@@ -3267,6 +3267,79 @@ function normalizarInformeSLA(valor) {
   return String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 }
 
+function InformeFacturacion() {
+  const [filtros, setFiltros] = useState(() => ({ ...filtrosInformeIniciales(), modalidad: "todas", estado: "", tipo_operacion: "" }));
+  const [aplicados, setAplicados] = useState(() => ({ ...filtrosInformeIniciales(), modalidad: "todas", estado: "", tipo_operacion: "" }));
+  const [datos, setDatos] = useState({ resumen: {}, items: [] });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [exportando, setExportando] = useState(false);
+  const [recarga, setRecarga] = useState(0);
+
+  useEffect(() => {
+    let activo = true;
+    setLoading(true);
+    setError("");
+    const params = Object.fromEntries(Object.entries(aplicados).filter(([, v]) => v !== "" && v != null));
+    axios.get(`${API_BASE}/informes/facturacion`, { params })
+      .then(({ data }) => { if (activo) setDatos({ resumen: data?.resumen || {}, items: Array.isArray(data?.items) ? data.items : [] }); })
+      .catch((err) => { if (activo) setError(err?.response?.data?.detail || "No se pudo cargar el informe de facturación."); })
+      .finally(() => { if (activo) setLoading(false); });
+    return () => { activo = false; };
+  }, [aplicados, recarga]);
+
+  const cambiar = (campo, valor) => setFiltros((actual) => ({ ...actual, [campo]: valor }));
+  const aplicar = (e) => { e.preventDefault(); setAplicados({ ...filtros }); };
+  const exportar = async () => {
+    setExportando(true);
+    try {
+      const params = Object.fromEntries(Object.entries(aplicados).filter(([, v]) => v !== "" && v != null));
+      await descargarExcelBackend(`${API_BASE}/informes/facturacion/exportar-excel`, params, "informe_facturacion_honorarios_gestoria.xlsx");
+    } catch (err) { setError(err?.response?.data?.detail || "No se pudo exportar el informe."); }
+    finally { setExportando(false); }
+  };
+  const resumen = datos.resumen || {};
+  const euros = (v) => Number(v || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
+  const fecha = (v) => v ? fechaInformeVisible(v) : "—";
+  const campo = "block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
+  return (
+    <section className="space-y-5">
+      <div className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div><h2 className="text-xl font-bold text-slate-800">Informe económico de cancelaciones</h2><p className="mt-1 text-sm text-slate-500">Solo incluye el concepto HONORARIOS GESTORÍA. Los importes y fechas se muestran desde los datos disponibles del ERP.</p></div>
+          <button type="button" onClick={() => setRecarga((v) => v + 1)} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">↻ Actualizar</button>
+        </div>
+        <form onSubmit={aplicar} className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6">
+          <label className="text-xs font-semibold text-slate-600">Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
+          <label className="text-xs font-semibold text-slate-600">Fecha hasta<input className={campo} type="date" value={filtros.fecha_hasta} onChange={(e) => cambiar("fecha_hasta", e.target.value)} /></label>
+          <label className="text-xs font-semibold text-slate-600">Tipo de cancelación<select className={campo} value={filtros.modalidad} onChange={(e) => cambiar("modalidad", e.target.value)}><option value="todas">Todas</option><option value="con_provision">Con provisión</option><option value="sin_provision">Sin provisión</option></select></label>
+          <label className="text-xs font-semibold text-slate-600">Tipo operación<input className={campo} value={filtros.tipo_operacion} onChange={(e) => cambiar("tipo_operacion", e.target.value)} placeholder="Filtrar operación" /></label>
+          <label className="text-xs font-semibold text-slate-600">Estado ABSIS<input className={campo} value={filtros.estado} onChange={(e) => cambiar("estado", e.target.value)} placeholder="Filtrar estado" /></label>
+          <label className="text-xs font-semibold text-slate-600">Buscar expediente<input className={campo} value={filtros.q} onChange={(e) => cambiar("q", e.target.value)} placeholder="Nº expediente / factura" /></label>
+          <div className="flex flex-wrap gap-2 sm:col-span-2 xl:col-span-6"><button type="submit" className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700">Aplicar filtros</button><button type="button" onClick={exportar} disabled={exportando} className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-50 disabled:opacity-50">{exportando ? "Exportando…" : "↓ Exportar Excel"}</button></div>
+        </form>
+      </div>
+      <AvisoInforme error={error} />
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <InformeKpi titulo="Honorarios gestoría" valor={euros(resumen.total_gasto)} subtitulo={`${resumen.registros || 0} registros`} icono="🧾" />
+        <InformeKpi titulo="Base imponible" valor={euros(resumen.base_impuesto)} subtitulo="Base asociada al impuesto" icono="📑" />
+        <InformeKpi titulo="Base de retención" valor={euros(resumen.base_retencion)} subtitulo="Base sujeta a retención" icono="🧮" />
+        <InformeKpi titulo="Impuestos" valor={euros(resumen.total_impuesto)} subtitulo="Importe total de impuesto" icono="💶" />
+      </div>
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <div className="rounded-2xl border border-emerald-100 bg-white/80 p-4"><div className="text-sm font-semibold text-slate-500">Cancelaciones con provisión</div><div className="mt-1 text-2xl font-bold text-emerald-700">{resumen.con_provision || 0}</div></div>
+        <div className="rounded-2xl border border-amber-100 bg-white/80 p-4"><div className="text-sm font-semibold text-slate-500">Cancelaciones sin provisión</div><div className="mt-1 text-2xl font-bold text-amber-700">{resumen.sin_provision || 0}</div></div>
+        <div className="rounded-2xl border border-slate-200 bg-white/80 p-4"><div className="text-sm font-semibold text-slate-500">Pendientes de clasificar</div><div className="mt-1 text-2xl font-bold text-slate-700">{resumen.sin_clasificar || 0}</div></div>
+      </div>
+      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/80 shadow-[0_10px_35px_rgba(55,85,120,0.08)]">
+        <div className="border-b border-slate-200 px-5 py-4"><h3 className="font-bold text-slate-800">Detalle de honorarios de gestoría</h3><p className="mt-1 text-xs text-slate-500">Se excluyen todos los conceptos de gasto distintos de HONORARIOS GESTORÍA.</p></div>
+        <PanelEstadoInforme loading={loading} vacio={!loading && datos.items.length === 0} textoVacio="No hay gastos de HONORARIOS GESTORÍA para los filtros seleccionados. Si los datos aún no se han incorporado desde ABSIS, el informe permanecerá vacío." />
+        {!loading && datos.items.length > 0 && <div className="max-h-[65vh] overflow-auto"><table className="min-w-[1450px] w-full text-left text-xs"><thead className="sticky top-0 bg-slate-100 text-slate-600"><tr>{["Expediente","Clasificación","TIPOOPERACION","CONCEPTOGASTO","ESTADO","ESTADOJUSTIFICANTE","FECHAADJUNTARFACTURA","IMPGASTO","IMPBASEIMPUESTO","IMPBASERETENCION","IMPIMPUESTO","FESTADO","FPETICION","FPAGO"].map((h) => <th key={h} className="whitespace-nowrap px-3 py-3 font-bold">{h}</th>)}</tr></thead><tbody className="divide-y divide-slate-100">{datos.items.map((fila, i) => <tr key={`${fila.id_expediente}-${i}`} className="hover:bg-blue-50/50"><td className="whitespace-nowrap px-3 py-3 font-semibold text-blue-700">{fila.id_expediente}</td><td className="whitespace-nowrap px-3 py-3">{fila.tipo_cancelacion === "con_provision" ? "Con provisión" : fila.tipo_cancelacion === "sin_provision" ? "Sin provisión" : "Sin clasificar"}</td><td className="px-3 py-3">{fila.tipo_operacion || "—"}</td><td className="px-3 py-3 font-semibold">HONORARIOS GESTORÍA</td><td className="px-3 py-3">{fila.estado || "—"}</td><td className="px-3 py-3">{fila.estado_justificante || "—"}</td><td className="whitespace-nowrap px-3 py-3">{fecha(fila.fecha_adjuntar_factura)}</td><td className="whitespace-nowrap px-3 py-3 text-right">{fila.imp_gasto == null ? "—" : euros(fila.imp_gasto)}</td><td className="whitespace-nowrap px-3 py-3 text-right">{fila.imp_base_impuesto == null ? "—" : euros(fila.imp_base_impuesto)}</td><td className="whitespace-nowrap px-3 py-3 text-right">{fila.imp_base_retencion == null ? "—" : euros(fila.imp_base_retencion)}</td><td className="whitespace-nowrap px-3 py-3 text-right">{fila.imp_impuesto == null ? "—" : euros(fila.imp_impuesto)}</td><td className="whitespace-nowrap px-3 py-3">{fecha(fila.fecha_estado)}</td><td className="whitespace-nowrap px-3 py-3">{fecha(fila.fecha_peticion)}</td><td className="whitespace-nowrap px-3 py-3">{fecha(fila.fecha_pago)}</td></tr>)}</tbody></table></div>}
+      </section>
+    </section>
+  );
+}
+
 function ApartadoInformePendiente({ apartado }) {
   const detalle = {
     firmas: {
@@ -3345,7 +3418,7 @@ export default function Informes() {
     if (claveApartado === "firmas") return <InformeFirmas />;
     if (claveApartado === "sla") return <InformeSLA />;
     if (claveApartado === "notarios") return <InformeNotarios />;
-    if (claveApartado === "facturacion") return <ApartadoInformePendiente apartado={apartadoSeleccionado} />;
+    if (claveApartado === "facturacion") return <InformeFacturacion />;
     return null;
   };
 
