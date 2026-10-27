@@ -3268,7 +3268,8 @@ function normalizarInformeSLA(valor) {
 }
 
 const COLUMNAS_POSTFIRMA = [
-  "IDEXPEDIENTE", "FECHAALTA", "ORIGENBANKIA", "ACTIVIDADACTUAL", "ESTADOACTIVIDAD",
+  "IDEXPEDIENTE", "IDGASTO", "TIPOCONCEPTO", "ORIGENREGISTRO", "ESTADOCONSOLIDACION", "FECHAULTIMASINCRONIZACION",
+  "FECHAALTA", "ORIGENBANKIA", "ACTIVIDADACTUAL", "ESTADOACTIVIDAD",
   "IDPROVISION", "IMPORTEPROVISION", "TIPOPROVISION", "DETALLEOPERACION", "TIPOOPERACION",
   "SUBTIPOOPERACION", "OFICINA", "DAN", "IDGESTORIATRAMITE", "NOMBREGESTORIA",
   "NOMBREDOCUMENTO", "IDGASTO", "CONCEPTOGASTO", "ESTADO", "ESTADOJUSTIFICANTE",
@@ -3285,6 +3286,11 @@ function valorColumnaPostFirma(fila, columna) {
   if (valor === undefined || valor === null || valor === "") {
     const alternativas = {
       IDEXPEDIENTE: fila.id_expediente,
+      IDGASTO: fila.id_gasto_absis,
+      TIPOCONCEPTO: fila.tipo_concepto_absis,
+      ORIGENREGISTRO: fila.origen_registro,
+      ESTADOCONSOLIDACION: fila.estado_consolidacion,
+      FECHAULTIMASINCRONIZACION: fila.fecha_ultima_sincronizacion,
       TIPOOPERACION: fila.tipo_operacion,
       CONCEPTOGASTO: fila.concepto_gasto,
       ESTADO: fila.estado,
