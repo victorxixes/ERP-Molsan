@@ -305,19 +305,25 @@ async def importar_postfirma_absis(
 @router.post("/postfirma/validar")
 async def validar_postfirma_absis(
     fichero: UploadFile = File(...),
+    fecha_desde: date | None = Query(default=None, description="Fecha inicial de FECHAALTA en formato YYYY-MM-DD."),
+    fecha_hasta: date | None = Query(default=None, description="Fecha final de FECHAALTA en formato YYYY-MM-DD."),
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
-    """Audita el Excel y devuelve exclusivamente recuentos/importes agregados; no guarda filas."""
+    """Audita Post Firma por intervalo FECHAALTA y devuelve métricas; nunca guarda filas."""
     require_perm_modulo(usuario, "utilidades", "editar")
     nombre = (fichero.filename or "").strip()
     if not nombre.lower().endswith(".xlsx"):
         raise HTTPException(status_code=400, detail="El histórico Post Firma debe ser un Excel .xlsx.")
+    if fecha_desde is None or fecha_hasta is None:
+        raise HTTPException(status_code=400, detail="Selecciona las fechas desde y hasta para FECHAALTA.")
+    if fecha_desde > fecha_hasta:
+        raise HTTPException(status_code=400, detail="La fecha desde no puede ser posterior a la fecha hasta.")
     contenido = await fichero.read()
     if not contenido:
         raise HTTPException(status_code=400, detail="El Excel Post Firma está vacío.")
     try:
-        return validar_postfirma(db, contenido)
+        return validar_postfirma(db, contenido, fecha_desde=fecha_desde, fecha_hasta=fecha_hasta)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     except Exception as exc:
