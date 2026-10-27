@@ -46,6 +46,8 @@ class ExpedienteGasto(Base):
     medio_pago = Column(String(100), nullable=True)
     numero_factura = Column(String(150), nullable=True)
     fecha_factura = Column(Date, nullable=True)
+    numero_factura_absis = Column(String(150), nullable=True)
+    fecha_factura_absis = Column(Date, nullable=True)
 
     # Bases imponibles.
     importe_total_bruto = Column(Numeric(12, 2), nullable=True)
