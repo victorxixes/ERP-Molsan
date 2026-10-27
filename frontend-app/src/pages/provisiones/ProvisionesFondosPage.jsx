@@ -171,7 +171,7 @@ function ConfiguracionConceptosProvisiones() {
   };
   const subirLogoPlantilla = (codigo, archivo) => {
     if (!archivo) return;
-    if (!/^image\\/(png|jpeg|webp)$/.test(archivo.type || "")) { setErrorConfig("El logo debe ser una imagen PNG, JPG o WEBP."); return; }
+    if (!/^image\/(png|jpeg|webp)$/.test(archivo.type || "")) { setErrorConfig("El logo debe ser una imagen PNG, JPG o WEBP."); return; }
     if (archivo.size > 1024 * 1024) { setErrorConfig("El logo no puede superar 1 MB para mantener ligera la plantilla."); return; }
     const lector = new FileReader();
     lector.onload = () => {
