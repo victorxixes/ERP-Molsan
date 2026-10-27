@@ -9,3 +9,14 @@ TAREAS A REALIZAR
   - [ ] Comprobar validación y autorización del encargo.
   - [ ] Probar encargos con varios contratos y varias fincas.
   - [ ] Confirmar que los cambios están desplegados en Render.
+
+- [ ] Módulos Mensajería y Mensajería Gestión: finalizar validación y conexión con transportistas.
+  - [ ] Confirmar que el backend se despliega correctamente en Render con las últimas correcciones de permisos.
+  - [ ] Probar con un empleado que solo puede consultar sus propias solicitudes y comunicarse sobre ellas.
+  - [ ] Probar con un usuario autorizado de Mensajería Gestión la consulta y gestión de solicitudes, servicios/tarifas, proveedores, albaranes, facturas y comunicaciones.
+  - [ ] Revisar que los permisos configurados en las fichas de empleados coinciden con los accesos previstos.
+  - [ ] Obtener la documentación técnica y las credenciales de las empresas de mensajería.
+  - [ ] Integrar la API del transportista para enviar pedidos automáticamente.
+  - [ ] Guardar el identificador/número de seguimiento y sincronizar estados cuando la API lo permita.
+  - [ ] Implementar gestión de errores, reintentos y registro de respuestas de la API.
+  - [ ] Realizar pruebas de extremo a extremo y confirmar el despliegue final en Render.
