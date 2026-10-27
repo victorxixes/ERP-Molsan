@@ -984,10 +984,12 @@ CAMPOS_EXPEDIENTE = [
 ]
 
 
+# Ordenación segura del listado: permitir todas las columnas reales del modelo
+# y no depender de una lista manual que puede quedarse desactualizada.
 COLUMNAS_ORDENABLES = {
-    campo: getattr(Expediente, campo)
-    for campo in CAMPOS_EXPEDIENTE
-    if hasattr(Expediente, campo)
+    columna.key: getattr(Expediente, columna.key)
+    for columna in Expediente.__table__.columns
+    if hasattr(Expediente, columna.key)
 }
 
 
