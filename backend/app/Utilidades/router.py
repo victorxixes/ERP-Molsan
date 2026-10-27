@@ -269,7 +269,7 @@ def _asegurar_tabla_correspondencia(db: Session):
         "categoria": "Provisión de fondos",
         "asunto": "Provisión de fondos estimativa – {{cliente.nombre}}, {{oficina.numero}}, {{provision.id}}",
         "destinatario": "{{oficina.email}}",
-        "cuerpo": "Buenos días:\\n\\nAdjuntamos la provisión de fondos estimativa correspondiente a la operación, para su conocimiento y revisión.\\n\\nEl documento adjunto recoge el importe estimado de la provisión necesaria para la tramitación.\\n\\nQuedamos a su disposición para cualquier aclaración.\\n\\nMuchas gracias.\\n\\nUn saludo,",
+        "cuerpo": "Buenos días:\n\nAdjuntamos la provisión de fondos estimativa correspondiente a la operación, para su conocimiento y revisión.\n\nEl documento adjunto recoge el importe estimado de la provisión necesaria para la tramitación.\n\nQuedamos a su disposición para cualquier aclaración.\n\nMuchas gracias.\n\nUn saludo,",
     })
     db.commit()
 
