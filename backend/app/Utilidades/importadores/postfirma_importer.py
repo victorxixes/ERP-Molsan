@@ -256,8 +256,6 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
                 tipo_concepto = registro["tipo_concepto"]
                 numero_exp = registro["numero_exp"]
                 exp = expedientes_existentes.get(numero_exp.casefold()) if numero_exp else None
-                if exp is None:
-                    sin_expediente += 1
 
                 clave = (id_gasto.casefold(), (tipo_concepto or "").casefold())
                 gasto = gastos_por_clave.get(clave)
@@ -266,6 +264,10 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
                     candidato = gastos_por_id[id_gasto.casefold()][0]
                     if not candidato.tipo_concepto_absis:
                         gasto = candidato
+                # Contar como no vinculado solo si no hay expediente ABSIS localizado
+                # ni un gasto ERP previo que conserve ya el vínculo interno.
+                if exp is None and (gasto is None or gasto.expediente_id is None):
+                    sin_expediente += 1
                 es_nuevo = gasto is None
                 origen_previo = (str(getattr(gasto, "origen_registro", "") or "").strip().upper()) if gasto else None
                 # Compatibilidad con gastos ERP anteriores a los campos de trazabilidad:
