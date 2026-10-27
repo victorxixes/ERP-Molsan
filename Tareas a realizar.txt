@@ -1,0 +1,11 @@
+TAREAS A REALIZAR
+=================
+
+- [ ] Módulo EncargaGest (Notarios + Gestoría): realizar pruebas funcionales de extremo a extremo.
+  - [ ] Comprobar creación y guardado de encargos.
+  - [ ] Verificar que Notarios y Gestoría ven los mismos datos.
+  - [ ] Probar registro y recepción de incidencias.
+  - [ ] Probar subida y visualización de documentos compartidos.
+  - [ ] Comprobar validación y autorización del encargo.
+  - [ ] Probar encargos con varios contratos y varias fincas.
+  - [ ] Confirmar que los cambios están desplegados en Render.
