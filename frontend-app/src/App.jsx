@@ -441,6 +441,10 @@ export default function App() {
             path="informes"
             element={<Informes />}
           />
+          <Route
+            path="informes/:apartado"
+            element={<Informes />}
+          />
 
 
           {/* ==================================================
