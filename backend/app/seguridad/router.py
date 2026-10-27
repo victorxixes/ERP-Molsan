@@ -70,6 +70,18 @@ PLANTILLA_PERMISOS = {
         "editar",
         "eliminar",
     ],
+    "mensajeria-gestion": [
+        "ver",
+        "crear",
+        "editar",
+        "eliminar",
+    ],
+    "control-fichajes": [
+        "ver",
+        "crear",
+        "editar",
+        "eliminar",
+    ],
     "noticias": [
         "ver",
         "crear",
