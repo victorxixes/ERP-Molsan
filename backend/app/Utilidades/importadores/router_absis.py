@@ -296,3 +296,27 @@ async def importar_postfirma_absis(
         db.rollback()
         print("[IMPORTADOR ABSIS POST FIRMA] ERROR:", exc, flush=True)
         raise HTTPException(status_code=500, detail="Error al importar Post Firma. Se ha revertido la transacción.")
+
+
+
+@router.post("/postfirma/validar")
+async def validar_postfirma_absis(
+    fichero: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    """Audita el Excel y devuelve exclusivamente recuentos/importes agregados; no guarda filas."""
+    require_perm_modulo(usuario, "utilidades", "editar")
+    nombre = (fichero.filename or "").strip()
+    if not nombre.lower().endswith(".xlsx"):
+        raise HTTPException(status_code=400, detail="El histórico Post Firma debe ser un Excel .xlsx.")
+    contenido = await fichero.read()
+    if not contenido:
+        raise HTTPException(status_code=400, detail="El Excel Post Firma está vacío.")
+    try:
+        return validar_postfirma(db, contenido)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        print("[VALIDACION ABSIS POST FIRMA] ERROR:", exc, flush=True)
+        raise HTTPException(status_code=500, detail="No se pudo validar el Excel. No se han guardado cambios.")
