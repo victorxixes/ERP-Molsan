@@ -1,4 +1,4 @@
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 from io import BytesIO
 from urllib.parse import quote
@@ -50,6 +50,11 @@ def _migrar_tablas():
 @router.on_event("startup")
 def preparar_tablas_fichajes():
     _migrar_tablas()
+
+
+def _hoy_madrid():
+    """Fecha civil oficial de la aplicación en la zona horaria de España peninsular."""
+    return datetime.now(ZoneInfo("Europe/Madrid")).date()
 
 
 def _nombre_completo(empleado):
@@ -168,9 +173,9 @@ def listar_mis_marcajes(
     require_perm_modulo(usuario, "fichajes", "ver")
     consulta = db.query(FichajeMarcaje).filter(FichajeMarcaje.empleado_id == usuario.id)
     if desde:
-        consulta = consulta.filter(FichajeMarcaje.fecha_hora >= datetime.combine(desde, time.min))
+        consulta = consulta.filter(FichajeMarcaje.fecha_hora >= datetime.combine(desde, time.min).replace(tzinfo=ZoneInfo("Europe/Madrid")))
     if hasta:
-        consulta = consulta.filter(FichajeMarcaje.fecha_hora < datetime.combine(hasta + timedelta(days=1), time.min))
+        consulta = consulta.filter(FichajeMarcaje.fecha_hora < datetime.combine(hasta + timedelta(days=1), time.min).replace(tzinfo=ZoneInfo("Europe/Madrid")))
     return [_marcaje_dict(m) for m in consulta.order_by(desc(FichajeMarcaje.fecha_hora)).limit(2000).all()]
 
 
@@ -183,6 +188,9 @@ def crear_marcaje(
     db: Session = Depends(get_db),
 ):
     require_perm_modulo(usuario, "fichajes", "crear")
+    # Los marcajes nuevos siempre se registran en la hora oficial de Madrid;
+    # un periodo cerrado no admite nuevos movimientos ni correcciones.
+    _exigir_periodo_abierto(db, datetime.now(ZoneInfo("Europe/Madrid")))
     tipo = tipo.strip().upper()
     if tipo not in TIPOS_MARCAJE:
         raise HTTPException(status_code=422, detail="Tipo de marcaje no válido.")
@@ -233,6 +241,92 @@ def crear_marcaje(
     db.commit()
     db.refresh(marcaje)
     return _marcaje_dict(marcaje)
+
+
+@router.get("/resumen-horas")
+def resumen_horas(
+    anio: int | None = Query(default=None),
+    usuario=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Resume horas de jornadas cerradas, descontando pausas y recortando al año solicitado."""
+    require_perm_modulo(usuario, "fichajes", "ver")
+    if anio is None:
+        anio = datetime.now(ZoneInfo("Europe/Madrid")).year
+    if anio < 2000 or anio > 2100:
+        raise HTTPException(status_code=422, detail="Indica un año válido entre 2000 y 2100.")
+
+    zona = ZoneInfo("Europe/Madrid")
+    inicio = datetime(anio, 1, 1, tzinfo=zona)
+    fin = datetime(anio + 1, 1, 1, tzinfo=zona)
+    # Se leen los marcajes hasta el día siguiente para cerrar correctamente
+    # una jornada nocturna iniciada el 31 de diciembre.
+    limite = fin + timedelta(days=1)
+    marcajes = db.query(FichajeMarcaje).filter(
+        FichajeMarcaje.empleado_id == usuario.id,
+        FichajeMarcaje.fecha_hora < limite,
+    ).order_by(FichajeMarcaje.fecha_hora.asc(), FichajeMarcaje.id.asc()).all()
+
+    pausas_inicio = {
+        "PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO",
+        "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "AUSENCIA",
+    }
+    pausas_fin = {
+        "PAUSA_DESAYUNO_FIN", "PAUSA_COMIDA_FIN",
+        "PAUSA_CIGARRILLO_FIN", "RETORNO_AUSENCIA",
+    }
+    activo = False
+    pausado = False
+    inicio_jornada = None
+    instante_anterior = None
+    segundos_jornada_anio = 0.0
+    segundos_totales = 0.0
+    jornadas_incompletas = 0
+
+    def como_local(valor):
+        if valor.tzinfo is None:
+            return valor.replace(tzinfo=zona)
+        return valor.astimezone(zona)
+
+    for m in marcajes:
+        instante = como_local(m.fecha_hora)
+        if instante_anterior is not None and activo and not pausado:
+            tramo_inicio = max(instante_anterior, inicio)
+            tramo_fin = min(instante, fin)
+            if tramo_fin > tramo_inicio:
+                segundos_jornada_anio += (tramo_fin.astimezone(timezone.utc) - tramo_inicio.astimezone(timezone.utc)).total_seconds()
+
+        tipo = m.tipo
+        if tipo == "ENTRADA":
+            if activo and inicio_jornada and inicio_jornada.year == anio:
+                jornadas_incompletas += 1
+            activo = True
+            pausado = False
+            inicio_jornada = instante
+            segundos_jornada_anio = 0.0
+        elif tipo == "SALIDA":
+            if activo:
+                segundos_totales += segundos_jornada_anio
+            activo = False
+            pausado = False
+            inicio_jornada = None
+            segundos_jornada_anio = 0.0
+        elif tipo in pausas_inicio and activo and not pausado:
+            pausado = True
+        elif tipo in pausas_fin and activo and pausado:
+            pausado = False
+        # AUSENCIA_PUNTUAL es un evento informativo, no abre una pausa.
+        instante_anterior = instante
+
+    if activo and inicio_jornada and inicio_jornada.year == anio:
+        jornadas_incompletas += 1
+
+    return {
+        "anio": anio,
+        "horas_trabajadas": round(segundos_totales / 3600, 2),
+        "jornadas_incompletas": jornadas_incompletas,
+        "aviso": "Solo se suman jornadas cerradas con salida registrada. Las pausas se descuentan y las jornadas que cruzan de año se imputan al tiempo comprendido dentro del año consultado.",
+    }
 
 
 @router.get("/documentos")
@@ -291,11 +385,13 @@ def descargar_documento(
     usuario=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    require_perm_modulo(usuario, "fichajes", "ver")
     documento = db.query(FichajeDocumento).filter(FichajeDocumento.id == documento_id).first()
     if not documento:
         raise HTTPException(status_code=404, detail="Documento no encontrado.")
-    if documento.empleado_id != usuario.id:
+    if documento.empleado_id == usuario.id:
+        require_perm_modulo(usuario, "fichajes", "ver")
+    else:
+        require_perm_modulo(usuario, "control-fichajes", "ver")
         _exigir_admin(usuario)
     nombre = quote(documento.nombre_archivo or "documento")
     return StreamingResponse(
@@ -310,7 +406,7 @@ def admin_empleados(
     usuario=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    require_perm_modulo(usuario, "fichajes", "ver")
+    require_perm_modulo(usuario, "control-fichajes", "ver")
     _exigir_admin(usuario)
     empleados = db.query(Empleado).filter(Empleado.activo.is_(True)).order_by(Empleado.nombre, Empleado.apellidos).all()
     return [{
@@ -332,15 +428,15 @@ def admin_marcajes(
     usuario=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    require_perm_modulo(usuario, "fichajes", "ver")
+    require_perm_modulo(usuario, "control-fichajes", "ver")
     _exigir_admin(usuario)
     consulta = db.query(FichajeMarcaje, Empleado).join(Empleado, Empleado.id == FichajeMarcaje.empleado_id)
     if empleado_id:
         consulta = consulta.filter(FichajeMarcaje.empleado_id == empleado_id)
     if desde:
-        consulta = consulta.filter(FichajeMarcaje.fecha_hora >= datetime.combine(desde, time.min))
+        consulta = consulta.filter(FichajeMarcaje.fecha_hora >= datetime.combine(desde, time.min).replace(tzinfo=ZoneInfo("Europe/Madrid")))
     if hasta:
-        consulta = consulta.filter(FichajeMarcaje.fecha_hora < datetime.combine(hasta + timedelta(days=1), time.min))
+        consulta = consulta.filter(FichajeMarcaje.fecha_hora < datetime.combine(hasta + timedelta(days=1), time.min).replace(tzinfo=ZoneInfo("Europe/Madrid")))
     if tipo:
         consulta = consulta.filter(FichajeMarcaje.tipo == tipo.strip().upper())
     if busqueda and busqueda.strip():
@@ -379,7 +475,7 @@ def admin_crear_marcaje(
     usuario=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    require_perm_modulo(usuario, "fichajes", "crear")
+    require_perm_modulo(usuario, "control-fichajes", "crear")
     _exigir_admin(usuario)
     motivo = (motivo or "").strip()
     if len(motivo) < 5:
@@ -419,7 +515,7 @@ def admin_editar_marcaje(
     usuario=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    require_perm_modulo(usuario, "fichajes", "editar")
+    require_perm_modulo(usuario, "control-fichajes", "editar")
     _exigir_admin(usuario)
     motivo = (motivo or "").strip()
     if len(motivo) < 5:
@@ -455,7 +551,7 @@ def admin_editar_marcaje(
 
 @router.get("/admin/marcajes/{marcaje_id}/auditoria")
 def admin_auditoria_marcaje(marcaje_id: int, usuario=Depends(get_current_user), db: Session = Depends(get_db)):
-    require_perm_modulo(usuario, "fichajes", "ver")
+    require_perm_modulo(usuario, "control-fichajes", "ver")
     _exigir_admin(usuario)
     registros = db.query(FichajeMarcajeAuditoria, Empleado).outerjoin(Empleado, Empleado.id == FichajeMarcajeAuditoria.actor_id).filter(
         FichajeMarcajeAuditoria.marcaje_id == marcaje_id
@@ -471,7 +567,7 @@ def admin_auditoria_marcaje(marcaje_id: int, usuario=Depends(get_current_user), 
 
 @router.get("/admin/periodos")
 def admin_listar_periodos(usuario=Depends(get_current_user), db: Session = Depends(get_db)):
-    require_perm_modulo(usuario, "fichajes", "ver")
+    require_perm_modulo(usuario, "control-fichajes", "ver")
     _exigir_admin(usuario)
     return [{"anio": p.anio, "mes": p.mes, "cerrado": bool(p.cerrado), "motivo": p.motivo,
              "actualizado_en": p.actualizado_en.isoformat() if p.actualizado_en else None}
@@ -483,7 +579,7 @@ def admin_cambiar_periodo(
     anio: int = Form(...), mes: int = Form(...), cerrado: bool = Form(...), motivo: str = Form(...),
     usuario=Depends(get_current_user), db: Session = Depends(get_db)
 ):
-    require_perm_modulo(usuario, "fichajes", "editar")
+    require_perm_modulo(usuario, "control-fichajes", "editar")
     _exigir_admin(usuario)
     if anio < 2000 or anio > 2100 or mes < 1 or mes > 12:
         raise HTTPException(status_code=422, detail="Mes o año no válidos.")
@@ -513,7 +609,7 @@ def listar_tipos_ausencia(usuario=Depends(get_current_user), db: Session = Depen
 @router.post("/catalogo-ausencias")
 def crear_tipo_ausencia(nombre: str = Form(...), requiere_justificante: bool = Form(False),
                         usuario=Depends(get_current_user), db: Session = Depends(get_db)):
-    require_perm_modulo(usuario, "fichajes", "crear")
+    require_perm_modulo(usuario, "control-fichajes", "crear")
     _exigir_admin(usuario)
     nombre = nombre.strip()
     if not nombre or len(nombre) > 120:
@@ -528,10 +624,10 @@ def crear_tipo_ausencia(nombre: str = Form(...), requiere_justificante: bool = F
 @router.get("/vacaciones")
 def mis_vacaciones(usuario=Depends(get_current_user), db: Session = Depends(get_db)):
     require_perm_modulo(usuario, "fichajes", "ver")
-    anio = date.today().year
+    anio = _hoy_madrid().year
     registros = db.query(FichajeVacaciones).filter(FichajeVacaciones.empleado_id == usuario.id,
         FichajeVacaciones.fecha_inicio >= date(anio, 1, 1), FichajeVacaciones.fecha_inicio < date(anio + 1, 1, 1)).order_by(FichajeVacaciones.fecha_inicio).all()
-    hoy = date.today()
+    hoy = _hoy_madrid()
     aprobadas = [v for v in registros if v.estado == "APROBADO"]
     disfrutados = sum(
         min(v.dias, max(0, (min(hoy, v.fecha_fin) - v.fecha_inicio).days + 1))
@@ -570,6 +666,14 @@ def solicitar_vacaciones(fecha_inicio: date = Form(...), fecha_fin: date = Form(
     ).first()
     if vacaciones_solapadas:
         raise HTTPException(status_code=409, detail="Ya existe otra solicitud de vacaciones pendiente o aprobada que coincide con esas fechas.")
+    ausencia_solapada = db.query(FichajeSolicitudAusencia).filter(
+        FichajeSolicitudAusencia.empleado_id == usuario.id,
+        FichajeSolicitudAusencia.estado.in_({"SOLICITADO", "APROBADO"}),
+        FichajeSolicitudAusencia.fecha_inicio <= fecha_fin,
+        FichajeSolicitudAusencia.fecha_fin >= fecha_inicio,
+    ).first()
+    if ausencia_solapada:
+        raise HTTPException(status_code=409, detail="Ya existe una solicitud de ausencia pendiente o aprobada dentro de esas fechas.")
     compensacion_duplicada = db.query(FichajeSolicitudCompensacion).filter(
         FichajeSolicitudCompensacion.empleado_id == usuario.id,
         FichajeSolicitudCompensacion.fecha_disfrute >= fecha_inicio,
@@ -646,7 +750,7 @@ def admin_listar_solicitudes_ausencia(
     desde: date | None = Query(default=None), hasta: date | None = Query(default=None),
     usuario=Depends(get_current_user), db: Session = Depends(get_db)
 ):
-    require_perm_modulo(usuario, "fichajes", "ver")
+    require_perm_modulo(usuario, "control-fichajes", "ver")
     _exigir_admin(usuario)
     consulta = db.query(FichajeSolicitudAusencia, Empleado).join(Empleado, Empleado.id == FichajeSolicitudAusencia.empleado_id)
     if estado:
@@ -668,11 +772,13 @@ def admin_resolver_solicitud_ausencia(
     solicitud_id: int, estado: str = Form(...), motivo: str = Form(...),
     usuario=Depends(get_current_user), db: Session = Depends(get_db)
 ):
-    require_perm_modulo(usuario, "fichajes", "editar")
+    require_perm_modulo(usuario, "control-fichajes", "editar")
     _exigir_admin(usuario)
     registro = db.query(FichajeSolicitudAusencia).filter(FichajeSolicitudAusencia.id == solicitud_id).with_for_update().first()
     if not registro:
         raise HTTPException(status_code=404, detail="No se encuentra la solicitud de ausencia.")
+    if registro.estado != "SOLICITADO":
+        raise HTTPException(status_code=409, detail="Esta solicitud ya se ha resuelto.")
     estado = estado.strip().upper()
     if estado not in {"APROBADO", "RECHAZADO"}:
         raise HTTPException(status_code=422, detail="Estado de resolución no válido.")
@@ -691,7 +797,7 @@ def admin_resolver_solicitud_ausencia(
         otra = db.query(FichajeSolicitudAusencia).filter(
             FichajeSolicitudAusencia.id != registro.id,
             FichajeSolicitudAusencia.empleado_id == registro.empleado_id,
-            FichajeSolicitudAusencia.estado == "APROBADO",
+            FichajeSolicitudAusencia.estado.in_({"SOLICITADO", "APROBADO"}),
             FichajeSolicitudAusencia.fecha_inicio <= registro.fecha_fin,
             FichajeSolicitudAusencia.fecha_fin >= registro.fecha_inicio,
         ).first()
@@ -720,7 +826,7 @@ def admin_listar_solicitudes_vacaciones(
     usuario=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    require_perm_modulo(usuario, "fichajes", "ver")
+    require_perm_modulo(usuario, "control-fichajes", "ver")
     _exigir_admin(usuario)
     consulta = db.query(FichajeVacaciones, Empleado).join(
         Empleado, Empleado.id == FichajeVacaciones.empleado_id
@@ -751,7 +857,7 @@ def admin_resolver_solicitud_vacaciones(
     usuario=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    require_perm_modulo(usuario, "fichajes", "editar")
+    require_perm_modulo(usuario, "control-fichajes", "editar")
     _exigir_admin(usuario)
     solicitud = db.query(FichajeVacaciones).filter(
         FichajeVacaciones.id == solicitud_id
@@ -821,7 +927,7 @@ def admin_listar_documentos(
     usuario=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    require_perm_modulo(usuario, "fichajes", "ver")
+    require_perm_modulo(usuario, "control-fichajes", "ver")
     _exigir_admin(usuario)
     consulta = db.query(FichajeDocumento, Empleado).join(
         Empleado, Empleado.id == FichajeDocumento.empleado_id
@@ -846,7 +952,7 @@ def admin_revisar_documento(
     documento_id: int, estado: str = Form(...), motivo: str = Form(...),
     usuario=Depends(get_current_user), db: Session = Depends(get_db)
 ):
-    require_perm_modulo(usuario, "fichajes", "editar")
+    require_perm_modulo(usuario, "control-fichajes", "editar")
     _exigir_admin(usuario)
     documento = db.query(FichajeDocumento).filter(FichajeDocumento.id == documento_id).first()
     if not documento:
@@ -868,9 +974,9 @@ def admin_revisar_documento(
 @router.get("/admin/vacaciones-bolsa")
 def admin_listar_bolsas_vacaciones(anio: int | None = Query(default=None),
                                    usuario=Depends(get_current_user), db: Session = Depends(get_db)):
-    require_perm_modulo(usuario, "fichajes", "ver")
+    require_perm_modulo(usuario, "control-fichajes", "ver")
     _exigir_admin(usuario)
-    anio = anio or date.today().year
+    anio = anio or _hoy_madrid().year
     filas = db.query(FichajeBolsaVacaciones, Empleado).join(Empleado, Empleado.id == FichajeBolsaVacaciones.empleado_id).filter(FichajeBolsaVacaciones.anio == anio).all()
     return [{"empleado_id": b.empleado_id, "empleado_nombre": _nombre_completo(e) or e.usuario, "anio": b.anio, "dias_asignados": b.dias_asignados} for b, e in filas]
 
@@ -878,13 +984,21 @@ def admin_listar_bolsas_vacaciones(anio: int | None = Query(default=None),
 @router.post("/admin/vacaciones-bolsa")
 def admin_configurar_bolsa_vacaciones(empleado_id: int = Form(...), anio: int = Form(...), dias_asignados: int = Form(...),
                                       usuario=Depends(get_current_user), db: Session = Depends(get_db)):
-    require_perm_modulo(usuario, "fichajes", "crear")
+    require_perm_modulo(usuario, "control-fichajes", "crear")
     _exigir_admin(usuario)
     if anio < 2000 or anio > 2100 or dias_asignados < 0 or dias_asignados > 60:
         raise HTTPException(status_code=422, detail="Indica un año válido y entre 0 y 60 días asignados.")
     if not db.query(Empleado).filter(Empleado.id == empleado_id).first():
         raise HTTPException(status_code=404, detail="Empleado no encontrado.")
     bolsa = db.query(FichajeBolsaVacaciones).filter(FichajeBolsaVacaciones.empleado_id == empleado_id, FichajeBolsaVacaciones.anio == anio).first()
+    comprometidos = sum(v.dias for v in db.query(FichajeVacaciones).filter(
+        FichajeVacaciones.empleado_id == empleado_id,
+        FichajeVacaciones.estado == "APROBADO",
+        FichajeVacaciones.fecha_inicio >= date(anio, 1, 1),
+        FichajeVacaciones.fecha_inicio < date(anio + 1, 1, 1),
+    ).all())
+    if comprometidos > dias_asignados:
+        raise HTTPException(status_code=409, detail=f"No se puede asignar {dias_asignados} días: ya hay {comprometidos} días de vacaciones aprobados para ese año.")
     if bolsa:
         bolsa.dias_asignados = dias_asignados
     else:
@@ -922,7 +1036,7 @@ def _saldo_compensacion(db, empleado_id, unidad):
 
 def _procesar_compensaciones_vencidas(db, empleado_id):
     """Convierte reservas aprobadas cuya fecha ya llegó en disfrutes efectivos."""
-    hoy = date.today()
+    hoy = _hoy_madrid()
     vencidas = db.query(FichajeSolicitudCompensacion).filter(
         FichajeSolicitudCompensacion.empleado_id == empleado_id,
         FichajeSolicitudCompensacion.estado == "APROBADO",
@@ -1011,7 +1125,7 @@ def solicitar_compensacion(fecha_disfrute: date = Form(...), cantidad: float = F
     unidad = (unidad or "").strip().upper()
     if unidad not in UNIDADES_COMPENSACION or cantidad <= 0 or cantidad > 100:
         raise HTTPException(status_code=422, detail="Indica una cantidad positiva y una unidad válida (días u horas).")
-    if fecha_disfrute < date.today():
+    if fecha_disfrute < _hoy_madrid():
         raise HTTPException(status_code=422, detail="La fecha de disfrute no puede estar en el pasado.")
     vacaciones_duplicadas = db.query(FichajeVacaciones).filter(
         FichajeVacaciones.empleado_id == usuario.id,
@@ -1065,7 +1179,7 @@ def mis_movimientos_compensacion(usuario=Depends(get_current_user), db: Session 
 def admin_registrar_festivo(empleado_id: int = Form(...), fecha: date = Form(...),
                              horas_trabajadas: float = Form(...), observaciones: str = Form(""),
                              usuario=Depends(get_current_user), db: Session = Depends(get_db)):
-    require_perm_modulo(usuario, "fichajes", "crear")
+    require_perm_modulo(usuario, "control-fichajes", "crear")
     _exigir_admin(usuario)
     if horas_trabajadas <= 0 or horas_trabajadas > 24:
         raise HTTPException(status_code=422, detail="Las horas trabajadas deben estar entre 0 y 24.")
@@ -1091,7 +1205,7 @@ def admin_registrar_festivo(empleado_id: int = Form(...), fecha: date = Form(...
 def admin_listar_festivos(estado: str | None = Query(default=None),
                            empleado_id: int | None = Query(default=None),
                            usuario=Depends(get_current_user), db: Session = Depends(get_db)):
-    require_perm_modulo(usuario, "fichajes", "ver")
+    require_perm_modulo(usuario, "control-fichajes", "ver")
     _exigir_admin(usuario)
     q = db.query(FichajeFestivoTrabajado, Empleado).join(Empleado, Empleado.id == FichajeFestivoTrabajado.empleado_id)
     if estado: q = q.filter(FichajeFestivoTrabajado.estado == estado.upper())
@@ -1104,7 +1218,7 @@ def admin_validar_festivo(festivo_id: int, estado: str = Form(...),
                            cantidad_compensable: float = Form(0), unidad_compensable: str = Form("DIAS"),
                            observaciones: str = Form(""), usuario=Depends(get_current_user),
                            db: Session = Depends(get_db)):
-    require_perm_modulo(usuario, "fichajes", "editar")
+    require_perm_modulo(usuario, "control-fichajes", "editar")
     _exigir_admin(usuario)
     f = db.query(FichajeFestivoTrabajado).filter(FichajeFestivoTrabajado.id == festivo_id).with_for_update().first()
     if not f: raise HTTPException(status_code=404, detail="Registro de festivo no encontrado.")
@@ -1133,7 +1247,7 @@ def admin_validar_festivo(festivo_id: int, estado: str = Form(...),
 def admin_listar_solicitudes_compensacion(estado: str | None = Query(default=None),
                                            empleado_id: int | None = Query(default=None),
                                            usuario=Depends(get_current_user), db: Session = Depends(get_db)):
-    require_perm_modulo(usuario, "fichajes", "ver")
+    require_perm_modulo(usuario, "control-fichajes", "ver")
     _exigir_admin(usuario)
     q = db.query(FichajeSolicitudCompensacion, Empleado).join(Empleado, Empleado.id == FichajeSolicitudCompensacion.empleado_id)
     if estado: q = q.filter(FichajeSolicitudCompensacion.estado == estado.upper())
@@ -1145,7 +1259,7 @@ def admin_listar_solicitudes_compensacion(estado: str | None = Query(default=Non
 def admin_resolver_solicitud_compensacion(solicitud_id: int, estado: str = Form(...),
                                            observaciones: str = Form(""), usuario=Depends(get_current_user),
                                            db: Session = Depends(get_db)):
-    require_perm_modulo(usuario, "fichajes", "editar")
+    require_perm_modulo(usuario, "control-fichajes", "editar")
     _exigir_admin(usuario)
     s = db.query(FichajeSolicitudCompensacion).filter(FichajeSolicitudCompensacion.id == solicitud_id).with_for_update().first()
     if not s: raise HTTPException(status_code=404, detail="Solicitud no encontrada.")
@@ -1175,7 +1289,7 @@ def admin_resolver_solicitud_compensacion(solicitud_id: int, estado: str = Form(
     if observaciones.strip(): s.observaciones = (s.observaciones or "") + (" | " if s.observaciones else "") + observaciones.strip()[:400]
     _auditar_compensacion(db, s.empleado_id, usuario.id, "SOLICITUD", s.id, "RESOLUCION",
                            anterior, estado, observaciones)
-    if estado == "APROBADO" and s.fecha_disfrute <= date.today():
+    if estado == "APROBADO" and s.fecha_disfrute <= _hoy_madrid():
         _procesar_compensaciones_vencidas(db, s.empleado_id)
     db.commit(); db.refresh(s)
     return _solicitud_comp_dict(s)
@@ -1183,7 +1297,7 @@ def admin_resolver_solicitud_compensacion(solicitud_id: int, estado: str = Form(
 
 @router.get("/admin/compensaciones/saldos")
 def admin_saldos_compensacion(usuario=Depends(get_current_user), db: Session = Depends(get_db)):
-    require_perm_modulo(usuario, "fichajes", "ver")
+    require_perm_modulo(usuario, "control-fichajes", "ver")
     _exigir_admin(usuario)
     empleados = db.query(Empleado).filter(Empleado.activo.is_(True)).order_by(Empleado.nombre, Empleado.apellidos).all()
     resultado = []
@@ -1214,7 +1328,7 @@ def empleado_reportar_festivo(fecha: date = Form(...), horas_trabajadas: float =
         FichajeFestivoCalendario.fecha == fecha, FichajeFestivoCalendario.activo == 1).first()
     if not festivo:
         raise HTTPException(status_code=422, detail="La fecha no está en el calendario de festivos aprobado. Contacta con administración para revisarla.")
-    if fecha > date.today() or horas_trabajadas <= 0 or horas_trabajadas > 24:
+    if fecha > _hoy_madrid() or horas_trabajadas <= 0 or horas_trabajadas > 24:
         raise HTTPException(status_code=422, detail="Indica un festivo ya trabajado y entre 0 y 24 horas.")
     existente = db.query(FichajeFestivoTrabajado).filter(
         FichajeFestivoTrabajado.empleado_id == usuario.id,
@@ -1234,7 +1348,7 @@ def empleado_reportar_festivo(fecha: date = Form(...), horas_trabajadas: float =
 
 @router.get("/admin/compensaciones/calendario")
 def admin_listar_calendario_festivos(usuario=Depends(get_current_user), db: Session = Depends(get_db)):
-    require_perm_modulo(usuario, "fichajes", "ver")
+    require_perm_modulo(usuario, "control-fichajes", "ver")
     _exigir_admin(usuario)
     return [{"id": x.id, "fecha": x.fecha.isoformat(), "nombre": x.nombre, "ambito": x.ambito, "activo": bool(x.activo)}
             for x in db.query(FichajeFestivoCalendario).order_by(FichajeFestivoCalendario.fecha).limit(1000).all()]
@@ -1244,7 +1358,7 @@ def admin_listar_calendario_festivos(usuario=Depends(get_current_user), db: Sess
 def admin_crear_calendario_festivo(fecha: date = Form(...), nombre: str = Form(...),
                                     ambito: str = Form("EMPRESA"), usuario=Depends(get_current_user),
                                     db: Session = Depends(get_db)):
-    require_perm_modulo(usuario, "fichajes", "crear")
+    require_perm_modulo(usuario, "control-fichajes", "crear")
     _exigir_admin(usuario)
     nombre = nombre.strip()
     ambito = (ambito or "EMPRESA").strip().upper()
@@ -1263,7 +1377,7 @@ def admin_crear_calendario_festivo(fecha: date = Form(...), nombre: str = Form(.
 @router.get("/admin/compensaciones/auditoria")
 def admin_auditoria_compensaciones(empleado_id: int | None = Query(default=None),
                                     usuario=Depends(get_current_user), db: Session = Depends(get_db)):
-    require_perm_modulo(usuario, "fichajes", "ver")
+    require_perm_modulo(usuario, "control-fichajes", "ver")
     _exigir_admin(usuario)
     q = db.query(FichajeCompensacionAuditoria, Empleado).join(
         Empleado, Empleado.id == FichajeCompensacionAuditoria.empleado_id)
