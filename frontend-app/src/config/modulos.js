@@ -80,6 +80,15 @@ const MODULOS_ERP = [
     icon: "globe",
   },
 
+  // Permiso granular para la gestión de noticias de la intranet.
+  // route:null evita crear una segunda entrada de navegación.
+  {
+    key: "noticias",
+    label: "Noticias",
+    route: null,
+    icon: "newspaper",
+  },
+
   {
     key: "mensajes",
     label: "Mensajes",
