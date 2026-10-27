@@ -22,6 +22,14 @@ function Campo({ titulo, valor, onChange, tipo = "text", requerido = false, plac
 function normalizarCatalogo(valor) {
   return String(valor ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().replace(/\s+/g, " ").toLocaleLowerCase("es");
 }
+function esTerritorioVasco(g) {
+  const normalizar = (valor) => normalizarCatalogo(valor).replace(/[^a-z0-9]/g, "");
+  const claves = ["gipuzkoa", "guipuzcoa", "alava", "araba", "bizkaia", "vizcaya"];
+  return [g?.provincia, g?.registro_propiedad].some((valor) => {
+    const texto = normalizar(valor);
+    return claves.some((clave) => texto.includes(clave));
+  });
+}
 function AutocompleteCatalogo({ titulo, valor, opciones, etiqueta, detalle, onChange, onSelect, placeholder = "Escribe para buscar…", disabled = false, requerido = false }) {
   const [abierto, setAbierto] = useState(false);
   const consulta = normalizarCatalogo(valor);
@@ -553,10 +561,15 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
         return;
       }
       impuestos = Math.round((capital * porcentaje / 100) * 100) / 100;
-    } else if (esHipoteca && g.adquisicion_vivienda_habitual === "no") {
-      // Para hipotecas destinadas a otra finalidad, el valor de la regla provincial es un porcentaje del capital.
-      const porcentajeTerritorial = importeHipotecaProvincia(g.provincia);
-      if (porcentajeTerritorial !== null) impuestos = Math.round((capital * porcentajeTerritorial / 100) * 100) / 100;
+    } else if (esHipoteca && esTerritorioVasco(g)) {
+      // En el País Vasco, la vivienda habitual está exenta: Sí fuerza AJD a 0,00 €.
+      // Si responde No, solo se aplica el porcentaje territorial configurado.
+      if (g.adquisicion_vivienda_habitual === "si") {
+        impuestos = 0;
+      } else if (g.adquisicion_vivienda_habitual === "no") {
+        const porcentajeTerritorial = importeHipotecaProvincia(g.provincia);
+        if (porcentajeTerritorial !== null) impuestos = Math.round((capital * porcentajeTerritorial / 100) * 100) / 100;
+      }
     } else if (g.tipo_carga && !normalizar(g.tipo_carga).includes("hipotec")) {
       // Para otras cargas no se presupone un impuesto específico.
       impuestos = Number(g.ajd || 0);
@@ -717,17 +730,17 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
               <AutocompleteCatalogo titulo="Provincia" valor={g.provincia} opciones={[...new Set(catalogoMunicipios.map((m) => m.provincia).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"))} etiqueta={(p) => p} placeholder="Busca una provincia…" onChange={(v) => cambiarGarantia(i, "provincia", v)} onSelect={(p) => cambiarGarantia(i, "provincia", p)} />
               <Selector titulo="Tipo de carga" valor={g.tipo_carga} onChange={(v) => cambiarGarantia(i, "tipo_carga", v)} opciones={tiposCarga} />
               <Selector titulo="¿Es una condición resolutoria?" valor={g.condicion_resolutoria || (normalizarCatalogo(g.tipo_carga).includes("condicion resolutoria") ? "si" : "no")} onChange={(v) => cambiarGarantia(i, "condicion_resolutoria", v)} opciones={[{ nombre: "no" }, { nombre: "si" }]} />
-              {normalizarCatalogo(g.tipo_carga).includes("hipotec") && <label className={label}>¿La hipoteca se constituyó para adquirir la vivienda habitual?
+              {normalizarCatalogo(g.tipo_carga).includes("hipotec") && esTerritorioVasco(g) && <label className={label}>¿La hipoteca se constituyó para adquirir la vivienda habitual?
                 <select className={input} value={g.adquisicion_vivienda_habitual ?? ""} onChange={(e) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => {
                   if (n !== i) return x;
                   const respuesta = e.target.value;
-                  return { ...x, adquisicion_vivienda_habitual: respuesta };
+                  return { ...x, adquisicion_vivienda_habitual: respuesta, ...(respuesta === "si" ? { ajd: "0" } : {}) };
                 }) }))}>
                 <option value="">Selecciona una respuesta…</option><option value="si">Sí, para adquirir la vivienda habitual</option><option value="no">No, para otra finalidad</option>
               </select>
               </label>}
             </div>
-            {normalizarCatalogo(g.tipo_carga).includes("hipotec") && ["gipuzkoa", "alava", "bizkaia"].includes(String(g.provincia || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es")) && <div role="status" className="mb-3 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-900">
+            {normalizarCatalogo(g.tipo_carga).includes("hipotec") && esTerritorioVasco(g) && <div role="status" className="mb-3 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-900">
               <strong>Regla territorial detectada: {g.provincia}.</strong>{" "}
               {g.adquisicion_vivienda_habitual === "" || g.adquisicion_vivienda_habitual == null
                 ? "Responde primero si la hipoteca se constituyó para adquirir la vivienda habitual."
