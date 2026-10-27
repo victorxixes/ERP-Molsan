@@ -237,13 +237,12 @@ def preparar_integracion_gasto_absis(
             }).scalar()
         else:
             solicitud_id = existente
+        gasto.estado_consolidacion = "Pendiente envío"
         db.commit()
     except Exception as exc:
         db.rollback()
         raise HTTPException(status_code=500, detail="No se pudo registrar la solicitud pendiente de integración ABSIS.") from exc
 
-    gasto.estado_consolidacion = "Pendiente envío"
-    db.commit()
     return {
         "ok": True,
         "solicitud_id": solicitud_id,
