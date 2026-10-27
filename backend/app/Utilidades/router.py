@@ -267,10 +267,22 @@ def _asegurar_tabla_correspondencia(db: Session):
     """), {
         "nombre": "Envío de provisión de fondos",
         "categoria": "Provisión de fondos",
-        "asunto": "Provisión de fondos estimativa – {{cliente.nombre}}, {{oficina.numero}}, {{provision.id}}",
+        "asunto": "Provisión de fondos estimativa – Cliente {{cliente.nombre}}, Oficina {{oficina.numero}}, Número de provisión {{provision.id}}",
         "destinatario": "{{oficina.email}}",
         "cuerpo": "Buenos días:\n\nAdjuntamos la provisión de fondos estimativa correspondiente a la operación, para su conocimiento y revisión.\n\nEl documento adjunto recoge el importe estimado de la provisión necesaria para la tramitación.\n\nQuedamos a su disposición para cualquier aclaración.\n\nMuchas gracias.\n\nUn saludo,",
     })
+
+    db.execute(text("""
+        UPDATE correspondencia_plantillas
+        SET asunto = :asunto, actualizado_en = CURRENT_TIMESTAMP
+        WHERE lower(nombre) = lower(:nombre)
+          AND asunto = :asunto_anterior
+    """), {
+        "nombre": "Envío de provisión de fondos",
+        "asunto": "Provisión de fondos estimativa – Cliente {{cliente.nombre}}, Oficina {{oficina.numero}}, Número de provisión {{provision.id}}",
+        "asunto_anterior": "Provisión de fondos estimativa – {{cliente.nombre}}, {{oficina.numero}}, {{provision.id}}",
+    })
+
     db.commit()
 
 
