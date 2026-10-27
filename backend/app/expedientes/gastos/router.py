@@ -97,7 +97,6 @@ class GastoResponse(GastoBase):
     estado_justificante: Optional[str] = None
     imp_gasto: Optional[Decimal] = None
     fecha_pago: Optional[date] = None
-    datos_absis_json: Optional[str] = None
 
 
 def _obtener_expediente(db: Session, expediente_id: int):
