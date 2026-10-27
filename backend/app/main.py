@@ -1007,6 +1007,14 @@ def inicializar_tablas_auxiliares():
             """))
             conexion_defectos_absis.execute(text("""
                 ALTER TABLE IF EXISTS public.expediente_defectos
+                ADD COLUMN IF NOT EXISTS asiento_renovacion VARCHAR(100)
+            """))
+            conexion_defectos_absis.execute(text("""
+                ALTER TABLE IF EXISTS public.expediente_defectos
+                ADD COLUMN IF NOT EXISTS libro_diario VARCHAR(100)
+            """))
+            conexion_defectos_absis.execute(text("""
+                ALTER TABLE IF EXISTS public.expediente_defectos
                 ADD COLUMN IF NOT EXISTS asiento_renovacion_libro_diario VARCHAR(200)
             """))
             conexion_defectos_absis.execute(text("""
