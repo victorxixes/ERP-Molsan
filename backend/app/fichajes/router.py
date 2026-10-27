@@ -183,6 +183,9 @@ def crear_marcaje(
     db: Session = Depends(get_db),
 ):
     require_perm_modulo(usuario, "fichajes", "crear")
+    # Los marcajes nuevos siempre se registran en la hora oficial de Madrid;
+    # un periodo cerrado no admite nuevos movimientos ni correcciones.
+    _exigir_periodo_abierto(db, datetime.now(ZoneInfo("Europe/Madrid")))
     tipo = tipo.strip().upper()
     if tipo not in TIPOS_MARCAJE:
         raise HTTPException(status_code=422, detail="Tipo de marcaje no válido.")
@@ -654,6 +657,14 @@ def solicitar_vacaciones(fecha_inicio: date = Form(...), fecha_fin: date = Form(
     ).first()
     if vacaciones_solapadas:
         raise HTTPException(status_code=409, detail="Ya existe otra solicitud de vacaciones pendiente o aprobada que coincide con esas fechas.")
+    ausencia_solapada = db.query(FichajeSolicitudAusencia).filter(
+        FichajeSolicitudAusencia.empleado_id == usuario.id,
+        FichajeSolicitudAusencia.estado.in_({"SOLICITADO", "APROBADO"}),
+        FichajeSolicitudAusencia.fecha_inicio <= fecha_fin,
+        FichajeSolicitudAusencia.fecha_fin >= fecha_inicio,
+    ).first()
+    if ausencia_solapada:
+        raise HTTPException(status_code=409, detail="Ya existe una solicitud de ausencia pendiente o aprobada dentro de esas fechas.")
     compensacion_duplicada = db.query(FichajeSolicitudCompensacion).filter(
         FichajeSolicitudCompensacion.empleado_id == usuario.id,
         FichajeSolicitudCompensacion.fecha_disfrute >= fecha_inicio,
@@ -757,6 +768,8 @@ def admin_resolver_solicitud_ausencia(
     registro = db.query(FichajeSolicitudAusencia).filter(FichajeSolicitudAusencia.id == solicitud_id).with_for_update().first()
     if not registro:
         raise HTTPException(status_code=404, detail="No se encuentra la solicitud de ausencia.")
+    if registro.estado != "SOLICITADO":
+        raise HTTPException(status_code=409, detail="Esta solicitud ya se ha resuelto.")
     estado = estado.strip().upper()
     if estado not in {"APROBADO", "RECHAZADO"}:
         raise HTTPException(status_code=422, detail="Estado de resolución no válido.")
@@ -775,7 +788,7 @@ def admin_resolver_solicitud_ausencia(
         otra = db.query(FichajeSolicitudAusencia).filter(
             FichajeSolicitudAusencia.id != registro.id,
             FichajeSolicitudAusencia.empleado_id == registro.empleado_id,
-            FichajeSolicitudAusencia.estado == "APROBADO",
+            FichajeSolicitudAusencia.estado.in_({"SOLICITADO", "APROBADO"}),
             FichajeSolicitudAusencia.fecha_inicio <= registro.fecha_fin,
             FichajeSolicitudAusencia.fecha_fin >= registro.fecha_inicio,
         ).first()
@@ -969,6 +982,14 @@ def admin_configurar_bolsa_vacaciones(empleado_id: int = Form(...), anio: int = 
     if not db.query(Empleado).filter(Empleado.id == empleado_id).first():
         raise HTTPException(status_code=404, detail="Empleado no encontrado.")
     bolsa = db.query(FichajeBolsaVacaciones).filter(FichajeBolsaVacaciones.empleado_id == empleado_id, FichajeBolsaVacaciones.anio == anio).first()
+    comprometidos = sum(v.dias for v in db.query(FichajeVacaciones).filter(
+        FichajeVacaciones.empleado_id == empleado_id,
+        FichajeVacaciones.estado == "APROBADO",
+        FichajeVacaciones.fecha_inicio >= date(anio, 1, 1),
+        FichajeVacaciones.fecha_inicio < date(anio + 1, 1, 1),
+    ).all())
+    if comprometidos > dias_asignados:
+        raise HTTPException(status_code=409, detail=f"No se puede asignar {dias_asignados} días: ya hay {comprometidos} días de vacaciones aprobados para ese año.")
     if bolsa:
         bolsa.dias_asignados = dias_asignados
     else:
