@@ -124,6 +124,11 @@ def _valor_original_excel(celda):
 
 
 def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str = ""):
+    """Importa por lotes pequeños para evitar miles de consultas y transacciones gigantes.
+
+    Cada lote se confirma por separado. Si el proceso se interrumpe, una nueva ejecución
+    vuelve a detectar los IDGASTO ya guardados y continúa sin duplicarlos.
+    """
     try:
         df = pd.read_excel(BytesIO(contenido_excel), sheet_name=0, header=0, engine="openpyxl")
     except Exception as exc:
@@ -134,97 +139,153 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
     hoja_original = libro_original.worksheets[0]
     faltan = sorted(c for c in CABECERAS_REQUERIDAS if c not in columnas)
     if faltan:
+        libro_original.close()
         raise ValueError("El Excel no parece ser el histórico Post Firma. Faltan columnas: " + ", ".join(faltan))
 
+    TAMANO_LOTE = 500
     creados = actualizados = sin_id_gasto = sin_expediente = filas_vacias = 0
+    duplicados_excel = 0
     ids_vistos = set()
     errores = []
-    resumen_vinculos = []
+    errores_total = 0
 
-    for indice, row in df.iterrows():
-        fila_excel = indice + 2  # primera fila de datos, tras la cabecera
-        original = {
-            str(columna): _valor_original_excel(hoja_original.cell(row=fila_excel, column=posicion + 1))
-            for posicion, columna in enumerate(df.columns)
-        }
-        if not any(v is not None for v in original.values()):
-            filas_vacias += 1
-            continue
+    def val(row, nombre):
+        col = columnas.get(_norm_col(nombre))
+        return _limpiar(row[col]) if col is not None else None
 
-        def val(nombre):
-            col = columnas.get(_norm_col(nombre))
-            return _limpiar(row[col]) if col is not None else None
+    try:
+        # Iterador secuencial: en modo read_only, llamar cell() repetidamente
+        # puede volver a recorrer el XML desde el principio y disparar el tiempo de lectura.
+        filas_originales = hoja_original.iter_rows(min_row=2, max_col=len(df.columns), values_only=False)
+        for inicio in range(0, len(df), TAMANO_LOTE):
+            lote = df.iloc[inicio:inicio + TAMANO_LOTE]
+            registros = []
+            ids_lote = set()
+            expedientes_lote = set()
 
-        id_gasto = _texto(val("IDGASTO"))
-        if not id_gasto:
-            sin_id_gasto += 1
-            errores.append({"fila": int(indice) + 2, "motivo": "IDGASTO vacío; fila omitida para evitar duplicados"})
-            continue
-        if id_gasto in ids_vistos:
-            errores.append({"fila": int(indice) + 2, "id_gasto": id_gasto, "motivo": "IDGASTO duplicado dentro del Excel; fila posterior omitida"})
-            continue
-        ids_vistos.add(id_gasto)
+            # Preparar solo el lote actual; no se retienen miles de objetos ORM ni
+            # el listado completo de expedientes sin vínculo.
+            for indice, row in lote.iterrows():
+                fila_excel = int(indice) + 2
+                celdas_originales = next(filas_originales, ())
+                original = {
+                    str(columna): _valor_original_excel(celdas_originales[posicion])
+                    for posicion, columna in enumerate(df.columns)
+                    if posicion < len(celdas_originales)
+                }
+                if not any(v is not None for v in original.values()):
+                    filas_vacias += 1
+                    continue
 
-        numero_exp = _texto(val("IDEXPEDIENTE"))
-        exp = None
-        if numero_exp:
-            exp = db.query(Expediente).filter(
-                func.lower(Expediente.id_expediente) == numero_exp.casefold()
-            ).first()
-        if exp is None:
-            sin_expediente += 1
-            resumen_vinculos.append({"fila": int(indice) + 2, "id_gasto": id_gasto, "id_expediente_absis": numero_exp})
+                id_gasto = _texto(val(row, "IDGASTO"))
+                if not id_gasto:
+                    sin_id_gasto += 1
+                    errores_total += 1
+                    if len(errores) < 200:
+                        errores.append({"fila": fila_excel, "motivo": "IDGASTO vacío; fila omitida para evitar duplicados"})
+                    continue
+                if id_gasto in ids_vistos or id_gasto in ids_lote:
+                    duplicados_excel += 1
+                    errores_total += 1
+                    if len(errores) < 200:
+                        errores.append({"fila": fila_excel, "id_gasto": id_gasto, "motivo": "IDGASTO duplicado dentro del Excel; fila posterior omitida"})
+                    continue
+                ids_vistos.add(id_gasto)
+                ids_lote.add(id_gasto)
 
-        gasto = db.query(ExpedienteGasto).filter(ExpedienteGasto.id_gasto_absis == id_gasto).first()
-        es_nuevo = gasto is None
-        if es_nuevo:
-            gasto = ExpedienteGasto()
-            db.add(gasto)
+                numero_exp = _texto(val(row, "IDEXPEDIENTE"))
+                if numero_exp:
+                    expedientes_lote.add(numero_exp.casefold())
+                registros.append({
+                    "row": row,
+                    "fila_excel": fila_excel,
+                    "original": original,
+                    "id_gasto": id_gasto,
+                    "numero_exp": numero_exp,
+                })
 
-        concepto = _texto(val("CONCEPTOGASTO"))
-        importe = _decimal(val("IMPGASTO"))
-        fecha_factura = _fecha(val("FFACTURA"))
-        fecha_adjuntar = _fecha(val("FECHAADJUNTARFACTURA"))
-        fecha_pago = _fecha(val("FPAGO"))
-        fecha_estado = _fecha(val("FESTADO"))
-        fecha_peticion = _fecha(val("FPETICION"))
+            if not registros:
+                continue
 
-        gasto.expediente_id = exp.id if exp else None
-        gasto.id_gasto_absis = id_gasto
-        gasto.id_expediente_absis = numero_exp
-        gasto.tipo_operacion_absis = _texto(val("TIPOOPERACION"))
-        gasto.concepto_gasto_absis = concepto
-        gasto.tipo = concepto or "Gasto ABSIS Post Firma"
-        gasto.descripcion = _texto(val("DETALLEOPERACION")) or concepto
-        gasto.importe = importe
-        gasto.imp_gasto = importe
-        gasto.fecha = fecha_factura or fecha_adjuntar
-        gasto.fecha_factura = fecha_factura
-        gasto.fecha_adjuntar_factura = fecha_adjuntar
-        gasto.numero_factura = _texto(val("NUMFACTURA"))
-        gasto.estado_absis = _texto(val("ESTADO"))
-        gasto.estado_justificante = _texto(val("ESTADOJUSTIFICANTE"))
-        gasto.imp_base_impuesto = _decimal(val("IMPBASEIMPUESTO"))
-        gasto.imp_base_retencion = _decimal(val("IMPBASERETENCION"))
-        gasto.imp_impuesto = _decimal(val("IMPIMPUESTO"))
-        gasto.fecha_estado = fecha_estado
-        gasto.fecha_peticion = fecha_peticion
-        gasto.fecha_pago = fecha_pago
-        gasto.pagador = _texto(val("NOMBREPAGADOR"))
-        gasto.nif_notario = None
-        gasto.medio_pago = _texto(val("FORMAPAGO"))
-        gasto.cuenta_bancaria = _texto(val("CTAORIGEN"))
-        gasto.datos_absis_json = json.dumps(original, ensure_ascii=False, default=str)
+            # Dos consultas por lote, en vez de dos consultas por cada fila.
+            gastos_existentes = {
+                str(g.id_gasto_absis).strip(): g
+                for g in db.query(ExpedienteGasto)
+                .filter(ExpedienteGasto.id_gasto_absis.in_(ids_lote)).all()
+                if g.id_gasto_absis is not None
+            }
+            expedientes_existentes = {}
+            if expedientes_lote:
+                expedientes_existentes = {
+                    str(exp.id_expediente).casefold(): exp
+                    for exp in db.query(Expediente)
+                    .filter(func.lower(Expediente.id_expediente).in_(expedientes_lote)).all()
+                    if exp.id_expediente is not None
+                }
 
-        if es_nuevo:
-            creados += 1
-        else:
-            actualizados += 1
+            for registro in registros:
+                row = registro["row"]
+                id_gasto = registro["id_gasto"]
+                numero_exp = registro["numero_exp"]
+                exp = expedientes_existentes.get(numero_exp.casefold()) if numero_exp else None
+                if exp is None:
+                    sin_expediente += 1
 
-        if (creados + actualizados) % 500 == 0:
-            db.flush()
+                gasto = gastos_existentes.get(id_gasto)
+                es_nuevo = gasto is None
+                if es_nuevo:
+                    gasto = ExpedienteGasto()
+                    db.add(gasto)
+                    gastos_existentes[id_gasto] = gasto
 
-    db.commit()
+                concepto = _texto(val(row, "CONCEPTOGASTO"))
+                importe = _decimal(val(row, "IMPGASTO"))
+                fecha_factura = _fecha(val(row, "FFACTURA"))
+                fecha_adjuntar = _fecha(val(row, "FECHAADJUNTARFACTURA"))
+
+                gasto.expediente_id = exp.id if exp else None
+                gasto.id_gasto_absis = id_gasto
+                gasto.id_expediente_absis = numero_exp
+                gasto.tipo_operacion_absis = _texto(val(row, "TIPOOPERACION"))
+                gasto.concepto_gasto_absis = concepto
+                gasto.tipo = concepto or "Gasto ABSIS Post Firma"
+                gasto.descripcion = _texto(val(row, "DETALLEOPERACION")) or concepto
+                gasto.importe = importe
+                gasto.imp_gasto = importe
+                gasto.fecha = fecha_factura or fecha_adjuntar
+                gasto.fecha_factura = fecha_factura
+                gasto.fecha_adjuntar_factura = fecha_adjuntar
+                gasto.numero_factura = _texto(val(row, "NUMFACTURA"))
+                gasto.estado_absis = _texto(val(row, "ESTADO"))
+                gasto.estado_justificante = _texto(val(row, "ESTADOJUSTIFICANTE"))
+                gasto.imp_base_impuesto = _decimal(val(row, "IMPBASEIMPUESTO"))
+                gasto.imp_base_retencion = _decimal(val(row, "IMPBASERETENCION"))
+                gasto.imp_impuesto = _decimal(val(row, "IMPIMPUESTO"))
+                gasto.fecha_estado = _fecha(val(row, "FESTADO"))
+                gasto.fecha_peticion = _fecha(val(row, "FPETICION"))
+                gasto.fecha_pago = _fecha(val(row, "FPAGO"))
+                gasto.pagador = _texto(val(row, "NOMBREPAGADOR"))
+                gasto.nif_notario = None
+                gasto.medio_pago = _texto(val(row, "FORMAPAGO"))
+                gasto.cuenta_bancaria = _texto(val(row, "CTAORIGEN"))
+                gasto.datos_absis_json = json.dumps(registro["original"], ensure_ascii=False, default=str)
+
+                if es_nuevo:
+                    creados += 1
+                else:
+                    actualizados += 1
+
+            # Commit incremental: los lotes confirmados sobreviven a un reinicio.
+            # Al reintentar, IDGASTO permite actualizar en vez de duplicar.
+            db.commit()
+            db.expunge_all()
+
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        libro_original.close()
+
     return {
         "ok": True,
         "archivo": nombre_archivo,
@@ -232,16 +293,14 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
         "creados": creados,
         "actualizados": actualizados,
         "sin_id_gasto": sin_id_gasto,
+        "duplicados_en_excel": duplicados_excel,
         "sin_expediente_vinculado": sin_expediente,
         "filas_vacias": filas_vacias,
-        "errores": errores[:200],
-        "errores_total": len(errores),
-        "expedientes_no_vinculados": resumen_vinculos[:200],
-        "expedientes_no_vinculados_total": len(resumen_vinculos),
+        "errores": errores,
+        "errores_total": errores_total,
         "total_procesados": creados + actualizados,
-        "nota": "Importación confirmada por IDGASTO; no se ha modificado ni creado ningún expediente.",
+        "nota": "Importación por lotes confirmados por IDGASTO; no se ha modificado ni creado ningún expediente.",
     }
-
 
 
 def validar_postfirma(db: Session, contenido_excel: bytes):
