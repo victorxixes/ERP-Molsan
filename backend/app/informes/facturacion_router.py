@@ -85,9 +85,9 @@ def _consultar(db, fecha_desde=None, fecha_hasta=None, tipo_operacion=None, esta
         (ExpedienteGasto.descripcion.ilike("honorarios gestoría"))
     )
     if fecha_desde:
-        query = query.filter(ExpedienteGasto.fecha_factura >= fecha_desde)
+        query = query.filter(ExpedienteGasto.fecha_adjuntar_factura >= fecha_desde)
     if fecha_hasta:
-        query = query.filter(ExpedienteGasto.fecha_factura <= fecha_hasta)
+        query = query.filter(ExpedienteGasto.fecha_adjuntar_factura <= fecha_hasta)
     if tipo_operacion:
         query = query.filter(Expediente.tipo_operacion.ilike(f"%{tipo_operacion.strip()}%"))
     if estado:
@@ -102,7 +102,7 @@ def _consultar(db, fecha_desde=None, fecha_hasta=None, tipo_operacion=None, esta
             ExpedienteGasto.numero_factura.ilike(patron),
         ))
     filas = []
-    for gasto, exp in query.order_by(ExpedienteGasto.fecha_factura.desc().nullslast(), Expediente.id_expediente.asc()).all():
+    for gasto, exp in query.order_by(ExpedienteGasto.fecha_adjuntar_factura.desc().nullslast(), Expediente.id_expediente.asc()).all():
         tipo = _tipo_cancelacion(exp)
         if modalidad == "con_provision" and tipo != "con_provision":
             continue
