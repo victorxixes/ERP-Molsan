@@ -1041,7 +1041,12 @@ function formatearValor(
 // ============================================================
 
 function estiloEstado(valor) {
-  const estado = String(valor || "").toLocaleLowerCase("es-ES");
+  const estado = String(valor || "").trim().toLocaleLowerCase("es-ES");
+
+  // Códigos oficiales de Estado expediente: distinguirlos de un vistazo.
+  if (estado === "rst") return { background: "#f3e8ff", color: "#6b21a8", borderColor: "#d8b4fe" };
+  if (estado === "pva") return { background: "#dbeafe", color: "#1d4ed8", borderColor: "#93c5fd" };
+
   if (/vencid|bloquead|error|rechaz|defecto|urgente|atrasad/.test(estado)) return { background: "#fef2f2", color: "#991b1b", borderColor: "#fecaca" };
   if (/pendient|espera|revis|tramit|proceso/.test(estado)) return { background: "#fffbeb", color: "#92400e", borderColor: "#fde68a" };
   if (/finaliz|cerrad|complet|inscrit|entregad|facturad|firmad|correcto/.test(estado)) return { background: "#ecfdf5", color: "#065f46", borderColor: "#a7f3d0" };
