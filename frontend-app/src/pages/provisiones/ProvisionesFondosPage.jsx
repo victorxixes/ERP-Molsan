@@ -105,6 +105,7 @@ function ConfiguracionConceptosProvisiones() {
   const [borradores, setBorradores] = useState({});
   const [catalogoHonorarios, setCatalogoHonorarios] = useState([]);
   const [tramosEditando, setTramosEditando] = useState({});
+  const [arrastrandoCampo, setArrastrandoCampo] = useState(null);
   useEffect(() => { axios.get("/honorarios-gestoria?activos=true").then((r) => setCatalogoHonorarios(Array.isArray(r.data) ? r.data.filter((h) => h.activo !== false) : [])).catch(() => setCatalogoHonorarios([])); }, []);
   const cargar = useCallback(async () => {
     setCargando(true);
@@ -158,6 +159,28 @@ function ConfiguracionConceptosProvisiones() {
       await cargar();
     } catch (e) { setErrorConfig(e.response?.data?.detail || "No se pudo guardar " + item.nombre + "."); }
     finally { setGuardando(""); }
+  };
+  const cambiarCampoPlantilla = (codigo, campo, valor) => {
+    const draft = borradores[codigo] || {};
+    cambiar(codigo, "reglas", { ...(draft.reglas || {}), plantilla_pdf: { ...(draft.reglas?.plantilla_pdf || {}), [campo]: valor } });
+  };
+  const actualizarPosicionPlantilla = (codigo, campo, x, y) => {
+    const p = borradores[codigo]?.reglas?.plantilla_pdf || {};
+    const actual = p.posiciones?.[campo] || {};
+    cambiarCampoPlantilla(codigo, "posiciones", { ...(p.posiciones || {}), [campo]: { ...actual, x: Math.max(0, Math.min(94, x)), y: Math.max(0, Math.min(82, y)) } });
+  };
+  const subirLogoPlantilla = (codigo, archivo) => {
+    if (!archivo) return;
+    if (!/^image\\/(png|jpeg|webp)$/.test(archivo.type || "")) { setErrorConfig("El logo debe ser una imagen PNG, JPG o WEBP."); return; }
+    if (archivo.size > 1024 * 1024) { setErrorConfig("El logo no puede superar 1 MB para mantener ligera la plantilla."); return; }
+    const lector = new FileReader();
+    lector.onload = () => {
+      const p = borradores[codigo]?.reglas?.plantilla_pdf || {};
+      cambiarCampoPlantilla(codigo, "logo_data_url", String(lector.result || ""));
+      setErrorConfig("");
+    };
+    lector.onerror = () => setErrorConfig("No se ha podido leer el archivo del logo.");
+    lector.readAsDataURL(archivo);
   };
   const renderTabla = (item, draft, tipo) => {
     const caixabank = tipo === "caixabank";
@@ -269,7 +292,53 @@ function ConfiguracionConceptosProvisiones() {
                 <label className="flex items-center gap-2 text-sm font-medium text-slate-700"><input type="checkbox" checked={draft.reglas?.plantilla_pdf?.mostrar_aviso_legal !== false} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), plantilla_pdf: { ...(draft.reglas?.plantilla_pdf || {}), mostrar_aviso_legal: e.target.checked } })} /> Mostrar aviso legal</label>
                 <label className="flex items-center gap-2 text-sm font-medium text-slate-700"><input type="checkbox" checked={draft.reglas?.plantilla_pdf?.mostrar_firma !== false} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), plantilla_pdf: { ...(draft.reglas?.plantilla_pdf || {}), mostrar_firma: e.target.checked } })} /> Mostrar firma del cliente</label>
               </div>
-              <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50/50 p-4"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">Vista previa</p><div className="mt-3 border-b-2 border-slate-200 pb-3"><p className="text-lg font-extrabold text-[#15325b]">{draft.reglas?.plantilla_pdf?.nombre_empresa || "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L."}</p><p className="text-xs text-slate-600">{[draft.reglas?.plantilla_pdf?.cif, draft.reglas?.plantilla_pdf?.direccion, draft.reglas?.plantilla_pdf?.contacto].filter(Boolean).join(" · ") || "Completa los datos corporativos."}</p><p className="mt-2 font-semibold text-slate-800">PROVISIÓN ESTIMATIVA DE FONDOS</p></div><p className="mt-3 text-xs text-slate-600">{draft.reglas?.plantilla_pdf?.mostrar_aviso_legal === false ? "Aviso legal oculto" : (draft.reglas?.plantilla_pdf?.aviso_legal || "Aviso legal pendiente")}</p></div>
+              <section className="mt-4 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50/80 to-slate-50 p-4 sm:p-5">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div><p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-800">Editor visual · MOLSAN Premium 2027</p><h4 className="mt-1 font-bold text-slate-900">Diseña la cabecera del PDF</h4><p className="mt-1 text-xs text-slate-600">Arrastra el logo y cada dato corporativo dentro de la hoja. Las posiciones se guardan para los dos tipos de PDF.</p></div>
+                  <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-blue-200 bg-white px-3 py-2 text-sm font-bold text-blue-800 shadow-sm hover:bg-blue-50"> <span>＋ Cargar logo</span><input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(e) => { subirLogoPlantilla(item.codigo, e.target.files?.[0]); e.target.value = ""; }} /></label>
+                </div>
+                <div className="mt-4 rounded-xl border border-dashed border-blue-300 bg-white p-2 sm:p-3">
+                  <div className="relative mx-auto aspect-[5.05/1] w-full max-w-4xl overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm" onPointerMove={(e) => {
+                    if (!arrastrandoCampo || arrastrandoCampo.codigo !== item.codigo) return;
+                    const r = e.currentTarget.getBoundingClientRect();
+                    const x = ((e.clientX - r.left) / r.width) * 100 - arrastrandoCampo.dx;
+                    const y = ((e.clientY - r.top) / r.height) * 100 - arrastrandoCampo.dy;
+                    actualizarPosicionPlantilla(item.codigo, arrastrandoCampo.campo, x, y);
+                  }} onPointerUp={() => setArrastrandoCampo(null)} onPointerCancel={() => setArrastrandoCampo(null)} onPointerLeave={() => {}}>
+                    <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-blue-700 via-indigo-500 to-cyan-400" />
+                    {[
+                      { id: "logo", titulo: "LOGO", x: 2, y: 13, w: 21, h: 70, kind: "logo" },
+                      { id: "nombre_empresa", titulo: "Nombre corporativo", x: 26, y: 16, w: 70, h: 24, kind: "name" },
+                      { id: "cif", titulo: "CIF", x: 26, y: 43, w: 30, h: 15, kind: "cif" },
+                      { id: "direccion", titulo: "Dirección corporativa", x: 26, y: 59, w: 68, h: 15, kind: "direccion" },
+                      { id: "contacto", titulo: "Teléfono y correo", x: 26, y: 75, w: 68, h: 15, kind: "contacto" },
+                    ].map((el) => {
+                      const pos = draft.reglas?.plantilla_pdf?.posiciones?.[el.id] || el;
+                      const p = draft.reglas?.plantilla_pdf || {};
+                      const valor = el.kind === "name" ? (p.nombre_empresa || "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L.") : el.kind === "cif" ? (p.cif || "CIF de la empresa") : el.kind === "direccion" ? (p.direccion || "Dirección corporativa") : el.kind === "contacto" ? (p.contacto || "Teléfono · correo") : "";
+                      return <div key={el.id} onPointerDown={(e) => {
+                        if (el.kind === "logo" && !(p.logo_data_url)) return;
+                        const r = e.currentTarget.parentElement.getBoundingClientRect();
+                        const x = ((e.clientX - r.left) / r.width) * 100;
+                        const y = ((e.clientY - r.top) / r.height) * 100;
+                        setArrastrandoCampo({ codigo: item.codigo, campo: el.id, dx: x - Number(pos.x ?? el.x), dy: y - Number(pos.y ?? el.y) });
+                        e.currentTarget.setPointerCapture?.(e.pointerId);
+                        e.preventDefault();
+                      }} className={`absolute cursor-move select-none touch-none rounded-md border border-dashed border-blue-300/90 bg-blue-50/70 px-1.5 py-1 text-left text-[7px] leading-tight text-slate-700 hover:border-blue-600 hover:bg-blue-100 sm:text-[10px] ${arrastrandoCampo?.codigo === item.codigo && arrastrandoCampo?.campo === el.id ? "z-20 ring-2 ring-blue-500" : ""}`} style={{ left: `${pos.x ?? el.x}%`, top: `${pos.y ?? el.y}%`, width: `${pos.w ?? el.w}%`, height: `${pos.h ?? el.h}%` }}>
+                        {el.kind === "logo" ? <img src={p.logo_data_url || "/img/logo.jpg"} alt="Logo Molsan" className="h-full w-full object-contain pointer-events-none" /> : <span className={el.kind === "name" ? "block truncate text-[9px] font-extrabold text-[#15325b] sm:text-sm" : "block truncate font-medium"}>{valor}</span>}
+                      </div>;
+                    })}
+                    <div className="absolute bottom-[3%] left-[2%] right-[2%] border-b border-slate-200" />
+                  </div>
+                  <p className="mt-2 text-center text-[11px] text-slate-500">Vista esquemática de la cabecera A4 · arrastra cada elemento para cambiar su posición.</p>
+                </div>
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  <label className={label}>Tamaño del logo · ancho (%)<input className={input} type="number" min="5" max="45" value={draft.reglas?.plantilla_pdf?.posiciones?.logo?.w ?? 21} onChange={(e) => cambiarCampoPlantilla(item.codigo, "posiciones", { ...(draft.reglas?.plantilla_pdf?.posiciones || {}), logo: { ...(draft.reglas?.plantilla_pdf?.posiciones?.logo || { x: 2, y: 13, h: 70 }), w: Number(e.target.value || 21) } })} /></label>
+                  <label className={label}>Tamaño del logo · alto (%)<input className={input} type="number" min="15" max="90" value={draft.reglas?.plantilla_pdf?.posiciones?.logo?.h ?? 70} onChange={(e) => cambiarCampoPlantilla(item.codigo, "posiciones", { ...(draft.reglas?.plantilla_pdf?.posiciones || {}), logo: { ...(draft.reglas?.plantilla_pdf?.posiciones?.logo || { x: 2, y: 13, w: 21 }), h: Number(e.target.value || 70) } })} /></label>
+                </div>
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-2"><p className="text-xs text-slate-500">{draft.reglas?.plantilla_pdf?.logo_data_url ? "Logo personalizado cargado y guardado con la plantilla." : "Se utiliza el logo del proyecto: /img/logo.jpg. Puedes sustituirlo por otro archivo."}</p><button type="button" onClick={() => cambiarCampoPlantilla(item.codigo, "posiciones", {})} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Restablecer posiciones</button></div>
+              </section>
+              <div className="mt-4 rounded-xl border border-blue-100 bg-white p-4 shadow-sm"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">Vista previa del documento</p><div className="mt-3 border-b-2 border-slate-200 pb-3"><p className="font-semibold text-slate-800">PROVISIÓN ESTIMATIVA DE FONDOS</p></div><p className="mt-3 text-xs text-slate-600">{draft.reglas?.plantilla_pdf?.mostrar_aviso_legal === false ? "Aviso legal oculto" : (draft.reglas?.plantilla_pdf?.aviso_legal || "Aviso legal pendiente")}</p></div>
             </div>
           </div>;
         }
