@@ -10,6 +10,7 @@ on:
       - "frontend-app/src/pages/expedientes/FichaExpediente.jsx"
       - "frontend-app/src/pages/informes/Informes.jsx"
       - "frontend-app/src/pages/herramientas/CatalogoAbsis.jsx"
+      - "frontend-app/src/pages/herramientas/ImportadorPostFirma.jsx"
       - ".github/workflows/consolidacion-postfirma-checks.yml"
   push:
     branches: [feature/consolidacion-gastos-postfirma]
