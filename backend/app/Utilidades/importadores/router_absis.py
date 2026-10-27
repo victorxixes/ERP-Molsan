@@ -18,7 +18,7 @@ from backend.app.realtime.schemas import RealtimeEvent
 from backend.app.Utilidades.importadores.expedientes_importer import (
     importar_excel_expedientes,
 )
-from backend.app.Utilidades.importadores.postfirma_importer import validar_postfirma
+from backend.app.Utilidades.importadores.postfirma_importer import importar_postfirma, validar_postfirma
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 
@@ -279,17 +279,27 @@ async def importar_expedientes_absis(
 
 @router.post("/postfirma")
 async def importar_postfirma_absis(
+    fichero: UploadFile = File(...),
+    db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
-    """Bloquea temporalmente la escritura hasta validar el informe Post Firma."""
+    """Importa el histórico Post Firma completo, sin filtro de fechas."""
     require_perm_modulo(usuario, "utilidades", "editar")
-    raise HTTPException(
-        status_code=409,
-        detail=(
-            "La importación que modifica gastos está temporalmente deshabilitada. "
-            "Utiliza la validación Post Firma por intervalo FPAGO; no se han guardado cambios."
-        ),
-    )
+    nombre = (fichero.filename or "").strip()
+    if not nombre.lower().endswith(".xlsx"):
+        raise HTTPException(status_code=400, detail="El histórico Post Firma debe ser un Excel .xlsx.")
+    contenido = await fichero.read()
+    if not contenido:
+        raise HTTPException(status_code=400, detail="El Excel Post Firma está vacío.")
+    try:
+        return importar_postfirma(db=db, contenido_excel=contenido, nombre_archivo=nombre)
+    except ValueError as exc:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        db.rollback()
+        print("[IMPORTACION ABSIS POST FIRMA] ERROR:", exc, flush=True)
+        raise HTTPException(status_code=500, detail="Error durante la importación Post Firma. Revisa los logs del backend.")
 
 
 
