@@ -10,7 +10,7 @@ on:
       - "backend/app/fichajes/**"
       - ".github/workflows/validar-fichajes.yml"
   push:
-    branches: [main]
+    branches: [main, "fix/revision-integral-fichajes"]
     paths:
       - "frontend-app/src/pages/fichajes/**"
       - "frontend-app/src/pages/ModulosSelector.jsx"
