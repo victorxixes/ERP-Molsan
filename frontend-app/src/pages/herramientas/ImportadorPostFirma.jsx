@@ -28,6 +28,8 @@ export default function ImportadorPostFirma() {
   const [resultado, setResultado] = useState(null);
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
+  const [fechaDesde, setFechaDesde] = useState(`${new Date().getFullYear()}-01-01`);
+  const [fechaHasta, setFechaHasta] = useState(`${new Date().getFullYear()}-12-31`);
 
   const ejecutar = async (modo) => {
     setError("");
@@ -36,13 +38,21 @@ export default function ImportadorPostFirma() {
       setError("Selecciona el Excel histórico Post Firma (.xlsx).");
       return;
     }
+    if (modo === "validar" && (!fechaDesde || !fechaHasta)) {
+      setError("Selecciona las fechas desde y hasta para FECHAALTA.");
+      return;
+    }
+    if (modo === "validar" && fechaDesde > fechaHasta) {
+      setError("La fecha desde no puede ser posterior a la fecha hasta.");
+      return;
+    }
 
     setCargando(true);
     const formData = new FormData();
     formData.append("fichero", archivo);
     try {
       const endpoint = modo === "validar"
-        ? "/utilidades/importador-absis/postfirma/validar"
+        ? `/utilidades/importador-absis/postfirma/validar?fecha_desde=${encodeURIComponent(fechaDesde)}&fecha_hasta=${encodeURIComponent(fechaHasta)}`
         : "/utilidades/importador-absis/postfirma";
       const respuesta = await axios.post(endpoint, formData);
       if (modo === "validar") setValidacion(respuesta.data);
@@ -78,7 +88,7 @@ export default function ImportadorPostFirma() {
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-slate-800 md:text-3xl">Importador ABSIS · Post Firma</h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">
-                Importa el histórico de gastos y facturación del Excel Post Firma. Se conservan las columnas originales disponibles y se utiliza IDGASTO para reconocer y actualizar registros, sin crear ni modificar expedientes.
+                Revisa el histórico Post Firma por fecha de alta del expediente (FECHAALTA). El análisis conserva cada movimiento por separado y no modifica gastos, pagos ni expedientes.
               </p>
             </div>
           </div>
@@ -94,10 +104,21 @@ export default function ImportadorPostFirma() {
           <input id="postfirma-excel" type="file" accept=".xlsx" onChange={seleccionar} disabled={cargando} className={CAMPO} />
           {archivo && <p className="mt-2 text-xs text-slate-500">Seleccionado: {archivo.name} · {(archivo.size / 1024 / 1024).toFixed(2)} MB</p>}
         </div>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <button type="button" onClick={() => ejecutar("validar")} disabled={cargando || !archivo} className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50">{cargando ? "Procesando…" : "Validar sin importar"}</button>
-          <button type="button" onClick={() => { if (window.confirm("¿Confirmas la importación del histórico Post Firma? Se crearán o actualizarán gastos por IDGASTO.")) ejecutar("importar"); }} disabled={cargando || !archivo} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">{cargando ? "Procesando…" : "Importar Post Firma"}</button>
+        <div className="mt-5 grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label htmlFor="postfirma-fecha-desde" className="mb-2 block text-sm font-semibold text-slate-700">FECHAALTA · Desde</label>
+            <input id="postfirma-fecha-desde" type="date" value={fechaDesde} max={fechaHasta || undefined} onChange={(event) => setFechaDesde(event.target.value)} disabled={cargando} className={CAMPO} />
+          </div>
+          <div>
+            <label htmlFor="postfirma-fecha-hasta" className="mb-2 block text-sm font-semibold text-slate-700">FECHAALTA · Hasta</label>
+            <input id="postfirma-fecha-hasta" type="date" value={fechaHasta} min={fechaDesde || undefined} onChange={(event) => setFechaHasta(event.target.value)} disabled={cargando} className={CAMPO} />
+          </div>
         </div>
+        <p className="mt-3 max-w-3xl text-xs leading-5 text-slate-500">El periodo se aplica a FECHAALTA del expediente. Si un expediente tiene varias filas de gasto, se conservan todas las filas que correspondan a esa alta. Las fechas vacías o inválidas se contabilizan como incidencias.</p>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <button type="button" onClick={() => ejecutar("validar")} disabled={cargando || !archivo || !fechaDesde || !fechaHasta} className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50">{cargando ? "Procesando…" : "Revisar periodo sin importar"}</button>
+        </div>
+        <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">La importación que modifica gastos permanece deshabilitada durante esta fase de revisión. Esta pantalla solo valida y genera métricas; no guarda cambios en el ERP.</div>
         {error && <div role="alert" className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">{error}</div>}
       </section>
 
@@ -108,7 +129,10 @@ export default function ImportadorPostFirma() {
             <p className="mt-1 text-sm text-emerald-700">Validación completada sin guardar cambios.</p>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <Metrica titulo="Filas con datos" valor={validacion.filas_con_datos} detalle={`Filas Excel: ${validacion.filas_excel ?? "—"}`} />
+            <Metrica titulo="Filas con datos del periodo" valor={validacion.filas_con_datos} detalle={`Filas totales Excel: ${validacion.filas_excel ?? "—"}`} />
+            <Metrica titulo="Filas dentro del periodo" valor={validacion.filas_dentro_periodo} detalle={`${validacion.fecha_desde || "—"} a ${validacion.fecha_hasta || "—"}`} />
+            <Metrica titulo="Filas fuera del periodo" valor={validacion.filas_fuera_periodo} />
+            <Metrica titulo="FECHAALTA vacía o inválida" valor={validacion.fechaalta_sin_fecha_o_invalida} />
             <Metrica titulo="IDGASTO únicos" valor={validacion.ids_gasto_unicos} />
             <Metrica titulo="Importe total IMPGASTO" valor={euros(validacion.suma_imp_gasto)} detalle={`${validacion.filas_con_importe_valido ?? 0} filas con importe válido`} />
             <Metrica titulo="IDGASTO ya existentes" valor={validacion.idgasto_ya_existentes_en_erp} />
@@ -117,6 +141,7 @@ export default function ImportadorPostFirma() {
             <Metrica titulo="Expedientes ABSIS sin vínculo" valor={validacion.expedientes_absis_distintos_sin_vinculo} />
             <Metrica titulo="Importes no interpretables" valor={validacion.importes_no_interpretables} />
           </div>
+          {Array.isArray(validacion.columnas_detectadas) && <div><h3 className="mb-2 font-bold text-slate-700">Columnas detectadas en el Excel</h3><p className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs leading-5 text-slate-600">{validacion.columnas_detectadas.join(" · ")}</p><p className="mt-1 text-xs text-slate-500">Columna utilizada para filtrar: <strong>{validacion.columna_filtro_fecha || "FECHAALTA"}</strong>.</p></div>}
           {validacion.por_estado_absis && <div><h3 className="mb-2 font-bold text-slate-700">Desglose por estado ABSIS</h3><div className="overflow-x-auto rounded-xl border border-slate-200"><table className="w-full text-left text-sm"><thead className="bg-slate-50 text-slate-600"><tr><th className="px-3 py-2">Estado</th><th className="px-3 py-2">Filas</th><th className="px-3 py-2">Importe IMPGASTO</th></tr></thead><tbody>{Object.entries(validacion.por_estado_absis).map(([estado, dato]) => <tr key={estado} className="border-t border-slate-100"><td className="px-3 py-2">{estado}</td><td className="px-3 py-2">{dato.filas}</td><td className="px-3 py-2">{euros(dato.importe_imp_gasto)}</td></tr>)}</tbody></table></div></div>}
           <p className="text-xs text-slate-500">{validacion.nota_privacidad}</p>
         </section>
