@@ -1212,6 +1212,45 @@ def crear_encargo(datos: EncargoCrear, db: Session = Depends(get_db), usuario=De
     contratos = datos.contratos or []
     if not isinstance(contratos, list) or any(not isinstance(contrato, dict) for contrato in contratos):
         raise HTTPException(status_code=422, detail="Los contratos deben enviarse como una lista de objetos válidos.")
+    contratos_normalizados = []
+    for indice_contrato, contrato in enumerate(contratos):
+        fincas = contrato.get("fincas") or []
+        if not isinstance(fincas, list) or any(not isinstance(finca, dict) for finca in fincas):
+            raise HTTPException(status_code=422, detail="Las fincas del contrato " + str(indice_contrato + 1) + " deben enviarse como una lista de objetos válidos.")
+        fincas_normalizadas = []
+        for indice_finca, finca in enumerate(fincas):
+            capital_finca = finca.get("capital_inscrito")
+            try:
+                capital_finca = Decimal(str(capital_finca)) if capital_finca not in (None, "") else None
+                if capital_finca is not None and (
+                    not capital_finca.is_finite() or capital_finca < 0
+                    or len(capital_finca.as_tuple().digits) > 14
+                    or max(-capital_finca.as_tuple().exponent, 0) > 2
+                ):
+                    raise ValueError()
+            except Exception:
+                raise HTTPException(status_code=422, detail="Capital inscrito no válido en la finca " + str(indice_finca + 1) + " del contrato " + str(indice_contrato + 1) + ".")
+            fincas_normalizadas.append({
+                "numero_finca": str(finca.get("numero_finca") or "").strip(),
+                "capital_inscrito": float(capital_finca) if capital_finca is not None else None,
+                "numero_inscripcion": str(finca.get("numero_inscripcion") or "").strip(),
+                "seccion": str(finca.get("seccion") or "").strip(),
+                "municipio_registro": str(finca.get("municipio_registro") or "").strip(),
+                "registro_propiedad": str(finca.get("registro_propiedad") or "").strip(),
+            })
+        fecha_contrato = contrato.get("fecha_constitucion") or None
+        if fecha_contrato:
+            try:
+                fecha_contrato = date.fromisoformat(str(fecha_contrato)[:10]).isoformat()
+            except ValueError:
+                raise HTTPException(status_code=422, detail="Fecha de constitución no válida en el contrato " + str(indice_contrato + 1) + ".")
+        contratos_normalizados.append({
+            "entidad_bancaria": str(contrato.get("entidad_bancaria") or "").strip(),
+            "numero_prestamo": str(contrato.get("numero_prestamo") or "").strip(),
+            "fecha_constitucion": fecha_contrato,
+            "fincas": fincas_normalizadas,
+        })
+    contratos = contratos_normalizados
     primer_contrato = contratos[0] if contratos else {}
     fincas_primer_contrato = primer_contrato.get("fincas") or []
     if not isinstance(fincas_primer_contrato, list) or any(not isinstance(finca, dict) for finca in fincas_primer_contrato):
