@@ -246,7 +246,7 @@ def crear_servicio(data: ServicioIn, db: Session = Depends(get_db), usuario=Depe
 
 
 @router.patch("/servicios/{servicio_id}")
-def actualizar_servicio(servicio_id: int, data: ServicioIn, db: Session = Depends(get_current_user)):
+def actualizar_servicio(servicio_id: int, data: ServicioIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "editar")
     _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
@@ -293,7 +293,7 @@ def crear_solicitud(data: SolicitudIn, db: Session = Depends(get_db), usuario=De
 
 
 @router.patch("/solicitudes/{solicitud_id}")
-def actualizar_solicitud(solicitud_id: int, data: SolicitudIn, db: Session = Depends(get_current_user)):
+def actualizar_solicitud(solicitud_id: int, data: SolicitudIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "editar")
     _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
@@ -324,7 +324,7 @@ def listar_albaranes(db: Session = Depends(get_db), usuario=Depends(get_current_
 
 
 @router.post("/albaranes")
-def crear_albaran(data: AlbaranIn, db: Session = Depends(get_current_user)):
+def crear_albaran(data: AlbaranIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "crear")
     _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
@@ -337,7 +337,7 @@ def crear_albaran(data: AlbaranIn, db: Session = Depends(get_current_user)):
 
 
 @router.patch("/albaranes/{albaran_id}")
-def actualizar_albaran(albaran_id: int, data: AlbaranIn, db: Session = Depends(get_current_user)):
+def actualizar_albaran(albaran_id: int, data: AlbaranIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "editar")
     _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
@@ -363,7 +363,7 @@ def listar_facturas(db: Session = Depends(get_db), usuario=Depends(get_current_u
 
 
 @router.post("/facturas")
-def crear_factura(data: FacturaIn, db: Session = Depends(get_current_user)):
+def crear_factura(data: FacturaIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "crear")
     _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
@@ -386,7 +386,7 @@ def crear_factura(data: FacturaIn, db: Session = Depends(get_current_user)):
 
 
 @router.patch("/facturas/{factura_id}")
-def actualizar_factura(factura_id: int, data: FacturaIn, db: Session = Depends(get_current_user)):
+def actualizar_factura(factura_id: int, data: FacturaIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "editar")
     _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
@@ -421,7 +421,7 @@ def listar_mis_solicitudes(db: Session = Depends(get_db), usuario=Depends(get_cu
 
 
 @router.post("/mis-solicitudes")
-def crear_mi_solicitud(data: SolicitudIn, db: Session = Depends(get_current_user)):
+def crear_mi_solicitud(data: SolicitudIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_permiso_mensajeria(usuario, "crear")
     _ensure_tables(db)
     usuario_id = getattr(usuario, "id", None)
@@ -497,7 +497,7 @@ def crear_proveedor(data: ProveedorMensajeriaIn, db: Session = Depends(get_db), 
 
 
 @router.patch("/proveedores/{proveedor_id}")
-def actualizar_proveedor(proveedor_id: int, data: ProveedorMensajeriaIn, db: Session = Depends(get_current_user)):
+def actualizar_proveedor(proveedor_id: int, data: ProveedorMensajeriaIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "editar")
     _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
