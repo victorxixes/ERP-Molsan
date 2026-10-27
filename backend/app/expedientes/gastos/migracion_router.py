@@ -44,6 +44,16 @@ COLUMNAS_GASTOS = {
     "importe_resultante": "NUMERIC(12, 2)",
     "documento_carpeta_id": "INTEGER",
     "estado_pago": "VARCHAR(50)",
+    "estado_absis": "VARCHAR(100)",
+    "estado_justificante": "VARCHAR(100)",
+    "fecha_adjuntar_factura": "DATE",
+    "imp_gasto": "NUMERIC(12, 2)",
+    "imp_base_impuesto": "NUMERIC(12, 2)",
+    "imp_base_retencion": "NUMERIC(12, 2)",
+    "imp_impuesto": "NUMERIC(12, 2)",
+    "fecha_estado": "DATE",
+    "fecha_peticion": "DATE",
+    "fecha_pago": "DATE",
 }
 
 
