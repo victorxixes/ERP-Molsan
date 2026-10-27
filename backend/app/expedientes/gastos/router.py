@@ -44,6 +44,8 @@ class GastoBase(BaseModel):
     medio_pago: Optional[str] = Field(None, max_length=100)
     numero_factura: Optional[str] = Field(None, max_length=150)
     fecha_factura: Optional[date] = None
+    numero_factura_absis: Optional[str] = Field(None, max_length=150)
+    fecha_factura_absis: Optional[date] = None
     importe_total_bruto: Optional[Decimal] = None
     base_exenta_impuestos: Optional[Decimal] = None
     base_sujeta_impuestos: Optional[Decimal] = None
