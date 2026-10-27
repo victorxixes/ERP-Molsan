@@ -6312,7 +6312,21 @@ const cuantiaFincasParaEnvio =
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
                       <p className="text-sm font-bold text-slate-800">Finca {finca.finca || "—"}</p>
-                      <p className="mt-1 text-xs leading-5 text-slate-500">{[finca.registro ? `Registro: ${finca.registro}` : null, finca.seccion ? `Sección: ${finca.seccion}` : null, finca.poblacion ? `Población: ${finca.poblacion}` : null, finca.provincia ? `Provincia: ${finca.provincia}` : null].filter(Boolean).join(" · ") || "Sin datos registrales"}</p>
+                      <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-5 text-slate-500">
+                        {finca.registro ? <button type="button" onClick={() => {
+                          const registroBuscado = normalizarTexto(finca.registro);
+                          const registroCatalogo = catalogoRegistrosPropiedad.find((item) =>
+                            (finca.registro_propiedad_id && Number(item.id) === Number(finca.registro_propiedad_id)) ||
+                            normalizarTexto(item.registro_propiedad) === registroBuscado
+                          );
+                          if (registroCatalogo) setRegistroDetalleAbierto(registroCatalogo);
+                          else window.alert("Este registro no se encuentra en el catálogo de Registros de la Propiedad.");
+                        }} title="Abrir la ficha completa del Registro de la Propiedad" className="font-semibold text-blue-700 underline decoration-blue-300 underline-offset-2 transition hover:text-blue-900">Registro: {finca.registro} <span aria-hidden="true">ⓘ</span></button> : null}
+                        {finca.seccion ? <span>Sección: {finca.seccion}</span> : null}
+                        {finca.poblacion ? <span>Población: {finca.poblacion}</span> : null}
+                        {finca.provincia ? <span>Provincia: {finca.provincia}</span> : null}
+                        {!finca.registro && !finca.seccion && !finca.poblacion && !finca.provincia ? "Sin datos registrales" : null}
+                      </div>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <button type="button" onClick={() => abrirSolicitudFusion(finca)} disabled={!finca.registro} title={!finca.registro ? "Completa el registro de la finca para solicitar una fusión" : "Crear solicitud de fusión para este registro"} className="inline-flex items-center gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-2.5 py-1.5 text-[11px] font-bold text-violet-700 hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-50">
