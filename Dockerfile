@@ -38,10 +38,11 @@ EXPOSE 10000
 # ============================================================
 # ARRANQUE
 #
-# IMPORTANTE:
-# Uvicorn escucha en el PORT proporcionado por Render.
-#
-# Si PORT no existe localmente, utilizamos 10000.
+# Uvicorn access logs incluyen la query string en conexiones
+# WebSocket. Como la aplicación transporta el JWT en "token",
+# no habilitamos access logs de Uvicorn para evitar que las
+# credenciales de sesión terminen en los logs de aplicación.
+# Render conserva sus logs HTTP de solicitudes por separado.
 # ============================================================
 
-CMD ["sh", "-c", "exec uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-10000}"]
+CMD ["sh", "-c", "exec uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-10000} --no-access-log"]
