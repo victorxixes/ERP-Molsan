@@ -61,8 +61,9 @@ def _concepto_honorarios(gasto):
     valores = [getattr(gasto, "tipo", None), getattr(gasto, "descripcion", None)]
     return any("honorarios gestoria" in _normalizar_texto(v) for v in valores if v)
 
-def _tipo_cancelacion(exp):
-    valor = _normalizar_texto(getattr(exp, "tipo_operacion", None))
+def _tipo_cancelacion(exp, gasto=None):
+    valor_origen = getattr(gasto, "tipo_operacion_absis", None) if gasto is not None else None
+    valor = _normalizar_texto(valor_origen or getattr(exp, "tipo_operacion", None))
     # La clasificación principal sale de TIPOOPERACION; no se deduce del importe.
     if "cancelacion" in valor and "sin provision" in valor:
         return "sin_provision"
@@ -96,11 +97,13 @@ def _decimal(valor):
 def _consultar(db, fecha_desde=None, fecha_hasta=None, tipo_operacion=None, estado=None, estado_justificante=None, situacion=None, q=None, modalidad="todas"):
     if fecha_desde and fecha_hasta and fecha_desde > fecha_hasta:
         raise HTTPException(status_code=400, detail="La fecha desde no puede ser posterior a la fecha hasta.")
-    query = db.query(ExpedienteGasto, Expediente).join(
+    query = db.query(ExpedienteGasto, Expediente).outerjoin(
         Expediente, Expediente.id == ExpedienteGasto.expediente_id
     )
     # Los datos históricos pueden guardar el concepto en tipo o descripcion y con/sin tilde.
     query = query.filter(or_(
+        ExpedienteGasto.concepto_gasto_absis.ilike("%honorarios gestoría%"),
+        ExpedienteGasto.concepto_gasto_absis.ilike("%honorarios gestoria%"),
         ExpedienteGasto.tipo.ilike("%honorarios gestoría%"),
         ExpedienteGasto.tipo.ilike("%honorarios gestoria%"),
         ExpedienteGasto.descripcion.ilike("%honorarios gestoría%"),
@@ -111,7 +114,7 @@ def _consultar(db, fecha_desde=None, fecha_hasta=None, tipo_operacion=None, esta
     if fecha_hasta:
         query = query.filter(ExpedienteGasto.fecha_adjuntar_factura <= fecha_hasta)
     if tipo_operacion:
-        query = query.filter(Expediente.tipo_operacion.ilike(f"%{tipo_operacion.strip()}%"))
+        query = query.filter(or_(Expediente.tipo_operacion.ilike(f"%{tipo_operacion.strip()}%"), ExpedienteGasto.tipo_operacion_absis.ilike(f"%{tipo_operacion.strip()}%")))
     if estado:
         query = query.filter(ExpedienteGasto.estado_absis.ilike(f"%{estado.strip()}%"))
     if estado_justificante:
@@ -120,24 +123,27 @@ def _consultar(db, fecha_desde=None, fecha_hasta=None, tipo_operacion=None, esta
         patron = f"%{q.strip()}%"
         query = query.filter(or_(
             Expediente.id_expediente.ilike(patron),
+            ExpedienteGasto.id_expediente_absis.ilike(patron),
             Expediente.tipo_operacion.ilike(patron),
+            ExpedienteGasto.tipo_operacion_absis.ilike(patron),
+            ExpedienteGasto.concepto_gasto_absis.ilike(patron),
             ExpedienteGasto.tipo.ilike(patron),
             ExpedienteGasto.descripcion.ilike(patron),
             ExpedienteGasto.numero_factura.ilike(patron),
         ))
     filas = []
     for gasto, exp in query.order_by(ExpedienteGasto.fecha_adjuntar_factura.desc().nullslast(), Expediente.id_expediente.asc()).all():
-        tipo = _tipo_cancelacion(exp)
+        tipo = _tipo_cancelacion(exp, gasto)
         if modalidad in {"con_provision", "sin_provision", "otros"} and tipo != modalidad:
             continue
         situacion_fila = _situacion_facturacion(gasto)
         if situacion and situacion_fila != situacion:
             continue
         filas.append({
-            "id_expediente": exp.id_expediente,
+            "id_expediente": exp.id_expediente if exp else getattr(gasto, "id_expediente_absis", None),
             "tipo_cancelacion": tipo,
-            "tipo_operacion": exp.tipo_operacion,
-            "concepto_gasto": "HONORARIOS GESTORÍA",
+            "tipo_operacion": getattr(gasto, "tipo_operacion_absis", None) or (exp.tipo_operacion if exp else None),
+            "concepto_gasto": getattr(gasto, "concepto_gasto_absis", None) or "HONORARIOS GESTORÍA",
             "situacion_facturacion": situacion_fila,
             "estado": getattr(gasto, "estado_absis", None),
             "estado_justificante": getattr(gasto, "estado_justificante", None),
