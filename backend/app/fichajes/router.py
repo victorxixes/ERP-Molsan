@@ -52,6 +52,11 @@ def preparar_tablas_fichajes():
     _migrar_tablas()
 
 
+def _hoy_madrid():
+    """Fecha civil oficial de la aplicación en la zona horaria de España peninsular."""
+    return datetime.now(ZoneInfo("Europe/Madrid")).date()
+
+
 def _nombre_completo(empleado):
     return " ".join(p for p in [getattr(empleado, "nombre", None), getattr(empleado, "apellidos", None)] if p).strip()
 
@@ -617,10 +622,10 @@ def crear_tipo_ausencia(nombre: str = Form(...), requiere_justificante: bool = F
 @router.get("/vacaciones")
 def mis_vacaciones(usuario=Depends(get_current_user), db: Session = Depends(get_db)):
     require_perm_modulo(usuario, "fichajes", "ver")
-    anio = date.today().year
+    anio = _hoy_madrid().year
     registros = db.query(FichajeVacaciones).filter(FichajeVacaciones.empleado_id == usuario.id,
         FichajeVacaciones.fecha_inicio >= date(anio, 1, 1), FichajeVacaciones.fecha_inicio < date(anio + 1, 1, 1)).order_by(FichajeVacaciones.fecha_inicio).all()
-    hoy = date.today()
+    hoy = _hoy_madrid()
     aprobadas = [v for v in registros if v.estado == "APROBADO"]
     disfrutados = sum(
         min(v.dias, max(0, (min(hoy, v.fecha_fin) - v.fecha_inicio).days + 1))
@@ -969,7 +974,7 @@ def admin_listar_bolsas_vacaciones(anio: int | None = Query(default=None),
                                    usuario=Depends(get_current_user), db: Session = Depends(get_db)):
     require_perm_modulo(usuario, "fichajes", "ver")
     _exigir_admin(usuario)
-    anio = anio or date.today().year
+    anio = anio or _hoy_madrid().year
     filas = db.query(FichajeBolsaVacaciones, Empleado).join(Empleado, Empleado.id == FichajeBolsaVacaciones.empleado_id).filter(FichajeBolsaVacaciones.anio == anio).all()
     return [{"empleado_id": b.empleado_id, "empleado_nombre": _nombre_completo(e) or e.usuario, "anio": b.anio, "dias_asignados": b.dias_asignados} for b, e in filas]
 
@@ -1029,7 +1034,7 @@ def _saldo_compensacion(db, empleado_id, unidad):
 
 def _procesar_compensaciones_vencidas(db, empleado_id):
     """Convierte reservas aprobadas cuya fecha ya llegó en disfrutes efectivos."""
-    hoy = date.today()
+    hoy = _hoy_madrid()
     vencidas = db.query(FichajeSolicitudCompensacion).filter(
         FichajeSolicitudCompensacion.empleado_id == empleado_id,
         FichajeSolicitudCompensacion.estado == "APROBADO",
@@ -1118,7 +1123,7 @@ def solicitar_compensacion(fecha_disfrute: date = Form(...), cantidad: float = F
     unidad = (unidad or "").strip().upper()
     if unidad not in UNIDADES_COMPENSACION or cantidad <= 0 or cantidad > 100:
         raise HTTPException(status_code=422, detail="Indica una cantidad positiva y una unidad válida (días u horas).")
-    if fecha_disfrute < date.today():
+    if fecha_disfrute < _hoy_madrid():
         raise HTTPException(status_code=422, detail="La fecha de disfrute no puede estar en el pasado.")
     vacaciones_duplicadas = db.query(FichajeVacaciones).filter(
         FichajeVacaciones.empleado_id == usuario.id,
@@ -1282,7 +1287,7 @@ def admin_resolver_solicitud_compensacion(solicitud_id: int, estado: str = Form(
     if observaciones.strip(): s.observaciones = (s.observaciones or "") + (" | " if s.observaciones else "") + observaciones.strip()[:400]
     _auditar_compensacion(db, s.empleado_id, usuario.id, "SOLICITUD", s.id, "RESOLUCION",
                            anterior, estado, observaciones)
-    if estado == "APROBADO" and s.fecha_disfrute <= date.today():
+    if estado == "APROBADO" and s.fecha_disfrute <= _hoy_madrid():
         _procesar_compensaciones_vencidas(db, s.empleado_id)
     db.commit(); db.refresh(s)
     return _solicitud_comp_dict(s)
@@ -1321,7 +1326,7 @@ def empleado_reportar_festivo(fecha: date = Form(...), horas_trabajadas: float =
         FichajeFestivoCalendario.fecha == fecha, FichajeFestivoCalendario.activo == 1).first()
     if not festivo:
         raise HTTPException(status_code=422, detail="La fecha no está en el calendario de festivos aprobado. Contacta con administración para revisarla.")
-    if fecha > date.today() or horas_trabajadas <= 0 or horas_trabajadas > 24:
+    if fecha > _hoy_madrid() or horas_trabajadas <= 0 or horas_trabajadas > 24:
         raise HTTPException(status_code=422, detail="Indica un festivo ya trabajado y entre 0 y 24 horas.")
     existente = db.query(FichajeFestivoTrabajado).filter(
         FichajeFestivoTrabajado.empleado_id == usuario.id,
