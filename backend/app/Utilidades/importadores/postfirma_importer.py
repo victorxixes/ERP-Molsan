@@ -411,6 +411,7 @@ def validar_postfirma(
     filas_con_importe = 0
     importes_invalidos = 0
     claves_gasto = []
+    ids_gasto = []
     ids_vacios = 0
     expedientes_excel = set()
     filas_no_vacias = 0
@@ -430,6 +431,7 @@ def validar_postfirma(
         if not id_gasto:
             ids_vacios += 1
         else:
+            ids_gasto.append(id_gasto.casefold())
             claves_gasto.append((id_gasto.casefold(), (tipo_concepto or "").casefold()))
 
         numero_exp = _texto(celda(row, "IDEXPEDIENTE"))
@@ -509,7 +511,8 @@ def validar_postfirma(
         "fpago_sin_fecha_o_invalida": fpago_sin_fecha,
         "filas_analizadas": int(len(df)),
         "filas_con_datos": filas_no_vacias,
-        "ids_gasto_unicos": len(set(ids)),
+        "ids_gasto_unicos": len(set(ids_gasto)),
+        "claves_correlacion_unicas": len(set(claves_gasto)),
         "idgasto_vacios": ids_vacios,
         "ids_duplicados_en_excel": duplicados_archivo,
         "filas_duplicadas_adicionales": duplicados_filas,
