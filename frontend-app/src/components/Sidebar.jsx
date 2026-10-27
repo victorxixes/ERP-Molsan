@@ -438,6 +438,28 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     (s) => s.empleado
   );
 
+  const rolSidebar = String(
+    empleado?.rol?.nombre ||
+    empleado?.rol_nombre ||
+    (typeof empleado?.rol === "string" ? empleado.rol : "")
+  ).normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").replace(/[_-]+/g, " ").trim().toLowerCase().replace(/\\s+/g, " ");
+  const rolesAdminSidebar = new Set([
+    "admin", "administrador", "administradora", "superadmin", "super admin",
+    "superadministrador", "super administradora", "superuser", "super usuario",
+    "superusuario", "administrador general",
+  ]);
+  const esAdminSidebar =
+    empleado?.es_admin === true ||
+    empleado?.is_admin === true ||
+    Number(empleado?.rol_id ?? empleado?.rol?.id) === 0 ||
+    String(empleado?.usuario || "").trim().toLowerCase() === "admin" ||
+    rolesAdminSidebar.has(rolSidebar);
+  const modulosVisiblesSidebar = [
+    ...(Array.isArray(empleado?.modulos_visibles_list) ? empleado.modulos_visibles_list : []),
+    ...(Array.isArray(empleado?.modulos_visibles) ? empleado.modulos_visibles : []),
+  ].map((v) => String(v || "").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").trim().toLowerCase());
+  const tieneControlFichajesVisible = modulosVisiblesSidebar.includes("control-fichajes");
+
   const perfilModal = useAuthStore((s) => s.perfilModal);
   const setPerfilModal = useAuthStore((s) => s.setPerfilModal);
 
@@ -822,12 +844,11 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
   const visiblesPrincipales = useMemo(
     () =>
-      navegacionPrincipalCatalogo.filter(
-        (modulo) =>
-          puedeVerModulo(
-            modulo.permiso || modulo.key
-          )
-      ),
+      navegacionPrincipalCatalogo.filter((modulo) => {
+        if (esAdminSidebar && modulo.key === "fichajes") return false;
+        if (modulo.key === "control-fichajes" && !tieneControlFichajesVisible) return false;
+        return puedeVerModulo(modulo.permiso || modulo.key);
+      }),
     [
       empleado,
       mensajesNoLeidos,
@@ -837,10 +858,11 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
   const visiblesSecundarios = useMemo(
     () =>
-      navegacionSecundariaCatalogo.filter(
-        (modulo) =>
-          puedeVerModulo(modulo.permiso || modulo.key)
-      ),
+      navegacionSecundariaCatalogo.filter((modulo) => {
+        if (esAdminSidebar && modulo.key === "fichajes") return false;
+        if (modulo.key === "control-fichajes" && !tieneControlFichajesVisible) return false;
+        return puedeVerModulo(modulo.permiso || modulo.key);
+      }),
     [
       empleado,
     ]
@@ -913,7 +935,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
   const accesosDirectosUtilidades = [
     { key: "fichajes", to: "/fichajes", label: "Fichajes", icon: "clock", directRoute: true },
     { key: "mensajeria", to: "/mensajeria", label: "Mensajería", icon: "truck", directRoute: true },
-  ].filter((item) => puedeVerModulo(item.key));
+  ].filter((item) => !(esAdminSidebar && item.key === "fichajes") && puedeVerModulo(item.key));
   const crearListaDropdown = (tipo) => {
     if (esPortalNotarialExterno) return [];
     // Utilidades y Catálogos deben vivir exclusivamente en el desplegable Técnicos,
@@ -922,6 +944,8 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       const clave = normalizarModulo(item?.key);
       const etiqueta = normalizarModulo(item?.label);
       const ruta = String(item?.to || item?.route || "").replace(/\/$/, "").toLocaleLowerCase("es");
+      if (esAdminSidebar && (clave === "fichajes" || ruta === "/fichajes")) return false;
+      if ((clave === "control-fichajes" || ruta === "/control-fichajes") && !tieneControlFichajesVisible) return false;
       return !["utilidades", "catalogos"].includes(clave) &&
         !["utilidades", "catalogos"].includes(etiqueta) &&
         !["/herramientas/utilidades", "/catalogos"].includes(ruta);
