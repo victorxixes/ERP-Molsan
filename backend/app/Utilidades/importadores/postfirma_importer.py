@@ -267,7 +267,7 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
                     if not candidato.tipo_concepto_absis:
                         gasto = candidato
                 es_nuevo = gasto is None
-                origen_previo = (getattr(gasto, "origen_registro", None) or "ERP") if gasto else None
+                origen_previo = getattr(gasto, "origen_registro", None) if gasto else None
                 if es_nuevo:
                     gasto = ExpedienteGasto()
                     db.add(gasto)
@@ -283,7 +283,7 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
                 gasto.id_gasto_absis = id_gasto
                 gasto.id_expediente_absis = numero_exp
                 gasto.tipo_concepto_absis = tipo_concepto
-                gasto.origen_registro = "ERP" if origen_previo == "ERP" and not es_nuevo else "ABSIS_POSTFIRMA"
+                gasto.origen_registro = "ERP" if origen_previo == "ERP" else "ABSIS_POSTFIRMA"
                 gasto.estado_consolidacion = "Consolidado" if (not es_nuevo and origen_previo == "ERP") else "Importado Post Firma"
                 gasto.fecha_ultima_sincronizacion = date.today()
                 gasto.tipo_operacion_absis = _texto(val(row, "TIPOOPERACION"))
