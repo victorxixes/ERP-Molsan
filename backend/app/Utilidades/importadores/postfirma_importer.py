@@ -85,7 +85,7 @@ def _fecha_alta(value):
         try:
             numero = float(value)
             # Intervalo razonable de seriales Excel (aprox. 1954–2119).
-            if numero.is_integer() and 20000 <= numero <= 80000:
+            if 20000 <= numero <= 80000:
                 return (datetime(1899, 12, 30) + timedelta(days=numero)).date()
         except (TypeError, ValueError, OverflowError):
             return None
