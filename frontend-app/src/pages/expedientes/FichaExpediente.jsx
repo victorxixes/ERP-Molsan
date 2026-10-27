@@ -5655,8 +5655,8 @@ const cuantiaFincasParaEnvio =
                               <Dato campo="Motivos del defecto" valor={defecto.motivo_defecto} />
                               <Dato campo="Subtipo del defecto" valor={defecto.subtipo_defecto} />
                               <Dato campo="Fecha calificación" valor={defecto.fecha_calificacion} tipo="fecha" />
-                              <Dato campo="Fecha renovación asiento" valor={defecto.fecha_renovacion_asiento} tipo="fecha" />
-                              <Dato campo="Asiento renovación / libro diario" valor={defecto.asiento_renovacion_libro_diario} />
+                              <Dato campo="Asiento renovación" valor={defecto.asiento_renovacion || defecto.asiento_renovacion_libro_diario} />
+                              <Dato campo="Libro diario" valor={defecto.libro_diario} />
                               <Dato campo="Vencimiento asiento renovación" valor={defecto.vencimiento_asiento_renovacion} tipo="fecha" />
                               <Dato campo="Anotación suspensiva" valor={defecto.anotacion_suspensiva == null ? "—" : defecto.anotacion_suspensiva ? "Sí" : "No"} />
                               <Dato campo="Vencimiento anotación" valor={defecto.vencimiento_anotacion} tipo="fecha" />
@@ -7160,20 +7160,20 @@ const cuantiaFincasParaEnvio =
 
         <label className="block text-sm font-medium text-slate-700">
           Fecha calificación *
-          <input type="date" required className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" value={defectoForm.fecha_calificacion} onChange={(e) => setDefectoForm((actual) => ({ ...actual, fecha_calificacion: e.target.value }))} />
+          <input type="date" required className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" value={defectoForm.fecha_calificacion} onChange={(e) => setDefectoForm((actual) => ({ ...actual, fecha_calificacion: e.target.value, vencimiento_asiento_renovacion: calcularVencimientoAsientoRenovacion(e.target.value) }))} />
         </label>
         <label className="block text-sm font-medium text-slate-700">
-          Fecha renovación asiento
-          <input type="date" className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" value={defectoForm.fecha_renovacion_asiento} onChange={(e) => setDefectoForm((actual) => ({ ...actual, fecha_renovacion_asiento: e.target.value }))} />
+          Asiento renovación
+          <input type="text" maxLength={100} className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" value={defectoForm.asiento_renovacion} onChange={(e) => setDefectoForm((actual) => ({ ...actual, asiento_renovacion: e.target.value }))} placeholder="Asiento de renovación" />
         </label>
-        <label className="block text-sm font-medium text-slate-700 md:col-span-2">
-          Asiento renovación y libro diario
-          <input type="text" maxLength={200} className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" value={defectoForm.asiento_renovacion_libro_diario} onChange={(e) => setDefectoForm((actual) => ({ ...actual, asiento_renovacion_libro_diario: e.target.value }))} placeholder="Asiento de renovación / libro diario" />
+        <label className="block text-sm font-medium text-slate-700">
+          Libro diario
+          <input type="text" maxLength={100} className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" value={defectoForm.libro_diario} onChange={(e) => setDefectoForm((actual) => ({ ...actual, libro_diario: e.target.value }))} placeholder="Libro diario" />
         </label>
         <label className="block text-sm font-medium text-slate-700">
           Vencimiento asiento renovación
           <input type="date" readOnly className="mt-1 w-full rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm" value={defectoForm.vencimiento_asiento_renovacion} />
-          <span className="mt-1 block text-xs font-normal text-amber-700">Cálculo automático: fecha de notificación + 60 días naturales.</span>
+          <span className="mt-1 block text-xs font-normal text-amber-700">Cálculo automático: fecha de calificación + 60 días naturales.</span>
         </label>
         <label className="block text-sm font-medium text-slate-700">
           Anotación suspensiva
@@ -7207,22 +7207,6 @@ const cuantiaFincasParaEnvio =
               setDefectoForm((actual) => ({
                 ...actual,
                 fecha_notificacion_registro: e.target.value,
-                vencimiento_asiento_renovacion: calcularVencimientoAsientoRenovacion(e.target.value),
-              }))
-            }
-          />
-        </label>
-
-        <label className="block text-sm font-medium text-slate-700">
-          Fecha Vencimiento Presentación Registro
-          <input
-            type="date"
-            className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm"
-            value={defectoForm.fecha_vencimiento_presentacion}
-            onChange={(e) =>
-              setDefectoForm((actual) => ({
-                ...actual,
-                fecha_vencimiento_presentacion: e.target.value,
               }))
             }
           />
@@ -7279,23 +7263,25 @@ const cuantiaFincasParaEnvio =
           />
         </label>
 
-        <label className="block text-sm font-medium text-slate-700 md:col-span-2">
-          Fecha Entrada Registro Subsanación
-          <input
-            type="date"
-            className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm"
-            value={defectoForm.fecha_entrada_subsanacion}
-            onChange={(e) =>
-              setDefectoForm((actual) => ({
-                ...actual,
-                fecha_entrada_subsanacion: e.target.value,
-              }))
-            }
-          />
-          <span className="mt-1 block text-xs font-normal text-slate-500">
-            Rellena esta fecha cuando la subsanación haya entrado en el Registro.
-          </span>
-        </label>
+        {defectoEditandoId && (
+          <label className="block text-sm font-medium text-slate-700 md:col-span-2">
+            Fecha Entrada Registro Subsanación · baja/cierre del defecto
+            <input
+              type="date"
+              className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm"
+              value={defectoForm.fecha_entrada_subsanacion}
+              onChange={(e) =>
+                setDefectoForm((actual) => ({
+                  ...actual,
+                  fecha_entrada_subsanacion: e.target.value,
+                }))
+              }
+            />
+            <span className="mt-1 block text-xs font-normal text-slate-500">
+              Rellena esta fecha únicamente cuando quieras registrar la entrada de la subsanación y cerrar el defecto.
+            </span>
+          </label>
+        )}
       </div>
 
       {defectoEditandoId && (
@@ -8722,8 +8708,8 @@ const cuantiaFincasParaEnvio =
                         </div>
                         <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
                           <Dato campo="Fecha calificación" valor={defecto.fecha_calificacion} tipo="fecha" />
-                          <Dato campo="Fecha renovación asiento" valor={defecto.fecha_renovacion_asiento} tipo="fecha" />
-                          <Dato campo="Asiento renovación / libro diario" valor={defecto.asiento_renovacion_libro_diario} />
+                          <Dato campo="Asiento renovación" valor={defecto.asiento_renovacion || defecto.asiento_renovacion_libro_diario} />
+                          <Dato campo="Libro diario" valor={defecto.libro_diario} />
                           <Dato campo="Vencimiento asiento renovación" valor={defecto.vencimiento_asiento_renovacion} tipo="fecha" />
                           <Dato campo="Anotación suspensiva" valor={defecto.anotacion_suspensiva == null ? "—" : defecto.anotacion_suspensiva ? "Sí" : "No"} />
                           <Dato campo="Vencimiento anotación" valor={defecto.vencimiento_anotacion} tipo="fecha" />
