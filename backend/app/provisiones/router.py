@@ -1191,6 +1191,7 @@ def _preparar_email_provision(db: Session, item: ProvisionIndependiente, usuario
         "numero_oficina": contexto["oficina.numero"],
         "provision_id": item.id,
         "pdf_filename": f"provision_{item.numero or item.id}.pdf",
+        "smtp_configurado": bool(os.getenv("SMTP_HOST", "").strip()),
         "historial": [{
             "destinatario": fila["destinatario"], "asunto": fila["asunto"],
             "estado": fila["estado"], "detalle": fila["detalle"],
