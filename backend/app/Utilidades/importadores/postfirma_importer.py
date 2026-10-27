@@ -410,7 +410,7 @@ def validar_postfirma(
     total_importe = Decimal("0")
     filas_con_importe = 0
     importes_invalidos = 0
-    ids = []
+    claves_gasto = []
     ids_vacios = 0
     expedientes_excel = set()
     filas_no_vacias = 0
@@ -426,10 +426,11 @@ def validar_postfirma(
             continue
         filas_no_vacias += 1
         id_gasto = _texto(celda(row, "IDGASTO"))
+        tipo_concepto = _texto(celda(row, "TIPOCONCEPTO"))
         if not id_gasto:
             ids_vacios += 1
         else:
-            ids.append(id_gasto)
+            claves_gasto.append((id_gasto.casefold(), (tipo_concepto or "").casefold()))
 
         numero_exp = _texto(celda(row, "IDEXPEDIENTE"))
         if numero_exp:
@@ -471,16 +472,18 @@ def validar_postfirma(
             fechas_adjuntar_vacias += 1
 
     from collections import Counter
-    conteo_ids = Counter(ids)
-    duplicados_archivo = sum(1 for n in conteo_ids.values() if n > 1)
-    duplicados_filas = sum(n - 1 for n in conteo_ids.values() if n > 1)
+    conteo_claves = Counter(claves_gasto)
+    duplicados_archivo = sum(1 for n in conteo_claves.values() if n > 1)
+    duplicados_filas = sum(n - 1 for n in conteo_claves.values() if n > 1)
     existentes = {
-        str(v[0]).strip()
-        for v in db.query(ExpedienteGasto.id_gasto_absis)
-        .filter(ExpedienteGasto.id_gasto_absis.isnot(None)).all()
-        if v[0] is not None
+        (str(fila[0]).strip().casefold(), str(fila[1] or "").strip().casefold())
+        for fila in db.query(
+            ExpedienteGasto.id_gasto_absis,
+            ExpedienteGasto.tipo_concepto_absis,
+        ).filter(ExpedienteGasto.id_gasto_absis.isnot(None)).all()
+        if fila[0] is not None
     }
-    coincidencias = sum(1 for valor in set(ids) if valor in existentes)
+    coincidencias = sum(1 for valor in set(claves_gasto) if valor in existentes)
     ids_expedientes_erp = {
         str(v[0]).casefold()
         for v in db.query(Expediente.id_expediente).all()
