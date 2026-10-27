@@ -56,6 +56,7 @@ const Mensajes = lazy(() => import("./pages/mensajes/Mensajes.jsx"));
 const Herramientas = lazy(() => import("./pages/herramientas/Herramientas.jsx"));
 const ImportarCTN = lazy(() => import("./pages/herramientas/ImportarCTN.jsx"));
 const ImportadorAbsis = lazy(() => import("./pages/herramientas/importador_absis"));
+const ImportadorPostFirma = lazy(() => import("./pages/herramientas/ImportadorPostFirma.jsx"));
 const Utilidades = lazy(() => import("./pages/herramientas/Utilidades.jsx"));
 const AdministracionEmpleadoConfig = lazy(() => import("./pages/herramientas/AdministracionEmpleadoConfig.jsx"));
 const AccesosNotariales = lazy(() => import("./pages/herramientas/AccesosNotariales.jsx"));
@@ -479,6 +480,10 @@ export default function App() {
           <Route
             path="herramientas/importador-absis"
             element={<ImportadorAbsis />}
+          />
+          <Route
+            path="herramientas/importador-absis/postfirma"
+            element={<ImportadorPostFirma />}
           />
 
           <Route
