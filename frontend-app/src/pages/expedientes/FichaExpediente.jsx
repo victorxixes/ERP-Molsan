@@ -8504,10 +8504,6 @@ const cuantiaFincasParaEnvio =
             ) : actividadSeleccionada === "sede-notarial" ? (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <label className="block rounded-lg border border-slate-200 bg-white p-3">
-                  <span className="block text-xs font-bold text-slate-600">Fecha de envío</span>
-                  <input type="date" value={Object.prototype.hasOwnProperty.call(actividadDraft, "fecha_envio_notario") ? String(actividadDraft.fecha_envio_notario ?? "").slice(0, 10) : String(expediente?.fecha_envio_notario || expediente?.fecha_envio || "").slice(0, 10)} onChange={(event) => setActividadDraft((actual) => ({ ...actual, fecha_envio_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
-                </label>
-                <label className="block rounded-lg border border-slate-200 bg-white p-3">
                   <span className="block text-xs font-bold text-slate-600">Notario</span>
                   <input type="text" value={Object.prototype.hasOwnProperty.call(actividadDraft, "nombre_notario") ? String(actividadDraft.nombre_notario ?? "") : String(expediente?.nombre_notario || "")} onChange={(event) => setActividadDraft((actual) => ({ ...actual, nombre_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} placeholder="Nombre del notario" className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
                 </label>
