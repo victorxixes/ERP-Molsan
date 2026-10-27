@@ -72,16 +72,28 @@ def _tipo_cancelacion(exp, gasto=None):
     return "otros"
 
 def _situacion_facturacion(gasto):
+    """La situación económica se decide por ESTADO de ABSIS; FPAGO solo aporta la fecha."""
     estado = _normalizar_texto(getattr(gasto, "estado_absis", None))
     justificante = _normalizar_texto(getattr(gasto, "estado_justificante", None))
     conjunto = f"{estado} {justificante}"
-    if any(p in conjunto for p in ("incidencia", "error", "rechaz", "devuelt", "problema")):
+
+    # Incidencias prevalecen para no contabilizar como cobro confirmado un registro problemático.
+    if any(p in conjunto for p in ("incidencia", "error", "rechaz", "devuelt", "problema", "anulad")):
         return "incidencia"
-    if getattr(gasto, "fecha_pago", None):
+
+    # No deducir el cobro de la existencia de FPAGO: el estado oficial manda.
+    if any(p in estado for p in ("pagad", "abonad", "cobrad")):
         return "cobrado"
-    if getattr(gasto, "fecha_adjuntar_factura", None):
+
+    # Si ABSIS aún no confirma el pago, clasificar según el estado real.
+    if any(p in estado for p in ("pendient", "solicit", "tramite", "en curso", "emitid", "generad")):
         return "pendiente_cobro"
-    return "pendiente_factura"
+
+    # La fecha de factura sirve para distinguir pendiente de factura, nunca para declarar un cobro.
+    if not estado and not justificante:
+        return "pendiente_factura" if not getattr(gasto, "fecha_adjuntar_factura", None) else "pendiente_cobro"
+
+    return "otros"
 
 def _fecha_iso(valor):
     return valor.isoformat() if valor else None
