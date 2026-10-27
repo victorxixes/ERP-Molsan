@@ -1367,6 +1367,31 @@ def actualizar_encargo(encargo_id: int, datos: EncargoActualizar, db: Session = 
             "municipio_registro": primera_finca.get("municipio_registro") or None,
             "registro_propiedad": primera_finca.get("registro_propiedad") or None,
         })
+    else:
+        # Si se edita un campo heredado desde una pantalla antigua, reflejarlo
+        # también en el primer contrato/finca para evitar que la siguiente carga
+        # vuelva a mostrar un valor anterior desde contratos_json.
+        campos_contrato = {"entidad_bancaria", "numero_prestamo", "fecha_constitucion"}
+        campos_finca = {"capital_inscrito", "numero_finca", "municipio_registro", "registro_propiedad"}
+        if cambios.keys() & (campos_contrato | campos_finca) and item.contratos_json:
+            contratos_actualizados = [dict(c) for c in item.contratos_json if isinstance(c, dict)]
+            if contratos_actualizados:
+                primero = contratos_actualizados[0]
+                if cambios.keys() & campos_contrato:
+                    for campo in campos_contrato & cambios.keys():
+                        valor = cambios[campo]
+                        primero[campo] = valor.isoformat() if isinstance(valor, date) else (str(valor).strip() if valor is not None else "")
+                fincas = [dict(f) for f in (primero.get("fincas") or []) if isinstance(f, dict)]
+                if cambios.keys() & campos_finca:
+                    if not fincas:
+                        fincas.append({})
+                    for campo in campos_finca & cambios.keys():
+                        valor = cambios[campo]
+                        clave = "capital_inscrito" if campo == "capital_inscrito" else campo
+                        fincas[0][clave] = float(valor) if campo == "capital_inscrito" and valor is not None else (str(valor).strip() if valor is not None else "")
+                    primero["fincas"] = fincas
+                contratos_actualizados[0] = primero
+                cambios["contratos"] = contratos_actualizados
     for campo, valor in cambios.items():
         if campo == "contratos":
             item.contratos_json = valor or None
@@ -1489,6 +1514,13 @@ async def subir_documento(
     categoria = str(categoria or "Otros").strip()
     if categoria not in CATEGORIAS_DOCUMENTO:
         raise HTTPException(status_code=422, detail="Categoría documental no válida.")
+    contratos = item.contratos_json or []
+    if isinstance(contrato_index, bool) or contrato_index < 0:
+        raise HTTPException(status_code=422, detail="El contrato seleccionado no es válido.")
+    if contratos and contrato_index >= len(contratos):
+        raise HTTPException(status_code=422, detail="El documento debe vincularse a un contrato existente.")
+    if not contratos and contrato_index != 0:
+        raise HTTPException(status_code=422, detail="Este encargo no tiene contratos adicionales para vincular el documento.")
     nombre_original = Path(archivo.filename or "documento").name
     extension = Path(nombre_original).suffix.lower()
     if not nombre_original or nombre_original in {".", ".."} or extension not in EXTENSIONES_PERMITIDAS:
@@ -1509,7 +1541,7 @@ async def subir_documento(
             nombre_original=nombre_original,
             nombre_guardado=nombre_guardado,
             categoria=categoria,
-            contrato_index=max(0, contrato_index),
+            contrato_index=contrato_index,
             tipo_mime=archivo.content_type,
             tamano_bytes=len(contenido),
             subido_por_id=(usuario.get("usuario_id") if _es_externo(usuario) else usuario.id),
@@ -1560,7 +1592,15 @@ def eliminar_documento(encargo_id: int, documento_id: int, db: Session = Depends
     try:
         if ruta.parent == ROOT:
             ruta.unlink(missing_ok=True)
+        nombre_documento = documento.nombre_original
+        categoria_documento = documento.categoria
         db.delete(documento)
+        _registrar_actividad(
+            db, encargo.id, usuario, "DOCUMENTO",
+            f"Documento eliminado de {categoria_documento}: {nombre_documento}.",
+            visible_notaria=True,
+        )
+        encargo.actualizado_en = datetime.utcnow()
         db.commit()
     except Exception:
         db.rollback()
