@@ -4,6 +4,8 @@ import "./ProvisionesFondosPage.css";
 
 const hoy = () => new Date().toISOString().slice(0, 10);
 const dinero = (v) => new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(v || 0));
+const totalConceptos = (g) => Math.round((["notaria", "ajd", "registro", "gestion"].reduce((s, k) => s + Number(g?.[k] || 0), 0) + Number.EPSILON) * 100) / 100;
+const compactarEntidad = (valor) => normalizarCatalogo(valor).replace(/[^a-z0-9]/g, "");
 const vaciaGarantia = () => ({ entidad: "", capital: "", finca: "", cru_idufir: "", registro_propiedad: "", poblacion: "", provincia: "", tipo_carga: "prestamo hipotecario", condicion_resolutoria: "no", adquisicion_vivienda_habitual: "", notaria: "0", ajd: "0", registro: "0", gestion: "0", total: "0" });
 const nuevoFormulario = () => ({ id: null, fecha: hoy(), cliente: { nombre: "", nif: "", direccion: "", cp: "", poblacion: "", provincia: "", telefono: "", email: "" }, oficina: { numero: "", contacto: "", email: "" }, garantias: [vaciaGarantia()], observaciones: "" });
 const input = "mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
@@ -20,7 +22,16 @@ function Campo({ titulo, valor, onChange, tipo = "text", requerido = false, plac
 function normalizarCatalogo(valor) {
   return String(valor ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().replace(/\s+/g, " ").toLocaleLowerCase("es");
 }
-function AutocompleteCatalogo({ titulo, valor, opciones, etiqueta, detalle, onChange, onSelect, placeholder = "Escribe para buscar…", disabled = false }) {
+function esTerritorioVasco(g, municipios = []) {
+  const normalizar = (valor) => normalizarCatalogo(valor).replace(/[^a-z0-9]/g, "");
+  const claves = ["gipuzkoa", "guipuzcoa", "alava", "araba", "bizkaia", "vizcaya"];
+  const municipioCatalogado = municipios.find((m) => normalizar(m.municipio) === normalizar(g?.poblacion));
+  return [g?.provincia, g?.registro_propiedad, municipioCatalogado?.provincia].some((valor) => {
+    const texto = normalizar(valor);
+    return claves.some((clave) => texto.includes(clave));
+  });
+}
+function AutocompleteCatalogo({ titulo, valor, opciones, etiqueta, detalle, onChange, onSelect, placeholder = "Escribe para buscar…", disabled = false, requerido = false }) {
   const [abierto, setAbierto] = useState(false);
   const consulta = normalizarCatalogo(valor);
   const filtradas = opciones.filter((op) => {
@@ -29,7 +40,7 @@ function AutocompleteCatalogo({ titulo, valor, opciones, etiqueta, detalle, onCh
     return !consulta || normalizarCatalogo(texto).includes(consulta) || normalizarCatalogo(apoyo).includes(consulta);
   }).slice(0, 12);
   return <div className="relative min-w-0">
-    <label className={label}>{titulo}<input className={input} value={valor ?? ""} disabled={disabled} autoComplete="off" placeholder={placeholder} role="combobox" aria-autocomplete="list" aria-expanded={abierto} onFocus={() => setAbierto(true)} onChange={(e) => { onChange(e.target.value); setAbierto(true); }} onBlur={() => setTimeout(() => setAbierto(false), 120)} /></label>
+    <label className={label}>{titulo}<input className={input} value={valor ?? ""} disabled={disabled} required={requerido} autoComplete="off" placeholder={placeholder} role="combobox" aria-autocomplete="list" aria-expanded={abierto} onFocus={() => setAbierto(true)} onChange={(e) => { onChange(e.target.value); setAbierto(true); }} onBlur={() => setTimeout(() => setAbierto(false), 120)} /></label>
     {abierto && !disabled && consulta && <div role="listbox" className="absolute z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-xl">
       {filtradas.map((op, idx) => {
         const texto = typeof etiqueta === "function" ? etiqueta(op) : String(op ?? "");
@@ -478,11 +489,19 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
     if (!Number.isFinite(capital) || capital <= 0) { setError("Introduce un capital del préstamo válido y mayor que 0 €."); return; }
 
     const normalizar = normalizarCatalogo;
+    // El usuario puede escribir el nombre bancario con o sin espacios/puntuación
+    // (p. ej. "BancoCaixaGeral" frente a "Banco Caixa Geral, S.A.").
+    // La coincidencia compacta evita rechazar una entidad válida por diferencias de formato.
     const entidadEscrita = normalizar(g.entidad);
-    const coincidenciasBanco = entidadesBancarias.filter((e) => normalizar(e.nombre) === entidadEscrita);
+    const entidadCompacta = compactarEntidad(g.entidad);
+    const coincidenciasExactas = entidadesBancarias.filter((e) => normalizar(e.nombre) === entidadEscrita);
+    const coincidenciasCompactas = entidadesBancarias.filter((e) => compactarEntidad(e.nombre) === entidadCompacta);
+    const coincidenciasBanco = coincidenciasExactas.length ? coincidenciasExactas : coincidenciasCompactas;
     const coincidenciasParciales = coincidenciasBanco.length ? coincidenciasBanco : entidadesBancarias.filter((e) => {
       const nombre = normalizar(e.nombre);
-      return nombre.startsWith(entidadEscrita) || entidadEscrita.startsWith(nombre);
+      const nombreCompacto = compactarEntidad(e.nombre);
+      return nombre.startsWith(entidadEscrita) || entidadEscrita.startsWith(nombre)
+        || nombreCompacto.startsWith(entidadCompacta) || entidadCompacta.startsWith(nombreCompacto);
     });
     const banco = coincidenciasParciales.length === 1 ? coincidenciasParciales[0] : null;
     if (!banco) {
@@ -491,13 +510,19 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
         : "Selecciona una entidad bancaria existente en el catálogo Entidades bancarias.");
       return;
     }
-    const entidadActual = entidadesBancarias.find((e) => banco.entidad_actual_id != null && String(e.id) === String(banco.entidad_actual_id));
-    // Solo se considera entidad propia si el catálogo identifica explícitamente a CaixaBank como entidad actual.
-    // Si la columna está vacía, no tiene sucesora vinculada o conserva el nombre original, se trata como otra entidad.
-    const actualNombre = (typeof banco.entidad_actual === "string" && banco.entidad_actual.trim()) || entidadActual?.nombre || "";
+    const entidadActualRelacionada = entidadesBancarias.find((e) => banco.entidad_actual_id != null && String(e.id) === String(banco.entidad_actual_id));
+    // La tarifa se decide exclusivamente por la columna Entidad actual del registro seleccionado.
+    // Si no hay sucesora, está vacía o conserva el nombre original, corresponde Otra entidad.
+    const actualNombre = (typeof banco.entidad_actual === "string" && banco.entidad_actual.trim())
+      || entidadActualRelacionada?.nombre
+      || "";
     const nombreOriginal = normalizar(banco.nombre);
     const nombreActual = normalizar(actualNombre);
-    const esCaixaBank = Boolean(nombreActual && nombreActual !== nombreOriginal && nombreActual.includes("caixabank"));
+    const esCaixaBank = Boolean(
+      nombreActual
+      && nombreActual !== nombreOriginal
+      && (nombreActual === "caixabank" || nombreActual === "caixabank s.a." || nombreActual === "caixabank sa" || nombreActual.includes("caixabank"))
+    );
     const conceptoNotaria = conceptosImportes.find((x) => x.codigo === "notaria" && x.activo !== false);
     const conceptoRegistro = conceptosImportes.find((x) => x.codigo === "registro" && x.activo !== false);
     const conceptoImpuestos = conceptosImportes.find((x) => x.codigo === "impuestos" && x.activo !== false);
@@ -537,10 +562,15 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
         return;
       }
       impuestos = Math.round((capital * porcentaje / 100) * 100) / 100;
-    } else if (esHipoteca && g.adquisicion_vivienda_habitual === "no") {
-      // Para hipotecas destinadas a otra finalidad, el valor de la regla provincial es un porcentaje del capital.
-      const porcentajeTerritorial = importeHipotecaProvincia(g.provincia);
-      if (porcentajeTerritorial !== null) impuestos = Math.round((capital * porcentajeTerritorial / 100) * 100) / 100;
+    } else if (esHipoteca && esTerritorioVasco(g, catalogoMunicipios)) {
+      // En el País Vasco, la vivienda habitual está exenta: Sí fuerza AJD a 0,00 €.
+      // Si responde No, solo se aplica el porcentaje territorial configurado.
+      if (g.adquisicion_vivienda_habitual === "si") {
+        impuestos = 0;
+      } else if (g.adquisicion_vivienda_habitual === "no") {
+        const porcentajeTerritorial = importeHipotecaProvincia(g.provincia);
+        if (porcentajeTerritorial !== null) impuestos = Math.round((capital * porcentajeTerritorial / 100) * 100) / 100;
+      }
     } else if (g.tipo_carga && !normalizar(g.tipo_carga).includes("hipotec")) {
       // Para otras cargas no se presupone un impuesto específico.
       impuestos = Number(g.ajd || 0);
@@ -560,7 +590,8 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
       const ajd = Number(g.ajd || 0);
       const registro = Number(g.registro || 0);
       const gestion = Number(g.gestion || 0);
-      return { ...g, capital: Number(g.capital || 0), notaria, ajd, registro, gestion, total: notaria + ajd + registro + gestion };
+      const total = Math.round((notaria + ajd + registro + gestion + Number.EPSILON) * 100) / 100;
+      return { ...g, capital: Number(g.capital || 0), notaria, ajd, registro, gestion, total };
     }), observaciones: form.observaciones };
     try {
       const r = form.id ? await axios.put(`/expedientes/provisiones-independientes/${form.id}`, payload) : await axios.post("/expedientes/provisiones-independientes", payload);
@@ -683,34 +714,39 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
           {form.garantias.map((g, i) => <div key={i} className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
             <div className="mb-4 flex items-center justify-between"><h3 className="text-sm font-bold text-slate-800">Garantía {i + 1}</h3>{form.garantias.length > 1 && <button type="button" onClick={() => setForm((f) => ({ ...f, garantias: f.garantias.filter((_, n) => n !== i) }))} className="text-xs font-semibold text-red-600 hover:text-red-800">Eliminar</button>}</div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <Campo titulo="Entidad bancaria" valor={g.entidad} onChange={(v) => cambiarGarantia(i, "entidad", v)} requerido listId="catalogo-entidades-bancarias" placeholder="Escribe para buscar una entidad…" />
-              <Campo titulo="Capital del préstamo (€)" tipo="number" valor={g.capital} onChange={(v) => cambiarGarantia(i, "capital", v)} />
+              <AutocompleteCatalogo titulo="Entidad bancaria" valor={g.entidad} opciones={entidadesBancarias} etiqueta={(e) => e.nombre} detalle={(e) => e.entidad_actual || ""} placeholder="Escribe para buscar una entidad bancaria…" requerido onChange={(v) => cambiarGarantia(i, "entidad", v)} onSelect={(e) => cambiarGarantia(i, "entidad", e.nombre)} />
+              {(() => {
+                const bancoCatalogo = entidadesBancarias.find((e) => compactarEntidad(e.nombre) === compactarEntidad(g.entidad));
+                const entidadActual = String(bancoCatalogo?.entidad_actual || entidadesBancarias.find((e) => bancoCatalogo?.entidad_actual_id != null && String(e.id) === String(bancoCatalogo.entidad_actual_id))?.nombre || "").trim();
+                return <p className="sm:col-span-2 lg:col-span-4 -mt-1 text-xs text-slate-500">Entidad actual del catálogo: <strong className="text-slate-700">{entidadActual || "Sin entidad actual asignada; se aplicará tarifa de otra entidad"}</strong></p>;
+              })()}
+              <Campo titulo="Capital del préstamo (€)" tipo="number" valor={g.capital} onChange={(v) => cambiarGarantia(i, "capital", v)} requerido />
               <Campo titulo="N.º finca registral" valor={g.finca} onChange={(v) => cambiarGarantia(i, "finca", v)} />
               <Campo titulo="CRU / IDUFIR" valor={g.cru_idufir} onChange={(v) => cambiarGarantia(i, "cru_idufir", v)} />
               <AutocompleteCatalogo titulo="Registro de la Propiedad" valor={g.registro_propiedad} opciones={catalogoRegistros} etiqueta={(r) => r.registro_propiedad} detalle={(r) => [r.poblacion, r.provincia].filter(Boolean).join(" · ")} placeholder="Busca un registro…" onChange={(v) => cambiarGarantia(i, "registro_propiedad", v)} onSelect={(r) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, registro_propiedad: r.registro_propiedad, poblacion: r.poblacion || x.poblacion, provincia: r.provincia || x.provincia } : x) }))} />
-              <AutocompleteCatalogo titulo="Población" valor={g.poblacion} opciones={catalogoMunicipios} etiqueta={(m) => m.municipio} detalle={(m) => m.provincia} placeholder="Busca una población…" onChange={(v) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, poblacion: v, provincia: "", ajd: x.adquisicion_vivienda_habitual === "no" ? "0" : x.ajd } : x) }))} onSelect={(m) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => {
+              <AutocompleteCatalogo titulo="Población" valor={g.poblacion} opciones={catalogoMunicipios} etiqueta={(m) => m.municipio} detalle={(m) => m.provincia} placeholder="Busca una población…" onChange={(v) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, poblacion: v, provincia: "", ajd: x.adquisicion_vivienda_habitual === "si" ? "0" : x.ajd } : x) }))} onSelect={(m) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => {
                 if (n !== i) return x;
                 return { ...x, poblacion: m.municipio, provincia: m.provincia };
               }) }))} />
               <AutocompleteCatalogo titulo="Provincia" valor={g.provincia} opciones={[...new Set(catalogoMunicipios.map((m) => m.provincia).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"))} etiqueta={(p) => p} placeholder="Busca una provincia…" onChange={(v) => cambiarGarantia(i, "provincia", v)} onSelect={(p) => cambiarGarantia(i, "provincia", p)} />
-              <Selector titulo="Tipo de carga" valor={g.tipo_carga} onChange={(v) => cambiarGarantia(i, "tipo_carga", v)} opciones={tiposCarga} requerido />
-              <Selector titulo="¿Es una condición resolutoria?" valor={g.condicion_resolutoria || (normalizarCatalogo(g.tipo_carga).includes("condicion resolutoria") ? "si" : "no")} onChange={(v) => cambiarGarantia(i, "condicion_resolutoria", v)} opciones={[{ nombre: "no" }, { nombre: "si" }]} requerido />
-              {normalizarCatalogo(g.tipo_carga).includes("hipotec") && <label className={label}>¿La hipoteca se constituyó para adquirir la vivienda habitual?
+              <Selector titulo="Tipo de carga" valor={g.tipo_carga} onChange={(v) => cambiarGarantia(i, "tipo_carga", v)} opciones={tiposCarga} />
+              <Selector titulo="¿Es una condición resolutoria?" valor={g.condicion_resolutoria || (normalizarCatalogo(g.tipo_carga).includes("condicion resolutoria") ? "si" : "no")} onChange={(v) => cambiarGarantia(i, "condicion_resolutoria", v)} opciones={[{ nombre: "no" }, { nombre: "si" }]} />
+              {normalizarCatalogo(g.tipo_carga).includes("hipotec") && esTerritorioVasco(g, catalogoMunicipios) && <label className={label}>¿La hipoteca se constituyó para adquirir la vivienda habitual?
                 <select className={input} value={g.adquisicion_vivienda_habitual ?? ""} onChange={(e) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => {
                   if (n !== i) return x;
                   const respuesta = e.target.value;
-                  return { ...x, adquisicion_vivienda_habitual: respuesta };
-                }) }))} required>
+                  return { ...x, adquisicion_vivienda_habitual: respuesta, ...(respuesta === "si" ? { ajd: "0" } : {}) };
+                }) }))}>
                 <option value="">Selecciona una respuesta…</option><option value="si">Sí, para adquirir la vivienda habitual</option><option value="no">No, para otra finalidad</option>
               </select>
               </label>}
             </div>
-            {normalizarCatalogo(g.tipo_carga).includes("hipotec") && ["gipuzkoa", "alava", "bizkaia"].includes(String(g.provincia || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es")) && <div role="status" className="mb-3 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-900">
+            {normalizarCatalogo(g.tipo_carga).includes("hipotec") && esTerritorioVasco(g, catalogoMunicipios) && <div role="status" className="mb-3 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-900">
               <strong>Regla territorial detectada: {g.provincia}.</strong>{" "}
               {g.adquisicion_vivienda_habitual === "" || g.adquisicion_vivienda_habitual == null
                 ? "Responde primero si la hipoteca se constituyó para adquirir la vivienda habitual."
                 : g.adquisicion_vivienda_habitual === "si"
-                  ? "Al tratarse de una hipoteca constituida para adquirir la vivienda habitual, no se aplica el porcentaje provincial configurado por esta regla."
+                  ? "Al tratarse de la vivienda habitual, AJD / impuestos queda fijado en 0,00 € y no se aplica el porcentaje provincial."
                   : importeHipotecaProvincia(g.provincia) === null
                     ? "No hay porcentaje configurado para " + g.provincia + " en Catálogos → Tabla Provisiones de fondos. Introduce el impuesto manualmente."
                     : "Como la hipoteca no se constituyó para adquirir la vivienda habitual, se aplica el " + String(importeHipotecaProvincia(g.provincia)).replace(".", ",") + " % al capital del préstamo. El resultado se refleja en AJD / impuestos y puedes revisarlo antes de guardar."}
@@ -724,7 +760,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
             </div>
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
               <button type="button" onClick={() => calcular(i)} className={`${boton} border border-blue-200 bg-white text-blue-800 hover:bg-blue-50`}>Calcular con tarifario</button>
-              <div className="text-right"><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total de la garantía</p><p className="text-lg font-bold text-slate-900">{dinero(Number(g.total || 0) || ["notaria", "ajd", "registro", "gestion"].reduce((s, k) => s + Number(g[k] || 0), 0))}</p><button type="button" onClick={() => cambiarGarantia(i, "total", ["notaria", "ajd", "registro", "gestion"].reduce((s, k) => s + Number(g[k] || 0), 0).toFixed(2))} className="mt-1 text-xs font-semibold text-blue-700 underline">Actualizar total desde conceptos</button></div>
+              <div className="text-right"><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total de la garantía</p><p className="text-lg font-bold text-slate-900">{dinero(totalConceptos(g))}</p></div>
             </div>
           </div>)}
           <button type="button" onClick={() => setForm((f) => ({ ...f, garantias: [...f.garantias, vaciaGarantia()] }))} className={`${boton} border border-dashed border-slate-300 bg-white text-slate-700 hover:bg-slate-50`}>＋ Añadir otra garantía / préstamo</button>
@@ -734,7 +770,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
       <Seccion titulo="4. Observaciones" ><textarea className={`${input} min-h-24 resize-y`} value={form.observaciones} onChange={(e) => setForm((f) => ({ ...f, observaciones: e.target.value }))} placeholder="Si se trata de un embargo u otra carga no hipotecaria, indica aquí qué carga debe cancelarse y cualquier detalle relevante. No se presupuestará gasto notarial para esas cargas." /></Seccion>
 
       <div className="sticky bottom-3 z-10 flex flex-col items-stretch justify-between gap-3 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-lg backdrop-blur sm:flex-row sm:items-center">
-        <div><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Importe total estimado</p><p className="text-2xl font-bold text-slate-950">{dinero(form.garantias.reduce((s, g) => s + (Number(g.total || 0) || ["notaria", "ajd", "registro", "gestion"].reduce((a, k) => a + Number(g[k] || 0), 0)), 0))}</p></div>
+        <div><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Importe total estimado</p><p className="text-2xl font-bold text-slate-950">{dinero(form.garantias.reduce((s, g) => s + totalConceptos(g), 0))}</p></div>
         <div className="flex flex-wrap gap-2"><button type="button" onClick={nueva} className={`${boton} border border-slate-300 text-slate-700 hover:bg-slate-50`}>Nueva / limpiar</button><button type="button" onClick={pdf} disabled={!form.id} className={`${boton} border border-blue-200 text-blue-800 hover:bg-blue-50`}>Generar PDF</button><button type="button" onClick={() => abrirEmail(form)} disabled={!form.id} className={`${boton} border border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100`}>✉ Enviar por email</button><button type="submit" disabled={guardando} className={`${boton} bg-slate-950 text-white hover:bg-slate-800`}>{guardando ? "Guardando…" : form.id ? "Guardar cambios" : "Guardar provisión"}</button></div>
       </div>
     </form>

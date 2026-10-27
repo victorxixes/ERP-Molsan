@@ -982,10 +982,13 @@ def _guardar_independiente(item: ProvisionIndependiente, datos: ProvisionIndepen
     garantias = datos.garantias or []
     total = Decimal("0.00")
     for g in garantias:
-        subtotal = _dinero(g.get("total") or g.get("importe_manual") or 0)
-        if not subtotal:
-            subtotal = sum((_dinero(g.get(k, 0)) for k in ("notaria", "ajd", "registro", "gestion", "otros_gastos")), Decimal("0.00"))
-        g["total"] = float(subtotal.quantize(Decimal("0.01")))
+        # El total nunca se toma del cliente ni de campos heredados: se deriva exclusivamente
+        # de los cuatro conceptos vigentes de la provisión.
+        subtotal = sum(
+            (_dinero(g.get(k, 0)) for k in ("notaria", "ajd", "registro", "gestion")),
+            Decimal("0.00"),
+        ).quantize(Decimal("0.01"))
+        g["total"] = float(subtotal)
         total += subtotal
     item.fecha = datos.fecha
     item.cliente_nombre = str(cliente.get("nombre") or "").strip()
@@ -1142,7 +1145,7 @@ def documento_provision_independiente(provision_id: int, db: Session = Depends(g
         ("TOPPADDING", (0,0), (-1,-1), 5), ("BOTTOMPADDING", (0,0), (-1,-1), 5),
     ]))
     story.extend([tabla_oficina, Spacer(1, 5*mm), Paragraph("DESGLOSE DE LA PROVISIÓN", styles["Heading3"])])
-    rows = [[_p("ENTIDAD / CARGA", styles["CeldaIndBold"]), _p("CUANTÍA", styles["CeldaIndBold"]), _p("NOTARÍA", styles["CeldaIndBold"]), _p("AJD", styles["CeldaIndBold"]), _p("REGISTRO", styles["CeldaIndBold"]), _p("GESTIÓN", styles["CeldaIndBold"]), _p("TOTAL", styles["CeldaIndBold"])]]
+    rows = [[_p("ENTIDAD / CARGA", styles["CeldaIndBold"]), _p("CUANTÍA", styles["CeldaIndBold"]), _p("NOTARÍA", styles["CeldaIndBold"]), _p("IMPUESTOS", styles["CeldaIndBold"]), _p("REGISTRO", styles["CeldaIndBold"]), _p("GESTIÓN", styles["CeldaIndBold"]), _p("TOTAL", styles["CeldaIndBold"])]]
     for g in data["garantias"]:
         entidad_carga = f"{escape(str(g.get('entidad') or '—'))}<br/><font size='6'>Carga: {escape(str(g.get('tipo_carga') or '—'))}</font>"
         rows.append([
