@@ -79,6 +79,8 @@ class DefectoCrear(BaseModel):
     fecha_vencimiento_presentacion: Optional[date] = None
     fecha_calificacion: Optional[date] = None
     fecha_renovacion_asiento: Optional[date] = None
+    asiento_renovacion: Optional[str] = Field(None, max_length=100)
+    libro_diario: Optional[str] = Field(None, max_length=100)
     asiento_renovacion_libro_diario: Optional[str] = Field(None, max_length=200)
     vencimiento_asiento_renovacion: Optional[date] = None
     anotacion_suspensiva: Optional[bool] = None
@@ -107,6 +109,8 @@ class DefectoActualizar(BaseModel):
     fecha_vencimiento_presentacion: Optional[date] = None
     fecha_calificacion: Optional[date] = None
     fecha_renovacion_asiento: Optional[date] = None
+    asiento_renovacion: Optional[str] = Field(None, max_length=100)
+    libro_diario: Optional[str] = Field(None, max_length=100)
     asiento_renovacion_libro_diario: Optional[str] = Field(None, max_length=200)
     vencimiento_asiento_renovacion: Optional[date] = None
     anotacion_suspensiva: Optional[bool] = None
@@ -448,6 +452,8 @@ def datos_defecto(
         "fecha_vencimiento_presentacion",
         "fecha_calificacion",
         "fecha_renovacion_asiento",
+        "asiento_renovacion",
+        "libro_diario",
         "asiento_renovacion_libro_diario",
         "vencimiento_asiento_renovacion",
         "anotacion_suspensiva",
