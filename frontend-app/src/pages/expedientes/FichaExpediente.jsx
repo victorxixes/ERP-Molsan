@@ -3300,6 +3300,10 @@ async function guardarDefectoRegistral() {
     setErrorDefecto("Selecciona un motivo del defecto.");
     return;
   }
+  if (!defectoForm.fecha_calificacion) {
+    setErrorDefecto("Indica la fecha de calificación.");
+    return;
+  }
   if (defectoForm.observaciones_registro && defectoForm.observaciones_registro.length > 200) {
     setErrorDefecto("Las observaciones no pueden superar 200 caracteres.");
     return;
@@ -5576,8 +5580,11 @@ const cuantiaFincasParaEnvio =
             {actividadSeleccionada === "defectos-registrales" && (
               <section className="mb-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-3 sm:p-4">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="text-sm font-extrabold text-slate-800">Datos vinculados de Enviar a notario</h3>
-                  <span className="text-[11px] font-medium text-slate-500">Datos enlazados a la ficha del expediente</span>
+                  <h3 className="text-sm font-extrabold text-slate-800">Defectos registrales del expediente</h3>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-[11px] font-medium text-slate-500">Detalle compartido con el alta de defectos</span>
+                    <Boton tipo="primary" onClick={() => { setDefectoEditandoId(null); setDefectoForm({ ...DEFECTO_VACIO }); setErrorDefecto(""); setMostrarDefecto(true); }}>＋ Alta defecto</Boton>
+                  </div>
                 </div>
                 <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
                   <Dato campo="Notario" valor={expediente?.nombre_notario ?? expediente?.notario} />
@@ -5639,11 +5646,20 @@ const cuantiaFincasParaEnvio =
                               <Dato campo="Tipo de carga hipotecaria" valor={tipoCarga} />
                               <Dato campo="Motivos del defecto" valor={defecto.motivo_defecto} />
                               <Dato campo="Subtipo del defecto" valor={defecto.subtipo_defecto} />
-                              <Dato campo="Fecha Notificación Registro" valor={defecto.fecha_notificacion_registro} tipo="fecha" />
-                              <Dato campo="Fecha Vencimiento Presentación Registro" valor={defecto.fecha_vencimiento_presentacion} tipo="fecha" />
+                              <Dato campo="Fecha calificación" valor={defecto.fecha_calificacion} tipo="fecha" />
+                              <Dato campo="Fecha renovación asiento" valor={defecto.fecha_renovacion_asiento} tipo="fecha" />
+                              <Dato campo="Asiento renovación / libro diario" valor={defecto.asiento_renovacion_libro_diario} />
+                              <Dato campo="Vencimiento asiento renovación" valor={defecto.vencimiento_asiento_renovacion} tipo="fecha" />
+                              <Dato campo="Anotación suspensiva" valor={defecto.anotacion_suspensiva == null ? "—" : defecto.anotacion_suspensiva ? "Sí" : "No"} />
+                              <Dato campo="Vencimiento anotación" valor={defecto.vencimiento_anotacion} tipo="fecha" />
+                              <Dato campo="Calificación sustitutoria" valor={defecto.calificacion_sustitutoria == null ? "—" : defecto.calificacion_sustitutoria ? "Sí" : "No"} />
+                              <Dato campo="Recurso gubernativo" valor={defecto.recurso_gubernativo == null ? "—" : defecto.recurso_gubernativo ? "Sí" : "No"} />
+                              <Dato campo="Fecha Notificación Registro (control interno)" valor={defecto.fecha_notificacion_registro} tipo="fecha" />
+                              <Dato campo="Fecha Vencimiento Presentación (control interno)" valor={defecto.fecha_vencimiento_presentacion} tipo="fecha" />
                               <Dato campo="Fecha Entrada Registro Subsanación" valor={defecto.fecha_entrada_subsanacion} tipo="fecha" />
                               <Dato campo="Calificación del Registro" valor={defecto.calificacion_registro} />
                               <Dato campo="Observaciones" valor={defecto.observaciones_registro} />
+                              <Dato campo="Estado envío ABSIS" valor={defecto.estado_envio_absis || "Pendiente"} />
                               <Dato campo="Estado de subsanación" valor={defecto.fecha_entrada_subsanacion ? "Subsanado" : "Pendiente de subsanación"} />
                             </div>
                           </article>
