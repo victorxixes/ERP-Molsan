@@ -91,6 +91,10 @@ class ExpedienteGasto(Base):
     tipo_operacion_absis = Column(String(300), nullable=True)
     concepto_gasto_absis = Column(String(300), nullable=True)
     datos_absis_json = Column(Text, nullable=True)
+    tipo_concepto_absis = Column(String(100), nullable=True, index=True)
+    origen_registro = Column(String(30), nullable=True, default="ERP")
+    estado_consolidacion = Column(String(50), nullable=True, default="Pendiente envío")
+    fecha_ultima_sincronizacion = Column(Date, nullable=True)
 
     @property
     def numero_documento(self):
