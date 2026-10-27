@@ -569,30 +569,19 @@ const CAMPOS_ACTIVIDADES = {
   ],
 
   "defectos-registrales": [
-    {
-      key: "tipo_documento",
-      label: "Tipo documento",
-    },
-    {
-      key: "motivos_defecto",
-      label: "Motivos del defecto",
-      catalogo: "motivos-defecto",
-    },
-    {
-      key: "fecha_notificacion_registro",
-      label: "Fecha notificación Registro",
-      tipo: "fecha",
-    },
-    {
-      key: "fecha_vencimiento_presentacion_registro",
-      label: "Fecha vencimiento presentación Registro",
-      tipo: "fecha",
-    },
-    {
-      key: "observaciones_defecto_registral",
-      label: "Observaciones",
-      multilinea: true,
-    },
+    { key: "tipo_documento", label: "Tipo documento" },
+    { key: "motivo_defecto", label: "Motivo del defecto" },
+    { key: "fecha_calificacion", label: "Fecha calificación", tipo: "fecha" },
+    { key: "asiento_renovacion", label: "Asiento renovación" },
+    { key: "libro_diario", label: "Libro diario" },
+    { key: "vencimiento_asiento_renovacion", label: "Vencimiento asiento renovación", tipo: "fecha" },
+    { key: "anotacion_suspensiva", label: "Anotación suspensiva", opciones: [{ value: "true", label: "Sí" }, { value: "false", label: "No" }] },
+    { key: "vencimiento_anotacion", label: "Vencimiento anotación", tipo: "fecha" },
+    { key: "calificacion_sustitutoria", label: "Calificación sustitutoria", opciones: [{ value: "true", label: "Sí" }, { value: "false", label: "No" }] },
+    { key: "recurso_gubernativo", label: "Recurso gubernativo", opciones: [{ value: "true", label: "Sí" }, { value: "false", label: "No" }] },
+    { key: "fecha_notificacion_registro", label: "Fecha notificación Registro", tipo: "fecha" },
+    { key: "fecha_entrada_subsanacion", label: "Fecha Entrada Registro Subsanación", tipo: "fecha" },
+    { key: "observaciones_registro", label: "Observaciones", multilinea: true },
   ],
 
   "facturacion-cierre": [
@@ -5657,8 +5646,9 @@ const cuantiaFincasParaEnvio =
                           <article key={defecto.id ?? defecto.id_defecto} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
                             <p className="mb-2 text-xs font-extrabold text-slate-800">{defecto.motivo_defecto || defecto.tipo_error || "Defecto registral"}</p>
                             <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                              <Dato campo="Tipo documento" valor={defecto.tipo_documento || "cancelacion de prestamo o credito"} />
                               <Dato campo="Tipo de carga hipotecaria" valor={tipoCarga} />
-                              <Dato campo="Motivos del defecto" valor={defecto.motivo_defecto} />
+                              <Dato campo="Motivo del defecto" valor={defecto.motivo_defecto || defecto.tipo_error} />
                               <Dato campo="Subtipo del defecto" valor={defecto.subtipo_defecto} />
                               <Dato campo="Fecha calificación" valor={defecto.fecha_calificacion} tipo="fecha" />
                               <Dato campo="Asiento renovación" valor={defecto.asiento_renovacion || defecto.asiento_renovacion_libro_diario} />
@@ -5668,8 +5658,7 @@ const cuantiaFincasParaEnvio =
                               <Dato campo="Vencimiento anotación" valor={defecto.vencimiento_anotacion} tipo="fecha" />
                               <Dato campo="Calificación sustitutoria" valor={defecto.calificacion_sustitutoria == null ? "—" : defecto.calificacion_sustitutoria ? "Sí" : "No"} />
                               <Dato campo="Recurso gubernativo" valor={defecto.recurso_gubernativo == null ? "—" : defecto.recurso_gubernativo ? "Sí" : "No"} />
-                              <Dato campo="Fecha Notificación Registro (control interno)" valor={defecto.fecha_notificacion_registro} tipo="fecha" />
-                              <Dato campo="Fecha Vencimiento Presentación (control interno)" valor={defecto.fecha_vencimiento_presentacion} tipo="fecha" />
+                              <Dato campo="Fecha Notificación Registro" valor={defecto.fecha_notificacion_registro} tipo="fecha" />
                               <Dato campo="Fecha Entrada Registro Subsanación" valor={defecto.fecha_entrada_subsanacion} tipo="fecha" />
                               <Dato campo="Calificación del Registro" valor={defecto.calificacion_registro} />
                               <Dato campo="Observaciones" valor={defecto.observaciones_registro} />
@@ -8713,6 +8702,8 @@ const cuantiaFincasParaEnvio =
                           <span className="rounded-full border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-600">{defecto.estado_envio_absis || "Pendiente ABSIS"}</span>
                         </div>
                         <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+                          <Dato campo="Tipo documento" valor={defecto.tipo_documento || "cancelacion de prestamo o credito"} />
+                          <Dato campo="Motivo del defecto" valor={defecto.motivo_defecto || defecto.tipo_error} />
                           <Dato campo="Fecha calificación" valor={defecto.fecha_calificacion} tipo="fecha" />
                           <Dato campo="Asiento renovación" valor={defecto.asiento_renovacion || defecto.asiento_renovacion_libro_diario} />
                           <Dato campo="Libro diario" valor={defecto.libro_diario} />
@@ -8721,6 +8712,8 @@ const cuantiaFincasParaEnvio =
                           <Dato campo="Vencimiento anotación" valor={defecto.vencimiento_anotacion} tipo="fecha" />
                           <Dato campo="Calificación sustitutoria" valor={defecto.calificacion_sustitutoria == null ? "—" : defecto.calificacion_sustitutoria ? "Sí" : "No"} />
                           <Dato campo="Recurso gubernativo" valor={defecto.recurso_gubernativo == null ? "—" : defecto.recurso_gubernativo ? "Sí" : "No"} />
+                          <Dato campo="Fecha notificación Registro" valor={defecto.fecha_notificacion_registro} tipo="fecha" />
+                          <Dato campo="Fecha Entrada Registro Subsanación" valor={defecto.fecha_entrada_subsanacion} tipo="fecha" />
                           <Dato campo="Observaciones" valor={defecto.observaciones_registro} />
                           <Dato campo="Subsanación" valor={defecto.fecha_entrada_subsanacion ? "Subsanado" : "Pendiente de subsanación"} />
                         </div>
