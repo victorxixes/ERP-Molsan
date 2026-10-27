@@ -97,7 +97,7 @@ export default function ModulosSelector() {
       empleado.nombre_rol ||
       empleado.role?.name ||
       (typeof empleado.rol === "string" ? empleado.rol : "")
-    ).replace(/[_-]+/g, " ").replace(/\\s+/g, " ").trim();
+    ).replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
     const usuario = normalizar(empleado.usuario);
     // Mantener el mismo criterio estricto que usa la API. Roles operativos
     // como "gestor" o "manager" no deben recibir privilegios administrativos
