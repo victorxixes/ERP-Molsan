@@ -3298,7 +3298,6 @@ function valorColumnaPostFirma(fila, columna) {
       FPETICION: fila.fecha_peticion,
       FPAGO: fila.fecha_pago,
       FFACTURA: fila.fecha_factura,
-      NUMFACTURA: fila.numero_factura,
     };
     valor = alternativas[columna];
   }
