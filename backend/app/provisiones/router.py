@@ -1127,7 +1127,7 @@ def _preparar_email_provision(db: Session, item: ProvisionIndependiente, usuario
     plantilla = db.execute(text("""
         SELECT id, nombre, asunto, cuerpo, activo
         FROM correspondencia_plantillas
-        WHERE lower(nombre) = lower(:nombre)
+        WHERE lower(nombre) = lower(:nombre) AND activo = TRUE
         ORDER BY id ASC LIMIT 1
     """), {"nombre": "Envío de provisión de fondos"}).mappings().first()
     if not plantilla:
