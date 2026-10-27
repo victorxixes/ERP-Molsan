@@ -1090,8 +1090,8 @@ export const useSeguridadStore =
 
       try {
 
-        await axios.post(
-          `${API}/seguridad/asignar/empleado/${empleadoId}/permisos`,
+        await axios.put(
+          `${API}/empleados/${empleadoId}/permisos`,
           permisos
         );
 
