@@ -1,4 +1,5 @@
 import { Fragment, useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "../../api/axios";
 import { API_BASE } from "../../api/config";
 import Chart from "chart.js/auto";
@@ -3333,65 +3334,63 @@ function ApartadoInformePendiente({ apartado }) {
 }
 
 export default function Informes() {
-  const [apartadoActivo, setApartadoActivo] = useState("apoderados");
+  const navigate = useNavigate();
+  const { apartado: claveApartado } = useParams();
   const apartadoSeleccionado = APARTADOS_INFORMES.find(
-    (apartado) => apartado.key === apartadoActivo
-  ) || APARTADOS_INFORMES[0];
+    (apartado) => apartado.key === claveApartado
+  );
+
+  const renderInforme = () => {
+    if (claveApartado === "apoderados") return <InformeCitasApoderados />;
+    if (claveApartado === "firmas") return <InformeFirmas />;
+    if (claveApartado === "sla") return <InformeSLA />;
+    if (claveApartado === "notarios") return <InformeNotarios />;
+    if (claveApartado === "facturacion") return <ApartadoInformePendiente apartado={apartadoSeleccionado} />;
+    return null;
+  };
 
   return (
     <div className="informes-premium-page herramientas-subpagina-premium min-h-screen space-y-5 bg-gradient-to-br from-[#eef5fb] via-[#f7faff] to-[#eaf2fb] p-4 text-slate-700 md:p-6">
       <header className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl md:p-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-200 bg-blue-100 text-xl shadow-sm">📊</div>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-800 md:text-3xl">Informes</h1>
-            <p className="mt-1 text-sm text-slate-500">Selecciona el tipo de informe que quieres consultar.</p>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-200 bg-blue-100 text-xl shadow-sm">📊</div>
+            <div>
+              <h1 className="text-2xl font-bold text-slate-800 md:text-3xl">{apartadoSeleccionado ? apartadoSeleccionado.titulo : "Informes"}</h1>
+              <p className="mt-1 text-sm text-slate-500">{apartadoSeleccionado ? apartadoSeleccionado.descripcion : "Selecciona el tipo de informe que quieres consultar."}</p>
+            </div>
           </div>
+          {claveApartado && <button type="button" onClick={() => navigate("/informes")} className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50">← Volver a Informes</button>}
         </div>
       </header>
 
-      <nav aria-label="Apartados de informes" className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {APARTADOS_INFORMES.map((apartado) => {
-          const activo = apartado.key === apartadoActivo;
-          return (
+      {!claveApartado ? (
+        <nav aria-label="Apartados de informes" className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {APARTADOS_INFORMES.map((apartado) => (
             <button
               key={apartado.key}
               type="button"
-              onClick={() => setApartadoActivo(apartado.key)}
-              aria-pressed={activo}
-              className={`flex min-h-[100px] items-start gap-3 rounded-2xl border p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${
-                activo
-                  ? "border-blue-400 bg-blue-50 ring-2 ring-blue-100"
-                  : "border-white/80 bg-white/75 hover:border-blue-200"
-              }`}
+              onClick={() => navigate(`/informes/${apartado.key}`)}
+              className="group flex min-h-[150px] items-start gap-4 rounded-2xl border border-white/80 bg-white/75 p-5 text-left shadow-[0_8px_25px_rgba(55,85,120,0.07)] backdrop-blur-xl transition-all hover:-translate-y-1 hover:border-blue-300 hover:shadow-[0_14px_35px_rgba(55,85,120,0.13)] focus:outline-none focus:ring-2 focus:ring-blue-300"
             >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-white text-xl">
-                {apartado.icono}
-              </span>
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-2xl transition group-hover:bg-blue-100">{apartado.icono}</span>
               <span className="min-w-0 flex-1">
-                <span className={`block text-sm font-bold ${activo ? "text-blue-800" : "text-slate-800"}`}>
-                  {apartado.titulo}
-                </span>
-                <span className="mt-1 block text-xs leading-relaxed text-slate-500">
-                  {apartado.descripcion}
-                </span>
+                <span className="block text-base font-bold text-slate-800">{apartado.titulo}</span>
+                <span className="mt-2 block text-sm leading-relaxed text-slate-500">{apartado.descripcion}</span>
+                <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-blue-700">Abrir informe <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span></span>
               </span>
-              {activo && <span className="mt-1 text-xs font-bold text-blue-600">●</span>}
             </button>
-          );
-        })}
-      </nav>
-
-      {apartadoActivo === "apoderados" ? (
-        <InformeCitasApoderados />
-      ) : apartadoActivo === "firmas" ? (
-        <InformeFirmas />
-      ) : apartadoActivo === "sla" ? (
-        <InformeSLA />
-      ) : apartadoActivo === "notarios" ? (
-        <InformeNotarios />
+          ))}
+        </nav>
+      ) : apartadoSeleccionado ? (
+        renderInforme()
       ) : (
-        <ApartadoInformePendiente apartado={apartadoSeleccionado} />
+        <section className="rounded-2xl border border-white/80 bg-white/75 p-8 text-center shadow-sm">
+          <div className="text-3xl">📊</div>
+          <h2 className="mt-3 text-lg font-bold text-slate-800">Informe no encontrado</h2>
+          <p className="mt-1 text-sm text-slate-500">El apartado solicitado no existe.</p>
+          <button type="button" onClick={() => navigate("/informes")} className="mt-4 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">Ver los cinco informes</button>
+        </section>
       )}
     </div>
   );
