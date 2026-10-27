@@ -77,6 +77,14 @@ class DefectoCrear(BaseModel):
 
     fecha_notificacion_registro: Optional[date] = None
     fecha_vencimiento_presentacion: Optional[date] = None
+    fecha_calificacion: Optional[date] = None
+    fecha_renovacion_asiento: Optional[date] = None
+    asiento_renovacion_libro_diario: Optional[str] = Field(None, max_length=200)
+    vencimiento_asiento_renovacion: Optional[date] = None
+    anotacion_suspensiva: Optional[bool] = None
+    vencimiento_anotacion: Optional[date] = None
+    calificacion_sustitutoria: Optional[bool] = None
+    recurso_gubernativo: Optional[bool] = None
     fecha_entrada_subsanacion: Optional[date] = None
     fecha_cierre_defecto: Optional[date] = None
 
@@ -97,6 +105,14 @@ class DefectoActualizar(BaseModel):
 
     fecha_notificacion_registro: Optional[date] = None
     fecha_vencimiento_presentacion: Optional[date] = None
+    fecha_calificacion: Optional[date] = None
+    fecha_renovacion_asiento: Optional[date] = None
+    asiento_renovacion_libro_diario: Optional[str] = Field(None, max_length=200)
+    vencimiento_asiento_renovacion: Optional[date] = None
+    anotacion_suspensiva: Optional[bool] = None
+    vencimiento_anotacion: Optional[date] = None
+    calificacion_sustitutoria: Optional[bool] = None
+    recurso_gubernativo: Optional[bool] = None
     fecha_entrada_subsanacion: Optional[date] = None
     fecha_cierre_defecto: Optional[date] = None
 
@@ -430,6 +446,17 @@ def datos_defecto(
         "subtipo_defecto",
         "fecha_notificacion_registro",
         "fecha_vencimiento_presentacion",
+        "fecha_calificacion",
+        "fecha_renovacion_asiento",
+        "asiento_renovacion_libro_diario",
+        "vencimiento_asiento_renovacion",
+        "anotacion_suspensiva",
+        "vencimiento_anotacion",
+        "calificacion_sustitutoria",
+        "recurso_gubernativo",
+        "estado_envio_absis",
+        "enviado_absis_en",
+        "respuesta_absis",
         "fecha_entrada_subsanacion",
         "fecha_cierre_defecto",
         "observaciones_registro",
