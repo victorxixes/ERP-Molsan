@@ -134,11 +134,12 @@ export default function ImportadorPostFirma() {
             <Metrica titulo="Filas dentro del periodo" valor={validacion.filas_dentro_periodo} detalle={`${validacion.fecha_desde || "—"} a ${validacion.fecha_hasta || "—"}`} />
             <Metrica titulo="Filas fuera del periodo" valor={validacion.filas_fuera_periodo} />
             <Metrica titulo="FPAGO vacío o inválido" valor={validacion.fpago_sin_fecha_o_invalida} />
-            <Metrica titulo="IDGASTO únicos" valor={validacion.ids_gasto_unicos} />
+            <Metrica titulo="IDGASTO distintos" valor={validacion.ids_gasto_unicos} />
+            <Metrica titulo="Claves IDGASTO + TIPOCONCEPTO únicas" valor={validacion.claves_correlacion_unicas ?? validacion.ids_gasto_unicos} />
             <Metrica titulo="Importe total IMPGASTO" valor={euros(validacion.suma_imp_gasto)} detalle={`${validacion.filas_con_importe_valido ?? 0} filas con importe válido`} />
-            <Metrica titulo="IDGASTO ya existentes" valor={validacion.idgasto_ya_existentes_en_erp} />
+            <Metrica titulo="Claves ya existentes en ERP" valor={validacion.idgasto_ya_existentes_en_erp} />
             <Metrica titulo="IDGASTO vacíos" valor={validacion.idgasto_vacios} />
-            <Metrica titulo="Filas duplicadas adicionales" valor={validacion.filas_duplicadas_adicionales} />
+            <Metrica titulo="Filas duplicadas por clave compuesta" valor={validacion.filas_duplicadas_adicionales} />
             <Metrica titulo="Expedientes ABSIS sin vínculo" valor={validacion.expedientes_absis_distintos_sin_vinculo} />
             <Metrica titulo="Importes no interpretables" valor={validacion.importes_no_interpretables} />
           </div>
