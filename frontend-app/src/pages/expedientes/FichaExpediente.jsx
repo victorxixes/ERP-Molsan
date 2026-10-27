@@ -378,6 +378,14 @@ const CAMPOS_COMUNES_ACTIVIDAD = [
 
 
 
+function calcularVencimientoAsientoRenovacion(fechaNotificacion) {
+  if (!fechaNotificacion) return "";
+  const [anio, mes, dia] = String(fechaNotificacion).split("-").map(Number);
+  if (!anio || !mes || !dia) return "";
+  // UTC evita desfases de zona horaria al sumar días naturales.
+  return new Date(Date.UTC(anio, mes - 1, dia + 60)).toISOString().slice(0, 10);
+}
+
 const DEFECTO_VACIO = {
   tipo_carga_hipotecaria_id: "",
   motivo_defecto: "",
@@ -3279,7 +3287,7 @@ function editarDefectoRegistrado(defecto) {
     fecha_calificacion: defecto.fecha_calificacion || "",
     fecha_renovacion_asiento: defecto.fecha_renovacion_asiento || "",
     asiento_renovacion_libro_diario: defecto.asiento_renovacion_libro_diario || "",
-    vencimiento_asiento_renovacion: defecto.vencimiento_asiento_renovacion || "",
+    vencimiento_asiento_renovacion: calcularVencimientoAsientoRenovacion(defecto.fecha_notificacion_registro),
     anotacion_suspensiva: defecto.anotacion_suspensiva == null ? "" : String(defecto.anotacion_suspensiva),
     vencimiento_anotacion: defecto.vencimiento_anotacion || "",
     calificacion_sustitutoria: defecto.calificacion_sustitutoria == null ? "" : String(defecto.calificacion_sustitutoria),
@@ -7165,7 +7173,7 @@ const cuantiaFincasParaEnvio =
         <label className="block text-sm font-medium text-slate-700">
           Vencimiento asiento renovación
           <input type="date" readOnly className="mt-1 w-full rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm" value={defectoForm.vencimiento_asiento_renovacion} />
-          <span className="mt-1 block text-xs font-normal text-amber-700">Pendiente de confirmar el número de días naturales para calcularlo desde la fecha de calificación.</span>
+          <span className="mt-1 block text-xs font-normal text-amber-700">Cálculo automático: fecha de notificación + 60 días naturales.</span>
         </label>
         <label className="block text-sm font-medium text-slate-700">
           Anotación suspensiva
@@ -7199,6 +7207,7 @@ const cuantiaFincasParaEnvio =
               setDefectoForm((actual) => ({
                 ...actual,
                 fecha_notificacion_registro: e.target.value,
+                vencimiento_asiento_renovacion: calcularVencimientoAsientoRenovacion(e.target.value),
               }))
             }
           />
