@@ -608,7 +608,7 @@ const CAMPOS_INTEGRACION_SEDE_PROTOCOLO = [
   { key: "nombre_notario", label: "Notario" },
   { key: "nif_notario", label: "NIF notario" },
   { key: "apoderado", label: "Apoderado" },
-  { key: "tipo_gestoria", label: "Gestoría", opciones: ["Gestoría", "Otra entidad"] },
+  { key: "tipo_gestoria", label: "Gestoría", opciones: ["Gestoría", "CaixaBank"] },
   { key: "tipo_firma", label: "Tipo firma" },
   { key: "fecha_firma", label: "Fecha firma", tipo: "fecha" },
   { key: "protocolo", label: "Protocolo" },
@@ -2871,18 +2871,9 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         "fecha_presentacion", "numero_entrada",
         "fecha_recogida_notario_presentacion_telematica",
       ]) {
-        const apoderadoTexto = String(
-          Object.prototype.hasOwnProperty.call(actividadDraft, "apoderado")
-            ? (actividadDraft.apoderado ?? "")
-            : (expediente?.apoderado ?? "")
-        ).toLowerCase();
-        const esOficinaOtraEntidad = apoderadoTexto.includes("oficina") && apoderadoTexto.includes("otra entidad");
-        const esOficinaCaixaBank = apoderadoTexto.includes("oficina") && apoderadoTexto.includes("caixabank");
-        const gestoriaPorDefecto = esOficinaOtraEntidad
-          ? "Otra entidad"
-          : (expediente?.apoderado_empleado_id || esOficinaCaixaBank)
-            ? "Gestoría"
-            : "Gestoría";
+        const gestoriaPorDefecto = Number(expediente?.apoderado_empleado_id) === 7
+          ? "CaixaBank"
+          : "Gestoría";
         const valorPorDefecto = key === "tipo_gestoria"
           ? (expediente?.tipo_gestoria || gestoriaPorDefecto)
           : (key === "apoderado" ? (expediente?.apoderado || "") : (expediente?.[key] ?? ""));
@@ -8520,12 +8511,21 @@ const cuantiaFincasParaEnvio =
                     {CAMPOS_INTEGRACION_SEDE_PROTOCOLO.filter((campo) => ["nombre_notario", "nif_notario", "tipo_gestoria", "fecha_firma", "asiento_presentacion", "libro_diario", "fecha_presentacion", "numero_entrada", "fecha_recogida_notario_presentacion_telematica"].includes(campo.key)).map((campo) => {
                       const valor = Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)
                         ? (actividadDraft[campo.key] ?? "")
-                        : (expediente?.[campo.key] ?? "");
+                        : campo.key === "tipo_gestoria"
+                          ? (expediente?.tipo_gestoria || (Number(expediente?.apoderado_empleado_id) === 7 ? "CaixaBank" : "Gestoría"))
+                          : (expediente?.[campo.key] ?? "");
                       const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
                       return (
                         <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
                           <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
-                          <input type={campo.tipo === "fecha" ? "date" : "text"} value={campo.tipo === "fecha" ? String(valor).slice(0, 10) : String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} placeholder={campo.label} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
+                          {campo.key === "tipo_gestoria" ? (
+                            <select value={String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800">
+                              <option value="Gestoría">Gestoría</option>
+                              <option value="CaixaBank">CaixaBank</option>
+                            </select>
+                          ) : (
+                            <input type={campo.tipo === "fecha" ? "date" : "text"} value={campo.tipo === "fecha" ? String(valor).slice(0, 10) : String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} placeholder={campo.label} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
+                          )}
                         </label>
                       );
                     })}
