@@ -287,7 +287,7 @@ async def importar_postfirma_absis(
         status_code=409,
         detail=(
             "La importación que modifica gastos está temporalmente deshabilitada. "
-            "Utiliza la validación Post Firma por intervalo FECHAALTA; no se han guardado cambios."
+            "Utiliza la validación Post Firma por intervalo FPAGO; no se han guardado cambios."
         ),
     )
 
@@ -296,18 +296,18 @@ async def importar_postfirma_absis(
 @router.post("/postfirma/validar")
 async def validar_postfirma_absis(
     fichero: UploadFile = File(...),
-    fecha_desde: date | None = Query(default=None, description="Fecha inicial de FECHAALTA en formato YYYY-MM-DD."),
-    fecha_hasta: date | None = Query(default=None, description="Fecha final de FECHAALTA en formato YYYY-MM-DD."),
+    fecha_desde: date | None = Query(default=None, description="Fecha inicial de FPAGO en formato YYYY-MM-DD."),
+    fecha_hasta: date | None = Query(default=None, description="Fecha final de FPAGO en formato YYYY-MM-DD."),
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
-    """Audita Post Firma por intervalo FECHAALTA y devuelve métricas; nunca guarda filas."""
+    """Audita Post Firma por intervalo FPAGO y devuelve métricas; nunca guarda filas."""
     require_perm_modulo(usuario, "utilidades", "editar")
     nombre = (fichero.filename or "").strip()
     if not nombre.lower().endswith(".xlsx"):
         raise HTTPException(status_code=400, detail="El histórico Post Firma debe ser un Excel .xlsx.")
     if fecha_desde is None or fecha_hasta is None:
-        raise HTTPException(status_code=400, detail="Selecciona las fechas desde y hasta para FECHAALTA.")
+        raise HTTPException(status_code=400, detail="Selecciona las fechas desde y hasta para FPAGO.")
     if fecha_desde > fecha_hasta:
         raise HTTPException(status_code=400, detail="La fecha desde no puede ser posterior a la fecha hasta.")
     contenido = await fichero.read()

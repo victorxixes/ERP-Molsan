@@ -39,7 +39,7 @@ export default function ImportadorPostFirma() {
       return;
     }
     if (modo === "validar" && (!fechaDesde || !fechaHasta)) {
-      setError("Selecciona las fechas desde y hasta para FECHAALTA.");
+      setError("Selecciona las fechas desde y hasta para FPAGO.");
       return;
     }
     if (modo === "validar" && fechaDesde > fechaHasta) {
@@ -88,7 +88,7 @@ export default function ImportadorPostFirma() {
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-slate-800 md:text-3xl">Importador ABSIS · Post Firma</h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">
-                Revisa el histórico Post Firma por fecha de alta del expediente (FECHAALTA). El análisis conserva cada movimiento por separado y no modifica gastos, pagos ni expedientes.
+                Revisa el histórico Post Firma por fecha efectiva del pago (FPAGO). El análisis conserva cada movimiento por separado y no modifica gastos, pagos ni expedientes.
               </p>
             </div>
           </div>
@@ -106,15 +106,15 @@ export default function ImportadorPostFirma() {
         </div>
         <div className="mt-5 grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor="postfirma-fecha-desde" className="mb-2 block text-sm font-semibold text-slate-700">FECHAALTA · Desde</label>
+            <label htmlFor="postfirma-fecha-desde" className="mb-2 block text-sm font-semibold text-slate-700">FPAGO · Desde</label>
             <input id="postfirma-fecha-desde" type="date" value={fechaDesde} max={fechaHasta || undefined} onChange={(event) => setFechaDesde(event.target.value)} disabled={cargando} className={CAMPO} />
           </div>
           <div>
-            <label htmlFor="postfirma-fecha-hasta" className="mb-2 block text-sm font-semibold text-slate-700">FECHAALTA · Hasta</label>
+            <label htmlFor="postfirma-fecha-hasta" className="mb-2 block text-sm font-semibold text-slate-700">FPAGO · Hasta</label>
             <input id="postfirma-fecha-hasta" type="date" value={fechaHasta} min={fechaDesde || undefined} onChange={(event) => setFechaHasta(event.target.value)} disabled={cargando} className={CAMPO} />
           </div>
         </div>
-        <p className="mt-3 max-w-3xl text-xs leading-5 text-slate-500">El periodo se aplica a FECHAALTA del expediente. Si un expediente tiene varias filas de gasto, se conservan todas las filas que correspondan a esa alta. Las fechas vacías o inválidas se contabilizan como incidencias.</p>
+        <p className="mt-3 max-w-3xl text-xs leading-5 text-slate-500">El periodo se aplica a FPAGO, la fecha efectiva del pago. Cada movimiento de gasto se evalúa por separado; los pagos con FPAGO vacío o inválido se contabilizan como incidencias.</p>
         <div className="mt-5 flex flex-wrap gap-3">
           <button type="button" onClick={() => ejecutar("validar")} disabled={cargando || !archivo || !fechaDesde || !fechaHasta} className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50">{cargando ? "Procesando…" : "Revisar periodo sin importar"}</button>
         </div>
@@ -132,7 +132,7 @@ export default function ImportadorPostFirma() {
             <Metrica titulo="Filas con datos del periodo" valor={validacion.filas_con_datos} detalle={`Filas totales Excel: ${validacion.filas_excel ?? "—"}`} />
             <Metrica titulo="Filas dentro del periodo" valor={validacion.filas_dentro_periodo} detalle={`${validacion.fecha_desde || "—"} a ${validacion.fecha_hasta || "—"}`} />
             <Metrica titulo="Filas fuera del periodo" valor={validacion.filas_fuera_periodo} />
-            <Metrica titulo="FECHAALTA vacía o inválida" valor={validacion.fechaalta_sin_fecha_o_invalida} />
+            <Metrica titulo="FPAGO vacío o inválido" valor={validacion.fpago_sin_fecha_o_invalida} />
             <Metrica titulo="IDGASTO únicos" valor={validacion.ids_gasto_unicos} />
             <Metrica titulo="Importe total IMPGASTO" valor={euros(validacion.suma_imp_gasto)} detalle={`${validacion.filas_con_importe_valido ?? 0} filas con importe válido`} />
             <Metrica titulo="IDGASTO ya existentes" valor={validacion.idgasto_ya_existentes_en_erp} />
@@ -141,7 +141,7 @@ export default function ImportadorPostFirma() {
             <Metrica titulo="Expedientes ABSIS sin vínculo" valor={validacion.expedientes_absis_distintos_sin_vinculo} />
             <Metrica titulo="Importes no interpretables" valor={validacion.importes_no_interpretables} />
           </div>
-          {Array.isArray(validacion.columnas_detectadas) && <div><h3 className="mb-2 font-bold text-slate-700">Columnas detectadas en el Excel</h3><p className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs leading-5 text-slate-600">{validacion.columnas_detectadas.join(" · ")}</p><p className="mt-1 text-xs text-slate-500">Columna utilizada para filtrar: <strong>{validacion.columna_filtro_fecha || "FECHAALTA"}</strong>.</p></div>}
+          {Array.isArray(validacion.columnas_detectadas) && <div><h3 className="mb-2 font-bold text-slate-700">Columnas detectadas en el Excel</h3><p className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs leading-5 text-slate-600">{validacion.columnas_detectadas.join(" · ")}</p><p className="mt-1 text-xs text-slate-500">Columna utilizada para filtrar: <strong>{validacion.columna_filtro_fecha || "FPAGO"}</strong>.</p></div>}
           {validacion.por_estado_absis && <div><h3 className="mb-2 font-bold text-slate-700">Desglose por estado ABSIS</h3><div className="overflow-x-auto rounded-xl border border-slate-200"><table className="w-full text-left text-sm"><thead className="bg-slate-50 text-slate-600"><tr><th className="px-3 py-2">Estado</th><th className="px-3 py-2">Filas</th><th className="px-3 py-2">Importe IMPGASTO</th></tr></thead><tbody>{Object.entries(validacion.por_estado_absis).map(([estado, dato]) => <tr key={estado} className="border-t border-slate-100"><td className="px-3 py-2">{estado}</td><td className="px-3 py-2">{dato.filas}</td><td className="px-3 py-2">{euros(dato.importe_imp_gasto)}</td></tr>)}</tbody></table></div></div>}
           <p className="text-xs text-slate-500">{validacion.nota_privacidad}</p>
         </section>

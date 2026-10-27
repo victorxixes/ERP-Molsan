@@ -73,7 +73,7 @@ def _fecha(value):
 
 
 def _fecha_alta(value):
-    """Interpreta FECHAALTA como fecha real o como número serial de Excel.
+    """Interpreta FPAGO como fecha real o como número serial de Excel.
 
     En celdas con formato General, Excel puede entregar el serial numérico
     (días desde 1899-12-30) en lugar de un datetime.
@@ -337,8 +337,8 @@ def validar_postfirma(
 
     columnas = {_norm_col(c): c for c in df.columns}
     faltan = sorted(c for c in CABECERAS_REQUERIDAS if c not in columnas)
-    if "FECHAALTA" not in columnas:
-        faltan.append("FECHAALTA")
+    if "FPAGO" not in columnas:
+        faltan.append("FPAGO")
     if faltan:
         raise ValueError("Faltan columnas requeridas: " + ", ".join(sorted(set(faltan))))
     if fecha_desde and fecha_hasta and fecha_desde > fecha_hasta:
@@ -350,19 +350,19 @@ def validar_postfirma(
         col = columnas.get(_norm_col(nombre))
         return _limpiar(row[col]) if col is not None else None
 
-    # El filtro se aplica por FECHAALTA del expediente y mantiene todas las
-    # filas/movimientos que correspondan a esa alta, sin agrupar por expediente.
+    # El filtro se aplica por FPAGO (fecha efectiva del pago), conservando
+    # cada movimiento individual y sin agrupar por expediente.
     filas_excel_total = int(len(df))
-    fechas_alta = df[columnas["FECHAALTA"]].map(_fecha_alta)
-    fechaalta_sin_fecha = int(fechas_alta.isna().sum())
+    fechas_pago = df[columnas["FPAGO"]].map(_fecha_alta)
+    fpago_sin_fecha = int(fechas_pago.isna().sum())
     if fecha_desde and fecha_hasta:
-        mascara = fechas_alta.map(
+        mascara = fechas_pago.map(
             lambda valor: valor is not None and fecha_desde <= valor <= fecha_hasta
         )
         filas_dentro_periodo = int(mascara.sum())
         df = df.loc[mascara].copy()
     else:
-        filas_dentro_periodo = int(fechas_alta.notna().sum())
+        filas_dentro_periodo = int(fechas_pago.notna().sum())
 
     filas_fuera_periodo = filas_excel_total - filas_dentro_periodo
 
@@ -456,13 +456,13 @@ def validar_postfirma(
     return {
         "validacion_sin_escritura": True,
         "columnas_detectadas": [str(c) for c in columnas.values()],
-        "columna_filtro_fecha": "FECHAALTA",
+        "columna_filtro_fecha": "FPAGO",
         "fecha_desde": fecha_desde.isoformat() if fecha_desde else None,
         "fecha_hasta": fecha_hasta.isoformat() if fecha_hasta else None,
         "filas_excel": filas_excel_total,
         "filas_dentro_periodo": filas_dentro_periodo,
         "filas_fuera_periodo": filas_fuera_periodo,
-        "fechaalta_sin_fecha_o_invalida": fechaalta_sin_fecha,
+        "fpago_sin_fecha_o_invalida": fpago_sin_fecha,
         "filas_analizadas": int(len(df)),
         "filas_con_datos": filas_no_vacias,
         "ids_gasto_unicos": len(set(ids)),
