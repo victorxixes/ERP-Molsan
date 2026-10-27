@@ -173,9 +173,9 @@ def listar_mis_marcajes(
     require_perm_modulo(usuario, "fichajes", "ver")
     consulta = db.query(FichajeMarcaje).filter(FichajeMarcaje.empleado_id == usuario.id)
     if desde:
-        consulta = consulta.filter(FichajeMarcaje.fecha_hora >= datetime.combine(desde, time.min))
+        consulta = consulta.filter(FichajeMarcaje.fecha_hora >= datetime.combine(desde, time.min).replace(tzinfo=ZoneInfo("Europe/Madrid")))
     if hasta:
-        consulta = consulta.filter(FichajeMarcaje.fecha_hora < datetime.combine(hasta + timedelta(days=1), time.min))
+        consulta = consulta.filter(FichajeMarcaje.fecha_hora < datetime.combine(hasta + timedelta(days=1), time.min).replace(tzinfo=ZoneInfo("Europe/Madrid")))
     return [_marcaje_dict(m) for m in consulta.order_by(desc(FichajeMarcaje.fecha_hora)).limit(2000).all()]
 
 
@@ -432,9 +432,9 @@ def admin_marcajes(
     if empleado_id:
         consulta = consulta.filter(FichajeMarcaje.empleado_id == empleado_id)
     if desde:
-        consulta = consulta.filter(FichajeMarcaje.fecha_hora >= datetime.combine(desde, time.min))
+        consulta = consulta.filter(FichajeMarcaje.fecha_hora >= datetime.combine(desde, time.min).replace(tzinfo=ZoneInfo("Europe/Madrid")))
     if hasta:
-        consulta = consulta.filter(FichajeMarcaje.fecha_hora < datetime.combine(hasta + timedelta(days=1), time.min))
+        consulta = consulta.filter(FichajeMarcaje.fecha_hora < datetime.combine(hasta + timedelta(days=1), time.min).replace(tzinfo=ZoneInfo("Europe/Madrid")))
     if tipo:
         consulta = consulta.filter(FichajeMarcaje.tipo == tipo.strip().upper())
     if busqueda and busqueda.strip():
