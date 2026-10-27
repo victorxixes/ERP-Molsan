@@ -1168,6 +1168,19 @@ def _preparar_email_provision(db: Session, item: ProvisionIndependiente, usuario
     firma_personal = "\n".join(x for x in [nombre, " · ".join(x for x in [departamento or "", cargo or ""] if x)] if x)
     firma_pie = (fila_firma["firma_pie"] or "").strip() if fila_firma else ""
     cuerpo = "\n\n".join(x for x in [cuerpo.strip(), firma_personal, firma_pie] if x)
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS provisiones_email_envios (
+            id SERIAL PRIMARY KEY, provision_id INTEGER NOT NULL,
+            destinatario VARCHAR(320) NOT NULL, asunto VARCHAR(500) NOT NULL,
+            estado VARCHAR(30) NOT NULL, detalle TEXT,
+            enviado_por VARCHAR(300), creado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+    historial = db.execute(text("""
+        SELECT destinatario, asunto, estado, detalle, creado_en
+        FROM provisiones_email_envios WHERE provision_id = :id
+        ORDER BY creado_en DESC, id DESC LIMIT 5
+    """), {"id": item.id}).mappings().all()
     db.commit()
     return {
         "plantilla_id": plantilla["id"],
@@ -1178,6 +1191,11 @@ def _preparar_email_provision(db: Session, item: ProvisionIndependiente, usuario
         "numero_oficina": contexto["oficina.numero"],
         "provision_id": item.id,
         "pdf_filename": f"provision_{item.numero or item.id}.pdf",
+        "historial": [{
+            "destinatario": fila["destinatario"], "asunto": fila["asunto"],
+            "estado": fila["estado"], "detalle": fila["detalle"],
+            "creado_en": fila["creado_en"].isoformat() if fila["creado_en"] else None,
+        } for fila in historial],
     }
 
 
