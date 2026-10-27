@@ -706,7 +706,7 @@ def _plantilla_pdf_provision(db: Session) -> dict:
     """Lee la plantilla editable guardada en el concepto notaria del catálogo."""
     defaults = {
         "nombre_empresa": "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L.",
-        "cif": "", "direccion": "", "contacto": "",
+        "cif": "", "direccion": "", "contacto": "", "logo_data_url": "",
         "aviso_legal": "En el supuesto de que todos los gastos, hasta su inscripción registral, fueran superiores a los informados, según norma 3.7.20 Cancelaciones solicitaremos un complemento de saldo. Rogamos tengan en cuenta esta información.",
         "texto_estimacion": "La presente provisión es estimativa y podrá ajustarse a los gastos efectivamente devengados.",
         "pie_corporativo": "Documento emitido por ERP-Molsan.",
