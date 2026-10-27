@@ -117,8 +117,9 @@ export default function ImportadorPostFirma() {
         <p className="mt-3 max-w-3xl text-xs leading-5 text-slate-500">El periodo se aplica a FPAGO, la fecha efectiva del pago. Cada movimiento de gasto se evalúa por separado; los pagos con FPAGO vacío o inválido se contabilizan como incidencias.</p>
         <div className="mt-5 flex flex-wrap gap-3">
           <button type="button" onClick={() => ejecutar("validar")} disabled={cargando || !archivo || !fechaDesde || !fechaHasta} className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50">{cargando ? "Procesando…" : "Revisar periodo sin importar"}</button>
+          <button type="button" onClick={() => ejecutar("importar")} disabled={cargando || !archivo} className="rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50">{cargando ? "Procesando…" : "Importar Excel completo"}</button>
         </div>
-        <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">La importación que modifica gastos permanece deshabilitada durante esta fase de revisión. Esta pantalla solo valida y genera métricas; no guarda cambios en el ERP.</div>
+        <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900"><strong>Importación real:</strong> al pulsar «Importar Excel completo» se procesarán todas las filas del fichero, sin filtro de fechas. Los gastos con IDGASTO existente se actualizarán; los nuevos se crearán. Los que no encuentren expediente conservarán su referencia ABSIS y quedarán sin vínculo en el ERP. Esta acción sí guarda cambios en la base de datos.</div>
         {error && <div role="alert" className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">{error}</div>}
       </section>
 
