@@ -26,6 +26,13 @@ function textoSeguro(valor) {
 }
 
 
+const ETIQUETAS_MODULOS = {
+  noticias: "Noticias",
+  "mensajeria-gestion": "Mensajería Gestión",
+  "control-fichajes": "Control de Fichajes",
+};
+
+
 function Chip({
   children,
   tone = "neutral",
@@ -1220,7 +1227,7 @@ export default function SeguridadPermisos() {
                               text-[var(--erp-text)]
                             "
                           >
-                            {modulo}
+                            {ETIQUETAS_MODULOS[modulo] || modulo}
                           </span>
 
                           <span
