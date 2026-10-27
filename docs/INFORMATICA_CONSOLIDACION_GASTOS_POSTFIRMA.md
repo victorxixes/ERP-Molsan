@@ -29,10 +29,11 @@ La respuesta de la API de gastos expone la identidad ABSIS y el estado de consol
 2. Migración idempotente que añade las columnas opcionales; no borra ni altera filas existentes.
 3. Importador Post Firma correlaciona por `IDGASTO + TIPOCONCEPTO` cuando la columna existe y conserva compatibilidad prudente con históricos sin tipo.
 4. Respuesta de gastos preparada para devolver la información de consolidación.
+5. El Catálogo ABSIS existente incluye las categorías `TIPOCONCEPTO` y `CONCEPTOGASTO`, sin crear una segunda pantalla de catálogo.
 
 ## Pendiente de validación / integración de Informática
 
-- Confirmar el nombre exacto, formato y obligatoriedad de `TIPOCONCEPTO` en el Excel y en el contrato de la API saliente.
+- Confirmar los códigos/valores oficiales de `TIPOCONCEPTO` y `CONCEPTOGASTO` con Informática y cargar o revisar sus entradas en el Catálogo ABSIS.
 - Definir endpoint, autenticación, reintentos, timeout y respuesta de la API del cliente. No hay envío externo activado por este cambio.
 - En el alta ERP, guardar el `IDGASTO` y `TIPOCONCEPTO` que devuelva ABSIS (o el identificador de correlación acordado) y mantener `origen_registro=ERP`.
 - Verificar en la FichaExpediente la presentación de los datos ERP y Post Firma como un único registro con estado visible. La rama prepara el contrato backend, pero la presentación visual final debe validarse con la pantalla real.
