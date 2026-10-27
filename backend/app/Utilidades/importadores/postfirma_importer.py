@@ -267,7 +267,7 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
                     if not candidato.tipo_concepto_absis:
                         gasto = candidato
                 es_nuevo = gasto is None
-                origen_previo = getattr(gasto, "origen_registro", None) if gasto else None
+                origen_previo = (str(getattr(gasto, "origen_registro", "") or "").strip().upper()) if gasto else None
                 if es_nuevo:
                     gasto = ExpedienteGasto()
                     db.add(gasto)
