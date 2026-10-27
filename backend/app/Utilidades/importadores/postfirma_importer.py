@@ -10,6 +10,7 @@ from decimal import Decimal, InvalidOperation
 from io import BytesIO
 
 import pandas as pd
+from openpyxl import load_workbook
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -103,6 +104,25 @@ def _json_value(value):
     return value if isinstance(value, (str, int, float, bool)) else str(value)
 
 
+def _valor_original_excel(celda):
+    """Conserva el contenido original y máscaras simples visibles de Excel."""
+    valor = celda.value
+    if valor is None:
+        return None
+    formato = str(celda.number_format or "").strip()
+    if isinstance(valor, (int, float)) and not isinstance(valor, bool):
+        # Ejemplo: el valor 0 con formato 0000000 se muestra como 0000000.
+        # No reinterpretar formatos complejos ni alterar importes o fechas.
+        if formato and all(caracter == "0" for caracter in formato):
+            try:
+                numero = int(valor)
+                if float(valor) == numero:
+                    return str(numero).zfill(len(formato))
+            except (TypeError, ValueError, OverflowError):
+                pass
+    return _json_value(valor)
+
+
 def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str = ""):
     try:
         df = pd.read_excel(BytesIO(contenido_excel), sheet_name=0, header=0, engine="openpyxl")
@@ -110,6 +130,8 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
         raise ValueError(f"No se pudo leer el Excel Post Firma: {exc}")
 
     columnas = {_norm_col(c): c for c in df.columns}
+    libro_original = load_workbook(BytesIO(contenido_excel), data_only=True, read_only=True)
+    hoja_original = libro_original.worksheets[0]
     faltan = sorted(c for c in CABECERAS_REQUERIDAS if c not in columnas)
     if faltan:
         raise ValueError("El Excel no parece ser el histórico Post Firma. Faltan columnas: " + ", ".join(faltan))
@@ -120,7 +142,11 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
     resumen_vinculos = []
 
     for indice, row in df.iterrows():
-        original = {str(c): _json_value(row[c]) for c in df.columns}
+        fila_excel = indice + 2  # primera fila de datos, tras la cabecera
+        original = {
+            str(columna): _valor_original_excel(hoja_original.cell(row=fila_excel, column=posicion + 1))
+            for posicion, columna in enumerate(df.columns)
+        }
         if not any(v is not None for v in original.values()):
             filas_vacias += 1
             continue
