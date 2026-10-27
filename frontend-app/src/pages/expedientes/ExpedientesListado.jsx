@@ -1128,6 +1128,7 @@ export default function ExpedientesListado() {
   const [loadingAlertasControl, setLoadingAlertasControl] = useState(true);
   const [mostrarAyudaControlPlazos, setMostrarAyudaControlPlazos] = useState(false);
   const [alertaSeleccionada, setAlertaSeleccionada] = useState("");
+  const [totalesEstadosDiferenciales, setTotalesEstadosDiferenciales] = useState({ PVA: 0, RST: 0 });
 
   // ==========================================================
   // INTERFAZ
@@ -1595,6 +1596,30 @@ export default function ExpedientesListado() {
     }
 
     cargarAlertasControl();
+    return () => { activo = false; };
+  }, [recargaRealtime]);
+
+  // ==========================================================
+  // RECUENTOS DE ESTADOS DIFERENCIALES (NO SON ACTIVIDADES NI SLA)
+  // ==========================================================
+  useEffect(() => {
+    let activo = true;
+    async function cargarEstadosDiferenciales() {
+      try {
+        const [pendientes, retencion] = await Promise.all([
+          obtenerListadoExpedientes({ pagina: 1, porPagina: 1, estadoExpediente: "PVA" }),
+          obtenerListadoExpedientes({ pagina: 1, porPagina: 1, estadoExpediente: "RST" }),
+        ]);
+        if (activo) setTotalesEstadosDiferenciales({
+          PVA: Number(pendientes?.total || 0),
+          RST: Number(retencion?.total || 0),
+        });
+      } catch (err) {
+        if (activo) setTotalesEstadosDiferenciales({ PVA: 0, RST: 0 });
+        console.error("No se han podido cargar los recuentos de estados diferenciales.");
+      }
+    }
+    cargarEstadosDiferenciales();
     return () => { activo = false; };
   }, [recargaRealtime]);
 
@@ -2406,6 +2431,49 @@ export default function ExpedientesListado() {
         </header>
 
             <div className="grid grid-cols-1 gap-5 xl:grid-cols-2 xl:items-start">
+      {/* ESTADOS DIFERENCIALES: son estados del expediente, no actividades ni SLA */}
+      <section className="space-y-3" aria-label="Estados diferenciales del expediente">
+        <div>
+          <h3 className="text-base font-bold text-[var(--erp-text)]">Estados diferenciales</h3>
+          <p className="text-sm text-[var(--erp-text-soft)]">Estos filtros se basan en el estado del expediente. No son actividades y no calculan SLA.</p>
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {[
+            { codigo: "PVA", titulo: "Pendientes de Validar", icono: "🔎", borde: "#2563eb", fondo: "rgba(37, 99, 235, 0.08)" },
+            { codigo: "RST", titulo: "Retención", icono: "⏸️", borde: "#7e22ce", fondo: "rgba(126, 34, 206, 0.08)" },
+          ].map((estado) => {
+            const activa = filtrosAplicados.estadoExpediente.trim().toLocaleUpperCase("es-ES") === estado.codigo;
+            return (
+              <button
+                key={estado.codigo}
+                type="button"
+                aria-pressed={activa}
+                onClick={() => {
+                  const seleccionar = activa ? "" : estado.codigo;
+                  setAlertaSeleccionada("");
+                  setActividadSeleccionada("");
+                  setFiltroActividad("");
+                  setFiltroEstadoExpediente(seleccionar);
+                  setFiltrosAplicados((actual) => ({ ...actual, estadoExpediente: seleccionar, actividad: "" }));
+                  setColumnasVisibles(COLUMNAS_POR_DEFECTO);
+                  setPagina(1);
+                }}
+                className="min-h-[116px] rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
+                style={{ background: activa ? estado.fondo : "var(--erp-surface)", borderColor: activa ? estado.borde : "var(--erp-border)", boxShadow: activa ? `0 0 0 1px ${estado.borde}` : undefined }}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: estado.fondo }}>{estado.icono}</span>
+                  <span className="text-3xl font-extrabold tabular-nums" style={{ color: estado.borde }}>{loading ? "…" : formatearNumero(totalesEstadosDiferenciales[estado.codigo])}</span>
+                </div>
+                <div className="mt-3 font-bold text-[var(--erp-text)]">{estado.titulo}</div>
+                <div className="mt-1 text-xs text-[var(--erp-text-soft)]">Estado ABSIS: {estado.codigo}</div>
+                <div className="mt-2 text-xs font-semibold" style={{ color: activa ? estado.borde : "var(--erp-text-soft)" }}>{activa ? "Estado seleccionado · pulsa para quitar" : "Ver expedientes →"}</div>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
       {/* SLA GLOBAL: CIRCUITOS DIFERENCIADOS */}
       <section className="space-y-3" aria-label="SLA global por circuito">
         <div>
