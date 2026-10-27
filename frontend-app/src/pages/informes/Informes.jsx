@@ -3267,6 +3267,46 @@ function normalizarInformeSLA(valor) {
   return String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 }
 
+const COLUMNAS_POSTFIRMA = [
+  "IDEXPEDIENTE", "FECHAALTA", "ORIGENBANKIA", "ACTIVIDADACTUAL", "ESTADOACTIVIDAD",
+  "IDPROVISION", "IMPORTEPROVISION", "TIPOPROVISION", "DETALLEOPERACION", "TIPOOPERACION",
+  "SUBTIPOOPERACION", "OFICINA", "DAN", "IDGESTORIATRAMITE", "NOMBREGESTORIA",
+  "NOMBREDOCUMENTO", "IDGASTO", "CONCEPTOGASTO", "ESTADO", "ESTADOJUSTIFICANTE",
+  "FECHAADJUNTARFACTURA", "IMPGASTO", "IMPBASEIMPUESTO", "IMPBASERETENCION",
+  "IMPIMPUESTO", "FESTADO", "FPETICION", "FPAGO", "CTAORIGEN", "CTADESTINO",
+  "FFACTURA", "FORMAPAGO", "NUMFACTURA", "IDBENEFICIARIO", "BENEFICIARIO",
+  "NOMBREPAGADOR", "NIFPAGADOR"
+];
+
+function valorColumnaPostFirma(fila, columna) {
+  const original = fila.datos_absis || {};
+  const clave = Object.keys(original).find((k) => k.trim().toUpperCase() === columna);
+  let valor = clave ? original[clave] : undefined;
+  if (valor === undefined || valor === null || valor === "") {
+    const alternativas = {
+      IDEXPEDIENTE: fila.id_expediente,
+      TIPOOPERACION: fila.tipo_operacion,
+      CONCEPTOGASTO: fila.concepto_gasto,
+      ESTADO: fila.estado,
+      ESTADOJUSTIFICANTE: fila.estado_justificante,
+      FECHAADJUNTARFACTURA: fila.fecha_adjuntar_factura,
+      IMPGASTO: fila.imp_gasto,
+      IMPBASEIMPUESTO: fila.imp_base_impuesto,
+      IMPBASERETENCION: fila.imp_base_retencion,
+      IMPIMPUESTO: fila.imp_impuesto,
+      FESTADO: fila.fecha_estado,
+      FPETICION: fila.fecha_peticion,
+      FPAGO: fila.fecha_pago,
+      FFACTURA: fila.fecha_factura,
+      NUMFACTURA: fila.numero_factura,
+    };
+    valor = alternativas[columna];
+  }
+  if (valor === undefined || valor === null || valor === "") return "—";
+  if (typeof valor === "object") return JSON.stringify(valor);
+  return String(valor);
+}
+
 function InformeFacturacion() {
   const [filtros, setFiltros] = useState(() => ({ ...filtrosInformeIniciales(), fecha_desde: "", fecha_hasta: "", modalidad: "todas", estado: "", estado_justificante: "", situacion: "", tipo_operacion: "" }));
   const [aplicados, setAplicados] = useState(() => ({ ...filtrosInformeIniciales(), fecha_desde: "", fecha_hasta: "", modalidad: "todas", estado: "", estado_justificante: "", situacion: "", tipo_operacion: "" }));
@@ -3343,7 +3383,7 @@ function InformeFacturacion() {
       <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/80 shadow-[0_10px_35px_rgba(55,85,120,0.08)]">
         <div className="border-b border-slate-200 px-5 py-4"><h3 className="font-bold text-slate-800">Detalle de honorarios de gestoría</h3><p className="mt-1 text-xs text-slate-500">Se excluyen todos los conceptos de gasto distintos de HONORARIOS GESTORÍA.</p></div>
         <PanelEstadoInforme loading={loading} vacio={!loading && datos.items.length === 0} textoVacio="No hay gastos de HONORARIOS GESTORÍA para los filtros seleccionados. Si los datos aún no se han incorporado desde ABSIS, el informe permanecerá vacío." />
-        {!loading && datos.items.length > 0 && <div className="max-h-[65vh] overflow-auto"><table className="min-w-[1450px] w-full text-left text-xs"><thead className="sticky top-0 bg-slate-100 text-slate-600"><tr>{["Expediente","Clasificación","TIPOOPERACION","CONCEPTOGASTO","Situación","ESTADO","ESTADOJUSTIFICANTE","FECHAADJUNTARFACTURA","IMPGASTO","IMPBASEIMPUESTO","IMPBASERETENCION","IMPIMPUESTO","FESTADO","FPETICION","FPAGO"].map((h) => <th key={h} className="whitespace-nowrap px-3 py-3 font-bold">{h}</th>)}</tr></thead><tbody className="divide-y divide-slate-100">{datos.items.map((fila, i) => <tr key={`${fila.id_expediente}-${i}`} className="hover:bg-blue-50/50"><td className="whitespace-nowrap px-3 py-3 font-semibold text-blue-700">{fila.id_expediente}</td><td className="whitespace-nowrap px-3 py-3">{fila.tipo_cancelacion === "con_provision" ? "Cancelación con provisión" : fila.tipo_cancelacion === "sin_provision" ? "Cancelación sin provisión" : "Otros"}</td><td className="px-3 py-3">{fila.tipo_operacion || "—"}</td><td className="px-3 py-3 font-semibold">HONORARIOS GESTORÍA</td><td className="px-3 py-3">{fila.situacion_facturacion === "cobrado" ? "Cobrado" : fila.situacion_facturacion === "pendiente_cobro" ? "Pendiente de cobro" : fila.situacion_facturacion === "pendiente_factura" ? "Pendiente de factura" : "Incidencia"}</td><td className="px-3 py-3">{fila.estado || "—"}</td><td className="px-3 py-3">{fila.estado_justificante || "—"}</td><td className="whitespace-nowrap px-3 py-3">{fecha(fila.fecha_adjuntar_factura)}</td><td className="whitespace-nowrap px-3 py-3 text-right">{fila.imp_gasto == null ? "—" : euros(fila.imp_gasto)}</td><td className="whitespace-nowrap px-3 py-3 text-right">{fila.imp_base_impuesto == null ? "—" : euros(fila.imp_base_impuesto)}</td><td className="whitespace-nowrap px-3 py-3 text-right">{fila.imp_base_retencion == null ? "—" : euros(fila.imp_base_retencion)}</td><td className="whitespace-nowrap px-3 py-3 text-right">{fila.imp_impuesto == null ? "—" : euros(fila.imp_impuesto)}</td><td className="whitespace-nowrap px-3 py-3">{fecha(fila.fecha_estado)}</td><td className="whitespace-nowrap px-3 py-3">{fecha(fila.fecha_peticion)}</td><td className="whitespace-nowrap px-3 py-3">{fecha(fila.fecha_pago)}</td></tr>)}</tbody></table></div>}
+        {!loading && datos.items.length > 0 && <div className="max-h-[65vh] overflow-auto"><table className="min-w-[2600px] w-full text-left text-xs"><thead className="sticky top-0 bg-slate-100 text-slate-600"><tr>{COLUMNAS_POSTFIRMA.map((h) => <th key={h} className="whitespace-nowrap px-3 py-3 font-bold">{h}</th>)}</tr></thead><tbody className="divide-y divide-slate-100">{datos.items.map((fila, i) => <tr key={`${fila.id_expediente}-${i}`} className="hover:bg-blue-50/50">{COLUMNAS_POSTFIRMA.map((h) => <td key={h} className="whitespace-nowrap px-3 py-3">{valorColumnaPostFirma(fila, h)}</td>)}</tr>)}</tbody></table></div>}
       </section>
     </section>
   );
