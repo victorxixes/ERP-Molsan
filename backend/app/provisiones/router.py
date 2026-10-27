@@ -712,11 +712,11 @@ def _plantilla_pdf_provision(db: Session) -> dict:
         "pie_corporativo": "Documento emitido por ERP-Molsan.",
         "mostrar_aviso_legal": True, "mostrar_firma": True,
         "posiciones": {
-            "logo": {"x": 2, "y": 13, "w": 21, "h": 70},
-            "nombre_empresa": {"x": 26, "y": 16, "w": 70, "h": 24},
-            "cif": {"x": 26, "y": 43, "w": 30, "h": 15},
-            "direccion": {"x": 26, "y": 59, "w": 68, "h": 15},
-            "contacto": {"x": 26, "y": 75, "w": 68, "h": 15},
+            "logo": {"x": 2, "y": 12, "w": 23, "h": 74},
+            "nombre_empresa": {"x": 28, "y": 10, "w": 70, "h": 28},
+            "cif": {"x": 28, "y": 38, "w": 68, "h": 15},
+            "direccion": {"x": 28, "y": 53, "w": 68, "h": 18},
+            "contacto": {"x": 28, "y": 70, "w": 68, "h": 18},
         },
     }
     try:
@@ -731,7 +731,7 @@ def _plantilla_pdf_provision(db: Session) -> dict:
 
 class _CabeceraVisualProvision(Flowable):
     """Cabecera corporativa con posiciones editables en porcentajes del área A4."""
-    def __init__(self, plantilla: dict, ancho=176*mm, alto=34*mm):
+    def __init__(self, plantilla: dict, ancho=176*mm, alto=38*mm):
         super().__init__()
         self.plantilla = plantilla or {}
         self.width = ancho
@@ -755,11 +755,11 @@ class _CabeceraVisualProvision(Flowable):
     def draw(self):
         c = self.canv
         defaults = {
-            "logo": {"x": 2, "y": 13, "w": 21, "h": 70},
-            "nombre_empresa": {"x": 26, "y": 16, "w": 70, "h": 24},
-            "cif": {"x": 26, "y": 43, "w": 30, "h": 15},
-            "direccion": {"x": 26, "y": 59, "w": 68, "h": 15},
-            "contacto": {"x": 26, "y": 75, "w": 68, "h": 15},
+            "logo": {"x": 2, "y": 12, "w": 23, "h": 74},
+            "nombre_empresa": {"x": 28, "y": 10, "w": 70, "h": 28},
+            "cif": {"x": 28, "y": 38, "w": 68, "h": 15},
+            "direccion": {"x": 28, "y": 53, "w": 68, "h": 18},
+            "contacto": {"x": 28, "y": 70, "w": 68, "h": 18},
         }
         for clave in ("logo", "nombre_empresa", "cif", "direccion", "contacto"):
             p = self._pos(clave, defaults[clave])
@@ -1093,9 +1093,9 @@ def documento_provision_independiente(provision_id: int, db: Session = Depends(g
     styles = getSampleStyleSheet()
     styles.add(ParagraphStyle(name="TituloInd", parent=styles["Title"], fontName="Helvetica-Bold", fontSize=17, leading=21, textColor=colors.HexColor("#15325b"), spaceAfter=2*mm))
     styles.add(ParagraphStyle(name="TextoInd", parent=styles["Normal"], fontName="Helvetica", fontSize=8.5, leading=11))
-    styles.add(ParagraphStyle(name="EtiquetaInd", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=7.5, leading=9, textColor=colors.HexColor("#58677c")))
-    styles.add(ParagraphStyle(name="CeldaInd", parent=styles["Normal"], fontName="Helvetica", fontSize=7.2, leading=9))
-    styles.add(ParagraphStyle(name="CeldaIndBold", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=7.2, leading=9))
+    styles.add(ParagraphStyle(name="EtiquetaInd", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=8, leading=9.5, textColor=colors.HexColor("#58677c")))
+    styles.add(ParagraphStyle(name="CeldaInd", parent=styles["Normal"], fontName="Helvetica", fontSize=8, leading=10))
+    styles.add(ParagraphStyle(name="CeldaIndBold", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=8, leading=10))
     styles.add(ParagraphStyle(name="TotalInd", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=12, leading=15, alignment=TA_RIGHT, textColor=colors.HexColor("#15325b")))
     plantilla = _plantilla_pdf_provision(db)
     datos_corporativos = [plantilla.get("cif"), plantilla.get("direccion"), plantilla.get("contacto")]
@@ -1117,7 +1117,7 @@ def documento_provision_independiente(provision_id: int, db: Session = Depends(g
         [_p("Población", styles["EtiquetaInd"]), _p(cli.get("poblacion"), styles["CeldaInd"]), _p("Provincia", styles["EtiquetaInd"]), _p(cli.get("provincia"), styles["CeldaInd"])],
         [_p("Teléfono", styles["EtiquetaInd"]), _p(cli.get("telefono"), styles["CeldaInd"]), _p("Email", styles["EtiquetaInd"]), _p(cli.get("email"), styles["CeldaInd"])],
     ]
-    tabla_cliente = Table(cliente_rows, colWidths=[23*mm, 64*mm, 24*mm, 48*mm])
+    tabla_cliente = Table(cliente_rows, colWidths=[24*mm, 64*mm, 25*mm, 63*mm], hAlign="LEFT")
     tabla_cliente.setStyle(TableStyle([
         ("GRID", (0,0), (-1,-1), 0.35, colors.HexColor("#d5deea")),
         ("BACKGROUND", (0,0), (0,-1), colors.HexColor("#f3f6fa")),
@@ -1135,7 +1135,7 @@ def documento_provision_independiente(provision_id: int, db: Session = Depends(g
         [_p("DAN", styles["EtiquetaInd"]), _p(off.get("dan"), styles["CeldaInd"]), _p("DT", styles["EtiquetaInd"]), _p(off.get("dt"), styles["CeldaInd"])],
         [_p("Contacto", styles["EtiquetaInd"]), _p(off.get("contacto"), styles["CeldaInd"]), _p("Email", styles["EtiquetaInd"]), _p(off.get("email"), styles["CeldaInd"])],
     ]
-    tabla_oficina = Table(oficina_rows, colWidths=[23*mm, 64*mm, 24*mm, 48*mm])
+    tabla_oficina = Table(oficina_rows, colWidths=[24*mm, 64*mm, 25*mm, 63*mm], hAlign="LEFT")
     tabla_oficina.setStyle(TableStyle([
         ("GRID", (0,0), (-1,-1), 0.35, colors.HexColor("#d5deea")),
         ("BACKGROUND", (0,0), (0,-1), colors.HexColor("#f3f6fa")),
@@ -1157,13 +1157,13 @@ def documento_provision_independiente(provision_id: int, db: Session = Depends(g
             _p(_euros(g.get("gestion", 0)), styles["CeldaInd"]),
             _p(_euros(g.get("total", 0)), styles["CeldaIndBold"]),
         ])
-    tabla = Table(rows, colWidths=[39*mm, 24*mm, 20*mm, 17*mm, 21*mm, 21*mm, 27*mm], repeatRows=1, hAlign="LEFT")
+    tabla = Table(rows, colWidths=[40*mm, 24*mm, 22*mm, 20*mm, 22*mm, 22*mm, 26*mm], repeatRows=1, hAlign="LEFT")
     tabla.setStyle(TableStyle([
         ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#eaf0f8")),
         ("GRID", (0,0), (-1,-1), 0.4, colors.HexColor("#cdd6e2")),
         ("VALIGN", (0,0), (-1,-1), "TOP"), ("ALIGN", (1,1), (-1,-1), "RIGHT"),
-        ("LEFTPADDING", (0,0), (-1,-1), 4), ("RIGHTPADDING", (0,0), (-1,-1), 4),
-        ("TOPPADDING", (0,0), (-1,-1), 6), ("BOTTOMPADDING", (0,0), (-1,-1), 6),
+        ("LEFTPADDING", (0,0), (-1,-1), 5), ("RIGHTPADDING", (0,0), (-1,-1), 5),
+        ("TOPPADDING", (0,0), (-1,-1), 7), ("BOTTOMPADDING", (0,0), (-1,-1), 7),
     ]))
     story.extend([tabla, Spacer(1, 5*mm), Paragraph(f"IMPORTE TOTAL ESTIMADO: {_euros(item.importe_total)}", styles["TotalInd"])])
     if data.get("observaciones"):
