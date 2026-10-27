@@ -184,16 +184,11 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
         gasto.fecha_estado = fecha_estado
         gasto.fecha_peticion = fecha_peticion
         gasto.fecha_pago = fecha_pago
-        gasto.pagad or None
-        gasto.pagad or None
-        gasto.pagad or None
-        gasto.pagad or None
         gasto.pagador = _texto(val("NOMBREPAGADOR"))
         gasto.nif_notario = None
         gasto.medio_pago = _texto(val("FORMAPAGO"))
         gasto.cuenta_bancaria = _texto(val("CTAORIGEN"))
         gasto.datos_absis_json = json.dumps(original, ensure_ascii=False, default=str)
-        gasto.estado_pago = "Pagado" if fecha_pago else (gasto.estado_pago or "Pendiente")
 
         if es_nuevo:
             creados += 1
