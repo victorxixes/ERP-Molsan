@@ -1429,7 +1429,7 @@ export default function FichaExpediente() {
   const [controlExpediente, setControlExpediente] = useState({ liquidado_sin_tramitar:false, fecha_liquidacion_sin_tramitar:"", cambio_gestoria:false, fecha_cambio_gestoria:"", bloqueo_manual:false, motivo_bloqueo:"", fecha_bloqueo:new Date().toLocaleDateString("sv-SE") });
   const [mensajeActividad, setMensajeActividad] = useState("");
   const [estadoDocumentacionAbsis, setEstadoDocumentacionAbsis] = useState({
-    certificado_saldo_cero_erroneo: true,
+    certificado_saldo_cero_erroneo: false,
     solicitud_cancelacion_notarial: false,
     certificado_cancelacion_administrativo: false,
     nota_simple_registral: false,
@@ -2475,7 +2475,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
           // Si nunca se ha guardado el estado, el selector empieza en NO.
           certificado_saldo_cero_erroneo: res?.data?.fecha_actualizacion
             ? Boolean(res.data.certificado_saldo_cero_erroneo)
-            : true,
+            : false,
         })))
         .catch(() => {})
         .finally(() => setCargandoEstadoAbsis(false));
@@ -2597,11 +2597,6 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       if (Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)) {
         campos[campo.key] = actividadDraft[campo.key] ?? "";
       }
-    }
-    // La fecha de envío a notario también se puede corregir desde el bloque
-    // de integración de Documentación previa.
-    if (actividadSeleccionada === "documentacion-previa" && Object.prototype.hasOwnProperty.call(actividadDraft, "fecha_envio_notario")) {
-      campos.fecha_envio_notario = actividadDraft.fecha_envio_notario ?? "";
     }
     if (actividadSeleccionada === "sede-notarial") {
       for (const key of ["fecha_envio_notario", "nombre_notario", "nif_notario"]) {
@@ -2857,15 +2852,9 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         campos[campo.key] = actividadDraft[campo.key] ?? "";
       }
     }
-    if (actividadSeleccionada === "documentacion-previa") {
-      // Estos campos se editan en el bloque de integración y también deben
-      // persistirse con el botón general del modal.
-      for (const key of ["fecha_envio_notario"]) {
-        campos[key] = Object.prototype.hasOwnProperty.call(actividadDraft, key)
-          ? (actividadDraft[key] ?? "")
-          : (expediente?.[key] ?? "");
-      }
-    }
+    // En Documentación previa la fecha de envío no se edita aquí:
+    // es un dato único, enlazado y mantenido por el modal «Enviar a notario».
+    // No incluir fecha_envio_notario en este guardado evita sobrescribirla.
     if (actividadSeleccionada === "sede-notarial") {
       // Sede notarial no tiene campos en CAMPOS_ACTIVIDADES: sus datos
       // editables viven en el bloque de integración del modal.
@@ -8495,8 +8484,11 @@ const cuantiaFincasParaEnvio =
               <>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <label className="block rounded-lg border border-slate-200 bg-white p-3">
-                  <span className="block text-xs font-bold text-slate-600">Fecha de envío a notario</span>
-                  <input type="date" value={Object.prototype.hasOwnProperty.call(actividadDraft, "fecha_envio_notario") ? String(actividadDraft.fecha_envio_notario ?? "").slice(0, 10) : String(expediente?.fecha_envio_notario || expediente?.fecha_envio || "").slice(0, 10)} onChange={(event) => setActividadDraft((actual) => ({ ...actual, fecha_envio_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
+                  <span className="block text-xs font-bold text-slate-600">Certificado Saldo "0" erróneo SI/NO</span>
+                  <select value={estadoDocumentacionAbsis.certificado_saldo_cero_erroneo ? "si" : "no"} onChange={(event) => setEstadoDocumentacionAbsis((actual) => ({ ...actual, certificado_saldo_cero_erroneo: event.target.value === "si" }))} disabled={guardandoActividad || cargandoEstadoAbsis || registrandoSolicitudIntegracion || expedienteBloqueado} className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800">
+                    <option value="no">NO</option>
+                    <option value="si">SÍ</option>
+                  </select>
                 </label>
                 <label className="block rounded-lg border border-slate-200 bg-white p-3">
                   <span className="block text-xs font-bold text-slate-600">Notario</span>
