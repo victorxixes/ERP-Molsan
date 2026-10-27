@@ -994,6 +994,55 @@ def inicializar_tablas_auxiliares():
         MunicipioCodigoPostal.__table__.create(bind=engine, checkfirst=True)
         print("[MUNICIPIOS] Tabla de códigos postales disponible.", flush=True)
 
+        # Campos del defecto registral solicitados por el cliente.
+        # Migración idempotente: conserva todos los defectos ya registrados.
+        with engine.begin() as conexion_defectos_absis:
+            conexion_defectos_absis.execute(text("""
+                ALTER TABLE IF EXISTS public.expediente_defectos
+                ADD COLUMN IF NOT EXISTS fecha_calificacion DATE
+            """))
+            conexion_defectos_absis.execute(text("""
+                ALTER TABLE IF EXISTS public.expediente_defectos
+                ADD COLUMN IF NOT EXISTS fecha_renovacion_asiento DATE
+            """))
+            conexion_defectos_absis.execute(text("""
+                ALTER TABLE IF EXISTS public.expediente_defectos
+                ADD COLUMN IF NOT EXISTS asiento_renovacion_libro_diario VARCHAR(200)
+            """))
+            conexion_defectos_absis.execute(text("""
+                ALTER TABLE IF EXISTS public.expediente_defectos
+                ADD COLUMN IF NOT EXISTS vencimiento_asiento_renovacion DATE
+            """))
+            conexion_defectos_absis.execute(text("""
+                ALTER TABLE IF EXISTS public.expediente_defectos
+                ADD COLUMN IF NOT EXISTS anotacion_suspensiva BOOLEAN
+            """))
+            conexion_defectos_absis.execute(text("""
+                ALTER TABLE IF EXISTS public.expediente_defectos
+                ADD COLUMN IF NOT EXISTS vencimiento_anotacion DATE
+            """))
+            conexion_defectos_absis.execute(text("""
+                ALTER TABLE IF EXISTS public.expediente_defectos
+                ADD COLUMN IF NOT EXISTS calificacion_sustitutoria BOOLEAN
+            """))
+            conexion_defectos_absis.execute(text("""
+                ALTER TABLE IF EXISTS public.expediente_defectos
+                ADD COLUMN IF NOT EXISTS recurso_gubernativo BOOLEAN
+            """))
+            conexion_defectos_absis.execute(text("""
+                ALTER TABLE IF EXISTS public.expediente_defectos
+                ADD COLUMN IF NOT EXISTS estado_envio_absis VARCHAR(30) NOT NULL DEFAULT 'Pendiente'
+            """))
+            conexion_defectos_absis.execute(text("""
+                ALTER TABLE IF EXISTS public.expediente_defectos
+                ADD COLUMN IF NOT EXISTS enviado_absis_en TIMESTAMP WITH TIME ZONE
+            """))
+            conexion_defectos_absis.execute(text("""
+                ALTER TABLE IF EXISTS public.expediente_defectos
+                ADD COLUMN IF NOT EXISTS respuesta_absis TEXT
+            """))
+        print("[DEFECTOS REGISTRALES] Campos de cliente y trazabilidad ABSIS comprobados.", flush=True)
+
         # Catálogo configurable de importes estimativos de Provisiones.
         from backend.app.provisiones.models import ConceptoImporteProvision
         ConceptoImporteProvision.__table__.create(bind=engine, checkfirst=True)

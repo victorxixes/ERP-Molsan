@@ -169,6 +169,21 @@ class ExpedienteDefecto(Base):
         nullable=True,
     )
 
+    # Campos adicionales solicitados por el cliente para ABSIS.
+    fecha_calificacion = Column(Date, nullable=True)
+    fecha_renovacion_asiento = Column(Date, nullable=True)
+    asiento_renovacion_libro_diario = Column(String(200), nullable=True)
+    vencimiento_asiento_renovacion = Column(Date, nullable=True)
+    anotacion_suspensiva = Column(Boolean, nullable=True)
+    vencimiento_anotacion = Column(Date, nullable=True)
+    calificacion_sustitutoria = Column(Boolean, nullable=True)
+    recurso_gubernativo = Column(Boolean, nullable=True)
+
+    # Trazabilidad preparada para la futura integración con ABSIS.
+    estado_envio_absis = Column(String(30), nullable=False, default="Pendiente", server_default="Pendiente")
+    enviado_absis_en = Column(DateTime(timezone=True), nullable=True)
+    respuesta_absis = Column(Text, nullable=True)
+
     fecha_vencimiento_presentacion = Column(
         Date,
         nullable=True,
