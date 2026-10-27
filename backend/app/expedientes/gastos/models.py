@@ -71,6 +71,18 @@ class ExpedienteGasto(Base):
     documento_carpeta_id = Column(Integer, nullable=True)
     estado_pago = Column(String(50), nullable=True, default="Pendiente")
 
+    # Campos ABSIS para el informe de facturación. Opcionales y sin alterar datos históricos.
+    estado_absis = Column(String(100), nullable=True)
+    estado_justificante = Column(String(100), nullable=True)
+    fecha_adjuntar_factura = Column(Date, nullable=True)
+    imp_gasto = Column(Numeric(12, 2), nullable=True)
+    imp_base_impuesto = Column(Numeric(12, 2), nullable=True)
+    imp_base_retencion = Column(Numeric(12, 2), nullable=True)
+    imp_impuesto = Column(Numeric(12, 2), nullable=True)
+    fecha_estado = Column(Date, nullable=True)
+    fecha_peticion = Column(Date, nullable=True)
+    fecha_pago = Column(Date, nullable=True)
+
     @property
     def numero_documento(self):
         """Número estable del documento económico derivado de la PK no reutilizable."""
