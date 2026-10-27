@@ -1407,6 +1407,7 @@ export default function FichaExpediente() {
   const [guardandoActividad, setGuardandoActividad] = useState(false);
   const [errorActividad, setErrorActividad] = useState("");
   const [mostrarControlExpediente, setMostrarControlExpediente] = useState(false);
+  const [mostrarAvisoBloqueoExpediente, setMostrarAvisoBloqueoExpediente] = useState(false);
   const [guardandoControlExpediente, setGuardandoControlExpediente] = useState(false);
   const [errorControlExpediente, setErrorControlExpediente] = useState("");
   const [controlExpediente, setControlExpediente] = useState({ liquidado_sin_tramitar:false, fecha_liquidacion_sin_tramitar:"", cambio_gestoria:false, fecha_cambio_gestoria:"", bloqueo_manual:false, motivo_bloqueo:"", fecha_bloqueo:new Date().toLocaleDateString("sv-SE") });
@@ -2387,6 +2388,10 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
   const estadoLegadoBloqueante = ["LST","RST"].some((codigo) => String(expediente?.estado_expediente || "").trim().toUpperCase().startsWith(codigo));
   const motivoBloqueoExpediente = String(expediente?.estado_expediente || "").trim().toUpperCase().startsWith("LST") ? "LIQUIDADO SIN TRAMITAR" : String(expediente?.estado_expediente || "").trim().toUpperCase()==="RST" ? "RETENCIÓN SIN TRAMITAR" : expediente?.liquidado_sin_tramitar ? "LIQUIDADO SIN TRAMITAR" : expediente?.cambio_gestoria ? "CAMBIO DE GESTORÍA" : expediente?.bloqueo_manual ? (expediente?.motivo_bloqueo || "BLOQUEO MANUAL") : "";
   const expedienteBloqueado = Boolean(motivoBloqueoExpediente);
+  const esRetencionSinTramitar = String(expediente?.estado_expediente || "").trim().toUpperCase() === "RST";
+  useEffect(() => {
+    setMostrarAvisoBloqueoExpediente(Boolean(expedienteBloqueado && !esRetencionSinTramitar));
+  }, [id, expedienteBloqueado, esRetencionSinTramitar, motivoBloqueoExpediente]);
   function abrirControlExpediente() {
     setControlExpediente({ liquidado_sin_tramitar:Boolean(expediente?.liquidado_sin_tramitar)||String(expediente?.estado_expediente||"").trim().toUpperCase().startsWith("LST"), fecha_liquidacion_sin_tramitar:String(expediente?.fecha_liquidacion_sin_tramitar||"").slice(0,10), cambio_gestoria:Boolean(expediente?.cambio_gestoria), fecha_cambio_gestoria:String(expediente?.fecha_cambio_gestoria||"").slice(0,10), bloqueo_manual:Boolean(expediente?.bloqueo_manual), motivo_bloqueo:expediente?.motivo_bloqueo||"", fecha_bloqueo:String(expediente?.fecha_bloqueo||new Date().toLocaleDateString("sv-SE")).slice(0,10) });
     setErrorControlExpediente(""); setMostrarControlExpediente(true);
@@ -6366,7 +6371,7 @@ const cuantiaFincasParaEnvio =
           <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-8">
         {/* ENVÍO A NOTARIO: CENTRADO DEBAJO DE PPAD E INFORMACIÓN CREDITICIA */}
         <div className="min-w-0 w-full xl:col-span-8">
-          {expedienteBloqueado && <section role="alert" className="mx-auto mb-4 w-full rounded-2xl border-2 border-red-300 bg-red-50 px-5 py-4 shadow-sm"><p className="text-xs font-black uppercase text-red-700">⛔ Expediente bloqueado</p><h2 className="mt-1 text-base font-extrabold text-red-900">{motivoBloqueoExpediente}</h2>{(String(expediente?.estado_expediente||"").trim().toUpperCase()==="LST"||expediente?.liquidado_sin_tramitar)&&<p className="mt-1 text-sm text-red-800">Liquidación sin tramitar · fecha: {formatearFecha(expediente?.fecha_liquidacion_sin_tramitar)}</p>}{expediente?.cambio_gestoria&&<p className="mt-1 text-sm text-red-800">Cambio de gestoría · fecha: {formatearFecha(expediente?.fecha_cambio_gestoria)}</p>}{String(expediente?.estado_expediente||"").trim().toUpperCase().startsWith("RST")&&<p className="mt-1 text-sm text-red-800">Estado RST: retención sin tramitar.</p>}{expediente?.bloqueo_manual&&<p className="mt-1 text-sm text-red-800">Motivo: {valorVisible(expediente?.motivo_bloqueo)} · fecha: {formatearFecha(expediente?.fecha_bloqueo)}</p>}<p className="mt-2 text-xs font-semibold text-red-700">Las actividades no se pueden modificar ni avanzar mientras esté bloqueado.</p><button type="button" onClick={abrirControlExpediente} className="mt-2 rounded-lg border border-red-300 bg-white px-3 py-2 text-xs font-bold text-red-800">Gestionar bloqueo</button></section>}
+          {expedienteBloqueado && esRetencionSinTramitar && <section role="alert" className="mx-auto mb-4 w-full rounded-2xl border-2 border-red-300 bg-red-50 px-5 py-4 shadow-sm"><p className="text-xs font-black uppercase text-red-700">⛔ Expediente bloqueado</p><h2 className="mt-1 text-base font-extrabold text-red-900">RETENCIÓN SIN TRAMITAR</h2><p className="mt-1 text-sm text-red-800">Estado RST: retención sin tramitar.</p><p className="mt-2 text-xs font-semibold text-red-700">Las actividades no se pueden modificar ni avanzar mientras esté bloqueado.</p><button type="button" onClick={abrirControlExpediente} className="mt-2 rounded-lg border border-red-300 bg-white px-3 py-2 text-xs font-bold text-red-800">Gestionar bloqueo</button></section>}
           <div className="flex w-full min-w-0 justify-center">
           {/* =====================================================
               FICHA COMPLETA DE ENVÍO A NOTARIO
@@ -6828,6 +6833,37 @@ const cuantiaFincasParaEnvio =
         </div>
       </Modal>
 
+
+      {/* AVISO CENTRAL DE BLOQUEO: no se muestra para RETENCIÓN SIN TRAMITAR (RST). */}
+      <Modal
+        open={mostrarAvisoBloqueoExpediente}
+        onClose={() => setMostrarAvisoBloqueoExpediente(false)}
+        titulo="⛔ AVISO DE BLOQUEO DEL EXPEDIENTE"
+        subtitulo={`Expediente ${valorVisible(expediente?.id_expediente)}`}
+        ancho="max-w-[620px]"
+        footer={
+          <div className="flex flex-wrap justify-center gap-3">
+            <Boton onClick={() => setMostrarAvisoBloqueoExpediente(false)}>Entendido</Boton>
+            <Boton tipo="primary" onClick={() => { setMostrarAvisoBloqueoExpediente(false); abrirControlExpediente(); }}>🔐 Gestionar bloqueo</Boton>
+          </div>
+        }
+      >
+        <div role="alert" className="rounded-2xl border-2 border-red-300 bg-red-50 p-5 text-center shadow-inner sm:p-7">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-red-200 bg-white text-4xl shadow-sm">⛔</div>
+          <p className="mt-4 text-xs font-black uppercase tracking-[0.18em] text-red-700">Expediente bloqueado</p>
+          <h2 className="mt-2 text-xl font-black text-red-900 sm:text-2xl">{motivoBloqueoExpediente}</h2>
+          {(String(expediente?.estado_expediente || "").trim().toUpperCase().startsWith("LST") || expediente?.liquidado_sin_tramitar) && (
+            <p className="mt-3 text-sm font-semibold text-red-800">Liquidación sin tramitar · fecha: {formatearFecha(expediente?.fecha_liquidacion_sin_tramitar)}</p>
+          )}
+          {expediente?.cambio_gestoria && (
+            <p className="mt-2 text-sm font-semibold text-red-800">Cambio de gestoría · fecha: {formatearFecha(expediente?.fecha_cambio_gestoria)}</p>
+          )}
+          {expediente?.bloqueo_manual && (
+            <p className="mt-2 text-sm font-semibold text-red-800">Motivo: {valorVisible(expediente?.motivo_bloqueo)} · fecha: {formatearFecha(expediente?.fecha_bloqueo)}</p>
+          )}
+          <p className="mt-4 rounded-xl border border-red-200 bg-white/80 px-4 py-3 text-sm font-bold text-red-800">Las actividades no se pueden modificar ni avanzar mientras el expediente siga bloqueado.</p>
+        </div>
+      </Modal>
 
       {/* CONTROL DE BLOQUEO */}
       <Modal open={mostrarControlExpediente} onClose={()=>!guardandoControlExpediente&&setMostrarControlExpediente(false)} titulo="🔐 Control del expediente" subtitulo={`Expediente ${valorVisible(expediente?.id_expediente)}`} ancho="max-w-[760px]" footer={<div className="flex justify-end gap-2"><Boton onClick={()=>setMostrarControlExpediente(false)} disabled={guardandoControlExpediente}>Cancelar</Boton><Boton tipo="primary" onClick={guardarControlExpediente} disabled={guardandoControlExpediente}>{guardandoControlExpediente?"Guardando…":"💾 Guardar control"}</Boton></div>}>
