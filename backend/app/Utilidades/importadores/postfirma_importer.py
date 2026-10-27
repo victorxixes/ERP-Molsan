@@ -432,6 +432,7 @@ def validar_postfirma(
             ids_vacios += 1
         else:
             ids_gasto.append(id_gasto.casefold())
+            ids_gasto.append(id_gasto.casefold())
             claves_gasto.append((id_gasto.casefold(), (tipo_concepto or "").casefold()))
 
         numero_exp = _texto(celda(row, "IDEXPEDIENTE"))
