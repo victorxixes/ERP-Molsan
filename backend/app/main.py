@@ -163,6 +163,7 @@ def servir_fotografia_empleado(
 # ============================================================
 
 from backend.app.informes.sla_router import router as informes_sla_router
+from backend.app.informes.facturacion_router import router as informes_facturacion_router
 
 from backend.app.auth.router import router as auth_router
 
@@ -468,6 +469,7 @@ app.include_router(complementos_saldo_router, prefix="/api")
 app.include_router(proceso_absis_router, prefix="/api")
 app.include_router(informes_router, prefix="/api")
 app.include_router(informes_firmas_notarios_router, prefix="/api")
+app.include_router(informes_facturacion_router, prefix="/api")
 app.include_router(informes_sla_router, prefix="/api")
 app.include_router(router_absis, prefix="/api")
 
