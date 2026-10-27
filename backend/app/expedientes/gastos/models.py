@@ -5,6 +5,7 @@ from sqlalchemy import (
     Integer,
     Numeric,
     String,
+    Text,
 )
 from backend.app.database import Base
 
@@ -82,6 +83,14 @@ class ExpedienteGasto(Base):
     fecha_estado = Column(Date, nullable=True)
     fecha_peticion = Column(Date, nullable=True)
     fecha_pago = Column(Date, nullable=True)
+
+    # Identidad y trazabilidad del histórico ABSIS Post Firma.
+    # No se impone UNIQUE hasta auditar posibles duplicados históricos en producción.
+    id_gasto_absis = Column(String(100), nullable=True, index=True)
+    id_expediente_absis = Column(String(100), nullable=True, index=True)
+    tipo_operacion_absis = Column(String(300), nullable=True)
+    concepto_gasto_absis = Column(String(300), nullable=True)
+    datos_absis_json = Column(Text, nullable=True)
 
     @property
     def numero_documento(self):
