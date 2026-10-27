@@ -693,7 +693,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
             <div className="mb-4 flex items-center justify-between"><h3 className="text-sm font-bold text-slate-800">Garantía {i + 1}</h3>{form.garantias.length > 1 && <button type="button" onClick={() => setForm((f) => ({ ...f, garantias: f.garantias.filter((_, n) => n !== i) }))} className="text-xs font-semibold text-red-600 hover:text-red-800">Eliminar</button>}</div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <Campo titulo="Entidad bancaria" valor={g.entidad} onChange={(v) => cambiarGarantia(i, "entidad", v)} requerido listId="catalogo-entidades-bancarias" placeholder="Escribe para buscar una entidad…" />
-              <Campo titulo="Capital del préstamo (€)" tipo="number" valor={g.capital} onChange={(v) => cambiarGarantia(i, "capital", v)} />
+              <Campo titulo="Capital del préstamo (€)" tipo="number" valor={g.capital} onChange={(v) => cambiarGarantia(i, "capital", v)} requerido />
               <Campo titulo="N.º finca registral" valor={g.finca} onChange={(v) => cambiarGarantia(i, "finca", v)} />
               <Campo titulo="CRU / IDUFIR" valor={g.cru_idufir} onChange={(v) => cambiarGarantia(i, "cru_idufir", v)} />
               <AutocompleteCatalogo titulo="Registro de la Propiedad" valor={g.registro_propiedad} opciones={catalogoRegistros} etiqueta={(r) => r.registro_propiedad} detalle={(r) => [r.poblacion, r.provincia].filter(Boolean).join(" · ")} placeholder="Busca un registro…" onChange={(v) => cambiarGarantia(i, "registro_propiedad", v)} onSelect={(r) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, registro_propiedad: r.registro_propiedad, poblacion: r.poblacion || x.poblacion, provincia: r.provincia || x.provincia } : x) }))} />
@@ -702,14 +702,14 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
                 return { ...x, poblacion: m.municipio, provincia: m.provincia };
               }) }))} />
               <AutocompleteCatalogo titulo="Provincia" valor={g.provincia} opciones={[...new Set(catalogoMunicipios.map((m) => m.provincia).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"))} etiqueta={(p) => p} placeholder="Busca una provincia…" onChange={(v) => cambiarGarantia(i, "provincia", v)} onSelect={(p) => cambiarGarantia(i, "provincia", p)} />
-              <Selector titulo="Tipo de carga" valor={g.tipo_carga} onChange={(v) => cambiarGarantia(i, "tipo_carga", v)} opciones={tiposCarga} requerido />
-              <Selector titulo="¿Es una condición resolutoria?" valor={g.condicion_resolutoria || (normalizarCatalogo(g.tipo_carga).includes("condicion resolutoria") ? "si" : "no")} onChange={(v) => cambiarGarantia(i, "condicion_resolutoria", v)} opciones={[{ nombre: "no" }, { nombre: "si" }]} requerido />
+              <Selector titulo="Tipo de carga" valor={g.tipo_carga} onChange={(v) => cambiarGarantia(i, "tipo_carga", v)} opciones={tiposCarga} />
+              <Selector titulo="¿Es una condición resolutoria?" valor={g.condicion_resolutoria || (normalizarCatalogo(g.tipo_carga).includes("condicion resolutoria") ? "si" : "no")} onChange={(v) => cambiarGarantia(i, "condicion_resolutoria", v)} opciones={[{ nombre: "no" }, { nombre: "si" }]} />
               {normalizarCatalogo(g.tipo_carga).includes("hipotec") && <label className={label}>¿La hipoteca se constituyó para adquirir la vivienda habitual?
                 <select className={input} value={g.adquisicion_vivienda_habitual ?? ""} onChange={(e) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => {
                   if (n !== i) return x;
                   const respuesta = e.target.value;
                   return { ...x, adquisicion_vivienda_habitual: respuesta };
-                }) }))} required>
+                }) }))}>
                 <option value="">Selecciona una respuesta…</option><option value="si">Sí, para adquirir la vivienda habitual</option><option value="no">No, para otra finalidad</option>
               </select>
               </label>}
