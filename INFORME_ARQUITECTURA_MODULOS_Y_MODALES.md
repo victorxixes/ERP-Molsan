@@ -249,20 +249,34 @@ Archivos identificados:
 - [ ] Probar accesos denegados directamente en API y URL.
 
 ## 7.3 Fichaje Molsan y administrador de fichajes
-Archivos identificados:
-- `pages/fichajes/Fichajes.jsx`
-- `FichajesResumen.jsx`
-- `SolicitudesAusencia.jsx`
-- `ControlFichajesAdmin.jsx`
-- `DocumentosAdmin.jsx`
-- `FestivosCompensaciones.jsx`
 
-- [ ] Inventariar formularios/diálogos de entrada, salida, pausas, ausencias, vacaciones y permisos.
-- [ ] Inventariar diálogos de aprobación/rechazo, incidencias, documentos justificativos y compensaciones.
-- [ ] Comprobar calendario mensual y navegación entre meses/años.
-- [ ] Comprobar historial y filtros de marcajes.
-- [ ] Verificar que los documentos justificativos tienen tipo, fecha, fichero e historial.
-- [ ] Probar separación entre área de empleado y administrador.
+**Archivos identificados**
+- `pages/fichajes/Fichajes.jsx`
+- `pages/fichajes/FichajesResumen.jsx`
+- `pages/fichajes/SolicitudesAusencia.jsx`
+- `pages/fichajes/ControlFichajesAdmin.jsx`
+- `pages/fichajes/DocumentosAdmin.jsx`
+- `pages/fichajes/FestivosCompensaciones.jsx`
+- Backend: `backend/app/fichajes/router.py`
+- Validación automática: `.github/workflows/validar-fichajes.yml`
+
+**Estado técnico a 27 de octubre de 2026**
+- [x] Revisión de código y correcciones integradas en `main` mediante el PR #306 (`f8c9c9db251572c58e458e59dd945c18ecdc6a5e`): resumen anual de horas, ajustes de cálculo horario, límites de periodos cerrados, validaciones de solapamientos y separación de permisos personales/administrativos.
+- [x] Protección de solicitudes de vacaciones y ausencias frente a fechas invertidas, rangos excesivos y solapamientos con otras solicitudes pendientes o aprobadas, incluidos conflictos con compensaciones.
+- [x] Validaciones administrativas para aprobar vacaciones según saldo asignado y para resolver solicitudes una sola vez.
+- [x] Revisión de seguridad de los registros de acceso WebSocket: PR #307 (`a33f29982e86a7682a8975eaa5afa7e9cb862a9b`) desactiva el access log de Uvicorn para evitar que las URL de conexión expongan el token de autenticación. Despliegue de backend confirmado como Live en Render.
+- [x] Workflow de GitHub para compilar el frontend y comprobar la compilación/sintaxis del backend; la ejecución anterior terminó correctamente.
+- [ ] **Prueba funcional real pendiente:** secuencia completa entrada → pausa → retorno → salida, incluyendo intentos inválidos (entrada duplicada, salida sin entrada, pausa duplicada o retorno sin pausa abierta).
+- [ ] **Prueba funcional real pendiente:** cálculo de horas trabajadas y pausas, jornada sin cerrar, turnos que cruzan medianoche, cambio horario y límites de mes/año.
+- [ ] **Prueba funcional real pendiente:** solicitar, aprobar y rechazar vacaciones; verificar saldo asignado, días comprometidos, solicitudes pendientes y conflictos de fechas.
+- [ ] **Prueba funcional real pendiente:** solicitar y resolver ausencias; comprobar solapamientos entre vacaciones, ausencias y compensaciones.
+- [ ] **Prueba funcional real pendiente:** subida, consulta y descarga de justificantes; tipo, fecha, historial y revisión administrativa.
+- [ ] **Prueba funcional real pendiente:** aislamiento de datos entre empleados, acceso directo a URL/API y permisos separados de Fichaje Molsan y Control de Fichajes.
+- [ ] **Prueba funcional real pendiente:** calendario mensual y navegación por meses/años, filtros, resumen anual, festivos, compensaciones, cierres de periodo y auditoría de correcciones administrativas.
+- [ ] **Comprobación de entorno pendiente:** realizar estas pruebas en Render con cuentas de prueba de empleado y administrador y comprobar los registros recientes. La compilación correcta no sustituye estas pruebas.
+
+**Criterio de cierre:** el módulo se considerará validado cuando las pruebas anteriores se ejecuten en el entorno desplegado y sus resultados queden registrados. Hasta entonces, el estado correcto es **corregido en código; pendiente de pruebas funcionales**, no “validado”.
+
 
 ---
 
