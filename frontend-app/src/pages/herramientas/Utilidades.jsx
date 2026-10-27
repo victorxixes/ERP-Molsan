@@ -35,7 +35,7 @@ export default function Utilidades() {
       <Grupo titulo="Importaciones y datos" descripcion="Carga información desde los ficheros de trabajo autorizados.">
         <Card icon="📥" titulo="Importar CTN" descripcion="Importar un Excel con información de notarías." link="/herramientas/importar-ctn" />
         <Card icon="📦" titulo="Importador ABSIS" descripcion="Importar expedientes desde el Excel matriz ABSIS." etapa="Carga Pre firma" link="/herramientas/importador-absis" destacado />
-        <Card icon="📦" titulo="Importador ABSIS" descripcion="Importar expedientes desde el Excel matriz ABSIS." etapa="Post Firma" link="/herramientas/importador-absis" destacado />
+        <Card icon="📦" titulo="Importador ABSIS" descripcion="Importación Post Firma: formato Excel pendiente de revisión técnica." etapa="Post Firma" link="/herramientas/importador-absis" destacado aviso="El Excel de Post Firma incluye provisiones, gastos y datos de facturación. La integración completa está pendiente de revisión por el informático. Por ahora, no se importan ni se registran estos datos económicos." />
       </Grupo>
 
       <Grupo titulo="Integraciones y comunicaciones" descripcion="Seguimiento de los procesos de intercambio de información con los sistemas de nuestros clientes.">
@@ -115,6 +115,7 @@ function Card({
   destacado = false,
   enConstruccion = false,
   etapa = null,
+  aviso = null,
   onClick,
 }) {
   const contenido = (
@@ -139,6 +140,7 @@ function Card({
           </div>
           <p className="mt-1.5 text-sm leading-5 text-slate-500">{descripcion}</p>
           {etapa && <p className="mt-3 inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-700">{etapa}</p>}
+          {aviso && <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs leading-5 text-amber-900"><p className="font-bold">⚠️ Pendiente de revisión técnica</p><p className="mt-1">{aviso}</p></div>}
           {enConstruccion && (
             <p className="mt-3 text-xs font-medium text-amber-700">
               Próximamente: registro de envíos, respuestas y cambios de estado vía API.
