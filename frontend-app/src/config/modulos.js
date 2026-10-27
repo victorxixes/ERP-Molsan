@@ -62,7 +62,7 @@ const MODULOS_ERP = [
     key: "control-fichajes",
     label: "Gestión de fichajes",
     route: "/control-fichajes",
-    permiso: "fichajes",
+    permiso: "control-fichajes",
     icon: "clock",
   },
 
