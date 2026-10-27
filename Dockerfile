@@ -16,6 +16,10 @@ ENV PYTHONDONTWRITEBYTECODE=1
 
 COPY backend /app/backend
 
+# Incluir el logo corporativo en la imagen del backend para los PDF.
+RUN mkdir -p /app/backend/app/static/img
+COPY frontend-app/public/img/logo.jpg /app/backend/app/static/img/logo.jpg
+
 
 # ============================================================
 # INSTALAR DEPENDENCIAS
