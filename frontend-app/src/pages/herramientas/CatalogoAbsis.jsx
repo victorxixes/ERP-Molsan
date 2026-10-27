@@ -8,6 +8,8 @@ const CATEGORIAS = [
   "Estados expedientes",
   "ESTADO",
   "ESTADOJUSTIFICANTE",
+  "TIPOCONCEPTO",
+  "CONCEPTOGASTO",
   "Producto GTG",
   "Actividad Actual",
   "Estado Actividad",
