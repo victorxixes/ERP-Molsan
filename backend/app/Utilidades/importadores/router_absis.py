@@ -266,3 +266,33 @@ async def importar_expedientes_absis(
     # ========================================================
 
     return resultado
+
+
+
+# ============================================================
+# POST FIRMA — HISTÓRICO DE GASTOS/FACTURACIÓN
+# Endpoint independiente del importador de expedientes.
+# ============================================================
+
+@router.post("/postfirma")
+async def importar_postfirma_absis(
+    fichero: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "editar")
+    nombre = (fichero.filename or "").strip()
+    if not nombre.lower().endswith(".xlsx"):
+        raise HTTPException(status_code=400, detail="El histórico Post Firma debe ser un Excel .xlsx.")
+    contenido = await fichero.read()
+    if not contenido:
+        raise HTTPException(status_code=400, detail="El Excel Post Firma está vacío.")
+    try:
+        return importar_postfirma(db, contenido, nombre)
+    except ValueError as exc:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        db.rollback()
+        print("[IMPORTADOR ABSIS POST FIRMA] ERROR:", exc, flush=True)
+        raise HTTPException(status_code=500, detail="Error al importar Post Firma. Se ha revertido la transacción.")
