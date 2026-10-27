@@ -1,5 +1,5 @@
 import { Fragment, useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "../../api/axios";
 import { API_BASE } from "../../api/config";
 import Chart from "chart.js/auto";
@@ -3346,7 +3346,7 @@ function InformeFacturacion() {
       <div className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div><h2 className="text-xl font-bold text-slate-800">Informe económico de cancelaciones</h2><p className="mt-1 text-sm text-slate-500">Solo incluye el concepto HONORARIOS GESTORÍA. Los importes y fechas se muestran desde los datos disponibles del ERP.</p></div>
-          <button type="button" onClick={() => setRecarga((v) => v + 1)} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">↻ Actualizar</button>
+          <div className="flex flex-wrap gap-2"><Link to="/herramientas/importador-absis/postfirma" className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">📦 Importar Post Firma</Link><button type="button" onClick={() => setRecarga((v) => v + 1)} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">↻ Actualizar</button></div>
         </div>
         <form onSubmit={aplicar} className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6">
           <label className="text-xs font-semibold text-slate-600">Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
