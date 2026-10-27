@@ -4,6 +4,8 @@ import "./ProvisionesFondosPage.css";
 
 const hoy = () => new Date().toISOString().slice(0, 10);
 const dinero = (v) => new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(v || 0));
+const totalConceptos = (g) => Math.round((["notaria", "ajd", "registro", "gestion"].reduce((s, k) => s + Number(g?.[k] || 0), 0) + Number.EPSILON) * 100) / 100;
+const compactarEntidad = (valor) => normalizarCatalogo(valor).replace(/[^a-z0-9]/g, "");
 const vaciaGarantia = () => ({ entidad: "", capital: "", finca: "", cru_idufir: "", registro_propiedad: "", poblacion: "", provincia: "", tipo_carga: "prestamo hipotecario", condicion_resolutoria: "no", adquisicion_vivienda_habitual: "", notaria: "0", ajd: "0", registro: "0", gestion: "0", total: "0" });
 const nuevoFormulario = () => ({ id: null, fecha: hoy(), cliente: { nombre: "", nif: "", direccion: "", cp: "", poblacion: "", provincia: "", telefono: "", email: "" }, oficina: { numero: "", contacto: "", email: "" }, garantias: [vaciaGarantia()], observaciones: "" });
 const input = "mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
@@ -481,7 +483,6 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
     // El usuario puede escribir el nombre bancario con o sin espacios/puntuación
     // (p. ej. "BancoCaixaGeral" frente a "Banco Caixa Geral, S.A.").
     // La coincidencia compacta evita rechazar una entidad válida por diferencias de formato.
-    const compactarEntidad = (valor) => normalizar(valor).replace(/[^a-z0-9]/g, "");
     const entidadEscrita = normalizar(g.entidad);
     const entidadCompacta = compactarEntidad(g.entidad);
     const coincidenciasExactas = entidadesBancarias.filter((e) => normalizar(e.nombre) === entidadEscrita);
@@ -700,6 +701,11 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
             <div className="mb-4 flex items-center justify-between"><h3 className="text-sm font-bold text-slate-800">Garantía {i + 1}</h3>{form.garantias.length > 1 && <button type="button" onClick={() => setForm((f) => ({ ...f, garantias: f.garantias.filter((_, n) => n !== i) }))} className="text-xs font-semibold text-red-600 hover:text-red-800">Eliminar</button>}</div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <AutocompleteCatalogo titulo="Entidad bancaria" valor={g.entidad} opciones={entidadesBancarias} etiqueta={(e) => e.nombre} detalle={(e) => e.entidad_actual || ""} placeholder="Escribe para buscar una entidad bancaria…" requerido onChange={(v) => cambiarGarantia(i, "entidad", v)} onSelect={(e) => cambiarGarantia(i, "entidad", e.nombre)} />
+              {(() => {
+                const bancoCatalogo = entidadesBancarias.find((e) => compactarEntidad(e.nombre) === compactarEntidad(g.entidad));
+                const entidadActual = String(bancoCatalogo?.entidad_actual || "").trim();
+                return <p className="sm:col-span-2 lg:col-span-4 -mt-1 text-xs text-slate-500">Entidad actual del catálogo: <strong className="text-slate-700">{entidadActual || "Sin entidad actual asignada; se aplicará tarifa de otra entidad"}</strong></p>;
+              })()}
               <Campo titulo="Capital del préstamo (€)" tipo="number" valor={g.capital} onChange={(v) => cambiarGarantia(i, "capital", v)} requerido />
               <Campo titulo="N.º finca registral" valor={g.finca} onChange={(v) => cambiarGarantia(i, "finca", v)} />
               <Campo titulo="CRU / IDUFIR" valor={g.cru_idufir} onChange={(v) => cambiarGarantia(i, "cru_idufir", v)} />
@@ -740,7 +746,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
             </div>
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
               <button type="button" onClick={() => calcular(i)} className={`${boton} border border-blue-200 bg-white text-blue-800 hover:bg-blue-50`}>Calcular con tarifario</button>
-              <div className="text-right"><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total de la garantía</p><p className="text-lg font-bold text-slate-900">{dinero(Number(g.total || 0) || ["notaria", "ajd", "registro", "gestion"].reduce((s, k) => s + Number(g[k] || 0), 0))}</p><button type="button" onClick={() => cambiarGarantia(i, "total", ["notaria", "ajd", "registro", "gestion"].reduce((s, k) => s + Number(g[k] || 0), 0).toFixed(2))} className="mt-1 text-xs font-semibold text-blue-700 underline">Actualizar total desde conceptos</button></div>
+              <div className="text-right"><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total de la garantía</p><p className="text-lg font-bold text-slate-900">{dinero(totalConceptos(g))}</p></div>
             </div>
           </div>)}
           <button type="button" onClick={() => setForm((f) => ({ ...f, garantias: [...f.garantias, vaciaGarantia()] }))} className={`${boton} border border-dashed border-slate-300 bg-white text-slate-700 hover:bg-slate-50`}>＋ Añadir otra garantía / préstamo</button>
@@ -750,7 +756,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
       <Seccion titulo="4. Observaciones" ><textarea className={`${input} min-h-24 resize-y`} value={form.observaciones} onChange={(e) => setForm((f) => ({ ...f, observaciones: e.target.value }))} placeholder="Si se trata de un embargo u otra carga no hipotecaria, indica aquí qué carga debe cancelarse y cualquier detalle relevante. No se presupuestará gasto notarial para esas cargas." /></Seccion>
 
       <div className="sticky bottom-3 z-10 flex flex-col items-stretch justify-between gap-3 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-lg backdrop-blur sm:flex-row sm:items-center">
-        <div><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Importe total estimado</p><p className="text-2xl font-bold text-slate-950">{dinero(form.garantias.reduce((s, g) => s + (Number(g.total || 0) || ["notaria", "ajd", "registro", "gestion"].reduce((a, k) => a + Number(g[k] || 0), 0)), 0))}</p></div>
+        <div><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Importe total estimado</p><p className="text-2xl font-bold text-slate-950">{dinero(form.garantias.reduce((s, g) => s + totalConceptos(g), 0))}</p></div>
         <div className="flex flex-wrap gap-2"><button type="button" onClick={nueva} className={`${boton} border border-slate-300 text-slate-700 hover:bg-slate-50`}>Nueva / limpiar</button><button type="button" onClick={pdf} disabled={!form.id} className={`${boton} border border-blue-200 text-blue-800 hover:bg-blue-50`}>Generar PDF</button><button type="button" onClick={() => abrirEmail(form)} disabled={!form.id} className={`${boton} border border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100`}>✉ Enviar por email</button><button type="submit" disabled={guardando} className={`${boton} bg-slate-950 text-white hover:bg-slate-800`}>{guardando ? "Guardando…" : form.id ? "Guardar cambios" : "Guardar provisión"}</button></div>
       </div>
     </form>
