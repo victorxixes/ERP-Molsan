@@ -22,7 +22,8 @@ class ExpedienteFinca(Base):
     poblacion = Column(String(200))            # Población
 
     # Registro (número + nombre)
-    registro = Column(String(300))             # Ej: "46046-SAGUNTO ( SAGUNT ) 1"
+    registro = Column(String(300))             # Texto visible y compatibilidad con datos antiguos
+    registro_propiedad_id = Column(Integer, ForeignKey("registros_propiedad.id"), nullable=True, index=True)
 
     # ============================
     # DATOS REGISTRALES
