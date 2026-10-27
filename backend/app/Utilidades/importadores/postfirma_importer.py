@@ -5,7 +5,7 @@ del expediente. IDGASTO se usa como clave de actualización cuando está disponi
 """
 import json
 import unicodedata
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from decimal import Decimal, InvalidOperation
 from io import BytesIO
 
@@ -70,6 +70,26 @@ def _fecha(value):
         return None if pd.isna(parsed) else parsed.date()
     except Exception:
         return None
+
+
+def _fecha_alta(value):
+    """Interpreta FECHAALTA como fecha real o como número serial de Excel.
+
+    En celdas con formato General, Excel puede entregar el serial numérico
+    (días desde 1899-12-30) en lugar de un datetime.
+    """
+    value = _limpiar(value)
+    if value is None:
+        return None
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        try:
+            numero = float(value)
+            # Intervalo razonable de seriales Excel (aprox. 1954–2119).
+            if 20000 <= numero <= 80000:
+                return (datetime(1899, 12, 30) + timedelta(days=numero)).date()
+        except (TypeError, ValueError, OverflowError):
+            return None
+    return _fecha(value)
 
 
 def _decimal(value):
@@ -303,7 +323,12 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
     }
 
 
-def validar_postfirma(db: Session, contenido_excel: bytes):
+def validar_postfirma(
+    db: Session,
+    contenido_excel: bytes,
+    fecha_desde: date | None = None,
+    fecha_hasta: date | None = None,
+):
     """Valida el Excel sin escribir datos y devuelve solo métricas agregadas."""
     try:
         df = pd.read_excel(BytesIO(contenido_excel), sheet_name=0, header=0, engine="openpyxl")
@@ -312,12 +337,34 @@ def validar_postfirma(db: Session, contenido_excel: bytes):
 
     columnas = {_norm_col(c): c for c in df.columns}
     faltan = sorted(c for c in CABECERAS_REQUERIDAS if c not in columnas)
+    if "FECHAALTA" not in columnas:
+        faltan.append("FECHAALTA")
     if faltan:
-        raise ValueError("Faltan columnas requeridas: " + ", ".join(faltan))
+        raise ValueError("Faltan columnas requeridas: " + ", ".join(sorted(set(faltan))))
+    if fecha_desde and fecha_hasta and fecha_desde > fecha_hasta:
+        raise ValueError("La fecha desde no puede ser posterior a la fecha hasta.")
+    if bool(fecha_desde) != bool(fecha_hasta):
+        raise ValueError("Debes indicar las dos fechas: desde y hasta.")
 
     def celda(row, nombre):
         col = columnas.get(_norm_col(nombre))
         return _limpiar(row[col]) if col is not None else None
+
+    # El filtro se aplica por FECHAALTA del expediente y mantiene todas las
+    # filas/movimientos que correspondan a esa alta, sin agrupar por expediente.
+    filas_excel_total = int(len(df))
+    fechas_alta = df[columnas["FECHAALTA"]].map(_fecha_alta)
+    fechaalta_sin_fecha = int(fechas_alta.isna().sum())
+    if fecha_desde and fecha_hasta:
+        mascara = fechas_alta.map(
+            lambda valor: valor is not None and fecha_desde <= valor <= fecha_hasta
+        )
+        filas_dentro_periodo = int(mascara.sum())
+        df = df.loc[mascara].copy()
+    else:
+        filas_dentro_periodo = int(fechas_alta.notna().sum())
+
+    filas_fuera_periodo = filas_excel_total - filas_dentro_periodo
 
     total_importe = Decimal("0")
     filas_con_importe = 0
@@ -408,7 +455,15 @@ def validar_postfirma(db: Session, contenido_excel: bytes):
 
     return {
         "validacion_sin_escritura": True,
-        "filas_excel": int(len(df)),
+        "columnas_detectadas": [str(c) for c in columnas.values()],
+        "columna_filtro_fecha": "FECHAALTA",
+        "fecha_desde": fecha_desde.isoformat() if fecha_desde else None,
+        "fecha_hasta": fecha_hasta.isoformat() if fecha_hasta else None,
+        "filas_excel": filas_excel_total,
+        "filas_dentro_periodo": filas_dentro_periodo,
+        "filas_fuera_periodo": filas_fuera_periodo,
+        "fechaalta_sin_fecha_o_invalida": fechaalta_sin_fecha,
+        "filas_analizadas": int(len(df)),
         "filas_con_datos": filas_no_vacias,
         "ids_gasto_unicos": len(set(ids)),
         "idgasto_vacios": ids_vacios,
