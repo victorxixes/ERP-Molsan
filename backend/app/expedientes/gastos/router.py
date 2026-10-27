@@ -59,6 +59,14 @@ class GastoBase(BaseModel):
     importe_resultante: Optional[Decimal] = None
     documento_carpeta_id: Optional[int] = None
     estado_pago: Optional[str] = Field("Pendiente", max_length=50)
+    id_gasto_absis: Optional[str] = Field(None, max_length=100)
+    id_expediente_absis: Optional[str] = Field(None, max_length=100)
+    tipo_operacion_absis: Optional[str] = Field(None, max_length=300)
+    concepto_gasto_absis: Optional[str] = Field(None, max_length=300)
+    tipo_concepto_absis: Optional[str] = Field(None, max_length=100)
+    origen_registro: Optional[str] = Field("ERP", max_length=30)
+    estado_consolidacion: Optional[str] = Field("Pendiente envío", max_length=50)
+    fecha_ultima_sincronizacion: Optional[date] = None
 
     @validator(
         "importe", "importe_total_bruto", "base_exenta_impuestos",
@@ -85,6 +93,11 @@ class GastoResponse(GastoBase):
     id: int
     expediente_id: int
     numero_documento: str
+    estado_absis: Optional[str] = None
+    estado_justificante: Optional[str] = None
+    imp_gasto: Optional[Decimal] = None
+    fecha_pago: Optional[date] = None
+    datos_absis_json: Optional[str] = None
 
 
 def _obtener_expediente(db: Session, expediente_id: int):
