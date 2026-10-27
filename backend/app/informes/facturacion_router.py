@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 from datetime import date
 from decimal import Decimal
 from io import BytesIO
@@ -160,6 +162,7 @@ def _consultar(db, fecha_desde=None, fecha_hasta=None, tipo_operacion=None, esta
             "estado": getattr(gasto, "estado_absis", None),
             "estado_justificante": getattr(gasto, "estado_justificante", None),
             "fecha_adjuntar_factura": _fecha_iso(getattr(gasto, "fecha_adjuntar_factura", None)),
+            "fecha_factura": _fecha_iso(getattr(gasto, "fecha_factura", None)),
             "imp_gasto": _decimal(getattr(gasto, "imp_gasto", None)) if getattr(gasto, "imp_gasto", None) is not None else _decimal(gasto.importe_total_bruto if gasto.importe_total_bruto is not None else gasto.importe),
             "imp_base_impuesto": _decimal(getattr(gasto, "imp_base_impuesto", None)) if getattr(gasto, "imp_base_impuesto", None) is not None else _decimal(gasto.base_sujeta_impuestos),
             "imp_base_retencion": _decimal(getattr(gasto, "imp_base_retencion", None)) if getattr(gasto, "imp_base_retencion", None) is not None else _decimal(gasto.base_sujeta_retencion),
@@ -169,6 +172,7 @@ def _consultar(db, fecha_desde=None, fecha_hasta=None, tipo_operacion=None, esta
             "fecha_pago": _fecha_iso(getattr(gasto, "fecha_pago", None)),
             "estado_pago": gasto.estado_pago,
             "numero_factura": gasto.numero_factura,
+            "datos_absis": (json.loads(gasto.datos_absis_json) if getattr(gasto, "datos_absis_json", None) else {}),
         })
     return filas
 
