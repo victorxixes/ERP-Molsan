@@ -5717,7 +5717,7 @@ const cuantiaFincasParaEnvio =
                 }
                 return (
                   <label key={campo.key} className="block min-w-0 rounded-xl border border-slate-200 bg-white p-3">
-                    <span className="mb-1.5 block text-[11px] font-bold text-slate-600">{campo.label}</span>
+                    <span className="mb-1.5 flex items-center justify-between gap-2 text-[11px] font-bold text-slate-600">{campo.label}{campo.key === "oficina" && <button type="button" onClick={async () => { setOficinaDetalleAbierta(true); setCargandoOficinaDetalle(true); setOficinaCatalogoDetalle(null); try { const respuesta = await axios.get("/oficinas-catalogo", { params: { q: expediente?.oficina || "", limit: 200 } }); const items = Array.isArray(respuesta?.data?.items) ? respuesta.data.items : []; const valor = normalizarTexto(expediente?.oficina || ""); const encontrada = items.find((item) => normalizarTexto(item.oficina) === valor || normalizarTexto(item.nombre) === valor) || items.find((item) => valor && (normalizarTexto(item.oficina).includes(valor) || normalizarTexto(item.nombre).includes(valor) || valor.includes(normalizarTexto(item.oficina)))); setOficinaCatalogoDetalle(encontrada || null); } catch (error) { setOficinaCatalogoDetalle(null); } finally { setCargandoOficinaDetalle(false); } }} className="rounded-md border border-indigo-200 bg-indigo-50 px-2 py-1 text-[10px] font-extrabold text-indigo-700 hover:bg-indigo-100">ⓘ Ver catálogo</button>}</span>
                     {campo.multilinea ? (
                       <textarea
                         rows={3}
