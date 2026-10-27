@@ -3269,7 +3269,7 @@ function normalizarInformeSLA(valor) {
 
 function InformeFacturacion() {
   const [filtros, setFiltros] = useState(() => ({ ...filtrosInformeIniciales(), fecha_desde: "", fecha_hasta: "", modalidad: "todas", estado: "", tipo_operacion: "" }));
-  const [aplicados, setAplicados] = useState(() => ({ ...filtrosInformeIniciales(), modalidad: "todas", estado: "", tipo_operacion: "" }));
+  const [aplicados, setAplicados] = useState(() => ({ ...filtrosInformeIniciales(), fecha_desde: "", fecha_hasta: "", modalidad: "todas", estado: "", tipo_operacion: "" }));
   const [datos, setDatos] = useState({ resumen: {}, items: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
