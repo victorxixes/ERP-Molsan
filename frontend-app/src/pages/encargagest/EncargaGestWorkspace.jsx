@@ -39,6 +39,13 @@ export default function EncargaGestWorkspace({ page }) {
         }}
       />
       <main className="relative min-h-screen px-4 py-6 lg:px-6">
+        <div role="status" aria-live="polite" className="mb-5 flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 shadow-sm">
+          <span aria-hidden="true" className="mt-0.5 text-xl">⚠️</span>
+          <div>
+            <p className="text-sm font-extrabold">Conexiones con bancos pendientes</p>
+            <p className="mt-1 text-sm">La integración mediante API con las entidades bancarias todavía está pendiente de conexión. Puedes acceder y utilizar EncargaGest con normalidad; las funciones que dependan de esas conexiones estarán disponibles cuando se complete la integración.</p>
+          </div>
+        </div>
         {page === "encargos" && <EncargaGest />}
         {page === "ctn" && <Ctn />}
         {page === "agenda" && <Agenda />}
