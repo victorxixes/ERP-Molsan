@@ -1,0 +1,50 @@
+name: Validar Fichaje Molsan
+
+on:
+  pull_request:
+    paths:
+      - "frontend-app/src/pages/fichajes/**"
+      - "frontend-app/src/pages/ModulosSelector.jsx"
+      - "frontend-app/src/components/Sidebar.jsx"
+      - "frontend-app/src/config/modulos.js"
+      - "backend/app/fichajes/**"
+      - ".github/workflows/validar-fichajes.yml"
+  push:
+    branches: [main]
+    paths:
+      - "frontend-app/src/pages/fichajes/**"
+      - "frontend-app/src/pages/ModulosSelector.jsx"
+      - "frontend-app/src/components/Sidebar.jsx"
+      - "frontend-app/src/config/modulos.js"
+      - "backend/app/fichajes/**"
+      - ".github/workflows/validar-fichajes.yml"
+
+jobs:
+  build-frontend:
+    name: Build del frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Instalar dependencias y compilar
+        working-directory: frontend-app
+        run: |
+          npm install
+          npm run build
+
+  syntax-backend:
+    name: Sintaxis del backend de fichajes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Comprobar sintaxis Python
+        run: python -m compileall -q backend/app/fichajes
