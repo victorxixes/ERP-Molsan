@@ -911,6 +911,13 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
       </header>
 
       <main className="eg-main w-full max-w-none px-1 pb-4">
+        <section role="status" aria-live="polite" className="mb-5 flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 shadow-sm">
+          <span aria-hidden="true" className="mt-0.5 text-xl">⚠️</span>
+          <div>
+            <p className="text-sm font-extrabold">Conexiones con bancos pendientes</p>
+            <p className="mt-1 text-sm">La conexión mediante API con las entidades bancarias está pendiente de implantación. Puedes acceder y trabajar en EncargaGest Gestoría con normalidad; las funciones que requieran conexión bancaria quedarán disponibles cuando se complete la integración.</p>
+          </div>
+        </section>
         {modo === "interno" && !esAdminEncargaGest && (
           <section className="mb-5 flex flex-col gap-3 rounded-2xl border border-blue-100 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
             <div><p className="text-xs font-black uppercase tracking-[0.14em] text-blue-700">Notarías asignadas</p><p className="mt-1 text-xs text-slate-500">Solo aparecen las notarías asignadas a tu usuario.</p></div>
