@@ -6826,6 +6826,10 @@ const cuantiaFincasParaEnvio =
                                       <span className="font-bold text-indigo-700">{gasto.numero_documento || `PAG-${String(gasto.id).padStart(6, "0")}`}</span>
                                       {gasto.tipo && <span>{gasto.tipo}</span>}
                                       {gasto.fecha && <span>Fecha: {formatearFecha(gasto.fecha)}</span>}
+                                      {gasto.id_gasto_absis && <span className="rounded-md bg-slate-100 px-2 py-1 font-semibold text-slate-700">IDGASTO: {gasto.id_gasto_absis}</span>}
+                                      {gasto.tipo_concepto_absis && <span className="rounded-md bg-indigo-50 px-2 py-1 font-semibold text-indigo-700">TIPOCONCEPTO: {gasto.tipo_concepto_absis}</span>}
+                                      {gasto.estado_consolidacion && <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${gasto.estado_consolidacion === "Consolidado" ? "bg-emerald-50 text-emerald-700" : gasto.estado_consolidacion === "Pendiente envío" ? "bg-amber-50 text-amber-700" : "bg-sky-50 text-sky-700"}`}>{gasto.estado_consolidacion}</span>}
+                                      {gasto.fecha_ultima_sincronizacion && <span>Sincronizado: {formatearFecha(gasto.fecha_ultima_sincronizacion)}</span>}
                                       <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${String(gasto.estado_pago || "Pendiente").toLowerCase().includes("pag") || String(gasto.estado_pago || "").toLowerCase().includes("abon") ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{gasto.estado_pago || "Pendiente"}</span>
                                     </div>
                                   </div>
