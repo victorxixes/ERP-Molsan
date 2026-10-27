@@ -268,6 +268,15 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
                         gasto = candidato
                 es_nuevo = gasto is None
                 origen_previo = (str(getattr(gasto, "origen_registro", "") or "").strip().upper()) if gasto else None
+                # Compatibilidad con gastos ERP anteriores a los campos de trazabilidad:
+                # si ya están vinculados internamente y aún no tienen datos ABSIS, no pisar sus valores.
+                es_gasto_erp = bool(gasto) and (
+                    origen_previo == "ERP" or (
+                        gasto.expediente_id is not None
+                        and not getattr(gasto, "id_expediente_absis", None)
+                        and not getattr(gasto, "datos_absis_json", None)
+                    )
+                )
                 if es_nuevo:
                     gasto = ExpedienteGasto()
                     db.add(gasto)
@@ -278,24 +287,36 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
                 importe = _decimal(val(row, "IMPGASTO"))
                 fecha_factura = _fecha(val(row, "FFACTURA"))
                 fecha_adjuntar = _fecha(val(row, "FECHAADJUNTARFACTURA"))
+                fecha_factura_absis = fecha_factura
+                numero_factura_absis = _texto(val(row, "NUMFACTURA"))
 
-                gasto.expediente_id = exp.id if exp else None
+                # Si el expediente todavía no se encuentra en ERP, conservar el vínculo
+                # existente si lo había; nunca desasociar un gasto ERP por un Excel parcial.
+                if exp is not None:
+                    gasto.expediente_id = exp.id
+                elif es_nuevo:
+                    gasto.expediente_id = None
                 gasto.id_gasto_absis = id_gasto
                 gasto.id_expediente_absis = numero_exp
                 gasto.tipo_concepto_absis = tipo_concepto
-                gasto.origen_registro = "ERP" if origen_previo == "ERP" else "ABSIS_POSTFIRMA"
-                gasto.estado_consolidacion = "Consolidado" if (not es_nuevo and origen_previo == "ERP") else "Importado Post Firma"
+                gasto.origen_registro = "ERP" if es_gasto_erp else "ABSIS_POSTFIRMA"
+                gasto.estado_consolidacion = "Consolidado" if es_gasto_erp else "Importado Post Firma"
                 gasto.fecha_ultima_sincronizacion = date.today()
                 gasto.tipo_operacion_absis = _texto(val(row, "TIPOOPERACION"))
                 gasto.concepto_gasto_absis = concepto
-                gasto.tipo = concepto or "Gasto ABSIS Post Firma"
-                gasto.descripcion = _texto(val(row, "DETALLEOPERACION")) or concepto
-                gasto.importe = importe
+                # El bloque ABSIS se conserva en sus campos propios; solo un gasto ABSIS
+                # nuevo usa los campos base como compatibilidad con pantallas antiguas.
+                if es_nuevo or not es_gasto_erp:
+                    gasto.tipo = concepto or "Gasto ABSIS Post Firma"
+                    gasto.descripcion = _texto(val(row, "DETALLEOPERACION")) or concepto
+                    gasto.importe = importe
+                    gasto.fecha = fecha_factura or fecha_adjuntar
+                    gasto.fecha_factura = fecha_factura
+                    gasto.numero_factura = numero_factura_absis
                 gasto.imp_gasto = importe
-                gasto.fecha = fecha_factura or fecha_adjuntar
-                gasto.fecha_factura = fecha_factura
+                gasto.fecha_factura_absis = fecha_factura_absis
                 gasto.fecha_adjuntar_factura = fecha_adjuntar
-                gasto.numero_factura = _texto(val(row, "NUMFACTURA"))
+                gasto.numero_factura_absis = numero_factura_absis
                 gasto.estado_absis = _texto(val(row, "ESTADO"))
                 gasto.estado_justificante = _texto(val(row, "ESTADOJUSTIFICANTE"))
                 gasto.imp_base_impuesto = _decimal(val(row, "IMPBASEIMPUESTO"))
