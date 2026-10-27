@@ -378,8 +378,8 @@ const CAMPOS_COMUNES_ACTIVIDAD = [
 
 
 
-function calcularVencimientoAsientoRenovacion(fechaNotificacion) {
-  if (!fechaNotificacion) return "";
+function calcularVencimientoAsientoRenovacion(fechaCalificacion) {
+  if (!fechaCalificacion) return "";
   const [anio, mes, dia] = String(fechaNotificacion).split("-").map(Number);
   if (!anio || !mes || !dia) return "";
   // UTC evita desfases de zona horaria al sumar días naturales.
@@ -395,6 +395,8 @@ const DEFECTO_VACIO = {
   fecha_vencimiento_presentacion: "",
   fecha_calificacion: "",
   fecha_renovacion_asiento: "",
+  asiento_renovacion: "",
+  libro_diario: "",
   asiento_renovacion_libro_diario: "",
   vencimiento_asiento_renovacion: "",
   anotacion_suspensiva: "",
@@ -567,30 +569,19 @@ const CAMPOS_ACTIVIDADES = {
   ],
 
   "defectos-registrales": [
-    {
-      key: "tipo_documento",
-      label: "Tipo documento",
-    },
-    {
-      key: "motivos_defecto",
-      label: "Motivos del defecto",
-      catalogo: "motivos-defecto",
-    },
-    {
-      key: "fecha_notificacion_registro",
-      label: "Fecha notificación Registro",
-      tipo: "fecha",
-    },
-    {
-      key: "fecha_vencimiento_presentacion_registro",
-      label: "Fecha vencimiento presentación Registro",
-      tipo: "fecha",
-    },
-    {
-      key: "observaciones_defecto_registral",
-      label: "Observaciones",
-      multilinea: true,
-    },
+    { key: "tipo_documento", label: "Tipo documento" },
+    { key: "motivo_defecto", label: "Motivo del defecto" },
+    { key: "fecha_calificacion", label: "Fecha calificación", tipo: "fecha" },
+    { key: "asiento_renovacion", label: "Asiento renovación" },
+    { key: "libro_diario", label: "Libro diario" },
+    { key: "vencimiento_asiento_renovacion", label: "Vencimiento asiento renovación", tipo: "fecha" },
+    { key: "anotacion_suspensiva", label: "Anotación suspensiva", opciones: [{ value: "true", label: "Sí" }, { value: "false", label: "No" }] },
+    { key: "vencimiento_anotacion", label: "Vencimiento anotación", tipo: "fecha" },
+    { key: "calificacion_sustitutoria", label: "Calificación sustitutoria", opciones: [{ value: "true", label: "Sí" }, { value: "false", label: "No" }] },
+    { key: "recurso_gubernativo", label: "Recurso gubernativo", opciones: [{ value: "true", label: "Sí" }, { value: "false", label: "No" }] },
+    { key: "fecha_notificacion_registro", label: "Fecha notificación Registro", tipo: "fecha" },
+    { key: "fecha_entrada_subsanacion", label: "Fecha Entrada Registro Subsanación", tipo: "fecha" },
+    { key: "observaciones_registro", label: "Observaciones", multilinea: true },
   ],
 
   "facturacion-cierre": [
@@ -3286,8 +3277,10 @@ function editarDefectoRegistrado(defecto) {
     fecha_vencimiento_presentacion: defecto.fecha_vencimiento_presentacion || "",
     fecha_calificacion: defecto.fecha_calificacion || "",
     fecha_renovacion_asiento: defecto.fecha_renovacion_asiento || "",
+    asiento_renovacion: defecto.asiento_renovacion || defecto.asiento_renovacion_libro_diario || "",
+    libro_diario: defecto.libro_diario || "",
     asiento_renovacion_libro_diario: defecto.asiento_renovacion_libro_diario || "",
-    vencimiento_asiento_renovacion: calcularVencimientoAsientoRenovacion(defecto.fecha_notificacion_registro),
+    vencimiento_asiento_renovacion: calcularVencimientoAsientoRenovacion(defecto.fecha_calificacion),
     anotacion_suspensiva: defecto.anotacion_suspensiva == null ? "" : String(defecto.anotacion_suspensiva),
     vencimiento_anotacion: defecto.vencimiento_anotacion || "",
     calificacion_sustitutoria: defecto.calificacion_sustitutoria == null ? "" : String(defecto.calificacion_sustitutoria),
@@ -3337,8 +3330,10 @@ async function guardarDefectoRegistral() {
       fecha_vencimiento_presentacion: defectoForm.fecha_vencimiento_presentacion || null,
       fecha_calificacion: defectoForm.fecha_calificacion || null,
       fecha_renovacion_asiento: defectoForm.fecha_renovacion_asiento || null,
-      asiento_renovacion_libro_diario: defectoForm.asiento_renovacion_libro_diario || null,
-      vencimiento_asiento_renovacion: defectoForm.vencimiento_asiento_renovacion || null,
+      asiento_renovacion: defectoForm.asiento_renovacion || null,
+      libro_diario: defectoForm.libro_diario || null,
+      asiento_renovacion_libro_diario: [defectoForm.asiento_renovacion, defectoForm.libro_diario].filter(Boolean).join(" / ") || defectoForm.asiento_renovacion_libro_diario || null,
+      vencimiento_asiento_renovacion: calcularVencimientoAsientoRenovacion(defectoForm.fecha_calificacion) || null,
       anotacion_suspensiva: defectoForm.anotacion_suspensiva === "" ? null : defectoForm.anotacion_suspensiva === "true",
       vencimiento_anotacion: defectoForm.vencimiento_anotacion || null,
       calificacion_sustitutoria: defectoForm.calificacion_sustitutoria === "" ? null : defectoForm.calificacion_sustitutoria === "true",
@@ -5651,19 +5646,19 @@ const cuantiaFincasParaEnvio =
                           <article key={defecto.id ?? defecto.id_defecto} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
                             <p className="mb-2 text-xs font-extrabold text-slate-800">{defecto.motivo_defecto || defecto.tipo_error || "Defecto registral"}</p>
                             <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                              <Dato campo="Tipo documento" valor={defecto.tipo_documento || "cancelacion de prestamo o credito"} />
                               <Dato campo="Tipo de carga hipotecaria" valor={tipoCarga} />
-                              <Dato campo="Motivos del defecto" valor={defecto.motivo_defecto} />
+                              <Dato campo="Motivo del defecto" valor={defecto.motivo_defecto || defecto.tipo_error} />
                               <Dato campo="Subtipo del defecto" valor={defecto.subtipo_defecto} />
                               <Dato campo="Fecha calificación" valor={defecto.fecha_calificacion} tipo="fecha" />
-                              <Dato campo="Fecha renovación asiento" valor={defecto.fecha_renovacion_asiento} tipo="fecha" />
-                              <Dato campo="Asiento renovación / libro diario" valor={defecto.asiento_renovacion_libro_diario} />
+                              <Dato campo="Asiento renovación" valor={defecto.asiento_renovacion || defecto.asiento_renovacion_libro_diario} />
+                              <Dato campo="Libro diario" valor={defecto.libro_diario} />
                               <Dato campo="Vencimiento asiento renovación" valor={defecto.vencimiento_asiento_renovacion} tipo="fecha" />
                               <Dato campo="Anotación suspensiva" valor={defecto.anotacion_suspensiva == null ? "—" : defecto.anotacion_suspensiva ? "Sí" : "No"} />
                               <Dato campo="Vencimiento anotación" valor={defecto.vencimiento_anotacion} tipo="fecha" />
                               <Dato campo="Calificación sustitutoria" valor={defecto.calificacion_sustitutoria == null ? "—" : defecto.calificacion_sustitutoria ? "Sí" : "No"} />
                               <Dato campo="Recurso gubernativo" valor={defecto.recurso_gubernativo == null ? "—" : defecto.recurso_gubernativo ? "Sí" : "No"} />
-                              <Dato campo="Fecha Notificación Registro (control interno)" valor={defecto.fecha_notificacion_registro} tipo="fecha" />
-                              <Dato campo="Fecha Vencimiento Presentación (control interno)" valor={defecto.fecha_vencimiento_presentacion} tipo="fecha" />
+                              <Dato campo="Fecha Notificación Registro" valor={defecto.fecha_notificacion_registro} tipo="fecha" />
                               <Dato campo="Fecha Entrada Registro Subsanación" valor={defecto.fecha_entrada_subsanacion} tipo="fecha" />
                               <Dato campo="Calificación del Registro" valor={defecto.calificacion_registro} />
                               <Dato campo="Observaciones" valor={defecto.observaciones_registro} />
@@ -7160,20 +7155,20 @@ const cuantiaFincasParaEnvio =
 
         <label className="block text-sm font-medium text-slate-700">
           Fecha calificación *
-          <input type="date" required className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" value={defectoForm.fecha_calificacion} onChange={(e) => setDefectoForm((actual) => ({ ...actual, fecha_calificacion: e.target.value }))} />
+          <input type="date" required className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" value={defectoForm.fecha_calificacion} onChange={(e) => setDefectoForm((actual) => ({ ...actual, fecha_calificacion: e.target.value, vencimiento_asiento_renovacion: calcularVencimientoAsientoRenovacion(e.target.value) }))} />
         </label>
         <label className="block text-sm font-medium text-slate-700">
-          Fecha renovación asiento
-          <input type="date" className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" value={defectoForm.fecha_renovacion_asiento} onChange={(e) => setDefectoForm((actual) => ({ ...actual, fecha_renovacion_asiento: e.target.value }))} />
+          Asiento renovación
+          <input type="text" maxLength={100} className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" value={defectoForm.asiento_renovacion} onChange={(e) => setDefectoForm((actual) => ({ ...actual, asiento_renovacion: e.target.value }))} placeholder="Asiento de renovación" />
         </label>
-        <label className="block text-sm font-medium text-slate-700 md:col-span-2">
-          Asiento renovación y libro diario
-          <input type="text" maxLength={200} className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" value={defectoForm.asiento_renovacion_libro_diario} onChange={(e) => setDefectoForm((actual) => ({ ...actual, asiento_renovacion_libro_diario: e.target.value }))} placeholder="Asiento de renovación / libro diario" />
+        <label className="block text-sm font-medium text-slate-700">
+          Libro diario
+          <input type="text" maxLength={100} className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" value={defectoForm.libro_diario} onChange={(e) => setDefectoForm((actual) => ({ ...actual, libro_diario: e.target.value }))} placeholder="Libro diario" />
         </label>
         <label className="block text-sm font-medium text-slate-700">
           Vencimiento asiento renovación
           <input type="date" readOnly className="mt-1 w-full rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm" value={defectoForm.vencimiento_asiento_renovacion} />
-          <span className="mt-1 block text-xs font-normal text-amber-700">Cálculo automático: fecha de notificación + 60 días naturales.</span>
+          <span className="mt-1 block text-xs font-normal text-amber-700">Cálculo automático: fecha de calificación + 60 días naturales.</span>
         </label>
         <label className="block text-sm font-medium text-slate-700">
           Anotación suspensiva
@@ -7207,22 +7202,6 @@ const cuantiaFincasParaEnvio =
               setDefectoForm((actual) => ({
                 ...actual,
                 fecha_notificacion_registro: e.target.value,
-                vencimiento_asiento_renovacion: calcularVencimientoAsientoRenovacion(e.target.value),
-              }))
-            }
-          />
-        </label>
-
-        <label className="block text-sm font-medium text-slate-700">
-          Fecha Vencimiento Presentación Registro
-          <input
-            type="date"
-            className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm"
-            value={defectoForm.fecha_vencimiento_presentacion}
-            onChange={(e) =>
-              setDefectoForm((actual) => ({
-                ...actual,
-                fecha_vencimiento_presentacion: e.target.value,
               }))
             }
           />
@@ -7279,23 +7258,25 @@ const cuantiaFincasParaEnvio =
           />
         </label>
 
-        <label className="block text-sm font-medium text-slate-700 md:col-span-2">
-          Fecha Entrada Registro Subsanación
-          <input
-            type="date"
-            className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm"
-            value={defectoForm.fecha_entrada_subsanacion}
-            onChange={(e) =>
-              setDefectoForm((actual) => ({
-                ...actual,
-                fecha_entrada_subsanacion: e.target.value,
-              }))
-            }
-          />
-          <span className="mt-1 block text-xs font-normal text-slate-500">
-            Rellena esta fecha cuando la subsanación haya entrado en el Registro.
-          </span>
-        </label>
+        {defectoEditandoId && (
+          <label className="block text-sm font-medium text-slate-700 md:col-span-2">
+            Fecha Entrada Registro Subsanación · baja/cierre del defecto
+            <input
+              type="date"
+              className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm"
+              value={defectoForm.fecha_entrada_subsanacion}
+              onChange={(e) =>
+                setDefectoForm((actual) => ({
+                  ...actual,
+                  fecha_entrada_subsanacion: e.target.value,
+                }))
+              }
+            />
+            <span className="mt-1 block text-xs font-normal text-slate-500">
+              Rellena esta fecha únicamente cuando quieras registrar la entrada de la subsanación y cerrar el defecto.
+            </span>
+          </label>
+        )}
       </div>
 
       {defectoEditandoId && (
@@ -8721,14 +8702,18 @@ const cuantiaFincasParaEnvio =
                           <span className="rounded-full border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-600">{defecto.estado_envio_absis || "Pendiente ABSIS"}</span>
                         </div>
                         <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+                          <Dato campo="Tipo documento" valor={defecto.tipo_documento || "cancelacion de prestamo o credito"} />
+                          <Dato campo="Motivo del defecto" valor={defecto.motivo_defecto || defecto.tipo_error} />
                           <Dato campo="Fecha calificación" valor={defecto.fecha_calificacion} tipo="fecha" />
-                          <Dato campo="Fecha renovación asiento" valor={defecto.fecha_renovacion_asiento} tipo="fecha" />
-                          <Dato campo="Asiento renovación / libro diario" valor={defecto.asiento_renovacion_libro_diario} />
+                          <Dato campo="Asiento renovación" valor={defecto.asiento_renovacion || defecto.asiento_renovacion_libro_diario} />
+                          <Dato campo="Libro diario" valor={defecto.libro_diario} />
                           <Dato campo="Vencimiento asiento renovación" valor={defecto.vencimiento_asiento_renovacion} tipo="fecha" />
                           <Dato campo="Anotación suspensiva" valor={defecto.anotacion_suspensiva == null ? "—" : defecto.anotacion_suspensiva ? "Sí" : "No"} />
                           <Dato campo="Vencimiento anotación" valor={defecto.vencimiento_anotacion} tipo="fecha" />
                           <Dato campo="Calificación sustitutoria" valor={defecto.calificacion_sustitutoria == null ? "—" : defecto.calificacion_sustitutoria ? "Sí" : "No"} />
                           <Dato campo="Recurso gubernativo" valor={defecto.recurso_gubernativo == null ? "—" : defecto.recurso_gubernativo ? "Sí" : "No"} />
+                          <Dato campo="Fecha notificación Registro" valor={defecto.fecha_notificacion_registro} tipo="fecha" />
+                          <Dato campo="Fecha Entrada Registro Subsanación" valor={defecto.fecha_entrada_subsanacion} tipo="fecha" />
                           <Dato campo="Observaciones" valor={defecto.observaciones_registro} />
                           <Dato campo="Subsanación" valor={defecto.fecha_entrada_subsanacion ? "Subsanado" : "Pendiente de subsanación"} />
                         </div>
