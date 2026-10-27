@@ -1,17 +1,23 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
+
+const fechaISOlocal = (fecha) => {
+  const d = new Date(fecha);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
 
 export default function FichajesResumen({ recargar }) {
   const [vacaciones, setVacaciones] = useState(null);
   const [horas, setHoras] = useState(null);
-  const [desde, setDesde] = useState(new Date().toLocaleDateString("en-CA"));
-  const [hasta, setHasta] = useState(new Date().toLocaleDateString("en-CA"));
+  const [desde, setDesde] = useState(() => fechaISOlocal(new Date()));
+  const [hasta, setHasta] = useState(() => fechaISOlocal(new Date()));
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
   const [mensaje, setMensaje] = useState("");
-  const cargar = async () => {
+  const cargar = useCallback(async () => {
     setCargando(true);
+    setError("");
     try {
       const [v, h] = await Promise.all([
         axios.get("/fichajes/vacaciones"),
