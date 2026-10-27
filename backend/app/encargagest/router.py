@@ -1264,7 +1264,9 @@ def crear_encargo(datos: EncargoCrear, db: Session = Depends(get_db), usuario=De
             fecha_constitucion = date.fromisoformat(fecha_constitucion[:10])
         except ValueError:
             raise HTTPException(status_code=422, detail="Fecha de constitución no válida en el primer contrato.")
-    capital_inscrito = primera_finca.get("capital_inscrito", datos.capital_inscrito)
+    capital_inscrito = primera_finca.get("capital_inscrito")
+    if capital_inscrito is None:
+        capital_inscrito = datos.capital_inscrito
     try:
         capital_inscrito = Decimal(str(capital_inscrito)) if capital_inscrito not in (None, "") else None
         if capital_inscrito is not None and (not capital_inscrito.is_finite() or capital_inscrito < 0 or len(capital_inscrito.as_tuple().digits) > 14):
