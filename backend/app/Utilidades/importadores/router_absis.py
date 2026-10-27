@@ -279,26 +279,17 @@ async def importar_expedientes_absis(
 
 @router.post("/postfirma")
 async def importar_postfirma_absis(
-    fichero: UploadFile = File(...),
-    db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
+    """Bloquea temporalmente la escritura hasta validar el informe Post Firma."""
     require_perm_modulo(usuario, "utilidades", "editar")
-    nombre = (fichero.filename or "").strip()
-    if not nombre.lower().endswith(".xlsx"):
-        raise HTTPException(status_code=400, detail="El histórico Post Firma debe ser un Excel .xlsx.")
-    contenido = await fichero.read()
-    if not contenido:
-        raise HTTPException(status_code=400, detail="El Excel Post Firma está vacío.")
-    try:
-        return importar_postfirma(db, contenido, nombre)
-    except ValueError as exc:
-        db.rollback()
-        raise HTTPException(status_code=400, detail=str(exc))
-    except Exception as exc:
-        db.rollback()
-        print("[IMPORTADOR ABSIS POST FIRMA] ERROR:", exc, flush=True)
-        raise HTTPException(status_code=500, detail="Error al importar Post Firma. Se ha revertido la transacción.")
+    raise HTTPException(
+        status_code=409,
+        detail=(
+            "La importación que modifica gastos está temporalmente deshabilitada. "
+            "Utiliza la validación Post Firma por intervalo FECHAALTA; no se han guardado cambios."
+        ),
+    )
 
 
 
