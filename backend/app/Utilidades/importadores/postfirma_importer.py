@@ -323,7 +323,12 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
     }
 
 
-def validar_postfirma(\n    db: Session,\n    contenido_excel: bytes,\n    fecha_desde: date | None = None,\n    fecha_hasta: date | None = None,\n):
+def validar_postfirma(
+    db: Session,
+    contenido_excel: bytes,
+    fecha_desde: date | None = None,
+    fecha_hasta: date | None = None,
+):
     """Valida el Excel sin escribir datos y devuelve solo métricas agregadas."""
     try:
         df = pd.read_excel(BytesIO(contenido_excel), sheet_name=0, header=0, engine="openpyxl")
