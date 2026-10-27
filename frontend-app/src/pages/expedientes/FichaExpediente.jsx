@@ -3084,7 +3084,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     setErrorGastos("");
     setMensajeGastos("");
     try {
-      await axios.post(
+      const respuestaGasto = await axios.post(
         `/expedientes/${encodeURIComponent(expedienteId)}/gastos`,
         {
           tipo: gastoForm.tipo.trim(), descripcion: gastoForm.descripcion.trim(), importe: resultadoCalculadoGasto, fecha: gastoForm.fecha,
@@ -3104,8 +3104,21 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
           estado_pago: gastoForm.estado_pago || "Pendiente",
         }
       );
+      let avisoIntegracion = "";
+      if (gastoForm.tipo_concepto_absis && respuestaGasto?.data?.id) {
+        try {
+          const solicitud = await axios.post(
+            `/expedientes/${encodeURIComponent(expedienteId)}/gastos/${encodeURIComponent(respuestaGasto.data.id)}/integracion-absis`
+          );
+          avisoIntegracion = solicitud?.data?.transmitido_a_absis
+            ? " Enviado a ABSIS."
+            : " Solicitud de integración registrada para Informática; todavía no se ha transmitido a ABSIS.";
+        } catch {
+          avisoIntegracion = " El gasto se ha guardado, pero no se pudo registrar la solicitud pendiente de integración.";
+        }
+      }
       setGastoForm({ tipo: "", tipo_concepto_absis: "", descripcion: "", importe: "", fecha: new Date().toLocaleDateString("sv-SE"), documento_url: "", nif_notario: "", nombre_notario: "", pagador: "", cuenta_bancaria: "", medio_pago: "Transferencia", numero_factura: "", fecha_factura: new Date().toLocaleDateString("sv-SE"), importe_total_bruto: "", base_exenta_impuestos: "0.00", base_sujeta_impuestos: "", tramo_impuesto: "General", tipo_impuesto: "IVA 21%", porcentaje_impuesto: "21", base_exenta_retencion: "0.00", base_sujeta_retencion: "0.00", tipo_retencion: "IRPF profesionales", porcentaje_retencion: "15", documento_carpeta_id: "", estado_pago: "Pendiente" });
-      setMensajeGastos("El gasto se ha registrado correctamente.");
+      setMensajeGastos(`El gasto se ha registrado correctamente.${avisoIntegracion}`);
       setMostrarFormularioGasto(false);
       setHonorarioGestoriaId("");
       await cargarGastosExpediente();
