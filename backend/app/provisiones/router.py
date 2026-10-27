@@ -811,12 +811,23 @@ def _logo_pdf_path():
     """Devuelve la ruta del logo incluido en el proyecto, si está disponible."""
     base = Path(__file__).resolve()
     candidatos = [
+        # Ruta habitual cuando se despliega desde la raíz del repositorio.
         base.parents[3] / "frontend-app" / "public" / "img" / "logo.jpg",
+        # Rutas alternativas según el directorio raíz configurado en Render.
+        Path.cwd() / "frontend-app" / "public" / "img" / "logo.jpg",
+        Path.cwd() / "public" / "img" / "logo.jpg",
+        base.parents[3] / "public" / "img" / "logo.jpg",
         base.parents[2] / "static" / "img" / "logo.jpg",
         base.parents[1] / "static" / "img" / "logo.jpg",
         base.parents[2] / "frontend-app" / "public" / "img" / "logo.jpg",
     ]
-    return next((ruta for ruta in candidatos if ruta.is_file() and ruta.stat().st_size > 0), None)
+    for ruta in candidatos:
+        try:
+            if ruta.is_file() and ruta.stat().st_size > 0:
+                return ruta
+        except OSError:
+            continue
+    return None
 
 
 def _cabecera_visual_pdf(plantilla: dict):
@@ -1157,13 +1168,16 @@ def documento_provision_independiente(provision_id: int, db: Session = Depends(g
             _p(_euros(g.get("gestion", 0)), styles["CeldaInd"]),
             _p(_euros(g.get("total", 0)), styles["CeldaIndBold"]),
         ])
-    tabla = Table(rows, colWidths=[40*mm, 24*mm, 22*mm, 20*mm, 22*mm, 22*mm, 26*mm], repeatRows=1, hAlign="LEFT")
+    # La tabla ocupa exactamente el ancho útil A4 (176 mm). Se da más espacio
+    # a IMPUESTOS para que el encabezado no parta la última letra y se elevan
+    # los paddings para que las filas respiren mejor.
+    tabla = Table(rows, colWidths=[38*mm, 22*mm, 21*mm, 24*mm, 21*mm, 22*mm, 28*mm], repeatRows=1, hAlign="LEFT")
     tabla.setStyle(TableStyle([
         ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#eaf0f8")),
         ("GRID", (0,0), (-1,-1), 0.4, colors.HexColor("#cdd6e2")),
-        ("VALIGN", (0,0), (-1,-1), "TOP"), ("ALIGN", (1,1), (-1,-1), "RIGHT"),
-        ("LEFTPADDING", (0,0), (-1,-1), 5), ("RIGHTPADDING", (0,0), (-1,-1), 5),
-        ("TOPPADDING", (0,0), (-1,-1), 7), ("BOTTOMPADDING", (0,0), (-1,-1), 7),
+        ("VALIGN", (0,0), (-1,-1), "MIDDLE"), ("ALIGN", (1,1), (-1,-1), "RIGHT"),
+        ("LEFTPADDING", (0,0), (-1,-1), 4), ("RIGHTPADDING", (0,0), (-1,-1), 4),
+        ("TOPPADDING", (0,0), (-1,-1), 9), ("BOTTOMPADDING", (0,0), (-1,-1), 9),
     ]))
     story.extend([tabla, Spacer(1, 5*mm), Paragraph(f"IMPORTE TOTAL ESTIMADO: {_euros(item.importe_total)}", styles["TotalInd"])])
     if data.get("observaciones"):
