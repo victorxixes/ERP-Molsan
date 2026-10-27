@@ -1820,6 +1820,7 @@ APODERADOS EN: ALICANTE · BALEARES · CANARIAS · CASTELLON · CATALUÑA · GAL
     provincia: "",
     poblacion: "",
     registro: "",
+    registro_propiedad_id: "",
     seccion: "",
     cuantia: "",
     inscripcion: "",
@@ -1837,9 +1838,27 @@ APODERADOS EN: ALICANTE · BALEARES · CANARIAS · CASTELLON · CATALUÑA · GAL
   const [errorFincas, setErrorFincas] = useState("");
   const [fincaEditandoId, setFincaEditandoId] = useState(null);
   const [guardandoFinca, setGuardandoFinca] = useState(false);
+  const [catalogoRegistrosPropiedad, setCatalogoRegistrosPropiedad] = useState([]);
+  const [modalSelectorRegistro, setModalSelectorRegistro] = useState(false);
+  const [busquedaRegistroCatalogo, setBusquedaRegistroCatalogo] = useState("");
+  const [registroDetalleAbierto, setRegistroDetalleAbierto] = useState(null);
+  const [oficinaDetalleAbierta, setOficinaDetalleAbierta] = useState(false);
+  const [oficinaCatalogoDetalle, setOficinaCatalogoDetalle] = useState(null);
+  const [cargandoOficinaDetalle, setCargandoOficinaDetalle] = useState(false);
 
   useEffect(() => {
     let activo = true;
+    async function cargarCatalogoRegistrosPropiedad() {
+      try {
+        const respuesta = await axios.get("/registros-propiedad");
+        if (!activo) return;
+        const datos = Array.isArray(respuesta?.data) ? respuesta.data : (Array.isArray(respuesta?.data?.items) ? respuesta.data.items : []);
+        setCatalogoRegistrosPropiedad(datos);
+      } catch (error) {
+        console.error("No se ha podido cargar el catálogo de Registros de la Propiedad.");
+      }
+    }
+    cargarCatalogoRegistrosPropiedad();
     async function cargarMunicipiosCatalogo() {
       setCargandoMunicipiosCatalogo(true);
       try {
@@ -4336,6 +4355,7 @@ const cuantiaFincasParaEnvio =
       provincia: finca?.provincia || expediente?.provincia || "",
       poblacion: finca?.poblacion || expediente?.poblacion || "",
       registro: finca?.registro || "",
+      registro_propiedad_id: finca?.registro_propiedad_id ? String(finca.registro_propiedad_id) : "",
       seccion: finca?.seccion || "",
       cuantia: finca?.cuantia ?? "",
       inscripcion: finca?.inscripcion || "",
@@ -4360,6 +4380,7 @@ const cuantiaFincasParaEnvio =
       provincia: String(fincaForm.provincia || "").trim() || null,
       poblacion: String(fincaForm.poblacion || "").trim() || null,
       registro: String(fincaForm.registro || "").trim() || null,
+      registro_propiedad_id: fincaForm.registro_propiedad_id ? Number(fincaForm.registro_propiedad_id) : null,
       seccion: String(fincaForm.seccion || "").trim() || null,
       cuantia: fincaForm.cuantia === "" ? null : String(fincaForm.cuantia),
       inscripcion: String(fincaForm.inscripcion || "").trim() || null,
@@ -5155,7 +5176,22 @@ const cuantiaFincasParaEnvio =
                   </span>
                   <span className="inline-flex items-center gap-1.5">
                     <span className="font-bold text-slate-500">Oficina</span>
-                    <span className="font-semibold text-slate-800">{expediente.oficina || "—"}</span>
+                    <button type="button" onClick={async () => {
+                      setOficinaDetalleAbierta(true);
+                      setCargandoOficinaDetalle(true);
+                      setOficinaCatalogoDetalle(null);
+                      try {
+                        const respuesta = await axios.get("/oficinas-catalogo", { params: { q: expediente?.oficina || "", limit: 200 } });
+                        const items = Array.isArray(respuesta?.data?.items) ? respuesta.data.items : [];
+                        const valor = normalizarTexto(expediente?.oficina || "");
+                        const encontrada = items.find((item) => normalizarTexto(item.oficina) === valor || normalizarTexto(item.nombre) === valor) || items.find((item) => valor && (normalizarTexto(item.oficina).includes(valor) || normalizarTexto(item.nombre).includes(valor) || valor.includes(normalizarTexto(item.oficina))));
+                        setOficinaCatalogoDetalle(encontrada || null);
+                      } catch (error) {
+                        setOficinaCatalogoDetalle(null);
+                      } finally {
+                        setCargandoOficinaDetalle(false);
+                      }
+                    }} className="font-semibold text-indigo-700 underline decoration-dotted underline-offset-2 hover:text-indigo-900" title="Consultar datos del catálogo de oficinas">{expediente.oficina || "—"}</button>
                   </span>
                   <span className="inline-flex items-center gap-1.5">
                     <span className="font-bold text-slate-500">Fecha alta</span>
@@ -7299,16 +7335,31 @@ const cuantiaFincasParaEnvio =
             />
           </div>
 
-          <CampoFormulario
-            label="Registro (número - Nombre)"
-            value={fincaForm.registro}
-            onChange={(valor) =>
-              setFincaForm((actual) => ({
-                ...actual,
-                registro: valor,
-              }))
-            }
-          />
+          <div className="mt-4 min-w-0">
+            <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-slate-500">Registro (número - Nombre)</label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={fincaForm.registro || ""}
+                readOnly
+                placeholder="Selecciona un Registro de la Propiedad"
+                onClick={() => {
+                  const existente = catalogoRegistrosPropiedad.find((item) => String(item.id) === String(fincaForm.registro_propiedad_id));
+                  if (existente) setRegistroDetalleAbierto(existente);
+                  else if (fincaForm.registro) {
+                    const texto = normalizarTexto(fincaForm.registro);
+                    const coincidencia = catalogoRegistrosPropiedad.find((item) => normalizarTexto(item.registro_propiedad) === texto || normalizarTexto(item.registro_propiedad).includes(texto) || texto.includes(normalizarTexto(item.registro_propiedad)));
+                    if (coincidencia) setRegistroDetalleAbierto(coincidencia);
+                    else setModalSelectorRegistro(true);
+                  } else setModalSelectorRegistro(true);
+                }}
+                className="min-w-0 flex-1 cursor-pointer rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 outline-none hover:border-indigo-300"
+                aria-label="Consultar datos del Registro de la Propiedad"
+              />
+              <button type="button" onClick={() => { setBusquedaRegistroCatalogo(""); setModalSelectorRegistro(true); }} className="shrink-0 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-100">Buscar</button>
+            </div>
+            <p className="mt-1 text-[11px] text-slate-500">{fincaForm.registro_propiedad_id ? "Registro vinculado al catálogo. Pulsa el campo para consultar sus datos." : "Selecciona un registro del catálogo para vincularlo al expediente."}</p>
+          </div>
 
           <CampoFormulario
             label="Sección"
@@ -7395,6 +7446,90 @@ const cuantiaFincasParaEnvio =
 
       </Modal>
 
+
+      <Modal
+        open={modalSelectorRegistro}
+        onClose={() => setModalSelectorRegistro(false)}
+        titulo="📚 Catálogo de Registros de la Propiedad"
+        subtitulo="Busca y vincula un registro al expediente"
+        ancho="max-w-4xl"
+        footer={<Boton onClick={() => setModalSelectorRegistro(false)}>Cerrar</Boton>}
+      >
+        <div className="space-y-3">
+          <input value={busquedaRegistroCatalogo} onChange={(event) => setBusquedaRegistroCatalogo(event.target.value)} placeholder="Buscar por número, nombre, población o provincia…" className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" />
+          <div className="max-h-[55vh] overflow-y-auto rounded-xl border border-slate-200">
+            {catalogoRegistrosPropiedad.filter((item) => {
+              const q = normalizarTexto(busquedaRegistroCatalogo);
+              return !q || [item.registro_propiedad, item.nombre_registrador, item.poblacion, item.provincia, item.direccion].some((v) => normalizarTexto(v).includes(q));
+            }).slice(0, 100).map((item) => (
+              <div key={item.id} className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 px-3 py-2.5 last:border-b-0 hover:bg-indigo-50/60">
+                <button type="button" onClick={() => { setFincaForm((actual) => ({ ...actual, registro: item.registro_propiedad || "", registro_propiedad_id: String(item.id), poblacion: item.poblacion || actual.poblacion, provincia: item.provincia || actual.provincia })); setModalSelectorRegistro(false); }} className="min-w-0 flex-1 text-left">
+                  <span className="block text-sm font-bold text-slate-800">{item.registro_propiedad}</span>
+                  <span className="block text-xs text-slate-500">{[item.poblacion, item.provincia].filter(Boolean).join(" · ")}{item.nombre_registrador ? " · " + item.nombre_registrador : ""}</span>
+                </button>
+                <button type="button" onClick={() => { setRegistroDetalleAbierto(item); setModalSelectorRegistro(false); }} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-indigo-700 hover:bg-indigo-50">Ver datos</button>
+              </div>
+            ))}
+            {catalogoRegistrosPropiedad.length === 0 && <p className="p-4 text-sm text-slate-500">No se han podido cargar registros del catálogo.</p>}
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        open={Boolean(registroDetalleAbierto)}
+        onClose={() => setRegistroDetalleAbierto(null)}
+        titulo="🏛️ Datos del Registro de la Propiedad"
+        subtitulo={registroDetalleAbierto?.registro_propiedad || "Datos del catálogo"}
+        ancho="max-w-3xl"
+        footer={<Boton onClick={() => setRegistroDetalleAbierto(null)}>Cerrar</Boton>}
+      >
+        {registroDetalleAbierto && <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {[
+            ["Registro (número - Nombre)", registroDetalleAbierto.registro_propiedad],
+            ["Nombre del registrador", registroDetalleAbierto.nombre_registrador],
+            ["Dirección", registroDetalleAbierto.direccion],
+            ["Código postal", registroDetalleAbierto.codigo_postal],
+            ["Población", registroDetalleAbierto.poblacion],
+            ["Provincia", registroDetalleAbierto.provincia],
+            ["Teléfono", registroDetalleAbierto.telefono],
+            ["Teléfono 2", registroDetalleAbierto.telefono_2],
+            ["Fax", registroDetalleAbierto.fax],
+            ["WhatsApp", registroDetalleAbierto.whatsapp],
+            ["Email 1", registroDetalleAbierto.email_1],
+            ["Email 2", registroDetalleAbierto.email_2],
+            ["IBAN", registroDetalleAbierto.iban],
+            ["Oficina liquidadora", registroDetalleAbierto.tiene_of_liq ? "Sí" : "No"],
+            ["Comentarios", registroDetalleAbierto.comentarios],
+          ].map(([label, value]) => <div key={label} className="rounded-xl border border-slate-200 bg-slate-50/70 p-3"><div className="text-[10px] font-extrabold uppercase tracking-wide text-slate-500">{label}</div><div className="mt-1 break-words text-sm font-medium text-slate-800">{value || "—"}</div></div>)}
+        </div>}
+      </Modal>
+
+      <Modal
+        open={oficinaDetalleAbierta}
+        onClose={() => setOficinaDetalleAbierta(false)}
+        titulo="🏢 Datos de la oficina"
+        subtitulo={expediente?.oficina || "Catálogo de oficinas"}
+        ancho="max-w-3xl"
+        footer={<Boton onClick={() => setOficinaDetalleAbierta(false)}>Cerrar</Boton>}
+      >
+        {cargandoOficinaDetalle ? <p className="text-sm text-slate-500">Consultando el catálogo de oficinas…</p> : oficinaCatalogoDetalle ? <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {[
+            ["Oficina", oficinaCatalogoDetalle.oficina],
+            ["Nombre", oficinaCatalogoDetalle.nombre],
+            ["Dirección", oficinaCatalogoDetalle.direccion],
+            ["Población", oficinaCatalogoDetalle.poblacion],
+            ["Código postal", oficinaCatalogoDetalle.cod_postal],
+            ["Código provincia", oficinaCatalogoDetalle.cod_provincia],
+            ["Provincia", oficinaCatalogoDetalle.provincia],
+            ["Código DT", oficinaCatalogoDetalle.cod_dt],
+            ["DT", oficinaCatalogoDetalle.dt],
+            ["Código DG", oficinaCatalogoDetalle.cod_dg],
+            ["DG", oficinaCatalogoDetalle.dg],
+            ["Código DAN", oficinaCatalogoDetalle.cod_dan],
+            ["DAN", oficinaCatalogoDetalle.dan],
+          ].map(([label, value]) => <div key={label} className="rounded-xl border border-slate-200 bg-slate-50/70 p-3"><div className="text-[10px] font-extrabold uppercase tracking-wide text-slate-500">{label}</div><div className="mt-1 break-words text-sm font-medium text-slate-800">{value || "—"}</div></div>)}
+        </div> : <p className="text-sm text-amber-700">No se ha encontrado una coincidencia para esta oficina en el catálogo. El dato original del expediente se conserva: {expediente?.oficina || "—"}.</p>}
+      </Modal>
 
       {/* =====================================================
           MODAL SOLICITUD DE FUSIÓN
