@@ -54,6 +54,10 @@ COLUMNAS_GASTOS = {
     "fecha_estado": "DATE",
     "fecha_peticion": "DATE",
     "fecha_pago": "DATE",
+    "tipo_concepto_absis": "VARCHAR(100)",
+    "origen_registro": "VARCHAR(30)",
+    "estado_consolidacion": "VARCHAR(50)",
+    "fecha_ultima_sincronizacion": "DATE",
 }
 
 
