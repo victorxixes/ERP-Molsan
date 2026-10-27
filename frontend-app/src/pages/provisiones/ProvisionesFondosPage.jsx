@@ -492,8 +492,12 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
       return;
     }
     const entidadActual = entidadesBancarias.find((e) => banco.entidad_actual_id != null && String(e.id) === String(banco.entidad_actual_id));
-    const actualNombre = entidadActual?.nombre || (typeof banco.entidad_actual === "string" ? banco.entidad_actual : "") || banco.nombre;
-    const esCaixaBank = normalizar(actualNombre).includes("caixabank");
+    // Solo se considera entidad propia si el catálogo identifica explícitamente a CaixaBank como entidad actual.
+    // Si la columna está vacía, no tiene sucesora vinculada o conserva el nombre original, se trata como otra entidad.
+    const actualNombre = (typeof banco.entidad_actual === "string" && banco.entidad_actual.trim()) || entidadActual?.nombre || "";
+    const nombreOriginal = normalizar(banco.nombre);
+    const nombreActual = normalizar(actualNombre);
+    const esCaixaBank = Boolean(nombreActual && nombreActual !== nombreOriginal && nombreActual.includes("caixabank"));
     const conceptoNotaria = conceptosImportes.find((x) => x.codigo === "notaria" && x.activo !== false);
     const conceptoRegistro = conceptosImportes.find((x) => x.codigo === "registro" && x.activo !== false);
     const conceptoImpuestos = conceptosImportes.find((x) => x.codigo === "impuestos" && x.activo !== false);

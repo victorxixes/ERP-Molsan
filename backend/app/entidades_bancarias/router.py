@@ -83,6 +83,7 @@ class EntidadBancariaResponse(
 
     id: int
     activo: bool
+    entidad_actual: Optional[str] = None
 
     class Config:
         orm_mode = True
@@ -141,9 +142,15 @@ def listar_entidades_bancarias(
     db: Session = Depends(get_db),
 ):
 
+    EntidadActual = aliased(EntidadBancaria)
     registros = (
         db.query(
-            EntidadBancaria
+            EntidadBancaria,
+            EntidadActual.nombre.label("entidad_actual"),
+        )
+        .outerjoin(
+            EntidadActual,
+            EntidadBancaria.entidad_actual_id == EntidadActual.id,
         )
         .filter(
             EntidadBancaria.activo.is_(True)
@@ -156,10 +163,11 @@ def listar_entidades_bancarias(
     )
 
     return [
-        entidad_a_dict(
-            registro
-        )
-        for registro in registros
+        {
+            **entidad_a_dict(registro),
+            "entidad_actual": entidad_actual,
+        }
+        for registro, entidad_actual in registros
     ]
 
 
