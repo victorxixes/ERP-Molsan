@@ -378,8 +378,8 @@ const CAMPOS_COMUNES_ACTIVIDAD = [
 
 
 
-function calcularVencimientoAsientoRenovacion(fechaNotificacion) {
-  if (!fechaNotificacion) return "";
+function calcularVencimientoAsientoRenovacion(fechaCalificacion) {
+  if (!fechaCalificacion) return "";
   const [anio, mes, dia] = String(fechaNotificacion).split("-").map(Number);
   if (!anio || !mes || !dia) return "";
   // UTC evita desfases de zona horaria al sumar días naturales.
@@ -395,6 +395,8 @@ const DEFECTO_VACIO = {
   fecha_vencimiento_presentacion: "",
   fecha_calificacion: "",
   fecha_renovacion_asiento: "",
+  asiento_renovacion: "",
+  libro_diario: "",
   asiento_renovacion_libro_diario: "",
   vencimiento_asiento_renovacion: "",
   anotacion_suspensiva: "",
@@ -3286,8 +3288,10 @@ function editarDefectoRegistrado(defecto) {
     fecha_vencimiento_presentacion: defecto.fecha_vencimiento_presentacion || "",
     fecha_calificacion: defecto.fecha_calificacion || "",
     fecha_renovacion_asiento: defecto.fecha_renovacion_asiento || "",
+    asiento_renovacion: defecto.asiento_renovacion || defecto.asiento_renovacion_libro_diario || "",
+    libro_diario: defecto.libro_diario || "",
     asiento_renovacion_libro_diario: defecto.asiento_renovacion_libro_diario || "",
-    vencimiento_asiento_renovacion: calcularVencimientoAsientoRenovacion(defecto.fecha_notificacion_registro),
+    vencimiento_asiento_renovacion: calcularVencimientoAsientoRenovacion(defecto.fecha_calificacion),
     anotacion_suspensiva: defecto.anotacion_suspensiva == null ? "" : String(defecto.anotacion_suspensiva),
     vencimiento_anotacion: defecto.vencimiento_anotacion || "",
     calificacion_sustitutoria: defecto.calificacion_sustitutoria == null ? "" : String(defecto.calificacion_sustitutoria),
@@ -3337,8 +3341,10 @@ async function guardarDefectoRegistral() {
       fecha_vencimiento_presentacion: defectoForm.fecha_vencimiento_presentacion || null,
       fecha_calificacion: defectoForm.fecha_calificacion || null,
       fecha_renovacion_asiento: defectoForm.fecha_renovacion_asiento || null,
-      asiento_renovacion_libro_diario: defectoForm.asiento_renovacion_libro_diario || null,
-      vencimiento_asiento_renovacion: defectoForm.vencimiento_asiento_renovacion || null,
+      asiento_renovacion: defectoForm.asiento_renovacion || null,
+      libro_diario: defectoForm.libro_diario || null,
+      asiento_renovacion_libro_diario: [defectoForm.asiento_renovacion, defectoForm.libro_diario].filter(Boolean).join(" / ") || defectoForm.asiento_renovacion_libro_diario || null,
+      vencimiento_asiento_renovacion: calcularVencimientoAsientoRenovacion(defectoForm.fecha_calificacion) || null,
       anotacion_suspensiva: defectoForm.anotacion_suspensiva === "" ? null : defectoForm.anotacion_suspensiva === "true",
       vencimiento_anotacion: defectoForm.vencimiento_anotacion || null,
       calificacion_sustitutoria: defectoForm.calificacion_sustitutoria === "" ? null : defectoForm.calificacion_sustitutoria === "true",
