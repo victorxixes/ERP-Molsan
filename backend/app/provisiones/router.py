@@ -665,6 +665,8 @@ def _logo_pdf():
     """Localiza el logo real de Molsan en las rutas posibles del despliegue."""
     base = Path(__file__).resolve()
     candidatos = [
+        # Copia explícita del logo dentro de la imagen Docker del backend.
+        base.parent / "logo.jpg",
         base.parents[3] / "frontend-app" / "public" / "img" / "logo.jpg",
         base.parents[2] / "static" / "img" / "logo.jpg",
         base.parents[1] / "static" / "img" / "logo.jpg",
