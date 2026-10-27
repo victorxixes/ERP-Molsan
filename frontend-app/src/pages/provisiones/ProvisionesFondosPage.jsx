@@ -317,7 +317,6 @@ function ConfiguracionConceptosProvisiones() {
                       const p = draft.reglas?.plantilla_pdf || {};
                       const valor = el.kind === "name" ? (p.nombre_empresa || "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L.") : el.kind === "cif" ? (p.cif || "CIF de la empresa") : el.kind === "direccion" ? (p.direccion || "Dirección corporativa") : el.kind === "contacto" ? (p.contacto || "Teléfono · correo") : "";
                       return <div key={el.id} onPointerDown={(e) => {
-                        if (el.kind === "logo" && !(p.logo_data_url)) return;
                         const r = e.currentTarget.parentElement.getBoundingClientRect();
                         const x = ((e.clientX - r.left) / r.width) * 100;
                         const y = ((e.clientY - r.top) / r.height) * 100;
