@@ -813,6 +813,8 @@ def _logo_pdf_path():
     """Devuelve la ruta del logo incluido en el proyecto, si está disponible."""
     base = Path(__file__).resolve()
     candidatos = [
+        # Copia explícita del logo dentro de la imagen Docker del backend.
+        base.parent / "logo.jpg",
         # Ruta habitual cuando se despliega desde la raíz del repositorio.
         base.parents[3] / "frontend-app" / "public" / "img" / "logo.jpg",
         # Rutas alternativas según el directorio raíz configurado en Render.
