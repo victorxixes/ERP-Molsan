@@ -1754,6 +1754,17 @@ def listado_expedientes(
     q = aplicar_filtro_alerta_control(q, alerta, db)
     q = aplicar_ambito_reparto(q, db, usuario)
 
+    # Ocultar del listado de trabajo los expedientes ya liquidados (LIQ)
+    # o liquidados sin tramitar (LST), sin modificar ni borrar sus registros.
+    # Se aplica antes del recuento y la paginación para que ambos sean coherentes.
+    # Los estados se comparan sin distinguir mayúsculas ni espacios exteriores.
+    q = q.filter(
+        or_(
+            Expediente.estado_expediente.is_(None),
+            func.upper(func.trim(Expediente.estado_expediente)).notin_(("LIQ", "LST")),
+        )
+    )
+
     orden_aplicado = False
 
     if ordenMultiple:
