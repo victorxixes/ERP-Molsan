@@ -132,7 +132,7 @@ export default function ModulosSelector() {
         estilo: "mg",
       });
     }
-    if (esAdmin && visibles.includes("fichajes")) {
+    if (esAdmin && visibles.includes("control-fichajes")) {
       disponibles.push({
         clave: "control-fichajes",
         nombre: "Control de Fichajes",
