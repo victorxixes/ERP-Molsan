@@ -97,15 +97,21 @@ export default function ModulosSelector() {
       empleado.nombre_rol ||
       empleado.role?.name ||
       (typeof empleado.rol === "string" ? empleado.rol : "")
-    );
+    ).replace(/[_-]+/g, " ").replace(/\\s+/g, " ").trim();
     const usuario = normalizar(empleado.usuario);
-    const nombre = normalizar(empleado.nombre);
+    // Mantener el mismo criterio estricto que usa la API. Roles operativos
+    // como "gestor" o "manager" no deben recibir privilegios administrativos
+    // por una coincidencia parcial del nombre del rol.
+    const rolesAdministradores = new Set([
+      "admin", "administrador", "administradora", "superadmin",
+      "super admin", "superadministrador", "super administradora",
+      "superuser", "super usuario", "superusuario", "administrador general",
+    ]);
     const esAdmin =
       empleado.es_admin === true ||
       empleado.is_admin === true ||
       usuario === "admin" ||
-      nombre === "admin" ||
-      ["admin", "administrador", "administradora", "superadmin", "superusuario", "gestor", "manager"].some((r) => rol.includes(r));
+      rolesAdministradores.has(rol);
 
     // El administrador gestiona los fichajes de la plantilla desde Control
     // de Fichajes; no necesita la tarjeta de marcaje personal en este panel.
