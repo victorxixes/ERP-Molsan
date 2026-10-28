@@ -58,6 +58,7 @@ const ImportarCTN = lazy(() => import("./pages/herramientas/ImportarCTN.jsx"));
 const ImportadorAbsis = lazy(() => import("./pages/herramientas/importador_absis"));
 const ImportadorPostFirma = lazy(() => import("./pages/herramientas/ImportadorPostFirma.jsx"));
 const Utilidades = lazy(() => import("./pages/herramientas/Utilidades.jsx"));
+const AltaExpediente = lazy(() => import("./pages/herramientas/AltaExpediente.jsx"));
 const AdministracionEmpleadoConfig = lazy(() => import("./pages/herramientas/AdministracionEmpleadoConfig.jsx"));
 const AccesosNotariales = lazy(() => import("./pages/herramientas/AccesosNotariales.jsx"));
 const Catalogos = lazy(() => import("./pages/herramientas/Catalogos.jsx"));
@@ -491,6 +492,7 @@ export default function App() {
             path="herramientas/utilidades"
             element={<Utilidades />}
           />
+          <Route path="herramientas/utilidades/alta-expediente" element={<AltaExpediente />} />
 
           <Route
             path="herramientas/utilidades/lectura-copias"
