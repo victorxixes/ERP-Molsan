@@ -1440,6 +1440,7 @@ export default function FichaExpediente() {
   });
   const [cargandoEstadoAbsis, setCargandoEstadoAbsis] = useState(false);
   const [registrandoSolicitudIntegracion, setRegistrandoSolicitudIntegracion] = useState(false);
+  const [fechaEnvioAbsis, setFechaEnvioAbsis] = useState("");
   const [documentosCarpetaPrevia, setDocumentosCarpetaPrevia] = useState([]);
   const [documentosCierre, setDocumentosCierre] = useState([]);
   const actualizarDocumentosCarpetaPrevia = useCallback((lista) => {
@@ -1482,6 +1483,21 @@ export default function FichaExpediente() {
   useEffect(() => {
     if (actividadSeleccionada === "facturacion-cierre") cargarDocumentosCierre();
   }, [actividadSeleccionada, cargarDocumentosCierre]);
+
+  // Recupera la fecha registrada para el envío de la actividad seleccionada.
+  useEffect(() => {
+    const numero = expediente?.id_expediente || id;
+    if (!mostrarModalDatosActividad || !numero || !actividadSeleccionada || actividadSeleccionada === "gestion-economica") return undefined;
+    let activo = true;
+    axios.get(`/expedientes/${encodeURIComponent(numero)}/integraciones-pendientes/${encodeURIComponent(actividadSeleccionada)}`)
+      .then(({ data }) => {
+        if (activo) setFechaEnvioAbsis(String(data?.fecha_envio_absis || "").slice(0, 10));
+      })
+      .catch(() => {
+        if (activo) setFechaEnvioAbsis("");
+      });
+    return () => { activo = false; };
+  }, [mostrarModalDatosActividad, expediente?.id_expediente, id, actividadSeleccionada]);
 
   // Mantiene visibles en Documentación previa los archivos que ya están guardados
   // en la carpeta digital, incluso antes de abrir el repositorio manualmente.
@@ -2586,6 +2602,40 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       );
     } finally {
       setGuardandoActividad(false);
+    }
+  }
+
+  async function enviarActividadAAbsis() {
+    const numero = expediente?.id_expediente || id;
+    if (!numero || !actividadSeleccionada || actividadSeleccionada === "gestion-economica" || registrandoSolicitudIntegracion) return;
+    if (!fechaEnvioAbsis) {
+      setErrorActividad("Indica la fecha de envío a ABSIS antes de registrar la solicitud.");
+      return;
+    }
+    setRegistrandoSolicitudIntegracion(true);
+    setErrorActividad("");
+    setMensajeActividad("");
+    try {
+      const payload = {
+        ...actividadDraft,
+        fecha_envio_absis: fechaEnvioAbsis,
+        estado_documentacion_absis: actividadSeleccionada === "documentacion-previa" ? estadoDocumentacionAbsis : undefined,
+        solicitud_manual: true,
+        mover_siguiente_actividad: false,
+      };
+      const respuesta = await axios.post(
+        `/expedientes/${encodeURIComponent(numero)}/integraciones-pendientes/${encodeURIComponent(actividadSeleccionada)}`,
+        payload
+      );
+      setMensajeActividad(
+        `Solicitud de envío a ABSIS registrada (n.º ${respuesta?.data?.solicitud_id || "—"}). ` +
+        "Importante: la conexión externa aún no está activa; no se ha transmitido información a ABSIS."
+      );
+    } catch (err) {
+      const detail = err?.response?.data?.detail;
+      setErrorActividad(typeof detail === "string" ? detail : detail?.mensaje || JSON.stringify(detail) || err?.message || "No se pudo registrar la solicitud de envío a ABSIS.");
+    } finally {
+      setRegistrandoSolicitudIntegracion(false);
     }
   }
 
@@ -8731,6 +8781,33 @@ const cuantiaFincasParaEnvio =
                 </section>
               </div>
             ) : null}
+        {actividadSeleccionada !== "gestion-economica" && (
+          <section className="mt-5 rounded-xl border border-sky-200 bg-sky-50/70 p-4">
+            <div className="grid grid-cols-1 items-end gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+              <label className="block min-w-0">
+                <span className="mb-1.5 block text-xs font-extrabold text-slate-700">Fecha envío ABSIS</span>
+                <input
+                  type="date"
+                  value={fechaEnvioAbsis}
+                  onChange={(event) => setFechaEnvioAbsis(event.target.value)}
+                  disabled={registrandoSolicitudIntegracion || expedienteBloqueado}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={enviarActividadAAbsis}
+                disabled={registrandoSolicitudIntegracion || expedienteBloqueado}
+                className="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-lg bg-sky-700 px-4 py-2.5 text-xs font-extrabold text-white transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {registrandoSolicitudIntegracion ? "Registrando solicitud…" : "📤 Enviar a ABSIS"}
+              </button>
+            </div>
+            <p className="mt-2 text-[11px] leading-relaxed text-sky-900">
+              Permite registrar el envío manual o dejar preparada la solicitud. Hasta que se active la conexión con ABSIS, este botón registra la petición en el ERP, pero no transmite datos externamente.
+            </p>
+          </section>
+        )}
         <section className="mt-5 rounded-xl border border-amber-300 bg-amber-50 p-4">
           <p className="text-sm font-extrabold text-amber-900">Aviso para informática · Integración de datos</p>
           {actividadSeleccionada === "sede-notarial-protocolo" ? (
