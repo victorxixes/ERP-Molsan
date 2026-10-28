@@ -21,6 +21,7 @@ from backend.app.auth.dependencies import get_current_user
 from backend.app.database import get_db
 from backend.app.expedientes.models import Expediente
 from backend.app.expedientes.gastos.models import ExpedienteGasto
+from backend.app.Utilidades.importadores.clasificacion_postfirma import clasificar_tipo_operacion
 
 router = APIRouter(prefix="/informes", tags=["Informes"], dependencies=[Depends(get_current_user)])
 
@@ -121,12 +122,10 @@ def _valor(gasto, atributo, clave_original):
 
 def _tipo_cancelacion(exp, gasto=None):
     valor_origen = _valor(gasto, "tipo_operacion_absis", "TIPOOPERACION") if gasto is not None else None
-    valor = _normalizar_texto(valor_origen or (getattr(exp, "tipo_operacion", None) if exp else None))
-    if "cancelacion" in valor and "sin provision" in valor:
-        return "sin_provision"
-    if "cancelacion" in valor:
-        return "con_provision"
-    return "otros"
+    valor = valor_origen or (getattr(exp, "tipo_operacion", None) if exp else None)
+    # Solo el valor equivalente exacto a "Cancelación sin provision" es sin provisión.
+    # CANCELACIÓN y cualquier otro tipo se clasifican como con provisión.
+    return clasificar_tipo_operacion(valor)
 
 
 def _situacion_facturacion(gasto):
