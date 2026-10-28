@@ -5034,7 +5034,7 @@ const cuantiaFincasParaEnvio =
             </div>
             <div className="flex min-w-0 flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-white px-2 py-1.5">
               <label htmlFor="ficha-promocion" className="shrink-0 text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Promoción</label>
-              <input id="ficha-promocion" type="text" value={expediente?.promocion || ""} readOnly disabled placeholder="Sin asignar" className="w-36 min-w-[100px] cursor-not-allowed rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs text-slate-700 disabled:opacity-100 sm:w-44" aria-label="Promoción asignada al expediente" title="La promoción se asigna desde Utilidades → Gestión de expedientes." />
+              <input id="ficha-promocion" type="text" value={expediente?.promocion || ""} readOnly placeholder="Sin asignar" className="w-36 min-w-[100px] cursor-default rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs text-slate-700 sm:w-44" aria-label="Promoción asignada al expediente" title="La promoción se asigna desde Utilidades → Gestión de expedientes." />
             </div>
             <div className="flex shrink-0 items-center gap-2">
               <button type="button" onClick={abrirAgregarExpedientes} className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold text-blue-700 transition hover:bg-blue-100">
