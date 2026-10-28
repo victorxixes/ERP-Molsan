@@ -4560,14 +4560,24 @@ const cuantiaFincasParaEnvio =
                           <h3 className="text-sm font-extrabold text-slate-800">Checklist de calidad del expediente</h3>
                           <p className="mt-1 text-xs text-slate-500">Cada visto se obtiene de los datos guardados y de los documentos encontrados en la carpeta digital. Los requisitos pendientes se muestran para poder corregirlos.</p>
                         </div>
-                        <button
-                          type="button"
-                          onClick={cargarDocumentosCierre}
-                          disabled={cargandoDocumentosCierre}
-                          className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-                        >
-                          {cargandoDocumentosCierre ? "Comprobando…" : "↻ Comprobar de nuevo"}
-                        </button>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={generarHonorariosGestoria}
+                            disabled={generandoHonorariosGestoria || !expediente?.id_expediente}
+                            className="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-extrabold text-white hover:bg-emerald-800 disabled:opacity-50"
+                          >
+                            {generandoHonorariosGestoria ? "Abriendo factura…" : "🧾 Liquidar expediente / Factura definitiva de honorarios"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={cargarDocumentosCierre}
+                            disabled={cargandoDocumentosCierre}
+                            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                          >
+                            {cargandoDocumentosCierre ? "Comprobando…" : "↻ Comprobar de nuevo"}
+                          </button>
+                        </div>
                       </div>
                       {cargandoDocumentosCierre && <p className="mt-3 text-xs text-slate-500">Actualizando datos documentales…</p>}
                       {errorDocumentosCierre && <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorDocumentosCierre}</p>}
