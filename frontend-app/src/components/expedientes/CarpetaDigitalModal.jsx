@@ -968,6 +968,7 @@ export default function CarpetaDigitalModal({
                             ["Provincia", datosEnvioNotario?.facturacion_provincia],
                             ["Teléfono", datosEnvioNotario?.facturacion_telefono],
                             ["Email", datosEnvioNotario?.facturacion_email],
+                            ["Empleado", [true, "true", "1", "si", "sí"].includes(String(datosEnvioNotario?.facturacion_empleado ?? datosPanelActividad?.facturacion_empleado ?? expedienteDatos?.facturacion_empleado ?? false).trim().toLowerCase()) ? "Sí" : "No"],
                             ["Idioma del documento", datosEnvioNotario?.idioma_documento || datosEnvioNotario?.idioma],
                           ],
                         },
@@ -1095,6 +1096,7 @@ export default function CarpetaDigitalModal({
                               ["Provincia", datosPanelActividad?.facturacion_provincia || datosPanelActividad?.provincia_facturacion],
                               ["Teléfono", datosPanelActividad?.facturacion_telefono || datosPanelActividad?.telefono_facturacion],
                               ["Email", datosPanelActividad?.facturacion_email || datosPanelActividad?.email_facturacion],
+                              ["Empleado", [true, "true", "1", "si", "sí"].includes(String(datosPanelActividad?.facturacion_empleado ?? expedienteDatos?.facturacion_empleado ?? false).trim().toLowerCase()) ? "Sí" : "No"],
                             ].map(([etiqueta, valor]) => (
                               <div key={etiqueta} className="min-w-0 border-b border-slate-100 py-1.5 last:border-b-0">
                                 <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
@@ -1122,6 +1124,7 @@ export default function CarpetaDigitalModal({
                               ["Provincia", datosPanelActividad?.facturacion_provincia || datosPanelActividad?.provincia_facturacion],
                               ["Teléfono", datosPanelActividad?.facturacion_telefono || datosPanelActividad?.telefono_facturacion],
                               ["Email", datosPanelActividad?.facturacion_email || datosPanelActividad?.email_facturacion],
+                              ["Empleado", [true, "true", "1", "si", "sí"].includes(String(datosPanelActividad?.facturacion_empleado ?? expedienteDatos?.facturacion_empleado ?? false).trim().toLowerCase()) ? "Sí" : "No"],
                             ],
                           },
                           {
