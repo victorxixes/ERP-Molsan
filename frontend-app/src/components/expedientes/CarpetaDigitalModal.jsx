@@ -986,7 +986,7 @@ export default function CarpetaDigitalModal({
                     </div>
                   ) : (
                     (["liquidacion-impuestos", "tramitacion-inscripcion", "defectos-registrales", "facturacion-cierre"].includes(actividadId)) ? (
-                      <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-3">
+                      <div className={`grid min-w-0 grid-cols-1 items-start gap-3 ${actividadId === "facturacion-cierre" ? "xl:grid-cols-2" : "xl:grid-cols-3"}`}>
                         <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
                           <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">📋 Datos · {bloqueActividad?.titulo || ({ "liquidacion-impuestos": "Liquidación de impuestos", "tramitacion-inscripcion": "Tramitación inscripción", "defectos-registrales": "Defectos registrales", "facturacion-cierre": "Cierre del expediente" }[actividadId] || "Datos de actividad")}</h5>
                           <div className="grid min-w-0 grid-cols-1 gap-1.5 px-2.5 py-2 sm:grid-cols-2 xl:grid-cols-1">
@@ -1023,6 +1023,7 @@ export default function CarpetaDigitalModal({
                             ))}
                           </div>
                         </section>
+                        {actividadId !== "facturacion-cierre" && (
                         <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
                           <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">Datos de facturación</h5>
                           <div className="space-y-0 px-2.5 py-1.5">
@@ -1093,6 +1094,7 @@ export default function CarpetaDigitalModal({
                             ))}
                           </div>
                         </section>
+                        )}
                       </div>
                     ) : (
                     actividadId === "gestion-economica" ? (
