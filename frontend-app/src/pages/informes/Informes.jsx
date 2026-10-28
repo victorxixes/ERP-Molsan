@@ -3359,7 +3359,7 @@ const ESTADOS_FACTURACION_ABSIS = {
 };
 
 function estadoFacturacionAbsis(fila) {
-  const estado = String(fila?.estado ?? "").trim().toUpperCase().replace(/\\s+/g, " ");
+  const estado = String(fila?.estado ?? "").trim().toUpperCase().replace(/\s+/g, " ");
   for (const [situacion, estados] of Object.entries(ESTADOS_FACTURACION_ABSIS)) {
     if (estados.includes(estado)) return situacion;
   }
@@ -3523,7 +3523,7 @@ function InformeFacturacion() {
         </div>
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {ESTADOS_ABSIS_INFORME.map((estadoInfo) => {
-            const filasEstado = datosTarjetas.filter((fila) => String(fila.estado ?? "").trim().toUpperCase().replace(/\\s+/g, " ") === estadoInfo.codigo);
+            const filasEstado = datosTarjetas.filter((fila) => String(fila.estado ?? "").trim().toUpperCase().replace(/\s+/g, " ") === estadoInfo.codigo);
             const importeEstado = filasEstado.reduce((total, fila) => total + (Number(fila.imp_gasto) || 0), 0);
             const acento = estadoInfo.color === "emerald" ? "border-emerald-200 bg-emerald-50/70 text-emerald-800"
               : estadoInfo.color === "rose" ? "border-rose-200 bg-rose-50/70 text-rose-800"
