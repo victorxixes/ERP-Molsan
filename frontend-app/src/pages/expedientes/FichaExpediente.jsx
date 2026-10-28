@@ -7,6 +7,7 @@ import axios from "../../api/axios";
 import { obtenerExpediente, obtenerListadoExpedientes, enviarExpedienteANotario } from "../../api/expedientes";
 
 import EnviarANotarioModal from "../../components/expedientes/EnviarANotarioModal";
+import LiquidarExpedienteModal from "../../components/expedientes/LiquidarExpedienteModal";
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
 import TraspasoSaldoPanel from "../../components/expedientes/TraspasoSaldoPanel";
 import { useAuthStore } from "../../store/authStore";
@@ -5072,6 +5073,21 @@ const cuantiaFincasParaEnvio =
               {actividadSeleccionada === "facturacion-cierre" && (
                 <button
                   type="button"
+                  onClick={() => {
+                    setMostrarLiquidarExpediente(true);
+                    cargarGastosExpediente();
+                    cargarDocumentosCierre();
+                  }}
+                  disabled={!expediente?.id_expediente}
+                  className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-indigo-300 bg-indigo-700 px-3 py-2 text-[11px] font-extrabold text-white transition hover:bg-indigo-800 disabled:opacity-50"
+                  title="Revisar provisión, movimientos, facturación y checklist antes del cierre"
+                >
+                  ⚖️ Liquidar
+                </button>
+              )}
+              {actividadSeleccionada === "facturacion-cierre" && (
+                <button
+                  type="button"
                   onClick={generarHonorariosGestoria}
                   disabled={generandoHonorariosGestoria || !expediente?.id_expediente}
                   className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-emerald-300 bg-emerald-700 px-3 py-2 text-[11px] font-extrabold text-white transition hover:bg-emerald-800 disabled:opacity-50"
@@ -8988,7 +9004,31 @@ const cuantiaFincasParaEnvio =
         )}
       </Modal>
 
-
+      {mostrarLiquidarExpediente && (
+        <LiquidarExpedienteModal
+          expediente={expediente}
+          movimientos={gastosExpediente}
+          checklist={renderChecklistCalidad()}
+          cargandoCierre={liquidandoExpediente}
+          onClose={() => setMostrarLiquidarExpediente(false)}
+          onConfirmarCierre={async () => {
+            setLiquidandoExpediente(true);
+            try {
+              const respuesta = await axios.post(
+                "/expedientes/" + encodeURIComponent(expediente?.id_expediente || id) + "/avanzar-actividad",
+                {}
+              );
+              await cargarExpediente();
+              await cargarGastosExpediente();
+              setMostrarLiquidarExpediente(false);
+              setMensajeActividad("Liquidación confirmada y expediente cerrado.");
+              return respuesta?.data;
+            } finally {
+              setLiquidandoExpediente(false);
+            }
+          }}
+        />
+      )}
 
           </div>
         </div>
