@@ -156,7 +156,7 @@ export default function AltaExpediente() {
         {notarioSeleccionado && <div className="grid gap-4 rounded-xl border border-emerald-100 bg-emerald-50/60 p-4 md:grid-cols-3"><div><p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">NIF</p><p className="mt-1 font-semibold text-slate-800">{notarioSeleccionado.nif || "No disponible"}</p></div><div><p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Población</p><p className="mt-1 font-semibold text-slate-800">{notarioSeleccionado.poblacion || "No disponible"}</p></div><div><p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Provincia</p><p className="mt-1 font-semibold text-slate-800">{notarioSeleccionado.provincia || "No disponible"}</p></div></div>}
       </Seccion>
 
-      <Seccion className="lg:col-span-2 2xl:col-span-3" numero="7" titulo="Observaciones" descripcion="Notas generales o instrucciones adicionales para el expediente.">
+      <Seccion numero="7" titulo="Observaciones" descripcion="Notas generales o instrucciones adicionales para el expediente.">
         <label className="block space-y-1.5"><span className="text-sm font-semibold text-slate-700">Observaciones generales</span><textarea className={campo} rows={5} value={observaciones} onChange={(e) => setObservaciones(e.target.value)} placeholder="Escribe aquí las observaciones generales del expediente…" /></label>
       </Seccion>
 
