@@ -3503,6 +3503,18 @@ def generar_honorarios_gestoria(
     if expediente is None:
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
 
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS facturas_honorarios_gestoria (
+            id BIGSERIAL PRIMARY KEY,
+            id_expediente VARCHAR(200) NOT NULL UNIQUE,
+            numero_factura VARCHAR(40) NOT NULL UNIQUE,
+            fecha_factura DATE NOT NULL,
+            datos_factura JSONB NOT NULL,
+            estado VARCHAR(40) NOT NULL DEFAULT 'Pendiente de registro',
+            creada_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            registrada_en TIMESTAMP WITHOUT TIME ZONE
+        )
+    """))
     factura_registrable = db.execute(text("""
         SELECT numero_factura, fecha_factura, datos_factura, estado
         FROM facturas_honorarios_gestoria
