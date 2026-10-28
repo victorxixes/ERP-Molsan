@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 from io import BytesIO
 from typing import Optional
@@ -104,6 +104,31 @@ def _situacion_facturacion(gasto):
 
     return "otros"
 
+def _fecha_original_absis(gasto, clave):
+    """Recupera una fecha del JSON original cuando el campo normalizado está vacío."""
+    bruto = getattr(gasto, "datos_absis_json", None)
+    if not bruto:
+        return None
+    try:
+        original = json.loads(bruto)
+    except (TypeError, ValueError):
+        return None
+    valor = original.get(clave)
+    if valor is None or str(valor).strip() == "":
+        return None
+    if isinstance(valor, datetime):
+        return valor.date()
+    if isinstance(valor, date):
+        return valor
+    texto = str(valor).strip()
+    for formato in ("%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y", "%Y/%m/%d"):
+        try:
+            return datetime.strptime(texto[:10], formato).date()
+        except ValueError:
+            continue
+    return None
+
+
 def _fecha_iso(valor):
     return valor.isoformat() if valor else None
 
@@ -171,7 +196,7 @@ def _consultar(db, fecha_desde=None, fecha_hasta=None, tipo_operacion=None, esta
             "id_expediente": exp.id_expediente if exp else getattr(gasto, "id_expediente_absis", None),
             "id_gasto_absis": getattr(gasto, "id_gasto_absis", None),
             "numero_factura_absis": getattr(gasto, "numero_factura_absis", None),
-            "fecha_factura_absis": _fecha_iso(getattr(gasto, "fecha_factura_absis", None)),
+            "fecha_factura_absis": _fecha_iso(getattr(gasto, "fecha_factura_absis", None) or _fecha_original_absis(gasto, "FFACTURA")),
             "tipo_concepto_absis": getattr(gasto, "tipo_concepto_absis", None),
             "origen_registro": getattr(gasto, "origen_registro", None),
             "estado_consolidacion": getattr(gasto, "estado_consolidacion", None),
@@ -279,6 +304,15 @@ def exportar_informe_facturacion(
         ("FPETICION", "fecha_peticion"), ("FPAGO", "fecha_pago"), ("Estado pago ERP", "estado_pago"),
         ("Nº factura", "numero_factura"),
     ]
+    # Añadir todas las columnas originales del Excel ABSIS, aunque no tengan
+    # una columna normalizada propia en el modelo de datos.
+    claves_originales = []
+    for item in items:
+        for clave in (item.get("datos_absis") or {}).keys():
+            if clave not in claves_originales:
+                claves_originales.append(clave)
+    columnas.extend((f"ABSIS · {clave}", f"raw:{clave}") for clave in claves_originales)
+
     for idx, (label, _) in enumerate(columnas, 1):
         celda = ws.cell(row=1, column=idx, value=label)
         celda.font = Font(bold=True, color="FFFFFF")
@@ -286,7 +320,11 @@ def exportar_informe_facturacion(
         celda.alignment = Alignment(vertical="center")
     for rownum, item in enumerate(items, 2):
         for idx, (_, field) in enumerate(columnas, 1):
-            ws.cell(row=rownum, column=idx, value=item.get(field))
+            if field.startswith("raw:"):
+                valor = (item.get("datos_absis") or {}).get(field[4:])
+            else:
+                valor = item.get(field)
+            ws.cell(row=rownum, column=idx, value=valor)
     ws.auto_filter.ref = f"A1:{get_column_letter(len(columnas))}{max(1, len(items)+1)}"
     for idx, (label, field) in enumerate(columnas, 1):
         ws.column_dimensions[get_column_letter(idx)].width = min(max(len(label)+3, 14), 34)
