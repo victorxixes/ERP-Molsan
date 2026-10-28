@@ -45,6 +45,9 @@ class Expediente(Base):
     cliente_id = Column(Integer, ForeignKey("clientes.id"), nullable=True, index=True)
     cliente = relationship("Cliente", back_populates="expedientes")
     id_expediente = Column(String(100), unique=True, index=True, nullable=False)
+    # Alta manual: tipo maestro y contador independiente por tipo.
+    tipo_expediente_id = Column(Integer, nullable=True, index=True)
+    numero_tipo_expediente = Column(Integer, nullable=True)
     # Relaciones estables con los catálogos CTN y Empleados.
     notario_id = Column(Integer, nullable=True, index=True)
     apoderado_empleado_id = Column(Integer, ForeignKey("empleados.id"), nullable=True, index=True)
