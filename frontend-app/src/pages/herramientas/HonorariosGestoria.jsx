@@ -18,6 +18,12 @@ export default function HonorariosGestoria() {
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
   const [mensaje, setMensaje] = useState("");
+  const [plantillaFactura, setPlantillaFactura] = useState(null);
+  const [archivoPlantilla, setArchivoPlantilla] = useState(null);
+  const [subiendoPlantilla, setSubiendoPlantilla] = useState(false);
+  const [descargandoPlantilla, setDescargandoPlantilla] = useState(false);
+  const [errorPlantilla, setErrorPlantilla] = useState("");
+  const [mensajePlantilla, setMensajePlantilla] = useState("");
 
   async function cargar() {
     setCargando(true);
@@ -32,7 +38,64 @@ export default function HonorariosGestoria() {
     }
   }
 
-  useEffect(() => { cargar(); }, []);
+  useEffect(() => { cargar(); cargarEstadoPlantilla(); }, []);
+
+  async function cargarEstadoPlantilla() {
+    try {
+      const { data } = await axios.get("/utilidades/conceptos-gastos/6/plantilla-factura/estado");
+      setPlantillaFactura(data);
+      setErrorPlantilla("");
+    } catch (e) {
+      setErrorPlantilla(e?.response?.data?.detail || "No se pudo consultar el estado de la plantilla Word.");
+    }
+  }
+
+  async function subirPlantilla() {
+    if (!archivoPlantilla || subiendoPlantilla) return;
+    if (!archivoPlantilla.name.toLowerCase().endsWith(".docx")) {
+      setErrorPlantilla("Selecciona un documento Word .docx.");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("fichero", archivoPlantilla);
+    setSubiendoPlantilla(true);
+    setErrorPlantilla("");
+    setMensajePlantilla("");
+    try {
+      const { data } = await axios.post("/utilidades/conceptos-gastos/6/plantilla-factura", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setPlantillaFactura({ plantilla_cargada: true, factura_nombre: data.factura_nombre, factura_tipo: data.factura_tipo, actualizado_en: new Date().toISOString() });
+      setArchivoPlantilla(null);
+      const selector = document.getElementById("plantilla-word-honorarios");
+      if (selector) selector.value = "";
+      setMensajePlantilla("Plantilla Word guardada correctamente en el catálogo de honorarios.");
+    } catch (e) {
+      setErrorPlantilla(e?.response?.data?.detail || "No se pudo guardar el documento Word.");
+    } finally {
+      setSubiendoPlantilla(false);
+    }
+  }
+
+  async function descargarPlantilla() {
+    setDescargandoPlantilla(true);
+    setErrorPlantilla("");
+    try {
+      const { data } = await axios.get("/utilidades/conceptos-gastos/6/plantilla-factura", { responseType: "blob" });
+      const url = URL.createObjectURL(data instanceof Blob ? data : new Blob([data]));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = plantillaFactura?.factura_nombre || "plantilla-factura.docx";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      setErrorPlantilla(e?.response?.data?.detail || "No se pudo descargar la plantilla Word.");
+    } finally {
+      setDescargandoPlantilla(false);
+    }
+  }
 
   function editar(item) {
     setEditando(item.id);
@@ -88,6 +151,23 @@ export default function HonorariosGestoria() {
       </header>
 
       {(error || mensaje) && <div role="status" className={`rounded-xl border px-4 py-3 text-sm ${error ? "border-red-200 bg-red-50 text-red-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"}`}>{error || mensaje}</div>}
+
+      <section className="rounded-2xl border border-indigo-200 bg-white p-5 shadow-sm">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="max-w-2xl">
+            <p className="text-xs font-black uppercase tracking-[.16em] text-indigo-600">Plantilla de factura oficial</p>
+            <h2 className="mt-1 text-lg font-extrabold text-slate-900">Modelo Word de factura MOLSAN</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">Sube aquí el modelo oficial en formato .docx. El archivo se guarda en el servidor, vinculado a la plantilla de factura de honorarios, para poder revisarlo y adaptar el PDF del ERP a su estructura.</p>
+            <p className="mt-2 text-xs text-slate-500">{plantillaFactura?.plantilla_cargada ? "Documento guardado: " + (plantillaFactura.factura_nombre || "plantilla Word") : "Todavía no hay ningún Word guardado."} · Formato .docx · Máximo 10 MB</p>
+          </div>
+          {plantillaFactura?.plantilla_cargada && <button type="button" onClick={descargarPlantilla} disabled={descargandoPlantilla} className="shrink-0 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50">{descargandoPlantilla ? "Descargando…" : "Descargar Word guardado"}</button>}
+        </div>
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <input id="plantilla-word-honorarios" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={e=>setArchivoPlantilla(e.target.files?.[0] || null)} className="block w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-3 file:py-2 file:text-xs file:font-bold file:text-indigo-700" />
+          <button type="button" onClick={subirPlantilla} disabled={!archivoPlantilla || subiendoPlantilla} className="shrink-0 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50">{subiendoPlantilla ? "Subiendo…" : "Guardar plantilla Word"}</button>
+        </div>
+        {(errorPlantilla || mensajePlantilla) && <p role="status" className={`mt-3 rounded-lg px-3 py-2 text-sm ${errorPlantilla ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700"}`}>{errorPlantilla || mensajePlantilla}</p>}
+      </section>
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,.8fr)]">
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
