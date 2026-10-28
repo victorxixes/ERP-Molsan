@@ -46,6 +46,8 @@ class ExpedienteGasto(Base):
     medio_pago = Column(String(100), nullable=True)
     numero_factura = Column(String(150), nullable=True)
     fecha_factura = Column(Date, nullable=True)
+    numero_factura_absis = Column(String(150), nullable=True)
+    fecha_factura_absis = Column(Date, nullable=True)
 
     # Bases imponibles.
     importe_total_bruto = Column(Numeric(12, 2), nullable=True)
@@ -91,6 +93,10 @@ class ExpedienteGasto(Base):
     tipo_operacion_absis = Column(String(300), nullable=True)
     concepto_gasto_absis = Column(String(300), nullable=True)
     datos_absis_json = Column(Text, nullable=True)
+    tipo_concepto_absis = Column(String(100), nullable=True, index=True)
+    origen_registro = Column(String(30), nullable=True, default="ERP")
+    estado_consolidacion = Column(String(50), nullable=True, default="Pendiente envío")
+    fecha_ultima_sincronizacion = Column(Date, nullable=True)
 
     @property
     def numero_documento(self):

@@ -1,7 +1,6 @@
-"""Importador histórico ABSIS de gastos Post Firma.
-
-Separado del importador de expedientes: no filtra por FECHAALTA ni modifica la ficha
-del expediente. IDGASTO se usa como clave de actualización cuando está disponible.
+"""Importador ABSIS Post Firma idempotente para consolidar gastos ERP.
+La clave preferida es (IDGASTO, TIPOCONCEPTO); permite transición de históricos
+sin TIPOCONCEPTO solo cuando la coincidencia por IDGASTO es inequívoca.
 """
 import json
 import unicodedata
@@ -165,7 +164,7 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
     TAMANO_LOTE = 500
     creados = actualizados = sin_id_gasto = sin_expediente = filas_vacias = 0
     duplicados_excel = 0
-    ids_vistos = set()
+    claves_vistas = set()
     errores = []
     errores_total = 0
 
@@ -198,19 +197,21 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
                     continue
 
                 id_gasto = _texto(val(row, "IDGASTO"))
+                tipo_concepto = _texto(val(row, "TIPOCONCEPTO"))
                 if not id_gasto:
                     sin_id_gasto += 1
                     errores_total += 1
                     if len(errores) < 200:
                         errores.append({"fila": fila_excel, "motivo": "IDGASTO vacío; fila omitida para evitar duplicados"})
                     continue
-                if id_gasto in ids_vistos or id_gasto in ids_lote:
+                clave_gasto = (id_gasto.casefold(), (tipo_concepto or "").casefold())
+                if clave_gasto in claves_vistas:
                     duplicados_excel += 1
                     errores_total += 1
                     if len(errores) < 200:
-                        errores.append({"fila": fila_excel, "id_gasto": id_gasto, "motivo": "IDGASTO duplicado dentro del Excel; fila posterior omitida"})
+                        errores.append({"fila": fila_excel, "motivo": "IDGASTO + TIPOCONCEPTO duplicados dentro del Excel; fila posterior omitida"})
                     continue
-                ids_vistos.add(id_gasto)
+                claves_vistas.add(clave_gasto)
                 ids_lote.add(id_gasto)
 
                 numero_exp = _texto(val(row, "IDEXPEDIENTE"))
@@ -221,6 +222,7 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
                     "fila_excel": fila_excel,
                     "original": original,
                     "id_gasto": id_gasto,
+                    "tipo_concepto": tipo_concepto,
                     "numero_exp": numero_exp,
                 })
 
@@ -228,12 +230,17 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
                 continue
 
             # Dos consultas por lote, en vez de dos consultas por cada fila.
-            gastos_existentes = {
-                str(g.id_gasto_absis).strip(): g
-                for g in db.query(ExpedienteGasto)
+            gastos_existentes_lista = (
+                db.query(ExpedienteGasto)
                 .filter(ExpedienteGasto.id_gasto_absis.in_(ids_lote)).all()
-                if g.id_gasto_absis is not None
-            }
+            )
+            gastos_por_clave = {}
+            gastos_por_id = {}
+            for existente in gastos_existentes_lista:
+                id_existente = str(existente.id_gasto_absis).strip().casefold()
+                tipo_existente = str(existente.tipo_concepto_absis or "").strip().casefold()
+                gastos_por_clave[(id_existente, tipo_existente)] = existente
+                gastos_por_id.setdefault(id_existente, []).append(existente)
             expedientes_existentes = {}
             if expedientes_lote:
                 expedientes_existentes = {
@@ -246,36 +253,72 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
             for registro in registros:
                 row = registro["row"]
                 id_gasto = registro["id_gasto"]
+                tipo_concepto = registro["tipo_concepto"]
                 numero_exp = registro["numero_exp"]
                 exp = expedientes_existentes.get(numero_exp.casefold()) if numero_exp else None
-                if exp is None:
-                    sin_expediente += 1
 
-                gasto = gastos_existentes.get(id_gasto)
+                clave = (id_gasto.casefold(), (tipo_concepto or "").casefold())
+                gasto = gastos_por_clave.get(clave)
+                # Históricos sin TIPOCONCEPTO: reutilizar solo si la coincidencia es única.
+                if gasto is None and len(gastos_por_id.get(id_gasto.casefold(), [])) == 1:
+                    candidato = gastos_por_id[id_gasto.casefold()][0]
+                    if not candidato.tipo_concepto_absis:
+                        gasto = candidato
+                # Contar como no vinculado solo si no hay expediente ABSIS localizado
+                # ni un gasto ERP previo que conserve ya el vínculo interno.
+                if exp is None and (gasto is None or gasto.expediente_id is None):
+                    sin_expediente += 1
                 es_nuevo = gasto is None
+                origen_previo = (str(getattr(gasto, "origen_registro", "") or "").strip().upper()) if gasto else None
+                # Compatibilidad con gastos ERP anteriores a los campos de trazabilidad:
+                # si ya están vinculados internamente y aún no tienen datos ABSIS, no pisar sus valores.
+                es_gasto_erp = bool(gasto) and (
+                    origen_previo == "ERP" or (
+                        gasto.expediente_id is not None
+                        and not getattr(gasto, "id_expediente_absis", None)
+                        and not getattr(gasto, "datos_absis_json", None)
+                    )
+                )
                 if es_nuevo:
                     gasto = ExpedienteGasto()
                     db.add(gasto)
-                    gastos_existentes[id_gasto] = gasto
+                    gastos_por_clave[clave] = gasto
+                    gastos_por_id.setdefault(id_gasto.casefold(), []).append(gasto)
 
                 concepto = _texto(val(row, "CONCEPTOGASTO"))
                 importe = _decimal(val(row, "IMPGASTO"))
                 fecha_factura = _fecha(val(row, "FFACTURA"))
                 fecha_adjuntar = _fecha(val(row, "FECHAADJUNTARFACTURA"))
+                fecha_factura_absis = fecha_factura
+                numero_factura_absis = _texto(val(row, "NUMFACTURA"))
 
-                gasto.expediente_id = exp.id if exp else None
+                # Si el expediente todavía no se encuentra en ERP, conservar el vínculo
+                # existente si lo había; nunca desasociar un gasto ERP por un Excel parcial.
+                if exp is not None:
+                    gasto.expediente_id = exp.id
+                elif es_nuevo:
+                    gasto.expediente_id = None
                 gasto.id_gasto_absis = id_gasto
                 gasto.id_expediente_absis = numero_exp
+                gasto.tipo_concepto_absis = tipo_concepto
+                gasto.origen_registro = "ERP" if es_gasto_erp else "ABSIS_POSTFIRMA"
+                gasto.estado_consolidacion = "Consolidado" if es_gasto_erp else "Importado Post Firma"
+                gasto.fecha_ultima_sincronizacion = date.today()
                 gasto.tipo_operacion_absis = _texto(val(row, "TIPOOPERACION"))
                 gasto.concepto_gasto_absis = concepto
-                gasto.tipo = concepto or "Gasto ABSIS Post Firma"
-                gasto.descripcion = _texto(val(row, "DETALLEOPERACION")) or concepto
-                gasto.importe = importe
+                # El bloque ABSIS se conserva en sus campos propios; solo un gasto ABSIS
+                # nuevo usa los campos base como compatibilidad con pantallas antiguas.
+                if es_nuevo or not es_gasto_erp:
+                    gasto.tipo = concepto or "Gasto ABSIS Post Firma"
+                    gasto.descripcion = _texto(val(row, "DETALLEOPERACION")) or concepto
+                    gasto.importe = importe
+                    gasto.fecha = fecha_factura or fecha_adjuntar
+                    gasto.fecha_factura = fecha_factura
+                    gasto.numero_factura = numero_factura_absis
                 gasto.imp_gasto = importe
-                gasto.fecha = fecha_factura or fecha_adjuntar
-                gasto.fecha_factura = fecha_factura
+                gasto.fecha_factura_absis = fecha_factura_absis
                 gasto.fecha_adjuntar_factura = fecha_adjuntar
-                gasto.numero_factura = _texto(val(row, "NUMFACTURA"))
+                gasto.numero_factura_absis = numero_factura_absis
                 gasto.estado_absis = _texto(val(row, "ESTADO"))
                 gasto.estado_justificante = _texto(val(row, "ESTADOJUSTIFICANTE"))
                 gasto.imp_base_impuesto = _decimal(val(row, "IMPBASEIMPUESTO"))
@@ -319,7 +362,7 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
         "errores": errores,
         "errores_total": errores_total,
         "total_procesados": creados + actualizados,
-        "nota": "Importación por lotes confirmados por IDGASTO; no se ha modificado ni creado ningún expediente.",
+        "nota": "Importación por lotes idempotente por IDGASTO + TIPOCONCEPTO cuando existe; no se ha creado ningún expediente.",
     }
 
 
@@ -369,7 +412,8 @@ def validar_postfirma(
     total_importe = Decimal("0")
     filas_con_importe = 0
     importes_invalidos = 0
-    ids = []
+    claves_gasto = []
+    ids_gasto = []
     ids_vacios = 0
     expedientes_excel = set()
     filas_no_vacias = 0
@@ -385,10 +429,13 @@ def validar_postfirma(
             continue
         filas_no_vacias += 1
         id_gasto = _texto(celda(row, "IDGASTO"))
+        tipo_concepto = _texto(celda(row, "TIPOCONCEPTO"))
         if not id_gasto:
             ids_vacios += 1
         else:
-            ids.append(id_gasto)
+            ids_gasto.append(id_gasto.casefold())
+            ids_gasto.append(id_gasto.casefold())
+            claves_gasto.append((id_gasto.casefold(), (tipo_concepto or "").casefold()))
 
         numero_exp = _texto(celda(row, "IDEXPEDIENTE"))
         if numero_exp:
@@ -430,16 +477,18 @@ def validar_postfirma(
             fechas_adjuntar_vacias += 1
 
     from collections import Counter
-    conteo_ids = Counter(ids)
-    duplicados_archivo = sum(1 for n in conteo_ids.values() if n > 1)
-    duplicados_filas = sum(n - 1 for n in conteo_ids.values() if n > 1)
+    conteo_claves = Counter(claves_gasto)
+    duplicados_archivo = sum(1 for n in conteo_claves.values() if n > 1)
+    duplicados_filas = sum(n - 1 for n in conteo_claves.values() if n > 1)
     existentes = {
-        str(v[0]).strip()
-        for v in db.query(ExpedienteGasto.id_gasto_absis)
-        .filter(ExpedienteGasto.id_gasto_absis.isnot(None)).all()
-        if v[0] is not None
+        (str(fila[0]).strip().casefold(), str(fila[1] or "").strip().casefold())
+        for fila in db.query(
+            ExpedienteGasto.id_gasto_absis,
+            ExpedienteGasto.tipo_concepto_absis,
+        ).filter(ExpedienteGasto.id_gasto_absis.isnot(None)).all()
+        if fila[0] is not None
     }
-    coincidencias = sum(1 for valor in set(ids) if valor in existentes)
+    coincidencias = sum(1 for valor in set(claves_gasto) if valor in existentes)
     ids_expedientes_erp = {
         str(v[0]).casefold()
         for v in db.query(Expediente.id_expediente).all()
@@ -465,7 +514,8 @@ def validar_postfirma(
         "fpago_sin_fecha_o_invalida": fpago_sin_fecha,
         "filas_analizadas": int(len(df)),
         "filas_con_datos": filas_no_vacias,
-        "ids_gasto_unicos": len(set(ids)),
+        "ids_gasto_unicos": len(set(ids_gasto)),
+        "claves_correlacion_unicas": len(set(claves_gasto)),
         "idgasto_vacios": ids_vacios,
         "ids_duplicados_en_excel": duplicados_archivo,
         "filas_duplicadas_adicionales": duplicados_filas,

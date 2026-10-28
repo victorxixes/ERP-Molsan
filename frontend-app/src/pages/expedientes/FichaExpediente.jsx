@@ -1547,6 +1547,9 @@ export default function FichaExpediente() {
   });
   const [conceptosGasto, setConceptosGasto] = useState([]);
   const [cargandoConceptosGasto, setCargandoConceptosGasto] = useState(false);
+  const [tiposConceptoAbsis, setTiposConceptoAbsis] = useState([]);
+  const [cargandoTiposConceptoAbsis, setCargandoTiposConceptoAbsis] = useState(false);
+  const [catalogoTiposConceptoAbsisCargado, setCatalogoTiposConceptoAbsisCargado] = useState(false);
   const [honorariosCatalogo, setHonorariosCatalogo] = useState([]);
   const [honorarioGestoriaId, setHonorarioGestoriaId] = useState("");
   const [documentosFacturaGasto, setDocumentosFacturaGasto] = useState([]);
@@ -1603,7 +1606,7 @@ export default function FichaExpediente() {
   }, [mostrarFormularioGasto, documentoFacturaSeleccionado, documentosFacturaGasto, expedienteIdGastos]);
 
   const [gastoForm, setGastoForm] = useState({
-    tipo: "", descripcion: "", importe: "", fecha: new Date().toLocaleDateString("sv-SE"), documento_url: "",
+    tipo: "", tipo_concepto_absis: "", descripcion: "", importe: "", fecha: new Date().toLocaleDateString("sv-SE"), documento_url: "",
     nif_notario: "", nombre_notario: "", pagador: "", cuenta_bancaria: "", medio_pago: "Transferencia",
     numero_factura: "", fecha_factura: new Date().toLocaleDateString("sv-SE"), importe_total_bruto: "",
     base_exenta_impuestos: "0.00", base_sujeta_impuestos: "", tramo_impuesto: "General", tipo_impuesto: "IVA 21%",
@@ -3111,7 +3114,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     setErrorGastos("");
     setMensajeGastos("");
     try {
-      await axios.post(
+      const respuestaGasto = await axios.post(
         `/expedientes/${encodeURIComponent(expedienteId)}/gastos`,
         {
           tipo: gastoForm.tipo.trim(), descripcion: gastoForm.descripcion.trim(), importe: resultadoCalculadoGasto, fecha: gastoForm.fecha,
@@ -3119,6 +3122,8 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
           nif_notario: gastoForm.nif_notario.trim() || null, nombre_notario: gastoForm.nombre_notario.trim() || null,
           pagador: gastoForm.pagador.trim() || null, cuenta_bancaria: gastoForm.cuenta_bancaria.trim() || null,
           medio_pago: gastoForm.medio_pago || null, numero_factura: gastoForm.numero_factura.trim() || null,
+          tipo_concepto_absis: gastoForm.tipo_concepto_absis || null, origen_registro: "ERP",
+          estado_consolidacion: "Pendiente envío",
           fecha_factura: gastoForm.fecha_factura || null, importe_total_bruto: brutoCalculadoGasto,
           base_exenta_impuestos: numeroDecimalGasto(gastoForm.base_exenta_impuestos), base_sujeta_impuestos: baseImponibleGasto,
           tramo_impuesto: gastoForm.tramo_impuesto || null, tipo_impuesto: gastoForm.tipo_impuesto || null,
@@ -3129,8 +3134,21 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
           estado_pago: gastoForm.estado_pago || "Pendiente",
         }
       );
-      setGastoForm({ tipo: "", descripcion: "", importe: "", fecha: new Date().toLocaleDateString("sv-SE"), documento_url: "", nif_notario: "", nombre_notario: "", pagador: "", cuenta_bancaria: "", medio_pago: "Transferencia", numero_factura: "", fecha_factura: new Date().toLocaleDateString("sv-SE"), importe_total_bruto: "", base_exenta_impuestos: "0.00", base_sujeta_impuestos: "", tramo_impuesto: "General", tipo_impuesto: "IVA 21%", porcentaje_impuesto: "21", base_exenta_retencion: "0.00", base_sujeta_retencion: "0.00", tipo_retencion: "IRPF profesionales", porcentaje_retencion: "15", documento_carpeta_id: "", estado_pago: "Pendiente" });
-      setMensajeGastos("El gasto se ha registrado correctamente.");
+      let avisoIntegracion = "";
+      if (gastoForm.tipo_concepto_absis && respuestaGasto?.data?.id) {
+        try {
+          const solicitud = await axios.post(
+            `/expedientes/${encodeURIComponent(expedienteId)}/gastos/${encodeURIComponent(respuestaGasto.data.id)}/integracion-absis`
+          );
+          avisoIntegracion = solicitud?.data?.transmitido_a_absis
+            ? " Enviado a ABSIS."
+            : " Solicitud de integración registrada para Informática; todavía no se ha transmitido a ABSIS.";
+        } catch {
+          avisoIntegracion = " El gasto se ha guardado, pero no se pudo registrar la solicitud pendiente de integración.";
+        }
+      }
+      setGastoForm({ tipo: "", tipo_concepto_absis: "", descripcion: "", importe: "", fecha: new Date().toLocaleDateString("sv-SE"), documento_url: "", nif_notario: "", nombre_notario: "", pagador: "", cuenta_bancaria: "", medio_pago: "Transferencia", numero_factura: "", fecha_factura: new Date().toLocaleDateString("sv-SE"), importe_total_bruto: "", base_exenta_impuestos: "0.00", base_sujeta_impuestos: "", tramo_impuesto: "General", tipo_impuesto: "IVA 21%", porcentaje_impuesto: "21", base_exenta_retencion: "0.00", base_sujeta_retencion: "0.00", tipo_retencion: "IRPF profesionales", porcentaje_retencion: "15", documento_carpeta_id: "", estado_pago: "Pendiente" });
+      setMensajeGastos(`El gasto se ha registrado correctamente.${avisoIntegracion}`);
       setMostrarFormularioGasto(false);
       setHonorarioGestoriaId("");
       await cargarGastosExpediente();
@@ -3180,6 +3198,28 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       .catch(() => { if (activo) setErrorGastos("No se pudo cargar el catálogo de honorarios de gestoría."); });
     return () => { activo = false; };
   }, [mostrarFormularioGasto, honorariosCatalogo.length]);
+
+  useEffect(() => {
+    if (!mostrarFormularioGasto || catalogoTiposConceptoAbsisCargado) return;
+    let activo = true;
+    setCargandoTiposConceptoAbsis(true);
+    axios.get("/catalogos-absis?categoria=TIPOCONCEPTO")
+      .then((respuesta) => {
+        if (!activo) return;
+        const lista = Array.isArray(respuesta?.data) ? respuesta.data : [];
+        setTiposConceptoAbsis(lista.filter((item) => item && item.activo !== false));
+      })
+      .catch(() => {
+        if (activo) setTiposConceptoAbsis([]);
+      })
+      .finally(() => {
+        if (activo) {
+          setCargandoTiposConceptoAbsis(false);
+          setCatalogoTiposConceptoAbsisCargado(true);
+        }
+      });
+    return () => { activo = false; };
+  }, [mostrarFormularioGasto, catalogoTiposConceptoAbsisCargado]);
 
   useEffect(() => {
     if (!mostrarFormularioGasto || conceptosGasto.length) return;
@@ -5359,6 +5399,7 @@ const cuantiaFincasParaEnvio =
                                     }));
                                   } }} className="w-full rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · base {Number(x.base_imponible ?? x.importe ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € + {String(x.tipo_impuesto || "IVA").toUpperCase()} {Number(x.porcentaje_impuesto ?? 21)}% · total {Number(x.importe || 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</option>)}</select><span className="mt-1 block text-[11px] text-slate-500">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Concepto del gasto *</span><select required value={gastoForm.tipo} onChange={(e) => setGastoForm((a) => ({...a, tipo:e.target.value, descripcion:a.descripcion || e.target.options[e.target.selectedIndex]?.text || e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">{cargandoConceptosGasto ? "Cargando catálogo…" : "Selecciona un concepto"}</option>{conceptosGasto.map((c) => <option key={String(c.value)} value={String(c.value)}>{c.label}</option>)}{!conceptosGasto.some((c) => String(c.value) === "Honorarios de gestoría") && <option value="Honorarios de gestoría">Honorarios de gestoría</option>}</select></label>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tipo de concepto ABSIS (TIPOCONCEPTO)</span><select value={gastoForm.tipo_concepto_absis} onChange={(e) => setGastoForm((a) => ({ ...a, tipo_concepto_absis: e.target.value }))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">{cargandoTiposConceptoAbsis ? "Cargando catálogo ABSIS…" : tiposConceptoAbsis.length ? "Selecciona el tipo ABSIS" : "Sin valores activos en Catálogo ABSIS"}</option>{tiposConceptoAbsis.map((item) => <option key={item.id} value={String(item.codigo || item.valor || "")}>{item.codigo ? `${item.codigo} — ${item.valor}` : item.valor}</option>)}</select><span className="mt-1 block text-[11px] text-slate-500">Opcional hasta validar con Informática los códigos oficiales y su correspondencia con el concepto interno.</span></label>
                                 <div className="grid gap-3 sm:grid-cols-2">
                                   <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">NIF/CIF/NIE notario</span><input value={gastoForm.nif_notario} onChange={(e)=>setGastoForm(a=>({...a,nif_notario:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
                                   <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Nombre del notario</span><input value={gastoForm.nombre_notario} onChange={(e)=>setGastoForm(a=>({...a,nombre_notario:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
@@ -6856,6 +6897,10 @@ const cuantiaFincasParaEnvio =
                                       <span className="font-bold text-indigo-700">{gasto.numero_documento || `PAG-${String(gasto.id).padStart(6, "0")}`}</span>
                                       {gasto.tipo && <span>{gasto.tipo}</span>}
                                       {gasto.fecha && <span>Fecha: {formatearFecha(gasto.fecha)}</span>}
+                                      {gasto.id_gasto_absis && <span className="rounded-md bg-slate-100 px-2 py-1 font-semibold text-slate-700">IDGASTO: {gasto.id_gasto_absis}</span>}
+                                      {gasto.tipo_concepto_absis && <span className="rounded-md bg-indigo-50 px-2 py-1 font-semibold text-indigo-700">TIPOCONCEPTO: {gasto.tipo_concepto_absis}</span>}
+                                      {gasto.estado_consolidacion && <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${gasto.estado_consolidacion === "Consolidado" ? "bg-emerald-50 text-emerald-700" : gasto.estado_consolidacion === "Pendiente envío" ? "bg-amber-50 text-amber-700" : "bg-sky-50 text-sky-700"}`}>{gasto.estado_consolidacion}</span>}
+                                      {gasto.fecha_ultima_sincronizacion && <span>Sincronizado: {formatearFecha(gasto.fecha_ultima_sincronizacion)}</span>}
                                       <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${String(gasto.estado_pago || "Pendiente").toLowerCase().includes("pag") || String(gasto.estado_pago || "").toLowerCase().includes("abon") ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{gasto.estado_pago || "Pendiente"}</span>
                                     </div>
                                   </div>

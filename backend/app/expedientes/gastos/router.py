@@ -1,12 +1,15 @@
 from datetime import date
+import json
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import text
 from pydantic import BaseModel, Field, validator
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
 from backend.app.expedientes.gastos.models import ExpedienteGasto
 from backend.app.expedientes.models import Expediente
 
@@ -44,6 +47,8 @@ class GastoBase(BaseModel):
     medio_pago: Optional[str] = Field(None, max_length=100)
     numero_factura: Optional[str] = Field(None, max_length=150)
     fecha_factura: Optional[date] = None
+    numero_factura_absis: Optional[str] = Field(None, max_length=150)
+    fecha_factura_absis: Optional[date] = None
     importe_total_bruto: Optional[Decimal] = None
     base_exenta_impuestos: Optional[Decimal] = None
     base_sujeta_impuestos: Optional[Decimal] = None
@@ -59,6 +64,14 @@ class GastoBase(BaseModel):
     importe_resultante: Optional[Decimal] = None
     documento_carpeta_id: Optional[int] = None
     estado_pago: Optional[str] = Field("Pendiente", max_length=50)
+    id_gasto_absis: Optional[str] = Field(None, max_length=100)
+    id_expediente_absis: Optional[str] = Field(None, max_length=100)
+    tipo_operacion_absis: Optional[str] = Field(None, max_length=300)
+    concepto_gasto_absis: Optional[str] = Field(None, max_length=300)
+    tipo_concepto_absis: Optional[str] = Field(None, max_length=100)
+    origen_registro: Optional[str] = Field("ERP", max_length=30)
+    estado_consolidacion: Optional[str] = Field("Pendiente envío", max_length=50)
+    fecha_ultima_sincronizacion: Optional[date] = None
 
     @validator(
         "importe", "importe_total_bruto", "base_exenta_impuestos",
@@ -85,6 +98,10 @@ class GastoResponse(GastoBase):
     id: int
     expediente_id: int
     numero_documento: str
+    estado_absis: Optional[str] = None
+    estado_justificante: Optional[str] = None
+    imp_gasto: Optional[Decimal] = None
+    fecha_pago: Optional[date] = None
 
 
 def _obtener_expediente(db: Session, expediente_id: int):
@@ -144,6 +161,98 @@ def _validar_calculo(datos: dict):
 def listar_gastos(expediente_id: int, db: Session = Depends(get_db)):
     expediente = _obtener_expediente(db, expediente_id)
     return db.query(ExpedienteGasto).filter(ExpedienteGasto.expediente_id == expediente.id).order_by(ExpedienteGasto.fecha.desc(), ExpedienteGasto.id.desc()).all()
+
+
+@router.post("/{expediente_id}/gastos/{gasto_id}/integracion-absis")
+def preparar_integracion_gasto_absis(
+    expediente_id: int,
+    gasto_id: int,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    """Deja una solicitud trazable para la futura API saliente; no transmite a ABSIS."""
+    expediente = _obtener_expediente(db, expediente_id)
+    gasto = db.query(ExpedienteGasto).filter(
+        ExpedienteGasto.id == gasto_id,
+        ExpedienteGasto.expediente_id == expediente.id,
+    ).first()
+    if gasto is None:
+        raise HTTPException(status_code=404, detail="No se encontró el gasto del expediente.")
+    if not gasto.tipo_concepto_absis:
+        raise HTTPException(
+            status_code=422,
+            detail="Asigna TIPOCONCEPTO ABSIS al gasto antes de preparar la integración.",
+        )
+
+    payload = {
+        "erp": {
+            "id_gasto_erp": gasto.id,
+            "id_expediente_erp": str(expediente.id_expediente),
+        },
+        "gasto": {
+            "id_gasto_absis": gasto.id_gasto_absis,
+            "id_expediente_absis": gasto.id_expediente_absis or str(expediente.id_expediente),
+            "tipo_concepto": gasto.tipo_concepto_absis,
+            "concepto": gasto.tipo,
+            "descripcion": gasto.descripcion,
+            "importe": str(gasto.importe_total_bruto if gasto.importe_total_bruto is not None else gasto.importe) if (gasto.importe_total_bruto is not None or gasto.importe is not None) else None,
+            "fecha_factura": gasto.fecha_factura.isoformat() if gasto.fecha_factura else None,
+            "numero_factura": gasto.numero_factura,
+        },
+    }
+    payload_json = json.dumps(payload, ensure_ascii=False, default=str)
+    try:
+        db.execute(text("""
+            CREATE TABLE IF NOT EXISTS expediente_absis_solicitudes (
+                id BIGSERIAL PRIMARY KEY,
+                expediente_id VARCHAR(100) NOT NULL,
+                actividad VARCHAR(100) NOT NULL,
+                payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+                solicitado_por INTEGER NULL,
+                mover_siguiente_actividad BOOLEAN NOT NULL DEFAULT FALSE,
+                estado VARCHAR(40) NOT NULL DEFAULT 'PENDIENTE_CONFIGURACION',
+                creado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """))
+        existente = db.execute(text("""
+            SELECT id FROM expediente_absis_solicitudes
+            WHERE actividad = 'gastos-postfirma'
+              AND estado = 'PENDIENTE_CONFIGURACION'
+              AND payload->'erp'->>'id_gasto_erp' = :gasto_id
+            ORDER BY id DESC LIMIT 1
+        """), {"gasto_id": str(gasto.id)}).scalar()
+        if existente is None:
+            solicitud_id = db.execute(text("""
+                INSERT INTO expediente_absis_solicitudes
+                    (expediente_id, actividad, payload, solicitado_por,
+                     mover_siguiente_actividad, estado, creado_en)
+                VALUES
+                    (:expediente_id, 'gastos-postfirma', CAST(:payload AS JSONB),
+                     :solicitado_por, FALSE, 'PENDIENTE_CONFIGURACION', CURRENT_TIMESTAMP)
+                RETURNING id
+            """), {
+                "expediente_id": str(expediente.id_expediente),
+                "payload": payload_json,
+                "solicitado_por": getattr(usuario, "id", None),
+            }).scalar()
+        else:
+            solicitud_id = existente
+        gasto.estado_consolidacion = "Pendiente envío"
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="No se pudo registrar la solicitud pendiente de integración ABSIS.") from exc
+
+    return {
+        "ok": True,
+        "solicitud_id": solicitud_id,
+        "id_gasto_erp": gasto.id,
+        "id_expediente": str(expediente.id_expediente),
+        "estado": "PENDIENTE_CONFIGURACION",
+        "registrado_localmente": True,
+        "transmitido_a_absis": False,
+        "mensaje": "Solicitud registrada para Informática. No se ha enviado a ABSIS porque falta validar endpoint, autenticación y contrato de datos.",
+    }
 
 
 @router.post("/{expediente_id}/gastos", response_model=GastoResponse, status_code=status.HTTP_201_CREATED)

@@ -29,6 +29,8 @@ COLUMNAS_GASTOS = {
     "medio_pago": "VARCHAR(100)",
     "numero_factura": "VARCHAR(150)",
     "fecha_factura": "DATE",
+    "numero_factura_absis": "VARCHAR(150)",
+    "fecha_factura_absis": "DATE",
     "importe_total_bruto": "NUMERIC(12, 2)",
     "base_exenta_impuestos": "NUMERIC(12, 2)",
     "base_sujeta_impuestos": "NUMERIC(12, 2)",
@@ -54,6 +56,10 @@ COLUMNAS_GASTOS = {
     "fecha_estado": "DATE",
     "fecha_peticion": "DATE",
     "fecha_pago": "DATE",
+    "tipo_concepto_absis": "VARCHAR(100)",
+    "origen_registro": "VARCHAR(30)",
+    "estado_consolidacion": "VARCHAR(50)",
+    "fecha_ultima_sincronizacion": "DATE",
 }
 
 

@@ -44,6 +44,12 @@ def migrar_campos_absis_facturacion():
         "tipo_operacion_absis": "VARCHAR(300)",
         "concepto_gasto_absis": "VARCHAR(300)",
         "datos_absis_json": "TEXT",
+        "numero_factura_absis": "VARCHAR(150)",
+        "fecha_factura_absis": "DATE",
+        "tipo_concepto_absis": "VARCHAR(100)",
+        "origen_registro": "VARCHAR(30)",
+        "estado_consolidacion": "VARCHAR(50)",
+        "fecha_ultima_sincronizacion": "DATE",
     }
     with engine.begin() as conexion:
         for nombre, tipo_sql in columnas.items():
@@ -155,6 +161,13 @@ def _consultar(db, fecha_desde=None, fecha_hasta=None, tipo_operacion=None, esta
             continue
         filas.append({
             "id_expediente": exp.id_expediente if exp else getattr(gasto, "id_expediente_absis", None),
+            "id_gasto_absis": getattr(gasto, "id_gasto_absis", None),
+            "numero_factura_absis": getattr(gasto, "numero_factura_absis", None),
+            "fecha_factura_absis": _fecha_iso(getattr(gasto, "fecha_factura_absis", None)),
+            "tipo_concepto_absis": getattr(gasto, "tipo_concepto_absis", None),
+            "origen_registro": getattr(gasto, "origen_registro", None),
+            "estado_consolidacion": getattr(gasto, "estado_consolidacion", None),
+            "fecha_ultima_sincronizacion": _fecha_iso(getattr(gasto, "fecha_ultima_sincronizacion", None)),
             "tipo_cancelacion": tipo,
             "tipo_operacion": getattr(gasto, "tipo_operacion_absis", None) or (exp.tipo_operacion if exp else None),
             "concepto_gasto": getattr(gasto, "concepto_gasto_absis", None) or "HONORARIOS GESTORÍA",
@@ -244,7 +257,11 @@ def exportar_informe_facturacion(
     ws.title = "Honorarios gestoría"
     ws.freeze_panes = "A2"
     columnas = [
-        ("Nº expediente", "id_expediente"), ("Clasificación", "tipo_cancelacion"),
+        ("Nº expediente", "id_expediente"), ("IDGASTO", "id_gasto_absis"),
+        ("Nº factura ABSIS", "numero_factura_absis"), ("Fecha factura ABSIS", "fecha_factura_absis"),
+        ("TIPOCONCEPTO", "tipo_concepto_absis"), ("Origen", "origen_registro"),
+        ("Estado consolidación", "estado_consolidacion"), ("Última sincronización", "fecha_ultima_sincronizacion"),
+        ("Clasificación", "tipo_cancelacion"),
         ("TIPOOPERACION", "tipo_operacion"), ("CONCEPTOGASTO", "concepto_gasto"),
         ("Situación facturación", "situacion_facturacion"),
         ("ESTADO", "estado"), ("ESTADOJUSTIFICANTE", "estado_justificante"),
