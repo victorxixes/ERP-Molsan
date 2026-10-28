@@ -3506,7 +3506,7 @@ function InformeFacturacion() {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h3 className="text-lg font-bold text-slate-800">Seguimiento por estado ABSIS</h3>
-            <p className="mt-1 text-sm text-slate-500">Desglose de los honorarios gestoría del periodo seleccionado. Pulsa «Ver registros» para abrir el detalle filtrado por el estado original del Excel.</p>
+            <p className="mt-1 text-sm text-slate-500">Desglose de las filas Post Firma que cumplen el concepto y beneficiario seleccionados, agrupadas por el ESTADO original del Excel.</p>
           </div>
           <span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">{loadingTarjetas ? "Actualizando…" : numeroInforme(datosTarjetas.length) + " registros analizados"}</span>
         </div>
@@ -3578,7 +3578,7 @@ function InformeFacturacion() {
               </div>
             </form>
             <div className="flex-1 overflow-auto">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-3"><div className="text-sm font-semibold text-slate-700">{loading ? "Consultando registros…" : numeroInforme(datos.items.length) + " registros encontrados"}</div><div className="text-xs text-slate-500">Solo se incluyen conceptos de HONORARIOS GESTORÍA.</div></div>
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-3"><div className="text-sm font-semibold text-slate-700">{loading ? "Consultando registros…" : numeroInforme(datos.items.length) + " registros encontrados"}</div><div className="text-xs text-slate-500">Filtro del informe: CONCEPTOGASTO = HONORARIOS GESTORÍA y BENEFICIARIO = *MOLSAN. IDPAGO sigue desconectado.</div></div>
               {loading ? <PanelEstadoInforme loading /> : datos.items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay filas Post Firma para los filtros seleccionados." /> : (
                 <div className="max-h-[58vh] overflow-auto"><table className="min-w-[2600px] w-full text-left text-xs">
                   <thead className="sticky top-0 z-10 bg-slate-100 text-slate-600"><tr>{COLUMNAS_POSTFIRMA.map((h, i) => <th key={h + "-" + i} className="whitespace-nowrap px-3 py-3 font-bold">{h}</th>)}</tr></thead>
