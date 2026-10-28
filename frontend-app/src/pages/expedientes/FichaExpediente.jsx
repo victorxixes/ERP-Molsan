@@ -2942,7 +2942,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       // Generar primero el DOCX desde la plantilla asociada al concepto de gasto ID 6.
       // Si falta la plantilla o el concepto no coincide, no se confirma el registro.
       const documentoFactura = await axios.post(
-        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/honorarios-gestoria/factura-docx`,
+        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/honorarios-gestoria/factura-pdf`,
         payloadFactura,
         { responseType: "blob" }
       );
@@ -2963,13 +2963,13 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       const urlFactura = URL.createObjectURL(documentoFactura.data instanceof Blob ? documentoFactura.data : new Blob([documentoFactura.data]));
       const enlaceFactura = document.createElement("a");
       enlaceFactura.href = urlFactura;
-      enlaceFactura.download = `Factura_honorarios_${String(expediente.id_expediente).replace(/[/\\\\]/g, "-")}.docx`;
+      enlaceFactura.download = `Factura_honorarios_${String(expediente.id_expediente).replace(/[/\\\\]/g, "-")}.pdf`;
       document.body.appendChild(enlaceFactura);
       enlaceFactura.click();
       enlaceFactura.remove();
       URL.revokeObjectURL(urlFactura);
 
-      setMensajeHonorariosGestoria("Honorarios registrados y factura Word generada desde la plantilla oficial vinculada al concepto ID 6.");
+      setMensajeHonorariosGestoria("Honorarios registrados y factura PDF generada desde la plantilla oficial vinculada al concepto de honorarios de gestoría.");
       setMostrarModalFacturaHonorarios(false);
     } catch (err) {
       const detail = err?.response?.data?.detail;
@@ -8563,7 +8563,7 @@ const cuantiaFincasParaEnvio =
                 <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-200 bg-emerald-50 px-4 py-4 font-extrabold text-emerald-900"><span>TOTAL FACTURA</span><span>{Number(facturaHonorariosForm.totalFactura || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
               </div>
               {facturaHonorariosForm.observaciones && <p className="mt-4 whitespace-pre-wrap text-sm text-slate-600">{facturaHonorariosForm.observaciones}</p>}
-              <p className="mt-4 text-xs text-amber-700">Vista previa de revisión. Al pulsar «Guardar y facturar», el ERP generará y descargará el documento Word usando la plantilla oficial asociada al concepto ID 6.</p>
+              <p className="mt-4 text-xs text-amber-700">Vista previa de revisión. Al pulsar «Guardar y facturar», el ERP generará y descargará la factura en PDF usando la plantilla oficial asociada al concepto de honorarios de gestoría.</p>
             </div>
           ) : (
             <>
