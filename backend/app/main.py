@@ -315,6 +315,7 @@ from backend.app.Utilidades.importadores.router_absis import (
 
 # EXPEDIENTES
 from backend.app.expedientes.router import router as expedientes_router
+from backend.app.alta_expediente.router import router as alta_expediente_router
 from backend.app.expedientes.traspasos_saldo import router as traspasos_saldo_router
 from backend.app.expedientes.auditoria_vinculaciones import router as auditoria_vinculaciones_router
 
@@ -486,6 +487,7 @@ app.include_router(tipos_carga_hipotecaria_router, prefix="/api")
 app.include_router(provisiones_router, prefix="/api/expedientes")
 app.include_router(auditoria_vinculaciones_router, prefix="/api")
 app.include_router(expedientes_router, prefix="/api")
+app.include_router(alta_expediente_router, prefix="/api")
 app.include_router(traspasos_saldo_router, prefix="/api")
 app.include_router(migracion_defectos_router, prefix="/api")
 
