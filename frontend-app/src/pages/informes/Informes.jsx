@@ -3456,6 +3456,57 @@ function InformeFacturacion() {
         {renderTarjetas(grupos[1])}
       </div>
 
+      <section className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-sm backdrop-blur-xl">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h3 className="text-lg font-bold text-slate-800">Seguimiento por estado ABSIS</h3>
+            <p className="mt-1 text-sm text-slate-500">Desglose de los honorarios gestoría del periodo seleccionado. Pulsa «Ver registros» para abrir el detalle filtrado por el estado original del Excel.</p>
+          </div>
+          <span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">{loadingTarjetas ? "Actualizando…" : numeroInforme(datosTarjetas.length) + " registros analizados"}</span>
+        </div>
+        {(() => {
+          const estados = datosTarjetas.reduce((acumulado, fila) => {
+            const estado = String(fila.estado ?? "").trim() || "(vacío)";
+            if (!acumulado[estado]) acumulado[estado] = { filas: 0, importe: 0 };
+            acumulado[estado].filas += 1;
+            acumulado[estado].importe += Number(fila.imp_gasto || 0);
+            return acumulado;
+          }, {});
+          const listaEstados = Object.entries(estados).sort((a, b) => {
+            if (a[0] === "(vacío)") return 1;
+            if (b[0] === "(vacío)") return -1;
+            return a[0].localeCompare(b[0], "es");
+          });
+          return loadingTarjetas ? (
+            <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm text-slate-500">Cargando estados ABSIS…</div>
+          ) : listaEstados.length === 0 ? (
+            <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm text-slate-500">No hay registros para el periodo seleccionado.</div>
+          ) : (
+            <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200">
+              <table className="w-full min-w-[640px] text-left text-sm">
+                <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-4 py-3">ESTADO (Excel ABSIS)</th><th className="px-4 py-3 text-right">Registros</th><th className="px-4 py-3 text-right">Importe IMPGASTO</th><th className="px-4 py-3 text-right">Consulta</th></tr></thead>
+                <tbody className="divide-y divide-slate-100">
+                  {listaEstados.map(([estado, dato]) => (
+                    <tr key={estado} className="hover:bg-blue-50/50">
+                      <td className="px-4 py-3 font-semibold text-slate-700">{estado}</td>
+                      <td className="px-4 py-3 text-right tabular-nums">{numeroInforme(dato.filas)}</td>
+                      <td className="px-4 py-3 text-right tabular-nums">{euros(dato.importe)}</td>
+                      <td className="px-4 py-3 text-right"><button type="button" onClick={() => {
+                        const siguiente = { ...filtros, modalidad: "todas", estado: estado === "(vacío)" ? "" : estado };
+                        setFiltros(siguiente);
+                        setAplicados(siguiente);
+                        setModalAbierto(true);
+                      }} className="rounded-lg border border-blue-200 bg-white px-3 py-1.5 text-xs font-bold text-blue-700 hover:bg-blue-50">Ver registros</button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
+        })()}
+        <p className="mt-3 text-xs leading-5 text-slate-500">Los códigos de ESTADO se muestran sin traducir ni equiparar a los estados internos del expediente. La consulta no modifica datos.</p>
+      </section>
+
       <AvisoInforme error={error} />
 
       {modalAbierto && (
