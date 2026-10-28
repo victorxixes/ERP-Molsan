@@ -6644,20 +6644,6 @@ const cuantiaFincasParaEnvio =
                     <Dato campo="Hora prevista de firma" valor={expediente.hora_prevista_firma} />
                   </div>
                 </div>
-                <div className="hidden min-w-0 rounded-xl border border-slate-100 bg-slate-50/50 p-3">
-                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos de facturación</p>
-                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                    <Dato campo="Nombre" valor={expediente.facturacion_nombre ?? expediente.nombre_facturacion ?? expediente.nombre_cliente_facturacion} />
-                    <Dato campo="Apellidos" valor={expediente.facturacion_apellidos ?? expediente.apellidos_facturacion ?? expediente.apellidos_cliente_facturacion} />
-                    <Dato campo="DNI / NIF de facturación" valor={expediente.facturacion_dni_nif ?? expediente.dni_facturacion ?? expediente.nif_facturacion} />
-                    <Dato campo="Dirección" valor={expediente.facturacion_direccion ?? expediente.direccion_facturacion ?? expediente.direccion_cliente_facturacion} />
-                    <Dato campo="Código postal" valor={expediente.facturacion_codigo_postal ?? expediente.codigo_postal_facturacion ?? expediente.cp_facturacion} />
-                    <Dato campo="Población" valor={expediente.facturacion_poblacion ?? expediente.poblacion_facturacion ?? expediente.municipio_facturacion} />
-                    <Dato campo="Provincia" valor={expediente.facturacion_provincia ?? expediente.provincia_facturacion} />
-                    <Dato campo="Teléfono" valor={expediente.facturacion_telefono ?? expediente.telefono_facturacion ?? expediente.telefono_cliente_facturacion} />
-                    <Dato campo="Email" valor={expediente.facturacion_email ?? expediente.email_facturacion ?? expediente.correo_facturacion} />
-                  </div>
-                </div>
                 </div>
                 <div className="hidden border-t border-slate-100 pt-3">
                   <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Tipo de documento y cuantía</p>
