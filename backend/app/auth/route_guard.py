@@ -79,6 +79,7 @@ _PREFIJOS_MODULO = (
     ("/api/fusiones", "fusiones"),
     ("/api/fotos", "empleados"),
     ("/api/ctn", "ctn"),
+    ("/api/alta-expediente", "expedientes"),
     ("/api/expedientes", "expedientes"),
     ("/api/mensajes", "mensajes"),
     ("/api/notificaciones", "notificaciones"),
