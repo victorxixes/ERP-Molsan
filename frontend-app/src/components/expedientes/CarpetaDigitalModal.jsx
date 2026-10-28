@@ -1165,6 +1165,20 @@ export default function CarpetaDigitalModal({
                           );
                         })}
                         {camposPanelActividad.length === 0 && <p className="text-xs text-slate-500">Los campos específicos de esta actividad aparecerán aquí.</p>}
+                         {actividadId === "facturacion-cierre" && (
+                           <div className="mt-2 min-w-0 rounded-lg border border-indigo-100 bg-indigo-50/60 px-3 py-2">
+                             <p className="text-[10px] font-bold text-indigo-700">Fecha de cierre (fecha de liquidación)</p>
+                             <p className="break-words text-xs font-extrabold text-slate-900">
+                               {(() => {
+                                 const fecha = datosPanelActividad?.fecha_fin_actividad || expedienteDatos?.fecha_fin_actividad || datosPanelActividad?.fecha_liquidacion || expedienteDatos?.fecha_liquidacion;
+                                 if (!fecha) return "—";
+                                 const valorFecha = String(fecha).slice(0, 10);
+                                 const partes = valorFecha.split("-");
+                                 return partes.length === 3 ? `${partes[2]}/${partes[1]}/${partes[0]}` : valorFecha;
+                               })()}
+                             </p>
+                           </div>
+                         )}
                       </div>
                     )
                   )))}
