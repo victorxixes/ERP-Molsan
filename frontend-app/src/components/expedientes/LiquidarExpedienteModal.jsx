@@ -34,6 +34,7 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
       facturacion_provincia: valor(expediente, "facturacion_provincia", "provincia_facturacion"),
       facturacion_telefono: valor(expediente, "facturacion_telefono", "telefono_facturacion"),
       facturacion_email: valor(expediente, "facturacion_email", "email_facturacion"),
+      fecha_fin_actividad: String(expediente?.fecha_fin_actividad || fechaHoy()).slice(0, 10),
     });
     setFilas((Array.isArray(movimientos) ? movimientos : []).map((g) => ({
       ...g,
@@ -114,7 +115,7 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
                     <td className="whitespace-nowrap px-3 py-2 text-right font-semibold">{dinero(fila.importe_total_bruto ?? fila.importe ?? fila.importe_resultante)}</td>
                     <td className="px-3 py-2"><label className="inline-flex items-center gap-2"><input type="checkbox" checked={fila._pagado} onChange={(e) => setFilas((prev) => prev.map((f, i) => i === idx ? { ...f, _pagado: e.target.checked } : f))} />{fila._pagado ? "Realizado" : "Pendiente"}</label></td>
                   </tr>)}
-                  <tr className="border-t-2 border-indigo-200 bg-indigo-50/60"><td className="px-3 py-2"><input aria-label="Fecha de liquidación" type="date" defaultValue={fechaHoy()} className="rounded-md border border-slate-300 bg-white px-2 py-1.5" /></td><td className="px-3 py-2 font-extrabold text-indigo-900">Liquidación final</td><td className="px-3 py-2 text-right font-extrabold text-indigo-900">{dinero(saldoLiquidacion)}</td><td className="px-3 py-2 text-slate-600">Saldo calculado</td></tr>
+                  <tr className="border-t-2 border-indigo-200 bg-indigo-50/60"><td className="px-3 py-2"><input aria-label="Fecha de liquidación" type="date" value={form.fecha_fin_actividad || ""} onChange={(e) => cambiar("fecha_fin_actividad", e.target.value)} className="rounded-md border border-slate-300 bg-white px-2 py-1.5" /></td><td className="px-3 py-2 font-extrabold text-indigo-900">Liquidación final</td><td className="px-3 py-2 text-right font-extrabold text-indigo-900">{dinero(saldoLiquidacion)}</td><td className="px-3 py-2 text-slate-600">Saldo calculado</td></tr>
                 </tbody>
               </table>
             </div>
