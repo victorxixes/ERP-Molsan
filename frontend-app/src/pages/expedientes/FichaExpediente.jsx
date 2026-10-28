@@ -8775,9 +8775,10 @@ const cuantiaFincasParaEnvio =
             ) : actividadSeleccionada === "facturacion-cierre" ? (
               <div className="grid min-w-0 grid-cols-1 items-start gap-3">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                <h4 className="mb-3 text-sm font-extrabold text-slate-800">Datos de la actividad</h4>
+                <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Cierre del expediente</h4>
                 <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {[
+                    { key: "fecha_fin_actividad", label: "Fecha de cierre" },
                     { key: "fecha_presentacion", label: "Fecha presentación" },
                     { key: "fecha_vencimiento_asiento", label: "Fecha vencimiento asiento" },
                     { key: "fecha_inscripcion", label: "Fecha inscripción" },
