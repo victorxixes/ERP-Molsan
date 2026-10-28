@@ -92,6 +92,14 @@ def _fecha_valor(valor):
         return valor.date()
     if isinstance(valor, date):
         return valor
+    if isinstance(valor, (int, float)) and not isinstance(valor, bool):
+        try:
+            numero = float(valor)
+            if 20000 <= numero <= 80000:
+                from datetime import timedelta
+                return (datetime(1899, 12, 30) + timedelta(days=numero)).date()
+        except (TypeError, ValueError, OverflowError):
+            return None
     texto = str(valor).strip()
     for formato in ("%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y", "%Y/%m/%d", "%d/%m/%y"):
         try:
