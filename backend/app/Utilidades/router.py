@@ -1,4 +1,5 @@
 import logging
+import json
 
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
@@ -842,3 +843,69 @@ def descargar_plantilla_factura_honorarios(
         media_type=fila["tipo_archivo"] or "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         headers={"Content-Disposition": f'attachment; filename="{nombre}"'},
     )
+
+
+// ============================================================
+// DATOS CORPORATIVOS MOLSAN
+// Configuración centralizada para reutilización en documentos.
+// ============================================================
+
+class DatosMolsanRequest(BaseModel):
+    razon_social: str = ""
+    nif: str = ""
+    domicilio_fiscal: str = ""
+    codigo_postal: str = ""
+    poblacion: str = ""
+    provincia: str = ""
+    telefono: str = ""
+    email: str = ""
+    web: str = ""
+    logo_data_url: str = ""
+    serie_factura: str = ""
+    condiciones_pago: str = ""
+    datos_bancarios: str = ""
+    pie_factura: str = ""
+
+
+def _asegurar_tabla_datos_molsan(db: Session):
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS datos_molsan_config (
+            id INTEGER PRIMARY KEY CHECK (id = 1),
+            datos JSONB NOT NULL DEFAULT '{}'::jsonb,
+            actualizado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+    db.commit()
+
+
+@router.get("/datos-molsan")
+def obtener_datos_molsan(
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "ver")
+    _asegurar_tabla_datos_molsan(db)
+    fila = db.execute(text("SELECT datos, actualizado_en FROM datos_molsan_config WHERE id = 1")).mappings().first()
+    return {
+        "datos": dict(fila["datos"] or {}) if fila else {},
+        "actualizado_en": fila["actualizado_en"].isoformat() if fila and fila["actualizado_en"] else None,
+    }
+
+
+@router.put("/datos-molsan")
+def guardar_datos_molsan(
+    datos: DatosMolsanRequest,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "editar")
+    _asegurar_tabla_datos_molsan(db)
+    contenido = json.dumps(datos.dict(), ensure_ascii=False)
+    db.execute(text("""
+        INSERT INTO datos_molsan_config (id, datos, actualizado_en)
+        VALUES (1, CAST(:datos AS JSONB), CURRENT_TIMESTAMP)
+        ON CONFLICT (id) DO UPDATE
+        SET datos = EXCLUDED.datos, actualizado_en = CURRENT_TIMESTAMP
+    """), {"datos": contenido})
+    db.commit()
+    return {"ok": True, "mensaje": "Datos Molsan guardados correctamente."}
