@@ -2796,7 +2796,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     const siguiente = { ...formActual, ...cambios };
     const base = Math.max(0, Number(String(siguiente.baseImponible ?? "0").replace(",", ".")) || 0);
     const porcentaje = Math.max(0, Number(String(siguiente.porcentajeImpuesto ?? "0").replace(",", ".")) || 0);
-    const impuesto = Math.round((base * porcentaje + Number.EPSILON) * 100) / 100;
+    const impuesto = Math.round((base * (porcentaje / 100) + Number.EPSILON) * 100) / 100;
     siguiente.importeImpuesto = impuesto.toFixed(2);
     siguiente.totalFactura = (Math.round((base + impuesto + Number.EPSILON) * 100) / 100).toFixed(2);
     return siguiente;
@@ -2839,7 +2839,8 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       const totalCatalogo = Math.max(0, Number(calculo.importe) || 0);
       const esCanarias = normalizarTexto(calculo.tarifa).includes("canarias");
       const porcentaje = esCanarias ? 7 : 21;
-      const base = Math.round((totalCatalogo / (1 + porcentaje / 100) + Number.EPSILON) * 100) / 100;
+      // El catálogo almacena la base imponible, no el total con impuesto.
+      const base = Math.round((totalCatalogo + Number.EPSILON) * 100) / 100;
       setFacturaHonorariosForm((actual) => actualizarImportesFacturaHonorarios({
         ...actual,
         baseImponible: base.toFixed(2),
