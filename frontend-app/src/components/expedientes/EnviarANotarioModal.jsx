@@ -961,7 +961,7 @@ export default function EnviarANotarioModal({
                   </div>
                 </div>
 
-                <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-5">
                   <div>
                     <label className="mb-1 block text-xs font-semibold text-slate-700">¿El cliente es empleado?</label>
                     <select value={form.facturacion_empleado} disabled={loading} onChange={(event) => cambiarCampo("facturacion_empleado", event.target.value)} className={clasesInput()}>
