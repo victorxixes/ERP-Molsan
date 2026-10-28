@@ -655,7 +655,7 @@ export default function EnviarANotarioModal({
           <div className="grid grid-cols-1 items-start gap-3">
             {/* COLUMNA DERECHA — DATOS DEL ENVÍO Y FACTURACIÓN */}
             <div className="min-w-0">
-              <div className="grid grid-cols-1 items-start gap-3 md:grid-cols-2 xl:grid-cols-4 xl:gap-3">
+              <div className="grid grid-cols-1 items-start gap-3 md:grid-cols-2 xl:grid-cols-5 xl:gap-3">
             {/* BLOQUES EN UNA FILA EN PANTALLAS GRANDES; SE ADAPTAN A 2 O 1 COLUMNA */}
 
             <div className="contents">
@@ -725,7 +725,7 @@ export default function EnviarANotarioModal({
               {/* DATOS DEL NOTARIO */}
               {/* NOTARIO */}
 
-              <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+              <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3 xl:col-span-2">
                 <TituloSeccion
                   titulo="Datos del notario"
                   descripcion="Selecciona el notario desde el catálogo CTN."
@@ -752,7 +752,7 @@ export default function EnviarANotarioModal({
 
                 {notario && (
 
-                  <div className="mt-3 grid grid-cols-1 gap-3">
+                  <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <CampoTexto
                       label="Apoderado"
                       value={notario.apoderado || ""}
@@ -945,7 +945,7 @@ export default function EnviarANotarioModal({
             {/* DATOS DE FACTURACIÓN — CUARTO BLOQUE */}
 
             <div className="min-w-0">
-              <section className="rounded-xl border border-[var(--erp-primary)]/20 bg-slate-50/70 p-3 xl:col-span-4">
+              <section className="rounded-xl border border-[var(--erp-primary)]/20 bg-slate-50/70 p-3 xl:col-span-5">
                 <div className="mb-5 flex items-start gap-3">
                   <div>
                     <h3 className="text-base font-bold text-slate-800">
