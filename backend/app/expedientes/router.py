@@ -3832,11 +3832,16 @@ def generar_documento_factura_honorarios(
             ("BOTTOMPADDING", (0,0), (-1,-1), 8),
         ]))
         story.append(tabla_detalle)
-        resumen = [
-            [Paragraph("Base imponible", styles["FacturaCeldaMolsan"]), Paragraph(euros(base), styles["FacturaCeldaDerMolsan"])],
-        ]
         if es_empleado or descuento > 0:
-            resumen.append([Paragraph("Descuento empleado (50 %)", styles["FacturaCeldaMolsan"]), Paragraph(f"− {euros(descuento)}", styles["FacturaCeldaDerMolsan"])])
+            resumen = [
+                [Paragraph("Honorarios antes del descuento", styles["FacturaCeldaMolsan"]), Paragraph(euros(base + descuento), styles["FacturaCeldaDerMolsan"])],
+                [Paragraph("Descuento empleado (50 %)", styles["FacturaCeldaMolsan"]), Paragraph(f"− {euros(descuento)}", styles["FacturaCeldaDerMolsan"])],
+                [Paragraph("<b>Base imponible tras descuento</b>", styles["FacturaCeldaMolsan"]), Paragraph(f"<b>{euros(base)}</b>", styles["FacturaCeldaDerMolsan"])],
+            ]
+        else:
+            resumen = [
+                [Paragraph("Base imponible", styles["FacturaCeldaMolsan"]), Paragraph(euros(base), styles["FacturaCeldaDerMolsan"])],
+            ]
         resumen.extend([
             [Paragraph(f"{escape(tipo_impuesto)} {escape(porcentaje)} %", styles["FacturaCeldaMolsan"]), Paragraph(euros(impuesto), styles["FacturaCeldaDerMolsan"])],
             [Paragraph("<b>TOTAL FACTURA</b>", styles["FacturaTotalMolsan"]), Paragraph(f"<b>{euros(total)}</b>", styles["FacturaTotalMolsan"])],
