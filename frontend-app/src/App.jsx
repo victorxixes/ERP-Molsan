@@ -3,7 +3,7 @@
 // ============================================================
 
 import { Routes, Route, Navigate } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { Component, lazy, Suspense } from "react";
 import { useAuthStore } from "./store/authStore";
 
 /* AUTH */
@@ -181,6 +181,34 @@ function MensajesWrapper() {
 }
 
 
+class AppErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+  componentDidCatch(error, info) {
+    console.error("[ERP] Error de renderizado capturado:", error, info?.componentStack);
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, background: "#f8fafc", color: "#0f172a" }}>
+          <section style={{ width: "100%", maxWidth: 640, padding: 24, border: "1px solid #fecaca", borderRadius: 16, background: "#fff", boxShadow: "0 12px 36px rgba(15,23,42,.08)" }}>
+            <h1 style={{ margin: "0 0 10px", fontSize: 20, fontWeight: 800 }}>La pantalla del ERP ha encontrado un error</h1>
+            <p style={{ margin: "0 0 12px", fontSize: 14 }}>La sesión no se ha cerrado. Este mensaje permite identificar el fallo sin abrir la consola.</p>
+            <pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere", padding: 12, borderRadius: 10, background: "#fff7f7", color: "#991b1b", fontSize: 12 }}>{String(this.state.error?.message || this.state.error || "Error de renderizado desconocido")}</pre>
+            <button type="button" onClick={() => window.location.reload()} style={{ marginTop: 12, padding: "10px 16px", borderRadius: 10, background: "#1d4ed8", color: "#fff", fontWeight: 700 }}>Recargar ERP</button>
+          </section>
+        </main>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 /**
  * ============================================================
  * APP
@@ -195,6 +223,7 @@ export default function App() {
   return (
 
     <div className="animate-fade-in">
+      <AppErrorBoundary>
 
       {empleado && token ? <RealtimeGlobal /> : null}
 
@@ -765,6 +794,7 @@ export default function App() {
 
       </Routes>
       </Suspense>
+      </AppErrorBoundary>
 
     </div>
 
