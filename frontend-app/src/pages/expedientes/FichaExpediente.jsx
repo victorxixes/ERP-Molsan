@@ -2846,12 +2846,16 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
 
     try {
       const calculo = await calcularHonorariosGestoria();
-      const base = Math.round((Math.max(0, Number(calculo.baseImponible) || 0) + Number.EPSILON) * 100) / 100;
+      const baseOriginal = Math.round((Math.max(0, Number(calculo.baseImponible) || 0) + Number.EPSILON) * 100) / 100;
+      const esEmpleado = [true, "true", "1", "si", "sí"].includes(String(expediente?.facturacion_empleado ?? false).trim().toLowerCase());
+      const descuentoEmpleado = esEmpleado ? Math.round((baseOriginal * 0.5 + Number.EPSILON) * 100) / 100 : 0;
+      const base = Math.round((baseOriginal - descuentoEmpleado + Number.EPSILON) * 100) / 100;
       const tipoImpuesto = String(calculo.tipoImpuesto || "IVA").toUpperCase();
       const porcentaje = tipoImpuesto === "EXENTO" ? 0 : Math.max(0, Number(calculo.porcentajeImpuesto) || 0);
       setFacturaHonorariosForm((actual) => actualizarImportesFacturaHonorarios({
         ...actual,
         baseImponible: base.toFixed(2),
+        observaciones: esEmpleado ? `Cliente empleado: descuento del 50 % (${descuentoEmpleado.toFixed(2)} €) sobre honorarios.` : actual.observaciones,
         tipoImpuesto,
         porcentajeImpuesto: String(porcentaje),
         tarifa: calculo.tarifa,
@@ -2891,6 +2895,8 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         numero_factura: facturaHonorariosForm.numeroFactura,
         fecha_factura: facturaHonorariosForm.fechaFactura,
         base_imponible: base,
+        empleado: Boolean(expediente?.facturacion_empleado),
+        descuento_empleado: descuentoEmpleado,
         tipo_impuesto: tipoImpuesto,
         porcentaje_impuesto: porcentaje,
         importe_impuesto: impuesto,
@@ -8449,6 +8455,7 @@ const cuantiaFincasParaEnvio =
         titulo="🧾 Factura de honorarios gestoría"
         subtitulo={`Expediente ${expediente?.id_expediente || ""} · Revisa los datos antes de registrar`}
         ancho="max-w-5xl"
+        contenidoSuperior={null}
         footer={
           <div className="flex w-full flex-wrap justify-between gap-2">
             <Boton onClick={() => setMostrarModalFacturaHonorarios(false)} disabled={guardandoFacturaHonorarios}>Cancelar</Boton>
