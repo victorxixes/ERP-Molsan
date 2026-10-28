@@ -137,11 +137,12 @@ def consultar_promocion_expediente(
     if not expediente:
         raise HTTPException(status_code=404, detail=f"No se ha encontrado el expediente {numero}.")
 
-    tipo = db.query(TipoExpediente).filter(TipoExpediente.id == expediente.tipo_expediente_id).first() if expediente.tipo_expediente_id else None
+    tipo_id_promocion = getattr(expediente, "promocion_tipo_expediente_id", None)
+    tipo = db.query(TipoExpediente).filter(TipoExpediente.id == tipo_id_promocion).first() if tipo_id_promocion else None
     return {
         "numero_expediente": expediente.id_expediente,
         "actividad_actual": expediente.actividad_actual,
-        "tipo_expediente_id": expediente.tipo_expediente_id,
+        "promocion_tipo_expediente_id": tipo_id_promocion,
         "promocion": tipo.nombre if tipo else None,
         "titular": expediente.nombre_titular,
         "estado_expediente": expediente.estado_expediente,
@@ -181,7 +182,7 @@ def asignar_promocion_expediente(
         if not tipo:
             raise HTTPException(status_code=400, detail="El tipo seleccionado no existe o está inactivo en el catálogo Tipos de expediente.")
 
-    expediente.tipo_expediente_id = tipo.id if tipo else None
+    expediente.promocion_tipo_expediente_id = tipo.id if tipo else None
     # La etiqueta se calcula desde el catálogo; no se almacena en el campo libre promocion.
     expediente.promocion = None
     db.add(expediente)
@@ -191,7 +192,7 @@ def asignar_promocion_expediente(
         "ok": True,
         "mensaje": f"Promoción asignada a {expediente.id_expediente}." if tipo else f"Se ha retirado la promoción de {expediente.id_expediente}.",
         "numero_expediente": expediente.id_expediente,
-        "tipo_expediente_id": expediente.tipo_expediente_id,
+        "promocion_tipo_expediente_id": expediente.promocion_tipo_expediente_id,
         "promocion": tipo.nombre if tipo else None,
     }
 
