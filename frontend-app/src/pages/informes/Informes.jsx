@@ -3451,8 +3451,10 @@ function InformeFacturacion() {
         <p className="mt-2 text-xs text-slate-500">Por defecto se muestra el mes en curso. Al cambiar las fechas, las tarjetas se actualizan automáticamente.</p>
       </div>
 
-      {renderTarjetas(grupos[0])}
-      {renderTarjetas(grupos[1])}
+      <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2">
+        {renderTarjetas(grupos[0])}
+        {renderTarjetas(grupos[1])}
+      </div>
 
       <AvisoInforme error={error} />
 
