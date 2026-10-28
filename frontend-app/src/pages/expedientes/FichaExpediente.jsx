@@ -2236,8 +2236,10 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
           setExpediente(null);
 
           setError(
-            err?.response?.data?.detail ||
-            "No se ha podido cargar la ficha del expediente."
+            err?.code === "ECONNABORTED"
+              ? "El servidor ha tardado demasiado en responder al cargar el expediente. Comprueba la conexión e inténtalo de nuevo."
+              : err?.response?.data?.detail ||
+                "No se ha podido cargar la ficha del expediente."
           );
         } finally {
           setLoading(false);
@@ -4439,6 +4441,14 @@ async function descargarPDFCalificacion(defecto) {
           <p className="text-sm">
             {error}
           </p>
+
+          <button
+            type="button"
+            onClick={cargarExpediente}
+            className="mt-4 mr-3 inline-flex rounded-xl bg-red-700 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-red-800"
+          >
+            Reintentar carga
+          </button>
 
           <Link
             to="/expedientes"
