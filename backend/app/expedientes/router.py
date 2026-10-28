@@ -26,6 +26,7 @@ from backend.app.expedientes.models import (
     ExpedienteDocumentoEscritura,
 )
 from backend.app.tipos_expediente.models import TipoExpediente
+from backend.app.tipos_expediente.router import asegurar_catalogo_inicial
 from backend.app.ctn.models import Notaria
 from backend.app.expediente_ppad.models import ExpedientePPAD
 from backend.app.honorarios_gestoria.models import HonorarioGestoria
@@ -1155,6 +1156,7 @@ def expediente_a_dict(expediente: Expediente) -> dict:
 
 def adjuntar_promociones_catalogo(db: Session, items: list[dict]) -> list[dict]:
     """Expone el nombre del tipo de expediente como promoción calculada del catálogo."""
+    asegurar_catalogo_inicial(db)
     ids = {
         int(item["promocion_tipo_expediente_id"])
         for item in items
