@@ -575,6 +575,7 @@ def migrar_esquema_expedientes_inicio():
         # Estas columnas están en el modelo ORM y deben existir antes de cargar Expediente.
         ("tipo_expediente_id", "INTEGER"),
         ("numero_tipo_expediente", "INTEGER"),
+        ("promocion_tipo_expediente_id", "INTEGER"),
         # Envío a notario y documentos de escritura
         ("cliente_id", "INTEGER"),
         ("notario_id", "INTEGER"),
