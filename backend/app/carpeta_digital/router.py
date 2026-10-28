@@ -405,7 +405,7 @@ def previsualizar_cierre_documental(expediente_id: str, db: Session = Depends(ge
     salida.seek(0)
     respuesta = StreamingResponse(salida, media_type="application/pdf")
     respuesta.headers["Content-Disposition"] = f'inline; filename="previsualizacion-cierre-{quote(str(expediente_id))}.pdf"'
-    respuesta.headers["X-Cierre-Metadata"] = __import__("base64").urlsafe_b64encode(json.dumps(metadata, ensure_ascii=False).encode("utf-8")).decode("ascii")
+    respuesta.headers["X-Cierre-Metadata"] = __import__("base64").b64encode(json.dumps(metadata, ensure_ascii=False).encode("utf-8")).decode("ascii")
     return respuesta
 
 
