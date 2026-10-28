@@ -12,6 +12,7 @@ from backend.app.expedientes.models import Cliente, Expediente
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 from backend.app.ctn.models import Notaria
 from backend.app.tipos_expediente.models import TipoExpediente
+from backend.app.tipos_expediente.router import asegurar_catalogo_inicial
 
 router = APIRouter(prefix="/alta-expediente", tags=["Alta manual de expediente"])
 
@@ -83,6 +84,7 @@ def preparar_esquema(db: Session) -> None:
 
 @router.get("/catalogos")
 def catalogos_alta(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    asegurar_catalogo_inicial(db)
     tipos = db.query(TipoExpediente).filter(TipoExpediente.activo.is_(True)).order_by(TipoExpediente.id).all()
     notarios = db.query(Notaria).order_by(Notaria.apellidos.asc().nullslast(), Notaria.nombre.asc().nullslast()).all()
     return {
