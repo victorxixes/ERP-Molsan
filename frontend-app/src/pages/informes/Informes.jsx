@@ -3338,6 +3338,15 @@ function valorColumnaPostFirma(fila, columna) {
   return String(valor);
 }
 
+// Clasificación de estados originales ABSIS usada por las tarjetas de facturación.
+// Mantener los códigos originales; no equiparar estados internos del ERP.
+const ESTADOS_FACTURACION_ABSIS = {
+  cobrado: ["PAGADO", "PAG_RETRO"],
+  pendiente_factura: ["PTE_RESP_FAC", "PTE_EXPORT_FAC"],
+  incidencia: ["ANULADO", "PAG_DENEGADO"],
+  pendiente_cobro: ["PTE_CONS", "PTE_RESP", "ENTREGADA"],
+};
+
 function estadoFacturacionAbsis(fila) {
   const estado = String(fila?.estado ?? "").trim().toUpperCase();
   for (const [situacion, estados] of Object.entries(ESTADOS_FACTURACION_ABSIS)) {
