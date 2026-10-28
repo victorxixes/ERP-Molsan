@@ -770,6 +770,7 @@ export default function CarpetaDigitalModal({
                           ["Provincia", valor("facturacion_provincia", "provincia_facturacion")],
                           ["Teléfono", valor("facturacion_telefono", "telefono_facturacion")],
                           ["Email", valor("facturacion_email", "email_facturacion")],
+                          ["Empleado", [true, "true", "1", "si", "sí"].includes(String(valor("facturacion_empleado") ?? "false").trim().toLowerCase()) ? "Sí" : "No"],
                           ["Idioma del documento", valor("idioma_documento", "idioma")],
                         ],
                       },
@@ -991,6 +992,12 @@ export default function CarpetaDigitalModal({
                           <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">📋 Datos · {bloqueActividad?.titulo || ({ "liquidacion-impuestos": "Liquidación de impuestos", "tramitacion-inscripcion": "Tramitación inscripción", "defectos-registrales": "Defectos registrales", "facturacion-cierre": "Cierre del expediente" }[actividadId] || "Datos de actividad")}</h5>
                           <div className="grid min-w-0 grid-cols-1 gap-1.5 px-2.5 py-2 sm:grid-cols-2 xl:grid-cols-1">
 
+                            {actividadId === "facturacion-cierre" && (
+                              <div className="min-w-0 rounded-md border border-indigo-100 bg-indigo-50/70 px-2 py-2">
+                                <p className="text-[10px] font-bold text-indigo-700">Fecha de cierre</p>
+                                <p className="break-words text-[12px] font-extrabold text-slate-900">{(() => { const fecha = datosPanelActividad?.fecha_fin_actividad || expedienteDatos?.fecha_fin_actividad || datosPanelActividad?.fecha_liquidacion || expedienteDatos?.fecha_liquidacion; if (!fecha) return "Pendiente de cierre"; const s = String(fecha).slice(0, 10); const partes = s.split("-"); return partes.length === 3 ? `${partes[2]}/${partes[1]}/${partes[0]}` : s; })()}</p>
+                              </div>
+                            )}
                             {camposPanelActividad
                               .filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key))
                               .map((campo) => {
