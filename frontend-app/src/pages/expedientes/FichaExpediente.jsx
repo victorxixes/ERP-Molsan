@@ -8779,9 +8779,6 @@ const cuantiaFincasParaEnvio =
                 <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {[
                     { key: "fecha_fin_actividad", label: "Fecha de cierre" },
-                    { key: "fecha_presentacion", label: "Fecha presentación" },
-                    { key: "fecha_vencimiento_asiento", label: "Fecha vencimiento asiento" },
-                    { key: "fecha_inscripcion", label: "Fecha inscripción" },
                   ].map((campo) => {
                     const valor = Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)
                       ? actividadDraft[campo.key]
