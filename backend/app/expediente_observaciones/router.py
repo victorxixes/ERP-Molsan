@@ -108,7 +108,7 @@ class ObservacionComentarioFicha(BaseModel):
         return valores
 
 
-def _comprobar_expediente(db: Session, expediente_id: int) -> Expediente:
+def _comprobar_expediente(db: Session, expediente_id: str) -> Expediente:
     expediente = db.query(Expediente).filter(Expediente.id_expediente == str(expediente_id)).first()
     if not expediente:
         raise HTTPException(status_code=404, detail="El expediente no existe.")
@@ -166,7 +166,7 @@ def _crear_observacion(db: Session, expediente, usuario, comentario, visibilidad
 
 
 @router.get("", summary="Listar observaciones de un expediente")
-def listar_observaciones(expediente_id: int, incluir_inactivas: bool = False, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
+def listar_observaciones(expediente_id: str, incluir_inactivas: bool = False, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
     expediente = _comprobar_expediente(db, expediente_id)
     consulta = db.query(ExpedienteObservacion).filter(ExpedienteObservacion.expediente_id == expediente.id)
     if not incluir_inactivas:
@@ -183,7 +183,7 @@ def listar_observaciones(expediente_id: int, incluir_inactivas: bool = False, db
 
 
 @router.post("", status_code=status.HTTP_201_CREATED, summary="Crear observación de expediente")
-async def crear_observacion(expediente_id: int, datos: ObservacionCreate, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
+async def crear_observacion(expediente_id: str, datos: ObservacionCreate, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
     expediente = _comprobar_expediente(db, expediente_id)
     if datos.visibilidad == "Gestor":
         destinatario = db.query(Empleado).filter(Empleado.id == datos.empleado_destinatario_id, Empleado.activo.is_(True)).first()
@@ -206,7 +206,7 @@ async def crear_observacion(expediente_id: int, datos: ObservacionCreate, db: Se
 
 
 @router.post("/comentario-ficha", status_code=status.HTTP_201_CREATED, summary="Guardar comentario del modal clásico y sus destinos")
-async def guardar_comentario_ficha(expediente_id: int, datos: ObservacionComentarioFicha, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
+async def guardar_comentario_ficha(expediente_id: str, datos: ObservacionComentarioFicha, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
     expediente = _comprobar_expediente(db, expediente_id)
     if "actividad" in datos.visiones:
         if datos.empleado_destinatario_id is None:
@@ -253,7 +253,7 @@ async def guardar_comentario_ficha(expediente_id: int, datos: ObservacionComenta
 
 
 @router.post("/{observacion_id}/validar", summary="Validar una observación interna recibida")
-def validar_observacion(expediente_id: int, observacion_id: int, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
+def validar_observacion(expediente_id: str, observacion_id: int, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
     expediente = _comprobar_expediente(db, expediente_id)
     item = _obtener_observacion(db, expediente.id, observacion_id)
     if item.visibilidad != "Gestor" or item.empleado_destinatario_id != usuario.id:
@@ -273,7 +273,7 @@ def validar_observacion(expediente_id: int, observacion_id: int, db: Session = D
 
 
 @router.put("/{observacion_id}", summary="Modificar observación de expediente")
-def modificar_observacion(expediente_id: int, observacion_id: int, datos: ObservacionUpdate, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
+def modificar_observacion(expediente_id: str, observacion_id: int, datos: ObservacionUpdate, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
     expediente = _comprobar_expediente(db, expediente_id)
     item = _obtener_observacion(db, expediente.id, observacion_id)
     if item.autor_empleado_id != usuario.id:
@@ -302,7 +302,7 @@ def modificar_observacion(expediente_id: int, observacion_id: int, datos: Observ
 
 
 @router.delete("/{observacion_id}", summary="Desactivar observación de expediente")
-def desactivar_observacion(expediente_id: int, observacion_id: int, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
+def desactivar_observacion(expediente_id: str, observacion_id: int, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
     expediente = _comprobar_expediente(db, expediente_id)
     item = _obtener_observacion(db, expediente.id, observacion_id)
     if item.autor_empleado_id != usuario.id:
