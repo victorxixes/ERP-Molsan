@@ -29,7 +29,7 @@ export async function obtenerExpediente(idExpediente) {
     {
       // Evita que la ficha permanezca indefinidamente en "Cargando".
       // Si el backend/DB no responde, el componente podrá mostrar el error.
-      timeout: 20000,
+      timeout: 90000,
     }
   );
 
