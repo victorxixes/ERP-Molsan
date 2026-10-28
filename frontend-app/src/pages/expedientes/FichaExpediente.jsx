@@ -4560,24 +4560,14 @@ const cuantiaFincasParaEnvio =
                           <h3 className="text-sm font-extrabold text-slate-800">Checklist de calidad del expediente</h3>
                           <p className="mt-1 text-xs text-slate-500">Cada visto se obtiene de los datos guardados y de los documentos encontrados en la carpeta digital. Los requisitos pendientes se muestran para poder corregirlos.</p>
                         </div>
-                        <div className="flex flex-wrap items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={generarHonorariosGestoria}
-                            disabled={generandoHonorariosGestoria || !expediente?.id_expediente}
-                            className="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-extrabold text-white hover:bg-emerald-800 disabled:opacity-50"
-                          >
-                            {generandoHonorariosGestoria ? "Abriendo factura…" : "🧾 Liquidar expediente / Factura definitiva de honorarios"}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={cargarDocumentosCierre}
-                            disabled={cargandoDocumentosCierre}
-                            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-                          >
-                            {cargandoDocumentosCierre ? "Comprobando…" : "↻ Comprobar de nuevo"}
-                          </button>
-                        </div>
+                        <button
+                          type="button"
+                          onClick={cargarDocumentosCierre}
+                          disabled={cargandoDocumentosCierre}
+                          className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                        >
+                          {cargandoDocumentosCierre ? "Comprobando…" : "↻ Comprobar de nuevo"}
+                        </button>
                       </div>
                       {cargandoDocumentosCierre && <p className="mt-3 text-xs text-slate-500">Actualizando datos documentales…</p>}
                       {errorDocumentosCierre && <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorDocumentosCierre}</p>}
@@ -6081,6 +6071,22 @@ const cuantiaFincasParaEnvio =
 
             {actividadSeleccionada === "facturacion-cierre" && (
               <div className="mt-4 space-y-4">
+                <section className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <h3 className="text-sm font-extrabold text-slate-800">Factura definitiva de honorarios</h3>
+                      <p className="mt-1 text-xs text-slate-600">Abre la ventana de facturación existente para revisar los importes y confirmar la factura. Esta acción no cierra el expediente.</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={generarHonorariosGestoria}
+                      disabled={generandoHonorariosGestoria || !expediente?.id_expediente}
+                      className="rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-extrabold text-white hover:bg-emerald-800 disabled:opacity-50"
+                    >
+                      {generandoHonorariosGestoria ? "Abriendo factura…" : "🧾 Liquidar expediente / Factura definitiva de honorarios"}
+                    </button>
+                  </div>
+                </section>
                 <section className="rounded-2xl border border-indigo-200 bg-indigo-50/30 p-4">
                   <div className="mb-3">
                     <h3 className="text-sm font-extrabold text-slate-800">Datos vinculados de la ficha del expediente</h3>
@@ -6239,15 +6245,6 @@ const cuantiaFincasParaEnvio =
               {actividadSeleccionada === "documentacion-previa" && actividadActual === "documentacion-previa" && (
                 <Boton tipo="primary" onClick={avanzarActividad} disabled={guardandoActividad || expedienteBloqueado || !estadoDocumentacionAbsis.mover_siguiente_actividad}>
                   {guardandoActividad ? "Validando…" : "➡️ Mover a Sede notarial sin protocolo"}
-                </Boton>
-              )}
-              {actividadSeleccionada === "facturacion-cierre" && (
-                <Boton
-                  tipo="primary"
-                  onClick={generarHonorariosGestoria}
-                  disabled={generandoHonorariosGestoria || !expediente?.id_expediente}
-                >
-                  {generandoHonorariosGestoria ? "Abriendo factura…" : "🧾 Liquidar expediente / Factura definitiva de honorarios"}
                 </Boton>
               )}
               {actividadSeleccionada === actividadActual && actividadActual && actividadActual !== "documentacion-previa" && (
