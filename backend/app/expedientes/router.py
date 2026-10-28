@@ -3762,7 +3762,14 @@ def generar_documento_factura_honorarios(
             SELECT COALESCE(MAX(CAST(SUBSTRING(numero_factura FROM 4 FOR 5) AS BIGINT)), 0) + 1
             FROM facturas_honorarios_gestoria
             WHERE numero_factura LIKE :patron
-              AND numero_factura ~ '^VI/[0-9]{5}-[0-9]{2}
+              AND numero_factura ~ :formato
+        """), {
+            "patron": f"VI/%-{anio_corto}",
+            "formato": rf"^VI/[0-9]{{5}}-{anio_corto}$",
+        }).scalar()
+        numero_factura = f"VI/{int(siguiente or 1):05d}-{anio_corto}"
+        datos["numero_factura"] = numero_factura
+
 
     def valor(obj, *nombres):
         for nombre in nombres:
