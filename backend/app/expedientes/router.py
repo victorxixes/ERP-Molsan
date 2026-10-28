@@ -3630,7 +3630,7 @@ def generar_honorarios_gestoria(
     }
 
 
-@router.post("/{id_expediente}/honorarios-gestoria/factura-docx")
+@router.post("/{id_expediente}/honorarios-gestoria/factura-pdf")
 def generar_documento_factura_honorarios(
     id_expediente: str,
     datos: Dict[str, Any],
@@ -3721,83 +3721,165 @@ def generar_documento_factura_honorarios(
             parrafo.add_run(str(texto))
 
     try:
-        documento = Document(io.BytesIO(bytes(plantilla["contenido"])))
+        # Validamos la plantilla oficial del concepto y recuperamos su imagen
+        # corporativa para que el PDF conserve la identidad del documento.
+        from docx import Document
+        import zipfile
+        from reportlab.lib import colors
+        from reportlab.lib.enums import TA_LEFT, TA_RIGHT
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.units import mm
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image as PDFImage
+        from xml.sax.saxutils import escape
+
+        plantilla_bytes = bytes(plantilla["contenido"])
+        Document(io.BytesIO(plantilla_bytes))  # Comprueba que la plantilla oficial sea válida.
         numero_factura = str(datos.get("numero_factura") or "").strip() or "PENDIENTE DE ASIGNACIÓN"
         fecha_factura = fecha_es(datos.get("fecha_factura"))
         cliente = str(datos.get("cliente") or valor(expediente, "nombre_solicitante", "nombre_titular") or "").strip()
         nif_cliente = str(datos.get("nif_cliente") or valor(expediente, "nif_solicitante", "dni_solicitante", "nif_titular") or "").strip()
         concepto_factura = str(datos.get("concepto") or "Honorarios de gestoría").strip()
-        base = datos.get("base_imponible", 0)
-        impuesto = datos.get("importe_impuesto", 0)
-        total = datos.get("total_factura")
-        if total is None:
-            total = float(str(base or 0).replace(",", ".")) + float(str(impuesto or 0).replace(",", "."))
+        base = Decimal(str(datos.get("base_imponible") or 0).replace(",", ".")).quantize(Decimal("0.01"))
+        impuesto = Decimal(str(datos.get("importe_impuesto") or 0).replace(",", ".")).quantize(Decimal("0.01"))
+        total_dato = datos.get("total_factura")
+        total = Decimal(str(total_dato if total_dato is not None else base + impuesto).replace(",", ".")).quantize(Decimal("0.01"))
         tipo_impuesto = str(datos.get("tipo_impuesto") or "IVA").strip().upper()
         porcentaje = str(datos.get("porcentaje_impuesto") or ("7" if tipo_impuesto == "IGIC" else "21")).strip()
         numero_expediente = str(id_expediente)
-        documento_cliente = nif_cliente or "—"
         notario = valor(expediente, "nombre_notario", "notario_otorgante", "notario") or "—"
         protocolo = valor(expediente, "protocolo") or "—"
         fecha_firma = fecha_es(valor(expediente, "fecha_firma"))
-
-        # Tabla 1: número/fecha y bloque de datos del cliente.
-        if len(documento.tables) > 1:
-            tabla = documento.tables[1]
-            if len(tabla.rows) > 1:
-                poner_en_celda(tabla.rows[1].cells[0], numero_factura)
-                poner_en_celda(tabla.rows[1].cells[1], fecha_factura)
-            if len(tabla.rows) > 4:
-                poner_en_celda(tabla.rows[4].cells[0], f"{cliente or '—'}\nNIF/CIF: {documento_cliente}")
-
-        # Tabla 2: concepto, importes y datos de expediente.
-        if len(documento.tables) > 2:
-            tabla = documento.tables[2]
-            if len(tabla.rows) > 1:
-                poner_en_celda(tabla.rows[1].cells[0], concepto_factura)
-                poner_en_celda(tabla.rows[1].cells[3], euros(total))
-            datos_fila = {
-                6: f"N.º Expediente: {numero_expediente}",
-                7: f"Documento: {documento_cliente}",
-                8: f"Notario: {notario}",
-                9: f"Protocolo: {protocolo}",
-                10: f"Fecha de firma: {fecha_firma}",
-            }
-            # En el modelo oficial, el área de valores de estas cinco etiquetas
-            # está fusionada verticalmente en una única celda: insertar todas las
-            # líneas juntas evita que un dato sobrescriba al anterior.
-            if len(tabla.rows) > 6 and len(tabla.rows[6].cells) > 2:
-                valores_expediente = "\n".join([
-                    numero_expediente,
-                    documento_cliente,
-                    notario,
-                    protocolo,
-                    fecha_firma,
-                ])
-                poner_en_celda(tabla.rows[6].cells[2], valores_expediente)
-            if len(tabla.rows) > 13:
-                poner_en_celda(tabla.rows[13].cells[3], euros(base))
-            if len(tabla.rows) > 14:
-                poner_en_celda(tabla.rows[14].cells[2], f"{tipo_impuesto} {porcentaje}%")
-                poner_en_celda(tabla.rows[14].cells[3], euros(impuesto))
-            if len(tabla.rows) > 15:
-                poner_en_celda(tabla.rows[15].cells[3], euros(total))
-
-        salida = io.BytesIO()
-        documento.save(salida)
-        salida.seek(0)
+        descuento = Decimal(str(datos.get("descuento_empleado") or 0).replace(",", ".")).quantize(Decimal("0.01"))
+        es_empleado = str(datos.get("empleado") or "").strip().lower() in {"true", "1", "si", "sí"}
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(
+            buffer, pagesize=A4, rightMargin=18*mm, leftMargin=18*mm,
+            topMargin=15*mm, bottomMargin=17*mm,
+            title=f"Factura {numero_factura} - expediente {numero_expediente}",
+            author="ERP-Molsan",
+        )
+        styles = getSampleStyleSheet()
+        styles.add(ParagraphStyle(name="FacturaTituloMolsan", parent=styles["Title"], fontName="Helvetica-Bold", fontSize=18, leading=22, textColor=colors.HexColor("#15325b"), alignment=TA_LEFT, spaceAfter=2*mm))
+        styles.add(ParagraphStyle(name="FacturaSubMolsan", parent=styles["Normal"], fontSize=9, leading=13, textColor=colors.HexColor("#596579"), spaceAfter=2*mm))
+        styles.add(ParagraphStyle(name="FacturaSeccionMolsan", parent=styles["Heading3"], fontName="Helvetica-Bold", fontSize=10, leading=13, textColor=colors.HexColor("#15325b"), spaceBefore=4*mm, spaceAfter=2*mm))
+        styles.add(ParagraphStyle(name="FacturaCeldaMolsan", parent=styles["BodyText"], fontSize=8.5, leading=11))
+        styles.add(ParagraphStyle(name="FacturaCeldaDerMolsan", parent=styles["BodyText"], fontSize=8.5, leading=11, alignment=TA_RIGHT))
+        styles.add(ParagraphStyle(name="FacturaTotalMolsan", parent=styles["BodyText"], fontName="Helvetica-Bold", fontSize=11, leading=14, alignment=TA_RIGHT, textColor=colors.HexColor("#15325b")))
+        story = []
+        # Reutiliza la primera imagen incrustada en la plantilla Word oficial (normalmente el logo).
+        logo = None
+        try:
+            with zipfile.ZipFile(io.BytesIO(plantilla_bytes)) as archivo_docx:
+                imagenes = sorted(n for n in archivo_docx.namelist() if n.startswith("word/media/") and not n.endswith("/"))
+                if imagenes:
+                    logo = PDFImage(io.BytesIO(archivo_docx.read(imagenes[0])), width=32*mm, height=18*mm, kind="proportional")
+        except Exception:
+            logo = None
+        if logo:
+            cabecera = Table([[logo, Paragraph("<b>MOLSAN GESTIÓN Y TRAMITACIÓN</b><br/><font size='8'>Factura de honorarios de gestoría</font>", styles["FacturaSubMolsan"])]], colWidths=[38*mm, 136*mm])
+            cabecera.setStyle(TableStyle([
+                ("VALIGN", (0,0), (-1,-1), "MIDDLE"), ("LEFTPADDING", (0,0), (-1,-1), 0),
+                ("RIGHTPADDING", (0,0), (-1,-1), 4), ("BOTTOMPADDING", (0,0), (-1,-1), 4),
+                ("LINEBELOW", (0,0), (-1,-1), 1, colors.HexColor("#d6deea")),
+            ]))
+            story.extend([cabecera, Spacer(1, 6*mm)])
+        else:
+            story.extend([Paragraph("MOLSAN GESTIÓN Y TRAMITACIÓN", styles["FacturaTituloMolsan"]), Paragraph("Factura de honorarios de gestoría", styles["FacturaSubMolsan"]), Spacer(1, 4*mm)])
+        story.append(Paragraph("FACTURA", styles["FacturaTituloMolsan"]))
+        cabecera_datos = [
+            [Paragraph("<b>Número de factura</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Fecha</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Expediente</b>", styles["FacturaCeldaMolsan"])],
+            [Paragraph(escape(numero_factura), styles["FacturaCeldaMolsan"]), Paragraph(escape(fecha_factura), styles["FacturaCeldaMolsan"]), Paragraph(escape(numero_expediente), styles["FacturaCeldaMolsan"])],
+        ]
+        tabla_cabecera = Table(cabecera_datos, colWidths=[58*mm, 43*mm, 73*mm])
+        tabla_cabecera.setStyle(TableStyle([
+            ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#edf2f8")),
+            ("BOX", (0,0), (-1,-1), .5, colors.HexColor("#d5deea")),
+            ("INNERGRID", (0,0), (-1,-1), .35, colors.HexColor("#d5deea")),
+            ("VALIGN", (0,0), (-1,-1), "TOP"), ("LEFTPADDING", (0,0), (-1,-1), 7),
+            ("RIGHTPADDING", (0,0), (-1,-1), 7), ("TOPPADDING", (0,0), (-1,-1), 7),
+            ("BOTTOMPADDING", (0,0), (-1,-1), 7),
+        ]))
+        story.extend([tabla_cabecera, Paragraph("DATOS DEL CLIENTE", styles["FacturaSeccionMolsan"])])
+        cliente_txt = escape(cliente or "—")
+        nif_txt = escape(nif_cliente or "—")
+        datos_cliente = Table([
+            [Paragraph("<b>Cliente / titular</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>NIF / CIF</b>", styles["FacturaCeldaMolsan"])],
+            [Paragraph(cliente_txt, styles["FacturaCeldaMolsan"]), Paragraph(nif_txt, styles["FacturaCeldaMolsan"])],
+        ], colWidths=[87*mm, 87*mm])
+        datos_cliente.setStyle(TableStyle([
+            ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#edf2f8")),
+            ("BOX", (0,0), (-1,-1), .5, colors.HexColor("#d5deea")),
+            ("INNERGRID", (0,0), (-1,-1), .35, colors.HexColor("#d5deea")),
+            ("VALIGN", (0,0), (-1,-1), "TOP"), ("LEFTPADDING", (0,0), (-1,-1), 7),
+            ("RIGHTPADDING", (0,0), (-1,-1), 7), ("TOPPADDING", (0,0), (-1,-1), 7),
+            ("BOTTOMPADDING", (0,0), (-1,-1), 7),
+        ]))
+        story.extend([datos_cliente, Paragraph("DETALLE DE FACTURACIÓN", styles["FacturaSeccionMolsan"])])
+        story.append(Paragraph(f"<b>Concepto:</b> {escape(concepto_factura)}", styles["FacturaCeldaMolsan"]))
+        story.append(Spacer(1, 3*mm))
+        detalle = [
+            [Paragraph("<b>Descripción</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Importe</b>", styles["FacturaCeldaDerMolsan"])],
+            [Paragraph(escape(concepto_factura), styles["FacturaCeldaMolsan"]), Paragraph(euros(base), styles["FacturaCeldaDerMolsan"])],
+        ]
+        tabla_detalle = Table(detalle, colWidths=[125*mm, 49*mm])
+        tabla_detalle.setStyle(TableStyle([
+            ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#edf2f8")),
+            ("BOX", (0,0), (-1,-1), .5, colors.HexColor("#d5deea")),
+            ("INNERGRID", (0,0), (-1,-1), .35, colors.HexColor("#d5deea")),
+            ("VALIGN", (0,0), (-1,-1), "TOP"), ("LEFTPADDING", (0,0), (-1,-1), 7),
+            ("RIGHTPADDING", (0,0), (-1,-1), 7), ("TOPPADDING", (0,0), (-1,-1), 8),
+            ("BOTTOMPADDING", (0,0), (-1,-1), 8),
+        ]))
+        story.append(tabla_detalle)
+        resumen = [
+            [Paragraph("Base imponible", styles["FacturaCeldaMolsan"]), Paragraph(euros(base), styles["FacturaCeldaDerMolsan"])],
+        ]
+        if es_empleado or descuento > 0:
+            resumen.append([Paragraph("Descuento empleado (50 %)", styles["FacturaCeldaMolsan"]), Paragraph(f"− {euros(descuento)}", styles["FacturaCeldaDerMolsan"])])
+        resumen.extend([
+            [Paragraph(f"{escape(tipo_impuesto)} {escape(porcentaje)} %", styles["FacturaCeldaMolsan"]), Paragraph(euros(impuesto), styles["FacturaCeldaDerMolsan"])],
+            [Paragraph("<b>TOTAL FACTURA</b>", styles["FacturaTotalMolsan"]), Paragraph(f"<b>{euros(total)}</b>", styles["FacturaTotalMolsan"])],
+        ])
+        tabla_resumen = Table(resumen, colWidths=[125*mm, 49*mm], hAlign="RIGHT")
+        tabla_resumen.setStyle(TableStyle([
+            ("LINEABOVE", (0,0), (-1,0), .8, colors.HexColor("#9aabc2")),
+            ("BACKGROUND", (0,-1), (-1,-1), colors.HexColor("#edf2f8")),
+            ("LEFTPADDING", (0,0), (-1,-1), 7), ("RIGHTPADDING", (0,0), (-1,-1), 7),
+            ("TOPPADDING", (0,0), (-1,-1), 6), ("BOTTOMPADDING", (0,0), (-1,-1), 6),
+        ]))
+        story.extend([Spacer(1, 3*mm), tabla_resumen, Paragraph("DATOS DEL EXPEDIENTE", styles["FacturaSeccionMolsan"])])
+        datos_expediente = [
+            [Paragraph("<b>Documento</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Notario</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Protocolo</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Fecha de firma</b>", styles["FacturaCeldaMolsan"])],
+            [Paragraph(escape(nif_cliente or "—"), styles["FacturaCeldaMolsan"]), Paragraph(escape(notario), styles["FacturaCeldaMolsan"]), Paragraph(escape(protocolo), styles["FacturaCeldaMolsan"]), Paragraph(escape(fecha_firma), styles["FacturaCeldaMolsan"])],
+        ]
+        tabla_exp = Table(datos_expediente, colWidths=[43.5*mm]*4)
+        tabla_exp.setStyle(TableStyle([
+            ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#edf2f8")),
+            ("BOX", (0,0), (-1,-1), .5, colors.HexColor("#d5deea")),
+            ("INNERGRID", (0,0), (-1,-1), .35, colors.HexColor("#d5deea")),
+            ("VALIGN", (0,0), (-1,-1), "TOP"), ("LEFTPADDING", (0,0), (-1,-1), 5),
+            ("RIGHTPADDING", (0,0), (-1,-1), 5), ("TOPPADDING", (0,0), (-1,-1), 6),
+            ("BOTTOMPADDING", (0,0), (-1,-1), 6),
+        ]))
+        story.append(tabla_exp)
+        if datos.get("observaciones"):
+            story.extend([Paragraph("OBSERVACIONES", styles["FacturaSeccionMolsan"]), Paragraph(escape(str(datos["observaciones"])).replace("\\n", "<br/>"), styles["FacturaCeldaMolsan"])])
+        story.extend([Spacer(1, 8*mm), Paragraph("Documento generado por ERP-Molsan a partir de la plantilla oficial vinculada al concepto de honorarios de gestoría.", styles["FacturaSubMolsan"])])
+        doc.build(story)
+        buffer.seek(0)
     except HTTPException:
         raise
     except Exception as exc:
-        logger.exception("No se pudo rellenar la plantilla Word de honorarios para %s", id_expediente)
-        raise HTTPException(status_code=500, detail="No se pudo rellenar la plantilla Word. Revisa que el modelo DOCX esté íntegro.")
+        logger.exception("No se pudo generar el PDF oficial de honorarios para %s", id_expediente)
+        raise HTTPException(status_code=500, detail="No se pudo generar el PDF de la factura. Revisa que la plantilla oficial del concepto esté íntegra.")
 
-    nombre_salida = f"Factura_honorarios_{id_expediente}.docx".replace("/", "-").replace("\\\\", "-")
+    nombre_salida = f"Factura_honorarios_{id_expediente}.pdf".replace("/", "-").replace("\\\\", "-")
     return StreamingResponse(
-        salida,
-        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        buffer,
+        media_type="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="{nombre_salida}"'},
     )
-
 
 # ============================================================
 # CONSULTAR UN EXPEDIENTE
