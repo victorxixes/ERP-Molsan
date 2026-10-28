@@ -2763,7 +2763,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     const entidad = nombresEntidades.join(" ").toLowerCase();
 
     const normalizarNombre = (valor) => String(valor || "").normalize("NFD")
-      .replace(/[\\u0300-\\u036f]/g, "").toLocaleLowerCase("es-ES")
+      .replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es-ES")
       .replace(/[^a-z0-9]/g, "");
     // El catálogo conserva la entidad histórica y su sucesora en «Entidad actual».
     // Por eso no basta con buscar la palabra CaixaBank en el nombre original:
@@ -2790,12 +2790,9 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       datos.provincia, datos.nombre_provincia, datos.provincia_titular,
       datos.poblacion, datos.municipio, datos.direccion, datos.direccion_titular,
       datos.codigo_postal, datos.cp,
-    ].filter(Boolean).join(" ").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLowerCase();
+    ].filter(Boolean).join(" ").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     const esCanarias = /canarias|las palmas|santa cruz de tenerife|tenerife|gran canaria|lanzarote|fuerteventura|la palma|la gomera|el hierro/.test(ubicacionFiscal);
-    const esCaixaBank = entidadesParaTarifa.includes("caixabank") ||
-      entidadesParaTarifa.includes("caixabanksa") ||
-      entidadesParaTarifa.includes("caixabanksa") ||
-      entidadesParaTarifa.includes("caixabank");
+    const esCaixaBank = entidadesParaTarifa.includes("caixabank");
     const nombreTarifa = esCanarias
       ? "Honorarios de gestoría — Canarias"
       : esCaixaBank
@@ -2805,7 +2802,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     const respuesta = await axios.get("/honorarios-gestoria?activos=true");
     const catalogo = Array.isArray(respuesta?.data) ? respuesta.data : [];
     const normalizarTarifa = (valor) => String(valor || "").normalize("NFD")
-      .replace(/[\\u0300-\\u036f]/g, "").trim().toLocaleLowerCase("es-ES");
+      .replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es-ES");
     const tarifa = catalogo.find((item) => normalizarTarifa(item.nombre) === normalizarTarifa(nombreTarifa));
     if (!tarifa) {
       throw new Error(`No se encuentra activa la tarifa «${nombreTarifa}» en el catálogo de Honorarios de gestoría. Abre Utilidades → Honorarios de gestoría y comprueba que esté activa.`);
@@ -8567,7 +8564,7 @@ const cuantiaFincasParaEnvio =
                 <p className="mb-3 text-xs text-slate-500">Revisión visual de documentos y actividades vinculados al expediente. Los documentos no se marcan como completados automáticamente.</p>
                 {(() => {
                   const docs = Array.isArray(documentosCierre) ? documentosCierre : [];
-                  const norm = (v) => String(v ?? "").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLowerCase();
+                  const norm = (v) => String(v ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                   const textoDoc = (doc) => norm([doc?.categoria, doc?.categoria_nombre, doc?.nombre_categoria, doc?.tipo_documento, doc?.actividad, doc?.actividad_nombre, doc?.fase, doc?.nombre, doc?.nombre_archivo, doc?.nombre_original, doc?.filename, doc?.titulo].filter(Boolean).join(" "));
                   const hay = (...terminos) => docs.some((doc) => terminos.some((termino) => textoDoc(doc).includes(norm(termino))));
                   const dato = (...keys) => keys.some((key) => String(expediente?.[key] ?? actividadDraft?.[key] ?? "").trim() !== "");
