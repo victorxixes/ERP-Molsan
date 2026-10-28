@@ -3433,6 +3433,7 @@ function InformeFacturacion() {
   const grupos = [
     { key: "con_provision", titulo: "Cancelación con provisión", descripcion: "TIPOOPERACION: CANCELACIÓN / CANCELACIÓN CON PROVISIÓN", icono: "🏦", acento: "emerald" },
     { key: "sin_provision", titulo: "Cancelación sin provisión", descripcion: "TIPOOPERACION: CANCELACIÓN SIN PROVISIÓN", icono: "📄", acento: "amber" },
+    { key: "otros", titulo: "Otros tipos de operación", descripcion: "Registros de honorarios cuyo TIPOOPERACION no es una cancelación", icono: "📋", acento: "blue" },
   ];
   const renderTarjetas = (grupo) => {
     const r = resumen(grupo.key);
