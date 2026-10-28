@@ -6231,6 +6231,15 @@ const cuantiaFincasParaEnvio =
                   {guardandoActividad ? "Validando…" : "➡️ Mover a Sede notarial sin protocolo"}
                 </Boton>
               )}
+              {actividadSeleccionada === "facturacion-cierre" && (
+                <Boton
+                  tipo="primary"
+                  onClick={generarHonorariosGestoria}
+                  disabled={generandoHonorariosGestoria || !expediente?.id_expediente}
+                >
+                  {generandoHonorariosGestoria ? "Abriendo factura…" : "🧾 Liquidar expediente / Factura definitiva de honorarios"}
+                </Boton>
+              )}
               {actividadSeleccionada === actividadActual && actividadActual && actividadActual !== "documentacion-previa" && (
                 <Boton tipo="primary" onClick={avanzarActividad} disabled={guardandoActividad}>
                   {guardandoActividad
