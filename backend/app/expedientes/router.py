@@ -422,6 +422,7 @@ def migrar_campos_workflow_actividades(
         "sol": "VARCHAR(100)",
         "cs": "VARCHAR(100)",
         "ns": "VARCHAR(100)",
+        "promocion": "VARCHAR(300)",
     }
     try:
         for nombre, tipo_sql in columnas.items():
@@ -835,6 +836,7 @@ CAMPOS_EXPEDIENTE = [
     "id",
     "cliente_id",
     "id_expediente",
+    "promocion",
     "notario_id",
     "apoderado_empleado_id",
     "gestor_asignado_id",
@@ -1195,6 +1197,7 @@ def aplicar_filtros(
     saldoDisponible=None,
     importe=None,
     observaciones=None,
+    promocion=None,
     estadoActividad=None,
     estadoExpediente=None,
     actividadActual=None,
@@ -1312,6 +1315,8 @@ def aplicar_filtros(
     if texto(observaciones):
         patron_obs = f"%{texto(observaciones)}%"
         q = q.filter(Expediente.observaciones.ilike(patron_obs))
+    if texto(promocion):
+        q = q.filter(Expediente.promocion.ilike(f"%{texto(promocion)}%"))
     if texto(estadoActividad):
         q = q.filter(func.lower(func.trim(Expediente.estado_actividad)) == texto(estadoActividad).lower())
     # actividadActual es el valor persistido; no debe confundirse con
@@ -1674,6 +1679,7 @@ def listado_expedientes(
     saldoDisponible: Optional[float] = None,
     importe: Optional[float] = None,
     observaciones: Optional[str] = None,
+    promocion: Optional[str] = None,
     estadoActividad: Optional[str] = None,
     estadoExpediente: Optional[str] = None,
     actividadActual: Optional[str] = Query(None, description="Filtra por el valor almacenado en actividad_actual"),
@@ -1726,6 +1732,7 @@ def listado_expedientes(
         saldoDisponible=saldoDisponible,
         importe=importe,
         observaciones=observaciones,
+        promocion=promocion,
         estadoActividad=estadoActividad,
         estadoExpediente=estadoExpediente,
         actividadActual=actividadActual,
@@ -1993,6 +2000,7 @@ def exportar_excel_expedientes(
     saldoDisponible: Optional[float] = None,
     importe: Optional[float] = None,
     observaciones: Optional[str] = None,
+    promocion: Optional[str] = None,
     estadoActividad: Optional[str] = None,
     estadoExpediente: Optional[str] = None,
     actividadActual: Optional[str] = Query(None, description="Filtra por el valor almacenado en actividad_actual"),
@@ -2045,6 +2053,7 @@ def exportar_excel_expedientes(
         saldoDisponible=saldoDisponible,
         importe=importe,
         observaciones=observaciones,
+        promocion=promocion,
         estadoActividad=estadoActividad,
         estadoExpediente=estadoExpediente,
         actividadActual=actividadActual,
@@ -3109,7 +3118,7 @@ CAMPOS_EDITABLES_ACTIVIDAD = {
         "escritura_simple_cancelacion", "registral_estado", "registral_fecha",
         "tiene_defectos_abiertos", "tipo_error", "falta_defecto",
         "descripcion_error", "fcierre_defecto", "facturacion_estado",
-        "facturacion_fecha", "fecha_entregado_cliente",
+        "facturacion_fecha", "fecha_entregado_cliente", "promocion",
     }
 }
 
