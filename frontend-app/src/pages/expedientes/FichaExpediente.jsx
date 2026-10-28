@@ -8577,14 +8577,19 @@ const cuantiaFincasParaEnvio =
           ) : (
             <>
               <section className="rounded-xl border border-slate-200 p-4">
-                <h3 className="mb-3 text-sm font-extrabold text-slate-800">Datos de factura y cliente</h3>
+                <h3 className="mb-3 text-sm font-extrabold text-slate-800">Datos de facturación</h3>
                 <div className="grid gap-3 md:grid-cols-2">
                   <label className="text-xs font-semibold text-slate-600">Cliente / titular<input value={facturaHonorariosForm.cliente} onChange={e => setFacturaHonorariosForm(f => ({...f,cliente:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
                   <label className="text-xs font-semibold text-slate-600">NIF / CIF<input value={facturaHonorariosForm.nifCliente} onChange={e => setFacturaHonorariosForm(f => ({...f,nifCliente:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
-                  <label className="text-xs font-semibold text-slate-600 md:col-span-2">Dirección<input value={facturaHonorariosForm.direccion} onChange={e => setFacturaHonorariosForm(f => ({...f,direccion:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-slate-600">Dirección<input value={facturaHonorariosForm.direccion} onChange={e => setFacturaHonorariosForm(f => ({...f,direccion:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
                   <label className="text-xs font-semibold text-slate-600">Código postal<input value={facturaHonorariosForm.codigoPostal} onChange={e => setFacturaHonorariosForm(f => ({...f,codigoPostal:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
                   <label className="text-xs font-semibold text-slate-600">Población<input value={facturaHonorariosForm.poblacion} onChange={e => setFacturaHonorariosForm(f => ({...f,poblacion:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
                   <label className="text-xs font-semibold text-slate-600">Provincia<input value={facturaHonorariosForm.provincia} onChange={e => setFacturaHonorariosForm(f => ({...f,provincia:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
+                </div>
+              </section>
+              <section className="rounded-xl border border-slate-200 p-4">
+                <h3 className="mb-3 text-sm font-extrabold text-slate-800">Datos de factura</h3>
+                <div className="grid gap-3 md:grid-cols-2">
                   <label className="text-xs font-semibold text-slate-600">Número de factura<input value={facturaHonorariosForm.numeroFactura} onChange={e => setFacturaHonorariosForm(f => ({...f,numeroFactura:e.target.value}))} placeholder="Se puede asignar al guardar" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
                   <label className="text-xs font-semibold text-slate-600">Fecha de factura<input type="date" value={facturaHonorariosForm.fechaFactura} onChange={e => setFacturaHonorariosForm(f => ({...f,fechaFactura:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
                   <label className="text-xs font-semibold text-slate-600 md:col-span-2">Concepto
