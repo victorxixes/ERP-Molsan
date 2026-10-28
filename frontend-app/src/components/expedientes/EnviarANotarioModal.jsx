@@ -804,6 +804,34 @@ export default function EnviarANotarioModal({
                   <CampoTexto label="Contrato" value={form.contrato} disabled={loading} onChange={(v) => cambiarCampo("contrato", v)} placeholder="Contrato de Fincas y Registros" />
                   <CampoTexto label="Tipo de operación" value={form.tipo_operacion} disabled={loading} onChange={(v) => cambiarCampo("tipo_operacion", v)} placeholder="Tipo de operación" />
                   <CampoTexto label="Importe con provisión (€)" value={form.importe} disabled={loading} type="number" onChange={(v) => cambiarCampo("importe", v)} placeholder="0,00" />
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold text-slate-700">
+                      Formato de escritura <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      value={form.formato_escritura}
+                      disabled={loading}
+                      onChange={(event) => cambiarCampo("formato_escritura", event.target.value)}
+                      className={clasesInput()}
+                    >
+                      <option value="Papel">Papel</option>
+                      <option value="Digital">Digital</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold text-slate-700">
+                      Tipo de trámite <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      value={form.tipo_tramite}
+                      disabled={loading}
+                      onChange={(event) => cambiarCampo("tipo_tramite", event.target.value)}
+                      className={clasesInput()}
+                    >
+                      <option value="Telemático">Telemático</option>
+                      <option value="Presencial">Presencial</option>
+                    </select>
+                  </div>
                   </div>
                   <div className="min-w-0">
                 <div className="space-y-4">
@@ -902,47 +930,7 @@ export default function EnviarANotarioModal({
                     </select>
                   </div>
 
-                  <div className="mt-4 grid grid-cols-1 gap-3">
-                  {/* FORMATO DE ESCRITURA */}
-                  <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-700">
-                      Formato de escritura
-                      <span className="text-red-500"> *</span>
-                    </label>
 
-                    <select
-                      value={form.formato_escritura}
-                      disabled={loading}
-                      onChange={(event) =>
-                        cambiarCampo("formato_escritura", event.target.value)
-                      }
-                      className={clasesInput()}
-                    >
-                      <option value="Papel">Papel</option>
-                      <option value="Digital">Digital</option>
-                    </select>
-                  </div>
-
-                  {/* TIPO DE TRÁMITE */}
-                  <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-700">
-                      Tipo de trámite
-                      <span className="text-red-500"> *</span>
-                    </label>
-
-                    <select
-                      value={form.tipo_tramite}
-                      disabled={loading}
-                      onChange={(event) =>
-                        cambiarCampo("tipo_tramite", event.target.value)
-                      }
-                      className={clasesInput()}
-                    >
-                      <option value="Telemático">Telemático</option>
-                      <option value="Presencial">Presencial</option>
-                    </select>
-                  </div>
-                </div>
 
 
 
@@ -970,7 +958,7 @@ export default function EnviarANotarioModal({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-5">
                   <CampoTexto
                     label="Nombre"
                     value={form.facturacion_nombre}
