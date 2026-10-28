@@ -1862,6 +1862,7 @@ APODERADOS EN: ALICANTE · BALEARES · CANARIAS · CASTELLON · CATALUÑA · GAL
     notario: false,
     apoderado: false,
     actividad: true,
+    absis: false,
   });
 
   const [
@@ -3815,6 +3816,7 @@ async function descargarPDFCalificacion(defecto) {
       notario: false,
       apoderado: false,
       actividad: true,
+      absis: false,
     });
 
     setMostrarObservaciones(true);
@@ -8283,7 +8285,8 @@ const cuantiaFincasParaEnvio =
                 grid
                 grid-cols-1
                 gap-3
-                md:grid-cols-3
+                md:grid-cols-2
+                xl:grid-cols-4
               "
             >
 
@@ -8334,6 +8337,18 @@ const cuantiaFincasParaEnvio =
                   )
                 }
               />
+
+              <div className="space-y-1">
+                <CheckboxVision
+                  label="Visión ABSIS"
+                  checked={false}
+                  disabled
+                  onChange={() => {}}
+                />
+                <p className="px-1 text-[11px] font-semibold text-amber-700">
+                  Pendiente de API. Esta opción todavía no envía comentarios a ABSIS.
+                </p>
+              </div>
 
             </div>
 
@@ -9127,12 +9142,13 @@ function CheckboxVision({
   label,
   checked,
   onChange,
+  disabled = false,
 }) {
   return (
     <label
       className={`
         flex
-        cursor-pointer
+        ${disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}
         items-center
         gap-3
         rounded-xl
@@ -9152,6 +9168,7 @@ function CheckboxVision({
         checked={
           checked
         }
+        disabled={disabled}
         onChange={(event) =>
           onChange(
             event.target.checked
