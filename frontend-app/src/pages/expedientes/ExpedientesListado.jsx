@@ -2553,6 +2553,19 @@ export default function ExpedientesListado() {
           })}
         </div>
       </section>
+      {/* Acciones principales: agrupadas justo debajo de los bloques de tarjetas */}
+      <section className="w-full flex flex-wrap items-center justify-start gap-2 -mt-2" aria-label="Acciones de expedientes">
+        <button type="button" onClick={exportarExcel} disabled={loading} className="rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50" style={{ background: "var(--erp-success)" }}>📊 Exportar Excel</button>
+        <button type="button" onClick={() => setMostrarFiltros(true)} className="rounded-xl border px-4 py-2.5 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)", background: "var(--erp-surface)" }}>🔎 Filtros avanzados</button>
+        <button
+          type="button"
+          onClick={() => setMostrarAyudaControlPlazos(true)}
+          className="inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-bold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
+          style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface)", color: "var(--erp-primary)" }}
+        >
+          📌 Ver Control de plazos
+        </button>
+      </section>
         </div>
         <div className="min-w-0 xl:col-span-8">
       {/* GRIDS DE ACTIVIDAD */}
@@ -2606,23 +2619,6 @@ export default function ExpedientesListado() {
           })}
         </div>
       </section>
-        </div>
-      </div>
-
-      {/* Acciones principales: agrupadas justo debajo de los bloques de tarjetas */}
-      <section className="w-full flex flex-wrap items-center justify-start gap-2 -mt-2" aria-label="Acciones de expedientes">
-        <button type="button" onClick={exportarExcel} disabled={loading} className="rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50" style={{ background: "var(--erp-success)" }}>📊 Exportar Excel</button>
-        <button type="button" onClick={() => setMostrarFiltros(true)} className="rounded-xl border px-4 py-2.5 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)", background: "var(--erp-surface)" }}>🔎 Filtros avanzados</button>
-        <button
-          type="button"
-          onClick={() => setMostrarAyudaControlPlazos(true)}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-bold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
-          style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface)", color: "var(--erp-primary)" }}
-        >
-          📌 Ver Control de plazos
-        </button>
-      </section>
-
       {/* BÚSQUEDA FÁCIL: ocupa todo el ancho disponible */}
       <section
         className="w-full rounded-2xl border p-3 sm:p-4 shadow-sm space-y-2"
@@ -2670,8 +2666,8 @@ export default function ExpedientesListado() {
           </p>
         )}
       </section>
-
-
+        </div>
+      </div>
 
       {/* ======================================================
           TABLA
