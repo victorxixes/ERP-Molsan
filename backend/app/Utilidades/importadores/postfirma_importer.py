@@ -17,9 +17,18 @@ from backend.app.expedientes.models import Expediente
 from backend.app.expedientes.gastos.models import ExpedienteGasto
 
 
+# Encabezados oficiales del Excel ABSIS Post Firma (37 columnas).
+# TIPOCONCEPTO e IDPAGO no forman parte del origen y no se inventan ni enlazan.
 CABECERAS_REQUERIDAS = {
-    "IDEXPEDIENTE", "IDGASTO", "CONCEPTOGASTO", "ESTADO", "IMPGASTO",
-    "FFACTURA", "FECHAADJUNTARFACTURA", "TIPOOPERACION",
+    "IDEXPEDIENTE", "FECHAALTA", "ORIGENBANKIA", "ACTIVIDADACTUAL",
+    "ESTADOACTIVIDAD", "IDPROVISION", "IMPORTEPROVISION", "TIPOPROVISION",
+    "DETALLEOPERACION", "TIPOOPERACION", "SUBTIPOOPERACION", "OFICINA", "DAN",
+    "IDGESTORIATRAMITE", "NOMBREGESTORIA", "NOMBREDOCUMENTO", "IDGASTO",
+    "CONCEPTOGASTO", "ESTADO", "ESTADOJUSTIFICANTE", "FECHAADJUNTARFACTURA",
+    "IMPGASTO", "IMPBASEIMPUESTO", "IMPBASERETENCION", "IMPIMPUESTO",
+    "FESTADO", "FPETICION", "FPAGO", "CTAORIGEN", "CTADESTINO", "FFACTURA",
+    "FORMAPAGO", "NUMFACTURA", "IDBENEFICIARIO", "BENEFICIARIO",
+    "NOMBREPAGADOR", "NIFPAGADOR",
 }
 
 
@@ -64,6 +73,14 @@ def _fecha(value):
         return value.date()
     if isinstance(value, date):
         return value
+    # Excel puede entregar seriales numéricos si la celda no tiene formato fecha.
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        try:
+            numero = float(value)
+            if 20000 <= numero <= 80000:
+                return (datetime(1899, 12, 30) + timedelta(days=numero)).date()
+        except (TypeError, ValueError, OverflowError):
+            return None
     try:
         parsed = pd.to_datetime(value, dayfirst=True, errors="coerce")
         return None if pd.isna(parsed) else parsed.date()
@@ -327,10 +344,14 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
                 gasto.fecha_estado = _fecha(val(row, "FESTADO"))
                 gasto.fecha_peticion = _fecha(val(row, "FPETICION"))
                 gasto.fecha_pago = _fecha(val(row, "FPAGO"))
-                gasto.pagador = _texto(val(row, "NOMBREPAGADOR"))
-                gasto.nif_notario = None
-                gasto.medio_pago = _texto(val(row, "FORMAPAGO"))
-                gasto.cuenta_bancaria = _texto(val(row, "CTAORIGEN"))
+                # Los campos generales del gasto pertenecen al ERP: solo se inicializan
+                # en registros ABSIS nuevos/no ERP. Nunca se borra información existente.
+                if es_nuevo or not es_gasto_erp:
+                    gasto.pagador = _texto(val(row, "NOMBREPAGADOR"))
+                    gasto.medio_pago = _texto(val(row, "FORMAPAGO"))
+                    gasto.cuenta_bancaria = _texto(val(row, "CTAORIGEN"))
+                # El JSON conserva íntegros los 37 campos de origen, incluido NIFPAGADOR,
+                # BENEFICIARIO, CTADESTINO y metadatos que aún no tienen columna propia.
                 gasto.datos_absis_json = json.dumps(registro["original"], ensure_ascii=False, default=str)
 
                 if es_nuevo:
@@ -433,7 +454,6 @@ def validar_postfirma(
         if not id_gasto:
             ids_vacios += 1
         else:
-            ids_gasto.append(id_gasto.casefold())
             ids_gasto.append(id_gasto.casefold())
             claves_gasto.append((id_gasto.casefold(), (tipo_concepto or "").casefold()))
 

@@ -69,43 +69,8 @@ def _concepto_honorarios(gasto):
     valores = [getattr(gasto, "tipo", None), getattr(gasto, "descripcion", None)]
     return any("honorarios gestoria" in _normalizar_texto(v) for v in valores if v)
 
-def _tipo_cancelacion(exp, gasto=None):
-    valor_origen = getattr(gasto, "tipo_operacion_absis", None) if gasto is not None else None
-    valor = _normalizar_texto(valor_origen or getattr(exp, "tipo_operacion", None))
-    # ABSIS puede informar simplemente "CANCELACION"; se agrupa con las
-    # cancelaciones con provisión, salvo que indique expresamente lo contrario.
-    if "cancelacion" in valor and "sin provision" in valor:
-        return "sin_provision"
-    if "cancelacion" in valor:
-        return "con_provision"
-    return "otros"
-
-def _situacion_facturacion(gasto):
-    """La situación económica se decide por ESTADO de ABSIS; FPAGO solo aporta la fecha."""
-    estado = _normalizar_texto(getattr(gasto, "estado_absis", None))
-    justificante = _normalizar_texto(getattr(gasto, "estado_justificante", None))
-    conjunto = f"{estado} {justificante}"
-
-    # Incidencias prevalecen para no contabilizar como cobro confirmado un registro problemático.
-    if any(p in conjunto for p in ("incidencia", "error", "rechaz", "devuelt", "problema", "anulad")):
-        return "incidencia"
-
-    # No deducir el cobro de la existencia de FPAGO: el estado oficial manda.
-    if any(p in estado for p in ("pagad", "abonad", "cobrad")):
-        return "cobrado"
-
-    # Si ABSIS aún no confirma el pago, clasificar según el estado real.
-    if any(p in estado for p in ("pendient", "solicit", "tramite", "en curso", "emitid", "generad")):
-        return "pendiente_cobro"
-
-    # La fecha de factura sirve para distinguir pendiente de factura, nunca para declarar un cobro.
-    if not estado and not justificante:
-        return "pendiente_factura" if not getattr(gasto, "fecha_adjuntar_factura", None) else "pendiente_cobro"
-
-    return "otros"
-
-def _fecha_original_absis(gasto, clave):
-    """Recupera una fecha del JSON original cuando el campo normalizado está vacío."""
+def _original_absis(gasto, clave):
+    """Devuelve un valor de la fila ABSIS original, aunque falte su columna normalizada."""
     bruto = getattr(gasto, "datos_absis_json", None)
     if not bruto:
         return None
@@ -113,15 +78,30 @@ def _fecha_original_absis(gasto, clave):
         original = json.loads(bruto)
     except (TypeError, ValueError):
         return None
-    valor = original.get(clave)
+    buscada = str(clave).strip().casefold()
+    for nombre, valor in original.items():
+        if str(nombre).strip().casefold() == buscada and valor is not None and str(valor).strip() != "":
+            return valor
+    return None
+
+
+def _fecha_valor(valor):
     if valor is None or str(valor).strip() == "":
         return None
     if isinstance(valor, datetime):
         return valor.date()
     if isinstance(valor, date):
         return valor
+    if isinstance(valor, (int, float)) and not isinstance(valor, bool):
+        try:
+            numero = float(valor)
+            if 20000 <= numero <= 80000:
+                from datetime import timedelta
+                return (datetime(1899, 12, 30) + timedelta(days=numero)).date()
+        except (TypeError, ValueError, OverflowError):
+            return None
     texto = str(valor).strip()
-    for formato in ("%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y", "%Y/%m/%d"):
+    for formato in ("%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y", "%Y/%m/%d", "%d/%m/%y"):
         try:
             return datetime.strptime(texto[:10], formato).date()
         except ValueError:
@@ -129,96 +109,171 @@ def _fecha_original_absis(gasto, clave):
     return None
 
 
-def _fecha_iso(valor):
-    return valor.isoformat() if valor else None
+def _fecha_original_absis(gasto, clave):
+    return _fecha_valor(_original_absis(gasto, clave))
+
+
+def _valor(gasto, atributo, clave_original):
+    valor = getattr(gasto, atributo, None)
+    return valor if valor is not None and str(valor).strip() != "" else _original_absis(gasto, clave_original)
+
+
+def _tipo_cancelacion(exp, gasto=None):
+    valor_origen = _valor(gasto, "tipo_operacion_absis", "TIPOOPERACION") if gasto is not None else None
+    valor = _normalizar_texto(valor_origen or (getattr(exp, "tipo_operacion", None) if exp else None))
+    if "cancelacion" in valor and "sin provision" in valor:
+        return "sin_provision"
+    if "cancelacion" in valor:
+        return "con_provision"
+    return "otros"
+
+
+def _situacion_facturacion(gasto):
+    """Clasificación estricta según los códigos ESTADO acordados con ABSIS."""
+    estado = str(_valor(gasto, "estado_absis", "ESTADO") or "").strip().upper()
+    estados = {
+        "PAGADO": "cobrado",
+        "PAG_RETRO": "cobrado",
+        "PTE_RESP_FAC": "pendiente_factura",
+        "PTE_EXPORT_FAC": "pendiente_factura",
+        "ANULADO": "incidencia",
+        "PAG_DENEGADO": "incidencia",
+        "PTE_CONS": "pendiente_cobro",
+        "PTE_RESP": "pendiente_cobro",
+        "ENTREGADA": "pendiente_cobro",
+    }
+    return estados.get(estado, "sin_clasificar")
+
 
 def _decimal(valor):
     if valor is None:
         return None
     try:
+        if isinstance(valor, str):
+            texto = valor.strip().replace(" ", "")
+            if "," in texto:
+                texto = texto.replace(".", "").replace(",", ".")
+            valor = texto
         return float(Decimal(str(valor)))
     except Exception:
         return None
 
+
+def _fecha_iso(valor):
+    return valor.isoformat() if valor else None
+
+
 def _consultar(db, fecha_desde=None, fecha_hasta=None, tipo_operacion=None, estado=None, estado_justificante=None, situacion=None, q=None, modalidad="todas"):
     if fecha_desde and fecha_hasta and fecha_desde > fecha_hasta:
         raise HTTPException(status_code=400, detail="La fecha desde no puede ser posterior a la fecha hasta.")
-    query = db.query(ExpedienteGasto, Expediente).outerjoin(
+
+    # Se recuperan los registros y se filtran usando el dato normalizado o el
+    # original JSON. Así los históricos importados antes del mapeo completo también
+    # alimentan las tarjetas sin necesidad de reimportar ni crear pagos.
+    consulta = db.query(ExpedienteGasto, Expediente).outerjoin(
         Expediente, Expediente.id == ExpedienteGasto.expediente_id
     )
-    # Para registros Post Firma, el concepto original de ABSIS es la fuente de verdad.
-    # Solo los gastos ERP antiguos sin IDGASTO ABSIS pueden usar tipo/descripcion como compatibilidad.
-    query = query.filter(or_(
-        ExpedienteGasto.concepto_gasto_absis.ilike("%honorarios gestoría%"),
-        ExpedienteGasto.concepto_gasto_absis.ilike("%honorarios gestoria%"),
-        and_(
-            ExpedienteGasto.id_gasto_absis.is_(None),
-            or_(
-                ExpedienteGasto.tipo.ilike("%honorarios gestoría%"),
-                ExpedienteGasto.tipo.ilike("%honorarios gestoria%"),
-                ExpedienteGasto.descripcion.ilike("%honorarios gestoría%"),
-                ExpedienteGasto.descripcion.ilike("%honorarios gestoria%"),
-            ),
-        ),
-    ))
-    if fecha_desde:
-        query = query.filter(ExpedienteGasto.fecha_adjuntar_factura >= fecha_desde)
-    if fecha_hasta:
-        query = query.filter(ExpedienteGasto.fecha_adjuntar_factura <= fecha_hasta)
-    if tipo_operacion:
-        query = query.filter(or_(Expediente.tipo_operacion.ilike(f"%{tipo_operacion.strip()}%"), ExpedienteGasto.tipo_operacion_absis.ilike(f"%{tipo_operacion.strip()}%")))
-    if estado:
-        query = query.filter(ExpedienteGasto.estado_absis.ilike(f"%{estado.strip()}%"))
-    if estado_justificante:
-        query = query.filter(ExpedienteGasto.estado_justificante.ilike(f"%{estado_justificante.strip()}%"))
-    if q and q.strip():
-        patron = f"%{q.strip()}%"
-        query = query.filter(or_(
-            Expediente.id_expediente.ilike(patron),
-            ExpedienteGasto.id_expediente_absis.ilike(patron),
-            Expediente.tipo_operacion.ilike(patron),
-            ExpedienteGasto.tipo_operacion_absis.ilike(patron),
-            ExpedienteGasto.concepto_gasto_absis.ilike(patron),
-            ExpedienteGasto.tipo.ilike(patron),
-            ExpedienteGasto.descripcion.ilike(patron),
-            ExpedienteGasto.numero_factura.ilike(patron),
-        ))
     filas = []
-    for gasto, exp in query.order_by(ExpedienteGasto.fecha_adjuntar_factura.desc().nullslast(), Expediente.id_expediente.asc()).all():
+    for gasto, exp in consulta.order_by(
+        ExpedienteGasto.fecha_adjuntar_factura.desc().nullslast(),
+        Expediente.id_expediente.asc()
+    ).all():
+        datos_absis = {}
+        bruto = getattr(gasto, "datos_absis_json", None)
+        if bruto:
+            try:
+                datos_absis = json.loads(bruto)
+                if not isinstance(datos_absis, dict):
+                    datos_absis = {}
+            except (TypeError, ValueError):
+                datos_absis = {}
+
+        es_registro_absis = bool(getattr(gasto, "id_gasto_absis", None) or datos_absis)
+        concepto = _valor(gasto, "concepto_gasto_absis", "CONCEPTOGASTO") if es_registro_absis else (
+            getattr(gasto, "tipo", None) or getattr(gasto, "descripcion", None)
+        )
+        if "honorarios gestoria" not in _normalizar_texto(concepto):
+            continue
+
+        tipo_operacion_valor = _valor(gasto, "tipo_operacion_absis", "TIPOOPERACION") if es_registro_absis else (
+            getattr(exp, "tipo_operacion", None) if exp else None
+        )
+        estado_valor = _valor(gasto, "estado_absis", "ESTADO")
+        justificante_valor = _valor(gasto, "estado_justificante", "ESTADOJUSTIFICANTE")
+        fecha_adjuntar = getattr(gasto, "fecha_adjuntar_factura", None) or _fecha_original_absis(gasto, "FECHAADJUNTARFACTURA")
+        fecha_factura = getattr(gasto, "fecha_factura_absis", None) or _fecha_original_absis(gasto, "FFACTURA")
+        fecha_estado = getattr(gasto, "fecha_estado", None) or _fecha_original_absis(gasto, "FESTADO")
+        fecha_peticion = getattr(gasto, "fecha_peticion", None) or _fecha_original_absis(gasto, "FPETICION")
+        fecha_pago = getattr(gasto, "fecha_pago", None) or _fecha_original_absis(gasto, "FPAGO")
         tipo = _tipo_cancelacion(exp, gasto)
+
+        if fecha_desde and (fecha_adjuntar is None or fecha_adjuntar < fecha_desde):
+            continue
+        if fecha_hasta and (fecha_adjuntar is None or fecha_adjuntar > fecha_hasta):
+            continue
+        if tipo_operacion and _normalizar_texto(tipo_operacion.strip()) not in _normalizar_texto(tipo_operacion_valor):
+            continue
+        if estado and _normalizar_texto(estado.strip()) not in _normalizar_texto(estado_valor):
+            continue
+        if estado_justificante and _normalizar_texto(estado_justificante.strip()) not in _normalizar_texto(justificante_valor):
+            continue
         if modalidad in {"con_provision", "sin_provision", "otros"} and tipo != modalidad:
             continue
+
         situacion_fila = _situacion_facturacion(gasto)
         if situacion and situacion_fila != situacion:
             continue
-        es_registro_absis = bool(getattr(gasto, "id_gasto_absis", None) or getattr(gasto, "datos_absis_json", None))
+
+        id_expediente = (exp.id_expediente if exp else None) or _valor(gasto, "id_expediente_absis", "IDEXPEDIENTE")
+        id_gasto = getattr(gasto, "id_gasto_absis", None) or _original_absis(gasto, "IDGASTO")
+        numero_factura = getattr(gasto, "numero_factura_absis", None) or _original_absis(gasto, "NUMFACTURA") or getattr(gasto, "numero_factura", None)
+        imp_gasto = getattr(gasto, "imp_gasto", None)
+        if imp_gasto is None:
+            imp_gasto = _original_absis(gasto, "IMPGASTO")
+        base_impuesto = getattr(gasto, "imp_base_impuesto", None)
+        if base_impuesto is None:
+            base_impuesto = _original_absis(gasto, "IMPBASEIMPUESTO")
+        base_retencion = getattr(gasto, "imp_base_retencion", None)
+        if base_retencion is None:
+            base_retencion = _original_absis(gasto, "IMPBASERETENCION")
+        importe_impuesto = getattr(gasto, "imp_impuesto", None)
+        if importe_impuesto is None:
+            importe_impuesto = _original_absis(gasto, "IMPIMPUESTO")
+
+        buscar = " ".join(str(x or "") for x in (
+            id_expediente, id_gasto, tipo_operacion_valor, concepto, numero_factura,
+            _original_absis(gasto, "BENEFICIARIO"), _original_absis(gasto, "NIFPAGADOR")
+        ))
+        if q and q.strip() and _normalizar_texto(q.strip()) not in _normalizar_texto(buscar):
+            continue
+
         filas.append({
-            "id_expediente": exp.id_expediente if exp else getattr(gasto, "id_expediente_absis", None),
-            "id_gasto_absis": getattr(gasto, "id_gasto_absis", None),
-            "numero_factura_absis": getattr(gasto, "numero_factura_absis", None),
-            "fecha_factura_absis": _fecha_iso(getattr(gasto, "fecha_factura_absis", None) or _fecha_original_absis(gasto, "FFACTURA")),
+            "id_expediente": id_expediente,
+            "id_gasto_absis": id_gasto,
+            "numero_factura_absis": numero_factura,
+            "fecha_factura_absis": _fecha_iso(fecha_factura),
             "tipo_concepto_absis": getattr(gasto, "tipo_concepto_absis", None),
             "origen_registro": getattr(gasto, "origen_registro", None),
             "estado_consolidacion": getattr(gasto, "estado_consolidacion", None),
             "fecha_ultima_sincronizacion": _fecha_iso(getattr(gasto, "fecha_ultima_sincronizacion", None)),
             "tipo_cancelacion": tipo,
-            "tipo_operacion": getattr(gasto, "tipo_operacion_absis", None) or (exp.tipo_operacion if exp else None),
-            "concepto_gasto": getattr(gasto, "concepto_gasto_absis", None) if es_registro_absis else (getattr(gasto, "tipo", None) or getattr(gasto, "descripcion", None)),
+            "tipo_operacion": tipo_operacion_valor,
+            "concepto_gasto": concepto,
             "situacion_facturacion": situacion_fila,
-            "estado": getattr(gasto, "estado_absis", None),
-            "estado_justificante": getattr(gasto, "estado_justificante", None),
-            "fecha_adjuntar_factura": _fecha_iso(getattr(gasto, "fecha_adjuntar_factura", None)),
-            "fecha_factura": _fecha_iso(getattr(gasto, "fecha_factura", None)),
-            "imp_gasto": _decimal(getattr(gasto, "imp_gasto", None)) if es_registro_absis else _decimal(gasto.importe_total_bruto if gasto.importe_total_bruto is not None else gasto.importe),
-            "imp_base_impuesto": _decimal(getattr(gasto, "imp_base_impuesto", None)) if es_registro_absis else _decimal(gasto.base_sujeta_impuestos),
-            "imp_base_retencion": _decimal(getattr(gasto, "imp_base_retencion", None)) if es_registro_absis else _decimal(gasto.base_sujeta_retencion),
-            "imp_impuesto": _decimal(getattr(gasto, "imp_impuesto", None)) if es_registro_absis else _decimal(gasto.importe_impuesto),
-            "fecha_estado": _fecha_iso(getattr(gasto, "fecha_estado", None)),
-            "fecha_peticion": _fecha_iso(getattr(gasto, "fecha_peticion", None)),
-            "fecha_pago": _fecha_iso(getattr(gasto, "fecha_pago", None)),
+            "estado": estado_valor,
+            "estado_justificante": justificante_valor,
+            "fecha_adjuntar_factura": _fecha_iso(fecha_adjuntar),
+            "fecha_factura": _fecha_iso(getattr(gasto, "fecha_factura", None) or fecha_factura),
+            "imp_gasto": _decimal(imp_gasto) if es_registro_absis else _decimal(gasto.importe_total_bruto if gasto.importe_total_bruto is not None else gasto.importe),
+            "imp_base_impuesto": _decimal(base_impuesto) if es_registro_absis else _decimal(gasto.base_sujeta_impuestos),
+            "imp_base_retencion": _decimal(base_retencion) if es_registro_absis else _decimal(gasto.base_sujeta_retencion),
+            "imp_impuesto": _decimal(importe_impuesto) if es_registro_absis else _decimal(gasto.importe_impuesto),
+            "fecha_estado": _fecha_iso(fecha_estado),
+            "fecha_peticion": _fecha_iso(fecha_peticion),
+            "fecha_pago": _fecha_iso(fecha_pago),
             "estado_pago": gasto.estado_pago,
-            "numero_factura": gasto.numero_factura,
-            "datos_absis": (json.loads(gasto.datos_absis_json) if getattr(gasto, "datos_absis_json", None) else {}),
+            "numero_factura": getattr(gasto, "numero_factura", None),
+            "datos_absis": datos_absis,
         })
     return filas
 
