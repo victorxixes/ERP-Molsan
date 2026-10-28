@@ -1105,6 +1105,8 @@ export default function EnviarANotarioModal({
                           ? "Cargando catálogo de municipios…"
                           : "Selecciona un municipio para completar automáticamente la provincia."}
                       </p>
+                    </div>
+
                   <CampoTexto
                     label="Provincia"
                     value={form.facturacion_provincia}
