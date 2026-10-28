@@ -2430,7 +2430,8 @@ export default function ExpedientesListado() {
           </div>
         </header>
 
-            <div className="space-y-1">
+      <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-12">
+        <div className="space-y-3 xl:col-span-4">
       {/* SLA GLOBAL: CIRCUITOS DIFERENCIADOS */}
       <section className="space-y-3" aria-label="SLA global por circuito">
         <div>
@@ -2508,61 +2509,52 @@ export default function ExpedientesListado() {
           })}
         </div>
         <p className="text-xs text-[var(--erp-text-soft)]">Se calcula desde la fecha de envío hasta Fin actividad o la fecha actual si sigue abierto. Hipotecario y Crédito Stock quedan excluidos.</p>
+        </section>
 
-            {/* BÚSQUEDA FÁCIL: no hace falta conocer los nombres de los filtros */}
-            <section
-              className="w-full rounded-2xl border p-3 sm:p-4 shadow-sm space-y-2"
-              style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
-              aria-label="Buscar expedientes"
-            >
-              <div>
-                <h3 className="text-base font-bold text-[var(--erp-text)]">¿Qué expediente necesitas?</h3>
-                <p className="mt-1 text-sm text-[var(--erp-text-soft)]">
-                  Escribe cualquier dato que conozcas: número, nombre, NIF, notario, oficina, finca o registro.
-                </p>
-              </div>
-              <form
-                className="flex flex-col sm:flex-row gap-2"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  setBusquedaAplicada(busquedaRapida.trim());
+      {/* ESTADOS DIFERENCIALES: son estados del expediente, no actividades ni SLA */}
+      <section className="space-y-1" aria-label="Estados diferenciales del expediente">
+        <div>
+          <h3 className="text-base font-bold text-[var(--erp-text)]">Estados diferenciales</h3>
+          <p className="text-sm text-[var(--erp-text-soft)]">Estos filtros se basan en el estado del expediente. No son actividades y no calculan SLA.</p>
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {[
+            { codigo: "PVA", titulo: "Pendientes de Validar", icono: "🔎", borde: "#2563eb", fondo: "rgba(37, 99, 235, 0.08)" },
+            { codigo: "RST", titulo: "Retención", icono: "⏸️", borde: "#7e22ce", fondo: "rgba(126, 34, 206, 0.08)" },
+          ].map((estado) => {
+            const activa = filtrosAplicados.estadoExpediente.trim().toLocaleUpperCase("es-ES") === estado.codigo;
+            return (
+              <button
+                key={estado.codigo}
+                type="button"
+                aria-pressed={activa}
+                onClick={() => {
+                  const seleccionar = activa ? "" : estado.codigo;
+                  setAlertaSeleccionada("");
+                  setActividadSeleccionada("");
+                  setFiltroActividad("");
+                  setFiltroEstadoExpediente(seleccionar);
+                  setFiltrosAplicados((actual) => ({ ...actual, estadoExpediente: seleccionar, actividad: "" }));
+                  setColumnasVisibles(COLUMNAS_POR_DEFECTO);
                   setPagina(1);
                 }}
+                className="min-h-[116px] rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
+                style={{ background: activa ? estado.fondo : "var(--erp-surface)", borderColor: activa ? estado.borde : "var(--erp-border)", boxShadow: activa ? `0 0 0 1px ${estado.borde}` : undefined }}
               >
-                <div className="relative flex-1">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg" aria-hidden="true">🔎</span>
-                  <input
-                    type="search"
-                    value={busquedaRapida}
-                    onChange={(event) => setBusquedaRapida(event.target.value)}
-                    placeholder="Ej.: 2026-00123, María García, notario, finca…"
-                    aria-label="Buscar en todos los datos de los expedientes"
-                    className="w-full rounded-xl border py-3 pl-10 pr-3 text-sm outline-none focus:ring-2"
-                    style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}
-                  />
+                <div className="flex items-start justify-between gap-3">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: estado.fondo }}>{estado.icono}</span>
+                  <span className="text-3xl font-extrabold tabular-nums" style={{ color: estado.borde }}>{loading ? "…" : formatearNumero(totalesEstadosDiferenciales[estado.codigo])}</span>
                 </div>
-                <button type="submit" className="rounded-xl px-5 py-3 text-sm font-bold text-white" style={{ background: "var(--erp-primary)" }}>
-                  Buscar
-                </button>
-                {(busquedaRapida || busquedaAplicada) && (
-                  <button type="button" onClick={() => { setBusquedaRapida(""); setBusquedaAplicada(""); setPagina(1); }} className="rounded-xl border px-4 py-3 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
-                    Limpiar búsqueda
-                  </button>
-                )}
-              </form>
-              {busquedaAplicada && (
-                <p className="text-xs text-[var(--erp-text-soft)]" role="status">
-                  Búsqueda activa: <strong>{busquedaAplicada}</strong>. Puedes combinarla con los filtros avanzados.
-                </p>
-              )}
-            </section>
-      
-      <section className="w-full flex flex-wrap items-center justify-start gap-2" aria-label="Acciones de expedientes">
-              <button type="button" onClick={exportarExcel} disabled={loading} className="rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50" style={{ background: "var(--erp-success)" }}>📊 Exportar Excel</button>
-              <button type="button" onClick={() => setMostrarFiltros(true)} className="rounded-xl border px-4 py-2.5 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)", background: "var(--erp-surface)" }}>🔎 Filtros avanzados</button>
-            </section>
+                <div className="mt-3 font-bold text-[var(--erp-text)]">{estado.titulo}</div>
+                <div className="mt-1 text-xs text-[var(--erp-text-soft)]">Estado ABSIS: {estado.codigo}</div>
+                <div className="mt-2 text-xs font-semibold" style={{ color: activa ? estado.borde : "var(--erp-text-soft)" }}>{activa ? "Estado seleccionado · pulsa para quitar" : "Ver expedientes →"}</div>
+              </button>
+            );
+          })}
+        </div>
       </section>
-
+        </div>
+        <div className="min-w-0 xl:col-span-8">
       {/* GRIDS DE ACTIVIDAD */}
       <section className="space-y-3" aria-label="Expedientes por actividad">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
@@ -2624,51 +2616,61 @@ export default function ExpedientesListado() {
           </button>
         </div>
       </section>
-
-      {/* ESTADOS DIFERENCIALES: son estados del expediente, no actividades ni SLA */}
-      <section className="space-y-1" aria-label="Estados diferenciales del expediente">
-        <div>
-          <h3 className="text-base font-bold text-[var(--erp-text)]">Estados diferenciales</h3>
-          <p className="text-sm text-[var(--erp-text-soft)]">Estos filtros se basan en el estado del expediente. No son actividades y no calculan SLA.</p>
         </div>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {[
-            { codigo: "PVA", titulo: "Pendientes de Validar", icono: "🔎", borde: "#2563eb", fondo: "rgba(37, 99, 235, 0.08)" },
-            { codigo: "RST", titulo: "Retención", icono: "⏸️", borde: "#7e22ce", fondo: "rgba(126, 34, 206, 0.08)" },
-          ].map((estado) => {
-            const activa = filtrosAplicados.estadoExpediente.trim().toLocaleUpperCase("es-ES") === estado.codigo;
-            return (
-              <button
-                key={estado.codigo}
-                type="button"
-                aria-pressed={activa}
-                onClick={() => {
-                  const seleccionar = activa ? "" : estado.codigo;
-                  setAlertaSeleccionada("");
-                  setActividadSeleccionada("");
-                  setFiltroActividad("");
-                  setFiltroEstadoExpediente(seleccionar);
-                  setFiltrosAplicados((actual) => ({ ...actual, estadoExpediente: seleccionar, actividad: "" }));
-                  setColumnasVisibles(COLUMNAS_POR_DEFECTO);
+      </div>
+
+            {/* BÚSQUEDA FÁCIL: no hace falta conocer los nombres de los filtros */}
+            <section
+              className="w-full rounded-2xl border p-3 sm:p-4 shadow-sm space-y-2"
+              style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
+              aria-label="Buscar expedientes"
+            >
+              <div>
+                <h3 className="text-base font-bold text-[var(--erp-text)]">¿Qué expediente necesitas?</h3>
+                <p className="mt-1 text-sm text-[var(--erp-text-soft)]">
+                  Escribe cualquier dato que conozcas: número, nombre, NIF, notario, oficina, finca o registro.
+                </p>
+              </div>
+              <form
+                className="flex flex-col sm:flex-row gap-2"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  setBusquedaAplicada(busquedaRapida.trim());
                   setPagina(1);
                 }}
-                className="min-h-[116px] rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
-                style={{ background: activa ? estado.fondo : "var(--erp-surface)", borderColor: activa ? estado.borde : "var(--erp-border)", boxShadow: activa ? `0 0 0 1px ${estado.borde}` : undefined }}
               >
-                <div className="flex items-start justify-between gap-3">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: estado.fondo }}>{estado.icono}</span>
-                  <span className="text-3xl font-extrabold tabular-nums" style={{ color: estado.borde }}>{loading ? "…" : formatearNumero(totalesEstadosDiferenciales[estado.codigo])}</span>
+                <div className="relative flex-1">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg" aria-hidden="true">🔎</span>
+                  <input
+                    type="search"
+                    value={busquedaRapida}
+                    onChange={(event) => setBusquedaRapida(event.target.value)}
+                    placeholder="Ej.: 2026-00123, María García, notario, finca…"
+                    aria-label="Buscar en todos los datos de los expedientes"
+                    className="w-full rounded-xl border py-3 pl-10 pr-3 text-sm outline-none focus:ring-2"
+                    style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}
+                  />
                 </div>
-                <div className="mt-3 font-bold text-[var(--erp-text)]">{estado.titulo}</div>
-                <div className="mt-1 text-xs text-[var(--erp-text-soft)]">Estado ABSIS: {estado.codigo}</div>
-                <div className="mt-2 text-xs font-semibold" style={{ color: activa ? estado.borde : "var(--erp-text-soft)" }}>{activa ? "Estado seleccionado · pulsa para quitar" : "Ver expedientes →"}</div>
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      </div>
+                <button type="submit" className="rounded-xl px-5 py-3 text-sm font-bold text-white" style={{ background: "var(--erp-primary)" }}>
+                  Buscar
+                </button>
+                {(busquedaRapida || busquedaAplicada) && (
+                  <button type="button" onClick={() => { setBusquedaRapida(""); setBusquedaAplicada(""); setPagina(1); }} className="rounded-xl border px-4 py-3 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
+                    Limpiar búsqueda
+                  </button>
+                )}
+              </form>
+              {busquedaAplicada && (
+                <p className="text-xs text-[var(--erp-text-soft)]" role="status">
+                  Búsqueda activa: <strong>{busquedaAplicada}</strong>. Puedes combinarla con los filtros avanzados.
+                </p>
+              )}
+            </section>
+      
+      <section className="w-full flex flex-wrap items-center justify-start gap-2" aria-label="Acciones de expedientes">
+              <button type="button" onClick={exportarExcel} disabled={loading} className="rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50" style={{ background: "var(--erp-success)" }}>📊 Exportar Excel</button>
+              <button type="button" onClick={() => setMostrarFiltros(true)} className="rounded-xl border px-4 py-2.5 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)", background: "var(--erp-surface)" }}>🔎 Filtros avanzados</button>
+            </section>
 
       {/* ======================================================
           TABLA
