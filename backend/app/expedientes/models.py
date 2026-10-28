@@ -46,7 +46,8 @@ class Expediente(Base):
     cliente = relationship("Cliente", back_populates="expedientes")
     id_expediente = Column(String(100), unique=True, index=True, nullable=False)
     # Referencia interna libre para agrupar/identificar promociones.
-    promocion = Column(String(300), nullable=True, index=True)
+    promocion = Column(String(300), nullable=True, index=True)  # legado; no se usa como dato de asignación
+    promocion_tipo_expediente_id = Column(Integer, nullable=True, index=True)
     # Alta manual: tipo maestro y contador independiente por tipo.
     tipo_expediente_id = Column(Integer, nullable=True, index=True)
     numero_tipo_expediente = Column(Integer, nullable=True)
