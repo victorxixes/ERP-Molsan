@@ -497,7 +497,9 @@ def actualizar_entidad_bancaria(
             ),
         )
 
-    codigo = limpiar_texto(
+    # El Código Europeo es opcional, especialmente para entidades históricas.
+    # Normalizar vacío a None evita guardar "" y colisionar con la restricción UNIQUE.
+    codigo = limpiar_opcional(
         datos.codigo_europeo
     )
 
@@ -526,13 +528,6 @@ def actualizar_entidad_bancaria(
     # --------------------------------------------------------
     # VALIDACIONES
     # --------------------------------------------------------
-
-    if not codigo:
-
-        raise HTTPException(
-            status_code=400,
-            detail="El Código Europeo es obligatorio.",
-        )
 
     if not nombre:
 
