@@ -3146,6 +3146,9 @@ CAMPOS_EDITABLES_ACTIVIDAD = {
     for campo in {
         "fecha_inicio_actividad", "fecha_fin_actividad",
         "ultima_accion", "fecha_ultima_accion", "sol", "cs", "ns",
+        "facturacion_nombre", "facturacion_apellidos", "facturacion_dni_nif",
+        "facturacion_direccion", "facturacion_codigo_postal", "facturacion_poblacion",
+        "facturacion_provincia", "facturacion_telefono", "facturacion_email",
         "fecha_envio_notario", "fecha_envio", "nombre_notario", "nif_notario", "apoderado", "observaciones",
         "tipo_documento", "poblacion", "provincia", "tipo_firma",
         "fecha_prevista_firma", "fecha_firma", "protocolo",
