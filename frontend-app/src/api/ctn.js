@@ -21,6 +21,10 @@ export const listarNotarias = ({
 /** Obtiene la ficha de una notaría, incluidas sus asociaciones si el backend las devuelve. */
 export const obtenerNotaria = (id) => axios.get(`/ctn/notarias/${id}`);
 
+/** Guarda hasta dos IBAN en la ficha CTN del notario. */
+export const actualizarDatosBancariosNotaria = (id, datos) =>
+  axios.put(`/ctn/notarias/${id}/datos-bancarios`, datos);
+
 /**
  * Compatibilidad con el endpoint anterior.
  * Devuelve estadísticas de citas de agenda, NO de firmas realizadas.
