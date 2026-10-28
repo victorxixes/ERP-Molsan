@@ -146,6 +146,10 @@ def sincronizar_catalogo_historico_caixabank():
             if not clave or clave in procesadas:
                 continue
             procesadas.add(clave)
+            # "CAIXABANK" del listado identifica al sucesor actual; no reactivar
+            # el alias antiguo inactivo ni crear una segunda entidad actual.
+            if clave == _normalizar_nombre("CaixaBank"):
+                continue
             existentes = por_nombre.get(clave, [])
 
             if not existentes:
