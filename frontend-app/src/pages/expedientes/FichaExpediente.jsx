@@ -5413,6 +5413,7 @@ const cuantiaFincasParaEnvio =
                       }}
                       onFacturar={generarHonorariosGestoria}
                       generandoFacturacion={generandoHonorariosGestoria}
+                      facturaEmitida={Boolean(honorariosGestoria?.guardado || expediente?.facturacion_fecha || expediente?.numero_factura || expediente?.factura_honorarios_id)}
                       onPagar={() => {
                         setOrigenFormularioGasto("pagar");
                         setErrorGastos("");
