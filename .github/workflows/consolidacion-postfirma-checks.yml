@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - "backend/app/Utilidades/importadores/postfirma_importer.py"
+      - "backend/app/Utilidades/importadores/clasificacion_postfirma.py"
+      - "backend/tests/test_clasificacion_postfirma.py"
       - "backend/app/expedientes/gastos/**"
       - "backend/app/informes/facturacion_router.py"
       - "frontend-app/src/pages/expedientes/FichaExpediente.jsx"
@@ -36,8 +38,13 @@ jobs:
         run: |
           python -m compileall -q \
             backend/app/Utilidades/importadores/postfirma_importer.py \
+            backend/app/Utilidades/importadores/clasificacion_postfirma.py \
             backend/app/expedientes/gastos \
             backend/app/informes/facturacion_router.py
+      - name: Instalar pytest
+        run: python -m pip install pytest
+      - name: Probar reglas de clasificación ABSIS
+        run: python -m pytest -q backend/tests/test_clasificacion_postfirma.py
 
   frontend-build:
     runs-on: ubuntu-latest
