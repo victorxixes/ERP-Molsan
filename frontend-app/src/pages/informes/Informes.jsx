@@ -3313,84 +3313,170 @@ function valorColumnaPostFirma(fila, columna) {
   return String(valor);
 }
 
+function resumenFacturacionPorTipo(items) {
+  const suma = (campo, situacion = null) => items.reduce((total, fila) => {
+    if (situacion && fila.situacion_facturacion !== situacion) return total;
+    return total + (Number(fila[campo]) || 0);
+  }, 0);
+  const cuenta = (situacion) => items.filter((fila) => fila.situacion_facturacion === situacion).length;
+  return {
+    registros: items.length, total_gasto: suma("imp_gasto"), base_impuesto: suma("imp_base_impuesto"),
+    base_retencion: suma("imp_base_retencion"), total_impuesto: suma("imp_impuesto"),
+    cobrado: cuenta("cobrado"), pendiente_cobro: cuenta("pendiente_cobro"),
+    pendiente_factura: cuenta("pendiente_factura"), incidencias: cuenta("incidencia"),
+    total_cobrado: suma("imp_gasto", "cobrado"), total_pendiente_cobro: suma("imp_gasto", "pendiente_cobro"),
+    total_pendiente_factura: suma("imp_gasto", "pendiente_factura"), total_incidencias: suma("imp_gasto", "incidencia"),
+  };
+}
+
 function InformeFacturacion() {
-  const [filtros, setFiltros] = useState(() => ({ ...filtrosInformeIniciales(), fecha_desde: "", fecha_hasta: "", modalidad: "todas", estado: "", estado_justificante: "", situacion: "", tipo_operacion: "" }));
-  const [aplicados, setAplicados] = useState(() => ({ ...filtrosInformeIniciales(), fecha_desde: "", fecha_hasta: "", modalidad: "todas", estado: "", estado_justificante: "", situacion: "", tipo_operacion: "" }));
+  const filtrosIniciales = () => ({ ...filtrosInformeIniciales(), modalidad: "todas", estado: "", estado_justificante: "", situacion: "" });
+  const [filtros, setFiltros] = useState(filtrosIniciales);
+  const [aplicados, setAplicados] = useState(filtrosIniciales);
   const [datos, setDatos] = useState({ resumen: {}, items: [] });
-  const [loading, setLoading] = useState(true);
+  const [datosTarjetas, setDatosTarjetas] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [loadingTarjetas, setLoadingTarjetas] = useState(true);
   const [error, setError] = useState("");
   const [exportando, setExportando] = useState(false);
+  const [modalAbierto, setModalAbierto] = useState(false);
   const [recarga, setRecarga] = useState(0);
 
   useEffect(() => {
     let activo = true;
+    setLoadingTarjetas(true);
+    axios.get(API_BASE + "/informes/facturacion", { params: {
+      fecha_desde: aplicados.fecha_desde, fecha_hasta: aplicados.fecha_hasta, modalidad: "todas",
+    } }).then(({ data }) => {
+      if (activo) setDatosTarjetas(Array.isArray(data?.items) ? data.items : []);
+    }).catch((err) => {
+      if (activo) {
+        setDatosTarjetas([]);
+        setError(err?.response?.data?.detail || "No se pudieron actualizar los indicadores de facturación.");
+      }
+    }).finally(() => { if (activo) setLoadingTarjetas(false); });
+    return () => { activo = false; };
+  }, [aplicados.fecha_desde, aplicados.fecha_hasta, recarga]);
+
+  useEffect(() => {
+    if (!modalAbierto) return undefined;
+    let activo = true;
     setLoading(true);
     setError("");
     const params = Object.fromEntries(Object.entries(aplicados).filter(([, v]) => v !== "" && v != null));
-    axios.get(`${API_BASE}/informes/facturacion`, { params })
-      .then(({ data }) => { if (activo) setDatos({ resumen: data?.resumen || {}, items: Array.isArray(data?.items) ? data.items : [] }); })
-      .catch((err) => { if (activo) setError(err?.response?.data?.detail || "No se pudo cargar el informe de facturación."); })
+    axios.get(API_BASE + "/informes/facturacion", { params })
+      .then(({ data }) => {
+        if (activo) setDatos({ resumen: data?.resumen || {}, items: Array.isArray(data?.items) ? data.items : [] });
+      })
+      .catch((err) => { if (activo) setError(err?.response?.data?.detail || "No se pudo cargar el detalle de facturación."); })
       .finally(() => { if (activo) setLoading(false); });
     return () => { activo = false; };
-  }, [aplicados, recarga]);
+  }, [aplicados, modalAbierto, recarga]);
 
-  const cambiar = (campo, valor) => setFiltros((actual) => ({ ...actual, [campo]: valor }));
+  const cambiar = (campo, valor) => {
+    setFiltros((actual) => ({ ...actual, [campo]: valor }));
+    if (campo === "fecha_desde" || campo === "fecha_hasta") {
+      setAplicados((actual) => ({ ...actual, [campo]: valor }));
+    }
+  };
   const aplicar = (e) => { e.preventDefault(); setAplicados({ ...filtros }); };
   const exportar = async () => {
     setExportando(true);
+    setError("");
     try {
       const params = Object.fromEntries(Object.entries(aplicados).filter(([, v]) => v !== "" && v != null));
-      await descargarExcelBackend(`${API_BASE}/informes/facturacion/exportar-excel`, params, "informe_facturacion_honorarios_gestoria.xlsx");
-    } catch (err) { setError(err?.response?.data?.detail || "No se pudo exportar el informe."); }
-    finally { setExportando(false); }
+      await descargarExcelBackend(API_BASE + "/informes/facturacion/exportar-excel", params, "informe_facturacion_honorarios_gestoria.xlsx");
+    } catch (err) {
+      setError(err?.response?.data?.detail || "No se pudo exportar el informe.");
+    } finally { setExportando(false); }
   };
-  const resumen = datos.resumen || {};
+
+  const resumen = (modalidad) => resumenFacturacionPorTipo(datosTarjetas.filter((fila) => fila.tipo_cancelacion === modalidad));
   const euros = (v) => Number(v || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
-  const fecha = (v) => v ? fechaInformeVisible(v) : "—";
   const campo = "block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
+  const grupos = [
+    { key: "con_provision", titulo: "Cancelación con provisión", descripcion: "TIPOOPERACION: CANCELACIÓN / CANCELACIÓN CON PROVISIÓN", icono: "🏦", acento: "emerald" },
+    { key: "sin_provision", titulo: "Cancelación sin provisión", descripcion: "TIPOOPERACION: CANCELACIÓN SIN PROVISIÓN", icono: "📄", acento: "amber" },
+  ];
+  const renderTarjetas = (grupo) => {
+    const r = resumen(grupo.key);
+    return (
+      <section key={grupo.key} className="space-y-4 rounded-2xl border border-white/80 bg-white/55 p-4 shadow-sm backdrop-blur-xl sm:p-5">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className={"flex h-12 w-12 items-center justify-center rounded-xl text-2xl " + (grupo.acento === "emerald" ? "bg-emerald-50" : "bg-amber-50")}>{grupo.icono}</span>
+          <div><h3 className="text-lg font-bold text-slate-800">{grupo.titulo}</h3><p className="text-xs text-slate-500">{grupo.descripcion}</p></div>
+          <div className="ml-auto text-right"><div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Registros del periodo</div><div className="text-2xl font-extrabold text-slate-800">{loadingTarjetas ? "…" : numeroInforme(r.registros)}</div></div>
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <InformeKpi titulo="Honorarios gestoría" valor={loadingTarjetas ? "…" : euros(r.total_gasto)} subtitulo={numeroInforme(r.registros) + " registros"} icono="🧾" />
+          <InformeKpi titulo="Base imponible" valor={loadingTarjetas ? "…" : euros(r.base_impuesto)} subtitulo="Base asociada al impuesto" icono="📑" />
+          <InformeKpi titulo="Base de retención" valor={loadingTarjetas ? "…" : euros(r.base_retencion)} subtitulo="Base sujeta a retención" icono="🧮" />
+          <InformeKpi titulo="Impuestos" valor={loadingTarjetas ? "…" : euros(r.total_impuesto)} subtitulo="Importe total de impuesto" icono="💶" />
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="rounded-2xl border border-emerald-100 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Cobrado</div><div className="mt-1 text-xl font-bold text-emerald-700">{loadingTarjetas ? "…" : euros(r.total_cobrado)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.cobrado)} registros</div></div>
+          <div className="rounded-2xl border border-amber-100 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Pendiente de cobro</div><div className="mt-1 text-xl font-bold text-amber-700">{loadingTarjetas ? "…" : euros(r.total_pendiente_cobro)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.pendiente_cobro)} registros</div></div>
+          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Pendiente de factura</div><div className="mt-1 text-xl font-bold text-slate-700">{loadingTarjetas ? "…" : euros(r.total_pendiente_factura)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.pendiente_factura)} registros</div></div>
+          <div className="rounded-2xl border border-rose-100 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Importe con incidencias</div><div className="mt-1 text-xl font-bold text-rose-700">{loadingTarjetas ? "…" : euros(r.total_incidencias)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.incidencias)} registros</div></div>
+        </div>
+      </section>
+    );
+  };
+
   return (
     <section className="space-y-5">
       <div className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div><h2 className="text-xl font-bold text-slate-800">Informe económico de cancelaciones</h2><p className="mt-1 text-sm text-slate-500">Solo incluye el concepto HONORARIOS GESTORÍA. Los importes y fechas se muestran desde los datos disponibles del ERP.</p></div>
-          <div className="flex flex-wrap gap-2"><Link to="/herramientas/importador-absis/postfirma" className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">📦 Importar Post Firma</Link><button type="button" onClick={() => setRecarga((v) => v + 1)} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">↻ Actualizar</button></div>
+          <div><h2 className="text-xl font-bold text-slate-800">Informes de facturación</h2><p className="mt-1 text-sm text-slate-500">Indicadores separados por tipo de operación y actualizados según el periodo seleccionado.</p></div>
+          <button type="button" onClick={() => setRecarga((v) => v + 1)} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">↻ Actualizar</button>
         </div>
-        <form onSubmit={aplicar} className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6">
+        <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <label className="text-xs font-semibold text-slate-600">Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
           <label className="text-xs font-semibold text-slate-600">Fecha hasta<input className={campo} type="date" value={filtros.fecha_hasta} onChange={(e) => cambiar("fecha_hasta", e.target.value)} /></label>
-          <label className="text-xs font-semibold text-slate-600">Clasificación<select className={campo} value={filtros.modalidad} onChange={(e) => cambiar("modalidad", e.target.value)}><option value="todas">Todas</option><option value="con_provision">Cancelación con provisión</option><option value="sin_provision">Cancelación sin provisión</option><option value="otros">Otros</option></select></label>
-          <label className="text-xs font-semibold text-slate-600">Tipo operación<input className={campo} value={filtros.tipo_operacion} onChange={(e) => cambiar("tipo_operacion", e.target.value)} placeholder="Filtrar operación" /></label>
-          <label className="text-xs font-semibold text-slate-600">Estado ABSIS<input className={campo} value={filtros.estado} onChange={(e) => cambiar("estado", e.target.value)} placeholder="Filtrar estado" /></label>
-          <label className="text-xs font-semibold text-slate-600">Estado justificante<input className={campo} value={filtros.estado_justificante} onChange={(e) => cambiar("estado_justificante", e.target.value)} placeholder="Filtrar justificante" /></label>
-          <label className="text-xs font-semibold text-slate-600">Situación económica<select className={campo} value={filtros.situacion} onChange={(e) => cambiar("situacion", e.target.value)}><option value="">Todas</option><option value="cobrado">Cobrado (consta FPAGO)</option><option value="pendiente_cobro">Pendiente de cobro</option><option value="pendiente_factura">Pendiente de factura</option><option value="incidencia">Con incidencia</option></select></label>
-          <label className="text-xs font-semibold text-slate-600">Buscar expediente<input className={campo} value={filtros.q} onChange={(e) => cambiar("q", e.target.value)} placeholder="Nº expediente / factura" /></label>
-          <div className="flex flex-wrap gap-2 sm:col-span-2 xl:col-span-6"><button type="submit" className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700">Aplicar filtros</button><button type="button" onClick={exportar} disabled={exportando} className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-50 disabled:opacity-50">{exportando ? "Exportando…" : "↓ Exportar Excel"}</button></div>
-        </form>
+        </div>
+        <p className="mt-2 text-xs text-slate-500">Por defecto se muestra el mes en curso. Al cambiar las fechas, las tarjetas se actualizan automáticamente.</p>
       </div>
+
+      {renderTarjetas(grupos[0])}
+      {renderTarjetas(grupos[1])}
+
+      <div className="flex justify-center"><button type="button" onClick={() => setModalAbierto(true)} className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700">📊 Abrir tabla de facturación y exportar Excel</button></div>
       <AvisoInforme error={error} />
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <InformeKpi titulo="Honorarios gestoría" valor={euros(resumen.total_gasto)} subtitulo={`${resumen.registros || 0} registros`} icono="🧾" />
-        <InformeKpi titulo="Base imponible" valor={euros(resumen.base_impuesto)} subtitulo="Base asociada al impuesto" icono="📑" />
-        <InformeKpi titulo="Base de retención" valor={euros(resumen.base_retencion)} subtitulo="Base sujeta a retención" icono="🧮" />
-        <InformeKpi titulo="Impuestos" valor={euros(resumen.total_impuesto)} subtitulo="Importe total de impuesto" icono="💶" />
-      </div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-2xl border border-emerald-100 bg-white/80 p-4"><div className="text-sm font-semibold text-slate-500">Cancelaciones con provisión</div><div className="mt-1 text-2xl font-bold text-emerald-700">{resumen.con_provision || 0}</div></div>
-        <div className="rounded-2xl border border-amber-100 bg-white/80 p-4"><div className="text-sm font-semibold text-slate-500">Cancelaciones sin provisión</div><div className="mt-1 text-2xl font-bold text-amber-700">{resumen.sin_provision || 0}</div></div>
-        <div className="rounded-2xl border border-slate-200 bg-white/80 p-4"><div className="text-sm font-semibold text-slate-500">Otros tipos de operación</div><div className="mt-1 text-2xl font-bold text-slate-700">{resumen.otros || 0}</div></div>
-        <div className="rounded-2xl border border-blue-100 bg-white/80 p-4"><div className="text-sm font-semibold text-slate-500">Con incidencia</div><div className="mt-1 text-2xl font-bold text-blue-700">{resumen.incidencias || 0}</div></div>
-      </div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-2xl border border-emerald-100 bg-white/80 p-4"><div className="text-sm font-semibold text-slate-500">Cobrado (con fecha de pago)</div><div className="mt-1 text-xl font-bold text-emerald-700">{euros(resumen.total_cobrado)}</div><div className="mt-1 text-xs text-slate-400">{resumen.cobrado || 0} registros</div></div>
-        <div className="rounded-2xl border border-amber-100 bg-white/80 p-4"><div className="text-sm font-semibold text-slate-500">Pendiente de cobro</div><div className="mt-1 text-xl font-bold text-amber-700">{euros(resumen.total_pendiente_cobro)}</div><div className="mt-1 text-xs text-slate-400">{resumen.pendiente_cobro || 0} registros</div></div>
-        <div className="rounded-2xl border border-slate-200 bg-white/80 p-4"><div className="text-sm font-semibold text-slate-500">Pendiente de factura</div><div className="mt-1 text-xl font-bold text-slate-700">{euros(resumen.total_pendiente_factura)}</div><div className="mt-1 text-xs text-slate-400">{resumen.pendiente_factura || 0} registros</div></div>
-        <div className="rounded-2xl border border-rose-100 bg-white/80 p-4"><div className="text-sm font-semibold text-slate-500">Importe con incidencias</div><div className="mt-1 text-xl font-bold text-rose-700">{euros(resumen.total_incidencias)}</div><div className="mt-1 text-xs text-slate-400">{resumen.incidencias || 0} registros</div></div>
-      </div>
-      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/80 shadow-[0_10px_35px_rgba(55,85,120,0.08)]">
-        <div className="border-b border-slate-200 px-5 py-4"><h3 className="font-bold text-slate-800">Detalle de honorarios de gestoría</h3><p className="mt-1 text-xs text-slate-500">Se excluyen todos los conceptos de gasto distintos de HONORARIOS GESTORÍA.</p></div>
-        <PanelEstadoInforme loading={loading} vacio={!loading && datos.items.length === 0} textoVacio="No hay gastos de HONORARIOS GESTORÍA para los filtros seleccionados. Si los datos aún no se han incorporado desde ABSIS, el informe permanecerá vacío." />
-        {!loading && datos.items.length > 0 && <div className="max-h-[65vh] overflow-auto"><table className="min-w-[2600px] w-full text-left text-xs"><thead className="sticky top-0 bg-slate-100 text-slate-600"><tr>{COLUMNAS_POSTFIRMA.map((h) => <th key={h} className="whitespace-nowrap px-3 py-3 font-bold">{h}</th>)}</tr></thead><tbody className="divide-y divide-slate-100">{datos.items.map((fila, i) => <tr key={`${fila.id_expediente}-${i}`} className="hover:bg-blue-50/50">{COLUMNAS_POSTFIRMA.map((h) => <td key={h} className="whitespace-nowrap px-3 py-3">{valorColumnaPostFirma(fila, h)}</td>)}</tr>)}</tbody></table></div>}
-      </section>
+
+      {modalAbierto && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-2 backdrop-blur-sm sm:p-5" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }}>
+          <section role="dialog" aria-modal="true" aria-labelledby="modal-facturacion-titulo" className="flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden rounded-2xl border border-white/70 bg-white shadow-2xl">
+            <header className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200 px-5 py-4">
+              <div><h2 id="modal-facturacion-titulo" className="text-xl font-bold text-slate-800">Detalle de facturación</h2><p className="mt-1 text-sm text-slate-500">Tabla Excel con los registros que cumplen los filtros seleccionados.</p></div>
+              <button type="button" onClick={() => setModalAbierto(false)} aria-label="Cerrar ventana" className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50">✕ Cerrar</button>
+            </header>
+            <form onSubmit={aplicar} className="grid grid-cols-1 gap-3 overflow-y-auto border-b border-slate-200 bg-slate-50/80 px-5 py-4 sm:grid-cols-2 xl:grid-cols-4">
+              <label className="text-xs font-semibold text-slate-600">Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
+              <label className="text-xs font-semibold text-slate-600">Fecha hasta<input className={campo} type="date" value={filtros.fecha_hasta} onChange={(e) => cambiar("fecha_hasta", e.target.value)} /></label>
+              <label className="text-xs font-semibold text-slate-600">Clasificación<select className={campo} value={filtros.modalidad} onChange={(e) => cambiar("modalidad", e.target.value)}><option value="todas">Todas</option><option value="con_provision">Cancelación con provisión</option><option value="sin_provision">Cancelación sin provisión</option><option value="otros">Otros tipos de operación</option></select></label>
+              <label className="text-xs font-semibold text-slate-600">Tipo operación<input className={campo} value={filtros.tipo_operacion || ""} onChange={(e) => cambiar("tipo_operacion", e.target.value)} placeholder="Filtrar operación" /></label>
+              <label className="text-xs font-semibold text-slate-600">Estado ABSIS<input className={campo} value={filtros.estado || ""} onChange={(e) => cambiar("estado", e.target.value)} placeholder="Filtrar estado" /></label>
+              <label className="text-xs font-semibold text-slate-600">Estado justificante<input className={campo} value={filtros.estado_justificante || ""} onChange={(e) => cambiar("estado_justificante", e.target.value)} placeholder="Filtrar justificante" /></label>
+              <label className="text-xs font-semibold text-slate-600">Situación económica<select className={campo} value={filtros.situacion} onChange={(e) => cambiar("situacion", e.target.value)}><option value="">Todas</option><option value="cobrado">Cobrado (estado ABSIS)</option><option value="pendiente_cobro">Pendiente de cobro</option><option value="pendiente_factura">Pendiente de factura</option><option value="incidencia">Con incidencia</option></select></label>
+              <label className="text-xs font-semibold text-slate-600">Buscar expediente / factura<input className={campo} value={filtros.q || ""} onChange={(e) => cambiar("q", e.target.value)} placeholder="Nº expediente, IDGASTO o factura" /></label>
+              <div className="flex flex-wrap items-center gap-2 sm:col-span-2 xl:col-span-4">
+                <button type="submit" className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700">Aplicar filtros</button>
+                <button type="button" onClick={exportar} disabled={exportando} className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-50 disabled:opacity-50">{exportando ? "Exportando…" : "↓ Descargar Excel"}</button>
+                <span className="text-xs text-slate-500">La selección de fechas también actualiza las tarjetas del informe.</span>
+              </div>
+            </form>
+            <div className="flex-1 overflow-auto">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-3"><div className="text-sm font-semibold text-slate-700">{loading ? "Consultando registros…" : numeroInforme(datos.items.length) + " registros encontrados"}</div><div className="text-xs text-slate-500">Solo se incluyen conceptos de HONORARIOS GESTORÍA.</div></div>
+              {loading ? <PanelEstadoInforme loading /> : datos.items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay gastos de HONORARIOS GESTORÍA para los filtros seleccionados." /> : (
+                <div className="max-h-[58vh] overflow-auto"><table className="min-w-[2600px] w-full text-left text-xs">
+                  <thead className="sticky top-0 z-10 bg-slate-100 text-slate-600"><tr>{COLUMNAS_POSTFIRMA.map((h, i) => <th key={h + "-" + i} className="whitespace-nowrap px-3 py-3 font-bold">{h}</th>)}</tr></thead>
+                  <tbody className="divide-y divide-slate-100">{datos.items.map((fila, i) => <tr key={(fila.id_gasto_absis || fila.id_expediente || "registro") + "-" + i} className="hover:bg-blue-50/50">{COLUMNAS_POSTFIRMA.map((h, j) => <td key={h + "-" + j} className="whitespace-nowrap px-3 py-3">{valorColumnaPostFirma(fila, h)}</td>)}</tr>)}</tbody>
+                </table></div>
+              )}
+            </div>
+          </section>
+        </div>
+      )}
     </section>
   );
 }
