@@ -2605,67 +2605,68 @@ export default function ExpedientesListado() {
             </button>;
           })}
         </div>
-        <div className="flex justify-end">
+      </section>
+      <div className="mt-3 flex flex-col gap-3 lg:flex-row lg:items-stretch">
+        {/* BÚSQUEDA FÁCIL situada justo debajo de las tarjetas de actividad */}
+        <section
+          className="min-w-0 flex-1 rounded-2xl border p-3 sm:p-4 shadow-sm space-y-2"
+          style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
+          aria-label="Buscar expedientes"
+        >
+          <div>
+            <h3 className="text-base font-bold text-[var(--erp-text)]">¿Qué expediente necesitas?</h3>
+            <p className="mt-1 text-sm text-[var(--erp-text-soft)]">
+              Escribe cualquier dato que conozcas: número, nombre, NIF, notario, oficina, finca o registro.
+            </p>
+          </div>
+          <form
+            className="flex flex-col sm:flex-row gap-2"
+            onSubmit={(event) => {
+              event.preventDefault();
+              setBusquedaAplicada(busquedaRapida.trim());
+              setPagina(1);
+            }}
+          >
+            <div className="relative min-w-0 flex-1">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg" aria-hidden="true">🔎</span>
+              <input
+                type="search"
+                value={busquedaRapida}
+                onChange={(event) => setBusquedaRapida(event.target.value)}
+                placeholder="Ej.: 2026-00123, María García, notario, finca…"
+                aria-label="Buscar en todos los datos de los expedientes"
+                className="w-full rounded-xl border py-3 pl-10 pr-3 text-sm outline-none focus:ring-2"
+                style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}
+              />
+            </div>
+            <button type="submit" className="rounded-xl px-5 py-3 text-sm font-bold text-white" style={{ background: "var(--erp-primary)" }}>
+              Buscar
+            </button>
+            {(busquedaRapida || busquedaAplicada) && (
+              <button type="button" onClick={() => { setBusquedaRapida(""); setBusquedaAplicada(""); setPagina(1); }} className="rounded-xl border px-4 py-3 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
+                Limpiar búsqueda
+              </button>
+            )}
+          </form>
+          {busquedaAplicada && (
+            <p className="text-xs text-[var(--erp-text-soft)]" role="status">
+              Búsqueda activa: <strong>{busquedaAplicada}</strong>. Puedes combinarla con los filtros avanzados.
+            </p>
+          )}
+        </section>
+        <div className="flex shrink-0 items-center justify-center lg:w-52">
           <button
             type="button"
             onClick={() => setMostrarAyudaControlPlazos(true)}
-            className="inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-bold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-bold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
             style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface)", color: "var(--erp-primary)" }}
           >
             📌 Ver Control de plazos
           </button>
         </div>
-      </section>
+      </div>
         </div>
       </div>
-
-            {/* BÚSQUEDA FÁCIL: no hace falta conocer los nombres de los filtros */}
-            <section
-              className="w-full rounded-2xl border p-3 sm:p-4 shadow-sm space-y-2"
-              style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
-              aria-label="Buscar expedientes"
-            >
-              <div>
-                <h3 className="text-base font-bold text-[var(--erp-text)]">¿Qué expediente necesitas?</h3>
-                <p className="mt-1 text-sm text-[var(--erp-text-soft)]">
-                  Escribe cualquier dato que conozcas: número, nombre, NIF, notario, oficina, finca o registro.
-                </p>
-              </div>
-              <form
-                className="flex flex-col sm:flex-row gap-2"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  setBusquedaAplicada(busquedaRapida.trim());
-                  setPagina(1);
-                }}
-              >
-                <div className="relative flex-1">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg" aria-hidden="true">🔎</span>
-                  <input
-                    type="search"
-                    value={busquedaRapida}
-                    onChange={(event) => setBusquedaRapida(event.target.value)}
-                    placeholder="Ej.: 2026-00123, María García, notario, finca…"
-                    aria-label="Buscar en todos los datos de los expedientes"
-                    className="w-full rounded-xl border py-3 pl-10 pr-3 text-sm outline-none focus:ring-2"
-                    style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}
-                  />
-                </div>
-                <button type="submit" className="rounded-xl px-5 py-3 text-sm font-bold text-white" style={{ background: "var(--erp-primary)" }}>
-                  Buscar
-                </button>
-                {(busquedaRapida || busquedaAplicada) && (
-                  <button type="button" onClick={() => { setBusquedaRapida(""); setBusquedaAplicada(""); setPagina(1); }} className="rounded-xl border px-4 py-3 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
-                    Limpiar búsqueda
-                  </button>
-                )}
-              </form>
-              {busquedaAplicada && (
-                <p className="text-xs text-[var(--erp-text-soft)]" role="status">
-                  Búsqueda activa: <strong>{busquedaAplicada}</strong>. Puedes combinarla con los filtros avanzados.
-                </p>
-              )}
-            </section>
       
       <section className="w-full flex flex-wrap items-center justify-start gap-2" aria-label="Acciones de expedientes">
               <button type="button" onClick={exportarExcel} disabled={loading} className="rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50" style={{ background: "var(--erp-success)" }}>📊 Exportar Excel</button>
