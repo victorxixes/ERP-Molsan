@@ -244,6 +244,7 @@ export default function CarpetaDigitalModal({
           titulo: "Documentación general y previa",
           descripcion: "Documentos requeridos para esta actividad.",
           categorias: [
+            { etiqueta: "Documentos ABSIS", categoria: "Documentos Absis" },
             { etiqueta: "Hoja de encargo firmada", categoria: "Hoja de Encargo firmada" },
             { etiqueta: "Justificante de cancelación", categoria: "Justificante de cancelación" },
             { etiqueta: "Nota simple registral", categoria: "Nota simple registral" },
@@ -511,7 +512,11 @@ export default function CarpetaDigitalModal({
             <h4 className="max-w-full text-xs font-bold text-slate-800">{etiqueta}</h4>
             <p className="whitespace-nowrap text-[10px] text-slate-500">{totalCategoria} archivo(s)</p>
           </div>
-          {notaIntegracionRepositorio(categoria) && <p className="w-full text-[10px] font-semibold text-amber-700">{notaIntegracionRepositorio(categoria)}</p>}
+          {notaIntegracionRepositorio(categoria) && (
+            <div role="note" className="w-full rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-[10px] font-extrabold tracking-wide text-amber-800">
+              {notaIntegracionRepositorio(categoria)}
+            </div>
+          )}
           <label className={`inline-flex shrink-0 cursor-pointer items-center rounded-md border px-2 py-1 text-[11px] font-bold ${subiendo === categoria ? "border-slate-200 bg-slate-100 text-slate-500" : "border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100"}`}>
             {subiendo === categoria ? "Subiendo…" : "＋ Adjuntar"}
             <input className="hidden" type="file" accept=".pdf,application/pdf" multiple onChange={(event) => subir(event, categoria)} disabled={!!subiendo} />
