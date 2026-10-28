@@ -843,7 +843,7 @@ export default function CarpetaDigitalModal({
 
           <div
             className={modoActividad
-              ? "grid min-h-[300px] grid-cols-1 gap-2 transition-[grid-template-columns] duration-300 lg:h-[620px] lg:min-h-[620px] lg:max-h-[620px] " + (ocultarPanelEnvioNotario || (normalizar(actividadId).includes("sede-notarial") && !normalizar(actividadId).includes("protocolo")) ? "lg:grid-cols-[minmax(0,1fr)]" : panelDocumentosVisible ? "lg:grid-cols-[minmax(190px,0.38fr)_minmax(0,1.62fr)]" : "lg:grid-cols-[0_minmax(0,1fr)]")
+              ? "grid min-h-[300px] grid-cols-1 gap-2 transition-[grid-template-columns] duration-300 lg:h-[720px] lg:min-h-[720px] lg:max-h-[720px] " + (ocultarPanelEnvioNotario || (normalizar(actividadId).includes("sede-notarial") && !normalizar(actividadId).includes("protocolo")) ? "lg:grid-cols-[minmax(0,1fr)]" : panelDocumentosVisible ? "lg:grid-cols-[minmax(190px,0.38fr)_minmax(0,1.62fr)]" : "lg:grid-cols-[0_minmax(0,1fr)]")
               : "grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]"}
           >
             <div
