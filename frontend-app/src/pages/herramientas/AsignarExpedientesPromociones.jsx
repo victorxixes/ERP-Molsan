@@ -39,7 +39,7 @@ export default function AsignarExpedientesPromociones() {
     try {
       const { data } = await axios.get("/utilidades/expediente-promocion", { params: { numero_expediente: valor } });
       setExpediente(data);
-      setTipoId(data.tipo_expediente_id != null ? String(data.tipo_expediente_id) : "");
+      setTipoId(data.promocion_tipo_expediente_id != null ? String(data.promocion_tipo_expediente_id) : "");
     } catch (err) {
       setError(err.response?.data?.detail || "No se ha podido consultar el expediente.");
     } finally {
@@ -63,10 +63,10 @@ export default function AsignarExpedientesPromociones() {
       });
       setExpediente((actual) => actual ? {
         ...actual,
-        tipo_expediente_id: data.tipo_expediente_id,
+        promocion_tipo_expediente_id: data.promocion_tipo_expediente_id,
         promocion: data.promocion,
       } : actual);
-      setTipoId(data.tipo_expediente_id != null ? String(data.tipo_expediente_id) : "");
+      setTipoId(data.promocion_tipo_expediente_id != null ? String(data.promocion_tipo_expediente_id) : "");
       setMensaje(data.mensaje || "Asignación guardada correctamente.");
     } catch (err) {
       setError(err.response?.data?.detail || "No se ha podido guardar la asignación.");
