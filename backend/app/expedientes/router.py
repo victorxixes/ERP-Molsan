@@ -3739,6 +3739,10 @@ def generar_documento_factura_honorarios(
         fecha_factura = fecha_es(datos.get("fecha_factura"))
         cliente = str(datos.get("cliente") or valor(expediente, "nombre_solicitante", "nombre_titular") or "").strip()
         nif_cliente = str(datos.get("nif_cliente") or valor(expediente, "nif_solicitante", "dni_solicitante", "nif_titular") or "").strip()
+        direccion_facturacion = str(datos.get("direccion_facturacion") or valor(expediente, "facturacion_direccion", "direccion_facturacion") or "").strip()
+        codigo_postal_facturacion = str(datos.get("codigo_postal_facturacion") or valor(expediente, "facturacion_codigo_postal", "codigo_postal_facturacion") or "").strip()
+        poblacion_facturacion = str(datos.get("poblacion_facturacion") or valor(expediente, "facturacion_poblacion", "poblacion_facturacion") or "").strip()
+        provincia_facturacion = str(datos.get("provincia_facturacion") or valor(expediente, "facturacion_provincia", "provincia_facturacion") or "").strip()
         concepto_factura = str(datos.get("concepto") or "Honorarios de gestoría").strip()
         base = Decimal(str(datos.get("base_imponible") or 0).replace(",", ".")).quantize(Decimal("0.01"))
         impuesto = Decimal(str(datos.get("importe_impuesto") or 0).replace(",", ".")).quantize(Decimal("0.01"))
@@ -3803,9 +3807,17 @@ def generar_documento_factura_honorarios(
         story.extend([tabla_cabecera, Paragraph("DATOS DEL CLIENTE", styles["FacturaSeccionMolsan"])])
         cliente_txt = escape(cliente or "—")
         nif_txt = escape(nif_cliente or "—")
+        direccion_txt = escape(direccion_facturacion or "—")
+        cp_txt = escape(codigo_postal_facturacion or "—")
+        poblacion_txt = escape(poblacion_facturacion or "—")
+        provincia_txt = escape(provincia_facturacion or "—")
         datos_cliente = Table([
             [Paragraph("<b>Cliente / titular</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>NIF / CIF</b>", styles["FacturaCeldaMolsan"])],
             [Paragraph(cliente_txt, styles["FacturaCeldaMolsan"]), Paragraph(nif_txt, styles["FacturaCeldaMolsan"])],
+            [Paragraph("<b>Dirección</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Código postal</b>", styles["FacturaCeldaMolsan"])],
+            [Paragraph(direccion_txt, styles["FacturaCeldaMolsan"]), Paragraph(cp_txt, styles["FacturaCeldaMolsan"])],
+            [Paragraph("<b>Población</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Provincia</b>", styles["FacturaCeldaMolsan"])],
+            [Paragraph(poblacion_txt, styles["FacturaCeldaMolsan"]), Paragraph(provincia_txt, styles["FacturaCeldaMolsan"])],
         ], colWidths=[87*mm, 87*mm])
         datos_cliente.setStyle(TableStyle([
             ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#edf2f8")),
