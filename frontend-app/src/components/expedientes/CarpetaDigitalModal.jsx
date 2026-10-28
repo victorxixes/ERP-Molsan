@@ -112,6 +112,7 @@ export default function CarpetaDigitalModal({
   onLiquidar,
   onFacturar,
   generandoFacturacion = false,
+  facturaEmitida = false,
   formularioPago = null,
   formularioEnvioNotario = null,
   ocultarPanelEnvioNotario = false,
@@ -1183,38 +1184,7 @@ export default function CarpetaDigitalModal({
                     )
                   )))}
                   {actividadId === "facturacion-cierre" && (
-                    <div className="mt-3 space-y-3 border-t border-slate-200 pt-3">
-                      <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
-                        <h5 className="border-b border-slate-100 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-800">🧾 Datos de facturación</h5>
-                        <div className="grid min-w-0 grid-cols-1 gap-1.5 px-3 py-2 sm:grid-cols-2 xl:grid-cols-3">
-                          {[
-                            ["Nombre", datosPanelActividad?.facturacion_nombre || datosPanelActividad?.nombre_facturacion],
-                            ["Apellidos", datosPanelActividad?.facturacion_apellidos || datosPanelActividad?.apellidos_facturacion],
-                            ["DNI / NIF", datosPanelActividad?.facturacion_dni_nif || datosPanelActividad?.dni_facturacion || datosPanelActividad?.nif_facturacion],
-                            ["Dirección", datosPanelActividad?.facturacion_direccion || datosPanelActividad?.direccion_facturacion],
-                            ["Código postal", datosPanelActividad?.facturacion_codigo_postal || datosPanelActividad?.codigo_postal_facturacion],
-                            ["Población", datosPanelActividad?.facturacion_poblacion || datosPanelActividad?.poblacion_facturacion],
-                            ["Provincia", datosPanelActividad?.facturacion_provincia || datosPanelActividad?.provincia_facturacion],
-                            ["Teléfono", datosPanelActividad?.facturacion_telefono || datosPanelActividad?.telefono_facturacion],
-                            ["Email", datosPanelActividad?.facturacion_email || datosPanelActividad?.email_facturacion],
-                          ].map(([etiqueta, valor]) => (
-                            <div key={etiqueta} className="flex min-w-0 flex-col items-start gap-0.5 rounded-md border border-slate-100 bg-slate-50/60 px-2 py-1.5">
-                              <span className="text-[10px] font-bold leading-tight text-slate-500">{etiqueta}</span>
-                              <span className="min-w-0 break-words text-[11px] font-semibold leading-snug text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </section>
-                      <div className="flex flex-wrap justify-end gap-2">
-                        <button
-                          type="button"
-                          onClick={() => onLiquidar?.()}
-                          disabled={!onLiquidar}
-                          className="inline-flex items-center gap-2 rounded-lg border border-indigo-300 bg-indigo-700 px-4 py-2.5 text-xs font-extrabold text-white transition hover:bg-indigo-800 disabled:opacity-50"
-                          title="Revisar provisión, movimientos, facturación y checklist antes del cierre"
-                        >
-                          ⚖️ Liquidar
-                        </button>
+                                          <div className="flex flex-wrap justify-end gap-2">
                         <button
                           type="button"
                           onClick={() => onFacturar?.()}
@@ -1223,6 +1193,15 @@ export default function CarpetaDigitalModal({
                           title="Abrir la factura definitiva de honorarios"
                         >
                           {generandoFacturacion ? "Abriendo factura…" : "🧾 Facturar"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onLiquidar?.()}
+                          disabled={!onLiquidar || !facturaEmitida}
+                          className="inline-flex items-center gap-2 rounded-lg border border-indigo-300 bg-indigo-700 px-4 py-2.5 text-xs font-extrabold text-white transition hover:bg-indigo-800 disabled:cursor-not-allowed disabled:opacity-40"
+                          title={facturaEmitida ? "Revisar provisión, movimientos y confirmar el cierre" : "Primero debes generar y guardar la factura de honorarios"}
+                        >
+                          ⚖️ Liquidar
                         </button>
                       </div>
                     </div>
