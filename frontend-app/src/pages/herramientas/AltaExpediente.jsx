@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
 
-const campo = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10";
+const campo = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10";
 const botonSecundario = "rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50";
 const fincaVacia = () => ({ finca: "", cru_idufir: "", registro: "", provincia: "", poblacion: "", seccion: "", inscripcion: "", cuantia: "", contrato: "", entidad_original: "" });
 const hipotecaVacia = () => ({ acreedor: "", numero: "", capital: "", contrato: "", observaciones: "" });
@@ -11,8 +11,8 @@ function Campo({ label, value, onChange, type = "text", required = false, placeh
   return <label className="block space-y-1.5"><span className="text-sm font-semibold text-slate-700">{label}{required && <span className="text-rose-600"> *</span>}</span><input className={campo} type={type} value={value ?? ""} onChange={onChange} required={required} placeholder={placeholder} readOnly={readOnly} /></label>;
 }
 
-function Seccion({ numero, titulo, descripcion, children }) {
-  return <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><div className="flex items-start gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-sm font-bold text-blue-700">{numero}</span><div><h2 className="font-bold text-slate-800">{titulo}</h2><p className="mt-0.5 text-sm text-slate-500">{descripcion}</p></div></div><div className="space-y-5 p-5">{children}</div></section>;
+function Seccion({ numero, titulo, descripcion, children, className = "" }) {
+  return <section className={`overflow-hidden rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_36px_rgba(15,23,42,0.07)] backdrop-blur-sm ${className}`}><div className="flex items-start gap-3 border-b border-slate-100/80 bg-gradient-to-r from-slate-50 to-white px-5 py-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-100 to-teal-100 text-sm font-bold text-emerald-800 ring-1 ring-emerald-200/70">{numero}</span><div><h2 className="font-bold text-slate-800">{titulo}</h2><p className="mt-0.5 text-sm text-slate-500">{descripcion}</p></div></div><div className="space-y-5 p-5">{children}</div></section>;
 }
 
 export default function AltaExpediente() {
@@ -103,11 +103,11 @@ export default function AltaExpediente() {
     }
   }
 
-  return <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-    <header className="relative overflow-hidden rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm sm:p-7">
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
+  return <main className="min-h-full space-y-6 bg-gradient-to-br from-slate-50 via-slate-50 to-emerald-50/40 p-4 sm:p-6 lg:p-8">
+    <header className="relative overflow-hidden rounded-[28px] border border-white/70 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.09)] backdrop-blur-xl sm:p-8">
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-800 via-teal-600 to-amber-400" />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div><p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">MOLSAN ERP · PREMIUM 2027</p><h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Alta de expediente</h1><p className="mt-2 max-w-3xl text-sm text-slate-500">Crea un expediente manual con facturación, contrato, múltiples fincas, hipotecas y notaría CTN.</p></div>
+        <div><p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-800">MOLSAN ERP · PREMIUM 2027</p><h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Alta de expediente</h1><p className="mt-2 max-w-3xl text-sm text-slate-500">Crea un expediente manual con facturación, contrato, múltiples fincas, hipotecas y notaría CTN.</p></div>
         <button type="button" onClick={() => navigate("/herramientas/utilidades")} className={botonSecundario}>← Volver a Utilidades</button>
       </div>
     </header>
@@ -115,8 +115,8 @@ export default function AltaExpediente() {
     {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</div>}
     {resultado && <div role="status" className="flex flex-col gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-bold text-emerald-900">Expediente creado correctamente</p><p className="mt-1 text-sm text-emerald-800">{resultado.id_expediente} · {resultado.tipo_expediente}</p></div><button type="button" onClick={() => navigate("/expedientes")} className="rounded-xl bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800">Ir a expedientes</button></div>}
 
-    {cargando ? <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">Cargando catálogos…</div> : <form onSubmit={guardar} className="space-y-5">
-      <Seccion numero="1" titulo="Identificación del expediente" descripcion="El número se asigna automáticamente con contador independiente por tipo.">
+    {cargando ? <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">Cargando catálogos…</div> : <form onSubmit={guardar} className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2">
+      <Seccion className="xl:col-span-2" numero="1" titulo="Identificación del expediente" descripcion="El número se asigna automáticamente con contador independiente por tipo.">
         <div className="grid gap-4 md:grid-cols-3">
           <label className="block space-y-1.5"><span className="text-sm font-semibold text-slate-700">Tipo de expediente <span className="text-rose-600">*</span></span><select className={campo} required value={tipoId} onChange={(e) => setTipoId(e.target.value)}><option value="">Selecciona un tipo…</option>{catalogos.tipos.map((t) => <option key={t.id} value={t.id}>{t.nombre}</option>)}</select></label>
           <Campo label="Número previsto" value={numero?.identificador_previo || (tipoId ? "Calculando…" : "Se asigna al seleccionar tipo")} readOnly onChange={() => {}} />
@@ -142,22 +142,22 @@ export default function AltaExpediente() {
         </div>
       </Seccion>
 
-      <Seccion numero="4" titulo="Fincas y registros" descripcion="Añade tantas fincas como sean necesarias para este expediente.">
+      <Seccion className="xl:col-span-2" numero="4" titulo="Fincas y registros" descripcion="Añade tantas fincas como sean necesarias para este expediente.">
         {fincas.map((f, i) => <div key={i} className="space-y-4 rounded-xl border border-slate-200 p-4"><div className="flex items-center justify-between"><h3 className="font-semibold text-slate-800">Finca {i + 1}</h3>{fincas.length > 1 && <button type="button" className="text-sm font-semibold text-rose-600" onClick={() => setFincas((items) => items.filter((_, j) => j !== i))}>Eliminar finca</button>}</div><div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"><Campo label="Número de finca" value={f.finca} onChange={(e) => cambiarFinca(i, "finca", e.target.value)} /><Campo label="CRU / IDUFIR" value={f.cru_idufir} onChange={(e) => cambiarFinca(i, "cru_idufir", e.target.value)} /><Campo label="Registro de la propiedad" value={f.registro} onChange={(e) => cambiarFinca(i, "registro", e.target.value)} /><Campo label="Provincia" value={f.provincia} onChange={(e) => cambiarFinca(i, "provincia", e.target.value)} /><Campo label="Población" value={f.poblacion} onChange={(e) => cambiarFinca(i, "poblacion", e.target.value)} /><Campo label="Sección" value={f.seccion} onChange={(e) => cambiarFinca(i, "seccion", e.target.value)} /><Campo label="Inscripción" value={f.inscripcion} onChange={(e) => cambiarFinca(i, "inscripcion", e.target.value)} /><Campo label="Cuantía" value={f.cuantia} onChange={(e) => cambiarFinca(i, "cuantia", e.target.value)} /><Campo label="Entidad original" value={f.entidad_original} onChange={(e) => cambiarFinca(i, "entidad_original", e.target.value)} /></div></div>)}
         <button type="button" className={botonSecundario} onClick={() => setFincas((items) => [...items, fincaVacia()])}>＋ Añadir otra finca</button>
       </Seccion>
 
-      <Seccion numero="5" titulo="Hipotecas" descripcion="Registra una o varias hipotecas vinculadas al expediente.">
+      <Seccion className="xl:col-span-2" numero="5" titulo="Hipotecas" descripcion="Registra una o varias hipotecas vinculadas al expediente.">
         {hipotecas.map((h, i) => <div key={i} className="space-y-4 rounded-xl border border-slate-200 p-4"><div className="flex items-center justify-between"><h3 className="font-semibold text-slate-800">Hipoteca {i + 1}</h3>{hipotecas.length > 1 && <button type="button" className="text-sm font-semibold text-rose-600" onClick={() => setHipotecas((items) => items.filter((_, j) => j !== i))}>Eliminar hipoteca</button>}</div><div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"><Campo label="Entidad acreedora" value={h.acreedor} onChange={(e) => cambiarHipoteca(i, "acreedor", e.target.value)} /><Campo label="Número de hipoteca" value={h.numero} onChange={(e) => cambiarHipoteca(i, "numero", e.target.value)} /><Campo label="Capital" type="number" value={h.capital} onChange={(e) => cambiarHipoteca(i, "capital", e.target.value)} /><Campo label="Contrato" value={h.contrato} onChange={(e) => cambiarHipoteca(i, "contrato", e.target.value)} /><Campo label="Observaciones" value={h.observaciones} onChange={(e) => cambiarHipoteca(i, "observaciones", e.target.value)} /></div></div>)}
         <button type="button" className={botonSecundario} onClick={() => setHipotecas((items) => [...items, hipotecaVacia()])}>＋ Añadir otra hipoteca</button>
       </Seccion>
 
-      <Seccion numero="6" titulo="Notaría CTN" descripcion="Selecciona una notaría del catálogo; NIF, población y provincia se rellenan automáticamente.">
+      <Seccion className="xl:col-span-2" numero="6" titulo="Notaría CTN" descripcion="Selecciona una notaría del catálogo; NIF, población y provincia se rellenan automáticamente.">
         <div className="grid gap-4 md:grid-cols-2"><Campo label="Buscar notaría" value={busquedaNotario} onChange={(e) => setBusquedaNotario(e.target.value)} placeholder="Nombre, NIF, población o provincia…" /><label className="block space-y-1.5"><span className="text-sm font-semibold text-slate-700">Notario / notaría</span><select className={campo} value={notarioId} onChange={(e) => setNotarioId(e.target.value)}><option value="">Sin seleccionar</option>{notariosFiltrados.map((n) => <option key={n.id} value={n.id}>{n.nombre || `Notaría ${n.id}`} · {n.poblacion} ({n.provincia})</option>)}</select></label></div>
-        {notarioSeleccionado && <div className="grid gap-4 rounded-xl border border-blue-100 bg-blue-50/60 p-4 md:grid-cols-3"><div><p className="text-xs font-semibold uppercase tracking-wide text-blue-700">NIF</p><p className="mt-1 font-semibold text-slate-800">{notarioSeleccionado.nif || "No disponible"}</p></div><div><p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Población</p><p className="mt-1 font-semibold text-slate-800">{notarioSeleccionado.poblacion || "No disponible"}</p></div><div><p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Provincia</p><p className="mt-1 font-semibold text-slate-800">{notarioSeleccionado.provincia || "No disponible"}</p></div></div>}
+        {notarioSeleccionado && <div className="grid gap-4 rounded-xl border border-emerald-100 bg-emerald-50/60 p-4 md:grid-cols-3"><div><p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">NIF</p><p className="mt-1 font-semibold text-slate-800">{notarioSeleccionado.nif || "No disponible"}</p></div><div><p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Población</p><p className="mt-1 font-semibold text-slate-800">{notarioSeleccionado.poblacion || "No disponible"}</p></div><div><p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Provincia</p><p className="mt-1 font-semibold text-slate-800">{notarioSeleccionado.provincia || "No disponible"}</p></div></div>}
       </Seccion>
 
-      <div className="sticky bottom-3 z-10 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-lg backdrop-blur sm:flex-row sm:items-center sm:justify-between"><p className="text-sm text-slate-500">Revisa los datos antes de confirmar el alta. Los campos marcados con * son obligatorios.</p><div className="flex gap-3"><button type="button" className={botonSecundario} disabled={guardando} onClick={() => navigate("/herramientas/utilidades")}>Cancelar</button><button type="submit" disabled={guardando || !tipoId} className="rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50">{guardando ? "Creando expediente…" : "Crear expediente"}</button></div></div>
+      <div className="sticky bottom-3 z-10 flex flex-col gap-3 rounded-2xl border border-white/80 bg-white/95 p-4 shadow-[0_16px_40px_rgba(15,23,42,0.14)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between xl:col-span-2"><p className="text-sm text-slate-500">Revisa los datos antes de confirmar el alta. Los campos marcados con * son obligatorios.</p><div className="flex gap-3"><button type="button" className={botonSecundario} disabled={guardando} onClick={() => navigate("/herramientas/utilidades")}>Cancelar</button><button type="submit" disabled={guardando || !tipoId} className="rounded-xl bg-gradient-to-r from-emerald-800 to-teal-700 px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-emerald-900/15 transition hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50">{guardando ? "Creando expediente…" : "Crear expediente"}</button></div></div>
     </form>}
   </main>;
 }
