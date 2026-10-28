@@ -324,9 +324,29 @@ def generar_cierre_documental(expediente_id: str, db: Session = Depends(get_db))
         ("Hoja de inscripción", {"hoja de inscripcion", "documento de inscripcion"}),
     ]
 
-    fuentes = [(0, "Hoja de liquidación", hoja.getvalue())]
+    hojas_existentes = [
+        item for item in documentos
+        if normalizar(item.categoria) == normalizar("Hoja de liquidación")
+        and (str(item.nombre_original or "").lower().endswith(".pdf")
+             or str(item.tipo_mime or "").lower() == "application/pdf")
+    ]
+    fuentes = []
+    incluidos = []
+    for item in hojas_existentes:
+        ruta = _ruta_segura(item.nombre_guardado)
+        if ruta.is_file():
+            contenido = ruta.read_bytes()
+            if contenido.startswith(b"%PDF-"):
+                try:
+                    PdfReader(io.BytesIO(contenido), strict=False)
+                    fuentes.append((item.id, "Hoja de liquidación", contenido))
+                    incluidos.append(item.nombre_original or "Hoja de liquidación")
+                except Exception:
+                    logger.warning("Hoja de liquidación dañada; se generará una nueva: expediente=%s documento=%s", expediente_id, item.id)
+    if not fuentes:
+        fuentes = [(0, "Hoja de liquidación", hoja.getvalue())]
+        incluidos = ["Hoja de liquidación generada automáticamente"]
     faltantes = []
-    incluidos = ["Hoja de liquidación"]
     for etiqueta, alias in orden[1:]:
         alias_normalizados = {normalizar(a) for a in alias}
         coincidencias = [
