@@ -575,7 +575,6 @@ def migrar_esquema_expedientes_inicio():
         # Estas columnas están en el modelo ORM y deben existir antes de cargar Expediente.
         ("tipo_expediente_id", "INTEGER"),
         ("numero_tipo_expediente", "INTEGER"),
-        ("promocion_tipo_expediente_id", "INTEGER"),
         # Envío a notario y documentos de escritura
         ("cliente_id", "INTEGER"),
         ("notario_id", "INTEGER"),
@@ -1013,6 +1012,16 @@ def inicializar_tablas_auxiliares():
             conexion_promocion.execute(text("""
                 CREATE INDEX IF NOT EXISTS ix_expedientes_promocion
                 ON public.expedientes (promocion)
+            """))
+            conexion_promocion.execute(text("""
+                CREATE TABLE IF NOT EXISTS public.expediente_promociones (
+                    expediente_id VARCHAR(100) PRIMARY KEY,
+                    tipo_expediente_id INTEGER NOT NULL
+                )
+            """))
+            conexion_promocion.execute(text("""
+                CREATE INDEX IF NOT EXISTS ix_expediente_promociones_tipo_expediente_id
+                ON public.expediente_promociones (tipo_expediente_id)
             """))
 
         # Campos del defecto registral solicitados por el cliente.
