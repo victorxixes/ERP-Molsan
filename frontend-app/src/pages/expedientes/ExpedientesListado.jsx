@@ -2430,7 +2430,7 @@ export default function ExpedientesListado() {
           </div>
         </header>
 
-            <div className="space-y-5">
+            <div className="space-y-2">
       {/* SLA GLOBAL: CIRCUITOS DIFERENCIADOS */}
       <section className="space-y-3" aria-label="SLA global por circuito">
         <div>
@@ -2626,7 +2626,7 @@ export default function ExpedientesListado() {
       </section>
 
       {/* ESTADOS DIFERENCIALES: son estados del expediente, no actividades ni SLA */}
-      <section className="space-y-3" aria-label="Estados diferenciales del expediente">
+      <section className="space-y-2" aria-label="Estados diferenciales del expediente">
         <div>
           <h3 className="text-base font-bold text-[var(--erp-text)]">Estados diferenciales</h3>
           <p className="text-sm text-[var(--erp-text-soft)]">Estos filtros se basan en el estado del expediente. No son actividades y no calculan SLA.</p>
