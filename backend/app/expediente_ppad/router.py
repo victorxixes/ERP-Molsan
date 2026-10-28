@@ -61,7 +61,7 @@ class PPADUpdate(BaseModel):
         return value
 
 
-def _comprobar_expediente(db: Session, expediente_id: int) -> Expediente:
+def _comprobar_expediente(db: Session, expediente_id: str) -> Expediente:
     expediente = (
         db.query(Expediente)
         .filter(Expediente.id_expediente == str(expediente_id))
@@ -99,7 +99,7 @@ def _obtener_ppad(db: Session, expediente_pk: int, ppad_id: int) -> ExpedientePP
 
 
 @router.get("", summary="Listar registros PPAD de un expediente")
-def listar_ppad(expediente_id: int, db: Session = Depends(get_db)):
+def listar_ppad(expediente_id: str, db: Session = Depends(get_db)):
     expediente = _comprobar_expediente(db, expediente_id)
     items = (
         db.query(ExpedientePPAD)
@@ -111,7 +111,7 @@ def listar_ppad(expediente_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("", status_code=status.HTTP_201_CREATED, summary="Crear registro PPAD")
-def crear_ppad(expediente_id: int, datos: PPADCreate, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+def crear_ppad(expediente_id: str, datos: PPADCreate, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     expediente = _comprobar_expediente(db, expediente_id)
 
     # Evita duplicados al repetir la acción de generación automática.
@@ -149,7 +149,7 @@ def crear_ppad(expediente_id: int, datos: PPADCreate, db: Session = Depends(get_
 
 
 @router.put("/{ppad_id}", summary="Modificar registro PPAD")
-def modificar_ppad(expediente_id: int, ppad_id: int, datos: PPADUpdate, db: Session = Depends(get_db)):
+def modificar_ppad(expediente_id: str, ppad_id: int, datos: PPADUpdate, db: Session = Depends(get_db)):
     expediente = _comprobar_expediente(db, expediente_id)
     item = _obtener_ppad(db, expediente.id, ppad_id)
     if item.compensado:
@@ -186,7 +186,7 @@ def _es_administrador(usuario) -> bool:
 
 @router.delete("/{ppad_id}", summary="Eliminar registro PPAD")
 def eliminar_ppad(
-    expediente_id: int,
+    expediente_id: str,
     ppad_id: int,
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
@@ -209,7 +209,7 @@ def eliminar_ppad(
 
 
 @router.post("/{ppad_id}/compensar", summary="Marcar un PPAD como compensado")
-def compensar_ppad(expediente_id: int, ppad_id: int, db: Session = Depends(get_db)):
+def compensar_ppad(expediente_id: str, ppad_id: int, db: Session = Depends(get_db)):
     expediente = _comprobar_expediente(db, expediente_id)
     item = _obtener_ppad(db, expediente.id, ppad_id)
 
