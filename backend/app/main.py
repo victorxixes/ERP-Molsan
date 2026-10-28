@@ -988,8 +988,77 @@ def migrar_esquema_expedientes_inicio():
 # INICIALIZAR TABLAS AUXILIARES
 # ============================================================
 
-from contextlib import contextmanager
+from contextlib import contextmanager, wraps
 import time
+
+
+def _serializar_inicializacion_startup(funcion):
+    """Serializa el arranque auxiliar entre instancias usando el lock de migraciones."""
+    @wraps(funcion)
+    def envoltura(*args, **kwargs):
+        clave = 731208640224
+        conexion_lock = None
+        adquirido = False
+        try:
+            conexion_lock = engine.connect()
+            for intento in range(1, 121):
+                with conexion_lock.begin():
+                    adquirido = bool(
+                        conexion_lock.execute(
+                            text("SELECT pg_try_advisory_lock(:clave)"),
+                            {"clave": clave},
+                        ).scalar()
+                    )
+                if adquirido:
+                    print(
+                        f"[STARTUP LOCK] Bloqueo global adquirido; intento={intento}.",
+                        flush=True,
+                    )
+                    break
+                if intento % 10 == 0:
+                    print(
+                        f"[STARTUP LOCK] Esperando otra inicialización; intento={intento}/120.",
+                        flush=True,
+                    )
+                time.sleep(1)
+            if not adquirido:
+                raise RuntimeError(
+                    "No se pudo adquirir el bloqueo global de inicialización tras 120 segundos. "
+                    "Se aborta el arranque para evitar migraciones concurrentes."
+                )
+            return funcion(*args, **kwargs)
+        except Exception as error:
+            print(
+                f"[STARTUP LOCK] ERROR de inicialización: {type(error).__name__}: {error!r}",
+                flush=True,
+            )
+            raise
+        finally:
+            if conexion_lock is not None:
+                if adquirido:
+                    try:
+                        with conexion_lock.begin():
+                            liberado = bool(
+                                conexion_lock.execute(
+                                    text("SELECT pg_advisory_unlock(:clave)"),
+                                    {"clave": clave},
+                                ).scalar()
+                            )
+                        print(
+                            f"[STARTUP LOCK] Bloqueo global liberado={liberado}.",
+                            flush=True,
+                        )
+                    except Exception as error_unlock:
+                        print(
+                            f"[STARTUP LOCK] No se pudo liberar el bloqueo: {error_unlock!r}.",
+                            flush=True,
+                        )
+                        try:
+                            conexion_lock.invalidate()
+                        except Exception:
+                            pass
+                conexion_lock.close()
+    return envoltura
 
 
 @contextmanager
@@ -1053,6 +1122,7 @@ def _transaccion_inicio_segura(etiqueta):
 
 
 @app.on_event("startup")
+@_serializar_inicializacion_startup
 def inicializar_tablas_auxiliares():
     print(
         "[INICIALIZACION] Comprobando tablas auxiliares...",
@@ -1068,29 +1138,61 @@ def inicializar_tablas_auxiliares():
         print("[MUNICIPIOS] Tabla de códigos postales disponible.", flush=True)
 
         # Referencia interna de promoción para expedientes.
-        with _transaccion_inicio_segura("conexion_promocion") as conexion_promocion:
-            print("[STARTUP SQL] INICIO linea 1008", flush=True)
-            conexion_promocion.execute(text("""
-                ALTER TABLE IF EXISTS public.expedientes
-                ADD COLUMN IF NOT EXISTS promocion VARCHAR(300)
-            """))
-            print("[STARTUP SQL] INICIO linea 1012", flush=True)
-            conexion_promocion.execute(text("""
-                CREATE INDEX IF NOT EXISTS ix_expedientes_promocion
-                ON public.expedientes (promocion)
-            """))
-            print("[STARTUP SQL] INICIO linea 1016", flush=True)
-            conexion_promocion.execute(text("""
-                CREATE TABLE IF NOT EXISTS public.expediente_promociones (
-                    expediente_id VARCHAR(100) PRIMARY KEY,
-                    tipo_expediente_id INTEGER NOT NULL
-                )
-            """))
-            print("[STARTUP SQL] INICIO linea 1022", flush=True)
-            conexion_promocion.execute(text("""
-                CREATE INDEX IF NOT EXISTS ix_expediente_promociones_tipo_expediente_id
-                ON public.expediente_promociones (tipo_expediente_id)
-            """))
+        # Evita DDL innecesario en cada arranque: incluso IF NOT EXISTS puede bloquear.
+        with engine.connect() as conexion_catalogo:
+            objetos_promocion = conexion_catalogo.execute(text("""
+                SELECT
+                    to_regclass('public.expedientes') IS NOT NULL AS existe_expedientes,
+                    EXISTS (
+                        SELECT 1 FROM pg_attribute
+                        WHERE attrelid = to_regclass('public.expedientes')
+                          AND attname = 'promocion' AND NOT attisdropped
+                    ) AS existe_columna_promocion,
+                    EXISTS (
+                        SELECT 1 FROM pg_indexes
+                        WHERE schemaname = 'public'
+                          AND tablename = 'expedientes'
+                          AND indexname = 'ix_expedientes_promocion'
+                    ) AS existe_indice_promocion,
+                    to_regclass('public.expediente_promociones') IS NOT NULL AS existe_tabla_promociones,
+                    EXISTS (
+                        SELECT 1 FROM pg_indexes
+                        WHERE schemaname = 'public'
+                          AND tablename = 'expediente_promociones'
+                          AND indexname = 'ix_expediente_promociones_tipo_expediente_id'
+                    ) AS existe_indice_tipo_expediente
+            """)).mappings().one()
+        if all(objetos_promocion.values()):
+            print(
+                "[PROMOCIONES] Esquema completo; se omite DDL de promoción.",
+                flush=True,
+            )
+        else:
+            print(
+                f"[PROMOCIONES] Faltan objetos de esquema: {dict(objetos_promocion)!r}",
+                flush=True,
+            )
+            with _transaccion_inicio_segura("conexion_promocion") as conexion_promocion:
+                if objetos_promocion["existe_expedientes"] and not objetos_promocion["existe_columna_promocion"]:
+                    conexion_promocion.execute(text(
+                        "ALTER TABLE public.expedientes ADD COLUMN promocion VARCHAR(300)"
+                    ))
+                if objetos_promocion["existe_expedientes"] and not objetos_promocion["existe_indice_promocion"]:
+                    conexion_promocion.execute(text(
+                        "CREATE INDEX ix_expedientes_promocion ON public.expedientes (promocion)"
+                    ))
+                if not objetos_promocion["existe_tabla_promociones"]:
+                    conexion_promocion.execute(text("""
+                        CREATE TABLE public.expediente_promociones (
+                            expediente_id VARCHAR(100) PRIMARY KEY,
+                            tipo_expediente_id INTEGER NOT NULL
+                        )
+                    """))
+                if not objetos_promocion["existe_indice_tipo_expediente"]:
+                    conexion_promocion.execute(text("""
+                        CREATE INDEX ix_expediente_promociones_tipo_expediente_id
+                        ON public.expediente_promociones (tipo_expediente_id)
+                    """))
 
         # Campos del defecto registral solicitados por el cliente.
         # Migración idempotente: conserva todos los defectos ya registrados.
