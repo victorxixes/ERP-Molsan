@@ -184,23 +184,86 @@ function MensajesWrapper() {
 class AppErrorBoundary extends Component {
   constructor(props) {
     super(props);
-    this.state = { error: null };
+    this.state = { error: null, errorInfo: null };
   }
+
   static getDerivedStateFromError(error) {
     return { error };
   }
+
   componentDidCatch(error, info) {
+    this.setState({ errorInfo: info || null });
     console.error("[ERP] Error de renderizado capturado:", error, info?.componentStack);
   }
+
+  obtenerDiagnostico(error) {
+    const mensaje = String(error?.message || error || "Error de renderizado desconocido");
+    const texto = mensaje.toLowerCase();
+
+    if (/failed to fetch|networkerror|network request failed|load failed/.test(texto)) {
+      return {
+        causa: "No se ha podido completar una comunicación de red. Puede que el backend esté reiniciándose, no responda o exista un problema de conexión.",
+        accion: "Comprueba el estado del backend en Render. Cuando vuelva a estar disponible, prueba a recargar el ERP."
+      };
+    }
+    if (/loading chunk|chunkloaderror|dynamically imported module|importing a module script/.test(texto)) {
+      return {
+        causa: "Es posible que el frontend se haya actualizado mientras el navegador conservaba archivos antiguos en caché, o que falte un recurso del despliegue.",
+        accion: "Recarga el ERP. Si persiste, comprueba que el despliegue frontend esté en estado LIVE."
+      };
+    }
+    if (/undefined|is not defined|null|cannot read properties|cannot access/.test(texto)) {
+      return {
+        causa: "Probable error de programación: una variable, propiedad o dato que el módulo esperaba no está disponible en ese momento.",
+        accion: "Anota el módulo y el mensaje exacto. Hay que revisar la función indicada y el flujo que proporciona ese dato."
+      };
+    }
+    if (/401|403|unauthorized|forbidden|token|sesión/.test(texto)) {
+      return {
+        causa: "Posible problema de sesión, token caducado o permisos insuficientes.",
+        accion: "Comprueba si la sesión sigue activa y si el usuario tiene permisos para acceder a esta función."
+      };
+    }
+    return {
+      causa: "Error inesperado de la interfaz. El mensaje técnico que aparece abajo es la pista principal; por sí solo no confirma la causa raíz.",
+      accion: "Guarda el mensaje, la hora y la ruta del ERP y revisa los registros de Render y la función afectada."
+    };
+  }
+
   render() {
     if (this.state.error) {
+      const error = this.state.error;
+      const diagnostico = this.obtenerDiagnostico(error);
+      const detalle = [
+        "Diagnóstico ERP Molsan",
+        `Fecha: ${new Date().toLocaleString()}`,
+        `Ruta: ${window.location.pathname}`,
+        `Error: ${String(error?.message || error || "Error desconocido")}`,
+        `Causa posible: ${diagnostico.causa}`,
+        `Acción recomendada: ${diagnostico.accion}`,
+        this.state.errorInfo?.componentStack ? `Componentes: ${this.state.errorInfo.componentStack}` : ""
+      ].filter(Boolean).join("\\n");
+
       return (
         <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, background: "#f8fafc", color: "#0f172a" }}>
-          <section style={{ width: "100%", maxWidth: 640, padding: 24, border: "1px solid #fecaca", borderRadius: 16, background: "#fff", boxShadow: "0 12px 36px rgba(15,23,42,.08)" }}>
-            <h1 style={{ margin: "0 0 10px", fontSize: 20, fontWeight: 800 }}>La pantalla del ERP ha encontrado un error</h1>
-            <p style={{ margin: "0 0 12px", fontSize: 14 }}>La sesión no se ha cerrado. Este mensaje permite identificar el fallo sin abrir la consola.</p>
-            <pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere", padding: 12, borderRadius: 10, background: "#fff7f7", color: "#991b1b", fontSize: 12 }}>{String(this.state.error?.message || this.state.error || "Error de renderizado desconocido")}</pre>
-            <button type="button" onClick={() => window.location.reload()} style={{ marginTop: 12, padding: "10px 16px", borderRadius: 10, background: "#1d4ed8", color: "#fff", fontWeight: 700 }}>Recargar ERP</button>
+          <section style={{ width: "100%", maxWidth: 720, padding: 24, border: "1px solid #fecaca", borderRadius: 16, background: "#fff", boxShadow: "0 12px 36px rgba(15,23,42,.08)" }}>
+            <h1 style={{ margin: "0 0 10px", fontSize: 22, fontWeight: 800 }}>El ERP ha detectado un error</h1>
+            <p style={{ margin: "0 0 16px", fontSize: 14, lineHeight: 1.6 }}>La sesión no se ha cerrado. El diagnóstico siguiente ayuda a identificar qué ha fallado y qué revisar.</p>
+            <div style={{ marginBottom: 12, padding: 14, borderRadius: 10, background: "#fff7ed", border: "1px solid #fed7aa" }}>
+              <strong style={{ display: "block", marginBottom: 5 }}>Posible causa</strong>
+              <p style={{ margin: 0, fontSize: 14, lineHeight: 1.55 }}>{diagnostico.causa}</p>
+            </div>
+            <div style={{ marginBottom: 12, padding: 14, borderRadius: 10, background: "#eff6ff", border: "1px solid #bfdbfe" }}>
+              <strong style={{ display: "block", marginBottom: 5 }}>Qué hacer</strong>
+              <p style={{ margin: 0, fontSize: 14, lineHeight: 1.55 }}>{diagnostico.accion}</p>
+            </div>
+            <strong style={{ display: "block", marginBottom: 6 }}>Error técnico</strong>
+            <pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere", maxHeight: 180, overflow: "auto", padding: 12, borderRadius: 10, background: "#fff7f7", color: "#991b1b", fontSize: 12 }}>{String(error?.message || error || "Error de renderizado desconocido")}</pre>
+            <p style={{ margin: "10px 0 0", color: "#64748b", fontSize: 12 }}>Ruta: {window.location.pathname} · Fecha: {new Date().toLocaleString()}</p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 16 }}>
+              <button type="button" onClick={() => { try { navigator.clipboard?.writeText(detalle); } catch (e) { console.warn("No se pudo copiar el diagnóstico."); } }} style={{ padding: "10px 16px", borderRadius: 10, border: "1px solid #cbd5e1", background: "#fff", color: "#0f172a", fontWeight: 700 }}>Copiar diagnóstico</button>
+              <button type="button" onClick={() => window.location.reload()} style={{ padding: "10px 16px", borderRadius: 10, background: "#1d4ed8", color: "#fff", fontWeight: 700 }}>Recargar ERP</button>
+            </div>
           </section>
         </main>
       );
