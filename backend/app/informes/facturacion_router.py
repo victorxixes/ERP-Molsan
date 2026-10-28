@@ -72,10 +72,11 @@ def _concepto_honorarios(gasto):
 def _tipo_cancelacion(exp, gasto=None):
     valor_origen = getattr(gasto, "tipo_operacion_absis", None) if gasto is not None else None
     valor = _normalizar_texto(valor_origen or getattr(exp, "tipo_operacion", None))
-    # La clasificación principal sale de TIPOOPERACION; no se deduce del importe.
+    # ABSIS puede informar simplemente "CANCELACION"; se agrupa con las
+    # cancelaciones con provisión, salvo que indique expresamente lo contrario.
     if "cancelacion" in valor and "sin provision" in valor:
         return "sin_provision"
-    if "cancelacion" in valor and "con provision" in valor:
+    if "cancelacion" in valor:
         return "con_provision"
     return "otros"
 
