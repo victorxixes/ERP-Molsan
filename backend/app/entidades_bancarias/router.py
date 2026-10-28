@@ -128,6 +128,8 @@ def entidad_a_dict(
     }
 
 
+from backend.app.entidades_bancarias.sincronizar_catalogo_historico import sincronizar_catalogo_historico_caixabank
+
 # ============================================================
 # GET /api/entidades-bancarias
 # ============================================================
@@ -661,3 +663,9 @@ def eliminar_entidad_bancaria(
             "Entidad bancaria eliminada correctamente."
         ),
     }
+
+
+@router.on_event("startup")
+def cargar_catalogo_historico_caixabank_al_arrancar():
+    """Carga el listado histórico solicitado después de las migraciones del esquema."""
+    sincronizar_catalogo_historico_caixabank()
