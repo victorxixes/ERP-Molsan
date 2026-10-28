@@ -1972,7 +1972,8 @@ export default function ExpedientesListado() {
       saldoDisponible: filtroSaldoDisponible,
       importe: filtroImporte,
       observaciones: filtroObservaciones.trim(),
-      promocion: filtroPromocion.trim(),      estadoActividad: filtroEstadoActividad,
+      promocion: filtroPromocion.trim(),
+      estadoActividad: filtroEstadoActividad,
       actividad: filtroActividad,
       estadoExpediente: filtroEstadoExpediente.trim(),
       origenBankia: filtroOrigenBankia,
@@ -2029,7 +2030,8 @@ export default function ExpedientesListado() {
     setFiltroSaldoDisponible("");
     setFiltroImporte("");
     setFiltroObservaciones("");
-    setFiltroPromocion("");    setFiltroEstadoActividad("");
+    setFiltroPromocion("");
+    setFiltroEstadoActividad("");
     setFiltroActividad("");
     setFiltroEstadoExpediente("");
     setFiltroOrigenBankia("");
