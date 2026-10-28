@@ -14,6 +14,7 @@ export default function TiposExpediente() {
   const [error, setError] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [editando, setEditando] = useState(null);
+  const [mostrarModal, setMostrarModal] = useState(false);
   const [nombre, setNombre] = useState("");
   const [grupo, setGrupo] = useState("Tipos de expediente");
   const [activo, setActivo] = useState(true);
@@ -42,11 +43,23 @@ export default function TiposExpediente() {
   function abrirNuevo() {
     setEditando(null); setNombre(""); setGrupo("Tipos de expediente"); setActivo(true);
     setError(""); setMensaje("");
+    setMostrarModal(true);
   }
 
   function abrirEditar(tipo) {
     setEditando(tipo); setNombre(tipo.nombre); setGrupo(tipo.grupo); setActivo(tipo.activo !== false);
     setError(""); setMensaje("");
+    setMostrarModal(true);
+  }
+
+  function cerrarModal() {
+    if (guardando) return;
+    setMostrarModal(false);
+    setEditando(null);
+    setNombre("");
+    setGrupo("Tipos de expediente");
+    setActivo(true);
+    setError("");
   }
 
   async function guardar(event) {
@@ -58,7 +71,11 @@ export default function TiposExpediente() {
       if (editando) await axios.put(`${API}/${editando.id}`, payload);
       else await axios.post(API, payload);
       setMensaje(editando ? "Tipo de expediente actualizado." : "Tipo de expediente creado.");
-      abrirNuevo();
+      setMostrarModal(false);
+      setEditando(null);
+      setNombre("");
+      setGrupo("Tipos de expediente");
+      setActivo(true);
       await cargar();
     } catch (e) {
       setError(e?.response?.data?.detail || "No se pudo guardar el tipo de expediente.");
@@ -73,7 +90,7 @@ export default function TiposExpediente() {
     try {
       await axios.delete(`${API}/${tipo.id}`);
       setMensaje("Tipo de expediente eliminado.");
-      if (editando?.id === tipo.id) abrirNuevo();
+      if (editando?.id === tipo.id) cerrarModal();
       await cargar();
     } catch (e) {
       setError(e?.response?.data?.detail || "No se pudo eliminar el tipo de expediente.");
@@ -100,10 +117,10 @@ export default function TiposExpediente() {
 
       {(error || mensaje) && <div role="status" className={`rounded-xl border px-4 py-3 text-sm ${error ? "border-red-200 bg-red-50 text-red-700" : "border-emerald-200 bg-emerald-50 text-emerald-800"}`}>{error || mensaje}</div>}
 
-      <section className="rounded-[24px] border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
+      {mostrarModal && <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm" onMouseDown={(e) => { if (e.target === e.currentTarget) cerrarModal(); }}><div role="dialog" aria-modal="true" aria-labelledby="tipo-expediente-modal-title" className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[24px] border border-slate-200 bg-white p-5 shadow-2xl sm:p-6">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
-          <div><h2 className="text-lg font-bold text-slate-800">{editando ? "Editar tipo de expediente" : "Alta de tipo de expediente"}</h2><p className="mt-1 text-sm text-slate-500">Los identificadores históricos se conservan; las nuevas altas reciben un ID automático.</p></div>
-          {editando && <button type="button" onClick={abrirNuevo} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancelar edición</button>}
+          <div><h2 id="tipo-expediente-modal-title" className="text-lg font-bold text-slate-800">{editando ? "Editar tipo de expediente" : "Nuevo tipo de expediente"}</h2><p className="mt-1 text-sm text-slate-500">Los identificadores históricos se conservan; las nuevas altas reciben un ID automático.</p></div>
+          <button type="button" onClick={cerrarModal} disabled={guardando} aria-label="Cerrar ventana" className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50">Cerrar ✕</button>
         </div>
         <form onSubmit={guardar} className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-12">
           <label className="text-sm font-semibold text-slate-700 md:col-span-5">Descripción
@@ -119,7 +136,7 @@ export default function TiposExpediente() {
           </label>
           <div className="flex items-end md:col-span-1"><button disabled={guardando || !nombre.trim()} className="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50" type="submit">{guardando ? "..." : editando ? "Guardar" : "Añadir"}</button></div>
         </form>
-      </section>
+      </section></div></div>}
 
       <section className="overflow-hidden rounded-[24px] border border-slate-200/80 bg-white shadow-sm">
         <div className="flex flex-col gap-3 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between">
