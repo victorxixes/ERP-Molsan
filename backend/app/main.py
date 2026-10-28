@@ -571,6 +571,10 @@ def migrar_esquema_expedientes_inicio():
         ("fcierre_defecto", "DATE"),
         ("registral_estado", "VARCHAR(200)"),
         ("registral_fecha", "DATE"),
+        # Alta manual: tipo de expediente y numeración por tipo.
+        # Estas columnas están en el modelo ORM y deben existir antes de cargar Expediente.
+        ("tipo_expediente_id", "INTEGER"),
+        ("numero_tipo_expediente", "INTEGER"),
         # Envío a notario y documentos de escritura
         ("cliente_id", "INTEGER"),
         ("notario_id", "INTEGER"),
