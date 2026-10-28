@@ -5282,7 +5282,7 @@ const cuantiaFincasParaEnvio =
 
           {/* DETALLE */}
 
-          <div className={mostrarControlCalidad ? "hidden" : "min-w-0 h-[72vh] min-h-[360px] max-h-[820px] overflow-y-auto overscroll-contain rounded-2xl border border-slate-200 bg-slate-50/70 p-4"}>
+          <div className={mostrarControlCalidad ? "hidden" : "min-w-0 rounded-2xl border border-slate-200 bg-slate-50/70 p-4"}>
 
             <div
               className="
@@ -5379,7 +5379,7 @@ const cuantiaFincasParaEnvio =
             {(
               <div className="mb-4 min-w-0">
                 {actividadSeleccionada !== "sede-notarial" && (
-                  <div className="min-w-0 max-h-[300px] overflow-y-auto overscroll-contain rounded-xl border border-slate-200 bg-white p-2">
+                  <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-2">
                     <CarpetaDigitalModal
                       expedienteId={expediente?.id_expediente || id}
                       modoActividad
@@ -8726,7 +8726,7 @@ const cuantiaFincasParaEnvio =
               </div>
             ) : actividadSeleccionada === "facturacion-cierre" ? (
               <div className="grid min-w-0 grid-cols-1 items-start gap-3">
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
                 <h4 className="mb-3 text-sm font-extrabold text-slate-800">Datos de la actividad</h4>
                 <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {[
@@ -8752,7 +8752,7 @@ const cuantiaFincasParaEnvio =
                   })}
                 </div>
                 </section>
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
                 <h4 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h4>
                 <RepositorioDocumentosInline
                   expedienteId={expediente?.id || id}
