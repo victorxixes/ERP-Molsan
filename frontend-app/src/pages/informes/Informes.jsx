@@ -3345,7 +3345,7 @@ function resumenFacturacionPorTipo(items) {
 }
 
 function InformeFacturacion() {
-  const filtrosIniciales = () => ({ ...filtrosInformeIniciales(), modalidad: "todas", estado: "", estado_justificante: "", situacion: "" });
+  const filtrosIniciales = () => ({ ...filtrosInformeIniciales(), fecha_desde: "", fecha_hasta: "", modalidad: "todas", estado: "", estado_justificante: "", situacion: "" });
   const [filtros, setFiltros] = useState(filtrosIniciales);
   const [aplicados, setAplicados] = useState(filtrosIniciales);
   const [datos, setDatos] = useState({ resumen: {}, items: [] });
@@ -3463,7 +3463,7 @@ function InformeFacturacion() {
           <label className="text-xs font-semibold text-slate-600">Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
           <label className="text-xs font-semibold text-slate-600">Fecha hasta<input className={campo} type="date" value={filtros.fecha_hasta} onChange={(e) => cambiar("fecha_hasta", e.target.value)} /></label>
         </div>
-        <p className="mt-2 text-xs text-slate-500">Por defecto se muestra el mes en curso. Al cambiar las fechas, las tarjetas se actualizan automáticamente.</p>
+        <p className="mt-2 text-xs text-slate-500">Por defecto se muestran todos los registros Post Firma importados. Puedes limitar el informe a un periodo seleccionando las fechas; las tarjetas se actualizarán automáticamente.</p>
       </div>
 
       <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2">
