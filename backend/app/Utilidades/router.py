@@ -845,10 +845,10 @@ def descargar_plantilla_factura_honorarios(
     )
 
 
-// ============================================================
-// DATOS CORPORATIVOS MOLSAN
-// Configuración centralizada para reutilización en documentos.
-// ============================================================
+# ============================================================
+# DATOS CORPORATIVOS MOLSAN
+# Configuración centralizada para reutilización en documentos.
+# ============================================================
 
 class DatosMolsanRequest(BaseModel):
     razon_social: str = ""
