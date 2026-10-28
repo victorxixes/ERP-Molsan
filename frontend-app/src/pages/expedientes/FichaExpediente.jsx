@@ -1421,6 +1421,9 @@ export default function FichaExpediente() {
   // ----------------------------------------------------------
 
 
+  const [mostrarLiquidarExpediente, setMostrarLiquidarExpediente] = useState(false);
+  const [liquidandoExpediente, setLiquidandoExpediente] = useState(false);
+
   const [
     actividadSeleccionada,
     setActividadSeleccionada,
