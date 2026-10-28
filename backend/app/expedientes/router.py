@@ -2662,6 +2662,8 @@ def enviar_a_notario(
 
             setattr(expediente, campo, valor)
 
+        expediente.facturacion_empleado = bool(datos.facturacion_empleado)
+
         # DOCUMENTOS DE ESCRITURA
         db.query(ExpedienteDocumentoEscritura).filter(
             ExpedienteDocumentoEscritura.expediente_id == expediente.id
