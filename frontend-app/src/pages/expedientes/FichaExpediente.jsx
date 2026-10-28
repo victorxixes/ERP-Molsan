@@ -39,6 +39,24 @@ import {
 // HELPERS
 // ============================================================
 
+function mensajeErrorApi(error, fallback) {
+  const detalle = error?.response?.data?.detail;
+  if (typeof detalle === "string" && detalle.trim()) return detalle;
+  if (Array.isArray(detalle)) {
+    const mensajes = detalle.map((item) => {
+      if (typeof item === "string") return item;
+      if (item && typeof item === "object") return item.msg || item.message || JSON.stringify(item);
+      return String(item ?? "");
+    }).filter(Boolean);
+    if (mensajes.length) return mensajes.join(" · ");
+  }
+  if (detalle && typeof detalle === "object") {
+    return detalle.msg || detalle.message || JSON.stringify(detalle);
+  }
+  return fallback;
+}
+
+
 function valorVisible(valor) {
   if (
     valor === null ||
@@ -3684,7 +3702,7 @@ async function descargarPDFCalificacion(defecto) {
     } catch (err) {
       console.error("Error cargando observaciones del expediente:", err);
       setErrorObservaciones(
-        err?.response?.data?.detail || "No se pudieron cargar las observaciones."
+        mensajeErrorApi(err, "No se pudieron cargar las observaciones.")
       );
       setObservacionesExpediente([]);
     } finally {
@@ -3757,7 +3775,7 @@ async function descargarPDFCalificacion(defecto) {
       await cargarObservacionesExpediente();
     } catch (err) {
       console.error("Error guardando observación:", err);
-      setErrorObservaciones(err?.response?.data?.detail || "No se pudo guardar la observación.");
+      setErrorObservaciones(mensajeErrorApi(err, "No se pudo guardar la observación."));
     } finally {
       setGuardandoObservacion(false);
     }
@@ -3875,7 +3893,7 @@ async function descargarPDFCalificacion(defecto) {
       await axios.post(`/expedientes/${encodeURIComponent(numeroExpedienteApi)}/observaciones/${observacion.id}/validar`);
       await cargarObservacionesExpediente();
     } catch (err) {
-      setErrorObservaciones(err?.response?.data?.detail || "No se pudo validar la observación.");
+      setErrorObservaciones(mensajeErrorApi(err, "No se pudo validar la observación."));
     }
   }
 
@@ -4140,7 +4158,7 @@ async function descargarPDFCalificacion(defecto) {
       })));
     } catch (err) {
       console.error("Error cargando PPAD:", err);
-      setErrorPpad(err?.response?.data?.detail || "No se pudieron cargar los conceptos PPAD.");
+      setErrorPpad(mensajeErrorApi(err, "No se pudieron cargar los conceptos PPAD."));
       setPpadItems([]);
     } finally {
       setCargandoPpad(false);
