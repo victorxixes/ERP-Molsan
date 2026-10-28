@@ -250,10 +250,11 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
                 continue
 
             # Dos consultas por lote, en vez de dos consultas por cada fila.
+            ids_lote_normalizados = {str(valor).strip().casefold() for valor in ids_lote}
             gastos_existentes_lista = (
                 db.query(ExpedienteGasto)
-                .filter(ExpedienteGasto.id_gasto_absis.in_(ids_lote)).all()
-                if ids_lote else []
+                .filter(func.lower(ExpedienteGasto.id_gasto_absis).in_(ids_lote_normalizados)).all()
+                if ids_lote_normalizados else []
             )
             gastos_por_id = {}
             for existente in gastos_existentes_lista:
