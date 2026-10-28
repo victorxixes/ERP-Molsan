@@ -2754,21 +2754,48 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
 
   async function calcularHonorariosGestoria() {
     const datos = expediente || {};
-    const entidad = [
+    const nombresEntidades = [
       datos.entidad_bancaria, datos.nombre_entidad, datos.entidad, datos.banco,
       datos.entidad_financiera, datos.entidad_solicitante, datos.entidad_original,
       datos.entidad_crediticia, datos.banco_acreedor,
       ...(Array.isArray(fincasExpediente) ? fincasExpediente.map((f) => f?.entidad_original) : []),
-    ].filter(Boolean).join(" ").toLowerCase();
+    ].filter((valor) => valor != null && String(valor).trim() !== "").map((valor) => String(valor).trim());
+    const entidad = nombresEntidades.join(" ").toLowerCase();
 
+    const normalizarNombre = (valor) => String(valor || "").normalize("NFD")
+      .replace(/[\\u0300-\\u036f]/g, "").toLocaleLowerCase("es-ES")
+      .replace(/[^a-z0-9]/g, "");
+    // El catálogo conserva la entidad histórica y su sucesora en «Entidad actual».
+    // Por eso no basta con buscar la palabra CaixaBank en el nombre original:
+    // Banco de Murcia y otras entidades históricas pueden tener hoy esa sucesora.
+    const respuestaBancos = await axios.get("/entidades-bancarias").catch(() => ({ data: [] }));
+    const entidadesBancarias = Array.isArray(respuestaBancos?.data) ? respuestaBancos.data : [];
+    const entidadesActuales = nombresEntidades.flatMap((nombreOrigen) => {
+      const origenNormalizado = normalizarNombre(nombreOrigen);
+      if (!origenNormalizado) return [];
+      return entidadesBancarias
+        .filter((banco) => {
+          const nombreCatalogo = normalizarNombre(banco?.nombre);
+          return nombreCatalogo.length >= 8 &&
+            (nombreCatalogo === origenNormalizado ||
+             nombreCatalogo.startsWith(origenNormalizado) ||
+             origenNormalizado.startsWith(nombreCatalogo));
+        })
+        .map((banco) => banco?.entidad_actual || "");
+    }).filter(Boolean);
+    const entidadesParaTarifa = normalizarNombre(entidad + " " + entidadesActuales.join(" "));
+    
     // Canarias se selecciona por ubicación fiscal, nunca por la existencia de provisión.
     const ubicacionFiscal = [
       datos.provincia, datos.nombre_provincia, datos.provincia_titular,
       datos.poblacion, datos.municipio, datos.direccion, datos.direccion_titular,
       datos.codigo_postal, datos.cp,
-    ].filter(Boolean).join(" ").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    ].filter(Boolean).join(" ").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLowerCase();
     const esCanarias = /canarias|las palmas|santa cruz de tenerife|tenerife|gran canaria|lanzarote|fuerteventura|la palma|la gomera|el hierro/.test(ubicacionFiscal);
-    const esCaixaBank = entidad.includes("caixabank") || entidad.includes("caixa bank") || entidad.includes("la caixa") || /(^|\W)caixa(\W|$)/.test(entidad);
+    const esCaixaBank = entidadesParaTarifa.includes("caixabank") ||
+      entidadesParaTarifa.includes("caixabanksa") ||
+      entidadesParaTarifa.includes("caixabanksa") ||
+      entidadesParaTarifa.includes("caixabank");
     const nombreTarifa = esCanarias
       ? "Honorarios de gestoría — Canarias"
       : esCaixaBank
@@ -2777,9 +2804,9 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
 
     const respuesta = await axios.get("/honorarios-gestoria?activos=true");
     const catalogo = Array.isArray(respuesta?.data) ? respuesta.data : [];
-    const normalizarNombre = (valor) => String(valor || "").normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es-ES");
-    const tarifa = catalogo.find((item) => normalizarNombre(item.nombre) === normalizarNombre(nombreTarifa));
+    const normalizarTarifa = (valor) => String(valor || "").normalize("NFD")
+      .replace(/[\\u0300-\\u036f]/g, "").trim().toLocaleLowerCase("es-ES");
+    const tarifa = catalogo.find((item) => normalizarTarifa(item.nombre) === normalizarTarifa(nombreTarifa));
     if (!tarifa) {
       throw new Error(`No se encuentra activa la tarifa «${nombreTarifa}» en el catálogo de Honorarios de gestoría. Abre Utilidades → Honorarios de gestoría y comprueba que esté activa.`);
     }
