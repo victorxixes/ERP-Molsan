@@ -830,7 +830,7 @@ def descargar_plantilla_factura_honorarios(
     usuario=Depends(get_current_user),
 ):
     require_perm_modulo(usuario, "utilidades", "ver")
-    _asegurar_plantilla_factura_concepto(db)
+    concepto = _asegurar_plantilla_factura_concepto(db)
     fila = db.execute(text("""
         SELECT nombre_archivo, tipo_archivo, contenido
         FROM plantilla_factura_concepto_gasto WHERE concepto_gasto_id = :concepto_id
