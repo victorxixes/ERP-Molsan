@@ -6087,6 +6087,8 @@ const cuantiaFincasParaEnvio =
             )}
 
 
+            {actividadSeleccionada === "facturacion-cierre" && (
+              <div className="mt-4 space-y-4">
                 <section className="rounded-2xl border border-indigo-200 bg-indigo-50/30 p-4">
                   <div className="mb-3">
                     <h3 className="text-sm font-extrabold text-slate-800">Datos vinculados de la ficha del expediente</h3>
