@@ -407,8 +407,6 @@ def validar_postfirma(
         raise ValueError("Faltan columnas requeridas: " + ", ".join(sorted(set(faltan))))
     if fecha_desde and fecha_hasta and fecha_desde > fecha_hasta:
         raise ValueError("La fecha desde no puede ser posterior a la fecha hasta.")
-    if bool(fecha_desde) != bool(fecha_hasta):
-        raise ValueError("Debes indicar las dos fechas: desde y hasta.")
 
     def celda(row, nombre):
         col = columnas.get(_norm_col(nombre))
@@ -419,16 +417,25 @@ def validar_postfirma(
     filas_excel_total = int(len(df))
     fechas_pago = df[columnas["FPAGO"]].map(_fecha_alta)
     fpago_sin_fecha = int(fechas_pago.isna().sum())
-    if fecha_desde and fecha_hasta:
-        mascara = fechas_pago.map(
-            lambda valor: valor is not None and fecha_desde <= valor <= fecha_hasta
-        )
+    if fecha_desde or fecha_hasta:
+        def dentro_periodo(valor):
+            if valor is None:
+                return False
+            if fecha_desde and valor < fecha_desde:
+                return False
+            if fecha_hasta and valor > fecha_hasta:
+                return False
+            return True
+
+        mascara = fechas_pago.map(dentro_periodo)
         filas_dentro_periodo = int(mascara.sum())
         df = df.loc[mascara].copy()
+        filas_fuera_periodo = filas_excel_total - filas_dentro_periodo
     else:
-        filas_dentro_periodo = int(fechas_pago.notna().sum())
-
-    filas_fuera_periodo = filas_excel_total - filas_dentro_periodo
+        # Sin fechas seleccionadas se analiza todo el Excel, incluidos movimientos
+        # con FPAGO vacío/inválido, que se mantienen identificados como incidencias.
+        filas_dentro_periodo = filas_excel_total
+        filas_fuera_periodo = 0
 
     total_importe = Decimal("0")
     filas_con_importe = 0
