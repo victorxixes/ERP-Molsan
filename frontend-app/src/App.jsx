@@ -191,6 +191,29 @@ class AppErrorBoundary extends Component {
     return { error };
   }
 
+  componentDidMount() {
+    this._capturarErrorGlobal = (evento) => {
+      const error = evento?.error || new Error(evento?.message || "Error JavaScript global desconocido");
+      console.error("[ERP] Error JavaScript global:", error);
+      this.setState((actual) => actual.error ? null : ({ error, errorInfo: null }));
+    };
+    this._capturarRechazoNoControlado = (evento) => {
+      const razon = evento?.reason;
+      const error = razon instanceof Error
+        ? razon
+        : new Error(String(razon || "Promesa rechazada sin detalle"));
+      console.error("[ERP] Promesa no controlada:", error);
+      this.setState((actual) => actual.error ? null : ({ error, errorInfo: null }));
+    };
+    window.addEventListener("error", this._capturarErrorGlobal);
+    window.addEventListener("unhandledrejection", this._capturarRechazoNoControlado);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("error", this._capturarErrorGlobal);
+    window.removeEventListener("unhandledrejection", this._capturarRechazoNoControlado);
+  }
+
   componentDidCatch(error, info) {
     this.setState({ errorInfo: info || null });
     console.error("[ERP] Error de renderizado capturado:", error, info?.componentStack);
@@ -204,6 +227,12 @@ class AppErrorBoundary extends Component {
       return {
         causa: "No se ha podido completar una comunicación de red. Puede que el backend esté reiniciándose, no responda o exista un problema de conexión.",
         accion: "Comprueba el estado del backend en Render. Cuando vuelva a estar disponible, prueba a recargar el ERP."
+      };
+    }
+    if (/timeout|statement timeout|lock timeout|deadlock detected|could not obtain lock|canceling statement/.test(texto)) {
+      return {
+        causa: "La base de datos ha tardado más de lo permitido o una operación ha esperado un bloqueo. El límite evita que el proceso quede esperando indefinidamente; no identifica por sí solo qué sesión mantiene el bloqueo.",
+        accion: "Conserva el error técnico y revisa los registros del backend en Render, especialmente las líneas STARTUP SQL inmediatamente anteriores y posteriores."
       };
     }
     if (/loading chunk|chunkloaderror|dynamically imported module|importing a module script/.test(texto)) {
