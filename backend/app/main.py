@@ -1540,7 +1540,7 @@ def inicializar_tablas_auxiliares():
         ]
         with engine.begin() as conexion_semillas_caixabank:
             for nombre_historico in entidades_historicas_caixabank:
-                print("[STARTUP SQL] INICIO linea 1511 semilla_historica={nombre_historico}", flush=True)
+                print(f"[STARTUP SQL] INICIO linea 1511 semilla_historica={nombre_historico}", flush=True)
                 conexion_semillas_caixabank.execute(text("""
                     INSERT INTO public.entidades_bancarias
                         (codigo_europeo, lei, nombre, categoria, direccion, entidad_actual_id, activo)
@@ -1649,7 +1649,7 @@ def inicializar_tablas_auxiliares():
         ]
         with engine.begin() as conexion_caixabank_facilitados:
             for patron_origen in patrones_caixabank_facilitados:
-                print("[STARTUP SQL] INICIO linea 1619 sucesion_caixabank_facilitados patron={patron_origen}", flush=True)
+                print(f"[STARTUP SQL] INICIO linea 1619 sucesion_caixabank_facilitados patron={patron_origen}", flush=True)
                 conexion_caixabank_facilitados.execute(
                     text("""
                         UPDATE public.entidades_bancarias AS origen
@@ -1885,7 +1885,7 @@ def inicializar_tablas_auxiliares():
         with engine.begin() as conexion_sucesiones_ampliadas:
             for nombre_grupo, condicion_destino, patrones_origen in reglas_sucesion_bancaria:
                 for patron_origen in patrones_origen:
-                    print("[STARTUP SQL] INICIO linea 1851 sucesiones_ampliadas grupo={nombre_grupo} patron={patron_origen}", flush=True)
+                    print(f"[STARTUP SQL] INICIO linea 1851 sucesiones_ampliadas grupo={nombre_grupo} patron={patron_origen}", flush=True)
                     conexion_sucesiones_ampliadas.execute(
                         text(f"""
                             UPDATE public.entidades_bancarias AS origen
