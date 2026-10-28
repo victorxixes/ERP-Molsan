@@ -2996,14 +2996,22 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         observaciones: facturaHonorariosForm.observaciones,
       };
 
-      // Generar primero el DOCX desde la plantilla asociada al concepto de gasto ID 6.
-      // Si falta la plantilla o el concepto no coincide, no se confirma el registro.
+      // El backend asigna el siguiente número correlativo HG-AAAA-NNNNNN,
+      // genera el PDF oficial y conserva la factura como pendiente de registro.
       const documentoFactura = await axios.post(
         `/expedientes/${encodeURIComponent(expediente.id_expediente)}/honorarios-gestoria/factura-pdf`,
         payloadFactura,
         { responseType: "blob" }
       );
+      const numeroAsignado = String(documentoFactura?.headers?.["x-numero-factura"] || "").trim();
+      if (!numeroAsignado) {
+        throw new Error("El PDF se ha generado, pero el servidor no ha devuelto el número de factura HG. No se ha confirmado el registro definitivo.");
+      }
+      payloadFactura.numero_factura = numeroAsignado;
+      setFacturaHonorariosForm(actual => ({ ...actual, numeroFactura: numeroAsignado }));
 
+      // El segundo paso registra los honorarios y confirma la factura; ambos
+      // quedan asociados al expediente y habilitan el cierre cuando procede.
       const respuesta = await axios.post(
         `/expedientes/${encodeURIComponent(expediente.id_expediente)}/honorarios-gestoria/generar`,
         payloadFactura
@@ -3011,6 +3019,8 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
 
       setHonorariosGestoria({
         importe: total,
+        numeroFactura: numeroAsignado,
+        fechaFactura: facturaHonorariosForm.fechaFactura,
         tarifa: facturaHonorariosForm.tarifa,
         entidad: facturaHonorariosForm.entidad,
         ...(respuesta?.data || {}),
@@ -3020,13 +3030,13 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       const urlFactura = URL.createObjectURL(documentoFactura.data instanceof Blob ? documentoFactura.data : new Blob([documentoFactura.data]));
       const enlaceFactura = document.createElement("a");
       enlaceFactura.href = urlFactura;
-      enlaceFactura.download = `Factura_honorarios_${String(expediente.id_expediente).replace(/[/\\\\]/g, "-")}.pdf`;
+      enlaceFactura.download = `Factura_${numeroAsignado}_Expediente_${String(expediente.id_expediente).replace(/[/\\\\]/g, "-")}.pdf`;
       document.body.appendChild(enlaceFactura);
       enlaceFactura.click();
       enlaceFactura.remove();
       URL.revokeObjectURL(urlFactura);
 
-      setMensajeHonorariosGestoria("Honorarios registrados y factura PDF generada desde la plantilla oficial vinculada al concepto de honorarios de gestoría.");
+      setMensajeHonorariosGestoria(`Factura ${numeroAsignado} registrada correctamente y asociada al expediente ${expediente.id_expediente}. PDF oficial generado.`);
       setMostrarModalFacturaHonorarios(false);
     } catch (err) {
       const detail = err?.response?.data?.detail;
@@ -8644,7 +8654,7 @@ const cuantiaFincasParaEnvio =
               <section className="rounded-xl border border-slate-200 p-4">
                 <h3 className="mb-3 text-sm font-extrabold text-slate-800">Datos de factura</h3>
                 <div className="grid gap-3 md:grid-cols-2">
-                  <label className="text-xs font-semibold text-slate-600">Número de factura<input value={facturaHonorariosForm.numeroFactura} onChange={e => setFacturaHonorariosForm(f => ({...f,numeroFactura:e.target.value}))} placeholder="Se puede asignar al guardar" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-slate-600">Número de factura (automático)<input value={facturaHonorariosForm.numeroFactura} readOnly placeholder="Se asignará al generar la factura" className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm" /><span className="mt-1 block text-[11px] font-normal text-slate-400">Serie correlativa HG por año; el número definitivo lo asigna el servidor.</span></label>
                   <label className="text-xs font-semibold text-slate-600">Fecha de factura<input type="date" value={facturaHonorariosForm.fechaFactura} onChange={e => setFacturaHonorariosForm(f => ({...f,fechaFactura:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
                   <label className="text-xs font-semibold text-slate-600 md:col-span-2">Concepto
                     <select value={facturaHonorariosForm.concepto} onChange={e => setFacturaHonorariosForm(f => ({...f,concepto:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
