@@ -121,19 +121,12 @@ def siguiente_numero(tipo_id: int, db: Session = Depends(get_db), usuario=Depend
     tipo = db.query(TipoExpediente).filter(TipoExpediente.id == tipo_id, TipoExpediente.activo.is_(True)).first()
     if not tipo:
         raise HTTPException(status_code=404, detail="Tipo de expediente no encontrado o inactivo.")
-    if "caixabank" in (tipo.nombre or "").casefold():
-        ultimo = db.query(func.max(Expediente.numero_tipo_expediente)).filter(
-            Expediente.tipo_expediente_id == tipo_id
-        ).scalar() or 0
-        siguiente = int(ultimo) + 1
-        identificador = f"ALTA-{tipo_id}-{siguiente:05d}"
-    else:
-        anio = date.today().year
-        ultimo = db.execute(text(
-            "SELECT ultimo_numero FROM alta_expediente_contadores WHERE anio = :anio"
-        ), {"anio": anio}).scalar() or 0
-        siguiente = int(ultimo) + 1
-        identificador = f"{siguiente:05d}{anio}"
+    anio = date.today().year
+    ultimo = db.execute(text(
+        "SELECT ultimo_numero FROM alta_expediente_contadores WHERE anio = :anio"
+    ), {"anio": anio}).scalar() or 0
+    siguiente = int(ultimo) + 1
+    identificador = f"{siguiente:05d}{anio}"
     db.commit()
     return {"tipo_expediente_id": tipo_id, "siguiente_numero": siguiente, "identificador_previo": identificador}
 
@@ -149,38 +142,30 @@ def crear_alta_expediente(datos: AltaExpedienteInput, db: Session = Depends(get_
         if not tipo:
             raise HTTPException(status_code=400, detail="Selecciona un tipo de expediente activo.")
 
-        if "caixabank" in (tipo.nombre or "").casefold():
-            # CaixaBank conserva el contador histórico independiente por tipo.
-            if db.get_bind().dialect.name == "postgresql":
-                db.execute(text("SELECT pg_advisory_xact_lock(:clave)"), {"clave": 731208640 + datos.tipo_expediente_id})
-            ultimo = db.query(func.max(Expediente.numero_tipo_expediente)).filter(
-                Expediente.tipo_expediente_id == datos.tipo_expediente_id
-            ).scalar() or 0
-            numero = int(ultimo) + 1
-            identificador = f"ALTA-{datos.tipo_expediente_id}-{numero:05d}"
+        # Todas las altas manuales nuevas usan el contador global anual,
+        # independientemente del tipo de expediente. Los expedientes importados
+        # no pasan por este endpoint y conservan su identificador de origen.
+        anio = date.today().year
+        if db.get_bind().dialect.name == "postgresql":
+            db.execute(text("SELECT pg_advisory_xact_lock(:clave)"), {"clave": 731208639})
+        db.execute(text("""
+            INSERT INTO alta_expediente_contadores (anio, ultimo_numero)
+            VALUES (:anio, 0)
+            ON CONFLICT (anio) DO NOTHING
+        """), {"anio": anio})
+        if db.get_bind().dialect.name == "postgresql":
+            ultimo = db.execute(text(
+                "SELECT ultimo_numero FROM alta_expediente_contadores WHERE anio = :anio FOR UPDATE"
+            ), {"anio": anio}).scalar() or 0
         else:
-            # Contador global anual para las altas manuales no CaixaBank.
-            anio = date.today().year
-            if db.get_bind().dialect.name == "postgresql":
-                db.execute(text("SELECT pg_advisory_xact_lock(:clave)"), {"clave": 731208639})
-            db.execute(text("""
-                INSERT INTO alta_expediente_contadores (anio, ultimo_numero)
-                VALUES (:anio, 0)
-                ON CONFLICT (anio) DO NOTHING
-            """), {"anio": anio})
-            if db.get_bind().dialect.name == "postgresql":
-                ultimo = db.execute(text(
-                    "SELECT ultimo_numero FROM alta_expediente_contadores WHERE anio = :anio FOR UPDATE"
-                ), {"anio": anio}).scalar() or 0
-            else:
-                ultimo = db.execute(text(
-                    "SELECT ultimo_numero FROM alta_expediente_contadores WHERE anio = :anio"
-                ), {"anio": anio}).scalar() or 0
-            numero = int(ultimo) + 1
-            db.execute(text(
-                "UPDATE alta_expediente_contadores SET ultimo_numero = :numero WHERE anio = :anio"
-            ), {"numero": numero, "anio": anio})
-            identificador = f"{numero:05d}{anio}"
+            ultimo = db.execute(text(
+                "SELECT ultimo_numero FROM alta_expediente_contadores WHERE anio = :anio"
+            ), {"anio": anio}).scalar() or 0
+        numero = int(ultimo) + 1
+        db.execute(text(
+            "UPDATE alta_expediente_contadores SET ultimo_numero = :numero WHERE anio = :anio"
+        ), {"numero": numero, "anio": anio})
+        identificador = f"{numero:05d}{anio}"
 
         if db.query(Expediente.id).filter(Expediente.id_expediente == identificador).first():
             raise HTTPException(status_code=409, detail="El número generado ya existe. Actualiza el formulario e inténtalo de nuevo.")
