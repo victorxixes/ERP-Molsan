@@ -50,6 +50,7 @@ const FORM_INICIAL = {
   facturacion_provincia: "",
   facturacion_telefono: "",
   facturacion_email: "",
+  facturacion_empleado: "No",
 };
 
 function fechaHoy() {
@@ -181,6 +182,7 @@ function crearFormularioDesdeExpediente(expediente) {
     facturacion_provincia: obtenerValor(expediente, "facturacion_provincia", "provincia_facturacion"),
     facturacion_telefono: obtenerValor(expediente, "facturacion_telefono", "telefono_facturacion"),
     facturacion_email: obtenerValor(expediente, "facturacion_email", "email_facturacion"),
+    facturacion_empleado: [true, "true", "1", "si", "sí", "yes"].includes(String(expediente?.facturacion_empleado ?? "false").trim().toLowerCase()) ? "Sí" : "No",
   };
 }
 
@@ -603,6 +605,7 @@ export default function EnviarANotarioModal({
       facturacion_provincia: form.facturacion_provincia.trim(),
       facturacion_telefono: form.facturacion_telefono.trim(),
       facturacion_email: form.facturacion_email.trim(),
+      facturacion_empleado: form.facturacion_empleado === "Sí",
     };
 
     try {
@@ -959,6 +962,14 @@ export default function EnviarANotarioModal({
                 </div>
 
                 <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold text-slate-700">¿El cliente es empleado?</label>
+                    <select value={form.facturacion_empleado} disabled={loading} onChange={(event) => cambiarCampo("facturacion_empleado", event.target.value)} className={clasesInput()}>
+                      <option value="No">No</option>
+                      <option value="Sí">Sí — descuento del 50 % en honorarios</option>
+                    </select>
+                    <p className="mt-1 text-[11px] text-slate-500">Si seleccionas Sí, se aplicará el descuento de empleado en la factura de gestoría.</p>
+                  </div>
                   <CampoTexto
                     label="Nombre"
                     value={form.facturacion_nombre}
