@@ -83,6 +83,13 @@ export default function ModalCtnDetalle({
   const [guardandoAsociacion, setGuardandoAsociacion] =
     useState(false);
   const [guardandoDatosBancarios, setGuardandoDatosBancarios] = useState(false);
+  const [editandoCuenta1, setEditandoCuenta1] = useState(!notaria?.iban_1);
+  const [editandoCuenta2, setEditandoCuenta2] = useState(false);
+  const [mostrarCuenta2, setMostrarCuenta2] = useState(Boolean(notaria?.iban_2));
+  const [cuentasGuardadas, setCuentasGuardadas] = useState({
+    iban_1: notaria?.iban_1 || "",
+    iban_2: notaria?.iban_2 || "",
+  });
 
   const [modalidad, setModalidad] = useState("VC");
   const [busquedaFirma, setBusquedaFirma] = useState("");
@@ -117,6 +124,12 @@ export default function ModalCtnDetalle({
       const datosFicha = dataDe(respuestaFicha);
 
       setFicha(datosFicha || notaria || null);
+      const ibanPrincipal = datosFicha?.iban_1 || "";
+      const ibanSecundario = datosFicha?.iban_2 || "";
+      setCuentasGuardadas({ iban_1: ibanPrincipal, iban_2: ibanSecundario });
+      setMostrarCuenta2(Boolean(ibanSecundario));
+      setEditandoCuenta1(!ibanPrincipal);
+      setEditandoCuenta2(false);
 
       setAsociadas(
         listaDe(respuestaAsociadas, [
@@ -151,6 +164,13 @@ export default function ModalCtnDetalle({
       });
       const guardada = dataDe(respuesta);
       setFicha((actual) => ({ ...(actual || {}), ...(guardada || {}) }));
+      setCuentasGuardadas({
+        iban_1: guardada?.iban_1 ?? ficha?.iban_1 ?? "",
+        iban_2: guardada?.iban_2 ?? ficha?.iban_2 ?? "",
+      });
+      setEditandoCuenta1(false);
+      setEditandoCuenta2(false);
+      setMostrarCuenta2(Boolean(guardada?.iban_2 ?? ficha?.iban_2));
       setError("");
     } catch (e) {
       setError(mensajeError(e, "No se pudieron guardar las cuentas bancarias del notario."));
@@ -523,40 +543,155 @@ export default function ModalCtnDetalle({
             <span>Hasta dos cuentas para pagos</span>
           </div>
           <p className="ctn-modal-ayuda">
-            Guarda aquí las cuentas del notario. Al abrir «Pagar» en Gestión económica, podrás elegir una de estas cuentas; el IBAN seguirá siendo editable para casos excepcionales.
+            La cuenta principal se utilizará como primera opción al pagar desde Gestión económica. Puedes guardar una segunda cuenta si el notario dispone de ella.
           </p>
-          <div className="ctn-modal-datos-grid">
-            <label className="ctn-modal-dato">
-              <span className="ctn-modal-info-label">Cuenta bancaria 1 · IBAN</span>
-              <input
-                value={datos.iban_1 || ""}
-                maxLength={34}
-                autoComplete="off"
-                onChange={(event) => setFicha((actual) => ({ ...(actual || datos), iban_1: event.target.value.toUpperCase() }))}
-                placeholder="ES…"
-              />
-            </label>
-            <label className="ctn-modal-dato">
-              <span className="ctn-modal-info-label">Cuenta bancaria 2 · IBAN (opcional)</span>
-              <input
-                value={datos.iban_2 || ""}
-                maxLength={34}
-                autoComplete="off"
-                onChange={(event) => setFicha((actual) => ({ ...(actual || datos), iban_2: event.target.value.toUpperCase() }))}
-                placeholder="ES…"
-              />
-            </label>
+
+          <div className="ctn-modal-seccion ctn-modal-seccion--compact">
+            <div className="ctn-modal-seccion-titulo">
+              <h3>Cuenta bancaria principal</h3>
+              <span>{cuentasGuardadas.iban_1 ? "Cuenta guardada" : "Sin cuenta guardada"}</span>
+            </div>
+            {editandoCuenta1 ? (
+              <label className="ctn-modal-dato">
+                <span className="ctn-modal-info-label">IBAN de la cuenta principal</span>
+                <input
+                  value={datos.iban_1 || ""}
+                  maxLength={34}
+                  autoComplete="off"
+                  onChange={(event) => setFicha((actual) => ({ ...(actual || datos), iban_1: event.target.value.toUpperCase() }))}
+                  placeholder="ES…"
+                />
+              </label>
+            ) : (
+              <div className="ctn-modal-dato">
+                <span className="ctn-modal-info-label">IBAN</span>
+                <strong>{cuentasGuardadas.iban_1 || "No configurada"}</strong>
+              </div>
+            )}
+            <div className="mt-4 flex flex-wrap gap-2">
+              {editandoCuenta1 ? (
+                <>
+                  <button type="button" className="ctn-btn ctn-btn-primary" onClick={guardarDatosBancarios} disabled={guardandoDatosBancarios}>
+                    {guardandoDatosBancarios ? "Guardando…" : "Guardar"}
+                  </button>
+                  {cuentasGuardadas.iban_1 && (
+                    <button type="button" className="ctn-btn ctn-btn-secondary" onClick={() => { setFicha((actual) => ({ ...(actual || datos), iban_1: cuentasGuardadas.iban_1 })); setEditandoCuenta1(false); }}>
+                      Cancelar
+                    </button>
+                  )}
+                </>
+              ) : (
+                <button type="button" className="ctn-btn ctn-btn-secondary" onClick={() => setEditandoCuenta1(true)}>Editar</button>
+              )}
+              {cuentasGuardadas.iban_1 && (
+                <button
+                  type="button"
+                  className="ctn-btn ctn-btn-danger"
+                  disabled={guardandoDatosBancarios}
+                  onClick={async () => {
+                    if (!window.confirm("¿Eliminar la cuenta bancaria principal de este notario?")) return;
+                    const ibanAnterior = datos.iban_1 || "";
+                    setFicha((actual) => ({ ...(actual || datos), iban_1: "" }));
+                    try {
+                      setGuardandoDatosBancarios(true);
+                      const respuesta = await actualizarDatosBancariosNotaria(id, { iban_1: "", iban_2: datos.iban_2 || "" });
+                      const guardada = dataDe(respuesta);
+                      setFicha((actual) => ({ ...(actual || {}), ...(guardada || {}), iban_1: "" }));
+                      setCuentasGuardadas((actual) => ({ ...actual, iban_1: "" }));
+                      setEditandoCuenta1(true);
+                    } catch (e) {
+                      setFicha((actual) => ({ ...(actual || datos), iban_1: ibanAnterior }));
+                      setError(mensajeError(e, "No se pudo eliminar la cuenta bancaria principal."));
+                    } finally {
+                      setGuardandoDatosBancarios(false);
+                    }
+                  }}
+                >Eliminar</button>
+              )}
+            </div>
           </div>
-          <div className="mt-4 flex justify-end">
-            <button
-              type="button"
-              className="ctn-btn ctn-btn-primary"
-              onClick={guardarDatosBancarios}
-              disabled={guardandoDatosBancarios}
-            >
-              {guardandoDatosBancarios ? "Guardando…" : "Guardar datos bancarios"}
-            </button>
-          </div>
+
+          {mostrarCuenta2 && (
+            <div className="ctn-modal-seccion ctn-modal-seccion--compact">
+              <div className="ctn-modal-seccion-titulo">
+                <h3>Segunda cuenta bancaria</h3>
+                <span>{cuentasGuardadas.iban_2 ? "Cuenta guardada" : "Pendiente de guardar"}</span>
+              </div>
+              {editandoCuenta2 ? (
+                <label className="ctn-modal-dato">
+                  <span className="ctn-modal-info-label">IBAN de la segunda cuenta</span>
+                  <input
+                    value={datos.iban_2 || ""}
+                    maxLength={34}
+                    autoComplete="off"
+                    onChange={(event) => setFicha((actual) => ({ ...(actual || datos), iban_2: event.target.value.toUpperCase() }))}
+                    placeholder="ES…"
+                  />
+                </label>
+              ) : (
+                <div className="ctn-modal-dato">
+                  <span className="ctn-modal-info-label">IBAN</span>
+                  <strong>{cuentasGuardadas.iban_2 || "No configurada"}</strong>
+                </div>
+              )}
+              <div className="mt-4 flex flex-wrap gap-2">
+                {editandoCuenta2 ? (
+                  <>
+                    <button type="button" className="ctn-btn ctn-btn-primary" onClick={guardarDatosBancarios} disabled={guardandoDatosBancarios}>
+                      {guardandoDatosBancarios ? "Guardando…" : "Guardar"}
+                    </button>
+                    <button type="button" className="ctn-btn ctn-btn-secondary" onClick={() => { setFicha((actual) => ({ ...(actual || datos), iban_2: cuentasGuardadas.iban_2 })); if (!cuentasGuardadas.iban_2) setMostrarCuenta2(false); setEditandoCuenta2(false); }}>
+                      Cancelar
+                    </button>
+                  </>
+                ) : (
+                  <button type="button" className="ctn-btn ctn-btn-secondary" onClick={() => setEditandoCuenta2(true)}>Editar</button>
+                )}
+                {cuentasGuardadas.iban_2 && (
+                  <button
+                    type="button"
+                    className="ctn-btn ctn-btn-danger"
+                    disabled={guardandoDatosBancarios}
+                    onClick={async () => {
+                      if (!window.confirm("¿Eliminar la segunda cuenta bancaria de este notario?")) return;
+                      const ibanAnterior = datos.iban_2 || "";
+                      setFicha((actual) => ({ ...(actual || datos), iban_2: "" }));
+                      try {
+                        setGuardandoDatosBancarios(true);
+                        const respuesta = await actualizarDatosBancariosNotaria(id, { iban_1: datos.iban_1 || "", iban_2: "" });
+                        const guardada = dataDe(respuesta);
+                        setFicha((actual) => ({ ...(actual || {}), ...(guardada || {}), iban_2: "" }));
+                        setCuentasGuardadas((actual) => ({ ...actual, iban_2: "" }));
+                        setMostrarCuenta2(false);
+                        setEditandoCuenta2(false);
+                      } catch (e) {
+                        setFicha((actual) => ({ ...(actual || datos), iban_2: ibanAnterior }));
+                        setError(mensajeError(e, "No se pudo eliminar la segunda cuenta bancaria."));
+                      } finally {
+                        setGuardandoDatosBancarios(false);
+                      }
+                    }}
+                  >Eliminar</button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {!mostrarCuenta2 && (
+            <div className="mt-4">
+              <button
+                type="button"
+                className="ctn-btn ctn-btn-secondary"
+                onClick={() => {
+                  setMostrarCuenta2(true);
+                  setEditandoCuenta2(true);
+                  setFicha((actual) => ({ ...(actual || datos), iban_2: "" }));
+                }}
+              >
+                + Añadir otra cuenta
+              </button>
+            </div>
+          )}
         </section>
       )}
 
