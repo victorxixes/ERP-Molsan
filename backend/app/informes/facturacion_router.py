@@ -12,7 +12,7 @@ from fastapi.responses import StreamingResponse
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
-from sqlalchemy import or_
+from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from backend.app.database import engine
@@ -121,14 +121,20 @@ def _consultar(db, fecha_desde=None, fecha_hasta=None, tipo_operacion=None, esta
     query = db.query(ExpedienteGasto, Expediente).outerjoin(
         Expediente, Expediente.id == ExpedienteGasto.expediente_id
     )
-    # Los datos históricos pueden guardar el concepto en tipo o descripcion y con/sin tilde.
+    # Para registros Post Firma, el concepto original de ABSIS es la fuente de verdad.
+    # Solo los gastos ERP antiguos sin IDGASTO ABSIS pueden usar tipo/descripcion como compatibilidad.
     query = query.filter(or_(
         ExpedienteGasto.concepto_gasto_absis.ilike("%honorarios gestoría%"),
         ExpedienteGasto.concepto_gasto_absis.ilike("%honorarios gestoria%"),
-        ExpedienteGasto.tipo.ilike("%honorarios gestoría%"),
-        ExpedienteGasto.tipo.ilike("%honorarios gestoria%"),
-        ExpedienteGasto.descripcion.ilike("%honorarios gestoría%"),
-        ExpedienteGasto.descripcion.ilike("%honorarios gestoria%"),
+        and_(
+            ExpedienteGasto.id_gasto_absis.is_(None),
+            or_(
+                ExpedienteGasto.tipo.ilike("%honorarios gestoría%"),
+                ExpedienteGasto.tipo.ilike("%honorarios gestoria%"),
+                ExpedienteGasto.descripcion.ilike("%honorarios gestoría%"),
+                ExpedienteGasto.descripcion.ilike("%honorarios gestoria%"),
+            ),
+        ),
     ))
     if fecha_desde:
         query = query.filter(ExpedienteGasto.fecha_adjuntar_factura >= fecha_desde)
@@ -160,6 +166,7 @@ def _consultar(db, fecha_desde=None, fecha_hasta=None, tipo_operacion=None, esta
         situacion_fila = _situacion_facturacion(gasto)
         if situacion and situacion_fila != situacion:
             continue
+        es_registro_absis = bool(getattr(gasto, "id_gasto_absis", None) or getattr(gasto, "datos_absis_json", None))
         filas.append({
             "id_expediente": exp.id_expediente if exp else getattr(gasto, "id_expediente_absis", None),
             "id_gasto_absis": getattr(gasto, "id_gasto_absis", None),
@@ -171,16 +178,16 @@ def _consultar(db, fecha_desde=None, fecha_hasta=None, tipo_operacion=None, esta
             "fecha_ultima_sincronizacion": _fecha_iso(getattr(gasto, "fecha_ultima_sincronizacion", None)),
             "tipo_cancelacion": tipo,
             "tipo_operacion": getattr(gasto, "tipo_operacion_absis", None) or (exp.tipo_operacion if exp else None),
-            "concepto_gasto": getattr(gasto, "concepto_gasto_absis", None) or "HONORARIOS GESTORÍA",
+            "concepto_gasto": getattr(gasto, "concepto_gasto_absis", None) if es_registro_absis else (getattr(gasto, "tipo", None) or getattr(gasto, "descripcion", None)),
             "situacion_facturacion": situacion_fila,
             "estado": getattr(gasto, "estado_absis", None),
             "estado_justificante": getattr(gasto, "estado_justificante", None),
             "fecha_adjuntar_factura": _fecha_iso(getattr(gasto, "fecha_adjuntar_factura", None)),
             "fecha_factura": _fecha_iso(getattr(gasto, "fecha_factura", None)),
-            "imp_gasto": _decimal(getattr(gasto, "imp_gasto", None)) if getattr(gasto, "imp_gasto", None) is not None else _decimal(gasto.importe_total_bruto if gasto.importe_total_bruto is not None else gasto.importe),
-            "imp_base_impuesto": _decimal(getattr(gasto, "imp_base_impuesto", None)) if getattr(gasto, "imp_base_impuesto", None) is not None else _decimal(gasto.base_sujeta_impuestos),
-            "imp_base_retencion": _decimal(getattr(gasto, "imp_base_retencion", None)) if getattr(gasto, "imp_base_retencion", None) is not None else _decimal(gasto.base_sujeta_retencion),
-            "imp_impuesto": _decimal(getattr(gasto, "imp_impuesto", None)) if getattr(gasto, "imp_impuesto", None) is not None else _decimal(gasto.importe_impuesto),
+            "imp_gasto": _decimal(getattr(gasto, "imp_gasto", None)) if es_registro_absis else _decimal(gasto.importe_total_bruto if gasto.importe_total_bruto is not None else gasto.importe),
+            "imp_base_impuesto": _decimal(getattr(gasto, "imp_base_impuesto", None)) if es_registro_absis else _decimal(gasto.base_sujeta_impuestos),
+            "imp_base_retencion": _decimal(getattr(gasto, "imp_base_retencion", None)) if es_registro_absis else _decimal(gasto.base_sujeta_retencion),
+            "imp_impuesto": _decimal(getattr(gasto, "imp_impuesto", None)) if es_registro_absis else _decimal(gasto.importe_impuesto),
             "fecha_estado": _fecha_iso(getattr(gasto, "fecha_estado", None)),
             "fecha_peticion": _fecha_iso(getattr(gasto, "fecha_peticion", None)),
             "fecha_pago": _fecha_iso(getattr(gasto, "fecha_pago", None)),
