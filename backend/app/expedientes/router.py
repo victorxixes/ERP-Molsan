@@ -1342,6 +1342,7 @@ def aplicar_filtros(
         patron_obs = f"%{texto(observaciones)}%"
         q = q.filter(Expediente.observaciones.ilike(patron_obs))
     if texto(promocion):
+        asegurar_catalogo_inicial(q.session)
         q = q.outerjoin(TipoExpediente, Expediente.promocion_tipo_expediente_id == TipoExpediente.id)
         q = q.filter(TipoExpediente.nombre.ilike(f"%{texto(promocion)}%"))
     if texto(estadoActividad):
