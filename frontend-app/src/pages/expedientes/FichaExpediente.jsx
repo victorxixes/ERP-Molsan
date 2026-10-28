@@ -2751,24 +2751,21 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
   async function calcularHonorariosGestoria() {
     const datos = expediente || {};
     const entidad = [
-      datos.entidad_bancaria,
-      datos.nombre_entidad,
-      datos.entidad,
-      datos.banco,
-      datos.entidad_financiera,
-      datos.entidad_solicitante,
-      datos.entidad_original,
-      datos.entidad_crediticia,
-      datos.banco_acreedor,
+      datos.entidad_bancaria, datos.nombre_entidad, datos.entidad, datos.banco,
+      datos.entidad_financiera, datos.entidad_solicitante, datos.entidad_original,
+      datos.entidad_crediticia, datos.banco_acreedor,
       ...(Array.isArray(fincasExpediente) ? fincasExpediente.map((f) => f?.entidad_original) : []),
     ].filter(Boolean).join(" ").toLowerCase();
 
-    const valorProvision = Number(String(datos.importe ?? "").replace(",", "."));
-    const tieneProvision = datos.importe !== null && datos.importe !== undefined && datos.importe !== "" && Number.isFinite(valorProvision) && valorProvision > 0;
+    // Canarias se selecciona por ubicación fiscal, nunca por la existencia de provisión.
+    const ubicacionFiscal = [
+      datos.provincia, datos.nombre_provincia, datos.provincia_titular,
+      datos.poblacion, datos.municipio, datos.direccion, datos.direccion_titular,
+      datos.codigo_postal, datos.cp,
+    ].filter(Boolean).join(" ").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    const esCanarias = /canarias|las palmas|santa cruz de tenerife|tenerife|gran canaria|lanzarote|fuerteventura|la palma|la gomera|el hierro/.test(ubicacionFiscal);
     const esCaixaBank = entidad.includes("caixabank") || entidad.includes("caixa bank") || entidad.includes("la caixa") || /(^|\W)caixa(\W|$)/.test(entidad);
-    // Usar los nombres actuales del catálogo económico. Los nombres antiguos
-    // ("Cancelaciones ...") se migraron a "Honorarios de gestoría — ...".
-    const nombreTarifa = !tieneProvision
+    const nombreTarifa = esCanarias
       ? "Honorarios de gestoría — Canarias"
       : esCaixaBank
         ? "Honorarios de gestoría — CaixaBank"
@@ -2776,19 +2773,26 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
 
     const respuesta = await axios.get("/honorarios-gestoria?activos=true");
     const catalogo = Array.isArray(respuesta?.data) ? respuesta.data : [];
-    const normalizarNombre = (valor) => String(valor || "")
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .trim()
-      .toLocaleLowerCase("es-ES");
-    const tarifa = catalogo.find((item) =>
-      normalizarNombre(item.nombre) === normalizarNombre(nombreTarifa)
-    );
+    const normalizarNombre = (valor) => String(valor || "").normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es-ES");
+    const tarifa = catalogo.find((item) => normalizarNombre(item.nombre) === normalizarNombre(nombreTarifa));
     if (!tarifa) {
       throw new Error(`No se encuentra activa la tarifa «${nombreTarifa}» en el catálogo de Honorarios de gestoría. Abre Utilidades → Honorarios de gestoría y comprueba que esté activa.`);
     }
+    const tipoImpuesto = String(tarifa.tipo_impuesto || "IVA").toUpperCase();
+    const porcentajeImpuesto = tipoImpuesto === "EXENTO"
+      ? 0
+      : Math.max(0, Number(String(tarifa.porcentaje_impuesto ?? (tipoImpuesto === "IGIC" ? 7 : 21)).replace(",", ".")) || 0);
+    const baseCatalogo = Number(String(tarifa.base_imponible ?? "").replace(",", "."));
+    // "importe" en el catálogo es el total. Se prioriza siempre base_imponible.
+    // Compatibilidad con registros antiguos sin base: reconstruirla desde el total.
+    const base = Number.isFinite(baseCatalogo) && baseCatalogo >= 0
+      ? baseCatalogo
+      : Math.max(0, Number(String(tarifa.importe ?? "0").replace(",", ".")) / (1 + porcentajeImpuesto / 100));
     return {
-      importe: Number(tarifa.importe),
+      baseImponible: Number.isFinite(base) ? base : 0,
+      tipoImpuesto,
+      porcentajeImpuesto,
       tarifa: tarifa.nombre,
       entidad: entidad || "No identificada",
     };
@@ -2838,15 +2842,13 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
 
     try {
       const calculo = await calcularHonorariosGestoria();
-      const totalCatalogo = Math.max(0, Number(calculo.importe) || 0);
-      const esCanarias = normalizarTexto(calculo.tarifa).includes("canarias");
-      const porcentaje = esCanarias ? 7 : 21;
-      // El catálogo almacena la base imponible, no el total con impuesto.
-      const base = Math.round((totalCatalogo + Number.EPSILON) * 100) / 100;
+      const base = Math.round((Math.max(0, Number(calculo.baseImponible) || 0) + Number.EPSILON) * 100) / 100;
+      const tipoImpuesto = String(calculo.tipoImpuesto || "IVA").toUpperCase();
+      const porcentaje = tipoImpuesto === "EXENTO" ? 0 : Math.max(0, Number(calculo.porcentajeImpuesto) || 0);
       setFacturaHonorariosForm((actual) => actualizarImportesFacturaHonorarios({
         ...actual,
         baseImponible: base.toFixed(2),
-        tipoImpuesto: esCanarias ? "IGIC" : "IVA",
+        tipoImpuesto,
         porcentajeImpuesto: String(porcentaje),
         tarifa: calculo.tarifa,
         entidad: calculo.entidad,
@@ -2869,8 +2871,10 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     setErrorHonorariosGestoria("");
     setMensajeHonorariosGestoria("");
     try {
-      const base = Math.max(0, Number(String(facturaHonorariosForm.baseImponible).replace(",", ".")) || 0);
-      const impuesto = Math.max(0, Number(String(facturaHonorariosForm.importeImpuesto).replace(",", ".")) || 0);
+      const base = Math.round((Math.max(0, Number(String(facturaHonorariosForm.baseImponible).replace(",", ".")) || 0) + Number.EPSILON) * 100) / 100;
+      const porcentaje = Math.max(0, Number(String(facturaHonorariosForm.porcentajeImpuesto).replace(",", ".")) || 0);
+      const tipoImpuesto = String(facturaHonorariosForm.tipoImpuesto || "IVA").toUpperCase();
+      const impuesto = tipoImpuesto === "EXENTO" ? 0 : Math.round((base * porcentaje / 100 + Number.EPSILON) * 100) / 100;
       const total = Math.round((base + impuesto + Number.EPSILON) * 100) / 100;
       const payloadFactura = {
         importe: total,
