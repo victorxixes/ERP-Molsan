@@ -3503,6 +3503,15 @@ def generar_honorarios_gestoria(
     if expediente is None:
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
 
+    factura_registrable = db.execute(text("""
+        SELECT numero_factura, fecha_factura, datos_factura, estado
+        FROM facturas_honorarios_gestoria
+        WHERE id_expediente = :id_expediente
+        FOR UPDATE
+    """), {"id_expediente": str(id_expediente)}).mappings().first()
+    if not factura_registrable:
+        raise HTTPException(status_code=409, detail="Primero debe generarse el PDF oficial de la factura para asignar su número HG.")
+
     # La tarifa se decide con los datos guardados, no con el importe que envía
     # el navegador. Se consideran tanto los datos generales como las fincas.
     fincas = (
@@ -3603,18 +3612,32 @@ def generar_honorarios_gestoria(
     if not ya_existia:
         db.add(registro)
 
+    datos_factura_guardados = factura_registrable["datos_factura"]
+    if isinstance(datos_factura_guardados, str):
+        datos_factura_guardados = json.loads(datos_factura_guardados)
+    fecha_registro_factura = factura_registrable["fecha_factura"]
+    expediente.facturacion_estado = "Registrada"
+    expediente.facturacion_fecha = fecha_registro_factura
     try:
+        db.execute(text("""
+            UPDATE facturas_honorarios_gestoria
+            SET estado = 'Registrada', registrada_en = CURRENT_TIMESTAMP
+            WHERE id_expediente = :id_expediente
+        """), {"id_expediente": str(id_expediente)})
         db.commit()
         db.refresh(registro)
     except Exception as exc:
         db.rollback()
         raise HTTPException(
             status_code=500,
-            detail=f"No se pudieron registrar los honorarios de gestoría: {str(exc)[:300]}",
+            detail=f"No se pudieron registrar los honorarios y la factura: {str(exc)[:300]}",
         )
 
     return {
         "ok": True,
+        "numero_factura": factura_registrable["numero_factura"],
+        "fecha_factura": str(fecha_registro_factura),
+        "estado_factura": "Registrada",
         "guardado": True,
         "id": registro.id,
         "ppad_id": registro.id,
@@ -3669,6 +3692,18 @@ def generar_documento_factura_honorarios(
             actualizado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
         )
     """))
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS facturas_honorarios_gestoria (
+            id BIGSERIAL PRIMARY KEY,
+            id_expediente VARCHAR(200) NOT NULL UNIQUE,
+            numero_factura VARCHAR(40) NOT NULL UNIQUE,
+            fecha_factura DATE NOT NULL,
+            datos_factura JSONB NOT NULL,
+            estado VARCHAR(40) NOT NULL DEFAULT 'Pendiente de registro',
+            creada_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            registrada_en TIMESTAMP WITHOUT TIME ZONE
+        )
+    """))
     # Migra una plantilla antigua si existía antes de separar la configuración de email.
     db.execute(text("""
         INSERT INTO plantilla_factura_concepto_gasto
@@ -3689,6 +3724,34 @@ def generar_documento_factura_honorarios(
     expediente = db.query(Expediente).filter(Expediente.id_expediente == str(id_expediente)).first()
     if expediente is None:
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+
+    # Serie fiscal correlativa HG por año. El bloqueo transaccional evita que dos
+    # usuarios obtengan el mismo número cuando facturan simultáneamente.
+    db.execute(text("SELECT pg_advisory_xact_lock(724190281)"))
+    factura_existente = db.execute(text("""
+        SELECT numero_factura, datos_factura, estado
+        FROM facturas_honorarios_gestoria
+        WHERE id_expediente = :id_expediente
+        FOR UPDATE
+    """), {"id_expediente": str(id_expediente)}).mappings().first()
+    if factura_existente:
+        # Reintentos: siempre se vuelve a emitir el mismo documento, sin duplicar
+        # ni cambiar una factura que ya haya quedado registrada.
+        datos_guardados = factura_existente["datos_factura"]
+        if isinstance(datos_guardados, str):
+            datos_guardados = json.loads(datos_guardados)
+        datos.clear()
+        datos.update(dict(datos_guardados or {}))
+        numero_factura = str(factura_existente["numero_factura"])
+    else:
+        anio_factura = str(datos.get("fecha_factura") or date.today().isoformat())[:4]
+        siguiente = db.execute(text("""
+            SELECT COALESCE(MAX(CAST(SUBSTRING(numero_factura FROM 9) AS BIGINT)), 0) + 1
+            FROM facturas_honorarios_gestoria
+            WHERE numero_factura LIKE :patron
+        """), {"patron": f"HG-{anio_factura}-%"}).scalar() or 1
+        numero_factura = f"HG-{anio_factura}-{int(siguiente):06d}"
+        datos["numero_factura"] = numero_factura
 
     def valor(obj, *nombres):
         for nombre in nombres:
@@ -3735,7 +3798,7 @@ def generar_documento_factura_honorarios(
 
         plantilla_bytes = bytes(plantilla["contenido"])
         Document(io.BytesIO(plantilla_bytes))  # Comprueba que la plantilla oficial sea válida.
-        numero_factura = str(datos.get("numero_factura") or "").strip() or "PENDIENTE DE ASIGNACIÓN"
+        numero_factura = str(datos.get("numero_factura") or numero_factura).strip()
         fecha_factura = fecha_es(datos.get("fecha_factura"))
         cliente = str(datos.get("cliente") or valor(expediente, "nombre_solicitante", "nombre_titular") or "").strip()
         nif_cliente = str(datos.get("nif_cliente") or valor(expediente, "nif_solicitante", "dni_solicitante", "nif_titular") or "").strip()
@@ -3887,9 +3950,24 @@ def generar_documento_factura_honorarios(
         story.extend([Spacer(1, 8*mm), Paragraph("Documento generado por ERP-Molsan a partir de la plantilla oficial vinculada al concepto de honorarios de gestoría.", styles["FacturaSubMolsan"])])
         doc.build(story)
         buffer.seek(0)
+        if not factura_existente:
+            db.execute(text("""
+                INSERT INTO facturas_honorarios_gestoria
+                    (id_expediente, numero_factura, fecha_factura, datos_factura, estado)
+                VALUES
+                    (:id_expediente, :numero_factura, :fecha_factura, CAST(:datos_factura AS JSONB), 'Pendiente de registro')
+            """), {
+                "id_expediente": str(id_expediente),
+                "numero_factura": numero_factura,
+                "fecha_factura": str(datos.get("fecha_factura") or date.today().isoformat())[:10],
+                "datos_factura": json.dumps(datos, ensure_ascii=False, default=str),
+            })
+        db.commit()
     except HTTPException:
+        db.rollback()
         raise
     except Exception as exc:
+        db.rollback()
         logger.exception("No se pudo generar el PDF oficial de honorarios para %s", id_expediente)
         raise HTTPException(status_code=500, detail="No se pudo generar el PDF de la factura. Revisa que la plantilla oficial del concepto esté íntegra.")
 
@@ -3897,7 +3975,10 @@ def generar_documento_factura_honorarios(
     return StreamingResponse(
         buffer,
         media_type="application/pdf",
-        headers={"Content-Disposition": f'attachment; filename="{nombre_salida}"'},
+        headers={
+            "Content-Disposition": f'attachment; filename="{nombre_salida}"',
+            "X-Numero-Factura": numero_factura,
+        },
     )
 
 # ============================================================
