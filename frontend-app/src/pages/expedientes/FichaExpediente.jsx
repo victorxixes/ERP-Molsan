@@ -1475,12 +1475,28 @@ export default function FichaExpediente() {
   const [mostrarModalFacturaHonorarios, setMostrarModalFacturaHonorarios] = useState(false);
   const [previsualizandoFacturaHonorarios, setPrevisualizandoFacturaHonorarios] = useState(false);
   const [guardandoFacturaHonorarios, setGuardandoFacturaHonorarios] = useState(false);
+  const [conceptosFacturaHonorarios, setConceptosFacturaHonorarios] = useState([]);
   const [facturaHonorariosForm, setFacturaHonorariosForm] = useState({
     cliente: "", nifCliente: "", numeroFactura: "", fechaFactura: new Date().toISOString().slice(0, 10),
     concepto: "Honorarios de gestoría", baseImponible: "0.00", tipoImpuesto: "IVA", porcentajeImpuesto: "21",
     importeImpuesto: "0.00", totalFactura: "0.00", provisionFondos: "0.00", saldoDisponible: "0.00",
     tarifa: "", entidad: "", observaciones: "",
   });
+
+  useEffect(() => {
+    if (!mostrarModalFacturaHonorarios) return;
+    let vigente = true;
+    axios.get("/tipos-concepto-gastos/opciones")
+      .then(({ data }) => {
+        if (!vigente) return;
+        const lista = Array.isArray(data) ? data : [];
+        setConceptosFacturaHonorarios(lista);
+        const predeterminado = lista.find((item) => String(item.nombre || "").trim().toLowerCase() === "honorarios gestoría");
+        if (predeterminado) setFacturaHonorariosForm((actual) => ({ ...actual, concepto: predeterminado.nombre }));
+      })
+      .catch(() => { if (vigente) setConceptosFacturaHonorarios([]); });
+    return () => { vigente = false; };
+  }, [mostrarModalFacturaHonorarios]);
 
   const cargarDocumentosCierre = useCallback(async () => {
     const numero = expediente?.id_expediente || id;
@@ -8435,7 +8451,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={mostrarModalFacturaHonorarios}
         onClose={() => !guardandoFacturaHonorarios && setMostrarModalFacturaHonorarios(false)}
-        titulo="🧾 Factura de honorario"
+        titulo="🧾 Factura de honorarios gestoría"
         subtitulo={`Expediente ${expediente?.id_expediente || ""} · Revisa los datos antes de registrar`}
         ancho="max-w-5xl"
         footer={
@@ -8464,10 +8480,6 @@ const cuantiaFincasParaEnvio =
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Saldo disponible (dato del expediente)</p>
               <p className="mt-1 text-lg font-extrabold text-slate-800">{Number(String(facturaHonorariosForm.saldoDisponible || "0").replace(",", "." ) || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</p>
-            </div>
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-700">Total factura</p>
-              <p className="mt-1 text-xl font-extrabold text-emerald-800">{Number(facturaHonorariosForm.totalFactura || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</p>
             </div>
           </div>
 
@@ -8499,17 +8511,24 @@ const cuantiaFincasParaEnvio =
                   <label className="text-xs font-semibold text-slate-600">NIF / CIF<input value={facturaHonorariosForm.nifCliente} onChange={e => setFacturaHonorariosForm(f => ({...f,nifCliente:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
                   <label className="text-xs font-semibold text-slate-600">Número de factura<input value={facturaHonorariosForm.numeroFactura} onChange={e => setFacturaHonorariosForm(f => ({...f,numeroFactura:e.target.value}))} placeholder="Se puede asignar al guardar" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
                   <label className="text-xs font-semibold text-slate-600">Fecha de factura<input type="date" value={facturaHonorariosForm.fechaFactura} onChange={e => setFacturaHonorariosForm(f => ({...f,fechaFactura:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
-                  <label className="text-xs font-semibold text-slate-600 md:col-span-2">Concepto<input value={facturaHonorariosForm.concepto} onChange={e => setFacturaHonorariosForm(f => ({...f,concepto:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-slate-600 md:col-span-2">Concepto
+                    <select value={facturaHonorariosForm.concepto} onChange={e => setFacturaHonorariosForm(f => ({...f,concepto:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                      {conceptosFacturaHonorarios.length === 0 && <option value="Honorarios de gestoría">Honorarios de gestoría</option>}
+                      {conceptosFacturaHonorarios.map((concepto) => <option key={concepto.id} value={concepto.nombre}>{concepto.nombre}</option>)}
+                    </select>
+                    <span className="mt-1 block text-[11px] font-normal text-slate-400">Opciones del catálogo Tipos de Concepto de Gastos.</span>
+                  </label>
                 </div>
               </section>
               <section className="rounded-xl border border-slate-200 p-4">
                 <h3 className="mb-3 text-sm font-extrabold text-slate-800">Tarifa e impuestos</h3>
                 <p className="mb-3 text-xs text-slate-500">Tarifa del catálogo: <strong>{facturaHonorariosForm.tarifa}</strong> · Entidad detectada: {facturaHonorariosForm.entidad || "No identificada"}</p>
+                <p className="mb-3 text-xs text-slate-500">Tarifa del catálogo: <strong>{facturaHonorariosForm.tarifa}</strong> · Entidad detectada: {facturaHonorariosForm.entidad || "No identificada"} · <a href="/herramientas/honorarios-gestoria" target="_blank" rel="noreferrer" className="font-bold text-blue-700 underline">Revisa aquí tarifa honorarios</a></p>
                 <div className="grid gap-3 md:grid-cols-4">
                   <label className="text-xs font-semibold text-slate-600">Base imponible (€)<input type="number" min="0" step="0.01" value={facturaHonorariosForm.baseImponible} onChange={e => setFacturaHonorariosForm(f => actualizarImportesFacturaHonorarios(f,{baseImponible:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
-                  <label className="text-xs font-semibold text-slate-600">Impuesto<select value={facturaHonorariosForm.tipoImpuesto} onChange={e => setFacturaHonorariosForm(f => actualizarImportesFacturaHonorarios(f,{tipoImpuesto:e.target.value,porcentajeImpuesto:e.target.value==="IGIC"?"7":"21"}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"><option>IVA</option><option>IGIC</option></select></label>
                   <label className="text-xs font-semibold text-slate-600">Tipo (%)<input type="number" min="0" step="0.01" value={facturaHonorariosForm.porcentajeImpuesto} onChange={e => setFacturaHonorariosForm(f => actualizarImportesFacturaHonorarios(f,{porcentajeImpuesto:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
                   <label className="text-xs font-semibold text-slate-600">Impuesto (€)<input type="number" min="0" step="0.01" value={facturaHonorariosForm.importeImpuesto} readOnly className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm" /></label>
+                  <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"><span className="block text-xs font-semibold text-slate-500">Total factura</span><strong className="mt-1 block text-sm text-slate-800">{Number(facturaHonorariosForm.totalFactura || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</strong></div>
                 </div>
                 <label className="mt-3 block text-xs font-semibold text-slate-600">Observaciones<textarea value={facturaHonorariosForm.observaciones} onChange={e => setFacturaHonorariosForm(f => ({...f,observaciones:e.target.value}))} rows={2} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
               </section>
