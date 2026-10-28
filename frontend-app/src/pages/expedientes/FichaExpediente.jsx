@@ -8535,9 +8535,32 @@ const cuantiaFincasParaEnvio =
               <section className="rounded-xl border border-slate-200 p-4">
                 <h3 className="mb-2 text-sm font-extrabold text-slate-800">Checklist de control</h3>
                 <p className="mb-3 text-xs text-slate-500">Revisión visual de documentos y actividades vinculados al expediente. Los documentos no se marcan como completados automáticamente.</p>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {["Documentación previa","Firma / protocolo","Liquidación de impuestos","Tramitación de inscripción","Defectos registrales","Documentos de facturación y cierre"].map((item, i) => <div key={item} className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-700"><span className="text-slate-400">□</span><span>{item}</span></div>)}
-                </div>
+                {(() => {
+                  const docs = Array.isArray(documentosCierre) ? documentosCierre : [];
+                  const norm = (v) => String(v ?? "").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLowerCase();
+                  const textoDoc = (doc) => norm([doc?.categoria, doc?.categoria_nombre, doc?.nombre_categoria, doc?.tipo_documento, doc?.actividad, doc?.actividad_nombre, doc?.fase, doc?.nombre, doc?.nombre_archivo, doc?.nombre_original, doc?.filename, doc?.titulo].filter(Boolean).join(" "));
+                  const hay = (...terminos) => docs.some((doc) => terminos.some((termino) => textoDoc(doc).includes(norm(termino))));
+                  const dato = (...keys) => keys.some((key) => String(expediente?.[key] ?? actividadDraft?.[key] ?? "").trim() !== "");
+                  const items = [
+                    { nombre: "Documentación previa", ok: hay("documentación previa", "hoja encargo", "nota simple", "justificante cancelación", "documentos absis") },
+                    { nombre: "Firma / protocolo", ok: dato("fecha_firma", "numero_protocolo", "protocolo", "fecha_protocolo") || hay("copia simple", "hoja presentación", "protocolo") },
+                    { nombre: "Liquidación de impuestos", ok: dato("fecha_liquidacion_tributaria", "fecha_liquidacion", "justificante_impuestos") || hay("liquidación impuestos", "ajd", "itp", "impuestos") },
+                    { nombre: "Tramitación de inscripción", ok: dato("fecha_inscripcion", "fecha_presentacion_registro", "fecha_fin_tramitacion") || hay("hoja inscripción", "inscripción registro") },
+                    { nombre: "Defectos registrales", ok: dato("fecha_calificacion", "fecha_subsanacion", "fecha_fin_defectos") || hay("defecto registral", "subsanación defecto") },
+                    { nombre: "Documentos de facturación y cierre", ok: hay("factura gestoría", "factura notarial", "expediente digital completo", "cierre expediente") },
+                  ];
+                  const completos = items.every((item) => item.ok);
+                  return <>
+                    <div className={`mb-3 rounded-lg border px-3 py-2 text-xs font-bold ${completos ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-amber-200 bg-amber-50 text-amber-800"}`}>
+                      {completos ? "✓ Checklist completo según datos/documentos encontrados" : `${items.filter((item) => item.ok).length} de ${items.length} comprobaciones completas`}
+                    </div>
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {items.map((item) => <div key={item.nombre} className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs ${item.ok ? "border-emerald-100 bg-emerald-50/60 text-emerald-800" : "border-slate-200 bg-slate-50 text-slate-600"}`}><span className="font-extrabold">{item.ok ? "✓" : "□"}</span><span>{item.nombre}</span></div>)}
+                    </div>
+                  </>;
+                })()}
+                {errorDocumentosCierre && <p className="mt-2 text-xs text-red-700">No se ha podido verificar la carpeta digital completa; revisa antes de facturar.</p>}
+                <button type="button" onClick={cargarDocumentosCierre} disabled={cargandoDocumentosCierre} className="mt-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-50">{cargandoDocumentosCierre ? "Comprobando…" : "↻ Actualizar checklist"}</button>
               </section>
             </>
           )}
