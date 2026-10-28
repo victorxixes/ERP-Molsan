@@ -162,8 +162,8 @@ def _valor_original_excel(celda):
 def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str = ""):
     """Importa por lotes pequeños para evitar miles de consultas y transacciones gigantes.
 
-    Cada lote se confirma por separado. Si el proceso se interrumpe, una nueva ejecución
-    vuelve a detectar los IDGASTO ya guardados y continúa sin duplicarlos.
+    Cada lote se confirma por separado. Los IDGASTO existentes se omiten sin modificarlos;
+    las filas sin IDGASTO se guardan con todos los valores originales y generan un aviso.
     """
     try:
         df = pd.read_excel(BytesIO(contenido_excel), sheet_name=0, header=0, engine="openpyxl")
@@ -291,22 +291,8 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
                 exp = expedientes_existentes.get(numero_exp.casefold()) if numero_exp else None
                 if exp is None:
                     sin_expediente += 1
-                es_nuevo = True
-                es_gasto_erp = False
-                # Compatibilidad con gastos ERP anteriores a los campos de trazabilidad:
-                # si ya están vinculados internamente y aún no tienen datos ABSIS, no pisar sus valores.
-                es_gasto_erp = bool(gasto) and (
-                    origen_previo == "ERP" or (
-                        gasto.expediente_id is not None
-                        and not getattr(gasto, "id_expediente_absis", None)
-                        and not getattr(gasto, "datos_absis_json", None)
-                    )
-                )
-                if es_nuevo:
-                    gasto = ExpedienteGasto()
-                    db.add(gasto)
-                    gastos_por_clave[clave] = gasto
-                    gastos_por_id.setdefault(id_gasto.casefold(), []).append(gasto)
+                gasto = ExpedienteGasto()
+                db.add(gasto)
 
                 concepto = _texto(val(row, "CONCEPTOGASTO"))
                 importe = _decimal(val(row, "IMPGASTO"))
@@ -349,8 +335,7 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
                 gasto.fecha_estado = _fecha(val(row, "FESTADO"))
                 gasto.fecha_peticion = _fecha(val(row, "FPETICION"))
                 gasto.fecha_pago = _fecha(val(row, "FPAGO"))
-                # Los campos generales del gasto pertenecen al ERP: solo se inicializan
-                # en registros ABSIS nuevos/no ERP. Nunca se borra información existente.
+                # Esta fila crea un registro ABSIS nuevo; los existentes se han omitido arriba.
                 gasto.pagador = _texto(val(row, "NOMBREPAGADOR"))
                 gasto.medio_pago = _texto(val(row, "FORMAPAGO"))
                 gasto.cuenta_bancaria = _texto(val(row, "CTAORIGEN"))
@@ -388,6 +373,8 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
         "filas_vacias": filas_vacias,
         "errores": errores,
         "errores_total": errores_total,
+        "avisos": errores,
+        "nota_avisos": "Los avisos no bloqueantes incluyen filas sin IDGASTO, IDs repetidos y registros ya existentes no modificados.",
         "total_procesados": creados,
         "nota": "Todas las filas no vacías se conservan salvo IDGASTO ya existente o repetido dentro del mismo Excel; esos casos se notifican y no sobrescriben registros. Las filas sin IDGASTO se importan íntegramente y no son deduplicables automáticamente. IDPAGO no se conecta.",
     }
