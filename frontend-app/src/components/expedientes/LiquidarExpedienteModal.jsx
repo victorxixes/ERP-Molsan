@@ -21,6 +21,8 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
   const [mensaje, setMensaje] = useState("");
+  const [cierreDocumental, setCierreDocumental] = useState(null);
+  const [generandoCierreDocumental, setGenerandoCierreDocumental] = useState(false);
 
   useEffect(() => {
     setForm({
@@ -72,13 +74,27 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
       return false;
     } finally { setGuardando(false); }
   };
+  const generarCierreDocumental = async () => {
+    const id = expediente?.id_expediente ?? expediente?.id;
+    if (!id) throw new Error("No se ha identificado el expediente para generar el cierre documental.");
+    setGenerandoCierreDocumental(true);
+    try {
+      const { data } = await axios.post(`/expedientes/${encodeURIComponent(id)}/carpeta-digital/generar-cierre-documental`);
+      setCierreDocumental(data || null);
+      return data;
+    } finally {
+      setGenerandoCierreDocumental(false);
+    }
+  };
   const confirmar = async () => {
     const ok = await guardar();
     if (!ok) return;
     try {
+      setError("");
+      await generarCierreDocumental();
       await onConfirmarCierre?.();
     } catch (e) {
-      setError(e?.response?.data?.detail || e?.message || "No se ha podido cerrar el expediente. Revisa los requisitos de cierre y la factura de honorarios.");
+      setError(e?.response?.data?.detail || e?.message || "No se ha podido generar el cierre documental o cerrar el expediente. Revisa los requisitos de cierre y la factura de honorarios.");
     }
   };
   const contenido = (
@@ -133,6 +149,22 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
             <h3 className="mb-2 text-sm font-extrabold text-slate-800">Checklist del expediente</h3>
             <p className="mb-3 text-xs text-slate-500">Se muestra la comprobación existente de la ficha; no se crea una lista paralela.</p>
             {checklist || <p className="text-xs text-amber-700">La checklist existente no está disponible en este momento.</p>}
+          </section>
+          <section className="rounded-xl border border-indigo-200 bg-indigo-50/60 p-4">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <h3 className="text-sm font-extrabold text-slate-900">📚 Cierre documental digital</h3>
+                <p className="mt-1 text-xs leading-5 text-slate-600">Genera un único PDF y lo guarda en Carpeta digital → Expediente digital completo. El orden es: Hoja de liquidación, Factura notario, Factura registro, Factura Honorarios gestoría, Copia simple, Justificación de cancelación, AJD / ITP y Hoja de inscripción.</p>
+                {cierreDocumental && <div className="mt-3 rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs text-emerald-800">
+                  <p className="font-extrabold">{cierreDocumental.mensaje || "PDF de cierre documental generado."}</p>
+                  <p className="mt-1">{Number(cierreDocumental.paginas || 0)} páginas · {Array.isArray(cierreDocumental.documentos_incluidos) ? cierreDocumental.documentos_incluidos.length : 0} documento(s) incorporado(s).</p>
+                  {Array.isArray(cierreDocumental.documentos_faltantes) && cierreDocumental.documentos_faltantes.length > 0 && <p className="mt-1 text-amber-700">No encontrados: {cierreDocumental.documentos_faltantes.join(", ")}.</p>}
+                </div>}
+              </div>
+              <button type="button" onClick={async () => { setError(""); try { await generarCierreDocumental(); } catch (e) { setError(e?.response?.data?.detail || e?.message || "No se ha podido generar el PDF de cierre documental."); } }} disabled={generandoCierreDocumental || guardando || cargandoCierre} className="shrink-0 rounded-lg border border-indigo-300 bg-white px-3 py-2 text-xs font-extrabold text-indigo-800 hover:bg-indigo-100 disabled:opacity-50">
+                {generandoCierreDocumental ? "Generando PDF…" : cierreDocumental ? "Actualizar PDF completo" : "Generar PDF completo"}
+              </button>
+            </div>
           </section>
         </div>
         <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 bg-white px-5 py-4">
