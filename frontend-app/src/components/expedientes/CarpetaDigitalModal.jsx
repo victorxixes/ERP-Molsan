@@ -1184,7 +1184,8 @@ export default function CarpetaDigitalModal({
                     )
                   )))}
                   {actividadId === "facturacion-cierre" && (
-                                          <div className="flex flex-wrap justify-end gap-2">
+                    <div className="mt-3 border-t border-slate-200 pt-3">
+                      <div className="flex flex-wrap justify-end gap-2">
                         <button
                           type="button"
                           onClick={() => onFacturar?.()}
