@@ -8455,7 +8455,6 @@ const cuantiaFincasParaEnvio =
         titulo="🧾 Factura de honorarios gestoría"
         subtitulo={`Expediente ${expediente?.id_expediente || ""} · Revisa los datos antes de registrar`}
         ancho="max-w-5xl"
-        contenidoSuperior={null}
         footer={
           <div className="flex w-full flex-wrap justify-between gap-2">
             <Boton onClick={() => setMostrarModalFacturaHonorarios(false)} disabled={guardandoFacturaHonorarios}>Cancelar</Boton>
@@ -8474,6 +8473,10 @@ const cuantiaFincasParaEnvio =
       >
         <div className="max-h-[68vh] space-y-5 overflow-y-auto pr-1">
           {errorHonorariosGestoria && <p className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorHonorariosGestoria}</p>}
+          <div className={`rounded-xl border p-3 ${expediente?.facturacion_empleado ? "border-amber-300 bg-amber-50" : "border-slate-200 bg-slate-50"}`}>
+            <p className="text-xs font-extrabold text-slate-800">Cliente empleado: {expediente?.facturacion_empleado ? "Sí" : "No"}</p>
+            {expediente?.facturacion_empleado && <p className="mt-1 text-sm font-semibold text-amber-800">Descuento aplicado: 50 % sobre honorarios. La base imponible y el IVA se calculan sobre el importe reducido.</p>}
+          </div>
           <div className="grid gap-3 md:grid-cols-3">
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Provisión de fondos</p>
