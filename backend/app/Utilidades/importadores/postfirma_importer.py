@@ -344,10 +344,14 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
                 gasto.fecha_estado = _fecha(val(row, "FESTADO"))
                 gasto.fecha_peticion = _fecha(val(row, "FPETICION"))
                 gasto.fecha_pago = _fecha(val(row, "FPAGO"))
-                gasto.pagador = _texto(val(row, "NOMBREPAGADOR"))
-                gasto.nif_notario = None
-                gasto.medio_pago = _texto(val(row, "FORMAPAGO"))
-                gasto.cuenta_bancaria = _texto(val(row, "CTAORIGEN"))
+                # Los campos generales del gasto pertenecen al ERP: solo se inicializan
+                # en registros ABSIS nuevos/no ERP. Nunca se borra información existente.
+                if es_nuevo or not es_gasto_erp:
+                    gasto.pagador = _texto(val(row, "NOMBREPAGADOR"))
+                    gasto.medio_pago = _texto(val(row, "FORMAPAGO"))
+                    gasto.cuenta_bancaria = _texto(val(row, "CTAORIGEN"))
+                # El JSON conserva íntegros los 37 campos de origen, incluido NIFPAGADOR,
+                # BENEFICIARIO, CTADESTINO y metadatos que aún no tienen columna propia.
                 gasto.datos_absis_json = json.dumps(registro["original"], ensure_ascii=False, default=str)
 
                 if es_nuevo:
