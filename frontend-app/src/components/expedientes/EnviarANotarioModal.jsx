@@ -751,21 +751,7 @@ export default function EnviarANotarioModal({
                 )}
 
                 {notario && (
-                  <div className="mt-3">
-                    <label className="mb-1 block text-xs font-semibold text-slate-700">
-                      Idioma del documento
-                      <span className="text-red-500"> *</span>
-                    </label>
-                    <select
-                      value={form.idioma}
-                      disabled={loading}
-                      onChange={(event) => cambiarCampo("idioma", event.target.value)}
-                      className={clasesInput()}
-                    >
-                      <option value="Catalán">Catalán</option>
-                      <option value="Castellano">Castellano</option>
-                    </select>
-                  </div>
+
                   <div className="mt-4 grid grid-cols-1 gap-3">
                     <CampoTexto
                       label="Apoderado"
@@ -899,7 +885,23 @@ export default function EnviarANotarioModal({
                     </div>
                   ))}
 
-                                  <div className="mt-4 grid grid-cols-1 gap-3">
+                  <div className="mt-3">
+                    <label className="mb-1 block text-xs font-semibold text-slate-700">
+                      Idioma del documento
+                      <span className="text-red-500"> *</span>
+                    </label>
+                    <select
+                      value={form.idioma}
+                      disabled={loading}
+                      onChange={(event) => cambiarCampo("idioma", event.target.value)}
+                      className={clasesInput()}
+                    >
+                      <option value="Catalán">Catalán</option>
+                      <option value="Castellano">Castellano</option>
+                    </select>
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-1 gap-3">
                   {/* FORMATO DE ESCRITURA */}
                   <div>
                     <label className="mb-1 block text-xs font-semibold text-slate-700">
