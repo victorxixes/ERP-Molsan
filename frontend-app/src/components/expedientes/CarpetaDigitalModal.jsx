@@ -489,6 +489,15 @@ export default function CarpetaDigitalModal({
     0
   );
 
+  const notaIntegracionRepositorio = (categoria) => {
+    const clave = normalizar(categoria);
+    if (clave === "hoja de inscripcion") return "Pendiente API Registradores";
+    if (["documentos absis", "hoja de encargo firmada", "justificante de cancelacion", "nota simple registral"].includes(clave)) {
+      return "Pendiente API ABSIS";
+    }
+    return "";
+  };
+
   const renderCategoria = ({ etiqueta, categoria }) => {
     const lista = porCategoria(categoria).filter((doc) => {
       const q = normalizar(busquedaDocumento);
@@ -502,6 +511,7 @@ export default function CarpetaDigitalModal({
             <h4 className="max-w-full text-xs font-bold text-slate-800">{etiqueta}</h4>
             <p className="whitespace-nowrap text-[10px] text-slate-500">{totalCategoria} archivo(s)</p>
           </div>
+          {notaIntegracionRepositorio(categoria) && <p className="w-full text-[10px] font-semibold text-amber-700">{notaIntegracionRepositorio(categoria)}</p>}
           <label className={`inline-flex shrink-0 cursor-pointer items-center rounded-md border px-2 py-1 text-[11px] font-bold ${subiendo === categoria ? "border-slate-200 bg-slate-100 text-slate-500" : "border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100"}`}>
             {subiendo === categoria ? "Subiendo…" : "＋ Adjuntar"}
             <input className="hidden" type="file" accept=".pdf,application/pdf" multiple onChange={(event) => subir(event, categoria)} disabled={!!subiendo} />
