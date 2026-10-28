@@ -182,7 +182,6 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
     creados = actualizados = sin_id_gasto = sin_expediente = filas_vacias = 0
     duplicados_excel = existentes_omitidos = 0
     ids_vistos_excel = set()
-    claves_vistas = set()
     errores = []
     errores_total = 0
     avisos_total = 0
@@ -234,8 +233,6 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
                         continue
                     ids_vistos_excel.add(id_normalizado)
                     ids_lote.add(id_gasto)
-                    clave_gasto = (id_normalizado, (tipo_concepto or "").casefold())
-                    claves_vistas.add(clave_gasto)
 
                 numero_exp = _texto(val(row, "IDEXPEDIENTE"))
                 if numero_exp:
@@ -258,12 +255,9 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
                 .filter(ExpedienteGasto.id_gasto_absis.in_(ids_lote)).all()
                 if ids_lote else []
             )
-            gastos_por_clave = {}
             gastos_por_id = {}
             for existente in gastos_existentes_lista:
                 id_existente = str(existente.id_gasto_absis).strip().casefold()
-                tipo_existente = str(existente.tipo_concepto_absis or "").strip().casefold()
-                gastos_por_clave[(id_existente, tipo_existente)] = existente
                 gastos_por_id.setdefault(id_existente, []).append(existente)
             expedientes_existentes = {}
             if expedientes_lote:
@@ -305,7 +299,7 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
                 # existente si lo había; nunca desasociar un gasto ERP por un Excel parcial.
                 if exp is not None:
                     gasto.expediente_id = exp.id
-                elif es_nuevo:
+                else:
                     gasto.expediente_id = None
                 gasto.id_gasto_absis = id_gasto
                 gasto.id_expediente_absis = numero_exp
@@ -348,7 +342,7 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
                     gastos_por_id.setdefault(id_gasto.casefold(), []).append(gasto)
 
             # Commit incremental: los lotes confirmados sobreviven a un reinicio.
-            # Al reintentar, IDGASTO permite actualizar en vez de duplicar.
+            # Al reintentar, IDGASTO ya existente se omite y se informa sin modificarlo.
             db.commit()
             db.expunge_all()
 
