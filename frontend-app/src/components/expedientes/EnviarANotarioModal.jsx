@@ -958,7 +958,7 @@ export default function EnviarANotarioModal({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-5">
+                <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-3">
                   <CampoTexto
                     label="Nombre"
                     value={form.facturacion_nombre}
@@ -1001,9 +1001,8 @@ export default function EnviarANotarioModal({
                     }
                   />
 
-                  <div className="grid grid-cols-1 gap-3">
-                    <CampoTexto
-                      label="Código postal"
+                  <CampoTexto
+                    label="Código postal"
                       value={form.facturacion_codigo_postal}
                       disabled={loading}
                       autoComplete="postal-code"
@@ -1106,9 +1105,6 @@ export default function EnviarANotarioModal({
                           ? "Cargando catálogo de municipios…"
                           : "Selecciona un municipio para completar automáticamente la provincia."}
                       </p>
-                    </div>
-                  </div>
-
                   <CampoTexto
                     label="Provincia"
                     value={form.facturacion_provincia}
