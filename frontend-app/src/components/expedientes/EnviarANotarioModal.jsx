@@ -305,8 +305,6 @@ export default function EnviarANotarioModal({
   const [municipios, setMunicipios] = useState([]);
   const [municipiosAbierto, setMunicipiosAbierto] = useState(false);
   const [municipiosLoading, setMunicipiosLoading] = useState(false);
-  const [tiposDocumento, setTiposDocumento] = useState([]);
-  const [loadingTipos, setLoadingTipos] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -324,49 +322,6 @@ export default function EnviarANotarioModal({
     return () => { activo = false; };
   }, [expediente?.id_expediente]);
 
-  // CARGAR TIPOS DE DOCUMENTO
-  // ==========================================================
-
-  useEffect(() => {
-    let activo = true;
-
-    async function cargarTiposDocumento() {
-      try {
-        setLoadingTipos(true);
-
-        const response = await axios.get(
-          "/tipos-carga-hipotecaria/opciones"
-        );
-
-        if (!activo) return;
-
-        setTiposDocumento(
-          Array.isArray(response?.data) ? response.data : []
-        );
-      } catch (err) {
-        console.error("No se han podido cargar los tipos de documento.");
-
-        if (activo) {
-          setError(
-            err?.response?.data?.detail ||
-              err?.response?.data?.message ||
-              "No se han podido cargar los tipos de documento."
-          );
-        }
-      } finally {
-        if (activo) setLoadingTipos(false);
-      }
-    }
-
-    cargarTiposDocumento();
-
-    return () => {
-      activo = false;
-    };
-  }, []);
-
-  // ==========================================================
-  // ==========================================================
   // MUNICIPIOS: POBLACIÓN AUTOCOMPLETADA Y PROVINCIA VINCULADA
   // ==========================================================
 
@@ -796,6 +751,21 @@ export default function EnviarANotarioModal({
                 )}
 
                 {notario && (
+                  <div className="mt-3">
+                    <label className="mb-1 block text-xs font-semibold text-slate-700">
+                      Idioma del documento
+                      <span className="text-red-500"> *</span>
+                    </label>
+                    <select
+                      value={form.idioma}
+                      disabled={loading}
+                      onChange={(event) => cambiarCampo("idioma", event.target.value)}
+                      className={clasesInput()}
+                    >
+                      <option value="Catalán">Catalán</option>
+                      <option value="Castellano">Castellano</option>
+                    </select>
+                  </div>
                   <div className="mt-4 grid grid-cols-1 gap-3">
                     <CampoTexto
                       label="Apoderado"
@@ -847,21 +817,6 @@ export default function EnviarANotarioModal({
                   <CampoTexto label="Contrato" value={form.contrato} disabled={loading} onChange={(v) => cambiarCampo("contrato", v)} placeholder="Contrato de Fincas y Registros" />
                   <CampoTexto label="Tipo de operación" value={form.tipo_operacion} disabled={loading} onChange={(v) => cambiarCampo("tipo_operacion", v)} placeholder="Tipo de operación" />
                   <CampoTexto label="Importe con provisión (€)" value={form.importe} disabled={loading} type="number" onChange={(v) => cambiarCampo("importe", v)} placeholder="0,00" />
-                  <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-700">
-                      Idioma del documento
-                      <span className="text-red-500"> *</span>
-                    </label>
-                    <select
-                      value={form.idioma}
-                      disabled={loading}
-                      onChange={(event) => cambiarCampo("idioma", event.target.value)}
-                      className={clasesInput()}
-                    >
-                      <option value="Catalán">Catalán</option>
-                      <option value="Castellano">Castellano</option>
-                    </select>
-                  </div>
                 </div>
 
                 <div className="space-y-4">
@@ -891,7 +846,7 @@ export default function EnviarANotarioModal({
                       </label>
                       <select
                         value={documento.tipo_documento}
-                        disabled={loading || loadingTipos}
+                        disabled={loading}
                         onChange={(event) => {
                           const valor = event.target.value;
                           setDocumentosEscritura((actuales) => actuales.map((item) => item.id === documento.id ? { ...item, tipo_documento: valor } : item));
@@ -900,7 +855,7 @@ export default function EnviarANotarioModal({
                         className={clasesInput()}
                       >
                         <option value="">
-                          {loadingTipos ? "Cargando tipos de documento..." : "Seleccionar tipo de documento"}
+                          Seleccionar tipo de documento
                         </option>
                         {[
                           "Cancelación de condición resolutoria",
