@@ -186,6 +186,7 @@ class Expediente(Base):
     facturacion_provincia = Column(String(200), nullable=True)
     facturacion_telefono = Column(String(50), nullable=True)
     facturacion_email = Column(String(320), nullable=True)
+    facturacion_empleado = Column(Boolean, nullable=False, default=False, server_default="false")
     facturacion_estado = Column(String(200), nullable=True)
     facturacion_fecha = Column(Date, nullable=True)
 
