@@ -7,7 +7,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from backend.app.database import get_db
-from backend.app.expedientes.models import Expediente
+from backend.app.expedientes.models import Expediente, ExpedientePromocion
 from backend.app.tipos_expediente.models import TipoExpediente
 from backend.app.tipos_expediente.router import asegurar_catalogo_inicial
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
@@ -140,7 +140,9 @@ def consultar_promocion_expediente(
     if not expediente:
         raise HTTPException(status_code=404, detail=f"No se ha encontrado el expediente {numero}.")
 
-    tipo_id_promocion = getattr(expediente, "promocion_tipo_expediente_id", None)
+    ExpedientePromocion.__table__.create(bind=db.get_bind(), checkfirst=True)
+    asignacion = db.query(ExpedientePromocion).filter(ExpedientePromocion.expediente_id == expediente.id_expediente).first()
+    tipo_id_promocion = asignacion.tipo_expediente_id if asignacion else None
     tipo = db.query(TipoExpediente).filter(TipoExpediente.id == tipo_id_promocion).first() if tipo_id_promocion else None
     return {
         "numero_expediente": expediente.id_expediente,
@@ -185,17 +187,21 @@ def asignar_promocion_expediente(
         if not tipo:
             raise HTTPException(status_code=400, detail="El tipo seleccionado no existe o está inactivo en el catálogo Tipos de expediente.")
 
-    expediente.promocion_tipo_expediente_id = tipo.id if tipo else None
-    # La etiqueta se calcula desde el catálogo; no se almacena en el campo libre promocion.
-    expediente.promocion = None
-    db.add(expediente)
+    ExpedientePromocion.__table__.create(bind=db.get_bind(), checkfirst=True)
+    asignacion = db.query(ExpedientePromocion).filter(ExpedientePromocion.expediente_id == expediente.id_expediente).first()
+    if tipo:
+        if asignacion:
+            asignacion.tipo_expediente_id = tipo.id
+        else:
+            db.add(ExpedientePromocion(expediente_id=expediente.id_expediente, tipo_expediente_id=tipo.id))
+    elif asignacion:
+        db.delete(asignacion)
     db.commit()
-    db.refresh(expediente)
     return {
         "ok": True,
         "mensaje": f"Promoción asignada a {expediente.id_expediente}." if tipo else f"Se ha retirado la promoción de {expediente.id_expediente}.",
         "numero_expediente": expediente.id_expediente,
-        "promocion_tipo_expediente_id": expediente.promocion_tipo_expediente_id,
+        "promocion_tipo_expediente_id": tipo.id if tipo else None,
         "promocion": tipo.nombre if tipo else None,
     }
 
