@@ -2996,7 +2996,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         observaciones: facturaHonorariosForm.observaciones,
       };
 
-      // El backend asigna el siguiente número correlativo HG-AAAA-NNNNNN,
+      // El backend asigna el número correlativo VI/NNNNN-AA,
       // genera el PDF oficial y conserva la factura como pendiente de registro.
       const documentoFactura = await axios.post(
         `/expedientes/${encodeURIComponent(expediente.id_expediente)}/honorarios-gestoria/factura-pdf`,
@@ -3005,7 +3005,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       );
       const numeroAsignado = String(documentoFactura?.headers?.["x-numero-factura"] || "").trim();
       if (!numeroAsignado) {
-        throw new Error("El PDF se ha generado, pero el servidor no ha devuelto el número de factura HG. No se ha confirmado el registro definitivo.");
+        throw new Error("El PDF se ha generado, pero el servidor no ha devuelto el número de factura VI. No se ha confirmado el registro definitivo.");
       }
       payloadFactura.numero_factura = numeroAsignado;
       setFacturaHonorariosForm(actual => ({ ...actual, numeroFactura: numeroAsignado }));
@@ -8654,7 +8654,7 @@ const cuantiaFincasParaEnvio =
               <section className="rounded-xl border border-slate-200 p-4">
                 <h3 className="mb-3 text-sm font-extrabold text-slate-800">Datos de factura</h3>
                 <div className="grid gap-3 md:grid-cols-2">
-                  <label className="text-xs font-semibold text-slate-600">Número de factura (automático)<input value={facturaHonorariosForm.numeroFactura} readOnly placeholder="Se asignará al generar la factura" className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm" /><span className="mt-1 block text-[11px] font-normal text-slate-400">Serie correlativa HG por año; el número definitivo lo asigna el servidor.</span></label>
+                  <label className="text-xs font-semibold text-slate-600">Número de factura (automático)<input value={facturaHonorariosForm.numeroFactura} readOnly placeholder="Se asignará al generar la factura" className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm" /><span className="mt-1 block text-[11px] font-normal text-slate-400">Serie correlativa VI por año; el número definitivo lo asigna el servidor.</span></label>
                   <label className="text-xs font-semibold text-slate-600">Fecha de factura<input type="date" value={facturaHonorariosForm.fechaFactura} onChange={e => setFacturaHonorariosForm(f => ({...f,fechaFactura:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
                   <label className="text-xs font-semibold text-slate-600 md:col-span-2">Concepto
                     <select value={facturaHonorariosForm.concepto} onChange={e => setFacturaHonorariosForm(f => ({...f,concepto:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
