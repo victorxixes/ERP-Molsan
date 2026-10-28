@@ -3491,12 +3491,12 @@ function InformeFacturacion() {
                       <td className="px-4 py-3 font-semibold text-slate-700">{estado}</td>
                       <td className="px-4 py-3 text-right tabular-nums">{numeroInforme(dato.filas)}</td>
                       <td className="px-4 py-3 text-right tabular-nums">{euros(dato.importe)}</td>
-                      <td className="px-4 py-3 text-right"><button type="button" onClick={() => {
-                        const siguiente = { ...filtros, modalidad: "todas", estado: estado === "(vacío)" ? "" : estado };
+                      <td className="px-4 py-3 text-right">{estado === "(vacío)" ? <span className="text-xs text-slate-400">Sin código</span> : <button type="button" onClick={() => {
+                        const siguiente = { ...filtros, modalidad: "todas", estado };
                         setFiltros(siguiente);
                         setAplicados(siguiente);
                         setModalAbierto(true);
-                      }} className="rounded-lg border border-blue-200 bg-white px-3 py-1.5 text-xs font-bold text-blue-700 hover:bg-blue-50">Ver registros</button></td>
+                      }} className="rounded-lg border border-blue-200 bg-white px-3 py-1.5 text-xs font-bold text-blue-700 hover:bg-blue-50">Ver registros</button>}</td>
                     </tr>
                   ))}
                 </tbody>
