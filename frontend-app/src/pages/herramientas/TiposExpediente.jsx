@@ -1,0 +1,146 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+import axios from "../../api/axios";
+import "../../css/CatalogosMaestrosPremium.css";
+
+const API = "/tipos-expediente";
+const CAMPO = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10";
+
+export default function TiposExpediente() {
+  const [tipos, setTipos] = useState([]);
+  const [busqueda, setBusqueda] = useState("");
+  const [grupoFiltro, setGrupoFiltro] = useState("todos");
+  const [cargando, setCargando] = useState(true);
+  const [guardando, setGuardando] = useState(false);
+  const [error, setError] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [editando, setEditando] = useState(null);
+  const [nombre, setNombre] = useState("");
+  const [grupo, setGrupo] = useState("Tipos de expediente");
+  const [activo, setActivo] = useState(true);
+
+  const cargar = useCallback(async () => {
+    setCargando(true);
+    setError("");
+    try {
+      const { data } = await axios.get(API);
+      setTipos(Array.isArray(data) ? data : []);
+    } catch (e) {
+      setError(e?.response?.data?.detail || "No se pudo cargar el catálogo de tipos de expediente.");
+    } finally {
+      setCargando(false);
+    }
+  }, []);
+
+  useEffect(() => { cargar(); }, [cargar]);
+
+  const tiposFiltrados = useMemo(() => tipos.filter((tipo) => {
+    const coincideTexto = !busqueda.trim() || tipo.nombre.toLowerCase().includes(busqueda.trim().toLowerCase()) || String(tipo.id).includes(busqueda.trim());
+    const coincideGrupo = grupoFiltro === "todos" || tipo.grupo === grupoFiltro;
+    return coincideTexto && coincideGrupo;
+  }), [tipos, busqueda, grupoFiltro]);
+
+  function abrirNuevo() {
+    setEditando(null); setNombre(""); setGrupo("Tipos de expediente"); setActivo(true);
+    setError(""); setMensaje("");
+  }
+
+  function abrirEditar(tipo) {
+    setEditando(tipo); setNombre(tipo.nombre); setGrupo(tipo.grupo); setActivo(tipo.activo !== false);
+    setError(""); setMensaje("");
+  }
+
+  async function guardar(event) {
+    event.preventDefault();
+    if (!nombre.trim() || guardando) return;
+    setGuardando(true); setError(""); setMensaje("");
+    try {
+      const payload = { nombre: nombre.trim(), grupo, activo };
+      if (editando) await axios.put(`${API}/${editando.id}`, payload);
+      else await axios.post(API, payload);
+      setMensaje(editando ? "Tipo de expediente actualizado." : "Tipo de expediente creado.");
+      abrirNuevo();
+      await cargar();
+    } catch (e) {
+      setError(e?.response?.data?.detail || "No se pudo guardar el tipo de expediente.");
+    } finally {
+      setGuardando(false);
+    }
+  }
+
+  async function eliminar(tipo) {
+    if (!window.confirm(`¿Eliminar el tipo «${tipo.nombre}» (ID ${tipo.id})?`)) return;
+    setError(""); setMensaje("");
+    try {
+      await axios.delete(`${API}/${tipo.id}`);
+      setMensaje("Tipo de expediente eliminado.");
+      if (editando?.id === tipo.id) abrirNuevo();
+      await cargar();
+    } catch (e) {
+      setError(e?.response?.data?.detail || "No se pudo eliminar el tipo de expediente.");
+    }
+  }
+
+  const total = tipos.length;
+  const activos = tipos.filter((t) => t.activo !== false).length;
+
+  return (
+    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
+      <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white p-6 shadow-sm">
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">MOLSAN ERP PREMIUM 2027</p>
+        <h1 className="mt-2 text-2xl font-bold text-slate-800 sm:text-3xl">Tipos de expediente</h1>
+        <p className="mt-2 max-w-3xl text-sm text-slate-500">Catálogo maestro de tipos de expediente. Incluye los registros históricos de provisiones fuera del circuito GTG y los tipos para nuevas altas manuales.</p>
+      </header>
+
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="rounded-2xl border border-slate-200 bg-white p-4"><p className="text-sm text-slate-500">Tipos registrados</p><p className="mt-1 text-2xl font-bold text-slate-800">{total}</p></div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-4"><p className="text-sm text-slate-500">Tipos activos</p><p className="mt-1 text-2xl font-bold text-emerald-700">{activos}</p></div>
+        <div className="rounded-2xl border border-blue-100 bg-blue-50/70 p-4"><p className="text-sm text-blue-700">Altas disponibles</p><p className="mt-1 text-sm font-semibold text-blue-900">Crear, editar y eliminar tipos</p></div>
+      </section>
+
+      {(error || mensaje) && <div role="status" className={`rounded-xl border px-4 py-3 text-sm ${error ? "border-red-200 bg-red-50 text-red-700" : "border-emerald-200 bg-emerald-50 text-emerald-800"}`}>{error || mensaje}</div>}
+
+      <section className="rounded-[24px] border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
+        <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+          <div><h2 className="text-lg font-bold text-slate-800">{editando ? "Editar tipo de expediente" : "Alta de tipo de expediente"}</h2><p className="mt-1 text-sm text-slate-500">Los identificadores históricos se conservan; las nuevas altas reciben un ID automático.</p></div>
+          {editando && <button type="button" onClick={abrirNuevo} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancelar edición</button>}
+        </div>
+        <form onSubmit={guardar} className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-12">
+          <label className="text-sm font-semibold text-slate-700 md:col-span-5">Descripción
+            <input className={`${CAMPO} mt-2`} value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={250} required placeholder="Nombre del tipo de expediente" />
+          </label>
+          <label className="text-sm font-semibold text-slate-700 md:col-span-4">Grupo
+            <select className={`${CAMPO} mt-2`} value={grupo} onChange={(e) => setGrupo(e.target.value)}>
+              <option>Tipos de expediente</option><option>Provisiones fuera circuito GTG</option>
+            </select>
+          </label>
+          <label className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 md:col-span-2">
+            <input type="checkbox" checked={activo} onChange={(e) => setActivo(e.target.checked)} /> Activo
+          </label>
+          <div className="flex items-end md:col-span-1"><button disabled={guardando || !nombre.trim()} className="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50" type="submit">{guardando ? "..." : editando ? "Guardar" : "Añadir"}</button></div>
+        </form>
+      </section>
+
+      <section className="overflow-hidden rounded-[24px] border border-slate-200/80 bg-white shadow-sm">
+        <div className="flex flex-col gap-3 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div><h2 className="text-lg font-bold text-slate-800">Tabla de tipos de expediente</h2><p className="mt-1 text-sm text-slate-500">{tiposFiltrados.length} registros mostrados</p></div>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <input className={CAMPO} value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar por ID o descripción" />
+            <select className={CAMPO} value={grupoFiltro} onChange={(e) => setGrupoFiltro(e.target.value)}><option value="todos">Todos los grupos</option><option>Tipos de expediente</option><option>Provisiones fuera circuito GTG</option></select>
+            <button type="button" onClick={cargar} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">Actualizar</button>
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[760px] text-left text-sm">
+            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-5 py-3">ID</th><th className="px-5 py-3">Descripción</th><th className="px-5 py-3">Grupo</th><th className="px-5 py-3">Estado</th><th className="px-5 py-3 text-right">Acciones</th></tr></thead>
+            <tbody className="divide-y divide-slate-100">
+              {cargando ? <tr><td colSpan="5" className="px-5 py-10 text-center text-slate-500">Cargando catálogo…</td></tr> : tiposFiltrados.length === 0 ? <tr><td colSpan="5" className="px-5 py-10 text-center text-slate-500">No hay tipos que coincidan con la búsqueda.</td></tr> : tiposFiltrados.map((tipo) => <tr key={tipo.id} className="hover:bg-blue-50/40">
+                <td className="px-5 py-3 font-mono font-semibold text-slate-500">{tipo.id}</td><td className="px-5 py-3 font-semibold text-slate-800">{tipo.nombre}</td><td className="px-5 py-3 text-slate-600">{tipo.grupo}</td><td className="px-5 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${tipo.activo ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{tipo.activo ? "Activo" : "Inactivo"}</span></td><td className="px-5 py-3"><div className="flex justify-end gap-2"><button type="button" onClick={() => abrirEditar(tipo)} className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100">Editar</button><button type="button" onClick={() => eliminar(tipo)} className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">Eliminar</button></div></td>
+              </tr>)}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  );
+}
