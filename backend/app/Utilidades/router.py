@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from backend.app.database import get_db
 from backend.app.expedientes.models import Expediente
 from backend.app.tipos_expediente.models import TipoExpediente
+from backend.app.tipos_expediente.router import asegurar_catalogo_inicial
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 from backend.app.expedientes.reparto import resolver_key_actividad
 from backend.app.empleados.models import Empleado
@@ -106,6 +107,7 @@ def listar_tipos_para_promociones(
     usuario=Depends(get_current_user),
 ):
     require_perm_modulo(usuario, "utilidades", "editar")
+    asegurar_catalogo_inicial(db)
     tipos = (
         db.query(TipoExpediente)
         .filter(
@@ -125,6 +127,7 @@ def consultar_promocion_expediente(
     usuario=Depends(get_current_user),
 ):
     require_perm_modulo(usuario, "utilidades", "editar")
+    asegurar_catalogo_inicial(db)
     numero = (numero_expediente or "").strip()
     if not numero:
         raise HTTPException(status_code=400, detail="Indica el número de expediente.")
