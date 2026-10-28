@@ -8549,7 +8549,7 @@ const cuantiaFincasParaEnvio =
           {previsualizandoFacturaHonorarios ? (
             <div className="rounded-2xl border border-slate-200 bg-white p-6">
               <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 pb-4">
-                <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">MOLSAN ERP · Facturación</p><h3 className="mt-2 text-2xl font-extrabold text-slate-800">FACTURA DE HONORARIOS</h3><p className="mt-1 text-sm text-slate-500">Expediente {expediente?.id_expediente}</p></div>
+                <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">MOLSAN ERP · Facturación</p><h3 className="mt-2 text-2xl font-extrabold text-slate-800">FACTURA DE HONORARIOS GESTORIA</h3><p className="mt-1 text-sm text-slate-500">Expediente {expediente?.id_expediente}</p></div>
                 <div className="text-right"><p className="text-sm font-bold text-slate-700">{facturaHonorariosForm.numeroFactura || "Número pendiente de asignación"}</p><p className="text-sm text-slate-500">Fecha: {facturaHonorariosForm.fechaFactura || "—"}</p></div>
               </div>
               <div className="grid gap-4 py-5 md:grid-cols-2">
@@ -8559,6 +8559,7 @@ const cuantiaFincasParaEnvio =
               <div className="overflow-hidden rounded-xl border border-slate-200">
                 <div className="grid grid-cols-[1fr_auto] gap-3 bg-slate-50 px-4 py-3 text-xs font-bold text-slate-600"><span>Concepto</span><span>Importe</span></div>
                 <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-100 px-4 py-3 text-sm"><span>Base imponible</span><span>{Number(facturaHonorariosForm.baseImponible || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
+                {empleadoEnFactura && <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-100 bg-amber-50/60 px-4 py-3 text-sm text-amber-900"><span>Descuento empleado (50 %)</span><span className="font-semibold">− {Math.round((Math.max(0, Number(baseHonorariosOriginal) || 0) * 0.5 + Number.EPSILON) * 100) / 100 .toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>}
                 <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-100 px-4 py-3 text-sm"><span>{facturaHonorariosForm.tipoImpuesto} ({facturaHonorariosForm.porcentajeImpuesto}%)</span><span>{Number(facturaHonorariosForm.importeImpuesto || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
                 <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-200 bg-emerald-50 px-4 py-4 font-extrabold text-emerald-900"><span>TOTAL FACTURA</span><span>{Number(facturaHonorariosForm.totalFactura || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
               </div>
