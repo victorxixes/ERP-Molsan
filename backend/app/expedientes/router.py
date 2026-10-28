@@ -3285,10 +3285,11 @@ def registrar_solicitud_absis_sede_notarial_protocolo(
 # No envía datos a ABSIS; deja una entrada pendiente para trazabilidad.
 # ============================================================
 
+# Todas las actividades pueden dejar preparada una solicitud de envío a ABSIS,
+# excepto Gestión económica, cuyo flujo es distinto.
 ACTIVIDADES_CON_SOLICITUD_EXTERNA_PENDIENTE = {
-    "sede-notarial-protocolo",
-    "liquidacion-impuestos",
-    "tramitacion-inscripcion",
+    item["key"] for item in ACTIVIDADES_EXPEDIENTES
+    if item["key"] != "gestion-economica"
 }
 
 
@@ -3306,6 +3307,52 @@ def asegurar_tabla_solicitudes_integracion(db: Session) -> None:
         )
     """))
     db.flush()
+
+
+@router.get("/{id_expediente}/integraciones-pendientes/{actividad}")
+def obtener_solicitud_integracion_pendiente(
+    id_expediente: str,
+    actividad: str,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    """Devuelve la solicitud más reciente de una actividad, incluida su fecha de envío registrada."""
+    actividad_normalizada = resolver_actividad(actividad)
+    if actividad_normalizada not in ACTIVIDADES_CON_SOLICITUD_EXTERNA_PENDIENTE:
+        raise HTTPException(status_code=422, detail="Esta actividad no admite solicitudes de integración pendientes.")
+    expediente = db.query(Expediente).filter(
+        Expediente.id_expediente == str(id_expediente)
+    ).first()
+    if expediente is None:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+    try:
+        asegurar_tabla_solicitudes_integracion(db)
+        fila = db.execute(text("""
+            SELECT id, payload, estado, creado_en
+            FROM expediente_absis_solicitudes
+            WHERE expediente_id = :expediente_id AND actividad = :actividad
+            ORDER BY id DESC
+            LIMIT 1
+        """), {
+            "expediente_id": str(id_expediente),
+            "actividad": actividad_normalizada,
+        }).mappings().first()
+        if not fila:
+            return {"ok": True, "actividad": actividad_normalizada, "fecha_envio_absis": None, "estado": None, "solicitud_id": None}
+        payload = fila["payload"] or {}
+        if isinstance(payload, str):
+            payload = json.loads(payload)
+        return {
+            "ok": True,
+            "actividad": actividad_normalizada,
+            "fecha_envio_absis": payload.get("fecha_envio_absis"),
+            "estado": fila["estado"],
+            "solicitud_id": fila["id"],
+            "creado_en": fila["creado_en"],
+            "transmitido_a_absis": False,
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"No se pudo consultar el estado de envío a ABSIS: {str(exc)[:300]}")
 
 
 @router.post("/{id_expediente}/integraciones-pendientes/{actividad}")
