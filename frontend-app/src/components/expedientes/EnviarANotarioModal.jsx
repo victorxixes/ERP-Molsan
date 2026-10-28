@@ -752,7 +752,7 @@ export default function EnviarANotarioModal({
 
                 {notario && (
 
-                  <div className="mt-4 grid grid-cols-1 gap-3">
+                  <div className="mt-3 grid grid-cols-1 gap-3">
                     <CampoTexto
                       label="Apoderado"
                       value={notario.apoderado || ""}
@@ -970,7 +970,7 @@ export default function EnviarANotarioModal({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
                   <CampoTexto
                     label="Nombre"
                     value={form.facturacion_nombre}
