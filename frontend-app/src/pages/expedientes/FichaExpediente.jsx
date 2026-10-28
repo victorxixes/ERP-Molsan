@@ -8521,14 +8521,12 @@ const cuantiaFincasParaEnvio =
                 </div>
               </section>
               <section className="rounded-xl border border-slate-200 p-4">
-                <h3 className="mb-3 text-sm font-extrabold text-slate-800">Tarifa e impuestos</h3>
-                <p className="mb-3 text-xs text-slate-500">Tarifa del catálogo: <strong>{facturaHonorariosForm.tarifa}</strong> · Entidad detectada: {facturaHonorariosForm.entidad || "No identificada"}</p>
+                <h3 className="mb-3 text-sm font-extrabold text-slate-800">Tarifa de honorarios</h3>
                 <p className="mb-3 text-xs text-slate-500">Tarifa del catálogo: <strong>{facturaHonorariosForm.tarifa}</strong> · Entidad detectada: {facturaHonorariosForm.entidad || "No identificada"} · <a href="/herramientas/honorarios-gestoria" target="_blank" rel="noreferrer" className="font-bold text-blue-700 underline">Revisa aquí tarifa honorarios</a></p>
-                <div className="grid gap-3 md:grid-cols-4">
+                <div className="grid gap-3 md:grid-cols-3">
                   <label className="text-xs font-semibold text-slate-600">Base imponible (€)<input type="number" min="0" step="0.01" value={facturaHonorariosForm.baseImponible} onChange={e => setFacturaHonorariosForm(f => actualizarImportesFacturaHonorarios(f,{baseImponible:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
-                  <label className="text-xs font-semibold text-slate-600">Tipo (%)<input type="number" min="0" step="0.01" value={facturaHonorariosForm.porcentajeImpuesto} onChange={e => setFacturaHonorariosForm(f => actualizarImportesFacturaHonorarios(f,{porcentajeImpuesto:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
-                  <label className="text-xs font-semibold text-slate-600">Impuesto (€)<input type="number" min="0" step="0.01" value={facturaHonorariosForm.importeImpuesto} readOnly className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm" /></label>
-                  <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"><span className="block text-xs font-semibold text-slate-500">Total factura</span><strong className="mt-1 block text-sm text-slate-800">{Number(facturaHonorariosForm.totalFactura || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</strong></div>
+                  <label className="text-xs font-semibold text-slate-600">IVA (€)<input type="number" value={facturaHonorariosForm.importeImpuesto} readOnly className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm" /></label>
+                  <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2"><span className="block text-xs font-semibold text-emerald-700">Total honorarios (€)</span><strong className="mt-1 block text-sm text-emerald-800">{Number(facturaHonorariosForm.totalFactura || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</strong></div>
                 </div>
                 <label className="mt-3 block text-xs font-semibold text-slate-600">Observaciones<textarea value={facturaHonorariosForm.observaciones} onChange={e => setFacturaHonorariosForm(f => ({...f,observaciones:e.target.value}))} rows={2} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
               </section>
