@@ -194,6 +194,17 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
         # Iterador secuencial: en modo read_only, llamar cell() repetidamente
         # puede volver a recorrer el XML desde el principio y disparar el tiempo de lectura.
         filas_originales = hoja_original.iter_rows(min_row=2, max_col=len(df.columns), values_only=False)
+
+        def siguiente_fila_original_no_vacia():
+            # pandas.read_excel omite filas completamente vacías; el iterador de
+            # openpyxl no. Saltarlas aquí evita desplazar el JSON original una fila.
+            while True:
+                celdas = next(filas_originales, None)
+                if celdas is None:
+                    return ()
+                if any(_limpiar(celda.value) is not None for celda in celdas):
+                    return celdas
+
         for inicio in range(0, len(df), TAMANO_LOTE):
             lote = df.iloc[inicio:inicio + TAMANO_LOTE]
             registros = []
@@ -204,7 +215,7 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
             # el listado completo de expedientes sin vínculo.
             for indice, row in lote.iterrows():
                 fila_excel = int(indice) + 2
-                celdas_originales = next(filas_originales, ())
+                celdas_originales = siguiente_fila_original_no_vacia()
                 original = {
                     str(columna): _valor_original_excel(celdas_originales[posicion])
                     for posicion, columna in enumerate(df.columns)
