@@ -605,6 +605,7 @@ def migrar_esquema_expedientes_inicio():
         ("facturacion_provincia", "VARCHAR(200)"),
         ("facturacion_telefono", "VARCHAR(50)"),
         ("facturacion_email", "VARCHAR(320)"),
+        ("facturacion_empleado", "BOOLEAN NOT NULL DEFAULT FALSE"),
         ("facturacion_estado", "VARCHAR(200)"),
         ("facturacion_fecha", "DATE"),
     ]
