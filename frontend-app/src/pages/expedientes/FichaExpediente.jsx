@@ -1703,7 +1703,7 @@ export default function FichaExpediente() {
     }
   };
 
-  const numeroDecimalGasto = (valor) => (
+  const numeroDecimalGasto = (valor) => {
     if (valor === "" || valor === null || valor === undefined) return 0;
     const n = Number(String(valor).replace(/\s/g, "").replace(",", "."));
     return Number.isFinite(n) ? n : 0;
