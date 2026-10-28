@@ -20,6 +20,10 @@ export default function Utilidades() {
         </div>
       </header>
 
+      <Grupo titulo="Datos corporativos" descripcion="Centraliza la información de Molsan que se reutilizará en documentos y facturación.">
+        <Card icon="🏢" titulo="Datos Molsan" descripcion="Mantén los datos fiscales, contacto corporativo y preferencias documentales en un único lugar." link="/herramientas/utilidades/datos-molsan" destacado />
+      </Grupo>
+
       <Grupo titulo="Empleados y permisos" descripcion="Gestiona empleados, roles, permisos, asignaciones, visibilidad y auditoría desde un único grupo de administración.">
         <Card icon="🛡️" titulo="Empleados y permisos" descripcion="Selecciona un empleado para revisar y administrar sus roles, módulos y permisos asignados." link="/seguridad/usuarios" destacado />
         <Card icon="🔑" titulo="Gestión de roles" descripcion="Crea roles nuevos, como Colaborador, y administra los roles disponibles en el sistema." link="/seguridad/roles/editor" destacado />
