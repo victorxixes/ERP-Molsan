@@ -73,7 +73,12 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
   };
   const confirmar = async () => {
     const ok = await guardar();
-    if (ok) await onConfirmarCierre?.();
+    if (!ok) return;
+    try {
+      await onConfirmarCierre?.();
+    } catch (e) {
+      setError(e?.response?.data?.detail || e?.message || "No se ha podido cerrar el expediente. Revisa los requisitos de cierre y la factura de honorarios.");
+    }
   };
   const contenido = (
     <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-950/60 p-2 backdrop-blur-sm sm:p-5" role="dialog" aria-modal="true" aria-labelledby="liquidar-expediente-titulo">
