@@ -28,18 +28,14 @@ export default function ImportadorPostFirma() {
   const [resultado, setResultado] = useState(null);
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
-  const [fechaDesde, setFechaDesde] = useState(`${new Date().getFullYear()}-01-01`);
-  const [fechaHasta, setFechaHasta] = useState(`${new Date().getFullYear()}-12-31`);
+  const [fechaDesde, setFechaDesde] = useState("");
+  const [fechaHasta, setFechaHasta] = useState("");
 
   const ejecutar = async (modo) => {
     setError("");
     setResultado(null);
     if (!archivo) {
       setError("Selecciona el Excel histórico Post Firma (.xlsx).");
-      return;
-    }
-    if (modo === "validar" && (!fechaDesde || !fechaHasta)) {
-      setError("Selecciona las fechas desde y hasta para FPAGO.");
       return;
     }
     if (modo === "validar" && fechaDesde > fechaHasta) {
@@ -51,8 +47,11 @@ export default function ImportadorPostFirma() {
     const formData = new FormData();
     formData.append("fichero", archivo);
     try {
+      const parametros = new URLSearchParams();
+      if (fechaDesde) parametros.set("fecha_desde", fechaDesde);
+      if (fechaHasta) parametros.set("fecha_hasta", fechaHasta);
       const endpoint = modo === "validar"
-        ? `/utilidades/importador-absis/postfirma/validar?fecha_desde=${encodeURIComponent(fechaDesde)}&fecha_hasta=${encodeURIComponent(fechaHasta)}`
+        ? `/utilidades/importador-absis/postfirma/validar${parametros.size ? `?${parametros.toString()}` : ""}`
         : "/utilidades/importador-absis/postfirma";
       const respuesta = await axios.post(endpoint, formData);
       if (modo === "validar") setValidacion(respuesta.data);
@@ -88,7 +87,7 @@ export default function ImportadorPostFirma() {
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-slate-800 md:text-3xl">Importador ABSIS · Post Firma</h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">
-                Revisa el histórico Post Firma por fecha efectiva del pago (FPAGO). El análisis conserva cada movimiento por separado y no modifica gastos, pagos ni expedientes.
+                Valida el histórico Post Firma. El periodo es opcional y, cuando se indica, se aplica a FPAGO. La validación conserva cada movimiento por separado y no modifica gastos, pagos ni expedientes.
               </p>
             </div>
           </div>
@@ -114,9 +113,9 @@ export default function ImportadorPostFirma() {
             <input id="postfirma-fecha-hasta" type="date" value={fechaHasta} min={fechaDesde || undefined} onChange={(event) => setFechaHasta(event.target.value)} disabled={cargando} className={CAMPO} />
           </div>
         </div>
-        <p className="mt-3 max-w-3xl text-xs leading-5 text-slate-500">El periodo se aplica a FPAGO, la fecha efectiva del pago. Cada movimiento de gasto se evalúa por separado; los pagos con FPAGO vacío o inválido se contabilizan como incidencias.</p>
+        <p className="mt-3 max-w-3xl text-xs leading-5 text-slate-500">Las fechas son opcionales. Si las dejas en blanco, se revisa el Excel completo; si indicas una o ambas, el filtro se aplica a FPAGO (fecha efectiva del pago). Los pagos con FPAGO vacío o inválido se contabilizan como incidencias.</p>
         <div className="mt-5 flex flex-wrap gap-3">
-          <button type="button" onClick={() => ejecutar("validar")} disabled={cargando || !archivo || !fechaDesde || !fechaHasta} className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50">{cargando ? "Procesando…" : "Revisar periodo sin importar"}</button>
+          <button type="button" onClick={() => ejecutar("validar")} disabled={cargando || !archivo} className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50">{cargando ? "Procesando…" : "Revisar periodo sin importar"}</button>
           <button type="button" onClick={() => ejecutar("importar")} disabled={cargando || !archivo} className="rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50">{cargando ? "Procesando…" : "Importar Excel completo"}</button>
         </div>
         <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900"><strong>Importación real:</strong> al pulsar «Importar Excel completo» se procesarán todas las filas del fichero, sin filtro de fechas. Los gastos con IDGASTO existente se actualizarán; los nuevos se crearán. Los que no encuentren expediente conservarán su referencia ABSIS y quedarán sin vínculo en el ERP. Esta acción sí guarda cambios en la base de datos.</div>
@@ -131,7 +130,7 @@ export default function ImportadorPostFirma() {
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <Metrica titulo="Filas con datos del periodo" valor={validacion.filas_con_datos} detalle={`Filas totales Excel: ${validacion.filas_excel ?? "—"}`} />
-            <Metrica titulo="Filas dentro del periodo" valor={validacion.filas_dentro_periodo} detalle={`${validacion.fecha_desde || "—"} a ${validacion.fecha_hasta || "—"}`} />
+            <Metrica titulo="Filas dentro del periodo" valor={validacion.filas_dentro_periodo} detalle={validacion.fecha_desde || validacion.fecha_hasta ? `${validacion.fecha_desde || "Sin límite inicial"} a ${validacion.fecha_hasta || "Sin límite final"}` : "Excel completo, sin filtro temporal"} />
             <Metrica titulo="Filas fuera del periodo" valor={validacion.filas_fuera_periodo} />
             <Metrica titulo="FPAGO vacío o inválido" valor={validacion.fpago_sin_fecha_o_invalida} />
             <Metrica titulo="IDGASTO distintos" valor={validacion.ids_gasto_unicos} />
