@@ -942,10 +942,10 @@ export default function EnviarANotarioModal({
 
             </div>
 
-            {/* DATOS DE FACTURACIÓN — CUARTO BLOQUE */}
+            {/* DATOS DE FACTURACIÓN — CUARTO BLOQUE: ocupa todo el ancho disponible */}
 
-            <div className="min-w-0">
-              <section className="rounded-xl border border-[var(--erp-primary)]/20 bg-slate-50/70 p-3 xl:col-span-5">
+            <div className="min-w-0 w-full col-span-full">
+              <section className="w-full min-w-0 rounded-xl border border-[var(--erp-primary)]/20 bg-slate-50/70 p-4 sm:p-5">
                 <div className="mb-5 flex items-start gap-3">
                   <div>
                     <h3 className="text-base font-bold text-slate-800">
@@ -958,7 +958,7 @@ export default function EnviarANotarioModal({
                   </div>
                 </div>
 
-                <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-3">
+                <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   <CampoTexto
                     label="Nombre"
                     value={form.facturacion_nombre}
