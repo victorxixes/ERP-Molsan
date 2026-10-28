@@ -55,6 +55,7 @@ class TipoExpedienteResponse(BaseModel):
 
 
 def asegurar_catalogo_inicial(db: Session) -> None:
+    TipoExpediente.__table__.create(bind=db.get_bind(), checkfirst=True)
     if db.query(TipoExpediente.id).first():
         return
 
@@ -72,10 +73,11 @@ def asegurar_catalogo_inicial(db: Session) -> None:
     db.flush()
     # Los identificadores históricos 5–21 se conservan; el contador queda
     # preparado para asignar el siguiente ID automáticamente en PostgreSQL.
-    db.execute(text(
-        "SELECT setval(pg_get_serial_sequence('tipos_expediente', 'id'), "
-        "COALESCE((SELECT MAX(id) FROM tipos_expediente), 1), true)"
-    ))
+    if db.get_bind().dialect.name == "postgresql":
+        db.execute(text(
+            "SELECT setval(pg_get_serial_sequence('tipos_expediente', 'id'), "
+            "COALESCE((SELECT MAX(id) FROM tipos_expediente), 1), true)"
+        ))
     db.commit()
 
 
