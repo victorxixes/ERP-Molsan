@@ -62,7 +62,8 @@ def migrar_campos_absis_facturacion():
 def _normalizar_texto(valor):
     import unicodedata
     texto = str(valor or "").strip().casefold()
-    return "".join(c for c in unicodedata.normalize("NFKD", texto) if not unicodedata.combining(c))
+    texto = "".join(c for c in unicodedata.normalize("NFKD", texto) if not unicodedata.combining(c))
+    return " ".join(texto.split())
 
 def _concepto_honorarios(gasto):
     # Compatibilidad con datos anteriores: el concepto puede estar en tipo o descripcion.
@@ -192,8 +193,14 @@ def _consultar(db, fecha_desde=None, fecha_hasta=None, tipo_operacion=None, esta
         concepto = _valor(gasto, "concepto_gasto_absis", "CONCEPTOGASTO") if es_registro_absis else (
             getattr(gasto, "tipo", None) or getattr(gasto, "descripcion", None)
         )
-        # El informe Post Firma debe incluir todas las filas ABSIS importadas,
-        # no solo HONORARIOS GESTORÍA. Las tarjetas suman el IMPGASTO de cada fila.
+        # La importación conserva todas las filas y columnas ABSIS. El informe
+        # económico selecciona exclusivamente HONORARIOS GESTORÍA cuyo beneficiario
+        # sea *MOLSAN. IDPAGO no interviene en este filtro ni en los cálculos.
+        concepto_filtro = _normalizar_texto(_original_absis(gasto, "CONCEPTOGASTO") or concepto)
+        beneficiario_filtro = _normalizar_texto(_original_absis(gasto, "BENEFICIARIO"))
+        if concepto_filtro != "honorarios gestoria" or beneficiario_filtro != "*molsan":
+            continue
+
         tipo_operacion_valor = _valor(gasto, "tipo_operacion_absis", "TIPOOPERACION") if es_registro_absis else (
             getattr(exp, "tipo_operacion", None) if exp else None
         )
