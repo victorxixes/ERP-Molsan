@@ -3522,7 +3522,7 @@ def generar_honorarios_gestoria(
         FOR UPDATE
     """), {"id_expediente": str(id_expediente)}).mappings().first()
     if not factura_registrable:
-        raise HTTPException(status_code=409, detail="Primero debe generarse el PDF oficial de la factura para asignar su número HG.")
+        raise HTTPException(status_code=409, detail="Primero debe generarse el PDF oficial de la factura para asignar su número correlativo VI.")
 
     # La tarifa se decide con los datos guardados, no con el importe que envía
     # el navegador. Se consideran tanto los datos generales como las fincas.
@@ -3737,8 +3737,8 @@ def generar_documento_factura_honorarios(
     if expediente is None:
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
 
-    # Serie fiscal correlativa HG por año. El bloqueo transaccional evita que dos
-    # usuarios obtengan el mismo número cuando facturan simultáneamente.
+    # Serie correlativa VI/NNNNN-AA. El bloqueo transaccional evita duplicados
+    # si dos usuarios generan facturas simultáneamente.
     db.execute(text("SELECT pg_advisory_xact_lock(724190281)"))
     factura_existente = db.execute(text("""
         SELECT numero_factura, datos_factura, estado
@@ -3747,8 +3747,8 @@ def generar_documento_factura_honorarios(
         FOR UPDATE
     """), {"id_expediente": str(id_expediente)}).mappings().first()
     if factura_existente:
-        # Reintentos: siempre se vuelve a emitir el mismo documento, sin duplicar
-        # ni cambiar una factura que ya haya quedado registrada.
+        # Los reintentos conservan el número ya asignado, incluidos documentos
+        # antiguos; nunca se renumeran facturas que ya existan.
         datos_guardados = factura_existente["datos_factura"]
         if isinstance(datos_guardados, str):
             datos_guardados = json.loads(datos_guardados)
@@ -3756,13 +3756,547 @@ def generar_documento_factura_honorarios(
         datos.update(dict(datos_guardados or {}))
         numero_factura = str(factura_existente["numero_factura"])
     else:
-        anio_factura = str(datos.get("fecha_factura") or date.today().isoformat())[:4]
+        fecha_numero = str(datos.get("fecha_factura") or date.today().isoformat())[:10]
+        anio_corto = fecha_numero[2:4]
         siguiente = db.execute(text("""
-            SELECT COALESCE(MAX(CAST(SUBSTRING(numero_factura FROM 9) AS BIGINT)), 0) + 1
+            SELECT COALESCE(MAX(CAST(SUBSTRING(numero_factura FROM 4 FOR 5) AS BIGINT)), 0) + 1
             FROM facturas_honorarios_gestoria
             WHERE numero_factura LIKE :patron
-        """), {"patron": f"HG-{anio_factura}-%"}).scalar() or 1
-        numero_factura = f"HG-{anio_factura}-{int(siguiente):06d}"
+              AND numero_factura ~ '^VI/[0-9]{5}-[0-9]{2}
+
+    def valor(obj, *nombres):
+        for nombre in nombres:
+            dato = getattr(obj, nombre, None) if obj is not None else None
+            if dato is not None and str(dato).strip():
+                return str(dato).strip()
+        return ""
+
+    def fecha_es(valor_fecha):
+        if not valor_fecha:
+            return "—"
+        try:
+            return datetime.fromisoformat(str(valor_fecha)[:10]).strftime("%d/%m/%Y")
+        except (ValueError, TypeError):
+            return str(valor_fecha)
+
+    def euros(valor_importe):
+        try:
+            return f"{float(str(valor_importe or 0).replace(',', '.')):,.2f} €".replace(",", "X").replace(".", ",").replace("X", ".")
+        except (ValueError, TypeError):
+            return "0,00 €"
+
+    def poner_en_celda(celda, texto):
+        parrafo = celda.paragraphs[0] if celda.paragraphs else celda.add_paragraph()
+        if parrafo.runs:
+            parrafo.runs[0].text = str(texto)
+            for run in parrafo.runs[1:]:
+                run.text = ""
+        else:
+            parrafo.add_run(str(texto))
+
+    try:
+        # Validamos la plantilla oficial del concepto y recuperamos su imagen
+        # corporativa para que el PDF conserve la identidad del documento.
+        from docx import Document
+        import zipfile
+        from reportlab.lib import colors
+        from reportlab.lib.enums import TA_LEFT, TA_RIGHT
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.units import mm
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image as PDFImage
+        from xml.sax.saxutils import escape
+
+        plantilla_bytes = bytes(plantilla["contenido"])
+        Document(io.BytesIO(plantilla_bytes))  # Comprueba que la plantilla oficial sea válida.
+        numero_factura = str(datos.get("numero_factura") or numero_factura).strip()
+        fecha_factura = fecha_es(datos.get("fecha_factura"))
+        cliente = str(datos.get("cliente") or valor(expediente, "nombre_solicitante", "nombre_titular") or "").strip()
+        nif_cliente = str(datos.get("nif_cliente") or valor(expediente, "nif_solicitante", "dni_solicitante", "nif_titular") or "").strip()
+        direccion_facturacion = str(datos.get("direccion_facturacion") or valor(expediente, "facturacion_direccion", "direccion_facturacion") or "").strip()
+        codigo_postal_facturacion = str(datos.get("codigo_postal_facturacion") or valor(expediente, "facturacion_codigo_postal", "codigo_postal_facturacion") or "").strip()
+        poblacion_facturacion = str(datos.get("poblacion_facturacion") or valor(expediente, "facturacion_poblacion", "poblacion_facturacion") or "").strip()
+        provincia_facturacion = str(datos.get("provincia_facturacion") or valor(expediente, "facturacion_provincia", "provincia_facturacion") or "").strip()
+        concepto_factura = str(datos.get("concepto") or "Honorarios de gestoría").strip()
+        base = Decimal(str(datos.get("base_imponible") or 0).replace(",", ".")).quantize(Decimal("0.01"))
+        impuesto = Decimal(str(datos.get("importe_impuesto") or 0).replace(",", ".")).quantize(Decimal("0.01"))
+        total_dato = datos.get("total_factura")
+        total = Decimal(str(total_dato if total_dato is not None else base + impuesto).replace(",", ".")).quantize(Decimal("0.01"))
+        tipo_impuesto = str(datos.get("tipo_impuesto") or "IVA").strip().upper()
+        porcentaje = str(datos.get("porcentaje_impuesto") or ("7" if tipo_impuesto == "IGIC" else "21")).strip()
+        numero_expediente = str(id_expediente)
+        notario = valor(expediente, "nombre_notario", "notario_otorgante", "notario") or "—"
+        protocolo = valor(expediente, "protocolo") or "—"
+        fecha_firma = fecha_es(valor(expediente, "fecha_firma"))
+        descuento = Decimal(str(datos.get("descuento_empleado") or 0).replace(",", ".")).quantize(Decimal("0.01"))
+        es_empleado = str(datos.get("empleado") or "").strip().lower() in {"true", "1", "si", "sí"}
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(
+            buffer, pagesize=A4, rightMargin=18*mm, leftMargin=18*mm,
+            topMargin=15*mm, bottomMargin=17*mm,
+            title=f"Factura {numero_factura} - expediente {numero_expediente}",
+            author="ERP-Molsan",
+        )
+        styles = getSampleStyleSheet()
+        styles.add(ParagraphStyle(name="FacturaTituloMolsan", parent=styles["Title"], fontName="Helvetica-Bold", fontSize=18, leading=22, textColor=colors.HexColor("#15325b"), alignment=TA_LEFT, spaceAfter=2*mm))
+        styles.add(ParagraphStyle(name="FacturaSubMolsan", parent=styles["Normal"], fontSize=9, leading=13, textColor=colors.HexColor("#596579"), spaceAfter=2*mm))
+        styles.add(ParagraphStyle(name="FacturaSeccionMolsan", parent=styles["Heading3"], fontName="Helvetica-Bold", fontSize=10, leading=13, textColor=colors.HexColor("#15325b"), spaceBefore=4*mm, spaceAfter=2*mm))
+        styles.add(ParagraphStyle(name="FacturaCeldaMolsan", parent=styles["BodyText"], fontSize=8.5, leading=11))
+        styles.add(ParagraphStyle(name="FacturaCeldaDerMolsan", parent=styles["BodyText"], fontSize=8.5, leading=11, alignment=TA_RIGHT))
+        styles.add(ParagraphStyle(name="FacturaTotalMolsan", parent=styles["BodyText"], fontName="Helvetica-Bold", fontSize=11, leading=14, alignment=TA_RIGHT, textColor=colors.HexColor("#15325b")))
+        story = []
+        # Reutiliza la primera imagen incrustada en la plantilla Word oficial (normalmente el logo).
+        logo = None
+        try:
+            with zipfile.ZipFile(io.BytesIO(plantilla_bytes)) as archivo_docx:
+                imagenes = sorted(n for n in archivo_docx.namelist() if n.startswith("word/media/") and not n.endswith("/"))
+                if imagenes:
+                    logo = PDFImage(io.BytesIO(archivo_docx.read(imagenes[0])), width=32*mm, height=18*mm, kind="proportional")
+        except Exception:
+            logo = None
+        if logo:
+            cabecera = Table([[logo, Paragraph("<b>MOLSAN GESTIÓN Y TRAMITACIÓN</b><br/><font size='8'>Factura de honorarios de gestoría</font>", styles["FacturaSubMolsan"])]], colWidths=[38*mm, 136*mm])
+            cabecera.setStyle(TableStyle([
+                ("VALIGN", (0,0), (-1,-1), "MIDDLE"), ("LEFTPADDING", (0,0), (-1,-1), 0),
+                ("RIGHTPADDING", (0,0), (-1,-1), 4), ("BOTTOMPADDING", (0,0), (-1,-1), 4),
+                ("LINEBELOW", (0,0), (-1,-1), 1, colors.HexColor("#d6deea")),
+            ]))
+            story.extend([cabecera, Spacer(1, 6*mm)])
+        else:
+            story.extend([Paragraph("MOLSAN GESTIÓN Y TRAMITACIÓN", styles["FacturaTituloMolsan"]), Paragraph("Factura de honorarios de gestoría", styles["FacturaSubMolsan"]), Spacer(1, 4*mm)])
+        story.append(Paragraph("FACTURA", styles["FacturaTituloMolsan"]))
+        cabecera_datos = [
+            [Paragraph("<b>Número de factura</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Fecha</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Expediente</b>", styles["FacturaCeldaMolsan"])],
+            [Paragraph(escape(numero_factura), styles["FacturaCeldaMolsan"]), Paragraph(escape(fecha_factura), styles["FacturaCeldaMolsan"]), Paragraph(escape(numero_expediente), styles["FacturaCeldaMolsan"])],
+        ]
+        tabla_cabecera = Table(cabecera_datos, colWidths=[58*mm, 43*mm, 73*mm])
+        tabla_cabecera.setStyle(TableStyle([
+            ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#edf2f8")),
+            ("BOX", (0,0), (-1,-1), .5, colors.HexColor("#d5deea")),
+            ("INNERGRID", (0,0), (-1,-1), .35, colors.HexColor("#d5deea")),
+            ("VALIGN", (0,0), (-1,-1), "TOP"), ("LEFTPADDING", (0,0), (-1,-1), 7),
+            ("RIGHTPADDING", (0,0), (-1,-1), 7), ("TOPPADDING", (0,0), (-1,-1), 7),
+            ("BOTTOMPADDING", (0,0), (-1,-1), 7),
+        ]))
+        story.extend([tabla_cabecera, Paragraph("DATOS DEL CLIENTE", styles["FacturaSeccionMolsan"])])
+        cliente_txt = escape(cliente or "—")
+        nif_txt = escape(nif_cliente or "—")
+        direccion_txt = escape(direccion_facturacion or "—")
+        cp_txt = escape(codigo_postal_facturacion or "—")
+        poblacion_txt = escape(poblacion_facturacion or "—")
+        provincia_txt = escape(provincia_facturacion or "—")
+        datos_cliente = Table([
+            [Paragraph("<b>Cliente / titular</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>NIF / CIF</b>", styles["FacturaCeldaMolsan"])],
+            [Paragraph(cliente_txt, styles["FacturaCeldaMolsan"]), Paragraph(nif_txt, styles["FacturaCeldaMolsan"])],
+            [Paragraph("<b>Dirección</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Código postal</b>", styles["FacturaCeldaMolsan"])],
+            [Paragraph(direccion_txt, styles["FacturaCeldaMolsan"]), Paragraph(cp_txt, styles["FacturaCeldaMolsan"])],
+            [Paragraph("<b>Población</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Provincia</b>", styles["FacturaCeldaMolsan"])],
+            [Paragraph(poblacion_txt, styles["FacturaCeldaMolsan"]), Paragraph(provincia_txt, styles["FacturaCeldaMolsan"])],
+        ], colWidths=[87*mm, 87*mm])
+        datos_cliente.setStyle(TableStyle([
+            ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#edf2f8")),
+            ("BOX", (0,0), (-1,-1), .5, colors.HexColor("#d5deea")),
+            ("INNERGRID", (0,0), (-1,-1), .35, colors.HexColor("#d5deea")),
+            ("VALIGN", (0,0), (-1,-1), "TOP"), ("LEFTPADDING", (0,0), (-1,-1), 7),
+            ("RIGHTPADDING", (0,0), (-1,-1), 7), ("TOPPADDING", (0,0), (-1,-1), 7),
+            ("BOTTOMPADDING", (0,0), (-1,-1), 7),
+        ]))
+        story.extend([datos_cliente, Paragraph("DETALLE DE FACTURACIÓN", styles["FacturaSeccionMolsan"])])
+        story.append(Paragraph(f"<b>Concepto:</b> {escape(concepto_factura)}", styles["FacturaCeldaMolsan"]))
+        story.append(Spacer(1, 3*mm))
+        importe_honorarios_bruto = base + descuento if (es_empleado or descuento > 0) else base
+        descripcion_honorarios = f"{concepto_factura} (antes de descuento)" if (es_empleado or descuento > 0) else concepto_factura
+        detalle = [
+            [Paragraph("<b>Descripción</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Importe</b>", styles["FacturaCeldaDerMolsan"])],
+            [Paragraph(escape(descripcion_honorarios), styles["FacturaCeldaMolsan"]), Paragraph(euros(importe_honorarios_bruto), styles["FacturaCeldaDerMolsan"])],
+        ]
+        tabla_detalle = Table(detalle, colWidths=[125*mm, 49*mm])
+        tabla_detalle.setStyle(TableStyle([
+            ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#edf2f8")),
+            ("BOX", (0,0), (-1,-1), .5, colors.HexColor("#d5deea")),
+            ("INNERGRID", (0,0), (-1,-1), .35, colors.HexColor("#d5deea")),
+            ("VALIGN", (0,0), (-1,-1), "TOP"), ("LEFTPADDING", (0,0), (-1,-1), 7),
+            ("RIGHTPADDING", (0,0), (-1,-1), 7), ("TOPPADDING", (0,0), (-1,-1), 8),
+            ("BOTTOMPADDING", (0,0), (-1,-1), 8),
+        ]))
+        story.append(tabla_detalle)
+        if es_empleado or descuento > 0:
+            resumen = [
+                [Paragraph("Honorarios antes del descuento", styles["FacturaCeldaMolsan"]), Paragraph(euros(base + descuento), styles["FacturaCeldaDerMolsan"])],
+                [Paragraph("Descuento empleado (50 %)", styles["FacturaCeldaMolsan"]), Paragraph(f"− {euros(descuento)}", styles["FacturaCeldaDerMolsan"])],
+                [Paragraph("<b>Base imponible tras descuento</b>", styles["FacturaCeldaMolsan"]), Paragraph(f"<b>{euros(base)}</b>", styles["FacturaCeldaDerMolsan"])],
+            ]
+        else:
+            resumen = [
+                [Paragraph("Base imponible", styles["FacturaCeldaMolsan"]), Paragraph(euros(base), styles["FacturaCeldaDerMolsan"])],
+            ]
+        resumen.extend([
+            [Paragraph(f"{escape(tipo_impuesto)} {escape(porcentaje)} %", styles["FacturaCeldaMolsan"]), Paragraph(euros(impuesto), styles["FacturaCeldaDerMolsan"])],
+            [Paragraph("<b>TOTAL FACTURA</b>", styles["FacturaTotalMolsan"]), Paragraph(f"<b>{euros(total)}</b>", styles["FacturaTotalMolsan"])],
+        ])
+        tabla_resumen = Table(resumen, colWidths=[125*mm, 49*mm], hAlign="RIGHT")
+        tabla_resumen.setStyle(TableStyle([
+            ("LINEABOVE", (0,0), (-1,0), .8, colors.HexColor("#9aabc2")),
+            ("BACKGROUND", (0,-1), (-1,-1), colors.HexColor("#edf2f8")),
+            ("LEFTPADDING", (0,0), (-1,-1), 7), ("RIGHTPADDING", (0,0), (-1,-1), 7),
+            ("TOPPADDING", (0,0), (-1,-1), 6), ("BOTTOMPADDING", (0,0), (-1,-1), 6),
+        ]))
+        story.extend([Spacer(1, 3*mm), tabla_resumen, Paragraph("DATOS DEL EXPEDIENTE", styles["FacturaSeccionMolsan"])])
+        datos_expediente = [
+            [Paragraph("<b>Documento</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Notario</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Protocolo</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Fecha de firma</b>", styles["FacturaCeldaMolsan"])],
+            [Paragraph(escape(nif_cliente or "—"), styles["FacturaCeldaMolsan"]), Paragraph(escape(notario), styles["FacturaCeldaMolsan"]), Paragraph(escape(protocolo), styles["FacturaCeldaMolsan"]), Paragraph(escape(fecha_firma), styles["FacturaCeldaMolsan"])],
+        ]
+        tabla_exp = Table(datos_expediente, colWidths=[43.5*mm]*4)
+        tabla_exp.setStyle(TableStyle([
+            ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#edf2f8")),
+            ("BOX", (0,0), (-1,-1), .5, colors.HexColor("#d5deea")),
+            ("INNERGRID", (0,0), (-1,-1), .35, colors.HexColor("#d5deea")),
+            ("VALIGN", (0,0), (-1,-1), "TOP"), ("LEFTPADDING", (0,0), (-1,-1), 5),
+            ("RIGHTPADDING", (0,0), (-1,-1), 5), ("TOPPADDING", (0,0), (-1,-1), 6),
+            ("BOTTOMPADDING", (0,0), (-1,-1), 6),
+        ]))
+        story.append(tabla_exp)
+        if datos.get("observaciones"):
+            story.extend([Paragraph("OBSERVACIONES", styles["FacturaSeccionMolsan"]), Paragraph(escape(str(datos["observaciones"])).replace("\\n", "<br/>"), styles["FacturaCeldaMolsan"])])
+        story.extend([Spacer(1, 8*mm), Paragraph("Documento generado por ERP-Molsan a partir de la plantilla oficial vinculada al concepto de honorarios de gestoría.", styles["FacturaSubMolsan"])])
+        doc.build(story)
+        buffer.seek(0)
+        if not factura_existente:
+            db.execute(text("""
+                INSERT INTO facturas_honorarios_gestoria
+                    (id_expediente, numero_factura, fecha_factura, datos_factura, estado)
+                VALUES
+                    (:id_expediente, :numero_factura, :fecha_factura, CAST(:datos_factura AS JSONB), 'Pendiente de registro')
+            """), {
+                "id_expediente": str(id_expediente),
+                "numero_factura": numero_factura,
+                "fecha_factura": str(datos.get("fecha_factura") or date.today().isoformat())[:10],
+                "datos_factura": json.dumps(datos, ensure_ascii=False, default=str),
+            })
+        db.commit()
+    except HTTPException:
+        db.rollback()
+        raise
+    except Exception as exc:
+        db.rollback()
+        logger.exception("No se pudo generar el PDF oficial de honorarios para %s", id_expediente)
+        raise HTTPException(status_code=500, detail="No se pudo generar el PDF de la factura. Revisa que la plantilla oficial del concepto esté íntegra.")
+
+    nombre_salida = f"Factura_honorarios_{id_expediente}.pdf".replace("/", "-").replace("\\\\", "-")
+    return StreamingResponse(
+        buffer,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="{nombre_salida}"',
+            "X-Numero-Factura": numero_factura,
+        },
+    )
+
+# ============================================================
+# CONSULTAR UN EXPEDIENTE
+# ============================================================
+
+class ControlBloqueoRequest(BaseModel):
+    liquidado_sin_tramitar: bool = False
+    fecha_liquidacion_sin_tramitar: Optional[date] = None
+    cambio_gestoria: bool = False
+    fecha_cambio_gestoria: Optional[date] = None
+    bloqueo_manual: bool = False
+    motivo_bloqueo: Optional[str] = None
+    fecha_bloqueo: Optional[date] = None
+
+
+def motivo_bloqueo_expediente(expediente: Expediente) -> Optional[str]:
+    estado = str(getattr(expediente, "estado_expediente", "") or "").strip().upper()
+    if estado.startswith("LST"):
+        return "LIQUIDADO SIN TRAMITAR"
+    if estado.startswith("RST"):
+        return "RETENCIÓN SIN TRAMITAR"
+    if bool(getattr(expediente, "liquidado_sin_tramitar", False)):
+        return "LIQUIDADO SIN TRAMITAR"
+    if bool(getattr(expediente, "cambio_gestoria", False)):
+        return "CAMBIO DE GESTORÍA"
+    if bool(getattr(expediente, "bloqueo_manual", False)):
+        return str(getattr(expediente, "motivo_bloqueo", None) or "BLOQUEO MANUAL")
+    return None
+
+
+@router.put("/{id_expediente}/control-bloqueo")
+def actualizar_control_bloqueo(
+    id_expediente: str,
+    datos: ControlBloqueoRequest,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    expediente = db.query(Expediente).filter(
+        Expediente.id_expediente == str(id_expediente)
+    ).first()
+    if expediente is None:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+
+    # Solo un administrador puede retirar un bloqueo efectivo ya existente.
+    estado_actual = str(getattr(expediente, "estado_expediente", "") or "").strip().upper()
+    bloqueo_actual = bool(motivo_bloqueo_expediente(expediente))
+    bloqueo_solicitado = bool(
+        datos.liquidado_sin_tramitar
+        or datos.cambio_gestoria
+        or datos.bloqueo_manual
+        or estado_actual.startswith(("LST", "RST"))
+    )
+    if bloqueo_actual and not bloqueo_solicitado and not _usuario_es_admin_visibilidad(usuario):
+        raise HTTPException(status_code=403, detail="Solo un administrador puede desbloquear un expediente.")
+
+    if datos.liquidado_sin_tramitar and not datos.fecha_liquidacion_sin_tramitar and not str(expediente.estado_expediente or "").strip().upper().startswith("LST"):
+        raise HTTPException(status_code=422, detail="Indica la fecha de liquidación sin tramitar.")
+    if datos.cambio_gestoria and not datos.fecha_cambio_gestoria:
+        raise HTTPException(status_code=422, detail="Indica la fecha del cambio de gestoría.")
+    if datos.bloqueo_manual and not (datos.motivo_bloqueo or "").strip():
+        raise HTTPException(status_code=422, detail="Indica el motivo del bloqueo manual.")
+
+    expediente.liquidado_sin_tramitar = datos.liquidado_sin_tramitar
+    expediente.fecha_liquidacion_sin_tramitar = datos.fecha_liquidacion_sin_tramitar if datos.liquidado_sin_tramitar else None
+    expediente.cambio_gestoria = datos.cambio_gestoria
+    expediente.fecha_cambio_gestoria = datos.fecha_cambio_gestoria if datos.cambio_gestoria else None
+    expediente.bloqueo_manual = datos.bloqueo_manual
+    expediente.motivo_bloqueo = (datos.motivo_bloqueo or "").strip() or None if datos.bloqueo_manual else None
+    expediente.fecha_bloqueo = datos.fecha_bloqueo if datos.bloqueo_manual else None
+
+    # Mantener los estados heredados LST/RST como bloqueos efectivos.
+    db.add(expediente)
+    db.commit()
+    db.refresh(expediente)
+    resultado = expediente_a_dict(expediente)
+    resultado["bloqueado"] = bool(motivo_bloqueo_expediente(expediente))
+    resultado["motivo_bloqueo_efectivo"] = motivo_bloqueo_expediente(expediente)
+    return resultado
+
+
+@router.get("/{id_expediente}")
+def obtener_expediente(
+    id_expediente: str,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    expediente = (
+        db.query(Expediente)
+        .filter(Expediente.id_expediente == id_expediente)
+        .first()
+    )
+
+    if expediente is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Expediente no encontrado.",
+        )
+
+    ids_visibles = ids_expedientes_visibles(db, usuario)
+    if ids_visibles is not None and expediente.id not in ids_visibles:
+        # No revelar si existe un expediente fuera del ámbito del usuario.
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+    resultado = adjuntar_promociones_catalogo(db, [expediente_a_dict(expediente)])[0]
+    gestor = db.query(Empleado).filter(Empleado.id == expediente.gestor_asignado_id).first() if getattr(expediente, "gestor_asignado_id", None) else None
+    resultado["gestor_asignado_nombre"] = " ".join(filter(None, [getattr(gestor, "nombre", None), getattr(gestor, "apellidos", None)])).strip() if gestor else None
+    return resultado
+
+
+# ============================================================
+# MIGRACIÓN DE COLUMNAS
+# ============================================================
+
+@router.post("/migraciones/actualizar-envio-notario")
+def actualizar_columnas_envio_notario(
+    db: Session = Depends(get_db),
+):
+    """Migra el esquema del envío a notario en pasos confirmados por separado.
+
+    Primero crea y confirma la tabla de documentos de escritura. Después añade
+    las columnas de expedientes una a una, para que un timeout en una columna
+    no deshaga la creación de la tabla ni el trabajo ya confirmado.
+    """
+    columnas = [
+        ("idioma_documento", "VARCHAR(100)"),
+        ("formato_escritura", "VARCHAR(200)"),
+        ("tipo_tramite", "VARCHAR(200)"),
+        ("facturacion_nombre", "VARCHAR(300)"),
+        ("facturacion_apellidos", "VARCHAR(300)"),
+        ("facturacion_dni_nif", "VARCHAR(50)"),
+        ("facturacion_direccion", "VARCHAR(500)"),
+        ("facturacion_codigo_postal", "VARCHAR(30)"),
+        ("facturacion_poblacion", "VARCHAR(200)"),
+        ("facturacion_provincia", "VARCHAR(200)"),
+        ("facturacion_telefono", "VARCHAR(50)"),
+        ("facturacion_email", "VARCHAR(320)"),
+        ("facturacion_estado", "VARCHAR(200)"),
+        ("facturacion_fecha", "DATE"),
+    ]
+
+    print(
+        "INICIO MIGRACIÓN ENVÍO A NOTARIO: "
+        f"{len(columnas)} columnas; creando primero la tabla documental",
+        flush=True,
+    )
+
+    # PASO 1: crear la tabla que utiliza enviar_a_notario y confirmar este
+    # cambio por separado. Así, un fallo posterior al añadir columnas no
+    # provoca que PostgreSQL deshaga la creación de la tabla.
+    try:
+        db.execute(text("SET LOCAL lock_timeout = '5s'"))
+        db.execute(text("SET LOCAL statement_timeout = '20s'"))
+        db.execute(text("""
+            CREATE TABLE IF NOT EXISTS expediente_documentos_escritura (
+                id SERIAL PRIMARY KEY,
+                expediente_id INTEGER NOT NULL
+                    REFERENCES expedientes(id) ON DELETE CASCADE,
+                tipo_documento VARCHAR(300) NOT NULL,
+                cuantia DOUBLE PRECISION NULL
+            )
+        """))
+        db.execute(text("""
+            CREATE INDEX IF NOT EXISTS
+            ix_expediente_documentos_escritura_expediente_id
+            ON expediente_documentos_escritura (expediente_id)
+        """))
+        db.commit()
+        print(
+            "MIGRACIÓN ENVÍO A NOTARIO: tabla e índice confirmados",
+            flush=True,
+        )
+    except Exception as exc:
+        db.rollback()
+        print(
+            "ERROR CREANDO expediente_documentos_escritura:",
+            repr(exc),
+            flush=True,
+        )
+        mensaje = str(exc).lower()
+        if any(
+            token in mensaje
+            for token in (
+                "lock timeout",
+                "statement timeout",
+                "canceling statement due to",
+                "could not obtain lock",
+            )
+        ):
+            raise HTTPException(
+                status_code=503,
+                detail=(
+                    "PostgreSQL no pudo crear/verificar "
+                    "expediente_documentos_escritura porque está esperando "
+                    "un bloqueo o ha superado el tiempo máximo. La tabla "
+                    "no se ha confirmado; revisa los logs de Render."
+                ),
+            )
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "No se pudo crear/verificar la tabla "
+                "expediente_documentos_escritura. Causa técnica: "
+                f"{str(exc)[:400]}"
+            ),
+        )
+
+    # PASO 2: añadir cada columna en su propia transacción. Se vuelve a
+    # configurar lock_timeout/statement_timeout porque SET LOCAL termina
+    # al hacer commit o rollback.
+    columnas_confirmadas = []
+    columnas_pendientes = []
+
+    for indice, (columna, tipo_sql) in enumerate(columnas, start=1):
+        try:
+            print(
+                f"MIGRACIÓN ENVÍO A NOTARIO [{indice}/{len(columnas)}]: "
+                f"comprobando {columna}",
+                flush=True,
+            )
+            db.execute(text("SET LOCAL lock_timeout = '5s'"))
+            db.execute(text("SET LOCAL statement_timeout = '20s'"))
+            db.execute(text(
+                f"ALTER TABLE expedientes "
+                f"ADD COLUMN IF NOT EXISTS {columna} {tipo_sql}"
+            ))
+            db.commit()
+            columnas_confirmadas.append(columna)
+            print(
+                f"MIGRACIÓN ENVÍO A NOTARIO: {columna} confirmada",
+                flush=True,
+            )
+        except Exception as exc:
+            db.rollback()
+            columnas_pendientes.append({
+                "columna": columna,
+                "error": str(exc)[:300],
+            })
+            print(
+                f"ERROR MIGRANDO COLUMNA {columna}: {repr(exc)}",
+                flush=True,
+            )
+            # No seguir intentando bloquear expedientes si ya se ha
+            # detectado un timeout; devolver el diagnóstico al operador.
+            mensaje = str(exc).lower()
+            if any(
+                token in mensaje
+                for token in (
+                    "lock timeout",
+                    "statement timeout",
+                    "canceling statement due to",
+                    "could not obtain lock",
+                )
+            ):
+                break
+
+    if columnas_pendientes:
+        timeout = any(
+            any(
+                token in pendiente["error"].lower()
+                for token in (
+                    "lock timeout",
+                    "statement timeout",
+                    "canceling statement due to",
+                    "could not obtain lock",
+                )
+            )
+            for pendiente in columnas_pendientes
+        )
+        raise HTTPException(
+            status_code=503 if timeout else 500,
+            detail={
+                "mensaje": (
+                    "La tabla expediente_documentos_escritura está creada "
+                    "y confirmada, pero la migración de columnas no ha "
+                    "terminado. Puedes volver a ejecutar este endpoint; "
+                    "ADD COLUMN IF NOT EXISTS permite reintentarlo."
+                ),
+                "tabla_confirmada": "expediente_documentos_escritura",
+                "columnas_confirmadas": columnas_confirmadas,
+                "columnas_pendientes": columnas_pendientes,
+            },
+        )
+
+    print(
+        "FIN MIGRACIÓN ENVÍO A NOTARIO: tabla y columnas confirmadas",
+        flush=True,
+    )
+    return {
+        "ok": True,
+        "mensaje": "Base de datos actualizada correctamente.",
+        "tabla_documentos": "expediente_documentos_escritura",
+        "tabla_documentos_confirmada": True,
+        "tabla_expedientes": "expedientes",
+        "columnas_confirmadas": columnas_confirmadas,
+        "columnas_pendientes": [],
+    }
+
+
+# ============================================================
+# PROVISIONES DE FONDOS Y CANCELACIONES
+# Se monta dentro del router de Expedientes para conservar el RBAC existente.
+# ============================================================
+from backend.app.provisiones.router import router as provisiones_router
+router.include_router(provisiones_router)
+
+        """), {"patron": f"VI/%-{anio_corto}"}).scalar() or 1
+        numero_factura = f"VI/{int(siguiente):05d}-{anio_corto}"
         datos["numero_factura"] = numero_factura
 
     def valor(obj, *nombres):
