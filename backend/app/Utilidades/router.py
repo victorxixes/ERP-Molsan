@@ -3,10 +3,12 @@ import logging
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 from sqlalchemy import text, func
+from typing import Optional
 from pydantic import BaseModel
 
 from backend.app.database import get_db
 from backend.app.expedientes.models import Expediente
+from backend.app.tipos_expediente.models import TipoExpediente
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 from backend.app.expedientes.reparto import resolver_key_actividad
 from backend.app.empleados.models import Empleado
@@ -87,6 +89,111 @@ def add_columna_gestoria_expedientes(
             "error": "No se pudo crear la columna gestoria.",
             "detalle": str(e)
         }
+
+
+# ============================================================
+# ASIGNAR EXPEDIENTES A PROMOCIONES (CATÁLOGO TIPOS DE EXPEDIENTE)
+# ============================================================
+
+class AsignarPromocionRequest(BaseModel):
+    numero_expediente: str
+    tipo_expediente_id: Optional[int] = None
+
+
+@router.get("/tipos-promocion")
+def listar_tipos_para_promociones(
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "editar")
+    tipos = (
+        db.query(TipoExpediente)
+        .filter(
+            TipoExpediente.activo.is_(True),
+            TipoExpediente.grupo == "Tipos de expediente",
+        )
+        .order_by(TipoExpediente.nombre.asc())
+        .all()
+    )
+    return [{"id": tipo.id, "nombre": tipo.nombre} for tipo in tipos]
+
+
+@router.get("/expediente-promocion")
+def consultar_promocion_expediente(
+    numero_expediente: str,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "editar")
+    numero = (numero_expediente or "").strip()
+    if not numero:
+        raise HTTPException(status_code=400, detail="Indica el número de expediente.")
+
+    expediente = (
+        db.query(Expediente)
+        .filter(func.lower(Expediente.id_expediente) == numero.lower())
+        .first()
+    )
+    if not expediente:
+        raise HTTPException(status_code=404, detail=f"No se ha encontrado el expediente {numero}.")
+
+    tipo = db.query(TipoExpediente).filter(TipoExpediente.id == expediente.tipo_expediente_id).first() if expediente.tipo_expediente_id else None
+    return {
+        "numero_expediente": expediente.id_expediente,
+        "actividad_actual": expediente.actividad_actual,
+        "tipo_expediente_id": expediente.tipo_expediente_id,
+        "promocion": tipo.nombre if tipo else None,
+        "titular": expediente.nombre_titular,
+        "estado_expediente": expediente.estado_expediente,
+    }
+
+
+@router.post("/asignar-promocion")
+def asignar_promocion_expediente(
+    datos: AsignarPromocionRequest,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "editar")
+    numero = (datos.numero_expediente or "").strip()
+    if not numero:
+        raise HTTPException(status_code=400, detail="Indica el número de expediente.")
+
+    expediente = (
+        db.query(Expediente)
+        .filter(func.lower(Expediente.id_expediente) == numero.lower())
+        .first()
+    )
+    if not expediente:
+        raise HTTPException(status_code=404, detail=f"No se ha encontrado el expediente {numero}.")
+
+    tipo = None
+    if datos.tipo_expediente_id is not None:
+        tipo = (
+            db.query(TipoExpediente)
+            .filter(
+                TipoExpediente.id == datos.tipo_expediente_id,
+                TipoExpediente.activo.is_(True),
+                TipoExpediente.grupo == "Tipos de expediente",
+            )
+            .first()
+        )
+        if not tipo:
+            raise HTTPException(status_code=400, detail="El tipo seleccionado no existe o está inactivo en el catálogo Tipos de expediente.")
+
+    expediente.tipo_expediente_id = tipo.id if tipo else None
+    # La etiqueta se calcula desde el catálogo; no se almacena en el campo libre promocion.
+    expediente.promocion = None
+    db.add(expediente)
+    db.commit()
+    db.refresh(expediente)
+    return {
+        "ok": True,
+        "mensaje": f"Promoción asignada a {expediente.id_expediente}." if tipo else f"Se ha retirado la promoción de {expediente.id_expediente}.",
+        "numero_expediente": expediente.id_expediente,
+        "tipo_expediente_id": expediente.tipo_expediente_id,
+        "promocion": tipo.nombre if tipo else None,
+    }
 
 
 # ============================================================
