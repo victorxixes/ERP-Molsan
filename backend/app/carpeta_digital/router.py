@@ -254,3 +254,166 @@ def eliminar_documento(
     db.commit()
     ruta.unlink(missing_ok=True)
     return {"ok": True, "id": documento_id}
+
+
+@router.post("/{expediente_id}/carpeta-digital/generar-cierre-documental")
+def generar_cierre_documental(expediente_id: str, db: Session = Depends(get_db)):
+    """Genera la hoja de liquidación y reúne los PDF de cierre en orden oficial."""
+    import io
+    from reportlab.lib import colors
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import mm
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from pypdf import PdfReader, PdfWriter
+
+    expediente = _expediente_existe(db, expediente_id)
+    documentos = (
+        db.query(DocumentoCarpetaDigital)
+        .filter(DocumentoCarpetaDigital.expediente_id == str(expediente_id))
+        .order_by(DocumentoCarpetaDigital.fecha_subida.asc(), DocumentoCarpetaDigital.id.asc())
+        .all()
+    )
+
+    def normalizar(valor):
+        return _normalizar_texto(valor).replace("/", " ").replace("-", " ")
+
+    # Hoja de liquidación: se crea en cada generación con los datos guardados del expediente.
+    hoja = io.BytesIO()
+    estilos = getSampleStyleSheet()
+    estilos.add(ParagraphStyle(name="MolsanTitle", parent=estilos["Title"], textColor=colors.HexColor("#172554"), fontSize=17, leading=21, spaceAfter=8))
+    estilos.add(ParagraphStyle(name="MolsanSmall", parent=estilos["BodyText"], fontSize=9, leading=13))
+    doc_pdf = SimpleDocTemplate(hoja, pagesize=A4, rightMargin=20*mm, leftMargin=20*mm, topMargin=20*mm, bottomMargin=20*mm)
+    story = [
+        Paragraph("MOLSAN · HOJA DE LIQUIDACIÓN", estilos["MolsanTitle"]),
+        Paragraph(f"Expediente: {str(getattr(expediente, 'id_expediente', expediente_id) or expediente_id)}", estilos["Heading2"]),
+        Spacer(1, 5*mm),
+    ]
+    campos = [
+        ("Titular", getattr(expediente, "nombre_titular", None) or getattr(expediente, "nombre_solicitante", None) or "—"),
+        ("NIF / CIF", getattr(expediente, "nif_titular", None) or getattr(expediente, "nif_solicitante", None) or "—"),
+        ("Notario", getattr(expediente, "nombre_notario", None) or "—"),
+        ("Fecha de liquidación", str(getattr(expediente, "fecha_fin_actividad", None) or datetime.utcnow().date())),
+        ("Provisión inicial", f"{getattr(expediente, 'importe', None) if getattr(expediente, 'importe', None) is not None else '—'} €"),
+        ("Saldo real", f"{getattr(expediente, 'saldo_real', None) if getattr(expediente, 'saldo_real', None) is not None else '—'} €"),
+        ("Saldo disponible", f"{getattr(expediente, 'saldo_disponible', None) if getattr(expediente, 'saldo_disponible', None) is not None else '—'} €"),
+        ("Estado", str(getattr(expediente, "estado_expediente", None) or "—")),
+    ]
+    tabla = Table([[Paragraph(f"<b>{k}</b>", estilos["MolsanSmall"]), Paragraph(str(v), estilos["MolsanSmall"])] for k, v in campos], colWidths=[48*mm, 112*mm])
+    tabla.setStyle(TableStyle([
+        ("BACKGROUND", (0,0), (0,-1), colors.HexColor("#eff6ff")),
+        ("GRID", (0,0), (-1,-1), 0.4, colors.HexColor("#cbd5e1")),
+        ("VALIGN", (0,0), (-1,-1), "TOP"),
+        ("LEFTPADDING", (0,0), (-1,-1), 8),
+        ("RIGHTPADDING", (0,0), (-1,-1), 8),
+        ("TOPPADDING", (0,0), (-1,-1), 7),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 7),
+    ]))
+    story.extend([tabla, Spacer(1, 8*mm), Paragraph("Documento generado automáticamente desde los datos guardados en MOLSAN ERP.", estilos["MolsanSmall"])])
+    doc_pdf.build(story)
+    hoja.seek(0)
+
+    orden = [
+        ("Hoja de liquidación", None),
+        ("Factura notarial", {"factura notarial", "factura notaria"}),
+        ("Factura registro", {"factura registral", "factura registro"}),
+        ("Factura Honorarios gestoría", {"honorarios gestoria", "factura honorarios gestoria"}),
+        ("Copia simple", {"copia simple"}),
+        ("Justificación de cancelación", {"justificante de cancelacion", "justificacion de cancelacion"}),
+        ("AJD / ITP", {"ajd itp", "ajd itp "}),
+        ("Hoja de inscripción", {"hoja de inscripcion", "documento de inscripcion"}),
+    ]
+
+    fuentes = [(0, "Hoja de liquidación", hoja.getvalue())]
+    faltantes = []
+    incluidos = ["Hoja de liquidación"]
+    for etiqueta, alias in orden[1:]:
+        alias_normalizados = {normalizar(a) for a in alias}
+        coincidencias = [
+            item for item in documentos
+            if normalizar(item.categoria) in alias_normalizados
+            and (str(item.nombre_original or "").lower().endswith(".pdf")
+                 or str(item.tipo_mime or "").lower() == "application/pdf")
+            and item.categoria != "Expediente digital completo"
+        ]
+        archivos_validos = []
+        for item in coincidencias:
+            ruta = _ruta_segura(item.nombre_guardado)
+            if not ruta.is_file():
+                continue
+            try:
+                contenido = ruta.read_bytes()
+                if contenido.startswith(b"%PDF-"):
+                    # Validar que el PDF sea legible antes de incorporarlo.
+                    PdfReader(io.BytesIO(contenido), strict=False)
+                    archivos_validos.append((item, contenido))
+            except Exception:
+                logger.warning("PDF de cierre omitido por estar dañado: expediente=%s documento=%s", expediente_id, item.id)
+        if not archivos_validos:
+            faltantes.append(etiqueta)
+            continue
+        for item, contenido in archivos_validos:
+            fuentes.append((item.id, etiqueta, contenido))
+            incluidos.append(item.nombre_original or etiqueta)
+
+    writer = PdfWriter()
+    for _, etiqueta, contenido in fuentes:
+        try:
+            reader = PdfReader(io.BytesIO(contenido), strict=False)
+            for page in reader.pages:
+                writer.add_page(page)
+        except Exception as exc:
+            raise HTTPException(status_code=422, detail=f"No se ha podido unir el PDF «{etiqueta}»: {exc}")
+    salida = io.BytesIO()
+    writer.write(salida)
+    contenido_final = salida.getvalue()
+    if not contenido_final.startswith(b"%PDF-"):
+        raise HTTPException(status_code=500, detail="No se ha podido generar el PDF de cierre.")
+
+    nombre_original = f"Expediente digital completo - {expediente_id}.pdf"
+    nombre_guardado = f"{uuid.uuid4().hex}.pdf"
+    ruta_final = _ruta_segura(nombre_guardado)
+    temporal = _ruta_segura(f".{nombre_guardado}.part")
+    try:
+        temporal.write_bytes(contenido_final)
+        temporal.replace(ruta_final)
+        anteriores = [
+            d for d in documentos
+            if normalizar(d.categoria) == normalizar("Expediente digital completo")
+        ]
+        registro = DocumentoCarpetaDigital(
+            expediente_id=str(expediente_id),
+            categoria="Expediente digital completo",
+            nombre_original=nombre_original,
+            nombre_guardado=nombre_guardado,
+            tipo_mime="application/pdf",
+            tamano_bytes=len(contenido_final),
+            fecha_subida=datetime.utcnow(),
+        )
+        db.add(registro)
+        for anterior in anteriores:
+            db.delete(anterior)
+        db.commit()
+        db.refresh(registro)
+        for anterior in anteriores:
+            try:
+                _ruta_segura(anterior.nombre_guardado).unlink(missing_ok=True)
+            except Exception:
+                logger.warning("No se pudo retirar PDF completo anterior: %s", anterior.id)
+        return {
+            "ok": True,
+            "documento": DocumentoRespuesta.from_orm(registro).dict(),
+            "documentos_incluidos": incluidos,
+            "documentos_faltantes": faltantes,
+            "paginas": len(writer.pages),
+            "mensaje": (
+                "PDF de cierre documental generado."
+                if not faltantes else
+                "PDF generado, pero faltan documentos de estas categorías: " + ", ".join(faltantes)
+            ),
+        }
+    except Exception:
+        db.rollback()
+        temporal.unlink(missing_ok=True)
+        ruta_final.unlink(missing_ok=True)
+        raise
