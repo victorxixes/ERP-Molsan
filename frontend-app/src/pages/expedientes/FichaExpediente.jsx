@@ -1404,6 +1404,9 @@ export default function FichaExpediente() {
     expediente,
     setExpediente,
   ] = useState(null);
+  const [promocionEditada, setPromocionEditada] = useState("");
+  const [guardandoPromocion, setGuardandoPromocion] = useState(false);
+  const [estadoGuardadoPromocion, setEstadoGuardadoPromocion] = useState("");
 
   const [
     loading,
@@ -2143,6 +2146,8 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
             null;
 
           setExpediente(datos);
+          setPromocionEditada(String(datos?.promocion ?? ""));
+          setEstadoGuardadoPromocion("");
 
           setFincaRegistrada({
             numero_finca: datos?.finca || "",
@@ -5031,6 +5036,12 @@ const cuantiaFincasParaEnvio =
                 <h1 className="whitespace-nowrap text-base font-extrabold leading-tight text-slate-800">{valorVisible(expediente.id_expediente)}</h1>
                 <p className="whitespace-nowrap text-[10px] leading-tight text-slate-400">Ficha completa del expediente</p>
               </div>
+            </div>
+            <div className="flex min-w-0 flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-white px-2 py-1.5">
+              <label htmlFor="ficha-promocion" className="shrink-0 text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Promoción</label>
+              <input id="ficha-promocion" type="text" maxLength={300} value={promocionEditada} onChange={(event) => { setPromocionEditada(event.target.value); setEstadoGuardadoPromocion(""); }} placeholder="Referencia interna" className="w-36 min-w-[100px] rounded-md border border-slate-200 bg-white px-2 py-1.5 text-xs text-slate-700 outline-none focus:border-blue-400 sm:w-44" aria-label="Promoción interna del expediente" />
+              <button type="button" disabled={guardandoPromocion} onClick={async () => { setGuardandoPromocion(true); setEstadoGuardadoPromocion(""); try { const respuesta = await axios.put(`/expedientes/${encodeURIComponent(numeroExpedienteApi)}/actividad`, { campos: { promocion: promocionEditada.trim() || null } }); setExpediente((actual) => actual ? { ...actual, promocion: respuesta?.data?.promocion ?? (promocionEditada.trim() || null) } : actual); setPromocionEditada(promocionEditada.trim()); setEstadoGuardadoPromocion("Guardado"); } catch (errorPromocion) { setEstadoGuardadoPromocion(mensajeErrorApi(errorPromocion, "No se pudo guardar")); } finally { setGuardandoPromocion(false); } }} className="inline-flex shrink-0 items-center rounded-md border border-blue-200 bg-blue-50 px-2 py-1.5 text-[10px] font-bold text-blue-700 transition hover:bg-blue-100 disabled:opacity-60">{guardandoPromocion ? "Guardando…" : "Guardar"}</button>
+              {estadoGuardadoPromocion && <span className={`text-[10px] font-semibold ${estadoGuardadoPromocion === "Guardado" ? "text-emerald-700" : "text-red-600"}`} role="status">{estadoGuardadoPromocion}</span>}
             </div>
             <div className="flex shrink-0 items-center gap-2">
               <button type="button" onClick={abrirAgregarExpedientes} className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold text-blue-700 transition hover:bg-blue-100">
