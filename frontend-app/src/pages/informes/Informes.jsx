@@ -3313,12 +3313,27 @@ function valorColumnaPostFirma(fila, columna) {
   return String(valor);
 }
 
+const ESTADOS_FACTURACION_ABSIS = {
+  cobrado: ["PAGADO", "PAG_RETRO"],
+  pendiente_factura: ["PTE_RESP_FAC", "PTE_EXPORT_FAC"],
+  incidencia: ["ANULADO", "PAG_DENEGADO"],
+  pendiente_cobro: ["PTE_CONS", "PTE_RESP", "ENTREGADA"],
+};
+
+function estadoFacturacionAbsis(fila) {
+  const estado = String(fila?.estado ?? "").trim().toUpperCase();
+  for (const [situacion, estados] of Object.entries(ESTADOS_FACTURACION_ABSIS)) {
+    if (estados.includes(estado)) return situacion;
+  }
+  return "sin_clasificar";
+}
+
 function resumenFacturacionPorTipo(items) {
   const suma = (campo, situacion = null) => items.reduce((total, fila) => {
-    if (situacion && fila.situacion_facturacion !== situacion) return total;
+    if (situacion && estadoFacturacionAbsis(fila) !== situacion) return total;
     return total + (Number(fila[campo]) || 0);
   }, 0);
-  const cuenta = (situacion) => items.filter((fila) => fila.situacion_facturacion === situacion).length;
+  const cuenta = (situacion) => items.filter((fila) => estadoFacturacionAbsis(fila) === situacion).length;
   return {
     registros: items.length, total_gasto: suma("imp_gasto"), base_impuesto: suma("imp_base_impuesto"),
     base_retencion: suma("imp_base_retencion"), total_impuesto: suma("imp_impuesto"),
