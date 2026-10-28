@@ -23,6 +23,9 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
   const [mensaje, setMensaje] = useState("");
   const [cierreDocumental, setCierreDocumental] = useState(null);
   const [generandoCierreDocumental, setGenerandoCierreDocumental] = useState(false);
+  const [guardandoCierreDocumental, setGuardandoCierreDocumental] = useState(false);
+  const [vistaPreviaUrl, setVistaPreviaUrl] = useState("");
+  const [metadataVistaPrevia, setMetadataVistaPrevia] = useState(null);
 
   useEffect(() => {
     setForm({
@@ -49,7 +52,7 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
   const totalPagado = useMemo(() => filas.filter((f) => f._pagado).reduce((sum, f) => sum + Number(f.importe_total_bruto ?? f.importe ?? f.importe_resultante ?? 0), 0), [filas]);
   const saldoLiquidacion = Math.round((importeInicial - totalPagado) * 100) / 100;
 
-  const cambiar = (campo, dato) => setForm((actual) => ({ ...actual, [campo]: dato }));
+  const cambiar = (campo, dato) => { setCierreDocumental(null); setForm((actual) => ({ ...actual, [campo]: dato })); };
   const guardar = async () => {
     setGuardando(true); setError(""); setMensaje("");
     try {
@@ -77,24 +80,67 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
   const generarCierreDocumental = async () => {
     const id = expediente?.id_expediente ?? expediente?.id;
     if (!id) throw new Error("No se ha identificado el expediente para generar el cierre documental.");
+    const ok = await guardar();
+    if (!ok) return;
     setGenerandoCierreDocumental(true);
     try {
-      const { data } = await axios.post(`/expedientes/${encodeURIComponent(id)}/carpeta-digital/generar-cierre-documental`);
-      setCierreDocumental(data || null);
-      return data;
+      const { data, headers } = await axios.post(`/expedientes/${encodeURIComponent(id)}/carpeta-digital/previsualizar-cierre-documental`, null, { responseType: "blob" });
+      const blob = data instanceof Blob ? data : new Blob([data], { type: "application/pdf" });
+      if (vistaPreviaUrl) URL.revokeObjectURL(vistaPreviaUrl);
+      setVistaPreviaUrl(URL.createObjectURL(blob));
+      let meta = {};
+      try {
+        const encoded = headers?.["x-cierre-metadata"];
+        if (encoded) {
+          const bytes = Uint8Array.from(atob(encoded), (ch) => ch.charCodeAt(0));
+          meta = JSON.parse(new TextDecoder().decode(bytes));
+        }
+      } catch { meta = {}; }
+      setMetadataVistaPrevia(meta);
+      setError("");
+      return meta;
     } finally {
       setGenerandoCierreDocumental(false);
     }
   };
+  const aceptarCierreDocumental = async () => {
+    const id = expediente?.id_expediente ?? expediente?.id;
+    if (!id || !vistaPreviaUrl || guardandoCierreDocumental) return;
+    setGuardandoCierreDocumental(true);
+    setError("");
+    try {
+      const blob = await fetch(vistaPreviaUrl).then((r) => {
+        if (!r.ok) throw new Error("No se pudo recuperar el PDF previsualizado.");
+        return r.blob();
+      });
+      const body = new FormData();
+      body.append("archivo", new File([blob], `Expediente digital completo - ${id}.pdf`, { type: "application/pdf" }));
+      const { data } = await axios.post(`/expedientes/${encodeURIComponent(id)}/carpeta-digital/guardar-cierre-documental`, body, { headers: { "Content-Type": "multipart/form-data" } });
+      setCierreDocumental({ ...(metadataVistaPrevia || {}), documento: data, guardado: true, mensaje: "PDF aceptado y guardado en Expediente digital completo." });
+      setVistaPreviaUrl((actual) => { if (actual) URL.revokeObjectURL(actual); return ""; });
+      setMetadataVistaPrevia(null);
+    } catch (e) {
+      setError(e?.response?.data?.detail || e?.message || "No se ha podido guardar el PDF aceptado.");
+    } finally {
+      setGuardandoCierreDocumental(false);
+    }
+  };
+  const cerrarVistaPrevia = () => {
+    setVistaPreviaUrl((actual) => { if (actual) URL.revokeObjectURL(actual); return ""; });
+    setMetadataVistaPrevia(null);
+  };
   const confirmar = async () => {
+    if (!cierreDocumental?.guardado) {
+      setError("Primero genera el PDF, revísalo y pulsa «Aceptar y guardar en Carpeta digital».");
+      return;
+    }
     const ok = await guardar();
     if (!ok) return;
     try {
       setError("");
-      await generarCierreDocumental();
       await onConfirmarCierre?.();
     } catch (e) {
-      setError(e?.response?.data?.detail || e?.message || "No se ha podido generar el cierre documental o cerrar el expediente. Revisa los requisitos de cierre y la factura de honorarios.");
+      setError(e?.response?.data?.detail || e?.message || "No se ha podido cerrar el expediente. Revisa los requisitos de cierre y la factura de honorarios.");
     }
   };
   const contenido = (
@@ -154,25 +200,42 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
                 <h3 className="text-sm font-extrabold text-slate-900">📚 Cierre documental digital</h3>
-                <p className="mt-1 text-xs leading-5 text-slate-600">Genera un único PDF y lo guarda en Carpeta digital → Expediente digital completo. El orden es: Hoja de liquidación, Factura notario, Factura registro, Factura Honorarios gestoría, Copia simple, Justificación de cancelación, AJD / ITP y Hoja de inscripción.</p>
-                {cierreDocumental && <div className="mt-3 rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs text-emerald-800">
-                  <p className="font-extrabold">{cierreDocumental.mensaje || "PDF de cierre documental generado."}</p>
-                  <p className="mt-1">{Number(cierreDocumental.paginas || 0)} páginas · {Array.isArray(cierreDocumental.documentos_incluidos) ? cierreDocumental.documentos_incluidos.length : 0} documento(s) incorporado(s).</p>
-                  {Array.isArray(cierreDocumental.documentos_faltantes) && cierreDocumental.documentos_faltantes.length > 0 && <p className="mt-1 text-amber-700">No encontrados: {cierreDocumental.documentos_faltantes.join(", ")}.</p>}
+                <p className="mt-1 text-xs leading-5 text-slate-600">Genera una vista previa sin guardar. Tras revisarla, pulsa «Aceptar y guardar en Carpeta digital» para registrar el PDF en Expediente digital completo. Orden: Hoja de liquidación, Factura notario, Factura registro, Factura Honorarios gestoría, Copia simple, Justificación de cancelación, AJD / ITP y Hoja de inscripción.</p>
+                {cierreDocumental && <div className={`mt-3 rounded-lg border px-3 py-2 text-xs ${cierreDocumental.guardado ? "border-emerald-200 bg-white text-emerald-800" : "border-amber-200 bg-white text-amber-800"}`}>
+                  <p className="font-extrabold">{cierreDocumental.mensaje || "PDF de cierre documental preparado."}</p>
+                  <p className="mt-1">{Number(cierreDocumental.paginas || 0)} páginas · {Array.isArray(cierreDocumental.documentos_incluidos) ? cierreDocumental.documentos_incluidos.length : 0} documento(s).</p>
+                  {Array.isArray(cierreDocumental.documentos_faltantes) && cierreDocumental.documentos_faltantes.length > 0 && <p className="mt-1">No encontrados: {cierreDocumental.documentos_faltantes.join(", ")}.</p>}
                 </div>}
+                {cierreDocumental?.guardado && <p className="mt-2 text-xs font-bold text-emerald-700">✓ PDF guardado en Carpeta digital → Expediente digital completo.</p>}
               </div>
-              <button type="button" onClick={async () => { setError(""); try { await generarCierreDocumental(); } catch (e) { setError(e?.response?.data?.detail || e?.message || "No se ha podido generar el PDF de cierre documental."); } }} disabled={generandoCierreDocumental || guardando || cargandoCierre} className="shrink-0 rounded-lg border border-indigo-300 bg-white px-3 py-2 text-xs font-extrabold text-indigo-800 hover:bg-indigo-100 disabled:opacity-50">
-                {generandoCierreDocumental ? "Generando PDF…" : cierreDocumental ? "Actualizar PDF completo" : "Generar PDF completo"}
+              <button type="button" onClick={async () => { setError(""); try { await generarCierreDocumental(); } catch (e) { setError(e?.response?.data?.detail || e?.message || "No se ha podido generar la vista previa del PDF."); } }} disabled={generandoCierreDocumental || guardandoCierreDocumental || guardando || cargandoCierre} className="shrink-0 rounded-lg border border-indigo-300 bg-white px-3 py-2 text-xs font-extrabold text-indigo-800 hover:bg-indigo-100 disabled:opacity-50">
+                {generandoCierreDocumental ? "Generando vista previa…" : cierreDocumental?.guardado ? "Generar nueva vista previa" : "Generar y previsualizar PDF"}
               </button>
             </div>
           </section>
         </div>
         <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 bg-white px-5 py-4">
           <button type="button" onClick={onClose} className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50">Cerrar sin liquidar</button>
-          <div className="flex flex-wrap gap-2"><button type="button" disabled={guardando} onClick={guardar} className="rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-extrabold text-indigo-800 disabled:opacity-50">{guardando ? "Guardando…" : "Guardar liquidación"}</button><button type="button" disabled={guardando || cargandoCierre} onClick={confirmar} className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-extrabold text-white hover:bg-emerald-800 disabled:opacity-50">{cargandoCierre ? "Validando cierre…" : "Confirmar liquidación y cerrar expediente"}</button></div>
+          <div className="flex flex-wrap gap-2"><button type="button" disabled={guardando} onClick={guardar} className="rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-extrabold text-indigo-800 disabled:opacity-50">{guardando ? "Guardando…" : "Guardar liquidación"}</button><button type="button" disabled={guardando || cargandoCierre || !cierreDocumental?.guardado} className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-extrabold text-white hover:bg-emerald-800 disabled:opacity-50">{cargandoCierre ? "Validando cierre…" : !cierreDocumental?.guardado ? "Acepta el PDF para poder cerrar" : "Confirmar liquidación y cerrar expediente"}</button></div>
         </footer>
       </section>
     </div>
   );
-  return typeof document !== "undefined" ? createPortal(contenido, document.body) : contenido;
+  const vistaPrevia = vistaPreviaUrl ? (
+    <div className="fixed inset-0 z-[10010] flex items-center justify-center bg-slate-950/80 p-2 backdrop-blur-sm sm:p-5" role="dialog" aria-modal="true" aria-labelledby="vista-previa-cierre-titulo">
+      <section className="flex h-[96vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-white/70 bg-white shadow-2xl">
+        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-5 py-3">
+          <div><h2 id="vista-previa-cierre-titulo" className="text-base font-extrabold text-slate-900">Vista previa · Expediente digital completo</h2><p className="mt-1 text-xs text-slate-500">Aún no está guardado. Revísalo antes de aceptar.</p></div>
+          <button type="button" onClick={cerrarVistaPrevia} className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-bold">Cancelar</button>
+        </header>
+        {metadataVistaPrevia?.documentos_faltantes?.length > 0 && <p className="border-b border-amber-200 bg-amber-50 px-4 py-2 text-xs text-amber-900">Faltan documentos: {metadataVistaPrevia.documentos_faltantes.join(", ")}. Puedes revisar el PDF, pero comprueba si quieres aceptarlo incompleto.</p>}
+        <iframe title="Vista previa del PDF de cierre" src={vistaPreviaUrl} className="min-h-0 flex-1 bg-slate-100" />
+        <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 bg-white px-5 py-3">
+          <p className="text-xs text-slate-500">{Number(metadataVistaPrevia?.paginas || 0)} páginas · {Array.isArray(metadataVistaPrevia?.documentos_incluidos) ? metadataVistaPrevia.documentos_incluidos.length : 0} documento(s)</p>
+          <div className="flex gap-2"><button type="button" onClick={cerrarVistaPrevia} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700">Cancelar</button><button type="button" onClick={aceptarCierreDocumental} disabled={guardandoCierreDocumental} className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-extrabold text-white disabled:opacity-50">{guardandoCierreDocumental ? "Guardando PDF…" : "Aceptar y guardar en Carpeta digital"}</button></div>
+        </footer>
+      </section>
+    </div>
+  ) : null;
+  return typeof document !== "undefined" ? createPortal(<>{contenido}{vistaPrevia}</>, document.body) : contenido;
 }
