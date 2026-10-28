@@ -844,10 +844,9 @@ export default function EnviarANotarioModal({
                 />
 
                 <div className="mb-3 grid grid-cols-1 gap-3">
-                  <CampoTexto label="Contrato" value={form.contrato} disabled={loading} onChange={(v) => cambiarCampo("contrato", v)} placeholder="N.º de contrato" />
-                  <CampoTexto label="Capital (€)" value={form.capital} disabled={loading} type="number" onChange={(v) => cambiarCampo("capital", v)} placeholder="0,00" />
-                  <CampoTexto label="Tipo de operación" value={form.tipo_operacion} disabled={loading} onChange={(v) => cambiarCampo("tipo_operacion", v)} placeholder="Ej. Cancelación sin provisión" />
-                  <CampoTexto label="Subtipo de operación" value={form.subtipo_operacion} disabled={loading} onChange={(v) => cambiarCampo("subtipo_operacion", v)} placeholder="Ej. Crédito abierto" />
+                  <CampoTexto label="Contrato" value={form.contrato} disabled={loading} onChange={(v) => cambiarCampo("contrato", v)} placeholder="Contrato de Fincas y Registros" />
+                  <CampoTexto label="Tipo de operación" value={form.tipo_operacion} disabled={loading} onChange={(v) => cambiarCampo("tipo_operacion", v)} placeholder="Tipo de operación" />
+                  <CampoTexto label="Importe con provisión (€)" value={form.importe} disabled={loading} type="number" onChange={(v) => cambiarCampo("importe", v)} placeholder="0,00" />
                   <div>
                     <label className="mb-1 block text-xs font-semibold text-slate-700">
                       Idioma del documento
@@ -863,11 +862,10 @@ export default function EnviarANotarioModal({
                       <option value="Castellano">Castellano</option>
                     </select>
                   </div>
-                  <CampoTexto label="Importe (€)" value={form.importe} disabled={loading} type="number" onChange={(v) => cambiarCampo("importe", v)} placeholder="0,00" />
                 </div>
 
                 <div className="space-y-4">
-                  {documentosEscritura.map((documento, indice) => (
+                  {documentosEscritura.slice(0, 1).map((documento, indice) => (
                     <div
                       key={documento.id}
                       className="rounded-xl border border-slate-200 bg-slate-50/70 p-3 sm:p-4"
@@ -904,8 +902,24 @@ export default function EnviarANotarioModal({
                         <option value="">
                           {loadingTipos ? "Cargando tipos de documento..." : "Seleccionar tipo de documento"}
                         </option>
-                        {tiposDocumento.map((tipo) => (
-                          <option key={tipo.id} value={tipo.nombre}>{tipo.nombre}</option>
+                        {[
+                          "Cancelación de condición resolutoria",
+                          "Cancelación de condición resolutoria adicional",
+                          "Cancelación de préstamo o crédito",
+                          "Cancelación de préstamo o crédito adicional",
+                          "Cancelación de usufructo",
+                          "Cancelación de embargo",
+                          "Cancelación de embargo adicional",
+                          "Cancelación parcial y liberación de finca",
+                          "Cancelación parcial y liberación de garantía",
+                          "Cancelación por certificación de cargas",
+                          "Cancelación por instancia condición resolutoria",
+                          "Devolución mandamiento de cancelación",
+                          "Mandamiento judicial",
+                          "Mandamiento judicial de cancelación",
+                          "Préstamo hipotecario",
+                        ].map((tipo) => (
+                          <option key={tipo} value={tipo}>{tipo}</option>
                         ))}
                       </select>
 
