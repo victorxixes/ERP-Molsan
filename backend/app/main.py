@@ -1003,6 +1003,17 @@ def inicializar_tablas_auxiliares():
         MunicipioCodigoPostal.__table__.create(bind=engine, checkfirst=True)
         print("[MUNICIPIOS] Tabla de códigos postales disponible.", flush=True)
 
+        # Referencia interna de promoción para expedientes.
+        with engine.begin() as conexion_promocion:
+            conexion_promocion.execute(text("""
+                ALTER TABLE IF EXISTS public.expedientes
+                ADD COLUMN IF NOT EXISTS promocion VARCHAR(300)
+            """))
+            conexion_promocion.execute(text("""
+                CREATE INDEX IF NOT EXISTS ix_expedientes_promocion
+                ON public.expedientes (promocion)
+            """))
+
         # Campos del defecto registral solicitados por el cliente.
         # Migración idempotente: conserva todos los defectos ya registrados.
         with engine.begin() as conexion_defectos_absis:
