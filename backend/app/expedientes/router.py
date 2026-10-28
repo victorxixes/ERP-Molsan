@@ -25,6 +25,7 @@ from backend.app.expedientes.models import (
     Expediente,
     ExpedienteDocumentoEscritura,
 )
+from backend.app.tipos_expediente.models import TipoExpediente
 from backend.app.ctn.models import Notaria
 from backend.app.expediente_ppad.models import ExpedientePPAD
 from backend.app.honorarios_gestoria.models import HonorarioGestoria
@@ -837,6 +838,8 @@ CAMPOS_EXPEDIENTE = [
     "cliente_id",
     "id_expediente",
     "promocion",
+    "tipo_expediente_id",
+    "numero_tipo_expediente",
     "notario_id",
     "apoderado_empleado_id",
     "gestor_asignado_id",
@@ -1150,6 +1153,27 @@ def expediente_a_dict(expediente: Expediente) -> dict:
     return resultado
 
 
+def adjuntar_promociones_catalogo(db: Session, items: list[dict]) -> list[dict]:
+    """Expone el nombre del tipo de expediente como promoción calculada del catálogo."""
+    ids = {
+        int(item["tipo_expediente_id"])
+        for item in items
+        if item.get("tipo_expediente_id") is not None
+    }
+    nombres = {}
+    if ids:
+        nombres = {
+            int(tipo_id): nombre
+            for tipo_id, nombre in db.query(TipoExpediente.id, TipoExpediente.nombre)
+            .filter(TipoExpediente.id.in_(ids))
+            .all()
+        }
+    for item in items:
+        tipo_id = item.get("tipo_expediente_id")
+        item["promocion"] = nombres.get(int(tipo_id)) if tipo_id is not None else None
+    return items
+
+
 # ============================================================
 # FILTROS
 # ============================================================
@@ -1316,7 +1340,8 @@ def aplicar_filtros(
         patron_obs = f"%{texto(observaciones)}%"
         q = q.filter(Expediente.observaciones.ilike(patron_obs))
     if texto(promocion):
-        q = q.filter(Expediente.promocion.ilike(f"%{texto(promocion)}%"))
+        q = q.outerjoin(TipoExpediente, Expediente.tipo_expediente_id == TipoExpediente.id)
+        q = q.filter(TipoExpediente.nombre.ilike(f"%{texto(promocion)}%"))
     if texto(estadoActividad):
         q = q.filter(func.lower(func.trim(Expediente.estado_actividad)) == texto(estadoActividad).lower())
     # actividadActual es el valor persistido; no debe confundirse con
@@ -1831,6 +1856,7 @@ def listado_expedientes(
         expediente_a_dict(expediente)
         for expediente in items_db
     ]
+    items = adjuntar_promociones_catalogo(db, items)
     items = agregar_resumen_carpeta_digital(db, items)
 
     return {
@@ -3118,7 +3144,7 @@ CAMPOS_EDITABLES_ACTIVIDAD = {
         "escritura_simple_cancelacion", "registral_estado", "registral_fecha",
         "tiene_defectos_abiertos", "tipo_error", "falta_defecto",
         "descripcion_error", "fcierre_defecto", "facturacion_estado",
-        "facturacion_fecha", "fecha_entregado_cliente", "promocion",
+        "facturacion_fecha", "fecha_entregado_cliente",
     }
 }
 
@@ -3852,7 +3878,7 @@ def obtener_expediente(
     if ids_visibles is not None and expediente.id not in ids_visibles:
         # No revelar si existe un expediente fuera del ámbito del usuario.
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
-    resultado = expediente_a_dict(expediente)
+    resultado = adjuntar_promociones_catalogo(db, [expediente_a_dict(expediente)])[0]
     gestor = db.query(Empleado).filter(Empleado.id == expediente.gestor_asignado_id).first() if getattr(expediente, "gestor_asignado_id", None) else None
     resultado["gestor_asignado_nombre"] = " ".join(filter(None, [getattr(gestor, "nombre", None), getattr(gestor, "apellidos", None)])).strip() if gestor else None
     return resultado
