@@ -192,9 +192,8 @@ def _consultar(db, fecha_desde=None, fecha_hasta=None, tipo_operacion=None, esta
         concepto = _valor(gasto, "concepto_gasto_absis", "CONCEPTOGASTO") if es_registro_absis else (
             getattr(gasto, "tipo", None) or getattr(gasto, "descripcion", None)
         )
-        if "honorarios gestoria" not in _normalizar_texto(concepto):
-            continue
-
+        # El informe Post Firma debe incluir todas las filas ABSIS importadas,
+        # no solo HONORARIOS GESTORÍA. Las tarjetas suman el IMPGASTO de cada fila.
         tipo_operacion_valor = _valor(gasto, "tipo_operacion_absis", "TIPOOPERACION") if es_registro_absis else (
             getattr(exp, "tipo_operacion", None) if exp else None
         )
