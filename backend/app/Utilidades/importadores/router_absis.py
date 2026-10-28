@@ -316,9 +316,7 @@ async def validar_postfirma_absis(
     nombre = (fichero.filename or "").strip()
     if not nombre.lower().endswith(".xlsx"):
         raise HTTPException(status_code=400, detail="El histórico Post Firma debe ser un Excel .xlsx.")
-    if fecha_desde is None or fecha_hasta is None:
-        raise HTTPException(status_code=400, detail="Selecciona las fechas desde y hasta para FPAGO.")
-    if fecha_desde > fecha_hasta:
+    if fecha_desde and fecha_hasta and fecha_desde > fecha_hasta:
         raise HTTPException(status_code=400, detail="La fecha desde no puede ser posterior a la fecha hasta.")
     contenido = await fichero.read()
     if not contenido:
