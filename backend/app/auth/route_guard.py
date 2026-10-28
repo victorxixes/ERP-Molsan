@@ -61,6 +61,7 @@ _PREFIJOS_MODULO = (
     ("/api/oficinas-liquidadoras", "maestros"),
     ("/api/tipos-carga-hipotecaria", "maestros"),
     ("/api/tipos-concepto-gastos", "maestros"),
+    ("/api/tipos-expediente", "maestros"),
     ("/api/municipios", "maestros"),
     ("/api/maestros", "maestros"),
     ("/api/panel-tecnico", "panel-tecnico"),
