@@ -5077,32 +5077,6 @@ const cuantiaFincasParaEnvio =
               <button type="button" onClick={abrirAgregarExpedientes} className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold text-blue-700 transition hover:bg-blue-100">
                 ➕ Agregar expediente relacionado
               </button>
-              {actividadSeleccionada === "facturacion-cierre" && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMostrarLiquidarExpediente(true);
-                    cargarGastosExpediente();
-                    cargarDocumentosCierre();
-                  }}
-                  disabled={!expediente?.id_expediente}
-                  className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-indigo-300 bg-indigo-700 px-3 py-2 text-[11px] font-extrabold text-white transition hover:bg-indigo-800 disabled:opacity-50"
-                  title="Revisar provisión, movimientos, facturación y checklist antes del cierre"
-                >
-                  ⚖️ Liquidar
-                </button>
-              )}
-              {actividadSeleccionada === "facturacion-cierre" && (
-                <button
-                  type="button"
-                  onClick={generarHonorariosGestoria}
-                  disabled={generandoHonorariosGestoria || !expediente?.id_expediente}
-                  className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-emerald-300 bg-emerald-700 px-3 py-2 text-[11px] font-extrabold text-white transition hover:bg-emerald-800 disabled:opacity-50"
-                  title="Abrir la factura definitiva de honorarios"
-                >
-                  {generandoHonorariosGestoria ? "Abriendo factura…" : "🧾 Facturar"}
-                </button>
-              )}
             </div>
             {(() => {
               const relacionadosVisibles = [
@@ -5396,6 +5370,32 @@ const cuantiaFincasParaEnvio =
                 <button type="button" onClick={() => { setErrorActividad(""); setMensajeActividad(""); setMostrarModalDatosActividad(true); }} className="inline-flex items-center gap-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-extrabold text-sky-800 transition hover:bg-sky-100">
                   ☷ Datos de actividad
                 </button>
+                {actividadSeleccionada === "facturacion-cierre" && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMostrarLiquidarExpediente(true);
+                        cargarGastosExpediente();
+                        cargarDocumentosCierre();
+                      }}
+                      disabled={!expediente?.id_expediente}
+                      className="inline-flex items-center gap-2 rounded-lg border border-indigo-300 bg-indigo-700 px-3 py-2 text-xs font-extrabold text-white transition hover:bg-indigo-800 disabled:opacity-50"
+                      title="Revisar provisión, movimientos, facturación y checklist antes del cierre"
+                    >
+                      ⚖️ Liquidar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={generarHonorariosGestoria}
+                      disabled={generandoHonorariosGestoria || !expediente?.id_expediente}
+                      className="inline-flex items-center gap-2 rounded-lg border border-emerald-300 bg-emerald-700 px-3 py-2 text-xs font-extrabold text-white transition hover:bg-emerald-800 disabled:opacity-50"
+                      title="Abrir la factura definitiva de honorarios"
+                    >
+                      {generandoHonorariosGestoria ? "Abriendo factura…" : "🧾 Facturar"}
+                    </button>
+                  </>
+                )}
                 <button type="button" onClick={() => { setPestanaActividad("datos"); setMostrarModalPpad(true); setErrorPpad(""); }} className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-extrabold text-indigo-800 transition hover:bg-indigo-100">
                   PPAD
                   {ppadItems.filter((item) => !item.compensado).length > 0 && <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-amber-500 px-1.5 py-0.5 text-[10px] font-extrabold text-white">{ppadItems.filter((item) => !item.compensado).length}</span>}
