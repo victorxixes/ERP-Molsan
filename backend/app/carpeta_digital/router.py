@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import List
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -256,8 +256,8 @@ def eliminar_documento(
     return {"ok": True, "id": documento_id}
 
 
-@router.post("/{expediente_id}/carpeta-digital/generar-cierre-documental")
-def generar_cierre_documental(expediente_id: str, db: Session = Depends(get_db)):
+@router.post("/{expediente_id}/carpeta-digital/previsualizar-cierre-documental")
+def previsualizar_cierre_documental(expediente_id: str, db: Session = Depends(get_db)):
     """Genera la hoja de liquidación y reúne los PDF de cierre en orden oficial."""
     import io
     from reportlab.lib import colors
@@ -390,24 +390,65 @@ def generar_cierre_documental(expediente_id: str, db: Session = Depends(get_db))
     if not contenido_final.startswith(b"%PDF-"):
         raise HTTPException(status_code=500, detail="No se ha podido generar el PDF de cierre.")
 
+    import json
+    from urllib.parse import quote
+    metadata = {
+        "documentos_incluidos": incluidos,
+        "documentos_faltantes": faltantes,
+        "paginas": len(writer.pages),
+        "mensaje": (
+            "Vista previa generada. Todavía no se ha guardado en Carpeta digital."
+            if not faltantes else
+            "Vista previa generada; faltan estas categorías: " + ", ".join(faltantes)
+        ),
+    }
+    salida.seek(0)
+    respuesta = StreamingResponse(salida, media_type="application/pdf")
+    respuesta.headers["Content-Disposition"] = f'inline; filename="previsualizacion-cierre-{quote(str(expediente_id))}.pdf"'
+    respuesta.headers["X-Cierre-Metadata"] = __import__("base64").b64encode(json.dumps(metadata, ensure_ascii=False).encode("utf-8")).decode("ascii")
+    return respuesta
+
+
+@router.post("/{expediente_id}/carpeta-digital/guardar-cierre-documental", response_model=DocumentoRespuesta, status_code=201)
+async def guardar_cierre_documental(
+    expediente_id: str,
+    archivo: UploadFile = File(...),
+    db: Session = Depends(get_db),
+):
+    """Guarda únicamente el PDF que el usuario ha aceptado en la vista previa."""
+    _expediente_existe(db, expediente_id)
     nombre_original = f"Expediente digital completo - {expediente_id}.pdf"
+    contenido = await archivo.read(MAX_BYTES + 1)
+    if len(contenido) > MAX_BYTES:
+        raise HTTPException(status_code=413, detail="El PDF de cierre supera el límite permitido.")
+    if not contenido.startswith(b"%PDF-"):
+        raise HTTPException(status_code=400, detail="El archivo aceptado no es un PDF válido.")
+    from pypdf import PdfReader
+    import io
+    try:
+        PdfReader(io.BytesIO(contenido), strict=False)
+    except Exception as exc:
+        raise HTTPException(status_code=422, detail=f"El PDF no se puede leer: {exc}")
+
     nombre_guardado = f"{uuid.uuid4().hex}.pdf"
     ruta_final = _ruta_segura(nombre_guardado)
     temporal = _ruta_segura(f".{nombre_guardado}.part")
+    anteriores = (
+        db.query(DocumentoCarpetaDigital)
+        .filter(DocumentoCarpetaDigital.expediente_id == str(expediente_id))
+        .all()
+    )
+    anteriores = [d for d in anteriores if _normalizar_texto(d.categoria) == _normalizar_texto("Expediente digital completo")]
     try:
-        temporal.write_bytes(contenido_final)
+        temporal.write_bytes(contenido)
         temporal.replace(ruta_final)
-        anteriores = [
-            d for d in documentos
-            if normalizar(d.categoria) == normalizar("Expediente digital completo")
-        ]
         registro = DocumentoCarpetaDigital(
             expediente_id=str(expediente_id),
             categoria="Expediente digital completo",
             nombre_original=nombre_original,
             nombre_guardado=nombre_guardado,
             tipo_mime="application/pdf",
-            tamano_bytes=len(contenido_final),
+            tamano_bytes=len(contenido),
             fecha_subida=datetime.utcnow(),
         )
         db.add(registro)
@@ -419,21 +460,12 @@ def generar_cierre_documental(expediente_id: str, db: Session = Depends(get_db))
             try:
                 _ruta_segura(anterior.nombre_guardado).unlink(missing_ok=True)
             except Exception:
-                logger.warning("No se pudo retirar PDF completo anterior: %s", anterior.id)
-        return {
-            "ok": True,
-            "documento": DocumentoRespuesta.from_orm(registro).dict(),
-            "documentos_incluidos": incluidos,
-            "documentos_faltantes": faltantes,
-            "paginas": len(writer.pages),
-            "mensaje": (
-                "PDF de cierre documental generado."
-                if not faltantes else
-                "PDF generado, pero faltan documentos de estas categorías: " + ", ".join(faltantes)
-            ),
-        }
+                pass
+        return registro
     except Exception:
         db.rollback()
         temporal.unlink(missing_ok=True)
         ruta_final.unlink(missing_ok=True)
         raise
+    finally:
+        await archivo.close()
