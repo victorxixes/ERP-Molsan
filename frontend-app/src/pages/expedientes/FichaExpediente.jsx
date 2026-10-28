@@ -5299,6 +5299,24 @@ const cuantiaFincasParaEnvio =
                 <h3 className="text-base font-bold text-slate-800">
                   {actividadSeleccionadaDef.icono} {actividadSeleccionadaDef.label}
                 </h3>
+                {actividadSeleccionada === "facturacion-cierre" && (
+                  <div className="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        <h4 className="text-sm font-extrabold text-slate-800">Factura definitiva de honorarios</h4>
+                        <p className="mt-1 text-xs text-slate-600">Revisa los importes y confirma la factura en la ventana habitual. Este botón no cierra el expediente.</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={generarHonorariosGestoria}
+                        disabled={generandoHonorariosGestoria || !expediente?.id_expediente}
+                        className="rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-extrabold text-white hover:bg-emerald-800 disabled:opacity-50"
+                      >
+                        {generandoHonorariosGestoria ? "Abriendo factura…" : "🧾 Liquidar expediente / Factura definitiva de honorarios"}
+                      </button>
+                    </div>
+                  </div>
+                )}
                 <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
                   <span className="inline-flex items-center gap-1.5">
                     <span className="font-bold text-slate-500">Estado actividad</span>
@@ -6069,24 +6087,6 @@ const cuantiaFincasParaEnvio =
             )}
 
 
-            {actividadSeleccionada === "facturacion-cierre" && (
-              <div className="mt-4 space-y-4">
-                <section className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <h3 className="text-sm font-extrabold text-slate-800">Factura definitiva de honorarios</h3>
-                      <p className="mt-1 text-xs text-slate-600">Abre la ventana de facturación existente para revisar los importes y confirmar la factura. Esta acción no cierra el expediente.</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={generarHonorariosGestoria}
-                      disabled={generandoHonorariosGestoria || !expediente?.id_expediente}
-                      className="rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-extrabold text-white hover:bg-emerald-800 disabled:opacity-50"
-                    >
-                      {generandoHonorariosGestoria ? "Abriendo factura…" : "🧾 Liquidar expediente / Factura definitiva de honorarios"}
-                    </button>
-                  </div>
-                </section>
                 <section className="rounded-2xl border border-indigo-200 bg-indigo-50/30 p-4">
                   <div className="mb-3">
                     <h3 className="text-sm font-extrabold text-slate-800">Datos vinculados de la ficha del expediente</h3>
