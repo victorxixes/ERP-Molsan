@@ -24,6 +24,7 @@ from backend.app.auth.dependencies import get_current_user
 from backend.app.expedientes.models import (
     Expediente,
     ExpedienteDocumentoEscritura,
+    ExpedientePromocion,
 )
 from backend.app.tipos_expediente.models import TipoExpediente
 from backend.app.tipos_expediente.router import asegurar_catalogo_inicial
@@ -1157,22 +1158,31 @@ def expediente_a_dict(expediente: Expediente) -> dict:
 def adjuntar_promociones_catalogo(db: Session, items: list[dict]) -> list[dict]:
     """Expone el nombre del tipo de expediente como promoción calculada del catálogo."""
     asegurar_catalogo_inicial(db)
-    ids = {
-        int(item["promocion_tipo_expediente_id"])
+    expedientes_ids = {
+        str(item["id_expediente"])
         for item in items
-        if item.get("promocion_tipo_expediente_id") is not None
+        if item.get("id_expediente")
     }
-    nombres = {}
-    if ids:
-        nombres = {
-            int(tipo_id): nombre
-            for tipo_id, nombre in db.query(TipoExpediente.id, TipoExpediente.nombre)
-            .filter(TipoExpediente.id.in_(ids))
+    asignaciones = {}
+    if expedientes_ids:
+        filas = (
+            db.query(
+                ExpedientePromocion.expediente_id,
+                ExpedientePromocion.tipo_expediente_id,
+                TipoExpediente.nombre,
+            )
+            .outerjoin(TipoExpediente, ExpedientePromocion.tipo_expediente_id == TipoExpediente.id)
+            .filter(ExpedientePromocion.expediente_id.in_(expedientes_ids))
             .all()
+        )
+        asignaciones = {
+            str(expediente_id): (int(tipo_id), nombre)
+            for expediente_id, tipo_id, nombre in filas
         }
     for item in items:
-        tipo_id = item.get("promocion_tipo_expediente_id")
-        item["promocion"] = nombres.get(int(tipo_id)) if tipo_id is not None else None
+        asignacion = asignaciones.get(str(item.get("id_expediente") or ""))
+        item["promocion_tipo_expediente_id"] = asignacion[0] if asignacion else None
+        item["promocion"] = asignacion[1] if asignacion else None
     return items
 
 
@@ -1343,7 +1353,8 @@ def aplicar_filtros(
         q = q.filter(Expediente.observaciones.ilike(patron_obs))
     if texto(promocion):
         asegurar_catalogo_inicial(q.session)
-        q = q.outerjoin(TipoExpediente, Expediente.promocion_tipo_expediente_id == TipoExpediente.id)
+        q = q.outerjoin(ExpedientePromocion, ExpedientePromocion.expediente_id == Expediente.id_expediente)
+        q = q.outerjoin(TipoExpediente, ExpedientePromocion.tipo_expediente_id == TipoExpediente.id)
         q = q.filter(TipoExpediente.nombre.ilike(f"%{texto(promocion)}%"))
     if texto(estadoActividad):
         q = q.filter(func.lower(func.trim(Expediente.estado_actividad)) == texto(estadoActividad).lower())
