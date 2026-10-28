@@ -17,9 +17,18 @@ from backend.app.expedientes.models import Expediente
 from backend.app.expedientes.gastos.models import ExpedienteGasto
 
 
+# Encabezados oficiales del Excel ABSIS Post Firma (38 columnas).
+# TIPOCONCEPTO e IDPAGO no forman parte del origen y no se inventan ni enlazan.
 CABECERAS_REQUERIDAS = {
-    "IDEXPEDIENTE", "IDGASTO", "CONCEPTOGASTO", "ESTADO", "IMPGASTO",
-    "FFACTURA", "FECHAADJUNTARFACTURA", "TIPOOPERACION",
+    "IDEXPEDIENTE", "FECHAALTA", "ORIGENBANKIA", "ACTIVIDADACTUAL",
+    "ESTADOACTIVIDAD", "IDPROVISION", "IMPORTEPROVISION", "TIPOPROVISION",
+    "DETALLEOPERACION", "TIPOOPERACION", "SUBTIPOOPERACION", "OFICINA", "DAN",
+    "IDGESTORIATRAMITE", "NOMBREGESTORIA", "NOMBREDOCUMENTO", "IDGASTO",
+    "CONCEPTOGASTO", "ESTADO", "ESTADOJUSTIFICANTE", "FECHAADJUNTARFACTURA",
+    "IMPGASTO", "IMPBASEIMPUESTO", "IMPBASERETENCION", "IMPIMPUESTO",
+    "FESTADO", "FPETICION", "FPAGO", "CTAORIGEN", "CTADESTINO", "FFACTURA",
+    "FORMAPAGO", "NUMFACTURA", "IDBENEFICIARIO", "BENEFICIARIO",
+    "NOMBREPAGADOR", "NIFPAGADOR",
 }
 
 
@@ -433,7 +442,6 @@ def validar_postfirma(
         if not id_gasto:
             ids_vacios += 1
         else:
-            ids_gasto.append(id_gasto.casefold())
             ids_gasto.append(id_gasto.casefold())
             claves_gasto.append((id_gasto.casefold(), (tipo_concepto or "").casefold()))
 
