@@ -17,7 +17,7 @@ from backend.app.expedientes.models import Expediente
 from backend.app.expedientes.gastos.models import ExpedienteGasto
 
 
-# Encabezados oficiales del Excel ABSIS Post Firma (38 columnas).
+# Encabezados oficiales del Excel ABSIS Post Firma (37 columnas).
 # TIPOCONCEPTO e IDPAGO no forman parte del origen y no se inventan ni enlazan.
 CABECERAS_REQUERIDAS = {
     "IDEXPEDIENTE", "FECHAALTA", "ORIGENBANKIA", "ACTIVIDADACTUAL",
@@ -73,6 +73,14 @@ def _fecha(value):
         return value.date()
     if isinstance(value, date):
         return value
+    # Excel puede entregar seriales numéricos si la celda no tiene formato fecha.
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        try:
+            numero = float(value)
+            if 20000 <= numero <= 80000:
+                return (datetime(1899, 12, 30) + timedelta(days=numero)).date()
+        except (TypeError, ValueError, OverflowError):
+            return None
     try:
         parsed = pd.to_datetime(value, dayfirst=True, errors="coerce")
         return None if pd.isna(parsed) else parsed.date()
