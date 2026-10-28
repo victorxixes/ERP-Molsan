@@ -988,6 +988,37 @@ def migrar_esquema_expedientes_inicio():
 # INICIALIZAR TABLAS AUXILIARES
 # ============================================================
 
+from contextlib import contextmanager
+import time
+
+
+@contextmanager
+def _transaccion_inicio_segura(etiqueta):
+    """Limita esperas SQL durante migraciones de arranque y deja diagnóstico."""
+    inicio = time.monotonic()
+    print(f"[STARTUP SQL] INICIO transacción: {etiqueta}", flush=True)
+    try:
+        with engine.begin() as conexion:
+            # Evita que DDL/UPDATE espere indefinidamente por un bloqueo.
+            # SET LOCAL solo afecta a esta transacción; no limita consultas normales.
+            conexion.execute(text("SET LOCAL lock_timeout = '5s'"))
+            conexion.execute(text("SET LOCAL statement_timeout = '30s'"))
+            yield conexion
+        duracion = time.monotonic() - inicio
+        print(
+            f"[STARTUP SQL] FIN transacción: {etiqueta}; duración={duracion:.2f}s",
+            flush=True,
+        )
+    except Exception as error:
+        duracion = time.monotonic() - inicio
+        print(
+            f"[STARTUP SQL] ERROR transacción: {etiqueta}; "
+            f"duración={duracion:.2f}s; tipo={type(error).__name__}; detalle={error!r}",
+            flush=True,
+        )
+        raise
+
+
 @app.on_event("startup")
 def inicializar_tablas_auxiliares():
     print(
@@ -1004,7 +1035,7 @@ def inicializar_tablas_auxiliares():
         print("[MUNICIPIOS] Tabla de códigos postales disponible.", flush=True)
 
         # Referencia interna de promoción para expedientes.
-        with engine.begin() as conexion_promocion:
+        with _transaccion_inicio_segura("conexion_promocion") as conexion_promocion:
             print("[STARTUP SQL] INICIO linea 1008", flush=True)
             conexion_promocion.execute(text("""
                 ALTER TABLE IF EXISTS public.expedientes
@@ -1030,7 +1061,7 @@ def inicializar_tablas_auxiliares():
 
         # Campos del defecto registral solicitados por el cliente.
         # Migración idempotente: conserva todos los defectos ya registrados.
-        with engine.begin() as conexion_defectos_absis:
+        with _transaccion_inicio_segura("conexion_defectos_absis") as conexion_defectos_absis:
             print("[STARTUP SQL] INICIO linea 1030", flush=True)
             conexion_defectos_absis.execute(text("""
                 ALTER TABLE IF EXISTS public.expediente_defectos
@@ -1092,7 +1123,7 @@ def inicializar_tablas_auxiliares():
         from backend.app.provisiones.models import ConceptoImporteProvision
         ConceptoImporteProvision.__table__.create(bind=engine, checkfirst=True)
         # Migración compatible con instalaciones que ya tienen operaciones guardadas.
-        with engine.begin() as conn:
+        with _transaccion_inicio_segura("conn") as conn:
             print("[STARTUP SQL] INICIO linea 1081", flush=True)
             conn.execute(text("ALTER TABLE provisiones_operaciones ADD COLUMN IF NOT EXISTS notaria NUMERIC(14,2) NOT NULL DEFAULT 0"))
             print("[STARTUP SQL] INICIO linea 1082", flush=True)
@@ -1134,7 +1165,7 @@ def inicializar_tablas_auxiliares():
 
         ComplementoSaldo.__table__.create(bind=engine, checkfirst=True)
         # Migración segura del catálogo bancario: conserva todos los registros existentes.
-        with engine.begin() as conexion_entidades_bancarias:
+        with _transaccion_inicio_segura("conexion_entidades_bancarias") as conexion_entidades_bancarias:
             print("[STARTUP SQL] INICIO linea 1112", flush=True)
             conexion_entidades_bancarias.execute(text(
                 "ALTER TABLE public.entidades_bancarias "
@@ -1144,7 +1175,7 @@ def inicializar_tablas_auxiliares():
         print("[ENTIDADES BANCARIAS] Columna entidad_actual_id comprobada.", flush=True)
         # Completa automáticamente sucesiones bancarias históricas conocidas.
         # Solo rellena relaciones vacías: nunca sobrescribe una asignación manual.
-        with engine.begin() as conexion_sucesiones_bancarias:
+        with _transaccion_inicio_segura("conexion_sucesiones_bancarias") as conexion_sucesiones_bancarias:
             print("[STARTUP SQL] INICIO linea 1121", flush=True)
             conexion_sucesiones_bancarias.execute(text("""
                 UPDATE public.entidades_bancarias AS origen
@@ -1217,7 +1248,7 @@ def inicializar_tablas_auxiliares():
             """))
         print("[ENTIDADES BANCARIAS] Sucesiones históricas conocidas de CaixaBank comprobadas.", flush=True)
         # Otras sucesiones conocidas que terminaron en CaixaBank.
-        with engine.begin() as conexion_sucesiones_adicionales:
+        with _transaccion_inicio_segura("conexion_sucesiones_adicionales") as conexion_sucesiones_adicionales:
             print("[STARTUP SQL] INICIO linea 1193", flush=True)
             conexion_sucesiones_adicionales.execute(text("""
                 UPDATE public.entidades_bancarias AS origen
@@ -1328,7 +1359,7 @@ def inicializar_tablas_auxiliares():
         # Solo relaciona nombres históricos cuando la entidad sucesora activa está en el catálogo.
         # El código europeo se conserva como dato opcional para cajas históricas y entidades
         # que no disponen de un identificador europeo en la documentación disponible.
-        with engine.begin() as conexion_codigo_entidad:
+        with _transaccion_inicio_segura("conexion_codigo_entidad") as conexion_codigo_entidad:
             print("[STARTUP SQL] INICIO linea 1301", flush=True)
             conexion_codigo_entidad.execute(text(
                 "ALTER TABLE public.entidades_bancarias ALTER COLUMN codigo_europeo DROP NOT NULL"
@@ -1538,7 +1569,7 @@ def inicializar_tablas_auxiliares():
             ("Banco de Granada"),
             ("Banco de Progreso")
         ]
-        with engine.begin() as conexion_semillas_caixabank:
+        with _transaccion_inicio_segura("conexion_semillas_caixabank") as conexion_semillas_caixabank:
             for nombre_historico in entidades_historicas_caixabank:
                 print(f"[STARTUP SQL] INICIO linea 1511 semilla_historica={nombre_historico}", flush=True)
                 conexion_semillas_caixabank.execute(text("""
@@ -1647,7 +1678,7 @@ def inicializar_tablas_auxiliares():
                   "%CAIXA GIRONA%",
                   "%CAIXA DE GIRONA%"
         ]
-        with engine.begin() as conexion_caixabank_facilitados:
+        with _transaccion_inicio_segura("conexion_caixabank_facilitados") as conexion_caixabank_facilitados:
             for patron_origen in patrones_caixabank_facilitados:
                 print(f"[STARTUP SQL] INICIO linea 1619 sucesion_caixabank_facilitados patron={patron_origen}", flush=True)
                 conexion_caixabank_facilitados.execute(
@@ -1675,7 +1706,7 @@ def inicializar_tablas_auxiliares():
                 )
         # Reparar vínculos históricos que por coincidencia de prefijo quedaron enlazados
         # al fondo "CAIXABANK MONETARIO RENDIMIENTO, FI" en lugar del banco CaixaBank.
-        with engine.begin() as conexion_corregir_destino_caixabank:
+        with _transaccion_inicio_segura("conexion_corregir_destino_caixabank") as conexion_corregir_destino_caixabank:
             print("[STARTUP SQL] INICIO linea 1645", flush=True)
             conexion_corregir_destino_caixabank.execute(text("""
                 UPDATE public.entidades_bancarias AS origen
@@ -1699,7 +1730,7 @@ def inicializar_tablas_auxiliares():
                 )
             """))
         # BPI sigue operando como Banco BPI, S.A.; es filial del grupo, no un banco absorbido por CaixaBank.
-        with engine.begin() as conexion_bpi:
+        with _transaccion_inicio_segura("conexion_bpi") as conexion_bpi:
             print("[STARTUP SQL] INICIO linea 1668", flush=True)
             conexion_bpi.execute(text("""
                 UPDATE public.entidades_bancarias AS origen
@@ -1722,7 +1753,7 @@ def inicializar_tablas_auxiliares():
                   )
             """))
         # Banco Herrero terminó integrado en Banco Sabadell; corregir también vínculos previos erróneos.
-        with engine.begin() as conexion_herrero:
+        with _transaccion_inicio_segura("conexion_herrero") as conexion_herrero:
             print("[STARTUP SQL] INICIO linea 1690", flush=True)
             conexion_herrero.execute(text("""
                 UPDATE public.entidades_bancarias AS origen
@@ -1882,7 +1913,7 @@ def inicializar_tablas_auxiliares():
                 ["%EVO BANCO%", "%EVO BANCO, S.A.%"],
             ),
         ]
-        with engine.begin() as conexion_sucesiones_ampliadas:
+        with _transaccion_inicio_segura("conexion_sucesiones_ampliadas") as conexion_sucesiones_ampliadas:
             for nombre_grupo, condicion_destino, patrones_origen in reglas_sucesion_bancaria:
                 for patron_origen in patrones_origen:
                     print(f"[STARTUP SQL] INICIO linea 1851 sucesiones_ampliadas grupo={nombre_grupo} patron={patron_origen}", flush=True)
@@ -1918,7 +1949,7 @@ def inicializar_tablas_auxiliares():
         # Corrección de sucesiones históricas que apuntaban por error a un fondo monetario.
         # Kutxa, Caja Vital y Cajasur corresponden al banco Kutxabank, S.A.;
         # el fondo KUTXABANK MONETARIO AHORRO, FI no es el banco sucesor.
-        with engine.begin() as conexion_correcciones_catalogo:
+        with _transaccion_inicio_segura("conexion_correcciones_catalogo") as conexion_correcciones_catalogo:
             print("[STARTUP SQL] INICIO linea 1884", flush=True)
             conexion_correcciones_catalogo.execute(text("""
                 UPDATE public.entidades_bancarias AS origen
@@ -1961,7 +1992,7 @@ def inicializar_tablas_auxiliares():
             """))
         # Sucesiones que deben quedar cubiertas incluso si la regla genérica no encontró
         # la fila de origen en una inicialización anterior.
-        with engine.begin() as conexion_sucesiones_puntuales:
+        with _transaccion_inicio_segura("conexion_sucesiones_puntuales") as conexion_sucesiones_puntuales:
             print("[STARTUP SQL] INICIO linea 1924", flush=True)
             conexion_sucesiones_puntuales.execute(text("""
                 UPDATE public.entidades_bancarias AS origen
@@ -2006,7 +2037,7 @@ def inicializar_tablas_auxiliares():
         print("[ENTIDADES BANCARIAS] Correcciones de Kutxabank/Cajasur y fondos revisadas.", flush=True)
         print("[ENTIDADES BANCARIAS] Sucesiones de grupos bancarios españoles comprobadas.", flush=True)
         print("[ENTIDADES BANCARIAS] Sucesiones históricas adicionales comprobadas.", flush=True)
-        with engine.begin() as conexion_complementos:
+        with _transaccion_inicio_segura("conexion_complementos") as conexion_complementos:
             print("[STARTUP SQL] INICIO linea 1967", flush=True)
             conexion_complementos.execute(text(
                 "ALTER TABLE public.complementos_saldo ADD COLUMN IF NOT EXISTS provisionado DOUBLE PRECISION NOT NULL DEFAULT 0"
@@ -2050,7 +2081,7 @@ def inicializar_tablas_auxiliares():
         )
 
         # Migración compatible con la tabla PPAD ya existente.
-        with engine.begin() as conexion_ppad:
+        with _transaccion_inicio_segura("conexion_ppad") as conexion_ppad:
             print("[STARTUP SQL] INICIO linea 2008", flush=True)
             conexion_ppad.execute(text(
                 "ALTER TABLE public.expediente_ppad "
@@ -2068,7 +2099,7 @@ def inicializar_tablas_auxiliares():
             checkfirst=True,
         )
         # Migración idempotente: trazabilidad de recepción y validación interna.
-        with engine.begin() as conexion_observaciones:
+        with _transaccion_inicio_segura("conexion_observaciones") as conexion_observaciones:
             print("[STARTUP SQL] INICIO linea 2024", flush=True)
             conexion_observaciones.execute(text(
                 "ALTER TABLE public.expediente_observaciones "
