@@ -8572,7 +8572,7 @@ const cuantiaFincasParaEnvio =
                 <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-200 bg-emerald-50 px-4 py-4 font-extrabold text-emerald-900"><span>TOTAL FACTURA</span><span>{Number(facturaHonorariosForm.totalFactura || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
               </div>
               {facturaHonorariosForm.observaciones && <p className="mt-4 whitespace-pre-wrap text-sm text-slate-600">{facturaHonorariosForm.observaciones}</p>}
-              <p className="mt-4 text-xs text-amber-700">Vista previa de revisión. Al pulsar «Guardar y facturar», el ERP generará y descargará la factura en PDF usando la plantilla oficial asociada al concepto de honorarios de gestoría.</p>
+              <p className="mt-4 text-xs text-amber-700">Vista previa de revisión. Al pulsar «Guardar y facturar», el ERP generará y descargará la factura en PDF con número {expediente?.id_expediente || "—"} - {facturaHonorariosForm.numeroFactura || "pendiente de asignación"}, usando la plantilla oficial asociada al concepto de honorarios de gestoría.</p>
             </div>
           ) : (
             <>
