@@ -134,6 +134,7 @@ const TiposCargaHipotecaria = lazy(() => import("./pages/herramientas/TiposCarga
 
 /* TIPOS DE CONCEPTOS DE GASTOS */
 const TiposConceptoGastos = lazy(() => import("./pages/herramientas/TiposConceptoGastos.jsx"));
+const TiposExpediente = lazy(() => import("./pages/herramientas/TiposExpediente.jsx"));
 
 /* APODERAGEST */
 const ApoderaGest = lazy(() => import("./pages/apoderagest/ApoderaGest.jsx"));
@@ -580,6 +581,11 @@ export default function App() {
           <Route
             path="herramientas/tipos-concepto-gastos"
             element={<TiposConceptoGastos />}
+          />
+
+          <Route
+            path="herramientas/tipos-expediente"
+            element={<TiposExpediente />}
           />
 
           <Route
