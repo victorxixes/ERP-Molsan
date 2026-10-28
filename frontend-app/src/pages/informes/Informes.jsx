@@ -3384,7 +3384,7 @@ function InformeFacturacion() {
     setExportando(true);
     setError("");
     try {
-      const params = Object.fromEntries(Object.entries(aplicados).filter(([, v]) => v !== "" && v != null));
+      const params = Object.fromEntries(Object.entries(filtros).filter(([, v]) => v !== "" && v != null));
       await descargarExcelBackend(API_BASE + "/informes/facturacion/exportar-excel", params, "informe_facturacion_honorarios_gestoria.xlsx");
     } catch (err) {
       setError(err?.response?.data?.detail || "No se pudo exportar el informe.");
