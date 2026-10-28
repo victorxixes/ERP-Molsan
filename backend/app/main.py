@@ -1005,20 +1005,24 @@ def inicializar_tablas_auxiliares():
 
         # Referencia interna de promoción para expedientes.
         with engine.begin() as conexion_promocion:
+            print("[STARTUP SQL] INICIO linea 1008", flush=True)
             conexion_promocion.execute(text("""
                 ALTER TABLE IF EXISTS public.expedientes
                 ADD COLUMN IF NOT EXISTS promocion VARCHAR(300)
             """))
+            print("[STARTUP SQL] INICIO linea 1012", flush=True)
             conexion_promocion.execute(text("""
                 CREATE INDEX IF NOT EXISTS ix_expedientes_promocion
                 ON public.expedientes (promocion)
             """))
+            print("[STARTUP SQL] INICIO linea 1016", flush=True)
             conexion_promocion.execute(text("""
                 CREATE TABLE IF NOT EXISTS public.expediente_promociones (
                     expediente_id VARCHAR(100) PRIMARY KEY,
                     tipo_expediente_id INTEGER NOT NULL
                 )
             """))
+            print("[STARTUP SQL] INICIO linea 1022", flush=True)
             conexion_promocion.execute(text("""
                 CREATE INDEX IF NOT EXISTS ix_expediente_promociones_tipo_expediente_id
                 ON public.expediente_promociones (tipo_expediente_id)
@@ -1027,46 +1031,57 @@ def inicializar_tablas_auxiliares():
         # Campos del defecto registral solicitados por el cliente.
         # Migración idempotente: conserva todos los defectos ya registrados.
         with engine.begin() as conexion_defectos_absis:
+            print("[STARTUP SQL] INICIO linea 1030", flush=True)
             conexion_defectos_absis.execute(text("""
                 ALTER TABLE IF EXISTS public.expediente_defectos
                 ADD COLUMN IF NOT EXISTS fecha_calificacion DATE
             """))
+            print("[STARTUP SQL] INICIO linea 1034", flush=True)
             conexion_defectos_absis.execute(text("""
                 ALTER TABLE IF EXISTS public.expediente_defectos
                 ADD COLUMN IF NOT EXISTS fecha_renovacion_asiento DATE
             """))
+            print("[STARTUP SQL] INICIO linea 1038", flush=True)
             conexion_defectos_absis.execute(text("""
                 ALTER TABLE IF EXISTS public.expediente_defectos
                 ADD COLUMN IF NOT EXISTS asiento_renovacion_libro_diario VARCHAR(200)
             """))
+            print("[STARTUP SQL] INICIO linea 1042", flush=True)
             conexion_defectos_absis.execute(text("""
                 ALTER TABLE IF EXISTS public.expediente_defectos
                 ADD COLUMN IF NOT EXISTS vencimiento_asiento_renovacion DATE
             """))
+            print("[STARTUP SQL] INICIO linea 1046", flush=True)
             conexion_defectos_absis.execute(text("""
                 ALTER TABLE IF EXISTS public.expediente_defectos
                 ADD COLUMN IF NOT EXISTS anotacion_suspensiva BOOLEAN
             """))
+            print("[STARTUP SQL] INICIO linea 1050", flush=True)
             conexion_defectos_absis.execute(text("""
                 ALTER TABLE IF EXISTS public.expediente_defectos
                 ADD COLUMN IF NOT EXISTS vencimiento_anotacion DATE
             """))
+            print("[STARTUP SQL] INICIO linea 1054", flush=True)
             conexion_defectos_absis.execute(text("""
                 ALTER TABLE IF EXISTS public.expediente_defectos
                 ADD COLUMN IF NOT EXISTS calificacion_sustitutoria BOOLEAN
             """))
+            print("[STARTUP SQL] INICIO linea 1058", flush=True)
             conexion_defectos_absis.execute(text("""
                 ALTER TABLE IF EXISTS public.expediente_defectos
                 ADD COLUMN IF NOT EXISTS recurso_gubernativo BOOLEAN
             """))
+            print("[STARTUP SQL] INICIO linea 1062", flush=True)
             conexion_defectos_absis.execute(text("""
                 ALTER TABLE IF EXISTS public.expediente_defectos
                 ADD COLUMN IF NOT EXISTS estado_envio_absis VARCHAR(30) NOT NULL DEFAULT 'Pendiente'
             """))
+            print("[STARTUP SQL] INICIO linea 1066", flush=True)
             conexion_defectos_absis.execute(text("""
                 ALTER TABLE IF EXISTS public.expediente_defectos
                 ADD COLUMN IF NOT EXISTS enviado_absis_en TIMESTAMP WITH TIME ZONE
             """))
+            print("[STARTUP SQL] INICIO linea 1070", flush=True)
             conexion_defectos_absis.execute(text("""
                 ALTER TABLE IF EXISTS public.expediente_defectos
                 ADD COLUMN IF NOT EXISTS respuesta_absis TEXT
@@ -1078,16 +1093,27 @@ def inicializar_tablas_auxiliares():
         ConceptoImporteProvision.__table__.create(bind=engine, checkfirst=True)
         # Migración compatible con instalaciones que ya tienen operaciones guardadas.
         with engine.begin() as conn:
+            print("[STARTUP SQL] INICIO linea 1081", flush=True)
             conn.execute(text("ALTER TABLE provisiones_operaciones ADD COLUMN IF NOT EXISTS notaria NUMERIC(14,2) NOT NULL DEFAULT 0"))
+            print("[STARTUP SQL] INICIO linea 1082", flush=True)
             conn.execute(text("ALTER TABLE provisiones_operaciones ADD COLUMN IF NOT EXISTS impuestos NUMERIC(14,2) NOT NULL DEFAULT 0"))
+            print("[STARTUP SQL] INICIO linea 1083", flush=True)
             conn.execute(text("ALTER TABLE provisiones_operaciones ADD COLUMN IF NOT EXISTS gastos_registro_base NUMERIC(14,2) NOT NULL DEFAULT 0"))
+            print("[STARTUP SQL] INICIO linea 1084", flush=True)
             conn.execute(text("ALTER TABLE provisiones_operaciones ADD COLUMN IF NOT EXISTS suplidos_base NUMERIC(14,2) NOT NULL DEFAULT 0"))
+            print("[STARTUP SQL] INICIO linea 1085", flush=True)
             conn.execute(text("ALTER TABLE provisiones_operaciones ADD COLUMN IF NOT EXISTS otros_gastos_base NUMERIC(14,2) NOT NULL DEFAULT 0"))
+            print("[STARTUP SQL] INICIO linea 1086", flush=True)
             conn.execute(text("ALTER TABLE provisiones_operaciones ADD COLUMN IF NOT EXISTS ajustes_motivo TEXT"))
+            print("[STARTUP SQL] INICIO linea 1087", flush=True)
             conn.execute(text("ALTER TABLE provisiones_operaciones ADD COLUMN IF NOT EXISTS ajustes_auditoria JSON NOT NULL DEFAULT '[]'"))
+            print("[STARTUP SQL] INICIO linea 1088", flush=True)
             conn.execute(text("ALTER TABLE provisiones_conceptos_importes ADD COLUMN IF NOT EXISTS reglas JSON NOT NULL DEFAULT '{}'"))
+            print("[STARTUP SQL] INICIO linea 1089", flush=True)
             conn.execute(text("UPDATE provisiones_operaciones SET gastos_registro_base = gastos_registro WHERE gastos_registro_base = 0"))
+            print("[STARTUP SQL] INICIO linea 1090", flush=True)
             conn.execute(text("UPDATE provisiones_operaciones SET suplidos_base = suplidos WHERE suplidos_base = 0"))
+            print("[STARTUP SQL] INICIO linea 1091", flush=True)
             conn.execute(text("UPDATE provisiones_operaciones SET otros_gastos_base = otros_gastos WHERE otros_gastos_base = 0"))
         print("[PROVISIONES] Tabla de conceptos e importes disponible; migración de operaciones comprobada.", flush=True)
 
@@ -1109,6 +1135,7 @@ def inicializar_tablas_auxiliares():
         ComplementoSaldo.__table__.create(bind=engine, checkfirst=True)
         # Migración segura del catálogo bancario: conserva todos los registros existentes.
         with engine.begin() as conexion_entidades_bancarias:
+            print("[STARTUP SQL] INICIO linea 1112", flush=True)
             conexion_entidades_bancarias.execute(text(
                 "ALTER TABLE public.entidades_bancarias "
                 "ADD COLUMN IF NOT EXISTS entidad_actual_id INTEGER NULL "
@@ -1118,6 +1145,7 @@ def inicializar_tablas_auxiliares():
         # Completa automáticamente sucesiones bancarias históricas conocidas.
         # Solo rellena relaciones vacías: nunca sobrescribe una asignación manual.
         with engine.begin() as conexion_sucesiones_bancarias:
+            print("[STARTUP SQL] INICIO linea 1121", flush=True)
             conexion_sucesiones_bancarias.execute(text("""
                 UPDATE public.entidades_bancarias AS origen
                 SET entidad_actual_id = (
@@ -1190,6 +1218,7 @@ def inicializar_tablas_auxiliares():
         print("[ENTIDADES BANCARIAS] Sucesiones históricas conocidas de CaixaBank comprobadas.", flush=True)
         # Otras sucesiones conocidas que terminaron en CaixaBank.
         with engine.begin() as conexion_sucesiones_adicionales:
+            print("[STARTUP SQL] INICIO linea 1193", flush=True)
             conexion_sucesiones_adicionales.execute(text("""
                 UPDATE public.entidades_bancarias AS origen
                 SET entidad_actual_id = (
@@ -1241,6 +1270,7 @@ def inicializar_tablas_auxiliares():
             """))
             # La Caja de Ahorros Provincial de Ciudad Real pasó a CCM,
             # después a Liberbank y finalmente a Unicaja Banco.
+            print("[STARTUP SQL] INICIO linea 1244", flush=True)
             conexion_sucesiones_adicionales.execute(text("""
                 UPDATE public.entidades_bancarias AS origen
                 SET entidad_actual_id = (
@@ -1262,6 +1292,7 @@ def inicializar_tablas_auxiliares():
             """))
             # Las antiguas cajas de Catalunya, Tarragona, Manresa y Lleida
             # terminaron integradas en CatalunyaCaixa/Unnim y posteriormente BBVA.
+            print("[STARTUP SQL] INICIO linea 1265", flush=True)
             conexion_sucesiones_adicionales.execute(text("""
                 UPDATE public.entidades_bancarias AS origen
                 SET entidad_actual_id = (
@@ -1298,6 +1329,7 @@ def inicializar_tablas_auxiliares():
         # El código europeo se conserva como dato opcional para cajas históricas y entidades
         # que no disponen de un identificador europeo en la documentación disponible.
         with engine.begin() as conexion_codigo_entidad:
+            print("[STARTUP SQL] INICIO linea 1301", flush=True)
             conexion_codigo_entidad.execute(text(
                 "ALTER TABLE public.entidades_bancarias ALTER COLUMN codigo_europeo DROP NOT NULL"
             ))
@@ -1508,6 +1540,7 @@ def inicializar_tablas_auxiliares():
         ]
         with engine.begin() as conexion_semillas_caixabank:
             for nombre_historico in entidades_historicas_caixabank:
+                print("[STARTUP SQL] INICIO linea 1511 semilla_historica={nombre_historico}", flush=True)
                 conexion_semillas_caixabank.execute(text("""
                     INSERT INTO public.entidades_bancarias
                         (codigo_europeo, lei, nombre, categoria, direccion, entidad_actual_id, activo)
@@ -1616,6 +1649,7 @@ def inicializar_tablas_auxiliares():
         ]
         with engine.begin() as conexion_caixabank_facilitados:
             for patron_origen in patrones_caixabank_facilitados:
+                print("[STARTUP SQL] INICIO linea 1619 sucesion_caixabank_facilitados patron={patron_origen}", flush=True)
                 conexion_caixabank_facilitados.execute(
                     text("""
                         UPDATE public.entidades_bancarias AS origen
@@ -1642,6 +1676,7 @@ def inicializar_tablas_auxiliares():
         # Reparar vínculos históricos que por coincidencia de prefijo quedaron enlazados
         # al fondo "CAIXABANK MONETARIO RENDIMIENTO, FI" en lugar del banco CaixaBank.
         with engine.begin() as conexion_corregir_destino_caixabank:
+            print("[STARTUP SQL] INICIO linea 1645", flush=True)
             conexion_corregir_destino_caixabank.execute(text("""
                 UPDATE public.entidades_bancarias AS origen
                 SET entidad_actual_id = (
@@ -1665,6 +1700,7 @@ def inicializar_tablas_auxiliares():
             """))
         # BPI sigue operando como Banco BPI, S.A.; es filial del grupo, no un banco absorbido por CaixaBank.
         with engine.begin() as conexion_bpi:
+            print("[STARTUP SQL] INICIO linea 1668", flush=True)
             conexion_bpi.execute(text("""
                 UPDATE public.entidades_bancarias AS origen
                 SET entidad_actual_id = (
@@ -1687,6 +1723,7 @@ def inicializar_tablas_auxiliares():
             """))
         # Banco Herrero terminó integrado en Banco Sabadell; corregir también vínculos previos erróneos.
         with engine.begin() as conexion_herrero:
+            print("[STARTUP SQL] INICIO linea 1690", flush=True)
             conexion_herrero.execute(text("""
                 UPDATE public.entidades_bancarias AS origen
                 SET entidad_actual_id = (
@@ -1848,6 +1885,7 @@ def inicializar_tablas_auxiliares():
         with engine.begin() as conexion_sucesiones_ampliadas:
             for nombre_grupo, condicion_destino, patrones_origen in reglas_sucesion_bancaria:
                 for patron_origen in patrones_origen:
+                    print("[STARTUP SQL] INICIO linea 1851 sucesiones_ampliadas grupo={nombre_grupo} patron={patron_origen}", flush=True)
                     conexion_sucesiones_ampliadas.execute(
                         text(f"""
                             UPDATE public.entidades_bancarias AS origen
@@ -1881,6 +1919,7 @@ def inicializar_tablas_auxiliares():
         # Kutxa, Caja Vital y Cajasur corresponden al banco Kutxabank, S.A.;
         # el fondo KUTXABANK MONETARIO AHORRO, FI no es el banco sucesor.
         with engine.begin() as conexion_correcciones_catalogo:
+            print("[STARTUP SQL] INICIO linea 1884", flush=True)
             conexion_correcciones_catalogo.execute(text("""
                 UPDATE public.entidades_bancarias AS origen
                 SET entidad_actual_id = (
@@ -1904,11 +1943,13 @@ def inicializar_tablas_auxiliares():
                       AND UPPER(TRIM(actual.nombre)) = 'KUTXABANK, S.A.'
                   )
             """))
+            print("[STARTUP SQL] INICIO linea 1907", flush=True)
             conexion_correcciones_catalogo.execute(text("""
                 UPDATE public.entidades_bancarias
                 SET entidad_actual_id = NULL
                 WHERE UPPER(TRIM(nombre)) = 'KUTXABANK MONETARIO AHORRO, FI'
             """))
+            print("[STARTUP SQL] INICIO linea 1912", flush=True)
             conexion_correcciones_catalogo.execute(text("""
                 UPDATE public.entidades_bancarias
                 SET entidad_actual_id = NULL
@@ -1921,6 +1962,7 @@ def inicializar_tablas_auxiliares():
         # Sucesiones que deben quedar cubiertas incluso si la regla genérica no encontró
         # la fila de origen en una inicialización anterior.
         with engine.begin() as conexion_sucesiones_puntuales:
+            print("[STARTUP SQL] INICIO linea 1924", flush=True)
             conexion_sucesiones_puntuales.execute(text("""
                 UPDATE public.entidades_bancarias AS origen
                 SET entidad_actual_id = (
@@ -1944,6 +1986,7 @@ def inicializar_tablas_auxiliares():
                     WHERE actual.activo IS TRUE AND UPPER(TRIM(actual.nombre)) LIKE 'UNICAJA%'
                   )
             """))
+            print("[STARTUP SQL] INICIO linea 1947", flush=True)
             conexion_sucesiones_puntuales.execute(text("""
                 UPDATE public.entidades_bancarias AS origen
                 SET entidad_actual_id = (
@@ -1964,12 +2007,15 @@ def inicializar_tablas_auxiliares():
         print("[ENTIDADES BANCARIAS] Sucesiones de grupos bancarios españoles comprobadas.", flush=True)
         print("[ENTIDADES BANCARIAS] Sucesiones históricas adicionales comprobadas.", flush=True)
         with engine.begin() as conexion_complementos:
+            print("[STARTUP SQL] INICIO linea 1967", flush=True)
             conexion_complementos.execute(text(
                 "ALTER TABLE public.complementos_saldo ADD COLUMN IF NOT EXISTS provisionado DOUBLE PRECISION NOT NULL DEFAULT 0"
             ))
+            print("[STARTUP SQL] INICIO linea 1970", flush=True)
             conexion_complementos.execute(text(
                 "ALTER TABLE public.complementos_saldo ADD COLUMN IF NOT EXISTS saldo_disponible DOUBLE PRECISION NOT NULL DEFAULT 0"
             ))
+            print("[STARTUP SQL] INICIO linea 1973", flush=True)
             conexion_complementos.execute(text(
                 "ALTER TABLE public.complementos_saldo ADD COLUMN IF NOT EXISTS motivo VARCHAR(2000)"
             ))
@@ -2005,10 +2051,12 @@ def inicializar_tablas_auxiliares():
 
         # Migración compatible con la tabla PPAD ya existente.
         with engine.begin() as conexion_ppad:
+            print("[STARTUP SQL] INICIO linea 2008", flush=True)
             conexion_ppad.execute(text(
                 "ALTER TABLE public.expediente_ppad "
                 "ADD COLUMN IF NOT EXISTS compensado BOOLEAN NOT NULL DEFAULT FALSE"
             ))
+            print("[STARTUP SQL] INICIO linea 2012", flush=True)
             conexion_ppad.execute(text(
                 "ALTER TABLE public.expediente_ppad "
                 "ADD COLUMN IF NOT EXISTS fecha_compensacion TIMESTAMP WITH TIME ZONE"
@@ -2021,19 +2069,23 @@ def inicializar_tablas_auxiliares():
         )
         # Migración idempotente: trazabilidad de recepción y validación interna.
         with engine.begin() as conexion_observaciones:
+            print("[STARTUP SQL] INICIO linea 2024", flush=True)
             conexion_observaciones.execute(text(
                 "ALTER TABLE public.expediente_observaciones "
                 "ADD COLUMN IF NOT EXISTS estado_validacion VARCHAR(20) NOT NULL DEFAULT 'No requiere'"
             ))
+            print("[STARTUP SQL] INICIO linea 2028", flush=True)
             conexion_observaciones.execute(text(
                 "ALTER TABLE public.expediente_observaciones "
                 "ADD COLUMN IF NOT EXISTS validado_por_empleado_id INTEGER NULL "
                 "REFERENCES public.empleados(id)"
             ))
+            print("[STARTUP SQL] INICIO linea 2033", flush=True)
             conexion_observaciones.execute(text(
                 "ALTER TABLE public.expediente_observaciones "
                 "ADD COLUMN IF NOT EXISTS validado_en TIMESTAMP WITH TIME ZONE NULL"
             ))
+            print("[STARTUP SQL] INICIO linea 2037", flush=True)
             conexion_observaciones.execute(text(
                 "UPDATE public.expediente_observaciones "
                 "SET estado_validacion = 'Pendiente' "
