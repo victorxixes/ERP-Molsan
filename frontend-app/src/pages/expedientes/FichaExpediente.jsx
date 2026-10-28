@@ -5379,7 +5379,7 @@ const cuantiaFincasParaEnvio =
             {(
               <div className="mb-4 min-w-0">
                 {actividadSeleccionada !== "sede-notarial" && (
-                  <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-2">
+                  <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
                     <CarpetaDigitalModal
                       expedienteId={expediente?.id_expediente || id}
                       modoActividad
@@ -8655,7 +8655,7 @@ const cuantiaFincasParaEnvio =
               </div>
             ) : actividadSeleccionada === "sede-notarial-protocolo" ? (
               <div className="grid w-full min-w-0 grid-cols-1 items-start gap-3">
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
                   <h4 className="mb-3 text-sm font-extrabold text-slate-800">Datos de la actividad</h4>
                   <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {CAMPOS_INTEGRACION_SEDE_PROTOCOLO.filter((campo) => ["nombre_notario", "nif_notario", "tipo_gestoria", "fecha_firma", "asiento_presentacion", "libro_diario", "fecha_presentacion", "numero_entrada", "fecha_recogida_notario_presentacion_telematica"].includes(campo.key)).map((campo) => {
@@ -8681,7 +8681,7 @@ const cuantiaFincasParaEnvio =
                     })}
                   </div>
                 </section>
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
                   <h4 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h4>
                   <RepositorioDocumentosInline
                     expedienteId={expediente?.id_expediente || expediente?.id || id}
@@ -8709,13 +8709,13 @@ const cuantiaFincasParaEnvio =
                     </div>
                   </div>
                 </section>
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
                   <h4 className="mb-2 text-sm font-extrabold text-slate-800">Campos de cada línea económica</h4>
                   <p className="text-xs leading-relaxed text-slate-600">
                     El libro de movimientos de la ficha del expediente es la referencia para preparar la información contable. El campo <strong>Tipo de documento</strong> debe conservarse en cada movimiento junto con su identificador y desglose fiscal.
                   </p>
                 </section>
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
                   <h4 className="mb-3 text-sm font-extrabold text-slate-800">Carpeta digital · Gestión económica</h4>
                   <RepositorioDocumentosInline
                     expedienteId={expediente?.id_expediente || expediente?.id || id}
@@ -8762,8 +8762,8 @@ const cuantiaFincasParaEnvio =
                 </section>
               </div>
             ) : actividadSeleccionada === "liquidacion-impuestos" ? (
-              <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-2">
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3 xl:col-span-2">
+              <div className="grid min-w-0 grid-cols-1 items-start gap-3">
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
                   <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Liquidación de impuestos</h4>
                   <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
@@ -8785,7 +8785,7 @@ const cuantiaFincasParaEnvio =
                     })}
                   </div>
                 </section>
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
                   <h4 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h4>
                   <RepositorioDocumentosInline
                     expedienteId={expediente?.id_expediente || expediente?.id || id}
@@ -8796,8 +8796,8 @@ const cuantiaFincasParaEnvio =
                 </section>
               </div>
             ) : actividadSeleccionada === "tramitacion-inscripcion" ? (
-              <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-2">
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3 xl:col-span-2">
+              <div className="grid min-w-0 grid-cols-1 items-start gap-3">
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
                   <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Tramitación inscripción</h4>
                   <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
@@ -8819,7 +8819,7 @@ const cuantiaFincasParaEnvio =
                     })}
                   </div>
                 </section>
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
                   <h4 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h4>
                   <RepositorioDocumentosInline
                     expedienteId={expediente?.id_expediente || expediente?.id || id}
@@ -8831,7 +8831,7 @@ const cuantiaFincasParaEnvio =
               </div>
             ) : actividadSeleccionada === "defectos-registrales" ? (
               <div className="space-y-3">
-                <section className="rounded-xl border border-slate-200 bg-white p-3">
+                <section className="rounded-xl border border-slate-200 bg-white p-4">
                   <div className="mb-3">
                     <h3 className="text-sm font-extrabold text-slate-800">Defectos registrales · datos para integración</h3>
                     <p className="mt-1 text-xs leading-relaxed text-slate-600">Resumen de los campos propios de esta actividad para preparar la futura comunicación con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
@@ -8870,7 +8870,7 @@ const cuantiaFincasParaEnvio =
                   </div>
                 )}
                 </section>
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
                 <h4 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h4>
                 <RepositorioDocumentosInline
                   expedienteId={expediente?.id_expediente || expediente?.id || id}
