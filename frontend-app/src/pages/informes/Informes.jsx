@@ -3340,15 +3340,26 @@ function valorColumnaPostFirma(fila, columna) {
 
 // Clasificación de estados originales ABSIS usada por las tarjetas de facturación.
 // Mantener los códigos originales; no equiparar estados internos del ERP.
+const ESTADOS_ABSIS_INFORME = [
+  { codigo: "PAGADO", etiqueta: "Pagado", descripcion: "Pagado según ABSIS", color: "emerald" },
+  { codigo: "PAG_RETRO", etiqueta: "Retrocedido", descripcion: "Pago retrocedido", color: "rose" },
+  { codigo: "ANULADO", etiqueta: "Anulado", descripcion: "Gasto anulado", color: "slate" },
+  { codigo: "PTE_CONS", etiqueta: "Consolidado", descripcion: "Consolidado según ABSIS", color: "blue" },
+  { codigo: "PAG_DENEGADO", etiqueta: "Denegado", descripcion: "Pago denegado", color: "rose" },
+  { codigo: "PTE_RESP_FAC", etiqueta: "Pendiente respuesta", descripcion: "Pendiente de respuesta de factura", color: "amber" },
+  { codigo: "ENTREGADA", etiqueta: "Entregada", descripcion: "Factura entregada", color: "blue" },
+  { codigo: "PTE_EXPORT_FAC", etiqueta: "Pendiente exportar", descripcion: "Pendiente de exportación", color: "amber" },
+];
+
 const ESTADOS_FACTURACION_ABSIS = {
-  cobrado: ["PAGADO", "PAG_RETRO"],
+  cobrado: ["PAGADO"],
   pendiente_factura: ["PTE_RESP_FAC", "PTE_EXPORT_FAC"],
-  incidencia: ["ANULADO", "PAG_DENEGADO"],
-  pendiente_cobro: ["PTE_CONS", "PTE_RESP", "ENTREGADA"],
+  incidencia: ["PAG_RETRO", "ANULADO", "PAG_DENEGADO"],
+  pendiente_cobro: ["PTE_CONS", "ENTREGADA"],
 };
 
 function estadoFacturacionAbsis(fila) {
-  const estado = String(fila?.estado ?? "").trim().toUpperCase();
+  const estado = String(fila?.estado ?? "").trim().toUpperCase().replace(/\s+/g, " ");
   for (const [situacion, estados] of Object.entries(ESTADOS_FACTURACION_ABSIS)) {
     if (estados.includes(estado)) return situacion;
   }
@@ -3487,7 +3498,7 @@ function InformeFacturacion() {
     <section className="space-y-5">
       <div className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div><h2 className="text-xl font-bold text-slate-800">Informes de facturación</h2><p className="mt-1 text-sm text-slate-500">Indicadores separados por tipo de operación y actualizados según el periodo seleccionado.</p></div>
+          <div><h2 className="text-xl font-bold text-slate-800">Informes de facturación</h2><p className="mt-1 text-sm text-slate-500">Indicadores de Post Firma por tipo de operación y por estado original de ABSIS. El periodo se filtra por FPAGO.</p></div>
           <button type="button" onClick={() => setRecarga((v) => v + 1)} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">↻ Actualizar</button>
         </div>
         <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -3509,6 +3520,31 @@ function InformeFacturacion() {
             <p className="mt-1 text-sm text-slate-500">Desglose de las filas Post Firma que cumplen el concepto y beneficiario seleccionados, agrupadas por el ESTADO original del Excel.</p>
           </div>
           <span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">{loadingTarjetas ? "Actualizando…" : numeroInforme(datosTarjetas.length) + " registros analizados"}</span>
+        </div>
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {ESTADOS_ABSIS_INFORME.map((estadoInfo) => {
+            const filasEstado = datosTarjetas.filter((fila) => String(fila.estado ?? "").trim().toUpperCase().replace(/\s+/g, " ") === estadoInfo.codigo);
+            const importeEstado = filasEstado.reduce((total, fila) => total + (Number(fila.imp_gasto) || 0), 0);
+            const acento = estadoInfo.color === "emerald" ? "border-emerald-200 bg-emerald-50/70 text-emerald-800"
+              : estadoInfo.color === "rose" ? "border-rose-200 bg-rose-50/70 text-rose-800"
+              : estadoInfo.color === "amber" ? "border-amber-200 bg-amber-50/70 text-amber-800"
+              : estadoInfo.color === "blue" ? "border-blue-200 bg-blue-50/70 text-blue-800"
+              : "border-slate-200 bg-slate-50 text-slate-800";
+            return (
+              <button key={estadoInfo.codigo} type="button" disabled={loadingTarjetas} onClick={() => {
+                const siguiente = { ...filtros, modalidad: "todas", estado: estadoInfo.codigo };
+                setFiltros(siguiente);
+                setAplicados(siguiente);
+                setModalAbierto(true);
+              }} className={"rounded-xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:opacity-60 " + acento}>
+                <div className="text-xs font-bold uppercase tracking-wide">{estadoInfo.etiqueta}</div>
+                <div className="mt-2 text-2xl font-extrabold tabular-nums">{loadingTarjetas ? "…" : numeroInforme(filasEstado.length)}</div>
+                <div className="mt-1 text-sm font-semibold tabular-nums">{loadingTarjetas ? "…" : euros(importeEstado)}</div>
+                <div className="mt-1 text-xs opacity-80">{estadoInfo.descripcion}</div>
+                <div className="mt-3 text-xs font-bold underline underline-offset-2">Ver registros</div>
+              </button>
+            );
+          })}
         </div>
         {(() => {
           const estados = datosTarjetas.reduce((acumulado, fila) => {
@@ -3550,7 +3586,7 @@ function InformeFacturacion() {
             </div>
           );
         })()}
-        <p className="mt-3 text-xs leading-5 text-slate-500">Los códigos de ESTADO se muestran sin traducir ni equiparar a los estados internos del expediente. La consulta no modifica datos.</p>
+        <p className="mt-3 text-xs leading-5 text-slate-500">Las tarjetas muestran los ocho códigos acordados de ESTADO. Los códigos originales se conservan; los valores vacíos o desconocidos siguen apareciendo en el desglose inferior. PAG_RETRO no se contabiliza como cobro efectivo. La consulta no modifica datos.</p>
       </section>
 
       <AvisoInforme error={error} />

@@ -132,15 +132,16 @@ def _tipo_cancelacion(exp, gasto=None):
 def _situacion_facturacion(gasto):
     """Clasificación estricta según los códigos ESTADO acordados con ABSIS."""
     estado = str(_valor(gasto, "estado_absis", "ESTADO") or "").strip().upper()
+    # Los códigos de ABSIS se conservan y clasifican sin inferir equivalencias.
+    # PAG_RETRO no es un cobro efectivo; PTE_RESP no forma parte del catálogo acordado.
     estados = {
         "PAGADO": "cobrado",
-        "PAG_RETRO": "cobrado",
+        "PAG_RETRO": "incidencia",
         "PTE_RESP_FAC": "pendiente_factura",
         "PTE_EXPORT_FAC": "pendiente_factura",
         "ANULADO": "incidencia",
         "PAG_DENEGADO": "incidencia",
         "PTE_CONS": "pendiente_cobro",
-        "PTE_RESP": "pendiente_cobro",
         "ENTREGADA": "pendiente_cobro",
     }
     return estados.get(estado, "sin_clasificar")
@@ -213,9 +214,11 @@ def _consultar(db, fecha_desde=None, fecha_hasta=None, tipo_operacion=None, esta
         fecha_pago = getattr(gasto, "fecha_pago", None) or _fecha_original_absis(gasto, "FPAGO")
         tipo = _tipo_cancelacion(exp, gasto)
 
-        if fecha_desde and (fecha_adjuntar is None or fecha_adjuntar < fecha_desde):
+        # FPAGO es la fecha oficial para el filtro temporal del informe Post Firma.
+        # Las fechas vacías/no interpretables no se asignan artificialmente a un periodo.
+        if fecha_desde and (fecha_pago is None or fecha_pago < fecha_desde):
             continue
-        if fecha_hasta and (fecha_adjuntar is None or fecha_adjuntar > fecha_hasta):
+        if fecha_hasta and (fecha_pago is None or fecha_pago > fecha_hasta):
             continue
         if tipo_operacion and _normalizar_texto(tipo_operacion.strip()) not in _normalizar_texto(tipo_operacion_valor):
             continue
