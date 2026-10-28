@@ -840,7 +840,7 @@ CAMPOS_EXPEDIENTE = [
     "promocion",
     "tipo_expediente_id",
     "numero_tipo_expediente",
-    "notario_id",
+    "promocion_tipo_expediente_id",    "notario_id",
     "apoderado_empleado_id",
     "gestor_asignado_id",
     "estado_expediente",
@@ -1156,9 +1156,9 @@ def expediente_a_dict(expediente: Expediente) -> dict:
 def adjuntar_promociones_catalogo(db: Session, items: list[dict]) -> list[dict]:
     """Expone el nombre del tipo de expediente como promoción calculada del catálogo."""
     ids = {
-        int(item["tipo_expediente_id"])
+        int(item["promocion_tipo_expediente_id"])
         for item in items
-        if item.get("tipo_expediente_id") is not None
+        if item.get("promocion_tipo_expediente_id") is not None
     }
     nombres = {}
     if ids:
@@ -1169,7 +1169,7 @@ def adjuntar_promociones_catalogo(db: Session, items: list[dict]) -> list[dict]:
             .all()
         }
     for item in items:
-        tipo_id = item.get("tipo_expediente_id")
+        tipo_id = item.get("promocion_tipo_expediente_id")
         item["promocion"] = nombres.get(int(tipo_id)) if tipo_id is not None else None
     return items
 
@@ -1340,7 +1340,7 @@ def aplicar_filtros(
         patron_obs = f"%{texto(observaciones)}%"
         q = q.filter(Expediente.observaciones.ilike(patron_obs))
     if texto(promocion):
-        q = q.outerjoin(TipoExpediente, Expediente.tipo_expediente_id == TipoExpediente.id)
+        q = q.outerjoin(TipoExpediente, Expediente.promocion_tipo_expediente_id == TipoExpediente.id)
         q = q.filter(TipoExpediente.nombre.ilike(f"%{texto(promocion)}%"))
     if texto(estadoActividad):
         q = q.filter(func.lower(func.trim(Expediente.estado_actividad)) == texto(estadoActividad).lower())
