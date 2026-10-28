@@ -23,6 +23,7 @@ PyJWT
 websockets
 python-dotenv
 reportlab==4.4.10
+pypdf>=5.0,<6
 
 cryptography>=42.0.0
 python-docx==1.1.2
