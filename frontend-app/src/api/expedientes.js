@@ -25,7 +25,12 @@ export async function obtenerResumenExpedientes() {
  */
 export async function obtenerExpediente(idExpediente) {
   const res = await axios.get(
-    `/expedientes/${encodeURIComponent(idExpediente)}`
+    `/expedientes/${encodeURIComponent(idExpediente)}`,
+    {
+      // Evita que la ficha permanezca indefinidamente en "Cargando".
+      // Si el backend/DB no responde, el componente podrá mostrar el error.
+      timeout: 20000,
+    }
   );
 
   return res.data;
