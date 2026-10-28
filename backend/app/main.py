@@ -1016,6 +1016,39 @@ def _transaccion_inicio_segura(etiqueta):
             f"duración={duracion:.2f}s; tipo={type(error).__name__}; detalle={error!r}",
             flush=True,
         )
+        # Tras hacer rollback, consulta desde otra conexión qué sesiones mantienen
+        # bloqueos. No registra el texto SQL, que podría contener datos sensibles.
+        try:
+            with engine.connect() as diagnostico:
+                bloqueos = diagnostico.execute(text("""
+                    SELECT
+                        actividad.pid AS proceso_bloqueado,
+                        pg_blocking_pids(actividad.pid) AS procesos_bloqueadores,
+                        actividad.application_name AS aplicacion,
+                        actividad.state AS estado,
+                        actividad.wait_event_type AS tipo_espera,
+                        actividad.wait_event AS evento_espera,
+                        EXTRACT(EPOCH FROM (NOW() - actividad.query_start))::INTEGER AS segundos_consulta
+                    FROM pg_stat_activity AS actividad
+                    WHERE actividad.datname = current_database()
+                      AND cardinality(pg_blocking_pids(actividad.pid)) > 0
+                    ORDER BY actividad.query_start NULLS LAST
+                    LIMIT 20
+                """)).mappings().all()
+            if bloqueos:
+                print(f"[STARTUP SQL] SESIONES BLOQUEADAS: {list(bloqueos)!r}", flush=True)
+            else:
+                print(
+                    "[STARTUP SQL] Diagnóstico de bloqueos: no se encontraron "
+                    "sesiones bloqueadas visibles en el momento del análisis.",
+                    flush=True,
+                )
+        except Exception as error_diagnostico:
+            print(
+                f"[STARTUP SQL] No se pudo consultar pg_stat_activity: "
+                f"{type(error_diagnostico).__name__}: {error_diagnostico}",
+                flush=True,
+            )
         raise
 
 
