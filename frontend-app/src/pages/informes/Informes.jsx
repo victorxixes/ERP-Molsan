@@ -3430,7 +3430,7 @@ function InformeFacturacion() {
     setError("");
     try {
       const params = Object.fromEntries(Object.entries(filtros).filter(([, v]) => v !== "" && v != null));
-      await descargarExcelBackend(API_BASE + "/informes/facturacion/exportar-excel", params, "informe_facturacion_honorarios_gestoria.xlsx");
+      await descargarExcelBackend(API_BASE + "/informes/facturacion/exportar-excel", params, "informe_postfirma_todas_las_filas.xlsx");
     } catch (err) {
       setError(err?.response?.data?.detail || "No se pudo exportar el informe.");
     } finally { setExportando(false); }
@@ -3442,7 +3442,7 @@ function InformeFacturacion() {
   const grupos = [
     { key: "con_provision", titulo: "Cancelación con provisión", descripcion: "TIPOOPERACION: CANCELACIÓN / CANCELACIÓN CON PROVISIÓN", icono: "🏦", acento: "emerald" },
     { key: "sin_provision", titulo: "Cancelación sin provisión", descripcion: "TIPOOPERACION: CANCELACIÓN SIN PROVISIÓN", icono: "📄", acento: "amber" },
-    { key: "otros", titulo: "Otros tipos de operación", descripcion: "Registros de honorarios cuyo TIPOOPERACION no es una cancelación", icono: "📋", acento: "blue" },
+    { key: "otros", titulo: "Otros tipos de operación", descripcion: "Filas importadas cuyo TIPOOPERACION no es una cancelación", icono: "📋", acento: "blue" },
   ];
   const renderTarjetas = (grupo) => {
     const r = resumen(grupo.key);
@@ -3454,7 +3454,7 @@ function InformeFacturacion() {
           <div className="ml-auto text-right"><div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Registros del periodo</div><div className="text-2xl font-extrabold text-slate-800">{loadingTarjetas ? "…" : numeroInforme(r.registros)}</div></div>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <InformeKpi titulo="Honorarios gestoría" valor={loadingTarjetas ? "…" : euros(r.total_gasto)} subtitulo={numeroInforme(r.registros) + " registros"} icono="🧾" />
+          <InformeKpi titulo="Gastos Post Firma" valor={loadingTarjetas ? "…" : euros(r.total_gasto)} subtitulo={numeroInforme(r.registros) + " registros"} icono="🧾" />
           <InformeKpi titulo="Base imponible" valor={loadingTarjetas ? "…" : euros(r.base_impuesto)} subtitulo="Base asociada al impuesto" icono="📑" />
           <InformeKpi titulo="Base de retención" valor={loadingTarjetas ? "…" : euros(r.base_retencion)} subtitulo="Base sujeta a retención" icono="🧮" />
           <InformeKpi titulo="Impuestos" valor={loadingTarjetas ? "…" : euros(r.total_impuesto)} subtitulo="Importe total de impuesto" icono="💶" />
@@ -3579,7 +3579,7 @@ function InformeFacturacion() {
             </form>
             <div className="flex-1 overflow-auto">
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-3"><div className="text-sm font-semibold text-slate-700">{loading ? "Consultando registros…" : numeroInforme(datos.items.length) + " registros encontrados"}</div><div className="text-xs text-slate-500">Solo se incluyen conceptos de HONORARIOS GESTORÍA.</div></div>
-              {loading ? <PanelEstadoInforme loading /> : datos.items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay gastos de HONORARIOS GESTORÍA para los filtros seleccionados." /> : (
+              {loading ? <PanelEstadoInforme loading /> : datos.items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay filas Post Firma para los filtros seleccionados." /> : (
                 <div className="max-h-[58vh] overflow-auto"><table className="min-w-[2600px] w-full text-left text-xs">
                   <thead className="sticky top-0 z-10 bg-slate-100 text-slate-600"><tr>{COLUMNAS_POSTFIRMA.map((h, i) => <th key={h + "-" + i} className="whitespace-nowrap px-3 py-3 font-bold">{h}</th>)}</tr></thead>
                   <tbody className="divide-y divide-slate-100">{datos.items.map((fila, i) => <tr key={(fila.id_gasto_absis || fila.id_expediente || "registro") + "-" + i} className="hover:bg-blue-50/50">{COLUMNAS_POSTFIRMA.map((h, j) => <td key={h + "-" + j} className="whitespace-nowrap px-3 py-3">{valorColumnaPostFirma(fila, h)}</td>)}</tr>)}</tbody>
