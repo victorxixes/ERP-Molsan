@@ -10,7 +10,7 @@ const redondear = (n) => Math.round((Number(n || 0) + Number.EPSILON) * 100) / 1
 const totalHonorario = (form) => redondear(Number(String(form.base_imponible || "0").replace(",", ".")) * (1 + (form.tipo_impuesto === "EXENTO" ? 0 : Number(String(form.porcentaje_impuesto || "0").replace(",", "."))) / 100));
 const impuestoHonorario = (form) => redondear(totalHonorario(form) - Number(String(form.base_imponible || "0").replace(",", ".")));
 
-export default function HonorariosGestoria() {
+export default function HonorariosGestoria({ soloPlantilla = false } = {}) {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState(VACIO);
   const [editando, setEditando] = useState(null);
@@ -143,7 +143,8 @@ export default function HonorariosGestoria() {
   }
 
   return (
-    <div className="honorarios-gestoria-premium herramientas-subpagina-premium w-full max-w-none space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className={`honorarios-gestoria-premium herramientas-subpagina-premium w-full max-w-none space-y-6 ${soloPlantilla ? "p-0" : "p-4 sm:p-6 lg:p-8"}`}>
+      {!soloPlantilla && <>
       <header className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <p className="text-xs font-black uppercase tracking-[.18em] text-indigo-600">Utilidades · Catálogo económico</p>
         <h1 className="mt-2 text-2xl font-black text-slate-900 sm:text-3xl">Honorarios de gestoría</h1>
@@ -151,11 +152,9 @@ export default function HonorariosGestoria() {
       </header>
 
       {(error || mensaje) && <div role="status" className={`rounded-xl border px-4 py-3 text-sm ${error ? "border-red-200 bg-red-50 text-red-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"}`}>{error || mensaje}</div>}
-
-
-
-      <div className="grid items-start gap-6 2xl:grid-cols-[minmax(0,1.6fr)_minmax(360px,.8fr)]">
-        <div className="min-w-0 space-y-6">
+      </>}
+      <div className={soloPlantilla ? "space-y-6" : "grid items-start gap-6 2xl:grid-cols-[minmax(0,1.6fr)_minmax(360px,.8fr)]"}>
+        {!soloPlantilla && <div className="min-w-0 space-y-6">
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
           <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4"><div><h2 className="font-extrabold text-slate-800">Tarifas configuradas</h2><p className="mt-1 text-xs text-slate-500">Base, tipo de impuesto y porcentaje son configurables; el total se calcula automáticamente.</p></div><button type="button" onClick={nuevo} className="rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-700">＋ Nuevo honorario</button></div>
           {cargando ? <p className="p-6 text-sm text-slate-500">Cargando tarifas…</p> : items.length === 0 ? <p className="p-6 text-sm text-slate-500">Todavía no hay tarifas.</p> : <div className="overflow-x-auto"><table className="w-full min-w-[620px] text-left text-sm"><thead className="bg-slate-50 text-[11px] uppercase tracking-wide text-slate-500"><tr><th className="px-4 py-3">Honorario</th><th className="px-4 py-3">Base</th><th className="px-4 py-3">Impuesto</th><th className="px-4 py-3">Total</th><th className="px-4 py-3">Estado</th><th className="px-4 py-3 text-right">Acciones</th></tr></thead><tbody className="divide-y divide-slate-100">{items.map((item)=><tr key={item.id} className={item.activo ? "" : "bg-slate-50 opacity-60"}><td className="px-4 py-3"><div className="font-bold text-slate-800">{item.nombre}</div>{item.descripcion && <div className="mt-1 max-w-md text-xs text-slate-500">{item.descripcion}</div>}</td><td className="whitespace-nowrap px-4 py-3 tabular-nums">{euros(item.base_imponible ?? item.importe)}</td><td className="whitespace-nowrap px-4 py-3 text-xs">{item.tipo_impuesto || "IVA"} {Number(item.porcentaje_impuesto ?? 0)}%<div className="mt-1 text-[11px] text-slate-500">{euros(Number(item.base_imponible ?? item.importe) * (item.tipo_impuesto === "EXENTO" ? 0 : Number(item.porcentaje_impuesto ?? 0)) / 100)}</div></td><td className="whitespace-nowrap px-4 py-3 font-extrabold tabular-nums">{euros(item.importe)}</td><td className="px-4 py-3"><span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${item.activo ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-600"}`}>{item.activo ? "Activo" : "Inactivo"}</span></td><td className="whitespace-nowrap px-4 py-3 text-right"><button type="button" onClick={()=>editar(item)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50">Editar</button>{item.activo && <button type="button" onClick={()=>desactivar(item)} className="ml-2 rounded-lg border border-red-200 px-3 py-1.5 text-xs font-bold text-red-700 hover:bg-red-50">Desactivar</button>}</td></tr>)}</tbody></table></div>}
@@ -175,8 +174,8 @@ export default function HonorariosGestoria() {
             <div className="flex flex-wrap gap-2"><button disabled={guardando} className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">{guardando ? "Guardando…" : "Guardar honorario"}</button><button type="button" onClick={nuevo} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-600">Limpiar</button></div>
           </form>
         </section>
-        </div>
-        <div className="min-w-0">
+        </div>}
+        {soloPlantilla && <div className="min-w-0">
       <section className="rounded-2xl border border-indigo-200 bg-white p-5 shadow-sm">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="max-w-2xl">
@@ -193,7 +192,7 @@ export default function HonorariosGestoria() {
         </div>
         {(errorPlantilla || mensajePlantilla) && <p role="status" className={`mt-3 rounded-lg px-3 py-2 text-sm ${errorPlantilla ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700"}`}>{errorPlantilla || mensajePlantilla}</p>}
       </section>
-        </div>
+        </div>}
       </div>
     </div>
   );
