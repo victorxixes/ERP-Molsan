@@ -37,6 +37,12 @@ const COLUMNAS = [
   },
 
   {
+    key: "promocion",
+    label: "Promoción",
+    tipo: "texto",
+  },
+
+  {
     key: "id",
     label: "ID",
     tipo: "numero",
@@ -1159,6 +1165,7 @@ export default function ExpedientesListado() {
   const [filtroSaldoDisponible, setFiltroSaldoDisponible] = useState("");
   const [filtroImporte, setFiltroImporte] = useState("");
   const [filtroObservaciones, setFiltroObservaciones] = useState("");
+  const [filtroPromocion, setFiltroPromocion] = useState("");
   const [filtroEstadoActividad, setFiltroEstadoActividad] = useState("");
   const [filtroActividad, setFiltroActividad] = useState("");
   const [filtroEstadoExpediente, setFiltroEstadoExpediente] = useState("");
@@ -1192,7 +1199,7 @@ export default function ExpedientesListado() {
     nifSolicitante: "", nombreSolicitante: "",
     notario: "", nifNotario: "", finca: "",
     registroPropiedad: "", saldoReal: "", saldoDisponible: "",
-    importe: "", observaciones: "", estadoActividad: "",
+    importe: "", observaciones: "", promocion: "", estadoActividad: "",
     actividad: "", estadoExpediente: "",
     origenBankia: "", productoGtg: "", apoderado: "",
     tipoProvision: "", tipoOperacion: "", subtipoOperacion: "",
@@ -1448,6 +1455,7 @@ export default function ExpedientesListado() {
             saldoDisponible: filtrosAplicados.saldoDisponible !== "" ? Number(filtrosAplicados.saldoDisponible) : undefined,
             importe: filtrosAplicados.importe !== "" ? Number(filtrosAplicados.importe) : undefined,
             observaciones: filtrosAplicados.observaciones || undefined,
+            promocion: filtrosAplicados.promocion || undefined,
             estadoActividad: filtrosAplicados.estadoActividad || undefined,
             actividadActual: filtrosAplicados.actividad || undefined,
             alerta: alertaSeleccionada || undefined,
@@ -1964,7 +1972,7 @@ export default function ExpedientesListado() {
       saldoDisponible: filtroSaldoDisponible,
       importe: filtroImporte,
       observaciones: filtroObservaciones.trim(),
-      estadoActividad: filtroEstadoActividad,
+      promocion: filtroPromocion.trim(),      estadoActividad: filtroEstadoActividad,
       actividad: filtroActividad,
       estadoExpediente: filtroEstadoExpediente.trim(),
       origenBankia: filtroOrigenBankia,
@@ -2021,7 +2029,7 @@ export default function ExpedientesListado() {
     setFiltroSaldoDisponible("");
     setFiltroImporte("");
     setFiltroObservaciones("");
-    setFiltroEstadoActividad("");
+    setFiltroPromocion("");    setFiltroEstadoActividad("");
     setFiltroActividad("");
     setFiltroEstadoExpediente("");
     setFiltroOrigenBankia("");
@@ -2053,7 +2061,7 @@ export default function ExpedientesListado() {
       nifSolicitante: "", nombreSolicitante: "",
       notario: "", nifNotario: "", finca: "",
       registroPropiedad: "", saldoReal: "", saldoDisponible: "",
-      importe: "", observaciones: "", estadoActividad: "",
+      importe: "", observaciones: "", promocion: "", estadoActividad: "",
       actividad: "", estadoExpediente: "",
       origenBankia: "", productoGtg: "", apoderado: "",
       tipoProvision: "", tipoOperacion: "", subtipoOperacion: "",
@@ -3234,6 +3242,7 @@ export default function ExpedientesListado() {
               <FiltroInput label="Saldo disponible" type="number" value={filtroSaldoDisponible} onChange={setFiltroSaldoDisponible} placeholder="Importe exacto" />
               <FiltroInput label="Importe" type="number" value={filtroImporte} onChange={setFiltroImporte} placeholder="Importe exacto" />
               <FiltroInput label="Observaciones" value={filtroObservaciones} onChange={setFiltroObservaciones} placeholder="Texto a buscar" />
+              <FiltroInput label="Promoción" value={filtroPromocion} onChange={setFiltroPromocion} placeholder="Referencia interna" />
               <div>
                 <label className="block text-sm font-medium mb-1" style={{ color: "var(--erp-text)" }}>Estado actividad</label>
                 <select value={filtroEstadoActividad} onChange={(event) => setFiltroEstadoActividad(event.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
