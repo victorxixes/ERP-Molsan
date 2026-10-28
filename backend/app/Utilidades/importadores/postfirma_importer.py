@@ -214,8 +214,8 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
             # Preparar solo el lote actual; no se retienen miles de objetos ORM ni
             # el listado completo de expedientes sin vínculo.
             for indice, row in lote.iterrows():
-                fila_excel = int(indice) + 2
                 celdas_originales = siguiente_fila_original_no_vacia()
+                fila_excel = celdas_originales[0].row if celdas_originales else int(indice) + 2
                 original = {
                     str(columna): _valor_original_excel(celdas_originales[posicion])
                     for posicion, columna in enumerate(df.columns)
