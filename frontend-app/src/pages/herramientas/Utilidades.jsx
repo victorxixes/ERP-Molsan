@@ -20,6 +20,10 @@ export default function Utilidades() {
         </div>
       </header>
 
+      <Grupo titulo="Documentación y plantillas" descripcion="Centraliza el diseño de los documentos oficiales sin mover los catálogos ni las reglas económicas.">
+        <Card icon="📑" titulo="Modelos documentos" descripcion="Consulta y prepara las plantillas de Hoja de liquidación, Provisión de fondos y Factura de honorarios de gestoría." link="/herramientas/utilidades/modelos-documentos" destacado />
+      </Grupo>
+
       <Grupo titulo="Datos corporativos" descripcion="Centraliza la información de Molsan que se reutilizará en documentos y facturación.">
         <Card icon="🏢" titulo="Datos Molsan" descripcion="Mantén los datos fiscales, contacto corporativo y preferencias documentales en un único lugar." link="/herramientas/utilidades/datos-molsan" destacado />
       </Grupo>
