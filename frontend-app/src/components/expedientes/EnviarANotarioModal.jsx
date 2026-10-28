@@ -286,11 +286,11 @@ export default function EnviarANotarioModal({
       : [];
 
     if (guardados.length) {
-      return guardados.map((documento, indice) => ({
+      return guardados.slice(0, 1).map((documento, indice) => ({
         id: documento?.id ?? indice + 1,
         tipo_documento: String(documento?.tipo_documento ?? ""),
         cuantia: documento?.cuantia === null || documento?.cuantia === undefined || documento?.cuantia === ""
-          ? (indice === 0 ? cuantiaInicial : "")
+          ? cuantiaInicial
           : String(documento.cuantia),
       }));
     }
@@ -987,14 +987,7 @@ export default function EnviarANotarioModal({
                 </div>
 
 
-                  <button
-                    type="button"
-                    disabled={loading || loadingTipos}
-                    onClick={() => setDocumentosEscritura((actuales) => [...actuales, { id: Date.now(), tipo_documento: "", cuantia: "" }])}
-                    className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-primary)]/30 bg-[var(--erp-primary-soft)] px-4 py-2.5 text-sm font-bold text-[var(--erp-primary)] transition hover:opacity-80 disabled:opacity-50"
-                  >
-                    <span className="text-lg leading-none">+</span> Añadir otro documento y cuantía
-                  </button>
+
                 </div>
 
 
