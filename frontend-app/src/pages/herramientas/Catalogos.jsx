@@ -122,6 +122,14 @@ const CATALOGOS = [
     grupo: "Catálogos operativos",
   },
   {
+    icon: "🗃️",
+    titulo: "Tipos de expediente",
+    descripcion: "Mantén los tipos de expediente, incluidos los tipos históricos de provisiones fuera del circuito GTG.",
+    ruta: "/herramientas/tipos-expediente",
+    grupo: "Catálogos operativos",
+    destacado: true,
+  },
+  {
     icon: "📋",
     titulo: "Acciones del expediente",
     descripcion: "Acciones y actividades utilizadas en el circuito de expedientes.",
