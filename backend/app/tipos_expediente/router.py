@@ -30,11 +30,11 @@ TIPOS_INICIALES = [
     {"id": 19, "nombre": "CRITERIA CAIXA SAU", "grupo": "Provisiones fuera circuito GTG"},
     {"id": 20, "nombre": "INMOCAIXA - Inmo Criteria Caixa SAU", "grupo": "Provisiones fuera circuito GTG"},
     {"id": 21, "nombre": "OTRO DOC. VINC GTG", "grupo": "Provisiones fuera circuito GTG"},
-    {"nombre": "CaixaBank", "grupo": "Tipos de expediente"},
-    {"nombre": "Crédit Agricole", "grupo": "Tipos de expediente"},
-    {"nombre": "Particulares", "grupo": "Tipos de expediente"},
-    {"nombre": "BBVA", "grupo": "Tipos de expediente"},
-    {"nombre": "Banco Sabadell", "grupo": "Tipos de expediente"},
+    {"id": 22, "nombre": "CaixaBank", "grupo": "Tipos de expediente"},
+    {"id": 23, "nombre": "Crédit Agricole", "grupo": "Tipos de expediente"},
+    {"id": 24, "nombre": "Particulares", "grupo": "Tipos de expediente"},
+    {"id": 25, "nombre": "BBVA", "grupo": "Tipos de expediente"},
+    {"id": 26, "nombre": "Banco Sabadell", "grupo": "Tipos de expediente"},
 ]
 
 
