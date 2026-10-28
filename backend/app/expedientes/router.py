@@ -642,6 +642,7 @@ class EnvioANotarioRequest(BaseModel):
     facturacion_provincia: Optional[str] = None
     facturacion_telefono: Optional[str] = None
     facturacion_email: Optional[str] = None
+    facturacion_empleado: bool = False
 
 
 # ============================================================
@@ -3571,6 +3572,8 @@ def generar_honorarios_gestoria(
             detail=f"No existe una tarifa activa en el catálogo: {nombre_catalogo}.",
         )
     importe = Decimal(str(honorario_catalogo.importe or "0")).quantize(Decimal("0.01"))
+    if bool(getattr(expediente, "facturacion_empleado", False)):
+        importe = (importe * Decimal("0.50")).quantize(Decimal("0.01"))
 
     imputable_a = str(datos.get("imputable_a") or "Molsan").strip()
     if imputable_a not in ("Molsan", "Externo"):
