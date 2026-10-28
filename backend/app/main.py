@@ -75,6 +75,7 @@ from backend.app.tipos_carga_hipotecaria.models import TipoCargaHipotecaria
 from backend.app.expediente_ppad.models import ExpedientePPAD
 from backend.app.expediente_observaciones.models import ExpedienteObservacion
 from backend.app.tipos_concepto_gastos.models import TipoConceptoGastos
+from backend.app.tipos_expediente.models import TipoExpediente
 from backend.app.acciones_expediente.models import AccionExpediente
 from backend.app.catalogos_absis.router import router as catalogos_absis_router
 from backend.app.oficinas_catalogo.router import router as oficinas_catalogo_router
@@ -263,6 +264,7 @@ from backend.app.oficinas_liquidadoras.router import (
 from backend.app.tipos_concepto_gastos.router import (
     router as tipos_concepto_gastos_router,
 )
+from backend.app.tipos_expediente.router import router as tipos_expediente_router
 
 # ACCIONES DEL EXPEDIENTE
 from backend.app.acciones_expediente.router import (
@@ -440,6 +442,7 @@ app.include_router(oficinas_liquidadoras_router, prefix="/api")
 
 # TIPOS DE CONCEPTO DE GASTOS
 app.include_router(tipos_concepto_gastos_router, prefix="/api")
+app.include_router(tipos_expediente_router, prefix="/api")
 
 # ACCIONES DEL EXPEDIENTE
 app.include_router(acciones_expediente_router, prefix="/api")
