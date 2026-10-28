@@ -20,7 +20,7 @@ from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.ctn.models import Notaria
 from backend.app.ctn.service import obtener_notaria
-from backend.app.ctn.schemas import NotariaResponse
+from backend.app.ctn.schemas import NotariaResponse, NotariaDatosBancariosUpdate
 from backend.app.agenda.models import Cita
 from backend.app.expedientes.models import Expediente
 from backend.app.utils.distancia import distancia_km, MOLSAN_LAT, MOLSAN_LNG
@@ -85,8 +85,17 @@ else:
 
 @router.on_event("startup")
 def crear_tabla_asociaciones_ctn():
-    """Crea la tabla de asociaciones si falta; no borra datos existentes."""
+    """Crea la tabla de asociaciones y añade columnas bancarias sin tocar datos existentes."""
     notarios_asociados_table.create(bind=engine, checkfirst=True)
+    try:
+        with engine.begin() as conexion:
+            conexion.execute(text("SET LOCAL lock_timeout = '3s'"))
+            conexion.execute(text("SET LOCAL statement_timeout = '15s'"))
+            conexion.execute(text("ALTER TABLE public.ctn_notarios ADD COLUMN IF NOT EXISTS iban_1 VARCHAR(34)"))
+            conexion.execute(text("ALTER TABLE public.ctn_notarios ADD COLUMN IF NOT EXISTS iban_2 VARCHAR(34)"))
+        print("[CTN DATOS BANCARIOS] Columnas IBAN disponibles.", flush=True)
+    except Exception as error_migracion:
+        print(f"[CTN DATOS BANCARIOS] No se pudieron comprobar/crear las columnas IBAN: {type(error_migracion).__name__}: {error_migracion}", flush=True)
 
 
 # ============================================================
@@ -411,6 +420,28 @@ def detalle_notaria(notaria_id: int, db: Session = Depends(get_db)):
     notaria = obtener_notaria(db, notaria_id)
     if notaria is None:
         raise HTTPException(status_code=404, detail="Notario no encontrado")
+    return _notaria_con_asociaciones(db, notaria)
+
+
+@router.put("/notarias/{notaria_id}/datos-bancarios")
+def actualizar_datos_bancarios_notaria(
+    notaria_id: int,
+    payload: NotariaDatosBancariosUpdate,
+    db: Session = Depends(get_db),
+):
+    """Guarda hasta dos IBAN para reutilizarlos al registrar pagos del notario."""
+    notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
+    if notaria is None:
+        raise HTTPException(status_code=404, detail="Notario no encontrado")
+    for campo, valor in payload.dict().items():
+        normalizado = str(valor or "").replace(" ", "").replace("\u00a0", "").strip().upper()
+        setattr(notaria, campo, normalizado or None)
+    try:
+        db.commit()
+        db.refresh(notaria)
+    except Exception:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="No se pudieron guardar los datos bancarios del notario.")
     return _notaria_con_asociaciones(db, notaria)
 
 
