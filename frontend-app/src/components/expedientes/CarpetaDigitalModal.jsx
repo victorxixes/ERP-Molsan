@@ -536,7 +536,7 @@ export default function CarpetaDigitalModal({
           </span>
           <span className="shrink-0 text-xs font-bold text-slate-500">{modoActividad ? "‹" : abierto ? "⌃" : "⌄"}</span>
         </button>
-        {abierto && <div className={"grid grid-cols-1 gap-2 border-t border-slate-100 bg-slate-50/50 p-2 sm:p-3 " + (modoActividad ? "" : "sm:grid-cols-2 xl:grid-cols-4")}>{bloque.categorias.map(renderCategoria)}</div>}
+        {abierto && <div className={"grid grid-cols-1 gap-2 border-t border-slate-100 bg-slate-50/50 p-2 sm:p-3 " + (modoActividad && actividadId === "facturacion-cierre" ? "sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4" : modoActividad ? "" : "sm:grid-cols-2 xl:grid-cols-4")}>{bloque.categorias.map(renderCategoria)}</div>}
       </section>
     );
   };
