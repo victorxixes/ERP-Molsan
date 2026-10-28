@@ -3283,30 +3283,39 @@ function normalizarInformeSLA(valor) {
   return String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 }
 
+// Los metadatos internos ERP se separan de las 38 columnas originales de ABSIS.
 const COLUMNAS_POSTFIRMA = [
-  "IDEXPEDIENTE", "IDGASTO", "TIPOCONCEPTO", "ORIGENREGISTRO", "ESTADOCONSOLIDACION", "FECHAULTIMASINCRONIZACION",
-  "FECHAALTA", "ORIGENBANKIA", "ACTIVIDADACTUAL", "ESTADOACTIVIDAD",
-  "IDPROVISION", "IMPORTEPROVISION", "TIPOPROVISION", "DETALLEOPERACION", "TIPOOPERACION",
-  "SUBTIPOOPERACION", "OFICINA", "DAN", "IDGESTORIATRAMITE", "NOMBREGESTORIA",
-  "NOMBREDOCUMENTO", "IDGASTO", "CONCEPTOGASTO", "ESTADO", "ESTADOJUSTIFICANTE",
-  "FECHAADJUNTARFACTURA", "IMPGASTO", "IMPBASEIMPUESTO", "IMPBASERETENCION",
-  "IMPIMPUESTO", "FESTADO", "FPETICION", "FPAGO", "CTAORIGEN", "CTADESTINO",
-  "FFACTURA", "FORMAPAGO", "NUMFACTURA", "IDBENEFICIARIO", "BENEFICIARIO",
+  "ERP · Origen registro", "ERP · Estado consolidación", "ERP · Última sincronización",
+  "IDEXPEDIENTE", "FECHAALTA", "ORIGENBANKIA", "ACTIVIDADACTUAL",
+  "ESTADOACTIVIDAD", "IDPROVISION", "IMPORTEPROVISION", "TIPOPROVISION",
+  "DETALLEOPERACION", "TIPOOPERACION", "SUBTIPOOPERACION", "OFICINA", "DAN",
+  "IDGESTORIATRAMITE", "NOMBREGESTORIA", "NOMBREDOCUMENTO", "IDGASTO",
+  "CONCEPTOGASTO", "ESTADO", "ESTADOJUSTIFICANTE", "FECHAADJUNTARFACTURA",
+  "IMPGASTO", "IMPBASEIMPUESTO", "IMPBASERETENCION", "IMPIMPUESTO",
+  "FESTADO", "FPETICION", "FPAGO", "CTAORIGEN", "CTADESTINO", "FFACTURA",
+  "FORMAPAGO", "NUMFACTURA", "IDBENEFICIARIO", "BENEFICIARIO",
   "NOMBREPAGADOR", "NIFPAGADOR"
 ];
 
 function valorColumnaPostFirma(fila, columna) {
+  const etiqueta = String(columna || "").trim().toUpperCase();
+  const internas = {
+    "ERP · ORIGEN REGISTRO": fila.origen_registro,
+    "ERP · ESTADO CONSOLIDACIÓN": fila.estado_consolidacion,
+    "ERP · ÚLTIMA SINCRONIZACIÓN": fila.fecha_ultima_sincronizacion,
+  };
+  if (Object.prototype.hasOwnProperty.call(internas, etiqueta)) {
+    const valorInterno = internas[etiqueta];
+    return valorInterno === undefined || valorInterno === null || valorInterno === "" ? "—" : String(valorInterno);
+  }
+
   const original = fila.datos_absis || {};
-  const clave = Object.keys(original).find((k) => k.trim().toUpperCase() === columna);
+  const clave = Object.keys(original).find((k) => k.trim().toUpperCase() === etiqueta);
   let valor = clave ? original[clave] : undefined;
   if (valor === undefined || valor === null || valor === "") {
     const alternativas = {
       IDEXPEDIENTE: fila.id_expediente,
       IDGASTO: fila.id_gasto_absis,
-      TIPOCONCEPTO: fila.tipo_concepto_absis,
-      ORIGENREGISTRO: fila.origen_registro,
-      ESTADOCONSOLIDACION: fila.estado_consolidacion,
-      FECHAULTIMASINCRONIZACION: fila.fecha_ultima_sincronizacion,
       TIPOOPERACION: fila.tipo_operacion,
       CONCEPTOGASTO: fila.concepto_gasto,
       ESTADO: fila.estado,
@@ -3322,19 +3331,12 @@ function valorColumnaPostFirma(fila, columna) {
       FFACTURA: fila.fecha_factura_absis || fila.fecha_factura,
       NUMFACTURA: fila.numero_factura_absis || fila.numero_factura,
     };
-    valor = alternativas[columna];
+    valor = alternativas[etiqueta];
   }
   if (valor === undefined || valor === null || valor === "") return "—";
   if (typeof valor === "object") return JSON.stringify(valor);
   return String(valor);
 }
-
-const ESTADOS_FACTURACION_ABSIS = {
-  cobrado: ["PAGADO", "PAG_RETRO"],
-  pendiente_factura: ["PTE_RESP_FAC", "PTE_EXPORT_FAC"],
-  incidencia: ["ANULADO", "PAG_DENEGADO"],
-  pendiente_cobro: ["PTE_CONS", "PTE_RESP", "ENTREGADA"],
-};
 
 function estadoFacturacionAbsis(fila) {
   const estado = String(fila?.estado ?? "").trim().toUpperCase();
