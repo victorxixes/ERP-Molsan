@@ -15,6 +15,10 @@ class Notaria(Base):
     nif = Column(String(50), nullable=True, index=True)
     telefono = Column(String(50), nullable=True)
 
+    # Cuentas bancarias del notario para pagos de Gestión económica (máximo dos).
+    iban_1 = Column(String(34), nullable=True)
+    iban_2 = Column(String(34), nullable=True)
+
     # Departamentos internos
     departamento_cancelaciones = Column(String(150), nullable=True)
     departamento_copias = Column(String(150), nullable=True)
