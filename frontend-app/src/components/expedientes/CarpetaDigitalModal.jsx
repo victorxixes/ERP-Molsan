@@ -491,9 +491,15 @@ export default function CarpetaDigitalModal({
   );
 
   const notaIntegracionRepositorio = (categoria) => {
+    // normalizar() convierte espacios en guiones; las claves deben seguir ese formato.
     const clave = normalizar(categoria);
-    if (clave === "hoja de inscripcion") return "Pendiente API Registradores";
-    if (["documentos absis", "hoja de encargo firmada", "justificante de cancelacion", "nota simple registral"].includes(clave)) {
+    if (clave === "hoja-de-inscripcion") return "Pendiente API Registradores";
+    if ([
+      "documentos-absis",
+      "hoja-de-encargo-firmada",
+      "justificante-de-cancelacion",
+      "nota-simple-registral",
+    ].includes(clave)) {
       return "Pendiente API ABSIS";
     }
     return "";
