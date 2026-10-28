@@ -2731,9 +2731,25 @@ function InformeKpi({ titulo, valor, subtitulo, icono }) {
   );
 }
 
+function mensajeErrorInforme(error) {
+  if (!error) return "";
+  if (typeof error === "string") return error;
+  if (Array.isArray(error)) {
+    const mensajes = error.map((item) => {
+      if (typeof item === "string") return item;
+      if (item && typeof item === "object") return item.msg || item.message || JSON.stringify(item);
+      return String(item);
+    }).filter(Boolean);
+    return mensajes.join(" · ");
+  }
+  if (typeof error === "object") return error.msg || error.message || error.detail || JSON.stringify(error);
+  return String(error);
+}
+
 function AvisoInforme({ error }) {
-  if (!error) return null;
-  return <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>;
+  const mensaje = mensajeErrorInforme(error);
+  if (!mensaje) return null;
+  return <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{mensaje}</div>;
 }
 
 function PanelEstadoInforme({ loading, vacio, textoVacio = "No hay registros para los filtros seleccionados." }) {
@@ -3360,9 +3376,12 @@ function InformeFacturacion() {
   useEffect(() => {
     let activo = true;
     setLoadingTarjetas(true);
-    axios.get(API_BASE + "/informes/facturacion", { params: {
-      fecha_desde: aplicados.fecha_desde, fecha_hasta: aplicados.fecha_hasta, modalidad: "todas",
-    } }).then(({ data }) => {
+    const paramsTarjetas = Object.fromEntries(Object.entries({
+      fecha_desde: aplicados.fecha_desde,
+      fecha_hasta: aplicados.fecha_hasta,
+      modalidad: "todas",
+    }).filter(([, valor]) => valor !== "" && valor != null));
+    axios.get(API_BASE + "/informes/facturacion", { params: paramsTarjetas }).then(({ data }) => {
       if (activo) setDatosTarjetas(Array.isArray(data?.items) ? data.items : []);
     }).catch((err) => {
       if (activo) {
