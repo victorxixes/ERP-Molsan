@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import HonorariosGestoria from "./HonorariosGestoria";
+import ProvisionesFondosPage from "../provisiones/ProvisionesFondosPage";
 
 const documentos = [
   {
@@ -19,7 +21,6 @@ const documentos = [
     color: "blue",
     descripcion: "La generación actual de provisiones y sus cálculos siguen en el módulo de Provisiones de fondos.",
     campos: ["Datos del cliente", "Oficina de origen", "Garantías y conceptos", "Importes calculados", "Observaciones"],
-    link: "/provisiones-fondos",
   },
   {
     id: "factura",
@@ -29,7 +30,6 @@ const documentos = [
     color: "amber",
     descripcion: "El diseño definitivo de la factura oficial y su ajuste al modelo Word se terminarán en la siguiente sesión. Se conserva la numeración oficial existente.",
     campos: ["Número de factura", "Expediente", "Datos fiscales del cliente", "Base imponible e impuestos", "Totales"],
-    link: "/herramientas/honorarios-gestoria",
   },
 ];
 
@@ -76,7 +76,6 @@ export default function ModelosDocumentos() {
           <ul className="mt-3 grid gap-2 sm:grid-cols-2">
             {actual.campos.map((campo) => <li key={campo} className="flex items-start gap-2 rounded-xl border border-slate-100 bg-slate-50/70 px-3 py-2 text-sm text-slate-700"><span className="text-emerald-600">✓</span><span>{campo}</span></li>)}
           </ul>
-          {actual.link && <Link to={actual.link} className="mt-5 inline-flex rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Abrir módulo actual →</Link>}
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-slate-100/80 p-4 sm:p-5">
@@ -101,6 +100,9 @@ export default function ModelosDocumentos() {
           <p className="mt-3 text-center text-xs text-slate-500">Vista orientativa del diseño; no es un PDF real ni modifica expedientes.</p>
         </div>
       </section>
+
+      {actual.id === "provision" && <section className="space-y-3"><div><h2 className="text-lg font-bold text-slate-900">Editor de la hoja de provisión</h2><p className="mt-1 text-sm text-slate-600">Aquí se edita exclusivamente la plantilla. Las tarifas, tramos e importes siguen en Tabla Provisiones de fondos.</p></div><ProvisionesFondosPage soloEditorPlantilla /></section>}
+      {actual.id === "factura" && <section className="space-y-3"><div><h2 className="text-lg font-bold text-slate-900">Editor de la factura de honorarios</h2><p className="mt-1 text-sm text-slate-600">Gestiona aquí el modelo Word de la factura. El catálogo de honorarios y la numeración oficial permanecen en sus módulos actuales.</p></div><HonorariosGestoria soloPlantilla /></section>}
 
       <div className="rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-sm leading-6 text-amber-950">
         <strong>Importante:</strong> esta primera entrega centraliza el acceso y deja definida la estructura visual de la Hoja de liquidación. La edición avanzada de plantillas y la adaptación definitiva de la factura se continuarán mañana. Las tarifas, tramos, importes y cálculos existentes no se mueven ni se modifican.
