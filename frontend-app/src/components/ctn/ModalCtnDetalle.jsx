@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   obtenerNotaria,
+  actualizarDatosBancariosNotaria,
   obtenerHistoricoFirmasNotaria,
   listarNotariasAsociadas,
   asociarNotarios,
@@ -81,6 +82,7 @@ export default function ModalCtnDetalle({
 
   const [guardandoAsociacion, setGuardandoAsociacion] =
     useState(false);
+  const [guardandoDatosBancarios, setGuardandoDatosBancarios] = useState(false);
 
   const [modalidad, setModalidad] = useState("VC");
   const [busquedaFirma, setBusquedaFirma] = useState("");
@@ -137,6 +139,25 @@ export default function ModalCtnDetalle({
       setCargando(false);
     }
   }, [id, notaria]);
+
+  const guardarDatosBancarios = async () => {
+    if (!id || guardandoDatosBancarios) return;
+    setGuardandoDatosBancarios(true);
+    setError("");
+    try {
+      const respuesta = await actualizarDatosBancariosNotaria(id, {
+        iban_1: ficha?.iban_1 || "",
+        iban_2: ficha?.iban_2 || "",
+      });
+      const guardada = dataDe(respuesta);
+      setFicha((actual) => ({ ...(actual || {}), ...(guardada || {}) }));
+      setError("");
+    } catch (e) {
+      setError(mensajeError(e, "No se pudieron guardar las cuentas bancarias del notario."));
+    } finally {
+      setGuardandoDatosBancarios(false);
+    }
+  };
 
   const cargarFirmas = useCallback(
     async (modo = undefined, q = "") => {
@@ -344,6 +365,7 @@ export default function ModalCtnDetalle({
       <nav className="ctn-ficha-pestanas" role="tablist" aria-label="Secciones de la ficha del notario">
         {[
           ["ficha", "Ficha del notario"],
+          ["bancarios", "Datos bancarios"],
           ...(mostrarAccesosPortales ? [["portales", "Acceso a portales"]] : []),
           ["firmas", "Histórico de firmas reales"],
         ].map(([key, titulo]) => (
@@ -492,6 +514,50 @@ export default function ModalCtnDetalle({
       </section>
 
         </>
+      )}
+
+      {pestanaActiva === "bancarios" && (
+        <section className="ctn-modal-seccion">
+          <div className="ctn-modal-seccion-titulo">
+            <h3>Datos bancarios</h3>
+            <span>Hasta dos cuentas para pagos</span>
+          </div>
+          <p className="ctn-modal-ayuda">
+            Guarda aquí las cuentas del notario. Al abrir «Pagar» en Gestión económica, podrás elegir una de estas cuentas; el IBAN seguirá siendo editable para casos excepcionales.
+          </p>
+          <div className="ctn-modal-datos-grid">
+            <label className="ctn-modal-dato">
+              <span className="ctn-modal-info-label">Cuenta bancaria 1 · IBAN</span>
+              <input
+                value={datos.iban_1 || ""}
+                maxLength={34}
+                autoComplete="off"
+                onChange={(event) => setFicha((actual) => ({ ...(actual || datos), iban_1: event.target.value.toUpperCase() }))}
+                placeholder="ES…"
+              />
+            </label>
+            <label className="ctn-modal-dato">
+              <span className="ctn-modal-info-label">Cuenta bancaria 2 · IBAN (opcional)</span>
+              <input
+                value={datos.iban_2 || ""}
+                maxLength={34}
+                autoComplete="off"
+                onChange={(event) => setFicha((actual) => ({ ...(actual || datos), iban_2: event.target.value.toUpperCase() }))}
+                placeholder="ES…"
+              />
+            </label>
+          </div>
+          <div className="mt-4 flex justify-end">
+            <button
+              type="button"
+              className="ctn-btn ctn-btn-primary"
+              onClick={guardarDatosBancarios}
+              disabled={guardandoDatosBancarios}
+            >
+              {guardandoDatosBancarios ? "Guardando…" : "Guardar datos bancarios"}
+            </button>
+          </div>
+        </section>
       )}
 
       {mostrarAccesosPortales && pestanaActiva === "portales" && <PortalAccessTabs notariaId={id} />}

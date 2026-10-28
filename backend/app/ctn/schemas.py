@@ -20,6 +20,8 @@ class NotariaBase(BaseModel):
     apellidos: Optional[str] = None
     nif: Optional[str] = None
     telefono: Optional[str] = None
+    iban_1: Optional[str] = Field(None, max_length=34)
+    iban_2: Optional[str] = Field(None, max_length=34)
 
     departamento_cancelaciones: Optional[str] = None
     departamento_copias: Optional[str] = None
@@ -47,6 +49,11 @@ class NotariaCreate(NotariaBase):
 
 class NotariaUpdate(NotariaBase):
     pass
+
+
+class NotariaDatosBancariosUpdate(BaseModel):
+    iban_1: Optional[str] = Field(None, max_length=34)
+    iban_2: Optional[str] = Field(None, max_length=34)
 
 
 class NotariaResponse(NotariaBase):

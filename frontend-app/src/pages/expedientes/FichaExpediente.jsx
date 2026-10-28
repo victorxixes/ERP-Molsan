@@ -1653,6 +1653,55 @@ export default function FichaExpediente() {
     porcentaje_impuesto: "21", base_exenta_retencion: "0.00", base_sujeta_retencion: "0.00",
     tipo_retencion: "IRPF profesionales", porcentaje_retencion: "15", documento_carpeta_id: "", estado_pago: "Pendiente",
   });
+  const [cuentasBancariasNotario, setCuentasBancariasNotario] = useState([]);
+
+  const cargarCuentasBancariasNotarioParaPago = async () => {
+    setCuentasBancariasNotario([]);
+    const idNotaria = expediente?.notario_id || expediente?.notaria_id;
+    const nifObjetivo = String(expediente?.nif_notario || expediente?.notario_nif || "").trim().toUpperCase();
+    const nombreObjetivo = String(expediente?.notario || expediente?.nombre_notario || "").trim();
+    let notaria = null;
+    try {
+      if (idNotaria) {
+        try {
+          const detalle = await axios.get(`/ctn/notarias/${encodeURIComponent(idNotaria)}`);
+          notaria = detalle?.data || null;
+        } catch {
+          notaria = null;
+        }
+      }
+      if (!notaria && (nifObjetivo || nombreObjetivo)) {
+        const respuesta = await axios.get("/ctn/notarias", { params: { q: nifObjetivo || nombreObjetivo, page: 1, page_size: 100 } });
+        const items = Array.isArray(respuesta?.data?.items) ? respuesta.data.items : Array.isArray(respuesta?.data) ? respuesta.data : [];
+        notaria = items.find((item) => nifObjetivo && String(item.nif || "").trim().toUpperCase() === nifObjetivo)
+          || items.find((item) => nombreObjetivo && [item.nombre, item.apellidos, item.nombre_completo].filter(Boolean).join(" ").toLowerCase().includes(nombreObjetivo.toLowerCase()))
+          || null;
+        if (notaria?.id) {
+          try {
+            const detalle = await axios.get(`/ctn/notarias/${encodeURIComponent(notaria.id)}`);
+            notaria = detalle?.data || notaria;
+          } catch {}
+        }
+      }
+      const cuentas = [
+        { id: "iban_1", label: "Cuenta bancaria 1", iban: String(notaria?.iban_1 || "").replace(/\s/g, "").toUpperCase() },
+        { id: "iban_2", label: "Cuenta bancaria 2", iban: String(notaria?.iban_2 || "").replace(/\s/g, "").toUpperCase() },
+      ].filter((cuenta) => cuenta.iban);
+      setCuentasBancariasNotario(cuentas);
+      setGastoForm((actual) => ({
+        ...actual,
+        nif_notario: actual.nif_notario || notaria?.nif || nifObjetivo,
+        nombre_notario: actual.nombre_notario || [notaria?.nombre, notaria?.apellidos].filter(Boolean).join(" ").trim() || nombreObjetivo,
+        cuenta_bancaria: cuentas[0]?.iban || "",
+      }));
+      if (!notaria && (nifObjetivo || nombreObjetivo)) {
+        setErrorGastos("No se encontró la ficha CTN del notario; puedes introducir el IBAN manualmente.");
+      }
+    } catch {
+      setCuentasBancariasNotario([]);
+      setErrorGastos("No se pudieron consultar las cuentas CTN; puedes introducir el IBAN manualmente.");
+    }
+  };
 
   const numeroDecimalGasto = (valor) => {
     if (valor === "" || valor === null || valor === undefined) return 0;
@@ -5473,7 +5522,9 @@ const cuantiaFincasParaEnvio =
                           nif_notario: g.nif_notario || expediente?.nif_notario || expediente?.notario_nif || "",
                           nombre_notario: g.nombre_notario || expediente?.notario || expediente?.nombre_notario || "",
                           pagador: g.pagador || [expediente?.facturacion_nombre, expediente?.facturacion_apellidos].filter(Boolean).join(" "),
+                          cuenta_bancaria: "",
                         }));
+                        void cargarCuentasBancariasNotarioParaPago();
                         setMostrarFormularioGasto(true);
                       }}
                       formularioPago={origenFormularioGasto === "pagar" ? (
@@ -5526,7 +5577,10 @@ const cuantiaFincasParaEnvio =
                                   <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Fecha de factura *</span><input required type="date" value={gastoForm.fecha_factura} onChange={(e)=>setGastoForm(a=>({...a,fecha_factura:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
                                 </div>
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Fecha de pago / movimiento *</span><input required type="date" value={gastoForm.fecha} onChange={(e)=>setGastoForm(a=>({...a,fecha:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Cuenta bancaria / IBAN</span><input value={gastoForm.cuenta_bancaria} onChange={(e)=>setGastoForm(a=>({...a,cuenta_bancaria:e.target.value.toUpperCase()}))} placeholder="ES… (editable; no se autocompleta)" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                <div className="space-y-2">
+                                  {cuentasBancariasNotario.length > 0 && <label className="block"><span className="mb-1 block text-xs font-bold text-indigo-800">Cuentas guardadas en la ficha CTN</span><select value={cuentasBancariasNotario.some((cuenta) => cuenta.iban === gastoForm.cuenta_bancaria) ? gastoForm.cuenta_bancaria : "__manual__"} onChange={(e)=>setGastoForm(a=>({...a,cuenta_bancaria:e.target.value === "__manual__" ? "" : e.target.value}))} className="w-full rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm"><option value="__manual__">Introducir otra cuenta manualmente</option>{cuentasBancariasNotario.map((cuenta)=><option key={cuenta.id} value={cuenta.iban}>{cuenta.label} · {cuenta.iban}</option>)}</select></label>}
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Cuenta bancaria / IBAN</span><input value={gastoForm.cuenta_bancaria} onChange={(e)=>setGastoForm(a=>({...a,cuenta_bancaria:e.target.value.toUpperCase()}))} placeholder="Selecciona una cuenta guardada o introduce el IBAN" maxLength={34} autoComplete="off" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                </div>
                                 <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Medio de pago</span><select value={gastoForm.medio_pago} onChange={(e)=>setGastoForm(a=>({...a,medio_pago:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Transferencia</option><option>Cheque</option><option>Tarjeta</option><option>Efectivo</option><option>Otro</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Estado</span><select value={gastoForm.estado_pago} onChange={(e)=>setGastoForm(a=>({...a,estado_pago:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Pendiente</option><option>Pagado</option><option>Anulado</option></select></label></div>
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Documento / URL de factura</span><input type="url" value={gastoForm.documento_url} onChange={(e)=>setGastoForm(a=>({...a,documento_url:e.target.value}))} placeholder="https://…" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
                               </div>
