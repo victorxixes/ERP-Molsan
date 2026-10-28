@@ -1477,6 +1477,8 @@ export default function FichaExpediente() {
   const [errorHonorariosGestoria, setErrorHonorariosGestoria] = useState("");
   const [mensajeHonorariosGestoria, setMensajeHonorariosGestoria] = useState("");
   const [mostrarModalFacturaHonorarios, setMostrarModalFacturaHonorarios] = useState(false);
+  const [empleadoEnFactura, setEmpleadoEnFactura] = useState(false);
+  const [baseHonorariosOriginal, setBaseHonorariosOriginal] = useState(0);
   const [previsualizandoFacturaHonorarios, setPrevisualizandoFacturaHonorarios] = useState(false);
   const [guardandoFacturaHonorarios, setGuardandoFacturaHonorarios] = useState(false);
   const [conceptosFacturaHonorarios, setConceptosFacturaHonorarios] = useState([]);
@@ -2865,6 +2867,9 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       entidad: "",
       observaciones: "",
     });
+    const empleadoInicial = [true, "true", "1", "si", "sí"].includes(String(datos.facturacion_empleado ?? false).trim().toLowerCase());
+    setEmpleadoEnFactura(empleadoInicial);
+    setBaseHonorariosOriginal(0);
     setMostrarModalFacturaHonorarios(true);
     setGenerandoHonorariosGestoria(true);
 
@@ -2872,6 +2877,8 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       const calculo = await calcularHonorariosGestoria();
       const baseOriginal = Math.round((Math.max(0, Number(calculo.baseImponible) || 0) + Number.EPSILON) * 100) / 100;
       const esEmpleado = [true, "true", "1", "si", "sí"].includes(String(expediente?.facturacion_empleado ?? false).trim().toLowerCase());
+      setEmpleadoEnFactura(esEmpleado);
+      setBaseHonorariosOriginal(baseOriginal);
       const descuentoEmpleado = esEmpleado ? Math.round((baseOriginal * 0.5 + Number.EPSILON) * 100) / 100 : 0;
       const base = Math.round((baseOriginal - descuentoEmpleado + Number.EPSILON) * 100) / 100;
       const tipoImpuesto = String(calculo.tipoImpuesto || "IVA").toUpperCase();
@@ -2908,6 +2915,10 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       const tipoImpuesto = String(facturaHonorariosForm.tipoImpuesto || "IVA").toUpperCase();
       const impuesto = tipoImpuesto === "EXENTO" ? 0 : Math.round((base * porcentaje / 100 + Number.EPSILON) * 100) / 100;
       const total = Math.round((base + impuesto + Number.EPSILON) * 100) / 100;
+      const baseOriginal = Math.max(0, Number(baseHonorariosOriginal) || 0);
+      const descuentoEmpleado = empleadoEnFactura
+        ? Math.round((baseOriginal * 0.5 + Number.EPSILON) * 100) / 100
+        : 0;
       const payloadFactura = {
         importe: total,
         tarifa: facturaHonorariosForm.tarifa,
@@ -2919,7 +2930,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         numero_factura: facturaHonorariosForm.numeroFactura,
         fecha_factura: facturaHonorariosForm.fechaFactura,
         base_imponible: base,
-        empleado: Boolean(expediente?.facturacion_empleado),
+        empleado: Boolean(empleadoEnFactura),
         descuento_empleado: descuentoEmpleado,
         tipo_impuesto: tipoImpuesto,
         porcentaje_impuesto: porcentaje,
@@ -8497,9 +8508,32 @@ const cuantiaFincasParaEnvio =
       >
         <div className="max-h-[68vh] space-y-5 overflow-y-auto pr-1">
           {errorHonorariosGestoria && <p className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorHonorariosGestoria}</p>}
-          <div className={`rounded-xl border p-3 ${expediente?.facturacion_empleado ? "border-amber-300 bg-amber-50" : "border-slate-200 bg-slate-50"}`}>
-            <p className="text-xs font-extrabold text-slate-800">Cliente empleado: {expediente?.facturacion_empleado ? "Sí" : "No"}</p>
-            {expediente?.facturacion_empleado && <p className="mt-1 text-sm font-semibold text-amber-800">Descuento aplicado: 50 % sobre honorarios. La base imponible y el IVA se calculan sobre el importe reducido.</p>}
+          <div className={`rounded-xl border p-3 ${empleadoEnFactura ? "border-amber-300 bg-amber-50" : "border-slate-200 bg-slate-50"}`}>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <label htmlFor="empleado-factura-honorarios" className="text-xs font-extrabold text-slate-800">Empleado</label>
+              <select
+                id="empleado-factura-honorarios"
+                value={empleadoEnFactura ? "si" : "no"}
+                disabled={generandoHonorariosGestoria || guardandoFacturaHonorarios}
+                onChange={(event) => {
+                  const esEmpleado = event.target.value === "si";
+                  setEmpleadoEnFactura(esEmpleado);
+                  const original = Math.max(0, Number(baseHonorariosOriginal) || 0);
+                  const descuento = esEmpleado ? Math.round((original * 0.5 + Number.EPSILON) * 100) / 100 : 0;
+                  const base = Math.round((original - descuento + Number.EPSILON) * 100) / 100;
+                  setFacturaHonorariosForm((actual) => actualizarImportesFacturaHonorarios({
+                    ...actual,
+                    baseImponible: base.toFixed(2),
+                    observaciones: esEmpleado ? `Cliente empleado: descuento del 50 % (${descuento.toFixed(2)} €) sobre honorarios.` : "",
+                  }));
+                }}
+                className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none focus:border-amber-500"
+              >
+                <option value="no">No</option>
+                <option value="si">Sí — descuento del 50 %</option>
+              </select>
+            </div>
+            {empleadoEnFactura && <p className="mt-1 text-sm font-semibold text-amber-800">Descuento del 50 % aplicado sobre honorarios: la base imponible y el IVA se recalculan sobre el importe reducido.</p>}
           </div>
           <div className="grid gap-3 md:grid-cols-3">
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
