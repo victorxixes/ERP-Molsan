@@ -793,18 +793,19 @@ export default function EnviarANotarioModal({
                 )}
               </section>              {/* TIPO DE DOCUMENTO Y NUEVOS CAMPOS */}
 
-              <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+              <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3 xl:col-span-2">
                 <TituloSeccion
                   titulo="Tipo de documento"
                   descripcion="Selecciona el documento, el formato de escritura y la modalidad de tramitación."
                 />
 
-                <div className="mb-3 grid grid-cols-1 gap-3">
+                <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+                  <div className="min-w-0 space-y-3">
                   <CampoTexto label="Contrato" value={form.contrato} disabled={loading} onChange={(v) => cambiarCampo("contrato", v)} placeholder="Contrato de Fincas y Registros" />
                   <CampoTexto label="Tipo de operación" value={form.tipo_operacion} disabled={loading} onChange={(v) => cambiarCampo("tipo_operacion", v)} placeholder="Tipo de operación" />
                   <CampoTexto label="Importe con provisión (€)" value={form.importe} disabled={loading} type="number" onChange={(v) => cambiarCampo("importe", v)} placeholder="0,00" />
-                </div>
-
+                  </div>
+                  <div className="min-w-0">
                 <div className="space-y-4">
                   {documentosEscritura.slice(0, 1).map((documento, indice) => (
                     <div
@@ -946,8 +947,8 @@ export default function EnviarANotarioModal({
 
 
                 </div>
-
-
+                  </div>
+                </div>
               </section>
 
 
@@ -956,7 +957,7 @@ export default function EnviarANotarioModal({
             {/* DATOS DE FACTURACIÓN — CUARTO BLOQUE */}
 
             <div className="min-w-0">
-              <section className="rounded-xl border border-[var(--erp-primary)]/20 bg-slate-50/70 p-3">
+              <section className="rounded-xl border border-[var(--erp-primary)]/20 bg-slate-50/70 p-3 xl:col-span-4">
                 <div className="mb-5 flex items-start gap-3">
                   <div>
                     <h3 className="text-base font-bold text-slate-800">
@@ -969,7 +970,7 @@ export default function EnviarANotarioModal({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-3">
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                   <CampoTexto
                     label="Nombre"
                     value={form.facturacion_nombre}
