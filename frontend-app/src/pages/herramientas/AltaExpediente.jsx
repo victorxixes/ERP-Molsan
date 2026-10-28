@@ -37,6 +37,7 @@ export default function AltaExpediente() {
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
   const [resultado, setResultado] = useState(null);
+  const [imprimiendo, setImprimiendo] = useState(false);
 
   const cargarCatalogos = useCallback(async () => {
     setCargando(true);
@@ -73,6 +74,27 @@ export default function AltaExpediente() {
   }
   function cambiarFacturacion(key, value) {
     setFacturacion((actual) => ({ ...actual, [key]: value }));
+  }
+
+  async function imprimirFicha() {
+    if (!resultado?.id) return;
+    setImprimiendo(true);
+    setError("");
+    try {
+      const response = await axios.get(`/alta-expediente/${resultado.id}/documento`, { responseType: "blob" });
+      const url = URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
+      const enlace = document.createElement("a");
+      enlace.href = url;
+      enlace.download = `ficha-${resultado.id_expediente || resultado.id}.pdf`;
+      document.body.appendChild(enlace);
+      enlace.click();
+      enlace.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      setError("No se ha podido generar la ficha PDF. " + (e?.response?.data?.detail || ""));
+    } finally {
+      setImprimiendo(false);
+    }
   }
 
   async function guardar(event) {
@@ -113,7 +135,7 @@ export default function AltaExpediente() {
     </header>
 
     {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</div>}
-    {resultado && <div role="status" className="flex flex-col gap-3 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-primary-soft)] p-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-bold text-[var(--molsan-primary-hover)]">Expediente creado correctamente</p><p className="mt-1 text-sm text-[var(--molsan-primary)]">{resultado.id_expediente} · {resultado.tipo_expediente}</p></div><button type="button" onClick={() => navigate("/expedientes")} className="rounded-xl bg-[var(--molsan-primary)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--molsan-primary-hover)]">Ir a expedientes</button></div>}
+    {resultado && <div role="status" className="flex flex-col gap-3 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-primary-soft)] p-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-bold text-[var(--molsan-primary-hover)]">Expediente creado correctamente</p><p className="mt-1 text-sm text-[var(--molsan-primary)]">{resultado.id_expediente} · {resultado.tipo_expediente}</p></div><div className="flex flex-wrap gap-2"><button type="button" onClick={imprimirFicha} disabled={imprimiendo} className="rounded-xl border border-[var(--molsan-primary)] bg-white px-4 py-2 text-sm font-semibold text-[var(--molsan-primary)] hover:bg-[var(--molsan-primary-soft)] disabled:opacity-60">{imprimiendo ? "Generando PDF…" : "Imprimir ficha PDF"}</button><button type="button" onClick={() => navigate("/expedientes")} className="rounded-xl bg-[var(--molsan-primary)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--molsan-primary-hover)]">Ir a expedientes</button></div></div>}
 
     {cargando ? <div className="rounded-2xl border border-[var(--molsan-border)] bg-white p-8 text-center text-sm text-[var(--molsan-text-muted)]">Cargando catálogos…</div> : <form onSubmit={guardar} className="grid grid-cols-1 items-start gap-5 lg:grid-cols-2 2xl:grid-cols-3">
       <Seccion className="lg:col-span-2 2xl:col-span-3" numero="1" titulo="Identificación del expediente" descripcion="El número se asigna automáticamente con contador independiente por tipo.">
