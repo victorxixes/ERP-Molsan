@@ -1483,7 +1483,7 @@ export default function FichaExpediente() {
   const [guardandoFacturaHonorarios, setGuardandoFacturaHonorarios] = useState(false);
   const [conceptosFacturaHonorarios, setConceptosFacturaHonorarios] = useState([]);
   const [facturaHonorariosForm, setFacturaHonorariosForm] = useState({
-    cliente: "", nifCliente: "", numeroFactura: "", fechaFactura: new Date().toISOString().slice(0, 10),
+    cliente: "", nifCliente: "", direccion: "", codigoPostal: "", poblacion: "", provincia: "", numeroFactura: "", fechaFactura: new Date().toISOString().slice(0, 10),
     concepto: "Honorarios de gestoría", baseImponible: "0.00", tipoImpuesto: "IVA", porcentajeImpuesto: "21",
     importeImpuesto: "0.00", totalFactura: "0.00", provisionFondos: "0.00", saldoDisponible: "0.00",
     tarifa: "", entidad: "", observaciones: "",
@@ -2851,8 +2851,12 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     setMensajeHonorariosGestoria("");
     setPrevisualizandoFacturaHonorarios(false);
     setFacturaHonorariosForm({
-      cliente: String(nombreCliente || ""),
-      nifCliente: String(nifCliente || ""),
+      cliente: String(datos.facturacion_nombre || datos.nombre_facturacion || nombreCliente || ""),
+      nifCliente: String(datos.facturacion_dni_nif || datos.dni_facturacion || datos.nif_facturacion || nifCliente || ""),
+      direccion: String(datos.facturacion_direccion || datos.direccion_facturacion || ""),
+      codigoPostal: String(datos.facturacion_codigo_postal || datos.codigo_postal_facturacion || ""),
+      poblacion: String(datos.facturacion_poblacion || datos.poblacion_facturacion || ""),
+      provincia: String(datos.facturacion_provincia || datos.provincia_facturacion || ""),
       numeroFactura: "",
       fechaFactura: new Date().toISOString().slice(0, 10),
       concepto: "Honorarios de gestoría",
@@ -2927,6 +2931,10 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         id_expediente: expediente.id_expediente,
         cliente: facturaHonorariosForm.cliente,
         nif_cliente: facturaHonorariosForm.nifCliente,
+        direccion_facturacion: facturaHonorariosForm.direccion,
+        codigo_postal_facturacion: facturaHonorariosForm.codigoPostal,
+        poblacion_facturacion: facturaHonorariosForm.poblacion,
+        provincia_facturacion: facturaHonorariosForm.provincia,
         numero_factura: facturaHonorariosForm.numeroFactura,
         fecha_factura: facturaHonorariosForm.fechaFactura,
         base_imponible: base,
@@ -8508,33 +8516,6 @@ const cuantiaFincasParaEnvio =
       >
         <div className="max-h-[68vh] space-y-5 overflow-y-auto pr-1">
           {errorHonorariosGestoria && <p className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorHonorariosGestoria}</p>}
-          <div className={`rounded-xl border p-3 ${empleadoEnFactura ? "border-amber-300 bg-amber-50" : "border-slate-200 bg-slate-50"}`}>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <label htmlFor="empleado-factura-honorarios" className="text-xs font-extrabold text-slate-800">Empleado</label>
-              <select
-                id="empleado-factura-honorarios"
-                value={empleadoEnFactura ? "si" : "no"}
-                disabled={generandoHonorariosGestoria || guardandoFacturaHonorarios}
-                onChange={(event) => {
-                  const esEmpleado = event.target.value === "si";
-                  setEmpleadoEnFactura(esEmpleado);
-                  const original = Math.max(0, Number(baseHonorariosOriginal) || 0);
-                  const descuento = esEmpleado ? Math.round((original * 0.5 + Number.EPSILON) * 100) / 100 : 0;
-                  const base = Math.round((original - descuento + Number.EPSILON) * 100) / 100;
-                  setFacturaHonorariosForm((actual) => actualizarImportesFacturaHonorarios({
-                    ...actual,
-                    baseImponible: base.toFixed(2),
-                    observaciones: esEmpleado ? `Cliente empleado: descuento del 50 % (${descuento.toFixed(2)} €) sobre honorarios.` : "",
-                  }));
-                }}
-                className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none focus:border-amber-500"
-              >
-                <option value="no">No</option>
-                <option value="si">Sí — descuento del 50 %</option>
-              </select>
-            </div>
-            {empleadoEnFactura && <p className="mt-1 text-sm font-semibold text-amber-800">Descuento del 50 % aplicado sobre honorarios: la base imponible y el IVA se recalculan sobre el importe reducido.</p>}
-          </div>
           <div className="grid gap-3 md:grid-cols-3">
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Provisión de fondos</p>
@@ -8543,6 +8524,33 @@ const cuantiaFincasParaEnvio =
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Saldo disponible (dato del expediente)</p>
               <p className="mt-1 text-lg font-extrabold text-slate-800">{Number(String(facturaHonorariosForm.saldoDisponible || "0").replace(",", "." ) || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</p>
+            </div>
+            <div className={`rounded-xl border p-3 ${empleadoEnFactura ? "border-amber-300 bg-amber-50" : "border-slate-200 bg-slate-50"}`}>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <label htmlFor="empleado-factura-honorarios" className="text-xs font-extrabold text-slate-800">Empleado</label>
+                <select
+                  id="empleado-factura-honorarios"
+                  value={empleadoEnFactura ? "si" : "no"}
+                  disabled={generandoHonorariosGestoria || guardandoFacturaHonorarios}
+                  onChange={(event) => {
+                    const esEmpleado = event.target.value === "si";
+                    setEmpleadoEnFactura(esEmpleado);
+                    const original = Math.max(0, Number(baseHonorariosOriginal) || 0);
+                    const descuento = esEmpleado ? Math.round((original * 0.5 + Number.EPSILON) * 100) / 100 : 0;
+                    const base = Math.round((original - descuento + Number.EPSILON) * 100) / 100;
+                    setFacturaHonorariosForm((actual) => actualizarImportesFacturaHonorarios({
+                      ...actual,
+                      baseImponible: base.toFixed(2),
+                      observaciones: esEmpleado ? `Cliente empleado: descuento del 50 % (${descuento.toFixed(2)} €) sobre honorarios.` : "",
+                    }));
+                  }}
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none focus:border-amber-500"
+                >
+                  <option value="no">No</option>
+                  <option value="si">Sí — descuento del 50 %</option>
+                </select>
+              </div>
+              {empleadoEnFactura && <p className="mt-1 text-xs font-semibold text-amber-800">Descuento del 50 % aplicado.</p>}
             </div>
           </div>
 
@@ -8553,7 +8561,7 @@ const cuantiaFincasParaEnvio =
                 <div className="text-right"><p className="text-sm font-bold text-slate-700">{facturaHonorariosForm.numeroFactura || "Número pendiente de asignación"}</p><p className="text-sm text-slate-500">Fecha: {facturaHonorariosForm.fechaFactura || "—"}</p></div>
               </div>
               <div className="grid gap-4 py-5 md:grid-cols-2">
-                <div><p className="text-[10px] font-bold uppercase text-slate-400">Facturar a</p><p className="mt-1 font-bold text-slate-800">{facturaHonorariosForm.cliente || "Cliente pendiente de completar"}</p><p className="text-sm text-slate-600">NIF: {facturaHonorariosForm.nifCliente || "—"}</p></div>
+                <div><p className="text-[10px] font-bold uppercase text-slate-400">Facturar a</p><p className="mt-1 font-bold text-slate-800">{facturaHonorariosForm.cliente || "Cliente pendiente de completar"}</p><p className="text-sm text-slate-600">NIF: {facturaHonorariosForm.nifCliente || "—"}</p><p className="text-sm text-slate-600">{[facturaHonorariosForm.direccion, facturaHonorariosForm.codigoPostal, facturaHonorariosForm.poblacion, facturaHonorariosForm.provincia].filter(Boolean).join(", ") || "Dirección pendiente de completar"}</p></div>
                 <div><p className="text-[10px] font-bold uppercase text-slate-400">Concepto</p><p className="mt-1 font-semibold text-slate-800">{facturaHonorariosForm.concepto}</p><p className="text-sm text-slate-500">{facturaHonorariosForm.tarifa}</p></div>
               </div>
               <div className="overflow-hidden rounded-xl border border-slate-200">
@@ -8573,6 +8581,10 @@ const cuantiaFincasParaEnvio =
                 <div className="grid gap-3 md:grid-cols-2">
                   <label className="text-xs font-semibold text-slate-600">Cliente / titular<input value={facturaHonorariosForm.cliente} onChange={e => setFacturaHonorariosForm(f => ({...f,cliente:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
                   <label className="text-xs font-semibold text-slate-600">NIF / CIF<input value={facturaHonorariosForm.nifCliente} onChange={e => setFacturaHonorariosForm(f => ({...f,nifCliente:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-slate-600 md:col-span-2">Dirección<input value={facturaHonorariosForm.direccion} onChange={e => setFacturaHonorariosForm(f => ({...f,direccion:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-slate-600">Código postal<input value={facturaHonorariosForm.codigoPostal} onChange={e => setFacturaHonorariosForm(f => ({...f,codigoPostal:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-slate-600">Población<input value={facturaHonorariosForm.poblacion} onChange={e => setFacturaHonorariosForm(f => ({...f,poblacion:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-slate-600">Provincia<input value={facturaHonorariosForm.provincia} onChange={e => setFacturaHonorariosForm(f => ({...f,provincia:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
                   <label className="text-xs font-semibold text-slate-600">Número de factura<input value={facturaHonorariosForm.numeroFactura} onChange={e => setFacturaHonorariosForm(f => ({...f,numeroFactura:e.target.value}))} placeholder="Se puede asignar al guardar" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
                   <label className="text-xs font-semibold text-slate-600">Fecha de factura<input type="date" value={facturaHonorariosForm.fechaFactura} onChange={e => setFacturaHonorariosForm(f => ({...f,fechaFactura:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
                   <label className="text-xs font-semibold text-slate-600 md:col-span-2">Concepto
