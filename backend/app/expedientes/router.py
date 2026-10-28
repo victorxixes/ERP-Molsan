@@ -3818,9 +3818,11 @@ def generar_documento_factura_honorarios(
         story.extend([datos_cliente, Paragraph("DETALLE DE FACTURACIÓN", styles["FacturaSeccionMolsan"])])
         story.append(Paragraph(f"<b>Concepto:</b> {escape(concepto_factura)}", styles["FacturaCeldaMolsan"]))
         story.append(Spacer(1, 3*mm))
+        importe_honorarios_bruto = base + descuento if (es_empleado or descuento > 0) else base
+        descripcion_honorarios = f"{concepto_factura} (antes de descuento)" if (es_empleado or descuento > 0) else concepto_factura
         detalle = [
             [Paragraph("<b>Descripción</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Importe</b>", styles["FacturaCeldaDerMolsan"])],
-            [Paragraph(escape(concepto_factura), styles["FacturaCeldaMolsan"]), Paragraph(euros(base), styles["FacturaCeldaDerMolsan"])],
+            [Paragraph(escape(descripcion_honorarios), styles["FacturaCeldaMolsan"]), Paragraph(euros(importe_honorarios_bruto), styles["FacturaCeldaDerMolsan"])],
         ]
         tabla_detalle = Table(detalle, colWidths=[125*mm, 49*mm])
         tabla_detalle.setStyle(TableStyle([
