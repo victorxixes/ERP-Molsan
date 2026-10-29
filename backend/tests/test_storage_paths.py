@@ -14,6 +14,18 @@ class StoragePathTests(unittest.TestCase):
                 {"MENSAJES_DIR": "/tmp/other-location"},
             )
 
+    def test_environment_path_overrides_are_respected(self):
+        with patch.dict(
+            "os.environ",
+            {"MENSAJES_DIR": "/tmp/molsan-test/mensajes-custom"},
+            clear=False,
+        ):
+            paths = resolve_storage_paths("/tmp/molsan-test")
+        self.assertEqual(
+            paths["mensajes"],
+            Path("/tmp/molsan-test/mensajes-custom").resolve(),
+        )
+
     def test_persistent_mode_rejects_unmounted_var_data(self):
         with patch("backend.app.storage.os.path.ismount", return_value=False):
             with self.assertRaisesRegex(RuntimeError, "no parece ser un punto de montaje"):
