@@ -4,6 +4,8 @@ import unittest
 
 from backend.app.auth.route_guard import _resolver_accion, _resolver_modulo
 from backend.app.empleados.service import hash_password, verificar_hash_password
+from backend.app.seguridad.permisos.permisos_router import MODULOS_BASE
+from backend.app.seguridad.router import PLANTILLA_PERMISOS
 
 
 class RouteGuardPolicyTests(unittest.TestCase):
@@ -49,6 +51,9 @@ class RouteGuardPolicyTests(unittest.TestCase):
             ),
             "editar",
         )
+
+    def test_security_permission_catalog_covers_all_template_modules(self):
+        self.assertTrue(set(PLANTILLA_PERMISOS).issubset(set(MODULOS_BASE)))
 
     def test_fichajes_routes_use_the_correct_permission_modules(self):
         self.assertEqual(_resolver_modulo("/api/fichajes/marcajes", {"GET"}), "fichajes")
