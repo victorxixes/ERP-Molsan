@@ -448,9 +448,13 @@ def anular_pago_gasto(
             SELECT COALESCE(SUM(importe), 0) FROM public.expediente_gasto_pagos
             WHERE gasto_id = :gasto_id AND anulado_en IS NULL
         """), {"gasto_id": gasto.id}).scalar()) or Decimal("0.00")
+        ultima_fecha_pago = db.execute(text("""
+            SELECT MAX(fecha) FROM public.expediente_gasto_pagos
+            WHERE gasto_id = :gasto_id AND anulado_en IS NULL
+        """), {"gasto_id": gasto.id}).scalar()
         obligacion = _decimal_opcional(gasto.importe_resultante if gasto.importe_resultante is not None else gasto.importe) or Decimal("0.00")
         if total >= obligacion and obligacion > 0:
-            gasto.estado_pago, gasto.fecha_pago = "Pagado", date.today()
+            gasto.estado_pago, gasto.fecha_pago = "Pagado", ultima_fecha_pago or date.today()
         elif total > 0:
             gasto.estado_pago, gasto.fecha_pago = "Parcial", None
         else:
@@ -618,7 +622,9 @@ def actualizar_gasto(expediente_id: int, gasto_id: int, payload: GastoUpdate, db
     # Una obligación no puede rebajarse por debajo de los pagos ya registrados.
     _garantizar_tabla_pagos(db)
     total_pagado = _decimal_opcional(db.execute(text("""
-        SELECT COALESCE(SUM(importe), 0) FROM public.expediente_gasto_pagos WHERE gasto_id = :gasto_id
+        SELECT COALESCE(SUM(importe), 0)
+        FROM public.expediente_gasto_pagos
+        WHERE gasto_id = :gasto_id AND anulado_en IS NULL
     """), {"gasto_id": gasto.id}).scalar()) or Decimal("0.00")
     # En actualizaciones parciales, validar la combinación final, no solo los campos enviados.
     combinados = {campo: getattr(gasto, campo, None) for campo in GastoBase.__fields__}
