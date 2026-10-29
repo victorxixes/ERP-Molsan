@@ -357,8 +357,10 @@ def previsualizar_cierre_documental(expediente_id: str, db: Session = Depends(ge
     empresa_nombre = datos_empresa.get("razon_social") or "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L."
     empresa_nif = datos_empresa.get("nif") or ""
     empresa_direccion = datos_empresa.get("domicilio_fiscal") or ""
-    empresa_ubicacion = " ".join(str(x) for x in [datos_empresa.get("codigo_postal"), datos_empresa.get("poblacion"), datos_empresa.get("provincia")] if x)
-    empresa_contacto = " · ".join(str(x) for x in [datos_empresa.get("telefono"), datos_empresa.get("email"), datos_empresa.get("web")] if x)
+    empresa_ubicacion = escape(" ".join(str(x) for x in [datos_empresa.get("codigo_postal"), datos_empresa.get("poblacion"), datos_empresa.get("provincia")] if x))
+    empresa_contacto = escape(" · ".join(str(x) for x in [datos_empresa.get("telefono"), datos_empresa.get("email"), datos_empresa.get("web")] if x))
+    empresa_direccion = escape(str(empresa_direccion))
+    empresa_nif = escape(str(empresa_nif))
 
     cabecera = Table([
         [Paragraph(f"<b>{txt(empresa_nombre)}</b>", estilos["MolsanSub"]),
@@ -475,28 +477,10 @@ def previsualizar_cierre_documental(expediente_id: str, db: Session = Depends(ge
         ("Hoja de inscripción", {"hoja de inscripcion", "documento de inscripcion"}),
     ]
 
-    hojas_existentes = [
-        item for item in documentos
-        if normalizar(item.categoria) == normalizar("Hoja de liquidación")
-        and (str(item.nombre_original or "").lower().endswith(".pdf")
-             or str(item.tipo_mime or "").lower() == "application/pdf")
-    ]
-    fuentes = []
-    incluidos = []
-    for item in hojas_existentes:
-        ruta = _ruta_segura(item.nombre_guardado)
-        if ruta.is_file():
-            contenido = ruta.read_bytes()
-            if contenido.startswith(b"%PDF-"):
-                try:
-                    PdfReader(io.BytesIO(contenido), strict=False)
-                    fuentes.append((item.id, "Hoja de liquidación", contenido))
-                    incluidos.append(item.nombre_original or "Hoja de liquidación")
-                except Exception:
-                    logger.warning("Hoja de liquidación dañada; se generará una nueva: expediente=%s documento=%s", expediente_id, item.id)
-    if not fuentes:
-        fuentes = [(0, "Hoja de liquidación", hoja.getvalue())]
-        incluidos = ["Hoja de liquidación generada automáticamente"]
+    # Siempre se utiliza la hoja recién generada con el diseño aprobado.
+    # No reutilizar una hoja antigua guardada en Carpeta digital: podría tener el diseño anterior.
+    fuentes = [(0, "Hoja de liquidación", hoja.getvalue())]
+    incluidos = ["Hoja de liquidación generada desde los datos actuales del expediente"]
     faltantes = []
     for etiqueta, alias in orden[1:]:
         alias_normalizados = {normalizar(a) for a in alias}
