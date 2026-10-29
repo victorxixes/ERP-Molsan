@@ -67,11 +67,13 @@ const FACTURA_EDITOR_DEFAULTS = {
   mostrarObservaciones: false,
   mostrarLogo: true,
   densidad: "normal",
+  logoDataUrl: "",
 };
 
 function FacturaPlantillaEditor() {
   const [config, setConfig] = useState(FACTURA_EDITOR_DEFAULTS);
   const [guardado, setGuardado] = useState(false);
+  const [errorLogoFactura, setErrorLogoFactura] = useState("");
 
   useEffect(() => {
     try {
@@ -83,6 +85,42 @@ function FacturaPlantillaEditor() {
   const actualizar = (campo, valor) => {
     setConfig(actual => ({ ...actual, [campo]: valor }));
     setGuardado(false);
+  };
+
+  const cargarLogoFactura = (archivo) => {
+    setErrorLogoFactura("");
+    if (!archivo) return;
+    if (!/^image\/(png|jpeg|webp)$/.test(archivo.type)) {
+      setErrorLogoFactura("Usa una imagen PNG, JPG o WEBP.");
+      return;
+    }
+    if (archivo.size > 8 * 1024 * 1024) {
+      setErrorLogoFactura("El archivo supera los 8 MB. Elige una imagen más ligera.");
+      return;
+    }
+    const lector = new FileReader();
+    lector.onerror = () => setErrorLogoFactura("No se pudo leer el archivo. Prueba con otra imagen.");
+    lector.onload = () => {
+      const imagen = new Image();
+      imagen.onerror = () => setErrorLogoFactura("No se pudo abrir la imagen seleccionada.");
+      imagen.onload = () => {
+        const escala = Math.min(1, 900 / imagen.width, 450 / imagen.height);
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(imagen.width * escala));
+        canvas.height = Math.max(1, Math.round(imagen.height * escala));
+        const contexto = canvas.getContext("2d");
+        if (!contexto) {
+          setErrorLogoFactura("El navegador no ha podido procesar la imagen.");
+          return;
+        }
+        contexto.fillStyle = "#ffffff";
+        contexto.fillRect(0, 0, canvas.width, canvas.height);
+        contexto.drawImage(imagen, 0, 0, canvas.width, canvas.height);
+        actualizar("logoDataUrl", canvas.toDataURL("image/jpeg", 0.86));
+      };
+      imagen.src = String(lector.result || "");
+    };
+    lector.readAsDataURL(archivo);
   };
 
   const guardarDiseno = () => {
@@ -120,7 +158,15 @@ function FacturaPlantillaEditor() {
             <select value={config.densidad} onChange={e=>actualizar("densidad",e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-normal"><option value="compacta">Compacta</option><option value="normal">Equilibrada</option><option value="amplia">Espaciada</option></select>
           </label>
           <div className="space-y-3 rounded-xl bg-slate-50 p-3">
-            <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={config.mostrarLogo} onChange={e=>actualizar("mostrarLogo",e.target.checked)}/> Mostrar espacio para logotipo</label>
+            <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={config.mostrarLogo} onChange={e=>actualizar("mostrarLogo",e.target.checked)}/> Mostrar logotipo</label>
+            <div className="rounded-lg border border-slate-200 bg-white p-3">
+              <label className="block text-sm font-semibold text-slate-700">Logotipo de la gestoría
+                <input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>{cargarLogoFactura(e.target.files?.[0]);e.target.value="";}} className="mt-2 block w-full cursor-pointer text-xs font-normal text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-sky-50 file:px-3 file:py-2 file:font-bold file:text-sky-800 hover:file:bg-sky-100"/>
+              </label>
+              <p className="mt-2 text-xs text-slate-500">Formatos PNG, JPG o WEBP · máximo 8 MB. La imagen se optimiza para la vista previa.</p>
+              {config.logoDataUrl && <div className="mt-3 flex items-center gap-3"><img src={config.logoDataUrl} alt="Logotipo cargado" className="h-14 max-w-[180px] rounded border border-slate-200 bg-white object-contain p-1"/><button type="button" onClick={()=>actualizar("logoDataUrl","")} className="text-xs font-bold text-rose-700 underline">Quitar logo</button></div>}
+              {errorLogoFactura && <p role="alert" className="mt-2 text-xs font-semibold text-rose-700">{errorLogoFactura}</p>}
+            </div>
             <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={config.mostrarAvisoAEAT} onChange={e=>actualizar("mostrarAvisoAEAT",e.target.checked)}/> Mostrar aviso de factura verificable en la AEAT</label>
             <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={config.mostrarObservaciones} onChange={e=>actualizar("mostrarObservaciones",e.target.checked)}/> Reservar espacio para observaciones</label>
           </div>
@@ -138,7 +184,7 @@ function FacturaPlantillaEditor() {
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><div><p className="text-xs font-bold uppercase tracking-wider text-sky-800">Vista previa</p><h3 className="font-bold text-slate-900">Factura · formato A4</h3></div><span className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-600">Maqueta editable</span></div>
       <article className={`mx-auto min-h-[820px] w-full max-w-[590px] bg-white text-slate-800 shadow-xl ${config.densidad==="compacta"?"p-6":config.densidad==="amplia"?"p-10":"p-8"}`}>
         <header className="flex items-start justify-between gap-4 border-b-2 pb-5" style={{borderColor:config.color}}>
-          <div className="flex min-w-0 items-center gap-3">{config.mostrarLogo && <div className="flex h-14 w-20 shrink-0 items-center justify-center rounded-md border border-dashed border-slate-300 text-[9px] text-slate-400">LOGO</div>}<div><div className="text-sm font-black" style={{color:config.color}}>MOLSAN</div><div className="mt-1 text-[9px] text-slate-500">CIF · Domicilio fiscal · Contacto</div></div></div>
+          <div className="flex min-w-0 items-center gap-3">{config.mostrarLogo && (config.logoDataUrl ? <div className="flex h-14 w-24 shrink-0 items-center justify-center"><img src={config.logoDataUrl} alt="Logotipo de la gestoría" className="max-h-14 max-w-24 object-contain"/></div> : <div className="flex h-14 w-20 shrink-0 items-center justify-center rounded-md border border-dashed border-slate-300 text-[9px] text-slate-400">SUBIR LOGO</div>)}<div><div className="text-sm font-black" style={{color:config.color}}>MOLSAN</div><div className="mt-1 text-[9px] text-slate-500">CIF · Domicilio fiscal · Contacto</div></div></div>
           <div className="text-right"><h4 className="text-2xl font-black" style={{color:config.color}}>{config.titulo || "FACTURA"}</h4><p className="mt-1 text-xs font-semibold">{config.subtitulo}</p><p className="mt-2 text-[10px] text-slate-500">N.º VI/00000-26</p><p className="text-[10px] text-slate-500">Fecha: dd/mm/aaaa</p></div>
         </header>
         <div className="mt-6 rounded-lg border border-slate-200 p-4"><h5 className="mb-3 text-[10px] font-extrabold tracking-wide" style={{color:config.color}}>DATOS DEL CLIENTE</h5><div className="grid grid-cols-2 gap-x-5 gap-y-3 text-[10px]"><div><p className="text-slate-400">Nombre / razón social</p><p className="mt-1 font-semibold">Nombre del cliente</p></div><div><p className="text-slate-400">NIF / CIF</p><p className="mt-1 font-semibold">—</p></div><div className="col-span-2"><p className="text-slate-400">Domicilio fiscal</p><p className="mt-1 font-semibold">Dirección · Código postal · Población</p></div></div></div>
