@@ -35,6 +35,7 @@ def resolve_storage_paths(
 ) -> dict[str, Path]:
     """Pure helper to resolve child paths and reject paths escaping the root."""
     base = Path(root).expanduser().resolve()
+    use_environment = overrides is None
     overrides = overrides or {}
     names = {
         "carpeta_digital": "CARPETA_DIGITAL_DIR",
@@ -50,7 +51,7 @@ def resolve_storage_paths(
         "fotos_empleados": base / "fotos" / "empleados",
     }
     for key, variable in names.items():
-        raw = overrides.get(variable) if overrides is not None else os.getenv(variable)
+        raw = os.getenv(variable) if use_environment else overrides.get(variable)
         candidate = Path(raw).expanduser().resolve() if raw else defaults[key].resolve()
         if not _inside(base, candidate):
             raise ValueError(
