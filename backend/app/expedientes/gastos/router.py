@@ -151,6 +151,20 @@ def _garantizar_tabla_pagos_en_inicio():
         conexion.execute(text("ALTER TABLE public.expediente_gasto_pagos ADD COLUMN IF NOT EXISTS anulado_en TIMESTAMP WITHOUT TIME ZONE NULL"))
         conexion.execute(text("ALTER TABLE public.expediente_gasto_pagos ADD COLUMN IF NOT EXISTS anulado_por INTEGER NULL"))
         conexion.execute(text("ALTER TABLE public.expediente_gasto_pagos ADD COLUMN IF NOT EXISTS motivo_anulacion TEXT NULL"))
+        # Las solicitudes ABSIS se registran localmente; la integración no transmite
+        # nada hasta que Informática configure y valide el contrato externo.
+        conexion.execute(text("""
+            CREATE TABLE IF NOT EXISTS public.expediente_absis_solicitudes (
+                id BIGSERIAL PRIMARY KEY,
+                expediente_id VARCHAR(100) NOT NULL,
+                actividad VARCHAR(100) NOT NULL,
+                payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+                solicitado_por INTEGER NULL,
+                mover_siguiente_actividad BOOLEAN NOT NULL DEFAULT FALSE,
+                estado VARCHAR(40) NOT NULL DEFAULT 'PENDIENTE_CONFIGURACION',
+                creado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """))
 
 
 @router.on_event("startup")
@@ -577,18 +591,6 @@ def preparar_integracion_gasto_absis(
     }
     payload_json = json.dumps(payload, ensure_ascii=False, default=str)
     try:
-        db.execute(text("""
-            CREATE TABLE IF NOT EXISTS expediente_absis_solicitudes (
-                id BIGSERIAL PRIMARY KEY,
-                expediente_id VARCHAR(100) NOT NULL,
-                actividad VARCHAR(100) NOT NULL,
-                payload JSONB NOT NULL DEFAULT '{}'::jsonb,
-                solicitado_por INTEGER NULL,
-                mover_siguiente_actividad BOOLEAN NOT NULL DEFAULT FALSE,
-                estado VARCHAR(40) NOT NULL DEFAULT 'PENDIENTE_CONFIGURACION',
-                creado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
-            )
-        """))
         existente = db.execute(text("""
             SELECT id FROM expediente_absis_solicitudes
             WHERE actividad = 'gastos-postfirma'
