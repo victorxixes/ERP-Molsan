@@ -675,7 +675,6 @@ def actualizar_gasto(expediente_id: int, gasto_id: int, payload: GastoUpdate, db
         raise HTTPException(status_code=422, detail="El estado de pago solo cambia al registrar o anular un movimiento real de pago.")
     _validar_calculo(datos)
     # Una obligación no puede rebajarse por debajo de los pagos ya registrados.
-    _garantizar_tabla_pagos(db)
     total_pagado = _decimal_opcional(db.execute(text("""
         SELECT COALESCE(SUM(importe), 0)
         FROM public.expediente_gasto_pagos
@@ -731,7 +730,6 @@ def eliminar_gasto(expediente_id: int, gasto_id: int, db: Session = Depends(get_
     ).with_for_update().first()
     if gasto is None:
         raise HTTPException(status_code=404, detail="No se encontró el gasto.")
-    _garantizar_tabla_pagos(db)
     pagos_existentes = db.execute(text("""
         SELECT COUNT(*) FROM public.expediente_gasto_pagos WHERE gasto_id = :gasto_id
     """), {"gasto_id": gasto.id}).scalar() or 0
