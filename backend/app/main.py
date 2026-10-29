@@ -1261,7 +1261,19 @@ def inicializar_tablas_auxiliares():
         from backend.app.provisiones.models import ConceptoImporteProvision
         ConceptoImporteProvision.__table__.create(bind=engine, checkfirst=True)
         # Migración compatible con instalaciones que ya tienen operaciones guardadas.
+        # El backfill debe ejecutarse SOLO al crear cada columna: hacerlo en cada
+        # arranque sobrescribiría con importes legacy cualquier cero legítimo
+        # guardado posteriormente en los campos *_base.
         with _transaccion_inicio_segura("conn") as conn:
+            columnas_operaciones_antes = {
+                fila[0]
+                for fila in conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_schema = 'public'
+                      AND table_name = 'provisiones_operaciones'
+                """)).fetchall()
+            }
             print("[STARTUP SQL] INICIO linea 1081", flush=True)
             conn.execute(text("ALTER TABLE provisiones_operaciones ADD COLUMN IF NOT EXISTS notaria NUMERIC(14,2) NOT NULL DEFAULT 0"))
             print("[STARTUP SQL] INICIO linea 1082", flush=True)
@@ -1279,11 +1291,23 @@ def inicializar_tablas_auxiliares():
             print("[STARTUP SQL] INICIO linea 1088", flush=True)
             conn.execute(text("ALTER TABLE provisiones_conceptos_importes ADD COLUMN IF NOT EXISTS reglas JSON NOT NULL DEFAULT '{}'"))
             print("[STARTUP SQL] INICIO linea 1089", flush=True)
-            conn.execute(text("UPDATE provisiones_operaciones SET gastos_registro_base = gastos_registro WHERE gastos_registro_base = 0"))
+            if "gastos_registro_base" not in columnas_operaciones_antes:
+                conn.execute(text("""
+                    UPDATE provisiones_operaciones
+                    SET gastos_registro_base = gastos_registro
+                """))
             print("[STARTUP SQL] INICIO linea 1090", flush=True)
-            conn.execute(text("UPDATE provisiones_operaciones SET suplidos_base = suplidos WHERE suplidos_base = 0"))
+            if "suplidos_base" not in columnas_operaciones_antes:
+                conn.execute(text("""
+                    UPDATE provisiones_operaciones
+                    SET suplidos_base = suplidos
+                """))
             print("[STARTUP SQL] INICIO linea 1091", flush=True)
-            conn.execute(text("UPDATE provisiones_operaciones SET otros_gastos_base = otros_gastos WHERE otros_gastos_base = 0"))
+            if "otros_gastos_base" not in columnas_operaciones_antes:
+                conn.execute(text("""
+                    UPDATE provisiones_operaciones
+                    SET otros_gastos_base = otros_gastos
+                """))
         print("[PROVISIONES] Tabla de conceptos e importes disponible; migración de operaciones comprobada.", flush=True)
 
         ExpedienteAccion.__table__.create(
