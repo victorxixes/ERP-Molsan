@@ -9,7 +9,7 @@ from datetime import date, datetime, time, timedelta
 
 import jwt
 from cryptography.fernet import Fernet
-from fastapi import APIRouter, Depends, HTTPException, File, Form, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, File, Form, UploadFile, Request
 from pydantic import BaseModel, constr
 from sqlalchemy import and_, text, or_
 from sqlalchemy.orm import Session
@@ -152,7 +152,7 @@ def migrar_notargest():
 
     print("[NOTARGEST MIGRACION] Migración de acceso revisada.", flush=True)
 
-def get_notario(token=Depends(obtener_token_bearer), db: Session = Depends(get_db)):
+def get_notario(request: Request, token=Depends(obtener_token_bearer), db: Session = Depends(get_db)):
     """Acepta JWT de notario o JWT ERP autorizado para el módulo NotarGest."""
     try:
         payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.ALGORITHM])
@@ -160,6 +160,21 @@ def get_notario(token=Depends(obtener_token_bearer), db: Session = Depends(get_d
             n = db.query(Notaria).filter(Notaria.id == int(payload["notaria_id"])).first()
             if not n or not n.notargest_habilitado:
                 raise HTTPException(status_code=403, detail="Acceso NotarGest deshabilitado")
+
+            requiere_cambio = bool(
+                getattr(n, "notargest_cambiar_password", True)
+                or getattr(n, "notargest_password_provisional", True)
+            )
+            ruta_actual = str(request.url.path or "").rstrip("/")
+            rutas_permitidas_sin_cambio = {
+                "/api/notargest/me",
+                "/api/notargest/cambiar-password",
+            }
+            if requiere_cambio and ruta_actual not in rutas_permitidas_sin_cambio:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Debes cambiar la contraseña provisional antes de acceder a NotarGest.",
+                )
             return n
         empleado_id = payload.get("id")
         if not empleado_id:
@@ -405,7 +420,19 @@ def login(data: LoginNotario, db: Session = Depends(get_db)):
     """), {"id": n.id, "usuario": nif})
     db.commit()
     token = jwt.encode({"tipo": "notargest", "notaria_id": n.id, "exp": datetime.utcnow() + timedelta(hours=8)}, settings.JWT_SECRET, algorithm=settings.ALGORITHM)
-    return {"token": token, "requiere_cambio_password": False, "notario": {"id": n.id, "nombre": " ".join(x for x in [n.nombre, n.apellidos] if x), "nif": n.nif}}
+    requiere_cambio = bool(
+        getattr(n, "notargest_cambiar_password", True)
+        or getattr(n, "notargest_password_provisional", True)
+    )
+    return {
+        "token": token,
+        "requiere_cambio_password": requiere_cambio,
+        "notario": {
+            "id": n.id,
+            "nombre": " ".join(x for x in [n.nombre, n.apellidos] if x),
+            "nif": n.nif,
+        },
+    }
 
 
 
@@ -556,7 +583,10 @@ def me(n=Depends(get_notario), db: Session = Depends(get_db)):
         "otros_departamentos": getattr(n, "otros_departamentos", None),
         "observacion": getattr(n, "observacion", None),
         "tipo_acceso": tipo_acceso,
-        "requiere_cambio_password": False,
+        "requiere_cambio_password": bool(
+            getattr(n, "notargest_cambiar_password", True)
+            or getattr(n, "notargest_password_provisional", True)
+        ),
     }
 
 @router.post("/cambiar-password")
