@@ -79,6 +79,7 @@ from backend.app.tipos_expediente.models import TipoExpediente
 from backend.app.acciones_expediente.models import AccionExpediente
 from backend.app.catalogos_absis.router import router as catalogos_absis_router
 from backend.app.oficinas_catalogo.router import router as oficinas_catalogo_router
+from backend.app.tipos_impositivos.router import router as tipos_impositivos_router
 from backend.app.expediente_acciones.models import ExpedienteAccion
 
 
@@ -410,6 +411,7 @@ app.include_router(fichajes_router, prefix="/api")
 app.include_router(maestros_router, prefix="/api")
 app.include_router(catalogos_absis_router, prefix="/api")
 app.include_router(oficinas_catalogo_router, prefix="/api")
+app.include_router(tipos_impositivos_router, prefix="/api")
 
 # INTRANET
 app.include_router(intranet_router, prefix="/api")
