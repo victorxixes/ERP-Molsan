@@ -119,6 +119,7 @@ _POST_ES_EDICION = (
     "/importador",
     "/asociadas",
     "/reset-password",
+    "/password",
     "/permisos",
     "/modulos",
     "/bloqueo",
@@ -194,7 +195,9 @@ def _resolver_modulo(path: str) -> str | None:
     # seguridad/asignar, pero su dependencia funcional exige empleados:editar.
     # Resolverlo antes del prefijo general /api/seguridad evita exigir además
     # el permiso incorrecto seguridad:crear.
-    if path == "/api/seguridad/asignar/empleado" or path.startswith("/api/seguridad/asignar/empleado/"):
+    if path.startswith("/api/seguridad/asignar/empleado/") and (
+        path.endswith("/bloquear") or path.endswith("/desbloquear")
+    ):
         return "empleados"
 
     # Routers montados dentro de /seguridad usan módulos de permiso específicos.
