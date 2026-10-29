@@ -10,7 +10,7 @@ const VACIO = {
 const secciones = [
   { titulo: "Identificación fiscal", campos: [
     ["razon_social", "Razón social", "text", true],
-    ["nif", "NIF", "text", true],
+    ["nif", "CIF", "text", true],
     ["domicilio_fiscal", "Domicilio fiscal", "text", true],
     ["codigo_postal", "Código postal", "text", false],
     ["poblacion", "Población", "text", false],
