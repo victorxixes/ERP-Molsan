@@ -27,10 +27,13 @@ class RouteGuardPolicyTests(unittest.TestCase):
             "/api/seguridad/asignar/empleado/17/modulos",
         ):
             self.assertEqual(_resolver_modulo(path), "seguridad")
-        self.assertEqual(
-            _resolver_accion("/api/seguridad/asignar/empleado/17/password", {"POST"}),
-            "editar",
-        )
+        for path in (
+            "/api/seguridad/asignar/empleado/17/password",
+            "/api/seguridad/asignar/empleado/17/rol/3",
+            "/api/seguridad/asignar/empleado/17/modulos",
+            "/api/seguridad/asignar/empleado/17/permisos",
+        ):
+            self.assertEqual(_resolver_accion(path, {"POST"}), "editar")
 
     def test_delete_is_always_delete_permission(self):
         self.assertEqual(
