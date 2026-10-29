@@ -8,12 +8,14 @@ from backend.app.auth.route_guard import (
     _normalizar_path,
     _resolver_modulo,
     _ya_tiene_visibilidad_expediente,
+    proteger_rutas_api,
 )
 from backend.app.main import app
 
 
 class RouteMappingCoverageTests(unittest.TestCase):
     def test_all_case_id_routes_have_visibility_guard(self):
+        proteger_rutas_api(app)
         missing = []
         for route in app.routes:
             if not isinstance(route, APIRoute):
