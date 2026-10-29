@@ -1,7 +1,9 @@
 """Regression tests for centralized API authorization policy."""
+import hashlib
 import unittest
 
 from backend.app.auth.route_guard import _resolver_accion, _resolver_modulo
+from backend.app.empleados.service import hash_password, verificar_hash_password
 
 
 class RouteGuardPolicyTests(unittest.TestCase):
@@ -25,6 +27,17 @@ class RouteGuardPolicyTests(unittest.TestCase):
 
     def test_unknown_api_path_is_not_silently_mapped(self):
         self.assertIsNone(_resolver_modulo("/api/new-unclassified-module"))
+
+    def test_new_password_hash_uses_pbkdf2_and_round_trips(self):
+        hashed = hash_password("Prueba-segura-123!")
+        self.assertTrue(hashed.startswith("pbkdf2_sha256$"))
+        self.assertTrue(verificar_hash_password("Prueba-segura-123!", hashed))
+        self.assertFalse(verificar_hash_password("otra-clave", hashed))
+
+    def test_legacy_sha256_hash_remains_verifiable_for_login_migration(self):
+        legacy = hashlib.sha256("Clave-antigua-123!".encode("utf-8")).hexdigest()
+        self.assertTrue(verificar_hash_password("Clave-antigua-123!", legacy))
+        self.assertFalse(verificar_hash_password("incorrecta", legacy))
 
 
 if __name__ == "__main__":
