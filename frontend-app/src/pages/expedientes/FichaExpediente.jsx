@@ -3554,17 +3554,17 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         numero_factura: gastoForm.numero_factura || null,
         fecha_factura: gastoForm.fecha_factura || null,
         importe_total_bruto: numeroDecimalGasto(gastoForm.importe_total_bruto) || importeFacturaActual,
-        base_exenta_impuestos: numeroDecimalGasto(gastoForm.base_exenta_impuestos),
-        base_sujeta_impuestos: numeroDecimalGasto(gastoForm.base_sujeta_impuestos),
-        tramo_impuesto: gastoForm.tramo_impuesto || null,
-        tipo_impuesto: gastoForm.tipo_impuesto || null,
-        porcentaje_impuesto: numeroDecimalGasto(gastoForm.porcentaje_impuesto),
-        importe_impuesto: numeroDecimalGasto(gasto.importe_impuesto),
-        base_exenta_retencion: numeroDecimalGasto(gastoForm.base_exenta_retencion),
-        base_sujeta_retencion: numeroDecimalGasto(gastoForm.base_sujeta_retencion),
-        tipo_retencion: gastoForm.tipo_retencion || null,
-        porcentaje_retencion: numeroDecimalGasto(gastoForm.porcentaje_retencion),
-        importe_retencion: numeroDecimalGasto(gasto.importe_retencion),
+        base_exenta_impuestos: gastoForm.base_exenta_impuestos === "" ? (gasto.base_exenta_impuestos ?? null) : numeroDecimalGasto(gastoForm.base_exenta_impuestos),
+        base_sujeta_impuestos: gastoForm.base_sujeta_impuestos === "" ? (gasto.base_sujeta_impuestos ?? null) : numeroDecimalGasto(gastoForm.base_sujeta_impuestos),
+        tramo_impuesto: gastoForm.tramo_impuesto || gasto.tramo_impuesto || null,
+        tipo_impuesto: gastoForm.tipo_impuesto || gasto.tipo_impuesto || null,
+        porcentaje_impuesto: gastoForm.porcentaje_impuesto === "" ? (gasto.porcentaje_impuesto ?? null) : numeroDecimalGasto(gastoForm.porcentaje_impuesto),
+        importe_impuesto: gasto.importe_impuesto ?? null,
+        base_exenta_retencion: gastoForm.base_exenta_retencion === "" ? (gasto.base_exenta_retencion ?? null) : numeroDecimalGasto(gastoForm.base_exenta_retencion),
+        base_sujeta_retencion: gastoForm.base_sujeta_retencion === "" ? (gasto.base_sujeta_retencion ?? null) : numeroDecimalGasto(gastoForm.base_sujeta_retencion),
+        tipo_retencion: gastoForm.tipo_retencion || gasto.tipo_retencion || null,
+        porcentaje_retencion: gastoForm.porcentaje_retencion === "" ? (gasto.porcentaje_retencion ?? null) : numeroDecimalGasto(gastoForm.porcentaje_retencion),
+        importe_retencion: gasto.importe_retencion ?? null,
         importe_resultante: Number(gasto.importe_resultante ?? gasto.importe ?? importeFacturaActual),
         documento_carpeta_id: gasto.documento_carpeta_id || null,
         estado_pago: gasto.estado_pago || "Pendiente",
@@ -5977,8 +5977,8 @@ const cuantiaFincasParaEnvio =
                                 <section className="mb-4 rounded-xl border border-slate-200 bg-white p-4">
                                   <h3 className="mb-3 text-sm font-extrabold text-slate-800">6. Datos fiscales</h3>
                                   <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                                    <label className="block text-xs font-bold text-slate-600">Base imponible
-                                      <input type="number" min="0" step="0.01" value={gastoForm.base_sujeta_impuestos || ""} onChange={(e) => setGastoForm((a) => ({ ...a, base_sujeta_impuestos: e.target.value }))} placeholder="Pendiente de lectura del PDF" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    <label className="block text-xs font-bold text-slate-600">Base imponible total
+                                      <input readOnly value={(gastoForm.base_exenta_impuestos !== "" || gastoForm.base_sujeta_impuestos !== "") ? (Number(gastoForm.base_exenta_impuestos || 0) + Number(gastoForm.base_sujeta_impuestos || 0)).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ""} placeholder="Pendiente de lectura del PDF" className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-normal text-slate-800" />
                                     </label>
                                     <label className="block text-xs font-bold text-slate-600">Base exenta / no sujeta
                                       <input type="number" min="0" step="0.01" value={gastoForm.base_exenta_impuestos || ""} onChange={(e) => setGastoForm((a) => ({ ...a, base_exenta_impuestos: e.target.value }))} placeholder="Pendiente de lectura del PDF" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal text-slate-800" />
