@@ -1202,8 +1202,8 @@ export default function CarpetaDigitalModal({
                         ))}
                       </div>
                       <div className="mt-3 flex justify-end border-t border-slate-100 pt-3">
-                        <button type="button" onClick={() => onPagar?.()} className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-300">
-                          💶 Pagar
+                        <button type="button" onClick={() => onPagar?.()} className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-300" title="Abrir las obligaciones; cada pago se inicia desde su propia línea">
+                          💶 Gestionar pagos
                         </button>
                       </div>
                       {formularioPago}
