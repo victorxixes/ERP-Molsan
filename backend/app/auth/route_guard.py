@@ -130,6 +130,8 @@ _POST_ES_EDICION = (
     "/pagos",
     "/avanzar-actividad",
     "/validar",
+    "/compensar",
+    "/revisar",
     "/enviar-a-notario",
     "/enviar-a-absis",
     "/integraciones-pendientes",
