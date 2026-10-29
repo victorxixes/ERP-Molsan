@@ -610,7 +610,10 @@ def crear_gasto(expediente_id: int, payload: GastoCreate, db: Session = Depends(
 @router.put("/{expediente_id}/gastos/{gasto_id}", response_model=GastoResponse)
 def actualizar_gasto(expediente_id: int, gasto_id: int, payload: GastoUpdate, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     expediente = _obtener_expediente(db, expediente_id)
-    gasto = db.query(ExpedienteGasto).filter(ExpedienteGasto.id == gasto_id, ExpedienteGasto.expediente_id == expediente.id).first()
+    gasto = db.query(ExpedienteGasto).filter(
+        ExpedienteGasto.id == gasto_id,
+        ExpedienteGasto.expediente_id == expediente.id,
+    ).with_for_update().first()
     if gasto is None:
         raise HTTPException(status_code=404, detail="No se encontró el gasto.")
     datos = payload.dict(exclude_unset=True)
@@ -670,7 +673,10 @@ def actualizar_gasto(expediente_id: int, gasto_id: int, payload: GastoUpdate, db
 @router.delete("/{expediente_id}/gastos/{gasto_id}", status_code=status.HTTP_204_NO_CONTENT)
 def eliminar_gasto(expediente_id: int, gasto_id: int, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     expediente = _obtener_expediente(db, expediente_id)
-    gasto = db.query(ExpedienteGasto).filter(ExpedienteGasto.id == gasto_id, ExpedienteGasto.expediente_id == expediente.id).first()
+    gasto = db.query(ExpedienteGasto).filter(
+        ExpedienteGasto.id == gasto_id,
+        ExpedienteGasto.expediente_id == expediente.id,
+    ).with_for_update().first()
     if gasto is None:
         raise HTTPException(status_code=404, detail="No se encontró el gasto.")
     _garantizar_tabla_pagos(db)
