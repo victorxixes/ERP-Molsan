@@ -51,6 +51,7 @@ _PREFIJOS_MODULO = (
     ("/api/permisos", "seguridad"),
     ("/api/catalogos-absis", "maestros"),
     ("/api/oficinas-catalogo", "catalogos"),
+    ("/api/tipos-impositivos", "maestros"),
     ("/api/acciones-expediente", "expedientes"),
     ("/api/expediente-acciones", "expedientes"),
     ("/api/expediente-ppad", "expedientes"),
