@@ -4,17 +4,30 @@ import unicodedata
 from datetime import date, datetime
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 from backend.app.database import get_db
 from backend.app.expedientes.models import Expediente
 from backend.app.expedientes.reparto import ids_expedientes_visibles
 
-router = APIRouter(prefix="/informes-sla", tags=["Informes SLA"], dependencies=[Depends(get_current_user)])
+def _autorizar_sla(request: Request, usuario=Depends(get_current_user)):
+    """Los informes SLA requieren lectura y las actualizaciones requieren edición."""
+    require_perm_modulo(usuario, "utilidades", "ver")
+    if request.method.upper() not in {"GET", "HEAD", "OPTIONS"}:
+        require_perm_modulo(usuario, "utilidades", "editar")
+    return usuario
+
+
+router = APIRouter(
+    prefix="/informes-sla",
+    tags=["Informes SLA"],
+    dependencies=[Depends(_autorizar_sla)],
+)
 
 ACTIVIDADES = [
     ("documentacion-previa", "Documentación previa", None),
