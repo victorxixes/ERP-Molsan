@@ -218,7 +218,11 @@ def _validar_documento_economico(expediente, documento, tipo: str) -> None:
         # No revelar si existe un documento perteneciente a otro expediente.
         raise HTTPException(status_code=404, detail="No se encontró el documento económico del expediente.")
     categoria_documento = str(documento.categoria or "").strip().casefold()
-    if categoria_documento != str(tipo or "").strip().casefold():
+    tipo_normalizado = str(tipo or "").strip().casefold()
+    categorias_compatibles = {
+        "factura registral": {"factura registral", "factura registro"},
+    }.get(tipo_normalizado, {tipo_normalizado})
+    if categoria_documento not in categorias_compatibles:
         raise HTTPException(
             status_code=422,
             detail="La categoría del documento no coincide con el concepto económico seleccionado.",
