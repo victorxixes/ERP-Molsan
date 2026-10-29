@@ -731,8 +731,8 @@ def migrar_esquema_expedientes_inicio():
         # PostgreSQL libere el bloqueo de tabla.
         max_intentos = 20
         for intento in range(1, max_intentos + 1):
-            # Repetir la limpieza en cada intento: la transacción que bloquea
-            # empleados puede superar los 5 minutos mientras se reintenta el DDL.
+            # Repetir el diagnóstico en cada intento: una transacción bloqueante puede
+            # permanecer abierta mientras se reintenta el DDL.
             registrar_transacciones_inactivas_expedientes()
             try:
                 with conexion.begin():
