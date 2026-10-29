@@ -538,6 +538,8 @@ export default function CarpetaDigitalModal({
       "nota-simple-registral",
       "copia-simple",
       "factura-notarial",
+      "factura-impuestos",
+      "honorarios-gestoria",
       "ajd-itp",
     ].includes(clave)) {
       return "Pendiente API ABSIS";
