@@ -18,7 +18,9 @@ from backend.app.realtime.schemas import RealtimeEvent
 from backend.app.Utilidades.importadores.expedientes_importer import (
     importar_excel_expedientes,
 )
-from backend.app.Utilidades.importadores.postfirma_importer import (\n    importar_postfirma, validar_postfirma, listar_cargas_postfirma, listar_registros_postfirma,\n)
+from backend.app.Utilidades.importadores.postfirma_importer import (
+    importar_postfirma, validar_postfirma, listar_cargas_postfirma, listar_registros_postfirma,
+)
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 
