@@ -260,6 +260,9 @@ export default function CarpetaDigitalModal({
             titulo: "Cierre del expediente",
             descripcion: "Incluye todos los repositorios digitales y el expediente digital completo.",
             categorias: [...BLOQUES.flatMap((item) => item.categorias), ...CATEGORIAS_OTROS]
+              // "Factura registral" y "Factura registro" son el mismo repositorio.
+              // En Cierre se conserva un único nombre canónico: "Factura registro".
+              .filter((item) => item.categoria !== "Factura registral" && item.categoria !== "Factura Registral")
               .filter((item, index, lista) => lista.findIndex((otro) => otro.categoria === item.categoria) === index),
           }
         : esCancelacionSinProvision && bloque.id === "sede-notarial"
@@ -494,6 +497,11 @@ export default function CarpetaDigitalModal({
         }
         if (categoriaNormalizada === "borradores escrituras") {
           return ["escrituras/borradores", "borradores de escrituras", "borradores de escritura"].includes(categoriaDocumento);
+        }
+        if (categoriaNormalizada === "factura registro") {
+          // Muestra también documentos históricos guardados como "Factura registral",
+          // sin duplicar el repositorio en la vista de Cierre del expediente.
+          return ["factura registro", "factura registral"].includes(categoriaDocumento);
         }
         if (categoriaNormalizada === "otros") {
           return categoriaDocumento === "borradores escrituras y otros";
