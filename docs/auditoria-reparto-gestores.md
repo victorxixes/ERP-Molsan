@@ -18,7 +18,7 @@ La rama de trabajo cambia ese comportamiento:
 
 Se añadieron dos pruebas de regresión para ambos escenarios en `backend/tests/test_reparto_sin_candidato.py`. Estas pruebas están escritas, pero todavía deben ejecutarse en un entorno con las dependencias del backend antes de considerarlas superadas.
 
-**Limitación pendiente:** el historial ya registra la incidencia, pero esta intervención aún no añade una señal visual de «asignación provisional/incompatible» en la ficha ni una bandeja operativa para resolver estas incidencias. Por tanto, conservar el gestor y registrar la incidencia está corregido en el código preparado; la supervisión visual completa queda pendiente.
+**Limitación pendiente:** la lógica de acceso ya permite que el gestor conservado provisionalmente siga viendo ese expediente, y deja de hacerlo cuando el historial registra una asignación posterior. Aún falta una señal visual de «asignación provisional/incompatible» en la ficha y una bandeja operativa para resolver estas incidencias. La incidencia se registra y se respeta en el ámbito de acceso, pero todavía no existe una supervisión visual completa.
 
 ## Panel central de Asignaciones
 
