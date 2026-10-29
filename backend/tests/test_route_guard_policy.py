@@ -69,6 +69,14 @@ class RouteGuardPolicyTests(unittest.TestCase):
             "editar",
         )
 
+    def test_security_maintenance_posts_use_edit_permission(self):
+        for path in (
+            "/api/seguridad/permisos/crear-base",
+            "/api/admin/install-unaccent",
+            "/api/mantenimiento-defectos/migrar",
+        ):
+            self.assertEqual(_resolver_accion(path, {"POST"}), "editar")
+
     def test_fichajes_routes_use_the_correct_permission_modules(self):
         self.assertEqual(_resolver_modulo("/api/fichajes/marcajes", {"GET"}), "fichajes")
         self.assertEqual(_resolver_modulo("/api/fichajes/admin/marcajes", {"GET"}), "control-fichajes")
