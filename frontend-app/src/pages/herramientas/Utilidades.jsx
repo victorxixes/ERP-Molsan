@@ -61,6 +61,10 @@ export default function Utilidades() {
         <Card icon="💶" titulo="PPAD" descripcion="Consulta importes pendientes y compensados, revisa cada expediente y descarga los listados a Excel." link="/herramientas/utilidades/ppad" destacado />
       </Grupo>
 
+      <Grupo titulo="Reglas y configuración de expedientes" descripcion="Define las condiciones de documentos, campos y validaciones del circuito de actividades.">
+        <Card icon="⚙️" titulo="Reglas de actividades expediente" descripcion="Configura los documentos requeridos en cada actividad, las condiciones de envío a notaría, las validaciones y los requisitos de avance y cierre." link="/herramientas/utilidades/reglas-actividades-expediente" destacado />
+      </Grupo>
+
       <Grupo titulo="Gestión de expedientes" descripcion="Acciones manuales y controladas sobre la asignación y el seguimiento de los expedientes.">
         <Card icon="📝" titulo="Alta expediente" descripcion="Crear un expediente nuevo con sus datos de facturación, contrato, múltiples fincas, hipotecas y notaría CTN." link="/herramientas/utilidades/alta-expediente" destacado />
         <Card icon="🔁" titulo="Cambiar gestor de expediente" descripcion="Busca un expediente por su número y reasígnalo manualmente a otro gestor, dejando constancia del cambio." link="/herramientas/utilidades/cambiar-gestor" />
