@@ -15,6 +15,7 @@ from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 from backend.app.expedientes.reparto import resolver_key_actividad
 from backend.app.empleados.models import Empleado
 from backend.app.auth.dependencies import get_current_user
+from backend.app.uploads import MAX_EXCEL_UPLOAD_BYTES, read_upload_limited
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.Utilidades.importadores.ctn_importer import importar_ctn_desde_excel
 from backend.app.Utilidades.importadores.expedientes_importer import importar_excel_expedientes
@@ -39,7 +40,11 @@ async def importar_ctn(
     usuario=Depends(get_current_user),
 ):
     require_perm_modulo(usuario, "utilidades", "editar")
-    contenido = await fichero.read()
+    contenido = await read_upload_limited(
+        fichero,
+        MAX_EXCEL_UPLOAD_BYTES,
+        "Excel CTN",
+    )
 
     total = importar_ctn_desde_excel(
         db,
@@ -782,11 +787,13 @@ async def subir_plantilla_factura_honorarios(
     extension = nombre.rsplit(".", 1)[-1].lower() if "." in nombre else ""
     if extension != "docx":
         raise HTTPException(status_code=400, detail="La plantilla oficial de factura debe ser un documento Word .docx para poder rellenarla conservando su formato y QR.")
-    contenido = await fichero.read()
+    contenido = await read_upload_limited(
+        fichero,
+        10 * 1024 * 1024,
+        "plantilla de factura",
+    )
     if not contenido:
         raise HTTPException(status_code=400, detail="El archivo está vacío.")
-    if len(contenido) > 10 * 1024 * 1024:
-        raise HTTPException(status_code=413, detail="El archivo supera el límite de 10 MB.")
     concepto = _asegurar_plantilla_factura_concepto(db)
     db.execute(text("""
         INSERT INTO plantilla_factura_concepto_gasto
