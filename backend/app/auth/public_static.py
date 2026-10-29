@@ -1,3 +1,5 @@
+import posixpath
+
 from starlette.exceptions import HTTPException
 from starlette.staticfiles import StaticFiles
 
@@ -6,7 +8,11 @@ class PublicStaticFiles(StaticFiles):
     """Sirve archivos estáticos públicos, excepto fotografías personales."""
 
     async def get_response(self, path: str, scope):
-        ruta = path.replace("\\", "/").lstrip("/")
+        # Normalizar separadores y segmentos antes de comprobar la zona privada.
+        # Starlette también normaliza los segmentos al resolver el fichero; si no
+        # lo hacemos aquí, rutas como ./fotos/... o x/../fotos/... podrían eludir
+        # el bloqueo del montaje público.
+        ruta = posixpath.normpath("/" + path.replace("\\", "/")).lstrip("/")
         primer_segmento = ruta.split("/", 1)[0].casefold()
 
         # Evitar que el montaje general /static exponga archivos privados
