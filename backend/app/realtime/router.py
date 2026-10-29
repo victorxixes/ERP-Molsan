@@ -31,6 +31,15 @@ def _empleado_activo(db: Session, empleado_id: int) -> Optional[Empleado]:
     return empleado
 
 
+def _destinatario_activo(empleado_id: int) -> bool:
+    """Comprueba al destinatario con una sesión corta, sin retener conexiones en el WebSocket."""
+    db_destinatario: Session = SessionLocal()
+    try:
+        return _empleado_activo(db_destinatario, empleado_id) is not None
+    finally:
+        db_destinatario.close()
+
+
 def _destinatario_id(data: dict, emisor_id: int) -> Optional[int]:
     try:
         destinatario_id = int(data.get("destinatario_id"))
@@ -160,8 +169,7 @@ async def realtime_ws(websocket: WebSocket):
             destinatario_id = _destinatario_id(data, usuario_id)
             if destinatario_id is None:
                 continue
-            destinatario = _empleado_activo(db, destinatario_id)
-            if destinatario is None:
+            if not _destinatario_activo(destinatario_id):
                 continue
 
             # Para eventos que envían contenido se exige también permiso crear.
