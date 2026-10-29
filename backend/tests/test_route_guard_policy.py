@@ -43,6 +43,15 @@ class RouteGuardPolicyTests(unittest.TestCase):
             "editar",
         )
 
+    def test_security_maintenance_routes_use_security_permissions(self):
+        paths = (
+            "/api/expedientes/gastos/migracion/aplicar",
+            "/api/utilidades/add_columna_gestoria_expedientes",
+        )
+        for path in paths:
+            self.assertEqual(_resolver_modulo(path, {"POST"}), "seguridad")
+            self.assertEqual(_resolver_accion(path, {"POST"}), "editar")
+
     def test_expediente_admin_operations_use_security_permissions(self):
         for path in (
             "/api/expedientes/migraciones/actividades",
