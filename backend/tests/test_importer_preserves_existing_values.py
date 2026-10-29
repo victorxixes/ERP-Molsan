@@ -6,6 +6,9 @@ import pandas as pd
 
 from backend.app.Utilidades.importadores.expedientes_importer import (
     _asignar_si_informado,
+    convertir_fecha,
+    convertir_numero,
+    obtener_valor,
     vincular_catalogos_expediente,
 )
 
@@ -15,6 +18,19 @@ class ImportadorABSISPreservacionTests(unittest.TestCase):
         expediente = SimpleNamespace(protocolo="123/2024")
         _asignar_si_informado(expediente, "protocolo", None)
         self.assertEqual(expediente.protocolo, "123/2024")
+
+    def test_blank_excel_cell_is_missing_value(self):
+        fila = pd.Series({"PROTOCOLO": "   ", "OTRO": float("nan")})
+        self.assertIsNone(obtener_valor(fila, "PROTOCOLO"))
+        self.assertIsNone(obtener_valor(fila, "OTRO"))
+
+    def test_invalid_date_does_not_create_default_date(self):
+        self.assertIsNone(convertir_fecha("fecha incorrecta"))
+        self.assertIsNone(convertir_fecha(None))
+
+    def test_invalid_number_is_missing_not_zero(self):
+        self.assertIsNone(convertir_numero("no es un importe"))
+        self.assertIsNone(convertir_numero(""))
 
     def test_non_empty_value_updates_existing_field(self):
         expediente = SimpleNamespace(protocolo="123/2024")
