@@ -53,6 +53,56 @@ function LiquidacionPreview({ datosMolsan, logoCliente }) {
 export default function ModelosDocumentos() {
   const [seleccionado, setSeleccionado] = useState("liquidacion");
   const actual = documentos.find((d) => d.id === seleccionado) || documentos[0];
+  const [datosMolsan, setDatosMolsan] = useState({});
+  const [logoCliente, setLogoCliente] = useState("");
+  const [errorLogo, setErrorLogo] = useState("");
+
+  useEffect(() => {
+    let activo = true;
+    axios.get("/utilidades/datos-molsan")
+      .then(({ data }) => {
+        if (activo) setDatosMolsan(data?.datos || data || {});
+      })
+      .catch(() => {
+        if (activo) setDatosMolsan({});
+      });
+    try {
+      const guardado = localStorage.getItem("molsan_logo_cliente_liquidacion");
+      if (guardado && activo) setLogoCliente(guardado);
+    } catch {}
+    return () => { activo = false; };
+  }, []);
+
+  const subirLogoCliente = (archivo) => {
+    setErrorLogo("");
+    if (!archivo) return;
+    const tiposPermitidos = ["image/png", "image/jpeg", "image/webp"];
+    if (!tiposPermitidos.includes(archivo.type)) {
+      setErrorLogo("Formato no válido. Sube una imagen PNG, JPG o WEBP.");
+      return;
+    }
+    if (archivo.size > 1024 * 1024) {
+      setErrorLogo("La imagen supera el máximo permitido de 1 MB.");
+      return;
+    }
+    const lector = new FileReader();
+    lector.onload = () => {
+      const resultado = typeof lector.result === "string" ? lector.result : "";
+      if (!resultado) {
+        setErrorLogo("No se ha podido leer la imagen seleccionada.");
+        return;
+      }
+      try {
+        localStorage.setItem("molsan_logo_cliente_liquidacion", resultado);
+        setLogoCliente(resultado);
+      } catch {
+        setErrorLogo("No se ha podido guardar la imagen en este navegador. Prueba con un archivo más pequeño.");
+      }
+    };
+    lector.onerror = () => setErrorLogo("No se ha podido leer la imagen seleccionada.");
+    lector.readAsDataURL(archivo);
+  };
+
   return <main className="min-h-full space-y-6 p-4 animate-fadeIn sm:p-6 lg:p-8">
     <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7"><div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-700 via-sky-500 to-cyan-300"/><div className="relative flex items-start gap-4"><div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-sky-100 bg-sky-50 text-2xl">▤</div><div className="min-w-0 flex-1"><p className="text-xs font-bold uppercase tracking-[.16em] text-blue-800">MOLSAN ERP · UTILIDADES · PREMIUM 2027</p><h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Modelos de documentos</h1><p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">Diseño corporativo unificado. Las plantillas no alteran tarifas, cálculos, pagos ni numeración oficial.</p></div><Link to="/herramientas/utilidades" className="hidden rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 sm:inline-flex">← Utilidades</Link></div></header>
     <section className="grid grid-cols-1 gap-4 md:grid-cols-3">{documentos.map(doc=><button key={doc.id} type="button" onClick={()=>setSeleccionado(doc.id)} className={`rounded-2xl border p-4 text-left transition hover:-translate-y-0.5 hover:shadow-lg ${seleccionado===doc.id?"border-sky-300 bg-sky-50/70 shadow-md":"border-slate-200 bg-white"}`}><div className="flex items-start justify-between gap-3"><span className="text-2xl">{doc.id==="liquidacion"?"▤":doc.id==="provision"?"€":"▧"}</span><span className="rounded-full bg-sky-50 px-2.5 py-1 text-[10px] font-bold text-sky-800">{doc.estado}</span></div><h2 className="mt-3 font-bold text-slate-900">{doc.titulo}</h2><p className="mt-1 text-xs text-slate-500">{doc.subtitulo}</p></button>)}</section>
