@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 import hashlib
+import hmac
+import secrets
 import json
 
 from backend.app.empleados.models import Empleado
@@ -26,9 +28,45 @@ from backend.app.maestros.models import (
 # =========================================================
 
 def hash_password(password: str) -> str:
-    return hashlib.sha256(
-        password.encode("utf-8")
-    ).hexdigest()
+    """Hash de contraseña resistente a fuerza bruta; formato compatible con PBKDF2."""
+    salt = secrets.token_hex(16)
+    rounds = 310000
+    digest = hashlib.pbkdf2_hmac(
+        "sha256",
+        password.encode("utf-8"),
+        bytes.fromhex(salt),
+        rounds,
+    ).hex()
+    return f"pbkdf2_sha256${rounds}${salt}${digest}"
+
+
+def verificar_hash_password(password: str, almacenado: str) -> bool:
+    """Verifica hashes nuevos PBKDF2 y hashes SHA-256 heredados sin corte de acceso."""
+    if not isinstance(almacenado, str) or not almacenado:
+        return False
+
+    partes = almacenado.split("$", 3)
+    if len(partes) == 4 and partes[0] == "pbkdf2_sha256":
+        try:
+            rondas = int(partes[1])
+            salt = bytes.fromhex(partes[2])
+            esperado = bytes.fromhex(partes[3])
+            if rondas < 100000 or rondas > 2000000 or len(salt) < 16:
+                return False
+            calculado = hashlib.pbkdf2_hmac(
+                "sha256",
+                password.encode("utf-8"),
+                salt,
+                rondas,
+            )
+            return hmac.compare_digest(calculado, esperado)
+        except (ValueError, TypeError):
+            return False
+
+    # Compatibilidad transitoria con los hashes SHA-256 antiguos. Se actualizan
+    # a PBKDF2 automáticamente después de un inicio de sesión correcto.
+    heredado = hashlib.sha256(password.encode("utf-8")).hexdigest()
+    return hmac.compare_digest(heredado, almacenado)
 
 
 # =========================================================
@@ -116,8 +154,18 @@ def login_empleado(
     # COMPROBAR PASSWORD
     # -----------------------------------------------------
 
-    if empleado.password != hash_password(password):
+    if not verificar_hash_password(password, empleado.password or ""):
         return None
+
+    # Migración progresiva: solo se actualiza tras verificar la contraseña.
+    if not str(empleado.password or "").startswith("pbkdf2_sha256$"):
+        empleado.password = hash_password(password)
+        try:
+            db.commit()
+            db.refresh(empleado)
+        except Exception:
+            db.rollback()
+            return None
 
     # Solo la cuenta administradora recibe este acceso automático;
     # la configuración del resto de empleados permanece intacta.
