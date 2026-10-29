@@ -240,25 +240,24 @@ def usuario_admin_expedientes(usuario):
 def ids_asignaciones_provisionales(db: Session, empleado_id: int) -> set[str]:
     """Expedientes conservados provisionalmente para un gestor tras no hallar regla."""
     try:
-        if not sa_inspect(db.get_bind()).has_table("expediente_gestor_historial"):
-            return set()
-        filas = db.execute(text("""
-            SELECT h.expediente_id
-            FROM expediente_gestor_historial AS h
-            WHERE h.gestor_id = :gestor_id
-              AND h.motivo = 'sin_regla_reparto_gestor_conservado'
-              AND h.id = (
-                  SELECT MAX(h2.id)
-                  FROM expediente_gestor_historial AS h2
-                  WHERE h2.expediente_id = h.expediente_id
-              )
-        """), {"gestor_id": int(empleado_id)}).fetchall()
-        return {str(fila[0]) for fila in filas if fila and fila[0] is not None}
+        existe_historial = sa_inspect(db.get_bind()).has_table("expediente_gestor_historial")
     except Exception:
-        # La comprobación de acceso no debe bloquear el ERP si el historial
-        # aún no existe en una instalación recién migrada. En ese caso, el
-        # expediente seguirá sujeto a las reglas normales de reparto.
         return set()
+    if not existe_historial:
+        return set()
+
+    filas = db.execute(text("""
+        SELECT h.expediente_id
+        FROM expediente_gestor_historial AS h
+        WHERE h.gestor_id = :gestor_id
+          AND h.motivo = 'sin_regla_reparto_gestor_conservado'
+          AND h.id = (
+              SELECT MAX(h2.id)
+              FROM expediente_gestor_historial AS h2
+              WHERE h2.expediente_id = h.expediente_id
+          )
+    """), {"gestor_id": int(empleado_id)}).fetchall()
+    return {str(fila[0]) for fila in filas if fila and fila[0] is not None}
 
 
 def expediente_cumple_reglas_empleado(
