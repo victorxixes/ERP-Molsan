@@ -47,7 +47,7 @@ export default function ReglasActividadesExpediente() {
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Resumen icono="📂" titulo="Actividad inicial" valor="Documentación previa" />
         <Resumen icono="📄" titulo="Documentos requeridos" valor={`${documentosActivos} de ${DOCUMENTOS_INICIALES.length}`} />
-        <Resumen icono="📨" titulo="Reglas definidas" valor="5 actividades" />
+        <Resumen icono="📨" titulo="Flujo principal" valor="5 transiciones" />
       </section>
 
       <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
@@ -187,6 +187,23 @@ export default function ReglasActividadesExpediente() {
         </div>
       </section>
 
+      <section className="overflow-hidden rounded-[22px] border border-amber-200 bg-white shadow-sm">
+        <div className="border-b border-amber-100 bg-amber-50/70 px-5 py-4 sm:px-6">
+          <p className="text-xs font-bold uppercase tracking-wider text-amber-800">Actividad condicional · entre liquidación y tramitación</p>
+          <h2 className="mt-1 text-lg font-bold text-slate-800">Defectos registrales</h2>
+          <p className="mt-1 text-sm text-slate-600">No forma parte obligatoria del recorrido. Solo se activa si el Registro de la Propiedad notifica un defecto registral.</p>
+        </div>
+        <div className="grid gap-4 p-5 sm:p-6 md:grid-cols-2">
+          <Condicion titulo="Si no hay notificación" texto="El expediente continúa directamente desde Liquidación impuestos a Tramitación inscripción y puede llegar al cierre sin pasar por Defectos registrales." />
+          <Condicion titulo="Si el Registro notifica un defecto" texto="Activar la actividad Defectos registrales, registrar la notificación y su fecha, y gestionar el defecto y su subsanación. La actividad no debe activarse por defecto en todos los expedientes." />
+          <Condicion titulo="Reanudación del flujo" texto="Una vez subsanado y documentado el defecto, el expediente puede continuar hacia Tramitación inscripción, manteniendo el historial y los documentos vinculados." />
+          <Condicion titulo="Control de cierre" texto="Antes de cerrar, comprobar que no quedan defectos registrales abiertos. El backend ya contiene una validación de bloqueo en una ruta de cierre documental; debe comprobarse que cubre todos los caminos de cierre." />
+        </div>
+        <div className="border-t border-amber-100 bg-amber-50/40 px-5 py-4 sm:px-6">
+          <p className="text-sm leading-5 text-slate-600">Pendiente de revisión: comprobar activación por notificación real, alta/edición, subsanación, historial y bloqueo de cierre con defectos abiertos.</p>
+        </div>
+      </section>
+
       <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
           <div>
@@ -228,8 +245,8 @@ export default function ReglasActividadesExpediente() {
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-indigo-600">Regla 05</p>
-            <h2 className="mt-1 text-lg font-bold text-slate-800">Tramitación inscripción → Cierre de expediente</h2>
-            <p className="mt-1 text-sm text-slate-500">La fecha de presentación procede de Liquidación impuestos; la fecha de inscripción se informa manualmente o se extrae de la Hoja de inscripción.</p>
+            <h2 className="mt-1 text-lg font-bold text-slate-800">Tramitación inscripción → Control de calidad → Cierre de expediente</h2>
+            <p className="mt-1 text-sm text-slate-500">Control de calidad se consulta antes del cierre; es una comprobación informativa del estado real y no una actividad obligatoria por la que deba pasar todo expediente.</p>
           </div>
           <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800">PDF/OCR y transición pendientes</span>
         </div>
@@ -248,7 +265,7 @@ export default function ReglasActividadesExpediente() {
           <div className="grid gap-4 md:grid-cols-2">
             <Condicion titulo="Origen de la Hoja de inscripción" texto="El documento PDF debe estar subido en la Carpeta digital del expediente, dentro del repositorio denominado exactamente «Hoja de inscripción»." />
             <Condicion titulo="Lectura PDF/OCR" texto="Al detectar la Hoja de inscripción, el lector PDF debe intentar extraer la fecha de inscripción y proponerla en el campo existente. El usuario podrá revisar/corregir el dato o introducirlo manualmente si la extracción falla." />
-            <Condicion titulo="Condición de avance automático" texto="Cuando la Hoja de inscripción esté adjunta y la fecha de inscripción esté informada y validada, el sistema cambiará automáticamente la actividad a Cierre de expediente." />
+            <Condicion titulo="Condición previa al cierre" texto="Cuando la Hoja de inscripción esté adjunta y la fecha de inscripción esté informada y validada, el expediente queda preparado para el control de calidad y el cierre, según las validaciones vigentes." />
             <Condicion titulo="Fecha de vencimiento" texto="Se calcula automáticamente a partir de la fecha de presentación heredada. El cálculo debe reutilizar la regla vigente de vencimiento de Tramitación inscripción y verificarse en las pruebas; no duplicar ni inventar una fórmula distinta." />
           </div>
         </div>
@@ -264,8 +281,9 @@ export default function ReglasActividadesExpediente() {
           <p className="mt-1 text-sm text-slate-600">Estas reglas quedan documentadas para el técnico y no deben darse por implementadas hasta revisar el comportamiento real.</p>
         </div>
         <div className="grid gap-4 p-5 sm:p-6 md:grid-cols-2">
-          <Condicion titulo="Revisar reglas de Cierre de expediente" texto="Revisar la lógica de cierre y su vínculo con el botón «Liquidar». Antes de activar el avance automático desde Tramitación inscripción, confirmar cómo interactúan el cierre, la liquidación, los honorarios y los controles económicos para evitar cierres prematuros o duplicados." />
-          <Condicion titulo="Gestión económica = gestión contable" texto="Pendiente de revisión e integración. Esta actividad centraliza el seguimiento contable y debe reflejar las facturas que puedan llegar desde NotarGest (factura de notaría) y desde Tramitación inscripción (factura del Registro), con su estado de pago basado en movimientos de pago reales, no solo por adjuntar una factura." />
+          <Condicion titulo="Control de calidad antes del cierre" texto="Revisar la pestaña y sus reglas existentes: cambios de estado, campos obligatorios cumplimentados, documentos adjuntos y consistencia global del expediente. Debe ofrecer una fotografía fiable del expediente antes de pulsar «Liquidar». No crear una checklist paralela: reutilizar la comprobación existente que ya se muestra en el modal Liquidar expediente. La revisión visual no convierte por sí sola esta actividad en un paso obligatorio del flujo." />
+          <Condicion titulo="Revisar reglas de Cierre de expediente y botón «Liquidar»" texto="Comprobar cómo interactúan el control de calidad, la generación y aceptación del PDF de cierre documental, la factura definitiva de honorarios, los saldos y el cierre final. Evitar cierres prematuros o duplicados. El modal actual exige aceptar y guardar el PDF antes de confirmar el cierre; debe probarse el comportamiento completo." />
+          <Condicion titulo="Gestión económica · actividad independiente" texto="No sigue el orden lineal de las actividades. Funciona en paralelo durante la vida del expediente como gestión contable central: puede recibir facturas de NotarGest (notaría) y de Tramitación inscripción (Registro), pero adjuntar una factura no equivale a pagarla. El estado pagado debe proceder de movimientos de pago reales registrados desde Gestión económica." />
           <Condicion titulo="Actividad Efectos" texto="Pendiente de especificar y revisar con el técnico: identificar el origen de los datos/documentos, las condiciones de entrada y salida, y sus relaciones con la gestión económica y el cierre. No crear automatismos hasta validar el flujo actual." />
           <Condicion titulo="Integración con el Colegio de Registradores" texto="Anotación técnica pendiente: estudiar API/servicio disponible, autenticación, campos necesarios, documentos intercambiados, errores, trazabilidad y entorno de pruebas. No asumir que existe una conexión operativa hasta comprobarla." />
         </div>
