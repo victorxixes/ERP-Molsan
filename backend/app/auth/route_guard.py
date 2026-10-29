@@ -133,6 +133,7 @@ _POST_ES_EDICION = (
     "/mover",
     "/aceptar",
     "/anular",
+    "/informes-sla/fechas/",
     "/admin/periodos",
     "/firmar",
     "/reparar",
