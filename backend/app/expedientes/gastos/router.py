@@ -206,7 +206,7 @@ def _validar_calculo(datos: dict):
 
 
 @router.get("/{expediente_id}/gastos", response_model=list[GastoResponse])
-def listar_gastos(expediente_id: int, db: Session = Depends(get_db)):
+def listar_gastos(expediente_id: int, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     expediente = _obtener_expediente(db, expediente_id)
     return db.query(ExpedienteGasto).filter(ExpedienteGasto.expediente_id == expediente.id).order_by(ExpedienteGasto.fecha.desc(), ExpedienteGasto.id.desc()).all()
 
