@@ -22,6 +22,7 @@ from backend.app.Utilidades.importadores.postfirma_importer import (
     importar_postfirma, validar_postfirma, listar_cargas_postfirma, listar_registros_postfirma,
 )
 from backend.app.auth.dependencies import get_current_user
+from backend.app.uploads import MAX_EXCEL_UPLOAD_BYTES, read_upload_limited
 from backend.app.auth.permissions import require_perm_modulo
 
 
@@ -109,10 +110,14 @@ async def importar_expedientes_absis(
 
     try:
 
-        contenido_excel = (
-            await fichero.read()
+        contenido_excel = await read_upload_limited(
+            fichero,
+            MAX_EXCEL_UPLOAD_BYTES,
+            "Excel ABSIS",
         )
 
+    except HTTPException:
+        raise
     except Exception as exc:
 
         raise HTTPException(
@@ -290,7 +295,11 @@ async def importar_postfirma_absis(
     nombre = (fichero.filename or "").strip()
     if not nombre.lower().endswith(".xlsx"):
         raise HTTPException(status_code=400, detail="El histórico Post Firma debe ser un Excel .xlsx.")
-    contenido = await fichero.read()
+    contenido = await read_upload_limited(
+        fichero,
+        MAX_EXCEL_UPLOAD_BYTES,
+        "Excel Post Firma",
+    )
     if not contenido:
         raise HTTPException(status_code=400, detail="El Excel Post Firma está vacío.")
     try:
@@ -318,7 +327,11 @@ async def validar_postfirma_absis(
     nombre = (fichero.filename or "").strip()
     if not nombre.lower().endswith(".xlsx"):
         raise HTTPException(status_code=400, detail="El histórico Post Firma debe ser un Excel .xlsx.")
-    contenido = await fichero.read()
+    contenido = await read_upload_limited(
+        fichero,
+        MAX_EXCEL_UPLOAD_BYTES,
+        "Excel Post Firma",
+    )
     if not contenido:
         raise HTTPException(status_code=400, detail="El Excel Post Firma está vacío.")
     try:
