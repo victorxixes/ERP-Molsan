@@ -19,6 +19,22 @@ router = APIRouter(prefix="/debug", tags=["Mantenimiento técnico"])
 
 def _autorizar_mantenimiento(usuario=Depends(get_current_user)):
     require_perm_modulo(usuario, "seguridad", "editar")
+
+    # Este router permite inspeccionar metadatos y una muestra de datos de tablas.
+    # Además del permiso granular, exigir identidad administrativa como declara
+    # el contrato del módulo evita que un permiso delegado abra el diagnóstico.
+    nombre_usuario = str(getattr(usuario, "usuario", "") or "").strip().casefold()
+    nombre_rol = str(
+        getattr(getattr(usuario, "rol", None), "nombre", "") or ""
+    ).strip().casefold()
+    es_administrador = nombre_usuario == "admin" or nombre_rol in {
+        "admin", "administrador", "administradora", "superadmin"
+    }
+    if not es_administrador:
+        raise HTTPException(
+            status_code=403,
+            detail="El diagnóstico técnico está reservado a usuarios administradores.",
+        )
     return usuario
 
 
