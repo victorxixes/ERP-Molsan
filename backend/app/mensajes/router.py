@@ -39,6 +39,13 @@ MAX_ARCHIVO_BYTES = 20 * 1024 * 1024
 EXTENSIONES_PERMITIDAS = {"pdf", "doc", "docx", "jpg", "jpeg", "png"}
 
 
+def _politica_descarga_adjunto(nombre: str) -> tuple[str, str]:
+    extension = Path(nombre or "").suffix.lower()
+    mime, _ = mimetypes.guess_type(nombre or "")
+    disposicion = "inline" if extension in {".pdf", ".jpg", ".jpeg", ".png"} else "attachment"
+    return mime or "application/octet-stream", disposicion
+
+
 def _usuario_actual_id(usuario: Empleado) -> int:
     try:
         return int(usuario.id)
@@ -189,12 +196,13 @@ def descargar_archivo(
     if ruta.parent != root or not ruta.is_file():
         raise HTTPException(status_code=404, detail="El archivo no está disponible")
 
-    mime, _ = mimetypes.guess_type(nombre)
+    mime, disposicion = _politica_descarga_adjunto(nombre)
     return FileResponse(
         path=str(ruta),
-        media_type=mime or "application/octet-stream",
+        media_type=mime,
         filename=nombre,
-        content_disposition_type="inline",
+        content_disposition_type=disposicion,
+        headers={"X-Content-Type-Options": "nosniff"},
     )
 
 
