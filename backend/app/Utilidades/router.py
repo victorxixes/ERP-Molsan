@@ -878,6 +878,16 @@ def _asegurar_tabla_datos_molsan(db: Session):
     db.commit()
 
 
+class FacturaPlantillaConfigRequest(BaseModel):
+    color: str = "#174A7E"
+    titulo: str = "FACTURA"
+    subtitulo: str = "Honorarios de gestoría"
+    mostrarAvisoAEAT: bool = True
+    mostrarObservaciones: bool = False
+    mostrarLogo: bool = True
+    densidad: str = "normal"
+
+
 @router.get("/datos-molsan")
 def obtener_datos_molsan(
     db: Session = Depends(get_db),
@@ -900,7 +910,14 @@ def guardar_datos_molsan(
 ):
     require_perm_modulo(usuario, "utilidades", "editar")
     _asegurar_tabla_datos_molsan(db)
-    contenido = json.dumps(datos.dict(), ensure_ascii=False)
+    fila_actual = db.execute(text("SELECT datos FROM datos_molsan_config WHERE id = 1")).mappings().first()
+    datos_actuales = dict(fila_actual["datos"] or {}) if fila_actual else {}
+    # Mantener las preferencias del editor al actualizar los datos fiscales corporativos.
+    config_plantilla = datos_actuales.get("configuracion_factura_honorarios")
+    contenido_datos = datos.dict()
+    if config_plantilla:
+        contenido_datos["configuracion_factura_honorarios"] = config_plantilla
+    contenido = json.dumps(contenido_datos, ensure_ascii=False)
     db.execute(text("""
         INSERT INTO datos_molsan_config (id, datos, actualizado_en)
         VALUES (1, CAST(:datos AS JSONB), CURRENT_TIMESTAMP)
@@ -909,3 +926,46 @@ def guardar_datos_molsan(
     """), {"datos": contenido})
     db.commit()
     return {"ok": True, "mensaje": "Datos Molsan guardados correctamente."}
+
+
+@router.get("/factura-plantilla")
+def obtener_configuracion_factura_plantilla(
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "ver")
+    _asegurar_tabla_datos_molsan(db)
+    fila = db.execute(text("SELECT datos, actualizado_en FROM datos_molsan_config WHERE id = 1")).mappings().first()
+    datos = dict(fila["datos"] or {}) if fila else {}
+    config = datos.get("configuracion_factura_honorarios") or {}
+    return {
+        "configuracion": config,
+        "datos_molsan": {k: v for k, v in datos.items() if k != "configuracion_factura_honorarios"},
+        "actualizado_en": fila["actualizado_en"].isoformat() if fila and fila["actualizado_en"] else None,
+    }
+
+
+@router.put("/factura-plantilla")
+def guardar_configuracion_factura_plantilla(
+    config: FacturaPlantillaConfigRequest,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "editar")
+    _asegurar_tabla_datos_molsan(db)
+    try:
+        fila = db.execute(text("SELECT datos FROM datos_molsan_config WHERE id = 1")).mappings().first()
+        datos = dict(fila["datos"] or {}) if fila else {}
+        datos["configuracion_factura_honorarios"] = config.dict()
+        db.execute(text("""
+            INSERT INTO datos_molsan_config (id, datos, actualizado_en)
+            VALUES (1, CAST(:datos AS JSONB), CURRENT_TIMESTAMP)
+            ON CONFLICT (id) DO UPDATE
+            SET datos = EXCLUDED.datos, actualizado_en = CURRENT_TIMESTAMP
+        """), {"datos": json.dumps(datos, ensure_ascii=False)})
+        db.commit()
+        return {"ok": True, "mensaje": "Diseño de factura guardado en el ERP.", "configuracion": config.dict()}
+    except Exception:
+        db.rollback()
+        logger.exception("Error guardando la configuración de la plantilla de factura")
+        raise HTTPException(status_code=500, detail="No se pudo guardar el diseño de la factura en el ERP.")
