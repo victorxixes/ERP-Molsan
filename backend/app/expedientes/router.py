@@ -39,6 +39,7 @@ from backend.app.expedientes.reparto import (
     asignar_gestor_automaticamente,
     ids_expedientes_visibles,
     resolver_key_actividad,
+    validar_visibilidad_expediente_request,
 )
 
 
@@ -56,28 +57,8 @@ def validar_ambito_reparto_ruta(
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
-    """Protege expedientes por URL directa, sin confundir provisiones independientes.
-
-    Las provisiones independientes tienen su propio identificador y sus permisos
-    específicos; no pertenecen a un expediente y no deben pasar por el filtro
-    de visibilidad por reparto de expedientes.
-    """
-    if "/provisiones-independientes" in request.url.path:
-        return
-    id_expediente = request.path_params.get("id_expediente")
-    if id_expediente is None:
-        return
-    expediente = (
-        db.query(Expediente)
-        .filter(Expediente.id_expediente == str(id_expediente))
-        .first()
-    )
-    if expediente is None:
-        return  # El endpoint correspondiente emitirá su 404 habitual.
-    ids_visibles = ids_expedientes_visibles(db, usuario)
-    if ids_visibles is not None and expediente.id not in ids_visibles:
-        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
-
+    """Compatibilidad con el nombre histórico; usa la comprobación compartida."""
+    return validar_visibilidad_expediente_request(request, db, usuario)
 
 setattr(validar_ambito_reparto_ruta, "_molsan_visibilidad_guard", True)
 
