@@ -1207,11 +1207,7 @@ export default function CarpetaDigitalModal({
                           </section>
                         ))}
                       </div>
-                      <div className="mt-3 flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-3">
-                        <button type="button" onClick={() => onFacturar?.()} disabled={generandoFacturacion || !onFacturar} className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-emerald-700 px-5 py-2.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-emerald-800 disabled:opacity-50" title="Generar y guardar la factura en el repositorio Honorarios gestoría, sin crear pagos ni avisos de deuda">
-                          {generandoFacturacion ? "Generando factura…" : "🧾 Facturar"}
-                        </button>
-                      </div>
+
                       {actividadId === "gestion-economica" && panelLibroPagos}
                       {formularioPago}
                       </>
