@@ -37,7 +37,7 @@ export default function ReglasActividadesExpediente() {
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-indigo-600">Configuración del expediente</p>
               <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Reglas de actividades expediente</h1>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Define los documentos, campos y validaciones que deben cumplirse en cada fase del expediente. Configura por separado las tres reglas de avance: documentación previa, protocolo notarial y las fases notarial, tributaria y de inscripción.</p>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Define los documentos, campos y validaciones de cada fase, y deja identificadas las integraciones y reglas que requieren revisión técnica.</p>
             </div>
           </div>
           <Link to="/herramientas/utilidades" className="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50">← Volver a Utilidades</Link>
@@ -47,7 +47,7 @@ export default function ReglasActividadesExpediente() {
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Resumen icono="📂" titulo="Actividad inicial" valor="Documentación previa" />
         <Resumen icono="📄" titulo="Documentos requeridos" valor={`${documentosActivos} de ${DOCUMENTOS_INICIALES.length}`} />
-        <Resumen icono="📨" titulo="Reglas definidas" valor="4 actividades" />
+        <Resumen icono="📨" titulo="Reglas definidas" valor="5 actividades" />
       </section>
 
       <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
@@ -221,6 +221,53 @@ export default function ReglasActividadesExpediente() {
         </div>
         <div className="border-t border-slate-100 bg-slate-50/60 px-5 py-4 sm:px-6">
           <p className="text-sm leading-5 text-slate-600">Pendiente del técnico: conexión con repositorios, lectura PDF/OCR, revisión de valores extraídos, detección de campos vacíos y pruebas de la transición a Tramitación inscripción.</p>
+        </div>
+      </section>
+
+      <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-indigo-600">Regla 05</p>
+            <h2 className="mt-1 text-lg font-bold text-slate-800">Tramitación inscripción → Cierre de expediente</h2>
+            <p className="mt-1 text-sm text-slate-500">La fecha de presentación procede de Liquidación impuestos; la fecha de inscripción se informa manualmente o se extrae de la Hoja de inscripción.</p>
+          </div>
+          <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800">PDF/OCR y transición pendientes</span>
+        </div>
+        <div className="space-y-5 p-5 sm:p-6">
+          <div>
+            <h3 className="text-sm font-bold text-slate-800">Campos y condiciones de la actividad</h3>
+            <p className="mt-1 text-sm text-slate-500">La fecha de presentación se hereda de la actividad anterior y la fecha de vencimiento se calcula automáticamente según la regla de vencimiento configurada para la actividad.</p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {["Fecha de presentación (heredada de Liquidación impuestos)", "Fecha de vencimiento (automática)", "Fecha de inscripción (manual o extraída del PDF)", "Hoja de inscripción en Carpeta digital"].map((campo) => (
+              <div key={campo} className="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm font-medium text-slate-700">
+                <span className="h-2 w-2 rounded-full bg-indigo-500" />{campo}
+              </div>
+            ))}
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Condicion titulo="Origen de la Hoja de inscripción" texto="El documento PDF debe estar subido en la Carpeta digital del expediente, dentro del repositorio denominado exactamente «Hoja de inscripción»." />
+            <Condicion titulo="Lectura PDF/OCR" texto="Al detectar la Hoja de inscripción, el lector PDF debe intentar extraer la fecha de inscripción y proponerla en el campo existente. El usuario podrá revisar/corregir el dato o introducirlo manualmente si la extracción falla." />
+            <Condicion titulo="Condición de avance automático" texto="Cuando la Hoja de inscripción esté adjunta y la fecha de inscripción esté informada y validada, el sistema cambiará automáticamente la actividad a Cierre de expediente." />
+            <Condicion titulo="Fecha de vencimiento" texto="Se calcula automáticamente a partir de la fecha de presentación heredada. El cálculo debe reutilizar la regla vigente de vencimiento de Tramitación inscripción y verificarse en las pruebas; no duplicar ni inventar una fórmula distinta." />
+          </div>
+        </div>
+        <div className="border-t border-slate-100 bg-slate-50/60 px-5 py-4 sm:px-6">
+          <p className="text-sm leading-5 text-slate-600">Anotación para el técnico: preparar la integración/API con el Colegio de Registradores para la comunicación/consulta registral. Queda pendiente de especificación técnica, credenciales y documentación oficial; no se ejecuta ninguna llamada externa desde esta pantalla.</p>
+        </div>
+      </section>
+
+      <section className="overflow-hidden rounded-[22px] border border-amber-200 bg-white shadow-sm">
+        <div className="border-b border-amber-100 bg-amber-50/70 px-5 py-4 sm:px-6">
+          <p className="text-xs font-bold uppercase tracking-wider text-amber-800">Pendientes de revisión técnica</p>
+          <h2 className="mt-1 text-lg font-bold text-slate-800">Cierre de expediente, Gestión económica y Efectos</h2>
+          <p className="mt-1 text-sm text-slate-600">Estas reglas quedan documentadas para el técnico y no deben darse por implementadas hasta revisar el comportamiento real.</p>
+        </div>
+        <div className="grid gap-4 p-5 sm:p-6 md:grid-cols-2">
+          <Condicion titulo="Revisar reglas de Cierre de expediente" texto="Revisar la lógica de cierre y su vínculo con el botón «Liquidar». Antes de activar el avance automático desde Tramitación inscripción, confirmar cómo interactúan el cierre, la liquidación, los honorarios y los controles económicos para evitar cierres prematuros o duplicados." />
+          <Condicion titulo="Gestión económica = gestión contable" texto="Pendiente de revisión e integración. Esta actividad centraliza el seguimiento contable y debe reflejar las facturas que puedan llegar desde NotarGest (factura de notaría) y desde Tramitación inscripción (factura del Registro), con su estado de pago basado en movimientos de pago reales, no solo por adjuntar una factura." />
+          <Condicion titulo="Actividad Efectos" texto="Pendiente de especificar y revisar con el técnico: identificar el origen de los datos/documentos, las condiciones de entrada y salida, y sus relaciones con la gestión económica y el cierre. No crear automatismos hasta validar el flujo actual." />
+          <Condicion titulo="Integración con el Colegio de Registradores" texto="Anotación técnica pendiente: estudiar API/servicio disponible, autenticación, campos necesarios, documentos intercambiados, errores, trazabilidad y entorno de pruebas. No asumir que existe una conexión operativa hasta comprobarla." />
         </div>
       </section>
 
