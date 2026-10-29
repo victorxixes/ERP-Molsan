@@ -1,5 +1,6 @@
 import hashlib
 import hmac
+import mimetypes
 import secrets
 import os
 import base64
