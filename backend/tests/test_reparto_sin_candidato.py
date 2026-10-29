@@ -6,9 +6,6 @@ Ejecutar desde la raíz con:
 import unittest
 
 from backend.app.expedientes.reparto import asignar_gestor_automaticamente
-from backend.app.empleados.models import Empleado
-from backend.app.maestros.models import Departamento
-
 
 class _QueryVacia:
     def __init__(self, modelo):
@@ -58,6 +55,20 @@ class RepartoSinCandidatoTests(unittest.TestCase):
         )
         self.assertEqual(db.historial[0]["gestor_id"], 27)
         self.assertEqual(db.historial[0]["anterior_id"], 27)
+
+    def test_trata_cero_como_sin_gestor_y_no_lo_guarda_como_fk(self):
+        db = _DBSinCandidatos()
+        expediente = _Expediente(gestor_asignado_id=0)
+
+        resultado = asignar_gestor_automaticamente(
+            db, expediente, "tramitacion-inscripcion"
+        )
+
+        self.assertIsNone(resultado)
+        self.assertEqual(expediente.gestor_asignado_id, 0)
+        self.assertEqual(db.historial[0]["motivo"], "sin_regla_reparto_sin_gestor")
+        self.assertIsNone(db.historial[0]["gestor_id"])
+        self.assertIsNone(db.historial[0]["anterior_id"])
 
     def test_registra_sin_gestor_si_no_hay_candidato_ni_asignacion_previa(self):
         db = _DBSinCandidatos()
