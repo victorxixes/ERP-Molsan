@@ -913,14 +913,14 @@ def actualizar_defecto(
 
     # Si cambia o se elimina la fecha de calificación, recalcular o limpiar
     # el vencimiento derivado. Si no cambia, conservar la relación existente.
-    if "fecha_calificacion" in valores:
-        valores["fecha_vencimiento_presentacion"] = _calcular_vencimiento_presentacion(
-            valores.get("fecha_calificacion")
-        )
-    elif getattr(defecto, "fecha_calificacion", None) is not None:
-        valores["fecha_vencimiento_presentacion"] = _calcular_vencimiento_presentacion(
-            defecto.fecha_calificacion
-        )
+    fecha_calificacion_final = (
+        valores["fecha_calificacion"]
+        if "fecha_calificacion" in valores
+        else getattr(defecto, "fecha_calificacion", None)
+    )
+    valores["fecha_vencimiento_presentacion"] = _calcular_vencimiento_presentacion(
+        fecha_calificacion_final
+    )
 
     valores_anteriores = {
         campo: getattr(defecto, campo, None)
