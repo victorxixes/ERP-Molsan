@@ -94,6 +94,37 @@ class GastoUpdate(GastoBase):
     pass
 
 
+class PagoCreate(BaseModel):
+    fecha: date
+    importe: Decimal
+    concepto: str = Field(..., min_length=1, max_length=300)
+    medio_pago: Optional[str] = Field(None, max_length=100)
+    idempotency_key: str = Field(..., min_length=8, max_length=100)
+
+    @validator("importe", pre=True)
+    def validar_importe_pago(cls, valor):
+        importe = _decimal_opcional(valor)
+        if importe is None or importe <= 0:
+            raise ValueError("El importe del pago debe ser mayor que cero.")
+        return importe
+
+
+def _garantizar_tabla_pagos(db: Session):
+    """Crea únicamente la tabla nueva de movimientos; no toca gastos históricos."""
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS public.expediente_gasto_pagos (
+            id BIGSERIAL PRIMARY KEY,
+            gasto_id INTEGER NOT NULL REFERENCES public.expediente_gastos(id) ON DELETE RESTRICT,
+            fecha DATE NOT NULL,
+            importe NUMERIC(12, 2) NOT NULL CHECK (importe > 0),
+            concepto VARCHAR(300) NOT NULL,
+            medio_pago VARCHAR(100),
+            idempotency_key VARCHAR(100) NOT NULL UNIQUE,
+            creado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+
+
 class GastoResponse(GastoBase):
     id: int
     expediente_id: int
@@ -161,6 +192,122 @@ def _validar_calculo(datos: dict):
 def listar_gastos(expediente_id: int, db: Session = Depends(get_db)):
     expediente = _obtener_expediente(db, expediente_id)
     return db.query(ExpedienteGasto).filter(ExpedienteGasto.expediente_id == expediente.id).order_by(ExpedienteGasto.fecha.desc(), ExpedienteGasto.id.desc()).all()
+
+
+@router.get("/{expediente_id}/gastos/{gasto_id}/pagos")
+def listar_pagos_gasto(expediente_id: int, gasto_id: int, db: Session = Depends(get_db)):
+    expediente = _obtener_expediente(db, expediente_id)
+    gasto = db.query(ExpedienteGasto).filter(
+        ExpedienteGasto.id == gasto_id,
+        ExpedienteGasto.expediente_id == expediente.id,
+    ).first()
+    if gasto is None:
+        raise HTTPException(status_code=404, detail="No se encontró la obligación económica.")
+    try:
+        _garantizar_tabla_pagos(db)
+        filas = db.execute(text("""
+            SELECT id, gasto_id, fecha, importe, concepto, medio_pago, idempotency_key, creado_en
+            FROM public.expediente_gasto_pagos
+            WHERE gasto_id = :gasto_id
+            ORDER BY fecha, id
+        """), {"gasto_id": gasto.id}).mappings().all()
+        total = db.execute(text("""
+            SELECT COALESCE(SUM(importe), 0)
+            FROM public.expediente_gasto_pagos WHERE gasto_id = :gasto_id
+        """), {"gasto_id": gasto.id}).scalar()
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="No se pudo consultar el histórico de pagos.") from exc
+    obligacion = _decimal_opcional(gasto.importe_resultante if gasto.importe_resultante is not None else gasto.importe) or Decimal("0.00")
+    total = _decimal_opcional(total) or Decimal("0.00")
+    return {
+        "items": [dict(fila) for fila in filas],
+        "total_pagado": str(total),
+        "importe_obligacion": str(obligacion),
+        "saldo_pendiente": str(max(Decimal("0.00"), obligacion - total)),
+        "estado_pago": gasto.estado_pago or "Pendiente",
+    }
+
+
+@router.post("/{expediente_id}/gastos/{gasto_id}/pagos", status_code=status.HTTP_201_CREATED)
+def registrar_pago_gasto(
+    expediente_id: int,
+    gasto_id: int,
+    payload: PagoCreate,
+    db: Session = Depends(get_db),
+):
+    """Registra un movimiento real de pago, idempotente y compatible con pagos parciales."""
+    expediente = _obtener_expediente(db, expediente_id)
+    gasto = db.query(ExpedienteGasto).filter(
+        ExpedienteGasto.id == gasto_id,
+        ExpedienteGasto.expediente_id == expediente.id,
+    ).with_for_update().first()
+    if gasto is None:
+        raise HTTPException(status_code=404, detail="No se encontró la obligación económica.")
+    obligacion = _decimal_opcional(gasto.importe_resultante if gasto.importe_resultante is not None else gasto.importe)
+    if obligacion is None or obligacion <= 0:
+        raise HTTPException(status_code=422, detail="Completa primero el importe de la factura antes de registrar pagos.")
+    try:
+        _garantizar_tabla_pagos(db)
+        existente = db.execute(text("""
+            SELECT id, gasto_id, fecha, importe, concepto, medio_pago, idempotency_key, creado_en
+            FROM public.expediente_gasto_pagos WHERE idempotency_key = :key
+        """), {"key": payload.idempotency_key}).mappings().first()
+        if existente:
+            if int(existente["gasto_id"]) != gasto.id:
+                raise HTTPException(status_code=409, detail="La clave de operación ya se utilizó para otro gasto.")
+            total = db.execute(text("""
+                SELECT COALESCE(SUM(importe), 0) FROM public.expediente_gasto_pagos
+                WHERE gasto_id = :gasto_id
+            """), {"gasto_id": gasto.id}).scalar()
+            db.commit()
+            total = _decimal_opcional(total) or Decimal("0.00")
+            return {
+                "ok": True, "duplicado": True, "pago": dict(existente),
+                "total_pagado": str(total),
+                "saldo_pendiente": str(max(Decimal("0.00"), obligacion - total)),
+                "estado_pago": gasto.estado_pago or "Pendiente",
+            }
+        total_previo = _decimal_opcional(db.execute(text("""
+            SELECT COALESCE(SUM(importe), 0) FROM public.expediente_gasto_pagos
+            WHERE gasto_id = :gasto_id
+        """), {"gasto_id": gasto.id}).scalar()) or Decimal("0.00")
+        if total_previo + payload.importe > obligacion:
+            raise HTTPException(
+                status_code=422,
+                detail=f"El pago supera el saldo de la obligación ({max(Decimal('0.00'), obligacion - total_previo):.2f} €).",
+            )
+        pago = db.execute(text("""
+            INSERT INTO public.expediente_gasto_pagos
+                (gasto_id, fecha, importe, concepto, medio_pago, idempotency_key)
+            VALUES (:gasto_id, :fecha, :importe, :concepto, :medio_pago, :key)
+            RETURNING id, gasto_id, fecha, importe, concepto, medio_pago, idempotency_key, creado_en
+        """), {
+            "gasto_id": gasto.id, "fecha": payload.fecha, "importe": payload.importe,
+            "concepto": payload.concepto.strip(), "medio_pago": payload.medio_pago,
+            "key": payload.idempotency_key,
+        }).mappings().first()
+        total = total_previo + payload.importe
+        if total >= obligacion:
+            gasto.estado_pago = "Pagado"
+            gasto.fecha_pago = payload.fecha
+        else:
+            gasto.estado_pago = "Parcial"
+            gasto.fecha_pago = None
+        db.commit()
+        return {
+            "ok": True, "duplicado": False, "pago": dict(pago),
+            "total_pagado": str(total),
+            "saldo_pendiente": str(max(Decimal("0.00"), obligacion - total)),
+            "estado_pago": gasto.estado_pago,
+        }
+    except HTTPException:
+        db.rollback()
+        raise
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="No se pudo registrar el pago. No se han confirmado cambios.") from exc
 
 
 @router.post("/{expediente_id}/gastos/{gasto_id}/integracion-absis")
