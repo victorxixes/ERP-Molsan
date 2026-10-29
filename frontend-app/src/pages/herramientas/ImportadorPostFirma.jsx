@@ -22,6 +22,7 @@ export default function ImportadorPostFirma() {
   const [cargaSeleccionada, setCargaSeleccionada] = useState("");
   const [registros, setRegistros] = useState([]);
   const [totalRegistros, setTotalRegistros] = useState(0);
+  const [columnasInforme, setColumnasInforme] = useState([]);
   const [offset, setOffset] = useState(0);
   const TAMANO_PAGINA = 100;
 
@@ -43,6 +44,7 @@ export default function ImportadorPostFirma() {
       const respuesta = await axios.get("/utilidades/importador-absis/postfirma/registros", { params });
       setRegistros(Array.isArray(respuesta.data?.items) ? respuesta.data.items : []);
       setTotalRegistros(Number(respuesta.data?.total || 0));
+      setColumnasInforme(Array.isArray(respuesta.data?.columnas) ? respuesta.data.columnas : []);
     } catch (err) {
       setError(err?.response?.data?.detail || "No se pudo cargar el detalle del histórico Post Firma.");
     }
@@ -97,7 +99,7 @@ export default function ImportadorPostFirma() {
     setArchivo(elegido);
   };
 
-  const columnas = Array.from(new Set(registros.flatMap((fila) => Object.keys(fila.datos || {}))));
+  const columnas = columnasInforme;
   const euros = (valor) => {
     const numero = Number(valor ?? 0);
     return Number.isFinite(numero) ? numero.toLocaleString("es-ES", { style: "currency", currency: "EUR" }) : "—";
