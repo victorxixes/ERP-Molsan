@@ -395,13 +395,32 @@ export default function CarpetaDigitalModal({
     setSubiendo(categoria);
     setError("");
     try {
+      const documentosNuevos = [];
       for (const archivo of archivos) {
         const data = new FormData();
         data.append("archivo", archivo);
         data.append("categoria", categoria);
-        await axios.post(BASE(expedienteId), data);
+        const respuestaSubida = await axios.post(BASE(expedienteId), data);
+        if (respuestaSubida?.data) documentosNuevos.push(respuestaSubida.data);
       }
       const lista = await cargar();
+      // Solo la carpeta de la actividad Gestión económica genera obligaciones.
+      // Adjuntar el documento nunca lo marca como pagado ni descuenta provisión.
+      const categoriasEconomicas = ["factura notarial", "factura registral", "factura impuestos", "ajd/itp", "otros impuestos"];
+      if (modoActividad && normalizar(actividadId) === "gestion economica" && categoriasEconomicas.includes(normalizar(categoria))) {
+        const idInternoExpediente = expedienteDatos?.id;
+        if (!idInternoExpediente) {
+          throw new Error("No se ha podido identificar el expediente interno para vincular la factura a Gestión económica.");
+        }
+        for (const documento of documentosNuevos) {
+          await axios.post(`/expedientes/${encodeURIComponent(idInternoExpediente)}/gastos/vincular-documento`, {
+            documento_carpeta_id: documento.id,
+            categoria: documento.categoria || categoria,
+            nombre_documento: documento.nombre_original || documento.nombre || "Documento económico",
+            fecha: String(documento.fecha_subida || "").slice(0, 10) || null,
+          });
+        }
+      }
       const subidos = lista.filter((doc) => doc.categoria === categoria);
       if (subidos.length) {
         const ultimo = [...subidos].sort((a, b) =>
