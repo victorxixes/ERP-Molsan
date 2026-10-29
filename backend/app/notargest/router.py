@@ -167,6 +167,20 @@ def _ruta_permitida_durante_cambio_password(path: str) -> bool:
     }
 
 
+def _accion_requerida_notargest(method: str, path: str) -> str:
+    verbo = str(method or "GET").upper()
+    ruta = str(path or "").rstrip("/")
+    # Seleccionar una notaría emulada es navegación de solo lectura; la ruta
+    # impone además el control explícito de administrador ERP.
+    if verbo in {"GET", "HEAD", "OPTIONS"} or (
+        verbo == "POST" and ruta.startswith("/api/notargest/seleccion/notaria/")
+    ):
+        return "ver"
+    if verbo == "DELETE":
+        return "eliminar"
+    return "editar"
+
+
 def get_notario(request: Request, token=Depends(obtener_token_bearer), db: Session = Depends(get_db)):
     """Acepta JWT de notario o JWT ERP autorizado para el módulo NotarGest."""
     try:
@@ -192,7 +206,11 @@ def get_notario(request: Request, token=Depends(obtener_token_bearer), db: Sessi
         modulos = getattr(empleado, "modulos_visibles_list", None) or []
         if not any(str(m).strip().casefold() == "notargest" for m in modulos):
             raise HTTPException(status_code=403, detail="NotarGest no está habilitado para este usuario ERP")
-        require_perm_modulo(empleado, "notargest", "ver")
+        accion_requerida = _accion_requerida_notargest(
+            request.method,
+            request.url.path,
+        )
+        require_perm_modulo(empleado, "notargest", accion_requerida)
         return empleado
     except HTTPException:
         raise
