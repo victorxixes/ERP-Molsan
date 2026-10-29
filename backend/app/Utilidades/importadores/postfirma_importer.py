@@ -49,6 +49,13 @@ def _json_value(value):
     return value if isinstance(value, (str, int, float, bool)) else str(value)
 
 
+def _normalizar_columna(value):
+    return "".join(
+        caracter for caracter in str(value or "").strip().upper()
+        if caracter.isalnum()
+    )
+
+
 def _texto(value):
     value = _limpiar(value)
     if value is None:
@@ -145,6 +152,8 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
 
     hoja = libro.worksheets[0]
     columnas = [str(c) if c is not None else "" for c in df.columns]
+    if not any(_normalizar_columna(c) == "TIPOCONCEPTO" for c in columnas):
+        columnas.append("TIPOCONCEPTO")
     sha256 = hashlib.sha256(contenido_excel).hexdigest()
     guardadas = 0
     filas_vacias = 0
@@ -171,17 +180,22 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
             numero_fila = int(indice) + 2
             celdas = next(filas_originales, ())
             datos = {}
-            for posicion, nombre in enumerate(columnas):
+            for posicion, nombre in enumerate(df.columns):
+                etiqueta = str(nombre) if nombre is not None else ""
                 if posicion >= len(celdas):
-                    datos[nombre] = None
+                    datos[etiqueta] = None
                 else:
-                    datos[nombre] = _json_value(celdas[posicion].value)
+                    datos[etiqueta] = _json_value(celdas[posicion].value)
+            valores_normalizados = {
+                _normalizar_columna(k): v for k, v in datos.items()
+            }
+            datos["TIPOCONCEPTO"] = valores_normalizados.get("TIPOCONCEPTO")
             if not any(v is not None and v != "" for v in datos.values()):
                 filas_vacias += 1
                 continue
 
             # Estos campos son índices de consulta auxiliares, no reglas de importación.
-            normalizados = {str(k).strip().upper(): v for k, v in datos.items()}
+            normalizados = {_normalizar_columna(k): v for k, v in datos.items()}
             importe = _decimal(normalizados.get("IMPGASTO"))
             fecha_pago = _fecha(normalizados.get("FPAGO"))
             lote.append({
@@ -323,7 +337,7 @@ def validar_postfirma(db: Session, contenido_excel: bytes, fecha_desde=None, fec
             filas_vacias += 1
             continue
         filas_con_datos += 1
-        datos = {str(k).strip().upper(): v for k, v in zip(columnas, valores)}
+        datos = {_normalizar_columna(k): v for k, v in zip(columnas, valores)}
         importe = _decimal(datos.get("IMPGASTO"))
         if importe is not None:
             importes += importe
