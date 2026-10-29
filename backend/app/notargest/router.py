@@ -30,6 +30,30 @@ from backend.app.storage import CARPETA_DIGITAL_DIR
 router = APIRouter(prefix="/notargest", tags=["NotarGest"])
 ROOT = CARPETA_DIGITAL_DIR.resolve()
 MAX_WORKFLOW_UPLOAD_BYTES = 25 * 1024 * 1024
+EXTENSIONES_NOTARGEST_PERMITIDAS = {
+    ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
+    ".odt", ".ods", ".odp", ".rtf", ".txt", ".csv", ".eml",
+    ".png", ".jpg", ".jpeg", ".gif", ".webp", ".zip",
+}
+EXTENSIONES_NOTARGEST_VISTA_PREVIA = {".pdf", ".png", ".jpg", ".jpeg", ".gif", ".webp"}
+
+
+def _tipo_mime_notargest_seguro(nombre: str) -> tuple[str, str]:
+    extension = Path(nombre).suffix.lower()
+    if extension not in EXTENSIONES_NOTARGEST_PERMITIDAS:
+        raise HTTPException(status_code=415, detail="Formato documental no permitido.")
+    tipo_mime = mimetypes.guess_type(f"documento{extension}")[0] or "application/octet-stream"
+    return extension, tipo_mime
+
+
+def _politica_descarga_notargest(nombre: str) -> tuple[str, str]:
+    extension = Path(nombre or "").suffix.lower()
+    tipo_mime = (
+        mimetypes.guess_type(f"documento{extension}")[0]
+        if extension in EXTENSIONES_NOTARGEST_PERMITIDAS
+        else None
+    ) or "application/octet-stream"
+    return tipo_mime, "inline" if extension in EXTENSIONES_NOTARGEST_VISTA_PREVIA else "attachment"
 
 
 def _validar_contenido_workflow(contenido: bytes, exigir_pdf: bool = False) -> None:
@@ -809,7 +833,8 @@ async def subir_documento_workflow(expediente_id: str, categoria: str = Form(...
         raise HTTPException(status_code=400, detail="Tipo de documento no válido")
     categoria_carpeta, mime_fijo, siguiente = categorias[categoria]
     nombre = Path(archivo.filename or "documento").name
-    if categoria in ("factura", "defecto", "subsanacion", "inscripcion", "copia") and not nombre.lower().endswith(".pdf"):
+    extension, tipo_mime_seguro = _tipo_mime_notargest_seguro(nombre)
+    if categoria in ("factura", "defecto", "subsanacion", "inscripcion", "copia") and extension != ".pdf":
         raise HTTPException(status_code=400, detail="Este documento debe adjuntarse en PDF")
     if categoria == "copia" and str(getattr(e, "tiene_defectos_abiertos", "") or "").strip().casefold() in {"si", "sí", "true", "1", "abierto"}:
         raise HTTPException(status_code=400, detail="No se puede cerrar el expediente mientras haya defectos registrales abiertos. Adjunta primero la subsanación del defecto.")
@@ -826,7 +851,7 @@ async def subir_documento_workflow(expediente_id: str, categoria: str = Form(...
     if ruta.parent != ROOT: raise HTTPException(status_code=400, detail="Nombre de archivo no válido")
     ruta.write_bytes(contenido)
     try:
-        doc = DocumentoCarpetaDigital(expediente_id=str(e.id_expediente), categoria=categoria_carpeta, nombre_original=nombre, nombre_guardado=nombre_guardado, tipo_mime=mime_fijo or archivo.content_type or "application/octet-stream", tamano_bytes=len(contenido), fecha_subida=datetime.utcnow())
+        doc = DocumentoCarpetaDigital(expediente_id=str(e.id_expediente), categoria=categoria_carpeta, nombre_original=nombre, nombre_guardado=nombre_guardado, tipo_mime=mime_fijo or tipo_mime_seguro, tamano_bytes=len(contenido), fecha_subida=datetime.utcnow())
         db.add(doc)
         if categoria == "defecto":
             e.tiene_defectos_abiertos = "SI"
@@ -1150,7 +1175,14 @@ def descargar_documento(expediente_id: str, documento_id: int, n=Depends(get_not
     if ruta.parent != ROOT or not ruta.is_file():
         raise HTTPException(status_code=404, detail="El archivo no está disponible en el almacenamiento")
     from fastapi.responses import FileResponse
-    return FileResponse(path=ruta, media_type=doc.tipo_mime or "application/octet-stream", filename=doc.nombre_original, content_disposition_type="inline")
+    media_type_seguro, disposicion = _politica_descarga_notargest(doc.nombre_original)
+    return FileResponse(
+        path=ruta,
+        media_type=media_type_seguro,
+        filename=doc.nombre_original,
+        content_disposition_type=disposicion,
+        headers={"X-Content-Type-Options": "nosniff"},
+    )
 
 @router.post("/expedientes/{expediente_id}/factura-notarial")
 async def subir_factura_notarial(expediente_id: str, archivo: UploadFile = File(...), n=Depends(get_notario), db: Session = Depends(get_db)):
