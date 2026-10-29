@@ -1774,7 +1774,7 @@ export default function FichaExpediente() {
       const estado = String(gasto.estado_pago || "").trim().toLowerCase();
       if (estado.includes("anulad")) return false;
       const pagos = Array.isArray(pagosPorGasto[String(gasto.id)]) ? pagosPorGasto[String(gasto.id)] : [];
-      const totalPagado = pagos.reduce((suma, pago) => suma + Number(pago.importe || 0), 0);
+      const totalPagado = pagos.filter((pago) => !pago.anulado_en).reduce((suma, pago) => suma + Number(pago.importe || 0), 0);
       const obligacion = Number(gasto.importe_resultante ?? gasto.importe ?? 0);
       if (obligacion > 0 && totalPagado > 0) return totalPagado + 0.005 < obligacion;
       return !estadosPagoConfirmado.includes(estado);
@@ -3397,7 +3397,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     const pendientes = lista.filter((gasto) => String(gasto.id) === String(gastoIdObjetivo)).filter((gasto) => {
       const estado = String(gasto.estado_pago || "").trim().toLowerCase();
       if (estado.includes("anulad") || estadosPagoConfirmado.includes(estado)) return false;
-      const totalPagado = (mapaPagos[String(gasto.id)] || []).reduce((suma, pago) => suma + Number(pago.importe || 0), 0);
+      const totalPagado = (mapaPagos[String(gasto.id)] || []).filter((pago) => !pago.anulado_en).reduce((suma, pago) => suma + Number(pago.importe || 0), 0);
       const importeObligacion = Number(gasto.importe_resultante ?? gasto.importe ?? 0);
       return importeObligacion <= 0 || totalPagado + 0.005 < importeObligacion;
     });
@@ -3422,7 +3422,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     if (pendientes.length) {
       const gasto = pendientes[0];
       const pagos = mapaPagos[String(gasto.id)] || [];
-      const totalPagado = pagos.reduce((suma, pago) => suma + Number(pago.importe || 0), 0);
+      const totalPagado = pagos.filter((pago) => !pago.anulado_en).reduce((suma, pago) => suma + Number(pago.importe || 0), 0);
       const restante = Math.max(0, Number(gasto.importe_resultante ?? gasto.importe ?? 0) - totalPagado);
       setPagoGastoSeleccionadoId(String(gasto.id));
       setPagoRealForm({
