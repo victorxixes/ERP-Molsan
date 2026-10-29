@@ -26,7 +26,14 @@ class RouteMappingCoverageTests(unittest.TestCase):
             if path.startswith("/api/notargest/") or path.startswith("/api/encargagest/"):
                 continue
             path_format = getattr(route, "path_format", route.path)
-            if "{expediente_id}" not in path_format and "{id_expediente}" not in path_format:
+            tiene_parametro_path = (
+                "{expediente_id}" in path_format or "{id_expediente}" in path_format
+            )
+            tiene_parametro_query = any(
+                getattr(parametro, "name", None) in {"expediente_id", "id_expediente"}
+                for parametro in (getattr(route.dependant, "query_params", []) or [])
+            )
+            if not (tiene_parametro_path or tiene_parametro_query):
                 continue
             if not _ya_tiene_visibilidad_expediente(route.dependant):
                 missing.append(f"{sorted(route.methods or [])} {path_format}")
