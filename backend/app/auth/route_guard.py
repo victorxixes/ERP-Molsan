@@ -157,6 +157,8 @@ _POST_ES_EDICION = (
     "/reasignar-gestor",
     "/provisiones-independientes/",
     "/integracion-absis",
+    "/plantilla-factura",
+    "/correspondencia/firma/factura",
     "/informes-sla/fechas/",
     "/reparto/asignar-pendientes",
     "/add_columna_gestoria_expedientes",
