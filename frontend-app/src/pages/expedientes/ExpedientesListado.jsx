@@ -84,6 +84,12 @@ const COLUMNAS = [
   },
 
   {
+    key: "estado_facturas",
+    label: "Facturas · estado de pago",
+    tipo: "texto",
+  },
+
+  {
     key: "registral_estado",
     label: "Estado registral",
     tipo: "texto",
@@ -2361,7 +2367,7 @@ export default function ExpedientesListado() {
   const columnasActivas =
     COLUMNAS.filter(
       (columna, indice, catalogo) =>
-        columnasVisibles.includes(columna.key) &&
+        (columna.key === "estado_facturas" || columnasVisibles.includes(columna.key)) &&
         catalogo.findIndex((item) => item.key === columna.key) === indice
     );
 
@@ -2932,7 +2938,7 @@ export default function ExpedientesListado() {
                               <Link to={`/expedientes/${encodeURIComponent(expediente.id_expediente || expediente.id || "")}`} className="font-extrabold text-[var(--erp-primary)] underline-offset-2 hover:underline" title={`Abrir ficha del expediente ${expediente.id_expediente || expediente.id || ""}`}>
                                 {formatearValor(expediente[columna.key], columna.tipo)}
                               </Link>
-                            ) : ["estado_expediente", "estado_actividad", "facturacion_estado", "registral_estado"].includes(columna.key) && expediente[columna.key] ? (
+                            ) : ["estado_expediente", "estado_actividad", "facturacion_estado", "registral_estado", "estado_facturas"].includes(columna.key) && expediente[columna.key] ? (
                               <span className="inline-flex max-w-[220px] items-center rounded-full border px-2.5 py-1 text-xs font-semibold whitespace-normal" style={estiloEstado(expediente[columna.key])} title={String(expediente[columna.key])}>
                                 {formatearValor(expediente[columna.key], columna.tipo)}
                               </span>
