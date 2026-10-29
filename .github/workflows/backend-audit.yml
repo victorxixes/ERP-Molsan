@@ -44,7 +44,9 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: python -m compileall -q backend
 
-      - name: Run backend tests
+      - name: Run backend tests (isolated SQLite, no production database)
         env:
           PYTHONPATH: ${{ github.workspace }}
+          DATABASE_URL: sqlite:///./backend-audit-test.db
+          JWT_SECRET: test-only-secret-for-ci-never-use-in-production-32chars
         run: python -m pytest -q backend/tests
