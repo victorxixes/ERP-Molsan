@@ -326,6 +326,10 @@ def validar_visibilidad_expediente_request(
     if identificador is None:
         identificador = request.path_params.get("expediente_id")
     if identificador is None:
+        identificador = request.query_params.get("id_expediente")
+    if identificador is None:
+        identificador = request.query_params.get("expediente_id")
+    if identificador is None:
         return
 
     candidatos = []
