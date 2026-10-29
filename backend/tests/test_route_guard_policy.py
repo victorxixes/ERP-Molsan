@@ -60,6 +60,15 @@ class RouteGuardPolicyTests(unittest.TestCase):
         self.assertEqual(_resolver_accion("/api/mensajeria/servicios", {"POST"}), "crear")
         self.assertEqual(_resolver_accion("/api/mensajeria/servicios/4", {"PATCH"}), "editar")
 
+    def test_link_audit_uses_security_edit_permission(self):
+        path = "/api/expedientes/auditoria-vinculaciones"
+        self.assertEqual(_resolver_modulo(path, {"GET"}), "seguridad")
+        self.assertEqual(_resolver_accion(path, {"GET"}), "editar")
+        self.assertEqual(
+            _resolver_accion(path + "/reparar-vinculos-unicos", {"POST"}),
+            "editar",
+        )
+
     def test_fichajes_routes_use_the_correct_permission_modules(self):
         self.assertEqual(_resolver_modulo("/api/fichajes/marcajes", {"GET"}), "fichajes")
         self.assertEqual(_resolver_modulo("/api/fichajes/admin/marcajes", {"GET"}), "control-fichajes")
