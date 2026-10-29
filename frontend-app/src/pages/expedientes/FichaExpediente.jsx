@@ -1439,7 +1439,7 @@ export default function FichaExpediente() {
   const [errorComplementosExpediente, setErrorComplementosExpediente] = useState("");
   const [mostrarDatosEnvioNotario, setMostrarDatosEnvioNotario] = useState(true);
   const [mostrarResumenEconomico, setMostrarResumenEconomico] = useState(true);
-  const [mostrarPanelEconomicoPago, setMostrarPanelEconomicoPago] = useState(true);
+  const [mostrarPanelEconomicoPago] = useState(true);
   const [mostrarModalDatosActividad, setMostrarModalDatosActividad] = useState(false);
   const [actividadDraft, setActividadDraft] = useState({});
   const [guardandoActividad, setGuardandoActividad] = useState(false);
@@ -5901,10 +5901,9 @@ const cuantiaFincasParaEnvio =
                             </div>
                             <div className="flex flex-wrap items-center gap-2">
                               <button type="button" onClick={cargarGastosExpediente} disabled={cargandoGastos} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-50">{cargandoGastos ? "Actualizando…" : "↻ Actualizar"}</button>
-                              <button type="button" onClick={() => setMostrarPanelEconomicoPago((actual) => !actual)} aria-expanded={mostrarPanelEconomicoPago} className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">{mostrarPanelEconomicoPago ? "⌃ Ocultar panel" : "⌄ Expandir panel"}</button>
                             </div>
                           </div>
-                          <div className={mostrarPanelEconomicoPago ? "p-4 sm:p-5" : "hidden"}>
+                          <div className="p-4 sm:p-5">
                             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                               <div className="rounded-xl border border-indigo-100 bg-indigo-50/70 p-4">
                                 <p className="text-[10px] font-bold uppercase tracking-wide text-indigo-700">Saldo inicial</p>
@@ -6977,7 +6976,7 @@ const cuantiaFincasParaEnvio =
        
 
         {/* Información complementaria: se oculta visualmente hasta registrar un envío a notario. */}
-        <div className={`min-w-0 xl:col-span-12 ${actividadSeleccionada === "gestion-economica" && mostrarPanelEconomicoPago ? "" : "hidden"}`}>
+        <div className={`min-w-0 xl:col-span-12 ${actividadSeleccionada === "gestion-economica" ? "" : "hidden"}`}>
           <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-8">
         {/* ENVÍO A NOTARIO: CENTRADO DEBAJO DE PPAD E INFORMACIÓN CREDITICIA */}
         <div className="min-w-0 w-full xl:col-span-8">
@@ -7077,7 +7076,7 @@ const cuantiaFincasParaEnvio =
 
                     </div>
 
-                    {actividadSeleccionada === "gestion-economica" && mostrarPanelEconomicoPago && (
+                    {actividadSeleccionada === "gestion-economica" && (
                       <section className="mt-4 rounded-xl border border-indigo-100 bg-white p-4">
                         <div className="flex flex-wrap items-center justify-between gap-3">
                           <div>
