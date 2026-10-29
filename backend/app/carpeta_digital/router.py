@@ -177,6 +177,7 @@ async def subir_documento(
         raise HTTPException(status_code=400, detail="Nombre de archivo no válido")
 
     try:
+        extension, tipo_mime_seguro = _tipo_mime_documento_seguro(nombre_original)
         contenido = await archivo.read(MAX_BYTES + 1)
         if len(contenido) > MAX_BYTES:
             raise HTTPException(
@@ -187,7 +188,6 @@ async def subir_documento(
             raise HTTPException(status_code=400, detail="El archivo está vacío")
 
         # Nombre aleatorio y extensión saneada; no se usa el nombre aportado como ruta.
-        extension, tipo_mime_seguro = _tipo_mime_documento_seguro(nombre_original)
         nombre_guardado = f"{uuid.uuid4().hex}{extension}"
         ruta = _ruta_segura(nombre_guardado)
         temporal = _ruta_segura(f".{nombre_guardado}.part")
