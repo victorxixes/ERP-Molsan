@@ -1206,7 +1206,10 @@ export default function CarpetaDigitalModal({
                           </section>
                         ))}
                       </div>
-                      <div className="mt-3 flex justify-end border-t border-slate-100 pt-3">
+                      <div className="mt-3 flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-3">
+                        <button type="button" onClick={() => onFacturar?.()} disabled={generandoFacturacion || !onFacturar} className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-emerald-700 px-5 py-2.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-emerald-800 disabled:opacity-50" title="Generar y guardar la factura en el repositorio Honorarios gestoría, sin crear pagos ni avisos de deuda">
+                          {generandoFacturacion ? "Generando factura…" : "🧾 Facturar"}
+                        </button>
                         <button type="button" onClick={() => onPagar?.()} className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-300" title="Abrir las obligaciones; cada pago se inicia desde su propia línea">
                           💶 Gestionar pagos
                         </button>
@@ -1250,15 +1253,6 @@ export default function CarpetaDigitalModal({
                   {actividadId === "facturacion-cierre" && (
                     <div className="mt-3 border-t border-slate-200 pt-3">
                       <div className="flex flex-wrap justify-end gap-2">
-                        <button
-                          type="button"
-                          onClick={() => onFacturar?.()}
-                          disabled={generandoFacturacion || !onFacturar}
-                          className="inline-flex items-center gap-2 rounded-lg border border-emerald-300 bg-emerald-700 px-4 py-2.5 text-xs font-extrabold text-white transition hover:bg-emerald-800 disabled:opacity-50"
-                          title="Abrir la factura definitiva de honorarios"
-                        >
-                          {generandoFacturacion ? "Abriendo factura…" : "🧾 Facturar"}
-                        </button>
                         <button
                           type="button"
                           onClick={() => onLiquidar?.()}
