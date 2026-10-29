@@ -103,6 +103,16 @@ _PREFIJOS_MODULO = (
 
 # POST normalmente crea. Estas rutas actúan sobre un registro/flujo existente
 # o ejecutan una importación/migración, por lo que exigen permiso "editar".
+# Rutas que realizan autorización propia dentro del endpoint (incluye reglas
+# condicionales como "mi ficha" o permisos alternativos Expedientes/Seguridad).
+# El guard global sigue exigiendo JWT y registra auditoría, pero no añade un
+# segundo permiso modular que contradiga la autorización funcional interna.
+_RUTAS_CON_AUTORIZACION_INTERNA = {
+    "/api/seguridad/empleado/{empleado_id}/ficha-completa": "seguridad",
+    "/api/apoderagest/encargos/reparar-asignacion": "apoderagest",
+}
+
+
 _POST_ES_EDICION = (
     "/actividad",
     "/enviar-a-notario",
@@ -386,6 +396,19 @@ def proteger_rutas_api(app: Any) -> dict[str, int]:
             )
             route.dependant.dependencies.append(dependencia_auth)
             autenticadas += 1
+
+        if path in _RUTAS_CON_AUTORIZACION_INTERNA:
+            if not _ya_tiene_auditoria(route.dependant):
+                dependencia_auditoria = get_dependant(
+                    path=getattr(route, "path_format", route.path),
+                    call=_crear_dependencia_auditoria(
+                        _RUTAS_CON_AUTORIZACION_INTERNA[path],
+                        _resolver_accion(path, getattr(route, "methods", None)),
+                        comprobar_permiso=False,
+                    ),
+                )
+                route.dependant.dependencies.append(dependencia_auditoria)
+            continue
 
         modulo = _resolver_modulo(path, getattr(route, "methods", None))
         if not modulo:
