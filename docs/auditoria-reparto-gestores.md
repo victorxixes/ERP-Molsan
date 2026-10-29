@@ -16,7 +16,7 @@ La rama de trabajo cambia ese comportamiento:
 - Si no había gestor, se mantiene sin asignar y se registra `sin_regla_reparto_sin_gestor`.
 - El resultado de la función sigue siendo `None` cuando no se ha elegido un gestor nuevo; no se presenta como una asignación nueva válida.
 
-Se añadieron dos pruebas de regresión para ambos escenarios en `backend/tests/test_reparto_sin_candidato.py`. Estas pruebas están escritas, pero todavía deben ejecutarse en un entorno con las dependencias del backend antes de considerarlas superadas.
+Se añadieron pruebas de regresión para conservar gestor, expediente sin gestor, valor 0 y acceso provisional. La ejecución de GitHub Actions «Backend audit» (run 99) ha pasado: compilación de módulos y suite completa de `backend/tests` con SQLite aislado, sin base de datos de producción. También han pasado las comprobaciones recientes de sintaxis backend y build frontend.
 
 **Limitación pendiente:** la lógica de acceso ya permite que el gestor conservado provisionalmente siga viendo ese expediente, y deja de hacerlo cuando el historial registra una asignación posterior. Se ha añadido el campo `gestor_asignacion_provisional` a la respuesta de detalle y al cambio de actividad, y una señal visual «Provisional» en la cabecera de la ficha. Sigue pendiente una bandeja operativa para consultar y resolver incidencias de forma centralizada.
 
@@ -51,8 +51,9 @@ Mejora recomendada pendiente: ampliar la pantalla central para supervisión (exp
 - [x] Corrección preparada en rama separada.
 - [x] Pruebas de regresión añadidas.
 - [x] Ruta y función real del panel central identificadas.
-- [ ] Pruebas ejecutadas y superadas.
+- [x] Pruebas automatizadas del backend ejecutadas y superadas en SQLite aislado.
 - [x] Estado provisional visible en la cabecera de la ficha.
 - [ ] Panel operativo de incidencias e historial.
-- [ ] Build frontend/backend y validación en entorno de pruebas.
+- [x] Build frontend y sintaxis backend superados en GitHub Actions.
+- [ ] Validación funcional en Render/entorno de pruebas.
 - [ ] Pruebas funcionales con MOLSAN.
