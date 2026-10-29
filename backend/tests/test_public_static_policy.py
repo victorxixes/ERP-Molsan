@@ -10,11 +10,22 @@ from backend.app.auth.public_static import PublicStaticFiles
 class PublicStaticFilesPolicyTests(unittest.IsolatedAsyncioTestCase):
     async def test_private_photo_and_message_paths_return_404(self):
         with tempfile.TemporaryDirectory() as directory:
+            from pathlib import Path
+
+            raiz = Path(directory)
+            (raiz / "fotos" / "empleados").mkdir(parents=True)
+            (raiz / "fotos" / "empleados" / "empleado_4.jpg").write_bytes(b"privado")
+            (raiz / "mensajes").mkdir(parents=True)
+            (raiz / "mensajes" / "adjunto.pdf").write_bytes(b"privado")
             static = PublicStaticFiles(directory=directory)
             for path in (
                 "fotos/empleados/empleado_4.jpg",
                 "mensajes/adjunto.pdf",
                 r"mensajes\adjunto.pdf",
+                "./fotos/empleados/empleado_4.jpg",
+                "publico/../fotos/empleados/empleado_4.jpg",
+                "./mensajes/adjunto.pdf",
+                "publico/../mensajes/adjunto.pdf",
             ):
                 with self.subTest(path=path):
                     with self.assertRaises(HTTPException) as caught:
