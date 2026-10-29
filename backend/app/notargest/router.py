@@ -610,6 +610,11 @@ def me(n=Depends(get_notario), db: Session = Depends(get_db)):
 
 @router.post("/cambiar-password")
 def cambiar_password(data: CambioPassword, n=Depends(get_notario), db: Session = Depends(get_db)):
+    if _es_usuario_erp(n):
+        raise HTTPException(
+            status_code=403,
+            detail="El cambio de contraseña desde el perfil está reservado a las cuentas externas de notaría.",
+        )
     valida = bool(n.notargest_password_hash and verificar_password(data.password_actual, n.notargest_password_hash))
     if not valida and getattr(n, "notargest_password_provisional", True):
         valida = hmac.compare_digest(normalizar_nif(data.password_actual), normalizar_nif(n.nif or ""))
