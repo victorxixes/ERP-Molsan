@@ -241,6 +241,7 @@ def vincular_documento_a_gasto(
     categorias = {
         "factura notarial": "Factura notarial",
         "factura registral": "Factura registral",
+        "factura registro": "Factura registral",
         "factura impuestos": "Factura impuestos",
         "ajd/itp": "AJD/ITP",
         "otros impuestos": "Otros impuestos",
