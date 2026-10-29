@@ -956,7 +956,8 @@ def obtener_estado_reparto_gestores(
     sin_gestor = db.execute(text("""
         SELECT COUNT(*)
         FROM expedientes
-        WHERE gestor_asignado_id IS NULL OR gestor_asignado_id = 0
+        WHERE (gestor_asignado_id IS NULL OR gestor_asignado_id = 0)
+          AND LOWER(COALESCE(estado_actividad, '')) NOT IN ('cerrada', 'cerrada automáticamente')
     """)).scalar() or 0
 
     filas_carga = db.execute(text("""
@@ -1009,12 +1010,15 @@ def obtener_estado_reparto_gestores(
                  FROM expediente_gestor_historial AS h2
                  WHERE h2.expediente_id = e.id_expediente
              )
-            WHERE e.gestor_asignado_id IS NULL
-               OR e.gestor_asignado_id = 0
-               OR (
-                   h.motivo = 'sin_regla_reparto_gestor_conservado'
-                   AND h.gestor_id = e.gestor_asignado_id
-               )
+            WHERE (
+                    e.gestor_asignado_id IS NULL
+                    OR e.gestor_asignado_id = 0
+                    OR (
+                        h.motivo = 'sin_regla_reparto_gestor_conservado'
+                        AND h.gestor_id = e.gestor_asignado_id
+                    )
+                )
+              AND LOWER(COALESCE(e.estado_actividad, '')) NOT IN ('cerrada', 'cerrada automáticamente')
             ORDER BY h.id DESC, e.id_expediente
             LIMIT 200
         """)).mappings().all()
