@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.uploads import MAX_EXCEL_UPLOAD_BYTES, read_upload_limited
 from backend.app.municipios.models import Municipio, MunicipioCodigoPostal
 from backend.app.Utilidades.importadores.municipios_importer import (
     importar_excel_municipios,
@@ -518,8 +519,14 @@ async def importar_municipios_excel(
 
     try:
 
-        contenido = await fichero.read()
+        contenido = await read_upload_limited(
+            fichero,
+            MAX_EXCEL_UPLOAD_BYTES,
+            "Excel de municipios",
+        )
 
+    except HTTPException:
+        raise
     except Exception as exc:
 
         raise HTTPException(
