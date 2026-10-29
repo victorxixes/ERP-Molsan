@@ -152,6 +152,21 @@ def migrar_notargest():
 
     print("[NOTARGEST MIGRACION] Migración de acceso revisada.", flush=True)
 
+def _requiere_cambio_password_notargest(notaria) -> bool:
+    return bool(
+        getattr(notaria, "notargest_cambiar_password", True)
+        or getattr(notaria, "notargest_password_provisional", True)
+    )
+
+
+def _ruta_permitida_durante_cambio_password(path: str) -> bool:
+    ruta = str(path or "").rstrip("/")
+    return ruta in {
+        "/api/notargest/me",
+        "/api/notargest/cambiar-password",
+    }
+
+
 def get_notario(request: Request, token=Depends(obtener_token_bearer), db: Session = Depends(get_db)):
     """Acepta JWT de notario o JWT ERP autorizado para el módulo NotarGest."""
     try:
@@ -161,16 +176,8 @@ def get_notario(request: Request, token=Depends(obtener_token_bearer), db: Sessi
             if not n or not n.notargest_habilitado:
                 raise HTTPException(status_code=403, detail="Acceso NotarGest deshabilitado")
 
-            requiere_cambio = bool(
-                getattr(n, "notargest_cambiar_password", True)
-                or getattr(n, "notargest_password_provisional", True)
-            )
-            ruta_actual = str(request.url.path or "").rstrip("/")
-            rutas_permitidas_sin_cambio = {
-                "/api/notargest/me",
-                "/api/notargest/cambiar-password",
-            }
-            if requiere_cambio and ruta_actual not in rutas_permitidas_sin_cambio:
+            requiere_cambio = _requiere_cambio_password_notargest(n)
+            if requiere_cambio and not _ruta_permitida_durante_cambio_password(request.url.path):
                 raise HTTPException(
                     status_code=403,
                     detail="Debes cambiar la contraseña provisional antes de acceder a NotarGest.",
@@ -420,10 +427,7 @@ def login(data: LoginNotario, db: Session = Depends(get_db)):
     """), {"id": n.id, "usuario": nif})
     db.commit()
     token = jwt.encode({"tipo": "notargest", "notaria_id": n.id, "exp": datetime.utcnow() + timedelta(hours=8)}, settings.JWT_SECRET, algorithm=settings.ALGORITHM)
-    requiere_cambio = bool(
-        getattr(n, "notargest_cambiar_password", True)
-        or getattr(n, "notargest_password_provisional", True)
-    )
+    requiere_cambio = _requiere_cambio_password_notargest(n)
     return {
         "token": token,
         "requiere_cambio_password": requiere_cambio,
@@ -583,10 +587,7 @@ def me(n=Depends(get_notario), db: Session = Depends(get_db)):
         "otros_departamentos": getattr(n, "otros_departamentos", None),
         "observacion": getattr(n, "observacion", None),
         "tipo_acceso": tipo_acceso,
-        "requiere_cambio_password": bool(
-            getattr(n, "notargest_cambiar_password", True)
-            or getattr(n, "notargest_password_provisional", True)
-        ),
+        "requiere_cambio_password": _requiere_cambio_password_notargest(n),
     }
 
 @router.post("/cambiar-password")
