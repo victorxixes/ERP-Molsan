@@ -444,8 +444,16 @@ def proteger_rutas_api(app: Any) -> dict[str, int]:
             autenticadas += 1
 
         path_formato = getattr(route, "path_format", route.path)
+        parametros_query_expediente = any(
+            getattr(parametro, "name", None) in {"expediente_id", "id_expediente"}
+            for parametro in (getattr(route.dependant, "query_params", []) or [])
+        )
         if (
-            ("{expediente_id}" in path_formato or "{id_expediente}" in path_formato)
+            (
+                "{expediente_id}" in path_formato
+                or "{id_expediente}" in path_formato
+                or parametros_query_expediente
+            )
             and not _ya_tiene_visibilidad_expediente(route.dependant)
         ):
             dependencia_visibilidad = get_dependant(
