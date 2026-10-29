@@ -13,6 +13,7 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.uploads import MAX_EXCEL_UPLOAD_BYTES, read_upload_limited
 from backend.app.oficinas_liquidadoras.models import (
     OficinaLiquidadora,
 )
@@ -237,7 +238,11 @@ async def importar_excel(
             ),
         )
 
-    contenido = await fichero.read()
+    contenido = await read_upload_limited(
+        fichero,
+        MAX_EXCEL_UPLOAD_BYTES,
+        "Excel de oficinas liquidadoras",
+    )
 
     if not contenido:
         raise HTTPException(
