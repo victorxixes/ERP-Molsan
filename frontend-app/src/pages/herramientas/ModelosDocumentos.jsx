@@ -4,109 +4,57 @@ import HonorariosGestoria from "./HonorariosGestoria";
 import ProvisionesFondosPage from "../provisiones/ProvisionesFondosPage";
 
 const documentos = [
-  {
-    id: "liquidacion",
-    titulo: "Hoja de liquidación",
-    subtitulo: "Cierre del expediente",
-    estado: "Plantilla base implementada",
-    color: "emerald",
-    descripcion: "Resumen de los datos identificativos y económicos del expediente. Se genera automáticamente al preparar el cierre documental digital.",
-    campos: ["Número de expediente", "Titular y NIF/CIF", "Notario", "Fecha de liquidación", "Provisión inicial", "Saldo real", "Saldo disponible", "Estado del expediente"],
-  },
-  {
-    id: "provision",
-    titulo: "Hoja de provisión de fondos",
-    subtitulo: "Provisiones de fondos",
-    estado: "Plantilla existente",
-    color: "blue",
-    descripcion: "La generación actual de provisiones y sus cálculos siguen en el módulo de Provisiones de fondos.",
-    campos: ["Datos del cliente", "Oficina de origen", "Garantías y conceptos", "Importes calculados", "Observaciones"],
-  },
-  {
-    id: "factura",
-    titulo: "Factura de honorarios de gestoría",
-    subtitulo: "Facturación de honorarios",
-    estado: "Diseño pendiente de completar",
-    color: "amber",
-    descripcion: "El diseño definitivo de la factura oficial y su ajuste al modelo Word se terminarán en la siguiente sesión. Se conserva la numeración oficial existente.",
-    campos: ["Número de factura", "Expediente", "Datos fiscales del cliente", "Base imponible e impuestos", "Totales"],
-  },
+  { id: "liquidacion", titulo: "Hoja de liquidación", subtitulo: "Cierre del expediente", estado: "Diseño MOLSAN PREMIUM 2027", color: "emerald", descripcion: "Documento de cierre económico y relación de documentación entregada. Esta vista define el diseño; la conexión a datos reales y la generación definitiva del PDF se realizarán sobre los registros del expediente.", campos: ["Titular y NIF", "Número de expediente", "Contrato y oficina CaixaBank", "Datos de la gestoría", "Documentos realizados e importes", "Provisión de fondos", "Movimientos de Gestión económica", "Documentación entregada", "Lugar, fecha y conformidad"] },
+  { id: "provision", titulo: "Hoja de provisión de fondos", subtitulo: "Provisiones de fondos", estado: "Plantilla existente", color: "blue", descripcion: "La generación actual de provisiones y sus cálculos siguen en el módulo de Provisiones de fondos.", campos: ["Datos del cliente", "Oficina de origen", "Garantías y conceptos", "Importes calculados", "Observaciones"] },
+  { id: "factura", titulo: "Factura de honorarios de gestoría", subtitulo: "Facturación de honorarios", estado: "Diseño pendiente", color: "amber", descripcion: "El diseño definitivo de la factura oficial se ajustará al modelo Word, conservando la numeración y las reglas actuales.", campos: ["Número de factura", "Expediente", "Datos fiscales del cliente", "Base imponible e impuestos", "Totales"] },
 ];
+
+const money = "— €";
+function Section({ title, children, className = "" }) {
+  return <section className={`overflow-hidden rounded-xl border border-sky-100 bg-white ${className}`}><div className="border-b border-sky-100 bg-gradient-to-r from-sky-50 to-white px-3 py-2"><h4 className="text-[11px] font-extrabold text-[#123e70]">{title}</h4></div><div className="p-3">{children}</div></section>;
+}
+function Field({ label, value = "Se completará desde el expediente" }) {
+  return <div className="grid grid-cols-[minmax(82px,.8fr)_minmax(0,1.2fr)] gap-2 border-b border-slate-100 py-1 text-[9px] last:border-0"><span className="text-slate-500">{label}</span><span className="font-semibold text-slate-700">{value}</span></div>;
+}
+function Table({ headers, rows }) {
+  return <div className="overflow-hidden rounded-md border border-sky-100"><table className="w-full border-collapse text-left text-[9px]"><thead className="bg-sky-50"><tr>{headers.map(h => <th key={h} className="border-b border-sky-100 px-2 py-1.5 font-bold text-[#123e70]">{h}</th>)}</tr></thead><tbody>{rows.map((row, i) => <tr key={i} className="odd:bg-white even:bg-slate-50/70">{row.map((cell, j) => <td key={j} className="border-b border-slate-100 px-2 py-1.5 text-slate-600">{cell}</td>)}</tr>)}</tbody></table></div>;
+}
+
+function LiquidacionPreview() {
+  return <div className="mx-auto w-full max-w-[760px] bg-slate-100 p-3 sm:p-5">
+    <article className="relative overflow-hidden bg-white p-4 text-slate-800 shadow-[0_12px_35px_rgba(15,23,42,.12)] sm:p-6">
+      <div className="pointer-events-none absolute right-0 top-0 h-32 w-32 rounded-bl-full bg-sky-50/80" />
+      <header className="relative flex flex-wrap items-center justify-between gap-3 border-b-2 border-[#1e5794] pb-3">
+        <div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0876bd] text-[10px] font-black text-white">Caixa</div><div className="border-l border-sky-200 pl-3"><div className="text-xl font-black tracking-[.14em] text-[#123e70]">MOLSAN</div><div className="text-[8px] font-semibold tracking-wide text-slate-500">GESTORÍA · ASESORÍA · SOLUCIONES</div></div></div>
+        <div className="text-right"><div className="text-[8px] font-bold uppercase tracking-[.18em] text-[#1e5794]">MOLSAN PREMIUM 2027</div><div className="mt-1 text-[8px] text-slate-500">Fecha de emisión: [fecha]</div></div>
+      </header>
+      <h3 className="relative mt-4 text-xl font-extrabold leading-tight text-[#123e70] sm:text-2xl">Hoja de liquidación de expediente</h3><p className="mt-1 text-sm font-semibold text-[#2872b8]">Cancelación</p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <Section title="Datos de la provisión"><Field label="Titular / Nombre" /><Field label="DNI / NIF" /><Field label="N.º expediente" /><Field label="Contrato" /><Field label="Oficina CaixaBank" /></Section>
+        <Section title="Datos de la gestoría"><Field label="Razón social" /><Field label="CIF" /><Field label="Domicilio" /><Field label="Teléfono / email" /></Section>
+      </div>
+      <div className="mt-3 grid gap-3 sm:grid-cols-[1.6fr_0.8fr]">
+        <Section title="Documentos realizados y cuantías"><Table headers={["Tipo de documento", "Importe"]} rows={[["[Documento realizado]", money],["[Documento realizado]", money],["[Documento realizado]", money],["Total documentos", money]]}/></Section>
+        <Section title="Importe de la provisión de fondos"><div className="rounded-lg bg-sky-50 p-3"><div className="text-[9px] font-semibold text-[#1e5794]">Importe recibido</div><div className="mt-2 text-xl font-black text-[#123e70]">{money}</div><div className="mt-3 border-t border-sky-200 pt-2 text-[8px] text-slate-500">Según provisión registrada</div></div></Section>
+      </div>
+      <div className="mt-3"><Section title="Gastos realizados del expediente"><Table headers={["Fecha", "Concepto", "Importe", "Estado"]} rows={[["[fecha]", "Factura / gasto de Gestión económica", money, "[Pagado / pendiente]"],["[fecha]", "Factura / gasto de Gestión económica", money, "[Pagado / pendiente]"],["", "Total gastos registrados", money, ""]]}/><p className="mt-2 text-[8px] italic text-slate-500">El detalle se alimentará de Gestión económica; adjuntar una factura no equivale a registrar su pago.</p></Section></div>
+      <div className="mt-3"><Section title="Documentación entregada en este documento"><p className="mb-2 text-[8px] text-slate-500">Relación según el orden establecido en la ventana «Liquidar expediente»:</p><ol className="grid list-decimal grid-cols-1 gap-x-6 gap-y-1 pl-4 text-[9px] sm:grid-cols-2">{["Hoja de encargo firmada","Documentos ABSIS","Nota simple registral","Facturas y justificantes de pago","Impuestos (AJD/ITP)","Honorarios de gestoría","Justificante de cancelación","Escritura de cancelación","Expediente digital completo"].map(x=><li key={x}>{x}</li>)}</ol></Section></div>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <Section title="Resultado de la liquidación"><Field label="Total fondos recibidos" value={money}/><Field label="Total gastos realizados" value={money}/><div className="mt-2 rounded-md bg-sky-50 px-2 py-2"><div className="text-[8px] font-bold text-[#1e5794]">Saldo a devolver / importe pendiente</div><div className="mt-1 text-lg font-black text-[#123e70]">{money}</div></div></Section>
+        <Section title="Cierre y conformidad"><p className="text-[9px]">En [población], a [día] de [mes] de [año].</p><p className="mt-3 text-[9px] font-semibold">Recibido y conforme por parte del titular</p><div className="mt-8 border-b border-slate-300"/><p className="mt-2 text-[9px] font-semibold">[Nombre completo]</p><p className="text-[9px] text-slate-500">DNI: [DNI del titular]</p></Section>
+      </div>
+      <footer className="mt-4 flex flex-wrap justify-between gap-2 border-t border-sky-100 pt-2 text-[8px] text-slate-500"><span>MOLSAN · Documento de liquidación del expediente</span><span>Diseño corporativo MOLSAN PREMIUM 2027</span></footer>
+      <p className="mt-3 rounded-md border border-amber-100 bg-amber-50 p-2 text-[8px] leading-4 text-amber-900">Maqueta de diseño: los datos, importes y ejemplos se sustituirán por información real del ERP antes de habilitar la emisión oficial.</p>
+    </article>
+  </div>;
+}
 
 export default function ModelosDocumentos() {
   const [seleccionado, setSeleccionado] = useState("liquidacion");
   const actual = documentos.find((d) => d.id === seleccionado) || documentos[0];
-
-  return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-      <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="relative flex items-start gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl">📑</div>
-          <div className="min-w-0 flex-1">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-800">MOLSAN ERP · UTILIDADES</p>
-            <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Modelos documentos</h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">Punto central para revisar las plantillas documentales. Esta herramienta centraliza el diseño; los catálogos económicos y las reglas de cálculo permanecen en sus módulos actuales.</p>
-          </div>
-          <Link to="/herramientas/utilidades" className="hidden rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 sm:inline-flex">← Utilidades</Link>
-        </div>
-      </header>
-
-      <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        {documentos.map((doc) => (
-          <button key={doc.id} type="button" onClick={() => setSeleccionado(doc.id)} className={`rounded-2xl border p-4 text-left transition hover:-translate-y-0.5 hover:shadow-lg ${seleccionado === doc.id ? "border-blue-300 bg-blue-50/70 shadow-md" : "border-slate-200 bg-white"}`}>
-            <div className="flex items-start justify-between gap-3">
-              <span className="text-2xl">{doc.id === "liquidacion" ? "🧾" : doc.id === "provision" ? "💶" : "📄"}</span>
-              <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${doc.color === "emerald" ? "bg-emerald-100 text-emerald-800" : doc.color === "blue" ? "bg-blue-100 text-blue-800" : "bg-amber-100 text-amber-800"}`}>{doc.estado}</span>
-            </div>
-            <h2 className="mt-3 font-bold text-slate-900">{doc.titulo}</h2>
-            <p className="mt-1 text-xs text-slate-500">{doc.subtitulo}</p>
-          </button>
-        ))}
-      </section>
-
-      <section className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.85fr)]">
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-          <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4">
-            <div><p className="text-xs font-bold uppercase tracking-wider text-slate-500">Modelo seleccionado</p><h2 className="mt-1 text-xl font-bold text-slate-900">{actual.titulo}</h2></div>
-            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">{actual.subtitulo}</span>
-          </div>
-          <p className="mt-4 text-sm leading-6 text-slate-600">{actual.descripcion}</p>
-          <h3 className="mt-5 text-sm font-bold text-slate-800">Contenido previsto de la plantilla</h3>
-          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-            {actual.campos.map((campo) => <li key={campo} className="flex items-start gap-2 rounded-xl border border-slate-100 bg-slate-50/70 px-3 py-2 text-sm text-slate-700"><span className="text-emerald-600">✓</span><span>{campo}</span></li>)}
-          </ul>
-        </div>
-
-        <div className="rounded-2xl border border-slate-200 bg-slate-100/80 p-4 sm:p-5">
-          <div className="mx-auto max-w-[440px] border border-slate-200 bg-white p-6 shadow-md sm:p-8">
-            <div className="border-b-2 border-slate-900 pb-4">
-              <p className="text-[10px] font-bold tracking-[0.22em] text-blue-800">MOLSAN</p>
-              <h3 className="mt-2 text-xl font-extrabold tracking-tight text-slate-900">{actual.id === "liquidacion" ? "HOJA DE LIQUIDACIÓN" : actual.titulo.toUpperCase()}</h3>
-              <p className="mt-1 text-xs text-slate-500">Documento de gestión de expediente</p>
-            </div>
-            <div className="mt-5 space-y-3">
-              <div className="rounded-lg bg-slate-50 p-3"><p className="text-[9px] font-bold uppercase tracking-wider text-slate-500">Expediente</p><p className="mt-1 text-sm font-bold text-slate-800">[Número de expediente]</p></div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="rounded-lg border border-slate-100 p-3"><p className="text-[9px] font-bold uppercase text-slate-500">Titular</p><p className="mt-1 text-xs font-semibold text-slate-700">[Nombre del titular]</p></div>
-                <div className="rounded-lg border border-slate-100 p-3"><p className="text-[9px] font-bold uppercase text-slate-500">NIF / CIF</p><p className="mt-1 text-xs font-semibold text-slate-700">[Identificación]</p></div>
-              </div>
-              <p className="pt-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">Resumen económico</p>
-              {["Provisión inicial", "Saldo real", "Saldo disponible"].map((campo) => <div key={campo} className="flex items-center justify-between border-b border-slate-100 py-2 text-xs"><span className="text-slate-600">{campo}</span><strong className="text-slate-900">[Importe] €</strong></div>)}
-              <div className="rounded-lg border border-blue-100 bg-blue-50/60 p-3"><p className="text-[9px] font-bold uppercase tracking-wider text-blue-800">Estado del expediente</p><p className="mt-1 text-xs font-semibold text-slate-800">[Estado actual]</p></div>
-              <div className="pt-4 text-[9px] leading-4 text-slate-400">Vista esquemática de la plantilla. Los datos se rellenarán con la información guardada del expediente al generar el PDF.</div>
-            </div>
-          </div>
-          <p className="mt-3 text-center text-xs text-slate-500">Vista orientativa del diseño; no es un PDF real ni modifica expedientes.</p>
-        </div>
-      </section>
-
-      {actual.id === "provision" && <section className="space-y-3"><div><h2 className="text-lg font-bold text-slate-900">Editor de la hoja de provisión</h2><p className="mt-1 text-sm text-slate-600">Aquí se edita exclusivamente la plantilla. Las tarifas, tramos e importes siguen en Tabla Provisiones de fondos.</p></div><ProvisionesFondosPage soloEditorPlantilla /></section>}
-      {actual.id === "factura" && <section className="space-y-3"><div><h2 className="text-lg font-bold text-slate-900">Editor de la factura de honorarios</h2><p className="mt-1 text-sm text-slate-600">Gestiona aquí el modelo Word de la factura. El catálogo de honorarios y la numeración oficial permanecen en sus módulos actuales.</p></div><HonorariosGestoria soloPlantilla /></section>}
-
-      <div className="rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-sm leading-6 text-amber-950">
-        <strong>Importante:</strong> esta primera entrega centraliza el acceso y deja definida la estructura visual de la Hoja de liquidación. La edición avanzada de plantillas y la adaptación definitiva de la factura se continuarán mañana. Las tarifas, tramos, importes y cálculos existentes no se mueven ni se modifican.
-      </div>
-    </main>
-  );
+  return <main className="min-h-full space-y-6 p-4 animate-fadeIn sm:p-6 lg:p-8">
+    <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7"><div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-700 via-sky-500 to-cyan-300"/><div className="relative flex items-start gap-4"><div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-sky-100 bg-sky-50 text-2xl">▤</div><div className="min-w-0 flex-1"><p className="text-xs font-bold uppercase tracking-[.16em] text-blue-800">MOLSAN ERP · UTILIDADES · PREMIUM 2027</p><h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Modelos de documentos</h1><p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">Diseño corporativo unificado. Las plantillas no alteran tarifas, cálculos, pagos ni numeración oficial.</p></div><Link to="/herramientas/utilidades" className="hidden rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 sm:inline-flex">← Utilidades</Link></div></header>
+    <section className="grid grid-cols-1 gap-4 md:grid-cols-3">{documentos.map(doc=><button key={doc.id} type="button" onClick={()=>setSeleccionado(doc.id)} className={`rounded-2xl border p-4 text-left transition hover:-translate-y-0.5 hover:shadow-lg ${seleccionado===doc.id?"border-sky-300 bg-sky-50/70 shadow-md":"border-slate-200 bg-white"}`}><div className="flex items-start justify-between gap-3"><span className="text-2xl">{doc.id==="liquidacion"?"▤":doc.id==="provision"?"€":"▧"}</span><span className="rounded-full bg-sky-50 px-2.5 py-1 text-[10px] font-bold text-sky-800">{doc.estado}</span></div><h2 className="mt-3 font-bold text-slate-900">{doc.titulo}</h2><p className="mt-1 text-xs text-slate-500">{doc.subtitulo}</p></button>)}</section>
+    {actual.id==="liquidacion" ? <section className="space-y-3"><div className="flex flex-wrap items-end justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-wider text-sky-800">Previsualización de diseño</p><h2 className="mt-1 text-xl font-bold text-slate-900">Hoja de liquidación · Cancelación</h2><p className="mt-1 text-sm text-slate-600">Maqueta visual basada en tu propuesta, con identidad MOLSAN PREMIUM 2027.</p></div><span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800">Pendiente de conexión a datos reales</span></div><LiquidacionPreview/><div className="rounded-2xl border border-sky-100 bg-sky-50/70 p-4 text-sm leading-6 text-slate-700"><strong className="text-[#123e70]">Siguiente fase:</strong> conectar los campos al expediente, usar los movimientos reales de Gestión económica, respetar el orden documental definido en «Liquidar expediente» y generar el PDF final con previsualización y confirmación antes de guardarlo en «Expediente digital completo».</div></section> : <section className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,.85fr)]"><div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"><h2 className="text-xl font-bold text-slate-900">{actual.titulo}</h2><p className="mt-3 text-sm leading-6 text-slate-600">{actual.descripcion}</p><h3 className="mt-5 text-sm font-bold text-slate-800">Contenido previsto</h3><ul className="mt-3 grid gap-2 sm:grid-cols-2">{actual.campos.map(c=><li key={c} className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-sm text-slate-700">✓ {c}</li>)}</ul></div><div className="rounded-2xl border border-slate-200 bg-white p-4">{actual.id==="provision" ? <ProvisionesFondosPage soloEditorPlantilla/> : <HonorariosGestoria soloPlantilla/>}</div></section>}
+  </main>;
 }
