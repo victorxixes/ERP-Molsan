@@ -37,7 +37,7 @@ export default function ReglasActividadesExpediente() {
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-indigo-600">Configuración del expediente</p>
               <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Reglas de actividades expediente</h1>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Define los documentos, campos y validaciones que deben cumplirse en cada fase del expediente. Configura por separado las tres reglas de avance: documentación previa, protocolo notarial y cierre de la fase notarial.</p>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Define los documentos, campos y validaciones que deben cumplirse en cada fase del expediente. Configura por separado las tres reglas de avance: documentación previa, protocolo notarial y las fases notarial, tributaria y de inscripción.</p>
             </div>
           </div>
           <Link to="/herramientas/utilidades" className="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50">← Volver a Utilidades</Link>
@@ -47,7 +47,7 @@ export default function ReglasActividadesExpediente() {
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Resumen icono="📂" titulo="Actividad inicial" valor="Documentación previa" />
         <Resumen icono="📄" titulo="Documentos requeridos" valor={`${documentosActivos} de ${DOCUMENTOS_INICIALES.length}`} />
-        <Resumen icono="📨" titulo="Reglas definidas" valor="3 actividades" />
+        <Resumen icono="📨" titulo="Reglas definidas" valor="4 actividades" />
       </section>
 
       <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
@@ -158,7 +158,7 @@ export default function ReglasActividadesExpediente() {
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-indigo-600">Regla 03</p>
-            <h2 className="mt-1 text-lg font-bold text-slate-800">Sede notarial con protocolo → Tramitación inscripción</h2>
+            <h2 className="mt-1 text-lg font-bold text-slate-800">Sede notarial con protocolo → Liquidación impuestos</h2>
             <p className="mt-1 text-sm text-slate-500">Validación de campos y documentos recibidos desde NotarGest / Visión Notarios.</p>
           </div>
           <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800">OCR/PDF pendiente</span>
@@ -178,12 +178,49 @@ export default function ReglasActividadesExpediente() {
           <div className="grid gap-4 md:grid-cols-2">
             <Condicion titulo="Documentos requeridos" texto="Copia simple y hoja de presentación deben estar subidas en los repositorios de NotarGest / Visión Notarios." />
             <Condicion titulo="Extracción de datos PDF" texto="Un proceso de lectura/extracción debe detectar los campos en los PDF y asociarlos al expediente. Los datos detectados deben poder revisarse y corregirse si la extracción no es fiable." />
-            <Condicion titulo="Condición de avance" texto="Solo pasar a Tramitación inscripción cuando estén presentes ambos documentos y todos los campos obligatorios estén completos y validados." />
+            <Condicion titulo="Condición de avance" texto="Solo pasar a Liquidación impuestos cuando estén presentes ambos documentos y todos los campos obligatorios estén completos y validados." />
             <Condicion titulo="Si falta información" texto="Mantener Sede notarial con protocolo, mostrar los campos o documentos pendientes y no avanzar automáticamente." />
           </div>
         </div>
         <div className="border-t border-slate-100 bg-slate-50/60 px-5 py-4 sm:px-6">
           <p className="text-sm leading-5 text-slate-600">Pendiente del técnico: conexión con NotarGest / Visión Notarios, extracción PDF/OCR, validación de campos, detección de documentos y pruebas con expedientes reales.</p>
+        </div>
+      </section>
+
+      <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-indigo-600">Regla 04</p>
+            <h2 className="mt-1 text-lg font-bold text-slate-800">Liquidación impuestos → Tramitación inscripción</h2>
+            <p className="mt-1 text-sm text-slate-500">La liquidación tributaria debe quedar documentada y con todos los datos de actividad cumplimentados antes de avanzar.</p>
+          </div>
+          <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800">Extracción PDF pendiente</span>
+        </div>
+        <div className="space-y-5 p-5 sm:p-6">
+          <div>
+            <h3 className="text-sm font-bold text-slate-800">Campos obligatorios en Datos de actividad</h3>
+            <p className="mt-1 text-sm text-slate-500">Todos deben estar cumplimentados y validados para cerrar Liquidación impuestos.</p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {["Fecha de presentación en oficina liquidadora", "Fecha de liquidación tributaria", "Base imponible", "Oficina liquidadora (desplegable existente)", "Tributo exento (desplegable existente)", "Documento AJD/ITP"].map((campo) => (
+              <div key={campo} className="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm font-medium text-slate-700">
+                <span className="h-2 w-2 rounded-full bg-indigo-500" />{campo}
+              </div>
+            ))}
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Condicion titulo="Origen del documento" texto="El AJD/ITP puede llegar desde NotarGest / Visión Notarios o ser subido directamente por el equipo Molsan para escrituras de cancelación gestionadas personalmente." />
+            <Condicion titulo="Lectura automática del PDF" texto="Al detectar o subir el documento, el lector PDF/OCR debe extraer la fecha de presentación, fecha de liquidación tributaria, base imponible, oficina liquidadora y situación de exención, y proponerlos en los campos existentes." />
+            <Condicion titulo="Condición de avance" texto="Pasar a Tramitación inscripción solo cuando el documento AJD/ITP esté adjunto, todos los campos estén completos y la validación de fechas sea correcta." />
+            <Condicion titulo="Fecha en Tramitación inscripción" texto="La fecha de presentación de Tramitación inscripción debe copiarse de la fecha de liquidación tributaria y nunca puede ser anterior a esta." />
+          </div>
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-5 text-amber-900">
+            <strong>Validación de fechas pendiente de confirmación</strong>
+            <p className="mt-1">La regla debe impedir fechas incoherentes. En tu mensaje hay una contradicción: indicas que la fecha de presentación en Liquidación impuestos nunca debe ser igual o anterior a la fecha de liquidación tributaria, pero después indicas que la fecha de liquidación tributaria nunca puede ser anterior a la fecha de presentación. No se activará una validación automática de esta pareja de fechas hasta confirmar cuál de las dos condiciones es la correcta.</p>
+          </div>
+        </div>
+        <div className="border-t border-slate-100 bg-slate-50/60 px-5 py-4 sm:px-6">
+          <p className="text-sm leading-5 text-slate-600">Pendiente del técnico: conexión con repositorios, lectura PDF/OCR, revisión de valores extraídos, detección de campos vacíos y pruebas de la transición a Tramitación inscripción.</p>
         </div>
       </section>
 
