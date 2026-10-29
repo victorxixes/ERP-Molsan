@@ -79,6 +79,9 @@ def validar_ambito_reparto_ruta(
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
 
 
+setattr(validar_ambito_reparto_ruta, "_molsan_visibilidad_guard", True)
+
+
 router = APIRouter(
     prefix="/expedientes",
     tags=["Expedientes"],
