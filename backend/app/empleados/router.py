@@ -39,6 +39,7 @@ from backend.app.seguridad.auditoria.service import (
 
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
+from backend.app.storage import FOTOS_EMPLEADOS_DIR
 
 
 def _permiso_empleados(accion: str):
@@ -361,6 +362,8 @@ def subir_foto(
     # COMPROBAR FICHERO
     # -----------------------------------------------------
 
+    MAX_FOTO_BYTES = 5 * 1024 * 1024
+
     if not foto:
 
         raise HTTPException(
@@ -406,43 +409,10 @@ def subir_foto(
         )
 
 
-    # -----------------------------------------------------
-    # DIRECTORIO REAL DE FOTOS
-    #
-    # main.py sirve:
-    #
-    # /api/fotos
-    #
-    # desde:
-    #
-    # backend/app/static/fotos
-    #
-    # Por tanto guardamos en:
-    #
-    # backend/app/static/fotos/empleados
-    # -----------------------------------------------------
-
-    app_dir = os.path.dirname(
-        os.path.dirname(
-            os.path.abspath(
-                __file__
-            )
-        )
-    )
-
-
-    upload_dir = os.path.join(
-        app_dir,
-        "static",
-        "fotos",
-        "empleados",
-    )
-
-
-    os.makedirs(
-        upload_dir,
-        exist_ok=True,
-    )
+    # Guardar las fotos en el almacenamiento central configurable.
+    # En Render debe apuntar a un Persistent Disk para sobrevivir despliegues.
+    upload_dir = str(FOTOS_EMPLEADOS_DIR)
+    os.makedirs(upload_dir, exist_ok=True)
 
 
     # -----------------------------------------------------
@@ -462,21 +432,38 @@ def subir_foto(
 
 
     # -----------------------------------------------------
-    # GUARDAR NUEVA FOTO
+    # VALIDAR Y GUARDAR NUEVA FOTO
     # -----------------------------------------------------
 
     try:
+        contenido = foto.file.read(MAX_FOTO_BYTES + 1)
+        if not contenido:
+            raise HTTPException(status_code=400, detail="La fotografía está vacía.")
+        if len(contenido) > MAX_FOTO_BYTES:
+            raise HTTPException(status_code=413, detail="La fotografía supera el límite de 5 MB.")
 
-        with open(
-            filepath,
-            "wb",
-        ) as buffer:
-
-            shutil.copyfileobj(
-                foto.file,
-                buffer,
+        firmas_validas = {
+            ".jpg": contenido.startswith(b"\xff\xd8\xff"),
+            ".jpeg": contenido.startswith(b"\xff\xd8\xff"),
+            ".png": contenido.startswith(b"\x89PNG\r\n\x1a\n"),
+            ".gif": contenido.startswith((b"GIF87a", b"GIF89a")),
+            ".webp": (
+                len(contenido) >= 12
+                and contenido.startswith(b"RIFF")
+                and contenido[8:12] == b"WEBP"
+            ),
+        }
+        if not firmas_validas.get(extension, False):
+            raise HTTPException(
+                status_code=415,
+                detail="El contenido del archivo no coincide con el formato de imagen declarado.",
             )
 
+        with open(filepath, "wb") as buffer:
+            buffer.write(contenido)
+
+    except HTTPException:
+        raise
     except Exception as exc:
 
         raise HTTPException(
