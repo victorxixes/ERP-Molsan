@@ -475,6 +475,8 @@ def anular_pago_gasto(
     if rol not in roles_administrador:
         raise HTTPException(status_code=403, detail="Solo un administrador puede anular un pago.")
     expediente = _obtener_expediente(db, expediente_id)
+    # Mismo orden de bloqueo que al registrar pagos: expediente y después gasto.
+    expediente = db.query(Expediente).filter(Expediente.id == expediente.id).with_for_update().first()
     gasto = db.query(ExpedienteGasto).filter(
         ExpedienteGasto.id == gasto_id, ExpedienteGasto.expediente_id == expediente.id
     ).with_for_update().first()
