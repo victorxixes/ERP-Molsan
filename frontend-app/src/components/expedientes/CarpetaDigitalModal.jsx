@@ -485,7 +485,7 @@ export default function CarpetaDigitalModal({
 
   const porCategoria = useCallback(
     (categoria) => {
-      const normalizarCategoria = (valor) => normalizar(valor).replace(/\\s+/g, " ").trim();
+      const normalizarCategoria = (valor) => normalizar(valor).replace(/-/g, " ").replace(/\\s+/g, " ").trim();
       const categoriaNormalizada = normalizarCategoria(categoria);
       return documentos.filter((doc) => {
         const categoriaDocumento = normalizarCategoria(doc.categoria || doc.categoria_nombre || doc.tipo_documento);
