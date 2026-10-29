@@ -6,7 +6,7 @@ class PublicStaticFiles(StaticFiles):
     """Sirve archivos estáticos públicos, excepto fotografías personales."""
 
     async def get_response(self, path: str, scope):
-        ruta = path.replace("\\\\", "/").lstrip("/")
+        ruta = path.replace("\\", "/").lstrip("/")
         primer_segmento = ruta.split("/", 1)[0].casefold()
 
         # Evitar que el montaje general /static exponga archivos privados
