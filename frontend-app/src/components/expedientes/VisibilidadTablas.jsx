@@ -31,7 +31,7 @@ const REPOSITORIOS_INICIALES = {
   "sede-notarial-protocolo": ["hoja_presentacion_documentos", "copia_simple_documentos"],
   "gestion-economica": ["factura_notarial_documentos", "factura_registral_documentos", "factura_impuestos_documentos", "honorarios_gestoria_documentos", "otros_documentos"],
   "liquidacion-impuestos": ["ajd_itp_documentos", "otros_impuestos_documentos"],
-  "tramitacion-inscripcion": ["hoja_inscripcion_documentos"],
+  "tramitacion-inscripcion": ["hoja_inscripcion_documentos", "factura_registro_documentos"],
   "defectos-registrales": ["defecto_registral", "subsanacion_defecto"],
   "facturacion-cierre": ["expediente_digital_completo_documentos"],
 };
