@@ -4,7 +4,10 @@ from types import SimpleNamespace
 
 from fastapi import HTTPException
 
-from backend.app.expedientes.gastos.router import _validar_documento_economico
+from backend.app.expedientes.gastos.router import (
+    _tipo_gasto_desde_categoria,
+    _validar_documento_economico,
+)
 
 
 class EconomicDocumentLinkTests(unittest.TestCase):
@@ -14,6 +17,16 @@ class EconomicDocumentLinkTests(unittest.TestCase):
             id=25,
             expediente_id="EXP-100",
             categoria="Factura registral",
+        )
+
+    def test_factura_registro_alias_maps_to_registral_obligation(self):
+        self.assertEqual(
+            _tipo_gasto_desde_categoria(" Factura registro "),
+            "Factura registral",
+        )
+        self.assertEqual(
+            _tipo_gasto_desde_categoria("FACTURA REGISTRAL"),
+            "Factura registral",
         )
 
     def test_accepts_document_from_same_expediente_and_category(self):
