@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.uploads import MAX_EXCEL_UPLOAD_BYTES, read_upload_limited
 from backend.app.registros_propiedad.models import (
     RegistroPropiedad,
 )
@@ -529,8 +530,14 @@ async def importar_registros_propiedad_excel(
 
     try:
 
-        contenido = await fichero.read()
+        contenido = await read_upload_limited(
+            fichero,
+            MAX_EXCEL_UPLOAD_BYTES,
+            "Excel de importación",
+        )
 
+    except HTTPException:
+        raise
     except Exception as exc:
 
         raise HTTPException(
