@@ -66,6 +66,7 @@ const AccesosNotariales = lazy(() => import("./pages/herramientas/AccesosNotaria
 const Catalogos = lazy(() => import("./pages/herramientas/Catalogos.jsx"));
 const CatalogoAbsis = lazy(() => import("./pages/herramientas/CatalogoAbsis.jsx"));
 const CatalogoOficinas = lazy(() => import("./pages/herramientas/CatalogoOficinas.jsx"));
+const TiposImpositivos = lazy(() => import("./pages/herramientas/TiposImpositivos.jsx"));
 const CorrespondenciaTipificada = lazy(() => import("./pages/herramientas/CorrespondenciaTipificada.jsx"));
 const FirmasEmail = lazy(() => import("./pages/herramientas/FirmasEmail.jsx"));
 const HonorariosGestoria = lazy(() => import("./pages/herramientas/HonorariosGestoria.jsx"));
@@ -654,6 +655,7 @@ export default function App() {
             path="catalogos/oficinas"
             element={<CatalogoOficinas />}
           />
+          <Route path="catalogos/tipos-impositivos" element={<TiposImpositivos />} />
           <Route
             path="catalogos/fichajes"
             element={<CatalogoFichajes />}
