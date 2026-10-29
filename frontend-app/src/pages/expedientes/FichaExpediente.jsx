@@ -3459,6 +3459,23 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     void cargarCuentasBancariasNotarioParaPago();
   }
 
+  async function anularPagoGasto(movimiento) {
+    if (!esAdministradorSesion || !movimiento?.gasto_id || !movimiento?.pago_id || movimiento.anulado_en) return;
+    const motivo = window.prompt("Indica el motivo de la anulación del pago:");
+    if (!motivo || motivo.trim().length < 5) {
+      setErrorPagoReal("La anulación requiere un motivo de al menos 5 caracteres.");
+      return;
+    }
+    try {
+      setErrorPagoReal("");
+      await axios.post("/expedientes/" + encodeURIComponent(expediente?.id ?? id) + "/gastos/" + encodeURIComponent(movimiento.gasto_id) + "/pagos/" + encodeURIComponent(movimiento.pago_id) + "/anular", { motivo: motivo.trim() });
+      setMensajeGastos("Pago PAG-" + String(movimiento.pago_id).padStart(6, "0") + " anulado; se conserva en el histórico.");
+      await cargarGastosExpediente();
+    } catch (err) {
+      setErrorPagoReal(err?.response?.data?.detail || "No se pudo anular el pago.");
+    }
+  }
+
   async function registrarPagoObligacion(event) {
     event.preventDefault();
     const expedienteId = expediente?.id ?? (Number.isFinite(Number(id)) ? Number(id) : null);
@@ -5933,9 +5950,9 @@ const cuantiaFincasParaEnvio =
                                         const base = movimiento.es_movimiento_pago ? Math.abs(Number(movimiento.importeMovimiento || 0)) : numeroDecimalGasto(movimiento.base_sujeta_impuestos) + numeroDecimalGasto(movimiento.base_exenta_impuestos);
                                         const impuesto = movimiento.es_movimiento_pago ? 0 : numeroDecimalGasto(movimiento.importe_impuesto);
                                         const total = movimiento.es_movimiento_pago ? base : Math.abs(Number(movimiento.importe_resultante ?? movimiento.importe ?? movimiento.importe_total_bruto ?? (base + impuesto)));
-                                        const estado = movimiento.es_movimiento_pago ? "Pagado" : String(movimiento.estado_pago || "Pagado").trim();
+                                        const estado = movimiento.es_movimiento_pago ? (movimiento.anulado_en ? "Anulado" : "Pagado") : String(movimiento.estado_pago || "Pagado").trim();
                                         const saldoTrasMovimiento = importeInicialDisponible ? Number(movimiento.saldoCalculado) : null;
-                                        return <tr key={movimiento.id} className="text-slate-700 transition-colors hover:bg-indigo-50/40"><td className="whitespace-nowrap px-3 py-3 font-extrabold text-indigo-700">{movimiento.numero_documento || ("PAG-" + String(movimiento.pago_id || movimiento.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(movimiento.fecha || movimiento.fecha_factura)}</td><td className="px-3 py-3"><span className="font-semibold">{movimiento.tipo || "Documento"}</span>{movimiento.concepto_pago ? <span className="mt-1 block text-slate-500">{movimiento.concepto_pago}</span> : movimiento.descripcion ? <span className="mt-1 block text-slate-500">{movimiento.descripcion}</span> : null}{movimiento.tipo_impuesto && !movimiento.es_movimiento_pago ? <span className="mt-1 block text-[10px] text-slate-400">{movimiento.tipo_impuesto}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{fmt(base)} €</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{fmt(impuesto)} €</td><td className="whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums">{fmt(total)} €</td><td className="whitespace-nowrap px-3 py-3"><span className="rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-700">{estado}</span></td><td className={"whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums " + (saldoTrasMovimiento !== null && saldoTrasMovimiento < 0 ? "text-red-700" : "text-slate-900")}>{saldoTrasMovimiento === null ? "—" : (fmt(saldoTrasMovimiento) + " €")}</td></tr>;
+                                        return <tr key={movimiento.id} className="text-slate-700 transition-colors hover:bg-indigo-50/40"><td className="whitespace-nowrap px-3 py-3 font-extrabold text-indigo-700">{movimiento.numero_documento || ("PAG-" + String(movimiento.pago_id || movimiento.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(movimiento.fecha || movimiento.fecha_factura)}</td><td className="px-3 py-3"><span className="font-semibold">{movimiento.tipo || "Documento"}</span>{movimiento.concepto_pago ? <span className="mt-1 block text-slate-500">{movimiento.concepto_pago}</span> : movimiento.descripcion ? <span className="mt-1 block text-slate-500">{movimiento.descripcion}</span> : null}{movimiento.tipo_impuesto && !movimiento.es_movimiento_pago ? <span className="mt-1 block text-[10px] text-slate-400">{movimiento.tipo_impuesto}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{fmt(base)} €</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{fmt(impuesto)} €</td><td className="whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums">{fmt(total)} €</td><td className="whitespace-nowrap px-3 py-3"><span className={"rounded-full px-2 py-1 text-[10px] font-bold " + (estado === "Anulado" ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700")}>{estado}</span>{movimiento.motivo_anulacion ? <span className="mt-1 block max-w-[220px] whitespace-normal text-[10px] text-red-600" title={movimiento.motivo_anulacion}>Motivo: {movimiento.motivo_anulacion}</span> : null}</td><td className={"whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums " + (saldoTrasMovimiento !== null && saldoTrasMovimiento < 0 ? "text-red-700" : "text-slate-900")}>{saldoTrasMovimiento === null ? "—" : (fmt(saldoTrasMovimiento) + " €")}</td><td className="px-3 py-3">{movimiento.es_movimiento_pago && !movimiento.anulado_en && esAdministradorSesion ? <button type="button" onClick={() => void anularPagoGasto(movimiento)} className="rounded-lg border border-red-200 px-2.5 py-1.5 text-[10px] font-bold text-red-700 hover:bg-red-50">Anular pago</button> : movimiento.anulado_en ? <span className="text-[10px] font-semibold text-slate-500">Anulado</span> : "—"}</td></tr>;
                                       })}
                                     </tbody>
                                   </table>
