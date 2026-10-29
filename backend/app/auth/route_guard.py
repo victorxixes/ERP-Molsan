@@ -190,6 +190,13 @@ def _ya_tiene_permiso(dependant: Any, modulo: str, accion: str) -> bool:
 def _resolver_modulo(path: str) -> str | None:
     path = _normalizar_path(path)
 
+    # El bloqueo/desbloqueo de empleados está implementado en el router de
+    # seguridad/asignar, pero su dependencia funcional exige empleados:editar.
+    # Resolverlo antes del prefijo general /api/seguridad evita exigir además
+    # el permiso incorrecto seguridad:crear.
+    if path == "/api/seguridad/asignar/empleado" or path.startswith("/api/seguridad/asignar/empleado/"):
+        return "empleados"
+
     # Routers montados dentro de /seguridad usan módulos de permiso específicos.
     # Se resuelven antes del prefijo general /api/seguridad.
     if path == "/api/seguridad/auditoria" or path.startswith("/api/seguridad/auditoria/"):
@@ -214,6 +221,11 @@ def _resolver_accion(path: str, methods: set[str] | None) -> str:
     metodos = {str(m).upper() for m in (methods or set())}
     metodos.discard("HEAD")
     metodos.discard("OPTIONS")
+
+    # Bloquear/desbloquear es una modificación de la ficha del empleado,
+    # no una creación, aunque el endpoint use POST por compatibilidad.
+    if path.endswith("/bloquear") or path.endswith("/desbloquear"):
+        return "editar"
 
     # Para endpoints con varios métodos, los permisos deben cubrir todos los
     # efectos: la acción más restrictiva se aplica a la ruta completa.
