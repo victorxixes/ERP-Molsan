@@ -18,7 +18,10 @@ class PublicStaticFilesPolicyTests(unittest.IsolatedAsyncioTestCase):
             ):
                 with self.subTest(path=path):
                     with self.assertRaises(HTTPException) as caught:
-                        await static.get_response(path, {"type": "http"})
+                        await static.get_response(
+                            path,
+                            {"type": "http", "method": "GET", "headers": []},
+                        )
                     self.assertEqual(caught.exception.status_code, 404)
 
 
