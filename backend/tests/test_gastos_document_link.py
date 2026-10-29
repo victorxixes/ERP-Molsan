@@ -33,6 +33,14 @@ class EconomicDocumentLinkTests(unittest.TestCase):
             )
         self.assertEqual(caught.exception.status_code, 404)
 
+    def test_accepts_legacy_factura_registro_category_alias(self):
+        self.documento.categoria = "Factura registro"
+        _validar_documento_economico(
+            self.expediente,
+            self.documento,
+            "Factura registral",
+        )
+
     def test_rejects_category_mismatch(self):
         with self.assertRaises(HTTPException) as caught:
             _validar_documento_economico(
