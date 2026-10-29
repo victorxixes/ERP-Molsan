@@ -19,6 +19,8 @@ class RouteGuardPolicyTests(unittest.TestCase):
             "/api/utilidades/reasignar-gestor",
             "/api/expedientes/provisiones-independientes/123/email",
             "/api/expedientes/4/gastos/12/integracion-absis",
+            "/api/utilidades/conceptos-gastos/6/plantilla-factura",
+            "/api/utilidades/correspondencia/firma/factura",
         ):
             with self.subTest(path=path):
                 self.assertEqual(_resolver_accion(path, {"POST"}), "editar")
