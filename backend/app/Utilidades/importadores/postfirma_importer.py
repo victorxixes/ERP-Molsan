@@ -171,8 +171,9 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
             "columnas": json.dumps(columnas, ensure_ascii=False),
         }).first()
         carga_id = int(carga[0])
-        db.commit()
 
+        # La carga y todas sus filas forman una única transacción: si falla un
+        # lote, el rollback elimina también la cabecera y los lotes anteriores.
         # Iteración directa de las celdas para conservar valores originales de Excel.
         filas_originales = hoja.iter_rows(min_row=2, max_col=max(len(columnas), 1), values_only=False)
         lote = []
@@ -219,7 +220,6 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
                             :tipo_concepto, :concepto_gasto, :estado, :importe, :fecha_pago)
                 """), lote)
                 guardadas += len(lote)
-                db.commit()
                 lote = []
 
         if lote:
