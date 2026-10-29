@@ -52,6 +52,7 @@ CATEGORIAS = {
     "Subsanación del defecto",
     # Tramitación inscripción
     "Hoja de Inscripción",
+    "Factura registro",
     # Facturación y cierre
     "Escritura digital final",
     # Documentación general
