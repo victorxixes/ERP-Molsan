@@ -8,7 +8,7 @@ from sqlalchemy import func, text
 from pydantic import BaseModel, Field, validator
 from sqlalchemy.orm import Session
 
-from backend.app.database import get_db
+from backend.app.database import get_db, engine
 from backend.app.auth.dependencies import get_current_user
 from backend.app.expedientes.gastos.models import ExpedienteGasto
 from backend.app.expedientes.models import Expediente
@@ -117,27 +117,35 @@ class PagoCreate(BaseModel):
         return importe
 
 
-def _garantizar_tabla_pagos(db: Session):
-    """Crea únicamente la tabla nueva de movimientos; no toca gastos históricos."""
-    db.execute(text("""
-        CREATE TABLE IF NOT EXISTS public.expediente_gasto_pagos (
-            id BIGSERIAL PRIMARY KEY,
-            gasto_id INTEGER NOT NULL REFERENCES public.expediente_gastos(id) ON DELETE RESTRICT,
-            fecha DATE NOT NULL,
-            importe NUMERIC(12, 2) NOT NULL CHECK (importe > 0),
-            concepto VARCHAR(300) NOT NULL,
-            medio_pago VARCHAR(100),
-            idempotency_key VARCHAR(100) NOT NULL UNIQUE,
-            creado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            anulado_en TIMESTAMP WITHOUT TIME ZONE NULL,
-            anulado_por INTEGER NULL,
-            motivo_anulacion TEXT NULL
-        )
-    """))
-    db.execute(text("ALTER TABLE public.expediente_gasto_pagos ADD COLUMN IF NOT EXISTS anulado_en TIMESTAMP WITHOUT TIME ZONE NULL"))
-    db.execute(text("ALTER TABLE public.expediente_gasto_pagos ADD COLUMN IF NOT EXISTS anulado_por INTEGER NULL"))
-    db.execute(text("ALTER TABLE public.expediente_gasto_pagos ADD COLUMN IF NOT EXISTS motivo_anulacion TEXT NULL"))
+def _garantizar_tabla_pagos_en_inicio():
+    """Prepara el esquema de movimientos al arrancar, no durante peticiones."""
+    # Los tests aislados pueden usar SQLite; el esquema productivo es PostgreSQL.
+    if engine.dialect.name != "postgresql":
+        return
+    with engine.begin() as conexion:
+        conexion.execute(text("""
+            CREATE TABLE IF NOT EXISTS public.expediente_gasto_pagos (
+                id BIGSERIAL PRIMARY KEY,
+                gasto_id INTEGER NOT NULL REFERENCES public.expediente_gastos(id) ON DELETE RESTRICT,
+                fecha DATE NOT NULL,
+                importe NUMERIC(12, 2) NOT NULL CHECK (importe > 0),
+                concepto VARCHAR(300) NOT NULL,
+                medio_pago VARCHAR(100),
+                idempotency_key VARCHAR(100) NOT NULL UNIQUE,
+                creado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                anulado_en TIMESTAMP WITHOUT TIME ZONE NULL,
+                anulado_por INTEGER NULL,
+                motivo_anulacion TEXT NULL
+            )
+        """))
+        conexion.execute(text("ALTER TABLE public.expediente_gasto_pagos ADD COLUMN IF NOT EXISTS anulado_en TIMESTAMP WITHOUT TIME ZONE NULL"))
+        conexion.execute(text("ALTER TABLE public.expediente_gasto_pagos ADD COLUMN IF NOT EXISTS anulado_por INTEGER NULL"))
+        conexion.execute(text("ALTER TABLE public.expediente_gasto_pagos ADD COLUMN IF NOT EXISTS motivo_anulacion TEXT NULL"))
 
+
+@router.on_event("startup")
+def inicializar_tabla_pagos():
+    _garantizar_tabla_pagos_en_inicio()
 
 class AnularPagoCreate(BaseModel):
     motivo: str = Field(..., min_length=5, max_length=1000)
@@ -309,7 +317,6 @@ def listar_pagos_gasto(expediente_id: int, gasto_id: int, db: Session = Depends(
     if gasto is None:
         raise HTTPException(status_code=404, detail="No se encontró la obligación económica.")
     try:
-        _garantizar_tabla_pagos(db)
         filas = db.execute(text("""
             SELECT id, gasto_id, fecha, importe, concepto, medio_pago, idempotency_key, creado_en, anulado_en, anulado_por, motivo_anulacion
             FROM public.expediente_gasto_pagos
@@ -345,6 +352,8 @@ def registrar_pago_gasto(
 ):
     """Registra un movimiento real de pago, idempotente y compatible con pagos parciales."""
     expediente = _obtener_expediente(db, expediente_id)
+    # Serializa las operaciones de pago que comparten el saldo del expediente.
+    expediente = db.query(Expediente).filter(Expediente.id == expediente.id).with_for_update().first()
     gasto = db.query(ExpedienteGasto).filter(
         ExpedienteGasto.id == gasto_id,
         ExpedienteGasto.expediente_id == expediente.id,
@@ -355,7 +364,19 @@ def registrar_pago_gasto(
     if obligacion is None or obligacion <= 0:
         raise HTTPException(status_code=422, detail="Completa primero el importe de la factura antes de registrar pagos.")
     try:
-        _garantizar_tabla_pagos(db)
+        estado_historico_pagado = str(gasto.estado_pago or "").strip().casefold() in {
+            "pagado", "pagada", "abonado", "abonada", "efectuado", "efectuada"
+        }
+        tiene_movimientos = db.execute(text("""
+            SELECT EXISTS (
+                SELECT 1 FROM public.expediente_gasto_pagos WHERE gasto_id = :gasto_id
+            )
+        """), {"gasto_id": gasto.id}).scalar()
+        if estado_historico_pagado and not tiene_movimientos:
+            raise HTTPException(
+                status_code=409,
+                detail="Este gasto consta como pagado en el histórico, pero no tiene movimientos de pago conciliados. Revísalo antes de registrar un nuevo pago.",
+            )
         existente = db.execute(text("""
             SELECT id, gasto_id, fecha, importe, concepto, medio_pago, idempotency_key, creado_en, anulado_en, anulado_por, motivo_anulacion
             FROM public.expediente_gasto_pagos WHERE idempotency_key = :key
@@ -457,7 +478,6 @@ def anular_pago_gasto(
     if gasto is None:
         raise HTTPException(status_code=404, detail="No se encontró la obligación económica.")
     try:
-        _garantizar_tabla_pagos(db)
         pago = db.execute(text("""
             SELECT id, importe, anulado_en FROM public.expediente_gasto_pagos
             WHERE id = :pago_id AND gasto_id = :gasto_id FOR UPDATE
@@ -637,6 +657,8 @@ def crear_gasto(expediente_id: int, payload: GastoCreate, db: Session = Depends(
 @router.put("/{expediente_id}/gastos/{gasto_id}", response_model=GastoResponse)
 def actualizar_gasto(expediente_id: int, gasto_id: int, payload: GastoUpdate, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     expediente = _obtener_expediente(db, expediente_id)
+    # Serializa las operaciones de pago que comparten el saldo del expediente.
+    expediente = db.query(Expediente).filter(Expediente.id == expediente.id).with_for_update().first()
     gasto = db.query(ExpedienteGasto).filter(
         ExpedienteGasto.id == gasto_id,
         ExpedienteGasto.expediente_id == expediente.id,
