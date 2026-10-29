@@ -123,6 +123,7 @@ _POST_ES_EDICION = (
     "/password",
     "/crear-base",
     "/install-unaccent",
+    "/roles",
     "/migrar",
     "/rol/",
     "/permisos",
