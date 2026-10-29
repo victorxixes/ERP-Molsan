@@ -2,7 +2,12 @@
 import unittest
 from types import SimpleNamespace
 
-from backend.app.Utilidades.importadores.expedientes_importer import _asignar_si_informado
+import pandas as pd
+
+from backend.app.Utilidades.importadores.expedientes_importer import (
+    _asignar_si_informado,
+    vincular_catalogos_expediente,
+)
 
 
 class ImportadorABSISPreservacionTests(unittest.TestCase):
@@ -22,6 +27,21 @@ class ImportadorABSISPreservacionTests(unittest.TestCase):
         _asignar_si_informado(expediente, "activo", False)
         self.assertEqual(expediente.importe, 0)
         self.assertIs(expediente.activo, False)
+
+    def test_signature_type_comes_from_ctn_not_excel(self):
+        expediente = SimpleNamespace(notario_id=None, tipo_firma="Presencial")
+        notario = SimpleNamespace(
+            id=8, nif="12345678Z", nombre="Notaria", apellidos="Ejemplo", vc="SI"
+        )
+        fila = pd.Series({
+            "NOMBRENOTARIO": "Notaria Ejemplo",
+            "NIFNOTARIO": "12345678Z",
+            "TIPOFIRMA": "Presencial",
+        })
+
+        vincular_catalogos_expediente(expediente, fila, [notario], [])
+        self.assertEqual(expediente.notario_id, 8)
+        self.assertEqual(expediente.tipo_firma, "Videoconferencia")
 
 
 if __name__ == "__main__":
