@@ -828,7 +828,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "ESTADOEXPEDIENTE",
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -837,7 +837,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "ESTADOEXPEDIENTEANCERT",
-                    ),
+                )
             )
 
             # ------------------------------------------------
@@ -849,9 +849,9 @@ def importar_excel_expedientes(
                 "fecha_alta",
                 convertir_fecha(
                     row.get(
-                    columna_fecha_alta
+                        columna_fecha_alta
                     )
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -859,10 +859,10 @@ def importar_excel_expedientes(
                 "fecha_firma",
                 convertir_fecha(
                     obtener_valor(
-                    row,
-                    "FECHAFIRMA",
+                        row,
+                        "FECHAFIRMA",
                     )
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -870,10 +870,10 @@ def importar_excel_expedientes(
                 "fecha_inscripcion",
                 convertir_fecha(
                     obtener_valor(
-                    row,
-                    "FECHAINSCRIPCION",
+                        row,
+                        "FECHAINSCRIPCION",
                     )
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -881,10 +881,10 @@ def importar_excel_expedientes(
                 "fecha_entregado_cliente",
                 convertir_fecha(
                     obtener_valor(
-                    row,
-                    "FECHAENTREGADOCLIENTE",
+                        row,
+                        "FECHAENTREGADOCLIENTE",
                     )
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -892,10 +892,10 @@ def importar_excel_expedientes(
                 "fecha_prevista_firma",
                 convertir_fecha(
                     obtener_valor(
-                    row,
-                    "FECHAPREVISTAFIRMA",
+                        row,
+                        "FECHAPREVISTAFIRMA",
                     )
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -903,10 +903,10 @@ def importar_excel_expedientes(
                 "fecha_vencimiento",
                 convertir_fecha(
                     obtener_valor(
-                    row,
-                    "FECHAVENCIMIENTO",
+                        row,
+                        "FECHAVENCIMIENTO",
                     )
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -914,10 +914,10 @@ def importar_excel_expedientes(
                 "fecha_sol_cgn",
                 convertir_fecha(
                     obtener_valor(
-                    row,
-                    "FECHASOLCGN",
+                        row,
+                        "FECHASOLCGN",
                     )
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -925,10 +925,10 @@ def importar_excel_expedientes(
                 "fecha_firma_prev_val",
                 convertir_fecha(
                     obtener_valor(
-                    row,
-                    "FECHAFIRMAPREVVAL",
+                        row,
+                        "FECHAFIRMAPREVVAL",
                     )
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -936,10 +936,10 @@ def importar_excel_expedientes(
                 "fecha_firma_prev_cli",
                 convertir_fecha(
                     obtener_valor(
-                    row,
-                    "FECHAFIRMAPREVCLI",
+                        row,
+                        "FECHAFIRMAPREVCLI",
                     )
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -947,10 +947,10 @@ def importar_excel_expedientes(
                 "fecha_inicio_actividad",
                 convertir_fecha(
                     obtener_valor(
-                    row,
-                    "FECHAINICIOACTIVIDAD",
+                        row,
+                        "FECHAINICIOACTIVIDAD",
                     )
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -958,10 +958,10 @@ def importar_excel_expedientes(
                 "fecha_fin_actividad",
                 convertir_fecha(
                     obtener_valor(
-                    row,
-                    "FECHAFINACTIVIDAD",
+                        row,
+                        "FECHAFINACTIVIDAD",
                     )
-                    ),
+                )
             )
 
             # Datos de seguimiento que pueden venir en la matriz ABSIS.
@@ -970,14 +970,14 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "ultima_accion",
-                    str(valor_ultima_accion).strip()[:500] or None,
+                    str(valor_ultima_accion).strip()[:500] or None
                 )
             fecha_ultima_accion = convertir_fecha(obtener_valor(row, "FECHAULTIMAACCION"))
             if fecha_ultima_accion is not None:
                 _asignar_si_informado(
                     exp,
                     "fecha_ultima_accion",
-                    fecha_ultima_accion,
+                    fecha_ultima_accion
                 )
             for campo, encabezado in (("sol", "SOL"), ("cs", "CS"), ("ns", "NS")):
                 valor = obtener_valor(row, encabezado)
@@ -988,14 +988,14 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "fecha_solicitud_pnc",
-                    fecha_solicitud_pnc,
+                    fecha_solicitud_pnc
                 )
             numero_solicitud_pnc = obtener_valor(row, "NUMEROSOLICITUDPNC")
             if numero_solicitud_pnc is not None:
                 _asignar_si_informado(
                     exp,
                     "numero_solicitud_pnc",
-                    str(numero_solicitud_pnc).strip()[:200] or None,
+                    str(numero_solicitud_pnc).strip()[:200] or None
                 )
 
             # Importar las fechas de envío si están presentes en la matriz ABSIS.
@@ -1004,14 +1004,14 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "fecha_envio_notario",
-                    fecha_envio_notario,
+                    fecha_envio_notario
                 )
             fecha_envio = convertir_fecha(obtener_valor(row, "FECHAENVIO"))
             if fecha_envio is not None:
                 _asignar_si_informado(
                     exp,
                     "fecha_envio",
-                    fecha_envio,
+                    fecha_envio
                 )
 
             _asignar_si_informado(
@@ -1019,10 +1019,10 @@ def importar_excel_expedientes(
                 "fcierre_defecto",
                 convertir_fecha(
                     obtener_valor(
-                    row,
-                    "FCIERREDEFECTO",
+                        row,
+                        "FCIERREDEFECTO",
                     )
-                    ),
+                )
             )
 
             # ------------------------------------------------
@@ -1035,7 +1035,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "ACTIVIDADACTUAL",
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -1044,7 +1044,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "ESTADOACTIVIDAD",
-                    ),
+                )
             )
 
             # ------------------------------------------------
@@ -1056,7 +1056,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "nombre_solicitante",
-                    valor,
+                    valor
                 )
 
             valor = obtener_valor(row, "NIFSOLICITANTE")
@@ -1064,7 +1064,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "nif_solicitante",
-                    valor,
+                    valor
                 )
 
             # ------------------------------------------------
@@ -1076,7 +1076,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "nombre_titular",
-                    valor,
+                    valor
                 )
 
             valor = obtener_valor(row, "NIFTITULAR")
@@ -1084,7 +1084,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "nif_titular",
-                    valor,
+                    valor
                 )
 
             # ------------------------------------------------
@@ -1096,7 +1096,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "apoderado",
-                    valor,
+                    valor
                 )
 
             # ------------------------------------------------
@@ -1108,7 +1108,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "nombre_notario",
-                    valor,
+                    valor
                 )
 
             valor = obtener_valor(row, "NIFNOTARIO")
@@ -1116,7 +1116,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "nif_notario",
-                    valor,
+                    valor
                 )
 
             valor = obtener_valor(row, "NOTARIO", "NOMBRENOTARIO")
@@ -1124,7 +1124,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "notario",
-                    valor,
+                    valor
                 )
 
             # Campos de firma/documento que ABSIS pueda aportar. Solo se
@@ -1157,7 +1157,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "OFICINA",
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -1166,7 +1166,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "OFICINAALTA",
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -1175,7 +1175,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "DAN",
-                    ),
+                )
             )
 
             # ------------------------------------------------
@@ -1187,7 +1187,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "capital",
-                    valor,
+                    valor
                 )
 
             valor = convertir_numero(obtener_valor(row, "IMPORTE"))
@@ -1195,7 +1195,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "importe",
-                    valor,
+                    valor
                 )
 
             valor = convertir_numero(obtener_valor(row, "SALDOREAL"))
@@ -1203,7 +1203,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "saldo_real",
-                    valor,
+                    valor
                 )
 
             valor = convertir_numero(obtener_valor(row, "SALDODISPONIBLE"))
@@ -1211,7 +1211,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "saldo_disponible",
-                    valor,
+                    valor
                 )
 
             # ------------------------------------------------
@@ -1223,7 +1223,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "id_provision",
-                    valor,
+                    valor
                 )
 
             valor = obtener_valor(row, "TIPOPROVISION")
@@ -1231,7 +1231,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "tipo_provision",
-                    valor,
+                    valor
                 )
 
             # ------------------------------------------------
@@ -1243,7 +1243,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "contrato",
-                    valor,
+                    valor
                 )
 
             valor = obtener_valor(row, "NUMSOLICITUDSIA")
@@ -1251,7 +1251,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "num_solicitud_sia",
-                    valor,
+                    valor
                 )
 
             valor = obtener_valor(row, "TIPOOPERACION")
@@ -1259,7 +1259,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "tipo_operacion",
-                    valor,
+                    valor
                 )
 
             valor = obtener_valor(row, "SUBTIPOOPERACION")
@@ -1267,7 +1267,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "subtipo_operacion",
-                    valor,
+                    valor
                 )
 
             _asignar_si_informado(
@@ -1276,7 +1276,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "VINCCANC",
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -1285,7 +1285,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "PROTOCOLO",
-                    ),
+                )
             )
 
             # ------------------------------------------------
@@ -1298,7 +1298,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "ORIGENBANKIA",
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -1307,7 +1307,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "PRODUCTOGTG",
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -1316,7 +1316,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "DT",
-                    ),
+                )
             )
 
             # ------------------------------------------------
@@ -1329,7 +1329,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "IDGESTORIATRAMITE",
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -1338,7 +1338,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "NOMBREGESTORIA",
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -1348,7 +1348,7 @@ def importar_excel_expedientes(
                     row,
                     "GESTORIA",
                     "NOMBREGESTORIA",
-                    ),
+                )
             )
 
             # ------------------------------------------------
@@ -1360,7 +1360,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "finca",
-                    valor,
+                    valor
                 )
 
             # Crear/actualizar el vínculo finca-registro si ABSIS aporta
@@ -1377,7 +1377,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "TIENEDEFECTOSABIERTOS",
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -1386,7 +1386,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "TIPOERROR",
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -1395,7 +1395,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "DESCRIPCIONERROR",
-                    ),
+                )
             )
 
             # ABSIS: FALTADEFECTO es un indicador SI/NO, no una fecha.
@@ -1408,7 +1408,7 @@ def importar_excel_expedientes(
             _asignar_si_informado(
                 exp,
                 "falta_defecto",
-                falta_defecto or None,
+                falta_defecto or None
             )
 
             # ------------------------------------------------
@@ -1421,7 +1421,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "IDEXPEDIENTECGN",
-                    ),
+                )
             )
 
             # ------------------------------------------------
@@ -1434,7 +1434,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "TIPOACTA",
-                    ),
+                )
             )
 
             # ------------------------------------------------
@@ -1447,7 +1447,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "LUCY",
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -1456,7 +1456,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "INDICADORTT",
-                    ),
+                )
             )
 
             # ------------------------------------------------
@@ -1483,7 +1483,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "observaciones",
-                    str(valor_observaciones).strip()[:2000],
+                    str(valor_observaciones).strip()[:2000]
                 )
 
             # ------------------------------------------------
@@ -1511,7 +1511,7 @@ def importar_excel_expedientes(
                 _asignar_si_informado(
                     exp,
                     "facturacion_fecha",
-                    facturacion_fecha,
+                    facturacion_fecha
                 )
 
             # ------------------------------------------------
@@ -1524,7 +1524,7 @@ def importar_excel_expedientes(
                 obtener_valor(
                     row,
                     "REGISTRALESTADO",
-                    ),
+                )
             )
 
             _asignar_si_informado(
@@ -1532,10 +1532,10 @@ def importar_excel_expedientes(
                 "registral_fecha",
                 convertir_fecha(
                     obtener_valor(
-                    row,
-                    "REGISTRALFECHA",
+                        row,
+                        "REGISTRALFECHA",
                     )
-                    ),
+                )
             )
 
             # Reparto inicial de expedientes nuevos o todavía sin responsable.
