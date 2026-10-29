@@ -35,6 +35,16 @@ def _redondear(valor: Decimal) -> Decimal:
     return valor.quantize(CENTIMO, rounding=ROUND_HALF_UP)
 
 
+def _validar_pago_historico_conciliado(estado_pago: str | None, tiene_movimientos: bool) -> None:
+    """Evita alterar el saldo de gastos antiguos pagados sin movimientos conciliados."""
+    estados_pagados = {"pagado", "pagada", "abonado", "abonada", "efectuado", "efectuada"}
+    if str(estado_pago or "").strip().casefold() in estados_pagados and not tiene_movimientos:
+        raise HTTPException(
+            status_code=409,
+            detail="Este gasto consta como pagado en el histórico, pero no tiene movimientos de pago conciliados. Revísalo antes de registrar un nuevo pago.",
+        )
+
+
 class GastoBase(BaseModel):
     tipo: Optional[str] = Field(None, max_length=200)
     descripcion: Optional[str] = Field(None, max_length=500)
@@ -364,19 +374,12 @@ def registrar_pago_gasto(
     if obligacion is None or obligacion <= 0:
         raise HTTPException(status_code=422, detail="Completa primero el importe de la factura antes de registrar pagos.")
     try:
-        estado_historico_pagado = str(gasto.estado_pago or "").strip().casefold() in {
-            "pagado", "pagada", "abonado", "abonada", "efectuado", "efectuada"
-        }
         tiene_movimientos = db.execute(text("""
             SELECT EXISTS (
                 SELECT 1 FROM public.expediente_gasto_pagos WHERE gasto_id = :gasto_id
             )
         """), {"gasto_id": gasto.id}).scalar()
-        if estado_historico_pagado and not tiene_movimientos:
-            raise HTTPException(
-                status_code=409,
-                detail="Este gasto consta como pagado en el histórico, pero no tiene movimientos de pago conciliados. Revísalo antes de registrar un nuevo pago.",
-            )
+        _validar_pago_historico_conciliado(gasto.estado_pago, bool(tiene_movimientos))
         existente = db.execute(text("""
             SELECT id, gasto_id, fecha, importe, concepto, medio_pago, idempotency_key, creado_en, anulado_en, anulado_por, motivo_anulacion
             FROM public.expediente_gasto_pagos WHERE idempotency_key = :key
