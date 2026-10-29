@@ -95,7 +95,7 @@ export default function ModelosDocumentos() {
       const datos = respuesta.data?.expediente || respuesta.data?.item || respuesta.data || null;
       if (!datos || !(datos.id_expediente || datos.id || datos.numero_expediente)) throw new Error("La respuesta no contiene un expediente identificable.");
       setExpedienteSeleccionado(datos);
-      const idConsulta = datos.id_expediente || numero;
+      const idConsulta = datos.id ?? datos.id_expediente ?? numero;
       try {
         const rGastos = await axios.get(`/expedientes/${encodeURIComponent(idConsulta)}/gastos`);
         setGastosExpediente(Array.isArray(rGastos.data) ? rGastos.data : (rGastos.data?.items || []));
