@@ -80,19 +80,15 @@ def _ensure_table(db: Session):
         ("IRPF actividades ganaderas de engorde/avicultura 1%", "retencion", "IRPF", 1, "España", "Tipo aplicable a determinados supuestos agrarios"),
         ("Sin retención", "retencion", "IRPF", 0, "España", "No aplicar retención en esta operación"),
     ]
-    for nombre, categoria, impuesto, porcentaje, territorio, descripcion in defaults:
-        db.execute(text("""
-            INSERT INTO public.tipos_impositivos
-                (nombre, categoria, impuesto, porcentaje, territorio, descripcion, activo)
-            SELECT :nombre, :categoria, :impuesto, :porcentaje, :territorio, :descripcion, TRUE
-            WHERE NOT EXISTS (
-                SELECT 1 FROM public.tipos_impositivos
-                WHERE categoria = :categoria AND impuesto = :impuesto
-                  AND nombre = :nombre AND territorio = :territorio
-                  AND porcentaje IS NOT DISTINCT FROM :porcentaje
-            )
-        """), {"nombre": nombre, "categoria": categoria, "impuesto": impuesto,
-               "porcentaje": porcentaje, "territorio": territorio, "descripcion": descripcion})
+    total = db.execute(text("SELECT COUNT(*) FROM public.tipos_impositivos")).scalar() or 0
+    if total == 0:
+        for nombre, categoria, impuesto, porcentaje, territorio, descripcion in defaults:
+            db.execute(text("""
+                INSERT INTO public.tipos_impositivos
+                    (nombre, categoria, impuesto, porcentaje, territorio, descripcion, activo)
+                VALUES (:nombre, :categoria, :impuesto, :porcentaje, :territorio, :descripcion, TRUE)
+            """), {"nombre": nombre, "categoria": categoria, "impuesto": impuesto,
+                   "porcentaje": porcentaje, "territorio": territorio, "descripcion": descripcion})
 
 
 def _admin(usuario):
