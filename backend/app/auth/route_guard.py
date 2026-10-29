@@ -126,6 +126,7 @@ _POST_ES_EDICION = (
     "/bloqueo",
     "/mover",
     "/aceptar",
+    "/anular",
     "/firmar",
     "/reparar",
     "/sincronizar",
