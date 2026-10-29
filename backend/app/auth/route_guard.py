@@ -196,6 +196,11 @@ def _resolver_modulo(path: str, methods: set[str] | None = None) -> str | None:
     path = _normalizar_path(path)
     metodos = {str(m).upper() for m in (methods or set())}
 
+    # La auditoría/reparación de vínculos de expedientes está autorizada
+    # explícitamente por Seguridad, no por los permisos operativos de Expedientes.
+    if path == "/api/expedientes/auditoria-vinculaciones" or path.startswith("/api/expedientes/auditoria-vinculaciones/"):
+        return "seguridad"
+
     # Los endpoints administrativos de fichajes usan el módulo específico
     # Control de Fichajes; los endpoints personales usan Fichajes.
     if path == "/api/fichajes/catalogo-ausencias" and "POST" in metodos:
@@ -236,6 +241,8 @@ def _resolver_modulo(path: str, methods: set[str] | None = None) -> str | None:
 def _resolver_accion(path: str, methods: set[str] | None) -> str:
     path = _normalizar_path(path).casefold()
     metodos = {str(m).upper() for m in (methods or set())}
+    if path == "/api/expedientes/auditoria-vinculaciones" or path.startswith("/api/expedientes/auditoria-vinculaciones/"):
+        return "editar"
     metodos.discard("HEAD")
     metodos.discard("OPTIONS")
 
