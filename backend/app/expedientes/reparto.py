@@ -310,6 +310,14 @@ def expediente_cumple_reglas_empleado(db: Session, empleado: Empleado, expedient
     return False
 
 
+def validar_candidatos_visibles(candidatos, ids_visibles) -> None:
+    """Rechaza si cualquiera de las referencias posibles apunta a un expediente oculto."""
+    if ids_visibles is not None and any(
+        expediente.id not in ids_visibles for expediente in candidatos
+    ):
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+
+
 def validar_visibilidad_expediente_request(
     request: Request,
     db: Session = Depends(get_db),
@@ -357,12 +365,9 @@ def validar_visibilidad_expediente_request(
         return
 
     ids_visibles = ids_expedientes_visibles(db, usuario)
-    if ids_visibles is not None and any(
-        expediente.id not in ids_visibles for expediente in candidatos
-    ):
-        # Si un identificador numérico coincide con dos expedientes distintos,
-        # no se permite usar la ambigüedad para consultar uno fuera del reparto.
-        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+    # Si un identificador numérico coincide con dos expedientes distintos,
+    # no se permite usar la ambigüedad para consultar uno fuera del reparto.
+    validar_candidatos_visibles(candidatos, ids_visibles)
 
 
 setattr(validar_visibilidad_expediente_request, "_molsan_visibilidad_guard", True)
