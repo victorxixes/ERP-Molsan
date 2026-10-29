@@ -1188,11 +1188,13 @@ def descargar_documento(expediente_id: str, documento_id: int, n=Depends(get_not
 async def subir_factura_notarial(expediente_id: str, archivo: UploadFile = File(...), n=Depends(get_notario), db: Session = Depends(get_db)):
     e = _expediente_autorizado(expediente_id, n, db)
     nombre = Path(archivo.filename or "factura.pdf").name
-    if not nombre.lower().endswith(".pdf") or (archivo.content_type and archivo.content_type not in ("application/pdf", "application/octet-stream")):
+    if not nombre.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Adjunta la factura en formato PDF")
-    contenido = await archivo.read(25 * 1024 * 1024 + 1)
-    if not contenido or len(contenido) > 25 * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="El PDF está vacío o supera 25 MB")
+    try:
+        contenido = await archivo.read(MAX_WORKFLOW_UPLOAD_BYTES + 1)
+    finally:
+        await archivo.close()
+    _validar_contenido_workflow(contenido, exigir_pdf=True)
     anterior = db.query(DocumentoCarpetaDigital).filter(
         DocumentoCarpetaDigital.expediente_id == str(e.id_expediente),
         DocumentoCarpetaDigital.categoria == "Factura notarial"
