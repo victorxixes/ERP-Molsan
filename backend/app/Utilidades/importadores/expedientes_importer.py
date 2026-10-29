@@ -267,8 +267,23 @@ def normalizar_nif(valor: Any) -> str:
     )
 
 
+def _aplicar_tipo_firma_ctn(expediente, notario):
+    tipo_ctn = clave_vinculacion(getattr(notario, "vc", None))
+    if tipo_ctn in {"si", "vc", "video", "videoconferencia", "videoconference"}:
+        expediente.tipo_firma = "Videoconferencia"
+    elif tipo_ctn in {"no", "presencial", "p", "fisica"}:
+        expediente.tipo_firma = "Presencial"
+
+
 def vincular_catalogos_expediente(expediente, row, notarios, empleados):
     """Vincula IDs solo si el valor de ABSIS identifica un único registro."""
+    notario_vinculado = next((
+        n for n in notarios
+        if getattr(n, "id", None) == getattr(expediente, "notario_id", None)
+    ), None)
+    if notario_vinculado is not None:
+        _aplicar_tipo_firma_ctn(expediente, notario_vinculado)
+
     nombre = obtener_valor(row, "NOMBRENOTARIO", "NOTARIO")
     nif = normalizar_nif(obtener_valor(row, "NIFNOTARIO"))
     if nombre or nif:
@@ -293,11 +308,7 @@ def vincular_catalogos_expediente(expediente, row, notarios, empleados):
             expediente.notario_id = notario_ctn.id
 
             # El tipo de firma procede de CTN, nunca del Excel ABSIS.
-            tipo_ctn = clave_vinculacion(getattr(notario_ctn, "vc", None))
-            if tipo_ctn in {"si", "vc", "video", "videoconferencia", "videoconference"}:
-                expediente.tipo_firma = "Videoconferencia"
-            elif tipo_ctn in {"no", "presencial", "p", "fisica"}:
-                expediente.tipo_firma = "Presencial"
+            _aplicar_tipo_firma_ctn(expediente, notario_ctn)
 
     nombre_apoderado = obtener_valor(row, "APODERADO")
     if nombre_apoderado:
