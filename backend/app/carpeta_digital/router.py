@@ -172,7 +172,7 @@ async def subir_documento(
     if categoria not in CATEGORIAS:
         raise HTTPException(status_code=400, detail="Categoría documental no válida")
 
-    nombre_original = Path(archivo.filename or "documento").name
+    nombre_original = (archivo.filename or "documento").replace("\\", "/").rsplit("/", 1)[-1]
     if not nombre_original or nombre_original in {".", ".."}:
         raise HTTPException(status_code=400, detail="Nombre de archivo no válido")
 
