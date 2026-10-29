@@ -13,6 +13,15 @@ from backend.app.seguridad.router import PLANTILLA_PERMISOS
 
 
 class RouteGuardPolicyTests(unittest.TestCase):
+    def test_existing_resource_post_actions_require_edit_not_create(self):
+        for path in (
+            "/api/utilidades/asignar-promocion",
+            "/api/utilidades/reasignar-gestor",
+            "/api/expedientes/provisiones-independientes/123/email",
+        ):
+            with self.subTest(path=path):
+                self.assertEqual(_resolver_accion(path, {"POST"}), "editar")
+
     def test_portal_access_routes_use_their_own_dynamic_permissions(self):
         expected = {
             "/api/ctn/accesos-portales/resumen",
