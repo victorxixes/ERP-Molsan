@@ -206,6 +206,7 @@ def vincular_documento_a_gasto(
     expediente_id: int,
     payload: VincularDocumentoCreate,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
     """Crea una obligación pendiente al adjuntar una factura en Gestión económica, sin marcarla pagada."""
     expediente = _obtener_expediente(db, expediente_id)
@@ -262,7 +263,7 @@ def vincular_documento_a_gasto(
 
 
 @router.get("/{expediente_id}/gastos/{gasto_id}/pagos")
-def listar_pagos_gasto(expediente_id: int, gasto_id: int, db: Session = Depends(get_db)):
+def listar_pagos_gasto(expediente_id: int, gasto_id: int, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     expediente = _obtener_expediente(db, expediente_id)
     gasto = db.query(ExpedienteGasto).filter(
         ExpedienteGasto.id == gasto_id,
@@ -303,6 +304,7 @@ def registrar_pago_gasto(
     gasto_id: int,
     payload: PagoCreate,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
     """Registra un movimiento real de pago, idempotente y compatible con pagos parciales."""
     expediente = _obtener_expediente(db, expediente_id)
