@@ -12,6 +12,7 @@ from backend.app.database import get_db
 from backend.app.auth.dependencies import get_current_user
 from backend.app.expedientes.gastos.models import ExpedienteGasto
 from backend.app.expedientes.models import Expediente
+from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
 
 router = APIRouter(prefix="/expedientes", tags=["Gastos de expedientes"])
 CENTIMO = Decimal("0.01")
@@ -211,6 +212,19 @@ def listar_gastos(expediente_id: int, db: Session = Depends(get_db), usuario=Dep
     return db.query(ExpedienteGasto).filter(ExpedienteGasto.expediente_id == expediente.id).order_by(ExpedienteGasto.fecha.desc(), ExpedienteGasto.id.desc()).all()
 
 
+def _validar_documento_economico(expediente, documento, tipo: str) -> None:
+    """Impide vincular a un gasto documentos de otro expediente o categoría."""
+    if documento is None or str(documento.expediente_id) != str(expediente.id_expediente):
+        # No revelar si existe un documento perteneciente a otro expediente.
+        raise HTTPException(status_code=404, detail="No se encontró el documento económico del expediente.")
+    categoria_documento = str(documento.categoria or "").strip().casefold()
+    if categoria_documento != str(tipo or "").strip().casefold():
+        raise HTTPException(
+            status_code=422,
+            detail="La categoría del documento no coincide con el concepto económico seleccionado.",
+        )
+
+
 @router.post("/{expediente_id}/gastos/vincular-documento", status_code=status.HTTP_201_CREATED)
 def vincular_documento_a_gasto(
     expediente_id: int,
@@ -231,6 +245,10 @@ def vincular_documento_a_gasto(
     tipo = categorias.get(clave)
     if not tipo:
         raise HTTPException(status_code=422, detail="Solo se pueden vincular facturas o justificantes económicos.")
+    documento = db.query(DocumentoCarpetaDigital).filter(
+        DocumentoCarpetaDigital.id == payload.documento_carpeta_id
+    ).first()
+    _validar_documento_economico(expediente, documento, tipo)
     existente = db.query(ExpedienteGasto).filter(
         ExpedienteGasto.expediente_id == expediente.id,
         ExpedienteGasto.documento_carpeta_id == payload.documento_carpeta_id,
