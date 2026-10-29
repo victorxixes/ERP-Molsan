@@ -18,7 +18,7 @@ La rama de trabajo cambia ese comportamiento:
 
 Se añadieron pruebas de regresión para conservar gestor, expediente sin gestor, valor 0 y acceso provisional. La ejecución de GitHub Actions «Backend audit» (run 99) ha pasado: compilación de módulos y suite completa de `backend/tests` con SQLite aislado, sin base de datos de producción. También han pasado las comprobaciones recientes de sintaxis backend y build frontend.
 
-**Limitación pendiente:** la lógica de acceso ya permite que el gestor conservado provisionalmente siga viendo ese expediente, y deja de hacerlo cuando el historial registra una asignación posterior. Se ha añadido el campo `gestor_asignacion_provisional` a la respuesta de detalle y al cambio de actividad, y una señal visual «Provisional» en la cabecera de la ficha. Sigue pendiente una bandeja operativa para consultar y resolver incidencias de forma centralizada.
+**Limitación pendiente:** la lógica de acceso ya permite que el gestor conservado provisionalmente siga viendo ese expediente, y deja de hacerlo cuando el historial registra una asignación posterior. Se ha añadido el campo `gestor_asignacion_provisional` a la respuesta de detalle y al cambio de actividad, y una señal visual «Provisional» en la cabecera de la ficha. El panel central ya incluye una vista de solo lectura de expedientes sin gestor, asignaciones provisionales y carga pendiente por gestor/actividad. Sigue pendiente una acción controlada para resolver incidencias y consultar el historial completo.
 
 ## Panel central de Asignaciones
 
@@ -26,15 +26,15 @@ La ruta `/herramientas/utilidades/asignaciones` existe y lleva a `Administracion
 
 La configuración se guarda en `empleados.reparto_actividades_json` y se lee/guarda mediante los endpoints de EncargaGest protegidos para administradores. Esto es coherente con mantener la ficha del empleado como fuente única de las reglas.
 
-Mejora recomendada pendiente: ampliar la pantalla central para supervisión (expedientes sin gestor, incidencias por falta de regla, carga por actividad y acceso al historial), sin crear una segunda fuente de configuración ni reasignar expedientes en masa.
+La pantalla central muestra ahora resumen de expedientes sin gestor, asignaciones provisionales, incidencias recientes y carga pendiente por gestor/actividad. La fuente de verdad sigue siendo `empleados.reparto_actividades_json`; el panel no modifica ni reasigna expedientes. Queda pendiente añadir filtros/paginación y un flujo de resolución controlada con historial completo.
 
 ## Validaciones pendientes
 
-1. Ejecutar las pruebas de regresión añadidas y la suite disponible del backend.
+1. [x] Ejecutar las pruebas de regresión y la suite del backend: 82 pruebas pasadas, 1 aviso de dependencia y 21 subtests, en SQLite aislado.
 2. Revisar las reglas de candidato y el cálculo de carga ponderada por porcentaje, con casos de actividad, oficina, territorio, producto, operación, estado, departamento y apoderado.
-3. Añadir una indicación visible de asignación provisional y una forma controlada de resolver la incidencia.
+3. [x] Añadir indicación visible de asignación provisional. [ ] Implementar resolución controlada de incidencias.
 4. Verificar que el panel central y la pestaña del empleado comparten la misma configuración y permisos.
-5. Ejecutar build/pruebas de frontend y comprobar el despliegue solo después de revisar y aprobar los cambios.
+5. [x] Build de frontend y sintaxis backend superados en GitHub Actions. [ ] Comprobar despliegue solo después de revisar y aprobar los cambios.
 6. Realizar las pruebas funcionales con expedientes de prueba/casi definitivos; no hacer reasignaciones masivas ni cambios en datos históricos durante la auditoría.
 
 ## Casos que debe revisar MOLSAN
@@ -53,7 +53,8 @@ Mejora recomendada pendiente: ampliar la pantalla central para supervisión (exp
 - [x] Ruta y función real del panel central identificadas.
 - [x] Pruebas automatizadas del backend ejecutadas y superadas en SQLite aislado.
 - [x] Estado provisional visible en la cabecera de la ficha.
-- [ ] Panel operativo de incidencias e historial.
+- [x] Panel central de solo lectura con incidencias recientes y carga por actividad.
+- [ ] Historial completo y resolución controlada de incidencias.
 - [x] Build frontend y sintaxis backend superados en GitHub Actions.
 - [ ] Validación funcional en Render/entorno de pruebas.
 - [ ] Pruebas funcionales con MOLSAN.
