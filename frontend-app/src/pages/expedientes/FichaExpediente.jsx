@@ -5543,6 +5543,14 @@ const cuantiaFincasParaEnvio =
               <div className="inline-flex max-w-[260px] items-center gap-1.5 rounded-lg border border-blue-100 bg-white px-2.5 py-2 text-[11px]">
                 <span className="whitespace-nowrap font-bold text-blue-700">Gestor asignado:</span>
                 <span className="truncate font-semibold text-slate-700">{expediente.gestor_asignado_nombre || "Pendiente de asignación"}</span>
+                {expediente.gestor_asignacion_provisional && (
+                  <span
+                    className="shrink-0 rounded-md border border-amber-300 bg-amber-50 px-1.5 py-1 text-[9px] font-extrabold uppercase tracking-wide text-amber-800"
+                    title="No se ha encontrado un gestor compatible con la actividad actual. Se conserva la asignación anterior de forma provisional; administración debe revisar las reglas."
+                  >
+                    ⚠ Provisional
+                  </span>
+                )}
               </div>
               <div className="inline-flex max-w-[300px] items-center gap-1.5 rounded-lg border border-emerald-100 bg-emerald-50 px-2.5 py-2 text-[11px]" title="Actividad actual del expediente">
                 <span className="whitespace-nowrap font-bold text-emerald-800">Actividad actual:</span>
