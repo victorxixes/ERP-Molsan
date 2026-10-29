@@ -5,7 +5,10 @@ Ejecutar desde la raíz con:
 """
 import unittest
 
-from backend.app.expedientes.reparto import asignar_gestor_automaticamente
+from backend.app.expedientes.reparto import (
+    asignar_gestor_automaticamente,
+    expediente_cumple_reglas_empleado,
+)
 
 class _QueryVacia:
     def __init__(self, modelo):
@@ -37,7 +40,36 @@ class _Expediente:
         self.gestor_asignado_id = gestor_asignado_id
 
 
+class _Empleado:
+    id = 27
+    reparto_actividades_json = []
+
+
 class RepartoSinCandidatoTests(unittest.TestCase):
+    def test_gestor_con_asignacion_provisional_conserva_acceso_al_expediente(self):
+        expediente = _Expediente(gestor_asignado_id=27)
+
+        visible = expediente_cumple_reglas_empleado(
+            db=None,
+            empleado=_Empleado(),
+            expediente=expediente,
+            asignaciones_provisionales={"TEST-REPARTO-001"},
+        )
+
+        self.assertTrue(visible)
+
+    def test_asignacion_no_provisional_no_elude_las_reglas_de_acceso(self):
+        expediente = _Expediente(gestor_asignado_id=27)
+
+        visible = expediente_cumple_reglas_empleado(
+            db=None,
+            empleado=_Empleado(),
+            expediente=expediente,
+            asignaciones_provisionales=set(),
+        )
+
+        self.assertFalse(visible)
+
     def test_conserva_gestor_y_registra_incidencia_si_no_hay_candidato(self):
         db = _DBSinCandidatos()
         expediente = _Expediente(gestor_asignado_id=27)
