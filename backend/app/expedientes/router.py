@@ -33,6 +33,7 @@ from backend.app.expediente_ppad.models import ExpedientePPAD
 from backend.app.honorarios_gestoria.models import HonorarioGestoria
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 from backend.app.expedientes.defectos.models import ExpedienteDefecto
+from backend.app.expedientes.gastos.models import ExpedienteGasto
 from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
 from backend.app.expedientes.reparto import (
     asignar_gestor_automaticamente,
@@ -1873,6 +1874,50 @@ def listado_expedientes(
     ]
     items = adjuntar_promociones_catalogo(db, items)
     items = agregar_resumen_carpeta_digital(db, items)
+
+    # Resumen contable de facturas para el listado general. El estado sale de
+    # la obligación económica; adjuntar el documento nunca equivale a pagarla.
+    ids_pagina = [item.get("id") for item in items if item.get("id") is not None]
+    resumen_facturas = {}
+    if ids_pagina:
+        tipos_factura = {
+            "factura notarial", "factura registral", "factura impuestos",
+            "ajd/itp", "ajd", "itp",
+        }
+        obligaciones = (
+            db.query(ExpedienteGasto)
+            .filter(ExpedienteGasto.expediente_id.in_(ids_pagina))
+            .all()
+        )
+        for gasto in obligaciones:
+            tipo = str(gasto.tipo or "").strip().lower()
+            if tipo not in tipos_factura:
+                continue
+            actual = resumen_facturas.setdefault(
+                gasto.expediente_id, {"pendientes": 0, "realizadas": 0, "parciales": 0}
+            )
+            estado_pago = str(gasto.estado_pago or "Pendiente").strip().lower()
+            if estado_pago in {"pagado", "pagada", "abonado", "abonada", "realizado", "realizada", "efectuado", "efectuada"}:
+                actual["realizadas"] += 1
+            elif estado_pago in {"anulado", "anulada", "anulado pago", "cancelado", "cancelada"}:
+                continue
+            else:
+                actual["pendientes"] += 1
+                if estado_pago in {"parcial", "pago parcial", "parcialmente pagado"}:
+                    actual["parciales"] += 1
+        for item in items:
+            resumen = resumen_facturas.get(item.get("id"), {"pendientes": 0, "realizadas": 0, "parciales": 0})
+            item["facturas_pendientes"] = resumen["pendientes"]
+            item["facturas_realizadas"] = resumen["realizadas"]
+            item["facturas_parciales"] = resumen["parciales"]
+            if resumen["pendientes"] and resumen["realizadas"]:
+                item["estado_facturas"] = f'{resumen["pendientes"]} pendiente(s) · {resumen["realizadas"]} pagada(s)'
+            elif resumen["pendientes"]:
+                item["estado_facturas"] = f'{resumen["pendientes"]} pendiente(s)'
+            elif resumen["realizadas"]:
+                item["estado_facturas"] = f'{resumen["realizadas"]} pagada(s)'
+            else:
+                item["estado_facturas"] = "—"
 
     return {
         "items": items,
