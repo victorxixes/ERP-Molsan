@@ -127,9 +127,19 @@ def _garantizar_tabla_pagos(db: Session):
             concepto VARCHAR(300) NOT NULL,
             medio_pago VARCHAR(100),
             idempotency_key VARCHAR(100) NOT NULL UNIQUE,
-            creado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+            creado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            anulado_en TIMESTAMP WITHOUT TIME ZONE NULL,
+            anulado_por INTEGER NULL,
+            motivo_anulacion TEXT NULL
         )
     """))
+    db.execute(text("ALTER TABLE public.expediente_gasto_pagos ADD COLUMN IF NOT EXISTS anulado_en TIMESTAMP WITHOUT TIME ZONE NULL"))
+    db.execute(text("ALTER TABLE public.expediente_gasto_pagos ADD COLUMN IF NOT EXISTS anulado_por INTEGER NULL"))
+    db.execute(text("ALTER TABLE public.expediente_gasto_pagos ADD COLUMN IF NOT EXISTS motivo_anulacion TEXT NULL"))
+
+
+class AnularPagoCreate(BaseModel):
+    motivo: str = Field(..., min_length=5, max_length=1000)
 
 
 class GastoResponse(GastoBase):
@@ -274,14 +284,14 @@ def listar_pagos_gasto(expediente_id: int, gasto_id: int, db: Session = Depends(
     try:
         _garantizar_tabla_pagos(db)
         filas = db.execute(text("""
-            SELECT id, gasto_id, fecha, importe, concepto, medio_pago, idempotency_key, creado_en
+            SELECT id, gasto_id, fecha, importe, concepto, medio_pago, idempotency_key, creado_en, anulado_en, anulado_por, motivo_anulacion
             FROM public.expediente_gasto_pagos
             WHERE gasto_id = :gasto_id
             ORDER BY fecha, id
         """), {"gasto_id": gasto.id}).mappings().all()
         total = db.execute(text("""
             SELECT COALESCE(SUM(importe), 0)
-            FROM public.expediente_gasto_pagos WHERE gasto_id = :gasto_id
+            FROM public.expediente_gasto_pagos WHERE gasto_id = :gasto_id AND anulado_en IS NULL
         """), {"gasto_id": gasto.id}).scalar()
         db.commit()
     except Exception as exc:
@@ -320,7 +330,7 @@ def registrar_pago_gasto(
     try:
         _garantizar_tabla_pagos(db)
         existente = db.execute(text("""
-            SELECT id, gasto_id, fecha, importe, concepto, medio_pago, idempotency_key, creado_en
+            SELECT id, gasto_id, fecha, importe, concepto, medio_pago, idempotency_key, creado_en, anulado_en, anulado_por, motivo_anulacion
             FROM public.expediente_gasto_pagos WHERE idempotency_key = :key
         """), {"key": payload.idempotency_key}).mappings().first()
         if existente:
@@ -328,7 +338,7 @@ def registrar_pago_gasto(
                 raise HTTPException(status_code=409, detail="La clave de operación ya se utilizó para otro gasto.")
             total = db.execute(text("""
                 SELECT COALESCE(SUM(importe), 0) FROM public.expediente_gasto_pagos
-                WHERE gasto_id = :gasto_id
+                WHERE gasto_id = :gasto_id AND anulado_en IS NULL
             """), {"gasto_id": gasto.id}).scalar()
             db.commit()
             total = _decimal_opcional(total) or Decimal("0.00")
@@ -340,7 +350,7 @@ def registrar_pago_gasto(
             }
         total_previo = _decimal_opcional(db.execute(text("""
             SELECT COALESCE(SUM(importe), 0) FROM public.expediente_gasto_pagos
-            WHERE gasto_id = :gasto_id
+            WHERE gasto_id = :gasto_id AND anulado_en IS NULL
         """), {"gasto_id": gasto.id}).scalar()) or Decimal("0.00")
         if total_previo + payload.importe > obligacion:
             raise HTTPException(
@@ -373,7 +383,7 @@ def registrar_pago_gasto(
                 SELECT COALESCE(SUM(p.importe), 0)
                 FROM public.expediente_gasto_pagos p
                 JOIN public.expediente_gastos g ON g.id = p.gasto_id
-                WHERE g.expediente_id = :expediente_id
+                WHERE g.expediente_id = :expediente_id AND p.anulado_en IS NULL
             """), {"expediente_id": expediente.id}).scalar()) or Decimal("0.00")
             historico_pagado = _decimal_opcional(db.execute(text("""
                 SELECT COALESCE(SUM(COALESCE(g.importe_resultante, g.importe, g.importe_total_bruto, 0)), 0)
@@ -401,6 +411,74 @@ def registrar_pago_gasto(
     except Exception as exc:
         db.rollback()
         raise HTTPException(status_code=500, detail="No se pudo registrar el pago. No se han confirmado cambios.") from exc
+
+
+@router.post("/{expediente_id}/gastos/{gasto_id}/pagos/{pago_id}/anular")
+def anular_pago_gasto(
+    expediente_id: int, gasto_id: int, pago_id: int, payload: AnularPagoCreate,
+    db: Session = Depends(get_db), usuario=Depends(get_current_user),
+):
+    """Anula un movimiento sin borrarlo; operación reservada a administradores."""
+    rol = str(getattr(getattr(usuario, "rol", None), "nombre", "") or "").strip().lower()
+    if not any(token in rol for token in ("admin", "administrador", "superadmin")):
+        raise HTTPException(status_code=403, detail="Solo un administrador puede anular un pago.")
+    expediente = _obtener_expediente(db, expediente_id)
+    gasto = db.query(ExpedienteGasto).filter(
+        ExpedienteGasto.id == gasto_id, ExpedienteGasto.expediente_id == expediente.id
+    ).with_for_update().first()
+    if gasto is None:
+        raise HTTPException(status_code=404, detail="No se encontró la obligación económica.")
+    try:
+        _garantizar_tabla_pagos(db)
+        pago = db.execute(text("""
+            SELECT id, importe, anulado_en FROM public.expediente_gasto_pagos
+            WHERE id = :pago_id AND gasto_id = :gasto_id FOR UPDATE
+        """), {"pago_id": pago_id, "gasto_id": gasto.id}).mappings().first()
+        if pago is None:
+            raise HTTPException(status_code=404, detail="No se encontró el movimiento de pago.")
+        if pago["anulado_en"] is not None:
+            raise HTTPException(status_code=409, detail="Este pago ya estaba anulado; se conserva su registro histórico.")
+        db.execute(text("""
+            UPDATE public.expediente_gasto_pagos
+            SET anulado_en = CURRENT_TIMESTAMP, anulado_por = :usuario_id, motivo_anulacion = :motivo
+            WHERE id = :pago_id AND gasto_id = :gasto_id AND anulado_en IS NULL
+        """), {"usuario_id": getattr(usuario, "id", None), "motivo": payload.motivo.strip(), "pago_id": pago_id, "gasto_id": gasto.id})
+        total = _decimal_opcional(db.execute(text("""
+            SELECT COALESCE(SUM(importe), 0) FROM public.expediente_gasto_pagos
+            WHERE gasto_id = :gasto_id AND anulado_en IS NULL
+        """), {"gasto_id": gasto.id}).scalar()) or Decimal("0.00")
+        obligacion = _decimal_opcional(gasto.importe_resultante if gasto.importe_resultante is not None else gasto.importe) or Decimal("0.00")
+        if total >= obligacion and obligacion > 0:
+            gasto.estado_pago, gasto.fecha_pago = "Pagado", date.today()
+        elif total > 0:
+            gasto.estado_pago, gasto.fecha_pago = "Parcial", None
+        else:
+            gasto.estado_pago, gasto.fecha_pago = "Pendiente", None
+        if expediente.importe is not None:
+            pagos_expediente = _decimal_opcional(db.execute(text("""
+                SELECT COALESCE(SUM(p.importe), 0)
+                FROM public.expediente_gasto_pagos p
+                JOIN public.expediente_gastos g ON g.id = p.gasto_id
+                WHERE g.expediente_id = :expediente_id AND p.anulado_en IS NULL
+            """), {"expediente_id": expediente.id}).scalar()) or Decimal("0.00")
+            historico_pagado = _decimal_opcional(db.execute(text("""
+                SELECT COALESCE(SUM(COALESCE(g.importe_resultante, g.importe, g.importe_total_bruto, 0)), 0)
+                FROM public.expediente_gastos g
+                WHERE g.expediente_id = :expediente_id
+                  AND lower(trim(coalesce(g.estado_pago, ''))) IN ('pagado', 'pagada', 'abonado', 'abonada', 'efectuado', 'efectuada')
+                  AND NOT EXISTS (SELECT 1 FROM public.expediente_gasto_pagos p WHERE p.gasto_id = g.id)
+            """), {"expediente_id": expediente.id}).scalar()) or Decimal("0.00")
+            expediente.saldo_disponible = _redondear(Decimal(str(expediente.importe)) - pagos_expediente - historico_pagado)
+        db.commit()
+        return {"ok": True, "pago_id": pago_id, "estado_pago": gasto.estado_pago,
+                "total_pagado": str(total), "saldo_pendiente": str(max(Decimal("0.00"), obligacion-total)),
+                "anulado_por": getattr(usuario, "id", None)}
+    except HTTPException:
+        db.rollback()
+        raise
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="No se pudo anular el pago; no se ha confirmado ningún cambio.") from exc
 
 
 @router.post("/{expediente_id}/gastos/{gasto_id}/integracion-absis")
@@ -496,9 +574,10 @@ def preparar_integracion_gasto_absis(
 
 
 @router.post("/{expediente_id}/gastos", response_model=GastoResponse, status_code=status.HTTP_201_CREATED)
-def crear_gasto(expediente_id: int, payload: GastoCreate, db: Session = Depends(get_db)):
+def crear_gasto(expediente_id: int, payload: GastoCreate, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     expediente = _obtener_expediente(db, expediente_id)
     datos = payload.dict(exclude_unset=True)
+    datos["estado_pago"] = "Pendiente"
     if not datos.get("tipo"):
         raise HTTPException(status_code=422, detail="El concepto del gasto es obligatorio.")
     # Compatibilidad con clientes antiguos: importe representa el neto cuando
@@ -524,12 +603,16 @@ def crear_gasto(expediente_id: int, payload: GastoCreate, db: Session = Depends(
 
 
 @router.put("/{expediente_id}/gastos/{gasto_id}", response_model=GastoResponse)
-def actualizar_gasto(expediente_id: int, gasto_id: int, payload: GastoUpdate, db: Session = Depends(get_db)):
+def actualizar_gasto(expediente_id: int, gasto_id: int, payload: GastoUpdate, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     expediente = _obtener_expediente(db, expediente_id)
     gasto = db.query(ExpedienteGasto).filter(ExpedienteGasto.id == gasto_id, ExpedienteGasto.expediente_id == expediente.id).first()
     if gasto is None:
         raise HTTPException(status_code=404, detail="No se encontró el gasto.")
     datos = payload.dict(exclude_unset=True)
+    estado_actual = str(gasto.estado_pago or "Pendiente").strip().lower()
+    estado_solicitado = str(datos.get("estado_pago", gasto.estado_pago or "Pendiente")).strip().lower()
+    if estado_solicitado != estado_actual:
+        raise HTTPException(status_code=422, detail="El estado de pago solo cambia al registrar o anular un movimiento real de pago.")
     _validar_calculo(datos)
     # Una obligación no puede rebajarse por debajo de los pagos ya registrados.
     _garantizar_tabla_pagos(db)
@@ -556,7 +639,7 @@ def actualizar_gasto(expediente_id: int, gasto_id: int, payload: GastoUpdate, db
 
 
 @router.delete("/{expediente_id}/gastos/{gasto_id}", status_code=status.HTTP_204_NO_CONTENT)
-def eliminar_gasto(expediente_id: int, gasto_id: int, db: Session = Depends(get_db)):
+def eliminar_gasto(expediente_id: int, gasto_id: int, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     expediente = _obtener_expediente(db, expediente_id)
     gasto = db.query(ExpedienteGasto).filter(ExpedienteGasto.id == gasto_id, ExpedienteGasto.expediente_id == expediente.id).first()
     if gasto is None:
