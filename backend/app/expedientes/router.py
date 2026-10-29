@@ -112,6 +112,7 @@ REPOSITORIOS_VISIBILIDAD = [
     {"key": "ajd_itp_documentos", "label": "AJD / ITP", "categoria": "AJD/ITP"},
     {"key": "otros_impuestos_documentos", "label": "Otros impuestos", "categoria": "Otros impuestos"},
     {"key": "hoja_inscripcion_documentos", "label": "Hoja de inscripción", "categoria": "Hoja de Inscripción"},
+    {"key": "factura_registro_documentos", "label": "Factura registro", "categoria": "Factura registro"},
     {"key": "defecto_registral", "label": "Defecto registral", "categoria": "Defecto registral"},
     {"key": "subsanacion_defecto", "label": "Subsanación del defecto", "categoria": "Subsanación del defecto"},
     {"key": "expediente_digital_completo_documentos", "label": "Expediente digital completo", "categoria": "Expediente digital completo"},
