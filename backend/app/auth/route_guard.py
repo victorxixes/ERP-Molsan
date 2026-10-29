@@ -92,6 +92,7 @@ _PREFIJOS_MODULO = (
     ("/api/dashboard", "dashboard"),
     # El catálogo de permisos no define un módulo "informes" independiente.
     # Los informes y exportaciones generales se gestionan dentro de utilidades.
+    ("/api/informes-sla", "utilidades"),
     ("/api/informes", "utilidades"),
     ("/api/utilidades", "utilidades"),
     ("/api/absis", "utilidades"),
