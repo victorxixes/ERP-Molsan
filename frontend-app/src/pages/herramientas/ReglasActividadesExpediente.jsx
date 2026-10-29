@@ -37,7 +37,7 @@ export default function ReglasActividadesExpediente() {
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-indigo-600">Configuración del expediente</p>
               <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Reglas de actividades expediente</h1>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Define los documentos, campos y validaciones que deben cumplirse en cada fase del expediente. Esta primera regla cubre Documentación previa y el envío a notaría.</p>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Define los documentos, campos y validaciones que deben cumplirse en cada fase del expediente. Configura por separado las tres reglas de avance: documentación previa, protocolo notarial y cierre de la fase notarial.</p>
             </div>
           </div>
           <Link to="/herramientas/utilidades" className="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50">← Volver a Utilidades</Link>
@@ -47,14 +47,14 @@ export default function ReglasActividadesExpediente() {
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Resumen icono="📂" titulo="Actividad inicial" valor="Documentación previa" />
         <Resumen icono="📄" titulo="Documentos requeridos" valor={`${documentosActivos} de ${DOCUMENTOS_INICIALES.length}`} />
-        <Resumen icono="📨" titulo="Siguiente paso" valor="Envío a notario" />
+        <Resumen icono="📨" titulo="Reglas definidas" valor="3 actividades" />
       </section>
 
       <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-indigo-600">Regla 01</p>
-            <h2 className="mt-1 text-lg font-bold text-slate-800">Documentación previa → Envío a notario</h2>
+            <h2 className="mt-1 text-lg font-bold text-slate-800">Documentación previa → Sede notarial</h2>
             <p className="mt-1 text-sm text-slate-500">Los tres documentos deben existir en la carpeta digital del resumen del expediente para dar por preparada la documentación.</p>
           </div>
           <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800">Borrador de configuración</span>
@@ -80,7 +80,7 @@ export default function ReglasActividadesExpediente() {
             </div>
             <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4 text-sm leading-5 text-blue-900">
               <strong>Condición de avance</strong>
-              <p className="mt-1">El envío a notaría queda preparado cuando están los documentos marcados como requeridos. La comprobación automática de la carpeta digital deberá conectarse a la lógica real del expediente.</p>
+              <p className="mt-1">El envío a notaría se registra con su fecha. Una vez registrada la fecha de envío, la actividad cambia automáticamente a Sede notarial, siempre que estén los tres documentos requeridos.</p>
             </div>
           </div>
 
@@ -127,10 +127,63 @@ export default function ReglasActividadesExpediente() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-semibold text-slate-800">3. Integración con ICAM I / ABSIS</p>
-              <p className="mt-1 max-w-3xl text-sm leading-5 text-slate-500">La API debe enviar los campos y los repositorios digitales de la ventana modal «Datos de actividad». Esta integración queda identificada como trabajo técnico pendiente; todavía no se realiza ningún envío externo desde esta pantalla.</p>
+              <p className="mt-1 max-w-3xl text-sm leading-5 text-slate-500">Al entrar en Sede notarial, la integración debe enviar a ABSIS los campos y repositorios digitales de la ventana modal «Datos de actividad». Esta integración queda identificada como trabajo técnico pendiente; todavía no se realiza ningún envío externo desde esta pantalla.</p>
             </div>
             <span className="shrink-0 rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800">Pendiente de desarrollo API</span>
           </div>
+        </div>
+      </section>
+
+      <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-indigo-600">Regla 02</p>
+            <h2 className="mt-1 text-lg font-bold text-slate-800">Sede notarial → Sede notarial con protocolo</h2>
+            <p className="mt-1 text-sm text-slate-500">La fecha de firma y el protocolo se reciben desde ApoderaGest cuando el apoderado informa de la firma de la escritura.</p>
+          </div>
+          <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800">Integración pendiente</span>
+        </div>
+        <div className="grid gap-4 p-5 sm:p-6 md:grid-cols-2">
+          <Condicion titulo="Origen de los datos" texto="ApoderaGest debe informar la fecha de firma y el número de protocolo del expediente." />
+          <Condicion titulo="Condición de avance" texto="Cuando la fecha de firma y el protocolo estén informados y validados, la actividad pasa a Sede notarial con protocolo." />
+          <Condicion titulo="Al entrar en Sede notarial" texto="Enviar a ABSIS los campos y repositorios digitales definidos en el modal Datos de actividad." />
+          <Condicion titulo="Control de integridad" texto="Si falta la fecha de firma o el protocolo, el expediente permanece en Sede notarial y se muestra qué dato falta." />
+        </div>
+        <div className="border-t border-slate-100 bg-slate-50/60 px-5 py-4 sm:px-6">
+          <p className="text-sm leading-5 text-slate-600">Pendiente del técnico: conectar el evento de ApoderaGest, validar los datos recibidos y desarrollar el envío de datos a ABSIS con trazabilidad de errores.</p>
+        </div>
+      </section>
+
+      <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-indigo-600">Regla 03</p>
+            <h2 className="mt-1 text-lg font-bold text-slate-800">Sede notarial con protocolo → Tramitación inscripción</h2>
+            <p className="mt-1 text-sm text-slate-500">Validación de campos y documentos recibidos desde NotarGest / Visión Notarios.</p>
+          </div>
+          <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800">OCR/PDF pendiente</span>
+        </div>
+        <div className="space-y-5 p-5 sm:p-6">
+          <div>
+            <h3 className="text-sm font-bold text-slate-800">Campos que deben estar informados</h3>
+            <p className="mt-1 text-sm text-slate-500">No se avanza de actividad hasta que todos los campos obligatorios estén detectados o validados.</p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {["Notario", "NIF del notario", "Gestoría", "Fecha de presentación", "Entrada", "Asiento", "Diario"].map((campo) => (
+              <div key={campo} className="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm font-medium text-slate-700">
+                <span className="h-2 w-2 rounded-full bg-indigo-500" />{campo}
+              </div>
+            ))}
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Condicion titulo="Documentos requeridos" texto="Copia simple y hoja de presentación deben estar subidas en los repositorios de NotarGest / Visión Notarios." />
+            <Condicion titulo="Extracción de datos PDF" texto="Un proceso de lectura/extracción debe detectar los campos en los PDF y asociarlos al expediente. Los datos detectados deben poder revisarse y corregirse si la extracción no es fiable." />
+            <Condicion titulo="Condición de avance" texto="Solo pasar a Tramitación inscripción cuando estén presentes ambos documentos y todos los campos obligatorios estén completos y validados." />
+            <Condicion titulo="Si falta información" texto="Mantener Sede notarial con protocolo, mostrar los campos o documentos pendientes y no avanzar automáticamente." />
+          </div>
+        </div>
+        <div className="border-t border-slate-100 bg-slate-50/60 px-5 py-4 sm:px-6">
+          <p className="text-sm leading-5 text-slate-600">Pendiente del técnico: conexión con NotarGest / Visión Notarios, extracción PDF/OCR, validación de campos, detección de documentos y pruebas con expedientes reales.</p>
         </div>
       </section>
 
@@ -141,6 +194,15 @@ export default function ReglasActividadesExpediente() {
         <button type="button" onClick={guardarVista} className="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700">Revisar configuración</button>
       </div>
     </main>
+  );
+}
+
+function Condicion({ titulo, texto }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 p-4">
+      <p className="text-sm font-semibold text-slate-800">{titulo}</p>
+      <p className="mt-1 text-sm leading-5 text-slate-500">{texto}</p>
+    </div>
   );
 }
 
