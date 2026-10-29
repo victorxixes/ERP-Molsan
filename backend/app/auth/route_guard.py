@@ -127,6 +127,7 @@ _POST_ES_EDICION = (
     "/mover",
     "/aceptar",
     "/anular",
+    "/admin/periodos",
     "/firmar",
     "/reparar",
     "/sincronizar",
@@ -190,8 +191,18 @@ def _ya_tiene_permiso(dependant: Any, modulo: str, accion: str) -> bool:
     return False
 
 
-def _resolver_modulo(path: str) -> str | None:
+def _resolver_modulo(path: str, methods: set[str] | None = None) -> str | None:
     path = _normalizar_path(path)
+    metodos = {str(m).upper() for m in (methods or set())}
+
+    # Los endpoints administrativos de fichajes usan el módulo específico
+    # Control de Fichajes; los endpoints personales usan Fichajes.
+    if path == "/api/fichajes/catalogo-ausencias" and "POST" in metodos:
+        return "control-fichajes"
+    if path == "/api/fichajes/admin" or path.startswith("/api/fichajes/admin/"):
+        return "control-fichajes"
+    if path == "/api/fichajes" or path.startswith("/api/fichajes/"):
+        return "fichajes"
 
     # El bloqueo/desbloqueo de empleados está implementado en el router de
     # seguridad/asignar, pero su dependencia funcional exige empleados:editar.
@@ -362,7 +373,7 @@ def proteger_rutas_api(app: Any) -> dict[str, int]:
             route.dependant.dependencies.append(dependencia_auth)
             autenticadas += 1
 
-        modulo = _resolver_modulo(path)
+        modulo = _resolver_modulo(path, getattr(route, "methods", None))
         if not modulo:
             sin_mapeo.append(path)
             if not _ya_tiene_auditoria(route.dependant):
