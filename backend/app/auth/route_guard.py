@@ -155,6 +155,7 @@ _POST_ES_EDICION = (
     "/asignar-promocion",
     "/reasignar-gestor",
     "/provisiones-independientes/",
+    "/integracion-absis",
     "/informes-sla/fechas/",
     "/reparto/asignar-pendientes",
     "/add_columna_gestoria_expedientes",
