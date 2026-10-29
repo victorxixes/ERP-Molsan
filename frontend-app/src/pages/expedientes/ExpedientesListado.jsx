@@ -659,6 +659,7 @@ const CATEGORIAS_POR_REPOSITORIO = {
   ajd_itp_documentos: ["AJD/ITP", "AJD / ITP", "AJD ITP"],
   otros_impuestos_documentos: ["Otros impuestos"],
   hoja_inscripcion_documentos: ["Hoja de Inscripción", "Hoja de inscripcion"],
+  factura_registro_documentos: ["Factura registro"],
   defecto_registral: ["Defecto registral"],
   subsanacion_defecto: ["Subsanación del defecto", "Subsanacion del defecto"],
   escritura_digital_final_documentos: ["Escritura digital final"],
