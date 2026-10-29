@@ -146,6 +146,7 @@ _POST_ES_EDICION = (
     "/anular",
     "/informes-sla/fechas/",
     "/reparto/asignar-pendientes",
+    "/add_columna_gestoria_expedientes",
     "/admin/periodos",
     "/firmar",
     "/reparar",
@@ -224,6 +225,8 @@ def _resolver_modulo(path: str, methods: set[str] | None = None) -> str | None:
     if path in {
         "/api/expedientes/migraciones/actividades",
         "/api/expedientes/reparto/asignar-pendientes",
+        "/api/expedientes/gastos/migracion/aplicar",
+        "/api/utilidades/add_columna_gestoria_expedientes",
     }:
         return "seguridad"
 
