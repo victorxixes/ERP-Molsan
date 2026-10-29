@@ -10,6 +10,8 @@ from sqlalchemy import text, or_
 import os
 import inspect
 
+from backend.app.storage import FOTOS_DIR as STORAGE_FOTOS_DIR
+
 
 # ============================================================
 # APP
@@ -117,13 +119,19 @@ app.mount(
 # STATIC — FOTOS PROTEGIDAS
 # ============================================================
 
-FOTOS_DIR = os.path.join(STATIC_DIR, "fotos")
+# Las fotos nuevas se sirven desde el almacenamiento central persistente.
+# Se mantiene lectura de la carpeta histórica para no romper fotos existentes.
+FOTOS_DIR = str(STORAGE_FOTOS_DIR)
 os.makedirs(FOTOS_DIR, exist_ok=True)
+LEGACY_FOTOS_DIR = os.path.join(STATIC_DIR, "fotos")
+os.makedirs(LEGACY_FOTOS_DIR, exist_ok=True)
 
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 
 FOTOS_ROOT = Path(FOTOS_DIR).resolve()
+LEGACY_FOTOS_ROOT = Path(LEGACY_FOTOS_DIR).resolve()
+FOTOS_ROOTS = (FOTOS_ROOT, LEGACY_FOTOS_ROOT)
 EXTENSIONES_FOTO_PERMITIDAS = {
     ".jpg",
     ".jpeg",
@@ -140,15 +148,20 @@ def servir_fotografia_empleado(
 ):
     require_perm_modulo(usuario, "empleados", "ver")
 
-    fichero = (FOTOS_ROOT / ruta).resolve()
-
-    if FOTOS_ROOT not in fichero.parents or not fichero.is_file():
+    if Path(ruta).suffix.lower() not in EXTENSIONES_FOTO_PERMITIDAS:
         raise HTTPException(
             status_code=404,
             detail="Fotografía no encontrada",
         )
 
-    if fichero.suffix.lower() not in EXTENSIONES_FOTO_PERMITIDAS:
+    fichero = None
+    for raiz in FOTOS_ROOTS:
+        candidata = (raiz / ruta).resolve()
+        if raiz in candidata.parents and candidata.is_file():
+            fichero = candidata
+            break
+
+    if fichero is None:
         raise HTTPException(
             status_code=404,
             detail="Fotografía no encontrada",
