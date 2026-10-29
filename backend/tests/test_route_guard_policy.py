@@ -72,6 +72,7 @@ class RouteGuardPolicyTests(unittest.TestCase):
     def test_security_maintenance_posts_use_edit_permission(self):
         for path in (
             "/api/seguridad/permisos/crear-base",
+            "/api/seguridad/roles",
             "/api/admin/install-unaccent",
             "/api/mantenimiento-defectos/migrar",
         ):
