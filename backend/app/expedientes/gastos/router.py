@@ -4,7 +4,7 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import text
+from sqlalchemy import func, text
 from pydantic import BaseModel, Field, validator
 from sqlalchemy.orm import Session
 
@@ -226,6 +226,15 @@ def vincular_documento_a_gasto(
     ).first()
     if existente:
         return {"ok": True, "duplicado": True, "gasto": existente}
+    # La misma factura puede volver a subirse y recibir un nuevo ID documental.
+    # Evitamos crear otra obligación si coinciden expediente, concepto y nombre.
+    existente_mismo_nombre = db.query(ExpedienteGasto).filter(
+        ExpedienteGasto.expediente_id == expediente.id,
+        ExpedienteGasto.tipo == tipo,
+        func.lower(func.trim(ExpedienteGasto.descripcion)) == payload.nombre_documento.strip().lower(),
+    ).first()
+    if existente_mismo_nombre:
+        return {"ok": True, "duplicado": True, "gasto": existente_mismo_nombre}
     gasto = ExpedienteGasto(
         expediente_id=expediente.id,
         tipo=tipo,
