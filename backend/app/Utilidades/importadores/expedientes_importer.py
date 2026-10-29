@@ -137,6 +137,12 @@ def obtener_columna_real(
     return None
 
 
+def _asignar_si_informado(objeto, campo: str, valor):
+    """No sobrescribe datos existentes con celdas Excel vacías o fechas inválidas."""
+    if valor is not None:
+        setattr(objeto, campo, valor)
+
+
 def obtener_valor(row, *columnas):
     """
     Devuelve el primer valor válido encontrado.
@@ -816,141 +822,229 @@ def importar_excel_expedientes(
             # ESTADOS
             # ------------------------------------------------
 
-            exp.estado_expediente = obtener_valor(
-                row,
-                "ESTADOEXPEDIENTE",
+            _asignar_si_informado(
+                exp,
+                "estado_expediente",
+                obtener_valor(
+                    row,
+                    "ESTADOEXPEDIENTE",
+                    ),
             )
 
-            exp.estado_expediente_ancert = obtener_valor(
-                row,
-                "ESTADOEXPEDIENTEANCERT",
+            _asignar_si_informado(
+                exp,
+                "estado_expediente_ancert",
+                obtener_valor(
+                    row,
+                    "ESTADOEXPEDIENTEANCERT",
+                    ),
             )
 
             # ------------------------------------------------
             # FECHAS
             # ------------------------------------------------
 
-            exp.fecha_alta = convertir_fecha(
-                row.get(
+            _asignar_si_informado(
+                exp,
+                "fecha_alta",
+                convertir_fecha(
+                    row.get(
                     columna_fecha_alta
-                )
+                    )
+                    ),
             )
 
-            exp.fecha_firma = convertir_fecha(
-                obtener_valor(
+            _asignar_si_informado(
+                exp,
+                "fecha_firma",
+                convertir_fecha(
+                    obtener_valor(
                     row,
                     "FECHAFIRMA",
-                )
+                    )
+                    ),
             )
 
-            exp.fecha_inscripcion = convertir_fecha(
-                obtener_valor(
+            _asignar_si_informado(
+                exp,
+                "fecha_inscripcion",
+                convertir_fecha(
+                    obtener_valor(
                     row,
                     "FECHAINSCRIPCION",
-                )
+                    )
+                    ),
             )
 
-            exp.fecha_entregado_cliente = convertir_fecha(
-                obtener_valor(
+            _asignar_si_informado(
+                exp,
+                "fecha_entregado_cliente",
+                convertir_fecha(
+                    obtener_valor(
                     row,
                     "FECHAENTREGADOCLIENTE",
-                )
+                    )
+                    ),
             )
 
-            exp.fecha_prevista_firma = convertir_fecha(
-                obtener_valor(
+            _asignar_si_informado(
+                exp,
+                "fecha_prevista_firma",
+                convertir_fecha(
+                    obtener_valor(
                     row,
                     "FECHAPREVISTAFIRMA",
-                )
+                    )
+                    ),
             )
 
-            exp.fecha_vencimiento = convertir_fecha(
-                obtener_valor(
+            _asignar_si_informado(
+                exp,
+                "fecha_vencimiento",
+                convertir_fecha(
+                    obtener_valor(
                     row,
                     "FECHAVENCIMIENTO",
-                )
+                    )
+                    ),
             )
 
-            exp.fecha_sol_cgn = convertir_fecha(
-                obtener_valor(
+            _asignar_si_informado(
+                exp,
+                "fecha_sol_cgn",
+                convertir_fecha(
+                    obtener_valor(
                     row,
                     "FECHASOLCGN",
-                )
+                    )
+                    ),
             )
 
-            exp.fecha_firma_prev_val = convertir_fecha(
-                obtener_valor(
+            _asignar_si_informado(
+                exp,
+                "fecha_firma_prev_val",
+                convertir_fecha(
+                    obtener_valor(
                     row,
                     "FECHAFIRMAPREVVAL",
-                )
+                    )
+                    ),
             )
 
-            exp.fecha_firma_prev_cli = convertir_fecha(
-                obtener_valor(
+            _asignar_si_informado(
+                exp,
+                "fecha_firma_prev_cli",
+                convertir_fecha(
+                    obtener_valor(
                     row,
                     "FECHAFIRMAPREVCLI",
-                )
+                    )
+                    ),
             )
 
-            exp.fecha_inicio_actividad = convertir_fecha(
-                obtener_valor(
+            _asignar_si_informado(
+                exp,
+                "fecha_inicio_actividad",
+                convertir_fecha(
+                    obtener_valor(
                     row,
                     "FECHAINICIOACTIVIDAD",
-                )
+                    )
+                    ),
             )
 
-            exp.fecha_fin_actividad = convertir_fecha(
-                obtener_valor(
+            _asignar_si_informado(
+                exp,
+                "fecha_fin_actividad",
+                convertir_fecha(
+                    obtener_valor(
                     row,
                     "FECHAFINACTIVIDAD",
-                )
+                    )
+                    ),
             )
 
             # Datos de seguimiento que pueden venir en la matriz ABSIS.
             valor_ultima_accion = obtener_valor(row, "ULTIMAACCION")
             if valor_ultima_accion is not None:
-                exp.ultima_accion = str(valor_ultima_accion).strip()[:500] or None
+                _asignar_si_informado(
+                    exp,
+                    "ultima_accion",
+                    str(valor_ultima_accion).strip()[:500] or None,
+                )
             fecha_ultima_accion = convertir_fecha(obtener_valor(row, "FECHAULTIMAACCION"))
             if fecha_ultima_accion is not None:
-                exp.fecha_ultima_accion = fecha_ultima_accion
+                _asignar_si_informado(
+                    exp,
+                    "fecha_ultima_accion",
+                    fecha_ultima_accion,
+                )
             for campo, encabezado in (("sol", "SOL"), ("cs", "CS"), ("ns", "NS")):
                 valor = obtener_valor(row, encabezado)
                 if valor is not None:
                     setattr(exp, campo, str(valor).strip()[:100] or None)
             fecha_solicitud_pnc = convertir_fecha(obtener_valor(row, "FECHASOLICITUDPNC"))
             if fecha_solicitud_pnc is not None:
-                exp.fecha_solicitud_pnc = fecha_solicitud_pnc
+                _asignar_si_informado(
+                    exp,
+                    "fecha_solicitud_pnc",
+                    fecha_solicitud_pnc,
+                )
             numero_solicitud_pnc = obtener_valor(row, "NUMEROSOLICITUDPNC")
             if numero_solicitud_pnc is not None:
-                exp.numero_solicitud_pnc = str(numero_solicitud_pnc).strip()[:200] or None
+                _asignar_si_informado(
+                    exp,
+                    "numero_solicitud_pnc",
+                    str(numero_solicitud_pnc).strip()[:200] or None,
+                )
 
             # Importar las fechas de envío si están presentes en la matriz ABSIS.
             fecha_envio_notario = convertir_fecha(obtener_valor(row, "FECHAENVIONOTARIO"))
             if fecha_envio_notario is not None:
-                exp.fecha_envio_notario = fecha_envio_notario
+                _asignar_si_informado(
+                    exp,
+                    "fecha_envio_notario",
+                    fecha_envio_notario,
+                )
             fecha_envio = convertir_fecha(obtener_valor(row, "FECHAENVIO"))
             if fecha_envio is not None:
-                exp.fecha_envio = fecha_envio
+                _asignar_si_informado(
+                    exp,
+                    "fecha_envio",
+                    fecha_envio,
+                )
 
-            exp.fcierre_defecto = convertir_fecha(
-                obtener_valor(
+            _asignar_si_informado(
+                exp,
+                "fcierre_defecto",
+                convertir_fecha(
+                    obtener_valor(
                     row,
                     "FCIERREDEFECTO",
-                )
+                    )
+                    ),
             )
 
             # ------------------------------------------------
             # ACTIVIDAD
             # ------------------------------------------------
 
-            exp.actividad_actual = obtener_valor(
-                row,
-                "ACTIVIDADACTUAL",
+            _asignar_si_informado(
+                exp,
+                "actividad_actual",
+                obtener_valor(
+                    row,
+                    "ACTIVIDADACTUAL",
+                    ),
             )
 
-            exp.estado_actividad = obtener_valor(
-                row,
-                "ESTADOACTIVIDAD",
+            _asignar_si_informado(
+                exp,
+                "estado_actividad",
+                obtener_valor(
+                    row,
+                    "ESTADOACTIVIDAD",
+                    ),
             )
 
             # ------------------------------------------------
@@ -959,11 +1053,19 @@ def importar_excel_expedientes(
 
             valor = obtener_valor(row, "NOMBRESOLICITANTE")
             if valor is not None:
-                exp.nombre_solicitante = valor
+                _asignar_si_informado(
+                    exp,
+                    "nombre_solicitante",
+                    valor,
+                )
 
             valor = obtener_valor(row, "NIFSOLICITANTE")
             if valor is not None:
-                exp.nif_solicitante = valor
+                _asignar_si_informado(
+                    exp,
+                    "nif_solicitante",
+                    valor,
+                )
 
             # ------------------------------------------------
             # TITULAR
@@ -971,11 +1073,19 @@ def importar_excel_expedientes(
 
             valor = obtener_valor(row, "NOMBRETITULAR")
             if valor is not None:
-                exp.nombre_titular = valor
+                _asignar_si_informado(
+                    exp,
+                    "nombre_titular",
+                    valor,
+                )
 
             valor = obtener_valor(row, "NIFTITULAR")
             if valor is not None:
-                exp.nif_titular = valor
+                _asignar_si_informado(
+                    exp,
+                    "nif_titular",
+                    valor,
+                )
 
             # ------------------------------------------------
             # APODERADO
@@ -983,7 +1093,11 @@ def importar_excel_expedientes(
 
             valor = obtener_valor(row, "APODERADO")
             if valor is not None:
-                exp.apoderado = valor
+                _asignar_si_informado(
+                    exp,
+                    "apoderado",
+                    valor,
+                )
 
             # ------------------------------------------------
             # NOTARIO
@@ -991,15 +1105,27 @@ def importar_excel_expedientes(
 
             valor = obtener_valor(row, "NOMBRENOTARIO")
             if valor is not None:
-                exp.nombre_notario = valor
+                _asignar_si_informado(
+                    exp,
+                    "nombre_notario",
+                    valor,
+                )
 
             valor = obtener_valor(row, "NIFNOTARIO")
             if valor is not None:
-                exp.nif_notario = valor
+                _asignar_si_informado(
+                    exp,
+                    "nif_notario",
+                    valor,
+                )
 
             valor = obtener_valor(row, "NOTARIO", "NOMBRENOTARIO")
             if valor is not None:
-                exp.notario = valor
+                _asignar_si_informado(
+                    exp,
+                    "notario",
+                    valor,
+                )
 
             # Campos de firma/documento que ABSIS pueda aportar. Solo se
             # actualizan si vienen informados para no borrar datos operativos.
@@ -1025,19 +1151,31 @@ def importar_excel_expedientes(
             # OFICINA
             # ------------------------------------------------
 
-            exp.oficina = obtener_valor(
-                row,
-                "OFICINA",
+            _asignar_si_informado(
+                exp,
+                "oficina",
+                obtener_valor(
+                    row,
+                    "OFICINA",
+                    ),
             )
 
-            exp.oficina_alta = obtener_valor(
-                row,
-                "OFICINAALTA",
+            _asignar_si_informado(
+                exp,
+                "oficina_alta",
+                obtener_valor(
+                    row,
+                    "OFICINAALTA",
+                    ),
             )
 
-            exp.dan = obtener_valor(
-                row,
-                "DAN",
+            _asignar_si_informado(
+                exp,
+                "dan",
+                obtener_valor(
+                    row,
+                    "DAN",
+                    ),
             )
 
             # ------------------------------------------------
@@ -1046,19 +1184,35 @@ def importar_excel_expedientes(
 
             valor = convertir_numero(obtener_valor(row, "CAPITAL"))
             if valor is not None:
-                exp.capital = valor
+                _asignar_si_informado(
+                    exp,
+                    "capital",
+                    valor,
+                )
 
             valor = convertir_numero(obtener_valor(row, "IMPORTE"))
             if valor is not None:
-                exp.importe = valor
+                _asignar_si_informado(
+                    exp,
+                    "importe",
+                    valor,
+                )
 
             valor = convertir_numero(obtener_valor(row, "SALDOREAL"))
             if valor is not None:
-                exp.saldo_real = valor
+                _asignar_si_informado(
+                    exp,
+                    "saldo_real",
+                    valor,
+                )
 
             valor = convertir_numero(obtener_valor(row, "SALDODISPONIBLE"))
             if valor is not None:
-                exp.saldo_disponible = valor
+                _asignar_si_informado(
+                    exp,
+                    "saldo_disponible",
+                    valor,
+                )
 
             # ------------------------------------------------
             # PROVISIÓN
@@ -1066,11 +1220,19 @@ def importar_excel_expedientes(
 
             valor = obtener_valor(row, "IDPROVISION")
             if valor is not None:
-                exp.id_provision = valor
+                _asignar_si_informado(
+                    exp,
+                    "id_provision",
+                    valor,
+                )
 
             valor = obtener_valor(row, "TIPOPROVISION")
             if valor is not None:
-                exp.tipo_provision = valor
+                _asignar_si_informado(
+                    exp,
+                    "tipo_provision",
+                    valor,
+                )
 
             # ------------------------------------------------
             # OPERACIÓN
@@ -1078,67 +1240,115 @@ def importar_excel_expedientes(
 
             valor = obtener_valor(row, "CONTRATO")
             if valor is not None:
-                exp.contrato = valor
+                _asignar_si_informado(
+                    exp,
+                    "contrato",
+                    valor,
+                )
 
             valor = obtener_valor(row, "NUMSOLICITUDSIA")
             if valor is not None:
-                exp.num_solicitud_sia = valor
+                _asignar_si_informado(
+                    exp,
+                    "num_solicitud_sia",
+                    valor,
+                )
 
             valor = obtener_valor(row, "TIPOOPERACION")
             if valor is not None:
-                exp.tipo_operacion = valor
+                _asignar_si_informado(
+                    exp,
+                    "tipo_operacion",
+                    valor,
+                )
 
             valor = obtener_valor(row, "SUBTIPOOPERACION")
             if valor is not None:
-                exp.subtipo_operacion = valor
+                _asignar_si_informado(
+                    exp,
+                    "subtipo_operacion",
+                    valor,
+                )
 
-            exp.vinccanc = obtener_valor(
-                row,
-                "VINCCANC",
+            _asignar_si_informado(
+                exp,
+                "vinccanc",
+                obtener_valor(
+                    row,
+                    "VINCCANC",
+                    ),
             )
 
-            exp.protocolo = obtener_valor(
-                row,
-                "PROTOCOLO",
+            _asignar_si_informado(
+                exp,
+                "protocolo",
+                obtener_valor(
+                    row,
+                    "PROTOCOLO",
+                    ),
             )
 
             # ------------------------------------------------
             # GTG / BANKIA
             # ------------------------------------------------
 
-            exp.origen_bankia = obtener_valor(
-                row,
-                "ORIGENBANKIA",
+            _asignar_si_informado(
+                exp,
+                "origen_bankia",
+                obtener_valor(
+                    row,
+                    "ORIGENBANKIA",
+                    ),
             )
 
-            exp.producto_gtg = obtener_valor(
-                row,
-                "PRODUCTOGTG",
+            _asignar_si_informado(
+                exp,
+                "producto_gtg",
+                obtener_valor(
+                    row,
+                    "PRODUCTOGTG",
+                    ),
             )
 
-            exp.dt = obtener_valor(
-                row,
-                "DT",
+            _asignar_si_informado(
+                exp,
+                "dt",
+                obtener_valor(
+                    row,
+                    "DT",
+                    ),
             )
 
             # ------------------------------------------------
             # GESTORÍA
             # ------------------------------------------------
 
-            exp.id_gestoria_tramite = obtener_valor(
-                row,
-                "IDGESTORIATRAMITE",
+            _asignar_si_informado(
+                exp,
+                "id_gestoria_tramite",
+                obtener_valor(
+                    row,
+                    "IDGESTORIATRAMITE",
+                    ),
             )
 
-            exp.nombre_gestoria = obtener_valor(
-                row,
-                "NOMBREGESTORIA",
+            _asignar_si_informado(
+                exp,
+                "nombre_gestoria",
+                obtener_valor(
+                    row,
+                    "NOMBREGESTORIA",
+                    ),
             )
 
-            exp.gestoria = obtener_valor(
-                row,
-                "GESTORIA",
-                "NOMBREGESTORIA",
+            _asignar_si_informado(
+                exp,
+                "gestoria",
+                obtener_valor(
+                    row,
+                    "GESTORIA",
+                    "NOMBREGESTORIA",
+                    ),
             )
 
             # ------------------------------------------------
@@ -1147,7 +1357,11 @@ def importar_excel_expedientes(
 
             valor = obtener_valor(row, "FINCA")
             if valor is not None:
-                exp.finca = valor
+                _asignar_si_informado(
+                    exp,
+                    "finca",
+                    valor,
+                )
 
             # Crear/actualizar el vínculo finca-registro si ABSIS aporta
             # columnas registrales explícitas; nunca borrar fincas existentes.
@@ -1157,19 +1371,31 @@ def importar_excel_expedientes(
             # DEFECTOS
             # ------------------------------------------------
 
-            exp.tiene_defectos_abiertos = obtener_valor(
-                row,
-                "TIENEDEFECTOSABIERTOS",
+            _asignar_si_informado(
+                exp,
+                "tiene_defectos_abiertos",
+                obtener_valor(
+                    row,
+                    "TIENEDEFECTOSABIERTOS",
+                    ),
             )
 
-            exp.tipo_error = obtener_valor(
-                row,
-                "TIPOERROR",
+            _asignar_si_informado(
+                exp,
+                "tipo_error",
+                obtener_valor(
+                    row,
+                    "TIPOERROR",
+                    ),
             )
 
-            exp.descripcion_error = obtener_valor(
-                row,
-                "DESCRIPCIONERROR",
+            _asignar_si_informado(
+                exp,
+                "descripcion_error",
+                obtener_valor(
+                    row,
+                    "DESCRIPCIONERROR",
+                    ),
             )
 
             # ABSIS: FALTADEFECTO es un indicador SI/NO, no una fecha.
@@ -1179,38 +1405,58 @@ def importar_excel_expedientes(
                 falta_defecto = str(falta_defecto).strip().upper()
                 if falta_defecto not in ("SI", "NO"):
                     falta_defecto = str(obtener_valor(row, "FALTADEFECTO")).strip()
-            exp.falta_defecto = falta_defecto or None
+            _asignar_si_informado(
+                exp,
+                "falta_defecto",
+                falta_defecto or None,
+            )
 
             # ------------------------------------------------
             # CGN
             # ------------------------------------------------
 
-            exp.id_expediente_cgn = obtener_valor(
-                row,
-                "IDEXPEDIENTECGN",
+            _asignar_si_informado(
+                exp,
+                "id_expediente_cgn",
+                obtener_valor(
+                    row,
+                    "IDEXPEDIENTECGN",
+                    ),
             )
 
             # ------------------------------------------------
             # ACTA
             # ------------------------------------------------
 
-            exp.tipo_acta = obtener_valor(
-                row,
-                "TIPOACTA",
+            _asignar_si_informado(
+                exp,
+                "tipo_acta",
+                obtener_valor(
+                    row,
+                    "TIPOACTA",
+                    ),
             )
 
             # ------------------------------------------------
             # OTROS
             # ------------------------------------------------
 
-            exp.lucy = obtener_valor(
-                row,
-                "LUCY",
+            _asignar_si_informado(
+                exp,
+                "lucy",
+                obtener_valor(
+                    row,
+                    "LUCY",
+                    ),
             )
 
-            exp.indicador_tt = obtener_valor(
-                row,
-                "INDICADORTT",
+            _asignar_si_informado(
+                exp,
+                "indicador_tt",
+                obtener_valor(
+                    row,
+                    "INDICADORTT",
+                    ),
             )
 
             # ------------------------------------------------
@@ -1234,7 +1480,11 @@ def importar_excel_expedientes(
             # fila del Excel no trae observaciones o viene vacía.
             # El modelo limita el campo a 2.000 caracteres.
             if valor_observaciones is not None:
-                exp.observaciones = str(valor_observaciones).strip()[:2000]
+                _asignar_si_informado(
+                    exp,
+                    "observaciones",
+                    str(valor_observaciones).strip()[:2000],
+                )
 
             # ------------------------------------------------
             # FACTURACIÓN
@@ -1258,22 +1508,34 @@ def importar_excel_expedientes(
 
             facturacion_fecha = convertir_fecha(obtener_valor(row, "FACTURACIONFECHA"))
             if facturacion_fecha is not None:
-                exp.facturacion_fecha = facturacion_fecha
+                _asignar_si_informado(
+                    exp,
+                    "facturacion_fecha",
+                    facturacion_fecha,
+                )
 
             # ------------------------------------------------
             # REGISTRAL
             # ------------------------------------------------
 
-            exp.registral_estado = obtener_valor(
-                row,
-                "REGISTRALESTADO",
-            )
-
-            exp.registral_fecha = convertir_fecha(
+            _asignar_si_informado(
+                exp,
+                "registral_estado",
                 obtener_valor(
                     row,
+                    "REGISTRALESTADO",
+                    ),
+            )
+
+            _asignar_si_informado(
+                exp,
+                "registral_fecha",
+                convertir_fecha(
+                    obtener_valor(
+                    row,
                     "REGISTRALFECHA",
-                )
+                    )
+                    ),
             )
 
             # Reparto inicial de expedientes nuevos o todavía sin responsable.
