@@ -3776,6 +3776,12 @@ async function abrirDefecto() {
   }
 }
 
+async function editarDefectoDesdeActividad(defecto) {
+  // Carga los catálogos y los datos de defectos antes de preparar el formulario de edición.
+  await abrirDefecto();
+  editarDefectoRegistrado(defecto);
+}
+
 function editarDefectoRegistrado(defecto) {
   setDefectoEditandoId(defecto.id ?? defecto.id_defecto);
   setArchivoCalificacion(null);
@@ -5140,10 +5146,10 @@ const cuantiaFincasParaEnvio =
                                   : "No hay defectos registrales abiertos; esta fase se considera correcta."
                               ),
                               requisito(
-                                "Fecha cierre defecto",
-                                !hayDefectosAbiertos && (!defectos.length || defectos.every((d) => Boolean(d?.fecha_cierre_defecto || d?.fecha_cierre || d?.fcierre_defecto))),
+                                "Fecha de cierre o subsanación del defecto",
+                                !hayDefectosAbiertos && (!defectos.length || defectos.every((d) => Boolean(d?.fecha_cierre_defecto || d?.fecha_cierre || d?.fcierre_defecto || d?.fecha_subsanacion || d?.fecha_entrada_subsanacion))),
                                 hayDefectosAbiertos
-                                  ? "Hay defectos abiertos. Registra la fecha de cierre cuando se hayan subsanado."
+                                  ? "Hay defectos abiertos. Registra la fecha de subsanación o cierre cuando corresponda."
                                   : "No hay defectos abiertos."
                               ),
                               requisito(
@@ -9449,7 +9455,7 @@ const cuantiaFincasParaEnvio =
                   </div>
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-indigo-100 bg-indigo-50 p-3">
                   <p className="text-xs leading-relaxed text-indigo-900">Los datos del defecto se mantienen en un único registro. Usa el alta para crear o editar la información; esta actividad solo resume el estado guardado y no duplica campos editables.</p>
-                  <Boton tipo="primary" disabled={expedienteBloqueado} onClick={() => { setDefectoEditandoId(null); setDefectoForm({ ...DEFECTO_VACIO }); setErrorDefecto(""); setMostrarDefecto(true); }}>＋ Alta defecto</Boton>
+                  <Boton tipo="primary" disabled={expedienteBloqueado} onClick={abrirDefecto}>＋ Alta defecto</Boton>
                 </div>
                 {defectosRegistrados.length === 0 ? (
                   <p className="rounded-lg border border-dashed border-slate-300 p-4 text-sm text-slate-500">Todavía no hay defectos registrados para este expediente.</p>
@@ -9474,7 +9480,7 @@ const cuantiaFincasParaEnvio =
                           <Dato campo="Subsanación" valor={defecto.fecha_entrada_subsanacion ? "Subsanado" : "Pendiente de subsanación"} />
                         </div>
                         <div className="mt-3 flex justify-end">
-                          <Boton onClick={() => { editarDefectoRegistrado(defecto); setMostrarDefecto(true); }}>Editar defecto</Boton>
+                          <Boton onClick={() => editarDefectoDesdeActividad(defecto)}>Editar defecto</Boton>
                         </div>
                       </article>
                     ))}
