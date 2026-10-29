@@ -1571,6 +1571,17 @@ export default function FichaExpediente() {
   const [mostrarFormularioGasto, setMostrarFormularioGasto] = useState(false);
   const [origenFormularioGasto, setOrigenFormularioGasto] = useState("economico");
   const [gastosExpediente, setGastosExpediente] = useState([]);
+  const [pagosPorGasto, setPagosPorGasto] = useState({});
+  const [mostrarFormularioPagoReal, setMostrarFormularioPagoReal] = useState(false);
+  const [pagoGastoSeleccionadoId, setPagoGastoSeleccionadoId] = useState("");
+  const [guardandoPagoReal, setGuardandoPagoReal] = useState(false);
+  const [errorPagoReal, setErrorPagoReal] = useState("");
+  const [pagoRealForm, setPagoRealForm] = useState({
+    fecha: new Date().toLocaleDateString("sv-SE"),
+    importe: "",
+    concepto: "",
+    medio_pago: "Transferencia",
+  });
   const [cargandoGastos, setCargandoGastos] = useState(false);
   const [guardandoGasto, setGuardandoGasto] = useState(false);
   const [errorGastos, setErrorGastos] = useState("");
@@ -1719,20 +1730,48 @@ export default function FichaExpediente() {
   const importeInicialProvision = Number(String(expediente?.importe ?? "").replace(",", "."));
   const importeInicialDisponible = expediente?.importe !== null && expediente?.importe !== undefined && expediente?.importe !== "" && Number.isFinite(importeInicialProvision);
   const movimientosEconomicosOrdenados = (Array.isArray(gastosExpediente) ? gastosExpediente : [])
-    .filter((gasto) => {
+    .flatMap((gasto) => {
+      const pagos = Array.isArray(pagosPorGasto[String(gasto.id)]) ? pagosPorGasto[String(gasto.id)] : [];
+      if (pagos.length) return pagos.map((pago) => ({
+        ...gasto,
+        id: `pago-${pago.id}`,
+        numero_documento: `PAG-${String(pago.id).padStart(6, "0")}`,
+        fecha: pago.fecha,
+        concepto_pago: pago.concepto,
+        importeMovimiento: -Math.abs(Number(pago.importe || 0)),
+        importe_resultante: Math.abs(Number(pago.importe || 0)),
+        pago_id: pago.id,
+        es_movimiento_pago: true,
+      }));
+      // Compatibilidad con gastos históricos que ya constaban como pagados antes
+      // del nuevo libro de movimientos; no se alteran ni se inventan filas de pago.
       const estado = String(gasto.estado_pago || "").trim().toLowerCase();
-      return estadosPagoConfirmado.includes(estado);
+      if (estadosPagoConfirmado.includes(estado)) return [{
+        ...gasto,
+        numero_documento: gasto.numero_documento || `PAG-${String(gasto.id).padStart(6, "0")}`,
+        importeMovimiento: -Math.abs(Number(gasto.importe_resultante ?? gasto.importe ?? 0)),
+        es_movimiento_pago: false,
+      }];
+      return [];
     })
-    .sort((a, b) => String(a.fecha || "").localeCompare(String(b.fecha || "")) || Number(a.id || 0) - Number(b.id || 0));
-  const resumenEconomico = movimientosEconomicosOrdenados.reduce((resultado, gasto) => {
-    const importe = Math.abs(Number(gasto.importe_resultante ?? gasto.importe ?? 0)) || 0;
+    .sort((a, b) => String(a.fecha || "").localeCompare(String(b.fecha || "")) || String(a.id).localeCompare(String(b.id)));
+  const resumenEconomico = movimientosEconomicosOrdenados.reduce((resultado, movimiento) => {
+    const importe = Math.abs(Number(movimiento.importeMovimiento ?? movimiento.importe_resultante ?? movimiento.importe ?? 0)) || 0;
     const saldo = resultado.saldoActual - importe;
-    resultado.movimientos.push({ ...gasto, importeMovimiento: importe === 0 ? 0 : -importe, saldoCalculado: saldo });
+    resultado.movimientos.push({ ...movimiento, importeMovimiento: importe === 0 ? 0 : -importe, saldoCalculado: saldo });
     resultado.saldoActual = saldo;
     return resultado;
   }, { saldoActual: importeInicialDisponible ? importeInicialProvision : 0, movimientos: [] });
   const gastosPendientesResumen = (Array.isArray(gastosExpediente) ? gastosExpediente : [])
-    .filter((gasto) => !estadosPagoConfirmado.includes(String(gasto.estado_pago || "").trim().toLowerCase()) && !String(gasto.estado_pago || "").trim().toLowerCase().includes("anulad"));
+    .filter((gasto) => {
+      const estado = String(gasto.estado_pago || "").trim().toLowerCase();
+      if (estado.includes("anulad")) return false;
+      const pagos = Array.isArray(pagosPorGasto[String(gasto.id)]) ? pagosPorGasto[String(gasto.id)] : [];
+      const totalPagado = pagos.reduce((suma, pago) => suma + Number(pago.importe || 0), 0);
+      const obligacion = Number(gasto.importe_resultante ?? gasto.importe ?? 0);
+      if (obligacion > 0 && totalPagado > 0) return totalPagado + 0.005 < obligacion;
+      return !estadosPagoConfirmado.includes(estado);
+    });
 
   const [
     mostrarFincas,
@@ -3222,6 +3261,17 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
             ? datos.gastos
             : [];
       setGastosExpediente(lista);
+      // El histórico de pagos se consulta por obligación. Si una obligación es antigua,
+      // sin movimientos nuevos, se conserva su estado histórico sin inventar pagos.
+      const pagosCargados = await Promise.all(lista.map(async (gasto) => {
+        try {
+          const respuestaPagos = await axios.get(`/expedientes/${encodeURIComponent(expedienteId)}/gastos/${encodeURIComponent(gasto.id)}/pagos`);
+          return [String(gasto.id), Array.isArray(respuestaPagos?.data?.items) ? respuestaPagos.data.items : []];
+        } catch {
+          return [String(gasto.id), []];
+        }
+      }));
+      setPagosPorGasto(Object.fromEntries(pagosCargados));
       // Si hay movimientos, abrir el libro al cargar o actualizar.
       if (lista.length > 0) setMostrarPanelEconomicoPago(true);
     } catch (err) {
@@ -3315,6 +3365,48 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       );
     } finally {
       setGuardandoGasto(false);
+    }
+  }
+
+  async function registrarPagoObligacion(event) {
+    event.preventDefault();
+    const expedienteId = expediente?.id ?? (Number.isFinite(Number(id)) ? Number(id) : null);
+    const gastoId = Number(pagoGastoSeleccionadoId);
+    const importe = numeroDecimalGasto(pagoRealForm.importe);
+    if (!expedienteId || !gastoId) {
+      setErrorPagoReal("Selecciona una obligación económica pendiente.");
+      return;
+    }
+    if (!pagoRealForm.fecha || !Number.isFinite(importe) || importe <= 0 || !pagoRealForm.concepto.trim()) {
+      setErrorPagoReal("Indica fecha, importe mayor que cero y concepto del pago.");
+      return;
+    }
+    const gasto = gastosExpediente.find((item) => Number(item.id) === gastoId);
+    if (!gasto) {
+      setErrorPagoReal("La obligación seleccionada ya no está disponible. Actualiza el libro económico.");
+      return;
+    }
+    const claveOperacion = `erp-pago-${gastoId}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    setGuardandoPagoReal(true);
+    setErrorPagoReal("");
+    try {
+      await axios.post(`/expedientes/${encodeURIComponent(expedienteId)}/gastos/${encodeURIComponent(gastoId)}/pagos`, {
+        fecha: pagoRealForm.fecha,
+        importe,
+        concepto: pagoRealForm.concepto.trim(),
+        medio_pago: pagoRealForm.medio_pago || null,
+        idempotency_key: claveOperacion,
+      });
+      setPagoRealForm({ fecha: new Date().toLocaleDateString("sv-SE"), importe: "", concepto: "", medio_pago: "Transferencia" });
+      setMostrarFormularioPagoReal(false);
+      setPagoGastoSeleccionadoId("");
+      setErrorPagoReal("");
+      setMensajeGastos("Pago registrado en el histórico de movimientos.");
+      await cargarGastosExpediente();
+    } catch (err) {
+      setErrorPagoReal(err?.response?.data?.detail || "No se pudo registrar el pago. No se ha confirmado ningún movimiento.");
+    } finally {
+      setGuardandoPagoReal(false);
     }
   }
 
