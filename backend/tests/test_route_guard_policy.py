@@ -55,6 +55,11 @@ class RouteGuardPolicyTests(unittest.TestCase):
     def test_security_permission_catalog_covers_all_template_modules(self):
         self.assertTrue(set(PLANTILLA_PERMISOS).issubset(set(MODULOS_BASE)))
 
+    def test_messaging_routes_use_messaging_permissions(self):
+        self.assertEqual(_resolver_modulo("/api/mensajeria/servicios", {"GET"}), "mensajeria")
+        self.assertEqual(_resolver_accion("/api/mensajeria/servicios", {"POST"}), "crear")
+        self.assertEqual(_resolver_accion("/api/mensajeria/servicios/4", {"PATCH"}), "editar")
+
     def test_fichajes_routes_use_the_correct_permission_modules(self):
         self.assertEqual(_resolver_modulo("/api/fichajes/marcajes", {"GET"}), "fichajes")
         self.assertEqual(_resolver_modulo("/api/fichajes/admin/marcajes", {"GET"}), "control-fichajes")
