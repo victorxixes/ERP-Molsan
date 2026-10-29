@@ -5916,6 +5916,7 @@ const cuantiaFincasParaEnvio =
                                   <table className="w-full min-w-[1080px] text-left text-xs">
                                     <thead className="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500"><tr><th className="px-3 py-3 font-bold">ID de pago</th><th className="px-3 py-3 font-bold">Fecha</th><th className="px-3 py-3 font-bold">Tipo de documento</th><th className="px-3 py-3 text-right font-bold">Base</th><th className="px-3 py-3 text-right font-bold">Impuesto</th><th className="px-3 py-3 text-right font-bold">Total</th><th className="px-3 py-3 font-bold">Estado</th><th className="px-3 py-3 text-right font-bold">Saldo tras pago</th></tr></thead>
                                     <tbody className="divide-y divide-slate-100">
+                                      {resumenEconomico.movimientos.length === 0 && <tr><td colSpan={8} className="px-4 py-6 text-center text-slate-500">No hay pagos reales registrados todavía. Las facturas pendientes no descuentan la provisión.</td></tr>}
                                       {resumenEconomico.movimientos.map((movimiento) => {
                                         const fmt = (valor) => Number(valor ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                                         const base = movimiento.es_movimiento_pago ? Math.abs(Number(movimiento.importeMovimiento || 0)) : numeroDecimalGasto(movimiento.base_sujeta_impuestos) + numeroDecimalGasto(movimiento.base_exenta_impuestos);
