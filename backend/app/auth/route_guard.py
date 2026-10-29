@@ -120,6 +120,7 @@ _POST_ES_EDICION = (
     "/asociadas",
     "/reset-password",
     "/password",
+    "/rol/",
     "/permisos",
     "/modulos",
     "/bloqueo",
