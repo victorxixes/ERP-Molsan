@@ -95,6 +95,20 @@ REQUIRE_PERSISTENT_STORAGE = _env_bool("MOLSAN_REQUIRE_PERSISTENT_STORAGE", Fals
 
 if REQUIRE_PERSISTENT_STORAGE:
     _validate_persistent_root(STORAGE_ROOT)
+elif (os.getenv("RENDER_SERVICE_ID") or os.getenv("RENDER")) and not _inside(
+    Path("/var/data").resolve(),
+    STORAGE_ROOT,
+):
+    # No detener el ERP existente sin autorización para provisionar un disco,
+    # pero dejar constancia explícita: el almacenamiento local de Render es
+    # efímero y puede perder documentos al desplegar o reiniciar el servicio.
+    print(
+        "[STORAGE][CRITICAL] Render está usando almacenamiento local no persistente. "
+        "Adjunta un Persistent Disk en /var/data y configura "
+        "MOLSAN_STORAGE_ROOT=/var/data/molsan y "
+        "MOLSAN_REQUIRE_PERSISTENT_STORAGE=true antes de producción.",
+        flush=True,
+    )
 
 _PATHS = resolve_storage_paths(STORAGE_ROOT)
 CARPETA_DIGITAL_DIR = _PATHS["carpeta_digital"]
