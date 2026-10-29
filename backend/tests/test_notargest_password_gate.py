@@ -3,6 +3,7 @@ import unittest
 from types import SimpleNamespace
 
 from backend.app.notargest.router import (
+    _accion_requerida_notargest,
     _requiere_cambio_password_notargest,
     _ruta_permitida_durante_cambio_password,
 )
@@ -28,6 +29,13 @@ class NotarGestPasswordGateTests(unittest.TestCase):
         self.assertTrue(_ruta_permitida_durante_cambio_password("/api/notargest/cambiar-password"))
         self.assertFalse(_ruta_permitida_durante_cambio_password("/api/notargest/expedientes"))
         self.assertFalse(_ruta_permitida_durante_cambio_password("/notargest/me"))
+
+    def test_internal_notargest_writes_require_correct_permission(self):
+        self.assertEqual(_accion_requerida_notargest("GET", "/api/notargest/expedientes"), "ver")
+        self.assertEqual(_accion_requerida_notargest("POST", "/api/notargest/seleccion/notaria/2"), "ver")
+        self.assertEqual(_accion_requerida_notargest("PATCH", "/api/notargest/expedientes/2/firma"), "editar")
+        self.assertEqual(_accion_requerida_notargest("POST", "/api/notargest/expedientes/2/estado"), "editar")
+        self.assertEqual(_accion_requerida_notargest("DELETE", "/api/notargest/expedientes/2"), "eliminar")
 
 
 if __name__ == "__main__":
