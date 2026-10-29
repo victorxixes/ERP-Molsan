@@ -279,38 +279,185 @@ def previsualizar_cierre_documental(expediente_id: str, db: Session = Depends(ge
     def normalizar(valor):
         return _normalizar_texto(valor).replace("/", " ").replace("-", " ")
 
-    # Hoja de liquidación: se crea en cada generación con los datos guardados del expediente.
-    hoja = io.BytesIO()
+    # Hoja de liquidación oficial MOLSAN PREMIUM 2027.
+    # Solo lee datos existentes: no registra pagos ni modifica saldos o estados económicos.
+    from sqlalchemy import text
+    from backend.app.expedientes.gastos.models import ExpedienteGasto
+    from xml.sax.saxutils import escape
+
     estilos = getSampleStyleSheet()
-    estilos.add(ParagraphStyle(name="MolsanTitle", parent=estilos["Title"], textColor=colors.HexColor("#172554"), fontSize=17, leading=21, spaceAfter=8))
-    estilos.add(ParagraphStyle(name="MolsanSmall", parent=estilos["BodyText"], fontSize=9, leading=13))
-    doc_pdf = SimpleDocTemplate(hoja, pagesize=A4, rightMargin=20*mm, leftMargin=20*mm, topMargin=20*mm, bottomMargin=20*mm)
-    story = [
-        Paragraph("MOLSAN · HOJA DE LIQUIDACIÓN", estilos["MolsanTitle"]),
-        Paragraph(f"Expediente: {str(getattr(expediente, 'id_expediente', expediente_id) or expediente_id)}", estilos["Heading2"]),
-        Spacer(1, 5*mm),
-    ]
-    campos = [
-        ("Titular", getattr(expediente, "nombre_titular", None) or getattr(expediente, "nombre_solicitante", None) or "—"),
-        ("NIF / CIF", getattr(expediente, "nif_titular", None) or getattr(expediente, "nif_solicitante", None) or "—"),
-        ("Notario", getattr(expediente, "nombre_notario", None) or "—"),
-        ("Fecha de liquidación", str(getattr(expediente, "fecha_fin_actividad", None) or datetime.utcnow().date())),
-        ("Provisión inicial", f"{getattr(expediente, 'importe', None) if getattr(expediente, 'importe', None) is not None else '—'} €"),
-        ("Saldo real", f"{getattr(expediente, 'saldo_real', None) if getattr(expediente, 'saldo_real', None) is not None else '—'} €"),
-        ("Saldo disponible", f"{getattr(expediente, 'saldo_disponible', None) if getattr(expediente, 'saldo_disponible', None) is not None else '—'} €"),
-        ("Estado", str(getattr(expediente, "estado_expediente", None) or "—")),
-    ]
-    tabla = Table([[Paragraph(f"<b>{k}</b>", estilos["MolsanSmall"]), Paragraph(str(v), estilos["MolsanSmall"])] for k, v in campos], colWidths=[48*mm, 112*mm])
-    tabla.setStyle(TableStyle([
-        ("BACKGROUND", (0,0), (0,-1), colors.HexColor("#eff6ff")),
-        ("GRID", (0,0), (-1,-1), 0.4, colors.HexColor("#cbd5e1")),
+    azul = colors.HexColor("#123e70")
+    azul_medio = colors.HexColor("#1e5794")
+    azul_claro = colors.HexColor("#eaf3fb")
+    gris = colors.HexColor("#64748b")
+    estilos.add(ParagraphStyle(name="MolsanTitle", parent=estilos["Title"], textColor=azul, fontName="Helvetica-Bold", fontSize=17, leading=21, alignment=0, spaceAfter=3*mm))
+    estilos.add(ParagraphStyle(name="MolsanSub", parent=estilos["Normal"], textColor=azul_medio, fontName="Helvetica-Bold", fontSize=9, leading=12, spaceAfter=2*mm))
+    estilos.add(ParagraphStyle(name="MolsanSmall", parent=estilos["BodyText"], fontName="Helvetica", fontSize=8, leading=10, textColor=colors.HexColor("#334155")))
+    estilos.add(ParagraphStyle(name="MolsanTiny", parent=estilos["BodyText"], fontName="Helvetica", fontSize=7, leading=9, textColor=gris))
+    estilos.add(ParagraphStyle(name="MolsanTableHead", parent=estilos["BodyText"], fontName="Helvetica-Bold", fontSize=7.2, leading=9, textColor=azul))
+    doc_pdf = SimpleDocTemplate(hoja, pagesize=A4, rightMargin=17*mm, leftMargin=17*mm, topMargin=14*mm, bottomMargin=17*mm, title=f"Hoja de liquidación - expediente {expediente_id}", author="MOLSAN ERP")
+
+    def txt(valor, fallback="—"):
+        if valor is None or str(valor).strip() == "":
+            return fallback
+        return escape(str(valor).strip())
+
+    def eur(valor):
+        try:
+            n = float(valor or 0)
+        except (TypeError, ValueError):
+            return "—"
+        return f"{n:,.2f} €".replace(",", "X").replace(".", ",").replace("X", ".")
+
+    # La configuración corporativa procede de Datos Molsan, sin crear tablas ni migraciones.
+    datos_empresa = {}
+    try:
+        fila_config = db.execute(text("SELECT datos FROM datos_molsan_config WHERE id = 1")).mappings().first()
+        datos_empresa = (fila_config or {}).get("datos") or {}
+        if not isinstance(datos_empresa, dict):
+            datos_empresa = {}
+    except Exception:
+        db.rollback()
+        datos_empresa = {}
+
+    cliente = getattr(expediente, "cliente", None)
+    nombre_cliente = (
+        getattr(cliente, "nombre_facturacion", None)
+        or getattr(expediente, "nombre_titular", None)
+        or getattr(expediente, "nombre_solicitante", None)
+        or getattr(cliente, "nombre_completo", None)
+    )
+    nif_cliente = (
+        getattr(cliente, "dni_facturacion", None)
+        or getattr(expediente, "nif_titular", None)
+        or getattr(expediente, "nif_solicitante", None)
+        or getattr(cliente, "dni", None)
+    )
+    direccion_cliente = getattr(cliente, "direccion_facturacion", None) or getattr(cliente, "direccion", None)
+    cp_cliente = getattr(cliente, "codigo_postal_facturacion", None) or getattr(cliente, "codigo_postal", None)
+    poblacion_cliente = getattr(cliente, "poblacion_facturacion", None) or getattr(cliente, "poblacion", None)
+    provincia_cliente = getattr(cliente, "provincia_facturacion", None) or getattr(cliente, "provincia", None)
+
+    gastos = (
+        db.query(ExpedienteGasto)
+        .filter(ExpedienteGasto.expediente_id == expediente.id)
+        .order_by(ExpedienteGasto.fecha.asc(), ExpedienteGasto.id.asc())
+        .all()
+    )
+    total_gastos = sum(float(g.importe_resultante if g.importe_resultante is not None else (g.importe_total_bruto if g.importe_total_bruto is not None else (g.importe or 0))) for g in gastos)
+    estados_pagados = {"pagado", "pagada", "abonado", "abonada", "efectuado", "efectuada", "paid"}
+    gastos_pagados = [g for g in gastos if str(g.estado_pago or "").strip().lower() in estados_pagados]
+    total_pagado = sum(float(g.importe_resultante if g.importe_resultante is not None else (g.importe_total_bruto if g.importe_total_bruto is not None else (g.importe or 0))) for g in gastos_pagados)
+    importe_provision = getattr(expediente, "importe", None)
+    fecha_liquidacion = getattr(expediente, "fecha_fin_actividad", None) or datetime.utcnow().date()
+
+    empresa_nombre = datos_empresa.get("razon_social") or "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L."
+    empresa_nif = datos_empresa.get("nif") or ""
+    empresa_direccion = datos_empresa.get("domicilio_fiscal") or ""
+    empresa_ubicacion = " ".join(str(x) for x in [datos_empresa.get("codigo_postal"), datos_empresa.get("poblacion"), datos_empresa.get("provincia")] if x)
+    empresa_contacto = " · ".join(str(x) for x in [datos_empresa.get("telefono"), datos_empresa.get("email"), datos_empresa.get("web")] if x)
+
+    cabecera = Table([
+        [Paragraph(f"<b>{txt(empresa_nombre)}</b>", estilos["MolsanSub"]),
+         Paragraph("<b>HOJA DE LIQUIDACIÓN</b><br/><font size='8'>EXPEDIENTE DE CANCELACIÓN</font>", estilos["MolsanTitle"])],
+        [Paragraph(" · ".join(x for x in [f"NIF: {empresa_nif}" if empresa_nif else "", empresa_direccion, empresa_ubicacion, empresa_contacto] if x) or "Datos corporativos configurables en Utilidades → Datos Molsan", estilos["MolsanTiny"]),
+         Paragraph(f"Expediente: <b>{txt(getattr(expediente, 'id_expediente', expediente_id))}</b><br/>Fecha: <b>{fecha_liquidacion.strftime('%d/%m/%Y') if hasattr(fecha_liquidacion, 'strftime') else txt(fecha_liquidacion)}</b>", estilos["MolsanSmall"])]
+    ], colWidths=[91*mm, 79*mm], hAlign="LEFT")
+    cabecera.setStyle(TableStyle([
         ("VALIGN", (0,0), (-1,-1), "TOP"),
-        ("LEFTPADDING", (0,0), (-1,-1), 8),
-        ("RIGHTPADDING", (0,0), (-1,-1), 8),
+        ("ALIGN", (1,0), (1,-1), "RIGHT"),
+        ("LINEBELOW", (0,-1), (-1,-1), 1.6, azul_medio),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 7),
+        ("TOPPADDING", (0,0), (-1,-1), 3),
+        ("LEFTPADDING", (0,0), (-1,-1), 0),
+        ("RIGHTPADDING", (0,0), (-1,-1), 0),
+    ]))
+    story = [cabecera, Spacer(1, 5*mm)]
+
+    def bloque(titulo, filas, anchos=(47*mm, 123*mm)):
+        story.append(Paragraph(txt(titulo), estilos["MolsanSub"]))
+        tabla = Table([
+            [Paragraph(f"<b>{txt(k)}</b>", estilos["MolsanSmall"]), Paragraph(txt(v), estilos["MolsanSmall"])]
+            for k, v in filas
+        ], colWidths=list(anchos), hAlign="LEFT")
+        tabla.setStyle(TableStyle([
+            ("BACKGROUND", (0,0), (0,-1), azul_claro),
+            ("GRID", (0,0), (-1,-1), 0.35, colors.HexColor("#d4dfeb")),
+            ("VALIGN", (0,0), (-1,-1), "TOP"),
+            ("LEFTPADDING", (0,0), (-1,-1), 6),
+            ("RIGHTPADDING", (0,0), (-1,-1), 6),
+            ("TOPPADDING", (0,0), (-1,-1), 5),
+            ("BOTTOMPADDING", (0,0), (-1,-1), 5),
+        ]))
+        story.extend([tabla, Spacer(1, 4*mm)])
+
+    bloque("DATOS DEL CLIENTE", [
+        ("Titular / razón social", nombre_cliente),
+        ("DNI / NIF", nif_cliente),
+        ("Domicilio", direccion_cliente),
+        ("Código postal", cp_cliente),
+        ("Población / provincia", ", ".join(str(x) for x in [poblacion_cliente, provincia_cliente] if x) or None),
+    ])
+    bloque("DATOS DE LA PROVISIÓN", [
+        ("N.º de expediente", getattr(expediente, "id_expediente", expediente_id)),
+        ("Contrato", getattr(expediente, "contrato", None)),
+        ("Oficina CaixaBank", getattr(expediente, "oficina", None) or getattr(expediente, "oficina_alta", None)),
+        ("Notario", getattr(expediente, "nombre_notario", None) or getattr(expediente, "notario", None)),
+        ("Protocolo", getattr(expediente, "protocolo", None)),
+        ("Fecha de liquidación", fecha_liquidacion.strftime("%d/%m/%Y") if hasattr(fecha_liquidacion, "strftime") else fecha_liquidacion),
+    ])
+
+    story.append(Paragraph("GASTOS REGISTRADOS EN GESTIÓN ECONÓMICA", estilos["MolsanSub"]))
+    filas_gastos = [[Paragraph("Fecha", estilos["MolsanTableHead"]), Paragraph("Concepto / documento", estilos["MolsanTableHead"]), Paragraph("Importe", estilos["MolsanTableHead"]), Paragraph("Estado", estilos["MolsanTableHead"])]]
+    for gasto in gastos:
+        importe_gasto = gasto.importe_resultante if gasto.importe_resultante is not None else (gasto.importe_total_bruto if gasto.importe_total_bruto is not None else gasto.importe)
+        fecha_gasto = gasto.fecha_pago or gasto.fecha_factura or gasto.fecha
+        filas_gastos.append([
+            Paragraph(txt(fecha_gasto.strftime("%d/%m/%Y") if hasattr(fecha_gasto, "strftime") else fecha_gasto), estilos["MolsanTiny"]),
+            Paragraph(txt(gasto.tipo or gasto.descripcion or gasto.concepto_gasto_absis or "Gasto"), estilos["MolsanTiny"]),
+            Paragraph(eur(importe_gasto), estilos["MolsanTiny"]),
+            Paragraph(txt(gasto.estado_pago or "Pendiente"), estilos["MolsanTiny"]),
+        ])
+    if not gastos:
+        filas_gastos.append([Paragraph("—", estilos["MolsanTiny"]), Paragraph("No constan gastos registrados", estilos["MolsanTiny"]), Paragraph("—", estilos["MolsanTiny"]), Paragraph("—", estilos["MolsanTiny"])])
+    filas_gastos.append([Paragraph("", estilos["MolsanTiny"]), Paragraph("<b>Total gastos registrados</b>", estilos["MolsanTiny"]), Paragraph(f"<b>{eur(total_gastos)}</b>", estilos["MolsanTiny"]), Paragraph("", estilos["MolsanTiny"])])
+    tabla_gastos = Table(filas_gastos, colWidths=[25*mm, 81*mm, 31*mm, 33*mm], repeatRows=1, hAlign="LEFT")
+    tabla_gastos.setStyle(TableStyle([
+        ("BACKGROUND", (0,0), (-1,0), azul_claro),
+        ("GRID", (0,0), (-1,-1), 0.35, colors.HexColor("#d4dfeb")),
+        ("VALIGN", (0,0), (-1,-1), "TOP"),
+        ("ALIGN", (2,1), (2,-1), "RIGHT"),
+        ("LEFTPADDING", (0,0), (-1,-1), 4),
+        ("RIGHTPADDING", (0,0), (-1,-1), 4),
+        ("TOPPADDING", (0,0), (-1,-1), 4),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 4),
+    ]))
+    story.extend([tabla_gastos, Spacer(1, 4*mm)])
+
+    total_recibido = float(importe_provision or 0)
+    saldo = round(total_recibido - total_pagado, 2)
+    resumen = Table([
+        [Paragraph("PROVISIÓN INICIAL", estilos["MolsanSmall"]), Paragraph("GASTOS PAGADOS", estilos["MolsanSmall"]), Paragraph("SALDO TRAS PAGOS REGISTRADOS", estilos["MolsanSmall"])],
+        [Paragraph(f"<b>{eur(total_recibido)}</b>", estilos["MolsanTitle"]), Paragraph(f"<b>{eur(total_pagado)}</b>", estilos["MolsanTitle"]), Paragraph(f"<b>{eur(saldo)}</b>", estilos["MolsanTitle"])],
+    ], colWidths=[56.7*mm, 56.7*mm, 56.7*mm], hAlign="LEFT")
+    resumen.setStyle(TableStyle([
+        ("BACKGROUND", (0,0), (-1,-1), azul_claro),
+        ("BOX", (0,0), (-1,-1), 0.6, colors.HexColor("#bfd1e3")),
+        ("INNERGRID", (0,0), (-1,-1), 0.35, colors.HexColor("#bfd1e3")),
+        ("VALIGN", (0,0), (-1,-1), "TOP"),
+        ("LEFTPADDING", (0,0), (-1,-1), 6),
+        ("RIGHTPADDING", (0,0), (-1,-1), 6),
         ("TOPPADDING", (0,0), (-1,-1), 7),
         ("BOTTOMPADDING", (0,0), (-1,-1), 7),
     ]))
-    story.extend([tabla, Spacer(1, 8*mm), Paragraph("Documento generado automáticamente desde los datos guardados en MOLSAN ERP.", estilos["MolsanSmall"])])
+    story.extend([resumen, Spacer(1, 5*mm)])
+    story.append(Paragraph("<b>Documentación entregada</b> · La relación documental se incorpora a continuación siguiendo el orden de cierre establecido en el ERP.", estilos["MolsanSmall"]))
+    story.append(Spacer(1, 2*mm))
+    story.append(Paragraph("Recibido y conforme por parte del titular:", estilos["MolsanSmall"]))
+    story.append(Spacer(1, 12*mm))
+    story.append(Paragraph(f"{txt(nombre_cliente)} · DNI/NIF: {txt(nif_cliente)}", estilos["MolsanSmall"]))
+    story.append(Spacer(1, 3*mm))
+    story.append(Paragraph("Documento generado desde los registros actuales del ERP. Adjuntar una factura no equivale a registrar su pago; el resumen económico refleja exclusivamente pagos registrados.", estilos["MolsanTiny"]))
     doc_pdf.build(story)
     hoja.seek(0)
 
