@@ -2,13 +2,27 @@
 import hashlib
 import unittest
 
-from backend.app.auth.route_guard import _resolver_accion, _resolver_modulo
+from backend.app.auth.route_guard import (
+    _RUTAS_CON_AUTORIZACION_INTERNA,
+    _resolver_accion,
+    _resolver_modulo,
+)
 from backend.app.empleados.service import hash_password, verificar_hash_password
 from backend.app.seguridad.permisos.permisos_router import MODULOS_BASE
 from backend.app.seguridad.router import PLANTILLA_PERMISOS
 
 
 class RouteGuardPolicyTests(unittest.TestCase):
+    def test_conditional_internal_authorization_is_not_double_gated(self):
+        self.assertIn(
+            "/api/seguridad/empleado/{empleado_id}/ficha-completa",
+            _RUTAS_CON_AUTORIZACION_INTERNA,
+        )
+        self.assertIn(
+            "/api/apoderagest/encargos/reparar-asignacion",
+            _RUTAS_CON_AUTORIZACION_INTERNA,
+        )
+
     def test_employee_blocking_uses_employee_module(self):
         for suffix in ("bloquear", "desbloquear"):
             path = f"/api/seguridad/asignar/empleado/17/{suffix}"
