@@ -160,15 +160,11 @@ def asignar_gestor_automaticamente(db: Session, expediente: Expediente, activida
         candidatos.append((pendientes / porcentaje, pendientes, empleado.id))
 
     if not candidatos:
-        anterior_id = getattr(expediente, "gestor_asignado_id", None)
-        if anterior_id:
-            expediente.gestor_asignado_id = None
-            db.execute(text("""
-                INSERT INTO expediente_gestor_historial
-                    (expediente_id, actividad, gestor_id, gestor_anterior_id, motivo, fecha)
-                VALUES (:expediente_id, :actividad, NULL, :anterior_id, 'sin_regla_reparto', CURRENT_TIMESTAMP)
-            """), {"expediente_id": str(expediente.id_expediente), "actividad": actividad_key, "anterior_id": anterior_id})
-        return None
+        # Una ausencia de regla compatible no debe borrar una asignación existente.
+        # Mantener el gestor actual evita pérdidas silenciosas de responsabilidad
+        # cuando cambian temporalmente los criterios o faltan datos del expediente.
+        # La reasignación/eliminación debe hacerse explícitamente desde el flujo de gestión.
+        return getattr(expediente, "gestor_asignado_id", None)
 
     candidatos.sort(key=lambda item: (item[0], item[1], item[2]))
     gestor_id = candidatos[0][2]
