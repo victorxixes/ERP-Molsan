@@ -6,9 +6,9 @@ públicas de forma explícita. Las rutas API conocidas reciben el permiso que
 corresponde a su módulo y al método HTTP; las rutas nuevas no mapeadas siguen
 exigiendo JWT y quedan identificadas en los logs para añadir su módulo.
 
-Esto no sustituye la autorización de ámbito del recurso (por ejemplo, si un
-usuario puede ver un expediente concreto), que debe comprobarse en el router
-cuando exista esa restricción funcional.
+Las rutas con identificador de expediente reciben además una comprobación
+compartida del ámbito de reparto; las rutas de NotarGest y EncargaGest conservan
+sus propios controles de ámbito y autenticación.
 """
 from __future__ import annotations
 
@@ -23,6 +23,7 @@ from starlette.routing import Mount
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.database import SessionLocal
+from backend.app.expedientes.reparto import validar_visibilidad_expediente_request
 from backend.app.seguridad.auditoria.service import registrar_auditoria
 
 
@@ -201,6 +202,21 @@ def _ya_tiene_auditoria(dependant: Any) -> bool:
             continue
         visitados.add(identidad)
         if getattr(getattr(actual, "call", None), "_molsan_audit_guard", False):
+            return True
+        pendientes.extend(getattr(actual, "dependencies", []) or [])
+    return False
+
+
+def _ya_tiene_visibilidad_expediente(dependant: Any) -> bool:
+    pendientes = [dependant]
+    visitados: set[int] = set()
+    while pendientes:
+        actual = pendientes.pop()
+        identidad = id(actual)
+        if identidad in visitados:
+            continue
+        visitados.add(identidad)
+        if getattr(getattr(actual, "call", None), "_molsan_visibilidad_guard", False):
             return True
         pendientes.extend(getattr(actual, "dependencies", []) or [])
     return False
@@ -426,6 +442,17 @@ def proteger_rutas_api(app: Any) -> dict[str, int]:
             )
             route.dependant.dependencies.append(dependencia_auth)
             autenticadas += 1
+
+        path_formato = getattr(route, "path_format", route.path)
+        if (
+            ("{expediente_id}" in path_formato or "{id_expediente}" in path_formato)
+            and not _ya_tiene_visibilidad_expediente(route.dependant)
+        ):
+            dependencia_visibilidad = get_dependant(
+                path=path_formato,
+                call=validar_visibilidad_expediente_request,
+            )
+            route.dependant.dependencies.append(dependencia_visibilidad)
 
         if path in _RUTAS_CON_AUTORIZACION_INTERNA:
             if not _ya_tiene_auditoria(route.dependant):
