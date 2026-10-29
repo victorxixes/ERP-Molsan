@@ -260,6 +260,20 @@ def listar_cargas_postfirma(db: Session):
 
 def listar_registros_postfirma(db: Session, limit: int = 200, offset: int = 0, carga_id: int | None = None):
     _crear_almacen(db)
+    if carga_id is not None:
+        esquema = db.execute(text(
+            "SELECT columnas_json FROM public.absis_postfirma_cargas WHERE id = :id"
+        ), {"id": int(carga_id)}).first()
+        columnas_informe = json.loads(esquema[0] or "[]") if esquema else []
+    else:
+        esquemas = db.execute(text(
+            "SELECT columnas_json FROM public.absis_postfirma_cargas ORDER BY id DESC"
+        )).all()
+        columnas_informe = list(dict.fromkeys(
+            columna
+            for esquema in esquemas
+            for columna in json.loads(esquema[0] or "[]")
+        ))
     where = "WHERE carga_id = :carga_id" if carga_id is not None else ""
     params = {"limit": max(1, min(int(limit), 500)), "offset": max(0, int(offset))}
     if carga_id is not None:
@@ -279,6 +293,7 @@ def listar_registros_postfirma(db: Session, limit: int = 200, offset: int = 0, c
         "total": int(total),
         "limit": params["limit"],
         "offset": params["offset"],
+        "columnas": columnas_informe,
         "items": [{
             "id": int(f["id"]),
             "carga_id": int(f["carga_id"]),
