@@ -406,8 +406,8 @@ export default function CarpetaDigitalModal({
       const lista = await cargar();
       // Solo la carpeta de la actividad Gestión económica genera obligaciones.
       // Adjuntar el documento nunca lo marca como pagado ni descuenta provisión.
-      const categoriasEconomicas = ["factura notarial", "factura registral", "factura impuestos", "ajd/itp", "otros impuestos"];
-      if (modoActividad && normalizar(actividadId) === "gestion economica" && categoriasEconomicas.includes(normalizar(categoria))) {
+      const categoriasEconomicas = ["factura-notarial", "factura-registral", "factura-impuestos", "ajd-itp", "otros-impuestos"];
+      if (modoActividad && normalizar(actividadId) === "gestion-economica" && categoriasEconomicas.includes(normalizar(categoria))) {
         const idInternoExpediente = expedienteDatos?.id;
         if (!idInternoExpediente) {
           throw new Error("No se ha podido identificar el expediente interno para vincular la factura a Gestión económica.");
