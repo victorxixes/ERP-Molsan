@@ -41,6 +41,15 @@ class RouteGuardPolicyTests(unittest.TestCase):
             "eliminar",
         )
 
+    def test_payment_void_is_an_edit_not_a_create(self):
+        self.assertEqual(
+            _resolver_accion(
+                "/api/expedientes/17/gastos/3/pagos/9/anular",
+                {"POST"},
+            ),
+            "editar",
+        )
+
     def test_unknown_api_path_is_not_silently_mapped(self):
         self.assertIsNone(_resolver_modulo("/api/new-unclassified-module"))
 
