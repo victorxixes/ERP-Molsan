@@ -2,12 +2,27 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 
-DATABASE_URL = os.getenv("DATABASE_URL")
 
-# PostgreSQL usa un pool ampliado para absorber las consultas concurrentes
-# de las fichas. SQLite (usado en pruebas/CI) no admite estos argumentos
-# de pool en su configuración NullPool, por lo que se configura por separado.
-if (DATABASE_URL or "").startswith("sqlite"):
+# Validar la configuración aquí, antes de construir el engine. main.py importa
+# este módulo antes de que todos los módulos de configuración estén cargados;
+# sin esta comprobación, una variable ausente produce un error poco claro de
+# SQLAlchemy durante el arranque.
+DATABASE_URL = (os.getenv("DATABASE_URL") or "").strip()
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL no está definida. Configura la conexión a la base de datos "
+        "en el entorno antes de iniciar el backend."
+    )
+
+# Compatibilidad con URLs PostgreSQL antiguas usadas por algunos proveedores.
+# SQLAlchemy 1.4 acepta postgresql:// y evita depender del alias postgres://.
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = "postgresql://" + DATABASE_URL[len("postgres://"):]
+
+# PostgreSQL usa un pool ampliado para absorber consultas concurrentes.
+# SQLite (usado en pruebas/CI) no admite estos argumentos de pool en su
+# configuración; se configura por separado.
+if DATABASE_URL.startswith("sqlite"):
     engine = create_engine(
         DATABASE_URL,
         connect_args={"check_same_thread": False},
@@ -25,10 +40,11 @@ else:
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
-    bind=engine
+    bind=engine,
 )
 
 Base = declarative_base()
+
 
 def get_db():
     db = SessionLocal()
