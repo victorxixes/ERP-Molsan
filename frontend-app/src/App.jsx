@@ -58,6 +58,7 @@ const ImportarCTN = lazy(() => import("./pages/herramientas/ImportarCTN.jsx"));
 const ImportadorAbsis = lazy(() => import("./pages/herramientas/importador_absis"));
 const ImportadorPostFirma = lazy(() => import("./pages/herramientas/ImportadorPostFirma.jsx"));
 const Utilidades = lazy(() => import("./pages/herramientas/Utilidades.jsx"));
+const ReglasActividadesExpediente = lazy(() => import("./pages/herramientas/ReglasActividadesExpediente.jsx"));
 const ModelosDocumentos = lazy(() => import("./pages/herramientas/ModelosDocumentos.jsx"));
 const DatosMolsan = lazy(() => import("./pages/herramientas/DatosMolsan.jsx"));
 const AltaExpediente = lazy(() => import("./pages/herramientas/AltaExpediente.jsx"));
@@ -618,6 +619,7 @@ export default function App() {
             element={<Utilidades />}
           />
           <Route path="herramientas/utilidades/modelos-documentos" element={<ModelosDocumentos />} />
+          <Route path="herramientas/utilidades/reglas-actividades-expediente" element={<ReglasActividadesExpediente />} />
           <Route path="herramientas/utilidades/datos-molsan" element={<DatosMolsan />} />
           <Route path="herramientas/utilidades/alta-expediente" element={<AltaExpediente />} />
 
