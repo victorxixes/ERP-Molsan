@@ -533,10 +533,11 @@ export default function CarpetaDigitalModal({
     const clave = normalizar(categoria);
     if (clave === "hoja-de-inscripcion") return "Pendiente API Registradores";
     if ([
-      "documentos-absis",
       "hoja-de-encargo-firmada",
       "justificante-de-cancelacion",
       "nota-simple-registral",
+      "copia-simple",
+      "factura-notarial",
     ].includes(clave)) {
       return "Pendiente API ABSIS";
     }
