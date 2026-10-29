@@ -1089,10 +1089,12 @@ async def subir_calificacion_defecto(
         defecto_id,
     )
 
-    nombre = fichero.filename or "calificacion.pdf"
+    # Limitar la lectura desde el origen para evitar cargar en memoria
+    # ficheros arbitrariamente grandes antes de poder rechazarlos.
+    nombre = (fichero.filename or "calificacion.pdf").replace("\\", "/").rsplit("/", 1)[-1][:255]
 
     try:
-        contenido = await fichero.read()
+        contenido = await fichero.read(MAX_PDF_BYTES + 1)
     finally:
         await fichero.close()
 
