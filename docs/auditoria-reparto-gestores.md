@@ -18,7 +18,7 @@ La rama de trabajo cambia ese comportamiento:
 
 Se añadieron dos pruebas de regresión para ambos escenarios en `backend/tests/test_reparto_sin_candidato.py`. Estas pruebas están escritas, pero todavía deben ejecutarse en un entorno con las dependencias del backend antes de considerarlas superadas.
 
-**Limitación pendiente:** la lógica de acceso ya permite que el gestor conservado provisionalmente siga viendo ese expediente, y deja de hacerlo cuando el historial registra una asignación posterior. Aún falta una señal visual de «asignación provisional/incompatible» en la ficha y una bandeja operativa para resolver estas incidencias. La incidencia se registra y se respeta en el ámbito de acceso, pero todavía no existe una supervisión visual completa.
+**Limitación pendiente:** la lógica de acceso ya permite que el gestor conservado provisionalmente siga viendo ese expediente, y deja de hacerlo cuando el historial registra una asignación posterior. Se ha añadido el campo `gestor_asignacion_provisional` a la respuesta de detalle y al cambio de actividad, y una señal visual «Provisional» en la cabecera de la ficha. Sigue pendiente una bandeja operativa para consultar y resolver incidencias de forma centralizada.
 
 ## Panel central de Asignaciones
 
@@ -52,7 +52,7 @@ Mejora recomendada pendiente: ampliar la pantalla central para supervisión (exp
 - [x] Pruebas de regresión añadidas.
 - [x] Ruta y función real del panel central identificadas.
 - [ ] Pruebas ejecutadas y superadas.
-- [ ] Estado provisional visible en la interfaz.
+- [x] Estado provisional visible en la cabecera de la ficha.
 - [ ] Panel operativo de incidencias e historial.
 - [ ] Build frontend/backend y validación en entorno de pruebas.
 - [ ] Pruebas funcionales con MOLSAN.
