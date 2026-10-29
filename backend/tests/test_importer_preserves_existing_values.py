@@ -43,6 +43,15 @@ class ImportadorABSISPreservacionTests(unittest.TestCase):
         self.assertEqual(expediente.notario_id, 8)
         self.assertEqual(expediente.tipo_firma, "Videoconferencia")
 
+    def test_existing_ctn_link_updates_signature_without_excel_notary_fields(self):
+        expediente = SimpleNamespace(notario_id=8, tipo_firma="Anterior")
+        notario = SimpleNamespace(
+            id=8, nif="12345678Z", nombre="Notaria", apellidos="Ejemplo", vc="NO"
+        )
+        fila = pd.Series({"TIPOFIRMA": "Videoconferencia"})
+        vincular_catalogos_expediente(expediente, fila, [notario], [])
+        self.assertEqual(expediente.tipo_firma, "Presencial")
+
 
 if __name__ == "__main__":
     unittest.main()
