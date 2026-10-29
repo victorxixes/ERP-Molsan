@@ -111,6 +111,13 @@ _RUTAS_CON_AUTORIZACION_INTERNA = {
     "/api/seguridad/empleado/{empleado_id}/ficha-completa": "seguridad",
     "/api/apoderagest/encargos/reparar-asignacion": "apoderagest",
     "/api/expedientes/configuracion-visibilidad": "expedientes",
+    # Estas rutas aplican autorización dinámica por portal (NotarGestWeb o
+    # EncargaGestWeb); no deben exigir además el permiso genérico ctn.
+    "/api/ctn/accesos-portales/resumen": "ctn",
+    "/api/ctn/notarias/{notaria_id}/accesos-portales": "ctn",
+    "/api/ctn/notarias/{notaria_id}/accesos-portales/{portal}/password": "ctn",
+    "/api/ctn/notarias/{notaria_id}/accesos-portales/{portal}/habilitado": "ctn",
+    "/api/ctn/notarias/{notaria_id}/accesos-portales/{portal}/reset-password": "ctn",
 }
 
 
@@ -144,6 +151,7 @@ _POST_ES_EDICION = (
     "/mover",
     "/aceptar",
     "/anular",
+    "/habilitado",
     "/informes-sla/fechas/",
     "/reparto/asignar-pendientes",
     "/add_columna_gestoria_expedientes",
