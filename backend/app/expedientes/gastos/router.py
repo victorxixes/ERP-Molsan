@@ -212,6 +212,19 @@ def listar_gastos(expediente_id: int, db: Session = Depends(get_db), usuario=Dep
     return db.query(ExpedienteGasto).filter(ExpedienteGasto.expediente_id == expediente.id).order_by(ExpedienteGasto.fecha.desc(), ExpedienteGasto.id.desc()).all()
 
 
+def _tipo_gasto_desde_categoria(categoria: str) -> str | None:
+    """Normaliza las categorías económicas visibles y sus alias históricos."""
+    categorias = {
+        "factura notarial": "Factura notarial",
+        "factura registral": "Factura registral",
+        "factura registro": "Factura registral",
+        "factura impuestos": "Factura impuestos",
+        "ajd/itp": "AJD/ITP",
+        "otros impuestos": "Otros impuestos",
+    }
+    return categorias.get(str(categoria or "").strip().casefold())
+
+
 def _validar_documento_economico(expediente, documento, tipo: str) -> None:
     """Impide vincular a un gasto documentos de otro expediente o categoría."""
     if documento is None or str(documento.expediente_id) != str(expediente.id_expediente):
@@ -238,16 +251,7 @@ def vincular_documento_a_gasto(
 ):
     """Crea una obligación pendiente al adjuntar una factura en Gestión económica, sin marcarla pagada."""
     expediente = _obtener_expediente(db, expediente_id)
-    categorias = {
-        "factura notarial": "Factura notarial",
-        "factura registral": "Factura registral",
-        "factura registro": "Factura registral",
-        "factura impuestos": "Factura impuestos",
-        "ajd/itp": "AJD/ITP",
-        "otros impuestos": "Otros impuestos",
-    }
-    clave = payload.categoria.strip().lower()
-    tipo = categorias.get(clave)
+    tipo = _tipo_gasto_desde_categoria(payload.categoria)
     if not tipo:
         raise HTTPException(status_code=422, detail="Solo se pueden vincular facturas o justificantes económicos.")
     documento = db.query(DocumentoCarpetaDigital).filter(
