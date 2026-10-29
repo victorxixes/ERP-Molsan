@@ -50,6 +50,13 @@ class RouteGuardPolicyTests(unittest.TestCase):
             "editar",
         )
 
+    def test_fichajes_routes_use_the_correct_permission_modules(self):
+        self.assertEqual(_resolver_modulo("/api/fichajes/marcajes", {"GET"}), "fichajes")
+        self.assertEqual(_resolver_modulo("/api/fichajes/admin/marcajes", {"GET"}), "control-fichajes")
+        self.assertEqual(_resolver_modulo("/api/fichajes/catalogo-ausencias", {"GET"}), "fichajes")
+        self.assertEqual(_resolver_modulo("/api/fichajes/catalogo-ausencias", {"POST"}), "control-fichajes")
+        self.assertEqual(_resolver_accion("/api/fichajes/admin/periodos", {"POST"}), "editar")
+
     def test_unknown_api_path_is_not_silently_mapped(self):
         self.assertIsNone(_resolver_modulo("/api/new-unclassified-module"))
 
