@@ -1582,6 +1582,7 @@ export default function FichaExpediente() {
     importe: "",
     concepto: "",
     medio_pago: "Transferencia",
+    idempotency_key: "erp-pago-" + Date.now() + "-" + Math.random().toString(36).slice(2, 10),
   });
   const [cargandoGastos, setCargandoGastos] = useState(false);
   const [guardandoGasto, setGuardandoGasto] = useState(false);
@@ -3418,6 +3419,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         importe: restante.toFixed(2),
         concepto: `Pago de ${gasto.tipo || "gasto"} · ${gasto.descripcion || gasto.numero_documento || gasto.id}`,
         medio_pago: "Transferencia",
+        idempotency_key: "erp-pago-" + gasto.id + "-" + Date.now() + "-" + Math.random().toString(36).slice(2, 10),
       });
       setMostrarFormularioGasto(false);
       setMostrarFormularioPagoReal(true);
@@ -3464,7 +3466,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       setErrorPagoReal("La obligación seleccionada ya no está disponible. Actualiza el libro económico.");
       return;
     }
-    const claveOperacion = `erp-pago-${gastoId}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    const claveOperacion = pagoRealForm.idempotency_key || ("erp-pago-" + gastoId + "-" + Date.now() + "-" + Math.random().toString(36).slice(2, 10));
     setGuardandoPagoReal(true);
     setErrorPagoReal("");
     try {
@@ -3475,7 +3477,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         medio_pago: pagoRealForm.medio_pago || null,
         idempotency_key: claveOperacion,
       });
-      setPagoRealForm({ fecha: new Date().toLocaleDateString("sv-SE"), importe: "", concepto: "", medio_pago: "Transferencia" });
+      setPagoRealForm({ fecha: new Date().toLocaleDateString("sv-SE"), importe: "", concepto: "", medio_pago: "Transferencia", idempotency_key: "erp-pago-" + Date.now() + "-" + Math.random().toString(36).slice(2, 10) });
       setMostrarFormularioPagoReal(false);
       setPagoGastoSeleccionadoId("");
       setErrorPagoReal("");
