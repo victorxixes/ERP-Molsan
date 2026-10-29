@@ -3458,7 +3458,8 @@ function InformeFacturacion() {
   const renderTarjetas = (grupo) => {
     const r = resumen(grupo.key);
     return (
-      <section key={grupo.key} className="space-y-4 rounded-2xl border border-white/80 bg-white/55 p-4 shadow-sm backdrop-blur-xl sm:p-5">
+      <>
+    <section key={grupo.key} className="space-y-4 rounded-2xl border border-white/80 bg-white/55 p-4 shadow-sm backdrop-blur-xl sm:p-5">
         <div className="flex flex-wrap items-center gap-3">
           <span className={"flex h-12 w-12 items-center justify-center rounded-xl text-2xl " + (grupo.acento === "emerald" ? "bg-emerald-50" : "bg-amber-50")}>{grupo.icono}</span>
           <div><h3 className="text-lg font-bold text-slate-800">{grupo.titulo}</h3><p className="text-xs text-slate-500">{grupo.descripcion}</p></div>
@@ -3495,6 +3496,7 @@ function InformeFacturacion() {
   };
 
   return (
+    <>
     <section className="space-y-5">
       <div role="note" className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-900">
         <span aria-hidden="true" className="text-lg">ℹ️</span>
@@ -3629,6 +3631,58 @@ function InformeFacturacion() {
           </section>
         </div>
       )}
+    </section>
+    <InformeHistoricoPostFirma />
+    </>
+  );
+}
+
+// Visor independiente del almacén histórico Post Firma.
+function InformeHistoricoPostFirma() {
+  const [cargas, setCargas] = useState([]);
+  const [cargaSeleccionada, setCargaSeleccionada] = useState("");
+  const [registros, setRegistros] = useState([]);
+  const [columnas, setColumnas] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
+  const [cargandoCargas, setCargandoCargas] = useState(false);
+  const [cargandoFilas, setCargandoFilas] = useState(false);
+  const [error, setError] = useState("");
+  const limite = 100;
+  useEffect(() => {
+    let activo = true; setCargandoCargas(true);
+    axios.get("/utilidades/importador-absis/postfirma/cargas").then(({data}) => {
+      if (!activo) return; const lista = Array.isArray(data?.items) ? data.items : [];
+      setCargas(lista); setCargaSeleccionada((actual) => actual || (lista[0] ? String(lista[0].id) : ""));
+    }).catch((err) => { if (activo) setError(err?.response?.data?.detail || "No se pudo cargar el histórico Post Firma."); })
+      .finally(() => { if (activo) setCargandoCargas(false); });
+    return () => { activo = false; };
+  }, []);
+  useEffect(() => {
+    if (!cargaSeleccionada) { setRegistros([]); setColumnas([]); setTotal(0); return undefined; }
+    let activo = true; setCargandoFilas(true); setError("");
+    axios.get("/utilidades/importador-absis/postfirma/registros", {params:{carga_id:Number(cargaSeleccionada),limit:limite,offset}})
+      .then(({data}) => { if (!activo) return; setRegistros(Array.isArray(data?.items)?data.items:[]); setColumnas(Array.isArray(data?.columnas)?data.columnas:[]); setTotal(Number(data?.total||0)); })
+      .catch((err) => { if (activo) setError(err?.response?.data?.detail || "No se pudieron consultar las filas originales."); })
+      .finally(() => { if (activo) setCargandoFilas(false); });
+    return () => { activo = false; };
+  }, [cargaSeleccionada, offset]);
+  const cargaActual = cargas.find((c) => String(c.id) === String(cargaSeleccionada));
+  const mostrarValor = (v) => v === null || v === undefined || v === "" ? "—" : typeof v === "object" ? JSON.stringify(v) : String(v);
+  const actualizar = async () => {
+    setError(""); setCargandoCargas(true);
+    try { const {data}=await axios.get("/utilidades/importador-absis/postfirma/cargas"); const lista=Array.isArray(data?.items)?data.items:[]; setCargas(lista); if (!lista.some((c)=>String(c.id)===String(cargaSeleccionada))) {setCargaSeleccionada(lista[0]?String(lista[0].id):"");setOffset(0);} }
+    catch(err){setError(err?.response?.data?.detail||"No se pudo actualizar el histórico.");} finally{setCargandoCargas(false);}
+  };
+  return (
+    <section className="space-y-4 rounded-2xl border border-white/80 bg-white/70 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.08)]">
+      <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="text-xl font-bold text-slate-800">Histórico bruto Post Firma</h2><p className="mt-1 max-w-3xl text-sm text-slate-500">Consulta las filas originales por fichero y mes. No vincula expedientes, no modifica Gestión económica y no consolida movimientos.</p></div><button type="button" onClick={actualizar} disabled={cargandoCargas} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50">↻ Actualizar cargas</button></div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4"><label className="text-xs font-semibold text-slate-600 sm:col-span-2">Fichero importado<select value={cargaSeleccionada} onChange={(e)=>{setCargaSeleccionada(e.target.value);setOffset(0);}} className="mt-1 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700" disabled={cargandoCargas||!cargas.length}>{!cargas.length&&<option value="">No hay cargas disponibles</option>}{cargas.map((c)=><option key={c.id} value={String(c.id)}>{c.nombre_archivo} · carga #{c.id} · {c.filas_guardadas} filas</option>)}</select></label><div className="rounded-xl border border-slate-200 bg-slate-50 p-3"><p className="text-xs font-semibold text-slate-500">Filas Excel</p><p className="mt-1 text-xl font-bold text-slate-800">{cargaActual?.filas_excel??"—"}</p></div><div className="rounded-xl border border-slate-200 bg-slate-50 p-3"><p className="text-xs font-semibold text-slate-500">Filas guardadas</p><p className="mt-1 text-xl font-bold text-slate-800">{cargaActual?.filas_guardadas??"—"}</p></div></div>
+      {cargaActual&&<p className="break-all text-xs text-slate-500">Fecha de carga: {cargaActual.fecha_carga||"—"} · SHA-256: {cargaActual.sha256||"—"}</p>}{error&&<p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}
+      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white"><div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-3"><div><h3 className="font-bold text-slate-800">Filas originales</h3><p className="text-xs text-slate-500">Columnas dinámicas del Excel, incluida TIPOCONCEPTO cuando exista.</p></div><span className="text-sm font-semibold text-slate-600">{total.toLocaleString("es-ES")} filas</span></div>
+      {cargandoCargas||cargandoFilas?<p className="p-8 text-center text-sm text-slate-500">Cargando histórico…</p>:!cargaSeleccionada?<p className="p-8 text-center text-sm text-slate-500">Todavía no hay ficheros Post Firma importados.</p>:<div className="max-h-[58vh] overflow-auto"><table className="min-w-max w-full text-left text-xs"><thead className="sticky top-0 z-10 bg-slate-100 text-slate-600"><tr><th className="whitespace-nowrap px-3 py-3 font-bold">Fila Excel</th>{columnas.map((c,i)=><th key={String(c)+"-"+i} className="whitespace-nowrap px-3 py-3 font-bold">{c||"(columna sin título)"}</th>)}</tr></thead><tbody className="divide-y divide-slate-100">{registros.map((fila)=><tr key={fila.id} className="hover:bg-blue-50/50"><td className="whitespace-nowrap px-3 py-2 text-slate-500">{fila.numero_fila}</td>{columnas.map((c,i)=><td key={String(c)+"-"+i} className="max-w-xs whitespace-nowrap px-3 py-2">{mostrarValor(fila.datos?.[c])}</td>)}</tr>)}{!registros.length&&<tr><td colSpan={Math.max(columnas.length+1,1)} className="px-4 py-8 text-center text-slate-500">Esta carga no contiene filas con datos.</td></tr>}</tbody></table></div>}
+      {cargaSeleccionada&&<div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 px-4 py-3"><p className="text-xs text-slate-500">Mostrando {total?offset+1:0}–{Math.min(offset+registros.length,total)} de {total.toLocaleString("es-ES")}</p><div className="flex gap-2"><button type="button" disabled={offset===0||cargandoFilas} onClick={()=>setOffset((v)=>Math.max(0,v-limite))} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold disabled:opacity-40">Anterior</button><button type="button" disabled={offset+limite>=total||cargandoFilas} onClick={()=>setOffset((v)=>v+limite)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold disabled:opacity-40">Siguiente</button></div></div>}
+      </div>
     </section>
   );
 }

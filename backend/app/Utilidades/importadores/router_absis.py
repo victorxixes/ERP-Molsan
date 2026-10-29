@@ -18,7 +18,9 @@ from backend.app.realtime.schemas import RealtimeEvent
 from backend.app.Utilidades.importadores.expedientes_importer import (
     importar_excel_expedientes,
 )
-from backend.app.Utilidades.importadores.postfirma_importer import importar_postfirma, validar_postfirma
+from backend.app.Utilidades.importadores.postfirma_importer import (
+    importar_postfirma, validar_postfirma, listar_cargas_postfirma, listar_registros_postfirma,
+)
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 
@@ -306,27 +308,56 @@ async def importar_postfirma_absis(
 @router.post("/postfirma/validar")
 async def validar_postfirma_absis(
     fichero: UploadFile = File(...),
-    fecha_desde: date | None = Query(default=None, description="Fecha inicial de FPAGO en formato YYYY-MM-DD."),
-    fecha_hasta: date | None = Query(default=None, description="Fecha final de FPAGO en formato YYYY-MM-DD."),
+    fecha_desde: date | None = Query(default=None, description="Parámetro legado; no filtra la validación."),
+    fecha_hasta: date | None = Query(default=None, description="Parámetro legado; no filtra la validación."),
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
-    """Audita Post Firma por intervalo FPAGO y devuelve métricas; nunca guarda filas."""
+    """Valida el contenido del Excel sin filtrar por fechas y sin guardar filas."""
     require_perm_modulo(usuario, "utilidades", "editar")
     nombre = (fichero.filename or "").strip()
     if not nombre.lower().endswith(".xlsx"):
         raise HTTPException(status_code=400, detail="El histórico Post Firma debe ser un Excel .xlsx.")
-    if fecha_desde is None or fecha_hasta is None:
-        raise HTTPException(status_code=400, detail="Selecciona las fechas desde y hasta para FPAGO.")
-    if fecha_desde > fecha_hasta:
-        raise HTTPException(status_code=400, detail="La fecha desde no puede ser posterior a la fecha hasta.")
     contenido = await fichero.read()
     if not contenido:
         raise HTTPException(status_code=400, detail="El Excel Post Firma está vacío.")
     try:
-        return validar_postfirma(db, contenido, fecha_desde=fecha_desde, fecha_hasta=fecha_hasta)
+        return validar_postfirma(db, contenido)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     except Exception as exc:
         print("[VALIDACION ABSIS POST FIRMA] ERROR:", exc, flush=True)
         raise HTTPException(status_code=500, detail="No se pudo validar el Excel. No se han guardado cambios.")
+
+
+@router.get("/postfirma/cargas")
+def obtener_cargas_postfirma(
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    """Devuelve el historial de ficheros cargados en el almacén bruto."""
+    require_perm_modulo(usuario, "utilidades", "ver")
+    try:
+        return {"items": listar_cargas_postfirma(db)}
+    except Exception as exc:
+        db.rollback()
+        print("[CONSULTA CARGAS POST FIRMA] ERROR:", exc, flush=True)
+        raise HTTPException(status_code=500, detail="No se pudo consultar el histórico Post Firma.")
+
+
+@router.get("/postfirma/registros")
+def obtener_registros_postfirma(
+    limit: int = Query(default=200, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
+    carga_id: int | None = Query(default=None, ge=1),
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    """Consulta paginada de filas originales; no aplica filtros de negocio."""
+    require_perm_modulo(usuario, "utilidades", "ver")
+    try:
+        return listar_registros_postfirma(db, limit=limit, offset=offset, carga_id=carga_id)
+    except Exception as exc:
+        db.rollback()
+        print("[CONSULTA REGISTROS POST FIRMA] ERROR:", exc, flush=True)
+        raise HTTPException(status_code=500, detail="No se pudo consultar el detalle del histórico Post Firma.")
