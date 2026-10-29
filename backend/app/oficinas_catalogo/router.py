@@ -11,6 +11,7 @@ from sqlalchemy import bindparam, text
 from sqlalchemy.orm import Session
 
 from backend.app.database import engine, get_db
+from backend.app.uploads import MAX_EXCEL_UPLOAD_BYTES, read_upload_limited
 
 router = APIRouter(prefix="/oficinas-catalogo", tags=["Catálogo de oficinas"])
 
@@ -167,7 +168,11 @@ async def previsualizar_importacion(
     archivo: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
-    contenido = await archivo.read()
+    contenido = await read_upload_limited(
+        archivo,
+        MAX_EXCEL_UPLOAD_BYTES,
+        "Excel de oficinas",
+    )
     filas, errores = _leer_excel(contenido, archivo.filename or "")
     existentes = _existentes(db, [fila["oficina"] for fila in filas])
     return {
@@ -186,7 +191,11 @@ async def importar_oficinas(
     archivo: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
-    contenido = await archivo.read()
+    contenido = await read_upload_limited(
+        archivo,
+        MAX_EXCEL_UPLOAD_BYTES,
+        "Excel de oficinas",
+    )
     filas, errores = _leer_excel(contenido, archivo.filename or "")
     if errores:
         raise HTTPException(
