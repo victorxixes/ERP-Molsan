@@ -3118,22 +3118,27 @@ def avanzar_actividad_expediente(
             expediente.fecha_presentacion = expediente.fecha_liquidacion_tributaria
 
     elif actual == "tramitacion-inscripcion":
-        requeridos = ["fecha_presentacion", "fecha_vencimiento_asiento", "fecha_inscripcion", "escritura_simple_cancelacion", "registral_estado", "registral_fecha"]
-        etiquetas = {"fecha_presentacion":"Fecha presentación", "fecha_vencimiento_asiento":"Fecha vencimiento asiento", "fecha_inscripcion":"Fecha inscripción", "escritura_simple_cancelacion":"Hoja de inscripción", "registral_estado":"Estado registral", "registral_fecha":"Fecha registral"}
-        _validar_campos_obligatorios(expediente, requeridos, etiquetas)
-        if not (_tiene_categoria_documental(categorias, "hoja de inscripcion") or _tiene_categoria_documental(categorias, "inscripcion")):
-            raise HTTPException(status_code=409, detail={"mensaje":"Falta incorporar la hoja de inscripción a la carpeta digital.", "documentos_pendientes":["Hoja de inscripción"]})
+        # Un defecto notificado interrumpe temporalmente esta actividad. Se
+        # atiende antes de validar el cierre registral y, una vez subsanado,
+        # el expediente vuelve aquí para continuar el mismo circuito.
         abiertos = _defectos_abiertos(db, expediente)
         if abiertos:
             expediente.actividad_actual = "Defectos registrales"
         else:
+            requeridos = ["fecha_presentacion", "fecha_vencimiento_asiento", "fecha_inscripcion", "escritura_simple_cancelacion", "registral_estado", "registral_fecha"]
+            etiquetas = {"fecha_presentacion":"Fecha presentación", "fecha_vencimiento_asiento":"Fecha vencimiento asiento", "fecha_inscripcion":"Fecha inscripción", "escritura_simple_cancelacion":"Hoja de inscripción", "registral_estado":"Estado registral", "registral_fecha":"Fecha registral"}
+            _validar_campos_obligatorios(expediente, requeridos, etiquetas)
+            if not (_tiene_categoria_documental(categorias, "hoja de inscripcion") or _tiene_categoria_documental(categorias, "inscripcion")):
+                raise HTTPException(status_code=409, detail={"mensaje":"Falta incorporar la hoja de inscripción a la carpeta digital.", "documentos_pendientes":["Hoja de inscripción"]})
             expediente.actividad_actual = "Cierre del expediente"
 
     elif actual == "defectos-registrales":
         abiertos = _defectos_abiertos(db, expediente)
         if abiertos:
-            raise HTTPException(status_code=409, detail="No se puede avanzar al cierre mientras existan defectos registrales abiertos.")
-        expediente.actividad_actual = "Cierre del expediente"
+            raise HTTPException(status_code=409, detail="No se puede continuar la tramitación mientras existan defectos registrales abiertos.")
+        # La subsanación no cierra el expediente: reanuda la actividad que
+        # quedó interrumpida por la calificación registral.
+        expediente.actividad_actual = "Tramitación inscripción"
 
     elif actual == "facturacion-cierre":
         if not (str(getattr(expediente, "facturacion_estado", "") or "").strip().lower() in ("generada", "generado", "registrada", "registrado", "cerrada", "cerrado") and getattr(expediente, "facturacion_fecha", None) and getattr(expediente, "fecha_fin_actividad", None)):
