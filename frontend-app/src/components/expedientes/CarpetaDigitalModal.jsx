@@ -408,7 +408,12 @@ export default function CarpetaDigitalModal({
       // Adjuntar el documento nunca lo marca como pagado ni descuenta provisión.
       const categoriasEconomicas = ["factura-notarial", "factura-registral", "factura-impuestos", "ajd-itp", "otros-impuestos"];
       if (modoActividad && normalizar(actividadId) === "gestion-economica" && categoriasEconomicas.includes(normalizar(categoria))) {
-        const idInternoExpediente = expedienteDatos?.id;
+        let idInternoExpediente = expedienteDatos?.id;
+        if (!idInternoExpediente) {
+          const detalleExpediente = await axios.get(`/expedientes/${encodeURIComponent(expedienteId)}`);
+          const datosDetalle = detalleExpediente?.data?.expediente || detalleExpediente?.data?.item || detalleExpediente?.data || null;
+          idInternoExpediente = datosDetalle?.id;
+        }
         if (!idInternoExpediente) {
           throw new Error("No se ha podido identificar el expediente interno para vincular la factura a Gestión económica.");
         }
