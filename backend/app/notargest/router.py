@@ -833,7 +833,7 @@ async def subir_documento_workflow(expediente_id: str, categoria: str = Form(...
     if categoria not in categorias:
         raise HTTPException(status_code=400, detail="Tipo de documento no válido")
     categoria_carpeta, mime_fijo, siguiente = categorias[categoria]
-    nombre = Path(archivo.filename or "documento").name
+    nombre = (archivo.filename or "documento").replace("\\", "/").rsplit("/", 1)[-1]
     extension, tipo_mime_seguro = _tipo_mime_notargest_seguro(nombre)
     if categoria in ("factura", "defecto", "subsanacion", "inscripcion", "copia") and extension != ".pdf":
         raise HTTPException(status_code=400, detail="Este documento debe adjuntarse en PDF")
@@ -1130,7 +1130,7 @@ async def subir_documento_carpeta_notargest(
     }
     if categoria not in categorias_permitidas:
         raise HTTPException(status_code=400, detail="Categoría documental no válida")
-    nombre = Path(archivo.filename or "documento.pdf").name
+    nombre = (archivo.filename or "documento.pdf").replace("\\", "/").rsplit("/", 1)[-1]
     if not nombre.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Solo se admiten archivos PDF")
     try:
@@ -1188,7 +1188,7 @@ def descargar_documento(expediente_id: str, documento_id: int, n=Depends(get_not
 @router.post("/expedientes/{expediente_id}/factura-notarial")
 async def subir_factura_notarial(expediente_id: str, archivo: UploadFile = File(...), n=Depends(get_notario), db: Session = Depends(get_db)):
     e = _expediente_autorizado(expediente_id, n, db)
-    nombre = Path(archivo.filename or "factura.pdf").name
+    nombre = (archivo.filename or "factura.pdf").replace("\\", "/").rsplit("/", 1)[-1]
     if not nombre.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Adjunta la factura en formato PDF")
     try:
