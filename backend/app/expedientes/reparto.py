@@ -1,5 +1,5 @@
 from fastapi import Depends, HTTPException, Request
-from sqlalchemy import text
+from sqlalchemy import inspect as sa_inspect, text
 from sqlalchemy.orm import Session
 
 from backend.app.auth.dependencies import get_current_user
@@ -237,8 +237,49 @@ def usuario_admin_expedientes(usuario):
     return False
 
 
-def expediente_cumple_reglas_empleado(db: Session, empleado: Empleado, expediente: Expediente, departamentos=None) -> bool:
-    """True si al menos una regla activa del empleado cubre la actividad y los criterios del expediente."""
+def ids_asignaciones_provisionales(db: Session, empleado_id: int) -> set[str]:
+    """Expedientes conservados provisionalmente para un gestor tras no hallar regla."""
+    try:
+        if not sa_inspect(db.get_bind()).has_table("expediente_gestor_historial"):
+            return set()
+        filas = db.execute(text("""
+            SELECT h.expediente_id
+            FROM expediente_gestor_historial AS h
+            WHERE h.gestor_id = :gestor_id
+              AND h.motivo = 'sin_regla_reparto_gestor_conservado'
+              AND h.id = (
+                  SELECT MAX(h2.id)
+                  FROM expediente_gestor_historial AS h2
+                  WHERE h2.expediente_id = h.expediente_id
+              )
+        """), {"gestor_id": int(empleado_id)}).fetchall()
+        return {str(fila[0]) for fila in filas if fila and fila[0] is not None}
+    except Exception:
+        # La comprobación de acceso no debe bloquear el ERP si el historial
+        # aún no existe en una instalación recién migrada. En ese caso, el
+        # expediente seguirá sujeto a las reglas normales de reparto.
+        return set()
+
+
+def expediente_cumple_reglas_empleado(
+    db: Session,
+    empleado: Empleado,
+    expediente: Expediente,
+    departamentos=None,
+    asignaciones_provisionales=None,
+) -> bool:
+    """True si hay regla compatible o una asignación provisional registrada para este gestor."""
+    id_expediente = str(getattr(expediente, "id_expediente", "") or "").strip()
+    gestor_asignado_id = getattr(expediente, "gestor_asignado_id", None)
+    if gestor_asignado_id and int(gestor_asignado_id) == int(empleado.id):
+        provisionales = (
+            ids_asignaciones_provisionales(db, empleado.id)
+            if asignaciones_provisionales is None
+            else asignaciones_provisionales
+        )
+        if id_expediente in provisionales:
+            return True
+
     reglas = getattr(empleado, "reparto_actividades_json", None) or []
     if not isinstance(reglas, list) or not reglas:
         return False
@@ -343,8 +384,11 @@ def validar_acceso_candidatos_expediente(db: Session, usuario, candidatos) -> No
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
 
     departamentos = {d.id: d.nombre for d in db.query(Departamento).all()}
+    asignaciones_provisionales = ids_asignaciones_provisionales(db, empleado.id)
     if any(
-        not expediente_cumple_reglas_empleado(db, empleado, expediente, departamentos)
+        not expediente_cumple_reglas_empleado(
+            db, empleado, expediente, departamentos, asignaciones_provisionales
+        )
         for expediente in candidatos
     ):
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
@@ -422,8 +466,11 @@ def ids_expedientes_visibles(db: Session, usuario):
         return []
     expedientes = db.query(Expediente).all()
     departamentos = {d.id: d.nombre for d in db.query(Departamento).all()}
+    asignaciones_provisionales = ids_asignaciones_provisionales(db, empleado.id)
     return [
         expediente.id
         for expediente in expedientes
-        if expediente_cumple_reglas_empleado(db, empleado, expediente, departamentos)
+        if expediente_cumple_reglas_empleado(
+            db, empleado, expediente, departamentos, asignaciones_provisionales
+        )
     ]
