@@ -289,7 +289,15 @@ def vincular_catalogos_expediente(expediente, row, notarios, empleados):
             if por_nif or por_nombre:
                 coincidencias.append(notario)
         if len(coincidencias) == 1:
-            expediente.notario_id = coincidencias[0].id
+            notario_ctn = coincidencias[0]
+            expediente.notario_id = notario_ctn.id
+
+            # El tipo de firma procede de CTN, nunca del Excel ABSIS.
+            tipo_ctn = clave_vinculacion(getattr(notario_ctn, "vc", None))
+            if tipo_ctn in {"si", "vc", "video", "videoconferencia", "videoconference"}:
+                expediente.tipo_firma = "Videoconferencia"
+            elif tipo_ctn in {"no", "presencial", "p", "fisica"}:
+                expediente.tipo_firma = "Presencial"
 
     nombre_apoderado = obtener_valor(row, "APODERADO")
     if nombre_apoderado:
@@ -1130,7 +1138,6 @@ def importar_excel_expedientes(
             # Campos de firma/documento que ABSIS pueda aportar. Solo se
             # actualizan si vienen informados para no borrar datos operativos.
             for campo, encabezado in (
-                ("tipo_firma", "TIPOFIRMA"),
                 ("tipo_documento", "TIPODOCUMENTO"),
                 ("idioma_documento", "IDIOMADOCUMENTO"),
                 ("formato_escritura", "FORMATOESCRITURA"),
