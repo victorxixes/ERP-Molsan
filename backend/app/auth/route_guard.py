@@ -128,6 +128,8 @@ _POST_ES_EDICION = (
     "/carpeta-digital",
     "/calificacion",
     "/pagos",
+    "/avanzar-actividad",
+    "/validar",
     "/enviar-a-notario",
     "/enviar-a-absis",
     "/integraciones-pendientes",
