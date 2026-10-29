@@ -1,5 +1,5 @@
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 import json
 from io import BytesIO
 from typing import Optional
@@ -768,6 +768,13 @@ def listar_defectos_expediente(
     }
 
 
+def _calcular_vencimiento_presentacion(fecha_calificacion):
+    """El plazo registral se calcula con 60 días naturales desde la calificación."""
+    if fecha_calificacion is None:
+        return None
+    return fecha_calificacion + timedelta(days=60)
+
+
 # ============================================================
 # DEFECTOS — CREAR
 # ============================================================
@@ -795,6 +802,12 @@ def crear_defecto(
         )
 
         valores = datos.dict()
+
+        # El vencimiento de presentación se deriva siempre de la fecha de
+        # calificación: 60 días naturales. No confiar en una fecha manual del cliente.
+        valores["fecha_vencimiento_presentacion"] = _calcular_vencimiento_presentacion(
+            valores.get("fecha_calificacion")
+        )
 
         if subtipo is not None:
             valores["subtipo_defecto"] = subtipo.nombre
@@ -897,6 +910,18 @@ def actualizar_defecto(
     )
 
     valores = datos.dict(exclude_unset=True)
+
+    # Si cambia o se elimina la fecha de calificación, recalcular o limpiar
+    # el vencimiento derivado. Si no cambia, conservar la relación existente.
+    if "fecha_calificacion" in valores:
+        valores["fecha_vencimiento_presentacion"] = _calcular_vencimiento_presentacion(
+            valores.get("fecha_calificacion")
+        )
+    elif getattr(defecto, "fecha_calificacion", None) is not None:
+        valores["fecha_vencimiento_presentacion"] = _calcular_vencimiento_presentacion(
+            defecto.fecha_calificacion
+        )
+
     valores_anteriores = {
         campo: getattr(defecto, campo, None)
         for campo in valores
