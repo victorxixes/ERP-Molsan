@@ -529,10 +529,18 @@ def actualizar_gasto(expediente_id: int, gasto_id: int, payload: GastoUpdate, db
         raise HTTPException(status_code=404, detail="No se encontró el gasto.")
     datos = payload.dict(exclude_unset=True)
     _validar_calculo(datos)
+    # Una obligación no puede rebajarse por debajo de los pagos ya registrados.
+    _garantizar_tabla_pagos(db)
+    total_pagado = _decimal_opcional(db.execute(text("""
+        SELECT COALESCE(SUM(importe), 0) FROM public.expediente_gasto_pagos WHERE gasto_id = :gasto_id
+    """), {"gasto_id": gasto.id}).scalar()) or Decimal("0.00")
     # En actualizaciones parciales, validar la combinación final, no solo los campos enviados.
     combinados = {campo: getattr(gasto, campo, None) for campo in GastoBase.__fields__}
     combinados.update(datos)
     _validar_calculo(combinados)
+    importe_final = _decimal_opcional(combinados.get("importe_resultante") if combinados.get("importe_resultante") is not None else combinados.get("importe"))
+    if total_pagado > 0 and importe_final is not None and importe_final + CENTIMO < total_pagado:
+        raise HTTPException(status_code=422, detail="El importe de la obligación no puede quedar por debajo del total ya pagado.")
     for campo, valor in datos.items():
         setattr(gasto, campo, valor)
     if "importe_resultante" in datos and "importe" not in datos:
@@ -551,6 +559,12 @@ def eliminar_gasto(expediente_id: int, gasto_id: int, db: Session = Depends(get_
     gasto = db.query(ExpedienteGasto).filter(ExpedienteGasto.id == gasto_id, ExpedienteGasto.expediente_id == expediente.id).first()
     if gasto is None:
         raise HTTPException(status_code=404, detail="No se encontró el gasto.")
+    _garantizar_tabla_pagos(db)
+    pagos_existentes = db.execute(text("""
+        SELECT COUNT(*) FROM public.expediente_gasto_pagos WHERE gasto_id = :gasto_id
+    """), {"gasto_id": gasto.id}).scalar() or 0
+    if pagos_existentes:
+        raise HTTPException(status_code=409, detail="No se puede eliminar una obligación con pagos registrados; conserva su histórico y corrige el registro si procede.")
     db.delete(gasto)
     try:
         db.commit()
