@@ -76,6 +76,14 @@ const CATALOGOS = [
     destacado: true,
   },
   {
+    icon: "🧮",
+    titulo: "Tipos impositivos",
+    descripcion: "Gestiona tipos de IVA, IGIC y retenciones; crea, edita y desactiva porcentajes utilizados por las órdenes de pago.",
+    ruta: "/catalogos/tipos-impositivos",
+    grupo: "Catálogos económicos",
+    destacado: true,
+  },
+  {
     icon: "💶",
     titulo: "Honorarios de gestoría",
     descripcion: "Tarifas con base imponible, IVA o IGIC y total calculado.",
