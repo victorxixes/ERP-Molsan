@@ -471,6 +471,13 @@ def datos_defecto(
         if hasattr(defecto, campo):
             valor = getattr(defecto, campo)
 
+            if campo == "fecha_vencimiento_presentacion":
+                # Mantener coherencia también para registros históricos sin
+                # recalcularlos ni escribir en producción durante una lectura.
+                valor = _calcular_vencimiento_presentacion(
+                    getattr(defecto, "fecha_calificacion", None)
+                )
+
             if isinstance(valor, (date, datetime)):
                 valor = valor.isoformat()
 
