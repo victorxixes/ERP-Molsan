@@ -29,6 +29,16 @@ from backend.app.storage import CARPETA_DIGITAL_DIR
 
 router = APIRouter(prefix="/notargest", tags=["NotarGest"])
 ROOT = CARPETA_DIGITAL_DIR.resolve()
+MAX_WORKFLOW_UPLOAD_BYTES = 25 * 1024 * 1024
+
+
+def _validar_contenido_workflow(contenido: bytes, exigir_pdf: bool = False) -> None:
+    if not contenido:
+        raise HTTPException(status_code=400, detail="El archivo está vacío.")
+    if len(contenido) > MAX_WORKFLOW_UPLOAD_BYTES:
+        raise HTTPException(status_code=413, detail="El archivo supera el límite de 25 MB.")
+    if exigir_pdf and b"%PDF-" not in contenido[:1024]:
+        raise HTTPException(status_code=400, detail="El contenido recibido no parece ser un PDF válido.")
 ROOT.mkdir(parents=True, exist_ok=True)
 
 @router.on_event("startup")
@@ -803,9 +813,14 @@ async def subir_documento_workflow(expediente_id: str, categoria: str = Form(...
         raise HTTPException(status_code=400, detail="Este documento debe adjuntarse en PDF")
     if categoria == "copia" and str(getattr(e, "tiene_defectos_abiertos", "") or "").strip().casefold() in {"si", "sí", "true", "1", "abierto"}:
         raise HTTPException(status_code=400, detail="No se puede cerrar el expediente mientras haya defectos registrales abiertos. Adjunta primero la subsanación del defecto.")
-    contenido = await archivo.read(25 * 1024 * 1024 + 1)
-    if not contenido or len(contenido) > 25 * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="El archivo está vacío o supera 25 MB")
+    try:
+        contenido = await archivo.read(MAX_WORKFLOW_UPLOAD_BYTES + 1)
+    finally:
+        await archivo.close()
+    exigir_pdf = mime_fijo == "application/pdf" or categoria in {
+        "factura", "defecto", "subsanacion", "inscripcion", "copia"
+    }
+    _validar_contenido_workflow(contenido, exigir_pdf=exigir_pdf)
     nombre_guardado = f"{uuid.uuid4().hex}{Path(nombre).suffix[:20].lower()}"
     ruta = (ROOT / nombre_guardado).resolve()
     if ruta.parent != ROOT: raise HTTPException(status_code=400, detail="Nombre de archivo no válido")
@@ -1092,9 +1107,11 @@ async def subir_documento_carpeta_notargest(
     nombre = Path(archivo.filename or "documento.pdf").name
     if not nombre.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Solo se admiten archivos PDF")
-    contenido = await archivo.read(25 * 1024 * 1024 + 1)
-    if not contenido or len(contenido) > 25 * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="El archivo está vacío o supera 25 MB")
+    try:
+        contenido = await archivo.read(MAX_WORKFLOW_UPLOAD_BYTES + 1)
+    finally:
+        await archivo.close()
+    _validar_contenido_workflow(contenido, exigir_pdf=True)
     nombre_guardado = f"{uuid.uuid4().hex}{Path(nombre).suffix[:20].lower()}"
     ruta = (ROOT / nombre_guardado).resolve()
     if ruta.parent != ROOT:
