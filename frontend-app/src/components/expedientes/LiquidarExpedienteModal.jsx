@@ -62,15 +62,15 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
       for (const fila of filas) {
         if (!fila.id) continue;
         const actual = movimientos.find((g) => String(g.id) === String(fila.id));
-        if (actual && (String(actual.tipo || actual.descripcion || "Gasto") !== fila._tipo || Boolean(["pagado", "realizado", "abonado", "paid"].includes(String(actual.estado_pago || "").toLowerCase())) !== fila._pagado)) {
+        // El modal de liquidación puede corregir el concepto, pero no simular pagos.
+        // Los estados de pago solo se actualizan al registrar movimientos reales.
+        if (actual && String(actual.tipo || actual.descripcion || "Gasto") !== fila._tipo) {
           await axios.put(`/expedientes/${encodeURIComponent(id)}/gastos/${encodeURIComponent(fila.id)}`, {
             tipo: fila._tipo,
-            estado_pago: fila._pagado ? "Pagado" : "Pendiente",
-            ...(fila._pagado && !fila.fecha_pago ? { fecha_pago: fechaHoy() } : {}),
           });
         }
       }
-      setMensaje("Datos de facturación y movimientos guardados.");
+      setMensaje("Datos de facturación y conceptos guardados. Los pagos solo se confirman desde Gestión económica.");
       return true;
     } catch (e) {
       setError(e?.response?.data?.detail || e?.message || "No se pudieron guardar los datos de liquidación.");
@@ -175,13 +175,13 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
                     <td className="whitespace-nowrap px-3 py-2">{String(fila.fecha_pago || fila.fecha || fila.fecha_factura || "").slice(0,10) || "—"}</td>
                     <td className="px-3 py-2"><input aria-label="Tipo de documento o movimiento" value={fila._tipo} onChange={(e) => { setCierreDocumental(null); setFilas((prev) => prev.map((f, i) => i === idx ? { ...f, _tipo: e.target.value } : f)); }} className="w-full rounded-md border border-slate-300 px-2 py-1.5" /></td>
                     <td className="whitespace-nowrap px-3 py-2 text-right font-semibold">{dinero(fila.importe_total_bruto ?? fila.importe ?? fila.importe_resultante)}</td>
-                    <td className="px-3 py-2"><label className="inline-flex items-center gap-2"><input type="checkbox" checked={fila._pagado} onChange={(e) => { setCierreDocumental(null); setFilas((prev) => prev.map((f, i) => i === idx ? { ...f, _pagado: e.target.checked } : f)); }} />{fila._pagado ? "Realizado" : "Pendiente"}</label></td>
+                    <td className="px-3 py-2"><span className={fila._pagado ? "font-bold text-emerald-700" : "font-semibold text-amber-700"}>{fila._pagado ? "Pagado" : "Pendiente · registrar desde Pagar"}</span></td>
                   </tr>)}
                   <tr className="border-t-2 border-indigo-200 bg-indigo-50/60"><td className="px-3 py-2"><input aria-label="Fecha de liquidación" type="date" value={form.fecha_fin_actividad || ""} onChange={(e) => cambiar("fecha_fin_actividad", e.target.value)} className="rounded-md border border-slate-300 bg-white px-2 py-1.5" /></td><td className="px-3 py-2 font-extrabold text-indigo-900">Liquidación final</td><td className="px-3 py-2 text-right font-extrabold text-indigo-900">{dinero(saldoLiquidacion)}</td><td className="px-3 py-2 text-slate-600">Saldo calculado</td></tr>
                 </tbody>
               </table>
             </div>
-            <p className="mt-2 text-[11px] text-slate-500">El saldo se calcula como provisión inicial menos los movimientos marcados como pagados. Los cambios de tipo y estado se guardan al pulsar Guardar liquidación.</p>
+            <p className="mt-2 text-[11px] text-slate-500">El saldo se calcula con pagos registrados. Para confirmar un pago, utiliza el botón Pagar de Gestión económica; este checklist no puede simular un movimiento.</p>
           </section>
           <section className="rounded-xl border border-slate-200 bg-white p-4">
             <h3 className="mb-3 text-sm font-extrabold text-slate-800">Datos de facturación</h3>
