@@ -160,14 +160,33 @@ def asignar_gestor_automaticamente(db: Session, expediente: Expediente, activida
         candidatos.append((pendientes / porcentaje, pendientes, empleado.id))
 
     if not candidatos:
+        # No borres una asignación existente solo porque no haya una regla
+        # compatible con la actividad nueva. Se conserva como provisional y
+        # se registra una incidencia explícita para que administración la revise.
+        # Si el expediente ya estaba sin gestor, también se registra el motivo.
         anterior_id = getattr(expediente, "gestor_asignado_id", None)
-        if anterior_id:
-            expediente.gestor_asignado_id = None
-            db.execute(text("""
-                INSERT INTO expediente_gestor_historial
-                    (expediente_id, actividad, gestor_id, gestor_anterior_id, motivo, fecha)
-                VALUES (:expediente_id, :actividad, NULL, :anterior_id, 'sin_regla_reparto', CURRENT_TIMESTAMP)
-            """), {"expediente_id": str(expediente.id_expediente), "actividad": actividad_key, "anterior_id": anterior_id})
+        motivo_sin_regla = (
+            "sin_regla_reparto_gestor_conservado"
+            if anterior_id
+            else "sin_regla_reparto_sin_gestor"
+        )
+        db.execute(text("""
+            INSERT INTO expediente_gestor_historial
+                (expediente_id, actividad, gestor_id, gestor_anterior_id, motivo, fecha)
+            VALUES (
+                :expediente_id, :actividad, :gestor_id, :anterior_id,
+                :motivo, CURRENT_TIMESTAMP
+            )
+        """), {
+            "expediente_id": str(expediente.id_expediente),
+            "actividad": actividad_key,
+            # gestor_id refleja la asignación que permanece vigente; si no
+            # existía gestor, ambos campos quedan NULL y el motivo identifica
+            # el expediente pendiente de asignación.
+            "gestor_id": anterior_id,
+            "anterior_id": anterior_id,
+            "motivo": motivo_sin_regla,
+        })
         return None
 
     candidatos.sort(key=lambda item: (item[0], item[1], item[2]))
