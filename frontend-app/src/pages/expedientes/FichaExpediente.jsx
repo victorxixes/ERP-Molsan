@@ -5910,85 +5910,6 @@ const cuantiaFincasParaEnvio =
                   </div>
                 )}
 
-                {actividadSeleccionada === "gestion-economica" && (
-                  <section className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/90 px-4 py-4 sm:px-5">
-                      <div className="flex min-w-0 items-center gap-3">
-                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700"><span aria-hidden="true">▤</span></span>
-                        <div>
-                          <h5 className="text-sm font-extrabold text-slate-900">Control económico · Libro de pagos</h5>
-                          <p className="mt-1 text-xs text-slate-500">Saldo inicial, gastos imputados y saldo pendiente del expediente.</p>
-                        </div>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <button type="button" onClick={cargarGastosExpediente} disabled={cargandoGastos} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-50">{cargandoGastos ? "Actualizando…" : "↻ Actualizar"}</button>
-                      </div>
-                    </div>
-                    <div className="p-4 sm:p-5">
-                      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                        <div className="rounded-xl border border-indigo-100 bg-indigo-50/70 p-4">
-                          <p className="text-[10px] font-bold uppercase tracking-wide text-indigo-700">Saldo inicial</p>
-                          <p className="mt-2 text-xl font-extrabold tabular-nums text-slate-900">{importeInicialDisponible ? `${importeInicialProvision.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
-                          <p className="mt-1 text-[10px] text-slate-500">Campo Importe del expediente</p>
-                        </div>
-                        <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 p-4">
-                          <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-700">Saldo pendiente</p>
-                          <p className={`mt-2 text-xl font-extrabold tabular-nums ${resumenEconomico.saldoActual < 0 ? "text-red-700" : "text-emerald-700"}`}>{importeInicialDisponible ? `${resumenEconomico.saldoActual.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
-                          <p className="mt-1 text-[10px] text-slate-500">Tras descontar pagos confirmados</p>
-                        </div>
-                        <div className="rounded-xl border border-slate-200 bg-white p-4">
-                          <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Total imputado</p>
-                          <p className="mt-2 text-xl font-extrabold tabular-nums text-slate-900">{importeInicialDisponible ? ` ${(importeInicialProvision - resumenEconomico.saldoActual).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`.trim() : `${resumenEconomico.movimientos.reduce((s, m) => s + Math.abs(Number(m.importeMovimiento || 0)), 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}</p>
-                          <p className="mt-1 text-[10px] text-slate-500">Pagos contabilizados</p>
-                        </div>
-                        <div className="rounded-xl border border-slate-200 bg-white p-4">
-                          <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Pagos registrados</p>
-                          <p className="mt-2 text-xl font-extrabold tabular-nums text-slate-900">{resumenEconomico.movimientos.length}</p>
-                          <p className="mt-1 text-[10px] text-slate-500">Movimientos confirmados</p>
-                        </div>
-                      </div>
-                      {importeInicialDisponible && importeInicialProvision > 0 && (
-                        <div className="mt-4">
-                          <div className="mb-2 flex items-center justify-between gap-3"><span className="text-xs font-semibold text-slate-600">Consumo del saldo inicial</span><span className="text-xs font-bold tabular-nums text-slate-600">{Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100)).toLocaleString("es-ES", { maximumFractionDigits: 1 })}%</span></div>
-                          <div className="h-2 overflow-hidden rounded-full bg-slate-100"><div className={`h-full rounded-full ${resumenEconomico.saldoActual < 0 ? "bg-red-500" : "bg-emerald-500"}`} style={{ width: `${Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100))}%` }} /></div>
-                        </div>
-                      )}
-                      <div className="mt-5">
-                        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-600">Libro de movimientos contables</h6><span className="text-[11px] text-slate-500">Solo los pagos confirmados descuentan el saldo</span></div>
-                        {cargandoGastos ? (
-                          <p className="py-4 text-sm text-slate-500">Cargando movimientos contables…</p>
-                        ) : gastosExpediente.length === 0 ? (
-                          <p className="rounded-xl border border-dashed border-slate-200 px-4 py-6 text-center text-sm text-slate-500">Todavía no hay líneas contables guardadas. Cada gasto registrado aparecerá aquí con su ID y desglose fiscal.</p>
-                        ) : (
-                          <div className="overflow-x-auto rounded-xl border border-slate-200">
-                            <table className="w-full min-w-[1080px] text-left text-xs">
-                              <thead className="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500"><tr><th className="px-3 py-3 font-bold">ID de pago</th><th className="px-3 py-3 font-bold">Fecha</th><th className="px-3 py-3 font-bold">Tipo de documento</th><th className="px-3 py-3 text-right font-bold">Cuantía documento</th><th className="px-3 py-3 text-right font-bold">Impuesto</th><th className="px-3 py-3 text-right font-bold">Total</th><th className="px-3 py-3 font-bold">Estado</th><th className="px-3 py-3 text-right font-bold">Saldo tras pago</th><th className="px-3 py-3 font-bold">Acciones</th></tr></thead>
-                              <tbody className="divide-y divide-slate-100">
-                                {resumenEconomico.movimientos.length === 0 && <tr><td colSpan={9} className="px-4 py-6 text-center text-slate-500">No hay pagos reales registrados todavía. Las facturas pendientes no descuentan la provisión.</td></tr>}
-                                {resumenEconomico.movimientos.map((movimiento) => {
-                                  const fmt = (valor) => Number(valor ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                                  const importeMovimiento = Math.abs(Number(movimiento.importeMovimiento ?? movimiento.importe_resultante ?? movimiento.importe ?? 0));
-                                  const textoMovimiento = normalizarTexto([movimiento.tipo, movimiento.concepto_pago, movimiento.descripcion, movimiento.tipo_impuesto].filter(Boolean).join(" "));
-                                  const esPagoImpuesto = movimiento.es_movimiento_pago && /impuesto|ajd|itp|tribut/.test(textoMovimiento);
-                                  const cuantiaDocumento = esPagoImpuesto ? null : numeroDecimalGasto(cuantiaFincasParaEnvio);
-                                  const impuesto = esPagoImpuesto ? importeMovimiento : 0;
-                                  const total = movimiento.es_movimiento_pago ? importeMovimiento : Math.abs(Number(movimiento.importe_resultante ?? movimiento.importe ?? movimiento.importe_total_bruto ?? importeMovimiento));
-                                  const estado = movimiento.es_movimiento_pago ? (movimiento.anulado_en ? "Anulado" : "Pagado") : String(movimiento.estado_pago || "Pagado").trim();
-                                  const saldoTrasMovimiento = importeInicialDisponible ? Number(movimiento.saldoCalculado) : null;
-                                  return <tr key={movimiento.id} className="text-slate-700 transition-colors hover:bg-indigo-50/40"><td className="whitespace-nowrap px-3 py-3 font-extrabold text-indigo-700">{movimiento.numero_documento || ("PAG-" + String(movimiento.pago_id || movimiento.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(movimiento.fecha || movimiento.fecha_factura)}</td><td className="px-3 py-3"><span className="font-semibold">{movimiento.tipo || "Documento"}</span>{movimiento.concepto_pago ? <span className="mt-1 block text-slate-500">{movimiento.concepto_pago}</span> : movimiento.descripcion ? <span className="mt-1 block text-slate-500">{movimiento.descripcion}</span> : null}{movimiento.tipo_impuesto && !movimiento.es_movimiento_pago ? <span className="mt-1 block text-[10px] text-slate-400">{movimiento.tipo_impuesto}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{cuantiaDocumento === null || cuantiaDocumento === 0 ? "—" : `${fmt(cuantiaDocumento)} €`}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{impuesto > 0 ? `${fmt(impuesto)} €` : "—"}</td><td className="whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums">{fmt(total)} €</td><td className="whitespace-nowrap px-3 py-3"><span className={"rounded-full px-2 py-1 text-[10px] font-bold " + (estado === "Anulado" ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700")}>{estado}</span>{movimiento.motivo_anulacion ? <span className="mt-1 block max-w-[220px] whitespace-normal text-[10px] text-red-600" title={movimiento.motivo_anulacion}>Motivo: {movimiento.motivo_anulacion}</span> : null}</td><td className={"whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums " + (saldoTrasMovimiento !== null && saldoTrasMovimiento < 0 ? "text-red-700" : "text-slate-900")}>{saldoTrasMovimiento === null ? "—" : (fmt(saldoTrasMovimiento) + " €")}</td><td className="px-3 py-3">{movimiento.es_movimiento_pago && !movimiento.anulado_en && esAdministradorSesion ? <button type="button" onClick={() => void anularPagoGasto(movimiento)} className="rounded-lg border border-red-200 px-2.5 py-1.5 text-[10px] font-bold text-red-700 hover:bg-red-50">Anular pago</button> : movimiento.anulado_en ? <span className="text-[10px] font-semibold text-slate-500">Anulado</span> : "—"}</td></tr>;
-                                })}
-                              </tbody>
-                            </table>
-                          </div>
-                        )}
-                        {!importeInicialDisponible && <p className="mt-2 text-xs text-amber-700">No hay un Importe inicial válido en el expediente; revisa el dato antes de utilizar el saldo como referencia contable.</p>}
-                      </div>
-                      {gastosPendientesResumen.length > 0 && <p className="mt-3 rounded-lg border border-amber-100 bg-amber-50 px-3 py-2 text-xs text-amber-800">{gastosPendientesResumen.length} gasto(s) registrado(s) todavía pendiente(s); no se descuentan del saldo hasta confirmar el pago.</p>}
-                    </div>
-                    {errorGastos && <p role="alert" className="border-t border-red-100 bg-red-50 px-4 py-2 text-xs text-red-700">{errorGastos}</p>}
-                  </section>
-                )}
-
                 {actividadSeleccionada === "sede-notarial" && (
                   <section className="mb-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-3 sm:p-4">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
@@ -7091,7 +7012,7 @@ const cuantiaFincasParaEnvio =
                               Importe inicial tomado de Información crediticia. El saldo solo descuenta los gastos cuyo pago está confirmado.
                             </p>
                           </div>
-                          <button type="button" onClick={() => setMostrarResumenEconomico((actual) => !actual)} aria-expanded={mostrarResumenEconomico} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">{mostrarResumenEconomico ? "⌃ Ocultar resumen" : "⌄ Expandir resumen"}</button>
+                          
                           <button
                             type="button"
                             onClick={() => {
@@ -7121,7 +7042,7 @@ const cuantiaFincasParaEnvio =
                             ＋ Solicitar complemento de saldo
                           </button>
                         </div>
-                        <div className={mostrarResumenEconomico ? "" : "hidden"}>
+                        <div>
 
                         {mensajeComplementoSaldo && <div role="status" className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800">{mensajeComplementoSaldo}</div>}
                         {mostrarModalComplementoSaldo && (
@@ -7179,6 +7100,84 @@ const cuantiaFincasParaEnvio =
                             <p className="mt-1 text-[10px] text-slate-500">Importe inicial menos pagos confirmados</p>
                           </div>
                         </div>
+
+                  <section className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/90 px-4 py-4 sm:px-5">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700"><span aria-hidden="true">▤</span></span>
+                        <div>
+                          <h5 className="text-sm font-extrabold text-slate-900">Control económico · Libro de pagos</h5>
+                          <p className="mt-1 text-xs text-slate-500">Saldo inicial, gastos imputados y saldo pendiente del expediente.</p>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button type="button" onClick={cargarGastosExpediente} disabled={cargandoGastos} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-50">{cargandoGastos ? "Actualizando…" : "↻ Actualizar"}</button>
+                      </div>
+                    </div>
+                    <div className="p-4 sm:p-5">
+                      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                        <div className="rounded-xl border border-indigo-100 bg-indigo-50/70 p-4">
+                          <p className="text-[10px] font-bold uppercase tracking-wide text-indigo-700">Saldo inicial</p>
+                          <p className="mt-2 text-xl font-extrabold tabular-nums text-slate-900">{importeInicialDisponible ? `${importeInicialProvision.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
+                          <p className="mt-1 text-[10px] text-slate-500">Campo Importe del expediente</p>
+                        </div>
+                        <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 p-4">
+                          <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-700">Saldo pendiente</p>
+                          <p className={`mt-2 text-xl font-extrabold tabular-nums ${resumenEconomico.saldoActual < 0 ? "text-red-700" : "text-emerald-700"}`}>{importeInicialDisponible ? `${resumenEconomico.saldoActual.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
+                          <p className="mt-1 text-[10px] text-slate-500">Tras descontar pagos confirmados</p>
+                        </div>
+                        <div className="rounded-xl border border-slate-200 bg-white p-4">
+                          <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Total imputado</p>
+                          <p className="mt-2 text-xl font-extrabold tabular-nums text-slate-900">{importeInicialDisponible ? ` ${(importeInicialProvision - resumenEconomico.saldoActual).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`.trim() : `${resumenEconomico.movimientos.reduce((s, m) => s + Math.abs(Number(m.importeMovimiento || 0)), 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}</p>
+                          <p className="mt-1 text-[10px] text-slate-500">Pagos contabilizados</p>
+                        </div>
+                        <div className="rounded-xl border border-slate-200 bg-white p-4">
+                          <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Pagos registrados</p>
+                          <p className="mt-2 text-xl font-extrabold tabular-nums text-slate-900">{resumenEconomico.movimientos.length}</p>
+                          <p className="mt-1 text-[10px] text-slate-500">Movimientos confirmados</p>
+                        </div>
+                      </div>
+                      {importeInicialDisponible && importeInicialProvision > 0 && (
+                        <div className="mt-4">
+                          <div className="mb-2 flex items-center justify-between gap-3"><span className="text-xs font-semibold text-slate-600">Consumo del saldo inicial</span><span className="text-xs font-bold tabular-nums text-slate-600">{Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100)).toLocaleString("es-ES", { maximumFractionDigits: 1 })}%</span></div>
+                          <div className="h-2 overflow-hidden rounded-full bg-slate-100"><div className={`h-full rounded-full ${resumenEconomico.saldoActual < 0 ? "bg-red-500" : "bg-emerald-500"}`} style={{ width: `${Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100))}%` }} /></div>
+                        </div>
+                      )}
+                      <div className="mt-5">
+                        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-600">Libro de movimientos contables</h6><span className="text-[11px] text-slate-500">Solo los pagos confirmados descuentan el saldo</span></div>
+                        {cargandoGastos ? (
+                          <p className="py-4 text-sm text-slate-500">Cargando movimientos contables…</p>
+                        ) : gastosExpediente.length === 0 ? (
+                          <p className="rounded-xl border border-dashed border-slate-200 px-4 py-6 text-center text-sm text-slate-500">Todavía no hay líneas contables guardadas. Cada gasto registrado aparecerá aquí con su ID y desglose fiscal.</p>
+                        ) : (
+                          <div className="overflow-x-auto rounded-xl border border-slate-200">
+                            <table className="w-full min-w-[1080px] text-left text-xs">
+                              <thead className="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500"><tr><th className="px-3 py-3 font-bold">ID de pago</th><th className="px-3 py-3 font-bold">Fecha</th><th className="px-3 py-3 font-bold">Tipo de documento</th><th className="px-3 py-3 text-right font-bold">Cuantía documento</th><th className="px-3 py-3 text-right font-bold">Impuesto</th><th className="px-3 py-3 text-right font-bold">Total</th><th className="px-3 py-3 font-bold">Estado</th><th className="px-3 py-3 text-right font-bold">Saldo tras pago</th><th className="px-3 py-3 font-bold">Acciones</th></tr></thead>
+                              <tbody className="divide-y divide-slate-100">
+                                {resumenEconomico.movimientos.length === 0 && <tr><td colSpan={9} className="px-4 py-6 text-center text-slate-500">No hay pagos reales registrados todavía. Las facturas pendientes no descuentan la provisión.</td></tr>}
+                                {resumenEconomico.movimientos.map((movimiento) => {
+                                  const fmt = (valor) => Number(valor ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                  const importeMovimiento = Math.abs(Number(movimiento.importeMovimiento ?? movimiento.importe_resultante ?? movimiento.importe ?? 0));
+                                  const textoMovimiento = normalizarTexto([movimiento.tipo, movimiento.concepto_pago, movimiento.descripcion, movimiento.tipo_impuesto].filter(Boolean).join(" "));
+                                  const esPagoImpuesto = movimiento.es_movimiento_pago && /impuesto|ajd|itp|tribut/.test(textoMovimiento);
+                                  const cuantiaDocumento = esPagoImpuesto ? null : numeroDecimalGasto(cuantiaFincasParaEnvio);
+                                  const impuesto = esPagoImpuesto ? importeMovimiento : 0;
+                                  const total = movimiento.es_movimiento_pago ? importeMovimiento : Math.abs(Number(movimiento.importe_resultante ?? movimiento.importe ?? movimiento.importe_total_bruto ?? importeMovimiento));
+                                  const estado = movimiento.es_movimiento_pago ? (movimiento.anulado_en ? "Anulado" : "Pagado") : String(movimiento.estado_pago || "Pagado").trim();
+                                  const saldoTrasMovimiento = importeInicialDisponible ? Number(movimiento.saldoCalculado) : null;
+                                  return <tr key={movimiento.id} className="text-slate-700 transition-colors hover:bg-indigo-50/40"><td className="whitespace-nowrap px-3 py-3 font-extrabold text-indigo-700">{movimiento.numero_documento || ("PAG-" + String(movimiento.pago_id || movimiento.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(movimiento.fecha || movimiento.fecha_factura)}</td><td className="px-3 py-3"><span className="font-semibold">{movimiento.tipo || "Documento"}</span>{movimiento.concepto_pago ? <span className="mt-1 block text-slate-500">{movimiento.concepto_pago}</span> : movimiento.descripcion ? <span className="mt-1 block text-slate-500">{movimiento.descripcion}</span> : null}{movimiento.tipo_impuesto && !movimiento.es_movimiento_pago ? <span className="mt-1 block text-[10px] text-slate-400">{movimiento.tipo_impuesto}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{cuantiaDocumento === null || cuantiaDocumento === 0 ? "—" : `${fmt(cuantiaDocumento)} €`}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{impuesto > 0 ? `${fmt(impuesto)} €` : "—"}</td><td className="whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums">{fmt(total)} €</td><td className="whitespace-nowrap px-3 py-3"><span className={"rounded-full px-2 py-1 text-[10px] font-bold " + (estado === "Anulado" ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700")}>{estado}</span>{movimiento.motivo_anulacion ? <span className="mt-1 block max-w-[220px] whitespace-normal text-[10px] text-red-600" title={movimiento.motivo_anulacion}>Motivo: {movimiento.motivo_anulacion}</span> : null}</td><td className={"whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums " + (saldoTrasMovimiento !== null && saldoTrasMovimiento < 0 ? "text-red-700" : "text-slate-900")}>{saldoTrasMovimiento === null ? "—" : (fmt(saldoTrasMovimiento) + " €")}</td><td className="px-3 py-3">{movimiento.es_movimiento_pago && !movimiento.anulado_en && esAdministradorSesion ? <button type="button" onClick={() => void anularPagoGasto(movimiento)} className="rounded-lg border border-red-200 px-2.5 py-1.5 text-[10px] font-bold text-red-700 hover:bg-red-50">Anular pago</button> : movimiento.anulado_en ? <span className="text-[10px] font-semibold text-slate-500">Anulado</span> : "—"}</td></tr>;
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+                        {!importeInicialDisponible && <p className="mt-2 text-xs text-amber-700">No hay un Importe inicial válido en el expediente; revisa el dato antes de utilizar el saldo como referencia contable.</p>}
+                      </div>
+                      {gastosPendientesResumen.length > 0 && <p className="mt-3 rounded-lg border border-amber-100 bg-amber-50 px-3 py-2 text-xs text-amber-800">{gastosPendientesResumen.length} gasto(s) registrado(s) todavía pendiente(s); no se descuentan del saldo hasta confirmar el pago.</p>}
+                    </div>
+                    {errorGastos && <p role="alert" className="border-t border-red-100 bg-red-50 px-4 py-2 text-xs text-red-700">{errorGastos}</p>}
+                  </section>
+                )}
 
                         <div className="mt-4">
                           <h5 className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-600">Movimientos de la provisión</h5>
