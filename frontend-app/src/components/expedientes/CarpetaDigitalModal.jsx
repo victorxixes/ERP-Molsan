@@ -117,6 +117,7 @@ export default function CarpetaDigitalModal({
   generandoFacturacion = false,
   facturaEmitida = false,
   formularioPago = null,
+  panelLibroPagos = null,
   formularioEnvioNotario = null,
   ocultarPanelEnvioNotario = false,
 }) {
@@ -1211,6 +1212,7 @@ export default function CarpetaDigitalModal({
                           {generandoFacturacion ? "Generando factura…" : "🧾 Facturar"}
                         </button>
                       </div>
+                      {actividadId === "gestion-economica" && panelLibroPagos}
                       {formularioPago}
                       </>
                     ) : (
