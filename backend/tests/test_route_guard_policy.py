@@ -22,11 +22,33 @@ class RouteGuardPolicyTests(unittest.TestCase):
             "/api/apoderagest/encargos/reparar-asignacion",
             _RUTAS_CON_AUTORIZACION_INTERNA,
         )
+        self.assertIn(
+            "/api/expedientes/configuracion-visibilidad",
+            _RUTAS_CON_AUTORIZACION_INTERNA,
+        )
 
     def test_employee_blocking_uses_employee_module(self):
         for suffix in ("bloquear", "desbloquear"):
             path = f"/api/seguridad/asignar/empleado/17/{suffix}"
             self.assertEqual(_resolver_modulo(path), "empleados")
+            self.assertEqual(_resolver_accion(path, {"POST"}), "editar")
+
+    def test_security_only_employee_actions_use_security_module(self):
+        self.assertEqual(
+            _resolver_modulo("/api/empleados/17/colaborador-apoderagest", {"PUT"}),
+            "seguridad",
+        )
+        self.assertEqual(
+            _resolver_accion("/api/empleados/17/colaborador-apoderagest", {"PUT"}),
+            "editar",
+        )
+
+    def test_expediente_admin_operations_use_security_permissions(self):
+        for path in (
+            "/api/expedientes/migraciones/actividades",
+            "/api/expedientes/reparto/asignar-pendientes",
+        ):
+            self.assertEqual(_resolver_modulo(path, {"POST"}), "seguridad")
             self.assertEqual(_resolver_accion(path, {"POST"}), "editar")
 
     def test_employee_permission_management_remains_security_module(self):
