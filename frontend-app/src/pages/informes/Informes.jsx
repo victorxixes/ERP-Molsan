@@ -3283,352 +3283,121 @@ function normalizarInformeSLA(valor) {
   return String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 }
 
-// Los metadatos internos ERP se separan de las 38 columnas originales de ABSIS.
-const COLUMNAS_POSTFIRMA = [
-  "ERP · Origen registro", "ERP · Estado consolidación", "ERP · Última sincronización",
-  "IDEXPEDIENTE", "FECHAALTA", "ORIGENBANKIA", "ACTIVIDADACTUAL",
-  "ESTADOACTIVIDAD", "IDPROVISION", "IMPORTEPROVISION", "TIPOPROVISION",
-  "DETALLEOPERACION", "TIPOOPERACION", "SUBTIPOOPERACION", "OFICINA", "DAN",
-  "IDGESTORIATRAMITE", "NOMBREGESTORIA", "NOMBREDOCUMENTO", "IDGASTO",
-  "CONCEPTOGASTO", "ESTADO", "ESTADOJUSTIFICANTE", "FECHAADJUNTARFACTURA",
-  "IMPGASTO", "IMPBASEIMPUESTO", "IMPBASERETENCION", "IMPIMPUESTO",
-  "FESTADO", "FPETICION", "FPAGO", "CTAORIGEN", "CTADESTINO", "FFACTURA",
-  "FORMAPAGO", "NUMFACTURA", "IDBENEFICIARIO", "BENEFICIARIO",
-  "NOMBREPAGADOR", "NIFPAGADOR"
-];
-
-function valorColumnaPostFirma(fila, columna) {
-  const etiqueta = String(columna || "").trim().toUpperCase();
-  const internas = {
-    "ERP · ORIGEN REGISTRO": fila.origen_registro,
-    "ERP · ESTADO CONSOLIDACIÓN": fila.estado_consolidacion,
-    "ERP · ÚLTIMA SINCRONIZACIÓN": fila.fecha_ultima_sincronizacion,
-  };
-  if (Object.prototype.hasOwnProperty.call(internas, etiqueta)) {
-    const valorInterno = internas[etiqueta];
-    return valorInterno === undefined || valorInterno === null || valorInterno === "" ? "—" : String(valorInterno);
-  }
-
-  const original = fila.datos_absis || {};
-  const clave = Object.keys(original).find((k) => k.trim().toUpperCase() === etiqueta);
-  let valor = clave ? original[clave] : undefined;
-  if (valor === undefined || valor === null || valor === "") {
-    const alternativas = {
-      IDEXPEDIENTE: fila.id_expediente,
-      IDGASTO: fila.id_gasto_absis,
-      TIPOOPERACION: fila.tipo_operacion,
-      CONCEPTOGASTO: fila.concepto_gasto,
-      ESTADO: fila.estado,
-      ESTADOJUSTIFICANTE: fila.estado_justificante,
-      FECHAADJUNTARFACTURA: fila.fecha_adjuntar_factura,
-      IMPGASTO: fila.imp_gasto,
-      IMPBASEIMPUESTO: fila.imp_base_impuesto,
-      IMPBASERETENCION: fila.imp_base_retencion,
-      IMPIMPUESTO: fila.imp_impuesto,
-      FESTADO: fila.fecha_estado,
-      FPETICION: fila.fecha_peticion,
-      FPAGO: fila.fecha_pago,
-      FFACTURA: fila.fecha_factura_absis || fila.fecha_factura,
-      NUMFACTURA: fila.numero_factura_absis || fila.numero_factura,
-    };
-    valor = alternativas[etiqueta];
-  }
-  if (valor === undefined || valor === null || valor === "") return "—";
-  if (typeof valor === "object") return JSON.stringify(valor);
-  return String(valor);
-}
-
-// Clasificación de estados originales ABSIS usada por las tarjetas de facturación.
-// Mantener los códigos originales; no equiparar estados internos del ERP.
-const ESTADOS_ABSIS_INFORME = [
-  { codigo: "PAGADO", etiqueta: "Pagado", descripcion: "Pagado según ABSIS", color: "emerald" },
-  { codigo: "PAG_RETRO", etiqueta: "Retrocedido", descripcion: "Pago retrocedido", color: "rose" },
-  { codigo: "ANULADO", etiqueta: "Anulado", descripcion: "Gasto anulado", color: "slate" },
-  { codigo: "PTE_CONS", etiqueta: "Consolidado", descripcion: "Consolidado según ABSIS", color: "blue" },
-  { codigo: "PAG_DENEGADO", etiqueta: "Denegado", descripcion: "Pago denegado", color: "rose" },
-  { codigo: "PTE_RESP_FAC", etiqueta: "Pendiente respuesta", descripcion: "Pendiente de respuesta de factura", color: "amber" },
-  { codigo: "ENTREGADA", etiqueta: "Entregada", descripcion: "Factura entregada", color: "blue" },
-  { codigo: "PTE_EXPORT_FAC", etiqueta: "Pendiente exportar", descripcion: "Pendiente de exportación", color: "amber" },
-];
-
-const ESTADOS_FACTURACION_ABSIS = {
-  cobrado: ["PAGADO"],
-  pendiente_factura: ["PTE_RESP_FAC", "PTE_EXPORT_FAC"],
-  incidencia: ["PAG_RETRO", "ANULADO", "PAG_DENEGADO"],
-  pendiente_cobro: ["PTE_CONS", "ENTREGADA"],
-};
-
-function estadoFacturacionAbsis(fila) {
-  const estado = String(fila?.estado ?? "").trim().toUpperCase().replace(/\s+/g, " ");
-  for (const [situacion, estados] of Object.entries(ESTADOS_FACTURACION_ABSIS)) {
-    if (estados.includes(estado)) return situacion;
-  }
-  return "sin_clasificar";
-}
-
-function resumenFacturacionPorTipo(items) {
-  const suma = (campo, situacion = null) => items.reduce((total, fila) => {
-    if (situacion && estadoFacturacionAbsis(fila) !== situacion) return total;
-    return total + (Number(fila[campo]) || 0);
-  }, 0);
-  const cuenta = (situacion) => items.filter((fila) => estadoFacturacionAbsis(fila) === situacion).length;
-  return {
-    registros: items.length, total_gasto: suma("imp_gasto"), base_impuesto: suma("imp_base_impuesto"),
-    base_retencion: suma("imp_base_retencion"), total_impuesto: suma("imp_impuesto"),
-    cobrado: cuenta("cobrado"), pendiente_cobro: cuenta("pendiente_cobro"),
-    pendiente_factura: cuenta("pendiente_factura"), incidencias: cuenta("incidencia"),
-    total_cobrado: suma("imp_gasto", "cobrado"), total_pendiente_cobro: suma("imp_gasto", "pendiente_cobro"),
-    total_pendiente_factura: suma("imp_gasto", "pendiente_factura"), total_incidencias: suma("imp_gasto", "incidencia"),
-  };
-}
-
+// Informe Post Firma: visor del almacén histórico aislado.
+// No consulta gastos operativos ni vincula filas a expedientes.
 function InformeFacturacion() {
-  const filtrosIniciales = () => ({ ...filtrosInformeIniciales(), fecha_desde: "", fecha_hasta: "", modalidad: "todas", estado: "", estado_justificante: "", situacion: "" });
-  const [filtros, setFiltros] = useState(filtrosIniciales);
-  const [aplicados, setAplicados] = useState(filtrosIniciales);
-  const [datos, setDatos] = useState({ resumen: {}, items: [] });
-  const [datosTarjetas, setDatosTarjetas] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [loadingTarjetas, setLoadingTarjetas] = useState(true);
+  const [cargas, setCargas] = useState([]);
+  const [cargaSeleccionada, setCargaSeleccionada] = useState("");
+  const [registros, setRegistros] = useState([]);
+  const [columnas, setColumnas] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
+  const [cargandoCargas, setCargandoCargas] = useState(false);
+  const [cargandoFilas, setCargandoFilas] = useState(false);
   const [error, setError] = useState("");
-  const [exportando, setExportando] = useState(false);
-  const [modalAbierto, setModalAbierto] = useState(false);
-  const [recarga, setRecarga] = useState(0);
+  const limite = 100;
 
   useEffect(() => {
     let activo = true;
-    setLoadingTarjetas(true);
-    const paramsTarjetas = Object.fromEntries(Object.entries({
-      fecha_desde: aplicados.fecha_desde,
-      fecha_hasta: aplicados.fecha_hasta,
-      modalidad: "todas",
-    }).filter(([, valor]) => valor !== "" && valor != null));
-    axios.get(API_BASE + "/informes/facturacion", { params: paramsTarjetas }).then(({ data }) => {
-      if (activo) setDatosTarjetas(Array.isArray(data?.items) ? data.items : []);
-    }).catch((err) => {
-      if (activo) {
-        setDatosTarjetas([]);
-        setError(err?.response?.data?.detail || "No se pudieron actualizar los indicadores de facturación.");
-      }
-    }).finally(() => { if (activo) setLoadingTarjetas(false); });
-    return () => { activo = false; };
-  }, [aplicados.fecha_desde, aplicados.fecha_hasta, recarga]);
-
-  useEffect(() => {
-    if (!modalAbierto) return undefined;
-    let activo = true;
-    setLoading(true);
-    setError("");
-    const params = Object.fromEntries(Object.entries(aplicados).filter(([, v]) => v !== "" && v != null));
-    axios.get(API_BASE + "/informes/facturacion", { params })
+    setCargandoCargas(true);
+    axios.get("/utilidades/importador-absis/postfirma/cargas")
       .then(({ data }) => {
-        if (activo) setDatos({ resumen: data?.resumen || {}, items: Array.isArray(data?.items) ? data.items : [] });
+        if (!activo) return;
+        const lista = Array.isArray(data?.items) ? data.items : [];
+        setCargas(lista);
+        setCargaSeleccionada((actual) => actual || (lista[0] ? String(lista[0].id) : ""));
       })
-      .catch((err) => { if (activo) setError(err?.response?.data?.detail || "No se pudo cargar el detalle de facturación."); })
-      .finally(() => { if (activo) setLoading(false); });
+      .catch((err) => {
+        if (activo) setError(err?.response?.data?.detail || "No se pudo cargar el histórico Post Firma.");
+      })
+      .finally(() => { if (activo) setCargandoCargas(false); });
     return () => { activo = false; };
-  }, [aplicados, modalAbierto, recarga]);
+  }, []);
 
-  const cambiar = (campo, valor) => {
-    setFiltros((actual) => ({ ...actual, [campo]: valor }));
-    if (campo === "fecha_desde" || campo === "fecha_hasta") {
-      setAplicados((actual) => ({ ...actual, [campo]: valor }));
+  useEffect(() => {
+    if (!cargaSeleccionada) {
+      setRegistros([]);
+      setColumnas([]);
+      setTotal(0);
+      return undefined;
     }
-  };
-  const aplicar = (e) => { e.preventDefault(); setAplicados({ ...filtros }); };
-  const exportar = async () => {
-    setExportando(true);
+    let activo = true;
+    setCargandoFilas(true);
     setError("");
-    try {
-      const params = Object.fromEntries(Object.entries(filtros).filter(([, v]) => v !== "" && v != null));
-      await descargarExcelBackend(API_BASE + "/informes/facturacion/exportar-excel", params, "informe_postfirma_todas_las_filas.xlsx");
-    } catch (err) {
-      setError(err?.response?.data?.detail || "No se pudo exportar el informe.");
-    } finally { setExportando(false); }
-  };
+    axios.get("/utilidades/importador-absis/postfirma/registros", {
+      params: { carga_id: Number(cargaSeleccionada), limit: limite, offset },
+    })
+      .then(({ data }) => {
+        if (!activo) return;
+        setRegistros(Array.isArray(data?.items) ? data.items : []);
+        setColumnas(Array.isArray(data?.columnas) ? data.columnas : []);
+        setTotal(Number(data?.total || 0));
+      })
+      .catch((err) => {
+        if (activo) setError(err?.response?.data?.detail || "No se pudieron consultar las filas del histórico.");
+      })
+      .finally(() => { if (activo) setCargandoFilas(false); });
+    return () => { activo = false; };
+  }, [cargaSeleccionada, offset]);
 
-  const resumen = (modalidad) => resumenFacturacionPorTipo(datosTarjetas.filter((fila) => fila.tipo_cancelacion === modalidad));
-  const euros = (v) => Number(v || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
-  const campo = "block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
-  const grupos = [
-    { key: "con_provision", titulo: "Cancelación con provisión", descripcion: "TIPOOPERACION: CANCELACIÓN / CANCELACIÓN CON PROVISIÓN", icono: "🏦", acento: "emerald" },
-    { key: "sin_provision", titulo: "Cancelación sin provisión", descripcion: "TIPOOPERACION: CANCELACIÓN SIN PROVISIÓN", icono: "📄", acento: "amber" },
-    { key: "otros", titulo: "Otros tipos de operación", descripcion: "Filas importadas cuyo TIPOOPERACION no es una cancelación", icono: "📋", acento: "blue" },
-  ];
-  const renderTarjetas = (grupo) => {
-    const r = resumen(grupo.key);
-    return (
-      <section key={grupo.key} className="space-y-4 rounded-2xl border border-white/80 bg-white/55 p-4 shadow-sm backdrop-blur-xl sm:p-5">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className={"flex h-12 w-12 items-center justify-center rounded-xl text-2xl " + (grupo.acento === "emerald" ? "bg-emerald-50" : "bg-amber-50")}>{grupo.icono}</span>
-          <div><h3 className="text-lg font-bold text-slate-800">{grupo.titulo}</h3><p className="text-xs text-slate-500">{grupo.descripcion}</p></div>
-          <div className="ml-auto text-right"><div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Registros del periodo</div><div className="text-2xl font-extrabold text-slate-800">{loadingTarjetas ? "…" : numeroInforme(r.registros)}</div></div>
-        </div>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <InformeKpi titulo="Gastos Post Firma" valor={loadingTarjetas ? "…" : euros(r.total_gasto)} subtitulo={numeroInforme(r.registros) + " registros"} icono="🧾" />
-          <InformeKpi titulo="Base imponible" valor={loadingTarjetas ? "…" : euros(r.base_impuesto)} subtitulo="Base asociada al impuesto" icono="📑" />
-          <InformeKpi titulo="Base de retención" valor={loadingTarjetas ? "…" : euros(r.base_retencion)} subtitulo="Base sujeta a retención" icono="🧮" />
-          <InformeKpi titulo="Impuestos" valor={loadingTarjetas ? "…" : euros(r.total_impuesto)} subtitulo="Importe total de impuesto" icono="💶" />
-        </div>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-emerald-100 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Cobrado</div><div className="mt-1 text-xl font-bold text-emerald-700">{loadingTarjetas ? "…" : euros(r.total_cobrado)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.cobrado)} registros</div></div>
-          <div className="rounded-2xl border border-amber-100 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Pendiente de cobro</div><div className="mt-1 text-xl font-bold text-amber-700">{loadingTarjetas ? "…" : euros(r.total_pendiente_cobro)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.pendiente_cobro)} registros</div></div>
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Pendiente de factura</div><div className="mt-1 text-xl font-bold text-slate-700">{loadingTarjetas ? "…" : euros(r.total_pendiente_factura)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.pendiente_factura)} registros</div></div>
-          <div className="rounded-2xl border border-rose-100 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Importe con incidencias</div><div className="mt-1 text-xl font-bold text-rose-700">{loadingTarjetas ? "…" : euros(r.total_incidencias)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.incidencias)} registros</div></div>
-        </div>
-        <div className="flex justify-center border-t border-slate-100 pt-4">
-          <button
-            type="button"
-            onClick={() => {
-              const siguiente = { ...filtros, modalidad: grupo.key };
-              setFiltros(siguiente);
-              setAplicados(siguiente);
-              setModalAbierto(true);
-            }}
-            className={"inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold text-white shadow-sm transition " + (grupo.acento === "emerald" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-amber-600 hover:bg-amber-700")}
-          >
-            📊 Ver detalle y descargar Excel: {grupo.titulo}
-          </button>
-        </div>
-      </section>
-    );
+  const cargaActual = cargas.find((c) => String(c.id) === String(cargaSeleccionada));
+  const mostrarValor = (valor) => {
+    if (valor === null || valor === undefined || valor === "") return "—";
+    if (typeof valor === "object") return JSON.stringify(valor);
+    return String(valor);
   };
 
   return (
     <section className="space-y-5">
-      <div role="note" className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-900">
-        <span aria-hidden="true" className="text-lg">ℹ️</span>
-        <p><strong>Importante:</strong> para que cada gasto quede correctamente asociado a su expediente en el ERP, debe relacionarse el <strong>IDGASTO</strong> del Excel ABSIS con el expediente correspondiente. Los gastos sin esa relación deben revisarse; este informe no crea el vínculo automáticamente.</p>
-      </div>
       <div className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div><h2 className="text-xl font-bold text-slate-800">Informes de facturación</h2><p className="mt-1 text-sm text-slate-500">Indicadores de Post Firma por tipo de operación y por estado original de ABSIS. El periodo se filtra por FPAGO.</p></div>
-          <button type="button" onClick={() => setRecarga((v) => v + 1)} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">↻ Actualizar</button>
-        </div>
-        <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label className="text-xs font-semibold text-slate-600">Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
-          <label className="text-xs font-semibold text-slate-600">Fecha hasta<input className={campo} type="date" value={filtros.fecha_hasta} onChange={(e) => cambiar("fecha_hasta", e.target.value)} /></label>
-        </div>
-        <p className="mt-2 text-xs text-slate-500">Por defecto se muestran todos los registros Post Firma importados. Puedes limitar el informe a un periodo seleccionando las fechas; las tarjetas se actualizarán automáticamente.</p>
-      </div>
-
-      <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2">
-        {renderTarjetas(grupos[0])}
-        {renderTarjetas(grupos[1])}
-      </div>
-
-      <section className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-sm backdrop-blur-xl">
-        <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h3 className="text-lg font-bold text-slate-800">Seguimiento por estado ABSIS</h3>
-            <p className="mt-1 text-sm text-slate-500">Desglose de las filas Post Firma que cumplen el concepto y beneficiario seleccionados, agrupadas por el ESTADO original del Excel.</p>
+            <h2 className="text-xl font-bold text-slate-800">Informes de facturación · Histórico Post Firma</h2>
+            <p className="mt-1 max-w-3xl text-sm text-slate-500">Consulta las filas originales importadas desde ABSIS. Este informe es independiente de Gestión económica: no consolida movimientos ni vincula expedientes.</p>
           </div>
-          <span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">{loadingTarjetas ? "Actualizando…" : numeroInforme(datosTarjetas.length) + " registros analizados"}</span>
+          <button type="button" onClick={() => { setCargas([]); setCargaSeleccionada(""); setOffset(0); setError(""); axios.get("/utilidades/importador-absis/postfirma/cargas").then(({data}) => { const lista = Array.isArray(data?.items) ? data.items : []; setCargas(lista); setCargaSeleccionada(lista[0] ? String(lista[0].id) : ""); }).catch((err) => setError(err?.response?.data?.detail || "No se pudo actualizar el histórico.")); }} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">↻ Actualizar</button>
         </div>
-        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {ESTADOS_ABSIS_INFORME.map((estadoInfo) => {
-            const filasEstado = datosTarjetas.filter((fila) => String(fila.estado ?? "").trim().toUpperCase().replace(/\s+/g, " ") === estadoInfo.codigo);
-            const importeEstado = filasEstado.reduce((total, fila) => total + (Number(fila.imp_gasto) || 0), 0);
-            const acento = estadoInfo.color === "emerald" ? "border-emerald-200 bg-emerald-50/70 text-emerald-800"
-              : estadoInfo.color === "rose" ? "border-rose-200 bg-rose-50/70 text-rose-800"
-              : estadoInfo.color === "amber" ? "border-amber-200 bg-amber-50/70 text-amber-800"
-              : estadoInfo.color === "blue" ? "border-blue-200 bg-blue-50/70 text-blue-800"
-              : "border-slate-200 bg-slate-50 text-slate-800";
-            return (
-              <button key={estadoInfo.codigo} type="button" disabled={loadingTarjetas} onClick={() => {
-                const siguiente = { ...filtros, modalidad: "todas", estado: estadoInfo.codigo };
-                setFiltros(siguiente);
-                setAplicados(siguiente);
-                setModalAbierto(true);
-              }} className={"rounded-xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:opacity-60 " + acento}>
-                <div className="text-xs font-bold uppercase tracking-wide">{estadoInfo.etiqueta}</div>
-                <div className="mt-2 text-2xl font-extrabold tabular-nums">{loadingTarjetas ? "…" : numeroInforme(filasEstado.length)}</div>
-                <div className="mt-1 text-sm font-semibold tabular-nums">{loadingTarjetas ? "…" : euros(importeEstado)}</div>
-                <div className="mt-1 text-xs opacity-80">{estadoInfo.descripcion}</div>
-                <div className="mt-3 text-xs font-bold underline underline-offset-2">Ver registros</div>
-              </button>
-            );
-          })}
+
+        <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <label className="text-xs font-semibold text-slate-600 sm:col-span-2">Fichero importado
+            <select value={cargaSeleccionada} onChange={(e) => { setCargaSeleccionada(e.target.value); setOffset(0); }} className="mt-1 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700" disabled={cargandoCargas || !cargas.length}>
+              {!cargas.length && <option value="">No hay cargas disponibles</option>}
+              {cargas.map((carga) => <option key={carga.id} value={String(carga.id)}>{carga.nombre_archivo} · carga #{carga.id} · {carga.filas_guardadas} filas</option>)}
+            </select>
+          </label>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3"><p className="text-xs font-semibold text-slate-500">Filas declaradas en Excel</p><p className="mt-1 text-xl font-bold text-slate-800">{cargaActual?.filas_excel ?? "—"}</p></div>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3"><p className="text-xs font-semibold text-slate-500">Filas guardadas</p><p className="mt-1 text-xl font-bold text-slate-800">{cargaActual?.filas_guardadas ?? "—"}</p></div>
         </div>
-        {(() => {
-          const estados = datosTarjetas.reduce((acumulado, fila) => {
-            const estado = String(fila.estado ?? "").trim() || "(vacío)";
-            if (!acumulado[estado]) acumulado[estado] = { filas: 0, importe: 0 };
-            acumulado[estado].filas += 1;
-            acumulado[estado].importe += Number(fila.imp_gasto || 0);
-            return acumulado;
-          }, {});
-          const listaEstados = Object.entries(estados).sort((a, b) => {
-            if (a[0] === "(vacío)") return 1;
-            if (b[0] === "(vacío)") return -1;
-            return a[0].localeCompare(b[0], "es");
-          });
-          return loadingTarjetas ? (
-            <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm text-slate-500">Cargando estados ABSIS…</div>
-          ) : listaEstados.length === 0 ? (
-            <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm text-slate-500">No hay registros para el periodo seleccionado.</div>
-          ) : (
-            <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200">
-              <table className="w-full min-w-[640px] text-left text-sm">
-                <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-4 py-3">ESTADO (Excel ABSIS)</th><th className="px-4 py-3 text-right">Registros</th><th className="px-4 py-3 text-right">Importe IMPGASTO</th><th className="px-4 py-3 text-right">Consulta</th></tr></thead>
+        {cargaActual && <div className="mt-3 space-y-1 text-xs text-slate-500"><p>Fecha de carga: {cargaActual.fecha_carga || "—"} · Huella SHA-256: <span className="break-all">{cargaActual.sha256 || "—"}</span></p><p>Las filas completamente vacías se contabilizan por separado y no se muestran como movimientos.</p></div>}
+        {error && <p role="alert" className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}
+      </div>
+
+      <div className="overflow-hidden rounded-2xl border border-white/80 bg-white/80 shadow-[0_10px_35px_rgba(55,85,120,0.09)]">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-5 py-4">
+          <div><h3 className="font-bold text-slate-800">Detalle original de Post Firma</h3><p className="mt-1 text-xs text-slate-500">Columnas dinámicas del Excel, incluida TIPOCONCEPTO cuando exista.</p></div>
+          <p className="text-sm font-semibold text-slate-600">{total.toLocaleString("es-ES")} filas</p>
+        </div>
+        {cargandoCargas || cargandoFilas ? <div className="p-8 text-center text-sm text-slate-500">Cargando histórico…</div> : !cargaSeleccionada ? <div className="p-8 text-center text-sm text-slate-500">Todavía no hay ficheros Post Firma importados.</div> : (
+          <>
+            <div className="max-h-[62vh] overflow-auto">
+              <table className="min-w-max w-full text-left text-xs">
+                <thead className="sticky top-0 z-10 bg-slate-100 text-slate-600"><tr><th className="whitespace-nowrap px-3 py-3 font-bold">Fila Excel</th>{columnas.map((columna, i) => <th key={String(columna) + "-" + i} className="whitespace-nowrap px-3 py-3 font-bold">{columna || "(columna sin título)"}</th>)}</tr></thead>
                 <tbody className="divide-y divide-slate-100">
-                  {listaEstados.map(([estado, dato]) => (
-                    <tr key={estado} className="hover:bg-blue-50/50">
-                      <td className="px-4 py-3 font-semibold text-slate-700">{estado}</td>
-                      <td className="px-4 py-3 text-right tabular-nums">{numeroInforme(dato.filas)}</td>
-                      <td className="px-4 py-3 text-right tabular-nums">{euros(dato.importe)}</td>
-                      <td className="px-4 py-3 text-right">{estado === "(vacío)" ? <span className="text-xs text-slate-400">Sin código</span> : <button type="button" onClick={() => {
-                        const siguiente = { ...filtros, modalidad: "todas", estado };
-                        setFiltros(siguiente);
-                        setAplicados(siguiente);
-                        setModalAbierto(true);
-                      }} className="rounded-lg border border-blue-200 bg-white px-3 py-1.5 text-xs font-bold text-blue-700 hover:bg-blue-50">Ver registros</button>}</td>
-                    </tr>
-                  ))}
+                  {registros.map((fila) => <tr key={fila.id} className="hover:bg-blue-50/50"><td className="whitespace-nowrap px-3 py-2 text-slate-500">{fila.numero_fila}</td>{columnas.map((columna, i) => <td key={String(columna) + "-" + i} className="max-w-xs whitespace-nowrap px-3 py-2">{mostrarValor(fila.datos?.[columna])}</td>)}</tr>)}
+                  {!registros.length && <tr><td colSpan={Math.max(columnas.length + 1, 1)} className="px-4 py-8 text-center text-slate-500">Esta carga no contiene filas con datos.</td></tr>}
                 </tbody>
               </table>
             </div>
-          );
-        })()}
-        <p className="mt-3 text-xs leading-5 text-slate-500">Las tarjetas muestran los ocho códigos acordados de ESTADO. Los códigos originales se conservan; los valores vacíos o desconocidos siguen apareciendo en el desglose inferior. PAG_RETRO no se contabiliza como cobro efectivo. La consulta no modifica datos.</p>
-      </section>
-
-      <AvisoInforme error={error} />
-
-      {modalAbierto && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-2 backdrop-blur-sm sm:p-5" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }}>
-          <section role="dialog" aria-modal="true" aria-labelledby="modal-facturacion-titulo" className="flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden rounded-2xl border border-white/70 bg-white shadow-2xl">
-            <header className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200 px-5 py-4">
-              <div><h2 id="modal-facturacion-titulo" className="text-xl font-bold text-slate-800">Detalle de facturación</h2><p className="mt-1 text-sm text-slate-500">Tabla Excel con los registros que cumplen los filtros seleccionados.</p></div>
-              <button type="button" onClick={() => setModalAbierto(false)} aria-label="Cerrar ventana" className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50">✕ Cerrar</button>
-            </header>
-            <form onSubmit={aplicar} className="grid grid-cols-1 gap-3 overflow-y-auto border-b border-slate-200 bg-slate-50/80 px-5 py-4 sm:grid-cols-2 xl:grid-cols-4">
-              <label className="text-xs font-semibold text-slate-600">Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
-              <label className="text-xs font-semibold text-slate-600">Fecha hasta<input className={campo} type="date" value={filtros.fecha_hasta} onChange={(e) => cambiar("fecha_hasta", e.target.value)} /></label>
-              <label className="text-xs font-semibold text-slate-600">Clasificación<select className={campo} value={filtros.modalidad} onChange={(e) => cambiar("modalidad", e.target.value)}><option value="todas">Todas</option><option value="con_provision">Cancelación con provisión</option><option value="sin_provision">Cancelación sin provisión</option><option value="otros">Otros tipos de operación</option></select></label>
-              <label className="text-xs font-semibold text-slate-600">Tipo operación<input className={campo} value={filtros.tipo_operacion || ""} onChange={(e) => cambiar("tipo_operacion", e.target.value)} placeholder="Filtrar operación" /></label>
-              <label className="text-xs font-semibold text-slate-600">Estado ABSIS<input className={campo} value={filtros.estado || ""} onChange={(e) => cambiar("estado", e.target.value)} placeholder="Filtrar estado" /></label>
-              <label className="text-xs font-semibold text-slate-600">Estado justificante<input className={campo} value={filtros.estado_justificante || ""} onChange={(e) => cambiar("estado_justificante", e.target.value)} placeholder="Filtrar justificante" /></label>
-              <label className="text-xs font-semibold text-slate-600">Situación económica<select className={campo} value={filtros.situacion} onChange={(e) => cambiar("situacion", e.target.value)}><option value="">Todas</option><option value="cobrado">Cobrado (estado ABSIS)</option><option value="pendiente_cobro">Pendiente de cobro</option><option value="pendiente_factura">Pendiente de factura</option><option value="incidencia">Con incidencia</option></select></label>
-              <label className="text-xs font-semibold text-slate-600">Buscar expediente / factura<input className={campo} value={filtros.q || ""} onChange={(e) => cambiar("q", e.target.value)} placeholder="Nº expediente, IDGASTO o factura" /></label>
-              <div className="flex flex-wrap items-center gap-2 sm:col-span-2 xl:col-span-4">
-                <button type="submit" className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700">Aplicar filtros</button>
-                <button type="button" onClick={exportar} disabled={exportando} className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-50 disabled:opacity-50">{exportando ? "Exportando…" : "↓ Descargar Excel"}</button>
-                <span className="text-xs text-slate-500">La selección de fechas también actualiza las tarjetas del informe.</span>
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 px-5 py-4">
+              <p className="text-xs text-slate-500">Mostrando {total ? offset + 1 : 0}–{Math.min(offset + registros.length, total)} de {total.toLocaleString("es-ES")}</p>
+              <div className="flex gap-2">
+                <button type="button" disabled={offset === 0 || cargandoFilas} onClick={() => setOffset((v) => Math.max(0, v - limite))} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 disabled:opacity-40">Anterior</button>
+                <button type="button" disabled={offset + limite >= total || cargandoFilas} onClick={() => setOffset((v) => v + limite)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 disabled:opacity-40">Siguiente</button>
               </div>
-            </form>
-            <div className="flex-1 overflow-auto">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-3"><div className="text-sm font-semibold text-slate-700">{loading ? "Consultando registros…" : numeroInforme(datos.items.length) + " registros encontrados"}</div><div className="text-xs text-slate-500">Filtro del informe: CONCEPTOGASTO = HONORARIOS GESTORÍA y BENEFICIARIO = *MOLSAN. IDPAGO sigue desconectado.</div></div>
-              {loading ? <PanelEstadoInforme loading /> : datos.items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay filas Post Firma para los filtros seleccionados." /> : (
-                <div className="max-h-[58vh] overflow-auto"><table className="min-w-[2600px] w-full text-left text-xs">
-                  <thead className="sticky top-0 z-10 bg-slate-100 text-slate-600"><tr>{COLUMNAS_POSTFIRMA.map((h, i) => <th key={h + "-" + i} className="whitespace-nowrap px-3 py-3 font-bold">{h}</th>)}</tr></thead>
-                  <tbody className="divide-y divide-slate-100">{datos.items.map((fila, i) => <tr key={(fila.id_gasto_absis || fila.id_expediente || "registro") + "-" + i} className="hover:bg-blue-50/50">{COLUMNAS_POSTFIRMA.map((h, j) => <td key={h + "-" + j} className="whitespace-nowrap px-3 py-3">{valorColumnaPostFirma(fila, h)}</td>)}</tr>)}</tbody>
-                </table></div>
-              )}
             </div>
-          </section>
-        </div>
-      )}
+          </>
+        )}
+      </div>
     </section>
   );
 }
