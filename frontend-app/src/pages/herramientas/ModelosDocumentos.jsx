@@ -7,7 +7,7 @@ import ProvisionesFondosPage from "../provisiones/ProvisionesFondosPage";
 const documentos = [
   { id: "liquidacion", titulo: "Hoja de liquidación", subtitulo: "Cierre del expediente", estado: "Implementada · diseño cerrado", color: "emerald", descripcion: "Diseño cerrado. La hoja oficial se genera desde Liquidar expediente con los datos disponibles del expediente y Gestión económica; se previsualiza y solo se guarda cuando se acepta.", campos: ["Titular y NIF", "Número de expediente", "Contrato y oficina CaixaBank", "Datos de la gestoría", "Documentos realizados e importes", "Provisión de fondos", "Movimientos de Gestión económica", "Documentación entregada", "Lugar, fecha y conformidad"] },
   { id: "provision", titulo: "Hoja de provisión de fondos", subtitulo: "Provisiones de fondos", estado: "Implementada · diseño cerrado", color: "blue", descripcion: "Diseño cerrado y conectado al PDF oficial de provisión. Se mantienen en Provisiones de fondos los catálogos, tarifas, tramos, reglas fiscales e importes calculados.", campos: ["Datos del cliente", "Oficina de origen", "Garantías y conceptos", "Importes calculados", "Observaciones"] },
-  { id: "factura", titulo: "Factura de honorarios de gestoría", subtitulo: "Facturación de honorarios", estado: "Diseño pendiente", color: "amber", descripcion: "El diseño definitivo de la factura oficial se ajustará al modelo Word, conservando la numeración y las reglas actuales.", campos: ["Número de factura", "Expediente", "Datos fiscales del cliente", "Base imponible e impuestos", "Totales"] },
+  { id: "factura", titulo: "Factura de honorarios de gestoría", subtitulo: "Facturación de honorarios", estado: "Preparación del diseño", color: "amber", descripcion: "Editor visual preparado para diseñar la factura tomando como referencia el Word oficial. La conexión al PDF de emisión se hará después de validar el diseño.", campos: ["Número de factura", "Expediente", "Datos fiscales del cliente", "Base imponible e impuestos", "Totales"] },
 ];
 
 const money = "— €";
@@ -74,9 +74,19 @@ function FacturaPlantillaEditor({ datosMolsan = {}, onGuardarLogoFactura }) {
   const [config, setConfig] = useState(FACTURA_EDITOR_DEFAULTS);
   const [guardado, setGuardado] = useState(false);
   const [errorLogoFactura, setErrorLogoFactura] = useState("");
+  const [plantillaWord, setPlantillaWord] = useState(null);
+  const [archivoWord, setArchivoWord] = useState(null);
+  const [subiendoWord, setSubiendoWord] = useState(false);
+  const [errorWord, setErrorWord] = useState("");
+  const [mensajeWord, setMensajeWord] = useState("");
 
   useEffect(() => {
     let activo = true;
+    axios.get("/utilidades/conceptos-gastos/6/plantilla-factura/estado")
+      .then(({ data }) => { if (activo) setPlantillaWord(data); })
+      .catch((error) => {
+        if (activo) setErrorWord(error?.response?.data?.detail || "No se pudo consultar el estado del Word oficial.");
+      });
     axios.get("/utilidades/factura-plantilla")
       .then(({ data }) => {
         if (!activo) return;
@@ -102,6 +112,59 @@ function FacturaPlantillaEditor({ datosMolsan = {}, onGuardarLogoFactura }) {
   const actualizar = (campo, valor) => {
     setConfig(actual => ({ ...actual, [campo]: valor }));
     setGuardado(false);
+  };
+
+  const subirWordOficial = async () => {
+    if (!archivoWord || subiendoWord) return;
+    if (!/\.docx$/i.test(archivoWord.name)) {
+      setErrorWord("Selecciona el modelo oficial en formato Word .docx.");
+      return;
+    }
+    if (archivoWord.size > 10 * 1024 * 1024) {
+      setErrorWord("El Word supera el límite permitido de 10 MB.");
+      return;
+    }
+    const form = new FormData();
+    form.append("fichero", archivoWord);
+    setSubiendoWord(true);
+    setErrorWord("");
+    setMensajeWord("");
+    try {
+      const { data } = await axios.post("/utilidades/conceptos-gastos/6/plantilla-factura", form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setPlantillaWord({
+        plantilla_cargada: true,
+        factura_nombre: data.factura_nombre,
+        factura_tipo: data.factura_tipo,
+        concepto_gasto_id: data.concepto_gasto_id,
+        concepto_gasto: data.concepto_gasto,
+        actualizado_en: new Date().toISOString(),
+      });
+      setArchivoWord(null);
+      setMensajeWord("Word oficial guardado. Se conserva como referencia para el diseño; todavía no cambia el PDF emitido.");
+    } catch (error) {
+      setErrorWord(error?.response?.data?.detail || "No se pudo guardar el Word oficial.");
+    } finally {
+      setSubiendoWord(false);
+    }
+  };
+
+  const descargarWordOficial = async () => {
+    setErrorWord("");
+    try {
+      const { data } = await axios.get("/utilidades/conceptos-gastos/6/plantilla-factura", { responseType: "blob" });
+      const url = URL.createObjectURL(data instanceof Blob ? data : new Blob([data]));
+      const enlace = document.createElement("a");
+      enlace.href = url;
+      enlace.download = plantillaWord?.factura_nombre || "MOD FACTURA.docx";
+      document.body.appendChild(enlace);
+      enlace.click();
+      enlace.remove();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      setErrorWord(error?.response?.data?.detail || "No se pudo descargar el Word oficial.");
+    }
   };
 
   const cargarLogoFactura = (archivo) => {
@@ -173,6 +236,25 @@ function FacturaPlantillaEditor({ datosMolsan = {}, onGuardarLogoFactura }) {
         <h2 className="mt-1 text-lg font-extrabold text-slate-900">Personalizar factura</h2>
         <p className="mt-2 text-sm leading-6 text-slate-600">Retoca la presentación y comprueba el resultado en la vista A4. Estos ajustes afectan al diseño de la previsualización; no modifican tarifas, impuestos, numeración ni facturas ya emitidas.</p>
         <div className="mt-4 space-y-4">
+          <section className="rounded-2xl border border-indigo-200 bg-indigo-50/60 p-4">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-[11px] font-black uppercase tracking-[.15em] text-indigo-700">Documento de referencia</p>
+                <h3 className="mt-1 text-sm font-extrabold text-slate-900">Modelo Word oficial de factura</h3>
+                <p className="mt-1 text-xs leading-5 text-slate-600">Trabajaremos a partir de este Word para definir la composición de la factura. Descargarlo permite compararlo mientras diseñas; subir otro Word sustituye la referencia guardada.</p>
+                <p className="mt-2 break-all text-xs font-bold text-slate-700">{plantillaWord?.plantilla_cargada ? `Word cargado: ${plantillaWord.factura_nombre || "plantilla Word"}` : "No se ha detectado una plantilla Word cargada todavía."}</p>
+                {plantillaWord?.actualizado_en && <p className="mt-1 text-[10px] text-slate-500">Última actualización: {new Date(plantillaWord.actualizado_en).toLocaleString("es-ES")}</p>}
+              </div>
+              {plantillaWord?.plantilla_cargada && <button type="button" onClick={descargarWordOficial} className="rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs font-bold text-indigo-800 hover:bg-indigo-100">Descargar Word</button>}
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <input type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={e => { setArchivoWord(e.target.files?.[0] || null); setErrorWord(""); setMensajeWord(""); }} className="min-w-0 flex-1 text-xs text-slate-600 file:mr-2 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-2 file:font-bold file:text-indigo-800"/>
+              <button type="button" onClick={subirWordOficial} disabled={!archivoWord || subiendoWord} className="rounded-lg bg-indigo-700 px-3 py-2 text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-50">{subiendoWord ? "Guardando Word…" : "Guardar Word de referencia"}</button>
+            </div>
+            {errorWord && <p role="alert" className="mt-2 text-xs font-semibold text-rose-700">{errorWord}</p>}
+            {mensajeWord && <p role="status" className="mt-2 text-xs font-semibold text-emerald-700">{mensajeWord}</p>}
+            <p className="mt-2 text-[10px] leading-4 text-amber-800">Guardar el Word aquí no emite facturas ni modifica el PDF oficial, la numeración, los pagos o los saldos.</p>
+          </section>
           <label className="block text-sm font-semibold text-slate-700">Título de la factura
             <input value={config.titulo} maxLength={60} onChange={e=>actualizar("titulo",e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-normal"/>
           </label>
@@ -203,7 +285,7 @@ function FacturaPlantillaEditor({ datosMolsan = {}, onGuardarLogoFactura }) {
             <button type="button" onClick={restaurar} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50">Restaurar diseño</button>
           </div>
           {guardado && <p role="status" className="text-sm font-semibold text-emerald-700">Diseño guardado en el ERP y disponible para los usuarios autorizados.</p>}
-          <p className="text-xs leading-5 text-amber-700">El diseño y el logotipo se guardan en el backend compartido. La plantilla visual todavía no modifica el PDF oficial; se conectará después de validar esta maqueta.</p>
+          <p className="text-xs leading-5 text-amber-700">El diseño y el logotipo se guardan en el backend compartido. La maqueta todavía no modifica el PDF oficial. Diseña aquí tomando como referencia el Word; después conectaremos y validaremos el PDF real antes de darlo por cerrado.</p>
         </div>
       </div>
       <div className="rounded-2xl border border-sky-100 bg-sky-50/70 p-4 text-sm leading-6 text-slate-700"><strong style={{color:config.color}}>Campos que se conservarán del modelo Word y datos fiscales:</strong><ul className="mt-2 list-disc space-y-1 pl-5"><li>Número y fecha de factura</li><li>Datos fiscales completos del cliente</li><li>Datos fiscales de Molsan: razón social, NIF, domicilio, CP, población, provincia y contacto</li><li>Concepto, base imponible, impuesto y total</li><li>Número de expediente, documento, notario, protocolo y fecha de firma</li></ul></div>
