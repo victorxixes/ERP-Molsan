@@ -326,6 +326,8 @@ def validar_postfirma(db: Session, contenido_excel: bytes, fecha_desde=None, fec
     except Exception as exc:
         raise ValueError(f"No se pudo leer el Excel Post Firma: {exc}")
     columnas = [str(c) if c is not None else "" for c in df.columns]
+    if "TIPOCONCEPTO" not in [str(c).strip().upper() for c in columnas]:
+        columnas.append("TIPOCONCEPTO")
     filas_con_datos = 0
     filas_vacias = 0
     importes = Decimal("0")
