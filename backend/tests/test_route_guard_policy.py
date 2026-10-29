@@ -21,6 +21,10 @@ class RouteGuardPolicyTests(unittest.TestCase):
             "/api/expedientes/4/gastos/12/integracion-absis",
             "/api/utilidades/conceptos-gastos/6/plantilla-factura",
             "/api/utilidades/correspondencia/firma/factura",
+            "/api/expedientes/EXP-100/carpeta-digital",
+            "/api/expedientes/EXP-100/carpeta-digital/guardar-cierre-documental",
+            "/api/expedientes/EXP-100/defectos/3/calificacion",
+            "/api/expedientes/4/gastos/12/pagos",
         ):
             with self.subTest(path=path):
                 self.assertEqual(_resolver_accion(path, {"POST"}), "editar")
