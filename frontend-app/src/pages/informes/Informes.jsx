@@ -3458,7 +3458,6 @@ function InformeFacturacion() {
   const renderTarjetas = (grupo) => {
     const r = resumen(grupo.key);
     return (
-      <>
     <section key={grupo.key} className="space-y-4 rounded-2xl border border-white/80 bg-white/55 p-4 shadow-sm backdrop-blur-xl sm:p-5">
         <div className="flex flex-wrap items-center gap-3">
           <span className={"flex h-12 w-12 items-center justify-center rounded-xl text-2xl " + (grupo.acento === "emerald" ? "bg-emerald-50" : "bg-amber-50")}>{grupo.icono}</span>
