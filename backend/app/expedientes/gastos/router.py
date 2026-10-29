@@ -626,6 +626,9 @@ def actualizar_gasto(expediente_id: int, gasto_id: int, payload: GastoUpdate, db
         FROM public.expediente_gasto_pagos
         WHERE gasto_id = :gasto_id AND anulado_en IS NULL
     """), {"gasto_id": gasto.id}).scalar()) or Decimal("0.00")
+    movimientos_pago = int(db.execute(text("""
+        SELECT COUNT(*) FROM public.expediente_gasto_pagos WHERE gasto_id = :gasto_id
+    """), {"gasto_id": gasto.id}).scalar() or 0)
     # En actualizaciones parciales, validar la combinación final, no solo los campos enviados.
     combinados = {campo: getattr(gasto, campo, None) for campo in GastoBase.__fields__}
     combinados.update(datos)
@@ -637,6 +640,25 @@ def actualizar_gasto(expediente_id: int, gasto_id: int, payload: GastoUpdate, db
         setattr(gasto, campo, valor)
     if "importe_resultante" in datos and "importe" not in datos:
         gasto.importe = datos["importe_resultante"]
+
+    # Si ya existe histórico de pagos nuevo, el estado debe seguir reflejando
+    # la obligación final tras editar importes. No reinterpretar gastos pagados
+    # legacy que aún no tienen movimientos en la tabla nueva.
+    if movimientos_pago and importe_final is not None:
+        if importe_final > 0 and total_pagado >= importe_final:
+            ultima_fecha_pago = db.execute(text("""
+                SELECT MAX(fecha) FROM public.expediente_gasto_pagos
+                WHERE gasto_id = :gasto_id AND anulado_en IS NULL
+            """), {"gasto_id": gasto.id}).scalar()
+            gasto.estado_pago = "Pagado"
+            gasto.fecha_pago = ultima_fecha_pago or gasto.fecha_pago
+        elif total_pagado > 0:
+            gasto.estado_pago = "Parcial"
+            gasto.fecha_pago = None
+        else:
+            gasto.estado_pago = "Pendiente"
+            gasto.fecha_pago = None
+
     try:
         db.commit(); db.refresh(gasto)
     except Exception:
