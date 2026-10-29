@@ -1,6 +1,9 @@
+from fastapi import Depends, HTTPException, Request
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from backend.app.auth.dependencies import get_current_user
+from backend.app.database import get_db
 from backend.app.empleados.models import Empleado
 from backend.app.maestros.models import Departamento
 from backend.app.expedientes.models import Expediente
@@ -305,6 +308,49 @@ def expediente_cumple_reglas_empleado(db: Session, empleado: Empleado, expedient
 
         return True
     return False
+
+
+def validar_visibilidad_expediente_request(
+    request: Request,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    """Impide acceder por URL a expedientes fuera del ámbito de reparto del usuario."""
+    ruta = str(request.url.path or "")
+    if ruta.startswith("/api/notargest/") or ruta.startswith("/api/encargagest/"):
+        return
+    if "/provisiones-independientes" in ruta:
+        return
+
+    identificador = request.path_params.get("id_expediente")
+    if identificador is None:
+        identificador = request.path_params.get("expediente_id")
+    if identificador is None:
+        return
+
+    expediente = db.query(Expediente).filter(
+        Expediente.id_expediente == str(identificador)
+    ).first()
+    if expediente is None:
+        try:
+            id_interno = int(identificador)
+        except (TypeError, ValueError):
+            id_interno = None
+        if id_interno is not None and id_interno > 0:
+            expediente = db.query(Expediente).filter(
+                Expediente.id == id_interno
+            ).first()
+
+    # El endpoint específico conserva su 404 habitual cuando no existe el expediente.
+    if expediente is None:
+        return
+
+    ids_visibles = ids_expedientes_visibles(db, usuario)
+    if ids_visibles is not None and expediente.id not in ids_visibles:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+
+
+setattr(validar_visibilidad_expediente_request, "_molsan_visibilidad_guard", True)
 
 
 def ids_expedientes_visibles(db: Session, usuario):
