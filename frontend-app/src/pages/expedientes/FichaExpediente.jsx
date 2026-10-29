@@ -1439,7 +1439,7 @@ export default function FichaExpediente() {
   const [errorComplementosExpediente, setErrorComplementosExpediente] = useState("");
   const [mostrarDatosEnvioNotario, setMostrarDatosEnvioNotario] = useState(true);
   const [mostrarResumenEconomico, setMostrarResumenEconomico] = useState(true);
-  const [mostrarPanelEconomicoPago] = useState(true);
+  const [mostrarPanelEconomicoPago, setMostrarPanelEconomicoPago] = useState(true);
   const [mostrarModalDatosActividad, setMostrarModalDatosActividad] = useState(false);
   const [actividadDraft, setActividadDraft] = useState({});
   const [guardandoActividad, setGuardandoActividad] = useState(false);
