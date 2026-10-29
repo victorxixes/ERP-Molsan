@@ -94,6 +94,13 @@ class GastoUpdate(GastoBase):
     pass
 
 
+class VincularDocumentoCreate(BaseModel):
+    documento_carpeta_id: int
+    categoria: str = Field(..., min_length=1, max_length=200)
+    nombre_documento: str = Field(..., min_length=1, max_length=500)
+    fecha: Optional[date] = None
+
+
 class PagoCreate(BaseModel):
     fecha: date
     importe: Decimal
@@ -192,6 +199,57 @@ def _validar_calculo(datos: dict):
 def listar_gastos(expediente_id: int, db: Session = Depends(get_db)):
     expediente = _obtener_expediente(db, expediente_id)
     return db.query(ExpedienteGasto).filter(ExpedienteGasto.expediente_id == expediente.id).order_by(ExpedienteGasto.fecha.desc(), ExpedienteGasto.id.desc()).all()
+
+
+@router.post("/{expediente_id}/gastos/vincular-documento", status_code=status.HTTP_201_CREATED)
+def vincular_documento_a_gasto(
+    expediente_id: int,
+    payload: VincularDocumentoCreate,
+    db: Session = Depends(get_db),
+):
+    """Crea una obligación pendiente al adjuntar una factura en Gestión económica, sin marcarla pagada."""
+    expediente = _obtener_expediente(db, expediente_id)
+    categorias = {
+        "factura notarial": "Factura notarial",
+        "factura registral": "Factura registral",
+        "factura impuestos": "Factura impuestos",
+        "ajd/itp": "AJD/ITP",
+        "otros impuestos": "Otros impuestos",
+    }
+    clave = payload.categoria.strip().lower()
+    tipo = categorias.get(clave)
+    if not tipo:
+        raise HTTPException(status_code=422, detail="Solo se pueden vincular facturas o justificantes económicos.")
+    existente = db.query(ExpedienteGasto).filter(
+        ExpedienteGasto.expediente_id == expediente.id,
+        ExpedienteGasto.documento_carpeta_id == payload.documento_carpeta_id,
+    ).first()
+    if existente:
+        return {"ok": True, "duplicado": True, "gasto": existente}
+    gasto = ExpedienteGasto(
+        expediente_id=expediente.id,
+        tipo=tipo,
+        descripcion=payload.nombre_documento.strip(),
+        fecha=payload.fecha or date.today(),
+        documento_carpeta_id=payload.documento_carpeta_id,
+        estado_pago="Pendiente",
+        origen_registro="ERP",
+    )
+    db.add(gasto)
+    try:
+        db.commit()
+        db.refresh(gasto)
+    except Exception as exc:
+        db.rollback()
+        # A simultaneous retry may have inserted the same document; return it safely.
+        existente = db.query(ExpedienteGasto).filter(
+            ExpedienteGasto.expediente_id == expediente.id,
+            ExpedienteGasto.documento_carpeta_id == payload.documento_carpeta_id,
+        ).first()
+        if existente:
+            return {"ok": True, "duplicado": True, "gasto": existente}
+        raise HTTPException(status_code=500, detail="No se pudo crear la obligación económica del documento.") from exc
+    return {"ok": True, "duplicado": False, "gasto": gasto}
 
 
 @router.get("/{expediente_id}/gastos/{gasto_id}/pagos")
