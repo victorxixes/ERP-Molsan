@@ -36,7 +36,7 @@ const BLOQUES = [
     descripcion: "Facturas, honorarios y documentación económica complementaria.",
     categorias: [
       { etiqueta: "Factura notarial", categoria: "Factura notarial" },
-      { etiqueta: "Factura registral", categoria: "Factura registral" },
+      { etiqueta: "Factura registro", categoria: "Factura registro" },
       { etiqueta: "Factura impuestos", categoria: "Factura impuestos" },
       { etiqueta: "Honorarios de gestoría", categoria: "Honorarios gestoría" },
       { etiqueta: "Otros", categoria: "Otros" },
@@ -415,7 +415,7 @@ export default function CarpetaDigitalModal({
       const lista = await cargar();
       // Solo la carpeta de la actividad Gestión económica genera obligaciones.
       // Adjuntar el documento nunca lo marca como pagado ni descuenta provisión.
-      const categoriasEconomicas = ["factura-notarial", "factura-registral", "factura-impuestos", "ajd-itp", "otros-impuestos"];
+      const categoriasEconomicas = ["factura-notarial", "factura-registro", "factura-registral", "factura-impuestos", "ajd-itp", "otros-impuestos"];
       if (modoActividad && normalizar(actividadId) === "gestion-economica" && categoriasEconomicas.includes(normalizar(categoria))) {
         let idInternoExpediente = expedienteDatos?.id;
         if (!idInternoExpediente) {
