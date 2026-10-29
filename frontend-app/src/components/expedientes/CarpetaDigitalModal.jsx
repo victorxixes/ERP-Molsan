@@ -55,7 +55,10 @@ const BLOQUES = [
     id: "tramitacion-inscripcion",
     titulo: "Tramitación inscripción",
     descripcion: "Documentación que acredita la inscripción registral.",
-    categorias: [{ etiqueta: "Hoja de inscripción", categoria: "Hoja de Inscripción" }],
+    categorias: [
+      { etiqueta: "Hoja de inscripción", categoria: "Hoja de Inscripción" },
+      { etiqueta: "Factura registro", categoria: "Factura registro" },
+    ],
   },
   {
     id: "defectos-registrales",
@@ -278,6 +281,7 @@ export default function CarpetaDigitalModal({
       "AJD/ITP": "ajd_itp_documentos",
       "Otros impuestos": "otros_impuestos_documentos",
       "Hoja de Inscripción": "hoja_inscripcion_documentos",
+      "Factura registro": "factura_registro_documentos",
       "Defecto registral": "defecto_registral",
       "Subsanación del defecto": "subsanacion_defecto",
       "Escritura digital final": "escritura_digital_final_documentos",
@@ -313,7 +317,8 @@ export default function CarpetaDigitalModal({
           && normalizar(actividadId).includes("protocolo")
           && ["Hoja de presentación", "Hoja de presentación Tacio", "Copia simple"].includes(item.categoria);
         const repositorioCierreExpediente = bloque.id === "facturacion-cierre" && item.categoria === "Expediente digital completo";
-        return (configRepositorios.includes(repositorioClave) || repositorioNuevoRequerido || repositoriosSedeProtocolo || repositorioCierreExpediente)
+        return (configRepositorios.includes(repositorioClave) || repositorioNuevoRequerido || repositoriosSedeProtocolo || repositorioCierreExpediente
+          || (bloque.id === "tramitacion-inscripcion" && item.categoria === "Factura registro"))
           && !(bloque.id === "documentacion-previa" && item.categoria === "Presentación Registro")
           && !(esCancelacionSinProvision && bloque.id === "sede-notarial" && item.categoria === "Presentación Registro");
       }),
