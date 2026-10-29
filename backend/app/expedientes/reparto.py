@@ -328,25 +328,36 @@ def validar_visibilidad_expediente_request(
     if identificador is None:
         return
 
-    expediente = db.query(Expediente).filter(
+    candidatos = []
+    expediente_por_referencia = db.query(Expediente).filter(
         Expediente.id_expediente == str(identificador)
     ).first()
-    if expediente is None:
-        try:
-            id_interno = int(identificador)
-        except (TypeError, ValueError):
-            id_interno = None
-        if id_interno is not None and id_interno > 0:
-            expediente = db.query(Expediente).filter(
-                Expediente.id == id_interno
-            ).first()
+    if expediente_por_referencia is not None:
+        candidatos.append(expediente_por_referencia)
+
+    try:
+        id_interno = int(identificador)
+    except (TypeError, ValueError):
+        id_interno = None
+    if id_interno is not None and id_interno > 0:
+        expediente_por_id = db.query(Expediente).filter(
+            Expediente.id == id_interno
+        ).first()
+        if expediente_por_id is not None and all(
+            int(expediente_por_id.id) != int(item.id) for item in candidatos
+        ):
+            candidatos.append(expediente_por_id)
 
     # El endpoint específico conserva su 404 habitual cuando no existe el expediente.
-    if expediente is None:
+    if not candidatos:
         return
 
     ids_visibles = ids_expedientes_visibles(db, usuario)
-    if ids_visibles is not None and expediente.id not in ids_visibles:
+    if ids_visibles is not None and any(
+        expediente.id not in ids_visibles for expediente in candidatos
+    ):
+        # Si un identificador numérico coincide con dos expedientes distintos,
+        # no se permite usar la ambigüedad para consultar uno fuera del reparto.
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
 
 
