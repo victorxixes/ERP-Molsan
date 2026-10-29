@@ -1,4 +1,5 @@
 import logging
+import mimetypes
 import os
 import uuid
 from pathlib import Path
@@ -71,6 +72,34 @@ CATEGORIAS = {
 }
 
 MAX_BYTES = int(os.getenv("CARPETA_DIGITAL_MAX_BYTES", str(100 * 1024 * 1024)))
+EXTENSIONES_DOCUMENTALES_PERMITIDAS = {
+    ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
+    ".odt", ".ods", ".odp", ".rtf", ".txt", ".csv", ".eml",
+    ".png", ".jpg", ".jpeg", ".gif", ".webp", ".zip",
+}
+EXTENSIONES_VISTA_PREVIA = {".pdf", ".png", ".jpg", ".jpeg", ".gif", ".webp"}
+
+
+def _tipo_mime_documento_seguro(nombre: str) -> tuple[str, str]:
+    extension = Path(nombre).suffix.lower()
+    if extension not in EXTENSIONES_DOCUMENTALES_PERMITIDAS:
+        raise HTTPException(
+            status_code=415,
+            detail="Formato documental no permitido. Usa PDF, Office, TXT, CSV, EML, ZIP o imágenes.",
+        )
+    tipo_mime = mimetypes.guess_type(f"documento{extension}")[0] or "application/octet-stream"
+    return extension, tipo_mime
+
+
+def _politica_descarga_documento(nombre: str) -> tuple[str, str]:
+    extension = Path(nombre or "").suffix.lower()
+    tipo_mime = (
+        mimetypes.guess_type(f"documento{extension}")[0]
+        if extension in EXTENSIONES_DOCUMENTALES_PERMITIDAS
+        else None
+    ) or "application/octet-stream"
+    disposicion = "inline" if extension in EXTENSIONES_VISTA_PREVIA else "attachment"
+    return tipo_mime, disposicion
 # Carpeta compartida de almacenamiento. En Render debe quedar bajo el disco
 # persistente configurado en MOLSAN_STORAGE_ROOT.
 ROOT = CARPETA_DIGITAL_DIR.resolve()
@@ -158,7 +187,7 @@ async def subir_documento(
             raise HTTPException(status_code=400, detail="El archivo está vacío")
 
         # Nombre aleatorio y extensión saneada; no se usa el nombre aportado como ruta.
-        extension = Path(nombre_original).suffix[:20].lower()
+        extension, tipo_mime_seguro = _tipo_mime_documento_seguro(nombre_original)
         nombre_guardado = f"{uuid.uuid4().hex}{extension}"
         ruta = _ruta_segura(nombre_guardado)
         temporal = _ruta_segura(f".{nombre_guardado}.part")
@@ -171,7 +200,7 @@ async def subir_documento(
                 categoria=categoria,
                 nombre_original=nombre_original,
                 nombre_guardado=nombre_guardado,
-                tipo_mime=archivo.content_type,
+                tipo_mime=tipo_mime_seguro,
                 tamano_bytes=len(contenido),
                 fecha_subida=datetime.utcnow(),
             )
@@ -227,11 +256,13 @@ def descargar_documento(
                 "CARPETA_DIGITAL_DIR apunte al disco persistente de Render."
             ),
         )
+    media_type_seguro, disposicion = _politica_descarga_documento(doc.nombre_original)
     return FileResponse(
         path=ruta,
-        media_type=doc.tipo_mime or "application/octet-stream",
+        media_type=media_type_seguro,
         filename=doc.nombre_original,
-        content_disposition_type="inline",
+        content_disposition_type=disposicion,
+        headers={"X-Content-Type-Options": "nosniff"},
     )
 
 
