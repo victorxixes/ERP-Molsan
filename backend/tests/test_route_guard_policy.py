@@ -13,6 +13,23 @@ from backend.app.seguridad.router import PLANTILLA_PERMISOS
 
 
 class RouteGuardPolicyTests(unittest.TestCase):
+    def test_portal_access_routes_use_their_own_dynamic_permissions(self):
+        expected = {
+            "/api/ctn/accesos-portales/resumen",
+            "/api/ctn/notarias/{notaria_id}/accesos-portales",
+            "/api/ctn/notarias/{notaria_id}/accesos-portales/{portal}/password",
+            "/api/ctn/notarias/{notaria_id}/accesos-portales/{portal}/habilitado",
+            "/api/ctn/notarias/{notaria_id}/accesos-portales/{portal}/reset-password",
+        }
+        self.assertTrue(expected.issubset(set(_RUTAS_CON_AUTORIZACION_INTERNA)))
+        self.assertEqual(
+            _resolver_accion(
+                "/api/ctn/notarias/{notaria_id}/accesos-portales/{portal}/habilitado",
+                {"POST"},
+            ),
+            "editar",
+        )
+
     def test_conditional_internal_authorization_is_not_double_gated(self):
         self.assertIn(
             "/api/seguridad/empleado/{empleado_id}/ficha-completa",
