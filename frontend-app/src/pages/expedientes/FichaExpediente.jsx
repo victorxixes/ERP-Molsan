@@ -3421,19 +3421,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     }
     if (pendientes.length) {
       const gasto = pendientes[0];
-      const pagos = mapaPagos[String(gasto.id)] || [];
-      const totalPagado = pagos.filter((pago) => !pago.anulado_en).reduce((suma, pago) => suma + Number(pago.importe || 0), 0);
-      const restante = Math.max(0, Number(gasto.importe_resultante ?? gasto.importe ?? 0) - totalPagado);
-      setPagoGastoSeleccionadoId(String(gasto.id));
-      setPagoRealForm({
-        fecha: new Date().toLocaleDateString("sv-SE"),
-        importe: restante.toFixed(2),
-        concepto: `Pago de ${gasto.tipo || "gasto"} · ${gasto.descripcion || gasto.numero_documento || gasto.id}`,
-        medio_pago: "Transferencia",
-        idempotency_key: "erp-pago-" + gasto.id + "-" + Date.now() + "-" + Math.random().toString(36).slice(2, 10),
-      });
-      setMostrarFormularioGasto(false);
-      setMostrarFormularioPagoReal(true);
+      abrirOrdenPago(gasto);
       return;
     }
     setGastoEdicionId(null);
@@ -3476,6 +3464,58 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     }
   }
 
+  function abrirOrdenPago(gasto) {
+    if (!gasto?.id) {
+      setErrorPagoReal("No se ha identificado la obligación económica que se va a pagar.");
+      return;
+    }
+    const pagos = (pagosPorGasto[String(gasto.id)] || []).filter((pago) => !pago.anulado_en);
+    const totalPagado = pagos.reduce((suma, pago) => suma + Number(pago.importe || 0), 0);
+    const importeObligacion = Number(gasto.importe_resultante ?? gasto.importe ?? 0);
+    const restante = Math.max(0, importeObligacion - totalPagado);
+    const hoy = new Date().toLocaleDateString("sv-SE");
+    setOrigenFormularioGasto("pagar");
+    setPagoGastoSeleccionadoId(String(gasto.id));
+    setPagoRealForm({
+      fecha: hoy,
+      importe: restante.toFixed(2),
+      concepto: String(gasto.tipo || "Gasto") + " · " + String(gasto.descripcion || gasto.numero_documento || gasto.id),
+      medio_pago: "Transferencia",
+      idempotency_key: "erp-pago-" + gasto.id + "-" + Date.now() + "-" + Math.random().toString(36).slice(2, 10),
+    });
+    setGastoForm((actual) => ({
+      ...actual,
+      tipo: gasto.tipo || actual.tipo || "Factura de notaría",
+      descripcion: gasto.descripcion || actual.descripcion || "",
+      nif_notario: expediente?.nif_notario || expediente?.notario_nif || gasto.nif_notario || "",
+      nombre_notario: expediente?.nombre_notario || expediente?.notario || gasto.nombre_notario || "",
+      pagador: [expediente?.facturacion_nombre, expediente?.facturacion_apellidos].filter(Boolean).join(" ") || gasto.pagador || "",
+      cuenta_bancaria: gasto.cuenta_bancaria || "",
+      medio_pago: "Transferencia",
+      numero_factura: gasto.numero_factura || gasto.numero_documento || "",
+      fecha_factura: gasto.fecha_factura || "",
+      importe_total_bruto: String(gasto.importe_total_bruto ?? gasto.importe_resultante ?? gasto.importe ?? ""),
+      base_exenta_impuestos: String(gasto.base_exenta_impuestos ?? ""),
+      base_sujeta_impuestos: String(gasto.base_sujeta_impuestos ?? ""),
+      tramo_impuesto: gasto.tramo_impuesto || "General",
+      tipo_impuesto: gasto.tipo_impuesto || "IVA 21%",
+      porcentaje_impuesto: String(gasto.porcentaje_impuesto ?? 21),
+      base_exenta_retencion: String(gasto.base_exenta_retencion ?? "0"),
+      base_sujeta_retencion: String(gasto.base_sujeta_retencion ?? "0"),
+      tipo_retencion: gasto.tipo_retencion || "Sin retención",
+      porcentaje_retencion: String(gasto.porcentaje_retencion ?? 0),
+      importe: String(gasto.importe_resultante ?? gasto.importe ?? ""),
+      fecha: gasto.fecha || hoy,
+      estado_pago: "Pendiente",
+      documento_carpeta_id: gasto.documento_carpeta_id ? String(gasto.documento_carpeta_id) : "",
+    }));
+    setErrorPagoReal("");
+    setErrorGastos("");
+    setMostrarFormularioGasto(false);
+    setMostrarFormularioPagoReal(true);
+    void cargarCuentasBancariasNotarioParaPago();
+  }
+
   async function registrarPagoObligacion(event) {
     event.preventDefault();
     const expedienteId = expediente?.id ?? (Number.isFinite(Number(id)) ? Number(id) : null);
@@ -3498,11 +3538,42 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     setGuardandoPagoReal(true);
     setErrorPagoReal("");
     try {
+      // Guardar los datos fiscales y bancarios en la obligación existente antes de registrar el pago.
+      // No se modifica el importe de la obligación ni su estado; el pago sigue siendo un movimiento independiente.
+      const importeFacturaActual = Number(gasto.importe_total_bruto ?? gasto.importe_resultante ?? gasto.importe ?? 0);
+      await axios.put(`/expedientes/${encodeURIComponent(expedienteId)}/gastos/${encodeURIComponent(gastoId)}`, {
+        tipo: gasto.tipo || gastoForm.tipo || "Gasto",
+        descripcion: gasto.descripcion || gastoForm.descripcion || "",
+        importe: Number(gasto.importe_resultante ?? gasto.importe ?? importeFacturaActual),
+        fecha: gasto.fecha || pagoRealForm.fecha,
+        nif_notario: gastoForm.nif_notario || expediente?.nif_notario || expediente?.notario_nif || null,
+        nombre_notario: gastoForm.nombre_notario || expediente?.nombre_notario || expediente?.notario || null,
+        pagador: gastoForm.pagador || [expediente?.facturacion_nombre, expediente?.facturacion_apellidos].filter(Boolean).join(" ") || null,
+        cuenta_bancaria: gastoForm.cuenta_bancaria || null,
+        medio_pago: "Transferencia",
+        numero_factura: gastoForm.numero_factura || null,
+        fecha_factura: gastoForm.fecha_factura || null,
+        importe_total_bruto: numeroDecimalGasto(gastoForm.importe_total_bruto) || importeFacturaActual,
+        base_exenta_impuestos: numeroDecimalGasto(gastoForm.base_exenta_impuestos),
+        base_sujeta_impuestos: numeroDecimalGasto(gastoForm.base_sujeta_impuestos),
+        tramo_impuesto: gastoForm.tramo_impuesto || null,
+        tipo_impuesto: gastoForm.tipo_impuesto || null,
+        porcentaje_impuesto: numeroDecimalGasto(gastoForm.porcentaje_impuesto),
+        importe_impuesto: numeroDecimalGasto(gasto.importe_impuesto),
+        base_exenta_retencion: numeroDecimalGasto(gastoForm.base_exenta_retencion),
+        base_sujeta_retencion: numeroDecimalGasto(gastoForm.base_sujeta_retencion),
+        tipo_retencion: gastoForm.tipo_retencion || null,
+        porcentaje_retencion: numeroDecimalGasto(gastoForm.porcentaje_retencion),
+        importe_retencion: numeroDecimalGasto(gasto.importe_retencion),
+        importe_resultante: Number(gasto.importe_resultante ?? gasto.importe ?? importeFacturaActual),
+        documento_carpeta_id: gasto.documento_carpeta_id || null,
+        estado_pago: gasto.estado_pago || "Pendiente",
+      });
       await axios.post(`/expedientes/${encodeURIComponent(expedienteId)}/gastos/${encodeURIComponent(gastoId)}/pagos`, {
         fecha: pagoRealForm.fecha,
         importe,
         concepto: pagoRealForm.concepto.trim(),
-        medio_pago: pagoRealForm.medio_pago || null,
+        medio_pago: "Transferencia",
         idempotency_key: claveOperacion,
       });
       setPagoRealForm({ fecha: new Date().toLocaleDateString("sv-SE"), importe: "", concepto: "", medio_pago: "Transferencia", idempotency_key: "erp-pago-" + Date.now() + "-" + Math.random().toString(36).slice(2, 10) });
@@ -5811,7 +5882,7 @@ const cuantiaFincasParaEnvio =
                               <thead className="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500"><tr><th className="px-3 py-3 font-bold">ID de pago</th><th className="px-3 py-3 font-bold">Fecha</th><th className="px-3 py-3 font-bold">Tipo de documento</th><th className="px-3 py-3 text-right font-bold">Cuantía documento</th><th className="px-3 py-3 text-right font-bold">Impuesto</th><th className="px-3 py-3 text-right font-bold">Total</th><th className="px-3 py-3 font-bold">Estado</th><th className="px-3 py-3 text-right font-bold">Saldo tras pago</th><th className="px-3 py-3 font-bold">Acciones</th></tr></thead>
                               <tbody className="divide-y divide-slate-100">
                                 {resumenEconomico.movimientos.length === 0 && gastosPendientesResumen.length === 0 && <tr><td colSpan={9} className="px-4 py-6 text-center text-slate-500">Todavía no hay gastos ni pagos registrados.</td></tr>}
-                                {gastosPendientesResumen.map((gasto) => { const fmtPendiente = (valor) => Number(valor ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); const importe = Math.abs(Number(gasto.importe_resultante ?? gasto.importe ?? 0)); const base = Number(gasto.base_imponible ?? gasto.base_sujeta_impuestos ?? gasto.base_exenta_impuestos ?? 0); const impuesto = Number(gasto.importe_impuesto ?? gasto.impuesto ?? gasto.iva ?? 0); return <tr key={"pendiente-" + gasto.id} className="bg-amber-50/40 text-slate-700"><td className="whitespace-nowrap px-3 py-3 font-extrabold text-amber-700">{gasto.numero_documento || ("GAS-" + String(gasto.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(gasto.fecha_factura || gasto.fecha || gasto.created_at)}</td><td className="px-3 py-3"><span className="font-semibold">{gasto.tipo || "Gasto registrado"}</span>{gasto.descripcion ? <span className="mt-1 block text-slate-500">{gasto.descripcion}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{fmtPendiente(base > 0 ? base : importe)} €</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{impuesto > 0 ? `${fmtPendiente(impuesto)} €` : "—"}</td><td className="whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums">{fmtPendiente(importe)} €</td><td className="whitespace-nowrap px-3 py-3"><span className="rounded-full bg-amber-100 px-2 py-1 text-[10px] font-bold text-amber-800">Pendiente</span></td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{importeInicialDisponible ? `${fmtPendiente(resumenEconomico.saldoActual)} €` : "—"}</td><td className="px-3 py-3">{esAdministradorSesion ? <button type="button" onClick={() => { const pagos = (pagosPorGasto[String(gasto.id)] || []).filter((p) => !p.anulado_en); const pagado = pagos.reduce((s, p) => s + Number(p.importe || 0), 0); const restante = Math.max(0, importe - pagado); setOrigenFormularioGasto("pagar"); setPagoGastoSeleccionadoId(String(gasto.id)); setPagoRealForm((actual) => ({ ...actual, importe: restante.toFixed(2), concepto: "Pago de " + (gasto.tipo || "gasto") + " · " + (gasto.descripcion || gasto.numero_documento || gasto.id) })); setErrorPagoReal(""); setMostrarFormularioPagoReal(true); }} disabled={importe <= 0} className="rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[10px] font-bold text-emerald-800 hover:bg-emerald-100 disabled:opacity-50">Pagar</button> : <span className="text-[10px] text-slate-400">Solo administración</span>}</td></tr>; })}}
+                                {gastosPendientesResumen.map((gasto) => { const fmtPendiente = (valor) => Number(valor ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); const importe = Math.abs(Number(gasto.importe_resultante ?? gasto.importe ?? 0)); const base = Number(gasto.base_imponible ?? gasto.base_sujeta_impuestos ?? gasto.base_exenta_impuestos ?? 0); const impuesto = Number(gasto.importe_impuesto ?? gasto.impuesto ?? gasto.iva ?? 0); return <tr key={"pendiente-" + gasto.id} className="bg-amber-50/40 text-slate-700"><td className="whitespace-nowrap px-3 py-3 font-extrabold text-amber-700">{gasto.numero_documento || ("GAS-" + String(gasto.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(gasto.fecha_factura || gasto.fecha || gasto.created_at)}</td><td className="px-3 py-3"><span className="font-semibold">{gasto.tipo || "Gasto registrado"}</span>{gasto.descripcion ? <span className="mt-1 block text-slate-500">{gasto.descripcion}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{fmtPendiente(base > 0 ? base : importe)} €</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{impuesto > 0 ? `${fmtPendiente(impuesto)} €` : "—"}</td><td className="whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums">{fmtPendiente(importe)} €</td><td className="whitespace-nowrap px-3 py-3"><span className="rounded-full bg-amber-100 px-2 py-1 text-[10px] font-bold text-amber-800">Pendiente</span></td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{importeInicialDisponible ? `${fmtPendiente(resumenEconomico.saldoActual)} €` : "—"}</td><td className="px-3 py-3">{esAdministradorSesion ? <button type="button" onClick={() => abrirOrdenPago(gasto)} disabled={importe <= 0} className="rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[10px] font-bold text-emerald-800 hover:bg-emerald-100 disabled:opacity-50">Pagar</button> : <span className="text-[10px] text-slate-400">Solo administración</span>}</td></tr>; })}}
                                 {resumenEconomico.movimientos.map((movimiento) => {
                                   const fmt = (valor) => Number(valor ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                                   const importeMovimiento = Math.abs(Number(movimiento.importeMovimiento ?? movimiento.importe_resultante ?? movimiento.importe ?? 0));
@@ -5841,47 +5912,114 @@ const cuantiaFincasParaEnvio =
                   </section>}
                       formularioPago={origenFormularioGasto === "pagar" ? (
                         <>
-                        {mostrarFormularioPagoReal && (
-                          <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50/40 p-3 sm:p-4">
-                            <form onSubmit={registrarPagoObligacion} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                              <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-                                <div><h5 className="text-base font-extrabold text-slate-900">Registrar pago real</h5><p className="mt-1 text-xs text-slate-500">Cada movimiento queda guardado con su propio ID. No se realiza ninguna transferencia bancaria.</p></div>
-                                <button type="button" onClick={() => { setMostrarFormularioPagoReal(false); setPagoGastoSeleccionadoId(""); }} className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-600">× Cerrar</button>
-                              </div>
-                              <div className="grid gap-3 md:grid-cols-2">
-                                <label className="block md:col-span-2"><span className="mb-1 block text-xs font-bold text-slate-700">Obligación pendiente *</span>
-                                  <select required value={pagoGastoSeleccionadoId} onChange={(e) => {
-                                    const elegido = gastosExpediente.find((g) => String(g.id) === e.target.value);
-                                    setPagoGastoSeleccionadoId(e.target.value);
-                                    if (elegido) {
-                                      const totalPagado = (pagosPorGasto[String(elegido.id)] || []).reduce((suma, pago) => suma + Number(pago.importe || 0), 0);
-                                      const restante = Math.max(0, Number(elegido.importe_resultante ?? elegido.importe ?? 0) - totalPagado);
-                                      setPagoRealForm((actual) => ({ ...actual, importe: restante.toFixed(2), concepto: "Pago de " + (elegido.tipo || "gasto") + " · " + (elegido.descripcion || elegido.numero_documento || elegido.id) }));
-                                    }
-                                  }} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
-                                    <option value="">Selecciona una obligación pendiente…</option>
-                                    {gastosExpediente.filter((g) => {
-                                      const estado = String(g.estado_pago || "").trim().toLowerCase();
-                                      const totalPagado = (pagosPorGasto[String(g.id)] || []).reduce((suma, pago) => suma + Number(pago.importe || 0), 0);
-                                      const importe = Number(g.importe_resultante ?? g.importe ?? 0);
-                                      return !estado.includes("anulad") && importe > 0 && !estadosPagoConfirmado.includes(estado) && totalPagado + 0.005 < importe;
-                                    }).map((g) => {
-                                      const totalPagado = (pagosPorGasto[String(g.id)] || []).reduce((suma, pago) => suma + Number(pago.importe || 0), 0);
-                                      const restante = Math.max(0, Number(g.importe_resultante ?? g.importe ?? 0) - totalPagado);
-                                      return <option key={g.id} value={String(g.id)}>{(g.tipo || "Gasto") + " · " + (g.descripcion || g.numero_documento || g.id) + " · pendiente " + restante.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €"}</option>;
-                                    })}
-                                  </select>
-                                </label>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Fecha del pago *</span><input required type="date" value={pagoRealForm.fecha} onChange={(e) => setPagoRealForm((actual) => ({ ...actual, fecha: e.target.value }))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Importe de este pago (€) *</span><input required type="number" min="0.01" step="0.01" value={pagoRealForm.importe} onChange={(e) => setPagoRealForm((actual) => ({ ...actual, importe: e.target.value }))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Concepto del movimiento *</span><input required maxLength={300} value={pagoRealForm.concepto} onChange={(e) => setPagoRealForm((actual) => ({ ...actual, concepto: e.target.value }))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Medio de pago</span><select value={pagoRealForm.medio_pago} onChange={(e) => setPagoRealForm((actual) => ({ ...actual, medio_pago: e.target.value }))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Transferencia</option><option>Cheque</option><option>Tarjeta</option><option>Efectivo</option><option>Otro</option></select></label>
-                              </div>
-                              {errorPagoReal && <p role="alert" className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorPagoReal}</p>}
-                              <div className="mt-4 flex flex-wrap justify-end gap-2"><button type="button" onClick={() => { setMostrarFormularioPagoReal(false); setPagoGastoSeleccionadoId(""); }} disabled={guardandoPagoReal} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600">Cancelar</button><button type="submit" disabled={guardandoPagoReal || !pagoGastoSeleccionadoId} className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{guardandoPagoReal ? "Guardando pago…" : "Confirmar pago"}</button></div>
-                            </form>
+                        {mostrarFormularioPagoReal && createPortal((
+                          <div className="fixed inset-0 z-[12000] flex items-center justify-center bg-slate-950/65 p-2 backdrop-blur-sm sm:p-5" role="dialog" aria-modal="true" aria-labelledby="orden-pago-titulo">
+                            <section className="flex max-h-[96vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-white/70 bg-slate-50 shadow-2xl">
+                              <header className="flex items-start justify-between gap-3 border-b border-slate-200 bg-white px-5 py-4 sm:px-6">
+                                <div><p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Gestión económica</p><h2 id="orden-pago-titulo" className="mt-1 text-xl font-extrabold text-slate-900">Orden de pago</h2><p className="mt-1 text-xs text-slate-500">Expediente {expediente?.id_expediente || expediente?.id || id || "—"} · Preparar la orden no ejecuta una transferencia bancaria.</p></div>
+                                <button type="button" onClick={() => { if (!guardandoPagoReal) { setMostrarFormularioPagoReal(false); setPagoGastoSeleccionadoId(""); } }} disabled={guardandoPagoReal} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-lg leading-none text-slate-600 hover:bg-slate-100 disabled:opacity-50" aria-label="Cerrar orden de pago">×</button>
+                              </header>
+                              <form onSubmit={registrarPagoObligacion} className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
+                                <section className="mb-4 rounded-xl border border-slate-200 bg-white p-4">
+                                  <h3 className="mb-3 text-sm font-extrabold text-slate-800">1. Concepto del gasto</h3>
+                                  <label className="block text-xs font-bold text-slate-600">Tipo de documento / obligación
+                                    <input readOnly value={gastoForm.tipo || (gastosExpediente.find((g) => String(g.id) === String(pagoGastoSeleccionadoId))?.tipo || "Gasto")} className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-semibold text-slate-800" />
+                                  </label>
+                                </section>
+                                <section className="mb-4 rounded-xl border border-slate-200 bg-white p-4">
+                                  <h3 className="mb-3 text-sm font-extrabold text-slate-800">2. Ordenante del pago</h3>
+                                  <div className="grid gap-3 md:grid-cols-2">
+                                    <label className="block text-xs font-bold text-slate-600">Nombre y apellidos
+                                      <input readOnly value={[expediente?.facturacion_nombre, expediente?.facturacion_apellidos].filter(Boolean).join(" ")} placeholder="Sin datos de facturación" className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    </label>
+                                    <label className="block text-xs font-bold text-slate-600">DNI / NIF
+                                      <input readOnly value={expediente?.facturacion_dni_nif || expediente?.dni_facturacion || expediente?.nif_facturacion || ""} placeholder="Sin DNI/NIF de facturación" className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    </label>
+                                  </div>
+                                </section>
+                                <section className="mb-4 rounded-xl border border-slate-200 bg-white p-4">
+                                  <h3 className="mb-3 text-sm font-extrabold text-slate-800">3. Beneficiario</h3>
+                                  <div className="grid gap-3 md:grid-cols-2">
+                                    <label className="block text-xs font-bold text-slate-600">Nombre del notario
+                                      <input readOnly value={expediente?.nombre_notario || expediente?.notario || gastoForm.nombre_notario || ""} placeholder="Sin notario vinculado en Envío a notario" className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    </label>
+                                    <label className="block text-xs font-bold text-slate-600">DNI / NIF del notario
+                                      <input readOnly value={expediente?.nif_notario || expediente?.notario_nif || gastoForm.nif_notario || ""} placeholder="Sin NIF del notario" className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    </label>
+                                  </div>
+                                  <label className="mt-3 block text-xs font-bold text-slate-600">Cuenta bancaria principal · CTN / Medios de pago
+                                    <input readOnly value={gastoForm.cuenta_bancaria || ""} placeholder="No consta cuenta principal en la ficha CTN" className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 font-mono text-sm font-normal text-slate-800" />
+                                  </label>
+                                  {cuentasBancariasNotario.length === 0 && <p className="mt-2 text-[11px] text-amber-700">No se ha podido confirmar la cuenta principal del notario. Revisa la ficha CTN antes de continuar.</p>}
+                                </section>
+                                <section className="mb-4 rounded-xl border border-slate-200 bg-white p-4">
+                                  <h3 className="mb-3 text-sm font-extrabold text-slate-800">4. Detalle del gasto</h3>
+                                  <div className="grid gap-3 md:grid-cols-2">
+                                    <label className="block text-xs font-bold text-slate-600">Medio de pago
+                                      <input readOnly value="Transferencia bancaria a la cuenta del destinatario" className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    </label>
+                                    <label className="block text-xs font-bold text-slate-600">Fecha del pago
+                                      <input readOnly type="date" value={pagoRealForm.fecha} className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    </label>
+                                  </div>
+                                </section>
+                                <section className="mb-4 rounded-xl border border-slate-200 bg-white p-4">
+                                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h3 className="text-sm font-extrabold text-slate-800">5. Datos de la factura</h3><span className="rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-bold text-amber-800">Extracción PDF pendiente</span></div>
+                                  <div className="grid gap-3 md:grid-cols-2">
+                                    <label className="block text-xs font-bold text-slate-600">N.º de factura
+                                      <input value={gastoForm.numero_factura || ""} onChange={(e) => setGastoForm((a) => ({ ...a, numero_factura: e.target.value }))} placeholder="Pendiente de lectura del PDF" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    </label>
+                                    <label className="block text-xs font-bold text-slate-600">Fecha de factura
+                                      <input type="date" value={gastoForm.fecha_factura || ""} onChange={(e) => setGastoForm((a) => ({ ...a, fecha_factura: e.target.value }))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    </label>
+                                  </div>
+                                </section>
+                                <section className="mb-4 rounded-xl border border-slate-200 bg-white p-4">
+                                  <h3 className="mb-3 text-sm font-extrabold text-slate-800">6. Datos fiscales</h3>
+                                  <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                                    <label className="block text-xs font-bold text-slate-600">Base imponible
+                                      <input type="number" min="0" step="0.01" value={gastoForm.base_sujeta_impuestos || ""} onChange={(e) => setGastoForm((a) => ({ ...a, base_sujeta_impuestos: e.target.value }))} placeholder="Pendiente de lectura del PDF" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    </label>
+                                    <label className="block text-xs font-bold text-slate-600">Base exenta / no sujeta
+                                      <input type="number" min="0" step="0.01" value={gastoForm.base_exenta_impuestos || ""} onChange={(e) => setGastoForm((a) => ({ ...a, base_exenta_impuestos: e.target.value }))} placeholder="Pendiente de lectura del PDF" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    </label>
+                                    <label className="block text-xs font-bold text-slate-600">Base sujeta a impuestos
+                                      <input type="number" min="0" step="0.01" value={gastoForm.base_sujeta_impuestos || ""} onChange={(e) => setGastoForm((a) => ({ ...a, base_sujeta_impuestos: e.target.value }))} placeholder="Pendiente de lectura del PDF" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    </label>
+                                    <label className="block text-xs font-bold text-slate-600">Tipo de impuesto
+                                      <select value={gastoForm.tipo_impuesto || "IVA 21%"} onChange={(e) => { const v=e.target.value; setGastoForm((a) => ({ ...a, tipo_impuesto:v, porcentaje_impuesto:v==="IVA 21%"?"21":v==="IGIC 5%"?"5":v==="IGIC 6,50%"?"6.5":v==="IGIC 7%"?"7":"0" })); }} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-800">{!["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].includes(gastoForm.tipo_impuesto) && <option value={gastoForm.tipo_impuesto}>{gastoForm.tipo_impuesto}</option>}{["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].map((x) => <option key={x} value={x}>{x}</option>)}</select>
+                                    </label>
+                                    <label className="block text-xs font-bold text-slate-600">Tramo / tipo
+                                      <select value={gastoForm.tramo_impuesto || "General"} onChange={(e) => setGastoForm((a) => ({ ...a, tramo_impuesto:e.target.value }))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-800">{["Exento","General","Reducido","Super reducido","Único"].map((x) => <option key={x}>{x}</option>)}</select>
+                                    </label>
+                                    <label className="block text-xs font-bold text-slate-600">Porcentaje del impuesto (%)
+                                      <input type="number" min="0" max="100" step="0.01" value={gastoForm.porcentaje_impuesto ?? "0"} onChange={(e) => setGastoForm((a) => ({ ...a, porcentaje_impuesto:e.target.value }))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    </label>
+                                    <label className="block text-xs font-bold text-slate-600">Tipo de retención
+                                      <select value={gastoForm.tipo_retencion || "Sin retención"} onChange={(e) => setGastoForm((a) => ({ ...a, tipo_retencion:e.target.value, porcentaje_retencion:e.target.value==="Sin retención"?"0":(a.porcentaje_retencion || "15") }))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-800"><option>Sin retención</option><option>IRPF profesionales</option></select>
+                                    </label>
+                                    <label className="block text-xs font-bold text-slate-600">Porcentaje de retención (%)
+                                      <input type="number" min="0" max="100" step="0.01" value={gastoForm.porcentaje_retencion ?? "0"} onChange={(e) => setGastoForm((a) => ({ ...a, porcentaje_retencion:e.target.value }))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    </label>
+                                  </div>
+                                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                                    <label className="block text-xs font-bold text-slate-600">Importe total de factura (€)
+                                      <input readOnly value={Number(gastoForm.importe_total_bruto || (gastosExpediente.find((g) => String(g.id) === String(pagoGastoSeleccionadoId))?.importe_total_bruto ?? gastosExpediente.find((g) => String(g.id) === String(pagoGastoSeleccionadoId))?.importe_resultante ?? gastosExpediente.find((g) => String(g.id) === String(pagoGastoSeleccionadoId))?.importe ?? 0)).toLocaleString("es-ES", { minimumFractionDigits:2, maximumFractionDigits:2 })} className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-extrabold text-slate-900" />
+                                    </label>
+                                    <label className="block text-xs font-bold text-slate-600">Importe de este pago (€)
+                                      <input required type="number" min="0.01" step="0.01" value={pagoRealForm.importe} onChange={(e) => setPagoRealForm((a) => ({ ...a, importe: e.target.value }))} className="mt-1 w-full rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm font-extrabold text-emerald-900" />
+                                    </label>
+                                  </div>
+                                </section>
+                                {errorPagoReal && <p role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{errorPagoReal}</p>}
+                                <footer className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-4">
+                                  <p className="max-w-xl text-xs leading-5 text-slate-500">Al confirmar, se guardarán los datos de la factura en la obligación y se registrará un movimiento en el histórico. No se ordena ninguna transferencia bancaria desde el ERP.</p>
+                                  <div className="flex gap-2"><button type="button" onClick={() => { if (!guardandoPagoReal) { setMostrarFormularioPagoReal(false); setPagoGastoSeleccionadoId(""); } }} disabled={guardandoPagoReal} className="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-600 disabled:opacity-50">Cancelar</button><button type="submit" disabled={guardandoPagoReal || !pagoGastoSeleccionadoId} className="rounded-lg bg-emerald-700 px-5 py-2.5 text-sm font-extrabold text-white hover:bg-emerald-800 disabled:opacity-50">{guardandoPagoReal ? "Registrando pago…" : "Pagar"}</button></div>
+                                </footer>
+                              </form>
+                            </section>
                           </div>
-                        )}
+                        ), document.body)}
                         {mostrarFormularioGasto && (
                           <div className="mt-4 rounded-2xl border border-indigo-200 bg-indigo-50/40 p-3 sm:p-4">
                             <div className="mx-auto flex w-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
