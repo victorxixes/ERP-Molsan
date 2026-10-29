@@ -419,8 +419,9 @@ def anular_pago_gasto(
     db: Session = Depends(get_db), usuario=Depends(get_current_user),
 ):
     """Anula un movimiento sin borrarlo; operación reservada a administradores."""
-    rol = str(getattr(getattr(usuario, "rol", None), "nombre", "") or "").strip().lower()
-    if not any(token in rol for token in ("admin", "administrador", "superadmin")):
+    rol = " ".join(str(getattr(getattr(usuario, "rol", None), "nombre", "") or "").strip().lower().replace("_", " ").replace("-", " ").split())
+    roles_administrador = {"admin", "administrador", "administradora", "superadmin", "super admin", "superadministrador", "super administradora", "administrador general"}
+    if rol not in roles_administrador:
         raise HTTPException(status_code=403, detail="Solo un administrador puede anular un pago.")
     expediente = _obtener_expediente(db, expediente_id)
     gasto = db.query(ExpedienteGasto).filter(
