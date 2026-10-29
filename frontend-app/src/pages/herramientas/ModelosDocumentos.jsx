@@ -57,6 +57,103 @@ function LiquidacionPreview({ datosMolsan, logoCliente, expediente, gastos = [],
   </div>;
 }
 
+
+const FACTURA_EDITOR_KEY = "molsan_editor_factura_honorarios_v1";
+const FACTURA_EDITOR_DEFAULTS = {
+  color: "#174A7E",
+  titulo: "FACTURA",
+  subtitulo: "Honorarios de gestoría",
+  mostrarAvisoAEAT: true,
+  mostrarObservaciones: false,
+  mostrarLogo: true,
+  densidad: "normal",
+};
+
+function FacturaPlantillaEditor() {
+  const [config, setConfig] = useState(FACTURA_EDITOR_DEFAULTS);
+  const [guardado, setGuardado] = useState(false);
+
+  useEffect(() => {
+    try {
+      const guardada = localStorage.getItem(FACTURA_EDITOR_KEY);
+      if (guardada) setConfig({ ...FACTURA_EDITOR_DEFAULTS, ...JSON.parse(guardada) });
+    } catch {}
+  }, []);
+
+  const actualizar = (campo, valor) => {
+    setConfig(actual => ({ ...actual, [campo]: valor }));
+    setGuardado(false);
+  };
+
+  const guardarDiseno = () => {
+    try {
+      localStorage.setItem(FACTURA_EDITOR_KEY, JSON.stringify(config));
+      setGuardado(true);
+    } catch {
+      setGuardado(false);
+    }
+  };
+
+  const restaurar = () => {
+    setConfig(FACTURA_EDITOR_DEFAULTS);
+    try { localStorage.removeItem(FACTURA_EDITOR_KEY); } catch {}
+    setGuardado(false);
+  };
+
+  return <section className="grid items-start gap-5 2xl:grid-cols-[minmax(280px,.72fr)_minmax(0,1.28fr)]">
+    <div className="space-y-4">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <p className="text-xs font-black uppercase tracking-[.16em] text-sky-700">Editor visual</p>
+        <h2 className="mt-1 text-lg font-extrabold text-slate-900">Personalizar factura</h2>
+        <p className="mt-2 text-sm leading-6 text-slate-600">Retoca la presentación y comprueba el resultado en la vista A4. Estos ajustes afectan al diseño de la previsualización; no modifican tarifas, impuestos, numeración ni facturas ya emitidas.</p>
+        <div className="mt-4 space-y-4">
+          <label className="block text-sm font-semibold text-slate-700">Título de la factura
+            <input value={config.titulo} maxLength={60} onChange={e=>actualizar("titulo",e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-normal"/>
+          </label>
+          <label className="block text-sm font-semibold text-slate-700">Subtítulo
+            <input value={config.subtitulo} maxLength={100} onChange={e=>actualizar("subtitulo",e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-normal"/>
+          </label>
+          <label className="block text-sm font-semibold text-slate-700">Color corporativo
+            <div className="mt-1 flex items-center gap-3 rounded-xl border border-slate-200 p-2"><input aria-label="Color corporativo" type="color" value={config.color} onChange={e=>actualizar("color",e.target.value)} className="h-10 w-14 cursor-pointer border-0 bg-transparent"/><span className="font-mono text-xs text-slate-500">{config.color}</span><div className="ml-auto h-7 w-12 rounded-md border border-black/10" style={{backgroundColor:config.color}}/></div>
+          </label>
+          <label className="block text-sm font-semibold text-slate-700">Distribución
+            <select value={config.densidad} onChange={e=>actualizar("densidad",e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-normal"><option value="compacta">Compacta</option><option value="normal">Equilibrada</option><option value="amplia">Espaciada</option></select>
+          </label>
+          <div className="space-y-3 rounded-xl bg-slate-50 p-3">
+            <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={config.mostrarLogo} onChange={e=>actualizar("mostrarLogo",e.target.checked)}/> Mostrar espacio para logotipo</label>
+            <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={config.mostrarAvisoAEAT} onChange={e=>actualizar("mostrarAvisoAEAT",e.target.checked)}/> Mostrar aviso de factura verificable en la AEAT</label>
+            <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={config.mostrarObservaciones} onChange={e=>actualizar("mostrarObservaciones",e.target.checked)}/> Reservar espacio para observaciones</label>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" onClick={guardarDiseno} className="rounded-xl bg-sky-700 px-4 py-2.5 text-sm font-bold text-white hover:bg-sky-800">Guardar diseño en este navegador</button>
+            <button type="button" onClick={restaurar} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50">Restaurar diseño</button>
+          </div>
+          {guardado && <p role="status" className="text-sm font-semibold text-emerald-700">Diseño guardado en este navegador.</p>}
+          <p className="text-xs leading-5 text-amber-700">El diseño se guarda localmente en este navegador. Todavía no se aplica al PDF oficial ni se comparte con otros equipos.</p>
+        </div>
+      </div>
+      <div className="rounded-2xl border border-sky-100 bg-sky-50/70 p-4 text-sm leading-6 text-slate-700"><strong style={{color:config.color}}>Campos que se conservarán del modelo Word:</strong><ul className="mt-2 list-disc space-y-1 pl-5"><li>Número y fecha de factura</li><li>Datos fiscales del cliente</li><li>Concepto, base imponible, impuesto y total</li><li>Número de expediente, documento, notario, protocolo y fecha de firma</li></ul></div>
+    </div>
+    <div className="min-w-0 rounded-2xl border border-slate-200 bg-slate-100 p-3 sm:p-5">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><div><p className="text-xs font-bold uppercase tracking-wider text-sky-800">Vista previa</p><h3 className="font-bold text-slate-900">Factura · formato A4</h3></div><span className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-600">Maqueta editable</span></div>
+      <article className={`mx-auto min-h-[820px] w-full max-w-[590px] bg-white text-slate-800 shadow-xl ${config.densidad==="compacta"?"p-6":config.densidad==="amplia"?"p-10":"p-8"}`}>
+        <header className="flex items-start justify-between gap-4 border-b-2 pb-5" style={{borderColor:config.color}}>
+          <div className="flex min-w-0 items-center gap-3">{config.mostrarLogo && <div className="flex h-14 w-20 shrink-0 items-center justify-center rounded-md border border-dashed border-slate-300 text-[9px] text-slate-400">LOGO</div>}<div><div className="text-sm font-black" style={{color:config.color}}>MOLSAN</div><div className="mt-1 text-[9px] text-slate-500">CIF · Domicilio fiscal · Contacto</div></div></div>
+          <div className="text-right"><h4 className="text-2xl font-black" style={{color:config.color}}>{config.titulo || "FACTURA"}</h4><p className="mt-1 text-xs font-semibold">{config.subtitulo}</p><p className="mt-2 text-[10px] text-slate-500">N.º VI/00000-26</p><p className="text-[10px] text-slate-500">Fecha: dd/mm/aaaa</p></div>
+        </header>
+        <div className="mt-6 rounded-lg border border-slate-200 p-4"><h5 className="mb-3 text-[10px] font-extrabold tracking-wide" style={{color:config.color}}>DATOS DEL CLIENTE</h5><div className="grid grid-cols-2 gap-x-5 gap-y-3 text-[10px]"><div><p className="text-slate-400">Nombre / razón social</p><p className="mt-1 font-semibold">Nombre del cliente</p></div><div><p className="text-slate-400">NIF / CIF</p><p className="mt-1 font-semibold">—</p></div><div className="col-span-2"><p className="text-slate-400">Domicilio fiscal</p><p className="mt-1 font-semibold">Dirección · Código postal · Población</p></div></div></div>
+        <h5 className="mb-2 mt-6 text-[10px] font-extrabold tracking-wide" style={{color:config.color}}>DETALLE DE FACTURACIÓN</h5><p className="mb-3 text-[10px]">Concepto: Honorarios de gestoría</p>
+        <table className="w-full border-collapse text-[10px]"><thead><tr style={{backgroundColor:config.color,color:"#fff"}}><th className="p-2 text-left">Descripción</th><th className="p-2 text-right">Importe</th></tr></thead><tbody><tr className="border-b border-slate-200"><td className="p-3">Servicios de gestoría</td><td className="p-3 text-right">— €</td></tr></tbody></table>
+        <div className="ml-auto mt-4 max-w-[280px] text-[10px]"><div className="flex justify-between border-b border-slate-100 py-2"><span>Base imponible</span><span>— €</span></div><div className="flex justify-between border-b border-slate-100 py-2"><span>IVA / IGIC</span><span>— €</span></div><div className="mt-2 flex justify-between rounded-md p-3 font-black" style={{backgroundColor:config.color+"14",color:config.color}}><span>TOTAL FACTURA</span><span>— €</span></div></div>
+        <h5 className="mb-2 mt-7 text-[10px] font-extrabold tracking-wide" style={{color:config.color}}>DATOS DEL EXPEDIENTE</h5><div className="grid grid-cols-4 gap-2 rounded-md border border-slate-200 p-3 text-[9px]">{["N.º expediente","Documento","Notario","Protocolo / fecha de firma"].map(x=><div key={x}><p className="text-slate-400">{x}</p><p className="mt-1 font-semibold">—</p></div>)}</div>
+        {config.mostrarObservaciones && <div className="mt-5 rounded-md border border-dashed border-slate-300 p-3 text-[10px]"><p className="font-bold">OBSERVACIONES</p><p className="mt-2 text-slate-400">Espacio reservado para observaciones</p></div>}
+        {config.mostrarAvisoAEAT && <p className="mt-7 border-t border-slate-200 pt-3 text-center text-[9px] font-semibold text-slate-500">Factura verificable en la Sede Electrónica de la AEAT</p>}
+        <footer className="mt-5 border-t border-slate-100 pt-2 text-[8px] text-slate-400">Documento de previsualización · No constituye una factura emitida.</footer>
+      </article>
+    </div>
+  </section>;
+}
+
 export default function ModelosDocumentos() {
   const [seleccionado, setSeleccionado] = useState("liquidacion");
   const actual = documentos.find((d) => d.id === seleccionado) || documentos[0];
@@ -148,6 +245,6 @@ export default function ModelosDocumentos() {
       </div>
       {errorLogo && <p role="alert" className="mt-3 text-sm text-rose-700">{errorLogo}</p>}
       <p className="mt-3 text-xs text-amber-700">Nota: por ahora el logotipo se conserva en este navegador; antes de usarlo desde varios equipos lo conectaremos a almacenamiento compartido del ERP.</p>
-    </section><section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="flex flex-wrap items-end gap-3"><label className="min-w-[240px] flex-1 text-sm font-semibold text-slate-700">Número de expediente<input value={numeroExpediente} onChange={e => setNumeroExpediente(e.target.value)} onKeyDown={e => { if (e.key === "Enter") cargarExpediente(); }} placeholder="Introduce el número exacto del expediente" className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 font-normal"/></label><button type="button" onClick={cargarExpediente} disabled={cargandoExpediente} className="rounded-xl bg-sky-700 px-4 py-2 text-sm font-bold text-white disabled:opacity-50">{cargandoExpediente ? "Cargando…" : "Cargar expediente"}</button></div>{errorExpediente && <p role="alert" className="mt-2 text-sm text-amber-700">{errorExpediente}</p>}{expedienteSeleccionado && <p className="mt-2 text-xs font-semibold text-emerald-700">Expediente cargado: {expedienteSeleccionado.id_expediente || expedienteSeleccionado.numero_expediente || numeroExpediente} · {gastosExpediente.length} gasto(s) recuperado(s).</p>}</section><LiquidacionPreview datosMolsan={datosMolsan} logoCliente={logoCliente} expediente={expedienteSeleccionado} gastos={gastosExpediente} fechaEmision={fechaEmision}/><div className="rounded-2xl border border-sky-100 bg-sky-50/70 p-4 text-sm leading-6 text-slate-700"><strong className="text-[#123e70]">Siguiente fase:</strong> conectar los campos al expediente, usar los movimientos reales de Gestión económica, respetar el orden documental definido en «Liquidar expediente» y generar el PDF final con previsualización y confirmación antes de guardarlo en «Expediente digital completo».</div></section> : <section className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,.85fr)]"><div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"><h2 className="text-xl font-bold text-slate-900">{actual.titulo}</h2><p className="mt-3 text-sm leading-6 text-slate-600">{actual.descripcion}</p><h3 className="mt-5 text-sm font-bold text-slate-800">Contenido previsto</h3><ul className="mt-3 grid gap-2 sm:grid-cols-2">{actual.campos.map(c=><li key={c} className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-sm text-slate-700">✓ {c}</li>)}</ul></div><div className="rounded-2xl border border-slate-200 bg-white p-4">{actual.id==="provision" ? <ProvisionesFondosPage soloEditorPlantilla/> : <HonorariosGestoria soloPlantilla/>}</div></section>}
+    </section><section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="flex flex-wrap items-end gap-3"><label className="min-w-[240px] flex-1 text-sm font-semibold text-slate-700">Número de expediente<input value={numeroExpediente} onChange={e => setNumeroExpediente(e.target.value)} onKeyDown={e => { if (e.key === "Enter") cargarExpediente(); }} placeholder="Introduce el número exacto del expediente" className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 font-normal"/></label><button type="button" onClick={cargarExpediente} disabled={cargandoExpediente} className="rounded-xl bg-sky-700 px-4 py-2 text-sm font-bold text-white disabled:opacity-50">{cargandoExpediente ? "Cargando…" : "Cargar expediente"}</button></div>{errorExpediente && <p role="alert" className="mt-2 text-sm text-amber-700">{errorExpediente}</p>}{expedienteSeleccionado && <p className="mt-2 text-xs font-semibold text-emerald-700">Expediente cargado: {expedienteSeleccionado.id_expediente || expedienteSeleccionado.numero_expediente || numeroExpediente} · {gastosExpediente.length} gasto(s) recuperado(s).</p>}</section><LiquidacionPreview datosMolsan={datosMolsan} logoCliente={logoCliente} expediente={expedienteSeleccionado} gastos={gastosExpediente} fechaEmision={fechaEmision}/><div className="rounded-2xl border border-sky-100 bg-sky-50/70 p-4 text-sm leading-6 text-slate-700"><strong className="text-[#123e70]">Siguiente fase:</strong> conectar los campos al expediente, usar los movimientos reales de Gestión económica, respetar el orden documental definido en «Liquidar expediente» y generar el PDF final con previsualización y confirmación antes de guardarlo en «Expediente digital completo».</div></section> : {actual.id==="factura" ? <FacturaPlantillaEditor/> : <section className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,.85fr)]"><div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"><h2 className="text-xl font-bold text-slate-900">{actual.titulo}</h2><p className="mt-3 text-sm leading-6 text-slate-600">{actual.descripcion}</p><h3 className="mt-5 text-sm font-bold text-slate-800">Contenido previsto</h3><ul className="mt-3 grid gap-2 sm:grid-cols-2">{actual.campos.map(c=><li key={c} className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-sm text-slate-700">✓ {c}</li>)}</ul></div><div className="rounded-2xl border border-slate-200 bg-white p-4">{actual.id==="provision" ? <ProvisionesFondosPage soloEditorPlantilla/> : <HonorariosGestoria soloPlantilla/>}</div></section>}}
   </main>;
 }
