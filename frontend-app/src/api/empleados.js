@@ -404,3 +404,14 @@ export const guardarReglasRepartoGestor = async (empleadoId, reglas) => {
   });
   return { data: res.data || null };
 };
+
+export const obtenerEstadoRepartoGestores = async () => {
+  const res = await axios.get("/encargagest/gestion/reparto/estado");
+  return {
+    data: res.data || {
+      resumen: {},
+      incidencias: [],
+      carga_por_gestor_actividad: [],
+    },
+  };
+};
