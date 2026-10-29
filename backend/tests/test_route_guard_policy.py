@@ -19,6 +19,19 @@ class RouteGuardPolicyTests(unittest.TestCase):
             "seguridad",
         )
 
+    def test_other_security_assignment_routes_remain_security_module(self):
+        for path in (
+            "/api/seguridad/asignar/empleado/17/password",
+            "/api/seguridad/asignar/empleado/17/rol/3",
+            "/api/seguridad/asignar/empleado/17/permisos",
+            "/api/seguridad/asignar/empleado/17/modulos",
+        ):
+            self.assertEqual(_resolver_modulo(path), "seguridad")
+        self.assertEqual(
+            _resolver_accion("/api/seguridad/asignar/empleado/17/password", {"POST"}),
+            "editar",
+        )
+
     def test_delete_is_always_delete_permission(self):
         self.assertEqual(
             _resolver_accion("/api/expedientes/17", {"DELETE"}),
