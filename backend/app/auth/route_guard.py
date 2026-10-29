@@ -124,6 +124,10 @@ _RUTAS_CON_AUTORIZACION_INTERNA = {
 
 _POST_ES_EDICION = (
     "/actividad",
+    # Operaciones sobre expedientes ya existentes; no requieren permiso de alta.
+    "/carpeta-digital",
+    "/calificacion",
+    "/pagos",
     "/enviar-a-notario",
     "/enviar-a-absis",
     "/integraciones-pendientes",
