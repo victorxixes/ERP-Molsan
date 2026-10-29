@@ -867,9 +867,8 @@ def reset_password(
     # PASSWORD TEMPORAL
     # -----------------------------------------------------
 
-    password_temporal = (
-        f"SJ{empleado_id}2026"
-    )
+    # Contraseña temporal aleatoria; no derivarla del ID del empleado.
+    password_temporal = secrets.token_urlsafe(16)
 
     empleado.password = hash_password(
         password_temporal
