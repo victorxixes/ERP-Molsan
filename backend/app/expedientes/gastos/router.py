@@ -353,6 +353,30 @@ def registrar_pago_gasto(
         else:
             gasto.estado_pago = "Parcial"
             gasto.fecha_pago = None
+
+        # El importe inicial no se modifica. El saldo persistido se recalcula
+        # únicamente con pagos reales y gastos históricos ya marcados como pagados
+        # que aún no disponen de movimientos en la tabla nueva.
+        if expediente.importe is not None:
+            pagos_expediente = _decimal_opcional(db.execute(text("""
+                SELECT COALESCE(SUM(p.importe), 0)
+                FROM public.expediente_gasto_pagos p
+                JOIN public.expediente_gastos g ON g.id = p.gasto_id
+                WHERE g.expediente_id = :expediente_id
+            """), {"expediente_id": expediente.id}).scalar()) or Decimal("0.00")
+            historico_pagado = _decimal_opcional(db.execute(text("""
+                SELECT COALESCE(SUM(COALESCE(g.importe_resultante, g.importe, g.importe_total_bruto, 0)), 0)
+                FROM public.expediente_gastos g
+                WHERE g.expediente_id = :expediente_id
+                  AND lower(trim(coalesce(g.estado_pago, ''))) IN
+                      ('pagado', 'pagada', 'abonado', 'abonada', 'efectuado', 'efectuada')
+                  AND NOT EXISTS (
+                      SELECT 1 FROM public.expediente_gasto_pagos p WHERE p.gasto_id = g.id
+                  )
+            """), {"expediente_id": expediente.id}).scalar()) or Decimal("0.00")
+            expediente.saldo_disponible = _redondear(
+                Decimal(str(expediente.importe)) - pagos_expediente - historico_pagado
+            )
         db.commit()
         return {
             "ok": True, "duplicado": False, "pago": dict(pago),
