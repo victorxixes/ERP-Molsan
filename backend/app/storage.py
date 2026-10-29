@@ -70,6 +70,12 @@ def _validate_persistent_root(root: Path) -> None:
             "monta un Persistent Disk en /var/data y usa, por ejemplo, "
             "MOLSAN_STORAGE_ROOT=/var/data/molsan."
         )
+    if not os.path.ismount(str(data_mount)):
+        raise RuntimeError(
+            "MOLSAN_REQUIRE_PERSISTENT_STORAGE está activado, pero /var/data "
+            "no parece ser un punto de montaje. No se iniciará el ERP para "
+            "evitar guardar documentos en almacenamiento efímero."
+        )
 
 
 def _probe_directory(path: Path) -> None:
@@ -95,13 +101,13 @@ REQUIRE_PERSISTENT_STORAGE = _env_bool("MOLSAN_REQUIRE_PERSISTENT_STORAGE", Fals
 
 if REQUIRE_PERSISTENT_STORAGE:
     _validate_persistent_root(STORAGE_ROOT)
-elif (os.getenv("RENDER_SERVICE_ID") or os.getenv("RENDER")) and not _inside(
-    Path("/var/data").resolve(),
-    STORAGE_ROOT,
+elif (os.getenv("RENDER_SERVICE_ID") or os.getenv("RENDER")) and (
+    not _inside(Path("/var/data").resolve(), STORAGE_ROOT)
+    or not os.path.ismount(str(Path("/var/data").resolve()))
 ):
     # No detener el ERP existente sin autorización para provisionar un disco,
-    # pero dejar constancia explícita: el almacenamiento local de Render es
-    # efímero y puede perder documentos al desplegar o reiniciar el servicio.
+    # pero dejar constancia explícita: estar bajo la ruta /var/data no basta;
+    # hay que comprobar que Render montó realmente un Persistent Disk.
     print(
         "[STORAGE][CRITICAL] Render está usando almacenamiento local no persistente. "
         "Adjunta un Persistent Disk en /var/data y configura "
@@ -140,6 +146,8 @@ def storage_status() -> dict[str, object]:
     status: dict[str, object] = {
         "persistent_required": REQUIRE_PERSISTENT_STORAGE,
         "root": str(STORAGE_ROOT),
+        "var_data_is_mountpoint": os.path.ismount("/var/data"),
+        "root_inside_var_data": _inside(Path("/var/data"), STORAGE_ROOT),
         "directories": {},
     }
     dirs: dict[str, object] = {}
