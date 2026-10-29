@@ -1740,9 +1740,14 @@ export default function FichaExpediente() {
         numero_documento: `PAG-${String(pago.id).padStart(6, "0")}`,
         fecha: pago.fecha,
         concepto_pago: pago.concepto,
-        importeMovimiento: -Math.abs(Number(pago.importe || 0)),
+        importeMovimiento: pago.anulado_en ? 0 : -Math.abs(Number(pago.importe || 0)),
         importe_resultante: Math.abs(Number(pago.importe || 0)),
         pago_id: pago.id,
+        gasto_id: gasto.id,
+        anulado_en: pago.anulado_en,
+        motivo_anulacion: pago.motivo_anulacion,
+        anulado_por: pago.anulado_por,
+        estado_pago: pago.anulado_en ? "Anulado" : "Pagado",
         es_movimiento_pago: true,
       }));
       // Compatibilidad con gastos históricos que ya constaban como pagados antes
@@ -3375,7 +3380,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     }
   }
 
-  async function abrirPagoDesdeGestionEconomica() {
+  async function abrirPagoDesdeGestionEconomica(gastoIdObjetivo = null) {
     setOrigenFormularioGasto("pagar");
     setErrorGastos("");
     setMensajeGastos("");
@@ -3383,7 +3388,13 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     const resultado = await cargarGastosExpediente();
     const lista = resultado?.lista || [];
     const mapaPagos = resultado?.pagosPorGasto || {};
-    const pendientes = lista.filter((gasto) => {
+    if (!gastoIdObjetivo) {
+      setMostrarFormularioPagoReal(false);
+      setMostrarFormularioGasto(false);
+      setPagoGastoSeleccionadoId("");
+      return;
+    }
+    const pendientes = lista.filter((gasto) => String(gasto.id) === String(gastoIdObjetivo)).filter((gasto) => {
       const estado = String(gasto.estado_pago || "").trim().toLowerCase();
       if (estado.includes("anulad") || estadosPagoConfirmado.includes(estado)) return false;
       const totalPagado = (mapaPagos[String(gasto.id)] || []).reduce((suma, pago) => suma + Number(pago.importe || 0), 0);
@@ -5914,9 +5925,9 @@ const cuantiaFincasParaEnvio =
                               ) : (
                                 <div className="overflow-x-auto rounded-xl border border-slate-200">
                                   <table className="w-full min-w-[1080px] text-left text-xs">
-                                    <thead className="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500"><tr><th className="px-3 py-3 font-bold">ID de pago</th><th className="px-3 py-3 font-bold">Fecha</th><th className="px-3 py-3 font-bold">Tipo de documento</th><th className="px-3 py-3 text-right font-bold">Base</th><th className="px-3 py-3 text-right font-bold">Impuesto</th><th className="px-3 py-3 text-right font-bold">Total</th><th className="px-3 py-3 font-bold">Estado</th><th className="px-3 py-3 text-right font-bold">Saldo tras pago</th></tr></thead>
+                                    <thead className="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500"><tr><th className="px-3 py-3 font-bold">ID de pago</th><th className="px-3 py-3 font-bold">Fecha</th><th className="px-3 py-3 font-bold">Tipo de documento</th><th className="px-3 py-3 text-right font-bold">Base</th><th className="px-3 py-3 text-right font-bold">Impuesto</th><th className="px-3 py-3 text-right font-bold">Total</th><th className="px-3 py-3 font-bold">Estado</th><th className="px-3 py-3 text-right font-bold">Saldo tras pago</th><th className="px-3 py-3 font-bold">Acciones</th></tr></thead>
                                     <tbody className="divide-y divide-slate-100">
-                                      {resumenEconomico.movimientos.length === 0 && <tr><td colSpan={8} className="px-4 py-6 text-center text-slate-500">No hay pagos reales registrados todavía. Las facturas pendientes no descuentan la provisión.</td></tr>}
+                                      {resumenEconomico.movimientos.length === 0 && <tr><td colSpan={9} className="px-4 py-6 text-center text-slate-500">No hay pagos reales registrados todavía. Las facturas pendientes no descuentan la provisión.</td></tr>}
                                       {resumenEconomico.movimientos.map((movimiento) => {
                                         const fmt = (valor) => Number(valor ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                                         const base = movimiento.es_movimiento_pago ? Math.abs(Number(movimiento.importeMovimiento || 0)) : numeroDecimalGasto(movimiento.base_sujeta_impuestos) + numeroDecimalGasto(movimiento.base_exenta_impuestos);
@@ -7306,6 +7317,15 @@ const cuantiaFincasParaEnvio =
                                   <span className="whitespace-nowrap text-base font-extrabold text-slate-900">
                                     {gasto.importe_resultante == null && gasto.importe == null ? "—" : `${Number(gasto.importe_resultante ?? gasto.importe).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}
                                   </span>
+                                  {(() => {
+                                    const estadoPago = String(gasto.estado_pago || "Pendiente").trim().toLowerCase();
+                                    const pagado = estadosPagoConfirmado.includes(estadoPago);
+                                    const importeObligacion = Number(gasto.importe_resultante ?? gasto.importe ?? 0);
+                                    const pagosActivos = (pagosPorGasto[String(gasto.id)] || []).filter((pago) => !pago.anulado_en);
+                                    const totalPagado = pagosActivos.reduce((suma, pago) => suma + Number(pago.importe || 0), 0);
+                                    const completado = pagado || (importeObligacion > 0 && totalPagado + 0.005 >= importeObligacion);
+                                    return <button type="button" onClick={() => void abrirPagoDesdeGestionEconomica(gasto.id)} disabled={completado} title={completado ? "Obligación pagada; no admite otro pago" : "Registrar un pago de esta obligación"} className="rounded-lg border border-emerald-200 px-3 py-2 text-sm font-bold text-emerald-700 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-45">{completado ? "Pagada" : "Pagar"}</button>;
+                                  })()}
                                   <button type="button" onClick={() => eliminarGastoExpediente(gasto)} className="rounded-lg border border-red-200 px-3 py-2 text-sm font-bold text-red-600 transition hover:bg-red-50">
                                     Eliminar
                                   </button>
