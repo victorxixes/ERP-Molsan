@@ -79,10 +79,18 @@ function FacturaPlantillaEditor({ datosMolsan = {}, onGuardarLogoFactura }) {
     let activo = true;
     axios.get("/utilidades/factura-plantilla")
       .then(({ data }) => {
-        if (activo && data?.configuracion) setConfig({ ...FACTURA_EDITOR_DEFAULTS, ...data.configuracion });
+        if (!activo) return;
+        if (data?.configuracion && Object.keys(data.configuracion).length) {
+          setConfig({ ...FACTURA_EDITOR_DEFAULTS, ...data.configuracion });
+          return;
+        }
+        // Migración de lectura: si aún no existe diseño compartido, recuperar el antiguo ajuste local.
+        try {
+          const guardada = localStorage.getItem(FACTURA_EDITOR_KEY);
+          if (guardada) setConfig({ ...FACTURA_EDITOR_DEFAULTS, ...JSON.parse(guardada) });
+        } catch {}
       })
       .catch(() => {
-        // Compatibilidad de lectura con el diseño antiguo guardado en este navegador.
         try {
           const guardada = localStorage.getItem(FACTURA_EDITOR_KEY);
           if (activo && guardada) setConfig({ ...FACTURA_EDITOR_DEFAULTS, ...JSON.parse(guardada) });
