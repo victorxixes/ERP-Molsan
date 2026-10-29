@@ -13,7 +13,7 @@ import asyncio
 import jwt
 from cryptography.fernet import Fernet
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, Request
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field, condecimal, constr
 from sqlalchemy import or_, func, inspect as sa_inspect, text
@@ -319,7 +319,15 @@ def _verificar_password(password, almacenado):
         return False
 
 
-def get_encargagest_actor(token=Depends(obtener_token_bearer), db: Session = Depends(get_db)):
+def _ruta_permitida_durante_cambio_password_encargagest(path: str) -> bool:
+    ruta = str(path or "").rstrip("/")
+    return ruta in {
+        "/api/encargagest/me",
+        "/api/encargagest/cambiar-password",
+    }
+
+
+def get_encargagest_actor(request: Request, token=Depends(obtener_token_bearer), db: Session = Depends(get_db)):
     try:
         payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.ALGORITHM])
         if payload.get("tipo") == "encargagest":
@@ -330,6 +338,11 @@ def get_encargagest_actor(token=Depends(obtener_token_bearer), db: Session = Dep
             ).first()
             if not acceso:
                 raise HTTPException(status_code=401, detail="El acceso EncargaGest está deshabilitado.")
+            if acceso.password_provisional and not _ruta_permitida_durante_cambio_password_encargagest(request.url.path):
+                raise HTTPException(
+                    status_code=403,
+                    detail="Debes cambiar la contraseña provisional antes de acceder a EncargaGest.",
+                )
             notaria = db.query(Notaria).filter(Notaria.id == acceso.notaria_id).first()
             if not notaria:
                 raise HTTPException(status_code=401, detail="La notaría asociada al acceso ya no existe.")
@@ -337,6 +350,7 @@ def get_encargagest_actor(token=Depends(obtener_token_bearer), db: Session = Dep
             return {
                 "tipo": "externo", "id": acceso.id, "usuario_id": acceso.id,
                 "notaria_id": notaria.id, "nombre": nombre, "usuario": acceso.usuario,
+                "requiere_cambio_password": bool(acceso.password_provisional),
             }
 
         empleado_id = payload.get("id")
@@ -655,7 +669,13 @@ def login_encargagest(datos: LoginEncargaGest, db: Session = Depends(get_db)):
         "exp": datetime.utcnow() + timedelta(hours=8),
     }, settings.JWT_SECRET, algorithm=settings.ALGORITHM)
     nombre = " ".join(filter(None, [notaria.nombre, notaria.apellidos])).strip() or f"Notaría {notaria.id}"
-    return {"token": token, "tipo": "encargagest", "notaria": {"id": notaria.id, "nombre": nombre, "nif": notaria.nif}, "usuario": acceso.usuario}
+    return {
+        "token": token,
+        "tipo": "encargagest",
+        "requiere_cambio_password": bool(acceso.password_provisional),
+        "notaria": {"id": notaria.id, "nombre": nombre, "nif": notaria.nif},
+        "usuario": acceso.usuario,
+    }
 
 
 @router.get("/me")
@@ -685,6 +705,7 @@ def mi_sesion_encargagest(usuario=Depends(get_encargagest_actor), db: Session = 
             "departamento_copias": getattr(notaria, "departamento_copias", None),
             "otros_departamentos": getattr(notaria, "otros_departamentos", None),
             "observacion": getattr(notaria, "observacion", None),
+            "requiere_cambio_password": bool(usuario.get("requiere_cambio_password", False)),
         }
     _autorizar(usuario, "ver")
     return {"modo": "interno", "nombre": _nombre_usuario(usuario), "empleado_id": usuario.id}
