@@ -1,3 +1,4 @@
+import logging
 import os
 import uuid
 from pathlib import Path
@@ -14,6 +15,8 @@ from backend.app.database import get_db
 from backend.app.expedientes.models import Expediente
 from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
 from backend.app.storage import CARPETA_DIGITAL_DIR
+
+logger = logging.getLogger(__name__)
 
 # Toda la API de la carpeta digital exige una sesión JWT válida.
 # El frontend de esta funcionalidad usa el cliente axios común, que añade el token.
