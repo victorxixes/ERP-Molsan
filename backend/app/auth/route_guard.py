@@ -72,6 +72,7 @@ _PREFIJOS_MODULO = (
     ("/api/admin", "seguridad"),
     ("/api/empleados", "empleados"),
     ("/api/agenda", "agenda"),
+    ("/api/mensajeria", "mensajeria"),
     ("/api/apoderagest", "apoderagest"),
     ("/api/mantenimiento-defectos", "seguridad"),
     ("/api/complementos-saldo", "expedientes"),
