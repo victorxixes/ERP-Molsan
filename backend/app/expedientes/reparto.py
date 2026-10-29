@@ -165,6 +165,8 @@ def asignar_gestor_automaticamente(db: Session, expediente: Expediente, activida
         # se registra una incidencia explícita para que administración la revise.
         # Si el expediente ya estaba sin gestor, también se registra el motivo.
         anterior_id = getattr(expediente, "gestor_asignado_id", None)
+        if anterior_id in (0, "0", ""):
+            anterior_id = None
         motivo_sin_regla = (
             "sin_regla_reparto_gestor_conservado"
             if anterior_id
