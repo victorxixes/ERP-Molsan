@@ -1573,6 +1573,7 @@ export default function FichaExpediente() {
   const [gastosExpediente, setGastosExpediente] = useState([]);
   const [pagosPorGasto, setPagosPorGasto] = useState({});
   const [mostrarFormularioPagoReal, setMostrarFormularioPagoReal] = useState(false);
+  const [gastoEdicionId, setGastoEdicionId] = useState(null);
   const [pagoGastoSeleccionadoId, setPagoGastoSeleccionadoId] = useState("");
   const [guardandoPagoReal, setGuardandoPagoReal] = useState(false);
   const [errorPagoReal, setErrorPagoReal] = useState("");
@@ -3244,7 +3245,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
 
   async function cargarGastosExpediente() {
     const expedienteId = expediente?.id ?? (Number.isFinite(Number(id)) ? Number(id) : null);
-    if (!expedienteId) return;
+    if (!expedienteId) return { lista: [], pagosPorGasto: {} };
 
     setCargandoGastos(true);
     setErrorGastos("");
@@ -3271,14 +3272,17 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
           return [String(gasto.id), []];
         }
       }));
-      setPagosPorGasto(Object.fromEntries(pagosCargados));
+      const mapaPagos = Object.fromEntries(pagosCargados);
+      setPagosPorGasto(mapaPagos);
       // Si hay movimientos, abrir el libro al cargar o actualizar.
       if (lista.length > 0) setMostrarPanelEconomicoPago(true);
+      return { lista, pagosPorGasto: mapaPagos };
     } catch (err) {
       setErrorGastos(
         err?.response?.data?.detail ||
         "No se pudieron cargar los gastos del expediente."
       );
+      return { lista: [], pagosPorGasto: {} };
     } finally {
       setCargandoGastos(false);
     }
@@ -3318,9 +3322,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     setErrorGastos("");
     setMensajeGastos("");
     try {
-      const respuestaGasto = await axios.post(
-        `/expedientes/${encodeURIComponent(expedienteId)}/gastos`,
-        {
+      const payloadGasto = {
           tipo: gastoForm.tipo.trim(), descripcion: gastoForm.descripcion.trim(), importe: resultadoCalculadoGasto, fecha: gastoForm.fecha,
           documento_url: gastoForm.documento_url.trim() || null,
           nif_notario: gastoForm.nif_notario.trim() || null, nombre_notario: gastoForm.nombre_notario.trim() || null,
@@ -3335,9 +3337,12 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
           base_exenta_retencion: numeroDecimalGasto(gastoForm.base_exenta_retencion), base_sujeta_retencion: numeroDecimalGasto(gastoForm.base_sujeta_retencion),
           tipo_retencion: gastoForm.tipo_retencion || null, porcentaje_retencion: numeroDecimalGasto(gastoForm.porcentaje_retencion), importe_retencion: retencionCalculadaGasto,
           importe_resultante: resultadoCalculadoGasto, documento_carpeta_id: gastoForm.documento_carpeta_id ? Number(gastoForm.documento_carpeta_id) : null,
-          estado_pago: gastoForm.estado_pago || "Pendiente",
-        }
-      );
+          estado_pago: "Pendiente",
+        };
+      const urlGastos = `/expedientes/${encodeURIComponent(expedienteId)}/gastos`;
+      const respuestaGasto = gastoEdicionId
+        ? await axios.put(`${urlGastos}/${encodeURIComponent(gastoEdicionId)}`, payloadGasto)
+        : await axios.post(urlGastos, payloadGasto);
       let avisoIntegracion = "";
       if (gastoForm.tipo_concepto_absis && respuestaGasto?.data?.id) {
         try {
@@ -3351,8 +3356,9 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
           avisoIntegracion = " El gasto se ha guardado, pero no se pudo registrar la solicitud pendiente de integración.";
         }
       }
+      setGastoEdicionId(null);
       setGastoForm({ tipo: "", tipo_concepto_absis: "", descripcion: "", importe: "", fecha: new Date().toLocaleDateString("sv-SE"), documento_url: "", nif_notario: "", nombre_notario: "", pagador: "", cuenta_bancaria: "", medio_pago: "Transferencia", numero_factura: "", fecha_factura: new Date().toLocaleDateString("sv-SE"), importe_total_bruto: "", base_exenta_impuestos: "0.00", base_sujeta_impuestos: "", tramo_impuesto: "General", tipo_impuesto: "IVA 21%", porcentaje_impuesto: "21", base_exenta_retencion: "0.00", base_sujeta_retencion: "0.00", tipo_retencion: "IRPF profesionales", porcentaje_retencion: "15", documento_carpeta_id: "", estado_pago: "Pendiente" });
-      setMensajeGastos(`El gasto se ha registrado correctamente.${avisoIntegracion}`);
+      setMensajeGastos(`${gastoEdicionId ? "La obligación económica se ha actualizado" : "El gasto se ha registrado correctamente"}.${avisoIntegracion}`);
       setMostrarFormularioGasto(false);
       setHonorarioGestoriaId("");
       await cargarGastosExpediente();
@@ -3366,6 +3372,78 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     } finally {
       setGuardandoGasto(false);
     }
+  }
+
+  async function abrirPagoDesdeGestionEconomica() {
+    setOrigenFormularioGasto("pagar");
+    setErrorGastos("");
+    setMensajeGastos("");
+    setErrorPagoReal("");
+    const resultado = await cargarGastosExpediente();
+    const lista = resultado?.lista || [];
+    const mapaPagos = resultado?.pagosPorGasto || {};
+    const pendientes = lista.filter((gasto) => {
+      const estado = String(gasto.estado_pago || "").trim().toLowerCase();
+      if (estado.includes("anulad") || estadosPagoConfirmado.includes(estado)) return false;
+      const totalPagado = (mapaPagos[String(gasto.id)] || []).reduce((suma, pago) => suma + Number(pago.importe || 0), 0);
+      const importeObligacion = Number(gasto.importe_resultante ?? gasto.importe ?? 0);
+      return importeObligacion <= 0 || totalPagado + 0.005 < importeObligacion;
+    });
+    const sinImporte = pendientes.find((gasto) => !(Number(gasto.importe_resultante ?? gasto.importe ?? 0) > 0));
+    if (sinImporte) {
+      setGastoEdicionId(sinImporte.id);
+      setGastoForm((actual) => ({
+        ...actual,
+        tipo: sinImporte.tipo || actual.tipo || "",
+        descripcion: sinImporte.descripcion || actual.descripcion || "",
+        documento_carpeta_id: sinImporte.documento_carpeta_id ? String(sinImporte.documento_carpeta_id) : "",
+        importe: "",
+        importe_total_bruto: "",
+        fecha: sinImporte.fecha || new Date().toLocaleDateString("sv-SE"),
+        fecha_factura: sinImporte.fecha_factura || sinImporte.fecha || new Date().toLocaleDateString("sv-SE"),
+        estado_pago: "Pendiente",
+      }));
+      setMostrarFormularioPagoReal(false);
+      setMostrarFormularioGasto(true);
+      return;
+    }
+    if (pendientes.length) {
+      const gasto = pendientes[0];
+      const pagos = mapaPagos[String(gasto.id)] || [];
+      const totalPagado = pagos.reduce((suma, pago) => suma + Number(pago.importe || 0), 0);
+      const restante = Math.max(0, Number(gasto.importe_resultante ?? gasto.importe ?? 0) - totalPagado);
+      setPagoGastoSeleccionadoId(String(gasto.id));
+      setPagoRealForm({
+        fecha: new Date().toLocaleDateString("sv-SE"),
+        importe: restante.toFixed(2),
+        concepto: `Pago de ${gasto.tipo || "gasto"} · ${gasto.descripcion || gasto.numero_documento || gasto.id}`,
+        medio_pago: "Transferencia",
+      });
+      setMostrarFormularioGasto(false);
+      setMostrarFormularioPagoReal(true);
+      return;
+    }
+    setGastoEdicionId(null);
+    setPagoGastoSeleccionadoId("");
+    setMostrarFormularioPagoReal(false);
+    setMostrarFormularioGasto(true);
+    setGastoForm((actual) => ({
+      ...actual,
+      tipo: actual.tipo || "",
+      descripcion: "",
+      documento_carpeta_id: "",
+      importe: "",
+      importe_total_bruto: "",
+      estado_pago: "Pendiente",
+    }));
+    setGastoForm((actual) => ({
+      ...actual,
+      nif_notario: actual.nif_notario || expediente?.nif_notario || expediente?.notario_nif || "",
+      nombre_notario: actual.nombre_notario || expediente?.notario || expediente?.nombre_notario || "",
+      pagador: actual.pagador || [expediente?.facturacion_nombre, expediente?.facturacion_apellidos].filter(Boolean).join(" "),
+      cuenta_bancaria: actual.cuenta_bancaria || "",
+    }));
+    void cargarCuentasBancariasNotarioParaPago();
   }
 
   async function registrarPagoObligacion(event) {
@@ -5648,21 +5726,7 @@ const cuantiaFincasParaEnvio =
                       onFacturar={generarHonorariosGestoria}
                       generandoFacturacion={generandoHonorariosGestoria}
                       facturaEmitida={Boolean(honorariosGestoria?.guardado || expediente?.facturacion_fecha || expediente?.numero_factura || expediente?.factura_honorarios_id)}
-                      onPagar={() => {
-                        setOrigenFormularioGasto("pagar");
-                        setErrorGastos("");
-                        setMensajeGastos("");
-                        cargarGastosExpediente();
-                        setGastoForm((g) => ({
-                          ...g,
-                          nif_notario: g.nif_notario || expediente?.nif_notario || expediente?.notario_nif || "",
-                          nombre_notario: g.nombre_notario || expediente?.notario || expediente?.nombre_notario || "",
-                          pagador: g.pagador || [expediente?.facturacion_nombre, expediente?.facturacion_apellidos].filter(Boolean).join(" "),
-                          cuenta_bancaria: "",
-                        }));
-                        void cargarCuentasBancariasNotarioParaPago();
-                        setMostrarFormularioGasto(true);
-                      }}
+                      onPagar={() => { void abrirPagoDesdeGestionEconomica(); }}
                       formularioPago={origenFormularioGasto === "pagar" ? (
                         <>
                         {mostrarFormularioGasto && (
