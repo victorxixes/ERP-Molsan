@@ -84,8 +84,13 @@ def _ensure_table(db: Session):
         db.execute(text("""
             INSERT INTO public.tipos_impositivos
                 (nombre, categoria, impuesto, porcentaje, territorio, descripcion, activo)
-            VALUES (:nombre, :categoria, :impuesto, :porcentaje, :territorio, :descripcion, TRUE)
-            ON CONFLICT (categoria, impuesto, nombre, porcentaje, territorio) DO NOTHING
+            SELECT :nombre, :categoria, :impuesto, :porcentaje, :territorio, :descripcion, TRUE
+            WHERE NOT EXISTS (
+                SELECT 1 FROM public.tipos_impositivos
+                WHERE categoria = :categoria AND impuesto = :impuesto
+                  AND nombre = :nombre AND territorio = :territorio
+                  AND porcentaje IS NOT DISTINCT FROM :porcentaje
+            )
         """), {"nombre": nombre, "categoria": categoria, "impuesto": impuesto,
                "porcentaje": porcentaje, "territorio": territorio, "descripcion": descripcion})
 
