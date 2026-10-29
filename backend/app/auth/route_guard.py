@@ -110,6 +110,7 @@ _PREFIJOS_MODULO = (
 _RUTAS_CON_AUTORIZACION_INTERNA = {
     "/api/seguridad/empleado/{empleado_id}/ficha-completa": "seguridad",
     "/api/apoderagest/encargos/reparar-asignacion": "apoderagest",
+    "/api/expedientes/configuracion-visibilidad": "expedientes",
 }
 
 
@@ -144,6 +145,7 @@ _POST_ES_EDICION = (
     "/aceptar",
     "/anular",
     "/informes-sla/fechas/",
+    "/reparto/asignar-pendientes",
     "/admin/periodos",
     "/firmar",
     "/reparar",
@@ -217,6 +219,14 @@ def _resolver_modulo(path: str, methods: set[str] | None = None) -> str | None:
     if path == "/api/expedientes/auditoria-vinculaciones" or path.startswith("/api/expedientes/auditoria-vinculaciones/"):
         return "seguridad"
 
+    # Operaciones administrativas bajo /expedientes cuya autorización funcional
+    # es Seguridad, no los permisos operativos ordinarios de Expedientes.
+    if path in {
+        "/api/expedientes/migraciones/actividades",
+        "/api/expedientes/reparto/asignar-pendientes",
+    }:
+        return "seguridad"
+
     # Los endpoints administrativos de fichajes usan el módulo específico
     # Control de Fichajes; los endpoints personales usan Fichajes.
     if path == "/api/fichajes/catalogo-ausencias" and "POST" in metodos:
@@ -247,7 +257,12 @@ def _resolver_modulo(path: str, methods: set[str] | None = None) -> str | None:
             # La gestión de módulos/permisos de empleados es sensible y usa
             # el módulo "seguridad", aunque el path base sea /empleados.
             if prefijo == "/api/empleados" and any(
-                trozo in path for trozo in ("/permisos", "/modulos", "/reset-password")
+                trozo in path for trozo in (
+                    "/permisos",
+                    "/modulos",
+                    "/reset-password",
+                    "/colaborador-apoderagest",
+                )
             ):
                 return "seguridad"
             return modulo
