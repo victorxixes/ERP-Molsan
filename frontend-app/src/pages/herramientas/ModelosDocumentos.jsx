@@ -70,16 +70,25 @@ const FACTURA_EDITOR_DEFAULTS = {
   logoDataUrl: "",
 };
 
-function FacturaPlantillaEditor() {
+function FacturaPlantillaEditor({ datosMolsan = {}, onGuardarLogoFactura }) {
   const [config, setConfig] = useState(FACTURA_EDITOR_DEFAULTS);
   const [guardado, setGuardado] = useState(false);
   const [errorLogoFactura, setErrorLogoFactura] = useState("");
 
   useEffect(() => {
-    try {
-      const guardada = localStorage.getItem(FACTURA_EDITOR_KEY);
-      if (guardada) setConfig({ ...FACTURA_EDITOR_DEFAULTS, ...JSON.parse(guardada) });
-    } catch {}
+    let activo = true;
+    axios.get("/utilidades/factura-plantilla")
+      .then(({ data }) => {
+        if (activo && data?.configuracion) setConfig({ ...FACTURA_EDITOR_DEFAULTS, ...data.configuracion });
+      })
+      .catch(() => {
+        // Compatibilidad de lectura con el diseño antiguo guardado en este navegador.
+        try {
+          const guardada = localStorage.getItem(FACTURA_EDITOR_KEY);
+          if (activo && guardada) setConfig({ ...FACTURA_EDITOR_DEFAULTS, ...JSON.parse(guardada) });
+        } catch {}
+      });
+    return () => { activo = false; };
   }, []);
 
   const actualizar = (campo, valor) => {
@@ -116,25 +125,36 @@ function FacturaPlantillaEditor() {
         contexto.fillStyle = "#ffffff";
         contexto.fillRect(0, 0, canvas.width, canvas.height);
         contexto.drawImage(imagen, 0, 0, canvas.width, canvas.height);
-        actualizar("logoDataUrl", canvas.toDataURL("image/jpeg", 0.86));
+        const logoOptimizado = canvas.toDataURL("image/jpeg", 0.86);
+        Promise.resolve(onGuardarLogoFactura?.(logoOptimizado))
+          .then(() => setErrorLogoFactura(""))
+          .catch((error) => setErrorLogoFactura(error?.message || "No se pudo guardar el logotipo corporativo en el ERP."));
       };
       imagen.src = String(lector.result || "");
     };
     lector.readAsDataURL(archivo);
   };
 
-  const guardarDiseno = () => {
+  const guardarDiseno = async () => {
+    setGuardado(false);
     try {
-      localStorage.setItem(FACTURA_EDITOR_KEY, JSON.stringify(config));
-      setGuardado(true);
-    } catch {
-      setGuardado(false);
+      const { data } = await axios.put("/utilidades/factura-plantilla", {
+        color: config.color,
+        titulo: config.titulo,
+        subtitulo: config.subtitulo,
+        mostrarAvisoAEAT: config.mostrarAvisoAEAT,
+        mostrarObservaciones: config.mostrarObservaciones,
+        mostrarLogo: config.mostrarLogo,
+        densidad: config.densidad,
+      });
+      setGuardado(Boolean(data?.ok));
+    } catch (error) {
+      setErrorLogoFactura(error?.response?.data?.detail || "No se pudo guardar el diseño en el ERP. Comprueba tus permisos.");
     }
   };
 
   const restaurar = () => {
     setConfig(FACTURA_EDITOR_DEFAULTS);
-    try { localStorage.removeItem(FACTURA_EDITOR_KEY); } catch {}
     setGuardado(false);
   };
 
@@ -164,27 +184,27 @@ function FacturaPlantillaEditor() {
                 <input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>{cargarLogoFactura(e.target.files?.[0]);e.target.value="";}} className="mt-2 block w-full cursor-pointer text-xs font-normal text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-sky-50 file:px-3 file:py-2 file:font-bold file:text-sky-800 hover:file:bg-sky-100"/>
               </label>
               <p className="mt-2 text-xs text-slate-500">Formatos PNG, JPG o WEBP · máximo 8 MB. La imagen se optimiza para la vista previa.</p>
-              {config.logoDataUrl && <div className="mt-3 flex items-center gap-3"><img src={config.logoDataUrl} alt="Logotipo cargado" className="h-14 max-w-[180px] rounded border border-slate-200 bg-white object-contain p-1"/><button type="button" onClick={()=>actualizar("logoDataUrl","")} className="text-xs font-bold text-rose-700 underline">Quitar logo</button></div>}
+              {datosMolsan.logo_data_url && <div className="mt-3 flex items-center gap-3"><img src={datosMolsan.logo_data_url} alt="Logotipo corporativo guardado en el ERP" className="h-14 max-w-[180px] rounded border border-slate-200 bg-white object-contain p-1"/><button type="button" onClick={()=>Promise.resolve(onGuardarLogoFactura?.("")).catch(error=>setErrorLogoFactura(error?.message || "No se pudo quitar el logotipo."))} className="text-xs font-bold text-rose-700 underline">Quitar logo corporativo</button></div>}
               {errorLogoFactura && <p role="alert" className="mt-2 text-xs font-semibold text-rose-700">{errorLogoFactura}</p>}
             </div>
             <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={config.mostrarAvisoAEAT} onChange={e=>actualizar("mostrarAvisoAEAT",e.target.checked)}/> Mostrar aviso de factura verificable en la AEAT</label>
             <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={config.mostrarObservaciones} onChange={e=>actualizar("mostrarObservaciones",e.target.checked)}/> Reservar espacio para observaciones</label>
           </div>
           <div className="flex flex-wrap gap-2">
-            <button type="button" onClick={guardarDiseno} className="rounded-xl bg-sky-700 px-4 py-2.5 text-sm font-bold text-white hover:bg-sky-800">Guardar diseño en este navegador</button>
+            <button type="button" onClick={guardarDiseno} className="rounded-xl bg-sky-700 px-4 py-2.5 text-sm font-bold text-white hover:bg-sky-800">Guardar diseño en el ERP</button>
             <button type="button" onClick={restaurar} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50">Restaurar diseño</button>
           </div>
-          {guardado && <p role="status" className="text-sm font-semibold text-emerald-700">Diseño guardado en este navegador.</p>}
-          <p className="text-xs leading-5 text-amber-700">El diseño se guarda localmente en este navegador. Todavía no se aplica al PDF oficial ni se comparte con otros equipos.</p>
+          {guardado && <p role="status" className="text-sm font-semibold text-emerald-700">Diseño guardado en el ERP y disponible para los usuarios autorizados.</p>}
+          <p className="text-xs leading-5 text-amber-700">El diseño y el logotipo se guardan en el backend compartido. La plantilla visual todavía no modifica el PDF oficial; se conectará después de validar esta maqueta.</p>
         </div>
       </div>
-      <div className="rounded-2xl border border-sky-100 bg-sky-50/70 p-4 text-sm leading-6 text-slate-700"><strong style={{color:config.color}}>Campos que se conservarán del modelo Word:</strong><ul className="mt-2 list-disc space-y-1 pl-5"><li>Número y fecha de factura</li><li>Datos fiscales del cliente</li><li>Concepto, base imponible, impuesto y total</li><li>Número de expediente, documento, notario, protocolo y fecha de firma</li></ul></div>
+      <div className="rounded-2xl border border-sky-100 bg-sky-50/70 p-4 text-sm leading-6 text-slate-700"><strong style={{color:config.color}}>Campos que se conservarán del modelo Word y datos fiscales:</strong><ul className="mt-2 list-disc space-y-1 pl-5"><li>Número y fecha de factura</li><li>Datos fiscales completos del cliente</li><li>Datos fiscales de Molsan: razón social, NIF, domicilio, CP, población, provincia y contacto</li><li>Concepto, base imponible, impuesto y total</li><li>Número de expediente, documento, notario, protocolo y fecha de firma</li></ul></div>
     </div>
     <div className="min-w-0 rounded-2xl border border-slate-200 bg-slate-100 p-3 sm:p-5">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><div><p className="text-xs font-bold uppercase tracking-wider text-sky-800">Vista previa</p><h3 className="font-bold text-slate-900">Factura · formato A4</h3></div><span className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-600">Maqueta editable</span></div>
       <article className={`mx-auto min-h-[820px] w-full max-w-[590px] bg-white text-slate-800 shadow-xl ${config.densidad==="compacta"?"p-6":config.densidad==="amplia"?"p-10":"p-8"}`}>
         <header className="flex items-start justify-between gap-4 border-b-2 pb-5" style={{borderColor:config.color}}>
-          <div className="flex min-w-0 items-center gap-3">{config.mostrarLogo && (config.logoDataUrl ? <div className="flex h-14 w-24 shrink-0 items-center justify-center"><img src={config.logoDataUrl} alt="Logotipo de la gestoría" className="max-h-14 max-w-24 object-contain"/></div> : <div className="flex h-14 w-20 shrink-0 items-center justify-center rounded-md border border-dashed border-slate-300 text-[9px] text-slate-400">SUBIR LOGO</div>)}<div><div className="text-sm font-black" style={{color:config.color}}>MOLSAN</div><div className="mt-1 text-[9px] text-slate-500">CIF · Domicilio fiscal · Contacto</div></div></div>
+          <div className="flex min-w-0 items-center gap-3">{config.mostrarLogo && (datosMolsan.logo_data_url ? <div className="flex h-14 w-24 shrink-0 items-center justify-center"><img src={datosMolsan.logo_data_url} alt="Logotipo de la gestoría" className="max-h-14 max-w-24 object-contain"/></div> : <div className="flex h-14 w-20 shrink-0 items-center justify-center rounded-md border border-dashed border-slate-300 text-[9px] text-slate-400">CONFIGURAR LOGO</div>)}<div className="min-w-0"><div className="text-sm font-black" style={{color:config.color}}>{datosMolsan.razon_social || "Razón social de Molsan"}</div><div className="mt-1 text-[9px] text-slate-500">{[datosMolsan.nif ? "NIF: "+datosMolsan.nif : "", datosMolsan.domicilio_fiscal, [datosMolsan.codigo_postal,datosMolsan.poblacion,datosMolsan.provincia].filter(Boolean).join(" ")].filter(Boolean).join(" · ") || "Completar los datos en Datos Molsan"}</div><div className="mt-1 text-[9px] text-slate-500">{[datosMolsan.telefono,datosMolsan.email,datosMolsan.web].filter(Boolean).join(" · ")}</div></div></div>
           <div className="text-right"><h4 className="text-2xl font-black" style={{color:config.color}}>{config.titulo || "FACTURA"}</h4><p className="mt-1 text-xs font-semibold">{config.subtitulo}</p><p className="mt-2 text-[10px] text-slate-500">N.º VI/00000-26</p><p className="text-[10px] text-slate-500">Fecha: dd/mm/aaaa</p></div>
         </header>
         <div className="mt-6 rounded-lg border border-slate-200 p-4"><h5 className="mb-3 text-[10px] font-extrabold tracking-wide" style={{color:config.color}}>DATOS DEL CLIENTE</h5><div className="grid grid-cols-2 gap-x-5 gap-y-3 text-[10px]"><div><p className="text-slate-400">Nombre / razón social</p><p className="mt-1 font-semibold">Nombre del cliente</p></div><div><p className="text-slate-400">NIF / CIF</p><p className="mt-1 font-semibold">—</p></div><div className="col-span-2"><p className="text-slate-400">Domicilio fiscal</p><p className="mt-1 font-semibold">Dirección · Código postal · Población</p></div></div></div>
@@ -291,6 +311,6 @@ export default function ModelosDocumentos() {
       </div>
       {errorLogo && <p role="alert" className="mt-3 text-sm text-rose-700">{errorLogo}</p>}
       <p className="mt-3 text-xs text-amber-700">Nota: por ahora el logotipo se conserva en este navegador; antes de usarlo desde varios equipos lo conectaremos a almacenamiento compartido del ERP.</p>
-    </section><section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="flex flex-wrap items-end gap-3"><label className="min-w-[240px] flex-1 text-sm font-semibold text-slate-700">Número de expediente<input value={numeroExpediente} onChange={e => setNumeroExpediente(e.target.value)} onKeyDown={e => { if (e.key === "Enter") cargarExpediente(); }} placeholder="Introduce el número exacto del expediente" className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 font-normal"/></label><button type="button" onClick={cargarExpediente} disabled={cargandoExpediente} className="rounded-xl bg-sky-700 px-4 py-2 text-sm font-bold text-white disabled:opacity-50">{cargandoExpediente ? "Cargando…" : "Cargar expediente"}</button></div>{errorExpediente && <p role="alert" className="mt-2 text-sm text-amber-700">{errorExpediente}</p>}{expedienteSeleccionado && <p className="mt-2 text-xs font-semibold text-emerald-700">Expediente cargado: {expedienteSeleccionado.id_expediente || expedienteSeleccionado.numero_expediente || numeroExpediente} · {gastosExpediente.length} gasto(s) recuperado(s).</p>}</section><LiquidacionPreview datosMolsan={datosMolsan} logoCliente={logoCliente} expediente={expedienteSeleccionado} gastos={gastosExpediente} fechaEmision={fechaEmision}/><div className="rounded-2xl border border-sky-100 bg-sky-50/70 p-4 text-sm leading-6 text-slate-700"><strong className="text-[#123e70]">Siguiente fase:</strong> conectar los campos al expediente, usar los movimientos reales de Gestión económica, respetar el orden documental definido en «Liquidar expediente» y generar el PDF final con previsualización y confirmación antes de guardarlo en «Expediente digital completo».</div></section> : actual.id==="factura" ? <FacturaPlantillaEditor/> : <section className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,.85fr)]"><div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"><h2 className="text-xl font-bold text-slate-900">{actual.titulo}</h2><p className="mt-3 text-sm leading-6 text-slate-600">{actual.descripcion}</p><h3 className="mt-5 text-sm font-bold text-slate-800">Contenido previsto</h3><ul className="mt-3 grid gap-2 sm:grid-cols-2">{actual.campos.map(c=><li key={c} className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-sm text-slate-700">✓ {c}</li>)}</ul></div><div className="rounded-2xl border border-slate-200 bg-white p-4">{actual.id==="provision" ? <ProvisionesFondosPage soloEditorPlantilla/> : <HonorariosGestoria soloPlantilla/>}</div></section>}}
+    </section><section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="flex flex-wrap items-end gap-3"><label className="min-w-[240px] flex-1 text-sm font-semibold text-slate-700">Número de expediente<input value={numeroExpediente} onChange={e => setNumeroExpediente(e.target.value)} onKeyDown={e => { if (e.key === "Enter") cargarExpediente(); }} placeholder="Introduce el número exacto del expediente" className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 font-normal"/></label><button type="button" onClick={cargarExpediente} disabled={cargandoExpediente} className="rounded-xl bg-sky-700 px-4 py-2 text-sm font-bold text-white disabled:opacity-50">{cargandoExpediente ? "Cargando…" : "Cargar expediente"}</button></div>{errorExpediente && <p role="alert" className="mt-2 text-sm text-amber-700">{errorExpediente}</p>}{expedienteSeleccionado && <p className="mt-2 text-xs font-semibold text-emerald-700">Expediente cargado: {expedienteSeleccionado.id_expediente || expedienteSeleccionado.numero_expediente || numeroExpediente} · {gastosExpediente.length} gasto(s) recuperado(s).</p>}</section><LiquidacionPreview datosMolsan={datosMolsan} logoCliente={logoCliente} expediente={expedienteSeleccionado} gastos={gastosExpediente} fechaEmision={fechaEmision}/><div className="rounded-2xl border border-sky-100 bg-sky-50/70 p-4 text-sm leading-6 text-slate-700"><strong className="text-[#123e70]">Siguiente fase:</strong> conectar los campos al expediente, usar los movimientos reales de Gestión económica, respetar el orden documental definido en «Liquidar expediente» y generar el PDF final con previsualización y confirmación antes de guardarlo en «Expediente digital completo».</div></section> : actual.id==="factura" ? <FacturaPlantillaEditor datosMolsan={datosMolsan} onGuardarLogoFactura={async (logoDataUrl) => { const actualizado = { ...datosMolsan, logo_data_url: logoDataUrl }; const { data } = await axios.put("/utilidades/datos-molsan", actualizado); if (!data?.ok) throw new Error(data?.mensaje || "No se pudo guardar el logotipo."); setDatosMolsan(actualizado); }} /> : <section className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,.85fr)]"><div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"><h2 className="text-xl font-bold text-slate-900">{actual.titulo}</h2><p className="mt-3 text-sm leading-6 text-slate-600">{actual.descripcion}</p><h3 className="mt-5 text-sm font-bold text-slate-800">Contenido previsto</h3><ul className="mt-3 grid gap-2 sm:grid-cols-2">{actual.campos.map(c=><li key={c} className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-sm text-slate-700">✓ {c}</li>)}</ul></div><div className="rounded-2xl border border-slate-200 bg-white p-4">{actual.id==="provision" ? <ProvisionesFondosPage soloEditorPlantilla/> : <HonorariosGestoria soloPlantilla/>}</div></section>}}
   </main>;
 }
