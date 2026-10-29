@@ -152,7 +152,7 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
 
     hoja = libro.worksheets[0]
     columnas = [str(c) if c is not None else "" for c in df.columns]
-    if not any(_normalizar_columna(c) == "TIPOCONCEPTO" for c in columnas):
+    if "TIPOCONCEPTO" not in [str(c).strip().upper() for c in columnas]:
         columnas.append("TIPOCONCEPTO")
     sha256 = hashlib.sha256(contenido_excel).hexdigest()
     guardadas = 0
