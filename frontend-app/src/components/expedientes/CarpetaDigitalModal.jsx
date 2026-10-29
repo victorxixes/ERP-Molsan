@@ -963,9 +963,9 @@ export default function CarpetaDigitalModal({
                         › Carpeta digital
                       </button>
                     )}
-                    {(actividadId === "sede-notarial" || actividadId === "gestion-economica") && (
+                    {actividadId === "sede-notarial" && (
                       <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onAbrirEnvioNotario?.(); }} className="shrink-0 rounded-lg bg-indigo-600 px-2.5 py-2 text-[10px] font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                        {actividadId === "gestion-economica" ? "✎ Editar datos" : "✉️ Envío al notario"}
+                        ✉️ Envío al notario
                       </button>
                     )}
                   </div>
