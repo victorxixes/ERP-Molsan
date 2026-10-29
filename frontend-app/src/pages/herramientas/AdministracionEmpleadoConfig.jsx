@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSeguridad } from "../../hooks/useSeguridad";
 import ModalEmpleado from "../../components/empleados/ModalEmpleado";
+import { obtenerEstadoRepartoGestores } from "../../api/empleados";
 import { useAuthStore } from "../../store/authStore";
 
 /**
@@ -19,6 +20,9 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
   const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(null);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modoModal, setModoModal] = useState("configuracion");
+  const [estadoReparto, setEstadoReparto] = useState(null);
+  const [errorEstadoReparto, setErrorEstadoReparto] = useState("");
+  const [cargandoEstadoReparto, setCargandoEstadoReparto] = useState(false);
 
   useEffect(() => {
     if (esAdministrador) cargarTodo();
@@ -27,8 +31,30 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
   const esAsignaciones = seccion === "asignaciones";
   const titulo = esAsignaciones ? "Asignaciones de empleados" : "Visibilidad de tablas";
   const descripcion = esAsignaciones
-    ? "Localiza a un empleado y accede directamente a sus reglas de reparto y asignación."
+    ? "Supervisa incidencias y carga del reparto, y accede a las reglas de cada empleado."
     : "Localiza a un empleado y configura las columnas y la visibilidad asociadas a sus actividades.";
+
+  const cargarEstadoReparto = useCallback(async () => {
+    if (!esAdministrador || !esAsignaciones) return;
+    setCargandoEstadoReparto(true);
+    setErrorEstadoReparto("");
+    try {
+      const { data } = await obtenerEstadoRepartoGestores();
+      setEstadoReparto(data || { resumen: {}, incidencias: [], carga_por_gestor_actividad: [] });
+    } catch (error) {
+      setErrorEstadoReparto(
+        error?.response?.data?.detail ||
+        error?.message ||
+        "No se ha podido cargar el estado del reparto."
+      );
+    } finally {
+      setCargandoEstadoReparto(false);
+    }
+  }, [esAdministrador, esAsignaciones]);
+
+  useEffect(() => {
+    if (esAsignaciones) cargarEstadoReparto();
+  }, [esAsignaciones, cargarEstadoReparto]);
 
   const empleadosSeguros = useMemo(
     () => (Array.isArray(empleados) ? empleados.filter((e) => e && e.id != null) : []),
@@ -69,6 +95,115 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
         <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">{titulo}</h1>
         <p className="mt-2 max-w-3xl text-sm text-slate-500">{descripcion}</p>
       </header>
+
+      {esAsignaciones && (
+        <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wide text-blue-600">Supervisión · Reparto automático</p>
+              <h2 className="mt-1 text-lg font-bold text-slate-900">Estado de asignaciones</h2>
+              <p className="mt-1 text-sm text-slate-500">Vista de solo lectura. Las reglas se siguen editando en la ficha del empleado; aquí no se reasignan expedientes.</p>
+            </div>
+            <button
+              type="button"
+              onClick={cargarEstadoReparto}
+              disabled={cargandoEstadoReparto}
+              className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+            >
+              {cargandoEstadoReparto ? "Actualizando…" : "Actualizar estado"}
+            </button>
+          </div>
+
+          {errorEstadoReparto && (
+            <p role="alert" className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorEstadoReparto}</p>
+          )}
+          {estadoReparto?.resumen?.historial_disponible === false && (
+            <p role="status" className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">El historial de reparto todavía no está disponible. Se muestran los expedientes sin gestor que se hayan podido consultar.</p>
+          )}
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-xs font-semibold text-slate-500">Expedientes sin gestor</p>
+              <p className="mt-2 text-2xl font-extrabold tabular-nums text-slate-900">{estadoReparto?.resumen?.expedientes_sin_gestor ?? "—"}</p>
+            </div>
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+              <p className="text-xs font-semibold text-amber-800">Asignaciones provisionales</p>
+              <p className="mt-2 text-2xl font-extrabold tabular-nums text-amber-900">{estadoReparto?.resumen?.asignaciones_provisionales ?? "—"}</p>
+            </div>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-xs font-semibold text-slate-500">Pendientes de asignar o revisar (máx. 200)</p>
+              <p className="mt-2 text-2xl font-extrabold tabular-nums text-slate-900">{estadoReparto?.resumen?.incidencias_mostradas ?? "—"}</p>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto rounded-xl border border-slate-200">
+            <div className="border-b border-slate-200 bg-slate-50 px-4 py-3">
+              <h3 className="text-sm font-bold text-slate-800">Expedientes que requieren revisión</h3>
+            </div>
+            <table className="w-full min-w-[760px] border-collapse text-left text-sm">
+              <thead>
+                <tr className="border-b border-slate-200 bg-white text-[11px] uppercase tracking-wide text-slate-500">
+                  <th className="px-3 py-2.5 font-bold">Expediente</th>
+                  <th className="px-3 py-2.5 font-bold">Actividad</th>
+                  <th className="px-3 py-2.5 font-bold">Gestor conservado</th>
+                  <th className="px-3 py-2.5 font-bold">Motivo</th>
+                  <th className="px-3 py-2.5 font-bold">Fecha</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(estadoReparto?.incidencias || []).map((item) => {
+                  const motivo = item.motivo === "sin_regla_reparto_gestor_conservado"
+                    ? "Sin regla compatible · asignación provisional"
+                    : item.motivo === "sin_regla_reparto_sin_gestor"
+                      ? "Sin regla compatible · sin gestor"
+                      : "Sin gestor asignado";
+                  return (
+                    <tr key={item.id_expediente} className="border-b border-slate-100 last:border-0">
+                      <td className="px-3 py-2.5 font-semibold text-slate-800">{item.id_expediente}</td>
+                      <td className="px-3 py-2.5 text-slate-600">{item.actividad || "Sin actividad"}</td>
+                      <td className="px-3 py-2.5 text-slate-600">{item.gestor_nombre || "—"}</td>
+                      <td className="px-3 py-2.5">
+                        <span className="inline-flex rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-800">{motivo}</span>
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-2.5 text-xs text-slate-500">{item.fecha ? new Date(item.fecha).toLocaleString("es-ES") : "—"}</td>
+                    </tr>
+                  );
+                })}
+                {!cargandoEstadoReparto && (estadoReparto?.incidencias || []).length === 0 && (
+                  <tr><td colSpan={5} className="px-4 py-6 text-center text-sm text-slate-500">No hay expedientes pendientes de asignación o revisión.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="overflow-x-auto rounded-xl border border-slate-200">
+            <div className="border-b border-slate-200 bg-slate-50 px-4 py-3">
+              <h3 className="text-sm font-bold text-slate-800">Carga pendiente por gestor y actividad</h3>
+            </div>
+            <table className="w-full min-w-[560px] border-collapse text-left text-sm">
+              <thead>
+                <tr className="border-b border-slate-200 bg-white text-[11px] uppercase tracking-wide text-slate-500">
+                  <th className="px-3 py-2.5 font-bold">Gestor</th>
+                  <th className="px-3 py-2.5 font-bold">Actividad</th>
+                  <th className="px-3 py-2.5 text-right font-bold">Expedientes pendientes</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(estadoReparto?.carga_por_gestor_actividad || []).map((item) => (
+                  <tr key={`${item.gestor_id}-${item.actividad}`} className="border-b border-slate-100 last:border-0">
+                    <td className="px-3 py-2.5 font-semibold text-slate-800">{item.gestor_nombre}</td>
+                    <td className="px-3 py-2.5 text-slate-600">{item.actividad}</td>
+                    <td className="px-3 py-2.5 text-right font-semibold tabular-nums text-slate-800">{item.expedientes_pendientes}</td>
+                  </tr>
+                ))}
+                {!cargandoEstadoReparto && (estadoReparto?.carga_por_gestor_actividad || []).length === 0 && (
+                  <tr><td colSpan={3} className="px-4 py-6 text-center text-sm text-slate-500">No hay carga pendiente que mostrar.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
 
       <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="flex flex-col gap-3 border-b border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">

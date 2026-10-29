@@ -943,6 +943,118 @@ def guardar_reglas_reparto_gestor(empleado_id: int, datos: ReglasRepartoGestor, 
     return {"ok": True, "empleado_id": empleado.id, "reglas": reglas_limpias}
 
 
+@router.get("/gestion/reparto/estado")
+def obtener_estado_reparto_gestores(
+    db: Session = Depends(get_db),
+    usuario=Depends(get_encargagest_actor),
+):
+    """Resumen de solo lectura para supervisar asignaciones e incidencias de reparto."""
+    _autorizar(usuario, "ver")
+    if not _es_administrador_encargagest(usuario):
+        raise HTTPException(status_code=403, detail="Solo un administrador puede consultar el estado global del reparto.")
+
+    sin_gestor = db.execute(text("""
+        SELECT COUNT(*)
+        FROM expedientes
+        WHERE (gestor_asignado_id IS NULL OR gestor_asignado_id = 0)
+          AND LOWER(COALESCE(estado_actividad, '')) NOT IN ('cerrada', 'cerrada automáticamente')
+    """)).scalar() or 0
+
+    filas_carga = db.execute(text("""
+        SELECT
+            e.gestor_asignado_id AS gestor_id,
+            TRIM(COALESCE(g.nombre, '') || ' ' || COALESCE(g.apellidos, '')) AS gestor_nombre,
+            COALESCE(NULLIF(TRIM(e.actividad_actual), ''), 'Sin actividad') AS actividad,
+            COUNT(*) AS expedientes_pendientes
+        FROM expedientes AS e
+        LEFT JOIN empleados AS g ON g.id = e.gestor_asignado_id
+        WHERE e.gestor_asignado_id IS NOT NULL
+          AND e.gestor_asignado_id <> 0
+          AND LOWER(COALESCE(e.estado_actividad, '')) NOT IN ('cerrada', 'cerrada automáticamente')
+        GROUP BY e.gestor_asignado_id, g.nombre, g.apellidos, COALESCE(NULLIF(TRIM(e.actividad_actual), ''), 'Sin actividad')
+        ORDER BY gestor_nombre, actividad
+        LIMIT 200
+    """)).mappings().all()
+
+    historial_disponible = sa_inspect(db.get_bind()).has_table("expediente_gestor_historial")
+    incidencias = []
+    provisionales = 0
+    if historial_disponible:
+        provisionales = db.execute(text("""
+            SELECT COUNT(*)
+            FROM expedientes AS e
+            JOIN expediente_gestor_historial AS h
+              ON h.expediente_id = e.id_expediente
+             AND h.id = (
+                 SELECT MAX(h2.id)
+                 FROM expediente_gestor_historial AS h2
+                 WHERE h2.expediente_id = e.id_expediente
+             )
+            WHERE h.motivo = 'sin_regla_reparto_gestor_conservado'
+              AND h.gestor_id = e.gestor_asignado_id
+        """)).scalar() or 0
+        filas_incidencias = db.execute(text("""
+            SELECT
+                e.id_expediente,
+                COALESCE(NULLIF(TRIM(e.actividad_actual), ''), 'Sin actividad') AS actividad,
+                e.gestor_asignado_id AS gestor_id,
+                TRIM(COALESCE(g.nombre, '') || ' ' || COALESCE(g.apellidos, '')) AS gestor_nombre,
+                h.motivo,
+                h.fecha
+            FROM expedientes AS e
+            LEFT JOIN empleados AS g ON g.id = e.gestor_asignado_id
+            LEFT JOIN expediente_gestor_historial AS h
+              ON h.expediente_id = e.id_expediente
+             AND h.id = (
+                 SELECT MAX(h2.id)
+                 FROM expediente_gestor_historial AS h2
+                 WHERE h2.expediente_id = e.id_expediente
+             )
+            WHERE (
+                    e.gestor_asignado_id IS NULL
+                    OR e.gestor_asignado_id = 0
+                    OR (
+                        h.motivo = 'sin_regla_reparto_gestor_conservado'
+                        AND h.gestor_id = e.gestor_asignado_id
+                    )
+                )
+              AND LOWER(COALESCE(e.estado_actividad, '')) NOT IN ('cerrada', 'cerrada automáticamente')
+            ORDER BY h.id DESC, e.id_expediente
+            LIMIT 200
+        """)).mappings().all()
+        for fila in filas_incidencias:
+            fecha = fila["fecha"]
+            incidencias.append({
+                "id_expediente": fila["id_expediente"],
+                "actividad": fila["actividad"],
+                "gestor_id": fila["gestor_id"],
+                "gestor_nombre": (fila["gestor_nombre"] or "").strip() or None,
+                "motivo": fila["motivo"] or (
+                    "sin_regla_reparto_sin_gestor" if not fila["gestor_id"] else "sin_gestor_asignado"
+                ),
+                "fecha": fecha.isoformat() if hasattr(fecha, "isoformat") else (str(fecha) if fecha else None),
+            })
+
+    return {
+        "resumen": {
+            "expedientes_sin_gestor": int(sin_gestor),
+            "asignaciones_provisionales": int(provisionales),
+            "incidencias_mostradas": len(incidencias),
+            "historial_disponible": bool(historial_disponible),
+        },
+        "incidencias": incidencias,
+        "carga_por_gestor_actividad": [
+            {
+                "gestor_id": fila["gestor_id"],
+                "gestor_nombre": (fila["gestor_nombre"] or "").strip() or "Gestor sin nombre",
+                "actividad": fila["actividad"],
+                "expedientes_pendientes": int(fila["expedientes_pendientes"] or 0),
+            }
+            for fila in filas_carga
+        ],
+    }
+
+
 @router.put("/gestion/notarias/{notaria_id}/responsable")
 def guardar_responsable_notaria(notaria_id: int, datos: ConfiguracionNotariaGestor, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _autorizar(usuario, "editar")
