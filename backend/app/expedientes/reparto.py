@@ -310,6 +310,25 @@ def expediente_cumple_reglas_empleado(db: Session, empleado: Empleado, expedient
     return False
 
 
+def validar_acceso_candidatos_expediente(db: Session, usuario, candidatos) -> None:
+    """Valida solo los expedientes solicitados, sin escanear toda la tabla en cada petición."""
+    if usuario_admin_expedientes(usuario):
+        return
+
+    empleado = db.query(Empleado).filter(
+        Empleado.id == getattr(usuario, "id", None)
+    ).first()
+    if empleado is None:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+
+    departamentos = {d.id: d.nombre for d in db.query(Departamento).all()}
+    if any(
+        not expediente_cumple_reglas_empleado(db, empleado, expediente, departamentos)
+        for expediente in candidatos
+    ):
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+
+
 def validar_candidatos_visibles(candidatos, ids_visibles) -> None:
     """Rechaza si cualquiera de las referencias posibles apunta a un expediente oculto."""
     if ids_visibles is not None and any(
@@ -364,10 +383,10 @@ def validar_visibilidad_expediente_request(
     if not candidatos:
         return
 
-    ids_visibles = ids_expedientes_visibles(db, usuario)
     # Si un identificador numérico coincide con dos expedientes distintos,
-    # no se permite usar la ambigüedad para consultar uno fuera del reparto.
-    validar_candidatos_visibles(candidatos, ids_visibles)
+    # ambos deben estar dentro del ámbito de reparto. Se comprueban solo esos
+    # registros, no todos los expedientes de la base de datos.
+    validar_acceso_candidatos_expediente(db, usuario, candidatos)
 
 
 setattr(validar_visibilidad_expediente_request, "_molsan_visibilidad_guard", True)
