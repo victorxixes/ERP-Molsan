@@ -60,6 +60,11 @@ class RouteGuardPolicyTests(unittest.TestCase):
         self.assertEqual(_resolver_accion("/api/mensajeria/servicios", {"POST"}), "crear")
         self.assertEqual(_resolver_accion("/api/mensajeria/servicios/4", {"PATCH"}), "editar")
 
+    def test_sla_report_routes_are_mapped_to_utilities_permissions(self):
+        self.assertEqual(_resolver_modulo("/api/informes-sla", {"GET"}), "utilidades")
+        self.assertEqual(_resolver_modulo("/api/informes-sla/fechas/EXP-1/gestion-economica", {"POST"}), "utilidades")
+        self.assertEqual(_resolver_accion("/api/informes-sla/fechas/EXP-1/gestion-economica", {"POST"}), "editar")
+
     def test_link_audit_uses_security_edit_permission(self):
         path = "/api/expedientes/auditoria-vinculaciones"
         self.assertEqual(_resolver_modulo(path, {"GET"}), "seguridad")
