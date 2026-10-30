@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import axios from "../../api/axios";
 import AutocompleteNotario from "../../components/agenda/AutocompleteNotario";
 import Agenda from "../agenda/Agenda";
@@ -767,6 +768,8 @@ export default function ApoderaGest() {
   const [busquedaEncargos, setBusquedaEncargos] = useState("");
   const [ultimaActualizacion, setUltimaActualizacion] = useState(null);
   const [modalResumen, setModalResumen] = useState(null);
+  const resumenDialogRef = useRef(null);
+  useAccessibleDialog({ open: Boolean(modalResumen), onClose: () => setModalResumen(null), dialogRef: resumenDialogRef });
 
 
   const cargarDatos = useCallback(async () => {
@@ -1089,7 +1092,7 @@ export default function ApoderaGest() {
       
       {modalResumen ? (
         <div className="ag-resumen-modal-overlay" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalResumen(null); }}>
-          <section className="ag-resumen-modal" role="dialog" aria-modal="true" aria-labelledby="ag-resumen-modal-titulo">
+          <section ref={resumenDialogRef} tabIndex={-1} className="ag-resumen-modal" role="dialog" aria-modal="true" aria-labelledby="ag-resumen-modal-titulo">
             <header className="ag-resumen-modal-cabecera">
               <div><span className="ag-kicker">APODERAGEST · RESUMEN DE ACTIVIDAD</span><h2 id="ag-resumen-modal-titulo">{modalResumen.titulo}</h2><p>{encargosDelResumen.length} expediente(s) en este indicador.</p></div>
               <button type="button" className="ag-resumen-modal-cerrar" onClick={() => setModalResumen(null)} aria-label="Cerrar modal">✕</button>
