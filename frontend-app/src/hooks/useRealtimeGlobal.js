@@ -957,6 +957,9 @@ export default function useRealtimeGlobal() {
           4004,
           4005,
           4006,
+          // Códigos que devuelve backend/app/realtime/router.py.
+          4401,
+          4403,
 
         ];
 
