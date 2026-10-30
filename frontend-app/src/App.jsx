@@ -745,7 +745,7 @@ export default function App() {
 
           <Route
             path="herramientas/mantenimiento-tecnico"
-            element={protegerModulo("mantenimiento-tecnico", <MantenimientoTecnico />)}
+            element={protegerModulo("utilidades", <MantenimientoTecnico />)}
           />
 
           <Route
