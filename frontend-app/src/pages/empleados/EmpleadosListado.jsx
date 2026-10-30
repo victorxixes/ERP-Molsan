@@ -3,11 +3,13 @@ import {
   useState,
   useCallback,
   useMemo,
+  useRef,
 } from "react";
 
 import AuthenticatedPhoto from "../../components/AuthenticatedPhoto";
 import "./EmpleadosListadoPremium.css";
 import "../../css/ModalesOperativosPremium.css";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 import {
   buscarEmpleados,
@@ -635,6 +637,9 @@ export default function EmpleadosListado({
         guardandoNuevo,
       ]
     );
+
+  const nuevoEmpleadoDialogRef = useRef(null);
+  useAccessibleDialog({ open: mostrarNuevo, onClose: cerrarNuevo, dialogRef: nuevoEmpleadoDialogRef });
 
 
   /* ==========================================================
@@ -1448,6 +1453,8 @@ export default function EmpleadosListado({
         >
 
           <div
+            ref={nuevoEmpleadoDialogRef}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-label="Nuevo empleado"
