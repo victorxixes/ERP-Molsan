@@ -37,6 +37,28 @@ const DOCUMENTO_LAYOUTS = {
   ],
 };
 
+function ProvisionDocumentoPreview({ posiciones = {} }) {
+  const bloques = [
+    { id:"cabecera", content:<div className="flex h-full items-center justify-between gap-3"><div className="flex items-center gap-3"><div className="flex h-12 w-28 items-center justify-center rounded border border-dashed border-slate-300 text-[9px] font-bold text-slate-400">LOGOTIPO</div><div><div className="text-sm font-black text-[#123e70]">MOLSAN GESTIÓN Y TRAMITACIÓN</div><div className="text-[8px] text-slate-500">CIF · Domicilio fiscal · Datos de contacto</div></div></div><div className="text-right text-[8px] text-slate-500">Documento de provisión</div></div> },
+    { id:"titulo", content:<div className="flex h-full items-center justify-between border-b-2 border-[#1e5794] pb-1"><div><div className="text-base font-extrabold text-[#123e70]">HOJA DE PROVISIÓN DE FONDOS</div><div className="text-[9px] font-semibold text-sky-700">Estimación de gastos y servicios de tramitación</div></div><div className="text-right text-[8px] text-slate-500">Fecha: DD/MM/AAAA<br/>N.º: PROV-000000</div></div> },
+    { id:"cliente", content:<div className="h-full rounded border border-sky-100 p-2"><div className="mb-1 text-[9px] font-extrabold uppercase text-[#123e70]">Datos del cliente</div><div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[8px] text-slate-600"><span>Nombre / Razón social: <b>Nombre del titular</b></span><span>NIF: <b>00000000X</b></span><span>Dirección: Calle y número</span><span>CP / Población: 08000 · Barcelona</span><span>Teléfono: 600 000 000</span><span>Email: cliente@correo.es</span></div></div> },
+    { id:"oficina", content:<div className="h-full rounded border border-sky-100 p-2"><div className="mb-1 text-[9px] font-extrabold uppercase text-[#123e70]">Oficina de origen</div><div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[8px] text-slate-600"><span>Entidad: <b>CaixaBank / Otra entidad</b></span><span>Oficina: <b>0000</b></span><span>Persona de contacto: Nombre</span><span>Email: oficina@entidad.es</span><span>Expediente / operación: EXP-000000</span><span>Fecha de solicitud: DD/MM/AAAA</span></div></div> },
+    { id:"desglose", content:<div className="h-full overflow-hidden rounded border border-sky-100"><div className="bg-sky-50 px-2 py-1 text-[9px] font-extrabold uppercase text-[#123e70]">Desglose estimado de provisión por garantía</div><table className="w-full border-collapse text-[8px]"><thead className="bg-slate-50 text-[#123e70]"><tr><th className="p-1 text-left">Concepto / garantía</th><th className="p-1 text-right">Notaría</th><th className="p-1 text-right">Impuestos</th><th className="p-1 text-right">Registro</th><th className="p-1 text-right">Gestión</th><th className="p-1 text-right">Total</th></tr></thead><tbody className="text-slate-600"><tr className="border-t border-slate-100"><td className="p-1">Hipoteca · Capital 150.000,00 €</td><td className="p-1 text-right">XXX €</td><td className="p-1 text-right">XXX €</td><td className="p-1 text-right">XXX €</td><td className="p-1 text-right">XXX €</td><td className="p-1 text-right font-bold">X.XXX €</td></tr><tr className="border-t border-slate-100"><td className="p-1">Otras garantías / conceptos</td><td className="p-1 text-right">—</td><td className="p-1 text-right">—</td><td className="p-1 text-right">—</td><td className="p-1 text-right">—</td><td className="p-1 text-right">—</td></tr></tbody></table></div> },
+    { id:"total", content:<div className="flex h-full items-center justify-between rounded bg-sky-50 px-3"><span className="text-[10px] font-extrabold uppercase text-[#123e70]">Total provisión estimada</span><span className="text-lg font-black text-[#123e70]">X.XXX,XX €</span></div> },
+    { id:"observaciones", content:<div className="h-full rounded border border-slate-200 p-2"><div className="mb-1 text-[8px] font-extrabold uppercase text-[#123e70]">Observaciones</div><p className="text-[8px] leading-relaxed text-slate-600">Importes estimados sujetos a las circunstancias de la operación, tarifas aplicables y liquidación definitiva de los organismos intervinientes.</p></div> },
+    { id:"aviso_firma", content:<div className="flex h-full items-end justify-between gap-3 text-[8px] text-slate-600"><div className="max-w-[58%]">La presente provisión tiene carácter estimativo. Los importes finales se justificarán con los documentos y pagos correspondientes.</div><div className="w-[34%] text-center"><div className="mb-1 font-bold text-[#123e70]">Conforme del cliente</div><div className="h-8 border-b border-slate-400"/><div className="mt-1">Firma y fecha</div></div></div> },
+  ];
+  return <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="mb-3"><p className="text-xs font-black uppercase tracking-wider text-emerald-700">Previsualización de la provisión</p><h3 className="font-bold text-slate-900">Así quedaría la hoja · vista A4 en directo</h3><p className="mt-1 text-xs text-slate-500">La distribución se actualiza al instante al mover los bloques del diseñador. Los textos e importes son una referencia visual, no una provisión emitida.</p></div>
+    <div className="overflow-auto rounded-xl bg-slate-100 p-3 sm:p-5"><article className="relative mx-auto aspect-[210/297] w-full max-w-[620px] overflow-hidden border border-slate-200 bg-white shadow-xl">
+      <div className="absolute inset-x-[5%] top-[1.5%] border-b border-sky-200 pb-1 text-center text-[7px] font-bold tracking-[.15em] text-slate-400">MOLSAN · PROVISIÓN DE FONDOS</div>
+      {bloques.map(b=>{const p=posiciones[b.id]||DOCUMENTO_LAYOUTS.provision.find(c=>c.id===b.id);if(!p)return null;return <div key={b.id} style={{left:p.x+"%",top:p.y+"%",width:p.w+"%",height:p.h+"%",textAlign:p.align||"left",fontSize:(p.fontSize||9)+"px",fontWeight:p.bold?"700":"400",fontStyle:p.italic?"italic":"normal",paddingLeft:(p.padL??1)+"%",paddingRight:(p.padR??1)+"%",paddingTop:(p.padT??1)+"%",paddingBottom:(p.padB??1)+"%"}} className="absolute overflow-hidden text-slate-800">{b.content}</div>;})}
+      <div className="absolute bottom-[1.5%] left-[5%] right-[5%] border-t border-slate-200 pt-1 text-center text-[6px] text-slate-400">MOLSAN · Documento de provisión de fondos · Modelo de referencia</div>
+    </article></div>
+    <p className="mt-3 text-[10px] leading-4 text-slate-500">Los textos e importes de ejemplo sirven para valorar la composición. Se conservan sin cambios las tarifas, los cálculos, las reglas fiscales y la generación del PDF oficial.</p>
+  </section>;
+}
+
 export function DocumentoLayoutDesigner({ tipo }) {
   const campos = DOCUMENTO_LAYOUTS[tipo] || [];
   const [posiciones, setPosiciones] = useState(() => Object.fromEntries(campos.map(c => [c.id,{...c,align:"left",valign:"top",fontSize:9,padL:1,padR:1,padT:1,padB:1,bold:false,italic:false}])));
@@ -84,7 +106,7 @@ export function DocumentoLayoutDesigner({ tipo }) {
   };
   const p=posiciones[activo] || {};
   const cambiarNumero=(k,v)=>actualizar(activo,k,Number(v));
-  return <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+  return <><section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div><p className="text-xs font-black uppercase tracking-wider text-sky-700">Diseñador de distribución · A4</p><h3 className="font-bold text-slate-900">Diseñador de distribución</h3><p className="mt-1 text-xs text-slate-500">Arrastra los bloques a la posición deseada. Recoloca los bloques dentro de la hoja y guarda la configuración.</p></div>
       <button type="button" onClick={guardar} disabled={guardando||cargando} className="rounded-lg bg-sky-700 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{guardando?"Guardando…":"Guardar distribución"}</button>
@@ -117,7 +139,7 @@ export function DocumentoLayoutDesigner({ tipo }) {
         <p className="text-[10px] leading-4 text-slate-500">Esta configuración se guarda por separado para cada documento. El PDF oficial conserva su composición actual: este editor no altera la emisión, tarifas, impuestos, gastos, pagos ni datos del expediente.</p>
       </aside>
     </div>
-  </section>;
+  </section>{tipo==="provision"&&<div className="mt-5"><ProvisionDocumentoPreview posiciones={posiciones}/></div>}</>;
 }
 
 
