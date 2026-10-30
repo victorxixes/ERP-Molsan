@@ -410,3 +410,12 @@ Se mantiene pendiente el recorrido del resto de herramientas: importaciones, mod
 - **EncargaGest:** dispone de hoja de estilos propia y una capa de workspace separada; se han conservado ambas. El portal no se debe forzar a adoptar la estructura del ERP interno.
 - La auditoría estática de CSS revela alta fragmentación de media queries en portales (más de 50 bloques en PortalProfesionalShared y más de 40 en NotarGest), además de reglas `!important` concentradas en las hojas históricas. Es una señal de deuda de cascada, no una razón para borrarlas automáticamente.
 - **Decisión técnica:** mantener estilos de portal aislados y reducir contradicciones por secciones pequeñas, con pruebas de escritorio/móvil de cada flujo. Las reglas de impresión de ApoderaGest quedan fuera de cualquier normalización de pantalla.
+
+
+## Vigésima primera pasada: CTN, informes e intranet
+
+- **CTN · ficha de notaría:** se ha añadido `ctn-workspace-premium` al ámbito de su contenedor propio para que las reglas transversales de CTN también alcancen esta ruta de detalle, que no necesariamente se renderiza dentro del listado.
+- **Informes:** el contenedor raíz imponía un degradado azul/gris y un color de texto local. Se ha conectado también a `utilidades-premium-page`, retirado el fondo degradado del módulo y eliminado el color de texto fijo para heredar el lienzo y la tipografía corporativos.
+- **Dashboard:** ya usa `erp-page`, `dashboard-cancelagest` y `molsan-page`, con hoja específica de dashboard; no se ha forzado otra clase.
+- **Intranet** y **Logs** ya tienen sus ámbitos premium propios.
+- Se conservan gráficos, filtros, navegación de informes, información de CTN y contenido de intranet.
