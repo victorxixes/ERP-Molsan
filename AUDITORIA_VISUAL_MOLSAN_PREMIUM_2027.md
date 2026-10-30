@@ -740,3 +740,16 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 - Backend audit completó compilación de módulos y pruebas unitarias con SQLite aislado; no utilizó la base de producción.
 - Los workflows de frontend finalizaron correctamente en los builds aplicables.
 - La última lectura de PR #374 mantiene estado abierto, draft y mergeable; no se ha integrado ni desplegado.
+
+## Trigésima quinta pasada: seguridad, controles y tablas compartidas — 30/10/2026
+- `SeguridadAuditoria.jsx`: el diálogo de detalle de registro integra `useAccessibleDialog`, foco inicial, ciclo de tabulación, Escape y restauración de foco.
+- `molsan-controls.css`: se elimina una regla duplicada de foco que quedaba sobrescrita por una segunda definición posterior.
+- `molsan-tables.css`: se consolidan en una sola definición las reglas repetidas de `.molsan-table-wrap`, scroll horizontal, ancho mínimo de tablas y breakpoint móvil; se conservan padding móvil, bordes y scroll táctil.
+- Comprobación de tablas: CTN detalle usa `.ctn-detalle-table-wrap` y `.ctn-detalle-history-table-wrap` con `overflow:auto`; CTN listado usa `.ctn-tabla-scroll`; Expedientes usa `.expedientes-table-scroll`/`.molsan-table-wrap`; ApoderaGest usa `.ag-resumen-tabla-wrap`; catálogos usan wrappers de scroll; Informes y FichaExpediente conservan wrappers propios.
+- Los listados extensos no se fuerzan a encoger columnas: el desplazamiento horizontal queda encapsulado en el contenedor de tabla.
+- Commit de seguridad: `4cc860e7`; consolidación de controles/tablas: `aed538ed` y `9ed2d108`.
+- El commit `9ed2d108` pasó los cinco workflows CI. El cambio posterior de SeguridadAuditoria (`4cc860e7`) está pendiente de la confirmación de su workflow asociado.
+
+### Estado de permisos de Control Apoderados
+- La ruta de administración se encuentra bajo `RequireAuth`; se verificó que los endpoints `/admin` del backend llaman a `_exigir_admin(usuario)`, que exige rol administrativo o permisos de edición de Utilidades/Seguridad. Los datos y las operaciones administrativas no dependen solo del guard visual del frontend.
+- Añadir un guard equivalente en frontend queda como mejora de experiencia (evitar abrir una pantalla que devolverá 403), no como corrección de la autorización de datos.
