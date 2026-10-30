@@ -726,3 +726,17 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 - En el commit de código `77cd28bf`, EncargaGest checks, Consolidación Post Firma, Validar Fichaje Molsan y Validar Control Apoderados finalizaron correctamente.
 - Backend audit seguía en ejecución en la última consulta; no se marca como completado hasta confirmar su resultado.
 - PR #374 permanece abierta, en borrador y mergeable; sin integración ni despliegue.
+
+## Trigésima cuarta pasada: consolidación de tokens y acentos de acción — 30/10/2026
+- `molsan-tokens.css` queda como fuente canónica para `--molsan-page-bg`, `--molsan-card-border`, `--molsan-card-shadow` y el nuevo `--molsan-card-shadow-hover`. Se conservan los valores que ya aplicaba la capa de rediseño, evitando un cambio visual brusco.
+- `MolsanRedesign2027.css` deja de redefinir esos tokens localmente en `.cg-page` y en el conjunto de pantallas migradas; consume los tokens globales.
+- `molsan-design-system.css` deja de sobrescribir `--molsan-radius-panel` (el valor canónico vuelve a ser el de `molsan-tokens.css`) y elimina un alias de sombra redundante.
+- `--ag-line` se unifica con `var(--molsan-border)` en la capa de rediseño, alineado con los portales compartidos.
+- Acciones principales de `FichaExpediente.jsx`, `EntidadesBancarias.jsx`, `Municipios.jsx` y `RegistrosPropiedad.jsx` pasan a `--molsan-primary` y `--molsan-primary-hover`; no se han cambiado colores de estados de negocio ni series de gráficos.
+- Commits de tokens: `d66495a4`, `665b6c23`, `9b43a10f`, `4ae0e091`; botones: `ebfc2602`, `988f402d`, `89bc6606`, `b28eb331`.
+
+### Resultado CI confirmado
+- Para el commit de código `b28eb331`, los cinco workflows asociados a la PR terminaron en `success`: Backend audit, EncargaGest checks, Consolidación Post Firma checks, Validar Fichaje Molsan y Validar Control Apoderados.
+- Backend audit completó compilación de módulos y pruebas unitarias con SQLite aislado; no utilizó la base de producción.
+- Los workflows de frontend finalizaron correctamente en los builds aplicables.
+- La última lectura de PR #374 mantiene estado abierto, draft y mergeable; no se ha integrado ni desplegado.
