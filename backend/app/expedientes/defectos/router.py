@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
 from backend.app.expedientes.models import Expediente
 from backend.app.expedientes.defectos.models import (
     DefectoSubtipo,
@@ -31,8 +32,9 @@ from backend.app.tipos_carga_hipotecaria.models import TipoCargaHipotecaria
 # ============================================================
 
 router = APIRouter(
-    prefix="/expedientes",
+    prefix="/expedientes/defectos",
     tags=["Defectos de expedientes"],
+    dependencies=[Depends(get_current_user)],
 )
 
 MAX_PDF_BYTES = 15 * 1024 * 1024
