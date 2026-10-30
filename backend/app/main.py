@@ -206,6 +206,8 @@ from backend.app.seguridad.asignar_password_router import (
 )
 from backend.app.seguridad.permisos.permisos_router import (
     router as permisos_router,
+    MODULOS_BASE,
+    PERMISOS_BASE,
 )
 from backend.app.expedientes.gastos.router import router as gastos_router
 from backend.app.honorarios_gestoria.router import router as honorarios_gestoria_router
@@ -2762,36 +2764,38 @@ def inicializar_esquema_base_preview():
 
 
 def crear_administrador_preview():
-    """Crea una cuenta administradora solo en la instancia aislada de preview."""
+    """Crea o repara el administrador únicamente en la API aislada de preview.
+
+    No inicializa el esquema ni cambia la contraseña de una cuenta existente.
+    La comprobación del hostname impide ejecutar este bootstrap en producción,
+    aunque la variable de activación se configurase allí por error.
+    """
     habilitado = os.getenv("MOLSAN_PREVIEW_BOOTSTRAP_ADMIN", "").strip().lower()
-    schema_habilitado = os.getenv("MOLSAN_PREVIEW_BOOTSTRAP_SCHEMA", "").strip().lower()
     if habilitado not in {"1", "true", "yes", "si", "sí"}:
         return
-    if schema_habilitado not in {"1", "true", "yes", "si", "sí"}:
-        raise RuntimeError("[PREVIEW ADMIN] Se exige el bootstrap de esquema exclusivo de preview.")
+
+    hostname = os.getenv("RENDER_EXTERNAL_HOSTNAME", "").strip().lower()
+    hostname_esperado = "molsan-glass-luxe-preview-api.onrender.com"
+    if hostname != hostname_esperado:
+        raise RuntimeError(
+            "[PREVIEW ADMIN] Bootstrap bloqueado: el servicio no es la API de preview autorizada."
+        )
 
     usuario = os.getenv("MOLSAN_PREVIEW_ADMIN_USERNAME", "").strip()
     password = os.getenv("MOLSAN_PREVIEW_ADMIN_PASSWORD", "")
-    if not usuario or len(password) < 20:
-        raise RuntimeError("[PREVIEW ADMIN] Faltan credenciales seguras de bootstrap.")
+    if not usuario:
+        raise RuntimeError("[PREVIEW ADMIN] Falta MOLSAN_PREVIEW_ADMIN_USERNAME.")
+
+    modulos_admin = list(MODULOS_BASE)
+    permisos_admin = {
+        modulo: list(PERMISOS_BASE)
+        for modulo in modulos_admin
+    }
 
     from backend.app.empleados.service import hash_password
 
-    modulos_admin = [
-        "dashboard", "agenda", "empleados", "informes", "intranet",
-        "auditoria", "seguridad", "utilidades", "catalogos", "logs",
-        "ctn", "maestros", "mensajes", "realtime", "notarios",
-        "documentos", "expedientes", "notargest", "encargagest",
-    ]
-    permisos_admin = {"*": ["ver", "crear", "editar", "eliminar"]}
-
     db = SessionLocal()
     try:
-        existente = db.query(Empleado).filter(Empleado.usuario == usuario).first()
-        if existente:
-            print("[PREVIEW ADMIN] La cuenta configurada ya existe; no se modifica ni se restablece su contraseña.", flush=True)
-            return
-
         rol_admin = db.query(Rol).filter(
             or_(
                 Rol.nombre.ilike("admin"),
@@ -2801,9 +2805,38 @@ def crear_administrador_preview():
             )
         ).first()
         if rol_admin is None:
-            rol_admin = Rol(nombre="Admin", descripcion="Administrador del entorno aislado de pruebas")
+            rol_admin = Rol(
+                nombre="Admin",
+                descripcion="Administrador del entorno aislado de pruebas",
+            )
             db.add(rol_admin)
             db.flush()
+
+        existente = (
+            db.query(Empleado)
+            .filter(Empleado.usuario == usuario)
+            .first()
+        )
+
+        if existente:
+            # La cuenta se identifica explícitamente mediante la variable de
+            # entorno del administrador de preview. Se repara el rol y los
+            # permisos explícitos; nunca se sobrescribe su contraseña.
+            existente.rol_id = rol_admin.id
+            existente.activo = True
+            existente.modulos_visibles_list = modulos_admin
+            existente.permisos_modulo_dict = permisos_admin
+            db.commit()
+            print(
+                "[PREVIEW ADMIN] Cuenta existente reparada: rol, módulos y permisos explícitos actualizados; contraseña conservada.",
+                flush=True,
+            )
+            return
+
+        if len(password) < 20:
+            raise RuntimeError(
+                "[PREVIEW ADMIN] Para crear una cuenta nueva, MOLSAN_PREVIEW_ADMIN_PASSWORD debe tener al menos 20 caracteres."
+            )
 
         administrador = Empleado(
             nombre="Administrador",
@@ -2819,7 +2852,10 @@ def crear_administrador_preview():
         )
         db.add(administrador)
         db.commit()
-        print("[PREVIEW ADMIN] Cuenta administradora de pruebas creada correctamente.", flush=True)
+        print(
+            "[PREVIEW ADMIN] Cuenta administradora de pruebas creada con permisos explícitos para todos los módulos base.",
+            flush=True,
+        )
     except Exception:
         db.rollback()
         raise
@@ -2838,8 +2874,12 @@ app.router.on_startup.insert(3, migrar_visibilidad_empleado)
 app.router.on_startup.insert(4, reparar_vinculos_apoderado_expedientes)
 
 # Solo el servicio aislado de preview activa la creación inicial del esquema.
+# El bootstrap del administrador es independiente: puede reparar permisos en
+# una base ya inicializada sin volver a ejecutar create_all ni exigir el flag schema.
 if os.getenv("MOLSAN_PREVIEW_BOOTSTRAP_SCHEMA", "").strip().lower() in {"1", "true", "yes", "si", "sí"}:
     app.router.on_startup.insert(0, inicializar_esquema_base_preview)
-    app.router.on_startup.insert(1, crear_administrador_preview)
+
+if os.getenv("MOLSAN_PREVIEW_BOOTSTRAP_ADMIN", "").strip().lower() in {"1", "true", "yes", "si", "sí"}:
+    app.router.on_startup.append(crear_administrador_preview)
 
 instrumentar_inicio_aplicacion()
