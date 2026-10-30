@@ -164,3 +164,32 @@ Se han inspeccionado estáticamente también:
 - Intranet, Maestros y Notificaciones tienen CSS dedicados.
 - Mensajería de Molsan importa estilos de herramientas; la ficha de proveedores carecía de estilos compartidos y ya se ha incorporado.
 - Seguridad (Usuarios y Permisos) ya utiliza clases de ámbito premium; persisten reglas CSS repetidas que se deben consolidar con cuidado, no mediante borrado masivo.
+
+
+## Tercera pasada: cobertura de ámbitos visuales y herramientas
+
+### Hallazgos de cobertura
+- `App.jsx` carga 88 pantallas mediante `React.lazy` / importación dinámica. Sus hojas CSS de módulo se descargan al entrar en la ruta; por tanto, no se puede asumir que una normalización global cargada al inicio prevalezca sobre las reglas específicas de cada módulo.
+- `EmpleadoPerfil.jsx` importaba CSS de acceso premium, pero el contenedor principal de la vista completa no tenía la clase `empleado-perfil-premium`; se ha añadido para activar el ámbito previsto.
+- `TiposExpediente.jsx` importaba `CatalogosMaestrosPremium.css` pero su raíz no tenía la clase `catalogo-maestro-page-premium`; se ha añadido.
+- `Verifacti.jsx` importaba componentes operativos compartidos, pero el ámbito `verifacti-premium` se aplicaba a un campo reutilizable, no a la página completa; se ha añadido `verifacti-page-premium` y su normalización de página.
+- Control Apoderados, Control Fichajes, resumen de fichajes, solicitudes de ausencia, festivos/compensaciones, Datos Molsan y Mensajería Proveedores carecían de ámbitos completos compartidos o no los tenían en el contenedor principal.
+
+### Correcciones aplicadas
+- Ámbitos raíz premium añadidos a EmpleadoPerfil, TiposExpediente y Verifacti.
+- Estilos de marca y controles para fichajes (resumen, solicitudes, festivos) conectados a tokens comunes, preservando estados semánticos.
+- Datos Molsan conectado a tokens comunes en cabecera, tarjetas, campos y botón de guardado; conserva la lógica de logo y persistencia.
+- Se eliminaron tres declaraciones duplicadas de tokens en `molsan-tokens.css`.
+- Se añadieron ámbitos de página para Control Apoderados, Control Fichajes y Mensajería Proveedores, con adaptación móvil y foco visible.
+
+### Hallazgos que requieren revisión visual antes de corregir
+- `MolsanRedesign2027.css` contiene 118 declaraciones `!important`, 25 media queries y varios selectores repetidos. No se hará una limpieza masiva porque hay reglas de compatibilidad que pueden estar compensando estilos de módulos.
+- `PortalProfesionalShared.css` contiene 56 `!important`, 55 media queries y selectores repetidos (por ejemplo, varios bloques de detalle de encargos).
+- `NotarGest.css` contiene 83 `!important`, 46 media queries y selectores repetidos para paneles, controles y modales.
+- `molsan-design-system.css` contiene reglas repetidas para algunos componentes y media queries. Deben consolidarse por componente después de confirmar qué bloque prevalece en cada ruta.
+- La página Informes tiene 64 menciones a modal/diálogo en su fuente y la página FichaExpediente tiene muchos diálogos inline. Es necesario verificar uno por uno los overlays, scroll interno, foco, cierre y altura útil.
+
+### Estado de QA
+- La compilación completa del frontend en el commit `5dce93ceece96fe60cf776eb669c723dc717b375` y los tres workflows de módulo terminaron correctamente.
+- Los commits posteriores siguen con validación en curso; no se da por validada la última versión hasta que acaben.
+- Ninguna de estas verificaciones estáticas equivale a abrir y comprobar las rutas y modales en un navegador real.
