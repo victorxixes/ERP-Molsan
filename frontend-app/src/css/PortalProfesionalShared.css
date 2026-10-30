@@ -1888,3 +1888,38 @@
     padding: 8px;
   }
 }
+
+
+
+/* Capa final compartida: ApoderaGest, NotarGest y EncargaGest */
+.apoderagest {
+  --ag-border: var(--molsan-border, #dce4ef);
+  --ag-surface: var(--molsan-surface, #fff);
+  --ag-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
+  color: var(--molsan-text, #17243a);
+  font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
+}
+.apoderagest :is(.ag-kpi,.ag-panel,.ag-cita-item,.ag-vacio) {
+  border-color: var(--ag-border);
+}
+.apoderagest :is(.ag-kpi,.ag-panel) {
+  border-radius: var(--molsan-radius-card,14px);
+  box-shadow: var(--ag-shadow);
+}
+.apoderagest .ag-panel-cabecera {
+  border-bottom-color: var(--molsan-border-light,#e8edf4);
+}
+.apoderagest :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),select,textarea) {
+  border-color: var(--molsan-border-strong,#c7d2e0);
+  border-radius: var(--molsan-radius-control,9px);
+  color: var(--molsan-text,#17243a);
+  font-family: inherit;
+}
+.apoderagest :is(table,.ag-tabla) { font-variant-numeric: tabular-nums; }
+.apoderagest :is(table, .ag-tabla) thead th {
+  background: #f5f7fb;
+  color: var(--molsan-text-secondary,#526176);
+}
+.apoderagest :is(button,a,input,select,textarea):focus-visible {
+  outline-color: rgba(49,86,179,.6);
+}
