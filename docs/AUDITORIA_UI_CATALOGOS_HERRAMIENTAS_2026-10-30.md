@@ -171,3 +171,11 @@ La revisión confirma clases presentes en el código, no una diferencia visual e
 ### Diálogos todavía pendientes de integración común
 - Catálogo ABSIS (crear lista y editar entrada), selector de soporte de módulos, CTN, Informes, Control Apoderados y Expedientes mantienen diálogos que requieren revisar su gestión de foco/teclado.
 - El inventario de diálogos se ha ampliado con `EnviarANotarioModal` y `TiposExpediente`, ya cubiertos por el gestor común.
+
+
+### Última ampliación de diálogos — 30/10/2026
+- `ModulosSelector.jsx`: diálogo de soporte de notaría añadido al gestor común de teclado/foco.
+- `ControlApoderados.jsx`: diálogo de listado de firmas añadido al gestor común.
+- `TiposExpediente.jsx`: diálogo de alta/edición añadido al gestor común; el componente también queda armonizado visualmente.
+- Los cambios de los tres módulos y los previos se compilaron correctamente en el head `cce08181dea0da4fbc1f68567af7c86bbaacf240`: los cinco workflows consultados finalizaron en `success`, incluido Backend audit.
+- Sigue pendiente la integración de Catálogo ABSIS, CTN, Informes y Expedientes. La cobertura de accesibilidad no se declara completa.
