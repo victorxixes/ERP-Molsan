@@ -2362,6 +2362,7 @@ export default function TiposConceptoGastos() {
 
         <div
           className="
+            panel-modal-premium
             fixed
             inset-0
             z-50
@@ -2385,6 +2386,9 @@ export default function TiposConceptoGastos() {
         >
 
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={modoEdicion ? "Editar tipo de concepto de gasto" : "Nuevo tipo de concepto de gasto"}
             className="
               w-full
               max-w-lg
