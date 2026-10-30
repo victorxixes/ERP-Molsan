@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 20
       - name: Instalar dependencias
-        run: npm install --no-audit --no-fund
+        run: npm install --include=optional --include=optional --no-audit --no-fund
       - name: Compilar aplicación completa
         run: npm run build
 
