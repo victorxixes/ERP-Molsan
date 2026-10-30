@@ -166,8 +166,8 @@ function AutocompleteCatalogo({ titulo, valor, opciones, etiqueta, detalle, onCh
 function Selector({ titulo, valor, onChange, opciones, requerido = false }) {
   return <label className={label}>{titulo}<select className={input} value={valor ?? ""} onChange={(e) => onChange(e.target.value)} required={requerido}><option value="">Seleccionar…</option>{opciones.map((op) => <option key={typeof op === "string" ? op : op.nombre} value={typeof op === "string" ? op : op.nombre}>{typeof op === "string" ? op : op.nombre}</option>)}</select></label>;
 }
-function Seccion({ titulo, detalle, children }) {
-  return <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="mb-4"><h2 className="text-base font-bold text-slate-900">{titulo}</h2>{detalle && <p className="mt-1 text-xs text-slate-500">{detalle}</p>}</div>{children}</section>;
+function Seccion({ titulo, detalle, children, className = "" }) {
+  return <section className={`rounded-2xl border border-slate-200 bg-white p-5 shadow-sm ${className}`}><div className="mb-4"><h2 className="text-base font-bold text-slate-900">{titulo}</h2>{detalle && <p className="mt-1 text-xs text-slate-500">{detalle}</p>}</div>{children}</section>;
 }
 
 
@@ -347,14 +347,14 @@ function ConfiguracionConceptosProvisiones({ soloEditorPlantilla = false } = {})
       </>}
     </div>;
   };
-  return <div className={soloEditorPlantilla ? "contents" : ""}><Seccion titulo="Configuración de conceptos e importes" detalle="Tablas editables de provisiones por capital. Los importes de Notaría y Registro se guardan por tramo; Honorarios y Gestión se enlazan al catálogo central. El total se calcula automáticamente cuando el catálogo proporciona el importe.">
+  return <div className={soloEditorPlantilla ? "contents" : ""}><Seccion className={soloEditorPlantilla ? "provision-editor-config-section" : ""} titulo="Configuración de conceptos e importes" detalle="Tablas editables de provisiones por capital. Los importes de Notaría y Registro se guardan por tramo; Honorarios y Gestión se enlazan al catálogo central. El total se calcula automáticamente cuando el catálogo proporciona el importe.">
     {errorConfig && <div role="alert" className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{errorConfig}</div>}
     {mensaje && <div role="status" className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{mensaje}</div>}
-    {cargando ? <p className="py-4 text-sm text-slate-500">Cargando conceptos…</p> : <div className={soloEditorPlantilla ? "grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,0.82fr)]" : "space-y-3"}>
+    {cargando ? <p className="py-4 text-sm text-slate-500">Cargando conceptos…</p> : <div className={soloEditorPlantilla ? "provision-editor-config-items" : "space-y-3"}>
       {items.filter((item) => item.codigo === "notaria" || (!soloEditorPlantilla && item.codigo === "impuestos")).map((item) => {
         const draft = borradores[item.codigo] || {};
         if (item.codigo === "notaria") {
-          return <><div key={item.codigo} className="rounded-xl border border-slate-200 bg-slate-50/60 p-4">
+          return <><div key={item.codigo} className={"rounded-xl border border-slate-200 bg-slate-50/60 p-4 " + (soloEditorPlantilla ? "provision-editor-tarifas" : "")}>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div><p className="font-semibold text-slate-900">Tramos de provisión por capital</p><p className="mt-1 max-w-3xl text-xs text-slate-600">Configuración maestra del catálogo económico. Los cambios de tarifas se gestionan aquí y no se trasladan al editor documental.</p></div>
               <button type="button" disabled={guardando === item.codigo} onClick={() => guardarConcepto(item)} className={boton + " bg-blue-600 text-white hover:bg-blue-700"}>{guardando === item.codigo ? "Guardando…" : "Guardar tablas"}</button>
@@ -363,7 +363,7 @@ function ConfiguracionConceptosProvisiones({ soloEditorPlantilla = false } = {})
             {renderTabla(item, draft, "ajena")}
             
           </div>
-          {soloEditorPlantilla && <Seccion titulo="Hoja de provisión de fondos" detalle="Configuración de los datos corporativos y textos de la plantilla. El PDF oficial conserva su composición y sus cálculos.">
+          {soloEditorPlantilla && <Seccion className="provision-editor-hoja" titulo="Hoja de provisión de fondos" detalle="Configuración de los datos corporativos y textos de la plantilla. El PDF oficial conserva su composición y sus cálculos.">
             <div className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
               <div className="flex flex-wrap items-start justify-between gap-3"><div><h3 className="font-bold text-slate-900">Plantilla de la hoja de provisión</h3><p className="mb-3 mt-1 text-xs text-slate-500">Configuración guardada en el catálogo y aplicada a los PDF nuevos, tanto independientes como vinculados a expedientes.</p></div><button type="button" disabled={guardando === item.codigo} onClick={() => guardarConcepto(item, "plantilla")} className={boton + " bg-emerald-600 text-white hover:bg-emerald-700"}>{guardando === item.codigo ? "Guardando plantilla…" : "Guardar plantilla"}</button></div>
               <div className="grid gap-3 md:grid-cols-2">
@@ -760,7 +760,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
   };
 
 
-  if (soloEditorPlantilla) return <main className="provisiones-fondos-page w-full min-w-0 p-3 md:p-6"><div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(260px,1fr)_minmax(0,1.8fr)]"><div className="min-w-0"><DocumentoLayoutDesigner tipo="provision" /></div><ConfiguracionConceptosProvisiones soloEditorPlantilla /></div></main>;
+  if (soloEditorPlantilla) return <main className="provisiones-fondos-page w-full min-w-0 p-3 md:p-6"><div className="provision-editor-layout"><div className="provision-editor-designer min-w-0"><DocumentoLayoutDesigner tipo="provision" /></div><ConfiguracionConceptosProvisiones soloEditorPlantilla /></div></main>;
   if (modoCatalogo) return <main className="provisiones-fondos-page w-full min-w-0 space-y-6 p-3 md:p-6"><header className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/85 px-5 py-5 shadow-sm"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700">MOLSAN ERP PREMIUM 2027 · CATÁLOGOS ECONÓMICOS</p><h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800">Tabla Provisiones de fondos</h1><p className="mt-1 max-w-3xl text-sm text-slate-500">Configura importes estimativos y criterios iniciales. Estos valores sirven de referencia para nuevas provisiones; los registros históricos no se recalculan al cambiar la tabla.</p></header><ConfiguracionConceptosProvisiones /></main>;
 
   return <main className="provisiones-fondos-page w-full min-w-0 space-y-6 p-3 md:p-6">
