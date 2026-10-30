@@ -2816,6 +2816,7 @@ function ModalImportarExcel({
 
     <div
       className="
+        panel-modal-premium
         fixed
         inset-0
         z-50
@@ -2842,6 +2843,9 @@ function ModalImportarExcel({
     >
 
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Importar entidades bancarias desde Excel"
         className="
           w-full
           max-w-2xl
@@ -3430,6 +3434,7 @@ function ModalEntidadBancaria({
 
     <div
       className="
+        panel-modal-premium
         fixed
         inset-0
         z-50
@@ -3456,6 +3461,9 @@ function ModalEntidadBancaria({
     >
 
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={modo === "nuevo" ? "Nueva entidad bancaria" : "Editar entidad bancaria"}
         className="
           w-full
           max-w-2xl
