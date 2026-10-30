@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import axios from "../../api/axios";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import "../../css/CatalogosMaestrosPremium.css";
 import "../../css/ModalesHerramientasPremium.css";
 
@@ -19,6 +20,8 @@ export default function TiposExpediente() {
   const [nombre, setNombre] = useState("");
   const [grupo, setGrupo] = useState("Tipos de expediente");
   const [activo, setActivo] = useState(true);
+  const dialogRef = useRef(null);
+  useAccessibleDialog({ open: mostrarModal, onClose: cerrarModal, dialogRef });
 
   const cargar = useCallback(async () => {
     setCargando(true);
@@ -118,7 +121,7 @@ export default function TiposExpediente() {
 
       {(error || mensaje) && <div role="status" className={`rounded-xl border px-4 py-3 text-sm ${error ? "border-red-200 bg-red-50 text-red-700" : "border-emerald-200 bg-emerald-50 text-emerald-800"}`}>{error || mensaje}</div>}
 
-      {mostrarModal && <div className="panel-modal-premium fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm" onMouseDown={(e) => { if (e.target === e.currentTarget) cerrarModal(); }}><div role="dialog" aria-modal="true" aria-labelledby="tipo-expediente-modal-title" className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[24px] border border-slate-200 bg-white p-5 shadow-2xl sm:p-6">
+      {mostrarModal && <div className="panel-modal-premium fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm" onMouseDown={(e) => { if (e.target === e.currentTarget) cerrarModal(); }}><div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="tipo-expediente-modal-title" className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[24px] border border-slate-200 bg-white p-5 shadow-2xl sm:p-6">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div><h2 id="tipo-expediente-modal-title" className="text-lg font-bold text-slate-800">{editando ? "Editar tipo de expediente" : "Nuevo tipo de expediente"}</h2><p className="mt-1 text-sm text-slate-500">Los identificadores históricos se conservan; las nuevas altas reciben un ID automático.</p></div>
           <button type="button" onClick={cerrarModal} disabled={guardando} aria-label="Cerrar ventana" className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50">Cerrar ✕</button>
