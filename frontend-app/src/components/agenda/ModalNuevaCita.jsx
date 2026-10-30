@@ -745,6 +745,9 @@ export default function ModalNuevaCita({
     >
 
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={titulo}
         className="
           bg-white
           border border-slate-200
