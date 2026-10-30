@@ -354,19 +354,17 @@ function ConfiguracionConceptosProvisiones({ soloEditorPlantilla = false } = {})
       {items.filter((item) => item.codigo === "notaria" || (!soloEditorPlantilla && item.codigo === "impuestos")).map((item) => {
         const draft = borradores[item.codigo] || {};
         if (item.codigo === "notaria") {
-          return <div key={item.codigo} className="rounded-xl border border-slate-200 bg-slate-50/60 p-4">
+          return <><div key={item.codigo} className="rounded-xl border border-slate-200 bg-slate-50/60 p-4">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div><p className="font-semibold text-slate-900">Tramos de provisión por capital</p><p className="mt-1 max-w-3xl text-xs text-slate-600">Configuración maestra del catálogo económico. Los cambios de tarifas se gestionan aquí y no se trasladan al editor documental.</p></div>
               <button type="button" disabled={guardando === item.codigo} onClick={() => guardarConcepto(item)} className={boton + " bg-blue-600 text-white hover:bg-blue-700"}>{guardando === item.codigo ? "Guardando…" : "Guardar tablas"}</button>
             </div>
-            {!soloEditorPlantilla && <>
-              {renderTabla(item, draft, "caixabank")}
-              {renderTabla(item, draft, "ajena")}
-            </>}
+            {renderTabla(item, draft, "caixabank")}
+            {renderTabla(item, draft, "ajena")}
             
           </div>
           {soloEditorPlantilla && <Seccion titulo="Hoja de provisión de fondos" detalle="Configuración de los datos corporativos y textos de la plantilla. El PDF oficial conserva su composición y sus cálculos.">
-            div className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
+            <div className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
               <div className="flex flex-wrap items-start justify-between gap-3"><div><h3 className="font-bold text-slate-900">Plantilla de la hoja de provisión</h3><p className="mb-3 mt-1 text-xs text-slate-500">Configuración guardada en el catálogo y aplicada a los PDF nuevos, tanto independientes como vinculados a expedientes.</p></div><button type="button" disabled={guardando === item.codigo} onClick={() => guardarConcepto(item, "plantilla")} className={boton + " bg-emerald-600 text-white hover:bg-emerald-700"}>{guardando === item.codigo ? "Guardando plantilla…" : "Guardar plantilla"}</button></div>
               <div className="grid gap-3 md:grid-cols-2">
                 <label className={label}>Nombre corporativo<input className={input} value={draft.reglas?.plantilla_pdf?.nombre_empresa ?? "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L."} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), plantilla_pdf: { ...(draft.reglas?.plantilla_pdf || {}), nombre_empresa: e.target.value } })} /></label>
@@ -466,8 +464,9 @@ function ConfiguracionConceptosProvisiones({ soloEditorPlantilla = false } = {})
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-2"><p className="text-xs text-slate-500">{draft.reglas?.plantilla_pdf?.logo_data_url ? "Logo personalizado cargado y guardado con la plantilla." : "Se utiliza el logo del proyecto: /img/logo.jpg. Puedes sustituirlo por otro archivo."}</p><button type="button" onClick={() => cambiarCampoPlantilla(item.codigo, "posiciones", {})} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Restablecer posiciones</button></div>
               </section>
               <div className="mt-4 rounded-xl border border-blue-100 bg-white p-4 shadow-sm"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">Vista previa del documento</p><div className="mt-3 border-b-2 border-slate-200 pb-3"><p className="font-semibold text-slate-800">PROVISIÓN ESTIMATIVA DE FONDOS</p></div><p className="mt-3 text-xs text-slate-600">{draft.reglas?.plantilla_pdf?.mostrar_aviso_legal === false ? "Aviso legal oculto" : (draft.reglas?.plantilla_pdf?.aviso_legal || "Aviso legal pendiente")}</p></div>
-            </div
-          </Seccion>};
+            </div>
+          </Seccion>}
+          </>;
         }
         return <div key={item.codigo} className="rounded-xl border border-slate-200 bg-white p-4">
           <div className="grid gap-3 md:grid-cols-[1.2fr_1fr_1.4fr_auto] md:items-end">
