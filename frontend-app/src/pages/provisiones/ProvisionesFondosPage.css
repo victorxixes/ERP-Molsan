@@ -58,3 +58,30 @@
     animation-iteration-count: 1 !important;
   }
 }
+
+
+/* Editor de provisiones: plantilla a todo el ancho y herramientas en segunda fila. */
+.provision-editor-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    "hoja hoja"
+    "designer tarifas";
+  align-items: start;
+  gap: 16px;
+}
+.provision-editor-designer { grid-area: designer; min-width: 0; }
+.provision-editor-hoja { grid-area: hoja; min-width: 0; }
+.provision-editor-config-section { display: contents; }
+.provision-editor-config-section > .mb-4 { display: none; }
+.provision-editor-config-items { display: contents; }
+.provision-editor-tarifas { grid-area: tarifas; min-width: 0; }
+@media (max-width: 1023px) {
+  .provision-editor-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "hoja"
+      "designer"
+      "tarifas";
+  }
+}
