@@ -6,10 +6,12 @@ from sqlalchemy import func, text
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
 from backend.app.tipos_expediente.models import TipoExpediente
 
 
-router = APIRouter(prefix="/tipos-expediente", tags=["Tipos de expediente"])
+router = APIRouter(
+    dependencies=[Depends(get_current_user)],prefix="/tipos-expediente", tags=["Tipos de expediente"])
 
 
 TIPOS_INICIALES = [
