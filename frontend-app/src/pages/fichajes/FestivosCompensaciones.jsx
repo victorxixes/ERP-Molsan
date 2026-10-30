@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
+import "../../css/ComponentesOperativosPremium.css";
 
 const hoy = () => {
   const d = new Date();
@@ -114,7 +115,7 @@ export default function FestivosCompensaciones({ modo = "empleado", onUpdated })
   const fechaBonita = (v) => v ? new Date(`${v}T12:00:00`).toLocaleDateString("es-ES", { day: "2-digit", month: "short", year: "numeric" }) : "—";
   const estado = (v) => ({ PENDIENTE: "Pendiente de validar", VALIDADO: "Validado", RECHAZADO: "Rechazado", SOLICITADO: "Pendiente de aprobación", APROBADO: "Aprobada", DISFRUTADO: "Disfrutada", CONSUMIDO: "Disfrutada" }[v] || v);
 
-  return <section className="space-y-5 p-4 sm:p-6">
+  return <section className="fichajes-festivos-premium space-y-5 p-4 sm:p-6">
     <header><h2 className="text-xl font-extrabold">Festivos y compensaciones</h2>
       <p className="mt-1 max-w-3xl text-sm text-[var(--erp-text-soft)]">{admin ? "Valida los festivos trabajados, resuelve solicitudes y consulta el saldo individual. Cada cambio queda auditado." : "Consulta los días u horas generados por festivos trabajados y solicita disfrutarlos en otra fecha. Este saldo es independiente de las vacaciones ordinarias."}</p>
     </header>
