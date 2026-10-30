@@ -1100,3 +1100,14 @@ La ejecución del commit `79180ca9a18b63bde61b879734cf50e1e38a8f4f` terminó con
 - Consolidación Post Firma checks: success.
 
 Este commit incluye las correcciones de autenticación, visibilidad de expedientes en routers auxiliares, permisos de Agenda/Informes/Dashboard/ABSIS y guards de las rutas privadas frontend. No hay cambios de código posteriores a ese commit en la rama; las anotaciones posteriores son únicamente documentación/PR.
+
+### Operaciones técnicas/destructivas — comprobación de cierre — 30/10/2026
+
+- `/debug/*`: solo lectura; exige JWT, `seguridad.editar` e identidad administradora. No ejecuta DDL ni devuelve filas de negocio.
+- Router de borrado de roles: deshabilitado; no registra operación DROP TABLE.
+- Router de borrado de tablas: deshabilitado.
+- Router de reset de Intranet: sin endpoints destructivos registrados.
+- Herramientas de creación de tablas: router desactivado; DDL de producción reservado a migraciones revisadas.
+- Migraciones de gastos y defectos: autenticación y permiso explícito `seguridad.editar`.
+
+No se han ejecutado ni solicitado acciones destructivas ni cambios sobre datos reales durante esta auditoría.
