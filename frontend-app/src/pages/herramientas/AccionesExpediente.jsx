@@ -2354,6 +2354,7 @@ export default function AccionesExpediente() {
 
         <div
           className="
+            panel-modal-premium
             fixed
             inset-0
             z-[200]
@@ -2367,6 +2368,9 @@ export default function AccionesExpediente() {
         >
 
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={modoEdicion ? "Editar acción del expediente" : "Nueva acción del expediente"}
             className="
               w-full
               max-w-3xl
@@ -2685,6 +2689,7 @@ export default function AccionesExpediente() {
 
         <div
           className="
+            panel-modal-premium
             fixed
             inset-0
             z-[210]
@@ -2698,6 +2703,9 @@ export default function AccionesExpediente() {
         >
 
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Importar acciones del expediente"
             className="
               w-full
               max-w-xl
