@@ -140,7 +140,7 @@
   .ficha-expediente-premium { padding-left: 12px; padding-right: 12px; }
   .ficha-expediente-premium :is(.grid-cols-2,.grid-cols-3,.grid-cols-4,.grid-cols-5,.grid-cols-6) { grid-template-columns: minmax(0,1fr); }
   .ficha-expediente-premium :is(.overflow-x-auto,[data-table-scroll="true"]) { margin-left: -2px; margin-right: -2px; }
-  .ficha-expediente-premium table { min-width: 680px; }
+  .ficha-expediente-premium :is(.overflow-x-auto,[data-table-scroll="true"]) table { min-width: 680px; }
   .ficha-expediente-premium :is(button,[role="button"]) { min-height: 36px; }
 }
 @media (prefers-reduced-motion: reduce) {
