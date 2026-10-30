@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { renderAsync } from "docx-preview";
 import axios from "../../api/axios";
+import "../../css/ComponentesOperativosPremium.css";
 import { Link } from "react-router-dom";
 import HonorariosGestoria from "./HonorariosGestoria";
 import ProvisionesFondosPage, { DocumentoLayoutDesigner } from "../provisiones/ProvisionesFondosPage";
@@ -298,7 +299,7 @@ function FacturaPlantillaEditor({ datosMolsan = {} }) {
     }
   };
 
-  return <section className="space-y-5">
+  return <section className="modelos-documentos-premium space-y-5">
     <FacturaLayoutDesigner datosMolsan={datosMolsan} />
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <p className="text-xs font-black uppercase tracking-[.16em] text-sky-700">Plantilla Word original</p>
