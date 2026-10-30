@@ -249,3 +249,13 @@ Se ha recorrido el inventario de importaciones lazy de `App.jsx`: 88 pantallas/r
 - El commit `d5a8144e` incorpora los últimos ámbitos de utilidades/Fusiones y está pendiente de sus workflows.
 - El artefacto `molsan-premium-frontend-dist` se publica desde GitHub Actions para conservar una compilación aislada de revisión.
 - La inspección estática y la compilación no sustituyen la prueba visual real. El navegador automatizado de este entorno bloquea la navegación a los archivos/servidor locales; no se han fabricado capturas ni se declara QA visual de navegador completada.
+
+
+## Sexta pasada: catálogo de tokens y validación de integración
+
+- Se revisó el catálogo central de tokens: ahora contiene 48 variables, sin nombres duplicados.
+- Se añadieron aliases explícitos para borde primario, sombra de diálogo, sombra de panel y compatibilidad de tarjetas heredadas. Esto evita que los componentes dependan de valores dispersos o de fallbacks inconsistentes.
+- La rama completa compila correctamente en el commit `5f147b268992a394a04942e333a3f15df197d718`.
+- También finalizaron correctamente los workflows de Control Apoderados, Fichaje Molsan, EncargaGest y Consolidación Post Firma para ese mismo commit.
+- GitHub Actions ha generado el artefacto `molsan-premium-frontend-dist` (artefacto aislado de build; no es un despliegue ni una captura visual).
+- La PR #374 sigue abierta, en borrador, con base `main`; no está fusionada.
