@@ -2591,6 +2591,7 @@ function ModalImportarExcel({
 
     <div
       className="
+        panel-modal-premium
         fixed
         inset-0
         z-50
@@ -2617,6 +2618,9 @@ function ModalImportarExcel({
     >
 
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Importar municipios desde Excel"
         className="
           w-full
           max-w-2xl
@@ -3216,6 +3220,7 @@ function ModalMunicipio({
 
     <div
       className="
+        panel-modal-premium
         fixed
         inset-0
         z-50
@@ -3242,6 +3247,9 @@ function ModalMunicipio({
     >
 
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={modo === "nuevo" ? "Nuevo municipio" : "Editar municipio"}
         className="
           w-full
           max-w-xl
