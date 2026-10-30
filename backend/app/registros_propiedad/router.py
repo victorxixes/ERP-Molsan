@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
 from backend.app.uploads import MAX_EXCEL_UPLOAD_BYTES, read_upload_limited
 from backend.app.registros_propiedad.models import (
     RegistroPropiedad,
@@ -25,6 +26,7 @@ from backend.app.Utilidades.importadores.registros_propiedad_importer import (
 # ============================================================
 
 router = APIRouter(
+    dependencies=[Depends(get_current_user)],
     prefix="/registros-propiedad",
     tags=["Registros de la Propiedad"],
 )
