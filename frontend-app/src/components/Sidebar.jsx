@@ -21,6 +21,7 @@ import SidebarPerfilModal from "./SidebarPerfilModal";
 
 
 import "../css/LayoutPortalesPremium.css";
+import "../css/ModalesHerramientasPremium.css";
 /**
  * ============================================================
  * ICONOS DE NAVEGACIÓN
@@ -1429,6 +1430,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
         <div
           className="
+            panel-modal-premium
             fixed
             inset-0
             z-[1000]
@@ -1441,9 +1443,6 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
             bg-slate-950/35
             backdrop-blur-[2px]
           "
-          role="dialog"
-          aria-modal="true"
-          aria-label="Notificaciones"
           onMouseDown={(event) => {
 
             if (
@@ -1459,6 +1458,9 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
         >
 
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Notificaciones"
             className="
               relative
               w-full
