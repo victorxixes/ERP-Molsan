@@ -43,7 +43,7 @@
 @media (max-width: 640px) {
   .maestros-premium-page { padding: 1rem; }
   .maestros-premium-page section { border-radius: .9rem; }
-  .maestros-premium-page table { min-width: 480px; }
+  .maestros-premium-page .overflow-x-auto table { min-width: 480px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .maestros-premium-page tbody tr { transition: none; }
