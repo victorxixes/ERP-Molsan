@@ -38,13 +38,17 @@ export function esAdministrador(empleado = useAuthStore.getState().empleado) {
     .toLowerCase();
   const usuario = String(empleado.usuario || "").trim().toLowerCase();
   const rolId = empleado.rol_id ?? empleado.rol?.id;
+  const rolIdTecnicoAdmin =
+    (typeof rolId === "number" && Number.isInteger(rolId) && rolId === 0) ||
+    (typeof rolId === "string" && rolId.trim() === "0");
+  const rolNormalizado = rol.replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
 
   return (
     empleado.es_admin === true ||
     empleado.is_admin === true ||
-    (rolId !== null && rolId !== undefined && Number(rolId) === 0) ||
+    rolIdTecnicoAdmin ||
     usuario === "admin" ||
-    /(^|\s)(admin|administrador|administradora|superadmin|superadministrador|superadministradora|superusuario|super usuario|superuser|root)(\s|$)/.test(rol)
+    /(^|\s)(admin|administrador|administradora|superadmin|super admin|superadministrador|super administradora|superusuario|super usuario|superuser|root|administrador general)(\s|$)/.test(rolNormalizado)
   );
 }
 
