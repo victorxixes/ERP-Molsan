@@ -1111,3 +1111,9 @@ Este commit incluye las correcciones de autenticación, visibilidad de expedient
 - Migraciones de gastos y defectos: autenticación y permiso explícito `seguridad.editar`.
 
 No se han ejecutado ni solicitado acciones destructivas ni cambios sobre datos reales durante esta auditoría.
+
+### Detección administrativa — excepción localizada en Tipos Impositivos — 30/10/2026
+
+Se detectó que `backend/app/tipos_impositivos/router.py::_admin` autoriza únicamente por nombre de rol en una lista cerrada (`admin`, `administrador`, `superadmin`, etc.). No utiliza el mismo criterio central de permisos de seguridad ni contempla explícitamente usuario `admin`, `rol_id=0` o flags administrativos. Puede producir un falso negativo si la cuenta administradora se identifica por otro atributo, aunque el resto del sistema la reconozca.
+
+No se ha cambiado este guard sin confirmar la política que debe gobernar el mantenimiento del catálogo de impuestos. Queda como ajuste puntual pendiente: unificarlo con el criterio administrativo backend aprobado, manteniendo el requisito de permiso de mantenimiento y sin conceder privilegios por nombre de usuario no verificado.
