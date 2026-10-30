@@ -934,3 +934,41 @@ Alcance y cautela:
 - El dashboard queda accesible solo a usuarios autenticados; la visibilidad del módulo y el permiso de consulta requieren verificación separada.
 - No se han ejecutado peticiones HTTP con perfiles de prueba ni pruebas de regresión tras estos cambios. Deben pasar CI/build y posteriormente pruebas 401 sin sesión, 200 con sesión autorizada y 403 con sesión sin permiso cuando se incorpore autorización granular.
 - Se comprobó además que Mensajería Molsan ya aplica comprobaciones explícitas de permiso en cada operación; CTN y Carpetas Digitales declaran autenticación a nivel de router; y los routers de borrado de tablas/restablecimiento de Intranet no registran endpoints destructivos.
+
+### Segunda pasada de routers backend y nuevas correcciones de autenticación — 30/10/2026
+
+Se amplió el muestreo a los routers de catálogos, importadores, expedientes y seguridad. Se localizaron otras rutas sin requisito JWT y se cerraron con dependencias de autenticación a nivel de router, conservando sus prefijos y contratos:
+
+- Fincas y registros del expediente: `backend/app/expedientes/fincasyregistros/router.py`.
+- Fusiones: `backend/app/fusiones/router.py`.
+- Defectos de expediente: `backend/app/expedientes/defectos/router.py`. Se preservó expresamente el prefijo original `/expedientes`; no se alteran las URLs existentes.
+- Catálogo ABSIS: `backend/app/catalogos_absis/router.py`.
+- Catálogo de oficinas: `backend/app/oficinas_catalogo/router.py`.
+- Entidades bancarias: `backend/app/entidades_bancarias/router.py`.
+- Registros de la Propiedad: `backend/app/registros_propiedad/router.py`.
+- Oficinas liquidadoras: `backend/app/oficinas_liquidadoras/router.py`.
+- Tipos de concepto de gastos: `backend/app/tipos_concepto_gastos/router.py`.
+- Tipos de expediente: `backend/app/tipos_expediente/router.py`.
+- Acciones de expediente y asignaciones de acciones: `backend/app/acciones_expediente/router.py` y `backend/app/expediente_acciones/router.py`.
+- Tipos de carga hipotecaria: `backend/app/tipos_carga_hipotecaria/router.py`.
+- Importador ABSIS de expedientes: `backend/app/Utilidades/importadores/router_absis.py`.
+
+Hallazgo adicional de prioridad alta: el endpoint heredado `POST /api/seguridad/asignar/empleado/{empleado_id}/password` permitía restablecer contraseñas sin autenticación ni permiso. Se ha protegido con sesión JWT y permiso explícito `seguridad.editar` en `backend/app/seguridad/asignar_password_router.py`.
+
+Límites de esta corrección:
+- Las dependencias añadidas garantizan autenticación; no equivalen a autorización por módulo/acción en todos los routers. En particular, Maestros, Municipios, Dashboard, Agenda, Informes ApoderaGest, Fusiones, Fincas, Defectos y varios catálogos aún necesitan contrastar el permiso funcional correcto con SeguridadUsuarios antes de restringir por acción.
+- Los routers de gastos de expediente y proceso ABSIS exigen JWT en sus endpoints, pero la revisión granular de permiso/ámbito de expediente continúa abierta.
+- No se ha modificado ninguna asignación de permisos de empleados ni se ha concedido bypass administrativo.
+
+### Incidencia CI de instalación de Rollup — 30/10/2026
+
+Los workflows de frontend fallaron después de instalar dependencias porque faltaba el paquete opcional nativo de Rollup para Linux `@rollup/rollup-linux-x64-gnu`. Los logs muestran que la compilación no llegó a analizar el código de la aplicación; el backend sí superó `compileall` y el workflow de auditoría ejecutó 84 tests y 21 subtests satisfactoriamente antes de quedar cancelado por la concurrencia de ejecuciones.
+
+Se actualizó la instalación de dependencias para incluir explícitamente las dependencias opcionales en:
+- `.github/workflows/frontend-build.yml`
+- `.github/workflows/validar-fichajes.yml`
+- `.github/workflows/control-apoderados-ci.yml`
+- `.github/workflows/encargagest-checks.yml`
+- `.github/workflows/consolidacion-postfirma-checks.yml`
+
+La solución está aplicada en la rama, pero queda pendiente confirmar un nuevo build verde con los workflows reejecutados. No se considera resuelta hasta esa comprobación.
