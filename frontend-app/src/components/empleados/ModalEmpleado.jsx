@@ -451,7 +451,6 @@ export default function ModalEmpleado({
   const usuarioSesion = useAuthStore((s) => s.empleado);
   const actualizarEmpleadoSesion = useAuthStore((s) => s.actualizarEmpleadoSesion);
   const dialogRef = useRef(null);
-  useAccessibleDialog({ open, onClose, dialogRef });
 
   // El rol puede llegar como texto plano, objeto anidado o solo como rol_id.
   // Si el catálogo está cargado, el nombre del rol tiene prioridad sobre el ID.
@@ -609,6 +608,20 @@ export default function ModalEmpleado({
     cargos,
     setCargos,
   ] = useState([]);
+
+  const cerrarModalEmpleado = () => {
+    if (
+      guardando ||
+      subiendoFoto ||
+      resettingPassword ||
+      guardandoVisibilidadEmpleado ||
+      guardandoNotariasEncargaGest ||
+      guardandoReparto
+    ) return;
+    onClose?.();
+  };
+
+  useAccessibleDialog({ open, onClose: cerrarModalEmpleado, dialogRef });
 
 
   /* ==========================================================
@@ -1006,48 +1019,6 @@ export default function ModalEmpleado({
 
   }, [
     open,
-  ]);
-
-
-  /* ==========================================================
-     ESC
-  ========================================================== */
-
-  useEffect(() => {
-
-    if (!open) {
-      return;
-    }
-
-    const handleKeyDown = (
-      event
-    ) => {
-
-      if (
-        event.key === "Escape"
-      ) {
-        onClose?.();
-      }
-
-    };
-
-    window.addEventListener(
-      "keydown",
-      handleKeyDown
-    );
-
-    return () => {
-
-      window.removeEventListener(
-        "keydown",
-        handleKeyDown
-      );
-
-    };
-
-  }, [
-    open,
-    onClose,
   ]);
 
 
@@ -2391,9 +2362,7 @@ const permisosDisponibles =
 
             <button
               type="button"
-              onClick={
-                onClose
-              }
+              onClick={cerrarModalEmpleado}
               className="
                 flex
                 h-10
@@ -4581,9 +4550,7 @@ const permisosDisponibles =
 
             <button
               type="button"
-              onClick={
-                onClose
-              }
+              onClick={cerrarModalEmpleado}
               className="
                 rounded-xl
                 bg-slate-900
