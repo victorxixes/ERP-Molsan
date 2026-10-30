@@ -285,3 +285,18 @@ Se ha contrastado el código de los overlays reales con las hojas compartidas: s
 ### Validación pendiente de esta pasada
 - Los workflows de los commits anteriores finalizaron correctamente; el build del commit `d3ee2b19` está pendiente.
 - El QA de navegador de cada diálogo sigue pendiente: el navegador automatizado disponible bloquea la navegación local. No se declara una comprobación visual real que no se ha podido ejecutar.
+
+
+## Octava pasada: cascada global y tipografía base
+
+### Hallazgo confirmado
+- `main.jsx` importa en este orden: `index.css`, `molsan-tokens.css`, `molsan-design-system.css`, `molsan-tables.css`, `molsan-controls.css` y finalmente `MolsanRedesign2027.css`. Por tanto, la capa de rediseño actúa como override final sobre parte de los estilos heredados.
+- `MolsanRedesign2027.css` contiene varias fases históricas de normalización y una capa final transversal. Hay reglas repetidas para controles, tablas, paneles y foco; no conviene borrar bloques por similitud textual porque algunas variantes están limitadas a portales o páginas concretas.
+- El bloque global `body` fijaba el tamaño de texto en 13px, aunque el token canónico `--molsan-font-size-md` establece 14px. Era una divergencia real entre la escala tipográfica declarada y la aplicada al ERP.
+- Se ha corregido el tamaño global para consumir `var(--molsan-font-size-md, 14px)`. No se han cambiado los colores semánticos ni los tamaños específicos de títulos, etiquetas o densidad de tablas.
+- Los estilos `index.css`, `base.css`, `erp-theme.css` y `MolsanRedesign2027.css` mantienen reglas globales parcialmente solapadas. La limpieza debe hacerse por familias y después de pruebas visuales, no mediante una sustitución masiva.
+
+### Pendiente de contraste
+- Confirmar en navegador que el cambio de 13px a 14px mejora legibilidad sin provocar desbordes en formularios densos y tablas.
+- Revisar específicamente portales y páginas con fuentes/tamaños explícitos que puedan neutralizar la escala global.
+- Verificar impresión: las reglas de impresión de `PortalProfesionalShared.css` usan deliberadamente colores y visibilidad forzados y deben quedar aisladas del tema de pantalla.
