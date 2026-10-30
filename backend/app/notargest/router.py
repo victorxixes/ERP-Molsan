@@ -753,6 +753,58 @@ def _estado_workflow(e):
     if getattr(e, "fecha_envio_notario", None): return "recepcion"
     return "recepcion"
 
+@router.post("/admin/expedientes/{expediente_id}/actividad")
+def mover_actividad_desde_utilidades(expediente_id: str, data: dict, actor=Depends(get_notario), db: Session = Depends(get_db)):
+    """Reasignación administrativa del estado NotarGest desde Utilidades ERP."""
+    if not _es_usuario_erp(actor):
+        raise HTTPException(status_code=403, detail="Esta operación solo está disponible para usuarios ERP autorizados.")
+    e = db.query(Expediente).filter(Expediente.id_expediente == str(expediente_id)).first()
+    if not e:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+    destino = str(data.get("estado") or "").strip()
+    motivo = str(data.get("motivo") or "").strip()
+    if destino not in ESTADOS_NOTARGEST:
+        raise HTTPException(status_code=400, detail="Actividad NotarGest no válida.")
+    if not motivo:
+        raise HTTPException(status_code=400, detail="Indica el motivo del cambio de actividad.")
+    if len(motivo) > 1000:
+        raise HTTPException(status_code=400, detail="El motivo no puede superar los 1.000 caracteres.")
+    actual = _estado_workflow(e)
+    if actual == destino:
+        return {"ok": True, "estado": actual, "estado_texto": ESTADOS_NOTARGEST[actual], "sin_cambios": True}
+    try:
+        db.execute(text("""
+            CREATE TABLE IF NOT EXISTS notargest_historial_actividad (
+                id BIGSERIAL PRIMARY KEY,
+                expediente_id VARCHAR(100) NOT NULL,
+                actividad_anterior VARCHAR(80) NOT NULL,
+                actividad_nueva VARCHAR(80) NOT NULL,
+                motivo TEXT NOT NULL,
+                usuario_id INTEGER,
+                usuario_tipo VARCHAR(30) NOT NULL DEFAULT 'ERP',
+                fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """))
+        e.notargest_estado = destino
+        e.actividad_actual = ESTADOS_NOTARGEST[destino]
+        db.execute(text("""
+            INSERT INTO notargest_historial_actividad
+                (expediente_id, actividad_anterior, actividad_nueva, motivo, usuario_id, usuario_tipo, fecha)
+            VALUES (:expediente_id, :anterior, :nueva, :motivo, :usuario_id, 'ERP', :fecha)
+        """), {
+            "expediente_id": str(e.id_expediente),
+            "anterior": actual,
+            "nueva": destino,
+            "motivo": motivo,
+            "usuario_id": getattr(actor, "id", None),
+            "fecha": datetime.utcnow(),
+        })
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+    return {"ok": True, "estado": destino, "estado_texto": ESTADOS_NOTARGEST[destino], "estado_anterior": actual}
+
 @router.post("/expedientes/{expediente_id}/estado")
 def cambiar_estado_workflow(expediente_id: str, data: dict, n=Depends(get_notario), db: Session = Depends(get_db)):
     e = _expediente_autorizado(expediente_id, n, db)
