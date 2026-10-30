@@ -1940,3 +1940,48 @@
   .apoderagest { min-width: 0; }
   .apoderagest :is(.ag-panel,.eg-panel,.ng-panel) { border-radius: 12px; }
 }
+
+
+/* ApoderaGest · modal de encargos por apoderado */
+.ag-encargos-modal-overlay {
+  box-sizing: border-box;
+  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.ag-encargos-modal-overlay > div {
+  min-width: 0;
+  max-width: 100%;
+  max-height: calc(100dvh - 24px);
+}
+.ag-encargos-modal-overlay .ag-encargos-detalle-lista {
+  min-height: 0;
+  max-width: 100%;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.ag-encargos-modal-overlay :is(.overflow-x-auto,[data-table-scroll="true"]) {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.ag-encargos-modal-overlay table { min-width: 680px; }
+@media (max-width: 640px) {
+  .ag-encargos-modal-overlay { padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom)); }
+  .ag-encargos-modal-overlay > div {
+    width: 100%;
+    max-height: calc(100dvh - 16px);
+    border-radius: 14px;
+  }
+  .ag-encargos-modal-overlay > div > header {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 14px;
+  }
+  .ag-encargos-modal-overlay .ag-encargos-detalle-lista { padding: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ag-encargos-modal-overlay * { animation: none !important; transition: none !important; }
+}
