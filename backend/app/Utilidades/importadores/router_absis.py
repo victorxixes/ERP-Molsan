@@ -53,7 +53,10 @@ async def importar_expedientes_absis(
         ),
     ),
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
+
+    require_perm_modulo(usuario, "utilidades", "editar")
 
     # ========================================================
     # NOMBRE DEL ARCHIVO
