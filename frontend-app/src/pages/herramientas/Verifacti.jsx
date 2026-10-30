@@ -135,7 +135,7 @@ export default function Verifacti() {
                   ["＋", "Registrar factura", "Preparar los campos de una nueva factura.", "crear"],
                   ["↻", "Subsanaciones y anulaciones", "Preparar una operación sobre un registro existente.", "operaciones"],
                   ["⇩", "XML y exportaciones", "Consultar XML de una factura o preparar una exportación.", "xml"],
-                ].map(([icon, title, desc, id]) => <button key={id} onClick={() => cambiarSeccion(id)} className="flex items-start gap-3 rounded-2xl border border-slate-200 p-4 text-left transition hover:border-blue-200 hover:bg-blue-50/40">
+                ].map(([icon, title, desc, id]) => <button key={id} type="button" onClick={() => cambiarSeccion(id)} className="flex items-start gap-3 rounded-2xl border border-slate-200 p-4 text-left transition hover:border-blue-200 hover:bg-blue-50/40">
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-xl text-blue-700">{icon}</span><span><strong className="block text-sm text-slate-800">{title}</strong><span className="mt-1 block text-sm leading-5 text-slate-500">{desc}</span></span><span className="ml-auto text-slate-300">→</span>
                 </button>)}
               </div>
