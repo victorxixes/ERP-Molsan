@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
+import "../../css/ComponentesOperativosPremium.css";
 
 const fechaISOlocal = (fecha) => {
   const d = new Date(fecha);
@@ -55,7 +56,7 @@ export default function FichajesResumen({ recargar }) {
     }
   };
 
-  return <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
+  return <section className="fichajes-resumen-premium grid grid-cols-1 gap-4 md:grid-cols-3">
     <article className="rounded-2xl border border-blue-100 bg-blue-50/70 p-5">
       <p className="text-sm font-semibold text-blue-800">Horas trabajadas · {horas?.anio || new Date().getFullYear()}</p>
       <p className="mt-2 text-3xl font-extrabold text-slate-900">{horas?.horas_trabajadas ?? "—"} h</p>
