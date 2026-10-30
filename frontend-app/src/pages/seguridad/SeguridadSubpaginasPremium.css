@@ -3,7 +3,7 @@
 .seguridad-auditoria-premium { min-width: 0; }
 .seguridad-usuarios-premium :is(input, select, textarea, button):focus-visible,
 .seguridad-auditoria-premium :is(input, select, textarea, button):focus-visible {
-  outline: 2px solid var(--molsan-primary, #2563eb);
+  outline: 2px solid var(--molsan-primary, #3156b3);
   outline-offset: 2px;
 }
 .seguridad-usuarios-premium :is(table, [role="table"]),
@@ -24,9 +24,9 @@
 }
 /* Subpantallas de seguridad: tablas, formularios y acciones coherentes. */
 .seguridad-subpagina-premium,
-.seguridad-logs-premium { min-width: 0; color: var(--molsan-text, #172033); }
+.seguridad-logs-premium { min-width: 0; color: var(--molsan-text, #17243a); }
 .seguridad-subpagina-premium :is(input, select, textarea, button):focus-visible,
-.seguridad-logs-premium :is(input, select, textarea, button):focus-visible { outline: 2px solid var(--molsan-primary, #4169e1); outline-offset: 2px; }
+.seguridad-logs-premium :is(input, select, textarea, button):focus-visible { outline: 2px solid var(--molsan-primary, #3156b3); outline-offset: 2px; }
 .seguridad-subpagina-premium :is(table, [role="table"]),
 .seguridad-logs-premium :is(table, [role="table"]) { width: 100%; max-width: 100%; }
 .seguridad-subpagina-premium :is(td, th), .seguridad-logs-premium :is(td, th) { overflow-wrap: anywhere; }
@@ -42,7 +42,7 @@
 .seguridad-roles-premium :is(input, select, textarea, button):focus-visible,
 .seguridad-modulos-premium :is(input, select, textarea, button):focus-visible,
 .seguridad-resumen-premium :is(input, select, textarea, button):focus-visible {
-  outline: 2px solid var(--molsan-primary, #4169e1);
+  outline: 2px solid var(--molsan-primary, #3156b3);
   outline-offset: 2px;
 }
 .seguridad-ficha-premium :is(table, [role="table"]),
@@ -80,7 +80,7 @@
 .seguridad-resumen-premium {
   min-width: 0;
   max-width: 100%;
-  color: var(--molsan-text, #172033);
+  color: var(--molsan-text, #17243a);
 }
 .seguridad-subpagina-premium :is(input, select, textarea, button),
 .seguridad-ficha-premium :is(input, select, textarea, button),
@@ -98,7 +98,7 @@
 .seguridad-modulos-premium :is(input, select, textarea, button):focus-visible,
 .seguridad-logs-premium :is(input, select, textarea, button):focus-visible,
 .seguridad-resumen-premium :is(input, select, textarea, button):focus-visible {
-  outline: 2px solid var(--molsan-primary, #2563eb);
+  outline: 2px solid var(--molsan-primary, #3156b3);
   outline-offset: 2px;
 }
 .seguridad-ficha-premium :is(td, th),
@@ -157,7 +157,7 @@
   border-color: var(--molsan-border, #d8e0ec);
   border-radius: 10px;
   background-color: var(--molsan-surface, #fff);
-  color: var(--molsan-text, #172033);
+  color: var(--molsan-text, #17243a);
 }
 :is(.seguridad-subpagina-premium, .seguridad-ficha-premium, .seguridad-roles-premium, .seguridad-permisos-premium, .seguridad-modulos-premium, .seguridad-logs-premium, .seguridad-resumen-premium) :is(button, [role="button"]) {
   transition: box-shadow .16s ease, border-color .16s ease, background-color .16s ease;
@@ -174,7 +174,7 @@
   text-transform: uppercase;
 }
 :is(.seguridad-subpagina-premium, .seguridad-ficha-premium, .seguridad-roles-premium, .seguridad-permisos-premium, .seguridad-modulos-premium, .seguridad-logs-premium, .seguridad-resumen-premium) table tbody tr:hover {
-  background: color-mix(in srgb, var(--molsan-primary, #4169e1) 4%, transparent);
+  background: color-mix(in srgb, var(--molsan-primary, #3156b3) 4%, transparent);
 }
 @media (prefers-reduced-motion: reduce) {
   :is(.seguridad-subpagina-premium, .seguridad-ficha-premium, .seguridad-roles-premium, .seguridad-permisos-premium, .seguridad-modulos-premium, .seguridad-logs-premium, .seguridad-resumen-premium) * { transition: none !important; }
