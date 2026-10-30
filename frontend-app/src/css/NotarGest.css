@@ -51,7 +51,7 @@
 .notargest .ng-tabla tbody tr:last-child td{border-bottom:0}
 .notargest .ng-abrir{display:inline-flex;align-items:center;padding:5px 8px;color:#3558c4;background:#edf2ff;border:1px solid #e0e8ff;border-radius:7px;font-size:10px;font-weight:800;white-space:nowrap}
 .notargest .ng-abrir:hover{background:#e4ebff}
-.notargest .ng-adjuntar{display:inline-flex;align-items:center;min-height:34px;padding:8px 11px;color:var(--molsan-primary,#3156b3);background:#edf2ff;border:1px solid #dce5ff;border-radius:10px;font-size:11px;font-weight:800;transition:background .15s,border-color .15s}
+.notargest .ng-adjuntar{display:inline-flex;align-items:center;min-height:34px;padding:8px 11px;color:var(--molsan-primary,#3156b3);background:var(--molsan-primary-soft,#edf3ff);border:1px solid var(--molsan-primary-border,#cbd7ee);border-radius:10px;font-size:11px;font-weight:800;transition:background .15s,border-color .15s}
 .notargest .ng-adjuntar:hover{background:#e5ecff;border-color:#bfcfff}
 .notargest .ng-ficha-cuerpo{padding:18px;gap:15px}
 .notargest .ng-detalle-bloque{padding:17px;background:rgba(255,255,255,.78);border:1px solid rgba(224,231,241,.95);border-radius:16px;box-shadow:0 5px 16px rgba(31,48,79,.025)}
@@ -65,7 +65,7 @@
 .notargest .ng-observacion p{color:#344256;font-size:12px}
 .notargest .ng-workflow{gap:14px}
 .notargest .ng-workflow-form input{min-height:40px;border:1px solid #e0e7f1;border-radius:10px;background:#f8faff}
-.notargest .ng-login-submit{min-height:42px;padding:0 17px;color:#fff;background:linear-gradient(135deg,var(--molsan-primary,#3156b3),var(--molsan-primary-hover,#274694));border:1px solid rgba(255,255,255,.4);border-radius:12px;box-shadow:0 6px 16px rgba(49,94,232,.18);font-size:12px;font-weight:800;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
+.notargest .ng-login-submit{min-height:42px;padding:0 17px;color:#fff;background:linear-gradient(135deg,var(--molsan-primary,#3156b3),var(--molsan-primary-hover,#274694));border:1px solid rgba(255,255,255,.4);border-radius:12px;box-shadow:0 6px 16px color-mix(in srgb,var(--molsan-primary,#3156b3) 18%,transparent);font-size:12px;font-weight:800;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
 .notargest .ng-login-submit:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 9px 20px rgba(49,94,232,.25);filter:brightness(1.04)}
 .notargest .ng-login-submit:disabled{cursor:wait;opacity:.7}
 .notargest .ng-error{color:#9e3944;background:rgba(255,243,244,.95);border:1px solid #f3d5d8;border-radius:13px}
@@ -235,7 +235,7 @@
 .notargest .ng-hero-apoderagest .ag-hero-acciones{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:9px}
 .notargest .ng-hero-apoderagest .ag-fecha-actual{display:flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid var(--erp-border,#dce4f0);border-radius:10px;background:#fff;color:#53627a;font-size:10px;white-space:nowrap}
 .notargest .ng-hero-apoderagest .ag-punto-vivo{width:6px;height:6px;border-radius:50%;background:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,.1)}
-.notargest .ng-hero-apoderagest .ag-boton-actualizar{display:inline-flex;align-items:center;gap:7px;min-height:41px;padding:0 13px;border:1px solid var(--molsan-primary,#3156b3);border-radius:10px;background:var(--molsan-primary,#3156b3);color:#fff;font-size:11px;font-weight:800;box-shadow:0 5px 12px rgba(54,95,229,.18)}
+.notargest .ng-hero-apoderagest .ag-boton-actualizar{display:inline-flex;align-items:center;gap:7px;min-height:41px;padding:0 13px;border:1px solid var(--molsan-primary,#3156b3);border-radius:10px;background:var(--molsan-primary,#3156b3);color:#fff;font-size:11px;font-weight:800;box-shadow:0 5px 12px color-mix(in srgb,var(--molsan-primary,#3156b3) 18%,transparent)}
 .notargest .ng-hero-apoderagest .ag-boton-actualizar:disabled{opacity:.65;cursor:wait}
 @media(max-width:700px){.notargest .ng-hero-apoderagest{align-items:flex-start;flex-direction:column;padding:8px 0 18px}.notargest .ng-hero-apoderagest .ag-hero-acciones{justify-content:flex-start;width:100%}}
 
@@ -273,7 +273,7 @@
 
 /* NotarGest: distintivo NG equivalente al bloque AG de ApoderaGest */
 .notargest .ag-hero .ag-marca.ng-marca-notargest{
-  display:flex!important;align-items:center;justify-content:center;flex:0 0 46px;width:46px;height:46px;min-width:46px;min-height:46px;padding:0;border:0;border-radius:14px;background:linear-gradient(145deg,#4778f4,#2449c8);color:#fff;font-size:16px;line-height:1;font-weight:900;letter-spacing:-.04em;box-shadow:0 5px 14px rgba(49,94,232,.22);overflow:hidden
+  display:flex!important;align-items:center;justify-content:center;flex:0 0 46px;width:46px;height:46px;min-width:46px;min-height:46px;padding:0;border:0;border-radius:14px;background:linear-gradient(145deg,var(--molsan-primary,#3156b3),var(--molsan-primary-hover,#274694));color:#fff;font-size:16px;line-height:1;font-weight:900;letter-spacing:-.04em;box-shadow:0 5px 14px rgba(49,94,232,.22);overflow:hidden
 }
 .notargest .ag-hero .ag-marca.ng-marca-notargest::before,.notargest .ag-hero .ag-marca.ng-marca-notargest::after{content:none!important;display:none!important}
 @media(min-width:1200px){.notargest .ng-hero-apoderagest{width:100%;max-width:none}}
@@ -613,7 +613,7 @@
   border:1px solid var(--molsan-border,#dce4ef)!important;border-radius:var(--molsan-radius-card,14px)!important;
   box-shadow:var(--molsan-shadow-card,0 4px 14px rgba(36,50,74,.06))!important;
 }
-.ng-admin-notarias .ng-admin-kpis article::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;border-radius:18px 0 0 18px;background:linear-gradient(180deg,#6488f4,#a4b7ff)}
+.ng-admin-notarias .ng-admin-kpis article::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;border-radius:18px 0 0 18px;background:linear-gradient(180deg,var(--molsan-primary,#3156b3),var(--molsan-primary-soft,#edf3ff))}
 .ng-admin-notarias .ng-admin-kpis article:nth-child(2)::before{background:linear-gradient(180deg,#10b981,#8be4c5)}
 .ng-admin-notarias .ng-admin-kpis article:nth-child(3)::before{background:linear-gradient(180deg,#f05a67,#ffb2b8)}
 .ng-admin-notarias .ng-admin-kpis article:nth-child(4)::before{background:linear-gradient(180deg,#e8a23b,#f7d49b)}
@@ -732,7 +732,7 @@
 .ng-admin-notarias .ng-admin-kpis-global article span{font-size:10px;line-height:1.45}
 .ng-admin-notarias .ng-admin-kpis-global article strong{font-size:clamp(24px,2vw,31px);margin-top:5px}
 .ng-admin-notarias .ng-admin-kpis-global article:nth-child(5n+2)::before{background:linear-gradient(180deg,#10b981,#8be4c5)}
-.ng-admin-notarias .ng-admin-kpis-global article:nth-child(5n+3)::before{background:linear-gradient(180deg,#6488f4,#a4b7ff)}
+.ng-admin-notarias .ng-admin-kpis-global article:nth-child(5n+3)::before{background:linear-gradient(180deg,var(--molsan-primary,#3156b3),var(--molsan-primary-soft,#edf3ff))}
 .ng-admin-notarias .ng-admin-kpis-global article:nth-child(5n+4)::before{background:linear-gradient(180deg,#e8a23b,#f7d49b)}
 .ng-admin-notarias .ng-admin-kpis-global article:nth-child(5n+5)::before{background:linear-gradient(180deg,#8b72e8,#c3b5ff)}
 .ng-admin-notarias .ng-admin-individual-titulo{margin:0 2px 15px}
