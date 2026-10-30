@@ -25,7 +25,7 @@
 
 
 
-.notargest .ng-boton-secundario,.notargest .ng-volver{min-height:42px;padding:0 16px;color:#3154c5;background:rgba(255,255,255,.72);border:1px solid #dfe6f1;border-radius:12px;box-shadow:0 4px 14px rgba(31,48,79,.035);font-size:12px;font-weight:750;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.notargest .ng-boton-secundario,.notargest .ng-volver{min-height:42px;padding:0 16px;color:var(--molsan-primary,#3156b3);background:rgba(255,255,255,.72);border:1px solid #dfe6f1;border-radius:12px;box-shadow:0 4px 14px rgba(31,48,79,.035);font-size:12px;font-weight:750;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
 .notargest .ng-boton-secundario:hover:not(:disabled),.notargest .ng-volver:hover{transform:translateY(-1px);border-color:#b9caff;box-shadow:0 8px 18px rgba(49,94,232,.10)}
 
 
@@ -51,7 +51,7 @@
 .notargest .ng-tabla tbody tr:last-child td{border-bottom:0}
 .notargest .ng-abrir{display:inline-flex;align-items:center;padding:5px 8px;color:#3558c4;background:#edf2ff;border:1px solid #e0e8ff;border-radius:7px;font-size:10px;font-weight:800;white-space:nowrap}
 .notargest .ng-abrir:hover{background:#e4ebff}
-.notargest .ng-adjuntar{display:inline-flex;align-items:center;min-height:34px;padding:8px 11px;color:#3154c5;background:#edf2ff;border:1px solid #dce5ff;border-radius:10px;font-size:11px;font-weight:800;transition:background .15s,border-color .15s}
+.notargest .ng-adjuntar{display:inline-flex;align-items:center;min-height:34px;padding:8px 11px;color:var(--molsan-primary,#3156b3);background:#edf2ff;border:1px solid #dce5ff;border-radius:10px;font-size:11px;font-weight:800;transition:background .15s,border-color .15s}
 .notargest .ng-adjuntar:hover{background:#e5ecff;border-color:#bfcfff}
 .notargest .ng-ficha-cuerpo{padding:18px;gap:15px}
 .notargest .ng-detalle-bloque{padding:17px;background:rgba(255,255,255,.78);border:1px solid rgba(224,231,241,.95);border-radius:16px;box-shadow:0 5px 16px rgba(31,48,79,.025)}
@@ -65,7 +65,7 @@
 .notargest .ng-observacion p{color:#344256;font-size:12px}
 .notargest .ng-workflow{gap:14px}
 .notargest .ng-workflow-form input{min-height:40px;border:1px solid #e0e7f1;border-radius:10px;background:#f8faff}
-.notargest .ng-login-submit{min-height:42px;padding:0 17px;color:#fff;background:linear-gradient(135deg,#416df0,#2e51ca);border:1px solid rgba(255,255,255,.4);border-radius:12px;box-shadow:0 6px 16px rgba(49,94,232,.18);font-size:12px;font-weight:800;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
+.notargest .ng-login-submit{min-height:42px;padding:0 17px;color:#fff;background:linear-gradient(135deg,var(--molsan-primary,#3156b3),var(--molsan-primary-hover,#274694));border:1px solid rgba(255,255,255,.4);border-radius:12px;box-shadow:0 6px 16px rgba(49,94,232,.18);font-size:12px;font-weight:800;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
 .notargest .ng-login-submit:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 9px 20px rgba(49,94,232,.25);filter:brightness(1.04)}
 .notargest .ng-login-submit:disabled{cursor:wait;opacity:.7}
 .notargest .ng-error{color:#9e3944;background:rgba(255,243,244,.95);border:1px solid #f3d5d8;border-radius:13px}
@@ -123,7 +123,7 @@
 .notargest .ng-ficha-premium{display:flex;flex-direction:column;gap:16px;padding:20px}
 .notargest .ng-ficha-premium>.ng-detalle-bloque{margin:0;padding:20px;border:1px solid #e7ebf2;border-radius:15px;background:#fff;box-shadow:0 3px 12px rgba(26,43,74,.025)}
 .notargest .ng-bloque-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
-.notargest .ng-bloque-heading h3{margin:3px 0 0;font-size:16px;color:#1e3352}
+.notargest .ng-bloque-heading h3{margin:3px 0 0;font-size:16px;color:var(--molsan-text,#17243a)}
 .notargest .ng-bloque-heading .ng-descripcion{margin:5px 0 0}
 .notargest .ng-kicker{font-size:9px;letter-spacing:.12em;font-weight:850;color:#7183a3}
 .notargest .ng-datos-operacion{grid-template-columns:repeat(4,minmax(0,1fr))}
@@ -210,7 +210,7 @@
 .notargest .ng-barra-mes{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px;min-width:0;height:180px}
 .notargest .ng-barra-mes strong{color:#34445e;font-size:11px}
 .notargest .ng-barra-pista{display:flex;align-items:flex-end;justify-content:center;width:100%;height:125px;background:#f2f5fb;border-radius:8px 8px 3px 3px;overflow:hidden}
-.notargest .ng-barra-pista span{display:block;width:72%;min-height:0;background:linear-gradient(180deg,#7090f5,#365bd4);border-radius:7px 7px 2px 2px}
+.notargest .ng-barra-pista span{display:block;width:72%;min-height:0;background:linear-gradient(180deg,var(--molsan-primary-hover,#274694),var(--molsan-primary,#3156b3));border-radius:7px 7px 2px 2px}
 .notargest .ng-barra-mes small{color:#8591a5;font-size:10px;text-align:center}
 .notargest .ng-barras-medias{display:flex;flex-direction:column;gap:18px}
 .notargest .ng-media-row{display:flex;flex-direction:column;gap:8px;min-width:0}
@@ -235,7 +235,7 @@
 .notargest .ng-hero-apoderagest .ag-hero-acciones{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:9px}
 .notargest .ng-hero-apoderagest .ag-fecha-actual{display:flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid var(--erp-border,#dce4f0);border-radius:10px;background:#fff;color:#53627a;font-size:10px;white-space:nowrap}
 .notargest .ng-hero-apoderagest .ag-punto-vivo{width:6px;height:6px;border-radius:50%;background:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,.1)}
-.notargest .ng-hero-apoderagest .ag-boton-actualizar{display:inline-flex;align-items:center;gap:7px;min-height:41px;padding:0 13px;border:1px solid #3158d8;border-radius:10px;background:#365fe5;color:#fff;font-size:11px;font-weight:800;box-shadow:0 5px 12px rgba(54,95,229,.18)}
+.notargest .ng-hero-apoderagest .ag-boton-actualizar{display:inline-flex;align-items:center;gap:7px;min-height:41px;padding:0 13px;border:1px solid var(--molsan-primary,#3156b3);border-radius:10px;background:var(--molsan-primary,#3156b3);color:#fff;font-size:11px;font-weight:800;box-shadow:0 5px 12px rgba(54,95,229,.18)}
 .notargest .ng-hero-apoderagest .ag-boton-actualizar:disabled{opacity:.65;cursor:wait}
 @media(max-width:700px){.notargest .ng-hero-apoderagest{align-items:flex-start;flex-direction:column;padding:8px 0 18px}.notargest .ng-hero-apoderagest .ag-hero-acciones{justify-content:flex-start;width:100%}}
 
@@ -425,9 +425,9 @@
 .notargest .ng-modulos-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;width:100%;margin:0 0 20px}
 .notargest .ng-modulo-card{display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:10px;min-width:0;min-height:66px;padding:11px 12px;border:1px solid var(--erp-border,#dce4f0);border-radius:14px;background:rgba(255,255,255,.92);color:var(--erp-text,#172b4d);text-align:left;box-shadow:0 4px 12px rgba(25,45,80,.035);cursor:pointer;transition:background .16s,border-color .16s,transform .16s,box-shadow .16s}
 .notargest .ng-modulo-card:hover{transform:translateY(-1px);border-color:#b8c9ff;background:#fbfcff;box-shadow:0 7px 17px rgba(25,45,80,.07)}
-.notargest .ng-modulo-card.activa{border-color:#365fe5;background:#eef2ff;box-shadow:inset 0 0 0 1px rgba(54,95,229,.12)}
-.notargest .ng-modulo-icono{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;border:1px solid #dce5ff;background:#edf2ff;color:#365fe5;font-size:18px;font-weight:850}
-.notargest .ng-modulo-card.activa .ng-modulo-icono{background:#365fe5;border-color:#365fe5;color:#fff}
+.notargest .ng-modulo-card.activa{border-color:var(--molsan-primary,#3156b3);background:var(--molsan-primary-soft,#edf3ff);box-shadow:inset 0 0 0 1px rgba(54,95,229,.12)}
+.notargest .ng-modulo-icono{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;border:1px solid var(--molsan-primary-border,#cbd7ee);background:var(--molsan-primary-soft,#edf3ff);color:var(--molsan-primary,#3156b3);font-size:18px;font-weight:850}
+.notargest .ng-modulo-card.activa .ng-modulo-icono{background:var(--molsan-primary,#3156b3);border-color:var(--molsan-primary,#3156b3);color:#fff}
 .notargest .ng-modulo-label{min-width:0;font-size:11px;font-weight:780;line-height:1.35}
 .notargest .ng-modulo-count{display:grid;place-items:center;min-width:23px;height:23px;padding:0 6px;border:1px solid #e0e7f1;border-radius:8px;background:#f0f3f9;color:#52617a;font-size:11px;font-weight:850;font-variant-numeric:tabular-nums}
 .notargest .ng-modulo-card.urgente{border-color:#fecaca;background:#fff7f7}
