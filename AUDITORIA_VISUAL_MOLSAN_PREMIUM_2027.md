@@ -687,3 +687,42 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 - La inspección estática confirma semántica y gestor de foco en los dos diálogos ABSIS, ficha CTN, histórico CTN, detalle de facturación y diálogos identificados de Expedientes.
 - No se puede declarar completada la accesibilidad real sin abrir las ventanas con teclado/lector de pantalla y comprobar foco, Escape, anidamiento, scroll y retorno del foco.
 - No se ha realizado QA real en navegador en escritorio/tablet/móvil: Render mantiene desactivadas las previews de PR y el frontend puede apuntar al backend LIVE si no se aísla la API. No se ha desplegado ni conectado esta rama a producción.
+
+## Trigésima tercera pasada: accesibilidad transversal, controles y auditoría de cascada CSS — 30/10/2026
+
+### Diálogos adicionales integrados con `useAccessibleDialog`
+- Agenda: `ModalNuevaCita.jsx` añade foco inicial, ciclo Tab, Escape y retorno al disparador; Escape no cierra durante guardado.
+- Empleados: `EmpleadosListado.jsx` integra el modal «Nuevo empleado» y conserva el bloqueo de cierre cuando está guardando.
+- Catálogos: `EntidadesBancarias.jsx` (alta/edición e importación), `Municipios.jsx` (alta/edición e importación), `OficinasLiquidadoras.jsx` (alta/edición e importación), `RegistrosPropiedad.jsx` (alta/edición e importación), `TiposCargaHipotecaria.jsx` y `AccionesExpediente.jsx` (crear/editar e importar) integran el gestor común.
+- ApoderaGest: el modal de encargos agrupados se integra con el gestor de foco. Se separa el grupo activo del estado de apertura de los detalles para mantener un único modal de grupo abierto y evitar refs duplicadas; el identificador del grupo activa la reinicialización correcta del foco al cambiar de grupo.
+- `SelectSJ.jsx`: el selector personalizado admite flechas arriba/abajo, Inicio/Fin dentro de opciones, Escape con retorno al disparador, foco gestionado y relación `aria-controls` con su listbox.
+- Commits principales: `62ea057f`, `e0ccdd80`, `ecea3472`, `82b58462`, `a1d5d939`, `cf734ecc`, `60bd0619`, `f264ea01`, `402981c3`, `b1b7692b`, `5a6f5a5d`, `d8476573` y `77cd28bf`.
+
+### Revisión CSS transversal
+- `main.jsx` importa primero `molsan-tokens.css`, después `molsan-design-system.css`, tablas y controles; la aplicación y sus hojas de módulo se cargan antes de `MolsanRedesign2027.css`, que actúa como última capa de armonización. La precedencia está documentada y explica parte de los overrides.
+- Tokens canónicos usados en las correcciones de Informes existen en `molsan-tokens.css`: `--molsan-primary`, `--molsan-primary-hover`, `--molsan-primary-soft`, `--molsan-primary-border`, `--molsan-surface-soft` y `--molsan-text-secondary`.
+- `MolsanRedesign2027.css` contiene 25 media queries, 118 declaraciones `!important` y varios selectores repetidos en capas base/responsive (p. ej. `.erp-main-inner`, `.tabs-sj`, `.modal-sj`, `.molsan-page-header`).
+- `NotarGest.css` contiene 46 media queries y 83 `!important`; hay selectores con varias redefiniciones, especialmente `.ng-control-hero`, `.ng-control-botones`, `.ng-modulos-grid` y `.ng-admin-kpis-global`.
+- `PortalProfesionalShared.css` contiene 55 media queries y 56 `!important`; `EncargaGest.css` contiene 17 media queries y 7 `!important`; `molsan-design-system.css` contiene 12 media queries y repeticiones de selectores de cabecera, toolbar y KPI.
+- Estas repeticiones son indicios de deuda de cascada, pero varias son overrides responsive deliberados. No se han eliminado en bloque porque podría romper los portales o el diseño adaptativo. La consolidación debe hacerse selector por selector, verificando el resultado en navegador.
+
+### Matriz responsive estática (cobertura CSS detectada)
+- Portales profesionales compartidos: 55 media queries, con puntos de corte desde 320 px hasta escritorio amplio; hay reglas específicas de tablet/móvil para formularios, grids, visor y tablas.
+- NotarGest: 46 media queries, con cortes frecuentes en 1050, 900, 800, 700, 650, 560 y 520 px.
+- EncargaGest: 17 media queries, con reglas específicas a 1100, 900, 700, 650 y 600 px.
+- Design system: 12 media queries; controles y tablas comunes tienen reglas específicas a 640/620 px.
+- Expedientes: listado 5 media queries (700 px); ficha 4 media queries (900, 720, 680, 640 y 620 px).
+- Agenda: 4 media queries (incluye 1100, 768, 760, 640 y 430 px).
+- Empleados listado: 2 media queries (760 px); Seguridad subpáginas: 14 media queries (1100, 900, 760, 680, 640 y 620 px).
+- Catálogos y modales operativos: los contenedores revisados usan límites de altura, scroll interno y breakpoints móviles. Esta es una comprobación de CSS estático, no una certificación visual de cada viewport.
+
+### Pendientes que se mantienen abiertos
+- El modal agrupado de ApoderaGest y los cambios del selector deben probarse con teclado real, especialmente al cambiar de grupo, seleccionar opciones y cerrar diálogos anidados.
+- La ruta administrativa `/herramientas/utilidades/control-apoderados` está dentro del árbol autenticado, pero no lleva el mismo `RequireModule` que las rutas `/apoderagest` y `/apoderagest/liquidaciones`. No se modifica a ciegas: falta confirmar la política de autorización del endpoint administrativo y el criterio de rol antes de imponer un guard de frontend.
+- La cascada CSS de NotarGest, EncargaGest y la capa global sigue necesitando consolidación selectiva; no conviene borrar `!important` sin una comparación visual.
+- QA en navegador real con escritorio, tablet y móvil; teclado/lector de pantalla; zoom 125–200 %; scroll horizontal de tablas; modales anidados; formularios largos y estados de carga. No se ha realizado ninguna operación con expedientes ni datos productivos.
+
+### CI de esta pasada
+- En el commit de código `77cd28bf`, EncargaGest checks, Consolidación Post Firma, Validar Fichaje Molsan y Validar Control Apoderados finalizaron correctamente.
+- Backend audit seguía en ejecución en la última consulta; no se marca como completado hasta confirmar su resultado.
+- PR #374 permanece abierta, en borrador y mergeable; sin integración ni despliegue.
