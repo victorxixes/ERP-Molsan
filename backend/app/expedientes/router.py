@@ -3854,12 +3854,13 @@ def generar_documento_factura_honorarios(
         Document(io.BytesIO(plantilla_bytes))  # Comprueba que la plantilla oficial sea válida.
         numero_factura = str(datos.get("numero_factura") or numero_factura).strip()
         fecha_factura = fecha_es(datos.get("fecha_factura"))
-        cliente = str(datos.get("cliente") or " ".join(filter(None, [valor(expediente, "facturacion_nombre"), valor(expediente, "facturacion_apellidos")])) or valor(expediente, "nombre_solicitante", "nombre_titular") or "").strip()
-        nif_cliente = str(datos.get("nif_cliente") or valor(expediente, "facturacion_dni_nif", "nif_solicitante", "dni_solicitante", "nif_titular") or "").strip()
-        direccion_facturacion = str(datos.get("direccion_facturacion") or valor(expediente, "facturacion_direccion") or "").strip()
-        codigo_postal_facturacion = str(datos.get("codigo_postal_facturacion") or valor(expediente, "facturacion_codigo_postal") or "").strip()
-        poblacion_facturacion = str(datos.get("poblacion_facturacion") or valor(expediente, "facturacion_poblacion") or "").strip()
-        provincia_facturacion = str(datos.get("provincia_facturacion") or valor(expediente, "facturacion_provincia") or "").strip()
+        cliente_rel = getattr(expediente, "cliente", None)
+        cliente = str(datos.get("cliente") or " ".join(filter(None, [valor(expediente, "facturacion_nombre"), valor(expediente, "facturacion_apellidos")])) or valor(cliente_rel, "nombre_facturacion", "nombre_completo") or valor(expediente, "nombre_solicitante", "nombre_titular") or "").strip()
+        nif_cliente = str(datos.get("nif_cliente") or valor(expediente, "facturacion_dni_nif", "nif_solicitante", "dni_solicitante", "nif_titular") or valor(cliente_rel, "dni_facturacion", "dni") or "").strip()
+        direccion_facturacion = str(datos.get("direccion_facturacion") or valor(expediente, "facturacion_direccion") or valor(cliente_rel, "direccion_facturacion", "direccion") or "").strip()
+        codigo_postal_facturacion = str(datos.get("codigo_postal_facturacion") or valor(expediente, "facturacion_codigo_postal") or valor(cliente_rel, "codigo_postal_facturacion", "codigo_postal") or "").strip()
+        poblacion_facturacion = str(datos.get("poblacion_facturacion") or valor(expediente, "facturacion_poblacion") or valor(cliente_rel, "poblacion_facturacion", "poblacion") or "").strip()
+        provincia_facturacion = str(datos.get("provincia_facturacion") or valor(expediente, "facturacion_provincia") or valor(cliente_rel, "provincia_facturacion", "provincia") or "").strip()
         concepto_factura = str(datos.get("concepto") or "Honorarios de gestoría").strip()
         base = Decimal(str(datos.get("base_imponible") or 0).replace(",", ".")).quantize(Decimal("0.01"))
         impuesto = Decimal(str(datos.get("importe_impuesto") or 0).replace(",", ".")).quantize(Decimal("0.01"))
@@ -3964,7 +3965,7 @@ def generar_documento_factura_honorarios(
             [Paragraph(poblacion_txt, styles["FacturaCeldaMolsan"]), Paragraph(provincia_txt, styles["FacturaCeldaMolsan"])],
         ], colWidths=[87*mm, 87*mm])
         datos_cliente.setStyle(TableStyle([
-            ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#edf2f8")),
+            ("BACKGROUND", (0,0), (-1,-1), colors.white),
             ("BOX", (0,0), (-1,-1), .5, colors.HexColor("#d5deea")),
             ("INNERGRID", (0,0), (-1,-1), .35, colors.HexColor("#d5deea")),
             ("VALIGN", (0,0), (-1,-1), "TOP"), ("LEFTPADDING", (0,0), (-1,-1), 7),
