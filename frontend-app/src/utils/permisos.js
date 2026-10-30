@@ -76,8 +76,9 @@ export function puedeVerModulo(modulo) {
     .trim()
     .toLowerCase();
   const usuario = String(empleado.usuario || "").trim().toLowerCase();
+  const rolId = empleado.rol_id ?? empleado.rol?.id;
   const esAdministrador =
-    Number(empleado.rol_id ?? empleado.rol?.id) === 0 ||
+    (rolId !== null && rolId !== undefined && Number(rolId) === 0) ||
     usuario === "admin" ||
     /(^|\s)(admin|administrador|administradora|superadmin|superusuario|superuser|root)(\s|$)/.test(rol);
 
