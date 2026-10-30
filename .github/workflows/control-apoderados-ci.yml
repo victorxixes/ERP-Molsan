@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm install
+      - run: npm install --include=optional
       - run: npm run build
   backend-syntax:
     runs-on: ubuntu-latest
