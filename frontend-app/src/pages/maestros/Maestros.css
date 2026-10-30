@@ -48,3 +48,16 @@
 @media (prefers-reduced-motion: reduce) {
   .maestros-premium-page tbody tr { transition: none; }
 }
+
+
+
+/* Maestros: acabado de superficies y controles comunes */
+.maestros-premium-page {
+  font-family: var(--molsan-font-family,Inter,system-ui,sans-serif);
+}
+.maestros-premium-page section {
+  border: 1px solid var(--molsan-border,#dce4ef);
+  box-shadow: var(--molsan-shadow-card,0 4px 14px rgba(36,50,74,.06));
+}
+.maestros-premium-page table { font-variant-numeric: tabular-nums; }
+.maestros-premium-page table thead th { background:#f5f7fb; color:var(--molsan-text-secondary,#526176); }
