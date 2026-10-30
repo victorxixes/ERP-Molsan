@@ -88,7 +88,7 @@ function FacturaDocumentoPreview({ posiciones, datosMolsan = {} }) {
     <div className="overflow-auto rounded-xl bg-slate-100 p-3 sm:p-5">
       <article className="relative mx-auto aspect-[210/297] w-full max-w-[620px] overflow-hidden border border-slate-200 bg-white shadow-xl">
         <div className="absolute inset-x-[6%] top-[1.2%] border-b-2 border-[#1e5794] pb-1 text-center text-[clamp(6px,.65vw,8px)] font-bold tracking-[.16em] text-[#1e5794]">FACTURA DE HONORARIOS DE GESTORÍA</div>
-        {FACTURA_CAMPOS.map(c => { const p = posiciones[c.id] || c; return <div key={c.id} style={{left:p.x+"%",top:p.y+"%",width:p.w+"%",height:p.h+"%"}} className="absolute overflow-hidden border border-slate-200 bg-white p-[1.2%] text-[clamp(6px,.72vw,9px)] leading-[1.35] text-slate-700">{valores[c.id]}</div>; })}
+        {FACTURA_CAMPOS.map(c => { const p = posiciones[c.id] || c; return <div key={c.id} style={{left:p.x+"%",top:p.y+"%",width:p.w+"%",height:p.h+"%",textAlign:p.align||"left",fontSize:(p.fontSize||9)+"px",paddingLeft:(p.padL??1.2)+"%",paddingRight:(p.padR??1.2)+"%",paddingTop:(p.padT??1.2)+"%",paddingBottom:(p.padB??1.2)+"%",display:"flex",alignItems:p.valign==="center"?"center":p.valign==="bottom"?"flex-end":"flex-start",fontWeight:p.bold?"700":"400",fontStyle:p.italic?"italic":"normal"}} className="absolute overflow-hidden border border-slate-200 bg-white leading-[1.35] text-slate-700">{valores[c.id]}</div>; })}
         <div className="absolute bottom-[2%] left-[6%] right-[6%] border-t border-slate-200 pt-1 text-center text-[clamp(5px,.55vw,7px)] text-slate-400">MOLSAN · Documento de ejemplo · No válido como factura</div>
       </article>
     </div>
@@ -96,7 +96,8 @@ function FacturaDocumentoPreview({ posiciones, datosMolsan = {} }) {
 }
 
 function FacturaLayoutDesigner({ datosMolsan = {} }) {
-  const [posiciones, setPosiciones] = useState(() => Object.fromEntries(FACTURA_CAMPOS.map(c => [c.id, { x: c.x, y: c.y, w: c.w, h: c.h }])));
+  const [posiciones, setPosiciones] = useState(() => Object.fromEntries(FACTURA_CAMPOS.map(c => [c.id, { x: c.x, y: c.y, w: c.w, h: c.h, align: "left", valign: "top", fontSize: 9, padL: 1.2, padR: 1.2, padT: 1.2, padB: 1.2 }])));
+  const [campoActivo, setCampoActivo] = useState("empresa");
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState("");
@@ -136,6 +137,7 @@ function FacturaLayoutDesigner({ datosMolsan = {} }) {
     const cursorY = ((e.clientY - rect.top) / rect.height) * 100;
     const x = Math.max(0, Math.min(100 - w, cursorX - w / 2));
     const y = Math.max(0, Math.min(100 - h, cursorY - h / 2));
+    setCampoActivo(id);
     setPosiciones(prev => ({ ...prev, [id]: { ...(prev[id] || actual), x, y, w, h } }));
     setMensaje("");
   };
@@ -161,14 +163,25 @@ function FacturaLayoutDesigner({ datosMolsan = {} }) {
     <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
       <div className="overflow-auto rounded-xl bg-slate-100 p-3">
         <div onDragOver={e => e.preventDefault()} onDrop={soltarCampo} className="relative mx-auto aspect-[210/297] w-full max-w-[620px] overflow-hidden border border-slate-300 bg-white shadow-lg">
-          {FACTURA_CAMPOS.map(c => { const p = posiciones[c.id] || c; return <div key={c.id} draggable onDragStart={e => e.dataTransfer.setData("text/plain", c.id)} style={{ left: p.x + "%", top: p.y + "%", width: p.w + "%", minHeight: p.h + "%" }} className="absolute flex cursor-grab items-center justify-center border border-dashed border-sky-500 bg-sky-50/80 px-1 text-center text-[clamp(7px,1.1vw,11px)] font-semibold leading-tight text-sky-900 active:cursor-grabbing">{c.label}</div>; })}
+          {FACTURA_CAMPOS.map(c => { const p = posiciones[c.id] || c; const activo = campoActivo === c.id; return <div key={c.id} draggable onClick={() => setCampoActivo(c.id)} onDragStart={e => { setCampoActivo(c.id); e.dataTransfer.setData("text/plain", c.id); }} style={{ left: p.x + "%", top: p.y + "%", width: p.w + "%", height: p.h + "%", textAlign:p.align||"left",fontSize:(p.fontSize||9)+"px",paddingLeft:(p.padL??1.2)+"%",paddingRight:(p.padR??1.2)+"%",paddingTop:(p.padT??1.2)+"%",paddingBottom:(p.padB??1.2)+"%" }} className={`absolute flex cursor-grab items-center border border-dashed ${activo ? "z-10 border-2 border-blue-700 bg-blue-100/95 ring-2 ring-blue-300" : "border-sky-500 bg-sky-50/80"} font-semibold leading-tight text-sky-900 active:cursor-grabbing`}>{c.label}</div>; })}
           <div className="pointer-events-none absolute bottom-2 left-2 text-[8px] text-slate-300">MOLSAN · FACTURA DE HONORARIOS</div>
         </div>
       </div>
-      <aside className="space-y-2">
-        <p className="text-xs font-bold text-slate-700">Campos disponibles</p>
-        {FACTURA_CAMPOS.map(c => <div key={c.id} draggable onDragStart={e => e.dataTransfer.setData("text/plain", c.id)} className="cursor-grab rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:border-sky-300 hover:bg-sky-50">{c.label}</div>)}
-        <p className="pt-2 text-[11px] leading-5 text-slate-500">El QR se reserva para el código fiscal real; no se genera un QR ficticio.</p>
+      <aside className="space-y-3">
+        <div><p className="text-xs font-bold text-slate-700">1. Selecciona un campo</p><div className="mt-2 max-h-40 space-y-1 overflow-auto">{FACTURA_CAMPOS.map(c => <button key={c.id} type="button" onClick={() => setCampoActivo(c.id)} draggable onDragStart={e => { setCampoActivo(c.id); e.dataTransfer.setData("text/plain", c.id); }} className={`w-full cursor-grab rounded-lg border px-3 py-2 text-left text-xs font-semibold ${campoActivo===c.id?"border-blue-500 bg-blue-50 text-blue-900":"border-slate-200 bg-white text-slate-700 hover:border-sky-300"}`}>{c.label}</button>)}</div></div>
+        {(() => { const p = posiciones[campoActivo] || FACTURA_CAMPOS.find(c=>c.id===campoActivo) || {}; const cambiar = (k,v) => { const n=Number(v); setPosiciones(prev=>({...prev,[campoActivo]:{...(prev[campoActivo]||p),[k]:Number.isFinite(n)?n:0}})); setMensaje(""); }; const mover=(dx,dy)=>setPosiciones(prev=>({...prev,[campoActivo]:{...(prev[campoActivo]||p),x:Math.max(0,Math.min(100-(p.w||10),(p.x||0)+dx)),y:Math.max(0,Math.min(100-(p.h||5),(p.y||0)+dy))}})); return <div className="space-y-3 rounded-xl border border-blue-200 bg-blue-50/50 p-3">
+          <div><p className="text-xs font-extrabold text-blue-900">2. Posición y tamaño</p><p className="text-[10px] text-slate-500">{FACTURA_CAMPOS.find(c=>c.id===campoActivo)?.label}</p></div>
+          <div className="grid grid-cols-2 gap-2">{[["x","X · izquierda"],["y","Y · arriba"],["w","Ancho"],["h","Alto"]].map(([k,l])=><label key={k} className="text-[10px] font-semibold text-slate-600">{l} (%)<input type="number" min="0" max="100" step="0.5" value={Number(p[k]??0)} onChange={e=>cambiar(k,e.target.value)} className="mt-1 w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-xs"/></label>)}</div>
+          <div className="flex items-center justify-between gap-2"><span className="text-[10px] font-bold text-slate-600">Ajuste fino</span><div className="grid grid-cols-3 gap-1"><span/><button type="button" onClick={()=>mover(0,-0.5)} className="rounded border bg-white px-2 py-1 text-xs">↑</button><span/><button type="button" onClick={()=>mover(-0.5,0)} className="rounded border bg-white px-2 py-1 text-xs">←</button><button type="button" onClick={()=>mover(0,0.5)} className="rounded border bg-white px-2 py-1 text-xs">↓</button><button type="button" onClick={()=>mover(0.5,0)} className="rounded border bg-white px-2 py-1 text-xs">→</button></div></div>
+          <div className="border-t border-blue-100 pt-2"><p className="text-xs font-extrabold text-blue-900">3. Texto y márgenes internos</p>
+            <label className="mt-2 block text-[10px] font-semibold text-slate-600">Alineación horizontal<select value={p.align||"left"} onChange={e=>setPosiciones(prev=>({...prev,[campoActivo]:{...(prev[campoActivo]||p),align:e.target.value}}))} className="mt-1 w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-xs"><option value="left">Izquierda</option><option value="center">Centrada</option><option value="right">Derecha</option><option value="justify">Justificada</option></select></label>
+            <label className="mt-2 block text-[10px] font-semibold text-slate-600">Alineación vertical<select value={p.valign||"top"} onChange={e=>setPosiciones(prev=>({...prev,[campoActivo]:{...(prev[campoActivo]||p),valign:e.target.value}}))} className="mt-1 w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-xs"><option value="top">Arriba</option><option value="center">Centro</option><option value="bottom">Abajo</option></select></label>
+            <label className="mt-2 block text-[10px] font-semibold text-slate-600">Tamaño de letra (px)<input type="number" min="5" max="24" step="0.5" value={p.fontSize||9} onChange={e=>cambiar("fontSize",e.target.value)} className="mt-1 w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-xs"/></label>
+            <div className="mt-2 grid grid-cols-2 gap-2">{[["padL","Margen izq."],["padR","Margen der."],["padT","Margen sup."],["padB","Margen inf."]].map(([k,l])=><label key={k} className="text-[10px] font-semibold text-slate-600">{l} (%)<input type="number" min="0" max="8" step="0.2" value={p[k]??1.2} onChange={e=>cambiar(k,e.target.value)} className="mt-1 w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-xs"/></label>)}</div>
+            <div className="mt-2 flex gap-3 text-xs"><label className="flex items-center gap-1"><input type="checkbox" checked={!!p.bold} onChange={e=>setPosiciones(prev=>({...prev,[campoActivo]:{...(prev[campoActivo]||p),bold:e.target.checked}}))}/>Negrita</label><label className="flex items-center gap-1"><input type="checkbox" checked={!!p.italic} onChange={e=>setPosiciones(prev=>({...prev,[campoActivo]:{...(prev[campoActivo]||p),italic:e.target.checked}}))}/>Cursiva</label></div>
+          </div>
+        </div>; })()}
+        <p className="text-[10px] leading-4 text-slate-500">Puedes arrastrar los campos o ajustar sus valores exactos. La alineación, tamaño de letra y márgenes internos se guardan junto con la distribución. El QR se reserva para el código fiscal real; no se genera un QR ficticio.</p>
         {error && <p role="alert" className="text-xs text-rose-700">{error}</p>}
         {mensaje && <p role="status" className="text-xs font-semibold text-emerald-700">{mensaje}</p>}
       </aside>
