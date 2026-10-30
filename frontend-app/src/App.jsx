@@ -776,7 +776,7 @@ export default function App() {
 
           <Route
             path="notificaciones"
-            element={<Notificaciones />}
+            element={protegerModulo("notificaciones", <Notificaciones />)}
           />
 
 
