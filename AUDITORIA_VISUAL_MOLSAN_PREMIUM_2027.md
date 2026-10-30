@@ -401,3 +401,12 @@ Se mantiene pendiente el recorrido del resto de herramientas: importaciones, mod
 - Se mantiene el modal específico `eg-modal-form` para alta de encargo y sus estilos propios de portal; la capa común solo añade foco, scroll y adaptación de viewport.
 - No se han cambiado los flujos de creación, edición, incidencias, perfiles, contraseñas ni accesos de notaría.
 - Pendiente: inspección visual real de todos los paneles de EncargaGest en escritorio/móvil, especialmente el formulario de alta largo y la edición de encargo.
+
+
+## Vigésima pasada: NotarGest y CSS independiente de portales
+
+- **ApoderaGest:** el modal de encargos ya usa el overlay/panel semánticamente correcto; se ha añadido la importación efectiva de `ModalesHerramientasPremium.css` para que la clase `panel-modal-premium` recién conectada aplique de verdad scroll, foco y límites de viewport.
+- **NotarGest:** sus cuatro diálogos revisados (avisos, pagos, perfil CTN y resumen de expedientes) ya usan `role="presentation"` en el fondo y `role="dialog"` + `aria-modal` + `aria-labelledby` en el panel. Se mantiene su sistema propio `ng-modal`, con tablas anchas dentro de contenedores desplazables.
+- **EncargaGest:** dispone de hoja de estilos propia y una capa de workspace separada; se han conservado ambas. El portal no se debe forzar a adoptar la estructura del ERP interno.
+- La auditoría estática de CSS revela alta fragmentación de media queries en portales (más de 50 bloques en PortalProfesionalShared y más de 40 en NotarGest), además de reglas `!important` concentradas en las hojas históricas. Es una señal de deuda de cascada, no una razón para borrarlas automáticamente.
+- **Decisión técnica:** mantener estilos de portal aislados y reducir contradicciones por secciones pequeñas, con pruebas de escritorio/móvil de cada flujo. Las reglas de impresión de ApoderaGest quedan fuera de cualquier normalización de pantalla.
