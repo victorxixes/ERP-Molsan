@@ -829,3 +829,14 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 ### Último ajuste del gestor de foco
 - Se añadió un listener `focusin` al diálogo modal superior: si el foco se desplaza por código o interacción fuera del modal activo, vuelve al primer control disponible. Los diálogos anidados siguen delegando teclado/foco únicamente al modal superior.
 - Commit: `9a1eb1e4`.
+
+## Estado de cierre técnico de esta sesión — 30/10/2026
+- `useAccessibleDialog` filtra controles invisibles (`visibility:hidden`, `display:none`), deshabilitados, descendientes de `aria-hidden` e `inert`; incluye controles nativos de `details`, audio y vídeo; contiene el foco incluso si otro script intenta moverlo fuera del modal superior; restaura el foco previo al cerrar.
+- `ModalEmpleado`, Enviar a notario, CTN, NotarGest, Control de Fichajes, Mensajería y Provisiones bloquean Escape/cierre de interfaz cuando hay una operación de escritura o envío activa. Los cierres de solo lectura permanecen disponibles.
+- Se comprobó por análisis estático que el catálogo central tiene 32 claves únicas, 27 rutas reales sin duplicados y todas las rutas tienen declaración exacta en `App.jsx`.
+- El catálogo central ya muestra `NotarGest` con la capitalización acordada.
+- CI actual del commit `794b69ad`: los cinco workflows (Backend audit, EncargaGest, Post Firma, Fichajes y Control Apoderados) están en estado `queued`; aún no se pueden dar por superados. El último conjunto de cinco workflows confirmado en verde corresponde al commit anterior `20da43cf`, anterior a estas últimas correcciones.
+- `frontend-app/package.json` solo define `npm run build` y no define suite de pruebas unitarias frontend. El workflow frontend ejecuta `npm install` y `npm run build`; el workflow Backend audit sí incluye compilación y pruebas unitarias aisladas.
+- PR #374 sigue abierta, en borrador y mergeable; rama `molsan-premium-2027-glass-luxe`: 353 commits por delante de `main`, 0 por detrás y 96 archivos modificados. No se ha fusionado ni desplegado.
+- No se han ejecutado escrituras en expedientes ni en base de datos productiva. No se ha alterado el servicio Render Live.
+- Cierre pendiente antes de declarar la fase técnica completamente validada: esperar el resultado de los cinco workflows de esta última tanda y, posteriormente, QA real en navegador con teclado, zoom y viewports 320/375/768/1024/1440 px. La revisión estática no sustituye esas pruebas.
