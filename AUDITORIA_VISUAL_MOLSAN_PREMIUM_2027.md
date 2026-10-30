@@ -560,3 +560,24 @@ Se ha repetido el recuento estático directamente sobre las cinco hojas principa
 
 ### Siguiente paso
 Priorizar la lectura contextual de los bloques repetidos de NotarGest y PortalProfesionalShared, registrar cuáles son variantes responsive legítimas y cuáles pueden consolidarse sin cambiar el resultado calculado. Después repetir build/CI y reservar las capturas de comparación para la previsualización aislada.
+
+
+## Vigésima novena pasada: cascada contextual de portales
+
+### PortalProfesionalShared.css · aceptación de encargos
+- Se ha seguido la cascada de `.ag-aceptar-resumen`: parte de cuatro columnas, recibe una variante de siete columnas para la fila compacta y después otra distribución de siete columnas para los campos de aceptación; existen breakpoints intermedios de cuatro y dos columnas.
+- Una regla tardía dentro de un media query vuelve a imponer una rejilla de nueve columnas con `!important`. Por tanto, el número alto de repeticiones no es una simple copia literal: son iteraciones de diseño superpuestas y algunas se contradicen en el número de columnas.
+- No se ha retirado ninguna regla. Antes hay que comprobar qué versión corresponde al flujo actual de aceptación en ApoderaGest y qué anchura real necesita cada campo; después se podrá dejar una única regla base y sus breakpoints.
+
+### PortalProfesionalShared.css · ficha de encargo
+- `.ag-encargo-paneles.ag-ficha-paneles` tiene varias distribuciones históricas: dos columnas, tres columnas y variantes específicas para envío, facturación, archivo, registro, firma y observaciones.
+- Los breakpoints de 1200, 900 y 760px cambian la colocación de subpaneles. Las últimas reglas de escritorio vuelven a fijar tres columnas y modifican el reparto de Carpeta Digital/Registro.
+- Se confirma que esta cascada necesita capturas del flujo real antes de consolidar: el orden de los paneles es parte de la comprensión del expediente y no debe cambiarse accidentalmente.
+
+### NotarGest.css · administración y overlays
+- Las repeticiones de `.ng-admin-notarias .ng-control-hero` corresponden a sucesivas adaptaciones de la cabecera administrativa; requieren validar el salto de acciones a segunda línea.
+- Los overlays generales y los especializados de pagos/perfil se redefinen en varios tramos de la hoja. El modal de pagos conserva tabla con ancho mínimo y scroll interno; se debe comprobar que el scroll no se propaga al fondo y que el encabezado permanece visible.
+- La navegación de bandejas tiene breakpoints explícitos hasta una columna a 390px; se registra como cobertura estática, no como confirmación de legibilidad visual.
+
+### Decisión
+La cascada de ambos portales queda clasificada como **deuda de mantenimiento prioritaria, sin regresión confirmada**. No se aplican sustituciones automáticas ni se elimina `!important` a ciegas. La reducción debe hacerse por bloque, con comparación visual de escritorio/tablet/móvil y verificación de que no cambian acciones, datos ni orden de trabajo.
