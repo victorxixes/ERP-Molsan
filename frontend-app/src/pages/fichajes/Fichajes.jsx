@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import "../../css/ComponentesOperativosPremium.css";
 import axios from "../../api/axios";
 import FichajesResumen from "./FichajesResumen.jsx";
 import FestivosCompensaciones from "./FestivosCompensaciones.jsx";
