@@ -1062,3 +1062,19 @@ El frontend de Agenda ya distinguía explícitamente `agenda.ver`, `agenda.crear
 - Borrado: `agenda.eliminar`.
 
 La comprobación se aplica en cada endpoint mediante `require_perm_modulo`; no se concede permiso por rol ni por ser administrador. Esto cierra la diferencia entre los controles de botones del frontend y la autorización real del servidor. Las asignaciones efectivas deben probarse con perfiles de prueba antes de desplegar.
+
+### Ámbito de reparto por expediente — correcciones backend — 30/10/2026
+
+Se ha extendido el control de visibilidad del expediente a los routers auxiliares que reciben su identificador por URL. Antes exigían JWT, pero su router no aplicaba el mismo guard de reparto que el router principal de Expedientes:
+
+- Gastos y pagos: `backend/app/expedientes/gastos/router.py`.
+- Fincas y registros: `backend/app/expedientes/fincasyregistros/router.py`.
+- Defectos e historial: `backend/app/expedientes/defectos/router.py`.
+- Carpeta Digital y descargas: `backend/app/carpeta_digital/router.py`.
+- PPAD: `backend/app/expediente_ppad/router.py`.
+- Provisiones: `backend/app/provisiones/router.py`; las rutas de provisiones independientes conservan el bypass previsto por el helper compartido.
+- Observaciones: `backend/app/expediente_observaciones/router.py` usa su autenticación JWT específica y ahora valida el empleado contra `validar_acceso_candidatos_expediente` antes de operar sobre el expediente.
+
+El guard compartido valida solo el expediente solicitado, devuelve 404 para referencias fuera del ámbito y conserva el criterio central de administradores/empleados con reglas de reparto. Traspasos de saldo ya calculaba `ids_expedientes_visibles` en sus operaciones y se mantiene.
+
+No se han cambiado reglas de reparto ni asignaciones de empleados. Queda validar con perfiles de prueba: empleado con expediente asignado, empleado sin asignación y administrador con permisos explícitos.
