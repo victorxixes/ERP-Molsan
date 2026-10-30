@@ -537,3 +537,26 @@ Se mantiene pendiente el recorrido del resto de herramientas: importaciones, mod
 
 ### Límite de esta pasada
 La revisión anterior es estática sobre la rama aislada. No se han ejecutado operaciones con notarías, encargos, documentos, pagos ni accesos; tampoco se han modificado datos. No se marca QA visual como completado. La consolidación de cascada y cualquier ajuste adicional quedan condicionados a una previsualización aislada con backend de pruebas o mocks, nunca contra el backend productivo.
+
+
+## Vigésima octava pasada: medición de deuda de cascada CSS
+
+Se ha repetido el recuento estático directamente sobre las cinco hojas principales de la rama. Los datos actuales son:
+
+| Hoja | Líneas | `!important` | Media queries | Selectores repetidos destacados |
+|---|---:|---:|---:|---:|
+| `MolsanRedesign2027.css` | 3.499 | 118 | 25 | `.erp-main-inner` (2), `.tabs-sj` (2), `.modal-sj` (2) |
+| `NotarGest.css` | 958 | 83 | 46 | `.ng-admin-notarias .ng-control-hero` (5), `.notargest .ng-modulos-grid` (4), `.ng-modal` (3) |
+| `PortalProfesionalShared.css` | 1.988 | 56 | 55 | `.ag-aceptar-resumen` (10), `.ag-encargo-paneles.ag-ficha-paneles` (8), `.ag-encargo-detalle-cabecera` (6) |
+| `EncargaGest.css` | 792 | 7 | 17 | `.eg-modal-layout` (4), `.eg-perfil-layout` (4), `.eg-modal-form` (3) |
+| `molsan-design-system.css` | 938 | 0 | 12 | `.molsan-page-header` (2), `.molsan-toolbar` (2), `.molsan-kpi-card` (2) |
+
+### Interpretación
+- El recuento confirma deuda de cascada especialmente concentrada en NotarGest y PortalProfesionalShared; no demuestra por sí mismo que cada repetición sea errónea.
+- En PortalProfesionalShared hay selectores con hasta diez bloques. Es necesario contrastar cada bloque con sus media queries y el orden de importación antes de consolidarlo.
+- EncargaGest presenta una fragmentación más acotada, pero las cuatro definiciones de `.eg-modal-layout` confirman que el formulario de alta ha recibido varias iteraciones estructurales.
+- `molsan-design-system.css` no contiene declaraciones `!important`; sus selectores repetidos se deben revisar para comprobar si son variantes responsive o duplicidades consolidables.
+- No se ha ejecutado una eliminación automática de selectores ni de `!important`. Se evita así introducir regresiones visuales en módulos que todavía no han pasado QA de navegador.
+
+### Siguiente paso
+Priorizar la lectura contextual de los bloques repetidos de NotarGest y PortalProfesionalShared, registrar cuáles son variantes responsive legítimas y cuáles pueden consolidarse sin cambiar el resultado calculado. Después repetir build/CI y reservar las capturas de comparación para la previsualización aislada.
