@@ -26,3 +26,11 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Compilar aplicación completa
         run: npm run build
+
+      - name: Publicar artefacto de previsualización
+        uses: actions/upload-artifact@v4
+        with:
+          name: molsan-premium-frontend-dist
+          path: frontend-app/dist/
+          if-no-files-found: error
+          retention-days: 2
