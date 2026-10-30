@@ -1025,3 +1025,20 @@ La ejecución del commit `c0945ef78ed3d0f7aef0315a907220b2ff550d64`, que contien
 - Backend audit: cancelled por concurrencia de ejecuciones.
 
 El backend audit del commit anterior `423144ec36bff7adead6750d5203577f57bac038`, que ya contenía todos los cambios backend de esta auditoría, sí terminó en success con `compileall` y 84 tests + 21 subtests satisfactorios. No se han introducido cambios backend después de ese commit. Por tanto, el resultado backend válido sigue siendo verde; la cancelación posterior no indica fallo de código.
+
+### Accesibilidad de diálogos — revisión ampliada de integración — 30/10/2026
+
+Se verificó la integración de `useAccessibleDialog` en los diálogos operativos más relevantes, comprobando refs, `role="dialog"`, `aria-modal`, nombre accesible y `tabIndex=-1` en el contenedor enfocable:
+
+- Ficha de Informes: Detalle de facturación.
+- Expedientes: Envío a notario, Liquidar expediente y vista previa, Carpeta Digital y visor, Provisiones y Traspaso de saldo.
+- CTN: ficha/detalle de notaría.
+- Empleados: ficha modal.
+- Catálogo ABSIS: alta de categoría y entrada.
+- Catálogos de Municipios, Entidades Bancarias, Registros de la Propiedad y Oficinas Liquidadoras: diálogos de importación/edición.
+- ApoderaGest: grupo de encargos y resumen.
+- NotarGest: avisos, pagos, perfil de notario y resumen de expedientes.
+- EncargaGest: alta, edición, incidencia, perfil y accesos de notaría.
+- Control Apoderados: listado de firmas.
+
+El hook implementa foco inicial, ciclo Tab/Shift+Tab, Escape solo en el diálogo superior y restauración del foco previo, permitiendo diálogos anidados. La revisión estática no sustituye la prueba real con teclado/lector de pantalla: quedan por verificar en navegador el orden de foco, la interacción con overlays anidados, el scroll del documento, zoom y lectores de pantalla.
