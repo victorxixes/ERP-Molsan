@@ -342,3 +342,11 @@ Se mantiene pendiente el recorrido del resto de herramientas: importaciones, mod
 - **Registros de Propiedad:** el modal de importación Excel y el modal de alta/edición activan ahora `panel-modal-premium`; los paneles interiores declaran su rol de diálogo y nombre accesible.
 - Se mantienen los anchos de importación (3xl) y edición (4xl), así como el scroll vertical del formulario largo.
 - **PPAD, Proceso ABSIS y Reasignar Notario:** no presentan overlays propios en el JSX inspeccionado; conservan sus ámbitos de subpágina y componentes compartidos. Se revisarán los controles integrados en el recorrido funcional visual.
+
+
+## Decimotercera pasada: catálogos de tipos
+
+- **Tipos de Carga Hipotecaria** y **Tipos de Concepto de Gastos:** conectados al modal responsive común; sus paneles interiores ahora tienen semántica de diálogo y etiqueta contextual.
+- **Tipos de Expediente:** el diálogo ya tenía atributos accesibles; se ha conectado al estilo responsive compartido.
+- Se conservan sus colores de validación y estados (rojo/verde), que son semánticos y no deben convertirse en el color corporativo.
+- **Tipos Impositivos:** no se detectó overlay propio en el JSX inspeccionado; se conserva el ámbito de controles operativos.
