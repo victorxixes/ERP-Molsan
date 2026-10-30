@@ -25,3 +25,11 @@ Se detectan acentos visuales heredados que no están totalmente unificados con l
 
 ## Limitaciones
 La revisión confirma clases presentes en el código, no una diferencia visual exacta en navegador. El build de frontend no garantiza contraste, legibilidad ni consistencia visual a todos los tamaños. Las pruebas de navegador siguen pendientes.
+
+
+## Pasada adicional — configuración de build y pruebas automatizadas
+- `frontend-app/package.json` define `npm run build` y `npm run preview`, pero no define scripts de test unitario, integración o pruebas de navegador. La revisión de workflows localizados confirma build de frontend y validaciones de sintaxis, no una suite de regresión visual.
+- El workflow `.github/workflows/frontend-build.yml` compila desde `frontend-app`, usa Node 20 y publica el artefacto de build como evidencia temporal de CI. Esto ayuda a detectar errores de compilación, pero no sustituye a la ejecución real de las pantallas.
+- El `package.json` de la raíz y el de `frontend-app` declaran versiones distintas de React Router, Vite y Tailwind. Como el workflow y la aplicación de Render están configurados para el frontend bajo `frontend-app`, la raíz parece ser una configuración heredada; conviene verificar cuál es la fuente oficial de instalación antes de limpiar o sincronizar manifiestos.
+- No se encontró en el manifiesto de `frontend-app` un script Playwright/Cypress/Vitest. No se deben presentar como realizadas pruebas automatizadas de interacción que no están configuradas.
+- Recomendación antes de integrar: confirmar el comando y directorio exactos de build usados por Render LIVE, contrastarlos con el workflow de CI y documentar el resultado. No se ha modificado configuración de build ni despliegue.
