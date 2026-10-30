@@ -4,6 +4,8 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 
 router = APIRouter(
     prefix="/mantenimiento-defectos",
@@ -13,7 +15,11 @@ router = APIRouter(
 
 
 @router.post("/crear-tablas")
-def crear_tablas_defectos(db: Session = Depends(get_db)):
+def crear_tablas_defectos(
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "seguridad", "editar")
     try:
         db.execute(text("""
             CREATE TABLE IF NOT EXISTS public.defecto_subtipos (
