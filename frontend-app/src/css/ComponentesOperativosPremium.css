@@ -16,8 +16,19 @@
 .mensajes-premium-page,
 .catalogos-premium-page,
 .herramientas-home-premium {
+  min-width: 0;
+  max-width: 100%;
   color: var(--molsan-text,#17243a);
   font-family: var(--molsan-font-family,Inter,system-ui,sans-serif);
+}
+.fichajes-premium-page :is(button,input,select,textarea):focus-visible {
+  outline: 2px solid var(--molsan-primary,#3156b3);
+  outline-offset: 2px;
+}
+.fichajes-premium-page .overflow-x-auto {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
 }
 .fichajes-premium-page :is(section,article),
 .mensajes-premium-page :is(section,article),
@@ -39,7 +50,7 @@
 .fichajes-premium-page table thead th,
 .mensajes-premium-page table thead th,
 .catalogos-premium-page table thead th {
-  background: #f5f7fb;
+  background: var(--molsan-surface-soft,#f7f9fc);
   color: var(--molsan-text-secondary,#526176);
 }
 
