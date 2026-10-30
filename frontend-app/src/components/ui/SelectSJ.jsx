@@ -68,7 +68,10 @@ export default function SelectSJ({
     const nextIndex = selectedIndex >= 0 ? selectedIndex : 0;
     setActiveIndex(nextIndex);
     optionRefs.current[nextIndex]?.focus();
-  }, [open, options, value]);
+  // El foco inicial solo se calcula al abrir; no debe saltar al botón
+  // seleccionado en cada render si el catálogo llega como array nuevo.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   // =========================================================
   // CERRAR SI PASA A DISABLED
@@ -204,14 +207,14 @@ export default function SelectSJ({
               No hay opciones disponibles
             </div>
           ) : (
-            options.map((o) => {
+            options.map((o, optionIndex) => {
               const seleccionada =
                 String(o.value) === String(value);
 
               return (
                 <button
                   key={o.value}
-                  ref={(element) => { optionRefs.current[options.indexOf(o)] = element; }}
+                  ref={(element) => { optionRefs.current[optionIndex] = element; }}
                   type="button"
                   role="option"
                   tabIndex={activeIndex === options.indexOf(o) ? 0 : -1}
