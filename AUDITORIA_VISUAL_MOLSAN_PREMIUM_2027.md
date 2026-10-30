@@ -259,3 +259,29 @@ Se ha recorrido el inventario de importaciones lazy de `App.jsx`: 88 pantallas/r
 - También finalizaron correctamente los workflows de Control Apoderados, Fichaje Molsan, EncargaGest y Consolidación Post Firma para ese mismo commit.
 - GitHub Actions ha generado el artefacto `molsan-premium-frontend-dist` (artefacto aislado de build; no es un despliegue ni una captura visual).
 - La PR #374 sigue abierta, en borrador, con base `main`; no está fusionada.
+
+
+## Séptima pasada: ventanas modales de mayor impacto
+
+Se ha contrastado el código de los overlays reales con las hojas compartidas: se localizaron varios diálogos que importaban CSS premium pero no tenían la clase de ámbito que activa sus reglas responsive.
+
+### Correcciones realizadas
+- **FichaExpediente:** conectado el ámbito de página a `ModalesOperativosPremium.css`; los diálogos de orden de pago, PPAD y gasto tienen ahora `role="dialog"` en el panel, y el modal genérico portaleado usa la clase de ámbito y etiqueta accesible. Se preservan los anchos configurados por cada variante de modal.
+- **Informes:** añadido `panel-modal-premium` al overlay del detalle de facturación para activar scroll y altura máxima responsive.
+- **Selector de módulos:** conectado el modal de soporte al ámbito `panel-modal-premium`.
+- **Provisiones:** conectado el modal de envío por email; el formulario, no el fondo oscuro, contiene ahora el rol de diálogo.
+- **Catálogo ABSIS:** sus dos diálogos usan la capa responsive compartida.
+- **Mensajería Molsan y Mensajería Solicitudes:** los paneles de edición/seguimiento activan las reglas comunes y contienen ahora los atributos accesibles del diálogo.
+- **Seguridad · Auditoría:** el detalle de registro activa el modal compartido y tiene rol y etiqueta accesibles en el panel.
+- **Control Apoderados:** el listado de firmas activa la capa común; el rol de diálogo se aplica al panel.
+- **Control Fichajes:** el formulario de corrección tiene rol y etiqueta accesibles y mantiene su clase de modal específica.
+- **Empleados:** el modal de alta activa `empleado-operativo-modal` y tiene rol y etiqueta accesibles. `ModalEmpleado` ya utilizaba la capa operativa compartida.
+
+### Reglas que se mantienen sin cambios funcionales
+- Los colores de éxito, error, advertencia y estados de pago se conservan.
+- No se cambian operaciones de guardar, cancelar, firmar, pagar, validar ni enviar.
+- Los diálogos con tablas extensas mantienen scroll horizontal en lugar de comprimir columnas.
+
+### Validación pendiente de esta pasada
+- Los workflows de los commits anteriores finalizaron correctamente; el build del commit `d3ee2b19` está pendiente.
+- El QA de navegador de cada diálogo sigue pendiente: el navegador automatizado disponible bloquea la navegación local. No se declara una comprobación visual real que no se ha podido ejecutar.
