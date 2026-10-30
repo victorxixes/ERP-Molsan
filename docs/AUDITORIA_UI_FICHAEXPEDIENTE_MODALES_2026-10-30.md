@@ -75,3 +75,12 @@ Revisión de código actual de `LiquidarExpedienteModal.jsx`, `EnviarANotarioMod
 - No se han cambiado cálculos, estados de pago, saldos, endpoints, operaciones económicas ni persistencia.
 - Commit: `83227646`.
 - Pendiente: comprobar modales anidados, apertura/cierre con teclado, retorno de foco, scroll interno, zoom 125 % y responsive en navegador. No se han abierto expedientes ni ejecutado pagos o escrituras.
+
+
+## Quinta pasada — listado de Expedientes
+
+- `ExpedientesListado.jsx`: se integra `useAccessibleDialog` en «Filtros avanzados» y «Control de plazos».
+- El panel de filtros avanzados es ahora la región semántica del diálogo; el overlay exterior se declara como presentación. Se evita que el botón de cierre por fondo quede incluido dentro de la lista de elementos enfocables del diálogo.
+- Ambos diálogos reciben foco inicial, contención Tab/Mayús+Tab, cierre con Escape y restauración del foco.
+- Commits: `48258919`.
+- No se han cambiado filtros, consultas, exportaciones, alertas ni datos. QA navegador pendiente.
