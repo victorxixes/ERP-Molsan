@@ -468,3 +468,24 @@ Se mantiene pendiente el recorrido del resto de herramientas: importaciones, mod
 - **Panel Técnico principal, Monitor Realtime, Auditoría Avanzada y Logs Avanzados** ya están dentro de sus ámbitos especializados `panel-tecnico-premium` / `panel-tecnico-submodulo-premium`.
 - **Monitor de Sistema:** su contenedor usaba `p-6` fijo; se ha cambiado a `p-4 sm:p-6` y añadido `min-w-0` para que los paneles de métricas no fuercen el ancho en móvil.
 - Los paneles técnicos conservan sus propios estados de conexión, alertas y severidad; no se han recoloreado indicadores de salud ni errores.
+
+
+## Decimoséptima pasada: Fichajes y Control de Fichajes
+
+### Revisión
+- **Fichajes empleado:** calendario mensual de 7 columnas; historial de marcajes con tabla de 560px dentro de `overflow-x-auto`; documentos y solicitudes con paneles propios.
+- **Control de Fichajes:** tabla administrativa de 1250px contenida en un wrapper horizontal; el modal de corrección ya tiene rol de diálogo, etiqueta accesible y estilos responsive compartidos.
+- **Solicitudes de ausencia:** tabla de 850px con wrapper horizontal; formulario empleado/administrador y filtros etiquetados.
+- **Festivos y compensaciones:** tablas extensas de 520–850px contenidas en wrappers independientes; el CSS móvil limita las tablas y evita que desborden el documento.
+- Se confirma que los colores verde/rojo/ámbar/violeta de los marcajes y las decisiones de aprobación/rechazo son estados semánticos, no se sustituyen.
+
+### Ajustes aplicados
+- El ámbito `fichajes-premium-page` ahora impide que el contenido fuerce el ancho de la página (`min-width:0`, `max-width:100%`).
+- Los wrappers `overflow-x-auto` de Fichajes contienen el desplazamiento horizontal y mantienen el gesto táctil dentro de cada tabla.
+- Se añadió un foco visible coherente con el color primario a botones y campos de Fichajes.
+- El encabezado de tablas consume el token de superficie suave en lugar de un hexadecimal fijo.
+
+### Pendiente de prueba real
+- Confirmar en móvil que el calendario de siete columnas conserva legibilidad con el tamaño real de los días.
+- Probar el scroll horizontal de cada tabla en dispositivo táctil y la edición del marcaje con teclado.
+- El selector de ausencia en Fichajes es un `select` nativo, correctamente asociado a su etiqueta; no se sustituye por un selector custom innecesario.
