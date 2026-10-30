@@ -2773,8 +2773,6 @@ function InformeFirmas() {
   const [error, setError] = useState("");
   const [exportando, setExportando] = useState(false);
   const [recarga, setRecarga] = useState(0);
-  const modalFacturacionRef = useRef(null);
-  useAccessibleDialog({ open: modalAbierto, onClose: () => setModalAbierto(false), dialogRef: modalFacturacionRef });
   const [editandoId, setEditandoId] = useState("");
   const [edicionFirma, setEdicionFirma] = useState({ modalidad: "SIN_CLASIFICAR", fecha_envio: "" });
   const [guardandoDatosFirma, setGuardandoDatosFirma] = useState(false);
@@ -3397,6 +3395,8 @@ function InformeFacturacion() {
   const [exportando, setExportando] = useState(false);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [recarga, setRecarga] = useState(0);
+  const modalFacturacionRef = useRef(null);
+  useAccessibleDialog({ open: modalAbierto, onClose: () => setModalAbierto(false), dialogRef: modalFacturacionRef });
 
   useEffect(() => {
     let activo = true;
