@@ -472,7 +472,12 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
   const [emailProvisionId, setEmailProvisionId] = useState(null);
   const [enviandoEmail, setEnviandoEmail] = useState(false);
   const emailDialogRef = useRef(null);
-  useAccessibleDialog({ open: Boolean(emailDraft), onClose: () => { setEmailDraft(null); setEmailProvisionId(null); }, dialogRef: emailDialogRef });
+  const cerrarEmail = () => {
+    if (enviandoEmail) return;
+    setEmailDraft(null);
+    setEmailProvisionId(null);
+  };
+  useAccessibleDialog({ open: Boolean(emailDraft), onClose: cerrarEmail, dialogRef: emailDialogRef });
 
   useEffect(() => {
     let activo = true;
@@ -905,7 +910,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
           <div className="flex items-center gap-3 rounded-xl border border-red-100 bg-red-50/70 p-3 text-sm text-slate-700"><span className="text-2xl">📎</span><div><p className="font-semibold">PDF de la provisión</p><p className="text-xs text-slate-500">Se genera desde la provisión seleccionada y se adjunta al correo automáticamente.</p></div></div>
           {emailDraft.historial?.length > 0 && <section className="rounded-xl border border-slate-200 bg-slate-50 p-3"><h3 className="mb-2 text-sm font-bold text-slate-800">Últimos envíos</h3><div className="space-y-2">{emailDraft.historial.map((envio, i) => <div key={envio.creado_en || i} className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white px-3 py-2 text-xs"><div><p className="font-semibold text-slate-700">{envio.destinatario}</p><p className="text-slate-500">{envio.creado_en ? new Date(envio.creado_en).toLocaleString("es-ES") : "Fecha no disponible"}</p></div><span className={envio.estado === "enviado" ? "rounded-full bg-emerald-100 px-2 py-1 font-bold text-emerald-800" : "rounded-full bg-red-100 px-2 py-1 font-bold text-red-800"}>{envio.estado === "enviado" ? "Enviado" : "Error"}</span></div>)}</div></section>}
           <div className="flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-4">
-            <button type="button" onClick={() => { setEmailDraft(null); setEmailProvisionId(null); }} className={boton + " border border-slate-300 text-slate-700 hover:bg-slate-50"}>Cancelar</button>
+            <button type="button" onClick={cerrarEmail} disabled={enviandoEmail} className={boton + " border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-50"}>Cancelar</button>
             <button type="submit" disabled={enviandoEmail || !emailDraft.smtp_configurado || !emailDraft.destinatario.trim() || !emailDraft.asunto.trim() || !emailDraft.cuerpo.trim()} className={boton + " bg-emerald-600 text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"}>{enviandoEmail ? "Enviando…" : emailDraft.smtp_configurado ? "Enviar correo" : "SMTP pendiente"}</button>
           </div>
         </div>
