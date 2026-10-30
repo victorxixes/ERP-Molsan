@@ -124,10 +124,10 @@ export default function CatalogoOficinas() {
             Archivo Excel
             <input id="catalogo-oficinas-excel" type="file" accept=".xlsx,.xls" onChange={seleccionarArchivo} className="mt-2 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:font-semibold file:text-blue-700" />
           </label>
-          <button type="button" onClick={previsualizar} disabled={!archivo || cargando || importando} className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-800 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50">
+          <button type="button" onClick={previsualizar} disabled={!archivo || cargando || importando} className="rounded-xl border border-[var(--molsan-primary-border)] bg-[var(--molsan-primary-soft)] px-4 py-3 text-sm font-semibold text-[var(--molsan-primary)] transition hover:bg-[var(--molsan-primary-border)] disabled:cursor-not-allowed disabled:opacity-50">
             {cargando ? "Validando…" : "Validar y previsualizar"}
           </button>
-          <button type="button" onClick={importar} disabled={!archivo || !previsualizacion || !!previsualizacion.errores?.length || importando} className="rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">
+          <button type="button" onClick={importar} disabled={!archivo || !previsualizacion || !!previsualizacion.errores?.length || importando} className="rounded-xl bg-[var(--molsan-primary)] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--molsan-primary-hover)] disabled:cursor-not-allowed disabled:opacity-50">
             {importando ? "Importando…" : "Importar oficinas"}
           </button>
         </div>
