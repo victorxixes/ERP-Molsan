@@ -436,3 +436,12 @@ Se mantiene pendiente el recorrido del resto de herramientas: importaciones, mod
 - **Modal CTN detalle:** conserva su sistema propio `ctn-modal-overlay/ctn-modal-panel`, con hoja CTN específica y semántica de diálogo. No se le impone el modal genérico para no alterar sus dimensiones/flujo.
 - **SelectSJ:** es un componente de selector compartido con estilos operativos; requiere comprobación visual en formularios de densidad alta, pero no contiene un modal independiente.
 - Se mantiene la navegación y las acciones de notificación, carpeta y visor sin cambios funcionales.
+
+
+## Vigésima cuarta pasada: controles compartidos y modales económicos
+
+- **SelectSJ:** se han alineado los colores de borde, texto, foco, selección y hover con los tokens Molsan. Se conserva la selección controlada, el cierre por clic exterior y Escape.
+- **Liquidar Expediente:** los diálogos de liquidación y vista previa PDF tenían `role="dialog"` en el overlay; se ha trasladado a cada panel interior, manteniendo `aria-labelledby` y sus identificadores de título.
+- **Provisiones y cancelaciones:** el rol de diálogo se ha trasladado del overlay al panel principal, conservando el nombre accesible y la clase operativa que aplica los límites responsive.
+- **Enviar a Notario:** usa portal y hoja de modales operativos, pero la estructura del diálogo no se ha cambiado todavía; queda para la pasada específica de modales integrados de FichaExpediente.
+- Se mantienen las alertas de error/éxito, la previsualización PDF y el flujo de liquidación/pago.
