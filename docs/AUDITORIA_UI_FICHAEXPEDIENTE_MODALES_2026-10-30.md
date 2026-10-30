@@ -84,3 +84,8 @@ Revisión de código actual de `LiquidarExpedienteModal.jsx`, `EnviarANotarioMod
 - Ambos diálogos reciben foco inicial, contención Tab/Mayús+Tab, cierre con Escape y restauración del foco.
 - Commits: `48258919`.
 - No se han cambiado filtros, consultas, exportaciones, alertas ni datos. QA navegador pendiente.
+
+## Continuación — armonización de acciones
+- El botón genérico `Boton` en variante primary y las acciones principales «Expedientes» y «Registrar gasto» usan los tokens de marca Molsan en vez de clases fijas azul/índigo.
+- No se han reemplazado globalmente los colores de actividades, alertas, documentos o estados económicos para preservar su significado.
+- CI del commit `b28eb331` completado con éxito en los cinco workflows asociados.
