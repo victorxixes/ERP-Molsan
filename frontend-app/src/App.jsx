@@ -8,6 +8,7 @@ import { useAuthStore } from "./store/authStore";
 
 /* AUTH */
 import RequireAuth from "./components/auth/RequireAuth";
+import RequireModule from "./components/auth/RequireModule";
 
 /* LAYOUT */
 import Layout from "./layout/Layout";
@@ -354,7 +355,9 @@ export default function App() {
             path="apoderagest"
             element={
               <RequireAuth>
-                <ApoderaGest />
+                <RequireModule module="apoderagest">
+                  <ApoderaGest />
+                </RequireModule>
               </RequireAuth>
             }
           />
