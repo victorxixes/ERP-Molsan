@@ -250,7 +250,7 @@ export default function CatalogoAbsis() {
         </section>
       </div>}
 
-      {modal && <div className="panel-modal-premium fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-950/50 p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModal(false); }}>
+      {modal && <div className="panel-modal-premium fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-950/50 p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !guardando) setModal(false); }}>
         <section ref={entradaDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="absis-modal-titulo" className="my-auto w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
           <form onSubmit={guardar}>
             <div className="border-b border-slate-200 px-6 py-5"><h2 id="absis-modal-titulo" className="text-lg font-bold text-slate-900">{editando ? "Editar entrada" : "Añadir entrada"} · {categoria}</h2><p className="mt-1 text-sm text-slate-500">Elige la lista y rellena los datos. El código es opcional.</p></div>
@@ -270,7 +270,7 @@ export default function CatalogoAbsis() {
               <label className="flex items-center gap-2 text-sm text-slate-700 sm:col-span-2"><input type="checkbox" checked={formulario.activo} onChange={(e) => setFormulario((f) => ({ ...f, activo: e.target.checked }))} /> Entrada activa</label>
               {error && <p role="alert" className="text-sm text-red-700 sm:col-span-2">{error}</p>}
             </div>
-            <div className="flex justify-end gap-3 border-t border-slate-200 px-6 py-4"><button type="button" onClick={() => setModal(false)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600">Cancelar</button><button type="submit" disabled={guardando} className="rounded-xl bg-[var(--molsan-primary)] px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{guardando ? "Guardando…" : "Guardar entrada"}</button></div>
+            <div className="flex justify-end gap-3 border-t border-slate-200 px-6 py-4"><button type="button" disabled={guardando} onClick={() => setModal(false)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 disabled:opacity-50">Cancelar</button><button type="submit" disabled={guardando} className="rounded-xl bg-[var(--molsan-primary)] px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{guardando ? "Guardando…" : "Guardar entrada"}</button></div>
           </form>
         </section>
       </div>}

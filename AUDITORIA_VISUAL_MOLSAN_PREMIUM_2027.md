@@ -671,3 +671,19 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 - Estado consultado de PR #374: abierta, draft, mergeable=true; rama 281 commits por delante de `main` y 0 por detrás. Sigue sin integrar.
 - El HEAD de la PR incluye una actualización documental posterior al commit de código validado; esa actualización no cambia el frontend.
 - La validación técnica no sustituye QA visual real. Siguen pendientes pruebas en navegador en escritorio/tablet/móvil, teclado/lector de pantalla y validación de interacciones con datos ficticios.
+
+## Revisión adicional de permisos y cierre de diálogos — 30/10/2026 18:05
+
+### Corrección aplicada
+- En `CatalogoAbsis.jsx`, el diálogo de entrada ya bloqueaba Escape durante el guardado, pero el clic en el fondo y el botón «Cancelar» todavía podían cerrarlo. Ambos mecanismos respetan ahora `guardando`, manteniendo coherencia con el bloqueo de Escape.
+
+### Verificación del control de módulo ApoderaGest
+- En frontend, `/apoderagest` y `/apoderagest/liquidaciones` usan `RequireModule` con la clave central `apoderagest`; la comprobación consulta el catálogo de módulos visibles del usuario.
+- En backend, los routers principales de dashboard, agenda y encargos requieren autenticación y aplican alcance por usuario/asignación en operaciones de expediente. No se observa una comprobación uniforme de que la sesión tenga habilitado el módulo `apoderagest`.
+- Hallazgo concreto: `GET /api/apoderagest/encargos/gestores` exige sesión autenticada, pero no verifica la visibilidad del módulo antes de devolver empleados activos. Por tanto, el guard frontend no constituye por sí solo una barrera backend de módulo.
+- El helper backend `require_perm_modulo` consulta permisos de acción explícitos (`permisos_modulo_dict`), mientras que `RequireModule` consulta módulos visibles. No se ha añadido un guard backend improvisado en esta PR: primero debe definirse si la autorización backend debe basarse en módulo visible o en la acción explícita `apoderagest.ver`, y probarse con perfiles reales de permisos en entorno aislado. Este punto queda pendiente de cierre de seguridad.
+
+### Validación de diálogos y límites
+- La inspección estática confirma semántica y gestor de foco en los dos diálogos ABSIS, ficha CTN, histórico CTN, detalle de facturación y diálogos identificados de Expedientes.
+- No se puede declarar completada la accesibilidad real sin abrir las ventanas con teclado/lector de pantalla y comprobar foco, Escape, anidamiento, scroll y retorno del foco.
+- No se ha realizado QA real en navegador en escritorio/tablet/móvil: Render mantiene desactivadas las previews de PR y el frontend puede apuntar al backend LIVE si no se aísla la API. No se ha desplegado ni conectado esta rama a producción.
