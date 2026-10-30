@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import axios from "../../api/axios";
 import { Link } from "react-router-dom";
 import "../../css/HerramientasPremium.css";
 
@@ -17,14 +18,53 @@ export default function ReglasActividadesExpediente() {
   const [exigirNotario, setExigirNotario] = useState(true);
   const [exigirTipoDocumento, setExigirTipoDocumento] = useState(true);
   const [mensaje, setMensaje] = useState("");
+  const [cargando, setCargando] = useState(true);
+  const [guardando, setGuardando] = useState(false);
+
+  useEffect(() => {
+    let vigente = true;
+    axios.get("/utilidades/reglas-actividades")
+      .then(({ data }) => {
+        if (!vigente) return;
+        const config = data?.configuracion || {};
+        if (config.documentos) setDocumentos((actual) => ({ ...actual, ...config.documentos }));
+        if (typeof config.validarFechaEnvio === "boolean") setValidarFechaEnvio(config.validarFechaEnvio);
+        if (typeof config.avisoFacturacion === "boolean") setAvisoFacturacion(config.avisoFacturacion);
+        if (typeof config.exigirNotario === "boolean") setExigirNotario(config.exigirNotario);
+        if (typeof config.exigirTipoDocumento === "boolean") setExigirTipoDocumento(config.exigirTipoDocumento);
+      })
+      .catch(() => {
+        if (vigente) setMensaje("No se pudo cargar la configuración guardada. Revisa los permisos o la conexión con el backend.");
+      })
+      .finally(() => {
+        if (vigente) setCargando(false);
+      });
+    return () => { vigente = false; };
+  }, []);
 
   const documentosActivos = useMemo(
     () => DOCUMENTOS_INICIALES.filter((d) => documentos[d.id]).length,
     [documentos]
   );
 
-  const guardarVista = () => {
-    setMensaje("Vista previa actualizada. El guardado persistente y la aplicación automática en expedientes requieren completar el backend.");
+  const guardarVista = async () => {
+    setGuardando(true);
+    setMensaje("");
+    try {
+      const configuracion = {
+        documentos,
+        validarFechaEnvio,
+        avisoFacturacion,
+        exigirNotario,
+        exigirTipoDocumento,
+      };
+      const { data } = await axios.put("/utilidades/reglas-actividades", configuracion);
+      setMensaje(data?.mensaje || "Reglas guardadas correctamente en el ERP.");
+    } catch (error) {
+      setMensaje(error?.response?.data?.detail || "No se pudieron guardar las reglas. Comprueba tu permiso de edición y la conexión.");
+    } finally {
+      setGuardando(false);
+    }
   };
 
   return (
@@ -57,7 +97,7 @@ export default function ReglasActividadesExpediente() {
             <h2 className="mt-1 text-lg font-bold text-slate-800">Documentación previa → Sede notarial</h2>
             <p className="mt-1 text-sm text-slate-500">Los tres documentos deben existir en la carpeta digital del resumen del expediente para dar por preparada la documentación.</p>
           </div>
-          <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800">Borrador de configuración</span>
+          <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800">Configuración persistente</span>
         </div>
 
         <div className="grid gap-6 p-5 sm:p-6 lg:grid-cols-[1.1fr_0.9fr]">
@@ -292,8 +332,8 @@ export default function ReglasActividadesExpediente() {
       {mensaje && <div role="status" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-5 text-amber-900">{mensaje}</div>}
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="max-w-2xl text-xs leading-5 text-slate-500">Esta vista permite revisar la estructura de la regla. Los cambios son temporales en esta versión y no se guardan en la base de datos ni modifican expedientes.</p>
-        <button type="button" onClick={guardarVista} className="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700">Revisar configuración</button>
+        <p className="max-w-2xl text-xs leading-5 text-slate-500">La configuración se guarda en el ERP y se recupera al volver a entrar. Guardarla no activa por sí sola automatismos ni modifica expedientes; la aplicación efectiva de cada regla se valida por separado.</p>
+        <button type="button" onClick={guardarVista} disabled={cargando || guardando} className="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60">{cargando ? "Cargando..." : guardando ? "Guardando..." : "Guardar reglas"}</button>
       </div>
     </main>
   );
