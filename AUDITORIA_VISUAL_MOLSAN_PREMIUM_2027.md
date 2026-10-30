@@ -855,3 +855,15 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 - Se extrajo `esAdministrador(empleado)` en `permisos.js` y ahora `puedeVerModulo` y Sidebar comparten exactamente el mismo criterio: flags `es_admin`/`is_admin`, rol técnico 0 solo si el ID existe, usuario `admin` y nombres administrativos normalizados.
 - Pruebas lógicas: rol 0, `Super Administrador`, `Superadministrador`, `Super Usuario`, flags administrativos y usuario `admin` se reconocen; rol nulo y rol ordinario no reciben privilegios administrativos; `Administración` no se eleva automáticamente.
 - Commits: `66ee993e` (helper central) y `2f724b67` (Sidebar). CI pendiente.
+
+### Reanudación tras interrupción de conexión — 30/10/2026
+
+- Se recuperó el estado de la PR #374 sin reiniciar la auditoría: rama `molsan-premium-2027-glass-luxe`, 96 archivos modificados, 362 commits por delante de `main`, 0 por detrás, PR abierta en borrador y mergeable. No se integró ni desplegó.
+- Se volvió a comprobar `Informes.jsx`: `useRef` y `useAccessibleDialog` pertenecen a `InformeFacturacion`; la ref `modalFacturacionRef` está conectada al panel real de «Detalle de facturación», que conserva `role=dialog`, `aria-modal=true` y `aria-labelledby`.
+- Se endureció `esAdministrador`: el rol técnico 0 solo se acepta para el número entero 0 o la cadena exacta "0" (admitiendo espacios exteriores); identificadores vacíos, nulos, booleanos u otros valores no se convierten en 0. Se normalizan guiones y guiones bajos en los nombres de rol y se reconocen las variantes administrativas compuestas.
+- Se revisó el uso común de la función: Sidebar y `puedeVerModulo` comparten el detector central; `RequireModule` protege ApoderaGest y la ruta de liquidaciones mantiene el guard dentro del árbol privado.
+- Reescaneo estático de botones en NotarGest, CTN, Informes, Control Apoderados, ApoderaGest, Mensajes, Mensajería Solicitudes y Mensajería Proveedores: tras la corrección no quedan botones sin atributo `type` en esos ocho ficheros. En Mensajería Proveedores se corrigieron el botón «Editar proveedor» (`type=button`) y el botón de alta/guardado del formulario (`type=submit`).
+- Commits de esta reanudación: `582c14a2` (detección administrativa) y `95f88f80` (semántica de botones).
+- Los cinco workflows asociados al HEAD `95f88f80` finalizaron correctamente: Backend audit, EncargaGest checks, Consolidación Post Firma checks, Validar Fichaje Molsan y Validar Control Apoderados.
+- La comparación `main...HEAD` confirma 362 commits por delante y 0 por detrás. PR #374 continúa abierta, en borrador, no fusionada y mergeable.
+- Estas comprobaciones son estáticas y de CI. Sigue pendiente el QA real en navegador para probar foco inicial, Tab/Shift+Tab, Escape, restauración de foco, diálogos anidados y tamaños escritorio/tablet/móvil. No se declaran pruebas de navegador que no se hayan ejecutado.
