@@ -3870,6 +3870,7 @@ def generar_documento_factura_honorarios(
         notario = valor(expediente, "nombre_notario", "notario_otorgante", "notario") or "—"
         protocolo = valor(expediente, "protocolo") or "—"
         fecha_firma = fecha_es(valor(expediente, "fecha_firma"))
+        tipo_documento_expediente = valor(expediente, "tipo_documento", "formato_escritura") or "—"
         descuento = Decimal(str(datos.get("descuento_empleado") or 0).replace(",", ".")).quantize(Decimal("0.01"))
         es_empleado = str(datos.get("empleado") or "").strip().lower() in {"true", "1", "si", "sí"}
         buffer = io.BytesIO()
