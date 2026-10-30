@@ -1042,3 +1042,13 @@ Se verificó la integración de `useAccessibleDialog` en los diálogos operativo
 - Control Apoderados: listado de firmas.
 
 El hook implementa foco inicial, ciclo Tab/Shift+Tab, Escape solo en el diálogo superior y restauración del foco previo, permitiendo diálogos anidados. La revisión estática no sustituye la prueba real con teclado/lector de pantalla: quedan por verificar en navegador el orden de foco, la interacción con overlays anidados, el scroll del documento, zoom y lectores de pantalla.
+
+### Responsive de tablas operativas — contraste estático adicional — 30/10/2026
+
+Se verificaron los contenedores de las tablas que conservan anchuras mínimas elevadas:
+- Control de Fichajes: tabla de 1250px dentro de un contenedor `overflow-x-auto`, con `max-width:100%`, `overscroll-behavior-x:contain` y desplazamiento táctil.
+- Control Apoderados: tabla de 1250px dentro de `overflow-x-auto`.
+- Importador Post Firma: tabla `min-w-max` dentro de contenedor `overflow-auto`; el ancho se desplaza dentro del panel de informe.
+- NotarGest: tablas de ancho extenso dentro de `.ng-tabla-contenedor` con scroll horizontal; la hoja local define 760px y prevalece sobre el mínimo de la hoja compartida por orden de importación.
+
+No se elimina el ancho mínimo: preserva la lectura de columnas. El punto pendiente es comprobar visualmente en navegador a 320/375px que el scroll queda confinado al contenedor y no produce desplazamiento horizontal del documento completo.
