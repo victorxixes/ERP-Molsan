@@ -685,3 +685,46 @@
   .molsan-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 }
 
+
+/* ============================================================
+   MOLSAN PREMIUM 2027 · GLASS LUXE
+   Primitivas compartidas. La transparencia se reserva a capas
+   de navegación y superficies de contexto; tablas y formularios
+   conservan fondos sólidos para priorizar legibilidad.
+   ============================================================ */
+.molsan-glass-surface {
+  color: var(--molsan-text);
+  background: var(--molsan-surface-glass);
+  border: 1px solid var(--molsan-glass-border);
+  box-shadow: var(--molsan-shadow-glass);
+  -webkit-backdrop-filter: blur(var(--molsan-glass-blur)) saturate(145%);
+  backdrop-filter: blur(var(--molsan-glass-blur)) saturate(145%);
+}
+.molsan-elevated-surface {
+  color: var(--molsan-text);
+  background: var(--molsan-surface);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-panel);
+  box-shadow: var(--molsan-shadow-card);
+}
+.molsan-page-canvas {
+  min-width: 0;
+  background:
+    radial-gradient(ellipse at 12% 0%, rgba(91, 126, 190, .10), transparent 36%),
+    radial-gradient(ellipse at 92% 8%, rgba(160, 178, 211, .12), transparent 32%),
+    var(--molsan-page-bg);
+}
+:where(.molsan-page, .cg-unified-workspace, .expedientes-listado-premium, .ficha-expediente-premium) {
+  min-width: 0;
+}
+:where(.molsan-page, .cg-unified-workspace, .expedientes-listado-premium, .ficha-expediente-premium) :where(button, a, input, select, textarea):focus-visible {
+  outline-color: rgba(49, 86, 179, .42);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-transparency: reduce) {
+  .molsan-glass-surface {
+    background: var(--molsan-surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
