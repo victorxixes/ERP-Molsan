@@ -849,3 +849,9 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 - Se detectó que `mantenimiento-tecnico` estaba en el Sidebar con ruta/etiqueta locales, pero faltaba en `MODULOS_ERP`. Se añadió al catálogo central con ruta `/herramientas/mantenimiento-tecnico`, permiso `utilidades` e icono `settings`.
 - Revisión posterior: 33 claves en el catálogo, sin claves duplicadas; las 22 claves de navegación del Sidebar están cubiertas por el catálogo y las 28 rutas reales del catálogo tienen correspondencia exacta en `App.jsx`.
 - Commit: `225a4aa`. Esto elimina la última excepción de navegación detectada en el Sidebar para un módulo con ruta real.
+
+### Unificación definitiva de detección de administrador
+- Se encontró que `Sidebar.jsx` mantenía un segundo detector de administrador distinto de `permisos.js`; además repetía el caso `Number(null) === 0` y no reconocía de forma homogénea los roles compuestos.
+- Se extrajo `esAdministrador(empleado)` en `permisos.js` y ahora `puedeVerModulo` y Sidebar comparten exactamente el mismo criterio: flags `es_admin`/`is_admin`, rol técnico 0 solo si el ID existe, usuario `admin` y nombres administrativos normalizados.
+- Pruebas lógicas: rol 0, `Super Administrador`, `Superadministrador`, `Super Usuario`, flags administrativos y usuario `admin` se reconocen; rol nulo y rol ordinario no reciben privilegios administrativos; `Administración` no se eleva automáticamente.
+- Commits: `66ee993e` (helper central) y `2f724b67` (Sidebar). CI pendiente.
