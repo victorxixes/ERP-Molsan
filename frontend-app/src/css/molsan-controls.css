@@ -66,3 +66,20 @@
 @media (prefers-reduced-motion: reduce) {
   .molsan-btn { transition: none; }
 }
+
+
+/* Formularios: controles fluidos y foco accesible en layouts compactos. */
+.molsan-field,
+.molsan-field__control { min-width: 0; max-width: 100%; }
+.molsan-field__control { box-sizing: border-box; }
+.molsan-field__control:focus-visible,
+.molsan-btn:focus-visible {
+  outline: 3px solid rgba(49,86,179,.22);
+  outline-offset: 2px;
+}
+.molsan-field__control:disabled,
+.molsan-btn:disabled { cursor: not-allowed; }
+@media (max-width: 640px) {
+  .molsan-field__control { width: 100%; }
+  .molsan-btn { min-height: 38px; }
+}
