@@ -773,3 +773,20 @@
   border-radius: var(--molsan-radius-control,9px);
   font-family: inherit;
 }
+
+
+/* EncargaGest · ventanas de trabajo y tablas en móvil */
+.encargagest { min-width: 0; }
+.encargagest :is(.eg-modal,.eg-modal-perfil) {
+  box-sizing: border-box;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100dvh - 24px);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.encargagest :is(.eg-tabla,.eg-tabla-wrap) { max-width: 100%; }
+.encargagest .eg-tabla { width: 100%; font-variant-numeric: tabular-nums; }
+@media (max-width: 640px) {
+  .encargagest :is(.eg-modal,.eg-modal-perfil) { max-width: calc(100vw - 16px); max-height: calc(100dvh - 16px); }
+  .encargagest .eg-tabla { min-width: 640px; }
+}
