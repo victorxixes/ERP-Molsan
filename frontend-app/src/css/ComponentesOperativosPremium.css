@@ -476,3 +476,44 @@
   .tipos-impositivos-premium > header,
   .firmas-email-premium > header { padding: 16px; }
 }
+
+
+/* Gestión de fusiones: alinear la cabecera y la interacción con el ERP común. */
+.fusiones-premium-page {
+  min-width: 0;
+  max-width: 100%;
+  color: var(--molsan-text, #17243a);
+  font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
+}
+.fusiones-premium-page > section {
+  min-width: 0;
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
+}
+.fusiones-premium-page > section > div:first-child {
+  background: linear-gradient(90deg,var(--molsan-primary-soft,#edf3ff),var(--molsan-primary,#3156b3),var(--molsan-primary-hover,#274694));
+}
+.fusiones-premium-page :is(button,input,select,textarea):focus-visible {
+  outline: 2px solid var(--molsan-primary, #3156b3);
+  outline-offset: 2px;
+}
+.fusiones-premium-page :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea) {
+  min-width: 0;
+  max-width: 100%;
+  border-color: var(--molsan-border-strong, #c4d0df);
+  border-radius: var(--molsan-radius-control, 9px);
+}
+.fusiones-premium-page .text-blue-600,
+.fusiones-premium-page .text-indigo-600 { color: var(--molsan-primary, #3156b3); }
+.fusiones-premium-page .bg-blue-600,
+.fusiones-premium-page .bg-indigo-600 { background-color: var(--molsan-primary, #3156b3); }
+.fusiones-premium-page .overflow-x-auto {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+@media (max-width: 640px) {
+  .fusiones-premium-page { padding-left: 12px; padding-right: 12px; }
+  .fusiones-premium-page > section > div:nth-child(2) { padding: 16px; }
+}
