@@ -75,3 +75,25 @@
     transition-duration: .01ms !important;
   }
 }
+
+
+
+/* Herramientas y mensajería: acabado de cabeceras y superficies */
+:is(.catalogos-premium-page,.utilidades-premium-page) {
+  font-family: var(--molsan-font-family,Inter,system-ui,sans-serif);
+}
+:is(.catalogos-premium-page,.utilidades-premium-page) > header {
+  background: var(--molsan-surface-glass,rgba(255,255,255,.78));
+  border-color: var(--molsan-glass-border,#dce4ef);
+  box-shadow: var(--molsan-shadow-glass,0 12px 34px rgba(29,43,68,.08));
+  -webkit-backdrop-filter: blur(var(--molsan-glass-blur,16px)) saturate(140%);
+  backdrop-filter: blur(var(--molsan-glass-blur,16px)) saturate(140%);
+}
+:is(.catalogos-premium-page,.utilidades-premium-page) :is(section,article) {
+  border-color: var(--molsan-border,#dce4ef);
+  border-radius: var(--molsan-radius-card,14px);
+}
+:is(.catalogos-premium-page,.utilidades-premium-page) table { font-variant-numeric: tabular-nums; }
+@media(prefers-reduced-transparency:reduce) {
+  :is(.catalogos-premium-page,.utilidades-premium-page) > header { background:#fff; -webkit-backdrop-filter:none; backdrop-filter:none; }
+}
