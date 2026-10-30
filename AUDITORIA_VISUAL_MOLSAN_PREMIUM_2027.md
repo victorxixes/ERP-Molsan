@@ -193,3 +193,22 @@ Se han inspeccionado estáticamente también:
 - La compilación completa del frontend en el commit `5dce93ceece96fe60cf776eb669c723dc717b375` y los tres workflows de módulo terminaron correctamente.
 - Los commits posteriores siguen con validación en curso; no se da por validada la última versión hasta que acaben.
 - Ninguna de estas verificaciones estáticas equivale a abrir y comprobar las rutas y modales en un navegador real.
+
+
+## Cuarta pasada: armonización de acentos y estados semánticos
+
+### Correcciones aplicadas
+- `PortalProfesionalShared.css`: se sustituyeron los acentos azules heredados en botones, cabeceras de encargos, spinner, acciones de firma, acciones de impresión y progreso por los tokens `--molsan-primary`, `--molsan-primary-hover`, `--molsan-primary-soft` y `--molsan-primary-border`.
+- `NotarGest.css`: se armonizaron acciones principales, botones secundarios, pestañas activas, iconos de módulos, avatar y acentos de gráficas con los mismos tokens. Se conservaron los estados de éxito y error con sus colores semánticos.
+- `SeguridadSubpaginasPremium.css`: la insignia primaria y el texto de cabecera usan los tokens corporativos; las insignias success, warning, danger y sus colores de estado no se modificaron.
+- Se evitó una sustitución global de colores: los verdes de éxito, rojos de error, avisos y estados funcionales quedan intactos.
+
+### Duplicidades CSS: criterio aplicado
+- No se eliminaron bloques repetidos de `PortalProfesionalShared.css`, `NotarGest.css` ni `MolsanRedesign2027.css` por el mero hecho de repetir selector. En estas hojas hay reglas responsive y ajustes de compatibilidad añadidos por etapas; borrar bloques sin comprobar cascada y capturas por ruta podría alterar pantallas que todavía no se han validado visualmente.
+- La duplicidad de tokens idénticos en `molsan-tokens.css` sí se redujo en la pasada anterior.
+- La consolidación de reglas heredadas queda pendiente de QA visual real por pantalla; se hará solo cuando se pueda demostrar que el bloque anterior es redundante y no una excepción funcional.
+
+### Validación
+- Los tres workflows de módulo del commit `7b73e56d` finalizaron correctamente.
+- Para el último commit `db2a2154`, el build general y los workflows de módulo se encuentran ejecutándose; no se declaran correctos hasta recibir su resultado.
+- No se ha fusionado la PR ni se ha desplegado nada en Render.
