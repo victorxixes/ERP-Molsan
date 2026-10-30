@@ -77,9 +77,13 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
   const pagosDialogRef = useRef(null);
   const perfilDialogRef = useRef(null);
   const resumenDialogRef = useRef(null);
+  const cerrarPerfilNotario = () => {
+    if (guardandoPasswordPerfil) return;
+    setPerfilNotarioAbierto(false);
+  };
   useAccessibleDialog({ open: notificacionesAbiertas, onClose: () => setNotificacionesAbiertas(false), dialogRef: avisosDialogRef });
   useAccessibleDialog({ open: pagosAbiertos, onClose: () => setPagosAbiertos(false), dialogRef: pagosDialogRef });
-  useAccessibleDialog({ open: perfilNotarioAbierto, onClose: () => setPerfilNotarioAbierto(false), dialogRef: perfilDialogRef });
+  useAccessibleDialog({ open: perfilNotarioAbierto, onClose: cerrarPerfilNotario, dialogRef: perfilDialogRef });
   useAccessibleDialog({ open: Boolean(modalExpedientesResumen), onClose: () => setModalExpedientesResumen(null), dialogRef: resumenDialogRef });
 
   const peticion = useCallback(async (path, options = {}) => {
@@ -581,7 +585,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
           </div>
         </section>
       </div>}
-      {perfilNotarioAbierto && <div className="ng-modal-overlay ng-modal-overlay-scroll" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setPerfilNotarioAbierto(false); }}><section ref={perfilDialogRef} tabIndex={-1} className="ng-modal ng-modal-perfil ng-modal-perfil-scroll" role="dialog" aria-modal="true" aria-labelledby="ng-perfil-titulo"><header><div><span className="ng-kicker">FICHA CTN</span><h2 id="ng-perfil-titulo">Ficha del notario</h2><p>Datos de la notaría registrados en el catálogo CTN.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setPerfilNotarioAbierto(false)}>Cerrar ✕</button></header><div className="grid grid-cols-1 gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)]">
+      {perfilNotarioAbierto && <div className="ng-modal-overlay ng-modal-overlay-scroll" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) cerrarPerfilNotario(); }}><section ref={perfilDialogRef} tabIndex={-1} className="ng-modal ng-modal-perfil ng-modal-perfil-scroll" role="dialog" aria-modal="true" aria-labelledby="ng-perfil-titulo"><header><div><span className="ng-kicker">FICHA CTN</span><h2 id="ng-perfil-titulo">Ficha del notario</h2><p>Datos de la notaría registrados en el catálogo CTN.</p></div><button type="button" className="ng-boton-secundario" onClick={cerrarPerfilNotario} disabled={guardandoPasswordPerfil}>Cerrar ✕</button></header><div className="grid grid-cols-1 gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)]">
           <div className="min-w-0">
             <div className="ng-perfil-identidad"><div className="ng-perfil-avatar">NG</div><div><strong>{texto(notario?.nombre)}</strong><span>{texto(notario?.nif)}</span></div></div>
             <div className="ng-perfil-datos">{[["Nombre",notario?.nombre],["NIF",notario?.nif],["Usuario",notario?.nif],["Teléfono",notario?.telefono],["Dirección",notario?.direccion],["Código postal",notario?.cp],["Municipio",notario?.municipio],["Provincia",notario?.provincia],["Código CTN",notario?.codigo],["Videoconferencia",notario?.vc],["Apoderado asociado",notario?.apoderado],["Departamento cancelaciones",notario?.departamento_cancelaciones],["Departamento copias",notario?.departamento_copias],["Otros departamentos",notario?.otros_departamentos]].map(([label,value]) => <div className="ng-dato" key={label}><small>{label}</small><strong>{texto(value)}</strong></div>)}</div>
