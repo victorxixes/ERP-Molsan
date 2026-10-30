@@ -1713,16 +1713,16 @@ export default function EntidadesBancarias() {
                 justify-center
                 gap-2
                 rounded-xl
-                bg-blue-600
+                bg-[var(--molsan-primary)]
                 px-5
                 py-2.5
                 text-sm
                 font-semibold
                 text-white
-                shadow-[0_8px_20px_rgba(37,99,235,0.20)]
+                shadow-[0_8px_20px_rgba(49,86,179,0.20)]
                 transition-all
                 hover:-translate-y-0.5
-                hover:bg-blue-700
+                hover:bg-[var(--molsan-primary-hover)]
                 active:scale-[0.98]
               "
             >
@@ -3944,7 +3944,7 @@ function ModalEntidadBancaria({
                 justify-center
                 gap-2
                 rounded-xl
-                bg-blue-600
+                bg-[var(--molsan-primary)]
                 px-5
                 py-2.5
                 text-sm
@@ -3952,7 +3952,7 @@ function ModalEntidadBancaria({
                 text-white
                 shadow-sm
                 transition
-                hover:bg-blue-700
+                hover:bg-[var(--molsan-primary-hover)]
                 disabled:cursor-not-allowed
                 disabled:opacity-60
               "
