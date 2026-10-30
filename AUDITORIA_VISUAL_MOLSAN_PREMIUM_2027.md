@@ -509,3 +509,31 @@ Se mantiene pendiente el recorrido del resto de herramientas: importaciones, mod
 - Probar SelectSJ con teclado, táctil y listas largas, confirmando que el desplegable queda dentro de la ventana.
 - Comprobar el scroll y la altura de ambos modales en móvil y tablet.
 - Revisar el chat en viewport estrecho y en escritorio con el panel de contactos abierto/cerrado.
+
+
+## Vigésima séptima pasada: revisión estructural de portales profesionales
+
+### NotarGest
+- Se ha verificado el catálogo de nueve bandejas operativas: recepción, firma, factura notarial, presentación en Registro, AJD/ITP, inscripción, defectos, copias simples y escrituras cerradas inscritas. La bandeja adicional de firmas urgentes se mantiene como acceso transversal.
+- El dashboard contiene tres paneles analíticos (hitos registrales, actividad de firmas y gestión económica), con reglas de reordenación responsive.
+- Se han localizado cuatro diálogos principales: avisos, pagos, perfil y resumen de expedientes. Los cuatro paneles declaran `role="dialog"`, `aria-modal="true"` y nombre accesible; los fondos usan presentación y cierre por clic exterior.
+- Las tablas mantienen scroll horizontal encapsulado; la tabla de pagos conserva un ancho mínimo para no comprimir datos económicos.
+- La navegación de bandejas pasa de cinco columnas en escritorio a cuatro/tres/dos y una columna en viewports progresivamente estrechos.
+- Pendiente de QA real: altura útil y scroll de pagos/perfil/resumen en móvil; lectura de las nueve bandejas con datos reales de prueba; foco y retorno de foco al cerrar cada diálogo.
+
+### EncargaGest
+- Se han localizado cinco diálogos de trabajo: alta, edición, incidencia, perfil CTN y gestión de acceso. Todos tienen semántica de diálogo y etiqueta accesible.
+- El alta dispone de formulario largo con carpeta digital y datos del encargo; CSS establece composición de dos columnas y reflujo a una columna por debajo de 1100px, y campos de una columna en móvil.
+- El perfil CTN tiene reflujo a una columna por debajo de 900px y datos en una columna por debajo de 600px; el panel limita altura y contiene su propio scroll.
+- Las tablas del directorio CTN tienen wrapper de scroll horizontal. La paginación y filtros se reordenan en móvil.
+- Hallazgo de deuda CSS: `EncargaGest.css` contiene varias redefiniciones sucesivas de `.eg-modal-layout`, `.eg-modal-datos`, `.eg-modal-carpeta-lateral` y `.eg-contrato-layout`. Las reglas posteriores ajustan deliberadamente la distribución del alta, pero la cascada es difícil de mantener. No se eliminan duplicidades sin capturas comparativas de la composición final.
+- Pendiente de QA real: alta con varios contratos/fincas y adjuntos; edición larga; incidencia; perfil CTN; gestión de acceso; comprobar scroll y botones en móvil/tablet.
+
+### ApoderaGest
+- Se ha revisado la estructura de encargos agrupados por apoderado, el detalle expandible y el modal de bloque con lista de expedientes.
+- El modal se monta mediante portal, el panel tiene `role="dialog"`, `aria-modal="true"` y nombre accesible; el overlay cierra al pulsar fuera.
+- Se conserva la impresión diferenciada de listado y fichas; las reglas de impresión quedan fuera de normalizaciones de pantalla.
+- Pendiente de QA real: grupos extensos, expansión de fichas, comentarios al gestor, firma, visor documental, impresión y modal en tres tamaños.
+
+### Límite de esta pasada
+La revisión anterior es estática sobre la rama aislada. No se han ejecutado operaciones con notarías, encargos, documentos, pagos ni accesos; tampoco se han modificado datos. No se marca QA visual como completado. La consolidación de cascada y cualquier ajuste adicional quedan condicionados a una previsualización aislada con backend de pruebas o mocks, nunca contra el backend productivo.
