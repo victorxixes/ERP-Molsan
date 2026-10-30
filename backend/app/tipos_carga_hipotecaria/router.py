@@ -13,6 +13,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
 from backend.app.tipos_carga_hipotecaria.models import (
     TipoCargaHipotecaria,
 )
@@ -23,6 +24,7 @@ from backend.app.tipos_carga_hipotecaria.models import (
 # ============================================================
 
 router = APIRouter(
+    dependencies=[Depends(get_current_user)],
     prefix="/tipos-carga-hipotecaria",
     tags=["Tipos de Carga Hipotecaria"],
 )
