@@ -489,3 +489,23 @@ Se mantiene pendiente el recorrido del resto de herramientas: importaciones, mod
 - Confirmar en móvil que el calendario de siete columnas conserva legibilidad con el tamaño real de los días.
 - Probar el scroll horizontal de cada tabla en dispositivo táctil y la edición del marcaje con teclado.
 - El selector de ausencia en Fichajes es un `select` nativo, correctamente asociado a su etiqueta; no se sustituye por un selector custom innecesario.
+
+
+## Decimoctava pasada: selector compartido y mensajería
+
+### Selector personalizado `SelectSJ`
+- Se revisó el commit de alineación de colores del selector y su hoja responsive.
+- Hallazgo: `.select-sj-premium [role=listbox]` define altura máxima y scroll táctil, pero la clase estaba colocada en el texto interior del botón, no en el contenedor que contiene al desplegable. Por ello, las reglas responsive no podían alcanzar el listbox.
+- Corrección: la clase `select-sj-premium` se ha movido al wrapper raíz y el texto mantiene truncado con `min-w-0`. No se altera la selección, las opciones, el valor ni los callbacks.
+
+### Mensajería
+- **Mensajería Molsan** y **Mensajería Solicitudes** ya usan overlay compartido y paneles interiores con semántica de diálogo.
+- Se detectaron dos utilidades Tailwind incompletas: `max-h-[92vh` y `max-h-[90vh`. Aunque la hoja compartida ya limitaba la altura, esas clases no eran válidas. Se han corregido a `max-h-[92vh]` y `max-h-[90vh]`.
+- **Mensajería Proveedores** usa un ámbito de formulario propio con controles y focus-visible compartidos.
+- **Mensajes internos** conserva un chat de altura dinámica en escritorio y composición flexible en móvil; no se ha cambiado su distribución ni el comportamiento de tiempo real.
+- Los colores de mensajes pendientes, leídos, presencia y estados de encargo se mantienen como semánticos.
+
+### Pendiente de prueba real
+- Probar SelectSJ con teclado, táctil y listas largas, confirmando que el desplegable queda dentro de la ventana.
+- Comprobar el scroll y la altura de ambos modales en móvil y tablet.
+- Revisar el chat en viewport estrecho y en escritorio con el panel de contactos abierto/cerrado.
