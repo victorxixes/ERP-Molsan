@@ -16,7 +16,8 @@
     "react-router-dom": "^7.18.4",
     "zustand": "^4.5.2",
     "axios": "^1.6.0",
-    "chart.js": "^4.4.0"
+    "chart.js": "^4.4.0",
+    "docx-preview": "^0.3.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
