@@ -2191,6 +2191,9 @@ const permisosDisponibles =
       ====================================================== */}
 
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Ficha de empleado"
         className="
           relative
           z-10
