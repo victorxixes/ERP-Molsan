@@ -171,11 +171,11 @@ export default function CatalogoAbsis() {
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · DATOS ABSIS</p>
+            <p className="text-xs font-bold uppercase tracking-[.18em] text-[var(--molsan-primary)]">MOLSAN ERP · DATOS ABSIS</p>
             <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">Catálogo ABSIS</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Gestiona en una única pantalla los estados y listas auxiliares que utiliza la integración ABSIS. Cada lista se mantiene por separado y sus cambios quedan guardados en el servidor.</p>
           </div>
-          <div className="rounded-2xl border border-indigo-100 bg-indigo-50 px-5 py-4">
+          <div className="rounded-2xl border border-[var(--molsan-primary-border)] bg-[var(--molsan-primary-soft)] px-5 py-4">
             <p className="text-3xl font-bold text-slate-900">{filas.filter((f) => f.activo).length}</p>
             <p className="text-xs font-medium text-slate-500">entradas activas</p>
           </div>
@@ -185,16 +185,16 @@ export default function CatalogoAbsis() {
       <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         <label className="mb-2 block text-sm font-semibold text-slate-700" htmlFor="absis-categoria">Lista que quieres gestionar</label>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <select id="absis-categoria" value={categoria} onChange={(e) => { setCategoria(e.target.value); setBusqueda(""); setMensaje(""); }} className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm focus:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-100">
+          <select id="absis-categoria" value={categoria} onChange={(e) => { setCategoria(e.target.value); setBusqueda(""); setMensaje(""); }} className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm focus:border-[var(--molsan-primary)] focus:outline-none focus:ring-4 focus:ring-[var(--molsan-primary-soft)]">
             {categorias.map((item) => <option key={item} value={item}>{item}</option>)}
           </select>
-          <button type="button" onClick={() => { setNombreNuevaLista(""); setError(""); setModalNuevaLista(true); }} className="inline-flex items-center justify-center gap-2 rounded-xl border border-indigo-200 bg-white px-4 py-3 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50 focus:outline-none focus:ring-4 focus:ring-indigo-100">+ Crear lista</button>
-          <button type="button" onClick={abrirNuevo} className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-200">
+          <button type="button" onClick={() => { setNombreNuevaLista(""); setError(""); setModalNuevaLista(true); }} className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--molsan-primary-border)] bg-white px-4 py-3 text-sm font-semibold text-[var(--molsan-primary)] transition hover:bg-[var(--molsan-primary-soft)] focus:outline-none focus:ring-4 focus:ring-[var(--molsan-primary-soft)]">+ Crear lista</button>
+          <button type="button" onClick={abrirNuevo} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--molsan-primary)] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--molsan-primary-hover)] focus:outline-none focus:ring-4 focus:ring-indigo-200">
             <span aria-hidden="true" className="text-lg leading-none">+</span> Añadir entrada
           </button>
         </div>
         <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <input type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar código, valor o descripción…" aria-label="Buscar en el catálogo seleccionado" className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100 sm:max-w-md" />
+          <input type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar código, valor o descripción…" aria-label="Buscar en el catálogo seleccionado" className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-300 focus:ring-4 focus:ring-[var(--molsan-primary-soft)] sm:max-w-md" />
           <p className="text-sm text-slate-500">{visibles.length} entradas en esta lista</p>
         </div>
       </section>
@@ -218,7 +218,7 @@ export default function CatalogoAbsis() {
               <td className="px-5 py-3 font-medium text-slate-800">{fila.valor || "—"}</td>
               <td className="max-w-xl px-5 py-3 text-slate-600">{fila.descripcion || "—"}</td>
               <td className="px-5 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${fila.activo ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{fila.activo ? "Activo" : "Inactivo"}</span></td>
-              <td className="whitespace-nowrap px-5 py-3 text-right"><button type="button" onClick={() => abrirEdicion(fila)} className="rounded-lg px-2 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-50">Editar</button><button type="button" onClick={() => eliminar(fila)} className="ml-1 rounded-lg px-2 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50">Eliminar</button></td>
+              <td className="whitespace-nowrap px-5 py-3 text-right"><button type="button" onClick={() => abrirEdicion(fila)} className="rounded-lg px-2 py-1.5 text-xs font-semibold text-[var(--molsan-primary)] hover:bg-[var(--molsan-primary-soft)]">Editar</button><button type="button" onClick={() => eliminar(fila)} className="ml-1 rounded-lg px-2 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50">Eliminar</button></td>
             </tr>)}</tbody>
           </table></div>
         }
@@ -233,13 +233,13 @@ export default function CatalogoAbsis() {
             </div>
             <div className="space-y-3 p-6">
               <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-700">Nombre de la lista
-                <input autoFocus value={nombreNuevaLista} onChange={(e) => setNombreNuevaLista(e.target.value)} maxLength={100} required placeholder="Ej. TIPOFACTURA" className="rounded-xl border border-slate-200 px-3 py-2.5 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100" />
+                <input autoFocus value={nombreNuevaLista} onChange={(e) => setNombreNuevaLista(e.target.value)} maxLength={100} required placeholder="Ej. TIPOFACTURA" className="rounded-xl border border-slate-200 px-3 py-2.5 outline-none focus:border-[var(--molsan-primary)] focus:ring-4 focus:ring-[var(--molsan-primary-soft)]" />
               </label>
               {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
             </div>
             <div className="flex justify-end gap-3 border-t border-slate-200 px-6 py-4">
               <button type="button" disabled={creandoLista} onClick={() => setModalNuevaLista(false)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600">Cancelar</button>
-              <button type="submit" disabled={creandoLista || !nombreNuevaLista.trim()} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{creandoLista ? "Creando…" : "Crear lista"}</button>
+              <button type="submit" disabled={creandoLista || !nombreNuevaLista.trim()} className="rounded-xl bg-[var(--molsan-primary)] px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{creandoLista ? "Creando…" : "Crear lista"}</button>
             </div>
           </form>
         </section>
@@ -265,7 +265,7 @@ export default function CatalogoAbsis() {
               <label className="flex items-center gap-2 text-sm text-slate-700 sm:col-span-2"><input type="checkbox" checked={formulario.activo} onChange={(e) => setFormulario((f) => ({ ...f, activo: e.target.checked }))} /> Entrada activa</label>
               {error && <p role="alert" className="text-sm text-red-700 sm:col-span-2">{error}</p>}
             </div>
-            <div className="flex justify-end gap-3 border-t border-slate-200 px-6 py-4"><button type="button" onClick={() => setModal(false)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600">Cancelar</button><button type="submit" disabled={guardando} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{guardando ? "Guardando…" : "Guardar entrada"}</button></div>
+            <div className="flex justify-end gap-3 border-t border-slate-200 px-6 py-4"><button type="button" onClick={() => setModal(false)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600">Cancelar</button><button type="submit" disabled={guardando} className="rounded-xl bg-[var(--molsan-primary)] px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{guardando ? "Guardando…" : "Guardar entrada"}</button></div>
           </form>
         </section>
       </div>}
