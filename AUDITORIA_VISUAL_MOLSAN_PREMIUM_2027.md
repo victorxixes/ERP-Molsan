@@ -461,3 +461,10 @@ Se mantiene pendiente el recorrido del resto de herramientas: importaciones, mod
 - **Decisión:** no retirar el padding global todavía, porque existen rutas antiguas que dependen de él y otras que ya incluyen padding propio. Se registra como punto de QA visual del shell: comprobar ruta por ruta y dejar un único propietario del gutter en cada una.
 - La navegación se mantiene en Sidebar centralizado; los estilos de transición están acotados a enlaces y botones del sidebar. La ventana de notificaciones se ha corregido para que el rol de diálogo esté en el panel.
 - El shell principal no se ha reestructurado en esta pasada para evitar alterar la anchura útil de los portales y módulos que no comparten el mismo patrón.
+
+
+## Vigésima sexta pasada: Panel Técnico
+
+- **Panel Técnico principal, Monitor Realtime, Auditoría Avanzada y Logs Avanzados** ya están dentro de sus ámbitos especializados `panel-tecnico-premium` / `panel-tecnico-submodulo-premium`.
+- **Monitor de Sistema:** su contenedor usaba `p-6` fijo; se ha cambiado a `p-4 sm:p-6` y añadido `min-w-0` para que los paneles de métricas no fuercen el ancho en móvil.
+- Los paneles técnicos conservan sus propios estados de conexión, alertas y severidad; no se han recoloreado indicadores de salud ni errores.
