@@ -24,6 +24,17 @@ router = APIRouter(prefix="/ws/realtime", tags=["Realtime"])
 MAX_TEXTO = 10_000
 
 
+async def _rechazar_websocket(websocket: WebSocket, codigo: int, motivo: str) -> None:
+    """Acepta solo para poder enviar un código de cierre reconocible por el navegador.
+
+    Si se cierra antes de aceptar el handshake, el navegador suele exponer 1006
+    y el cliente no puede distinguir un rechazo de autenticación de un corte de red.
+    No se envía ningún dato ni se registra la conexión en el gestor.
+    """
+    await websocket.accept()
+    await websocket.close(code=codigo, reason=motivo)
+
+
 def _empleado_activo(db: Session, empleado_id: int) -> Optional[Empleado]:
     empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
     if empleado is None or getattr(empleado, "activo", True) is False:
@@ -64,27 +75,28 @@ async def realtime_ws(websocket: WebSocket):
             # permiso de Mensajes para establecer el canal de presencia.
             usuario_id = autenticar_websocket(token)
         except HTTPException as exc:
-            await websocket.close(
-                code=4403 if exc.status_code == 403 else 4401,
-                reason="Permiso insuficiente" if exc.status_code == 403 else "Token ausente, no válido o usuario inactivo",
+            await _rechazar_websocket(
+                websocket,
+                4403 if exc.status_code == 403 else 4401,
+                "Permiso insuficiente" if exc.status_code == 403 else "Token ausente, no válido o usuario inactivo",
             )
             return
         except Exception:
-            await websocket.close(code=4401, reason="No se pudo validar la sesión")
+            await _rechazar_websocket(websocket, 4401, "No se pudo validar la sesión")
             return
 
         if usuario_id_param is not None:
             try:
                 if int(usuario_id_param) != usuario_id:
-                    await websocket.close(code=4403, reason="El usuario no coincide con el token")
+                    await _rechazar_websocket(websocket, 4403, "El usuario no coincide con el token")
                     return
             except (TypeError, ValueError):
-                await websocket.close(code=4403, reason="Identidad de usuario no válida")
+                await _rechazar_websocket(websocket, 4403, "Identidad de usuario no válida")
                 return
 
         empleado = _empleado_activo(db, usuario_id)
         if empleado is None:
-            await websocket.close(code=4401, reason="Empleado inexistente o inactivo")
+            await _rechazar_websocket(websocket, 4401, "Empleado inexistente o inactivo")
             return
 
         # Ignora rol/modulo/grupo enviados por el cliente. El rol, si existe,
