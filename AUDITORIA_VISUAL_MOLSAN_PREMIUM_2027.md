@@ -634,3 +634,30 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 - `ExpedientesListado.jsx`: los diálogos de filtros avanzados y ayuda de control de plazos integran el gestor común. En filtros avanzados, la semántica `role="dialog"` se ha situado en el panel de contenido y el overlay queda como presentación, evitando incluir el botón de fondo dentro de la región modal.
 - Commits: `e9339ca7` (ficha CTN) y `48258919` (listado de Expedientes).
 - Esta ampliación es revisión estática y corrección de código; la comprobación interactiva y la compilación del nuevo HEAD siguen pendientes.
+
+## Trigésima segunda pasada: coherencia visual de Informes y Expedientes — 30/10/2026
+
+### Armonización aplicada
+- `Informes.jsx`: acciones principales (aplicar filtros, guardar datos y abrir el conjunto de informes) usan los tokens de marca Molsan en lugar de azul Tailwind fijo.
+- Las cabeceras de las tablas de informes usan superficie suave y texto secundario del sistema de diseño.
+- Se han armonizado también enlaces de expediente y acciones secundarias concretas sin cambiar colores semánticos de estados ABSIS ni colores de las series de gráficos.
+- `ExpedientesListado.jsx`: los acentos del diálogo de control de plazos pasan a tokens Molsan.
+- Commits: `2046f4a3` y `16a7abb6`.
+
+### Revisión responsive estática de los bloques pendientes
+- CTN listado: 12 media queries en su hoja específica; las tablas anchas están dentro de contenedores con scroll horizontal. La ficha CTN modal limita altura a `90dvh` y en móvil cambia a alineación superior y anchura completa.
+- CTN detalle: rejillas adaptables y tabla histórica de 850 px dentro de wrapper desplazable; se conservan los datos sin comprimir columnas.
+- Catálogo ABSIS: los dos diálogos quedan limitados por `max-height: calc(100dvh - 2rem)` y scroll vertical en `ModalesHerramientasPremium.css`; en móvil ocupan el ancho disponible.
+- Expedientes listado: el diálogo de filtros tiene altura máxima del 88 % del viewport y scroll interno; la hoja local incluye breakpoint a 700 px.
+- FichaExpediente: breakpoints estáticos a 900, 720 y 640 px; tablas con scroll horizontal encapsulado, y los modales operativos usan `dvh`, safe-area y campos de 16 px en móvil.
+- Modales operativos: 8 media queries y reglas de altura/scroll contenidas.
+
+### Deuda visual que no debe corregirse a ciegas
+- `Informes.jsx` aún contiene acentos azules asociados a estados de negocio, clasificaciones, datos y gráficas. No se sustituyen de forma global para no borrar diferencias semánticas.
+- `FichaExpediente.jsx` conserva numerosos acentos azules/índigo y violeta. Parte identifica estados de actividad, alertas, documentos o importes; su clasificación final debe hacerse por contexto de cada control, no por reemplazo global.
+- Los breakpoints y wrappers revisados son evidencia estática. No confirman ausencia de solapamientos ni legibilidad real en navegador.
+
+### Estado de validación
+- El commit de código anterior (`48258919`) terminó correctamente en los cinco workflows; el Backend audit completó compilación y pruebas unitarias sobre SQLite aislado.
+- Los cambios visuales de los commits `2046f4a3` y `16a7abb6` son posteriores; sus workflows deben confirmarse antes de dar por validada la última versión.
+- QA visual interactivo escritorio/tablet/móvil, teclado y lector de pantalla sigue pendiente. No se ha publicado una previsualización conectada a producción.
