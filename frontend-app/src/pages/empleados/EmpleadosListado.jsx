@@ -1448,6 +1448,9 @@ export default function EmpleadosListado({
         >
 
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Nuevo empleado"
             className="
               w-full
               max-w-4xl
