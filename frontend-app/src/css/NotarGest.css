@@ -905,12 +905,6 @@
 
 
 /* NotarGest: acabados comunes sin intervenir en estados ni acciones */
-.notargest {
-  --ng-border: var(--molsan-border,#dce4ef);
-  --ng-text: var(--molsan-text,#17243a);
-  --ng-muted: var(--molsan-text-muted,#64748b);
-  font-family: var(--molsan-font-family,Inter,system-ui,sans-serif);
-}
 .notargest .ng-panel {
   border-color: var(--molsan-border,#dce4ef);
   border-radius: var(--molsan-radius-card,14px);
