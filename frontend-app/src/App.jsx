@@ -10,11 +10,6 @@ import { useAuthStore } from "./store/authStore";
 import RequireAuth from "./components/auth/RequireAuth";
 import RequireModule from "./components/auth/RequireModule";
 
-const protegerModulo = (modulo, elemento) => (
-  <RequireModule module={modulo}>{elemento}</RequireModule>
-);
-
-
 /* LAYOUT */
 import Layout from "./layout/Layout";
 
@@ -166,6 +161,11 @@ const ControlApoderados = lazy(() => import("./pages/apoderagest/ControlApoderad
  * WRAPPER MENSAJES
  * ============================================================
  */
+
+const protegerModulo = (modulo, elemento) => (
+  <RequireModule module={modulo}>{elemento}</RequireModule>
+);
+
 
 function MensajesWrapper() {
 
