@@ -893,6 +893,8 @@ class FacturaPlantillaConfigRequest(BaseModel):
     mostrarObservaciones: bool = False
     mostrarLogo: bool = True
     densidad: str = "normal"
+    posiciones: Optional[dict] = None
+    orden_campos: Optional[list] = None
 
 
 @router.get("/datos-molsan")
