@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { Link, useParams } from "react-router-dom";
+import "../../css/ModalesOperativosPremium.css";
 import axios from "../../api/axios";
 
 import { obtenerExpediente, obtenerListadoExpedientes, enviarExpedienteANotario } from "../../api/expedientes";
@@ -1187,6 +1188,7 @@ function Modal({
   return createPortal((
     <div
       className="
+        expediente-operativo-modal
         fixed
         inset-0
         z-[9999]
@@ -1208,6 +1210,7 @@ function Modal({
     >
       <div
         className={`
+          expediente-operativo-modal-panel
           relative
           flex
           max-h-[92vh]
@@ -4786,7 +4789,7 @@ async function descargarPDFCalificacion(defecto) {
   return (
       <div
         className="
-          ficha-expediente-premium erp-page
+          ficha-expediente-premium ficha-expediente-operativo erp-page
           p-6
         "
       >
@@ -5928,8 +5931,8 @@ const cuantiaFincasParaEnvio =
                       formularioPago={origenFormularioGasto === "pagar" ? (
                         <>
                         {mostrarFormularioPagoReal && createPortal((
-                          <div className="fixed inset-0 z-[12000] flex items-center justify-center bg-slate-950/65 p-2 backdrop-blur-sm sm:p-5" role="dialog" aria-modal="true" aria-labelledby="orden-pago-titulo">
-                            <section className="flex max-h-[96vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-white/70 bg-slate-50 shadow-2xl">
+                          <div className="fixed inset-0 z-[12000] flex items-center justify-center bg-slate-950/65 p-2 backdrop-blur-sm sm:p-5">
+                            <section role="dialog" aria-modal="true" aria-labelledby="orden-pago-titulo" className="expediente-operativo-modal-panel flex max-h-[96vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-white/70 bg-slate-50 shadow-2xl">
                               <header className="flex items-start justify-between gap-3 border-b border-slate-200 bg-white px-5 py-4 sm:px-6">
                                 <div><p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Gestión económica</p><h2 id="orden-pago-titulo" className="mt-1 text-xl font-extrabold text-slate-900">Orden de pago</h2><p className="mt-1 text-xs text-slate-500">Expediente {expediente?.id_expediente || expediente?.id || id || "—"} · Preparar la orden no ejecuta una transferencia bancaria.</p></div>
                                 <button type="button" onClick={() => { if (!guardandoPagoReal) { setMostrarFormularioPagoReal(false); setPagoGastoSeleccionadoId(""); } }} disabled={guardandoPagoReal} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-lg leading-none text-slate-600 hover:bg-slate-100 disabled:opacity-50" aria-label="Cerrar orden de pago">×</button>
@@ -7386,8 +7389,8 @@ const cuantiaFincasParaEnvio =
                         )}
 
                         {mostrarFormularioGasto && origenFormularioGasto === "economico" && createPortal((
-                          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-gasto">
-                            <div className="flex max-h-[94vh] w-full max-w-[96vw] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+                          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6">
+                            <div role="dialog" aria-modal="true" aria-labelledby="titulo-modal-gasto" className="expediente-operativo-modal-panel flex max-h-[94vh] w-full max-w-[96vw] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
                           <form onSubmit={guardarGastoExpediente} className="flex min-h-0 flex-col overflow-hidden">
                             <div className="flex items-start justify-between gap-3 border-b border-slate-200 bg-slate-50 px-5 py-4">
                               <div><h5 id="titulo-modal-gasto" className="text-base font-extrabold text-slate-900">Registrar gasto · Factura y pago</h5><p className="mt-1 text-xs text-slate-500">El registro no ejecuta una transferencia bancaria.</p></div>
