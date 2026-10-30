@@ -602,3 +602,28 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 - Corrección visual aplicada: Honorarios Gestoría.
 - CI del commit de Honorarios: correcto en los cuatro workflows.
 - QA visual con navegador y datos ficticios: pendiente de entorno aislado.
+
+
+## Trigésima primera pasada: diálogos pendientes y permiso de ApoderaGest — 30/10/2026
+
+### Correcciones aplicadas en la rama
+- `CatalogoAbsis.jsx`: los diálogos de creación de lista y edición de entrada usan `useAccessibleDialog` con foco inicial, ciclo Tab/Mayús+Tab, Escape y restauración del foco. Escape y cierre exterior quedan bloqueados mientras se está creando una lista; Escape durante el guardado de una entrada no cierra el formulario.
+- `CtnDetallePage.jsx`: el histórico de firmas usa el gestor compartido de foco/teclado.
+- `Informes.jsx`: el diálogo de detalle de facturación integra foco inicial, tabulación contenida, Escape y retorno de foco.
+- `FichaExpediente.jsx`: el modal base de expediente y los diálogos explícitos de orden de pago, registro de gasto y PPAD integran el gestor compartido.
+- `App.jsx`: la ruta `/apoderagest` queda envuelta en `RequireModule module="apoderagest"`; también queda protegida la ruta secundaria `/apoderagest/liquidaciones`. La comprobación usa el catálogo/permisos centrales y mantiene el guard de sesión existente. No se han alterado las rutas de acceso externo de NotarGest ni EncargaGest.
+
+### Commits de esta pasada
+- `a0365652`: guard de módulo en la ruta principal ApoderaGest.
+- `e18f037b`: diálogos de Catálogo ABSIS.
+- `f63a53fa`: diálogo CTN.
+- `3564034b`: diálogo de Informes.
+- `83227646`: diálogos de FichaExpediente.
+- `74351f7d`: guard de módulo en la ruta secundaria de liquidaciones ApoderaGest.
+
+### Verificación y límites
+- La inspección posterior confirma que los dos diálogos ABSIS, el histórico CTN, el diálogo de facturación y los diálogos de Expedientes tienen ahora refs y llamadas al gestor común.
+- La comparación de ramas confirma `main` como ancestro directo: rama de auditoría 271 commits por delante y 0 por detrás en la consulta realizada.
+- La metadata de GitHub de la PR #374 devolvió `mergeable: false` en la última lectura; debe volver a consultarse antes de cualquier decisión de integración.
+- En la consulta del último commit no se devolvieron runs ni estados de CI. Por tanto, estas últimas modificaciones **no se declaran compiladas** hasta obtener el resultado de los workflows.
+- Sigue pendiente QA manual en navegador, con teclado y lector de pantalla, en escritorio/tablet/móvil. No se ha utilizado el backend productivo ni se han ejecutado operaciones con expedientes, pagos, documentos o catálogos.
