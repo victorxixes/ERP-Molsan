@@ -5,6 +5,7 @@
   --ng-primary: var(--molsan-primary, #3156b3);
   width: 100% !important;
   max-width: none !important;
+  min-width: 0;
   margin: 0 auto;
   padding: 28px;
   color: var(--ng-text);
@@ -929,7 +930,6 @@
 
 
 /* NotarGest · bandejas y diálogos adaptables */
-.notargest { min-width: 0; }
 .notargest :is(.ng-modal,.ng-modal-avisos) {
   box-sizing: border-box;
   width: min(96vw, 1180px);
