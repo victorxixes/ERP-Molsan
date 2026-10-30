@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
 import "../../css/HerramientasPremium.css";
+import "../../css/ComponentesOperativosPremium.css";
 
 const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
 
@@ -42,7 +43,7 @@ export default function FirmasEmail() {
     }
   }
 
-  return <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
+  return <main className="firmas-email-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
     <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
       <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
