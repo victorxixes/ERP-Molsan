@@ -972,3 +972,16 @@ Se actualizó la instalación de dependencias para incluir explícitamente las d
 - `.github/workflows/consolidacion-postfirma-checks.yml`
 
 La solución está aplicada en la rama, pero queda pendiente confirmar un nuevo build verde con los workflows reejecutados. No se considera resuelta hasta esa comprobación.
+
+### Endpoints auxiliares y migraciones de esquema — ampliación 30/10/2026
+
+La revisión de endpoints auxiliares detectó que `POST /api/mantenimiento-defectos/crear-tablas` podía ejecutar DDL sin identidad ni autorización. Se ha añadido autenticación JWT y exigencia de `seguridad.editar` en `backend/app/expedientes/defectos/migracion_router.py`. La migración de gastos ya tenía protección equivalente y se mantiene.
+
+También se revisaron:
+- WebSocket Realtime: valida token, identidad del empleado y permisos antes de aceptar; no confía en el usuario/grupo enviado por el cliente.
+- WebSocket de Agenda y Mensajes: valida token y permiso de módulo/acción.
+- Notificaciones WebSocket: valida token y que el empleado solicitado coincida con la identidad autenticada.
+- Documentos y noticias de Intranet: requieren JWT y aplican la política de permisos de Intranet.
+- El endpoint GET de diagnóstico `/api/ws/notificaciones/test` no exige JWT, pero únicamente devuelve `{"status":"ok"}`, sin datos de negocio ni identificadores; se considera diagnóstico inocuo, no acceso a información privada.
+
+La matriz de autorización sigue separando autenticación (JWT), permiso funcional por módulo/acción y ámbito de expediente. No se da por cerrada la autorización integral hasta verificar cada endpoint y sus permisos concretos.
