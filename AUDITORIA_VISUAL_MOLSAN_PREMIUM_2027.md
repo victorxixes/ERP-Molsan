@@ -791,3 +791,8 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 
 ### CI de la última tanda
 - El commit `3f6e0d4f` ha generado los cinco workflows de PR; en la última consulta estaban en cola. Se confirmará su resultado antes de marcar esta tanda como validada.
+
+### Endurecimiento adicional de la identificación administrativa
+- Se detectó y corrigió un caso límite en `permisos.js`: `Number(null) === 0` podía clasificar como administrador un empleado cuyo identificador de rol fuera explícitamente nulo. Ahora solo se reconoce el rol técnico 0 si el identificador existe, además de los criterios explícitos de usuario/rol administrativo.
+- Prueba lógica de regresión: rol 0 → administrador; rol nulo sin nombre/usuario admin → no administrador; `Super Administrador` → administrador; usuario `admin` → administrador; rol ordinario con módulo visible → solo ve ese módulo; rol ordinario sin asignación → no ve ApoderaGest.
+- Commit de endurecimiento: `13dafe78`. La ejecución CI asociada está pendiente.
