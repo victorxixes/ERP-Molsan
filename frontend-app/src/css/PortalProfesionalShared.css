@@ -1939,5 +1939,4 @@
 @media (max-width: 640px) {
   .apoderagest { min-width: 0; }
   .apoderagest :is(.ag-panel,.eg-panel,.ng-panel) { border-radius: 12px; }
-  .apoderagest :is(.ag-tabla,.eg-tabla,.ng-tabla) { min-width: 680px; }
 }
