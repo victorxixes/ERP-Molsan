@@ -1923,3 +1923,21 @@
 .apoderagest :is(button,a,input,select,textarea):focus-visible {
   outline-color: rgba(49,86,179,.6);
 }
+
+
+/* Portales profesionales · comportamiento común de tablas, bandejas y diálogos */
+.apoderagest :is(.ag-panel,.eg-panel,.ng-panel,.ag-kpi,.eg-kpi) { min-width: 0; }
+.apoderagest :is(.ag-tabla,.eg-tabla,.ng-tabla) { width: 100%; border-collapse: separate; border-spacing: 0; }
+.apoderagest :is(.ag-tabla,.eg-tabla,.ng-tabla) :is(th,td) { overflow-wrap: anywhere; }
+.apoderagest :is(.ag-panel-cabecera,.eg-panel-head,.ng-panel-titulo) { gap: 12px; }
+.apoderagest :is(input,select,textarea) { min-width: 0; max-width: 100%; }
+.apoderagest :is(.ag-grid-principal,.ag-grid-secundario) > * { min-width: 0; }
+@media (max-width: 900px) {
+  .apoderagest :is(.ag-grid-principal,.ag-grid-secundario) { grid-template-columns: minmax(0,1fr); }
+  .apoderagest :is(.ag-panel-cabecera,.eg-panel-head,.ng-panel-titulo) { align-items: flex-start; flex-wrap: wrap; }
+}
+@media (max-width: 640px) {
+  .apoderagest { min-width: 0; }
+  .apoderagest :is(.ag-panel,.eg-panel,.ng-panel) { border-radius: 12px; }
+  .apoderagest :is(.ag-tabla,.eg-tabla,.ng-tabla) { min-width: 680px; }
+}
