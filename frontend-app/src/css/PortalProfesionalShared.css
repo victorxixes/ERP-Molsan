@@ -1601,7 +1601,7 @@
 
 
 /* Impresión de agenda y encargos · MOLSAN ERP */
-.ag-print-action{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:10px 15px;border:1px solid #d7e1f1;border-radius:11px;background:linear-gradient(135deg,var(--molsan-primary, #3156b3),var(--molsan-primary-hover, #274694));color:#fff;font:700 12px/1.2 Inter,system-ui,sans-serif;cursor:pointer;box-shadow:0 5px 14px rgba(49,94,232,.16);}
+.ag-print-action{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:10px 15px;border:1px solid #d7e1f1;border-radius:11px;background:linear-gradient(135deg,var(--molsan-primary, #3156b3),var(--molsan-primary-hover, #274694));color:#fff;font:700 12px/1.2 Inter,system-ui,sans-serif;cursor:pointer;box-shadow:0 5px 14px color-mix(in srgb,var(--molsan-primary,#3156b3) 16%,transparent);}
 .ag-print-action:hover{filter:brightness(1.04);transform:translateY(-1px)}
 .ag-print-action-secundario{background:#fff;color:#2948bb;border-color:#cfdaf0;box-shadow:none}
 .ag-print-tools{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:12px 0 16px}
