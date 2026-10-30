@@ -819,3 +819,13 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 - `ProvisionesFondosPage`: el diálogo de envío por correo no se cierra durante el envío.
 - Se eliminaron los listeners manuales de Escape redundantes en EnviarANotario y ModalEmpleado para que el gestor común sea la única fuente de cierre por teclado.
 - Commits de esta corrección: `a52c05c3`, `9528ad4f`, `1e2cf1b6`, `13c0acb6`, `97442a72`, `317f5713` y `21360fd8`.
+
+### Revisión del catálogo de navegación y rutas
+- `MODULOS_ERP` contiene 32 claves únicas; no hay claves duplicadas ni rutas reales duplicadas. Las 27 entradas con ruta tienen correspondencia exacta con una declaración `Route` de `App.jsx`; las entradas `route:null` son metadatos internos y no enlaces.
+- Se corrigió la etiqueta central `Notargest` a `NotarGest` en `frontend-app/src/config/modulos.js`, para que Sidebar y los espacios de trabajo muestren la marca con capitalización coherente.
+- `notificaciones` permanece excluido de los desplegables, manteniendo el acceso por la campana. `mensajeria` y `fichajes` permanecen como accesos directos según la distribución acordada; `mensajeria-gestion` queda en Espacios.
+- Commit de catálogo: `9bdfaf24`.
+
+### Último ajuste del gestor de foco
+- Se añadió un listener `focusin` al diálogo modal superior: si el foco se desplaza por código o interacción fuera del modal activo, vuelve al primer control disponible. Los diálogos anidados siguen delegando teclado/foco únicamente al modal superior.
+- Commit: `9a1eb1e4`.
