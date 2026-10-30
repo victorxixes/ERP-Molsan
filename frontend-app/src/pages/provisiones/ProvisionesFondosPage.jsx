@@ -350,7 +350,7 @@ function ConfiguracionConceptosProvisiones({ soloEditorPlantilla = false } = {})
   return <div className={soloEditorPlantilla ? "contents" : ""}><Seccion titulo="Configuración de conceptos e importes" detalle="Tablas editables de provisiones por capital. Los importes de Notaría y Registro se guardan por tramo; Honorarios y Gestión se enlazan al catálogo central. El total se calcula automáticamente cuando el catálogo proporciona el importe.">
     {errorConfig && <div role="alert" className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{errorConfig}</div>}
     {mensaje && <div role="status" className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{mensaje}</div>}
-    {cargando ? <p className="py-4 text-sm text-slate-500">Cargando conceptos…</p> : <div className="space-y-3">
+    {cargando ? <p className="py-4 text-sm text-slate-500">Cargando conceptos…</p> : <div className={soloEditorPlantilla ? "grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,0.82fr)]" : "space-y-3"}>
       {items.filter((item) => item.codigo === "notaria" || (!soloEditorPlantilla && item.codigo === "impuestos")).map((item) => {
         const draft = borradores[item.codigo] || {};
         if (item.codigo === "notaria") {
@@ -760,7 +760,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
   };
 
 
-  if (soloEditorPlantilla) return <main className="provisiones-fondos-page w-full min-w-0 p-3 md:p-6"><div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(260px,0.78fr)]"><div className="min-w-0"><DocumentoLayoutDesigner tipo="provision" /></div><ConfiguracionConceptosProvisiones soloEditorPlantilla /></div></main>;
+  if (soloEditorPlantilla) return <main className="provisiones-fondos-page w-full min-w-0 p-3 md:p-6"><div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(260px,1fr)_minmax(0,1.8fr)]"><div className="min-w-0"><DocumentoLayoutDesigner tipo="provision" /></div><ConfiguracionConceptosProvisiones soloEditorPlantilla /></div></main>;
   if (modoCatalogo) return <main className="provisiones-fondos-page w-full min-w-0 space-y-6 p-3 md:p-6"><header className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/85 px-5 py-5 shadow-sm"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700">MOLSAN ERP PREMIUM 2027 · CATÁLOGOS ECONÓMICOS</p><h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800">Tabla Provisiones de fondos</h1><p className="mt-1 max-w-3xl text-sm text-slate-500">Configura importes estimativos y criterios iniciales. Estos valores sirven de referencia para nuevas provisiones; los registros históricos no se recalculan al cambiar la tabla.</p></header><ConfiguracionConceptosProvisiones /></main>;
 
   return <main className="provisiones-fondos-page w-full min-w-0 space-y-6 p-3 md:p-6">
