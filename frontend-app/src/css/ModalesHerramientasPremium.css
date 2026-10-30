@@ -24,3 +24,29 @@
     max-height: calc(100dvh - 1rem);
   }
 }
+
+
+/* Carpeta digital · modal de trabajo amplio */
+.carpeta-digital-premium { box-sizing: border-box; overscroll-behavior: contain; }
+.carpeta-digital-premium > [role="dialog"] {
+  min-width: 0;
+  max-width: 100%;
+  max-height: calc(100dvh - 24px);
+  border-color: var(--molsan-border,#dce4ef);
+  border-radius: var(--molsan-radius-dialog,18px);
+  box-shadow: var(--molsan-shadow-dialog,0 24px 64px rgba(15,23,42,.22));
+}
+.carpeta-digital-premium :is(input,select,textarea,button) { max-width: 100%; }
+.carpeta-digital-premium :is(.overflow-x-auto,[data-table-scroll="true"]) {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+}
+@media (max-width: 640px) {
+  .carpeta-digital-premium { align-items: stretch; }
+  .carpeta-digital-premium > [role="dialog"] {
+    width: 100%;
+    max-height: calc(100dvh - 16px);
+    border-radius: 13px;
+  }
+  .carpeta-digital-premium table { min-width: 620px; }
+}
