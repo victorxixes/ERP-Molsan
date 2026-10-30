@@ -416,7 +416,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
   // ============================================================
 
   return (
-    <div className="agenda-premium-page space-y-5 p-6 text-[var(--erp-text)] animate-fade-in">
+    <div className="agenda-premium-page min-w-0 space-y-5 p-3 text-[var(--erp-text)] animate-fade-in sm:p-4 lg:p-6">
       {/* CABECERA Y NAVEGACIÓN */}
 
       <div className="erp-card p-4 shadow-sm">
