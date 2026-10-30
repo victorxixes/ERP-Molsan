@@ -7,6 +7,9 @@ const FOCUSABLE = [
   "input:not([disabled]):not([type='hidden'])",
   "select:not([disabled])",
   "textarea:not([disabled])",
+  "details > summary",
+  "audio[controls]",
+  "video[controls]",
   "iframe",
   "object",
   "embed",
@@ -31,7 +34,7 @@ export default function useAccessibleDialog({ open, onClose, dialogRef }) {
     const focusable = () =>
       Array.from(dialog.querySelectorAll(FOCUSABLE)).filter((element) =>
         element.getClientRects().length > 0 &&
-        element.getAttribute("aria-hidden") !== "true" &&
+        !element.closest('[aria-hidden="true"]') &&
         !element.closest("[inert]")
       );
 
