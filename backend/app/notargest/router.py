@@ -782,8 +782,12 @@ def consultar_actividad_desde_utilidades(expediente_id: str, actor=Depends(get_n
 @router.post("/admin/expedientes/{expediente_id}/actividad")
 def mover_actividad_desde_utilidades(expediente_id: str, data: dict, actor=Depends(get_notario), db: Session = Depends(get_db)):
     """Reasignación administrativa del estado NotarGest desde Utilidades ERP."""
-    if not _es_usuario_erp(actor):
-        raise HTTPException(status_code=403, detail="Esta operación solo está disponible para usuarios ERP autorizados.")
+    if not _es_usuario_erp(actor) or not _es_administrador_notargest(actor):
+        raise HTTPException(status_code=403, detail="Solo un administrador ERP puede reasignar administrativamente la actividad de NotarGest.")
+    # Defensa en profundidad: get_notario ya exige permiso de edición del módulo
+    # para las peticiones POST; se mantiene explícito aquí por tratarse de una
+    # operación administrativa sobre el flujo central del expediente.
+    require_perm_modulo(actor, "notargest", "editar")
     e = db.query(Expediente).filter(Expediente.id_expediente == str(expediente_id)).first()
     if not e:
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
