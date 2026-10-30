@@ -1014,3 +1014,14 @@ La ejecución asociada al commit `423144ec36bff7adead6750d5203577f57bac038` fina
 - Backend audit: success; `compileall` correcto y `84 passed, 1 warning, 21 subtests passed`.
 
 Esta ejecución ya incluye las correcciones backend de autenticación y el cambio de instalación de dependencias opcionales. Después se incorporaron los guards de rutas frontend; sus cinco workflows se han lanzado de nuevo para el commit `c0945ef78ed3d0f7aef0315a907220b2ff550d64` y estaban en curso en el momento de esta anotación. No se declara todavía la última ejecución como verde.
+
+### Resultado de la última ronda de CI — 30/10/2026
+
+La ejecución del commit `c0945ef78ed3d0f7aef0315a907220b2ff550d64`, que contiene los guards de rutas privadas y la limpieza del helper de rutas, terminó así:
+- Validar Fichaje Molsan: success.
+- Validar Control Apoderados: success.
+- EncargaGest checks: success.
+- Consolidación Post Firma checks: success.
+- Backend audit: cancelled por concurrencia de ejecuciones.
+
+El backend audit del commit anterior `423144ec36bff7adead6750d5203577f57bac038`, que ya contenía todos los cambios backend de esta auditoría, sí terminó en success con `compileall` y 84 tests + 21 subtests satisfactorios. No se han introducido cambios backend después de ese commit. Por tanto, el resultado backend válido sigue siendo verde; la cancelación posterior no indica fallo de código.
