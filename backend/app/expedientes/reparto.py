@@ -189,7 +189,7 @@ def asignar_gestor_automaticamente(db: Session, expediente: Expediente, activida
 
 
 def usuario_admin_expedientes(usuario):
-    """Reconoce administradores globales y permisos explícitos de seguridad."""
+    """Reconoce admin global por rol técnico 0, flags, cuenta/rol normalizado o permiso explícito de seguridad."""
     import unicodedata
 
     def norm(valor):
