@@ -6,6 +6,7 @@ import {
 } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 /**
  * ============================================================
@@ -2811,6 +2812,12 @@ function ModalImportarExcel({
   onCerrar,
   formatearTamano
 }) {
+  const dialogRef = useRef(null);
+  useAccessibleDialog({
+    open: true,
+    onClose: () => { if (!importando) onCerrar?.(); },
+    dialogRef,
+  });
 
   return (
 
@@ -2843,6 +2850,8 @@ function ModalImportarExcel({
     >
 
       <div
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label="Importar entidades bancarias desde Excel"
@@ -3368,6 +3377,12 @@ function ModalEntidadBancaria({
   onCerrar,
   onGuardar
 }) {
+  const dialogRef = useRef(null);
+  useAccessibleDialog({
+    open: true,
+    onClose: () => { if (!guardando) onCerrar?.(); },
+    dialogRef,
+  });
 
   const [
     formulario,
@@ -3461,6 +3476,8 @@ function ModalEntidadBancaria({
     >
 
       <div
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label={modo === "nuevo" ? "Nueva entidad bancaria" : "Editar entidad bancaria"}
