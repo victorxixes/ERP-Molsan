@@ -890,3 +890,48 @@
   border-radius: var(--molsan-radius-control, 9px);
   font-family: inherit;
 }
+
+
+
+/* Últimos espacios internos: CTN, auditoría, notificaciones y fusiones */
+.ctn-listado-page,
+.ctn-detalle-page,
+.logs-premium-page,
+.notificaciones-premium-page {
+  font-family: var(--molsan-font-family,Inter,system-ui,sans-serif);
+  color: var(--molsan-text,#17243a);
+}
+.ctn-listado-page .molsan-page-header,
+.ctn-detalle-page .ctn-detalle-header {
+  border-color: var(--molsan-border,#dce4ef);
+  border-radius: var(--molsan-radius-panel,18px);
+  box-shadow: var(--molsan-shadow-glass,0 12px 34px rgba(29,43,68,.08));
+}
+.ctn-listado-page .molsan-panel,
+.ctn-detalle-page .ctn-detalle-section,
+.logs-premium-page :is(section,article),
+.notificaciones-premium-page :is(section,article) {
+  border-color: var(--molsan-border,#dce4ef);
+  border-radius: var(--molsan-radius-card,14px);
+}
+.ctn-listado-page table,
+.ctn-detalle-page table,
+.logs-premium-page table,
+.notificaciones-premium-page table {
+  font-variant-numeric: tabular-nums;
+}
+.ctn-listado-page table thead th,
+.ctn-detalle-page table thead th,
+.logs-premium-page table thead th,
+.notificaciones-premium-page table thead th {
+  background: #f5f7fb;
+  color: var(--molsan-text-secondary,#526176);
+}
+.ctn-listado-page :is(input,select,textarea),
+.ctn-detalle-page :is(input,select,textarea),
+.logs-premium-page :is(input,select,textarea),
+.notificaciones-premium-page :is(input,select,textarea) {
+  border-color: var(--molsan-border-strong,#c7d2e0);
+  border-radius: var(--molsan-radius-control,9px);
+  font-family: inherit;
+}
