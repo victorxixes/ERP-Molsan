@@ -31,8 +31,28 @@ class _FiltroCredencialesWebSocket(logging.Filter):
         return True
 
 
+_FACTORY_INSTALADO = False
+
+
 def instalar_filtro_credenciales_websocket() -> None:
-    """Instala el filtro en Uvicorn antes de que acepte conexiones."""
+    """Redacta credenciales al crear cualquier registro, antes de formatearlo."""
+    global _FACTORY_INSTALADO
+
+    # Algunos mensajes de conexión WebSocket se emiten por loggers internos de
+    # Uvicorn distintos de uvicorn.access. El record factory cubre todos ellos
+    # y también los handlers que se creen después de importar la aplicación.
+    if not _FACTORY_INSTALADO:
+        factory_original = logging.getLogRecordFactory()
+
+        def factory_seguro(*args, **kwargs):
+            record = factory_original(*args, **kwargs)
+            record.msg = _redactar_valor(record.msg)
+            record.args = _redactar_valor(record.args)
+            return record
+
+        logging.setLogRecordFactory(factory_seguro)
+        _FACTORY_INSTALADO = True
+
     for nombre in ("uvicorn.error", "uvicorn.access"):
         logger = logging.getLogger(nombre)
         if not any(isinstance(filtro, _FiltroCredencialesWebSocket) for filtro in logger.filters):
