@@ -202,8 +202,8 @@ export default function ProvisionesModal({ idExpediente, onClose }) {
   const totalFormulario = form.operaciones.reduce((s, op) => s + (op.importe_manual !== "" && op.importe_manual != null ? numero(op.importe_manual) : (op.condonar_honorarios ? 0 : numero(op.honorarios)) + numero(op.suplidos) + numero(op.gastos_registro) + numero(op.otros_gastos) + numero(op.notaria) + numero(op.impuestos)), 0);
   const nombreTitular = expediente?.nombre_titular || expediente?.titular || "";
 
-  return <div className="expediente-operativo-modal fixed inset-0 z-[100] flex items-stretch justify-center bg-slate-950/60 p-0 sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label="Provisiones y cancelaciones">
-    <section className="flex max-h-screen w-full max-w-6xl flex-col overflow-hidden bg-slate-50 shadow-2xl sm:max-h-[94vh] sm:rounded-2xl">
+  return <div className="expediente-operativo-modal fixed inset-0 z-[100] flex items-stretch justify-center bg-slate-950/60 p-0 sm:items-center sm:p-4">
+    <section role="dialog" aria-modal="true" aria-label="Provisiones y cancelaciones" className="flex max-h-screen w-full max-w-6xl flex-col overflow-hidden bg-slate-50 shadow-2xl sm:max-h-[94vh] sm:rounded-2xl">
       <header className="flex items-start justify-between gap-4 bg-slate-900 px-5 py-4 text-white sm:px-6">
         <div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-300">ERP · Expedientes</p><h2 className="mt-1 text-xl font-bold">Provisiones de fondos y cancelaciones</h2><p className="mt-1 text-sm text-slate-300">Expediente {idExpediente}{nombreTitular ? ` · ${nombreTitular}` : ""}</p></div>
         <button className="rounded-lg px-3 py-2 text-xl leading-none text-slate-200 hover:bg-white/10" onClick={onClose} aria-label="Cerrar">×</button>
