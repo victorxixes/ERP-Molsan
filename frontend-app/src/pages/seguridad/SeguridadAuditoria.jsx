@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./SeguridadSubpaginasPremium.css";
 import "../../css/ModalesHerramientasPremium.css";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
 
@@ -575,6 +576,8 @@ function ModalDetalle({
   registro,
   onCerrar,
 }) {
+  const dialogRef = useRef(null);
+  useAccessibleDialog({ open: Boolean(registro), onClose: onCerrar, dialogRef });
 
   if (!registro) {
     return null;
@@ -610,6 +613,8 @@ function ModalDetalle({
     >
 
       <div
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label="Detalle de registro de auditoría"
