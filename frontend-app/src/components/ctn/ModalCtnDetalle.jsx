@@ -77,6 +77,14 @@ export default function ModalCtnDetalle({
   // las llamadas existentes desde ApoderaGest.
   const id = notaria?.id;
   const dialogRef = useRef(null);
+  const [ficha, setFicha] = useState(notaria || null);
+  const [pestanaActiva, setPestanaActiva] = useState(mostrarAccesosPortales ? "portales" : "ficha");
+  const [asociadas, setAsociadas] = useState([]);
+
+  const [guardandoAsociacion, setGuardandoAsociacion] =
+    useState(false);
+  const [guardandoDatosBancarios, setGuardandoDatosBancarios] = useState(false);
+
   useAccessibleDialog({
     open,
     onClose: () => {
@@ -85,14 +93,6 @@ export default function ModalCtnDetalle({
     },
     dialogRef,
   });
-
-  const [ficha, setFicha] = useState(notaria || null);
-  const [pestanaActiva, setPestanaActiva] = useState(mostrarAccesosPortales ? "portales" : "ficha");
-  const [asociadas, setAsociadas] = useState([]);
-
-  const [guardandoAsociacion, setGuardandoAsociacion] =
-    useState(false);
-  const [guardandoDatosBancarios, setGuardandoDatosBancarios] = useState(false);
   const [editandoCuenta1, setEditandoCuenta1] = useState(!notaria?.iban_1);
   const [editandoCuenta2, setEditandoCuenta2] = useState(false);
   const [mostrarCuenta2, setMostrarCuenta2] = useState(Boolean(notaria?.iban_2));
