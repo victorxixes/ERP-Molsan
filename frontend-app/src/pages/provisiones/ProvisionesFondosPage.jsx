@@ -64,7 +64,7 @@ function ProvisionDocumentoPreview({ posiciones = {}, datosMolsan = {} }) {
   </section>;
 }
 
-export function DocumentoLayoutDesigner({ tipo }) {
+export function DocumentoLayoutDesigner({ tipo, datosMolsan = {} }) {
   const campos = DOCUMENTO_LAYOUTS[tipo] || [];
   const [posiciones, setPosiciones] = useState(() => Object.fromEntries(campos.map(c => [c.id,{...c,align:"left",valign:"top",fontSize:9,padL:1,padR:1,padT:1,padB:1,bold:false,italic:false}])));
   const [activo,setActivo] = useState(campos[0]?.id || "");
@@ -144,7 +144,7 @@ export function DocumentoLayoutDesigner({ tipo }) {
         <p className="text-[10px] leading-4 text-slate-500">Esta configuración se guarda por separado para cada documento. El PDF oficial conserva su composición actual: este editor no altera la emisión, tarifas, impuestos, gastos, pagos ni datos del expediente.</p>
       </aside>
     </div>
-  </section>{tipo==="provision"&&<div className="mt-5"><ProvisionDocumentoPreview posiciones={posiciones}/></div>}</>;
+  </section>{tipo==="provision"&&<div className="mt-5"><ProvisionDocumentoPreview posiciones={posiciones} datosMolsan={datosMolsan}/></div>}</>;
 }
 
 
@@ -745,8 +745,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
       {errorDatosCorporativos && <p role="alert" className="mt-2 text-xs text-rose-700">{errorDatosCorporativos}</p>}
       {mensajeDatosCorporativos && <p role="status" className="mt-2 text-xs font-semibold text-emerald-700">{mensajeDatosCorporativos}</p>}
     </section>
-    <div className="provision-editor-layout provision-editor-layout-solo"><div className="provision-editor-designer min-w-0"><DocumentoLayoutDesigner tipo="provision" /></div></div>
-    <ProvisionDocumentoPreview posiciones={undefined} datosMolsan={datosCorporativos} />
+    <div className="provision-editor-layout provision-editor-layout-solo"><div className="provision-editor-designer min-w-0"><DocumentoLayoutDesigner tipo="provision" datosMolsan={datosCorporativos} /></div></div>
   </main>;
   if (modoCatalogo) return <main className="provisiones-fondos-page w-full min-w-0 space-y-6 p-3 md:p-6"><header className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/85 px-5 py-5 shadow-sm"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700">MOLSAN ERP PREMIUM 2027 · CATÁLOGOS ECONÓMICOS</p><h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800">Tabla Provisiones de fondos</h1><p className="mt-1 max-w-3xl text-sm text-slate-500">Configura importes estimativos y criterios iniciales. Estos valores sirven de referencia para nuevas provisiones; los registros históricos no se recalculan al cambiar la tabla.</p></header><ConfiguracionConceptosProvisiones /></main>;
 
