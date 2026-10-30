@@ -67,7 +67,7 @@ export default function SolicitudesAusencia({ modo = "empleado", empleados = [] 
 
   const label = "block text-xs font-bold text-slate-600";
   const input = "mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal";
-  return <div className="fichajes-solicitudes-premium p-4 sm:p-6">
+  return <div className="fichajes-premium-page fichajes-solicitudes-premium p-4 sm:p-6">
     <div className="mb-4"><h2 className="text-lg font-extrabold">{admin ? "Solicitudes de ausencias y permisos" : "Solicitar ausencia o permiso"}</h2><p className="mt-1 text-sm text-[var(--erp-text-soft)]">{admin ? "Revisa las peticiones, registra el motivo de cada decisión y evita solapamientos." : "Envía una solicitud para que administración la revise. Registrar una solicitud no equivale a su aprobación."}</p></div>
     {!admin && <form onSubmit={enviar} className="mb-6 grid gap-3 rounded-2xl border border-violet-100 bg-violet-50/50 p-4 sm:grid-cols-2">
       <label className={label}>Tipo de ausencia<select required value={tipo} onChange={(e) => setTipo(e.target.value)} className={input}><option value="">Selecciona…</option>{tipos.map((t) => <option key={t.id} value={t.nombre}>{t.nombre}{t.requiere_justificante ? " · requiere justificante" : ""}</option>)}</select></label>
