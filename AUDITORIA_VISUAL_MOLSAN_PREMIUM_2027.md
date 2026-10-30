@@ -1133,3 +1133,10 @@ La revisión de autorización sigue sin considerarse integralmente cerrada: Maes
 El test `backend/tests/test_permission_contract.py` usa ahora exclusivamente `unittest`, compatible con todos los workflows que ejecutan la suite compartida.
 
 Los cambios backend de esta última ronda están validados por CI en `5fdfa83`. La documentación de esta auditoría se actualiza en un commit posterior sin modificar código backend.
+### Aclaración del estado actual de autorización global — 30/10/2026
+
+Las notas de la primera ronda que identificaban catálogos y routers pendientes de autorización describen el estado histórico previo al guard global. La revisión posterior de `backend/app/auth/route_guard.py` confirma que las rutas HTTP privadas de `/api` reciben JWT y un permiso explícito por módulo/acción según el método HTTP; los portales NotarGest y EncargaGest mantienen su autenticación y autorización propias.
+
+Las pruebas `test_all_protected_api_routes_have_a_module_mapping` y `test_all_case_id_routes_have_visibility_guard` verifican la cobertura de las rutas privadas y de las rutas que reciben identificadores de expediente. En la última ejecución se revisaron 490 rutas HTTP y las comprobaciones de cobertura terminaron correctamente.
+
+Por tanto, la deuda pendiente ya no es la ausencia general de un guard granular en Maestros/Municipios/catálogos: es validar con perfiles de prueba reales que las asignaciones de SeguridadUsuarios para cada módulo/acción corresponden al trabajo de cada puesto y producen 200/403 correctos. No se han consultado ni modificado asignaciones reales desde producción.
