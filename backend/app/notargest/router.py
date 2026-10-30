@@ -753,6 +753,16 @@ def _estado_workflow(e):
     if getattr(e, "fecha_envio_notario", None): return "recepcion"
     return "recepcion"
 
+@router.get("/admin/expedientes/{expediente_id}/actividad")
+def consultar_actividad_desde_utilidades(expediente_id: str, actor=Depends(get_notario), db: Session = Depends(get_db)):
+    if not _es_usuario_erp(actor):
+        raise HTTPException(status_code=403, detail="Esta consulta solo está disponible para usuarios ERP.")
+    e = db.query(Expediente).filter(Expediente.id_expediente == str(expediente_id)).first()
+    if not e:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+    estado = _estado_workflow(e)
+    return {"ok": True, "estado": estado, "estado_texto": ESTADOS_NOTARGEST[estado]}
+
 @router.post("/admin/expedientes/{expediente_id}/actividad")
 def mover_actividad_desde_utilidades(expediente_id: str, data: dict, actor=Depends(get_notario), db: Session = Depends(get_db)):
     """Reasignación administrativa del estado NotarGest desde Utilidades ERP."""
