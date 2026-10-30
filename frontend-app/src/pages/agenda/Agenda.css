@@ -145,3 +145,28 @@
 
 .agenda-today-action { min-height:38px; padding:0 13px; border:1px solid var(--agenda-border); border-radius:9px; background:white; color:var(--agenda-primary); font-size:12px; font-weight:750; }
 .agenda-today-action:hover { border-color:var(--agenda-primary); background:var(--agenda-primary-soft); }
+
+
+
+/* Agenda: misma jerarquía de paneles y datos que el resto del ERP */
+.agenda-premium-page {
+  font-family: var(--molsan-font-family,Inter,system-ui,sans-serif);
+}
+.agenda-premium-page > .erp-card,
+.agenda-premium-page .agenda-stat-card,
+.agenda-premium-page .agenda-calendar-card,
+.agenda-premium-page .agenda-upcoming-card {
+  border-color: var(--molsan-border,#dce4ef);
+  border-radius: var(--molsan-radius-card,14px);
+  box-shadow: var(--molsan-shadow-card,0 4px 14px rgba(36,50,74,.06));
+}
+.agenda-premium-page .agenda-stat-card {
+  background: linear-gradient(145deg,#fff,#fbfcff);
+}
+.agenda-premium-page .agenda-stat-card strong,
+.agenda-premium-page .agenda-list-table { font-variant-numeric: tabular-nums; }
+.agenda-premium-page .agenda-list-table th {
+  background: #f5f7fb;
+  color: var(--molsan-text-secondary,#526176);
+}
+.agenda-premium-page .agenda-list-table tbody tr:hover { background: #f7f9fd; }
