@@ -70,3 +70,36 @@
   gap: 16px;
 }
 .provision-editor-designer { min-width: 0; }
+
+
+
+/* Provisiones: integración visual con la capa común Glass Luxe */
+.provisiones-fondos-page {
+  --pf-ink: var(--molsan-text, #17243a);
+  --pf-muted: var(--molsan-text-muted, #64748b);
+  --pf-line: var(--molsan-border, #dce4ef);
+  color: var(--pf-ink);
+  font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
+}
+.provisiones-fondos-page > header {
+  background: var(--molsan-surface-glass, rgba(255,255,255,.78));
+  border-color: var(--molsan-glass-border, #dce4ef);
+  box-shadow: var(--molsan-shadow-glass, 0 12px 34px rgba(29,43,68,.08));
+  -webkit-backdrop-filter: blur(var(--molsan-glass-blur,16px)) saturate(140%);
+  backdrop-filter: blur(var(--molsan-glass-blur,16px)) saturate(140%);
+}
+.provisiones-fondos-page :is(section,article) {
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card,14px);
+}
+.provisiones-fondos-page :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),select,textarea) {
+  font-family: inherit;
+}
+.provisiones-fondos-page table { font-variant-numeric: tabular-nums; }
+.provisiones-fondos-page thead th {
+  color: var(--molsan-text-secondary,#526176);
+  background: #f5f7fb;
+}
+@media(prefers-reduced-transparency:reduce) {
+  .provisiones-fondos-page > header { background: #fff; -webkit-backdrop-filter:none; backdrop-filter:none; }
+}
