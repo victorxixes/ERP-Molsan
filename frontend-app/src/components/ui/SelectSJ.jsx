@@ -80,7 +80,7 @@ export default function SelectSJ({
   return (
     <div
       ref={selectRef}
-      className={`relative ${className}`}
+      className={`relative select-sj-premium ${className}`}
     >
       {/* =====================================================
           BOTÓN PRINCIPAL
@@ -120,7 +120,7 @@ export default function SelectSJ({
           }
         `}
       >
-        <span className="select-sj-premium truncate">
+        <span className="min-w-0 truncate">
           {opcionSeleccionada?.label ?? placeholder}
         </span>
 
