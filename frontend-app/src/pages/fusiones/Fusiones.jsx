@@ -85,7 +85,7 @@ export default function Fusiones() {
     ["Facturadas", contar("Facturadas"), "Con factura o pre-factura indicada", "violet", "Facturadas"]
   ];
 
-  return <main className="fusiones-premium-page erp-page min-h-full space-y-6 p-4 text-[var(--erp-text)] sm:p-6 lg:p-8">
+  return <main className="fusiones-page fusiones-premium-page erp-page min-h-full min-w-0 space-y-6 p-4 text-[var(--erp-text)] sm:p-6 lg:p-8">
     <section className="relative overflow-hidden rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface,var(--erp-card,#fff))] shadow-sm">
       <div className="h-1 bg-gradient-to-r from-slate-400 via-blue-600 to-indigo-300" />
       <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
