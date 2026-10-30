@@ -24,6 +24,11 @@ def _autorizar_informes(usuario=Depends(get_current_user)):
     return usuario
 
 
+def _autorizar_edicion_expedientes(usuario=Depends(get_current_user)):
+    require_perm_modulo(usuario, "expedientes", "editar")
+    return usuario
+
+
 router = APIRouter(
     prefix="/informes",
     tags=["Informes"],
@@ -287,7 +292,7 @@ class ActualizarDatosFirmaRequest(BaseModel):
     fecha_envio: Optional[date] = None
 
 
-@router.put("/firmas/{id_expediente}/datos", dependencies=[Depends(lambda usuario=Depends(get_current_user): require_perm_modulo(usuario, "expedientes", "editar"))])
+@router.put("/firmas/{id_expediente}/datos", dependencies=[Depends(_autorizar_edicion_expedientes)])
 def actualizar_datos_firma(
     id_expediente: str,
     datos: ActualizarDatosFirmaRequest,
