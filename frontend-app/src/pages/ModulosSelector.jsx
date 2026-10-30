@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { API_BASE } from "../api/config";
 import { configurarSesionEncargaGest } from "../api/encargagest";
 import "../css/ModalesHerramientasPremium.css";
+import useAccessibleDialog from "../components/ui/useAccessibleDialog";
 
 const MODULOS = {
   apoderagest: {
@@ -77,6 +78,8 @@ export default function ModulosSelector() {
   const [cargandoSoporte, setCargandoSoporte] = useState(false);
   const [abriendoNotaria, setAbriendoNotaria] = useState(null);
   const [errorSoporte, setErrorSoporte] = useState("");
+  const soporteDialogRef = useRef(null);
+  useAccessibleDialog({ open: Boolean(modalSoporte), onClose: () => { if (!abriendoNotaria) setModalSoporte(null); }, dialogRef: soporteDialogRef });
 
   const modulosDisponibles = useMemo(() => {
     if (!empleado) return [];
@@ -359,7 +362,7 @@ export default function ModulosSelector() {
 
       {modalSoporte && (
         <div className="panel-modal-premium fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !abriendoNotaria) setModalSoporte(null); }}>
-          <section className="flex max-h-[min(86vh,760px)] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="soporte-notaria-titulo">
+          <section ref={soporteDialogRef} tabIndex={-1} className="flex max-h-[min(86vh,760px)] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="soporte-notaria-titulo">
             <header className="flex items-start justify-between gap-4 border-b border-slate-100 px-6 py-5">
               <div>
                 <p className="text-[10px] font-extrabold tracking-[0.18em] text-blue-700">ACCESO DE SOPORTE</p>
