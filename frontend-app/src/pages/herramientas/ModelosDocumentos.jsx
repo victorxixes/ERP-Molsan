@@ -177,7 +177,7 @@ function FacturaLayoutDesigner({ datosMolsan = {} }) {
   </section>;
 }
 
-function FacturaPlantillaEditor() {
+function FacturaPlantillaEditor({ datosMolsan = {} }) {
   const [plantillaWord, setPlantillaWord] = useState(null);
   const [archivoWord, setArchivoWord] = useState(null);
   const [subiendoWord, setSubiendoWord] = useState(false);
