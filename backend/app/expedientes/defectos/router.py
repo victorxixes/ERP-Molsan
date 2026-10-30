@@ -1042,12 +1042,39 @@ def registrar_subsanacion_defecto(
         db.flush()
 
         sincronizar_campos_compatibilidad(db, expediente)
+
+        # Cuando se subsana el último defecto abierto, reanudar automáticamente
+        # Tramitación inscripción. Si quedan otros defectos abiertos, mantener
+        # la actividad de defectos sin cambios.
+        actividad_actual = str(getattr(expediente, "actividad_actual", "") or "").strip().casefold()
+        actividad_actualizada = False
+        if (
+            actividad_actual in ("defectos registrales", "defectos registrales")
+            and str(getattr(expediente, "tiene_defectos_abiertos", "") or "").strip().upper() == "NO"
+        ):
+            expediente.actividad_actual = "Tramitación inscripción"
+            actividad_actualizada = True
+            # Reaplicar las reglas de reparto de la actividad de destino.
+            # Importación local para evitar dependencias circulares al cargar routers.
+            from backend.app.expedientes.reparto import asignar_gestor_automaticamente
+            asignar_gestor_automaticamente(
+                db,
+                expediente,
+                "tramitacion-inscripcion",
+                motivo="subsanacion_defecto",
+            )
+
         registrar_evento_defecto(
             db, expediente, defecto, "SUBSANADO",
             "Subsanación presentada y defecto cerrado",
-            {"fecha_entrada_subsanacion": fecha_entrada.isoformat(), "fecha_cierre_defecto": fecha_entrada.isoformat()},
+            {
+                "fecha_entrada_subsanacion": fecha_entrada.isoformat(),
+                "fecha_cierre_defecto": fecha_entrada.isoformat(),
+                "actividad_reanudada": "Tramitación inscripción" if actividad_actualizada else None,
+            },
         )
 
+        db.add(expediente)
         db.commit()
         db.refresh(defecto)
         db.refresh(expediente)
@@ -1055,8 +1082,12 @@ def registrar_subsanacion_defecto(
         return {
             "ok": True,
             "mensaje": (
-                "Subsanación registrada y defecto cerrado correctamente"
+                "Subsanación registrada, defecto cerrado y flujo reanudado"
+                if actividad_actualizada
+                else "Subsanación registrada y defecto cerrado correctamente"
             ),
+            "actividad_actualizada": actividad_actualizada,
+            "actividad_actual": expediente.actividad_actual,
             "defecto": datos_defecto(defecto, db, expediente),
         }
 
