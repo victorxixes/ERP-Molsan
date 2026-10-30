@@ -1127,6 +1127,9 @@ La revisión endpoint por endpoint ha detectado tres huecos que no quedaban cubi
 
 Se ha añadido `backend/tests/test_permission_contract.py` para comprobar que el permiso es exacto por módulo/acción, que la ausencia devuelve 403 y que los comodines no sustituyen permisos explícitos.
 
-La CI del commit `0bf8fab209adcca45133dc23e0c64926707a49ba`, anterior a estos últimos ajustes de acciones, terminó con los cinco workflows en success; Backend audit registró `compileall` correcto y `89 passed, 1 warning, 21 subtests passed`. Los cambios de acciones y el nuevo test de contrato se han incorporado después, por lo que su CI específica debe confirmarse antes de dar por cerrada esta ronda.
+La ejecución del commit `5fdfa830444de37830bba0b21b3fd845af530aac` terminó con los cinco workflows en success. Backend audit: `compileall` correcto y `92 passed, 1 warning, 21 subtests passed`. La primera ejecución de EncargaGest detectó que el nuevo test dependía de `pytest`, que ese workflow no instala; se cambió el test a `unittest` y la siguiente ejecución completa quedó verde.
 
 La revisión de autorización sigue sin considerarse integralmente cerrada: Maestros, Municipios y varios catálogos auxiliares continúan pendientes de contrastar con la matriz real de SeguridadUsuarios. No se han inventado permisos ni se han modificado asignaciones de empleados.
+El test `backend/tests/test_permission_contract.py` usa ahora exclusivamente `unittest`, compatible con todos los workflows que ejecutan la suite compartida.
+
+Los cambios backend de esta última ronda están validados por CI en `5fdfa83`. La documentación de esta auditoría se actualiza en un commit posterior sin modificar código backend.
