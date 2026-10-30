@@ -454,7 +454,7 @@ export default function App() {
           <Route path="control-fichajes" element={<Fichajes modo="admin" />} />
           <Route path="mensajeria" element={<MensajeriaSolicitudes />} />
           <Route path="mensajeria-gestion" element={<MensajeriaMolsan vistaGestion />} />
-          <Route path="apoderagest/liquidaciones" element={<ControlApoderados modo="colaborador" />} />
+          <Route path="apoderagest/liquidaciones" element={<RequireModule module="apoderagest"><ControlApoderados modo="colaborador" /></RequireModule>} />
           <Route path="herramientas/utilidades/control-apoderados" element={<ControlApoderados modo="admin" />} />
 
 
