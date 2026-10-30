@@ -273,3 +273,42 @@
   width: max-content;
   min-width: 100%;
 }
+
+
+
+/* MOLSAN PREMIUM 2027 · listado: pulido final Glass Luxe */
+.expedientes-page {
+  --exp-radius: var(--molsan-radius-card, 14px);
+  --exp-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
+  font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
+}
+.expedientes-page .molsan-page-header {
+  background: var(--molsan-surface-glass, rgba(255,255,255,.76));
+  border: 1px solid var(--molsan-glass-border, #dce4ef);
+  border-radius: var(--molsan-radius-panel, 18px);
+  box-shadow: var(--molsan-shadow-glass, 0 12px 34px rgba(29,43,68,.10));
+  -webkit-backdrop-filter: blur(var(--molsan-glass-blur, 16px)) saturate(140%);
+  backdrop-filter: blur(var(--molsan-glass-blur, 16px)) saturate(140%);
+}
+.expedientes-page :is(.erp-card,[class~="bg-white"]) {
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--exp-radius);
+  box-shadow: var(--exp-shadow);
+}
+.expedientes-page :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),select,textarea) {
+  border-color: var(--molsan-border-strong, #c7d2e0);
+  border-radius: var(--molsan-radius-control, 9px);
+  font-family: inherit;
+  font-size: 13px;
+}
+.expedientes-page :is(button,[role="button"]) { border-radius: var(--molsan-radius-control, 9px); }
+.expedientes-page table { font-variant-numeric: tabular-nums; }
+.expedientes-page table thead th { background: #f5f7fb; color: var(--molsan-text-secondary, #526176); }
+.expedientes-page .expedientes-table-scroll {
+  border: 1px solid var(--molsan-border, #dce4ef);
+  border-radius: 12px;
+  background: #fff;
+}
+@media (prefers-reduced-transparency: reduce) {
+  .expedientes-page .molsan-page-header { background: #fff; backdrop-filter: none; }
+}
