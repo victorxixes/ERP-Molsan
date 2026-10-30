@@ -68,6 +68,7 @@ export default function Utilidades() {
       <Grupo titulo="Gestión de expedientes" descripcion="Acciones manuales y controladas sobre la asignación y el seguimiento de los expedientes.">
         <Card icon="📝" titulo="Alta expediente" descripcion="Crear un expediente nuevo con sus datos de facturación, contrato, múltiples fincas, hipotecas y notaría CTN." link="/herramientas/utilidades/alta-expediente" destacado />
         <Card icon="🔁" titulo="Cambiar gestor de expediente" descripcion="Busca un expediente por su número y reasígnalo manualmente a otro gestor, dejando constancia del cambio." link="/herramientas/utilidades/cambiar-gestor" />
+        <Card icon="🏛️" titulo="Reasignar expediente a notario" descripcion="Busca un expediente, carga su ficha de Envío a notario y modifica el notario, la fecha de envío y los datos relacionados antes de guardar." link="/herramientas/utilidades/reasignar-notario" destacado />
         <Card icon="🏷️" titulo="Asignar expedientes a promociones" descripcion="Busca un expediente y asígnale un tipo del catálogo Tipos de expediente para que la promoción aparezca automáticamente en su ficha y en los filtros." link="/herramientas/utilidades/asignar-promociones" destacado />
       </Grupo>
 
