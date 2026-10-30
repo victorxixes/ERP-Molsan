@@ -28,7 +28,7 @@ const secciones = [
     ["datos_bancarios", "Datos bancarios para documentos (si procede)", "text", false],
   ]},
 ];
-const input = "mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
+const input = "mt-1 w-full rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface)] px-3 py-2.5 text-sm text-[var(--molsan-text)] outline-none transition focus:border-[var(--molsan-primary)] focus:ring-2 focus:ring-[var(--molsan-primary-soft)]";
 const label = "block text-xs font-semibold uppercase tracking-wide text-slate-500";
 
 export default function DatosMolsan() {
@@ -83,7 +83,7 @@ export default function DatosMolsan() {
   return (
     <div className="datos-molsan-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
       <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
+        <div className="absolute inset-x-0 top-0 h-1 bg-[var(--molsan-primary)]" />
         <div className="flex items-start gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[var(--molsan-primary-border)] bg-[var(--molsan-primary-soft)] text-2xl">🏢</div>
           <div>
