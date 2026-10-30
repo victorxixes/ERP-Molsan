@@ -737,10 +737,10 @@ export default function TiposConceptoGastos() {
                   items-center
                   justify-center
                   rounded-2xl
-                  bg-blue-600
+                  bg-[var(--molsan-primary)]
                   text-white
                   shadow-lg
-                  shadow-blue-600/20
+                  shadow-[var(--molsan-primary-border)]
                 "
               >
 
@@ -809,7 +809,7 @@ export default function TiposConceptoGastos() {
                     font-semibold
                     uppercase
                     tracking-[0.18em]
-                    text-blue-600
+                    text-[var(--molsan-primary)]
                   "
                 >
                   Herramientas
@@ -860,17 +860,17 @@ export default function TiposConceptoGastos() {
               justify-center
               gap-2
               rounded-xl
-              bg-blue-600
+              bg-[var(--molsan-primary)]
               px-5
               py-3
               text-sm
               font-semibold
               text-white
               shadow-lg
-              shadow-blue-600/20
+              shadow-[var(--molsan-primary-border)]
               transition-all
               duration-200
-              hover:bg-blue-700
+              hover:bg-[var(--molsan-primary-hover)]
               hover:-translate-y-0.5
               active:translate-y-0
             "
@@ -913,10 +913,10 @@ export default function TiposConceptoGastos() {
         </div>
 
 
-        <section className="mb-6 rounded-2xl border border-indigo-100 bg-white p-5 shadow-sm md:p-6">
+        <section className="mb-6 rounded-2xl border border-[var(--molsan-border)] bg-white p-5 shadow-sm md:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-3xl">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-indigo-600">Plantilla documental vinculada</p>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--molsan-primary)]">Plantilla documental vinculada</p>
               <h2 className="mt-1 text-lg font-extrabold text-slate-800">Factura de honorarios · Concepto ID 6</h2>
               <p className="mt-1 text-sm text-slate-500">La plantilla Word se asocia exclusivamente al registro «honorarios gestoría» del catálogo. Se utiliza al pulsar «Guardar y facturar» en la FichaExpediente y nunca se adjunta a los emails.</p>
               {plantillaFactura?.plantilla_cargada && <p className="mt-3 break-all text-sm font-semibold text-emerald-700">✓ Plantilla actual: {plantillaFactura.factura_nombre}</p>}
@@ -933,7 +933,7 @@ export default function TiposConceptoGastos() {
               <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">{plantillaFactura?.plantilla_cargada ? "Sustituir plantilla oficial (.docx)" : "Cargar plantilla oficial (.docx)"}</span>
               <input type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(e) => setArchivoPlantillaFactura(e.target.files?.[0] || null)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm" />
             </label>
-            <button type="button" onClick={subirPlantillaFactura} disabled={!archivoPlantillaFactura || subiendoPlantillaFactura} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 disabled:opacity-50">{subiendoPlantillaFactura ? "Guardando…" : "Vincular plantilla a honorarios gestoría"}</button>
+            <button type="button" onClick={subirPlantillaFactura} disabled={!archivoPlantillaFactura || subiendoPlantillaFactura} className="rounded-xl bg-[var(--molsan-primary)] px-5 py-2.5 text-sm font-bold text-white hover:bg-[var(--molsan-primary-hover)] disabled:opacity-50">{subiendoPlantillaFactura ? "Guardando…" : "Vincular plantilla a honorarios gestoría"}</button>
           </div>
         </section>
 
@@ -1366,10 +1366,10 @@ export default function TiposConceptoGastos() {
                     text-slate-700
                     outline-none
                     transition-all
-                    focus:border-blue-500
+                    focus:border-[var(--molsan-primary)]
                     focus:bg-white
                     focus:ring-4
-                    focus:ring-blue-500/10
+                    focus:ring-[var(--molsan-primary-border)]
                   "
                 />
 
@@ -1415,10 +1415,10 @@ export default function TiposConceptoGastos() {
                   text-slate-700
                   outline-none
                   transition-all
-                  focus:border-blue-500
+                  focus:border-[var(--molsan-primary)]
                   focus:bg-white
                   focus:ring-4
-                  focus:ring-blue-500/10
+                  focus:ring-[var(--molsan-primary-border)]
                 "
               >
 
@@ -1847,7 +1847,7 @@ export default function TiposConceptoGastos() {
                         className="
                           transition-all
                           duration-150
-                          hover:bg-blue-50/40
+                          hover:bg-[var(--molsan-surface-soft)]
                         "
                       >
 
@@ -1893,8 +1893,8 @@ export default function TiposConceptoGastos() {
                                 items-center
                                 justify-center
                                 rounded-xl
-                                bg-blue-50
-                                text-blue-600
+                                bg-[var(--molsan-primary-soft)]
+                                text-[var(--molsan-primary)]
                               "
                             >
 
@@ -2076,9 +2076,9 @@ export default function TiposConceptoGastos() {
                                 p-2
                                 text-slate-500
                                 transition-all
-                                hover:border-blue-200
-                                hover:bg-blue-50
-                                hover:text-blue-600
+                                hover:border-[var(--molsan-primary-border)]
+                                hover:bg-[var(--molsan-primary-soft)]
+                                hover:text-[var(--molsan-primary)]
                               "
                             >
 
@@ -2423,7 +2423,7 @@ export default function TiposConceptoGastos() {
                     font-semibold
                     uppercase
                     tracking-[0.18em]
-                    text-blue-600
+                    text-[var(--molsan-primary)]
                   "
                 >
                   Catálogo de gastos
@@ -2559,10 +2559,10 @@ export default function TiposConceptoGastos() {
                     text-slate-700
                     outline-none
                     transition-all
-                    focus:border-blue-500
+                    focus:border-[var(--molsan-primary)]
                     focus:bg-white
                     focus:ring-4
-                    focus:ring-blue-500/10
+                    focus:ring-[var(--molsan-primary-border)]
                   "
                 />
 
@@ -2639,7 +2639,7 @@ export default function TiposConceptoGastos() {
                     transition-all
                     ${
                       activo
-                        ? "bg-blue-600"
+                        ? "bg-[var(--molsan-primary)]"
                         : "bg-slate-300"
                     }
                   `}
@@ -2719,16 +2719,16 @@ export default function TiposConceptoGastos() {
                     justify-center
                     gap-2
                     rounded-xl
-                    bg-blue-600
+                    bg-[var(--molsan-primary)]
                     px-5
                     py-3
                     text-sm
                     font-semibold
                     text-white
                     shadow-lg
-                    shadow-blue-600/20
+                    shadow-[var(--molsan-primary-border)]
                     transition-all
-                    hover:bg-blue-700
+                    hover:bg-[var(--molsan-primary-hover)]
                     disabled:cursor-not-allowed
                     disabled:opacity-50
                   "
