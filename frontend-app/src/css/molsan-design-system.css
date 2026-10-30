@@ -851,3 +851,42 @@
     font-size: 21px;
   }
 }
+
+
+
+/* Aplicación de la capa común a módulos internos y administrativos */
+.empleados-listado-premium,
+.empleado-ficha-premium,
+.seguridad-premium-page,
+.seguridad-subpagina-premium,
+.seguridad-usuarios-premium,
+.seguridad-auditoria-premium,
+.seguridad-logs-premium {
+  font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
+  color: var(--molsan-text, #17243a);
+}
+.empleados-listado-premium :is(section,article),
+.empleado-ficha-premium :is(section,article),
+.seguridad-premium-page > section,
+.seguridad-subpagina-premium :is(section,article) {
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card, 14px);
+}
+.empleados-listado-premium table,
+.seguridad-premium-page table,
+.seguridad-subpagina-premium table {
+  font-variant-numeric: tabular-nums;
+}
+.empleados-listado-premium table thead th,
+.seguridad-premium-page table thead th,
+.seguridad-subpagina-premium table thead th {
+  background: #f5f7fb;
+  color: var(--molsan-text-secondary, #526176);
+}
+.empleados-listado-premium :is(input,select,textarea),
+.empleado-ficha-premium :is(input,select,textarea),
+.seguridad-subpagina-premium :is(input,select,textarea) {
+  border-color: var(--molsan-border-strong, #c7d2e0);
+  border-radius: var(--molsan-radius-control, 9px);
+  font-family: inherit;
+}
