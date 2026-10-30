@@ -5,6 +5,8 @@
   --ag-panel: var(--molsan-surface, #fff);
   --ag-blue: var(--molsan-primary, #3156b3);
   --ag-blue-dark: var(--molsan-primary-hover, #274694);
+  --eg-line: var(--molsan-border, #dce4ef);
+  --eg-ink: var(--molsan-text, #17243a);
   min-height: 100vh;
   min-width: 0;
   overflow: visible;
@@ -749,10 +751,6 @@
 
 
 /* EncargaGest: coherencia final de paneles, tablas y controles */
-.encargagest {
-  --eg-line: var(--molsan-border,#dce4ef);
-  --eg-ink: var(--molsan-text,#17243a);
-}
 .encargagest :is(.eg-panel,.eg-kpi) {
   border-color: var(--eg-line);
   border-radius: var(--molsan-radius-card,14px);
@@ -776,7 +774,6 @@
 
 
 /* EncargaGest · ventanas de trabajo y tablas en móvil */
-.encargagest { min-width: 0; }
 .encargagest :is(.eg-modal,.eg-modal-perfil) {
   box-sizing: border-box;
   max-width: calc(100vw - 24px);
