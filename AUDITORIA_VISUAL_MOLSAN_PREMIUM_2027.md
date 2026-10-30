@@ -1089,3 +1089,14 @@ Se alinearon permisos de acción del backend con las operaciones expuestas:
 - Importación ABSIS de expedientes: `utilidades.editar`.
 
 No se ha extendido indiscriminadamente el control de acciones a todos los catálogos auxiliares: Maestros, Municipios y varios catálogos todavía tienen endpoints autenticados cuya autorización de escritura no está unificada con el modelo acción-permiso. Se mantiene como deuda de autorización para revisar con la matriz real de SeguridadUsuarios y el uso de cada pantalla, en lugar de asignar una acción por intuición.
+
+### CI final tras la revisión de ámbitos y permisos — 30/10/2026
+
+La ejecución del commit `79180ca9a18b63bde61b879734cf50e1e38a8f4f` terminó con los cinco workflows en success:
+- Backend audit: `compileall` correcto; `84 passed, 1 warning, 21 subtests passed`.
+- Validar Fichaje Molsan: success.
+- Validar Control Apoderados: success.
+- EncargaGest checks: success.
+- Consolidación Post Firma checks: success.
+
+Este commit incluye las correcciones de autenticación, visibilidad de expedientes en routers auxiliares, permisos de Agenda/Informes/Dashboard/ABSIS y guards de las rutas privadas frontend. No hay cambios de código posteriores a ese commit en la rama; las anotaciones posteriores son únicamente documentación/PR.
