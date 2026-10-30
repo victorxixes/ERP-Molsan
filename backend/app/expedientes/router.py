@@ -3906,6 +3906,11 @@ def generar_documento_factura_honorarios(
         # Reutiliza la primera imagen incrustada en la plantilla Word oficial (normalmente el logo).
         logo = None
         try:
+            if logo_empresa_data.startswith("data:image/") and "," in logo_empresa_data:
+                logo = PDFImage(io.BytesIO(base64.b64decode(logo_empresa_data.split(",", 1)[1])), width=32*mm, height=18*mm, kind="proportional")
+        except Exception:
+            logo = None
+        try:
             with zipfile.ZipFile(io.BytesIO(plantilla_bytes)) as archivo_docx:
                 imagenes = sorted(n for n in archivo_docx.namelist() if n.startswith("word/media/") and not n.endswith("/"))
                 if imagenes:
@@ -3923,6 +3928,13 @@ def generar_documento_factura_honorarios(
         else:
             story.extend([Paragraph("MOLSAN GESTIÓN Y TRAMITACIÓN", styles["FacturaTituloMolsan"]), Paragraph("Factura de honorarios de gestoría", styles["FacturaSubMolsan"]), Spacer(1, 4*mm)])
         story.append(Paragraph("FACTURA", styles["FacturaTituloMolsan"]))
+        lineas_empresa = [f"<b>{escape(razon_social)}</b>"]
+        if nif_empresa: lineas_empresa.append(f"NIF: {escape(nif_empresa)}")
+        if domicilio_empresa: lineas_empresa.append(escape(domicilio_empresa))
+        if localidad_empresa: lineas_empresa.append(escape(localidad_empresa))
+        if telefono_empresa: lineas_empresa.append(f"Tel. {escape(telefono_empresa)}")
+        if web_empresa: lineas_empresa.append(escape(web_empresa))
+        story.append(Paragraph("<br/>".join(lineas_empresa), styles["FacturaSubMolsan"]))
         cabecera_datos = [
             [Paragraph("<b>Número de factura</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Fecha</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Expediente</b>", styles["FacturaCeldaMolsan"])],
             [Paragraph(escape(numero_factura), styles["FacturaCeldaMolsan"]), Paragraph(escape(fecha_factura), styles["FacturaCeldaMolsan"]), Paragraph(escape(numero_expediente), styles["FacturaCeldaMolsan"])],
