@@ -7,6 +7,27 @@ from backend.app.realtime.router import _destinatario_activo
 
 
 class WebSocketRejectionTests(unittest.IsolatedAsyncioTestCase):
+    def test_auth_rejection_maps_auth_and_permission_errors_to_terminal_codes(self):
+        from fastapi import HTTPException
+        from backend.app.realtime.router import _codigo_cierre_autenticacion
+
+        self.assertEqual(_codigo_cierre_autenticacion(HTTPException(401)), (4401, "Sesión no válida"))
+        self.assertEqual(_codigo_cierre_autenticacion(HTTPException(403)), (4403, "Permiso insuficiente"))
+
+    def test_server_errors_map_to_retryable_service_unavailable_code(self):
+        from fastapi import HTTPException
+        from backend.app.realtime.router import _codigo_cierre_autenticacion
+
+        self.assertEqual(
+            _codigo_cierre_autenticacion(HTTPException(503)),
+            (1013, "Servicio temporalmente no disponible"),
+        )
+        self.assertEqual(
+            _codigo_cierre_autenticacion(HTTPException(500)),
+            (1013, "Servicio temporalmente no disponible"),
+        )
+
+
     async def test_auth_rejection_accepts_handshake_then_sends_specific_close_code(self):
         from backend.app.realtime.router import _rechazar_websocket
 

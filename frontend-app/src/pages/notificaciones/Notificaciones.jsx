@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import "./Notificaciones.css";
 import { useNotificacionesStore } from "../../store/notificacionesStore";
-import { useNotificacionesWS } from "../../hooks/useNotificacionesWS";
 
 /**
  * ============================================================
@@ -23,12 +22,6 @@ export default function Notificaciones() {
     notificaciones,
     clearNotificaciones,
   } = useNotificacionesStore();
-
-  // ==========================================================
-  // WEBSOCKET REALTIME
-  // ==========================================================
-
-  useNotificacionesWS();
 
   // ==========================================================
   // LISTA ESTABLE
