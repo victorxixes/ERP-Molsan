@@ -318,3 +318,13 @@ Se está recorriendo el catálogo real de páginas bajo `pages/herramientas` (40
 - El workflow de compilación y los cuatro workflows específicos se ejecutaron correctamente en el commit anterior `5a34b2b7`.
 - Los cambios de esta pasada han generado una nueva ejecución de CI; debe terminar en verde antes de dar por validado el bloque.
 - La inspección visual de navegador sigue pendiente, especialmente para tablas densas y diálogos en anchuras pequeñas.
+
+
+## Décima pasada: páginas de herramientas e importadores
+
+- **Importador ABSIS · Post Firma:** se detectó que el contenedor raíz conservaba un fondo degradado propio y un color de texto explícito que lo separaban del lienzo común del ERP. Se ha conectado al ámbito `utilidades-premium-page`, eliminado el fondo degradado local y retirado el color heredado del contenedor para que consuma la tipografía/color del sistema global. Se mantienen las superficies internas, tabla, paginación y estados.
+- **Honorarios Gestoría:** la página ya utiliza `honorarios-gestoria-premium` y el sistema de modales/catálogos compartido; se deja anotado que conserva acentos Indigo en ciertos elementos primarios. Debe revisarse en conjunto con la plantilla Word y el editor de factura para no confundir estados semánticos con el color corporativo.
+- **Importar CTN, Cambiar Gestor, Cambios Actividad ABSIS, Complementos Saldo y Asignar Expedientes:** disponen de ámbito premium/subpágina y hojas compartidas, pero aún requieren comprobación de sus controles reales y formularios secundarios.
+- **Accesos Notariales:** comparte el ámbito de CTN/listados. No se ha añadido modal ni wrapper adicional porque la página no contiene un diálogo propio en su JSX.
+
+Se mantiene pendiente el recorrido del resto de herramientas: importaciones, modelos documentales, municipios, oficinas liquidadoras, registros, reglas de actividad, tipos, Verifacti, PPAD, proceso ABSIS y utilidades técnicas.
