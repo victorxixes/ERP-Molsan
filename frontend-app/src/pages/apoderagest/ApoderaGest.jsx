@@ -252,7 +252,7 @@ function TablaEncargos({ encargos, onFirmado }) {
   const [grupoEncargosAbierto, setGrupoEncargosAbierto] = useState(null);
   const grupoDialogRef = useRef(null);
   useAccessibleDialog({
-    open: Boolean(grupoEncargosAbierto),
+    open: grupoEncargosAbierto,
     onClose: () => setGrupoEncargosAbierto(null),
     dialogRef: grupoDialogRef,
   });
