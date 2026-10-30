@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
+import "../../css/ComponentesOperativosPremium.css";
 
 const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
 const initial = { nombre: "", contacto: "", email: "", telefono: "", codigo_cliente: "", url_portal: "", notas: "", principal: false, activo: true };
@@ -41,7 +42,7 @@ export default function MensajeriaProveedores() {
     finally { setGuardando(false); }
   };
 
-  return <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+  return <section className="mensajeria-proveedores-premium space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
     <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="text-lg font-bold text-slate-800">Proveedores de mensajería</h2><p className="mt-1 text-sm text-slate-500">Alta y mantenimiento de una o dos empresas. Los datos de API se configurarán cuando el proveedor facilite su documentación técnica.</p></div><span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-600">{items.length}/2 empresas</span></div>
     {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">{error}</div>}
     {aviso && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{aviso}</div>}
