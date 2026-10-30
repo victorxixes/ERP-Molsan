@@ -50,3 +50,11 @@ La revisión confirma clases presentes en el código, no una diferencia visual e
 - Hay rutas externas de ApoderaGest, NotarGest y EncargaGest fuera de ese wrapper general. Esto puede ser intencional para portales con autenticación propia; queda pendiente verificar en navegador que cada portal valide su sesión y no exponga datos antes de autenticar.
 - Se conservan alias de compatibilidad (notargestweb, encargagestweb y variantes de rutas externas). No se han eliminado para evitar romper enlaces existentes.
 - La revisión de texto no detecta por sí sola rutas huérfanas, errores de navegación por permisos o módulos que fallen al cargar. Requiere pruebas con perfiles de usuario autorizados y no autorizados.
+
+## Ajustes visuales puntuales aplicados en esta pasada
+
+- `Catalogos.jsx`: se sustituyeron los acentos de marca azul/índigo directos en cabecera, aviso, tarjetas destacadas, iconos y flecha de hover por tokens `--molsan-*`. Se conservan colores semánticos como el aviso ámbar «En construcción». Rutas y datos del catálogo no cambian.
+- `TiposImpositivos.jsx`: se armonizaron el acento superior de la cabecera, la etiqueta de marca y el botón principal de guardado con `--molsan-primary` y `--molsan-primary-hover`. Los estados de éxito/error/aviso mantienen sus colores semánticos.
+- Commits: `28ee36d87bc022c9e00ea04fbfe7ec6c46bbeeb4` y `0bf40355568c056dc681d986fec4414639273756`.
+- El workflow de build configurado en esta rama se dispara por `push` sobre la rama y cambios en `frontend-app/**`; la herramienta de consulta de ejecuciones no devolvió ejecuciones asociadas a estos commits. Por tanto, estos dos cambios aún no se dan por compilados por CI. Antes de cerrar la auditoría se debe obtener evidencia de build completo; no se ha afirmado éxito de compilación para estos commits.
+- No se han modificado handlers, endpoints, fórmulas, operaciones de importación ni datos. La aceptación visual final depende de comparar el resultado en navegador, incluido foco/hover y anchuras estrechas.
