@@ -991,3 +991,15 @@ La matriz de autorización sigue separando autenticación (JWT), permiso funcion
 Se contrastó la secuencia real de imports de `NotarGest.jsx`: primero `PortalProfesionalShared.css` y después `NotarGest.css`. Ambas hojas definen `.notargest .ng-tabla` con anchuras mínimas distintas (1450px en la compartida y 760px en la local). Por el orden de importación, la regla local de NotarGest prevalece cuando ambas reglas están en la misma capa/origen y no hay una regla posterior de mayor prioridad. No se cambia: parece una especialización deliberada del portal, pero debe verificarse en navegador que el scroll horizontal queda dentro de `.ng-tabla-contenedor` y no ensancha la página.
 
 También se encontró una regla global posterior en `MolsanRedesign2027.css` para `.notargest .ng-tabla td`, limitada al color del borde y marcada `!important`. Es una armonización de borde, no una redefinición de anchura ni un conflicto visual probado. Se mantiene hasta comprobar el resultado real.
+
+### Protección de navegación frontend por módulo — corrección aplicada — 30/10/2026
+
+Se ha cerrado el hallazgo de navegación directa en `frontend-app/src/App.jsx` mediante el helper `protegerModulo`, que reutiliza `RequireModule` y el mismo `puedeVerModulo` que alimenta el Sidebar.
+
+- Se han añadido guards por clave de módulo a las rutas privadas de Dashboard, CancelaGest, Fichajes, Control de Fichajes, Mensajería, Agenda, Expedientes, Provisiones, CTN, Empleados, Intranet, Informes, Mensajes, Herramientas/Utilidades, Catálogos, Fusiones, Panel Técnico, Maestros, Seguridad y Auditoría, además de sus subrutas.
+- Las pantallas de configuración de permisos/visibilidad se vinculan a Seguridad; las rutas de mantenimiento técnico a su módulo específico; el Control Apoderados administrativo a ApoderaGest.
+- La ruta de liquidaciones de ApoderaGest conserva su guard explícito previo.
+- Recuento estático posterior: 89 de 90 rutas dentro del grupo privado tienen guard de módulo; la excepción es `/notificaciones`, que sigue bajo `RequireAuth` y no tiene clave de módulo visible equivalente. Se mantiene pendiente decidir si debe ser una pantalla general para cualquier usuario autenticado o asociarse a un permiso específico. No aparece en la navegación principal.
+- Las rutas de portales externos NotarGest/EncargaGest, que se encuentran fuera del grupo privado y tienen su propio flujo de autenticación de portal, no se han alterado.
+
+La protección de rutas frontend complementa, pero no sustituye, los permisos del backend. Quedan pruebas con perfiles reales para verificar que la lista de módulos visibles y los permisos asignados producen los 200/403 esperados y no bloquean módulos legítimos.
