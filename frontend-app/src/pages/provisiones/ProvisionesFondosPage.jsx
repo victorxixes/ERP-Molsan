@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "../../api/axios";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import "./ProvisionesFondosPage.css";
 import "../../css/ModalesHerramientasPremium.css";
 
@@ -470,6 +471,8 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
   const [emailDraft, setEmailDraft] = useState(null);
   const [emailProvisionId, setEmailProvisionId] = useState(null);
   const [enviandoEmail, setEnviandoEmail] = useState(false);
+  const emailDialogRef = useRef(null);
+  useAccessibleDialog({ open: Boolean(emailDraft), onClose: () => { setEmailDraft(null); setEmailProvisionId(null); }, dialogRef: emailDialogRef });
 
   useEffect(() => {
     let activo = true;
@@ -885,7 +888,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
 
     </Seccion>
     {emailDraft && <div className="panel-modal-premium fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/55 p-3 backdrop-blur-sm sm:p-6">
-      <form role="dialog" aria-modal="true" aria-label="Enviar provisión por email" onSubmit={enviarEmail} className="max-h-[94vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-slate-200 bg-white shadow-[0_24px_80px_-20px_rgba(15,23,42,0.55)]">
+      <form ref={emailDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Enviar provisión por email" onSubmit={enviarEmail} className="max-h-[94vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-slate-200 bg-white shadow-[0_24px_80px_-20px_rgba(15,23,42,0.55)]">
         <header className="flex items-start justify-between gap-4 border-b border-slate-200 bg-gradient-to-r from-[var(--molsan-surface-soft)] via-white to-[var(--molsan-primary-soft)] px-5 py-5 sm:px-7">
           <div className="flex min-w-0 items-start gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-sm font-black tracking-tight text-white shadow-lg shadow-slate-900/15">M·</div>
