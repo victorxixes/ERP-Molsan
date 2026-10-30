@@ -924,7 +924,7 @@
 .apoderagest {
   --ag-ink: var(--molsan-text);
   --ag-muted: var(--molsan-text-muted);
-  --ag-line: var(--molsan-border-light);
+  --ag-line: var(--molsan-border);
   --ag-panel: var(--molsan-surface);
   --ag-blue: var(--molsan-primary);
   --ag-blue-dark: var(--molsan-primary-hover);
