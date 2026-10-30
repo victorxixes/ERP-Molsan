@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import axios from "../../api/axios";
+import useAccessibleDialog from "../ui/useAccessibleDialog";
 import { useAuthStore } from "../../store/authStore";
 import "../../css/ModalesHerramientasPremium.css";
 
@@ -148,6 +149,10 @@ export default function CarpetaDigitalModal({
   const [guardandoFechasSla, setGuardandoFechasSla] = useState(false);
   const [errorFechasSla, setErrorFechasSla] = useState("");
   const [mensajeFechasSla, setMensajeFechasSla] = useState("");
+  const dialogRef = useRef(null);
+  const viewerDialogRef = useRef(null);
+  useAccessibleDialog({ open: !modoActividad, onClose, dialogRef });
+  useAccessibleDialog({ open: Boolean(modoActividad && documentoVistaPrevia), onClose: cerrarVisor, dialogRef: viewerDialogRef });
 
   // Las fechas pertenecen a la ficha del expediente; este modal se abre desde
   // el listado sin recibir esos datos como props, por eso se cargan aquí.
@@ -649,7 +654,7 @@ export default function CarpetaDigitalModal({
           if (event.target === event.currentTarget) onClose?.();
         }}
       >
-        <section role="dialog" aria-modal="true" aria-label="Carpeta digital del expediente" className="flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-2xl">
+        <section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Carpeta digital del expediente" className="flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-2xl">
           <header className="flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-4 py-3 sm:px-5">
             <div className="min-w-0">
               <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Documentación</p>
@@ -1284,7 +1289,7 @@ export default function CarpetaDigitalModal({
 
       {modoActividad && documentoVistaPrevia && (
         <div className="panel-modal-premium fixed inset-0 z-[11000] flex items-center justify-center bg-slate-950/70 p-3 sm:p-6">
-          <div role="dialog" aria-modal="true" aria-label="Visor de documento" className="h-[88vh] max-h-[900px] w-full max-w-6xl">
+          <div ref={viewerDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Visor de documento" className="h-[88vh] max-h-[900px] w-full max-w-6xl">
             {renderVisor()}
           </div>
         </div>
