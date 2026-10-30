@@ -189,3 +189,9 @@ La revisión confirma clases presentes en el código, no una diferencia visual e
 - Se mantienen las validaciones, endpoints y operaciones originales. No se ha creado ninguna lista ni modificado entradas.
 - Commit: `e18f037b`.
 - Pendiente: QA real con teclado/lector de pantalla y viewports escritorio/tablet/móvil; la compilación de este último commit aún no está confirmada.
+
+## Continuación — diálogos y coherencia de acciones
+- Se integró `useAccessibleDialog` en alta/edición e importación de Entidades Bancarias, Municipios, Oficinas Liquidadoras y Registros de la Propiedad; también en Tipos de Carga Hipotecaria y Acciones del Expediente.
+- Los cierres por Escape respetan los estados de guardado/importación y no descartan operaciones en curso.
+- Los botones principales de alta/guardado de estos catálogos utilizan ahora tokens `--molsan-primary` y `--molsan-primary-hover`; los estados semánticos se conservan.
+- CI del commit `b28eb331` completado con éxito en los cinco workflows asociados.
