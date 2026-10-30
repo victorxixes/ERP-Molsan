@@ -62,3 +62,54 @@
     transition-duration: .01ms !important;
   }
 }
+
+
+
+/* MOLSAN PREMIUM 2027 · ficha: acabados Glass Luxe */
+.ficha-expediente-premium {
+  --ficha-radius: var(--molsan-radius-card, 14px);
+  --ficha-border: var(--molsan-border, #dce4ef);
+  --ficha-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
+  color: var(--molsan-text, #17243a);
+  font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
+}
+.ficha-expediente-premium > section,
+.ficha-expediente-premium > article,
+.ficha-expediente-premium > form,
+.ficha-expediente-premium [data-ficha-panel="true"] {
+  border-color: var(--ficha-border);
+  border-radius: var(--ficha-radius);
+  box-shadow: var(--ficha-shadow);
+}
+.ficha-expediente-premium :is(h1,h2,h3) { color: var(--molsan-text, #17243a); letter-spacing: -.018em; }
+.ficha-expediente-premium :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea) {
+  border-color: var(--molsan-border-strong, #c7d2e0);
+  border-radius: var(--molsan-radius-control, 9px);
+  color: var(--molsan-text, #17243a);
+  background-color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  box-shadow: none;
+}
+.ficha-expediente-premium :is(input,select,textarea):focus {
+  border-color: var(--molsan-primary, #3156b3);
+  box-shadow: 0 0 0 3px rgba(49,86,179,.12);
+}
+.ficha-expediente-premium :is(.overflow-x-auto,[data-table-scroll="true"]) {
+  border-radius: 11px;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.ficha-expediente-premium table { border-collapse: separate; border-spacing: 0; font-variant-numeric: tabular-nums; }
+.ficha-expediente-premium thead th { color: var(--molsan-text-secondary, #526176); background: #f5f7fb; font-weight: 750; }
+.ficha-expediente-premium tbody tr:hover > td { background-color: #f7f9fd; }
+.ficha-expediente-premium :is(button,[role="button"]) {
+  border-radius: var(--molsan-radius-control, 9px);
+  transition: background-color var(--molsan-transition-fast,150ms ease), border-color var(--molsan-transition-fast,150ms ease), box-shadow var(--molsan-transition-fast,150ms ease);
+}
+.ficha-expediente-premium :is(button,[role="button"]):disabled { cursor: not-allowed; opacity: .58; }
+@media (max-width: 720px) {
+  .ficha-expediente-premium { padding-top: 12px; }
+  .ficha-expediente-premium > section,
+  .ficha-expediente-premium > article { min-width: 0; }
+}
