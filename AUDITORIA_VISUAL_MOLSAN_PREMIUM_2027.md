@@ -581,3 +581,24 @@ Priorizar la lectura contextual de los bloques repetidos de NotarGest y PortalPr
 
 ### Decisión
 La cascada de ambos portales queda clasificada como **deuda de mantenimiento prioritaria, sin regresión confirmada**. No se aplican sustituciones automáticas ni se elimina `!important` a ciegas. La reducción debe hacerse por bloque, con comparación visual de escritorio/tablet/móvil y verificación de que no cambian acciones, datos ni orden de trabajo.
+
+
+## Trigésima pasada: utilidades, catálogos y formularios económicos
+
+### Corrección aplicada
+- `HonorariosGestoria.jsx`: los acentos Indigo de cabecera, acciones principales, resumen de cálculo y selector de plantilla Word se han conectado a `--molsan-primary`, `--molsan-primary-hover`, `--molsan-primary-soft` y `--molsan-primary-border`.
+- El cambio es exclusivamente visual. No modifica el cálculo de base/impuesto/total, los endpoints, las tarifas, el estado activo ni la carga/descarga del Word.
+- Los cuatro workflows disparados por este commit han finalizado correctamente: build frontend y sintaxis backend en los workflows de Fichajes, Control Apoderados y EncargaGest, además de Consolidación Post Firma.
+
+### Revisión estática adicional
+- `ImportadorPostFirma.jsx`: el informe histórico conserva su wrapper de scroll horizontal y el contenedor de página premium; no se altera el ancho de las columnas históricas.
+- `ImportarCTN.jsx`: formulario responsive con reflujo y capa compartida; falta probar la selección de archivo y la vista previa con datos ficticios.
+- `DatosMolsan.jsx`, `CatalogoAbsis.jsx`, `ReglasActividadesExpediente.jsx`, `Catalogos.jsx`, `CatalogoOficinas.jsx`, `TiposImpositivos.jsx` y `TiposConceptoGastos.jsx`: se han detectado acentos Indigo heredados en cabeceras, controles o acciones. Se registran como pendientes de armonización por pantalla, distinguiendo los estados semánticos (error, aviso, éxito) que deben conservar sus colores.
+- `ModelosDocumentos.jsx`: el editor/previsualizador tiene tablas compactas y rejillas de dos columnas; necesita QA de lectura a 100 % y 125 % de zoom, y en tablet/móvil, especialmente en la previsualización de factura.
+- Los catálogos de tarifas y entidades mantienen tablas con scroll horizontal encapsulado; no se reduce el ancho mínimo si ello impide leer importes o códigos.
+
+### Estado de cierre del bloque
+- Revisión estática: ampliada.
+- Corrección visual aplicada: Honorarios Gestoría.
+- CI del commit de Honorarios: correcto en los cuatro workflows.
+- QA visual con navegador y datos ficticios: pendiente de entorno aislado.
