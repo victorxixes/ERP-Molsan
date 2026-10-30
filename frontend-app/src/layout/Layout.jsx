@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import { useAuthStore } from "../store/authStore";
@@ -8,7 +7,7 @@ import NotificacionesToast from "../components/notificaciones/NotificacionesToas
 import "../css/CancelagestUnified.css";
 
 /** Layout principal de ERP-Molsan. Mantiene perfil, navegación,
- * WebSockets de empleado y notificaciones. */
+ * canal de notificaciones. */
 export default function Layout() {
   const empleado = useAuthStore((s) => s.empleado);
   const perfilModal = useAuthStore((s) => s.perfilModal);
@@ -21,37 +20,6 @@ export default function Layout() {
   const rutaCancelaGest = !/^\/(paneltecnico|seguridad|auditoria)(\/|$)/i.test(pathname);
 
   useNotificacionesWS(empleado?.id);
-
-  useEffect(() => {
-    if (!empleado?.id) return undefined;
-    const token = localStorage.getItem("token");
-    const base = String(import.meta.env.VITE_WS_URL || "").replace(/\/$/, "");
-    if (!token || !base) return undefined;
-
-    let ws;
-    try {
-      ws = new WebSocket(`${base}/ws/empleados/${encodeURIComponent(empleado.id)}?token=${encodeURIComponent(token)}`);
-    } catch (err) {
-      console.warn("WS Empleados: no se pudo iniciar la conexión.", err);
-      return undefined;
-    }
-
-    ws.onopen = () => console.log("WS Empleados conectado");
-    ws.onclose = () => console.log("WS Empleados cerrado");
-    ws.onerror = () => console.warn("WS Empleados: error de conexión.");
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        if (data?.tipo && data.tipo !== "heartbeat") console.debug("WS Empleados evento:", data.tipo);
-      } catch {
-        // Se ignoran mensajes que no estén serializados en JSON.
-      }
-    };
-
-    return () => {
-      try { ws.close(); } catch { /* La conexión puede haberse cerrado previamente. */ }
-    };
-  }, [empleado?.id]);
 
   return (
     <div className="erp-app-shell min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
