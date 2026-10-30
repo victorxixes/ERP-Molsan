@@ -1117,3 +1117,16 @@ No se han ejecutado ni solicitado acciones destructivas ni cambios sobre datos r
 Se detectó que `backend/app/tipos_impositivos/router.py::_admin` autoriza únicamente por nombre de rol en una lista cerrada (`admin`, `administrador`, `superadmin`, etc.). No utiliza el mismo criterio central de permisos de seguridad ni contempla explícitamente usuario `admin`, `rol_id=0` o flags administrativos. Puede producir un falso negativo si la cuenta administradora se identifica por otro atributo, aunque el resto del sistema la reconozca.
 
 No se ha cambiado este guard sin confirmar la política que debe gobernar el mantenimiento del catálogo de impuestos. Queda como ajuste puntual pendiente: unificarlo con el criterio administrativo backend aprobado, manteniendo el requisito de permiso de mantenimiento y sin conceder privilegios por nombre de usuario no verificado.
+### Hallazgos adicionales de autorización en acciones y defectos — 30/10/2026
+
+La revisión endpoint por endpoint ha detectado tres huecos que no quedaban cubiertos por el guard de ámbito genérico:
+
+- Catálogo de subtipos de defectos (`backend/app/expedientes/defectos/router.py`): al no llevar ID de expediente en la URL, el guard de reparto no aplicaba autorización funcional. Se ha añadido `expedientes.ver` a la consulta y `expedientes.editar` a alta, modificación y desactivación.
+- Catálogo de acciones (`backend/app/acciones_expediente/router.py`): las operaciones de lectura y mantenimiento solo exigían JWT. Ahora requieren, respectivamente, `expedientes.ver` y `expedientes.editar`, incluida la importación Excel.
+- Acciones asignadas a expedientes (`backend/app/expediente_acciones/router.py`): el listado, la asignación y las operaciones por ID de relación no comprobaban de forma uniforme el ámbito del expediente. Ahora cada operación resuelve el expediente real asociado y aplica `validar_acceso_candidatos_expediente`; la lectura exige `expedientes.ver` y las modificaciones `expedientes.editar`.
+
+Se ha añadido `backend/tests/test_permission_contract.py` para comprobar que el permiso es exacto por módulo/acción, que la ausencia devuelve 403 y que los comodines no sustituyen permisos explícitos.
+
+La CI del commit `0bf8fab209adcca45133dc23e0c64926707a49ba`, anterior a estos últimos ajustes de acciones, terminó con los cinco workflows en success; Backend audit registró `compileall` correcto y `89 passed, 1 warning, 21 subtests passed`. Los cambios de acciones y el nuevo test de contrato se han incorporado después, por lo que su CI específica debe confirmarse antes de dar por cerrada esta ronda.
+
+La revisión de autorización sigue sin considerarse integralmente cerrada: Maestros, Municipios y varios catálogos auxiliares continúan pendientes de contrastar con la matriz real de SeguridadUsuarios. No se han inventado permisos ni se han modificado asignaciones de empleados.
