@@ -8,7 +8,7 @@ import {
   useRef,
 } from "react";
 
-import { puedeVerModulo } from "../utils/permisos";
+import { esAdministrador, puedeVerModulo } from "../utils/permisos";
 
 import { useAuthStore } from "../store/authStore";
 import { useMensajesStore } from "../store/mensajesStore";
@@ -439,22 +439,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     (s) => s.empleado
   );
 
-  const rolSidebar = String(
-    empleado?.rol?.nombre ||
-    empleado?.rol_nombre ||
-    (typeof empleado?.rol === "string" ? empleado.rol : "")
-  ).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[_-]+/g, " ").trim().toLowerCase().replace(/\s+/g, " ");
-  const rolesAdminSidebar = new Set([
-    "admin", "administrador", "administradora", "superadmin", "super admin",
-    "superadministrador", "super administradora", "superuser", "super usuario",
-    "superusuario", "administrador general",
-  ]);
-  const esAdminSidebar =
-    empleado?.es_admin === true ||
-    empleado?.is_admin === true ||
-    Number(empleado?.rol_id ?? empleado?.rol?.id) === 0 ||
-    String(empleado?.usuario || "").trim().toLowerCase() === "admin" ||
-    rolesAdminSidebar.has(rolSidebar);
+  const esAdminSidebar = esAdministrador(empleado);
   const modulosVisiblesSidebar = [
     ...(Array.isArray(empleado?.modulos_visibles_list) ? empleado.modulos_visibles_list : []),
     ...(Array.isArray(empleado?.modulos_visibles) ? empleado.modulos_visibles : []),
