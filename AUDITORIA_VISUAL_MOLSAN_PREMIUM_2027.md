@@ -1140,3 +1140,10 @@ Las notas de la primera ronda que identificaban catálogos y routers pendientes 
 Las pruebas `test_all_protected_api_routes_have_a_module_mapping` y `test_all_case_id_routes_have_visibility_guard` verifican la cobertura de las rutas privadas y de las rutas que reciben identificadores de expediente. En la última ejecución se revisaron 490 rutas HTTP y las comprobaciones de cobertura terminaron correctamente.
 
 Por tanto, la deuda pendiente ya no es la ausencia general de un guard granular en Maestros/Municipios/catálogos: es validar con perfiles de prueba reales que las asignaciones de SeguridadUsuarios para cada módulo/acción corresponden al trabajo de cada puesto y producen 200/403 correctos. No se han consultado ni modificado asignaciones reales desde producción.
+### Revisión final de guards de rutas frontend — 30/10/2026
+
+Se compararon las claves usadas por `RequireModule` en `App.jsx` con el catálogo central `MODULOS_ERP` y los permisos alternativos declarados para cada módulo. Se detectó una discrepancia en la ruta `/herramientas/mantenimiento-tecnico`: el menú la mostraba usando `utilidades`, pero la ruta la comprobaba con la clave `mantenimiento-tecnico`. Se ha alineado el guard de ruta con `utilidades`, que es el permiso central definido en el catálogo, para evitar que un usuario vea el acceso en el menú y sea redirigido al entrar.
+
+Se confirma que `notificaciones` conserva una ruta directa protegida por su permiso, pero no se añade como entrada de navegación; las notificaciones siguen accesibles desde el control de campana, según el criterio de navegación establecido.
+
+Limitación de QA: no hay una herramienta de navegador interactivo disponible en esta sesión. Por ello, las pruebas de foco/teclado, diálogos anidados, scroll y responsive real a 320/375 px no se declaran ejecutadas. El análisis de CSS, rutas y componentes es estático; la compilación CI valida sintaxis y build, no el render ni la interacción real.
