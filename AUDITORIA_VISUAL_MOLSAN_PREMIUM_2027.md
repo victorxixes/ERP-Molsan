@@ -300,3 +300,21 @@ Se ha contrastado el código de los overlays reales con las hojas compartidas: s
 - Confirmar en navegador que el cambio de 13px a 14px mejora legibilidad sin provocar desbordes en formularios densos y tablas.
 - Revisar específicamente portales y páginas con fuentes/tamaños explícitos que puedan neutralizar la escala global.
 - Verificar impresión: las reglas de impresión de `PortalProfesionalShared.css` usan deliberadamente colores y visibilidad forzados y deben quedar aisladas del tema de pantalla.
+
+
+## Novena pasada: herramientas y catálogos operativos
+
+### Correcciones aplicadas
+- **Acciones de expediente:** los modales Crear/Editar e Importar Excel ahora activan `panel-modal-premium`; el panel interior es el diálogo accesible con nombre contextual.
+- **Entidades bancarias:** los modales Importar Excel y Nueva/Editar entidad ahora activan la capa responsive compartida y trasladan el rol accesible al panel real.
+- En ambos módulos se han mantenido los formularios, validaciones, callbacks, operaciones de guardado y estructuras de datos; los cambios son de presentación y semántica accesible.
+
+### Inventario de herramientas
+Se está recorriendo el catálogo real de páginas bajo `pages/herramientas` (40 componentes JSX en el árbol de la rama). Ya se han contrastado, entre otros, Accesos Notariales, Acciones Expediente, Administración Empleado, Alta Expediente, Asignar Expedientes, Cambiar Gestor, Cambios Actividad ABSIS, Catálogo ABSIS, Catálogo Fichajes, Catálogo Oficinas, Catálogos, Complementos Saldo, Correspondencia Tipificada, Crear Noticia, Datos Molsan, Entidades Bancarias y Firmas Email.
+- Varias páginas no contienen overlays propios: usan formularios integrados o componentes compartidos. No se les ha añadido una capa modal artificial.
+- Los catálogos que usan clases raíz premium están identificados; falta completar el recorrido de las restantes páginas y sus formularios secundarios.
+
+### Validación
+- El workflow de compilación y los cuatro workflows específicos se ejecutaron correctamente en el commit anterior `5a34b2b7`.
+- Los cambios de esta pasada han generado una nueva ejecución de CI; debe terminar en verde antes de dar por validado el bloque.
+- La inspección visual de navegador sigue pendiente, especialmente para tablas densas y diálogos en anchuras pequeñas.
