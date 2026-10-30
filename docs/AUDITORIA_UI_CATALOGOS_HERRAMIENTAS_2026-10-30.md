@@ -106,3 +106,20 @@ La revisión confirma clases presentes en el código, no una diferencia visual e
 
 - Reconsulta CI: `Consolidación Post Firma checks` (41085318969), `EncargaGest checks` (41085318806), `Validar Fichaje Molsan` (41085346459), `EncargaGest checks` (41085346424) y `Consolidación Post Firma checks` (41085346453) finalizaron todos con éxito, incluyendo sus builds frontend y comprobaciones backend correspondientes.
 - `Validar Control Apoderados` del commit `ff67bb27...` (run 41085346446) tenía backend correcto y build frontend aún en ejecución en la última lectura; queda pendiente de cierre.
+
+
+## Cierre de pasada por zonas — Tipos de Concepto de Gastos y Provisiones — 30/10/2026
+
+- `TiposConceptoGastos.jsx`: armonizados con los tokens Molsan los acentos de la tarjeta de plantilla documental, los estados hover de filas y acciones, iconografía, campos con foco y botones del formulario/modal. La búsqueda estática posterior ya no detecta utilidades de marca azul/índigo directas en este componente (0 coincidencias). Se conserva la estructura de 2.772 líneas y no se ha modificado la lógica de catálogo ni la carga/descarga de la plantilla Word.
+- `ProvisionesFondosPage.jsx`: armonizados controles del diseñador de distribución, selección de campos, tablas/tramos, cabecera, acciones de guardar/calcular, paneles informativos y cabecera del envío por email. Las clases azules/índigo de interfaz se han migrado a tokens Molsan. Las 11 coincidencias de color que permanecen son parte de la maqueta/preview del documento A4 (colores impresos del documento), no controles de la aplicación.
+- `ProvisionesModal.jsx` y `TraspasoSaldoPanel.jsx`: armonizados botones, campos, focos, estados y superficies con tokens centrales; no se han cambiado operaciones, importes, saldos, destinatarios ni llamadas API.
+- Commits de esta pasada: `a3b9ade` (TiposConceptoGastos), `7a21c8a` y `7b6c327` (ProvisionesFondosPage), `9e9f6cf` (ProvisionesModal), `4893703` (TraspasoSaldoPanel); último ajuste adicional de ProvisionesModal posterior a esta anotación.
+- Se ha comprobado que las variables `--molsan-primary`, `--molsan-primary-hover`, `--molsan-primary-soft`, `--molsan-primary-border`, `--molsan-surface-soft` y `--molsan-text` existen en `molsan-tokens.css`.
+
+## Auditoría de teclado y foco — resultado estático y límite de validación
+
+- Los cuatro diálogos inspeccionados conservan `role="dialog"` y `aria-modal="true"`; los diálogos de Tipos de Concepto y Provisiones tienen etiqueta accesible. El diálogo de traspaso usa `aria-labelledby`.
+- No se detectan manejadores explícitos de Escape ni una trampa de foco/gestión programática del foco en estos cuatro componentes. Por tanto, no se puede certificar que Escape cierre el diálogo, que el foco inicial entre en él, que Tab/Mayús+Tab quede contenido ni que el foco vuelva al control que lo abrió.
+- No se ha añadido una trampa de foco improvisada: estos componentes incluyen formularios y estados condicionales; una solución correcta debe cubrir apertura/cierre, modales anidados, controles deshabilitados, errores de validación y restauración del foco. Requiere prueba real con teclado y navegador.
+- El repositorio no tiene una suite de navegador Playwright/Cypress configurada según la inspección de manifiestos anterior. Los workflows de CI que se disparen para estos commits solo podrán certificar lo que ejecuten (build y checks definidos), no la navegación real con teclado ni la apariencia visual en escritorio/tablet/móvil.
+- No se han abierto pantallas de producción, enviado emails, guardado tarifas, calculado ni modificado provisiones, ni ejecutado traspasos o cambios de saldo.
