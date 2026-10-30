@@ -525,7 +525,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
+    <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)] notargest">
       <Sidebar
         brandName="NotarGest"
         navigationItems={[]}
