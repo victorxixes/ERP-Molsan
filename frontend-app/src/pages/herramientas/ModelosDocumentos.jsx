@@ -115,7 +115,7 @@ function FacturaPlantillaEditor() {
 
   const subirWordOficial = async () => {
     if (!archivoWord || subiendoWord) return;
-    if (!/\\.docx$/i.test(archivoWord.name)) {
+    if (!/\.docx$/i.test(archivoWord.name)) {
       setErrorWord("Selecciona el modelo oficial en formato Word .docx.");
       return;
     }
