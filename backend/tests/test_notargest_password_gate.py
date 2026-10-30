@@ -6,6 +6,7 @@ from backend.app.notargest.router import (
     _accion_requerida_notargest,
     _requiere_cambio_password_notargest,
     _ruta_permitida_durante_cambio_password,
+    _es_administrador_notargest,
 )
 
 
@@ -29,6 +30,11 @@ class NotarGestPasswordGateTests(unittest.TestCase):
         self.assertTrue(_ruta_permitida_durante_cambio_password("/api/notargest/cambiar-password"))
         self.assertFalse(_ruta_permitida_durante_cambio_password("/api/notargest/expedientes"))
         self.assertFalse(_ruta_permitida_durante_cambio_password("/notargest/me"))
+
+    def test_admin_only_guard_recognizes_admin_roles(self):
+        self.assertTrue(_es_administrador_notargest(SimpleNamespace(usuario="admin", rol=None)))
+        self.assertTrue(_es_administrador_notargest(SimpleNamespace(usuario="operador", rol=SimpleNamespace(nombre="Administrador"))))
+        self.assertFalse(_es_administrador_notargest(SimpleNamespace(usuario="operador", rol=SimpleNamespace(nombre="Gestor"))))
 
     def test_internal_notargest_writes_require_correct_permission(self):
         self.assertEqual(_accion_requerida_notargest("GET", "/api/notargest/expedientes"), "ver")
