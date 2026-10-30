@@ -1283,8 +1283,8 @@ export default function CarpetaDigitalModal({
       </div>
 
       {modoActividad && documentoVistaPrevia && (
-        <div className="fixed inset-0 z-[11000] flex items-center justify-center bg-slate-950/70 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label="Visor de documento">
-          <div className="h-[88vh] max-h-[900px] w-full max-w-6xl">
+        <div className="panel-modal-premium fixed inset-0 z-[11000] flex items-center justify-center bg-slate-950/70 p-3 sm:p-6">
+          <div role="dialog" aria-modal="true" aria-label="Visor de documento" className="h-[88vh] max-h-[900px] w-full max-w-6xl">
             {renderVisor()}
           </div>
         </div>
