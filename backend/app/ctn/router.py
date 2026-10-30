@@ -85,17 +85,95 @@ else:
 
 @router.on_event("startup")
 def crear_tabla_asociaciones_ctn():
-    """Crea la tabla de asociaciones y añade columnas bancarias sin tocar datos existentes."""
+    """Crea las asociaciones CTN y migra IBAN solo si faltan, serializando el DDL."""
+    import time
+
     notarios_asociados_table.create(bind=engine, checkfirst=True)
+    clave_bloqueo_migracion = 731208640224  # Compartida con las migraciones de main.py.
+    conexion = None
+    bloqueo_adquirido = False
     try:
-        with engine.begin() as conexion:
+        # No ejecutar ALTER TABLE en cada arranque: PostgreSQL necesita un bloqueo
+        # exclusivo incluso cuando ADD COLUMN IF NOT EXISTS termina sin cambios.
+        with engine.connect() as consulta:
+            columnas = {
+                fila[0]
+                for fila in consulta.execute(text(
+                    "SELECT column_name FROM information_schema.columns "
+                    "WHERE table_schema = 'public' AND table_name = 'ctn_notarios'"
+                )).fetchall()
+            }
+        pendientes = [nombre for nombre in ("iban_1", "iban_2") if nombre not in columnas]
+        if not pendientes:
+            print("[CTN DATOS BANCARIOS] Columnas IBAN disponibles; no se requiere DDL.", flush=True)
+            return
+
+        # Varias instancias pueden arrancar a la vez. Usamos el mismo advisory lock
+        # global que main.py y volvemos a inspeccionar el esquema una vez adquirido.
+        conexion = engine.connect()
+        for intento in range(1, 61):
+            with conexion.begin():
+                bloqueo_adquirido = bool(
+                    conexion.execute(
+                        text("SELECT pg_try_advisory_lock(:clave)"),
+                        {"clave": clave_bloqueo_migracion},
+                    ).scalar()
+                )
+            if bloqueo_adquirido:
+                break
+            time.sleep(1)
+        if not bloqueo_adquirido:
+            print(
+                "[CTN DATOS BANCARIOS] Se pospone la migración IBAN: "
+                "otra inicialización mantiene el bloqueo global.",
+                flush=True,
+            )
+            return
+
+        with conexion.begin():
             conexion.execute(text("SET LOCAL lock_timeout = '3s'"))
             conexion.execute(text("SET LOCAL statement_timeout = '15s'"))
-            conexion.execute(text("ALTER TABLE public.ctn_notarios ADD COLUMN IF NOT EXISTS iban_1 VARCHAR(34)"))
-            conexion.execute(text("ALTER TABLE public.ctn_notarios ADD COLUMN IF NOT EXISTS iban_2 VARCHAR(34)"))
+            columnas = {
+                fila[0]
+                for fila in conexion.execute(text(
+                    "SELECT column_name FROM information_schema.columns "
+                    "WHERE table_schema = 'public' AND table_name = 'ctn_notarios'"
+                )).fetchall()
+            }
+            if "iban_1" not in columnas:
+                conexion.execute(text(
+                    "ALTER TABLE public.ctn_notarios ADD COLUMN iban_1 VARCHAR(34)"
+                ))
+            if "iban_2" not in columnas:
+                conexion.execute(text(
+                    "ALTER TABLE public.ctn_notarios ADD COLUMN iban_2 VARCHAR(34)"
+                ))
         print("[CTN DATOS BANCARIOS] Columnas IBAN disponibles.", flush=True)
     except Exception as error_migracion:
-        print(f"[CTN DATOS BANCARIOS] No se pudieron comprobar/crear las columnas IBAN: {type(error_migracion).__name__}: {error_migracion}", flush=True)
+        print(
+            f"[CTN DATOS BANCARIOS] No se pudieron comprobar/crear las columnas IBAN: "
+            f"{type(error_migracion).__name__}: {error_migracion}",
+            flush=True,
+        )
+    finally:
+        if conexion is not None:
+            if bloqueo_adquirido:
+                try:
+                    with conexion.begin():
+                        conexion.execute(
+                            text("SELECT pg_advisory_unlock(:clave)"),
+                            {"clave": clave_bloqueo_migracion},
+                        )
+                except Exception as error_unlock:
+                    print(
+                        f"[CTN DATOS BANCARIOS] No se pudo liberar el bloqueo: {error_unlock!r}.",
+                        flush=True,
+                    )
+                    try:
+                        conexion.invalidate()
+                    except Exception:
+                        pass
+            conexion.close()
 
 
 # ============================================================
