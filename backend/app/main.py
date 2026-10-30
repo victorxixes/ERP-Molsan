@@ -2734,7 +2734,33 @@ def reparar_vinculos_apoderado_expedientes():
 # ORDEN DE ARRANQUE
 # ============================================================
 
-# La migración se ejecuta antes de crear o comprobar las tablas auxiliares.
+# La base de datos de pruebas parte vacía. En esa instancia aislada se
+# materializan primero las tablas definidas por los modelos SQLAlchemy y,
+# a continuación, se ejecutan las migraciones incrementales habituales.
+# La opción está desactivada por defecto y solo debe activarse en el servicio
+# molsan-glass-luxe-preview-api; producción conserva su esquema preexistente.
+def inicializar_esquema_base_preview():
+    habilitado = os.getenv("MOLSAN_PREVIEW_BOOTSTRAP_SCHEMA", "").strip().lower()
+    if habilitado not in {"1", "true", "yes", "si", "sí"}:
+        print("[PREVIEW SCHEMA] Bootstrap desactivado; se conserva el flujo normal.", flush=True)
+        return
+
+    print("[PREVIEW SCHEMA] Creando únicamente tablas ausentes desde los modelos registrados...", flush=True)
+    Base.metadata.create_all(bind=engine, checkfirst=True)
+    with engine.connect() as conexion_preview:
+        comprobacion = conexion_preview.execute(text("""
+            SELECT
+                to_regclass('public.roles') IS NOT NULL AS roles,
+                to_regclass('public.empleados') IS NOT NULL AS empleados
+        """)).mappings().one()
+    if not comprobacion["roles"] or not comprobacion["empleados"]:
+        raise RuntimeError(
+            "[PREVIEW SCHEMA] No se han podido crear las tablas base roles/empleados."
+        )
+    print("[PREVIEW SCHEMA] Tablas base roles/empleados disponibles.", flush=True)
+
+
+# Las migraciones incrementales siguen ejecutándose en su orden original.
 app.router.on_startup.insert(
     0,
     migrar_esquema_expedientes_inicio,
@@ -2743,5 +2769,9 @@ app.router.on_startup.insert(1, migrar_catalogo_honorarios_impuestos)
 app.router.on_startup.insert(2, migrar_catalogo_absis)
 app.router.on_startup.insert(3, migrar_visibilidad_empleado)
 app.router.on_startup.insert(4, reparar_vinculos_apoderado_expedientes)
+
+# Solo el servicio aislado de preview activa la creación inicial del esquema.
+if os.getenv("MOLSAN_PREVIEW_BOOTSTRAP_SCHEMA", "").strip().lower() in {"1", "true", "yes", "si", "sí"}:
+    app.router.on_startup.insert(0, inicializar_esquema_base_preview)
 
 instrumentar_inicio_aplicacion()
