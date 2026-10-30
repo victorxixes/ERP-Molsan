@@ -37,7 +37,7 @@ const DOCUMENTO_LAYOUTS = {
   ],
 };
 
-export export function DocumentoLayoutDesigner({ tipo }) {
+export function DocumentoLayoutDesigner({ tipo }) {
   const campos = DOCUMENTO_LAYOUTS[tipo] || [];
   const [posiciones, setPosiciones] = useState(() => Object.fromEntries(campos.map(c => [c.id,{...c,align:"left",valign:"top",fontSize:9,padL:1,padR:1,padT:1,padB:1,bold:false,italic:false}])));
   const [activo,setActivo] = useState(campos[0]?.id || "");
