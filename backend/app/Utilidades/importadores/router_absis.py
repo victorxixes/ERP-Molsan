@@ -31,6 +31,7 @@ from backend.app.auth.permissions import require_perm_modulo
 # ============================================================
 
 router = APIRouter(
+    dependencies=[Depends(get_current_user)],
     prefix="/utilidades/importador-absis",
     tags=["Importador ABSIS"],
 )
