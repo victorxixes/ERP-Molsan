@@ -3914,7 +3914,7 @@ def generar_documento_factura_honorarios(
         try:
             with zipfile.ZipFile(io.BytesIO(plantilla_bytes)) as archivo_docx:
                 imagenes = sorted(n for n in archivo_docx.namelist() if n.startswith("word/media/") and not n.endswith("/"))
-                if imagenes:
+                if imagenes and not logo:
                     logo = PDFImage(io.BytesIO(archivo_docx.read(imagenes[0])), width=32*mm, height=18*mm, kind="proportional")
         except Exception:
             logo = None
