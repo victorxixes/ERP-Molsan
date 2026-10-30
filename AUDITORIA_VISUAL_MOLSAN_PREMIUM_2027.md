@@ -761,3 +761,33 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 - El guard de `/apoderagest` y `/apoderagest/liquidaciones` sigue usando la clave central `apoderagest`; la ruta administrativa de Control Apoderados permanece autenticada y los endpoints backend `/admin` exigen `_exigir_admin`.
 - Commit: `20da43cf`.
 - Los cinco workflows asociados al commit `20da43cf` terminaron correctamente: Backend audit, EncargaGest checks, Consolidación Post Firma checks, Validar Fichaje Molsan y Validar Control Apoderados.
+
+## Trigésima séptima pasada: inventario de diálogos, tokens y cascada responsive — 30/10/2026
+
+### Inventario estático de diálogos
+- Se revisaron los diálogos marcados con `role="dialog"` en los componentes operativos y pantallas modificadas de Agenda, CTN, Empleados, Expedientes, ApoderaGest, Control Apoderados, EncargaGest, NotarGest, Fichajes, Informes, Mensajería, Provisiones, Seguridad y Catálogo ABSIS.
+- En los ficheros inspeccionados, los diálogos activos tienen `aria-modal="true"`, ref de foco y `useAccessibleDialog`; los nombres accesibles se proporcionan mediante `aria-label` o `aria-labelledby`.
+- `EnviarANotarioModal` comparte componente entre modo modal y modo inline; el hook solo se activa cuando `inline=false` y en ese modo el contenedor lleva `role="dialog"` y `aria-modal="true"`.
+- Se verificaron específicamente los diálogos de Catálogo ABSIS (alta/importación), CTN, Informes, Expedientes y Control Apoderados. La comprobación es estática: no equivale a probar el ciclo real de foco con teclado o lector de pantalla.
+- `SelectSJ` declara `aria-haspopup="listbox"`, `aria-controls`, `aria-expanded`, `role="listbox"` y `role="option"`; incluye flechas, Inicio/Fin y Escape. Pendiente validación manual de navegación y anuncio por lector de pantalla.
+
+### Tokens y cascada CSS
+- Se contrastaron 73 definiciones y 52 referencias de tokens en las hojas globales y de los tres portales profesionales. No se detectaron referencias sin definición que carezcan de fallback; `--erp-border` y `--erp-text` solo se usan con fallback.
+- Se eliminó la redefinición raíz redundante de tokens en `NotarGest.css` y se trasladaron `--eg-line`/`--eg-ink` al bloque raíz único de `EncargaGest.css`; también se eliminó su `min-width:0` repetido.
+- En NotarGest, `min-width:0` queda consolidado en el bloque raíz inicial. Los bloques posteriores de paneles, tablas y diálogos mantienen solo las reglas específicas que añaden estilo o adaptación.
+- La cascada conserva duplicaciones intencionales por breakpoint y por capas de compatibilidad. No se han borrado masivamente los `!important`: hacerlo sin comparar capturas podría alterar paneles, cabeceras, modales o tablas.
+- `main.jsx` carga `index.css`, tokens, design system, tablas y controles antes de `App`, y `MolsanRedesign2027.css` después de los estilos de los módulos como capa final de armonización.
+
+### Matriz responsive y overflow
+- El shell `.erp-main-content` y `.erp-main-inner` tienen `min-width:0`; el contenido central ocupa el ancho disponible y se limita a 1920 px en escritorio.
+- Los breakpoints globales más usados son 760 px y 640 px; NotarGest y EncargaGest añaden cortes específicos para grids, paneles, fichas y modales.
+- Se han localizado anchos mínimos deliberados en tablas largas (por ejemplo CTN 680 px, NotarGest 760/1250 px y catálogos 620 px) dentro de wrappers con desplazamiento horizontal; deben verificarse visualmente en móvil para confirmar que el scroll queda dentro de la tabla y no en toda la página.
+- `prefers-reduced-motion` está contemplado en la capa global para Expedientes, CTN, portales profesionales, catálogos, empleados, fichajes, Informes y otros módulos.
+
+### Permisos ApoderaGest
+- `/apoderagest` aplica `RequireAuth` y `RequireModule(module="apoderagest")`.
+- `/apoderagest/liquidaciones` aplica `RequireModule(module="apoderagest")` dentro del árbol privado `RequireAuth`/Layout.
+- `/herramientas/utilidades/control-apoderados` está dentro del árbol privado y el backend aplica `_exigir_admin` a los endpoints `/admin`; queda como mejora de UX añadir guard visual específico en frontend para evitar abrir la pantalla a quien recibirá 403.
+
+### CI de la última tanda
+- El commit `3f6e0d4f` ha generado los cinco workflows de PR; en la última consulta estaban en cola. Se confirmará su resultado antes de marcar esta tanda como validada.
