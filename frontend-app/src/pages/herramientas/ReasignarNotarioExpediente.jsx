@@ -12,6 +12,7 @@ export default function ReasignarNotarioExpediente() {
   const [error, setError] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [actividadActual, setActividadActual] = useState("");
+  const [actividadActualTexto, setActividadActualTexto] = useState("");
   const [actividadDestino, setActividadDestino] = useState("");
   const [motivoActividad, setMotivoActividad] = useState("");
   const [guardandoActividad, setGuardandoActividad] = useState(false);
@@ -36,6 +37,7 @@ export default function ReasignarNotarioExpediente() {
       setExpediente(data);
       const actividad = await axios.get(`/notargest/admin/expedientes/${encodeURIComponent(data.id_expediente)}/actividad`);
       setActividadActual(actividad.data.estado || "recepcion");
+      setActividadActualTexto(actividad.data.estado_texto || actividad.data.estado || "");
       setActividadDestino(actividad.data.estado || "recepcion");
     } catch (err) {
       setError(
@@ -68,6 +70,7 @@ export default function ReasignarNotarioExpediente() {
         { estado: actividadDestino, motivo: motivoActividad.trim() }
       );
       setActividadActual(data.estado);
+      setActividadActualTexto(data.estado_texto || data.estado);
       setMensaje(`Actividad NotarGest actualizada a «${data.estado_texto}». El cambio ha quedado registrado en el histórico.`);
       setMotivoActividad("");
     } catch (err) {
@@ -152,7 +155,7 @@ export default function ReasignarNotarioExpediente() {
             <p className="mt-1 text-sm text-slate-500">Puedes mover el expediente libremente a cualquiera de las bandejas. El cambio no elimina la fecha de firma, el protocolo ni los documentos ya registrados.</p>
           </div>
           <div className="rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
-            Actividad actual: <strong>{actividadActual || "Cargando…"}</strong>
+            Actividad actual: <strong>{actividadActualTexto || "Cargando…"}</strong>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block text-sm font-semibold text-slate-700">Actividad de destino
