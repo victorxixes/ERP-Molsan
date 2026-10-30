@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import "../../css/ComponentesOperativosPremium.css";
 
@@ -11,7 +11,11 @@ export default function SelectSJ({
   disabled = false,
 }) {
   const [open, setOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
   const selectRef = useRef(null);
+  const triggerRef = useRef(null);
+  const optionRefs = useRef([]);
+  const listboxId = useId();
 
   const opcionSeleccionada = options.find(
     (o) => String(o.value) === String(value)
@@ -44,8 +48,10 @@ export default function SelectSJ({
 
   useEffect(() => {
     const handleEscape = (event) => {
-      if (event.key === "Escape") {
+      if (event.key === "Escape" && open) {
+        event.preventDefault();
         setOpen(false);
+        triggerRef.current?.focus();
       }
     };
 
@@ -54,7 +60,15 @@ export default function SelectSJ({
     return () => {
       document.removeEventListener("keydown", handleEscape);
     };
-  }, []);
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const selectedIndex = options.findIndex((option) => String(option.value) === String(value));
+    const nextIndex = selectedIndex >= 0 ? selectedIndex : 0;
+    setActiveIndex(nextIndex);
+    optionRefs.current[nextIndex]?.focus();
+  }, [open, options, value]);
 
   // =========================================================
   // CERRAR SI PASA A DISABLED
@@ -75,6 +89,7 @@ export default function SelectSJ({
 
     onChange(option.value);
     setOpen(false);
+    triggerRef.current?.focus();
   };
 
   return (
@@ -87,6 +102,7 @@ export default function SelectSJ({
          ===================================================== */}
 
       <button
+        ref={triggerRef}
         type="button"
         disabled={disabled}
         onClick={() => {
@@ -94,7 +110,24 @@ export default function SelectSJ({
           setOpen((actual) => !actual);
         }}
         aria-haspopup="listbox"
+        aria-controls={listboxId}
         aria-expanded={open}
+        onKeyDown={(event) => {
+          if (disabled) return;
+          if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+            event.preventDefault();
+            if (!open) setOpen(true);
+            else {
+              const selectedIndex = options.findIndex((option) => String(option.value) === String(value));
+              const start = selectedIndex >= 0 ? selectedIndex : activeIndex;
+              const next = event.key === "ArrowDown"
+                ? Math.min(options.length - 1, start + 1)
+                : Math.max(0, start - 1);
+              setActiveIndex(next);
+              optionRefs.current[next]?.focus();
+            }
+          }
+        }}
         className={`
           w-full
           min-h-[42px]
@@ -145,7 +178,9 @@ export default function SelectSJ({
 
       {open && !disabled && (
         <div
+          id={listboxId}
           role="listbox"
+          aria-label={placeholder}
           className="
             absolute
             left-0
@@ -176,9 +211,28 @@ export default function SelectSJ({
               return (
                 <button
                   key={o.value}
+                  ref={(element) => { optionRefs.current[options.indexOf(o)] = element; }}
                   type="button"
                   role="option"
+                  tabIndex={activeIndex === options.indexOf(o) ? 0 : -1}
                   aria-selected={seleccionada}
+                  onKeyDown={(event) => {
+                    const currentIndex = options.indexOf(o);
+                    let nextIndex = currentIndex;
+                    if (event.key === "ArrowDown") nextIndex = Math.min(options.length - 1, currentIndex + 1);
+                    else if (event.key === "ArrowUp") nextIndex = Math.max(0, currentIndex - 1);
+                    else if (event.key === "Home") nextIndex = 0;
+                    else if (event.key === "End") nextIndex = options.length - 1;
+                    else if (event.key === "Escape") {
+                      event.preventDefault();
+                      setOpen(false);
+                      triggerRef.current?.focus();
+                      return;
+                    } else return;
+                    event.preventDefault();
+                    setActiveIndex(nextIndex);
+                    optionRefs.current[nextIndex]?.focus();
+                  }}
                   onClick={() => seleccionar(o)}
                   className={`
                     w-full
