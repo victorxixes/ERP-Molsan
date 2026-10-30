@@ -627,3 +627,10 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 - La metadata de GitHub de la PR #374 devolvió `mergeable: false` en la última lectura; debe volver a consultarse antes de cualquier decisión de integración.
 - En la consulta del último commit no se devolvieron runs ni estados de CI. Por tanto, estas últimas modificaciones **no se declaran compiladas** hasta obtener el resultado de los workflows.
 - Sigue pendiente QA manual en navegador, con teclado y lector de pantalla, en escritorio/tablet/móvil. No se ha utilizado el backend productivo ni se han ejecutado operaciones con expedientes, pagos, documentos o catálogos.
+
+
+### Ampliación de la pasada: ficha CTN y listado de Expedientes
+- `ModalCtnDetalle.jsx`, utilizado por el listado CTN, integra ahora `useAccessibleDialog` con foco inicial, ciclo de teclado, Escape y retorno del foco al control que abrió la ficha.
+- `ExpedientesListado.jsx`: los diálogos de filtros avanzados y ayuda de control de plazos integran el gestor común. En filtros avanzados, la semántica `role="dialog"` se ha situado en el panel de contenido y el overlay queda como presentación, evitando incluir el botón de fondo dentro de la región modal.
+- Commits: `e9339ca7` (ficha CTN) y `48258919` (listado de Expedientes).
+- Esta ampliación es revisión estática y corrección de código; la comprobación interactiva y la compilación del nuevo HEAD siguen pendientes.
