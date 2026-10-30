@@ -3337,7 +3337,7 @@ export default function ExpedientesListado() {
           <section ref={plazosDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="titulo-control-plazos" className="w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
             <header className="flex items-start justify-between gap-4 border-b border-slate-200 bg-slate-50 px-5 py-4">
               <div>
-                <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Expedientes</p>
+                <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[var(--molsan-primary)]">MOLSAN ERP · Expedientes</p>
                 <h2 id="titulo-control-plazos" className="mt-1 text-lg font-extrabold text-slate-900">📌 Control de plazos</h2>
               </div>
               <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} aria-label="Cerrar" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100">✕</button>
@@ -3357,7 +3357,7 @@ export default function ExpedientesListado() {
               <p>El SLA global se calcula desde el envío hasta Fin actividad o hoy: 40 días para Propia entidad/Vinculada propia entidad y 70 días para Vinculada otra entidad/Otra entidad. Hipotecario y Crédito Stock se excluyen.</p>
             </div>
             <footer className="flex justify-end border-t border-slate-200 bg-slate-50 px-5 py-3">
-              <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-bold text-white hover:bg-indigo-700">Cerrar</button>
+              <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} className="rounded-lg bg-[var(--molsan-primary)] px-4 py-2 text-sm font-bold text-white hover:bg-[var(--molsan-primary-hover)]">Cerrar</button>
             </footer>
           </section>
         </div>
