@@ -172,7 +172,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
       <button
           type="button"
           onClick={() => setAbierto(true)}
-          className="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-white px-3 py-2 text-xs font-extrabold text-indigo-800 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50"
+          className="inline-flex items-center gap-2 rounded-xl border border-[var(--molsan-primary-border)] bg-white px-3 py-2 text-xs font-extrabold text-[var(--molsan-primary)] shadow-sm transition hover:border-[var(--molsan-primary-border)] hover:bg-[var(--molsan-primary-soft)]"
         >
           <span aria-hidden="true">⇄</span> Gestionar traspaso
       </button>
@@ -182,7 +182,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
           <section role="dialog" aria-modal="true" aria-labelledby="modal-traspaso-saldo-titulo" className="my-auto max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl sm:p-5">
             <header className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div className="flex min-w-0 items-center gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-xl">⇄</span>
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--molsan-primary-soft)] text-xl">⇄</span>
                 <div>
                   <h3 id="modal-traspaso-saldo-titulo" className="text-sm font-extrabold text-slate-900">Control de traspasos de saldo</h3>
                   <p className="mt-1 max-w-3xl text-xs leading-5 text-slate-600">Solo para expedientes relacionados con «Cancelación con provisión». Permite agrupar varios orígenes en un único receptor, verificar el importe manualmente y registrar el email al cliente.</p>
@@ -222,7 +222,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
                   <p className="mt-1 text-xs text-slate-600">Orígenes: {op.origenes.map((item) => item.numero).join(", ") || "—"} · Importe receptor verificado: {euros(op.importe_receptor_actualizado)}</p>
                   {op.email_estado === "enviado" && <p className="mt-1 text-xs font-semibold text-emerald-700">Email enviado · {fecha(op.email_enviado_en)}</p>}
                   {op.estado === "pendiente_verificacion" && <button type="button" disabled={guardando} onClick={() => { setOperacionActiva(op); setReceptorNumero(op.receptor_numero); setAbierto(true); }} className="mt-2 rounded-lg border border-amber-200 px-3 py-1.5 text-xs font-bold text-amber-800">Continuar verificación</button>}
-                  {op.estado === "pendiente_email" && <button type="button" disabled={guardando} onClick={() => { setOperacionActiva(op); setAbierto(true); }} className="mt-2 rounded-lg border border-indigo-200 px-3 py-1.5 text-xs font-bold text-indigo-800">Continuar comunicación</button>}
+                  {op.estado === "pendiente_email" && <button type="button" disabled={guardando} onClick={() => { setOperacionActiva(op); setAbierto(true); }} className="mt-2 rounded-lg border border-[var(--molsan-primary-border)] px-3 py-1.5 text-xs font-bold text-[var(--molsan-primary)]">Continuar comunicación</button>}
                 </article>
               ))}
             </div>
@@ -247,14 +247,14 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
                 </label>
               </div>
               <div className="mt-3 flex flex-wrap justify-end gap-2">
-                <button type="button" disabled={guardando || !importeReceptor || !destinatario.includes("@") || !asunto.trim() || !cuerpo.trim()} onClick={verificar} className="rounded-lg bg-indigo-600 px-4 py-2.5 text-xs font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-50">{guardando ? "Guardando…" : "Confirmar importe verificado"}</button>
+                <button type="button" disabled={guardando || !importeReceptor || !destinatario.includes("@") || !asunto.trim() || !cuerpo.trim()} onClick={verificar} className="rounded-lg bg-[var(--molsan-primary)] px-4 py-2.5 text-xs font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-50">{guardando ? "Guardando…" : "Confirmar importe verificado"}</button>
                 <button type="button" disabled={guardando} onClick={cancelar} className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-xs font-bold text-slate-700">Cancelar operación</button>
               </div>
             </div>
           )}
 
           {operacionActiva?.estado === "pendiente_email" && (
-            <div className="rounded-xl border border-indigo-200 bg-indigo-50/40 p-4">
+            <div className="rounded-xl border border-[var(--molsan-primary-border)] bg-[var(--molsan-primary-soft)]/40 p-4">
               <h4 className="text-sm font-extrabold text-slate-900">2. Enviar email y cerrar el traspaso</h4>
               <p className="mt-1 text-xs leading-5 text-slate-600">El Importe del receptor ya se ha actualizado. Al enviar correctamente el email, los expedientes de origen pasarán a «Liquidado sin tramitar».</p>
               <p className="mt-2 text-xs text-slate-700">Importe verificado: <strong>{euros(operacionActiva.importe_receptor_actualizado)}</strong></p>
@@ -270,8 +270,8 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
                 </label>
               </div>
               <div className="mt-3 flex flex-wrap justify-end gap-2">
-                <button type="button" disabled={guardando || !destinatario.includes("@") || !asunto.trim() || !cuerpo.trim()} onClick={guardarEmail} className="rounded-lg border border-indigo-200 bg-white px-4 py-2.5 text-xs font-extrabold text-indigo-800 disabled:opacity-50">Guardar cambios del email</button>
-                <button type="button" disabled={guardando || !destinatario.includes("@") || !asunto.trim() || !cuerpo.trim()} onClick={enviarEmail} className="rounded-lg bg-indigo-600 px-4 py-2.5 text-xs font-extrabold text-white disabled:opacity-50">{guardando ? "Enviando…" : "Enviar email al cliente y cerrar"}</button>
+                <button type="button" disabled={guardando || !destinatario.includes("@") || !asunto.trim() || !cuerpo.trim()} onClick={guardarEmail} className="rounded-lg border border-[var(--molsan-primary-border)] bg-white px-4 py-2.5 text-xs font-extrabold text-[var(--molsan-primary)] disabled:opacity-50">Guardar cambios del email</button>
+                <button type="button" disabled={guardando || !destinatario.includes("@") || !asunto.trim() || !cuerpo.trim()} onClick={enviarEmail} className="rounded-lg bg-[var(--molsan-primary)] px-4 py-2.5 text-xs font-extrabold text-white disabled:opacity-50">{guardando ? "Enviando…" : "Enviar email al cliente y cerrar"}</button>
               </div>
               <p className="mt-2 text-[11px] text-slate-500">El envío requiere SMTP configurado en el backend. Si falla, la operación seguirá pendiente de comunicación y los orígenes no se liquidarán.</p>
             </div>
@@ -297,7 +297,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
               {origenes.map((item) => {
                 const bloqueado = item.bloqueado_por_traspaso || item.liquidado_sin_tramitar;
                 return <label key={item.numero} className={`flex flex-wrap items-center gap-3 rounded-lg border p-3 ${bloqueado ? "border-slate-200 bg-slate-100 opacity-70" : "border-slate-200 bg-white"}`}>
-                  <input type="checkbox" checked={origenesSeleccionados.includes(item.numero)} disabled={bloqueado} onChange={() => alternarOrigen(item.numero)} className="h-4 w-4 rounded border-slate-300 text-indigo-600" />
+                  <input type="checkbox" checked={origenesSeleccionados.includes(item.numero)} disabled={bloqueado} onChange={() => alternarOrigen(item.numero)} className="h-4 w-4 rounded border-slate-300 text-[var(--molsan-primary)]" />
                   <span className="min-w-0 flex-1"><strong className="text-xs text-slate-800">{item.numero}</strong><span className="ml-2 text-[11px] text-slate-500">{item.bloqueado_por_traspaso ? item.motivo_bloqueo_traspaso : item.liquidado_sin_tramitar ? "Liquidado sin tramitar" : "Disponible para incluir"}</span></span>
                   <span className="text-right text-xs"><span className="block text-slate-500">Importe</span><strong>{euros(item.importe)}</strong></span>
                   <span className="text-right text-xs"><span className="block text-slate-500">Saldo disponible</span><strong>{euros(item.saldo_disponible)}</strong></span>
@@ -306,7 +306,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
             </div>
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
               <p className="text-xs text-slate-600">Suma informativa de saldos seleccionados: <strong>{euros(sumaReferencia)}</strong></p>
-              <button type="button" disabled={guardando || !contexto?.expediente?.vinccanc || !receptorNumero || seleccionados.length === 0 || Boolean(origenBloqueado) || faltanFirma.length > 0} onClick={crear} className="rounded-lg bg-indigo-600 px-4 py-2.5 text-xs font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-50">{guardando ? "Creando…" : "Crear control de traspaso"}</button>
+              <button type="button" disabled={guardando || !contexto?.expediente?.vinccanc || !receptorNumero || seleccionados.length === 0 || Boolean(origenBloqueado) || faltanFirma.length > 0} onClick={crear} className="rounded-lg bg-[var(--molsan-primary)] px-4 py-2.5 text-xs font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-50">{guardando ? "Creando…" : "Crear control de traspaso"}</button>
             </div>
             <p className="mt-2 text-[11px] leading-5 text-slate-500">Reglas: todos deben compartir VINCCANC y ser «Cancelación con provisión»; el receptor necesita fecha de firma real y protocolo. Cada origen solo puede estar en un traspaso activo. Las validaciones también se aplican en el servidor.</p>
           </div>
