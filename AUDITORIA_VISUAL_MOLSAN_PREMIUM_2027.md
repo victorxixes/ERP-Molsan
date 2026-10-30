@@ -445,3 +445,9 @@ Se mantiene pendiente el recorrido del resto de herramientas: importaciones, mod
 - **Provisiones y cancelaciones:** el rol de diálogo se ha trasladado del overlay al panel principal, conservando el nombre accesible y la clase operativa que aplica los límites responsive.
 - **Enviar a Notario:** usa portal y hoja de modales operativos, pero la estructura del diálogo no se ha cambiado todavía; queda para la pasada específica de modales integrados de FichaExpediente.
 - Se mantienen las alertas de error/éxito, la previsualización PDF y el flujo de liquidación/pago.
+
+
+### Continuación FichaExpediente · Envío a Notario
+- El modal de envío a notario se renderiza mediante portal cuando funciona como ventana independiente y también admite modo integrado en línea. El panel interior no tenía semántica de diálogo en ninguno de los dos modos.
+- Se ha añadido `role="dialog"`, `aria-modal` y una etiqueta accesible únicamente cuando se presenta como modal independiente; el modo inline no recibe atributos de diálogo falsos.
+- Se conserva el diseño de ancho amplio, el formulario, los datos de notaría, los controles de firma y las operaciones existentes.
