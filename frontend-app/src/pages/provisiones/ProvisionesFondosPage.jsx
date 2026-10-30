@@ -37,9 +37,14 @@ const DOCUMENTO_LAYOUTS = {
   ],
 };
 
-function ProvisionDocumentoPreview({ posiciones = {} }) {
+function ProvisionDocumentoPreview({ posiciones = {}, datosMolsan = {} }) {
+  const logo = datosMolsan.logo_data_url || "";
+  const razon = datosMolsan.razon_social || "MOLSAN GESTIÓN Y TRAMITACIÓN";
+  const domicilio = [datosMolsan.domicilio_fiscal, [datosMolsan.codigo_postal, datosMolsan.poblacion, datosMolsan.provincia].filter(Boolean).join(" ")].filter(Boolean).join(" · ");
+  const contacto = [datosMolsan.telefono, datosMolsan.email, datosMolsan.web].filter(Boolean).join(" · ");
+
   const bloques = [
-    { id:"cabecera", content:<div className="flex h-full items-center justify-between gap-3"><div className="flex items-center gap-3"><div className="flex h-12 w-28 items-center justify-center rounded border border-dashed border-slate-300 text-[9px] font-bold text-slate-400">LOGOTIPO</div><div><div className="text-sm font-black text-[#123e70]">MOLSAN GESTIÓN Y TRAMITACIÓN</div><div className="text-[8px] text-slate-500">CIF · Domicilio fiscal · Datos de contacto</div></div></div><div className="text-right text-[8px] text-slate-500">Documento de provisión</div></div> },
+    { id:"cabecera", content:<div className="flex h-full items-center justify-between gap-3"><div className="flex min-w-0 items-center gap-3">{logo ? <img src={logo} alt="Logotipo Molsan" className="max-h-12 max-w-28 object-contain"/> : <div className="flex h-12 w-28 shrink-0 items-center justify-center rounded border border-dashed border-slate-300 text-[9px] font-bold text-slate-400">LOGOTIPO MOLSAN</div>}<div className="min-w-0"><div className="text-sm font-black text-[#123e70]">{razon}</div><div className="text-[8px] text-slate-500">{[datosMolsan.nif ? "CIF: "+datosMolsan.nif : "",domicilio,contacto].filter(Boolean).join(" · ") || "Completa los datos en Utilidades · Datos Molsan"}</div></div></div><div className="text-right text-[8px] text-slate-500">Documento de provisión</div></div> },
     { id:"titulo", content:<div className="flex h-full items-center justify-between border-b-2 border-[#1e5794] pb-1"><div><div className="text-base font-extrabold text-[#123e70]">HOJA DE PROVISIÓN DE FONDOS</div><div className="text-[9px] font-semibold text-sky-700">Estimación de gastos y servicios de tramitación</div></div><div className="text-right text-[8px] text-slate-500">Fecha: DD/MM/AAAA<br/>N.º: PROV-000000</div></div> },
     { id:"cliente", content:<div className="h-full rounded border border-sky-100 p-2"><div className="mb-1 text-[9px] font-extrabold uppercase text-[#123e70]">Datos del cliente</div><div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[8px] text-slate-600"><span>Nombre / Razón social: <b>Nombre del titular</b></span><span>NIF: <b>00000000X</b></span><span>Dirección: Calle y número</span><span>CP / Población: 08000 · Barcelona</span><span>Teléfono: 600 000 000</span><span>Email: cliente@correo.es</span></div></div> },
     { id:"oficina", content:<div className="h-full rounded border border-sky-100 p-2"><div className="mb-1 text-[9px] font-extrabold uppercase text-[#123e70]">Oficina de origen</div><div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[8px] text-slate-600"><span>Entidad: <b>CaixaBank / Otra entidad</b></span><span>Oficina: <b>0000</b></span><span>Persona de contacto: Nombre</span><span>Email: oficina@entidad.es</span><span>Expediente / operación: EXP-000000</span><span>Fecha de solicitud: DD/MM/AAAA</span></div></div> },
@@ -404,6 +409,50 @@ function ConfiguracionConceptosProvisiones({ soloEditorPlantilla = false } = {})
 
 export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditorPlantilla = false }) {
   const [form, setForm] = useState(nuevoFormulario);
+  const [datosCorporativos, setDatosCorporativos] = useState({});
+  const [cargandoDatosCorporativos, setCargandoDatosCorporativos] = useState(false);
+  const [guardandoLogo, setGuardandoLogo] = useState(false);
+  const [errorDatosCorporativos, setErrorDatosCorporativos] = useState("");
+  const [mensajeDatosCorporativos, setMensajeDatosCorporativos] = useState("");
+  useEffect(() => {
+    if (!soloEditorPlantilla) return;
+    let vigente = true;
+    setCargandoDatosCorporativos(true);
+    axios.get("/utilidades/datos-molsan").then(({ data }) => {
+      if (!vigente) return;
+      setDatosCorporativos(data?.datos || data || {});
+    }).catch((e) => {
+      if (vigente) setErrorDatosCorporativos(e?.response?.data?.detail || "No se pudieron cargar los Datos Molsan.");
+    }).finally(() => { if (vigente) setCargandoDatosCorporativos(false); });
+    return () => { vigente = false; };
+  }, [soloEditorPlantilla]);
+  const subirLogoCorporativo = (archivo) => {
+    setErrorDatosCorporativos(""); setMensajeDatosCorporativos("");
+    if (!archivo) return;
+    if (!["image/png", "image/jpeg", "image/webp"].includes(archivo.type)) {
+      setErrorDatosCorporativos("Formato no válido. Sube un PNG, JPG o WEBP."); return;
+    }
+    if (archivo.size > 1024 * 1024) {
+      setErrorDatosCorporativos("El logotipo supera el máximo permitido de 1 MB."); return;
+    }
+    const lector = new FileReader();
+    lector.onerror = () => setErrorDatosCorporativos("No se ha podido leer el logotipo.");
+    lector.onload = async () => {
+      const logo_data_url = typeof lector.result === "string" ? lector.result : "";
+      if (!logo_data_url) { setErrorDatosCorporativos("No se ha podido leer el logotipo."); return; }
+      setGuardandoLogo(true);
+      try {
+        const actualizado = { ...datosCorporativos, logo_data_url };
+        const { data } = await axios.put("/utilidades/datos-molsan", actualizado);
+        if (data?.ok === false) throw new Error(data?.mensaje || "No se pudo guardar el logotipo.");
+        setDatosCorporativos(data?.datos || actualizado);
+        setMensajeDatosCorporativos("Logotipo corporativo guardado. Ya aparece en la previsualización.");
+      } catch (e) {
+        setErrorDatosCorporativos(e?.response?.data?.detail || e?.message || "No se pudo guardar el logotipo.");
+      } finally { setGuardandoLogo(false); }
+    };
+    lector.readAsDataURL(archivo);
+  };
   const [items, setItems] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
@@ -680,7 +729,25 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
   };
 
 
-  if (soloEditorPlantilla) return <main className="provisiones-fondos-page w-full min-w-0 p-3 md:p-6"><div className="provision-editor-layout provision-editor-layout-solo"><div className="provision-editor-designer min-w-0"><DocumentoLayoutDesigner tipo="provision" /></div></div></main>;
+  if (soloEditorPlantilla) return <main className="provisiones-fondos-page w-full min-w-0 p-3 md:p-6 space-y-4">
+    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0 flex-1"><p className="text-xs font-black uppercase tracking-wider text-sky-700">Datos corporativos vinculados</p><h3 className="mt-1 font-bold text-slate-900">Datos Molsan</h3><p className="mt-1 text-xs text-slate-500">La cabecera utiliza la información guardada en Utilidades → Datos Molsan. Los cambios de razón social, CIF, domicilio y contacto se gestionan allí.</p>
+          <div className="mt-3 grid gap-1 text-xs text-slate-600 sm:grid-cols-2"><span><b>Razón social:</b> {datosCorporativos.razon_social || "No configurada"}</span><span><b>CIF:</b> {datosCorporativos.nif || "No configurado"}</span><span><b>Domicilio:</b> {datosCorporativos.domicilio_fiscal || "No configurado"}</span><span><b>Contacto:</b> {[datosCorporativos.telefono, datosCorporativos.email].filter(Boolean).join(" · ") || "No configurado"}</span></div>
+        </div>
+        <div className="flex min-w-[180px] flex-col items-start gap-2">
+          {datosCorporativos.logo_data_url ? <img src={datosCorporativos.logo_data_url} alt="Logotipo corporativo Molsan" className="max-h-16 max-w-40 object-contain"/> : <div className="flex h-16 w-40 items-center justify-center rounded-lg border border-dashed border-slate-300 text-xs text-slate-400">Sin logotipo</div>}
+          <label className="cursor-pointer rounded-lg bg-sky-700 px-3 py-2 text-xs font-bold text-white">{guardandoLogo ? "Guardando…" : datosCorporativos.logo_data_url ? "Cambiar logotipo" : "Subir logotipo"}<input type="file" accept="image/png,image/jpeg,image/webp" className="hidden" disabled={guardandoLogo} onChange={e => { subirLogoCorporativo(e.target.files?.[0]); e.target.value = ""; }}/></label>
+          <span className="text-[10px] text-slate-500">PNG, JPG o WEBP · máximo 1 MB</span>
+        </div>
+      </div>
+      {cargandoDatosCorporativos && <p className="mt-2 text-xs text-slate-500">Cargando Datos Molsan…</p>}
+      {errorDatosCorporativos && <p role="alert" className="mt-2 text-xs text-rose-700">{errorDatosCorporativos}</p>}
+      {mensajeDatosCorporativos && <p role="status" className="mt-2 text-xs font-semibold text-emerald-700">{mensajeDatosCorporativos}</p>}
+    </section>
+    <div className="provision-editor-layout provision-editor-layout-solo"><div className="provision-editor-designer min-w-0"><DocumentoLayoutDesigner tipo="provision" /></div></div>
+    <ProvisionDocumentoPreview posiciones={undefined} datosMolsan={datosCorporativos} />
+  </main>;
   if (modoCatalogo) return <main className="provisiones-fondos-page w-full min-w-0 space-y-6 p-3 md:p-6"><header className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/85 px-5 py-5 shadow-sm"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700">MOLSAN ERP PREMIUM 2027 · CATÁLOGOS ECONÓMICOS</p><h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800">Tabla Provisiones de fondos</h1><p className="mt-1 max-w-3xl text-sm text-slate-500">Configura importes estimativos y criterios iniciales. Estos valores sirven de referencia para nuevas provisiones; los registros históricos no se recalculan al cambiar la tabla.</p></header><ConfiguracionConceptosProvisiones /></main>;
 
   return <main className="provisiones-fondos-page w-full min-w-0 space-y-6 p-3 md:p-6">
