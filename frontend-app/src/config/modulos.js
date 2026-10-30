@@ -215,7 +215,7 @@ const MODULOS_ERP = [
   },
   {
     key: "notargest",
-    label: "Notargest",
+    label: "NotarGest",
     route: "/notargest",
     icon: "landmark",
   },
