@@ -867,3 +867,13 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 - Los cinco workflows asociados al HEAD `95f88f80` finalizaron correctamente: Backend audit, EncargaGest checks, Consolidación Post Firma checks, Validar Fichaje Molsan y Validar Control Apoderados.
 - La comparación `main...HEAD` confirma 362 commits por delante y 0 por detrás. PR #374 continúa abierta, en borrador, no fusionada y mergeable.
 - Estas comprobaciones son estáticas y de CI. Sigue pendiente el QA real en navegador para probar foco inicial, Tab/Shift+Tab, Escape, restauración de foco, diálogos anidados y tamaños escritorio/tablet/móvil. No se declaran pruebas de navegador que no se hayan ejecutado.
+
+### Ampliación del barrido de botones en rutas y herramientas — 30/10/2026
+
+- Se amplió el barrido estático a los componentes operativos de Expedientes, Empleados, Agenda, Fichajes, ApoderaGest, EncargaGest, CTN, Informes, Mensajería, Seguridad, herramientas, catálogos y panel técnico.
+- Se encontraron diez botones sin tipo explícito en `ProvisionesModal.jsx`: cierre del diálogo, pestañas de navegación y acciones del histórico. Todos son acciones que no envían formularios y se declararon `type=button`.
+- Se encontró una acción de navegación sin tipo en `Verifacti.jsx`; se declaró `type=button`.
+- Se encontró el botón «Guardar honorario» sin tipo explícito en `HonorariosGestoria.jsx`; se declaró `type=submit` por pertenecer al formulario.
+- En los restantes archivos JSX inspeccionados no se detectaron botones sin tipo. Un patrón de búsqueda simple produjo un falso positivo en `SelectSJ.jsx` por el operador flecha dentro de un atributo JSX; la inspección del fragmento confirmó que el botón de opción ya declara `type=button`.
+- Correcciones añadidas: `6d198c27` (ProvisionesModal), `be2d96b8` (Verifacti) y `c52b8077` (Honorarios Gestoría).
+- El barrido sigue siendo estático y no demuestra por sí mismo el comportamiento de envío/cancelación en navegador; la prueba funcional interactiva permanece pendiente.
