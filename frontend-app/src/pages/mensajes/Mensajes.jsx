@@ -1,4 +1,5 @@
 import {
+import "../../css/ComponentesOperativosPremium.css";
   useCallback,
   useEffect,
   useMemo,
