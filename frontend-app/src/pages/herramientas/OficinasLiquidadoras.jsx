@@ -2574,6 +2574,7 @@ export default function OficinasLiquidadoras() {
 
         <div
           className="
+        panel-modal-premium
             fixed
             inset-0
             z-[200]
@@ -2587,6 +2588,9 @@ export default function OficinasLiquidadoras() {
         >
 
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={modoEdicion ? "Editar oficina liquidadora" : "Nueva oficina liquidadora"}
             className="
               w-full
               max-w-4xl
@@ -2954,6 +2958,9 @@ export default function OficinasLiquidadoras() {
         >
 
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Importar oficinas liquidadoras desde Excel"
             className="
               w-full
               max-w-xl
