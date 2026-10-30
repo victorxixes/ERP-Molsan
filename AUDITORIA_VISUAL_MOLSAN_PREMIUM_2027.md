@@ -427,3 +427,12 @@ Se mantiene pendiente el recorrido del resto de herramientas: importaciones, mod
 - **Logs:** se ha retirado el color Tailwind fijo del contenedor raíz; la página hereda el color del sistema visual y conserva los colores específicos de severidad/evento dentro de la tabla.
 - **Notificaciones:** ya utiliza el ámbito `notificaciones-premium-page` y espaciado responsive; no se han cambiado los estados de lectura ni el significado de las alertas.
 - **Selector de módulos:** su ventana de ayuda ya activa `panel-modal-premium` y tiene semántica de diálogo; el shell de selección mantiene su composición actual.
+
+
+## Vigésima tercera pasada: componentes compartidos y ventanas globales
+
+- **Sidebar · notificaciones:** el fondo del modal ya no actúa como diálogo accesible; el rol y el nombre se han trasladado al panel interior. Se ha conectado el overlay a las reglas responsive compartidas.
+- **Carpeta Digital:** el diálogo principal ya estaba correctamente etiquetado y usa el sistema compartido. En el visor de documento secundario se ha trasladado también la semántica de diálogo al panel de visualización y se ha activado el ámbito responsive.
+- **Modal CTN detalle:** conserva su sistema propio `ctn-modal-overlay/ctn-modal-panel`, con hoja CTN específica y semántica de diálogo. No se le impone el modal genérico para no alterar sus dimensiones/flujo.
+- **SelectSJ:** es un componente de selector compartido con estilos operativos; requiere comprobación visual en formularios de densidad alta, pero no contiene un modal independiente.
+- Se mantiene la navegación y las acciones de notificación, carpeta y visor sin cambios funcionales.
