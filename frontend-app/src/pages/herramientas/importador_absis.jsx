@@ -140,6 +140,7 @@ export default function ImportadorAbsis() {
 
         <div
             className="
+                utilidades-premium-page
                 herramientas-subpagina-premium
                 w-full
                 p-4
