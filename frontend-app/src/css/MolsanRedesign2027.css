@@ -1849,7 +1849,7 @@ body {
   color: var(--molsan-text);
   background: var(--molsan-page-bg);
   font-family: var(--molsan-font-family);
-  font-size: 13px;
+  font-size: var(--molsan-font-size-md, 14px);
   line-height: 1.45;
 }
 
