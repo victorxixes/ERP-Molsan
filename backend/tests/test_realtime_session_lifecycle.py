@@ -1,7 +1,7 @@
 """La consulta del destinatario no debe mantener una sesión DB abierta en el WebSocket."""
 import unittest
 from types import SimpleNamespace
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from backend.app.realtime.router import _destinatario_activo
 
@@ -11,8 +11,8 @@ class WebSocketRejectionTests(unittest.IsolatedAsyncioTestCase):
         from backend.app.realtime.router import _rechazar_websocket
 
         websocket = MagicMock()
-        websocket.accept = __import__("unittest").mock.AsyncMock()
-        websocket.close = __import__("unittest").mock.AsyncMock()
+        websocket.accept = AsyncMock()
+        websocket.close = AsyncMock()
 
         await _rechazar_websocket(websocket, 4403, "El usuario no coincide con el token")
 
