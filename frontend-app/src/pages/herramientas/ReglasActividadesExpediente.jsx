@@ -73,9 +73,9 @@ export default function ReglasActividadesExpediente() {
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="relative flex flex-wrap items-start justify-between gap-4">
           <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl">⚙️</div>
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[var(--molsan-primary-border)] bg-[var(--molsan-primary-soft)] text-2xl">⚙️</div>
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-indigo-600">Configuración del expediente</p>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--molsan-primary)]">Configuración del expediente</p>
               <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Reglas de actividades expediente</h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Define los documentos, campos y validaciones de cada fase, y deja identificadas las integraciones y reglas que requieren revisión técnica.</p>
             </div>
@@ -93,7 +93,7 @@ export default function ReglasActividadesExpediente() {
       <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-indigo-600">Regla 01</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-[var(--molsan-primary)]">Regla 01</p>
             <h2 className="mt-1 text-lg font-bold text-slate-800">Documentación previa → Sede notarial</h2>
             <p className="mt-1 text-sm text-slate-500">Los tres documentos deben existir en la carpeta digital del resumen del expediente para dar por preparada la documentación.</p>
           </div>
@@ -108,8 +108,8 @@ export default function ReglasActividadesExpediente() {
             </div>
             <div className="space-y-3">
               {DOCUMENTOS_INICIALES.map((doc) => (
-                <label key={doc.id} className="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 p-4 transition hover:border-indigo-200 hover:bg-indigo-50/30">
-                  <input type="checkbox" checked={Boolean(documentos[doc.id])} onChange={(e) => { setDocumentos((actual) => ({ ...actual, [doc.id]: e.target.checked })); setMensaje(""); }} className="mt-1 h-4 w-4 accent-indigo-600" />
+                <label key={doc.id} className="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 p-4 transition hover:border-[var(--molsan-primary-border)] hover:bg-[var(--molsan-primary-soft)]/30">
+                  <input type="checkbox" checked={Boolean(documentos[doc.id])} onChange={(e) => { setDocumentos((actual) => ({ ...actual, [doc.id]: e.target.checked })); setMensaje(""); }} className="mt-1 h-4 w-4 accent-[var(--molsan-primary)]" />
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm font-semibold text-slate-800">{doc.nombre}</span>
                     <span className="mt-1 block text-sm leading-5 text-slate-500">{doc.detalle}</span>
@@ -144,7 +144,7 @@ export default function ReglasActividadesExpediente() {
               </div>
               <p className="mt-2 text-sm leading-5 text-slate-500">No serán obligatorios para permitir el envío, pero el sistema debe advertir si faltan datos de facturación para que se completen.</p>
               <label className="mt-3 flex items-center gap-2 text-sm text-slate-700">
-                <input type="checkbox" checked={avisoFacturacion} onChange={(e) => { setAvisoFacturacion(e.target.checked); setMensaje(""); }} className="h-4 w-4 accent-indigo-600" />
+                <input type="checkbox" checked={avisoFacturacion} onChange={(e) => { setAvisoFacturacion(e.target.checked); setMensaje(""); }} className="h-4 w-4 accent-[var(--molsan-primary)]" />
                 Mostrar aviso si faltan datos de facturación
               </label>
             </div>
@@ -177,7 +177,7 @@ export default function ReglasActividadesExpediente() {
       <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-indigo-600">Regla 02</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-[var(--molsan-primary)]">Regla 02</p>
             <h2 className="mt-1 text-lg font-bold text-slate-800">Sede notarial → Sede notarial con protocolo</h2>
             <p className="mt-1 text-sm text-slate-500">La fecha de firma y el protocolo se reciben desde ApoderaGest cuando el apoderado informa de la firma de la escritura.</p>
           </div>
@@ -197,7 +197,7 @@ export default function ReglasActividadesExpediente() {
       <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-indigo-600">Regla 03</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-[var(--molsan-primary)]">Regla 03</p>
             <h2 className="mt-1 text-lg font-bold text-slate-800">Sede notarial con protocolo → Liquidación impuestos</h2>
             <p className="mt-1 text-sm text-slate-500">Validación de campos y documentos recibidos desde NotarGest / Visión Notarios.</p>
           </div>
@@ -211,7 +211,7 @@ export default function ReglasActividadesExpediente() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {["Notario", "NIF del notario", "Gestoría", "Fecha de presentación", "Entrada", "Asiento", "Diario"].map((campo) => (
               <div key={campo} className="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm font-medium text-slate-700">
-                <span className="h-2 w-2 rounded-full bg-indigo-500" />{campo}
+                <span className="h-2 w-2 rounded-full bg-[var(--molsan-primary-soft)]0" />{campo}
               </div>
             ))}
           </div>
@@ -247,7 +247,7 @@ export default function ReglasActividadesExpediente() {
       <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-indigo-600">Regla 04</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-[var(--molsan-primary)]">Regla 04</p>
             <h2 className="mt-1 text-lg font-bold text-slate-800">Liquidación impuestos → Tramitación inscripción</h2>
             <p className="mt-1 text-sm text-slate-500">La liquidación tributaria debe quedar documentada y con todos los datos de actividad cumplimentados antes de avanzar.</p>
           </div>
@@ -261,7 +261,7 @@ export default function ReglasActividadesExpediente() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {["Fecha de presentación en oficina liquidadora", "Fecha de liquidación tributaria", "Base imponible", "Oficina liquidadora (desplegable existente)", "Tributo exento (desplegable existente)", "Documento AJD/ITP"].map((campo) => (
               <div key={campo} className="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm font-medium text-slate-700">
-                <span className="h-2 w-2 rounded-full bg-indigo-500" />{campo}
+                <span className="h-2 w-2 rounded-full bg-[var(--molsan-primary-soft)]0" />{campo}
               </div>
             ))}
           </div>
@@ -284,7 +284,7 @@ export default function ReglasActividadesExpediente() {
       <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-indigo-600">Regla 05</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-[var(--molsan-primary)]">Regla 05</p>
             <h2 className="mt-1 text-lg font-bold text-slate-800">Tramitación inscripción → Control de calidad → Cierre de expediente</h2>
             <p className="mt-1 text-sm text-slate-500">Control de calidad se consulta antes del cierre; es una comprobación informativa del estado real y no una actividad obligatoria por la que deba pasar todo expediente.</p>
           </div>
@@ -298,7 +298,7 @@ export default function ReglasActividadesExpediente() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {["Fecha de presentación (heredada de Liquidación impuestos)", "Fecha de vencimiento (automática)", "Fecha de inscripción (manual o extraída del PDF)", "Hoja de inscripción en Carpeta digital"].map((campo) => (
               <div key={campo} className="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm font-medium text-slate-700">
-                <span className="h-2 w-2 rounded-full bg-indigo-500" />{campo}
+                <span className="h-2 w-2 rounded-full bg-[var(--molsan-primary-soft)]0" />{campo}
               </div>
             ))}
           </div>
@@ -333,7 +333,7 @@ export default function ReglasActividadesExpediente() {
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="max-w-2xl text-xs leading-5 text-slate-500">La configuración se guarda en el ERP y se recupera al volver a entrar. Guardarla no activa por sí sola automatismos ni modifica expedientes; la aplicación efectiva de cada regla se valida por separado.</p>
-        <button type="button" onClick={guardarVista} disabled={cargando || guardando} className="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60">{cargando ? "Cargando..." : guardando ? "Guardando..." : "Guardar reglas"}</button>
+        <button type="button" onClick={guardarVista} disabled={cargando || guardando} className="inline-flex items-center justify-center rounded-xl bg-[var(--molsan-primary)] px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[var(--molsan-primary-hover)] disabled:cursor-not-allowed disabled:opacity-60">{cargando ? "Cargando..." : guardando ? "Guardando..." : "Guardar reglas"}</button>
       </div>
     </main>
   );
@@ -364,8 +364,8 @@ function Resumen({ icono, titulo, valor }) {
 
 function Opcion({ checked, onChange, titulo, descripcion }) {
   return (
-    <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 p-4 transition hover:border-indigo-200 hover:bg-indigo-50/30">
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="mt-1 h-4 w-4 accent-indigo-600" />
+    <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 p-4 transition hover:border-[var(--molsan-primary-border)] hover:bg-[var(--molsan-primary-soft)]/30">
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="mt-1 h-4 w-4 accent-[var(--molsan-primary)]" />
       <span>
         <span className="block text-sm font-semibold text-slate-800">{titulo}</span>
         <span className="mt-1 block text-sm leading-5 text-slate-500">{descripcion}</span>
