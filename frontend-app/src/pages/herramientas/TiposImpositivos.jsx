@@ -65,8 +65,8 @@ export default function TiposImpositivos() {
   return (
     <main className="tipos-impositivos-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-400" />
-        <p className="text-xs font-bold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP PREMIUM 2027</p>
+        <div className="absolute inset-x-0 top-0 h-1 bg-[var(--molsan-primary)]" />
+        <p className="text-xs font-bold uppercase tracking-[.18em] text-[var(--molsan-primary)]">MOLSAN ERP PREMIUM 2027</p>
         <h1 className="mt-2 text-2xl font-extrabold text-slate-900">Tipos impositivos</h1>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Mantén en un único catálogo los impuestos indirectos y las retenciones utilizados en las órdenes de pago, gastos y otros procesos económicos.</p>
       </header>
@@ -103,7 +103,7 @@ export default function TiposImpositivos() {
           </label>
           {editando && <label className="flex items-center gap-2 text-sm font-semibold text-slate-700"><input type="checkbox" checked={form.activo} onChange={(e) => setForm({ ...form, activo: e.target.checked })} />Activo y disponible en desplegables</label>}
           <div className="flex flex-wrap gap-2 sm:col-span-2 xl:col-span-3">
-            <button disabled={guardando} type="submit" className="rounded-xl bg-indigo-700 px-5 py-2.5 text-sm font-bold text-white hover:bg-indigo-800 disabled:opacity-50">{guardando ? "Guardando…" : editando ? "Guardar cambios" : "Crear tipo impositivo"}</button>
+            <button disabled={guardando} type="submit" className="rounded-xl bg-[var(--molsan-primary)] px-5 py-2.5 text-sm font-bold text-white hover:bg-[var(--molsan-primary-hover)] disabled:opacity-50">{guardando ? "Guardando…" : editando ? "Guardar cambios" : "Crear tipo impositivo"}</button>
             <button type="button" onClick={nuevo} className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50">Limpiar</button>
           </div>
         </form>
