@@ -985,3 +985,9 @@ También se revisaron:
 - El endpoint GET de diagnóstico `/api/ws/notificaciones/test` no exige JWT, pero únicamente devuelve `{"status":"ok"}`, sin datos de negocio ni identificadores; se considera diagnóstico inocuo, no acceso a información privada.
 
 La matriz de autorización sigue separando autenticación (JWT), permiso funcional por módulo/acción y ámbito de expediente. No se da por cerrada la autorización integral hasta verificar cada endpoint y sus permisos concretos.
+
+### Cascada CSS — colisión localizada en NotarGest — 30/10/2026
+
+Se contrastó la secuencia real de imports de `NotarGest.jsx`: primero `PortalProfesionalShared.css` y después `NotarGest.css`. Ambas hojas definen `.notargest .ng-tabla` con anchuras mínimas distintas (1450px en la compartida y 760px en la local). Por el orden de importación, la regla local de NotarGest prevalece cuando ambas reglas están en la misma capa/origen y no hay una regla posterior de mayor prioridad. No se cambia: parece una especialización deliberada del portal, pero debe verificarse en navegador que el scroll horizontal queda dentro de `.ng-tabla-contenedor` y no ensancha la página.
+
+También se encontró una regla global posterior en `MolsanRedesign2027.css` para `.notargest .ng-tabla td`, limitada al color del borde y marcada `!important`. Es una armonización de borde, no una redefinición de anchura ni un conflicto visual probado. Se mantiene hasta comprobar el resultado real.
