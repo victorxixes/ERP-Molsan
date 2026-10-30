@@ -329,6 +329,7 @@ def previsualizar_cierre_documental(expediente_id: str, db: Session = Depends(ge
     estilos.add(ParagraphStyle(name="MolsanSmall", parent=estilos["BodyText"], fontName="Helvetica", fontSize=8, leading=10, textColor=colors.HexColor("#334155")))
     estilos.add(ParagraphStyle(name="MolsanTiny", parent=estilos["BodyText"], fontName="Helvetica", fontSize=7, leading=9, textColor=gris))
     estilos.add(ParagraphStyle(name="MolsanTableHead", parent=estilos["BodyText"], fontName="Helvetica-Bold", fontSize=7.2, leading=9, textColor=azul))
+    hoja = io.BytesIO()
     doc_pdf = SimpleDocTemplate(hoja, pagesize=A4, rightMargin=17*mm, leftMargin=17*mm, topMargin=14*mm, bottomMargin=17*mm, title=f"Hoja de liquidación - expediente {expediente_id}", author="MOLSAN ERP")
 
     def txt(valor, fallback="—"):
@@ -383,7 +384,7 @@ def previsualizar_cierre_documental(expediente_id: str, db: Session = Depends(ge
     gastos_pagados = [g for g in gastos if str(g.estado_pago or "").strip().lower() in estados_pagados]
     total_pagado = sum(float(g.importe_resultante if g.importe_resultante is not None else (g.importe_total_bruto if g.importe_total_bruto is not None else (g.importe or 0))) for g in gastos_pagados)
     importe_provision = getattr(expediente, "importe", None)
-    fecha_liquidacion = getattr(expediente, "fecha_fin_actividad", None) or datetime.utcnow().date()
+    fecha_liquidacion = getattr(expediente, "fecha_fin_actividad", None)
 
     empresa_nombre = datos_empresa.get("razon_social") or "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L."
     empresa_nif = datos_empresa.get("nif") or ""
