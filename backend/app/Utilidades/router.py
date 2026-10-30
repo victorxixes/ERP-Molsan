@@ -927,7 +927,12 @@ def guardar_datos_molsan(
     # Mantener las preferencias del editor al actualizar los datos fiscales corporativos.
     contenido_datos = datos.dict()
     # Las preferencias de diseño de documentos se conservan al actualizar los datos corporativos.
-    for clave_config in ("configuracion_factura_honorarios", "configuracion_documento_liquidacion", "configuracion_documento_provision"):
+    for clave_config in (
+        "configuracion_factura_honorarios",
+        "configuracion_documento_liquidacion",
+        "configuracion_documento_provision",
+        "reglas_actividades_expediente",
+    ):
         if clave_config in datos_actuales:
             contenido_datos[clave_config] = datos_actuales[clave_config]
     contenido = json.dumps(contenido_datos, ensure_ascii=False)
