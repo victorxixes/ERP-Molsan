@@ -29,7 +29,7 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
   const dialogRef = useRef(null);
   const previewDialogRef = useRef(null);
   useAccessibleDialog({ open: true, onClose, dialogRef });
-  useAccessibleDialog({ open: Boolean(vistaPreviaUrl), onClose: cerrarVistaPrevia, dialogRef: previewDialogRef });
+  useAccessibleDialog({ open: Boolean(vistaPreviaUrl), onClose: () => { setVistaPreviaUrl((actual) => { if (actual) URL.revokeObjectURL(actual); return ""; }); setMetadataVistaPrevia(null); }, dialogRef: previewDialogRef });
 
   useEffect(() => {
     setForm({
