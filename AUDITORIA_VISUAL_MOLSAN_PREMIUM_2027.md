@@ -392,3 +392,12 @@ Se mantiene pendiente el recorrido del resto de herramientas: importaciones, mod
 - **EmpleadosListado:** el modal de alta ya activa el ámbito operativo y tiene semántica accesible.
 - **EmpleadoPerfil** y **EmpleadosModulo2026** ya tienen sus ámbitos premium.
 - No se han cambiado restricciones de edición, permisos ni datos de empleados.
+
+
+## Decimonovena pasada: portales profesionales · ApoderaGest y EncargaGest
+
+- **ApoderaGest · bloque de encargos:** se ha movido la semántica `role="dialog"` desde el overlay al panel de contenido, conservando el nombre dinámico del grupo y el cierre por clic en el fondo. Se ha conectado el overlay a `panel-modal-premium`.
+- **EncargaGest:** se ha añadido la capa compartida a los overlays de edición, incidencia, ficha/perfil y gestión de accesos. Los paneles de alta de encargo, edición, incidencia y acceso tienen ahora roles y nombres accesibles; el perfil externo ya tenía su diálogo etiquetado.
+- Se mantiene el modal específico `eg-modal-form` para alta de encargo y sus estilos propios de portal; la capa común solo añade foco, scroll y adaptación de viewport.
+- No se han cambiado los flujos de creación, edición, incidencias, perfiles, contraseñas ni accesos de notaría.
+- Pendiente: inspección visual real de todos los paneles de EncargaGest en escritorio/móvil, especialmente el formulario de alta largo y la edición de encargo.
