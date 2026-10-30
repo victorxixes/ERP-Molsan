@@ -1,5 +1,5 @@
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   obtenerNotaria,
   actualizarDatosBancariosNotaria,
@@ -9,6 +9,7 @@ import {
   desasociarNotarios,
 } from "../../api/ctn";
 import "../../css/CtnListadoPage.css";
+import useAccessibleDialog from "../ui/useAccessibleDialog";
 import AutocompleteNotario from "../agenda/AutocompleteNotario";
 import PortalAccessTabs from "./PortalAccessTabs";
 
@@ -75,6 +76,8 @@ export default function ModalCtnDetalle({
   // Se conservan las propiedades anteriores para no romper
   // las llamadas existentes desde ApoderaGest.
   const id = notaria?.id;
+  const dialogRef = useRef(null);
+  useAccessibleDialog({ open, onClose: () => (onClose || onCerrar)?.(), dialogRef });
 
   const [ficha, setFicha] = useState(notaria || null);
   const [pestanaActiva, setPestanaActiva] = useState(mostrarAccesosPortales ? "portales" : "ficha");
@@ -336,6 +339,8 @@ export default function ModalCtnDetalle({
       }}
     >
       <section
+        ref={dialogRef}
+        tabIndex={-1}
         className="ctn-modal-panel molsan-panel"
         role="dialog"
         aria-modal="true"
