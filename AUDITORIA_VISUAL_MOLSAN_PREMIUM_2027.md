@@ -114,3 +114,12 @@ En el commit `69d37549e939a10743cff55ed2635293024fd82b`, los tres workflows asoc
 - EncargaGest checks: build frontend y sintaxis backend correctos.
 
 Esto no equivale a QA visual ni a una prueba de todas las rutas.
+
+
+## Riesgo detectado para el entorno de previsualización
+
+La configuración `frontend-app/src/api/config.js` usa por defecto `https://agenda-intranet-b.onrender.com/api` cuando no existe `VITE_API_URL`.
+
+**Consecuencia:** no se debe publicar una previsualización aislada sin fijar explícitamente un backend de pruebas. De lo contrario, el frontend de la rama podría enviar peticiones al backend de producción. No se ha creado ningún servicio de preview ni se ha modificado Render.
+
+Antes del QA visual interactivo habrá que proporcionar un backend de pruebas aislado con datos ficticios, o preparar una capa de mocks de API para las pruebas. No se utilizará el backend productivo ni se copiarán datos históricos para esta finalidad.
