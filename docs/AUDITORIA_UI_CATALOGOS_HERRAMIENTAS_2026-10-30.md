@@ -195,3 +195,7 @@ La revisión confirma clases presentes en el código, no una diferencia visual e
 - Los cierres por Escape respetan los estados de guardado/importación y no descartan operaciones en curso.
 - Los botones principales de alta/guardado de estos catálogos utilizan ahora tokens `--molsan-primary` y `--molsan-primary-hover`; los estados semánticos se conservan.
 - CI del commit `b28eb331` completado con éxito en los cinco workflows asociados.
+
+## Permisos y verificación
+- Se corrigió en `permisos.js` la normalización de caracteres acentuados y espacios de rol. Esto evita falsos negativos en el reconocimiento de perfiles administrativos y en la comparación de etiquetas de módulos.
+- CI del commit `20da43cf`: los cinco workflows asociados finalizaron correctamente.
