@@ -10,6 +10,7 @@ import "../../css/ModalesHerramientasPremium.css";
 import { obtenerNotaria } from "../../api/ctn";
 
 import SelectSJ from "../ui/SelectSJ";
+import useAccessibleDialog from "../ui/useAccessibleDialog";
 
 
 const TIPOS_CITA = [
@@ -199,6 +200,13 @@ export default function ModalNuevaCita({
     notarioSeleccionado,
     setNotarioSeleccionado,
   ] = useState(null);
+
+  const dialogRef = useRef(null);
+  useAccessibleDialog({
+    open: Boolean(fecha),
+    onClose: () => { if (!loading) onClose?.(); },
+    dialogRef,
+  });
 
 
   // ==========================================================
@@ -745,6 +753,8 @@ export default function ModalNuevaCita({
     >
 
       <div
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label={titulo}
