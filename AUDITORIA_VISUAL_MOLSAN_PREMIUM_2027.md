@@ -911,3 +911,26 @@ Se volvió a leer el bloque completo de rutas de `App.jsx` (líneas 438–890 en
 - Riesgo confirmado a nivel de frontend: una persona con sesión válida puede intentar acceder directamente a rutas que el Sidebar no le muestra, porque el router no evalúa de forma uniforme `puedeVerModulo`. El acceso efectivo a datos/operaciones depende además de los permisos de cada endpoint backend; no se infiere una exposición de datos sin esa comprobación.
 - No se aplicó un guard masivo como corrección automática: varias rutas secundarias no tienen correspondencia 1:1 obvia con una clave del catálogo (p. ej. Utilidades, Herramientas, Panel Técnico, subrutas de Seguridad, Control Apoderados y alias). Antes hay que definir y contrastar una matriz de acceso por ruta y acción, incluidos los permisos de los roles reales, para evitar conceder acceso por usar una clave demasiado amplia o bloquear operaciones legítimas.
 - Criterio de cierre: cada ruta tendrá clave/permiso explícito; alias compartirán la misma política; las rutas administrativas tendrán permiso específico; y el backend seguirá siendo la autoridad final para cada operación. Después se probarán accesos permitidos y denegados con perfiles de prueba.
+
+### Auditoría backend — rutas que carecían de autenticación JWT y corrección aplicada — 30/10/2026
+
+En la revisión directa de los routers montados desde `main.py` se localizaron cinco superficies API cuyo `APIRouter` no declaraba dependencia de autenticación y cuyos endpoints tampoco recibían una dependencia de usuario:
+
+1. `/api/agenda`: búsqueda, consulta, alta, modificación y eliminación de citas.
+2. `/api/informes/apoderados`: tabla mensual, ranking e informe individual.
+3. `/api/maestros`: lectura y CRUD de departamentos, secciones y cargos.
+4. `/api/municipios`: consultas y operaciones del catálogo/importación.
+5. `/api/dashboard/expedientes`: indicadores de expedientes y CancelaGest.
+
+Corrección aplicada en la rama de auditoría: se añadió `Depends(get_current_user)` a nivel de router en los cinco módulos, de forma que todas sus rutas exigen una sesión JWT válida. Commits:
+- Agenda: `d4944f4b0aac52174e9b2e716645a93dde473027`
+- Informes ApoderaGest: `bc15a301acb0844d4393d25f974a7133a534da0c`
+- Maestros: `75bc543ca31ee14f8855390f6e87bae3b83170f4`
+- Municipios: `8b8f43715408b38536c324c544b4f46bcdf6a941`
+- Dashboard Expedientes: `1a61bc2c7e3eed92b0aa5731b3798fd833d0f123`
+
+Alcance y cautela:
+- Esto corrige la ausencia de autenticación, no concede ni sustituye permisos por módulo/acción. La autorización granular de Agenda, Informes, Maestros y Municipios debe contrastarse con la matriz real de permisos y las pantallas que los consumen antes de añadir restricciones adicionales.
+- El dashboard queda accesible solo a usuarios autenticados; la visibilidad del módulo y el permiso de consulta requieren verificación separada.
+- No se han ejecutado peticiones HTTP con perfiles de prueba ni pruebas de regresión tras estos cambios. Deben pasar CI/build y posteriormente pruebas 401 sin sesión, 200 con sesión autorizada y 403 con sesión sin permiso cuando se incorpore autorización granular.
+- Se comprobó además que Mensajería Molsan ya aplica comprobaciones explícitas de permiso en cada operación; CTN y Carpetas Digitales declaran autenticación a nivel de router; y los routers de borrado de tablas/restablecimiento de Intranet no registran endpoints destructivos.
