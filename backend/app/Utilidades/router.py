@@ -1026,3 +1026,109 @@ def guardar_configuracion_documento_plantilla(
         logger.exception("Error guardando la distribución del documento %s", documento_id)
         raise HTTPException(status_code=500, detail="No se pudo guardar la distribución del documento.")
 
+# ============================================================
+# REGLAS DE ACTIVIDADES DEL EXPEDIENTE — CONFIGURACIÓN PERSISTENTE
+# ============================================================
+
+REGLAS_ACTIVIDADES_DEFAULT = {
+    "documentos": {
+        "solicitud": True,
+        "justificante": True,
+        "nota_simple": True,
+    },
+    "validarFechaEnvio": True,
+    "avisoFacturacion": True,
+    "exigirNotario": True,
+    "exigirTipoDocumento": True,
+}
+
+
+class ReglasActividadesConfigRequest(BaseModel):
+    documentos: dict
+    validarFechaEnvio: bool = True
+    avisoFacturacion: bool = True
+    exigirNotario: bool = True
+    exigirTipoDocumento: bool = True
+
+
+@router.get("/reglas-actividades")
+def obtener_reglas_actividades(
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "ver")
+    _asegurar_tabla_datos_molsan(db)
+    fila = db.execute(
+        text("SELECT datos FROM datos_molsan_config WHERE id = 1")
+    ).mappings().first()
+    datos = dict(fila["datos"] or {}) if fila else {}
+    configuracion = datos.get("reglas_actividades_expediente") or {}
+    return {
+        "configuracion": {
+            **REGLAS_ACTIVIDADES_DEFAULT,
+            **configuracion,
+            "documentos": {
+                **REGLAS_ACTIVIDADES_DEFAULT["documentos"],
+                **(configuracion.get("documentos") or {}),
+            },
+        },
+        "persistente": True,
+    }
+
+
+@router.put("/reglas-actividades")
+def guardar_reglas_actividades(
+    config: ReglasActividadesConfigRequest,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "editar")
+    claves_documentos = set(REGLAS_ACTIVIDADES_DEFAULT["documentos"])
+    documentos = config.documentos
+    if set(documentos) != claves_documentos or any(
+        not isinstance(valor, bool) for valor in documentos.values()
+    ):
+        raise HTTPException(
+            status_code=422,
+            detail="La configuración de documentos no coincide con el catálogo permitido.",
+        )
+
+    _asegurar_tabla_datos_molsan(db)
+    try:
+        # Crear la fila singleton y bloquearla para no sobrescribir otras
+        # preferencias guardadas simultáneamente en datos_molsan_config.
+        db.execute(text("""
+            INSERT INTO datos_molsan_config (id, datos, actualizado_en)
+            VALUES (1, '{}'::jsonb, CURRENT_TIMESTAMP)
+            ON CONFLICT (id) DO NOTHING
+        """))
+        fila = db.execute(
+            text("SELECT datos FROM datos_molsan_config WHERE id = 1 FOR UPDATE")
+        ).mappings().first()
+        datos = dict(fila["datos"] or {}) if fila else {}
+        configuracion = config.dict()
+        datos["reglas_actividades_expediente"] = configuracion
+        db.execute(text("""
+            UPDATE datos_molsan_config
+            SET datos = CAST(:datos AS JSONB),
+                actualizado_en = CURRENT_TIMESTAMP
+            WHERE id = 1
+        """), {"datos": json.dumps(datos, ensure_ascii=False)})
+        db.commit()
+        return {
+            "ok": True,
+            "mensaje": "Reglas de actividades guardadas correctamente.",
+            "configuracion": configuracion,
+            "persistente": True,
+        }
+    except HTTPException:
+        db.rollback()
+        raise
+    except Exception:
+        db.rollback()
+        logger.exception("Error guardando las reglas de actividades del expediente")
+        raise HTTPException(
+            status_code=500,
+            detail="No se pudieron guardar las reglas de actividades.",
+        )
+
