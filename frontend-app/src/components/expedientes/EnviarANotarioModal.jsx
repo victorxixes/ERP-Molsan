@@ -276,7 +276,6 @@ export default function EnviarANotarioModal({
   );
 
   const dialogRef = useRef(null);
-  useAccessibleDialog({ open: !inline, onClose, dialogRef });
 
 
   // Lista de documentos de escritura. El primero conserva la cuantía
@@ -314,6 +313,14 @@ export default function EnviarANotarioModal({
   const [municipiosLoading, setMunicipiosLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useAccessibleDialog({
+    open: !inline,
+    onClose: () => {
+      if (!loading) onClose?.();
+    },
+    dialogRef,
+  });
 
   // ==========================================================
   useEffect(() => {
@@ -371,23 +378,6 @@ export default function EnviarANotarioModal({
       activo = false;
     };
   }, []);
-
-  // CERRAR CON ESC
-  // ==========================================================
-
-  useEffect(() => {
-    const handleEscape = (event) => {
-      if (event.key === "Escape" && !loading) {
-        onClose();
-      }
-    };
-
-    window.addEventListener("keydown", handleEscape);
-
-    return () => {
-      window.removeEventListener("keydown", handleEscape);
-    };
-  }, [loading, onClose]);
 
   // ==========================================================
   // CAMBIAR CAMPOS
