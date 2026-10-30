@@ -61,3 +61,45 @@
   }
   .liquidar-expediente-modal :is(header,footer) { flex-wrap: wrap; }
 }
+
+
+/* Vista previa del cierre documental · PDF adaptable a viewport móvil */
+.vista-previa-cierre-modal {
+  box-sizing: border-box;
+  padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+}
+.vista-previa-cierre-modal > section {
+  min-width: 0;
+  width: min(100%, 1152px);
+  max-width: 100%;
+  height: min(96dvh, 960px);
+  max-height: calc(100dvh - 16px);
+}
+.vista-previa-cierre-modal iframe {
+  min-width: 0;
+  width: 100%;
+}
+.vista-previa-cierre-modal :is(header, footer) {
+  flex-shrink: 0;
+  min-width: 0;
+}
+@media (max-width: 640px) {
+  .vista-previa-cierre-modal > section {
+    width: 100%;
+    height: calc(100dvh - 16px);
+    max-height: calc(100dvh - 16px);
+    border-radius: 12px;
+  }
+  .vista-previa-cierre-modal :is(header, footer) {
+    padding-left: 12px;
+    padding-right: 12px;
+    gap: 8px;
+  }
+  .vista-previa-cierre-modal footer > div {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vista-previa-cierre-modal * { transition: none !important; animation: none !important; }
+}
