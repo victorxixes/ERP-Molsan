@@ -3841,6 +3841,7 @@ def generar_documento_factura_honorarios(
         # corporativa para que el PDF conserve la identidad del documento.
         from docx import Document
         import zipfile
+        import base64
         from reportlab.lib import colors
         from reportlab.lib.enums import TA_LEFT, TA_RIGHT
         from reportlab.lib.pagesizes import A4
@@ -3853,8 +3854,8 @@ def generar_documento_factura_honorarios(
         Document(io.BytesIO(plantilla_bytes))  # Comprueba que la plantilla oficial sea válida.
         numero_factura = str(datos.get("numero_factura") or numero_factura).strip()
         fecha_factura = fecha_es(datos.get("fecha_factura"))
-        cliente = str(datos.get("cliente") or valor(expediente, "nombre_solicitante", "nombre_titular") or "").strip()
-        nif_cliente = str(datos.get("nif_cliente") or valor(expediente, "nif_solicitante", "dni_solicitante", "nif_titular") or "").strip()
+        cliente = str(datos.get("cliente") or " ".join(filter(None, [valor(expediente, "facturacion_nombre"), valor(expediente, "facturacion_apellidos")])) or valor(expediente, "nombre_solicitante", "nombre_titular") or "").strip()
+        nif_cliente = str(datos.get("nif_cliente") or valor(expediente, "facturacion_dni_nif", "nif_solicitante", "dni_solicitante", "nif_titular") or "").strip()
         direccion_facturacion = str(datos.get("direccion_facturacion") or valor(expediente, "facturacion_direccion", "direccion_facturacion") or "").strip()
         codigo_postal_facturacion = str(datos.get("codigo_postal_facturacion") or valor(expediente, "facturacion_codigo_postal", "codigo_postal_facturacion") or "").strip()
         poblacion_facturacion = str(datos.get("poblacion_facturacion") or valor(expediente, "facturacion_poblacion", "poblacion_facturacion") or "").strip()
@@ -3870,6 +3871,20 @@ def generar_documento_factura_honorarios(
         notario = valor(expediente, "nombre_notario", "notario_otorgante", "notario") or "—"
         protocolo = valor(expediente, "protocolo") or "—"
         fecha_firma = fecha_es(valor(expediente, "fecha_firma"))
+        tipo_documento_expediente = valor(expediente, "tipo_documento", "formato_escritura") or "—"
+        datos_empresa = {}
+        try:
+            fila_empresa = db.execute(text("SELECT datos FROM datos_molsan_config WHERE id = 1")).mappings().first()
+            datos_empresa = dict((fila_empresa or {}).get("datos") or {})
+        except Exception:
+            datos_empresa = {}
+        razon_social = str(datos_empresa.get("razon_social") or "MOLSAN GESTIÓN Y TRAMITACIÓN").strip()
+        nif_empresa = str(datos_empresa.get("nif") or "").strip()
+        domicilio_empresa = str(datos_empresa.get("domicilio_fiscal") or "").strip()
+        localidad_empresa = " ".join(filter(None, [str(datos_empresa.get("codigo_postal") or "").strip(), str(datos_empresa.get("poblacion") or "").strip(), str(datos_empresa.get("provincia") or "").strip()]))
+        telefono_empresa = str(datos_empresa.get("telefono") or "").strip()
+        web_empresa = str(datos_empresa.get("web") or "").strip()
+        logo_empresa_data = str(datos_empresa.get("logo_data_url") or "").strip()
         tipo_documento_expediente = valor(expediente, "tipo_documento", "formato_escritura") or "—"
         descuento = Decimal(str(datos.get("descuento_empleado") or 0).replace(",", ".")).quantize(Decimal("0.01"))
         es_empleado = str(datos.get("empleado") or "").strip().lower() in {"true", "1", "si", "sí"}
