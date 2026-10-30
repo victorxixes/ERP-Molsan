@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 /**
  * ============================================================
@@ -2586,6 +2587,8 @@ function ModalImportarExcel({
   onCerrar,
   formatearTamano
 }) {
+  const dialogRef = useRef(null);
+  useAccessibleDialog({ open: true, onClose: () => { if (!importando) onCerrar?.(); }, dialogRef });
 
   return (
 
@@ -2618,6 +2621,8 @@ function ModalImportarExcel({
     >
 
       <div
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label="Importar municipios desde Excel"
@@ -3148,6 +3153,8 @@ function ModalMunicipio({
   onCerrar,
   onGuardar
 }) {
+  const dialogRef = useRef(null);
+  useAccessibleDialog({ open: true, onClose: () => { if (!guardando) onCerrar?.(); }, dialogRef });
 
   const [formulario, setFormulario] =
     useState({
@@ -3247,6 +3254,8 @@ function ModalMunicipio({
     >
 
       <div
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label={modo === "nuevo" ? "Nuevo municipio" : "Editar municipio"}
