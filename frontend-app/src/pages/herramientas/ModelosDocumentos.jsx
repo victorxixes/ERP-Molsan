@@ -79,7 +79,21 @@ function FacturaLayoutDesigner() {
     let activo = true;
     axios.get("/utilidades/factura-plantilla").then(({ data }) => {
       const guardadas = data?.configuracion?.posiciones;
-      if (activo && guardadas && typeof guardadas === "object") setPosiciones(prev => ({ ...prev, ...guardadas }));
+      if (activo && guardadas && typeof guardadas === "object") setPosiciones(prev => {
+        const siguientes = { ...prev };
+        for (const campo of FACTURA_CAMPOS) {
+          const guardada = guardadas[campo.id];
+          if (!guardada || typeof guardada !== "object") continue;
+          const w = Math.max(4, Math.min(100, Number(guardada.w ?? campo.w) || campo.w));
+          const h = Math.max(3, Math.min(100, Number(guardada.h ?? campo.h) || campo.h));
+          siguientes[campo.id] = {
+            x: Math.max(0, Math.min(100 - w, Number(guardada.x ?? campo.x) || 0)),
+            y: Math.max(0, Math.min(100 - h, Number(guardada.y ?? campo.y) || 0)),
+            w, h,
+          };
+        }
+        return siguientes;
+      });
     }).catch(() => {});
     return () => { activo = false; };
   }, []);
@@ -88,9 +102,16 @@ function FacturaLayoutDesigner() {
     const id = e.dataTransfer.getData("text/plain");
     const rect = e.currentTarget.getBoundingClientRect();
     if (!id || !rect.width || !rect.height) return;
-    const x = Math.max(0, Math.min(94, ((e.clientX - rect.left) / rect.width) * 100));
-    const y = Math.max(0, Math.min(94, ((e.clientY - rect.top) / rect.height) * 100));
-    setPosiciones(prev => ({ ...prev, [id]: { ...(prev[id] || {}), x, y } }));
+    const actual = posiciones[id] || FACTURA_CAMPOS.find(c => c.id === id);
+    if (!actual) return;
+    const w = Math.max(4, Math.min(100, Number(actual.w) || 20));
+    const h = Math.max(3, Math.min(100, Number(actual.h) || 8));
+    // Coloca el centro del bloque bajo el cursor y limita sus cuatro bordes a la hoja A4.
+    const cursorX = ((e.clientX - rect.left) / rect.width) * 100;
+    const cursorY = ((e.clientY - rect.top) / rect.height) * 100;
+    const x = Math.max(0, Math.min(100 - w, cursorX - w / 2));
+    const y = Math.max(0, Math.min(100 - h, cursorY - h / 2));
+    setPosiciones(prev => ({ ...prev, [id]: { ...(prev[id] || actual), x, y, w, h } }));
     setMensaje("");
   };
   const guardar = async () => {
