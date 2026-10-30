@@ -21,6 +21,7 @@
   --molsan-primary: #3156b3;
   --molsan-primary-hover: #274694;
   --molsan-primary-soft: #edf3ff;
+  --molsan-primary-border: #cbd7ee;
   --molsan-page-bg: #eef2f8;
   --molsan-page-bg-elevated: #f7f9fd;
   --molsan-surface: #fff;
@@ -41,6 +42,10 @@
   --molsan-shadow-card: 0 4px 14px rgba(36, 50, 74, .06);
   --molsan-shadow-glass: 0 12px 34px rgba(29, 43, 68, .10);
   --molsan-shadow-popover: 0 18px 45px rgba(15, 23, 42, .14);
+  --molsan-shadow-dialog: 0 24px 64px rgba(15, 23, 42, .22);
+  --molsan-shadow-panel: var(--molsan-shadow-card);
+  --molsan-card-border: var(--molsan-border);
+  --molsan-card-shadow: var(--molsan-shadow-card);
   --molsan-transition-fast: 150ms ease;
   --molsan-transition-normal: 180ms ease;
 
