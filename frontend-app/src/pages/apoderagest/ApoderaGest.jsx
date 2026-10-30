@@ -872,7 +872,7 @@ export default function ApoderaGest() {
   }).format(new Date());
 
   return (
-    <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
+    <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)] apoderagest">
       <Sidebar
         brandName="ApoderaGest"
         navigationItems={[
