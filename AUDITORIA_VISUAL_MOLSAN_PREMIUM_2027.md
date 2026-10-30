@@ -383,3 +383,12 @@ Se mantiene pendiente el recorrido del resto de herramientas: importaciones, mod
 - El módulo principal Fichajes ya tenía el ámbito `fichajes-premium-page`; se ha mantenido sin añadir un scope de otra familia.
 - No se han tocado marcajes, calendarios laborales, reglas de cómputo, permisos ni datos.
 - Falta comprobar en navegador las tablas de marcajes, los formularios de solicitud y la adaptación de las vistas en móvil.
+
+
+## Decimoctava pasada: ficha y edición de empleados
+
+- **EmpleadoFicha:** hallazgo real de cobertura incompleta: su CSS específico `EmpleadoFicha.css` definía todas las reglas bajo `.empleado-ficha-premium`, pero los tres estados de renderizado (sin selección, carga y ficha) solo montaban `.erp-page`. Se ha añadido el scope premium a los tres contenedores; así las reglas locales previstas pasan a aplicarse de verdad.
+- **EmpleadoEditar:** el contenedor tenía padding fijo `p-6`; se ha convertido en `p-4 sm:p-6` y añadido `min-w-0` para el formulario en anchuras reducidas.
+- **EmpleadosListado:** el modal de alta ya activa el ámbito operativo y tiene semántica accesible.
+- **EmpleadoPerfil** y **EmpleadosModulo2026** ya tienen sus ámbitos premium.
+- No se han cambiado restricciones de edición, permisos ni datos de empleados.
