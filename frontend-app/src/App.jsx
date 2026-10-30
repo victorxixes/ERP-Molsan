@@ -10,6 +10,11 @@ import { useAuthStore } from "./store/authStore";
 import RequireAuth from "./components/auth/RequireAuth";
 import RequireModule from "./components/auth/RequireModule";
 
+const protegerModulo = (modulo, elemento) => (
+  <RequireModule module={modulo}>{elemento}</RequireModule>
+);
+
+
 /* LAYOUT */
 import Layout from "./layout/Layout";
 
@@ -439,7 +444,7 @@ export default function App() {
 
           <Route
             index
-            element={<Dashboard />}
+            element={protegerModulo("dashboard", <Dashboard />)}
           />
 
           <Route
