@@ -135,7 +135,6 @@
 }
 .expediente-operativo-modal-panel {
   width: min(100%, 1152px);
-  max-width: 100%;
   overflow: hidden;
 }
 .ficha-expediente-operativo .overflow-x-auto {
