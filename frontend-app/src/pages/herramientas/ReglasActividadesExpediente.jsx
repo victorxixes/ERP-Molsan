@@ -211,7 +211,7 @@ export default function ReglasActividadesExpediente() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {["Notario", "NIF del notario", "Gestoría", "Fecha de presentación", "Entrada", "Asiento", "Diario"].map((campo) => (
               <div key={campo} className="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm font-medium text-slate-700">
-                <span className="h-2 w-2 rounded-full bg-[var(--molsan-primary-soft)]0" />{campo}
+                <span className="h-2 w-2 rounded-full bg-[var(--molsan-primary)]" />{campo}
               </div>
             ))}
           </div>
@@ -261,7 +261,7 @@ export default function ReglasActividadesExpediente() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {["Fecha de presentación en oficina liquidadora", "Fecha de liquidación tributaria", "Base imponible", "Oficina liquidadora (desplegable existente)", "Tributo exento (desplegable existente)", "Documento AJD/ITP"].map((campo) => (
               <div key={campo} className="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm font-medium text-slate-700">
-                <span className="h-2 w-2 rounded-full bg-[var(--molsan-primary-soft)]0" />{campo}
+                <span className="h-2 w-2 rounded-full bg-[var(--molsan-primary)]" />{campo}
               </div>
             ))}
           </div>
@@ -298,7 +298,7 @@ export default function ReglasActividadesExpediente() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {["Fecha de presentación (heredada de Liquidación impuestos)", "Fecha de vencimiento (automática)", "Fecha de inscripción (manual o extraída del PDF)", "Hoja de inscripción en Carpeta digital"].map((campo) => (
               <div key={campo} className="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm font-medium text-slate-700">
-                <span className="h-2 w-2 rounded-full bg-[var(--molsan-primary-soft)]0" />{campo}
+                <span className="h-2 w-2 rounded-full bg-[var(--molsan-primary)]" />{campo}
               </div>
             ))}
           </div>
