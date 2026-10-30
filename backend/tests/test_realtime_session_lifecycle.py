@@ -6,6 +6,23 @@ from unittest.mock import MagicMock, patch
 from backend.app.realtime.router import _destinatario_activo
 
 
+class WebSocketRejectionTests(unittest.IsolatedAsyncioTestCase):
+    async def test_auth_rejection_accepts_handshake_then_sends_specific_close_code(self):
+        from backend.app.realtime.router import _rechazar_websocket
+
+        websocket = MagicMock()
+        websocket.accept = __import__("unittest").mock.AsyncMock()
+        websocket.close = __import__("unittest").mock.AsyncMock()
+
+        await _rechazar_websocket(websocket, 4403, "El usuario no coincide con el token")
+
+        websocket.accept.assert_awaited_once_with()
+        websocket.close.assert_awaited_once_with(
+            code=4403,
+            reason="El usuario no coincide con el token",
+        )
+
+
 class RealtimeSessionLifecycleTests(unittest.TestCase):
     def test_active_recipient_check_closes_its_database_session(self):
         db = MagicMock()
