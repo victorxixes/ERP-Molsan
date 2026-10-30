@@ -1,6 +1,5 @@
 /* MOLSAN ERP · controles de formulario, botones y estados */
 .molsan-btn { display:inline-flex; min-height:var(--molsan-control-height); align-items:center; justify-content:center; gap:8px; padding:0 12px; border:1px solid transparent; border-radius:var(--molsan-radius-control); font:inherit; font-size:var(--molsan-font-size-md); font-weight:650; line-height:1.2; text-decoration:none; white-space:nowrap; cursor:pointer; transition:color var(--molsan-transition-fast),background-color var(--molsan-transition-fast),border-color var(--molsan-transition-fast),box-shadow var(--molsan-transition-fast); }
-.molsan-btn:focus-visible,.molsan-field__control:focus-visible { outline:3px solid rgba(49,86,179,.24); outline-offset:2px; }
 .molsan-btn:disabled,.molsan-btn[aria-disabled="true"] { cursor:not-allowed; opacity:.55; }
 .molsan-btn--primary { color:#fff; background:var(--molsan-primary); border-color:var(--molsan-primary); }
 .molsan-btn--primary:hover:not(:disabled) { color:#fff; background:var(--molsan-primary-hover); border-color:var(--molsan-primary-hover); }
