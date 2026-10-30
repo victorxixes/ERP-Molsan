@@ -796,3 +796,10 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 - Se detectó y corrigió un caso límite en `permisos.js`: `Number(null) === 0` podía clasificar como administrador un empleado cuyo identificador de rol fuera explícitamente nulo. Ahora solo se reconoce el rol técnico 0 si el identificador existe, además de los criterios explícitos de usuario/rol administrativo.
 - Prueba lógica de regresión: rol 0 → administrador; rol nulo sin nombre/usuario admin → no administrador; `Super Administrador` → administrador; usuario `admin` → administrador; rol ordinario con módulo visible → solo ve ese módulo; rol ordinario sin asignación → no ve ApoderaGest.
 - Commit de endurecimiento: `13dafe78`. La ejecución CI asociada está pendiente.
+
+### Semántica de botones y ciclo de foco
+- Se explicitó `type="button"` en acciones de CTN, NotarGest, Informes, Control Apoderados y Mensajería que no deben enviar formularios; se explicitó `type="submit"` en las acciones que sí envían formularios.
+- Se hizo la misma distinción en formularios de Fichajes, Control de Fichajes, Festivos/Compensaciones y Solicitudes de Ausencia. En Mensajería, los botones de abrir/cerrar son `button` y los de crear/contestar son `submit`.
+- Reescaneo de las pantallas principales: no quedan botones sin atributo `type` en los ficheros corregidos ni en las pantallas de empleados, agenda, selector de módulos y catálogos maestros inspeccionadas.
+- `useAccessibleDialog` incluye ahora elementos nativos `details > summary`, `audio[controls]` y `video[controls]` en el ciclo de foco; además excluye controles descendientes de cualquier ancestro `aria-hidden="true"` o `inert`, no solo controles que lleven el atributo directamente.
+- Commit de foco: `6a8f09c0`; commits de tipos de botón: `3aec61d4`, `bd92143e`, `2de3e581`, `f7e177b6`, `f1dc954a`, `9309efd2`, `0d18e17d`, `3000db29`, `e1b8336e`, `9bfa89e4` y `5f9a377d`.
