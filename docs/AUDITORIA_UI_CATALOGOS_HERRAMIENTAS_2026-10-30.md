@@ -179,3 +179,13 @@ La revisión confirma clases presentes en el código, no una diferencia visual e
 - `TiposExpediente.jsx`: diálogo de alta/edición añadido al gestor común; el componente también queda armonizado visualmente.
 - Los cambios de los tres módulos y los previos se compilaron correctamente en el head `cce08181dea0da4fbc1f68567af7c86bbaacf240`: los cinco workflows consultados finalizaron en `success`, incluido Backend audit.
 - Sigue pendiente la integración de Catálogo ABSIS, CTN, Informes y Expedientes. La cobertura de accesibilidad no se declara completa.
+
+
+## Continuación — diálogos Catálogo ABSIS
+
+- Los diálogos «Crear nueva lista ABSIS» y «Añadir/Editar entrada» integran `useAccessibleDialog`.
+- Cada diálogo tiene ref y foco programático inicial; el gestor contiene Tab/Mayús+Tab, atiende Escape y restaura el foco al control invocador.
+- Durante la creación de una lista Escape no cierra el diálogo mientras la operación está activa. En la edición de entrada Escape queda bloqueado durante el guardado.
+- Se mantienen las validaciones, endpoints y operaciones originales. No se ha creado ninguna lista ni modificado entradas.
+- Commit: `e18f037b`.
+- Pendiente: QA real con teclado/lector de pantalla y viewports escritorio/tablet/móvil; la compilación de este último commit aún no está confirmada.
