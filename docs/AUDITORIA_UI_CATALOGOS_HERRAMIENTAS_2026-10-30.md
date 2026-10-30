@@ -103,3 +103,6 @@ La revisión confirma clases presentes en el código, no una diferencia visual e
 - Para `b873a45d75665df0ad3b59e50664de08e199c6d6`, los cuatro workflows de validación consultados completaron con éxito.
 - En los commits posteriores de cabecera de oficinas y controles de provisiones, varios builds seguían en ejecución al cierre de esta consulta; no se declaran verdes hasta consultar su resultado final. Los checks de backend que ya finalizaron estaban correctos.
 - La PR #374 continúa abierta, en borrador y sin integrar; `main` no tiene commits por delante/por detrás en el punto de comparación anterior. No se ha desplegado ni se han ejecutado operaciones sobre datos.
+
+- Reconsulta CI: `Consolidación Post Firma checks` (41085318969), `EncargaGest checks` (41085318806), `Validar Fichaje Molsan` (41085346459), `EncargaGest checks` (41085346424) y `Consolidación Post Firma checks` (41085346453) finalizaron todos con éxito, incluyendo sus builds frontend y comprobaciones backend correspondientes.
+- `Validar Control Apoderados` del commit `ff67bb27...` (run 41085346446) tenía backend correcto y build frontend aún en ejecución en la última lectura; queda pendiente de cierre.
