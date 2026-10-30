@@ -10,6 +10,7 @@ import CtnListadoPage from "../ctn/CtnListadoPage";
 import { useAuthStore } from "../../store/authStore";
 import { createPortal } from "react-dom";
 import "../../css/PortalProfesionalShared.css";
+import "../../css/ModalesHerramientasPremium.css";
 
 const PESTANAS = [
   { nombre: "Dashboard", icono: "◫" },
