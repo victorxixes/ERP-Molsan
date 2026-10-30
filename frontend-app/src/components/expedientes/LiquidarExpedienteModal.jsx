@@ -210,7 +210,7 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
     </div>
   );
   const vistaPrevia = vistaPreviaUrl ? (
-    <div className="fixed inset-0 z-[10010] flex items-center justify-center bg-slate-950/80 p-2 backdrop-blur-sm sm:p-5" role="dialog" aria-modal="true" aria-labelledby="vista-previa-cierre-titulo">
+    <div className="vista-previa-cierre-modal fixed inset-0 z-[10010] flex items-center justify-center bg-slate-950/80 p-2 backdrop-blur-sm sm:p-5" role="dialog" aria-modal="true" aria-labelledby="vista-previa-cierre-titulo">
       <section className="flex h-[96vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-white/70 bg-white shadow-2xl">
         <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-5 py-3">
           <div><h2 id="vista-previa-cierre-titulo" className="text-base font-extrabold text-slate-900">Vista previa · Expediente digital completo</h2><p className="mt-1 text-xs text-slate-500">Aún no está guardado. Revísalo antes de aceptar.</p></div>
