@@ -728,3 +728,126 @@
     backdrop-filter: none;
   }
 }
+
+
+/* =========================================================
+   MOLSAN PREMIUM 2027 · componentes compartidos
+   Primitivas visuales reutilizables; sin acoplarlas a un módulo.
+   ========================================================= */
+.molsan-glass-panel {
+  min-width: 0;
+  color: var(--molsan-text);
+  background: var(--molsan-surface-glass);
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-panel);
+  box-shadow: var(--molsan-shadow-glass);
+  -webkit-backdrop-filter: blur(var(--molsan-glass-blur)) saturate(145%);
+  backdrop-filter: blur(var(--molsan-glass-blur)) saturate(145%);
+}
+.molsan-content-surface {
+  min-width: 0;
+  color: var(--molsan-text);
+  background: var(--molsan-surface);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+.molsan-toolbar {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--molsan-surface-glass-strong);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+}
+.molsan-toolbar__group {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.molsan-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+  gap: 14px;
+  min-width: 0;
+}
+.molsan-kpi-card {
+  min-width: 0;
+  padding: 16px;
+  color: var(--molsan-text);
+  background: var(--molsan-surface);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+  transition: border-color var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast), transform var(--molsan-transition-fast);
+}
+.molsan-kpi-card:hover {
+  border-color: var(--molsan-border-strong);
+  box-shadow: 0 8px 22px rgba(29, 43, 68, .09);
+  transform: translateY(-1px);
+}
+.molsan-kpi-card__label {
+  margin: 0;
+  color: var(--molsan-text-muted);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: 650;
+}
+.molsan-kpi-card__value {
+  margin: 7px 0 0;
+  color: var(--molsan-text);
+  font-size: 25px;
+  font-weight: 750;
+  letter-spacing: -.035em;
+  font-variant-numeric: tabular-nums;
+}
+.molsan-empty-state {
+  display: grid;
+  min-height: 150px;
+  place-items: center;
+  padding: 24px;
+  color: var(--molsan-text-muted);
+  text-align: center;
+  background: var(--molsan-surface-soft);
+  border: 1px dashed var(--molsan-border-strong);
+  border-radius: var(--molsan-radius-card);
+}
+.molsan-dialog-surface {
+  color: var(--molsan-text);
+  background: var(--molsan-surface);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-dialog);
+  box-shadow: var(--molsan-shadow-popover);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .molsan-glass-panel,
+  .molsan-toolbar {
+    background: #fff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@media (max-width: 640px) {
+  .molsan-toolbar {
+    align-items: stretch;
+    padding: 10px;
+  }
+  .molsan-toolbar__group {
+    width: 100%;
+  }
+  .molsan-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+  .molsan-kpi-card {
+    padding: 12px;
+  }
+  .molsan-kpi-card__value {
+    font-size: 21px;
+  }
+}
