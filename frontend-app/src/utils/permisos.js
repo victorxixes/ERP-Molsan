@@ -28,6 +28,26 @@ import { useAuthStore } from "../store/authStore";
 const MODULOS_EN_CONSTRUCCION = [
 ];
 
+export function esAdministrador(empleado = useAuthStore.getState().empleado) {
+  if (!empleado) return false;
+
+  const rol = String(empleado.rol?.nombre || empleado.rol_nombre || empleado.rol || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+  const usuario = String(empleado.usuario || "").trim().toLowerCase();
+  const rolId = empleado.rol_id ?? empleado.rol?.id;
+
+  return (
+    empleado.es_admin === true ||
+    empleado.is_admin === true ||
+    (rolId !== null && rolId !== undefined && Number(rolId) === 0) ||
+    usuario === "admin" ||
+    /(^|\s)(admin|administrador|administradora|superadmin|superadministrador|superadministradora|superusuario|super usuario|superuser|root)(\s|$)/.test(rol)
+  );
+}
+
 
 /**
  * ============================================================
@@ -67,22 +87,8 @@ export function puedeVerModulo(modulo) {
       .trim()
       .toLowerCase();
 
-  // La cuenta técnica admin (rol_id=0) y los roles administrativos
-  // deben poder descubrir los módulos desde «Espacios de trabajo».
-  // La visibilidad configurada sigue aplicándose al resto de usuarios.
-  const rol = String(empleado.rol?.nombre || empleado.rol_nombre || empleado.rol || "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim()
-    .toLowerCase();
-  const usuario = String(empleado.usuario || "").trim().toLowerCase();
-  const rolId = empleado.rol_id ?? empleado.rol?.id;
-  const esAdministrador =
-    (rolId !== null && rolId !== undefined && Number(rolId) === 0) ||
-    usuario === "admin" ||
-    /(^|\s)(admin|administrador|administradora|superadmin|superusuario|superuser|root)(\s|$)/.test(rol);
-
-  if (esAdministrador) {
+  // La navegación y las rutas usan el mismo criterio central de administración.
+  if (esAdministrador(empleado)) {
     return true;
   }
 
