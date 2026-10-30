@@ -36,3 +36,16 @@ Commit: `9962c63221227bdbc8a4ad41267f33705848156b`.
 - Pruebas visuales reales en navegador, tamaños de pantalla y teclado: pendientes.
 - Pruebas de negocio con expedientes, documentos, pagos y cierre: pendientes y deben hacerse solo con datos de prueba autorizados.
 - Producción / Render LIVE / base de datos: no tocados.
+
+
+## Segunda pasada — portales profesionales (inspección estática)
+Archivos revisados: `ApoderaGest.jsx`, `NotarGest.jsx`, `EncargaGest.jsx` y sus CSS compartidos/específicos.
+
+- Los diálogos principales identificados tienen `role="dialog"` y `aria-modal="true"`; se detectaron dos diálogos en ApoderaGest, cuatro en NotarGest y cinco en EncargaGest.
+- ApoderaGest y los dos portales de NotarGest/EncargaGest no muestran, en los archivos inspeccionados, un manejador explícito de Escape ni gestión explícita del foco para sus diálogos. Requiere prueba de teclado y lector de pantalla; no significa por sí solo que toda apertura/cierre falle.
+- NotarGest tiene breakpoints específicos para bandejas y tarjetas de módulo hasta 390 px, tablas con contenedor desplazable y paneles que se reorganizan en móvil.
+- EncargaGest adapta formularios de dos columnas y paneles de carpeta a una columna en anchos estrechos; permanecen algunas reglas `!important` puntuales para sobreescribir rejillas heredadas.
+- PortalProfesionalShared.css mantiene una deuda de cascada considerable (56 `!important`, 55 media queries y selectores repetidos ya anotados en la auditoría general). No se eliminaron reglas en bloque porque falta comparar cada selector contra su componente real.
+- QA visual real de las bandejas, formularios, gráficos, visor, foco y retorno de foco sigue pendiente en escritorio/tablet/móvil.
+
+Esta pasada no modifica la lógica de negocio ni abre datos reales.
