@@ -122,7 +122,7 @@ export default function CatalogoOficinas() {
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-end">
           <label className="block text-sm font-medium text-slate-700">
             Archivo Excel
-            <input id="catalogo-oficinas-excel" type="file" accept=".xlsx,.xls" onChange={seleccionarArchivo} className="mt-2 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:font-semibold file:text-blue-700" />
+            <input id="catalogo-oficinas-excel" type="file" accept=".xlsx,.xls" onChange={seleccionarArchivo} className="mt-2 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-[var(--molsan-primary-soft)] file:px-3 file:py-2 file:font-semibold file:text-[var(--molsan-primary)]" />
           </label>
           <button type="button" onClick={previsualizar} disabled={!archivo || cargando || importando} className="rounded-xl border border-[var(--molsan-primary-border)] bg-[var(--molsan-primary-soft)] px-4 py-3 text-sm font-semibold text-[var(--molsan-primary)] transition hover:bg-[var(--molsan-primary-border)] disabled:cursor-not-allowed disabled:opacity-50">
             {cargando ? "Validando…" : "Validar y previsualizar"}
