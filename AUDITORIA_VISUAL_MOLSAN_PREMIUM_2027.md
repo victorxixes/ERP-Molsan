@@ -1147,3 +1147,10 @@ Se compararon las claves usadas por `RequireModule` en `App.jsx` con el catálog
 Se confirma que `notificaciones` conserva una ruta directa protegida por su permiso, pero no se añade como entrada de navegación; las notificaciones siguen accesibles desde el control de campana, según el criterio de navegación establecido.
 
 Limitación de QA: no hay una herramienta de navegador interactivo disponible en esta sesión. Por ello, las pruebas de foco/teclado, diálogos anidados, scroll y responsive real a 320/375 px no se declaran ejecutadas. El análisis de CSS, rutas y componentes es estático; la compilación CI valida sintaxis y build, no el render ni la interacción real.
+### Validación CI posterior al ajuste de ruta — 30/10/2026 19:45 UTC
+
+El commit de código `4ae77f4ad4a0432a5277671ea4d8aee22954f5ce` terminó con seis workflows correctos: `Molsan frontend build`, `Backend audit`, `Validar Fichaje Molsan`, `Validar Control Apoderados`, `EncargaGest checks` y `Consolidación Post Firma checks`.
+
+El frontend completó instalación, compilación completa y publicación del artefacto de previsualización. Backend audit ejecutó `compileall` y terminó con `92 passed, 1 warning, 21 subtests passed` usando SQLite aislado, sin conexión a la base de datos de producción. EncargaGest también importó la aplicación FastAPI completa y compiló frontend y backend.
+
+El commit posterior `3c0a880` contiene únicamente documentación de auditoría. No modifica código funcional ni requiere repetir la validación de build.
