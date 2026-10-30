@@ -77,7 +77,14 @@ export default function ModalCtnDetalle({
   // las llamadas existentes desde ApoderaGest.
   const id = notaria?.id;
   const dialogRef = useRef(null);
-  useAccessibleDialog({ open, onClose: () => (onClose || onCerrar)?.(), dialogRef });
+  useAccessibleDialog({
+    open,
+    onClose: () => {
+      if (guardandoAsociacion || guardandoDatosBancarios) return;
+      (onClose || onCerrar)?.();
+    },
+    dialogRef,
+  });
 
   const [ficha, setFicha] = useState(notaria || null);
   const [pestanaActiva, setPestanaActiva] = useState(mostrarAccesosPortales ? "portales" : "ficha");
