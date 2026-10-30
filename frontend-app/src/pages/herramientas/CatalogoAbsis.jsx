@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
 import "../../css/ComponentesOperativosPremium.css";
 import "../../css/ModalesHerramientasPremium.css";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 const API_URL = `${API_BASE}/catalogos-absis`;
 
@@ -46,6 +47,10 @@ export default function CatalogoAbsis() {
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
+  const nuevaListaDialogRef = useRef(null);
+  const entradaDialogRef = useRef(null);
+  useAccessibleDialog({ open: modalNuevaLista, onClose: () => { if (!creandoLista) setModalNuevaLista(false); }, dialogRef: nuevaListaDialogRef });
+  useAccessibleDialog({ open: modal, onClose: () => { if (!guardando) setModal(false); }, dialogRef: entradaDialogRef });
   const [mensaje, setMensaje] = useState("");
 
   const headers = useMemo(() => ({
@@ -225,7 +230,7 @@ export default function CatalogoAbsis() {
       </section>
 
       {modalNuevaLista && <div className="panel-modal-premium fixed inset-0 z-[110] flex items-center justify-center bg-slate-950/50 p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !creandoLista) setModalNuevaLista(false); }}>
-        <section role="dialog" aria-modal="true" aria-labelledby="absis-nueva-lista-titulo" className="w-full max-w-lg rounded-2xl bg-white shadow-2xl">
+        <section ref={nuevaListaDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="absis-nueva-lista-titulo" className="w-full max-w-lg rounded-2xl bg-white shadow-2xl">
           <form onSubmit={crearLista}>
             <div className="border-b border-slate-200 px-6 py-5">
               <h2 id="absis-nueva-lista-titulo" className="text-lg font-bold text-slate-900">Crear nueva lista ABSIS</h2>
@@ -246,7 +251,7 @@ export default function CatalogoAbsis() {
       </div>}
 
       {modal && <div className="panel-modal-premium fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-950/50 p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModal(false); }}>
-        <section role="dialog" aria-modal="true" aria-labelledby="absis-modal-titulo" className="my-auto w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
+        <section ref={entradaDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="absis-modal-titulo" className="my-auto w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
           <form onSubmit={guardar}>
             <div className="border-b border-slate-200 px-6 py-5"><h2 id="absis-modal-titulo" className="text-lg font-bold text-slate-900">{editando ? "Editar entrada" : "Añadir entrada"} · {categoria}</h2><p className="mt-1 text-sm text-slate-500">Elige la lista y rellena los datos. El código es opcional.</p></div>
             <div className="grid gap-4 p-6 sm:grid-cols-2">
