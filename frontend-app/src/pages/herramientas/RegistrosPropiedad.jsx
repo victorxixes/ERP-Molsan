@@ -3874,6 +3874,8 @@ function ModalRegistroPropiedad({
     >
 
       <div
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label={modo === "nuevo" ? "Nuevo registro de propiedad" : "Editar registro de propiedad"}
