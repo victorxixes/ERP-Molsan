@@ -42,3 +42,131 @@
   background: #f5f7fb;
   color: var(--molsan-text-secondary,#526176);
 }
+
+
+/* Control de Apoderados: integrar utilidades heredadas en la paleta corporativa. */
+.control-apoderados-premium {
+  min-width: 0;
+  max-width: 100%;
+  color: var(--molsan-text, #17243a);
+  font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
+}
+.control-apoderados-premium > header,
+.control-apoderados-premium > section {
+  min-width: 0;
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
+}
+.control-apoderados-premium .text-indigo-600,
+.control-apoderados-premium .text-indigo-700,
+.control-apoderados-premium .text-indigo-800 { color: var(--molsan-primary, #3156b3); }
+.control-apoderados-premium .bg-indigo-700 {
+  background-color: var(--molsan-primary, #3156b3);
+}
+.control-apoderados-premium .bg-indigo-700:hover:not(:disabled) {
+  background-color: var(--molsan-primary-hover, #24458f);
+}
+.control-apoderados-premium .border-indigo-100,
+.control-apoderados-premium .border-indigo-200 {
+  border-color: var(--molsan-primary-border, #cbd7ee);
+}
+.control-apoderados-premium input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.control-apoderados-premium select,
+.control-apoderados-premium textarea {
+  max-width: 100%;
+  border-color: var(--molsan-border-strong, #c4d0df);
+  border-radius: var(--molsan-radius-control, 9px);
+  color: var(--molsan-text, #17243a);
+}
+.control-apoderados-premium :is(input,select,textarea,button):focus-visible {
+  outline: 2px solid var(--molsan-primary, #3156b3);
+  outline-offset: 2px;
+}
+.control-apoderados-premium table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.control-apoderados-premium thead { background: var(--molsan-surface-soft, #f7f9fc); }
+.control-apoderados-premium th {
+  color: var(--molsan-text-secondary, #526176);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: .045em;
+}
+.control-apoderados-premium td,
+.control-apoderados-premium th { border-color: var(--molsan-border-light, #e8edf4); }
+.control-apoderados-premium .overflow-x-auto {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Control de Fichajes: acciones, tablas y edición con tokens compartidos. */
+.control-fichajes-admin-premium {
+  min-width: 0;
+  max-width: 100%;
+  color: var(--molsan-text, #17243a);
+  font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
+}
+.control-fichajes-admin-premium :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea) {
+  min-width: 0;
+  max-width: 100%;
+  border-color: var(--molsan-border-strong, #c4d0df);
+  border-radius: var(--molsan-radius-control, 9px);
+  color: var(--molsan-text, #17243a);
+}
+.control-fichajes-admin-premium :is(button,input,select,textarea):focus-visible {
+  outline: 2px solid var(--molsan-primary, #3156b3);
+  outline-offset: 2px;
+}
+.control-fichajes-admin-premium .bg-emerald-700,
+.control-fichajes-admin-premium .bg-blue-700 {
+  background-color: var(--molsan-primary, #3156b3);
+}
+.control-fichajes-admin-premium .bg-emerald-700:hover:not(:disabled),
+.control-fichajes-admin-premium .bg-blue-700:hover:not(:disabled) {
+  background-color: var(--molsan-primary-hover, #24458f);
+}
+.control-fichajes-admin-premium .text-blue-800 { color: var(--molsan-primary, #3156b3); }
+.control-fichajes-admin-premium table { border-collapse: separate; border-spacing: 0; }
+.control-fichajes-admin-premium thead th {
+  background: var(--molsan-surface-soft, #f7f9fc);
+  color: var(--molsan-text-secondary, #526176);
+}
+.control-fichajes-admin-premium th,
+.control-fichajes-admin-premium td { border-color: var(--molsan-border-light, #e8edf4); }
+.control-fichajes-admin-premium .overflow-x-auto {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.control-fichajes-admin-modal {
+  box-sizing: border-box;
+  padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+}
+.control-fichajes-admin-modal > form {
+  max-height: calc(100dvh - 24px);
+  border: 1px solid var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-dialog, 18px);
+  box-shadow: var(--molsan-shadow-dialog, 0 24px 64px rgba(15,23,42,.22));
+}
+@media (max-width: 640px) {
+  .control-apoderados-premium { padding-left: 12px; padding-right: 12px; }
+  .control-apoderados-premium > header { padding: 16px; }
+  .control-apoderados-premium table { min-width: 640px; }
+  .control-fichajes-admin-premium { padding-left: 12px; padding-right: 12px; }
+  .control-fichajes-admin-premium table { min-width: 1250px; }
+  .control-fichajes-admin-modal { align-items: flex-start; }
+  .control-fichajes-admin-modal > form {
+    width: 100%;
+    max-height: calc(100dvh - 16px);
+    padding: 16px;
+    border-radius: 13px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .control-apoderados-premium *,
+  .control-fichajes-admin-premium *,
+  .control-fichajes-admin-modal * {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
