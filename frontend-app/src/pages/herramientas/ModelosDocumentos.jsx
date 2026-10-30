@@ -59,6 +59,77 @@ function LiquidacionPreview({ datosMolsan, logoCliente, expediente, gastos = [],
 }
 
 
+const FACTURA_CAMPOS = [
+  { id: "logo", label: "Logotipo Molsan", x: 6, y: 3, w: 30, h: 8 },
+  { id: "empresa", label: "Datos fiscales de Molsan", x: 42, y: 3, w: 52, h: 12 },
+  { id: "numero", label: "Número de factura", x: 6, y: 19, w: 42, h: 7 },
+  { id: "fecha", label: "Fecha de emisión", x: 52, y: 19, w: 42, h: 7 },
+  { id: "cliente", label: "Datos completos del cliente", x: 6, y: 29, w: 88, h: 15 },
+  { id: "expediente", label: "Expediente · Documento · Notario · Protocolo · Firma", x: 6, y: 47, w: 88, h: 12 },
+  { id: "concepto", label: "Concepto: Honorarios de gestoría · Base", x: 6, y: 62, w: 88, h: 10 },
+  { id: "totales", label: "Base imponible · IVA · Total", x: 48, y: 75, w: 46, h: 12 },
+  { id: "qr", label: "QR Veri*Factu · AEAT", x: 6, y: 86, w: 32, h: 10 },
+];
+function FacturaLayoutDesigner() {
+  const [posiciones, setPosiciones] = useState(() => Object.fromEntries(FACTURA_CAMPOS.map(c => [c.id, { x: c.x, y: c.y, w: c.w, h: c.h }])));
+  const [guardando, setGuardando] = useState(false);
+  const [mensaje, setMensaje] = useState("");
+  const [error, setError] = useState("");
+  useEffect(() => {
+    let activo = true;
+    axios.get("/utilidades/factura-plantilla").then(({ data }) => {
+      const guardadas = data?.configuracion?.posiciones;
+      if (activo && guardadas && typeof guardadas === "object") setPosiciones(prev => ({ ...prev, ...guardadas }));
+    }).catch(() => {});
+    return () => { activo = false; };
+  }, []);
+  const soltarCampo = e => {
+    e.preventDefault();
+    const id = e.dataTransfer.getData("text/plain");
+    const rect = e.currentTarget.getBoundingClientRect();
+    if (!id || !rect.width || !rect.height) return;
+    const x = Math.max(0, Math.min(94, ((e.clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(0, Math.min(94, ((e.clientY - rect.top) / rect.height) * 100));
+    setPosiciones(prev => ({ ...prev, [id]: { ...(prev[id] || {}), x, y } }));
+    setMensaje("");
+  };
+  const guardar = async () => {
+    setGuardando(true); setError(""); setMensaje("");
+    try {
+      const { data } = await axios.put("/utilidades/factura-plantilla", {
+        color: "#174A7E", titulo: "FACTURA", subtitulo: "Honorarios de gestoría",
+        mostrarAvisoAEAT: true, mostrarObservaciones: false, mostrarLogo: true,
+        densidad: "normal", posiciones,
+      });
+      if (!data?.ok) throw new Error(data?.mensaje || "No se pudo guardar la distribución.");
+      setMensaje("Distribución guardada en el ERP.");
+    } catch (e) {
+      setError(e?.response?.data?.detail || e?.message || "No se pudo guardar la distribución.");
+    } finally { setGuardando(false); }
+  };
+  return <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <div><p className="text-xs font-black uppercase tracking-wider text-sky-700">Diseñador de distribución</p><h3 className="font-bold text-slate-900">Arrastra los bloques a la posición deseada</h3><p className="mt-1 text-xs text-slate-500">Recoloca los bloques dentro de la hoja y guarda la configuración.</p></div>
+      <button type="button" onClick={guardar} disabled={guardando} className="rounded-lg bg-sky-700 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{guardando ? "Guardando…" : "Guardar distribución"}</button>
+    </div>
+    <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
+      <div className="overflow-auto rounded-xl bg-slate-100 p-3">
+        <div onDragOver={e => e.preventDefault()} onDrop={soltarCampo} className="relative mx-auto aspect-[210/297] w-full max-w-[620px] overflow-hidden border border-slate-300 bg-white shadow-lg">
+          {FACTURA_CAMPOS.map(c => { const p = posiciones[c.id] || c; return <div key={c.id} draggable onDragStart={e => e.dataTransfer.setData("text/plain", c.id)} style={{ left: p.x + "%", top: p.y + "%", width: p.w + "%", minHeight: p.h + "%" }} className="absolute flex cursor-grab items-center justify-center border border-dashed border-sky-500 bg-sky-50/80 px-1 text-center text-[clamp(7px,1.1vw,11px)] font-semibold leading-tight text-sky-900 active:cursor-grabbing">{c.label}</div>; })}
+          <div className="pointer-events-none absolute bottom-2 left-2 text-[8px] text-slate-300">MOLSAN · FACTURA DE HONORARIOS</div>
+        </div>
+      </div>
+      <aside className="space-y-2">
+        <p className="text-xs font-bold text-slate-700">Campos disponibles</p>
+        {FACTURA_CAMPOS.map(c => <div key={c.id} draggable onDragStart={e => e.dataTransfer.setData("text/plain", c.id)} className="cursor-grab rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:border-sky-300 hover:bg-sky-50">{c.label}</div>)}
+        <p className="pt-2 text-[11px] leading-5 text-slate-500">El QR se reserva para el código fiscal real; no se genera un QR ficticio.</p>
+        {error && <p role="alert" className="text-xs text-rose-700">{error}</p>}
+        {mensaje && <p role="status" className="text-xs font-semibold text-emerald-700">{mensaje}</p>}
+      </aside>
+    </div>
+  </section>;
+}
+
 function FacturaPlantillaEditor() {
   const [plantillaWord, setPlantillaWord] = useState(null);
   const [archivoWord, setArchivoWord] = useState(null);
@@ -166,6 +237,7 @@ function FacturaPlantillaEditor() {
   };
 
   return <section className="space-y-5">
+    <FacturaLayoutDesigner />
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <p className="text-xs font-black uppercase tracking-[.16em] text-sky-700">Plantilla Word original</p>
       <h2 className="mt-1 text-lg font-extrabold text-slate-900">Factura de honorarios de gestoría</h2>
