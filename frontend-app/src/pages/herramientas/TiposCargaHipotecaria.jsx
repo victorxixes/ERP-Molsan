@@ -2,9 +2,11 @@ import React, {
   useEffect,
   useMemo,
   useState,
+  useRef,
 } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 
 // ============================================================
@@ -334,6 +336,9 @@ export default function TiposCargaHipotecaria() {
     setActivo(true);
   }
 
+
+  const dialogRef = useRef(null);
+  useAccessibleDialog({ open: mostrarModal, onClose: cerrarModal, dialogRef });
 
   // ==========================================================
   // GUARDAR
@@ -1254,6 +1259,8 @@ export default function TiposCargaHipotecaria() {
         >
 
           <div
+            ref={dialogRef}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-label={modoEdicion ? "Editar tipo de carga hipotecaria" : "Nuevo tipo de carga hipotecaria"}
