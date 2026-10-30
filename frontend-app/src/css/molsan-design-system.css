@@ -6,11 +6,6 @@
  * llamadas API ni estilos de componentes existentes.
  */
 
-:root {
-  --molsan-radius-panel: var(--molsan-radius-card);
-  --molsan-shadow-panel: var(--molsan-shadow-card);
-}
-
 /* Contenedor de página y cabecera común */
 .molsan-page {
   min-width: 0;
