@@ -8,3 +8,37 @@
 .crear-noticia-premium input,.crear-noticia-premium textarea,.mantenimiento-tecnico-premium input,.mantenimiento-tecnico-premium select,.verifacti-premium input,.verifacti-premium select { max-width:100%; min-width:0; }
 @media(max-width:640px){.informe-apoderado-premium,.visibilidad-tablas-premium,.mantenimiento-tecnico-premium,.verifacti-premium{overflow-x:auto;-webkit-overflow-scrolling:touch}.select-sj-premium [role=listbox]{max-height:40dvh}}
 @media(prefers-reduced-motion:reduce){.agenda-toast-premium *,.notificaciones-toast-premium *,.informe-apoderado-premium *,.visibilidad-tablas-premium *,.provisiones-launcher-premium *,.select-sj-premium *,.herramientas-home-premium *,.mantenimiento-tecnico-premium *,.verifacti-premium *,.crear-noticia-premium *{animation:none!important;transition:none!important}}
+
+
+
+/* Módulos internos: controles y superficies bajo tokens comunes */
+.fichajes-premium-page,
+.mensajes-premium-page,
+.catalogos-premium-page,
+.herramientas-home-premium {
+  color: var(--molsan-text,#17243a);
+  font-family: var(--molsan-font-family,Inter,system-ui,sans-serif);
+}
+.fichajes-premium-page :is(section,article),
+.mensajes-premium-page :is(section,article),
+.catalogos-premium-page :is(section,article),
+.herramientas-home-premium :is(section,article) {
+  border-color: var(--molsan-border,#dce4ef);
+  border-radius: var(--molsan-radius-card,14px);
+}
+.fichajes-premium-page :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),select,textarea),
+.mensajes-premium-page :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),select,textarea),
+.catalogos-premium-page :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),select,textarea) {
+  border-color: var(--molsan-border-strong,#c7d2e0);
+  border-radius: var(--molsan-radius-control,9px);
+  font-family: inherit;
+}
+.fichajes-premium-page table,
+.mensajes-premium-page table,
+.catalogos-premium-page table { font-variant-numeric: tabular-nums; }
+.fichajes-premium-page table thead th,
+.mensajes-premium-page table thead th,
+.catalogos-premium-page table thead th {
+  background: #f5f7fb;
+  color: var(--molsan-text-secondary,#526176);
+}
