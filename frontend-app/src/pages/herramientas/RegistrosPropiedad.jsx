@@ -3163,6 +3163,7 @@ function ModalImportarExcel({
 
     <div
       className="
+        panel-modal-premium
         fixed
         inset-0
         z-50
@@ -3189,6 +3190,9 @@ function ModalImportarExcel({
     >
 
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Importar registros de propiedad desde Excel"
         className="
           w-full
           max-w-3xl
@@ -3836,6 +3840,7 @@ function ModalRegistroPropiedad({
 
     <div
       className="
+        panel-modal-premium
         fixed
         inset-0
         z-50
@@ -3862,6 +3867,9 @@ function ModalRegistroPropiedad({
     >
 
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={modo === "nuevo" ? "Nuevo registro de propiedad" : "Editar registro de propiedad"}
         className="
           max-h-[94vh]
           w-full
