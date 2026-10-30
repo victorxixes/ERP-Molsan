@@ -1241,6 +1241,7 @@ export default function TiposCargaHipotecaria() {
 
         <div
           className="
+            panel-modal-premium
             fixed
             inset-0
             z-[100]
@@ -1253,6 +1254,9 @@ export default function TiposCargaHipotecaria() {
         >
 
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={modoEdicion ? "Editar tipo de carga hipotecaria" : "Nuevo tipo de carga hipotecaria"}
             className="
               w-full
               max-w-xl
