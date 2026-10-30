@@ -3,13 +3,19 @@ from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
 from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 from .schemas import DashboardExpedientesResponse
 from .service import obtener_dashboard_expedientes, obtener_dashboard_cancelagest
+
+def _autorizar_dashboard(usuario=Depends(get_current_user)):
+    require_perm_modulo(usuario, "dashboard", "ver")
+    return usuario
+
 
 router = APIRouter(
     prefix="/dashboard/expedientes",
     tags=["Dashboard Expedientes"],
-    dependencies=[Depends(get_current_user)],
+    dependencies=[Depends(get_current_user), Depends(_autorizar_dashboard)],
 )
 
 
