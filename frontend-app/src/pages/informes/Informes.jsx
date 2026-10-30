@@ -1736,7 +1736,7 @@ function InformeCitasApoderados() {
           "
         >
 
-          <button
+          <button type="button"
             onClick={exportarExcel}
             className="
               px-4
@@ -1761,7 +1761,7 @@ function InformeCitasApoderados() {
           </button>
 
 
-          <button
+          <button type="button"
             onClick={exportarPDF}
             className="
               px-4
