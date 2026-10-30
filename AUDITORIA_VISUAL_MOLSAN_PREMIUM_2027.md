@@ -328,3 +328,10 @@ Se está recorriendo el catálogo real de páginas bajo `pages/herramientas` (40
 - **Accesos Notariales:** comparte el ámbito de CTN/listados. No se ha añadido modal ni wrapper adicional porque la página no contiene un diálogo propio en su JSX.
 
 Se mantiene pendiente el recorrido del resto de herramientas: importaciones, modelos documentales, municipios, oficinas liquidadoras, registros, reglas de actividad, tipos, Verifacti, PPAD, proceso ABSIS y utilidades técnicas.
+
+
+## Undécima pasada: catálogos territoriales
+
+- **Municipios:** sus dos ventanas (importación Excel y alta/edición) activan ahora el sistema de modal compartido. Los paneles interiores contienen `role="dialog"`, `aria-modal` y una etiqueta contextual.
+- **Oficinas Liquidadoras:** los diálogos de alta/edición e importación Excel activan el mismo sistema; las etiquetas accesibles están en los paneles y no en el overlay.
+- Se conservan las anchuras propias (2xl/xl/4xl) y el contenido de los formularios. No se han alterado guardado, importación ni reglas de negocio.
