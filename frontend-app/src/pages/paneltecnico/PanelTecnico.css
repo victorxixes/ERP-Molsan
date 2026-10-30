@@ -43,7 +43,6 @@
 @media (max-width: 640px) {
   .panel-tecnico-premium { gap: 1rem; }
   .panel-tecnico-premium > section:not(:first-child) { padding: 1rem; }
-  .panel-tecnico-premium table { min-width: 640px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .panel-tecnico-premium * { scroll-behavior: auto !important; }
