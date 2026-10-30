@@ -62,22 +62,11 @@
 
 
 
-/* Editor de provisiones: solo dos paneles en una misma fila. */
+/* Editor documental de provisiones: únicamente el diseñador A4. */
 .provision-editor-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  grid-template-areas: "designer tarifas";
+  grid-template-columns: minmax(0, 1fr);
   align-items: start;
   gap: 16px;
 }
-.provision-editor-designer { grid-area: designer; min-width: 0; }
-.provision-editor-config-section { display: contents; }
-.provision-editor-config-section > .mb-4 { display: none; }
-.provision-editor-config-items { display: contents; }
-.provision-editor-tarifas { grid-area: tarifas; min-width: 0; }
-@media (max-width: 1023px) {
-  .provision-editor-layout {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "designer" "tarifas";
-  }
-}
+.provision-editor-designer { min-width: 0; }
