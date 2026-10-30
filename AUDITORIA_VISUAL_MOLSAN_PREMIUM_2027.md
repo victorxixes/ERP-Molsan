@@ -123,3 +123,15 @@ La configuración `frontend-app/src/api/config.js` usa por defecto `https://agen
 **Consecuencia:** no se debe publicar una previsualización aislada sin fijar explícitamente un backend de pruebas. De lo contrario, el frontend de la rama podría enviar peticiones al backend de producción. No se ha creado ningún servicio de preview ni se ha modificado Render.
 
 Antes del QA visual interactivo habrá que proporcionar un backend de pruebas aislado con datos ficticios, o preparar una capa de mocks de API para las pruebas. No se utilizará el backend productivo ni se copiarán datos históricos para esta finalidad.
+
+
+## Detalle inicial de FichaExpediente
+
+En `FichaExpediente.jsx` se han contado estáticamente:
+- 14 usos del componente `<Modal>`.
+- 3 diálogos explícitos con `role="dialog"` y `aria-modal="true"`.
+- 3 identificadores `aria-labelledby` distintos en esos diálogos.
+- 3 llamadas a `createPortal`.
+- Dos clases raíz detectadas: `ficha-expediente-premium erp-page p-6` y `ficha-expediente-premium erp-page space-y-4 pb-8`.
+
+El componente tiene aproximadamente 543 KB de fuente y 675 valores distintos de `className` estáticos detectados. Por su tamaño y densidad, la revisión debe hacerse por subactividad y ventana, no con una sustitución masiva de estilos.
