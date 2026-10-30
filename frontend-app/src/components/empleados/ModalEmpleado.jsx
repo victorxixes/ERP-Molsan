@@ -1,8 +1,10 @@
 import "../../css/ModalesOperativosPremium.css";
+import useAccessibleDialog from "../ui/useAccessibleDialog";
 
 import {
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -448,6 +450,8 @@ export default function ModalEmpleado({
 
   const usuarioSesion = useAuthStore((s) => s.empleado);
   const actualizarEmpleadoSesion = useAuthStore((s) => s.actualizarEmpleadoSesion);
+  const dialogRef = useRef(null);
+  useAccessibleDialog({ open, onClose, dialogRef });
 
   // El rol puede llegar como texto plano, objeto anidado o solo como rol_id.
   // Si el catálogo está cargado, el nombre del rol tiene prioridad sobre el ID.
@@ -2191,6 +2195,8 @@ const permisosDisponibles =
       ====================================================== */}
 
       <div
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label="Ficha de empleado"
