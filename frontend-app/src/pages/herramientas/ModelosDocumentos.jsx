@@ -70,7 +70,32 @@ const FACTURA_CAMPOS = [
   { id: "totales", label: "Base imponible · IVA · Total", x: 48, y: 75, w: 46, h: 12 },
   { id: "qr", label: "QR Veri*Factu · AEAT", x: 6, y: 86, w: 32, h: 10 },
 ];
-function FacturaLayoutDesigner() {
+function FacturaDocumentoPreview({ posiciones, datosMolsan = {} }) {
+  const logo = datosMolsan.logo_data_url || "";
+  const valores = {
+    logo: logo ? <img src={logo} alt="Logotipo Molsan" className="max-h-full max-w-full object-contain" /> : <div className="flex h-full items-center justify-center text-[9px] font-bold text-slate-400">LOGOTIPO MOLSAN</div>,
+    empresa: <div className="leading-tight"><div className="text-[clamp(9px,1.1vw,13px)] font-extrabold text-[#123e70]">{datosMolsan.razon_social || "MOLSAN GESTIÓN Y TRAMITACIÓN"}</div><div className="mt-1 text-[clamp(6px,.65vw,8px)] text-slate-600">{[datosMolsan.nif, datosMolsan.domicilio_fiscal, [datosMolsan.codigo_postal, datosMolsan.poblacion, datosMolsan.provincia].filter(Boolean).join(" ")].filter(Boolean).join(" · ")}</div></div>,
+    numero: <div><div className="font-bold text-[#123e70]">FACTURA N.º</div><div className="mt-1 text-slate-700">HG-2026-0001</div></div>,
+    fecha: <div><div className="font-bold text-[#123e70]">FECHA DE EMISIÓN</div><div className="mt-1 text-slate-700">{new Date().toLocaleDateString("es-ES")}</div></div>,
+    cliente: <div className="h-full"><div className="mb-1 font-extrabold uppercase text-[#123e70]">Datos del cliente</div><div>Nombre / Razón social: <b>Nombre del cliente</b></div><div>NIF: B00000000</div><div>Domicilio fiscal: Dirección · Código postal · Población</div><div>Provincia</div></div>,
+    expediente: <div className="h-full"><div className="mb-1 font-extrabold uppercase text-[#123e70]">Datos del expediente</div><div className="grid grid-cols-2 gap-x-2 gap-y-1"><span>N.º expediente: <b>EXP-000000</b></span><span>Documento: Escritura</span><span>Notario: Nombre del notario</span><span>Protocolo: 0000/2026</span><span>Fecha de firma: DD/MM/AAAA</span></div></div>,
+    concepto: <div className="h-full"><table className="w-full border-collapse text-left"><thead><tr className="border-b border-slate-300 text-[#123e70]"><th className="py-1">Concepto</th><th className="py-1 text-right">Base imponible</th></tr></thead><tbody><tr><td className="py-2">Honorarios de gestoría</td><td className="py-2 text-right">XXX,XX €</td></tr></tbody></table></div>,
+    totales: <div className="ml-auto max-w-full space-y-1 text-right"><div>Base imponible: <b>XXX,XX €</b></div><div>IVA: <b>XX,XX €</b></div><div className="border-t border-slate-400 pt-1 text-[clamp(9px,1vw,12px)] font-extrabold text-[#123e70]">TOTAL HONORARIOS: XXX,XX €</div></div>,
+    qr: <div className="flex h-full items-center gap-2"><div className="flex aspect-square h-full max-h-14 items-center justify-center border border-dashed border-slate-400 p-1 text-center text-[7px] text-slate-400">QR REAL<br/>PENDIENTE</div><div className="text-[clamp(6px,.65vw,8px)] leading-tight text-slate-500">Factura verificable en la Sede Electrónica de la AEAT<br/>Código QR Veri*Factu pendiente de integración oficial</div></div>,
+  };
+  return <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="mb-3"><p className="text-xs font-black uppercase tracking-wider text-emerald-700">Previsualización de la factura</p><h3 className="font-bold text-slate-900">Así quedará el documento · vista A4 en directo</h3><p className="mt-1 text-xs text-slate-500">Esta maqueta se actualiza al instante cuando mueves los bloques de arriba. Los datos e importes son ejemplos, no una factura emitida.</p></div>
+    <div className="overflow-auto rounded-xl bg-slate-100 p-3 sm:p-5">
+      <article className="relative mx-auto aspect-[210/297] w-full max-w-[620px] overflow-hidden border border-slate-200 bg-white shadow-xl">
+        <div className="absolute inset-x-[6%] top-[1.2%] border-b-2 border-[#1e5794] pb-1 text-center text-[clamp(6px,.65vw,8px)] font-bold tracking-[.16em] text-[#1e5794]">FACTURA DE HONORARIOS DE GESTORÍA</div>
+        {FACTURA_CAMPOS.map(c => { const p = posiciones[c.id] || c; return <div key={c.id} style={{left:p.x+"%",top:p.y+"%",width:p.w+"%",height:p.h+"%"}} className="absolute overflow-hidden border border-slate-200 bg-white p-[1.2%] text-[clamp(6px,.72vw,9px)] leading-[1.35] text-slate-700">{valores[c.id]}</div>; })}
+        <div className="absolute bottom-[2%] left-[6%] right-[6%] border-t border-slate-200 pt-1 text-center text-[clamp(5px,.55vw,7px)] text-slate-400">MOLSAN · Documento de ejemplo · No válido como factura</div>
+      </article>
+    </div>
+  </section>;
+}
+
+function FacturaLayoutDesigner({ datosMolsan = {} }) {
   const [posiciones, setPosiciones] = useState(() => Object.fromEntries(FACTURA_CAMPOS.map(c => [c.id, { x: c.x, y: c.y, w: c.w, h: c.h }])));
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState("");
@@ -148,6 +173,7 @@ function FacturaLayoutDesigner() {
         {mensaje && <p role="status" className="text-xs font-semibold text-emerald-700">{mensaje}</p>}
       </aside>
     </div>
+    <div className="mt-5"><FacturaDocumentoPreview posiciones={posiciones} datosMolsan={datosMolsan} /></div>
   </section>;
 }
 
@@ -258,7 +284,7 @@ function FacturaPlantillaEditor() {
   };
 
   return <section className="space-y-5">
-    <FacturaLayoutDesigner />
+    <FacturaLayoutDesigner datosMolsan={datosMolsan} />
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <p className="text-xs font-black uppercase tracking-[.16em] text-sky-700">Plantilla Word original</p>
       <h2 className="mt-1 text-lg font-extrabold text-slate-900">Factura de honorarios de gestoría</h2>
