@@ -808,3 +808,14 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 - `Informes.jsx`: se detectó que el hook y la ref del diálogo «Detalle de facturación» estaban declarados dentro de `InformeFirmas`, mientras que `modalAbierto` y el diálogo pertenecen a `InformeFacturacion`. Se trasladaron el `useRef` y `useAccessibleDialog` al componente propietario, evitando una referencia fuera de ámbito y asegurando que el foco se gestione en el diálogo correcto.
 - `ModalCtnDetalle.jsx`: Escape ya no cierra el detalle CTN mientras se guardan datos bancarios o se procesa una asociación; se conserva la operación en curso y su feedback.
 - Commits: `990eb877` (Informes) y `078f9f38` (CTN). Ambos requieren compilación/CI posterior; la prueba interactiva de cierre durante guardado queda pendiente.
+
+### Cierre seguro durante operaciones asíncronas
+- `EnviarANotarioModal`: el Escape duplicado manual se retiró; ahora usa un único `useAccessibleDialog` y el callback no cierra mientras `loading` esté activo. Los botones y el clic de fondo ya respetaban el bloqueo.
+- `ModalEmpleado`: el hook se trasladó después de los estados y Escape/los dos botones de cierre pasan por un cierre común que bloquea guardado, subida de foto, restablecimiento de contraseña, cambios de visibilidad, asignaciones de notaría y reglas de reparto.
+- `ModalCtnDetalle`: el hook se sitúa después de los estados y no permite cerrar mientras se guardan datos bancarios o asociaciones.
+- `NotarGest`: el perfil CTN no se cierra mientras se está cambiando la contraseña.
+- `ControlFichajesAdmin`: el diálogo de corrección de marcaje no se cierra mientras se guarda el cambio auditado.
+- `MensajeriaMolsan` y `MensajeriaSolicitudes`: se bloquea el cierre del formulario/seguimiento mientras se guarda una solicitud o se envía un mensaje.
+- `ProvisionesFondosPage`: el diálogo de envío por correo no se cierra durante el envío.
+- Se eliminaron los listeners manuales de Escape redundantes en EnviarANotario y ModalEmpleado para que el gestor común sea la única fuente de cierre por teclado.
+- Commits de esta corrección: `a52c05c3`, `9528ad4f`, `1e2cf1b6`, `13c0acb6`, `97442a72`, `317f5713` y `21360fd8`.
