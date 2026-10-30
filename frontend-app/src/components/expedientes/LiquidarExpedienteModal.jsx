@@ -3,7 +3,6 @@ import { createPortal } from "react-dom";
 import axios from "../../api/axios";
 import "../../css/ModalesOperativosPremium.css";
 
-const fechaHoy = () => new Date().toISOString().slice(0, 10);
 const dinero = (valor) => {
   const numero = Number(valor);
   return Number.isFinite(numero)
@@ -39,7 +38,7 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
       facturacion_provincia: valor(expediente, "facturacion_provincia", "provincia_facturacion"),
       facturacion_telefono: valor(expediente, "facturacion_telefono", "telefono_facturacion"),
       facturacion_email: valor(expediente, "facturacion_email", "email_facturacion"),
-      fecha_fin_actividad: String(expediente?.fecha_fin_actividad || fechaHoy()).slice(0, 10),
+      fecha_fin_actividad: String(expediente?.fecha_fin_actividad || "").slice(0, 10),
     });
     setFilas((Array.isArray(movimientos) ? movimientos : []).map((g) => ({
       ...g,
