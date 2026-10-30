@@ -11,6 +11,10 @@ export default function ReasignarNotarioExpediente() {
   const [consultando, setConsultando] = useState(false);
   const [error, setError] = useState("");
   const [mensaje, setMensaje] = useState("");
+  const [actividadActual, setActividadActual] = useState("");
+  const [actividadDestino, setActividadDestino] = useState("");
+  const [motivoActividad, setMotivoActividad] = useState("");
+  const [guardandoActividad, setGuardandoActividad] = useState(false);
 
   async function consultar(evento) {
     evento?.preventDefault();
@@ -30,6 +34,9 @@ export default function ReasignarNotarioExpediente() {
         `/expedientes/${encodeURIComponent(identificador)}`
       );
       setExpediente(data);
+      const actividad = await axios.get(`/notargest/admin/expedientes/${encodeURIComponent(data.id_expediente)}/actividad`);
+      setActividadActual(actividad.data.estado || "recepcion");
+      setActividadDestino(actividad.data.estado || "recepcion");
     } catch (err) {
       setError(
         err?.response?.data?.detail ||
@@ -45,6 +52,29 @@ export default function ReasignarNotarioExpediente() {
     setMensaje(
       `Se han guardado los datos de envío y la asignación notarial del expediente ${expediente.id_expediente}.`
     );
+  }
+
+  async function guardarActividad() {
+    if (!expediente || !actividadDestino || !motivoActividad.trim()) {
+      setError("Selecciona la actividad de destino e indica el motivo del cambio.");
+      return;
+    }
+    setGuardandoActividad(true);
+    setError("");
+    setMensaje("");
+    try {
+      const { data } = await axios.post(
+        `/notargest/admin/expedientes/${encodeURIComponent(expediente.id_expediente)}/actividad`,
+        { estado: actividadDestino, motivo: motivoActividad.trim() }
+      );
+      setActividadActual(data.estado);
+      setMensaje(`Actividad NotarGest actualizada a «${data.estado_texto}». El cambio ha quedado registrado en el histórico.`);
+      setMotivoActividad("");
+    } catch (err) {
+      setError(err?.response?.data?.detail || "No se ha podido actualizar la actividad NotarGest.");
+    } finally {
+      setGuardandoActividad(false);
+    }
   }
 
   function cerrarFormulario() {
@@ -114,6 +144,40 @@ export default function ReasignarNotarioExpediente() {
           </div>
         )}
       </section>
+
+      {expediente && (
+        <section className="rounded-3xl border border-indigo-100 bg-white p-6 shadow-sm space-y-4">
+          <div>
+            <h2 className="text-lg font-bold text-slate-800">3. Cambiar actividad en NotarGest</h2>
+            <p className="mt-1 text-sm text-slate-500">Puedes mover el expediente libremente a cualquiera de las bandejas. El cambio no elimina la fecha de firma, el protocolo ni los documentos ya registrados.</p>
+          </div>
+          <div className="rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
+            Actividad actual: <strong>{actividadActual || "Cargando…"}</strong>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="block text-sm font-semibold text-slate-700">Actividad de destino
+              <select value={actividadDestino} onChange={e => setActividadDestino(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 font-normal">
+                <option value="recepcion">Pendientes de recepción · Nuevo encargo</option>
+                <option value="firma">Pendientes de firma</option>
+                <option value="factura">Pendientes de factura notarial · Firmado</option>
+                <option value="registro">Pendientes de presentación en Registro</option>
+                <option value="ajd">Liquidación AJD / ITP</option>
+                <option value="inscripcion">Pendientes de inscripción</option>
+                <option value="copia">Pendientes de copia simple</option>
+                <option value="cerrada">Escrituras cerradas inscritas</option>
+              </select>
+            </label>
+            <label className="block text-sm font-semibold text-slate-700">Motivo del cambio (obligatorio)
+              <input value={motivoActividad} onChange={e => setMotivoActividad(e.target.value)} maxLength={1000} placeholder="Indica por qué se mueve el expediente" className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 font-normal" />
+            </label>
+          </div>
+          <div className="flex justify-end">
+            <button type="button" onClick={guardarActividad} disabled={guardandoActividad || !actividadDestino || !motivoActividad.trim() || actividadDestino === actividadActual} className="rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white disabled:opacity-50">
+              {guardandoActividad ? "Guardando…" : "Guardar cambio de actividad"}
+            </button>
+          </div>
+        </section>
+      )}
 
       {error && (
         <div role="alert" className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
