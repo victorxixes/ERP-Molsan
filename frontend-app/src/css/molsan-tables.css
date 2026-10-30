@@ -8,3 +8,26 @@
 .molsan-table tbody tr:hover { background:#f7f9fd; }
 .molsan-table-wrap :where(table) { margin:0; }
 @media(max-width:640px) { .molsan-table th,.molsan-table td { padding:8px 10px; } }
+
+
+/* Accesorios comunes para listados operativos y tablas de consulta. */
+.molsan-table thead { position: relative; z-index: 1; }
+.molsan-table th:first-child { border-top-left-radius: 8px; }
+.molsan-table th:last-child { border-top-right-radius: 8px; }
+.molsan-table tbody tr:focus-within { background: var(--molsan-primary-soft); }
+.molsan-table td.numeric,
+.molsan-table th.numeric,
+.molsan-table [data-numeric="true"] {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.molsan-table td.nowrap,
+.molsan-table th.nowrap { white-space: nowrap; }
+.molsan-table-wrap--glass {
+  background: var(--molsan-surface-glass-strong);
+  border-color: var(--molsan-glass-border);
+  box-shadow: var(--molsan-shadow-card);
+}
+@media (max-width: 640px) {
+  .molsan-table-wrap { border-radius: 11px; }
+}
