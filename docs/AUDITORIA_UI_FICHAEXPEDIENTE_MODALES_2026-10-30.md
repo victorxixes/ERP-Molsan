@@ -65,3 +65,13 @@ Revisión de código actual de `LiquidarExpedienteModal.jsx`, `EnviarANotarioMod
 2. Abrir/cerrar el visor y la vista previa de cierre sin perder el estado del modal padre.
 3. Durante cargas, Escape no debe descartar una operación activa ni dejar el overlay huérfano.
 4. Con zoom de navegador al 125 % y viewport estrecho, las acciones principales deben seguir visibles o alcanzables por scroll.
+
+
+## Cuarta pasada — integración de foco y teclado en Expedientes
+
+- El componente `Modal` base de FichaExpediente integra el gestor compartido `useAccessibleDialog`, cubriendo los diálogos que se renderizan mediante este componente.
+- Se integra también en los diálogos explícitos de orden de pago, registro de gasto y PPAD, con sus refs dedicadas.
+- Las acciones de cierre durante operaciones de guardado conservan sus bloqueos existentes; Escape sigue la misma condición para evitar descartar formularios en curso.
+- No se han cambiado cálculos, estados de pago, saldos, endpoints, operaciones económicas ni persistencia.
+- Commit: `83227646`.
+- Pendiente: comprobar modales anidados, apertura/cierre con teclado, retorno de foco, scroll interno, zoom 125 % y responsive en navegador. No se han abierto expedientes ni ejecutado pagos o escrituras.
