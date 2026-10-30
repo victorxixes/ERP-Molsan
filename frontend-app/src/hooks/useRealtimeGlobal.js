@@ -76,6 +76,8 @@ export default function useRealtimeGlobal() {
     let pingInterval =
       null;
 
+    let stableConnectionTimer = null;
+    let reconnectAttempts = 0;
     let mounted =
       true;
 
@@ -113,6 +115,11 @@ export default function useRealtimeGlobal() {
 
       }
 
+      if (stableConnectionTimer) {
+        clearTimeout(stableConnectionTimer);
+        stableConnectionTimer = null;
+      }
+
     };
 
 
@@ -132,6 +139,9 @@ export default function useRealtimeGlobal() {
       }
 
 
+      const delay = Math.min(2000 * (2 ** reconnectAttempts), 30000);
+      reconnectAttempts = Math.min(reconnectAttempts + 1, 5);
+
       reconnectTimer =
         setTimeout(
           () => {
@@ -142,7 +152,7 @@ export default function useRealtimeGlobal() {
             conectar();
 
           },
-          2000
+          delay
         );
 
     };
@@ -741,6 +751,12 @@ export default function useRealtimeGlobal() {
 
 
         console.log("[REALTIME] Conexión establecida.");
+
+        if (stableConnectionTimer) clearTimeout(stableConnectionTimer);
+        stableConnectionTimer = setTimeout(() => {
+          reconnectAttempts = 0;
+          stableConnectionTimer = null;
+        }, 30000);
 
 
         // ----------------------------------------------------
