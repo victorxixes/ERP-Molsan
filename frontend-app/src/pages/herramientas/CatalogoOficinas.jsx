@@ -166,10 +166,10 @@ export default function CatalogoOficinas() {
           </div>
           <label className="block w-full md:max-w-xl">
             <span className="sr-only">Buscar por código, nombre, dirección, población o datos territoriales</span>
-            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100">
+            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 focus-within:border-[var(--molsan-primary)] focus-within:ring-2 focus-within:ring-[var(--molsan-primary-soft)]">
               <span aria-hidden="true">⌕</span>
               <input value={busqueda} onChange={(evento) => { setBusqueda(evento.target.value); setPagina(0); }} placeholder="Código, nombre, dirección, población, provincia, DT, DG o DAN…" className="w-full bg-transparent text-sm outline-none" />
-              {busqueda && <button type="button" onClick={() => { setBusqueda(""); setPagina(0); }} className="text-xs font-semibold text-blue-700">Limpiar</button>}
+              {busqueda && <button type="button" onClick={() => { setBusqueda(""); setPagina(0); }} className="text-xs font-semibold text-[var(--molsan-primary)]">Limpiar</button>}
             </div>
           </label>
         </div>
@@ -178,7 +178,7 @@ export default function CatalogoOficinas() {
             <thead className="bg-slate-100 text-xs uppercase tracking-wide text-slate-600"><tr>{columnasVisibles.map(([campo, titulo]) => <th key={campo} className="whitespace-nowrap px-3 py-3 font-semibold">{titulo}</th>)}</tr></thead>
             <tbody>
               {cargando ? <tr><td colSpan={COLUMNAS.length} className="px-4 py-10 text-center text-slate-500">Cargando catálogo…</td></tr>
-                : oficinas.length ? oficinas.map((fila) => <tr key={fila.id} className="border-t border-slate-100 hover:bg-blue-50/50">{columnasVisibles.map(([campo]) => <td key={campo} className="max-w-64 truncate px-3 py-3 text-slate-700" title={fila[campo]}>{fila[campo] || "—"}</td>)}</tr>)
+                : oficinas.length ? oficinas.map((fila) => <tr key={fila.id} className="border-t border-slate-100 hover:bg-[var(--molsan-primary-soft)]">{columnasVisibles.map(([campo]) => <td key={campo} className="max-w-64 truncate px-3 py-3 text-slate-700" title={fila[campo]}>{fila[campo] || "—"}</td>)}</tr>)
                 : <tr><td colSpan={COLUMNAS.length} className="px-4 py-10 text-center text-slate-500">No hay oficinas que mostrar. Importa tu Excel para comenzar.</td></tr>}
             </tbody>
           </table>
