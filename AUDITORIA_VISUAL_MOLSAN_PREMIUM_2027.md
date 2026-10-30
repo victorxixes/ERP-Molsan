@@ -1052,3 +1052,13 @@ Se verificaron los contenedores de las tablas que conservan anchuras mínimas el
 - NotarGest: tablas de ancho extenso dentro de `.ng-tabla-contenedor` con scroll horizontal; la hoja local define 760px y prevalece sobre el mínimo de la hoja compartida por orden de importación.
 
 No se elimina el ancho mínimo: preserva la lectura de columnas. El punto pendiente es comprobar visualmente en navegador a 320/375px que el scroll queda confinado al contenedor y no produce desplazamiento horizontal del documento completo.
+
+### Agenda — permisos de acción aplicados en backend — 30/10/2026
+
+El frontend de Agenda ya distinguía explícitamente `agenda.ver`, `agenda.crear`, `agenda.editar` y `agenda.eliminar`, pero el router backend solo exigía JWT. Se ha alineado la API con ese contrato:
+- Lecturas, búsqueda, consulta diaria/semanal/mensual y diagnóstico: `agenda.ver`.
+- Alta: `agenda.crear`.
+- Edición y movimiento: `agenda.editar`.
+- Borrado: `agenda.eliminar`.
+
+La comprobación se aplica en cada endpoint mediante `require_perm_modulo`; no se concede permiso por rol ni por ser administrador. Esto cierra la diferencia entre los controles de botones del frontend y la autorización real del servidor. Las asignaciones efectivas deben probarse con perfiles de prueba antes de desplegar.
