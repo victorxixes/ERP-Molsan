@@ -59,3 +59,10 @@
     transition-duration: .01ms !important;
   }
 }
+
+/* Acabado compartido de tarjetas del dashboard CancelaGest */
+.cg-page .cg-kpi,.cg-page .cg-section,.cg-page .cg-panel,.cg-page .cg-module-card{border-color:var(--molsan-border,#dce4ef);box-shadow:var(--molsan-shadow-card,0 4px 14px rgba(36,50,74,.06))}
+.cg-page .cg-kpi{background:linear-gradient(145deg,#fff,#fbfcff)}
+.cg-page .cg-kpi strong{font-variant-numeric:tabular-nums;letter-spacing:-.035em}
+.cg-page .cg-module-card{transition:transform var(--molsan-transition-fast,150ms ease),border-color var(--molsan-transition-fast,150ms ease),box-shadow var(--molsan-transition-fast,150ms ease)}
+.cg-page .cg-module-card:hover{transform:translateY(-2px)}
