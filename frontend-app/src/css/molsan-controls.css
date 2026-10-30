@@ -18,3 +18,51 @@
 .molsan-status--warning { color:var(--molsan-warning); background:#fff7e8; border-color:#f4e1b6; }
 .molsan-status--danger { color:var(--molsan-danger); background:#fff0f1; border-color:#f4d0d4; }
 .molsan-status--info { color:var(--molsan-primary); background:var(--molsan-primary-soft); border-color:#d8e3ff; }
+
+
+/* Estados y variantes complementarias del sistema de controles. */
+.molsan-btn--soft {
+  color: var(--molsan-primary);
+  background: var(--molsan-primary-soft);
+  border-color: rgba(49, 86, 179, .14);
+}
+.molsan-btn--soft:hover:not(:disabled) {
+  background: #e3ebfb;
+  border-color: rgba(49, 86, 179, .28);
+}
+.molsan-btn--ghost {
+  color: var(--molsan-text-secondary);
+  background: transparent;
+  border-color: transparent;
+}
+.molsan-btn--ghost:hover:not(:disabled) {
+  color: var(--molsan-primary);
+  background: var(--molsan-primary-soft);
+}
+.molsan-field__control[aria-invalid="true"],
+.molsan-field__control:invalid:not(:placeholder-shown) {
+  border-color: var(--molsan-danger);
+}
+.molsan-field__hint {
+  color: var(--molsan-text-muted);
+  font-size: var(--molsan-font-size-sm);
+  line-height: 1.45;
+}
+.molsan-field__error {
+  color: var(--molsan-danger);
+  font-size: var(--molsan-font-size-sm);
+  line-height: 1.45;
+}
+.molsan-status--neutral {
+  color: var(--molsan-text-secondary);
+  background: #f1f4f8;
+  border-color: var(--molsan-border);
+}
+.molsan-status--primary {
+  color: var(--molsan-primary);
+  background: var(--molsan-primary-soft);
+  border-color: #d8e3ff;
+}
+@media (prefers-reduced-motion: reduce) {
+  .molsan-btn { transition: none; }
+}
