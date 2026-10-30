@@ -896,6 +896,9 @@ class FacturaPlantillaConfigRequest(BaseModel):
     posiciones: Optional[dict] = None
     orden_campos: Optional[list] = None
 
+class DocumentoLayoutConfigRequest(BaseModel):
+    posiciones: Optional[dict] = None
+
 
 @router.get("/datos-molsan")
 def obtener_datos_molsan(
@@ -922,10 +925,11 @@ def guardar_datos_molsan(
     fila_actual = db.execute(text("SELECT datos FROM datos_molsan_config WHERE id = 1")).mappings().first()
     datos_actuales = dict(fila_actual["datos"] or {}) if fila_actual else {}
     # Mantener las preferencias del editor al actualizar los datos fiscales corporativos.
-    config_plantilla = datos_actuales.get("configuracion_factura_honorarios")
     contenido_datos = datos.dict()
-    if config_plantilla:
-        contenido_datos["configuracion_factura_honorarios"] = config_plantilla
+    # Las preferencias de diseño de documentos se conservan al actualizar los datos corporativos.
+    for clave_config in ("configuracion_factura_honorarios", "configuracion_documento_liquidacion", "configuracion_documento_provision"):
+        if clave_config in datos_actuales:
+            contenido_datos[clave_config] = datos_actuales[clave_config]
     contenido = json.dumps(contenido_datos, ensure_ascii=False)
     db.execute(text("""
         INSERT INTO datos_molsan_config (id, datos, actualizado_en)
@@ -978,3 +982,47 @@ def guardar_configuracion_factura_plantilla(
         db.rollback()
         logger.exception("Error guardando la configuración de la plantilla de factura")
         raise HTTPException(status_code=500, detail="No se pudo guardar el diseño de la factura en el ERP.")
+
+@router.get("/documentos-plantilla/{documento_id}")
+def obtener_configuracion_documento_plantilla(
+    documento_id: str,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "ver")
+    if documento_id not in {"liquidacion", "provision"}:
+        raise HTTPException(status_code=404, detail="Tipo de documento no válido.")
+    _asegurar_tabla_datos_molsan(db)
+    fila = db.execute(text("SELECT datos FROM datos_molsan_config WHERE id = 1")).mappings().first()
+    datos = dict(fila["datos"] or {}) if fila else {}
+    return {"configuracion": datos.get(f"configuracion_documento_{documento_id}") or {}}
+
+
+@router.put("/documentos-plantilla/{documento_id}")
+def guardar_configuracion_documento_plantilla(
+    documento_id: str,
+    config: DocumentoLayoutConfigRequest,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "editar")
+    if documento_id not in {"liquidacion", "provision"}:
+        raise HTTPException(status_code=404, detail="Tipo de documento no válido.")
+    _asegurar_tabla_datos_molsan(db)
+    try:
+        fila = db.execute(text("SELECT datos FROM datos_molsan_config WHERE id = 1")).mappings().first()
+        datos = dict(fila["datos"] or {}) if fila else {}
+        datos[f"configuracion_documento_{documento_id}"] = config.dict()
+        db.execute(text("""
+            INSERT INTO datos_molsan_config (id, datos, actualizado_en)
+            VALUES (1, CAST(:datos AS JSONB), CURRENT_TIMESTAMP)
+            ON CONFLICT (id) DO UPDATE
+            SET datos = EXCLUDED.datos, actualizado_en = CURRENT_TIMESTAMP
+        """), {"datos": json.dumps(datos, ensure_ascii=False)})
+        db.commit()
+        return {"ok": True, "mensaje": "Distribución del documento guardada.", "configuracion": config.dict()}
+    except Exception:
+        db.rollback()
+        logger.exception("Error guardando la distribución del documento %s", documento_id)
+        raise HTTPException(status_code=500, detail="No se pudo guardar la distribución del documento.")
+
