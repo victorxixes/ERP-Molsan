@@ -33,3 +33,20 @@ La revisión confirma clases presentes en el código, no una diferencia visual e
 - El `package.json` de la raíz y el de `frontend-app` declaran versiones distintas de React Router, Vite y Tailwind. Como el workflow y la aplicación de Render están configurados para el frontend bajo `frontend-app`, la raíz parece ser una configuración heredada; conviene verificar cuál es la fuente oficial de instalación antes de limpiar o sincronizar manifiestos.
 - No se encontró en el manifiesto de `frontend-app` un script Playwright/Cypress/Vitest. No se deben presentar como realizadas pruebas automatizadas de interacción que no están configuradas.
 - Recomendación antes de integrar: confirmar el comando y directorio exactos de build usados por Render LIVE, contrastarlos con el workflow de CI y documentar el resultado. No se ha modificado configuración de build ni despliegue.
+
+## Verificación de Render y manifiestos — 30/10/2026
+
+- Workspace comprobado: **Molsan** (tea-d8cr02ek1jcs73a3s880), no Agenda_Molsan.
+- Servicio frontend LIVE: agenda-intranet-f, rama main, directorio raíz frontend-app, build `npm install && npm run build`, publicación dist. Auto-deploy por commit activo y previews de PR deshabilitadas.
+- Servicio backend LIVE: agenda-intranet-b, rama main, despliegue Docker desde la raíz. Ambos servicios estaban en estado live al consultar los despliegues; el último commit servido en ambos era e81d4ab9d571f9e266d7181db8bca57c49d98812. Por tanto, la rama de la PR no se ha desplegado en LIVE mediante esta configuración.
+- El workflow de compilación frontend usa también frontend-app y Node 20, por lo que coincide en directorio con Render. No coincide en el comando de instalación: CI usa `npm install --no-audit --no-fund`, Render usa `npm install`; ambos ejecutan `npm run build`.
+- En la rama auditada, frontend-app/.env contiene las URL públicas de API y WebSocket de producción. Son endpoints, no credenciales secretas, pero su presencia en el repositorio puede inducir a que un entorno local o una preview hable con producción. Render tiene las previews de PR deshabilitadas actualmente; antes de habilitarlas, habría que separar explícitamente la configuración de entornos y comprobar que los datos de prueba no apunten a producción.
+- La búsqueda de archivos no localizó package-lock.json ni en raíz ni en frontend-app. Esto debe confirmarse en una inspección completa del árbol antes de darlo por definitivo. Si realmente no hay lockfile, las instalaciones con rangos ^ pueden resolver versiones diferentes entre builds; conviene generar y revisar un lockfile en un cambio separado, no improvisar versiones durante esta auditoría.
+- El package.json raíz parece heredado frente al de frontend-app: difieren versiones de React Router, Vite y Tailwind. La configuración de Render y CI apunta a frontend-app, así que no se deben sincronizar ni actualizar dependencias en la raíz sin identificar primero si algún flujo todavía la utiliza.
+
+## Rutas principales — revisión estática
+
+- App.jsx usa importación diferida (lazy) para la mayoría de módulos y agrupa las rutas internas bajo un layout protegido por RequireAuth.
+- Hay rutas externas de ApoderaGest, NotarGest y EncargaGest fuera de ese wrapper general. Esto puede ser intencional para portales con autenticación propia; queda pendiente verificar en navegador que cada portal valide su sesión y no exponga datos antes de autenticar.
+- Se conservan alias de compatibilidad (notargestweb, encargagestweb y variantes de rutas externas). No se han eliminado para evitar romper enlaces existentes.
+- La revisión de texto no detecta por sí sola rutas huérfanas, errores de navegación por permisos o módulos que fallen al cargar. Requiere pruebas con perfiles de usuario autorizados y no autorizados.
