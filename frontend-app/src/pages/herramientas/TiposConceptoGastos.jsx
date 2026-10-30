@@ -2,8 +2,10 @@ import React, {
   useEffect,
   useMemo,
   useState,
+  useRef,
 } from "react";
 import axios from "../../api/axios";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
 
@@ -115,6 +117,8 @@ export default function TiposConceptoGastos() {
 
   const [mostrarModal, setMostrarModal] =
     useState(false);
+  const dialogRef = useRef(null);
+  useAccessibleDialog({ open: mostrarModal, onClose: cerrarModal, dialogRef });
 
   const [modoEdicion, setModoEdicion] =
     useState(false);
@@ -2386,6 +2390,8 @@ export default function TiposConceptoGastos() {
         >
 
           <div
+            ref={dialogRef}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-label={modoEdicion ? "Editar tipo de concepto de gasto" : "Nuevo tipo de concepto de gasto"}
