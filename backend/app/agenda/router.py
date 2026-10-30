@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
 from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 
 from backend.app.agenda.schemas import (
     CitaCreate,
@@ -34,6 +35,13 @@ from backend.app.agenda.models import Cita
 # ============================================================
 # ROUTER
 # ============================================================
+
+def _permiso_agenda(accion: str):
+    def comprobar(usuario=Depends(get_current_user)):
+        require_perm_modulo(usuario, "agenda", accion)
+        return usuario
+    return comprobar
+
 
 router = APIRouter(
     prefix="/agenda",
@@ -61,6 +69,7 @@ def buscar_citas(
     desde: str | None = None,
     hasta: str | None = None,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_agenda("ver")),
 ):
 
     q = db.query(Cita)
@@ -185,6 +194,7 @@ def buscar_citas(
 def citas_dia(
     fecha: date,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_agenda("ver")),
 ):
 
     return obtener_citas_dia(
@@ -204,6 +214,7 @@ def citas_dia(
 def citas_semana(
     fecha: date,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_agenda("ver")),
 ):
 
     return obtener_citas_semana(
@@ -217,7 +228,7 @@ def citas_semana(
 # ============================================================
 
 @router.get("/mes/{anio}/{mes}")
-def citas_mes(anio: int, mes: int, db: Session = Depends(get_db)):
+def citas_mes(anio: int, mes: int, db: Session = Depends(get_db), _usuario=Depends(_permiso_agenda("ver"))):
     if mes < 1 or mes > 12:
         raise HTTPException(
             status_code=400,
@@ -245,6 +256,7 @@ def citas_mes(anio: int, mes: int, db: Session = Depends(get_db)):
 def obtener(
     id: int,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_agenda("ver")),
 ):
 
     cita = obtener_cita(
@@ -273,6 +285,7 @@ def obtener(
 async def create_cita(
     cita: CitaCreate,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_agenda("crear")),
 ):
 
     nueva = crear_cita(
@@ -295,6 +308,7 @@ async def editar(
     id: int,
     data: CitaUpdate,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_agenda("editar")),
 ):
 
     editada = editar_cita(
@@ -323,6 +337,7 @@ async def editar(
 async def eliminar(
     id: int,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_agenda("eliminar")),
 ):
 
     resultado = eliminar_cita(
@@ -354,6 +369,7 @@ async def mover(
     id: int,
     fecha: date,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_agenda("editar")),
 ):
 
     resultado = mover_cita(
@@ -377,7 +393,7 @@ async def mover(
 # ============================================================
 
 @router.get("/debug/estado")
-def debug_estado(db: Session = Depends(get_db)):
+def debug_estado(db: Session = Depends(get_db), _usuario=Depends(_permiso_agenda("ver"))):
     total = db.query(Cita).count()
     return {
         "status": "ok",
