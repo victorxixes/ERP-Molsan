@@ -153,6 +153,14 @@ const MODULOS_ERP = [
   },
 
   {
+    key: "mantenimiento-tecnico",
+    label: "Mantenimiento técnico",
+    route: "/herramientas/mantenimiento-tecnico",
+    permiso: "utilidades",
+    icon: "settings",
+  },
+
+  {
     key: "seguridad",
     label: "Seguridad",
     route: "/seguridad",
