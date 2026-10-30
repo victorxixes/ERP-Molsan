@@ -314,3 +314,29 @@
   .dashboard-cancelagest .dashboard-signatures-wrap .dashboard-kpi { min-height: 0; }
   .dashboard-cancelagest .dashboard-signatures-wrap .erp-card { padding: 14px; }
 }
+
+
+
+/* Dashboard CancelaGest: superficies, datos y tarjetas bajo el mismo sistema */
+.dashboard-cancelagest {
+  font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
+}
+.dashboard-cancelagest :is(.dashboard-kpi,.erp-card) {
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
+}
+.dashboard-cancelagest .dashboard-kpi {
+  background: linear-gradient(145deg, #fff, #fbfcff);
+  transition: transform var(--molsan-transition-fast,150ms ease), box-shadow var(--molsan-transition-fast,150ms ease), border-color var(--molsan-transition-fast,150ms ease);
+}
+.dashboard-cancelagest .dashboard-kpi:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(29,43,68,.09);
+}
+.dashboard-cancelagest .dashboard-kpi__value,
+.dashboard-cancelagest table { font-variant-numeric: tabular-nums; }
+.dashboard-cancelagest table thead th {
+  background: #f5f7fb;
+  color: var(--molsan-text-secondary, #526176);
+}
