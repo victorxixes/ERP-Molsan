@@ -131,7 +131,8 @@
 
 @media (max-width: 640px) {
   .ficha-expediente-premium {
-    padding: 12px;
+    padding-left: 12px;
+    padding-right: 12px;
     padding-top: 12px;
   }
 
