@@ -788,5 +788,4 @@
 .encargagest .eg-tabla { width: 100%; font-variant-numeric: tabular-nums; }
 @media (max-width: 640px) {
   .encargagest :is(.eg-modal,.eg-modal-perfil) { max-width: calc(100vw - 16px); max-height: calc(100dvh - 16px); }
-  .encargagest .eg-tabla { min-width: 640px; }
 }
