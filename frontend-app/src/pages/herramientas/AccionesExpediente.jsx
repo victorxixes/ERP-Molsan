@@ -1,9 +1,11 @@
 import "../../css/ModalesHerramientasPremium.css";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import React, {
   useCallback,
   useEffect,
   useMemo,
   useState,
+  useRef,
 } from "react";
 
 
@@ -1109,6 +1111,11 @@ export default function AccionesExpediente() {
     );
 
   }
+
+  const accionDialogRef = useRef(null);
+  const importarDialogRef = useRef(null);
+  useAccessibleDialog({ open: mostrarModal, onClose: cerrarModal, dialogRef: accionDialogRef });
+  useAccessibleDialog({ open: mostrarImportar, onClose: cerrarImportar, dialogRef: importarDialogRef });
 
 
   async function importarExcel(
@@ -2368,6 +2375,8 @@ export default function AccionesExpediente() {
         >
 
           <div
+            ref={accionDialogRef}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-label={modoEdicion ? "Editar acción del expediente" : "Nueva acción del expediente"}
@@ -2703,6 +2712,8 @@ export default function AccionesExpediente() {
         >
 
           <div
+            ref={importarDialogRef}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-label="Importar acciones del expediente"
