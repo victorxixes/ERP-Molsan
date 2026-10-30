@@ -99,10 +99,10 @@ export default function SelectSJ({
           w-full
           min-h-[42px]
           bg-white
-          border border-slate-300
+          border border-[var(--molsan-border-strong,#c4d0df)]
           rounded-xl
           px-3 py-2
-          text-slate-700
+          text-[var(--molsan-text,#17243a)]
           text-left
           font-medium
           flex
@@ -116,7 +116,7 @@ export default function SelectSJ({
           ${
             disabled
               ? "opacity-60 cursor-not-allowed bg-slate-100"
-              : "hover:border-blue-400 hover:bg-slate-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              : "hover:border-[var(--molsan-primary,#3156b3)] hover:bg-[var(--molsan-primary-soft,#edf3ff)] cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--molsan-primary,#3156b3)] focus-visible:outline-offset-2"
           }
         `}
       >
@@ -128,7 +128,7 @@ export default function SelectSJ({
           className={`
             w-4 h-4
             shrink-0
-            text-slate-500
+            text-[var(--molsan-text-muted,#64748b)]
             transition-transform
             duration-200
             ${open ? "rotate-180" : ""}
@@ -196,8 +196,8 @@ export default function SelectSJ({
 
                     ${
                       seleccionada
-                        ? "bg-blue-50 text-blue-700 font-semibold"
-                        : "text-slate-700 hover:bg-slate-50"
+                        ? "bg-[var(--molsan-primary-soft,#edf3ff)] text-[var(--molsan-primary,#3156b3)] font-semibold"
+                        : "text-[var(--molsan-text-secondary,#526176)] hover:bg-[var(--molsan-surface-soft,#f7f9fc)]"
                     }
                   `}
                 >
@@ -207,7 +207,7 @@ export default function SelectSJ({
 
                   {seleccionada && (
                     <svg
-                      className="w-4 h-4 shrink-0 text-blue-600"
+                      className="w-4 h-4 shrink-0 text-[var(--molsan-primary,#3156b3)]"
                       aria-hidden="true"
                     >
                       <use href="/icons/icons.svg#check" />
