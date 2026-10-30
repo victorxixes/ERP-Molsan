@@ -1078,3 +1078,14 @@ Se ha extendido el control de visibilidad del expediente a los routers auxiliare
 El guard compartido valida solo el expediente solicitado, devuelve 404 para referencias fuera del ámbito y conserva el criterio central de administradores/empleados con reglas de reparto. Traspasos de saldo ya calculaba `ids_expedientes_visibles` en sus operaciones y se mantiene.
 
 No se han cambiado reglas de reparto ni asignaciones de empleados. Queda validar con perfiles de prueba: empleado con expediente asignado, empleado sin asignación y administrador con permisos explícitos.
+
+### Autorización funcional adicional — Agenda, informes, Dashboard y ABSIS — 30/10/2026
+
+Se alinearon permisos de acción del backend con las operaciones expuestas:
+- Agenda: `agenda.ver/crear/editar/eliminar` por endpoint, según lectura, alta, modificación/movimiento y borrado.
+- Informes ApoderaGest y firmas/notarios: `informes.ver`; la modificación de datos de firma exige además `expedientes.editar`.
+- Dashboard: `dashboard.ver`.
+- Proceso ABSIS: lecturas/exportación con `utilidades.ver`; alta, borrado, reintento y cambio de estado con `utilidades.editar`.
+- Importación ABSIS de expedientes: `utilidades.editar`.
+
+No se ha extendido indiscriminadamente el control de acciones a todos los catálogos auxiliares: Maestros, Municipios y varios catálogos todavía tienen endpoints autenticados cuya autorización de escritura no está unificada con el modelo acción-permiso. Se mantiene como deuda de autorización para revisar con la matriz real de SeguridadUsuarios y el uso de cada pantalla, en lugar de asignar una acción por intuición.
