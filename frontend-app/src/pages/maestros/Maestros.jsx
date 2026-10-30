@@ -360,7 +360,7 @@ export default function Maestros() {
   ---------------------------------------------------------- */
 
   return (
-    <div className="maestros-premium-page p-6 space-y-6 animate-fade-in">
+    <div className="maestros-premium-page min-w-0 p-4 sm:p-6 space-y-6 animate-fade-in">
 
       {/* ======================================================
           CABECERA
