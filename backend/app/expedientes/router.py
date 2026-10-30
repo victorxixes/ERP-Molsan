@@ -4042,7 +4042,7 @@ def generar_documento_factura_honorarios(
         story.append(tabla_exp)
         if datos.get("observaciones"):
             story.extend([Paragraph("OBSERVACIONES", styles["FacturaSeccionMolsan"]), Paragraph(escape(str(datos["observaciones"])).replace("\\n", "<br/>"), styles["FacturaCeldaMolsan"])])
-        story.extend([Spacer(1, 8*mm), Paragraph("Documento generado por ERP-Molsan a partir de la plantilla oficial vinculada al concepto de honorarios de gestoría.", styles["FacturaSubMolsan"])])
+        story.extend([Spacer(1, 5*mm), Paragraph("<b>Factura verificable en la Sede Electrónica de la AEAT</b>", styles["FacturaSubMolsan"]), Paragraph("Espacio reservado para el QR fiscal. Se incorporará cuando la emisión Veri*Factu esté integrada y validada; no se genera un código QR ficticio.", styles["FacturaSubMolsan"])])
         doc.build(story)
         buffer.seek(0)
         if not factura_existente:
