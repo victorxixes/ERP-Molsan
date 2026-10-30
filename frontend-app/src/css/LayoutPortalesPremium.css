@@ -237,3 +237,52 @@
   background: var(--erp-primary-soft, #edf3ff);
   color: var(--erp-primary, #3156b3);
 }
+
+/* ============================================================
+   MOLSAN PREMIUM 2027 · GLASS LUXE — navegación principal
+   Conserva el DOM y el modelo de permisos; solo cambia la capa visual.
+   ============================================================ */
+.erp-app-shell {
+  min-height: 100vh;
+  color: var(--molsan-text, #17243a);
+  background:
+    radial-gradient(ellipse at 10% 0%, rgba(91, 126, 190, .10), transparent 38%),
+    radial-gradient(ellipse at 92% 12%, rgba(160, 178, 211, .13), transparent 34%),
+    var(--molsan-page-bg, #eef2f8);
+}
+.erp-main-content {
+  min-width: 0;
+  background: transparent;
+}
+.erp-main-inner {
+  min-width: 0;
+}
+.mol-sidebar-premium {
+  background: var(--molsan-surface-glass-strong, rgba(255,255,255,.90));
+  border-color: rgba(194, 205, 224, .72);
+  box-shadow: 0 10px 30px rgba(29, 43, 68, .08);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(150%);
+}
+.mol-sidebar-premium nav a,
+.mol-sidebar-premium nav button {
+  transition:
+    color var(--molsan-transition-fast, 150ms ease),
+    background-color var(--molsan-transition-fast, 150ms ease),
+    border-color var(--molsan-transition-fast, 150ms ease),
+    box-shadow var(--molsan-transition-fast, 150ms ease);
+}
+.mol-sidebar-premium nav a[aria-current="page"],
+.mol-sidebar-premium nav button[aria-current="page"],
+.mol-sidebar-premium nav a[data-active="true"],
+.mol-sidebar-premium nav button[data-active="true"] {
+  background: rgba(49, 86, 179, .09);
+  box-shadow: inset 0 0 0 1px rgba(49, 86, 179, .13);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .mol-sidebar-premium {
+    background: #fff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
