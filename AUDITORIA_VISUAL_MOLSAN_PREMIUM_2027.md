@@ -212,3 +212,40 @@ Se han inspeccionado estáticamente también:
 - Los tres workflows de módulo del commit `7b73e56d` finalizaron correctamente.
 - Para el último commit `db2a2154`, el build general y los workflows de módulo se encuentran ejecutándose; no se declaran correctos hasta recibir su resultado.
 - No se ha fusionado la PR ni se ha desplegado nada en Render.
+
+
+## Quinta pasada: inventario estático de las 88 rutas del frontend
+
+Se ha recorrido el inventario de importaciones lazy de `App.jsx`: 88 pantallas/rutas. La inspección de cada grupo ha contrastado importaciones CSS, clases de ámbito, contenedores principales y menciones a modales/diálogos.
+
+### Ajustes añadidos durante el inventario
+- `ModelosDocumentos.jsx`: faltaba una hoja compartida y un ámbito de página; añadidos.
+- `AdministracionEmpleadoConfig.jsx`: no importaba estilos compartidos ni tenía ámbito de página; añadidos. El estado de acceso restringido conserva su aviso ámbar.
+- `ImportadorPostFirma.jsx`: se añadió ámbito de página y conexión al sistema operativo compartido; se mantiene el scroll horizontal para el informe histórico de muchas columnas.
+- `CatalogoAbsis.jsx` y `TiposImpositivos.jsx`: añadida la capa compartida y ámbitos propios de página.
+- `FirmasEmail.jsx`: añadida clase raíz específica y capa compartida.
+- `Fusiones.jsx`: añadida clase raíz premium y conexión a tokens corporativos.
+- `Verifacti.jsx`: comprobado que la clase de página `verifacti-page-premium` existe en el contenedor principal; `verifacti-premium` se mantiene para el campo reutilizable.
+
+### Rutas y superficies con cobertura CSS identificada
+- Acceso/login y selector de módulos.
+- Dashboard, CancelaGest, Agenda (Día/Semana/Mes), Expedientes, FichaExpediente y Provisiones.
+- CTN (workspace, listado y detalle).
+- Empleados (módulo, listado, ficha, edición y perfil).
+- Herramientas y catálogos ABSIS, económicos, documentales, oficinas, entidades, municipios, registros y fichajes.
+- Importadores ABSIS/Post Firma, Informes, Logs, Notificaciones y utilidades.
+- Panel técnico y submódulos de monitorización/auditoría.
+- Seguridad: usuarios, roles, módulos, permisos, ficha, logs, editor de rol y auditoría.
+- Portales ApoderaGest, NotarGest y EncargaGest.
+- Fichajes, mensajería, control de apoderados y fusiones.
+
+### Riesgo visual que se mantiene abierto
+- `FichaExpediente.jsx` concentra una cantidad especialmente alta de diálogos inline (119 menciones a modal/diálogo en el código fuente). Agenda, Informes y portales profesionales también contienen numerosas ventanas. No se considera cerrado ese bloque sin comprobar cada overlay con navegador y tamaños de viewport.
+- Algunas pantallas no tienen CSS propio porque usan Tailwind y tokens directamente; eso no es por sí solo una incidencia. Se han añadido ámbitos compartidos solo donde faltaba consistencia de marca, foco, controles o adaptación.
+- No se han cambiado los flujos de negocio, las llamadas API, los permisos ni los estados de los expedientes en estas correcciones visuales.
+
+### Validación de la pasada
+- Build general y workflows de módulos completados correctamente hasta el commit `61fbc420`.
+- El commit `d5a8144e` incorpora los últimos ámbitos de utilidades/Fusiones y está pendiente de sus workflows.
+- El artefacto `molsan-premium-frontend-dist` se publica desde GitHub Actions para conservar una compilación aislada de revisión.
+- La inspección estática y la compilación no sustituyen la prueba visual real. El navegador automatizado de este entorno bloquea la navegación a los archivos/servidor locales; no se han fabricado capturas ni se declara QA visual de navegador completada.
