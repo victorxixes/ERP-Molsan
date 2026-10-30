@@ -753,3 +753,11 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 ### Estado de permisos de Control Apoderados
 - La ruta de administración se encuentra bajo `RequireAuth`; se verificó que los endpoints `/admin` del backend llaman a `_exigir_admin(usuario)`, que exige rol administrativo o permisos de edición de Utilidades/Seguridad. Los datos y las operaciones administrativas no dependen solo del guard visual del frontend.
 - Añadir un guard equivalente en frontend queda como mejora de experiencia (evitar abrir una pantalla que devolverá 403), no como corrección de la autorización de datos.
+
+## Trigésima sexta pasada: normalización de permisos — 30/10/2026
+- `frontend-app/src/utils/permisos.js`: se corrigen dos expresiones regulares que contenían barras invertidas duplicadas: la normalización Unicode ahora elimina correctamente diacríticos NFD y la detección de rol reconoce espacios reales entre términos.
+- La corrección mejora la identificación de perfiles como `Super Administrador` y la comparación de etiquetas de módulos con acentos. No cambia las listas de permisos ni concede permisos nuevos.
+- Verificación lógica con casos `Administrador`, `Super Administrador`, `Administración`, `Gestoría`, `Superusuario` y `Usuario gestor`: los perfiles administrativos esperados se identifican; los nombres no administrativos no se elevan a administrador.
+- El guard de `/apoderagest` y `/apoderagest/liquidaciones` sigue usando la clave central `apoderagest`; la ruta administrativa de Control Apoderados permanece autenticada y los endpoints backend `/admin` exigen `_exigir_admin`.
+- Commit: `20da43cf`.
+- Los cinco workflows asociados al commit `20da43cf` terminaron correctamente: Backend audit, EncargaGest checks, Consolidación Post Firma checks, Validar Fichaje Molsan y Validar Control Apoderados.
