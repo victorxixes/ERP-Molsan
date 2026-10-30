@@ -249,6 +249,13 @@ function ImprimirEncargos({ encargos = [] }) {
 }
 function TablaEncargos({ encargos, onFirmado }) {
   const [abiertos, setAbiertos] = useState({});
+  const [grupoEncargosAbierto, setGrupoEncargosAbierto] = useState(null);
+  const grupoDialogRef = useRef(null);
+  useAccessibleDialog({
+    open: Boolean(grupoEncargosAbierto),
+    onClose: () => setGrupoEncargosAbierto(null),
+    dialogRef: grupoDialogRef,
+  });
   const [firmas, setFirmas] = useState({});
   const [guardandoFirma, setGuardandoFirma] = useState({});
   const [erroresFirma, setErroresFirma] = useState({});
@@ -486,14 +493,14 @@ function TablaEncargos({ encargos, onFirmado }) {
   return (
     <div className="ag-encargos-agrupados ag-apoderados-grid">
       {grupos.map((grupo) => {
-        const abierto = Boolean(abiertos[grupo.clave]);
+        const abierto = grupoEncargosAbierto === grupo.clave;
         const notarioCtn = encontrarNotarioCtn(grupo, catalogoCtn);
         const expedientesBloqueados = grupo.expedientes.filter((encargo) => Boolean(encargo.bloqueado)).length;
         const direccionNotario = [notarioCtn?.direccion, notarioCtn?.cp].filter(Boolean).join(" · ");
         const ubicacionNotario = [notarioCtn?.municipio, notarioCtn?.provincia].filter(Boolean).join(" · ");
         return (
           <section className="ag-panel ag-grupo-notario ag-grupo-apoderado" key={grupo.clave}>
-            <button type="button" className="ag-panel-cabecera ag-notario-grupo-trigger ag-apoderado-grupo-trigger" aria-expanded={abierto} onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: !actual[grupo.clave] }))}>
+            <button type="button" className="ag-panel-cabecera ag-notario-grupo-trigger ag-apoderado-grupo-trigger" aria-expanded={abierto} onClick={() => setGrupoEncargosAbierto(abierto ? null : grupo.clave)}>
               <span className="ag-notario-grupo-icono" aria-hidden="true">♙</span>
               <span className="ag-notario-grupo-info">
                 <span className="ag-notario-linea-unica">
@@ -509,11 +516,11 @@ function TablaEncargos({ encargos, onFirmado }) {
               </span>
             </button>
             {abierto ? createPortal((
-              <div className="ag-encargos-modal-overlay panel-modal-premium fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget) setAbiertos(actual => ({ ...actual, [grupo.clave]: false })); }}>
-                <div role="dialog" aria-modal="true" aria-label={`Encargos de ${grupo.nombre}`} className="flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+              <div className="ag-encargos-modal-overlay panel-modal-premium fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget) setGrupoEncargosAbierto(null); }}>
+                <div ref={grupoDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={`Encargos de ${grupo.nombre}`} className="flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
                   <header className="flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4">
                     <div><span className="text-xs font-semibold uppercase tracking-widest text-slate-500">APODERAGEST · BLOQUE DE APODERADO</span><h3 className="mt-1 text-xl font-bold text-slate-900">{grupo.nombre}</h3><p className="text-sm text-slate-600">{grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas registradas · {grupo.expedientes.length} encargos</p></div>
-                    <button type="button" className="rounded-xl border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-slate-100" onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: false }))}>Cerrar ✕</button>
+                    <button type="button" className="rounded-xl border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-slate-100" onClick={() => setGrupoEncargosAbierto(null)}>Cerrar ✕</button>
                   </header>
                   <div className="ag-encargos-detalle-lista ag-ficha-premium overflow-y-auto p-4">
                 {grupo.expedientes.map((encargo, indice) => {
