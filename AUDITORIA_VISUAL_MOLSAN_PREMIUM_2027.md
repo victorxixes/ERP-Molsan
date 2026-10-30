@@ -803,3 +803,8 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 - Reescaneo de las pantallas principales: no quedan botones sin atributo `type` en los ficheros corregidos ni en las pantallas de empleados, agenda, selector de módulos y catálogos maestros inspeccionadas.
 - `useAccessibleDialog` incluye ahora elementos nativos `details > summary`, `audio[controls]` y `video[controls]` en el ciclo de foco; además excluye controles descendientes de cualquier ancestro `aria-hidden="true"` o `inert`, no solo controles que lleven el atributo directamente.
 - Commit de foco: `6a8f09c0`; commits de tipos de botón: `3aec61d4`, `bd92143e`, `2de3e581`, `f7e177b6`, `f1dc954a`, `9309efd2`, `0d18e17d`, `3000db29`, `e1b8336e`, `9bfa89e4` y `5f9a377d`.
+
+### Correcciones adicionales de comportamiento modal
+- `Informes.jsx`: se detectó que el hook y la ref del diálogo «Detalle de facturación» estaban declarados dentro de `InformeFirmas`, mientras que `modalAbierto` y el diálogo pertenecen a `InformeFacturacion`. Se trasladaron el `useRef` y `useAccessibleDialog` al componente propietario, evitando una referencia fuera de ámbito y asegurando que el foco se gestione en el diálogo correcto.
+- `ModalCtnDetalle.jsx`: Escape ya no cierra el detalle CTN mientras se guardan datos bancarios o se procesa una asociación; se conserva la operación en curso y su feedback.
+- Commits: `990eb877` (Informes) y `078f9f38` (CTN). Ambos requieren compilación/CI posterior; la prueba interactiva de cierre durante guardado queda pendiente.
