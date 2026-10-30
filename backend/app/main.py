@@ -12,6 +12,10 @@ import inspect
 
 from backend.app.storage import FOTOS_DIR as STORAGE_FOTOS_DIR
 
+from backend.app.auth.log_redaction import instalar_filtro_credenciales_websocket
+
+instalar_filtro_credenciales_websocket()
+
 
 # ============================================================
 # APP
