@@ -81,6 +81,22 @@ def crear_tabla_avisos_leidos_notargest():
             )
         """))
 
+@router.on_event("startup")
+def crear_tabla_historial_actividad_notargest():
+    with engine.begin() as conn:
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS notargest_historial_actividad (
+                id BIGSERIAL PRIMARY KEY,
+                expediente_id VARCHAR(100) NOT NULL,
+                actividad_anterior VARCHAR(80) NOT NULL,
+                actividad_nueva VARCHAR(80) NOT NULL,
+                motivo TEXT NOT NULL,
+                usuario_id INTEGER,
+                usuario_tipo VARCHAR(30) NOT NULL DEFAULT 'ERP',
+                fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """))
+
 class LoginNotario(BaseModel):
     usuario: constr(min_length=3, max_length=50)
     password: constr(min_length=1, max_length=128)
@@ -783,18 +799,6 @@ def mover_actividad_desde_utilidades(expediente_id: str, data: dict, actor=Depen
     if actual == destino:
         return {"ok": True, "estado": actual, "estado_texto": ESTADOS_NOTARGEST[actual], "sin_cambios": True}
     try:
-        db.execute(text("""
-            CREATE TABLE IF NOT EXISTS notargest_historial_actividad (
-                id BIGSERIAL PRIMARY KEY,
-                expediente_id VARCHAR(100) NOT NULL,
-                actividad_anterior VARCHAR(80) NOT NULL,
-                actividad_nueva VARCHAR(80) NOT NULL,
-                motivo TEXT NOT NULL,
-                usuario_id INTEGER,
-                usuario_tipo VARCHAR(30) NOT NULL DEFAULT 'ERP',
-                fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-            )
-        """))
         e.notargest_estado = destino
         e.actividad_actual = ESTADOS_NOTARGEST[destino]
         db.execute(text("""
