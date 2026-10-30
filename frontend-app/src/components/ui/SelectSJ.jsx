@@ -217,10 +217,10 @@ export default function SelectSJ({
                   ref={(element) => { optionRefs.current[optionIndex] = element; }}
                   type="button"
                   role="option"
-                  tabIndex={activeIndex === options.indexOf(o) ? 0 : -1}
+                  tabIndex={activeIndex === optionIndex ? 0 : -1}
                   aria-selected={seleccionada}
                   onKeyDown={(event) => {
-                    const currentIndex = options.indexOf(o);
+                    const currentIndex = optionIndex;
                     let nextIndex = currentIndex;
                     if (event.key === "ArrowDown") nextIndex = Math.min(options.length - 1, currentIndex + 1);
                     else if (event.key === "ArrowUp") nextIndex = Math.max(0, currentIndex - 1);
