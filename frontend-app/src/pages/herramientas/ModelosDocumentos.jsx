@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { renderAsync } from "docx-preview";
+import "docx-preview/dist/docx-preview.css";
 import axios from "../../api/axios";
 import { Link } from "react-router-dom";
 import HonorariosGestoria from "./HonorariosGestoria";
@@ -58,27 +60,14 @@ function LiquidacionPreview({ datosMolsan, logoCliente, expediente, gastos = [],
 }
 
 
-const FACTURA_EDITOR_KEY = "molsan_editor_factura_honorarios_v1";
-const FACTURA_EDITOR_DEFAULTS = {
-  color: "#174A7E",
-  titulo: "FACTURA",
-  subtitulo: "Honorarios de gestoría",
-  mostrarAvisoAEAT: true,
-  mostrarObservaciones: false,
-  mostrarLogo: true,
-  densidad: "normal",
-  logoDataUrl: "",
-};
-
-function FacturaPlantillaEditor({ datosMolsan = {}, onGuardarLogoFactura }) {
-  const [config, setConfig] = useState(FACTURA_EDITOR_DEFAULTS);
-  const [guardado, setGuardado] = useState(false);
-  const [errorLogoFactura, setErrorLogoFactura] = useState("");
+function FacturaPlantillaEditor() {
   const [plantillaWord, setPlantillaWord] = useState(null);
   const [archivoWord, setArchivoWord] = useState(null);
   const [subiendoWord, setSubiendoWord] = useState(false);
+  const [cargandoVista, setCargandoVista] = useState(false);
   const [errorWord, setErrorWord] = useState("");
   const [mensajeWord, setMensajeWord] = useState("");
+  const vistaWordRef = useRef(null);
 
   useEffect(() => {
     let activo = true;
@@ -87,36 +76,46 @@ function FacturaPlantillaEditor({ datosMolsan = {}, onGuardarLogoFactura }) {
       .catch((error) => {
         if (activo) setErrorWord(error?.response?.data?.detail || "No se pudo consultar el estado del Word oficial.");
       });
-    axios.get("/utilidades/factura-plantilla")
-      .then(({ data }) => {
-        if (!activo) return;
-        if (data?.configuracion && Object.keys(data.configuracion).length) {
-          setConfig({ ...FACTURA_EDITOR_DEFAULTS, ...data.configuracion });
-          return;
-        }
-        // Migración de lectura: si aún no existe diseño compartido, recuperar el antiguo ajuste local.
-        try {
-          const guardada = localStorage.getItem(FACTURA_EDITOR_KEY);
-          if (guardada) setConfig({ ...FACTURA_EDITOR_DEFAULTS, ...JSON.parse(guardada) });
-        } catch {}
-      })
-      .catch(() => {
-        try {
-          const guardada = localStorage.getItem(FACTURA_EDITOR_KEY);
-          if (activo && guardada) setConfig({ ...FACTURA_EDITOR_DEFAULTS, ...JSON.parse(guardada) });
-        } catch {}
-      });
     return () => { activo = false; };
   }, []);
 
-  const actualizar = (campo, valor) => {
-    setConfig(actual => ({ ...actual, [campo]: valor }));
-    setGuardado(false);
-  };
+  useEffect(() => {
+    let activo = true;
+    const contenedor = vistaWordRef.current;
+    if (!plantillaWord?.plantilla_cargada || !contenedor) {
+      if (contenedor) contenedor.innerHTML = "";
+      return () => { activo = false; };
+    }
+
+    const mostrarDocumento = async () => {
+      setCargandoVista(true);
+      setErrorWord("");
+      contenedor.innerHTML = "";
+      try {
+        const { data } = await axios.get("/utilidades/conceptos-gastos/6/plantilla-factura", { responseType: "blob" });
+        if (!activo) return;
+        await renderAsync(data, contenedor, contenedor, {
+          className: "molsan-docx",
+          inWrapper: true,
+          breakPages: true,
+          ignoreWidth: false,
+          ignoreHeight: false,
+          experimental: true,
+        });
+      } catch (error) {
+        if (activo) setErrorWord(error?.response?.data?.detail || "No se ha podido representar el Word. Puedes descargarlo para comprobarlo.");
+      } finally {
+        if (activo) setCargandoVista(false);
+      }
+    };
+
+    mostrarDocumento();
+    return () => { activo = false; };
+  }, [plantillaWord?.plantilla_cargada, plantillaWord?.actualizado_en]);
 
   const subirWordOficial = async () => {
     if (!archivoWord || subiendoWord) return;
-    if (!/\.docx$/i.test(archivoWord.name)) {
+    if (!/\\.docx$/i.test(archivoWord.name)) {
       setErrorWord("Selecciona el modelo oficial en formato Word .docx.");
       return;
     }
@@ -142,7 +141,7 @@ function FacturaPlantillaEditor({ datosMolsan = {}, onGuardarLogoFactura }) {
         actualizado_en: new Date().toISOString(),
       });
       setArchivoWord(null);
-      setMensajeWord("Word oficial guardado. Se conserva como referencia para el diseño; todavía no cambia el PDF emitido.");
+      setMensajeWord("Word oficial actualizado. La vista previa ya muestra el documento subido.");
     } catch (error) {
       setErrorWord(error?.response?.data?.detail || "No se pudo guardar el Word oficial.");
     } finally {
@@ -167,145 +166,35 @@ function FacturaPlantillaEditor({ datosMolsan = {}, onGuardarLogoFactura }) {
     }
   };
 
-  const cargarLogoFactura = (archivo) => {
-    setErrorLogoFactura("");
-    if (!archivo) return;
-    if (!/^image\/(png|jpeg|webp)$/.test(archivo.type)) {
-      setErrorLogoFactura("Usa una imagen PNG, JPG o WEBP.");
-      return;
-    }
-    if (archivo.size > 8 * 1024 * 1024) {
-      setErrorLogoFactura("El archivo supera los 8 MB. Elige una imagen más ligera.");
-      return;
-    }
-    const lector = new FileReader();
-    lector.onerror = () => setErrorLogoFactura("No se pudo leer el archivo. Prueba con otra imagen.");
-    lector.onload = () => {
-      const imagen = new Image();
-      imagen.onerror = () => setErrorLogoFactura("No se pudo abrir la imagen seleccionada.");
-      imagen.onload = () => {
-        const escala = Math.min(1, 900 / imagen.width, 450 / imagen.height);
-        const canvas = document.createElement("canvas");
-        canvas.width = Math.max(1, Math.round(imagen.width * escala));
-        canvas.height = Math.max(1, Math.round(imagen.height * escala));
-        const contexto = canvas.getContext("2d");
-        if (!contexto) {
-          setErrorLogoFactura("El navegador no ha podido procesar la imagen.");
-          return;
-        }
-        contexto.fillStyle = "#ffffff";
-        contexto.fillRect(0, 0, canvas.width, canvas.height);
-        contexto.drawImage(imagen, 0, 0, canvas.width, canvas.height);
-        const logoOptimizado = canvas.toDataURL("image/jpeg", 0.86);
-        Promise.resolve(onGuardarLogoFactura?.(logoOptimizado))
-          .then(() => setErrorLogoFactura(""))
-          .catch((error) => setErrorLogoFactura(error?.message || "No se pudo guardar el logotipo corporativo en el ERP."));
-      };
-      imagen.src = String(lector.result || "");
-    };
-    lector.readAsDataURL(archivo);
-  };
-
-  const guardarDiseno = async () => {
-    setGuardado(false);
-    try {
-      const { data } = await axios.put("/utilidades/factura-plantilla", {
-        color: config.color,
-        titulo: config.titulo,
-        subtitulo: config.subtitulo,
-        mostrarAvisoAEAT: config.mostrarAvisoAEAT,
-        mostrarObservaciones: config.mostrarObservaciones,
-        mostrarLogo: config.mostrarLogo,
-        densidad: config.densidad,
-      });
-      setGuardado(Boolean(data?.ok));
-    } catch (error) {
-      setErrorLogoFactura(error?.response?.data?.detail || "No se pudo guardar el diseño en el ERP. Comprueba tus permisos.");
-    }
-  };
-
-  const restaurar = () => {
-    setConfig(FACTURA_EDITOR_DEFAULTS);
-    setGuardado(false);
-  };
-
-  return <section className="grid items-start gap-5 2xl:grid-cols-[minmax(280px,.72fr)_minmax(0,1.28fr)]">
-    <div className="space-y-4">
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <p className="text-xs font-black uppercase tracking-[.16em] text-sky-700">Editor visual</p>
-        <h2 className="mt-1 text-lg font-extrabold text-slate-900">Personalizar factura</h2>
-        <p className="mt-2 text-sm leading-6 text-slate-600">Retoca la presentación y comprueba el resultado en la vista A4. Estos ajustes afectan al diseño de la previsualización; no modifican tarifas, impuestos, numeración ni facturas ya emitidas.</p>
-        <div className="mt-4 space-y-4">
-          <section className="rounded-2xl border border-indigo-200 bg-indigo-50/60 p-4">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-black uppercase tracking-[.15em] text-indigo-700">Documento de referencia</p>
-                <h3 className="mt-1 text-sm font-extrabold text-slate-900">Modelo Word oficial de factura</h3>
-                <p className="mt-1 text-xs leading-5 text-slate-600">Trabajaremos a partir de este Word para definir la composición de la factura. Descargarlo permite compararlo mientras diseñas; subir otro Word sustituye la referencia guardada.</p>
-                <p className="mt-2 break-all text-xs font-bold text-slate-700">{plantillaWord?.plantilla_cargada ? `Word cargado: ${plantillaWord.factura_nombre || "plantilla Word"}` : "No se ha detectado una plantilla Word cargada todavía."}</p>
-                {plantillaWord?.actualizado_en && <p className="mt-1 text-[10px] text-slate-500">Última actualización: {new Date(plantillaWord.actualizado_en).toLocaleString("es-ES")}</p>}
-              </div>
-              {plantillaWord?.plantilla_cargada && <button type="button" onClick={descargarWordOficial} className="rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs font-bold text-indigo-800 hover:bg-indigo-100">Descargar Word</button>}
-            </div>
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <input type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={e => { setArchivoWord(e.target.files?.[0] || null); setErrorWord(""); setMensajeWord(""); }} className="min-w-0 flex-1 text-xs text-slate-600 file:mr-2 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-2 file:font-bold file:text-indigo-800"/>
-              <button type="button" onClick={subirWordOficial} disabled={!archivoWord || subiendoWord} className="rounded-lg bg-indigo-700 px-3 py-2 text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-50">{subiendoWord ? "Guardando Word…" : "Guardar Word de referencia"}</button>
-            </div>
-            {errorWord && <p role="alert" className="mt-2 text-xs font-semibold text-rose-700">{errorWord}</p>}
-            {mensajeWord && <p role="status" className="mt-2 text-xs font-semibold text-emerald-700">{mensajeWord}</p>}
-            <p className="mt-2 text-[10px] leading-4 text-amber-800">Guardar el Word aquí no emite facturas ni modifica el PDF oficial, la numeración, los pagos o los saldos.</p>
-          </section>
-          <label className="block text-sm font-semibold text-slate-700">Título de la factura
-            <input value={config.titulo} maxLength={60} onChange={e=>actualizar("titulo",e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-normal"/>
-          </label>
-          <label className="block text-sm font-semibold text-slate-700">Subtítulo
-            <input value={config.subtitulo} maxLength={100} onChange={e=>actualizar("subtitulo",e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-normal"/>
-          </label>
-          <label className="block text-sm font-semibold text-slate-700">Color corporativo
-            <div className="mt-1 flex items-center gap-3 rounded-xl border border-slate-200 p-2"><input aria-label="Color corporativo" type="color" value={config.color} onChange={e=>actualizar("color",e.target.value)} className="h-10 w-14 cursor-pointer border-0 bg-transparent"/><span className="font-mono text-xs text-slate-500">{config.color}</span><div className="ml-auto h-7 w-12 rounded-md border border-black/10" style={{backgroundColor:config.color}}/></div>
-          </label>
-          <label className="block text-sm font-semibold text-slate-700">Distribución
-            <select value={config.densidad} onChange={e=>actualizar("densidad",e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-normal"><option value="compacta">Compacta</option><option value="normal">Equilibrada</option><option value="amplia">Espaciada</option></select>
-          </label>
-          <div className="space-y-3 rounded-xl bg-slate-50 p-3">
-            <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={config.mostrarLogo} onChange={e=>actualizar("mostrarLogo",e.target.checked)}/> Mostrar logotipo</label>
-            <div className="rounded-lg border border-slate-200 bg-white p-3">
-              <label className="block text-sm font-semibold text-slate-700">Logotipo de la gestoría
-                <input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>{cargarLogoFactura(e.target.files?.[0]);e.target.value="";}} className="mt-2 block w-full cursor-pointer text-xs font-normal text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-sky-50 file:px-3 file:py-2 file:font-bold file:text-sky-800 hover:file:bg-sky-100"/>
-              </label>
-              <p className="mt-2 text-xs text-slate-500">Formatos PNG, JPG o WEBP · máximo 8 MB. La imagen se optimiza para la vista previa.</p>
-              {datosMolsan.logo_data_url && <div className="mt-3 flex items-center gap-3"><img src={datosMolsan.logo_data_url} alt="Logotipo corporativo guardado en el ERP" className="h-14 max-w-[180px] rounded border border-slate-200 bg-white object-contain p-1"/><button type="button" onClick={()=>Promise.resolve(onGuardarLogoFactura?.("")).catch(error=>setErrorLogoFactura(error?.message || "No se pudo quitar el logotipo."))} className="text-xs font-bold text-rose-700 underline">Quitar logo corporativo</button></div>}
-              {errorLogoFactura && <p role="alert" className="mt-2 text-xs font-semibold text-rose-700">{errorLogoFactura}</p>}
-            </div>
-            <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={config.mostrarAvisoAEAT} onChange={e=>actualizar("mostrarAvisoAEAT",e.target.checked)}/> Mostrar aviso de factura verificable en la AEAT</label>
-            <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={config.mostrarObservaciones} onChange={e=>actualizar("mostrarObservaciones",e.target.checked)}/> Reservar espacio para observaciones</label>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <button type="button" onClick={guardarDiseno} className="rounded-xl bg-sky-700 px-4 py-2.5 text-sm font-bold text-white hover:bg-sky-800">Guardar diseño en el ERP</button>
-            <button type="button" onClick={restaurar} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50">Restaurar diseño</button>
-          </div>
-          {guardado && <p role="status" className="text-sm font-semibold text-emerald-700">Diseño guardado en el ERP y disponible para los usuarios autorizados.</p>}
-          <p className="text-xs leading-5 text-amber-700">El diseño y el logotipo se guardan en el backend compartido. La maqueta todavía no modifica el PDF oficial. Diseña aquí tomando como referencia el Word; después conectaremos y validaremos el PDF real antes de darlo por cerrado.</p>
+  return <section className="space-y-5">
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p className="text-xs font-black uppercase tracking-[.16em] text-sky-700">Plantilla Word original</p>
+      <h2 className="mt-1 text-lg font-extrabold text-slate-900">Factura de honorarios de gestoría</h2>
+      <p className="mt-2 text-sm leading-6 text-slate-600">La previsualización se carga desde el archivo .docx guardado en el ERP. Para modificar su contenido o composición, descarga el Word, edítalo en Word y vuelve a subir la versión revisada. El archivo original solo se sustituye cuando guardas expresamente una nueva versión.</p>
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-indigo-200 bg-indigo-50/60 p-4">
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-black uppercase tracking-[.15em] text-indigo-700">Documento maestro</p>
+          <p className="mt-1 break-all text-sm font-bold text-slate-800">{plantillaWord?.plantilla_cargada ? plantillaWord.factura_nombre || "Plantilla Word oficial" : "Todavía no hay una plantilla Word cargada"}</p>
+          {plantillaWord?.actualizado_en && <p className="mt-1 text-xs text-slate-500">Última actualización: {new Date(plantillaWord.actualizado_en).toLocaleString("es-ES")}</p>}
         </div>
+        {plantillaWord?.plantilla_cargada && <button type="button" onClick={descargarWordOficial} className="rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs font-bold text-indigo-800 hover:bg-indigo-100">Descargar Word para editar</button>}
       </div>
-      <div className="rounded-2xl border border-sky-100 bg-sky-50/70 p-4 text-sm leading-6 text-slate-700"><strong style={{color:config.color}}>Campos que se conservarán del modelo Word y datos fiscales:</strong><ul className="mt-2 list-disc space-y-1 pl-5"><li>Número y fecha de factura</li><li>Datos fiscales completos del cliente</li><li>Datos fiscales de Molsan: razón social, NIF, domicilio, CP, población, provincia y contacto</li><li>Concepto, base imponible, impuesto y total</li><li>Número de expediente, documento, notario, protocolo y fecha de firma</li></ul></div>
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <input type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={e => { setArchivoWord(e.target.files?.[0] || null); setErrorWord(""); setMensajeWord(""); }} className="min-w-0 flex-1 text-xs text-slate-600 file:mr-2 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:font-bold file:text-slate-700"/>
+        <button type="button" onClick={subirWordOficial} disabled={!archivoWord || subiendoWord} className="rounded-lg bg-sky-700 px-4 py-2 text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-50">{subiendoWord ? "Guardando Word…" : "Guardar nueva versión"}</button>
+      </div>
+      {errorWord && <p role="alert" className="mt-3 text-sm font-semibold text-rose-700">{errorWord}</p>}
+      {mensajeWord && <p role="status" className="mt-3 text-sm font-semibold text-emerald-700">{mensajeWord}</p>}
     </div>
-    <div className="min-w-0 rounded-2xl border border-slate-200 bg-slate-100 p-3 sm:p-5">
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><div><p className="text-xs font-bold uppercase tracking-wider text-sky-800">Vista previa</p><h3 className="font-bold text-slate-900">Factura · formato A4</h3></div><span className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-600">Maqueta editable</span></div>
-      <article className={`mx-auto min-h-[820px] w-full max-w-[590px] bg-white text-slate-800 shadow-xl ${config.densidad==="compacta"?"p-6":config.densidad==="amplia"?"p-10":"p-8"}`}>
-        <header className="flex items-start justify-between gap-4 border-b-2 pb-5" style={{borderColor:config.color}}>
-          <div className="flex min-w-0 items-center gap-3">{config.mostrarLogo && (datosMolsan.logo_data_url ? <div className="flex h-14 w-24 shrink-0 items-center justify-center"><img src={datosMolsan.logo_data_url} alt="Logotipo de la gestoría" className="max-h-14 max-w-24 object-contain"/></div> : <div className="flex h-14 w-20 shrink-0 items-center justify-center rounded-md border border-dashed border-slate-300 text-[9px] text-slate-400">CONFIGURAR LOGO</div>)}<div className="min-w-0"><div className="text-sm font-black" style={{color:config.color}}>{datosMolsan.razon_social || "Razón social de Molsan"}</div><div className="mt-1 text-[9px] text-slate-500">{[datosMolsan.nif ? "NIF: "+datosMolsan.nif : "", datosMolsan.domicilio_fiscal, [datosMolsan.codigo_postal,datosMolsan.poblacion,datosMolsan.provincia].filter(Boolean).join(" ")].filter(Boolean).join(" · ") || "Completar los datos en Datos Molsan"}</div><div className="mt-1 text-[9px] text-slate-500">{[datosMolsan.telefono,datosMolsan.email,datosMolsan.web].filter(Boolean).join(" · ")}</div></div></div>
-          <div className="text-right"><h4 className="text-2xl font-black" style={{color:config.color}}>{config.titulo || "FACTURA"}</h4><p className="mt-1 text-xs font-semibold">{config.subtitulo}</p><p className="mt-2 text-[10px] text-slate-500">N.º VI/00000-26</p><p className="text-[10px] text-slate-500">Fecha: dd/mm/aaaa</p></div>
-        </header>
-        <div className="mt-6 rounded-lg border border-slate-200 p-4"><h5 className="mb-3 text-[10px] font-extrabold tracking-wide" style={{color:config.color}}>DATOS DEL CLIENTE</h5><div className="grid grid-cols-2 gap-x-5 gap-y-3 text-[10px]"><div><p className="text-slate-400">Nombre / razón social</p><p className="mt-1 font-semibold">Nombre del cliente</p></div><div><p className="text-slate-400">NIF / CIF</p><p className="mt-1 font-semibold">—</p></div><div className="col-span-2"><p className="text-slate-400">Domicilio fiscal</p><p className="mt-1 font-semibold">Dirección · Código postal · Población</p></div></div></div>
-        <h5 className="mb-2 mt-6 text-[10px] font-extrabold tracking-wide" style={{color:config.color}}>DETALLE DE FACTURACIÓN</h5><p className="mb-3 text-[10px]">Concepto: Honorarios de gestoría</p>
-        <table className="w-full border-collapse text-[10px]"><thead><tr style={{backgroundColor:config.color,color:"#fff"}}><th className="p-2 text-left">Descripción</th><th className="p-2 text-right">Importe</th></tr></thead><tbody><tr className="border-b border-slate-200"><td className="p-3">Servicios de gestoría</td><td className="p-3 text-right">— €</td></tr></tbody></table>
-        <div className="ml-auto mt-4 max-w-[280px] text-[10px]"><div className="flex justify-between border-b border-slate-100 py-2"><span>Base imponible</span><span>— €</span></div><div className="flex justify-between border-b border-slate-100 py-2"><span>IVA / IGIC</span><span>— €</span></div><div className="mt-2 flex justify-between rounded-md p-3 font-black" style={{backgroundColor:config.color+"14",color:config.color}}><span>TOTAL FACTURA</span><span>— €</span></div></div>
-        <h5 className="mb-2 mt-7 text-[10px] font-extrabold tracking-wide" style={{color:config.color}}>DATOS DEL EXPEDIENTE</h5><div className="grid grid-cols-4 gap-2 rounded-md border border-slate-200 p-3 text-[9px]">{["N.º expediente","Documento","Notario","Protocolo / fecha de firma"].map(x=><div key={x}><p className="text-slate-400">{x}</p><p className="mt-1 font-semibold">—</p></div>)}</div>
-        {config.mostrarObservaciones && <div className="mt-5 rounded-md border border-dashed border-slate-300 p-3 text-[10px]"><p className="font-bold">OBSERVACIONES</p><p className="mt-2 text-slate-400">Espacio reservado para observaciones</p></div>}
-        {config.mostrarAvisoAEAT && <p className="mt-7 border-t border-slate-200 pt-3 text-center text-[9px] font-semibold text-slate-500">Factura verificable en la Sede Electrónica de la AEAT</p>}
-        <footer className="mt-5 border-t border-slate-100 pt-2 text-[8px] text-slate-400">Documento de previsualización · No constituye una factura emitida.</footer>
-      </article>
+
+    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 p-3 sm:p-5">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div><p className="text-xs font-bold uppercase tracking-wider text-sky-800">Vista previa del archivo subido</p><h3 className="font-bold text-slate-900">{plantillaWord?.factura_nombre || "Documento Word"} · páginas originales</h3></div>
+        <span className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-600">{cargandoVista ? "Cargando Word…" : plantillaWord?.plantilla_cargada ? "Word representado" : "Sin documento"}</span>
+      </div>
+      {!plantillaWord?.plantilla_cargada && <div className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">Sube el archivo MOD FACTURA.docx para visualizar aquí su contenido y distribución.</div>}
+      {plantillaWord?.plantilla_cargada && <div ref={vistaWordRef} className="molsan-docx-preview min-h-[700px] overflow-x-auto rounded-lg bg-white p-2 shadow-inner"/>}
+      <p className="mt-3 text-xs leading-5 text-slate-500">La vista reproduce el contenido y la estructura del DOCX en el navegador. La paginación y algunos detalles pueden variar ligeramente respecto a Microsoft Word según las fuentes disponibles en el navegador. El Word descargado sigue siendo el documento maestro.</p>
     </div>
   </section>;
 }
