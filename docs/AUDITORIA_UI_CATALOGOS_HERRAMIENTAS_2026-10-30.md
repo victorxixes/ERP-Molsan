@@ -89,3 +89,17 @@ La revisión confirma clases presentes en el código, no una diferencia visual e
 
 - Para el commit `54d9f38cc892bf07dcf7b83b6d93d004234c9007` (ajuste visual de Datos Molsan), los cuatro workflows consultados terminaron con `success`: Consolidación Post Firma checks (41084910113), Validar Fichaje Molsan (41084910244), Validar Control Apoderados (41084910072) y EncargaGest checks (41084909922).
 - Los resultados CI prueban compilación/validaciones automatizadas de ese commit, pero no prueban que el logo, formularios y paneles se vean correctamente en dispositivos reales.
+
+## Segunda pasada de armonización — 30/10/2026
+
+- `CatalogoAbsis.jsx`: sustituido el gradiente azul/índigo superior por el token central `--molsan-primary`; el resto de los dos acentos detectados se limita a estilos de foco/borde que quedan para una pasada de controles.
+- `ReglasActividadesExpediente.jsx`: cabecera y panel informativo migrados a tokens centrales `--molsan-primary`, `--molsan-primary-border`, `--molsan-primary-soft` y `--molsan-text`. La búsqueda posterior ya no encuentra clases Tailwind azul/índigo directas.
+- `CatalogoOficinas.jsx`: cabecera, botones de validar/importar, foco de búsqueda, acción Limpiar y resaltado de fila armonizados con tokens Molsan. La inspección posterior deja solo dos clases directas de azul dentro del estilo nativo del selector de archivos; se dejan deliberadamente para una revisión del pseudo-elemento `file:` sin alterar su compatibilidad.
+- `ProvisionesFondosPage.jsx`: el control compartido de formulario ahora usa tokens de borde, superficie, texto y foco del sistema. Se mantienen 40 acentos azules/índigo en las vistas de editor, cálculos, tablas y acciones; requieren revisión por zonas para no perder semántica o jerarquía.
+- `TiposConceptoGastos.jsx`: siguen 27 acentos directos de azul/índigo distribuidos entre formularios, plantilla documental, filtros y acciones. No se aplicó sustitución automática al componente de 2.772 líneas por riesgo de modificar estados condicionales y variantes de botones.
+
+## Estado CI de la segunda pasada
+
+- Para `b873a45d75665df0ad3b59e50664de08e199c6d6`, los cuatro workflows de validación consultados completaron con éxito.
+- En los commits posteriores de cabecera de oficinas y controles de provisiones, varios builds seguían en ejecución al cierre de esta consulta; no se declaran verdes hasta consultar su resultado final. Los checks de backend que ya finalizaron estaban correctos.
+- La PR #374 continúa abierta, en borrador y sin integrar; `main` no tiene commits por delante/por detrás en el punto de comparación anterior. No se ha desplegado ni se han ejecutado operaciones sobre datos.
