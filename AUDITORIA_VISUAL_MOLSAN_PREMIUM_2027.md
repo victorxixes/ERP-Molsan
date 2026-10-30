@@ -661,3 +661,13 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 - El commit de código anterior (`48258919`) terminó correctamente en los cinco workflows; el Backend audit completó compilación y pruebas unitarias sobre SQLite aislado.
 - Los cambios visuales de los commits `2046f4a3` y `16a7abb6` son posteriores; sus workflows deben confirmarse antes de dar por validada la última versión.
 - QA visual interactivo escritorio/tablet/móvil, teclado y lector de pantalla sigue pendiente. No se ha publicado una previsualización conectada a producción.
+
+## Revalidación técnica y estado de PR — 30/10/2026
+- El commit de código más reciente de esta tanda (`16a7abb6`) tiene los cinco workflows en `success`: Backend audit, EncargaGest checks, Consolidación Post Firma checks, Validar Fichaje Molsan y Validar Control Apoderados.
+- Backend audit terminó con éxito la compilación de módulos y las pruebas unitarias sobre SQLite aislado; no conectó con la base productiva.
+- El frontend build de los workflows terminó correctamente en la misma revisión de código.
+- Validación estática de navegación: 32 claves del catálogo central, sin claves ni rutas duplicadas; la navegación mantiene Espacios/Técnicos y Notificaciones no aparece como entrada de menú.
+- ApoderaGest: las dos rutas internas (`/apoderagest` y `/apoderagest/liquidaciones`) están envueltas por `RequireModule` con clave `apoderagest`; las rutas de acceso externo no se han cambiado.
+- Estado consultado de PR #374: abierta, draft, mergeable=true; rama 281 commits por delante de `main` y 0 por detrás. Sigue sin integrar.
+- El HEAD de la PR incluye una actualización documental posterior al commit de código validado; esa actualización no cambia el frontend.
+- La validación técnica no sustituye QA visual real. Siguen pendientes pruebas en navegador en escritorio/tablet/móvil, teclado/lector de pantalla y validación de interacciones con datos ficticios.
