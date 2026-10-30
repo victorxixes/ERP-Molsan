@@ -610,6 +610,9 @@ function ModalDetalle({
     >
 
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Detalle de registro de auditoría"
         className="
           w-full
           max-w-2xl
