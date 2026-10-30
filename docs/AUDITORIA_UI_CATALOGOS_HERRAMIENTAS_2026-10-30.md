@@ -123,3 +123,35 @@ La revisión confirma clases presentes en el código, no una diferencia visual e
 - No se ha añadido una trampa de foco improvisada: estos componentes incluyen formularios y estados condicionales; una solución correcta debe cubrir apertura/cierre, modales anidados, controles deshabilitados, errores de validación y restauración del foco. Requiere prueba real con teclado y navegador.
 - El repositorio no tiene una suite de navegador Playwright/Cypress configurada según la inspección de manifiestos anterior. Los workflows de CI que se disparen para estos commits solo podrán certificar lo que ejecuten (build y checks definidos), no la navegación real con teclado ni la apariencia visual en escritorio/tablet/móvil.
 - No se han abierto pantallas de producción, enviado emails, guardado tarifas, calculado ni modificado provisiones, ni ejecutado traspasos o cambios de saldo.
+
+
+## Revisión ampliada y cierre de cambios de auditoría — 30/10/2026
+
+### Armonización visual adicional
+- `CatalogoOficinas.jsx`: selector nativo de Excel alineado con `--molsan-primary-soft` y `--molsan-primary`.
+- `CatalogoAbsis.jsx`: anillos y bordes de foco de búsqueda/acción unificados con los tokens primarios. Los dos diálogos de edición/listas siguen pendientes de integración con el gestor común de foco; no se da por cerrada su accesibilidad.
+- `ReglasActividadesExpediente.jsx`: corregidas tres clases Tailwind mal formadas (`bg-[var(--molsan-primary-soft)]0`) que impedían mostrar correctamente los indicadores circulares de campos.
+- `TiposExpediente.jsx`: acento de marca, campos, tarjeta de altas, acción principal, hover de filas y acción Editar armonizados con tokens Molsan. Se mantienen los colores semánticos de activo/inactivo y de eliminación.
+- No se han modificado fórmulas, transiciones, endpoints, escrituras ni operaciones del catálogo.
+
+### Teclado y foco de diálogos
+- Se incorpora `useAccessibleDialog`, una utilidad compartida para foco inicial, contención de Tab/Mayús+Tab, Escape y restauración del foco, con comprobación del diálogo modal superior para permitir anidamiento.
+- Integrada en los diálogos de Tipos de Concepto, envío por email de Provisiones, Provisiones de expediente, traspaso de saldo, liquidación y su vista PDF, Carpeta digital y su visor, los cuatro diálogos principales de NotarGest, los cinco de EncargaGest, resumen de ApoderaGest, Mensajería Gestión, seguimiento de Mensajería, corrección de fichajes y ficha de empleado.
+- La cobertura no es todavía universal: permanecen diálogos identificados en Catálogo ABSIS, selector de soporte de módulos, CTN, Informes, Tipos de expediente, Control Apoderados y Expedientes. Deben integrarse o verificarse antes de certificar accesibilidad global.
+- La utilidad se ha validado mediante compilación CI; no se ha ejecutado aún una prueba manual en navegador con teclado/lector de pantalla. Por tanto, la comprobación funcional de foco, Escape y modales anidados sigue pendiente.
+
+### Seguridad de registros y autenticación
+- Se detectó en los registros históricos del backend que algunas conexiones WebSocket podían registrar la URL de conexión con el token en la query string. La rama contiene el filtro de redacción `backend/app/auth/log_redaction.py` y sus pruebas unitarias, que comprueban la redacción de `token`, `access_token` y `refresh_token` antes de formatear registros.
+- Se ajustó `backend/app/realtime/router.py` para registrar el tipo de excepción y no su representación completa, evitando volcar detalles arbitrarios de una excepción WebSocket al log.
+- La ruta interna `/apoderagest` queda protegida por `RequireAuth`. Las rutas de acceso externo de NotarGest/EncargaGest se mantienen separadas; no se han cambiado sus mecanismos propios de acceso.
+- Las pruebas del backend se ejecutan en CI con SQLite aislado, no contra la base de datos de producción.
+
+### Configuración y reproducibilidad
+- En la rama no se encuentra `package-lock.json`, `npm-shrinkwrap.json`, `pnpm-lock.yaml`, `yarn.lock` ni lockfile de Bun en raíz o en `frontend-app`. CI y Render resuelven rangos semver durante la instalación; esto hace que las dependencias no queden fijadas de forma reproducible.
+- Hay dos manifiestos `package.json`: el de raíz conserva Vite 5 / React Router 6 / Tailwind 3, mientras `frontend-app/package.json` usa Vite 6 / React Router 7 / Tailwind 4 y es el manifiesto que utiliza el build de Render/CI. No se han sincronizado ni alterado versiones en esta auditoría para evitar una migración accidental de toolchain.
+- El workflow frontend usa Node 20 y `npm install --no-audit --no-fund`, seguido de `npm run build`. No hay configuración `.nvmrc` ni `.node-version`.
+
+### Límites de validación
+- No se ha ejecutado QA visual real en escritorio/tablet/móvil ni pruebas E2E; la revisión visual es estática sobre componentes y CSS.
+- No se han integrado cambios, desplegado la rama, reiniciado Render, modificado secretos ni tocado datos de producción.
+- La rama de auditoría y PR #374 permanecen separadas de `main`.
