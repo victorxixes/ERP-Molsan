@@ -374,3 +374,12 @@ Se mantiene pendiente el recorrido del resto de herramientas: importaciones, mod
 - **Modal Nueva Cita:** ya estaba conectado al estilo compartido `panel-modal-premium`; ahora el panel interior tiene `role="dialog"`, `aria-modal` y nombre dinámico según la acción (crear, editar o ver cita).
 - **Vistas Día/Mes/Semana:** mantienen sus componentes propios de calendario. El diseño de semana usa siete columnas y requiere comprobación real en móvil para confirmar que el desplazamiento horizontal queda contenido en el calendario, no en toda la página.
 - Se mantienen los colores semánticos de tipo de cita y los estados de carga.
+
+
+## Decimoséptima pasada: fichajes y administración horaria
+
+- Se han añadido ámbitos de página `fichajes-premium-page` a Resumen, Solicitudes de Ausencia, Festivos/Compensaciones y Control de Fichajes, para que reciban la misma capa visual transversal que el módulo principal.
+- **Control de Fichajes · modal de corrección:** ahora activa `panel-modal-premium` además de conservar su clase específica; el diálogo mantiene su rol/etiqueta accesible y las acciones de corrección existentes.
+- El módulo principal Fichajes ya tenía el ámbito `fichajes-premium-page`; se ha mantenido sin añadir un scope de otra familia.
+- No se han tocado marcajes, calendarios laborales, reglas de cómputo, permisos ni datos.
+- Falta comprobar en navegador las tablas de marcajes, los formularios de solicitud y la adaptación de las vistas en móvil.
