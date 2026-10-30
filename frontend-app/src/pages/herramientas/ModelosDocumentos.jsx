@@ -192,115 +192,6 @@ function FacturaLayoutDesigner({ datosMolsan = {} }) {
 
 
 
-const DOCUMENTO_LAYOUTS = {
-  liquidacion: [
-    { id:"cabecera", label:"Logotipo y datos corporativos", x:5,y:3,w:90,h:10 },
-    { id:"titulo", label:"Título · Hoja de liquidación", x:5,y:15,w:90,h:7 },
-    { id:"datos_provision", label:"Datos de la provisión · titular · expediente · contrato · oficina", x:5,y:24,w:44,h:16 },
-    { id:"datos_gestoria", label:"Datos de la gestoría", x:51,y:24,w:44,h:16 },
-    { id:"documentos", label:"Documentos realizados e importes", x:5,y:42,w:58,h:14 },
-    { id:"importe_provision", label:"Importe de la provisión de fondos", x:66,y:42,w:29,h:14 },
-    { id:"gastos", label:"Gastos realizados · Gestión económica", x:5,y:58,w:90,h:12 },
-    { id:"documentacion", label:"Documentación entregada", x:5,y:72,w:90,h:8 },
-    { id:"resultado", label:"Resultado de la liquidación", x:5,y:82,w:44,h:10 },
-    { id:"conformidad", label:"Cierre · fecha · conformidad y firma", x:51,y:82,w:44,h:10 },
-  ],
-  provision: [
-    { id:"cabecera", label:"Logotipo y datos corporativos", x:5,y:3,w:90,h:10 },
-    { id:"titulo", label:"Título · número y fecha de petición", x:5,y:15,w:90,h:8 },
-    { id:"cliente", label:"Datos del cliente", x:5,y:25,w:90,h:15 },
-    { id:"oficina", label:"Datos de la oficina de origen", x:5,y:42,w:90,h:16 },
-    { id:"desglose", label:"Desglose de provisión · entidad · cuantía · notaría · impuestos · registro · gestión", x:5,y:60,w:90,h:17 },
-    { id:"total", label:"Importe total estimado", x:5,y:79,w:90,h:5 },
-    { id:"observaciones", label:"Observaciones y textos de estimación", x:5,y:85,w:90,h:5 },
-    { id:"aviso_firma", label:"Aviso legal · firma del cliente", x:5,y:91,w:90,h:6 },
-  ],
-};
-
-function DocumentoLayoutDesigner({ tipo }) {
-  const campos = DOCUMENTO_LAYOUTS[tipo] || [];
-  const [posiciones, setPosiciones] = useState(() => Object.fromEntries(campos.map(c => [c.id,{...c,align:"left",valign:"top",fontSize:9,padL:1,padR:1,padT:1,padB:1,bold:false,italic:false}])));
-  const [activo,setActivo] = useState(campos[0]?.id || "");
-  const [guardando,setGuardando] = useState(false);
-  const [cargando,setCargando] = useState(true);
-  const [mensaje,setMensaje] = useState("");
-  const [error,setError] = useState("");
-  useEffect(() => {
-    let vigente=true;
-    axios.get("/utilidades/documentos-plantilla/"+tipo).then(({data})=>{
-      if(!vigente) return;
-      const guardadas=data?.configuracion?.posiciones || {};
-      setPosiciones(prev=>{
-        const next={...prev};
-        campos.forEach(c=>{ if(guardadas[c.id]) next[c.id]={...prev[c.id],...guardadas[c.id]}; });
-        return next;
-      });
-    }).catch(e=>{ if(vigente) setError(e?.response?.data?.detail || "No se pudo cargar la distribución guardada."); })
-      .finally(()=>{if(vigente)setCargando(false);});
-    return ()=>{vigente=false;};
-  },[tipo]);
-  const actualizar=(id,k,v)=>setPosiciones(prev=>({...prev,[id]:{...prev[id],[k]:v}}));
-  const mover=(id,dx,dy)=>setPosiciones(prev=>({...prev,[id]:{...prev[id],x:Math.max(0,Math.min(100-(prev[id]?.w||10),(prev[id]?.x||0)+dx)),y:Math.max(0,Math.min(100-(prev[id]?.h||5),(prev[id]?.y||0)+dy))}}));
-  const soltar=e=>{
-    e.preventDefault();
-    const id=e.dataTransfer.getData("text/plain");
-    const r=e.currentTarget.getBoundingClientRect();
-    const c=posiciones[id];
-    if(!c || !r.width || !r.height) return;
-    const x=((e.clientX-r.left)/r.width)*100;
-    const y=((e.clientY-r.top)/r.height)*100;
-    actualizar(id,"x",Math.max(0,Math.min(100-c.w,x-c.w/2)));
-    actualizar(id,"y",Math.max(0,Math.min(100-c.h,y-c.h/2)));
-    setActivo(id);
-  };
-  const guardar=async()=>{
-    setGuardando(true);setError("");setMensaje("");
-    try{
-      const {data}=await axios.put("/utilidades/documentos-plantilla/"+tipo,{posiciones});
-      if(!data?.ok) throw new Error(data?.mensaje || "No se pudo guardar la distribución.");
-      setMensaje("Distribución guardada correctamente.");
-    }catch(e){setError(e?.response?.data?.detail || e?.message || "No se pudo guardar la distribución.");}
-    finally{setGuardando(false);}
-  };
-  const p=posiciones[activo] || {};
-  const cambiarNumero=(k,v)=>actualizar(activo,k,Number(v));
-  return <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-    <div className="flex flex-wrap items-center justify-between gap-3">
-      <div><p className="text-xs font-black uppercase tracking-wider text-sky-700">Diseñador de distribución · A4</p><h3 className="font-bold text-slate-900">Organiza los bloques del documento</h3><p className="mt-1 text-xs text-slate-500">Misma herramienta de Honorarios de gestoría: arrastrar, seleccionar, ajustar posición, tamaño y texto.</p></div>
-      <button type="button" onClick={guardar} disabled={guardando||cargando} className="rounded-lg bg-sky-700 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{guardando?"Guardando…":"Guardar distribución"}</button>
-    </div>
-    <div className="mt-4 grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(360px,.95fr)]">
-      <div className="overflow-auto rounded-xl bg-slate-100 p-3">
-        <div onDragOver={e=>e.preventDefault()} onDrop={soltar} className="relative mx-auto aspect-[210/297] w-full max-w-[520px] overflow-hidden border border-slate-300 bg-white shadow-lg">
-          <div className="absolute inset-x-[5%] top-[1.5%] border-b-2 border-[#1e5794] pb-1 text-center text-[7px] font-bold tracking-wider text-[#1e5794]">{tipo==="liquidacion"?"HOJA DE LIQUIDACIÓN · CANCELACIÓN":"PROVISIÓN ESTIMATIVA DE FONDOS"}</div>
-          {campos.map(c=>{const v=posiciones[c.id]||c;return <div key={c.id} draggable onClick={()=>setActivo(c.id)} onDragStart={e=>{setActivo(c.id);e.dataTransfer.setData("text/plain",c.id);}} style={{left:v.x+"%",top:v.y+"%",width:v.w+"%",height:v.h+"%",textAlign:v.align||"left",fontSize:(v.fontSize||9)+"px",fontWeight:v.bold?"700":"500",fontStyle:v.italic?"italic":"normal",paddingLeft:(v.padL??1)+"%",paddingRight:(v.padR??1)+"%",paddingTop:(v.padT??1)+"%",paddingBottom:(v.padB??1)+"%"}} className={"absolute flex cursor-grab items-center overflow-hidden rounded-sm border border-dashed px-1 leading-tight text-sky-950 "+(activo===c.id?"z-10 border-2 border-blue-700 bg-blue-100/95 ring-2 ring-blue-300":"border-sky-500 bg-sky-50/85")}>{c.label}</div>;})}
-          <div className="absolute bottom-[1.5%] left-[5%] right-[5%] border-t border-slate-200 pt-1 text-center text-[6px] text-slate-400">MOLSAN · Documento oficial · distribución de referencia</div>
-        </div>
-      </div>
-      <aside className="grid min-w-0 content-start gap-3">
-        <div className="rounded-xl border border-slate-200 bg-white p-3"><p className="text-xs font-extrabold text-slate-800">1. Selecciona un campo</p><div className="mt-2 grid max-h-56 grid-cols-1 gap-1 overflow-y-auto sm:grid-cols-2 xl:grid-cols-1">{campos.map(c=><button key={c.id} type="button" draggable onClick={()=>setActivo(c.id)} onDragStart={e=>{setActivo(c.id);e.dataTransfer.setData("text/plain",c.id);}} className={"w-full cursor-grab rounded-lg border px-3 py-2 text-left text-xs font-semibold "+(activo===c.id?"border-blue-500 bg-blue-50 text-blue-900":"border-slate-200 bg-white text-slate-700")}>{c.label}</button>)}</div></div>
-        <div className="space-y-3 rounded-xl border border-blue-200 bg-blue-50/50 p-3">
-          <div><p className="text-xs font-extrabold text-blue-900">2. Posición y tamaño</p><p className="text-[10px] text-slate-500">{campos.find(c=>c.id===activo)?.label}</p></div>
-          <div className="grid grid-cols-2 gap-2">{[["x","X · izquierda"],["y","Y · arriba"],["w","Ancho"],["h","Alto"]].map(([k,l])=><label key={k} className="text-[10px] font-semibold text-slate-600">{l} (%)<input type="number" min="0" max="100" step="0.5" value={Number(p[k]??0)} onChange={e=>cambiarNumero(k,e.target.value)} className="mt-1 w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-xs"/></label>)}</div>
-          <div className="flex items-center justify-between gap-2"><span className="text-[10px] font-bold text-slate-600">Ajuste fino</span><div className="grid grid-cols-3 gap-1"><span/><button type="button" onClick={()=>mover(activo,0,-0.5)} className="rounded border bg-white px-2 py-1 text-xs">↑</button><span/><button type="button" onClick={()=>mover(activo,-0.5,0)} className="rounded border bg-white px-2 py-1 text-xs">←</button><button type="button" onClick={()=>mover(activo,0,0.5)} className="rounded border bg-white px-2 py-1 text-xs">↓</button><button type="button" onClick={()=>mover(activo,0.5,0)} className="rounded border bg-white px-2 py-1 text-xs">→</button></div></div>
-          <div className="border-t border-blue-100 pt-2"><p className="text-xs font-extrabold text-blue-900">3. Texto y márgenes internos</p>
-            <label className="mt-2 block text-[10px] font-semibold text-slate-600">Alineación horizontal<select value={p.align||"left"} onChange={e=>actualizar(activo,"align",e.target.value)} className="mt-1 w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-xs"><option value="left">Izquierda</option><option value="center">Centrada</option><option value="right">Derecha</option><option value="justify">Justificada</option></select></label>
-            <label className="mt-2 block text-[10px] font-semibold text-slate-600">Alineación vertical<select value={p.valign||"top"} onChange={e=>actualizar(activo,"valign",e.target.value)} className="mt-1 w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-xs"><option value="top">Arriba</option><option value="center">Centro</option><option value="bottom">Abajo</option></select></label>
-            <label className="mt-2 block text-[10px] font-semibold text-slate-600">Tamaño de letra (px)<input type="number" min="5" max="24" step="0.5" value={p.fontSize||9} onChange={e=>cambiarNumero("fontSize",e.target.value)} className="mt-1 w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-xs"/></label>
-            <div className="mt-2 grid grid-cols-2 gap-2">{[["padL","Margen izq."],["padR","Margen der."],["padT","Margen sup."],["padB","Margen inf."]].map(([k,l])=><label key={k} className="text-[10px] font-semibold text-slate-600">{l} (%)<input type="number" min="0" max="8" step="0.2" value={p[k]??1} onChange={e=>cambiarNumero(k,e.target.value)} className="mt-1 w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-xs"/></label>)}</div>
-            <div className="mt-2 flex gap-3 text-xs"><label className="flex items-center gap-1"><input type="checkbox" checked={!!p.bold} onChange={e=>actualizar(activo,"bold",e.target.checked)}/>Negrita</label><label className="flex items-center gap-1"><input type="checkbox" checked={!!p.italic} onChange={e=>actualizar(activo,"italic",e.target.checked)}/>Cursiva</label></div>
-          </div>
-        </div>
-        {cargando&&<p className="text-xs text-slate-500">Cargando distribución guardada…</p>}
-        {error&&<p role="alert" className="text-xs text-rose-700">{error}</p>}
-        {mensaje&&<p role="status" className="text-xs font-semibold text-emerald-700">{mensaje}</p>}
-        <p className="text-[10px] leading-4 text-slate-500">Esta configuración se guarda por separado para cada documento. El PDF oficial conserva su composición actual: este editor no altera la emisión, tarifas, impuestos, gastos, pagos ni datos del expediente.</p>
-      </aside>
-    </div>
-  </section>;
-}
-
-
 function FacturaPlantillaEditor({ datosMolsan = {} }) {
   const [plantillaWord, setPlantillaWord] = useState(null);
   const [archivoWord, setArchivoWord] = useState(null);
@@ -532,6 +423,6 @@ export default function ModelosDocumentos() {
       </div>
       {errorLogo && <p role="alert" className="mt-3 text-sm text-rose-700">{errorLogo}</p>}
       <p className="mt-3 text-xs text-slate-500">Esta imagen se utiliza en esta referencia visual. La emisión oficial se realiza desde Liquidar expediente y no depende de esta previsualización.</p>
-    </section><section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="flex flex-wrap items-end gap-3"><label className="min-w-[240px] flex-1 text-sm font-semibold text-slate-700">Número de expediente<input value={numeroExpediente} onChange={e => setNumeroExpediente(e.target.value)} onKeyDown={e => { if (e.key === "Enter") cargarExpediente(); }} placeholder="Introduce el número exacto del expediente" className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 font-normal"/></label><button type="button" onClick={cargarExpediente} disabled={cargandoExpediente} className="rounded-xl bg-sky-700 px-4 py-2 text-sm font-bold text-white disabled:opacity-50">{cargandoExpediente ? "Cargando…" : "Cargar expediente"}</button></div>{errorExpediente && <p role="alert" className="mt-2 text-sm text-amber-700">{errorExpediente}</p>}{expedienteSeleccionado && <p className="mt-2 text-xs font-semibold text-emerald-700">Expediente cargado: {expedienteSeleccionado.id_expediente || expedienteSeleccionado.numero_expediente || numeroExpediente} · {gastosExpediente.length} gasto(s) recuperado(s).</p>}</section><LiquidacionPreview datosMolsan={datosMolsan} logoCliente={logoCliente} expediente={expedienteSeleccionado} gastos={gastosExpediente} fechaEmision={fechaEmision}/><div className="rounded-2xl border border-emerald-100 bg-white p-4 text-sm leading-6 text-slate-700"><strong className="text-[#123e70]">Integración operativa:</strong> el PDF oficial se genera en «Liquidar expediente», reúne la documentación en el orden de cierre definido y se guarda en «Expediente digital completo» solo después de revisar y aceptar la vista previa. Los gastos figuran según sus registros y estados reales de pago.</div></section> : actual.id==="factura" ? <FacturaPlantillaEditor datosMolsan={datosMolsan} onGuardarLogoFactura={async (logoDataUrl) => { const actualizado = { ...datosMolsan, logo_data_url: logoDataUrl }; const { data } = await axios.put("/utilidades/datos-molsan", actualizado); if (!data?.ok) throw new Error(data?.mensaje || "No se pudo guardar el logotipo."); setDatosMolsan(actualizado); }} /> : <section className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,.85fr)]"><div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"><h2 className="text-xl font-bold text-slate-900">{actual.titulo}</h2><p className="mt-3 text-sm leading-6 text-slate-600">{actual.descripcion}</p><h3 className="mt-5 text-sm font-bold text-slate-800">Contenido previsto</h3><ul className="mt-3 grid gap-2 sm:grid-cols-2">{actual.campos.map(c=><li key={c} className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-sm text-slate-700">✓ {c}</li>)}</ul></div><div className="space-y-4">{actual.id==="provision" ? <><DocumentoLayoutDesigner tipo="provision"/><ProvisionesFondosPage soloEditorPlantilla/></> : <HonorariosGestoria soloPlantilla/>}</div></section>}}
+    </section><section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="flex flex-wrap items-end gap-3"><label className="min-w-[240px] flex-1 text-sm font-semibold text-slate-700">Número de expediente<input value={numeroExpediente} onChange={e => setNumeroExpediente(e.target.value)} onKeyDown={e => { if (e.key === "Enter") cargarExpediente(); }} placeholder="Introduce el número exacto del expediente" className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 font-normal"/></label><button type="button" onClick={cargarExpediente} disabled={cargandoExpediente} className="rounded-xl bg-sky-700 px-4 py-2 text-sm font-bold text-white disabled:opacity-50">{cargandoExpediente ? "Cargando…" : "Cargar expediente"}</button></div>{errorExpediente && <p role="alert" className="mt-2 text-sm text-amber-700">{errorExpediente}</p>}{expedienteSeleccionado && <p className="mt-2 text-xs font-semibold text-emerald-700">Expediente cargado: {expedienteSeleccionado.id_expediente || expedienteSeleccionado.numero_expediente || numeroExpediente} · {gastosExpediente.length} gasto(s) recuperado(s).</p>}</section><LiquidacionPreview datosMolsan={datosMolsan} logoCliente={logoCliente} expediente={expedienteSeleccionado} gastos={gastosExpediente} fechaEmision={fechaEmision}/><div className="rounded-2xl border border-emerald-100 bg-white p-4 text-sm leading-6 text-slate-700"><strong className="text-[#123e70]">Integración operativa:</strong> el PDF oficial se genera en «Liquidar expediente», reúne la documentación en el orden de cierre definido y se guarda en «Expediente digital completo» solo después de revisar y aceptar la vista previa. Los gastos figuran según sus registros y estados reales de pago.</div></section> : actual.id==="factura" ? <FacturaPlantillaEditor datosMolsan={datosMolsan} onGuardarLogoFactura={async (logoDataUrl) => { const actualizado = { ...datosMolsan, logo_data_url: logoDataUrl }; const { data } = await axios.put("/utilidades/datos-molsan", actualizado); if (!data?.ok) throw new Error(data?.mensaje || "No se pudo guardar el logotipo."); setDatosMolsan(actualizado); }} /> : <section className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,.85fr)]"><div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"><h2 className="text-xl font-bold text-slate-900">{actual.titulo}</h2><p className="mt-3 text-sm leading-6 text-slate-600">{actual.descripcion}</p><h3 className="mt-5 text-sm font-bold text-slate-800">Contenido previsto</h3><ul className="mt-3 grid gap-2 sm:grid-cols-2">{actual.campos.map(c=><li key={c} className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-sm text-slate-700">✓ {c}</li>)}</ul></div><div className="space-y-4">{actual.id==="provision" ? <ProvisionesFondosPage soloEditorPlantilla/> : <HonorariosGestoria soloPlantilla/>}</div></section>}}
   </main>;
 }
