@@ -11,9 +11,11 @@ from sqlalchemy import bindparam, text
 from sqlalchemy.orm import Session
 
 from backend.app.database import engine, get_db
+from backend.app.auth.dependencies import get_current_user
 from backend.app.uploads import MAX_EXCEL_UPLOAD_BYTES, read_upload_limited
 
-router = APIRouter(prefix="/oficinas-catalogo", tags=["Catálogo de oficinas"])
+router = APIRouter(
+    dependencies=[Depends(get_current_user)],prefix="/oficinas-catalogo", tags=["Catálogo de oficinas"])
 
 COLUMNAS = [
     "Oficina", "Nombre", "Dirección", "Población", "Cod. Postal",
