@@ -3492,3 +3492,279 @@ table :is(th, td) {
   transform: none !important;
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06)) !important;
 }
+
+
+/* ============================================================
+   MOLSAN ERP PREMIUM 2027 · GLASS LUXE
+   CAPA GLOBAL DE APLICACIÓN REAL
+   Esta capa alcanza también módulos heredados que aún no han
+   migrado a las clases molsan-*. Solo presentación: no altera
+   estructura DOM, lógica, eventos, permisos ni datos.
+   ============================================================ */
+
+:root {
+  --molsan-page-bg: #edf2f9;
+  --molsan-page-bg-elevated: #f6f8fc;
+  --molsan-surface: #ffffff;
+  --molsan-surface-soft: #f6f8fc;
+  --molsan-surface-glass: rgba(255,255,255,.76);
+  --molsan-surface-glass-strong: rgba(255,255,255,.91);
+  --molsan-glass-border: rgba(255,255,255,.78);
+  --molsan-border: #d9e2ef;
+  --molsan-border-light: #e8edf5;
+  --molsan-border-strong: #bdcadc;
+  --molsan-text: #18263d;
+  --molsan-text-secondary: #52627a;
+  --molsan-text-muted: #718096;
+  --molsan-primary: #3159b7;
+  --molsan-primary-hover: #25499f;
+  --molsan-primary-soft: #edf2ff;
+  --molsan-primary-border: #cbd7f2;
+  --molsan-radius-control: 10px;
+  --molsan-radius-card: 16px;
+  --molsan-radius-dialog: 20px;
+  --molsan-radius-panel: 20px;
+  --molsan-shadow-card: 0 5px 18px rgba(28,45,75,.055), 0 1px 2px rgba(28,45,75,.035);
+  --molsan-shadow-glass: 0 14px 38px rgba(28,45,75,.10);
+  --molsan-shadow-popover: 0 20px 52px rgba(20,35,62,.17);
+  --molsan-shadow-dialog: 0 28px 76px rgba(20,35,62,.24);
+}
+
+/* Lienzo operativo y jerarquía tipográfica compartida. */
+html { background: var(--molsan-page-bg); }
+body {
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.erp-app-shell {
+  background:
+    radial-gradient(ellipse at 7% 0%, rgba(87,119,190,.13), transparent 34%),
+    radial-gradient(ellipse at 94% 8%, rgba(166,185,219,.17), transparent 31%),
+    linear-gradient(145deg,#f5f7fc 0%,#edf2f9 54%,#f4f6fb 100%);
+}
+.erp-main-inner { padding-top: 26px; padding-bottom: 32px; }
+.erp-main-inner > div { min-width: 0; }
+.erp-main-inner :is(h1) {
+  color: var(--molsan-text);
+  font-weight: 760;
+  letter-spacing: -.035em;
+}
+.erp-main-inner :is(h2,h3) {
+  color: var(--molsan-text);
+  font-weight: 700;
+  letter-spacing: -.022em;
+}
+.erp-main-inner :is(p,small,.text-gray-500,.text-slate-500) {
+  text-wrap: pretty;
+}
+
+/* Paneles compartidos y tarjetas heredadas reconocibles. */
+.erp-main-inner :is(
+  .erp-card,.erp-card-soft,.molsan-panel,.cg-panel,.cg-card,
+  .ag-panel,.ag-card,.ag-kpi,.ng-panel,.ng-contador,.ng-tarea,
+  .ng-acceso,.eg-panel,.eg-kpi,.eg-card,.maestros-panel,
+  .logs-panel,.agenda-upcoming-card,.agenda-list-table-wrap,
+  .ctn-portal-card,.ctn-portal-field-card
+) {
+  min-width: 0;
+  color: var(--molsan-text);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  background: rgba(255,255,255,.92);
+  box-shadow: var(--molsan-shadow-card);
+  -webkit-backdrop-filter: blur(12px) saturate(135%);
+  backdrop-filter: blur(12px) saturate(135%);
+}
+.erp-main-inner :is(
+  .erp-card,.erp-card-soft,.molsan-panel,.cg-panel,
+  .ag-panel,.ag-card,.ng-panel,.ng-contador,.ng-tarea,
+  .ng-acceso,.eg-panel,.eg-kpi,.eg-card
+):hover {
+  border-color: #cbd6e5;
+}
+.erp-main-inner :is(.erp-card-soft) { background: rgba(247,249,253,.94); }
+
+/* Cabeceras de página y de bloque: misma escala y separación. */
+.erp-main-inner :is(.cg-hero,.cg-section-heading,.ag-hero,.ng-cabecera,.eg-hero) {
+  border-radius: var(--molsan-radius-panel);
+}
+.erp-main-inner :is(.cg-hero,.ag-hero,.ng-cabecera,.eg-hero) h1 {
+  font-size: clamp(1.35rem,2vw,1.75rem);
+  line-height: 1.2;
+}
+.erp-main-inner :is(.cg-section-heading,.ag-panel-cabecera,.ng-panel-titulo,.eg-panel-head) {
+  color: var(--molsan-text);
+}
+
+/* Controles unificados en todas las pantallas operativas. */
+.erp-main-inner :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+  select,textarea
+) {
+  min-width: 0;
+  max-width: 100%;
+  color: var(--molsan-text);
+  background-color: rgba(255,255,255,.96);
+  border: 1px solid var(--molsan-border-strong);
+  border-radius: var(--molsan-radius-control);
+  box-shadow: inset 0 1px 1px rgba(25,42,70,.025);
+  transition: border-color .16s ease,box-shadow .16s ease,background-color .16s ease;
+}
+.erp-main-inner :is(input,select,textarea)::placeholder { color: #8a97aa; opacity: 1; }
+.erp-main-inner :is(input,select,textarea):focus {
+  border-color: var(--molsan-primary);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(49,89,183,.13);
+}
+.erp-main-inner :is(input,select,textarea):disabled {
+  color: #8995a7;
+  background: #f1f4f8;
+  cursor: not-allowed;
+}
+.erp-main-inner input[type="checkbox"],
+.erp-main-inner input[type="radio"] { accent-color: var(--molsan-primary); }
+
+/* Botones: geometría, foco y respuesta comunes sin cambiar variantes. */
+.erp-main-inner button,
+.erp-main-inner [role="button"] {
+  font-family: inherit;
+  transition: background-color .16s ease,color .16s ease,border-color .16s ease,box-shadow .16s ease;
+}
+.erp-main-inner :is(button,a,[role="button"],input,select,textarea):focus-visible {
+  outline: 2px solid rgba(49,89,183,.48);
+  outline-offset: 2px;
+}
+.erp-main-inner button:disabled,
+.erp-main-inner [role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: .58;
+}
+
+/* Tablas de datos: encabezado sobrio, filas limpias y scroll contenido. */
+.erp-main-inner :is(.overflow-x-auto,.table-responsive,[data-table-scroll="true"]) {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.erp-main-inner table {
+  color: var(--molsan-text);
+  border-color: var(--molsan-border-light);
+}
+.erp-main-inner table thead th {
+  color: #52627a;
+  background: #f2f5fa;
+  border-color: var(--molsan-border);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: .035em;
+}
+.erp-main-inner table tbody td {
+  border-color: var(--molsan-border-light);
+}
+.erp-main-inner table tbody tr {
+  transition: background-color .13s ease;
+}
+.erp-main-inner table tbody tr:hover {
+  background: rgba(237,242,255,.72);
+}
+
+/* Ventanas modales compartidas y capas flotantes. */
+[role="dialog"] {
+  border-color: var(--molsan-border);
+  border-radius: var(--molsan-radius-dialog);
+  box-shadow: var(--molsan-shadow-dialog);
+}
+[role="menu"],[role="listbox"],[data-radix-popper-content-wrapper] {
+  border-color: var(--molsan-border);
+  border-radius: 14px;
+  box-shadow: var(--molsan-shadow-popover);
+}
+
+/* Navegación: barra acristalada y dropdown legible, sin hover opaco. */
+.mol-sidebar-premium {
+  background: rgba(255,255,255,.84);
+  border-bottom: 1px solid rgba(191,204,224,.75);
+  box-shadow: 0 9px 28px rgba(28,45,75,.075);
+  -webkit-backdrop-filter: blur(22px) saturate(155%);
+  backdrop-filter: blur(22px) saturate(155%);
+}
+.mol-sidebar-premium nav a,
+.mol-sidebar-premium nav button {
+  border-radius: 11px;
+  font-weight: 650;
+}
+.mol-sidebar-premium nav a:not([aria-current="page"]):hover,
+.mol-sidebar-premium nav button:not([aria-current="page"]):hover {
+  color: var(--molsan-primary);
+  background: rgba(49,89,183,.075);
+  border-color: rgba(49,89,183,.18);
+}
+body > .mol-sidebar-dropdown-menu,
+.mol-sidebar-premium [role="menu"] {
+  color: var(--molsan-text);
+  background: rgba(255,255,255,.97);
+  border: 1px solid var(--molsan-border);
+  box-shadow: var(--molsan-shadow-popover);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(150%);
+}
+body > .mol-sidebar-dropdown-menu [role="menuitem"]:hover,
+.mol-sidebar-premium [role="menu"] [role="menuitem"]:hover {
+  color: var(--molsan-primary);
+  background: rgba(49,89,183,.075);
+}
+
+/* Portales independientes: misma base visual sin imponer su layout. */
+:where(.notargest,.apoderagest,.encargagest,.portal-login-premium,.molsan-intranet-page) {
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+}
+:where(.notargest,.apoderagest,.encargagest) :is(.ng-panel,.ng-contador,.ng-tarea,.ng-acceso,.ag-panel,.ag-card,.ag-kpi,.eg-panel,.eg-card,.eg-kpi) {
+  border-color: var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+:where(.notargest,.apoderagest,.encargagest) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),select,textarea) {
+  border-radius: var(--molsan-radius-control);
+}
+:where(.notargest,.apoderagest,.encargagest) :is(th,thead th) {
+  color: #52627a;
+  background: #f2f5fa;
+  border-color: var(--molsan-border);
+}
+
+/* Responsive transversal: evita desbordamientos sin romper tablas densas. */
+@media (max-width: 900px) {
+  .erp-main-inner { padding-top: 18px; }
+  .erp-main-inner :is(.cg-hero,.ag-hero,.ng-cabecera,.eg-hero) { gap: 12px; }
+}
+@media (max-width: 640px) {
+  .erp-main-inner { padding: 14px 12px 24px; }
+  .erp-main-inner :is(.cg-hero,.ag-hero,.ng-cabecera,.eg-hero) {
+    align-items: flex-start;
+    padding: 14px;
+  }
+  .erp-main-inner :is(.cg-section-heading,.ag-panel-cabecera,.ng-panel-titulo,.eg-panel-head) {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .erp-main-inner table { min-width: 640px; }
+  [role="dialog"] { max-width: calc(100vw - 16px); max-height: calc(100dvh - 16px); overflow: auto; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .mol-sidebar-premium,.erp-main-inner :is(.erp-card,.molsan-panel,.cg-panel,.ag-panel,.ng-panel,.eg-panel) {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: #fff;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .erp-main-inner *, .erp-main-inner *::before, .erp-main-inner *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
