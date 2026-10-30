@@ -155,3 +155,19 @@ La revisión confirma clases presentes en el código, no una diferencia visual e
 - No se ha ejecutado QA visual real en escritorio/tablet/móvil ni pruebas E2E; la revisión visual es estática sobre componentes y CSS.
 - No se han integrado cambios, desplegado la rama, reiniciado Render, modificado secretos ni tocado datos de producción.
 - La rama de auditoría y PR #374 permanecen separadas de `main`.
+
+
+### Ampliación de teclado/foco y consistencia visual
+- `EnviarANotarioModal.jsx`: añadido foco inicial, contención de Tab/Mayús+Tab, Escape y retorno de foco cuando se presenta como diálogo. El modo integrado `inline` no activa el gestor de diálogo.
+- `TiposExpediente.jsx`: migrados sus acentos de marca a tokens Molsan y añadido el gestor común al diálogo de alta/edición.
+- La validación CI de la revisión más reciente consultada (head `d9478850857540f1396f77ff56ad479e52a53d67`) finalizó correctamente en los cinco workflows: Backend audit, EncargaGest checks, Consolidación Post Firma checks, Validar Fichaje Molsan y Validar Control Apoderados. Incluyen build frontend y sintaxis backend; Backend audit ejecuta la suite unitaria sobre SQLite aislado.
+- Los cambios de accesibilidad se consideran compilados, no probados aún con navegación real de teclado o lector de pantalla.
+
+### Permisos de ruta — observación pendiente
+- `/apoderagest` está protegido por `RequireAuth`, que comprueba sesión/token. La inspección de `puedeVerModulo` y del catálogo central confirma que la visibilidad de módulo se gestiona por separado mediante `empleado.modulos_visibles` / `modulos_visibles_list`.
+- Por tanto, el control de sesión ya está aplicado, pero la ruta todavía no comprueba de forma reactiva que el empleado tenga asignado el módulo ApoderaGest. No debe darse por cerrada la auditoría de permisos hasta integrar el guard de módulo y probar perfiles con y sin asignación.
+- Se ha dejado un componente auxiliar `RequireModule.jsx` en la rama, pero no está conectado a ninguna ruta; es un borrador y no aporta protección efectiva mientras no se integre. Las rutas de portales externos no se han modificado.
+
+### Diálogos todavía pendientes de integración común
+- Catálogo ABSIS (crear lista y editar entrada), selector de soporte de módulos, CTN, Informes, Control Apoderados y Expedientes mantienen diálogos que requieren revisar su gestión de foco/teclado.
+- El inventario de diálogos se ha ampliado con `EnviarANotarioModal` y `TiposExpediente`, ya cubiertos por el gestor común.
