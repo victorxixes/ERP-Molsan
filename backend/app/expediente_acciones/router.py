@@ -24,6 +24,7 @@ from backend.app.expediente_acciones.schemas import (
 
 
 router = APIRouter(
+    dependencies=[Depends(get_current_user)],
     prefix="/expediente-acciones",
     tags=["Acciones del expediente"],
 )
