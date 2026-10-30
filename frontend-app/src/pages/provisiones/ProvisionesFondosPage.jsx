@@ -899,7 +899,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-sm font-black tracking-tight text-white shadow-lg shadow-slate-900/15">M·</div>
             <div className="min-w-0"><p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--molsan-primary)]">MOLSAN ERP · PREMIUM 2027</p><h2 className="mt-1 text-xl font-bold tracking-tight text-slate-950">Enviar provisión de fondos</h2><p className="mt-1 text-sm text-slate-600">Correspondencia tipificada · PDF adjunto automáticamente</p><p className="mt-2 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700"><span className="h-2 w-2 rounded-full bg-[var(--molsan-primary)]"></span>Remitente: cancelaciones@molsan.es</p></div>
           </div>
-          <button type="button" onClick={() => { setEmailDraft(null); setEmailProvisionId(null); }} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xl text-slate-500 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900" aria-label="Cerrar">×</button>
+          <button type="button" onClick={cerrarEmail} disabled={enviandoEmail} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xl text-slate-500 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-50" aria-label="Cerrar">×</button>
         </header>
         <div className="space-y-5 p-5 sm:p-7">
           <label className={label}>De<input className={input} value="cancelaciones@molsan.es" readOnly /></label>
