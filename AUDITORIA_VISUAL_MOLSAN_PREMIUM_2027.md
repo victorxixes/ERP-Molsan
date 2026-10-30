@@ -840,3 +840,7 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 - PR #374 sigue abierta, en borrador y mergeable; rama `molsan-premium-2027-glass-luxe`: 353 commits por delante de `main`, 0 por detrás y 96 archivos modificados. No se ha fusionado ni desplegado.
 - No se han ejecutado escrituras en expedientes ni en base de datos productiva. No se ha alterado el servicio Render Live.
 - Cierre pendiente antes de declarar la fase técnica completamente validada: esperar el resultado de los cinco workflows de esta última tanda y, posteriormente, QA real en navegador con teclado, zoom y viewports 320/375/768/1024/1440 px. La revisión estática no sustituye esas pruebas.
+
+### Última comprobación de la utilidad de foco y CI
+- El filtro del ciclo de foco también excluye elementos con `visibility:hidden`, `display:none` y atributo `disabled`, evitando que el Tab se detenga en controles invisibles o no utilizables. Commit `794b69ad`.
+- En la tanda CI asociada a `794b69ad`, el job de sintaxis Python de EncargaGest ya terminó en `success`; su build frontend seguía `in_progress`; Backend audit seguía `in_progress`; los jobs de Fichajes, Post Firma y Control Apoderados seguían `queued`. No se declara el conjunto como verde hasta que todos finalicen.
