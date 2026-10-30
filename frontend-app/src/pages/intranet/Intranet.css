@@ -58,3 +58,16 @@
     animation-iteration-count: 1 !important;
   }
 }
+
+
+
+/* Intranet: tarjetas de contenido y controles del sistema común */
+.molsan-intranet-page {
+  font-family: var(--molsan-font-family,Inter,system-ui,sans-serif);
+}
+.molsan-intranet-page article {
+  border-color: var(--molsan-border,#dce4ef);
+  box-shadow: var(--molsan-shadow-card,0 4px 14px rgba(36,50,74,.06));
+}
+.molsan-intranet-page table { font-variant-numeric: tabular-nums; }
+.molsan-intranet-page thead th { background:#f5f7fb; color:var(--molsan-text-secondary,#526176); }
