@@ -76,3 +76,16 @@ La revisión confirma clases presentes en el código, no una diferencia visual e
 - En esos flujos finalizaron correctamente las tareas de build frontend; además, los flujos indicados completaron comprobaciones de sintaxis backend y el de EncargaGest completó la importación de la aplicación FastAPI.
 - El commit posterior `89f9ba65c97d11b3911e20ce5db8c637c457c744` solo añade documentación de auditoría; no se recibió ejecución de workflows asociada a ese commit.
 - Estos resultados confirman compilación CI de los cambios visuales aplicados hasta `0bf4035`, no una inspección visual en navegador ni pruebas funcionales de importación, pagos o expedientes.
+
+## Provisiones y operaciones económicas — revisión de código
+
+- Ruta correcta localizada: `frontend-app/src/pages/provisiones/ProvisionesFondosPage.jsx` (913 líneas) y hoja dedicada `ProvisionesFondosPage.css` (106 líneas). La búsqueda previa por `src/pages/herramientas/` no era la ruta correcta.
+- `ProvisionesFondosPage.jsx` mantiene 42 clases directas de la familia azul/índigo en la inspección estática, un diálogo con `role=dialog`/`aria-modal` y sin gestión explícita de Escape detectada. Es una pantalla de alta densidad funcional; no se recomienda un reemplazo global de clases sin validar los paneles de cálculo, previsualización y editor.
+- `ProvisionesFondosPage.css` no contiene clases Tailwind azul/índigo ni `!important` en la inspección de texto. La deuda cromática reside principalmente en JSX.
+- `ProvisionesModal.jsx` contiene un diálogo accesible con `role=dialog`/`aria-modal`, seis clases de la familia azul/índigo y sin gestión explícita de Escape detectada.
+- `TraspasoSaldoPanel.jsx` presenta el mismo patrón general: diálogo etiquetado, acentos índigo heredados y sin Escape explícito detectado. La interacción de traspaso no se ejecutó para no alterar saldos.
+
+## Verificación CI posterior
+
+- Para el commit `54d9f38cc892bf07dcf7b83b6d93d004234c9007` (ajuste visual de Datos Molsan), los cuatro workflows consultados terminaron con `success`: Consolidación Post Firma checks (41084910113), Validar Fichaje Molsan (41084910244), Validar Control Apoderados (41084910072) y EncargaGest checks (41084909922).
+- Los resultados CI prueban compilación/validaciones automatizadas de ese commit, pero no prueban que el logo, formularios y paneles se vean correctamente en dispositivos reales.
