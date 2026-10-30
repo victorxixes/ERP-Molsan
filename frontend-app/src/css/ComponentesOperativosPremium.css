@@ -315,3 +315,43 @@
 @media (prefers-reduced-motion: reduce) {
   .datos-molsan-premium * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+
+/* Verifactu: ámbito de página completo (no solo sus campos reutilizables). */
+.verifacti-page-premium {
+  min-width: 0;
+  max-width: 100%;
+  color: var(--molsan-text, #17243a);
+  font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
+}
+.verifacti-page-premium > header,
+.verifacti-page-premium > section,
+.verifacti-page-premium > article {
+  min-width: 0;
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
+}
+.verifacti-page-premium > header > div:first-child {
+  background: linear-gradient(90deg, var(--molsan-primary, #3156b3), var(--molsan-primary-hover, #274694), #9bb2e5);
+}
+.verifacti-page-premium :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),select,textarea) {
+  min-width: 0;
+  max-width: 100%;
+  border-color: var(--molsan-border-strong, #c4d0df);
+  border-radius: var(--molsan-radius-control, 9px);
+}
+.verifacti-page-premium :is(button,input,select,textarea):focus-visible {
+  outline: 2px solid var(--molsan-primary, #3156b3);
+  outline-offset: 2px;
+}
+.verifacti-page-premium .text-blue-700,
+.verifacti-page-premium .text-indigo-600 { color: var(--molsan-primary, #3156b3); }
+.verifacti-page-premium .bg-blue-600,
+.verifacti-page-premium .bg-indigo-600 { background-color: var(--molsan-primary, #3156b3); }
+.verifacti-page-premium .bg-blue-600:hover:not(:disabled),
+.verifacti-page-premium .bg-indigo-600:hover:not(:disabled) { background-color: var(--molsan-primary-hover, #274694); }
+@media (max-width: 640px) {
+  .verifacti-page-premium { padding-left: 12px; padding-right: 12px; }
+  .verifacti-page-premium > header { padding: 16px; }
+}
