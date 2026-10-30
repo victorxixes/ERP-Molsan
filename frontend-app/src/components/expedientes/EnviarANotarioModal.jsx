@@ -288,7 +288,7 @@ export default function EnviarANotarioModal({
       : [];
 
     if (guardados.length) {
-      return guardados.slice(0, 1).map((documento, indice) => ({
+      return guardados.map((documento, indice) => ({
         id: documento?.id ?? indice + 1,
         tipo_documento: String(documento?.tipo_documento ?? ""),
         cuantia: documento?.cuantia === null || documento?.cuantia === undefined || documento?.cuantia === ""
@@ -838,7 +838,7 @@ export default function EnviarANotarioModal({
                   </div>
                   <div className="min-w-0">
                 <div className="space-y-4">
-                  {documentosEscritura.slice(0, 1).map((documento, indice) => (
+                  {documentosEscritura.map((documento, indice) => (
                     <div
                       key={documento.id}
                       className="rounded-xl border border-slate-200 bg-slate-50/70 p-3 sm:p-4"
@@ -847,7 +847,7 @@ export default function EnviarANotarioModal({
                         <span className="text-sm font-bold text-slate-700">
                           Documento {indice + 1}
                         </span>
-                        {indice > 0 && (
+                        {documentosEscritura.length > 1 && (
                           <button
                             type="button"
                             disabled={loading}
@@ -916,6 +916,18 @@ export default function EnviarANotarioModal({
                       </div>
                     </div>
                   ))}
+
+                  <button
+                    type="button"
+                    disabled={loading}
+                    onClick={() => setDocumentosEscritura((actuales) => ([
+                      ...actuales,
+                      { id: Date.now(), tipo_documento: "", cuantia: "" },
+                    ]))}
+                    className="w-full rounded-xl border border-dashed border-indigo-300 bg-indigo-50/50 px-3 py-2.5 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50 disabled:opacity-50"
+                  >
+                    + Añadir otro documento de escritura
+                  </button>
 
                   <div className="mt-3">
                     <label className="mb-1 block text-xs font-semibold text-slate-700">
