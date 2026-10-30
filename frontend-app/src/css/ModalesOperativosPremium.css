@@ -22,3 +22,42 @@
     border-radius: .85rem;
   }
 }
+
+
+/* Modales operativos del expediente · jerarquía y adaptación */
+.expediente-operativo-modal,
+.liquidar-expediente-modal,
+.traspaso-saldo-modal {
+  box-sizing: border-box;
+  padding: clamp(8px, 2vw, 20px);
+  overscroll-behavior: contain;
+}
+.expediente-operativo-modal > :not(.w-full),
+.liquidar-expediente-modal > section,
+.traspaso-saldo-modal > section {
+  min-width: 0;
+  max-width: 100%;
+  border-color: var(--molsan-border,#dce4ef);
+  border-radius: var(--molsan-radius-dialog,18px);
+  box-shadow: var(--molsan-shadow-dialog,0 24px 64px rgba(15,23,42,.22));
+}
+.liquidar-expediente-modal > section,
+.traspaso-saldo-modal > section {
+  max-height: calc(100dvh - 32px);
+}
+@media (max-width: 640px) {
+  .expediente-operativo-modal > :not(.w-full) {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100dvh - 16px);
+    border-radius: 13px;
+  }
+  .liquidar-expediente-modal > section,
+  .traspaso-saldo-modal > section {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100dvh - 16px);
+    border-radius: 13px;
+  }
+  .liquidar-expediente-modal :is(header,footer) { flex-wrap: wrap; }
+}
