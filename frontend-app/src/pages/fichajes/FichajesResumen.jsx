@@ -81,7 +81,7 @@ export default function FichajesResumen({ recargar }) {
       <form className="mt-3 space-y-2" onSubmit={solicitar}>
         <label className="block text-xs">Desde<input required type="date" value={desde} onChange={(e) => setDesde(e.target.value)} className="mt-1 w-full rounded-lg border p-2 text-sm" /></label>
         <label className="block text-xs">Hasta<input required type="date" min={desde} value={hasta} onChange={(e) => setHasta(e.target.value)} className="mt-1 w-full rounded-lg border p-2 text-sm" /></label>
-        <button disabled={guardando || cargando} className="w-full rounded-lg bg-violet-700 px-3 py-2 text-sm font-bold text-white disabled:opacity-50">{guardando ? "Enviando…" : "Enviar solicitud"}</button>
+        <button type="submit" disabled={guardando || cargando} className="w-full rounded-lg bg-violet-700 px-3 py-2 text-sm font-bold text-white disabled:opacity-50">{guardando ? "Enviando…" : "Enviar solicitud"}</button>
       </form>
       {cargando && <p className="mt-2 text-xs text-slate-500">Actualizando datos…</p>}
     </article>
