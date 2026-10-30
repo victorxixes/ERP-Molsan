@@ -3,9 +3,11 @@ import React, {
   useEffect,
   useMemo,
   useState,
+  useRef,
 } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 
 // ============================================================
@@ -958,6 +960,12 @@ export default function OficinasLiquidadoras() {
 
     setArchivo(null);
   }
+
+  const oficinaDialogRef = useRef(null);
+  const importarDialogRef = useRef(null);
+  useAccessibleDialog({ open: mostrarModal, onClose: cerrarModal, dialogRef: oficinaDialogRef });
+  useAccessibleDialog({ open: mostrarImportar, onClose: cerrarImportacion, dialogRef: importarDialogRef });
+
 
 
   async function importarExcel(
@@ -2588,6 +2596,8 @@ export default function OficinasLiquidadoras() {
         >
 
           <div
+            ref={oficinaDialogRef}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-label={modoEdicion ? "Editar oficina liquidadora" : "Nueva oficina liquidadora"}
@@ -2958,6 +2968,8 @@ export default function OficinasLiquidadoras() {
         >
 
           <div
+            ref={importarDialogRef}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-label="Importar oficinas liquidadoras desde Excel"
