@@ -1,10 +1,12 @@
 import {
   useEffect,
+  useRef,
   useState,
 } from "react";
 import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import "./ExpedientesListado.css";
 
 import {
@@ -1151,6 +1153,10 @@ export default function ExpedientesListado() {
     mostrarFiltros,
     setMostrarFiltros,
   ] = useState(false);
+  const filtrosDialogRef = useRef(null);
+  const plazosDialogRef = useRef(null);
+  useAccessibleDialog({ open: mostrarFiltros, onClose: () => setMostrarFiltros(false), dialogRef: filtrosDialogRef });
+  useAccessibleDialog({ open: mostrarAyudaControlPlazos, onClose: () => setMostrarAyudaControlPlazos(false), dialogRef: plazosDialogRef });
   // ==========================================================
   // FILTROS EDITABLES — FILTROS AVANZADOS DEFINITIVOS
   // ==========================================================
@@ -3186,9 +3192,7 @@ export default function ExpedientesListado() {
       {mostrarFiltros && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-filtros-titulo"
+          role="presentation"
         >
           <button
             type="button"
@@ -3198,6 +3202,11 @@ export default function ExpedientesListado() {
           />
 
           <section
+            ref={filtrosDialogRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-filtros-titulo"
             className="relative z-10 w-full max-w-5xl max-h-[88vh] overflow-y-auto rounded-3xl border shadow-2xl"
             style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
           >
@@ -3325,7 +3334,7 @@ export default function ExpedientesListado() {
 
       {mostrarAyudaControlPlazos && (
         <div className="fixed inset-0 z-[11000] flex items-center justify-center bg-slate-950/60 p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setMostrarAyudaControlPlazos(false); }}>
-          <section role="dialog" aria-modal="true" aria-labelledby="titulo-control-plazos" className="w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+          <section ref={plazosDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="titulo-control-plazos" className="w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
             <header className="flex items-start justify-between gap-4 border-b border-slate-200 bg-slate-50 px-5 py-4">
               <div>
                 <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Expedientes</p>
