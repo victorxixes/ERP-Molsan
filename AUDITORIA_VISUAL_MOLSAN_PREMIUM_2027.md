@@ -350,3 +350,11 @@ Se mantiene pendiente el recorrido del resto de herramientas: importaciones, mod
 - **Tipos de Expediente:** el diálogo ya tenía atributos accesibles; se ha conectado al estilo responsive compartido.
 - Se conservan sus colores de validación y estados (rojo/verde), que son semánticos y no deben convertirse en el color corporativo.
 - **Tipos Impositivos:** no se detectó overlay propio en el JSX inspeccionado; se conserva el ámbito de controles operativos.
+
+
+## Decimocuarta pasada: cobertura de ámbitos premium en utilidades técnicas
+
+- **Importador ABSIS clásico:** se añadió `utilidades-premium-page` al contenedor raíz; antes solo tenía la clase genérica de subpágina, por lo que no recibía todas las reglas de la capa transversal.
+- **Mantenimiento Técnico:** el contenido autorizado carecía del ámbito raíz premium (solo lo tenía el estado de acceso restringido). Se añadió `mantenimiento-tecnico-premium utilidades-premium-page` al `main` real.
+- **Verifacti** contiene componentes de formulario internos y no un shell de página autónomo en el archivo inspeccionado; se mantiene el ámbito de componente y no se fuerza una clase de página a cada campo.
+- **Utilidades, Lectura Copias y Lectura CancelaI** conservan sus ámbitos operativos existentes. No se detectaron modales propios en los archivos revisados de esta pasada.
