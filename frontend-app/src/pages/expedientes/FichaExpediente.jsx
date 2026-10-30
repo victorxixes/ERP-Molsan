@@ -1224,6 +1224,9 @@ function Modal({
           bg-white
           shadow-2xl
         `}
+        role="dialog"
+        aria-modal="true"
+        aria-label={titulo}
         onMouseDown={(event) => {
           event.stopPropagation();
         }}
@@ -1286,6 +1289,7 @@ function Modal({
               hover:bg-slate-50
               hover:text-slate-800
             "
+            aria-label={`Cerrar ${titulo}`}
           >
             ✕
           </button>
