@@ -2760,6 +2760,73 @@ def inicializar_esquema_base_preview():
     print("[PREVIEW SCHEMA] Tablas base roles/empleados disponibles.", flush=True)
 
 
+
+def crear_administrador_preview():
+    """Crea una cuenta administradora solo en la instancia aislada de preview."""
+    habilitado = os.getenv("MOLSAN_PREVIEW_BOOTSTRAP_ADMIN", "").strip().lower()
+    schema_habilitado = os.getenv("MOLSAN_PREVIEW_BOOTSTRAP_SCHEMA", "").strip().lower()
+    if habilitado not in {"1", "true", "yes", "si", "sí"}:
+        return
+    if schema_habilitado not in {"1", "true", "yes", "si", "sí"}:
+        raise RuntimeError("[PREVIEW ADMIN] Se exige el bootstrap de esquema exclusivo de preview.")
+
+    usuario = os.getenv("MOLSAN_PREVIEW_ADMIN_USERNAME", "").strip()
+    password = os.getenv("MOLSAN_PREVIEW_ADMIN_PASSWORD", "")
+    if not usuario or len(password) < 20:
+        raise RuntimeError("[PREVIEW ADMIN] Faltan credenciales seguras de bootstrap.")
+
+    from backend.app.empleados.service import hash_password
+
+    modulos_admin = [
+        "dashboard", "agenda", "empleados", "informes", "intranet",
+        "auditoria", "seguridad", "utilidades", "catalogos", "logs",
+        "ctn", "maestros", "mensajes", "realtime", "notarios",
+        "documentos", "expedientes", "notargest", "encargagest",
+    ]
+    permisos_admin = {"*": ["ver", "crear", "editar", "eliminar"]}
+
+    db = SessionLocal()
+    try:
+        existente = db.query(Empleado).filter(Empleado.usuario == usuario).first()
+        if existente:
+            print("[PREVIEW ADMIN] La cuenta configurada ya existe; no se modifica ni se restablece su contraseña.", flush=True)
+            return
+
+        rol_admin = db.query(Rol).filter(
+            or_(
+                Rol.nombre.ilike("admin"),
+                Rol.nombre.ilike("administrador"),
+                Rol.nombre.ilike("administradora"),
+                Rol.nombre.ilike("superadmin"),
+            )
+        ).first()
+        if rol_admin is None:
+            rol_admin = Rol(nombre="Admin", descripcion="Administrador del entorno aislado de pruebas")
+            db.add(rol_admin)
+            db.flush()
+
+        administrador = Empleado(
+            nombre="Administrador",
+            apellidos="Preview",
+            dni="PREVIEW-ADMIN",
+            usuario=usuario,
+            password=hash_password(password),
+            activo=True,
+            foto="default-avatar.png",
+            rol_id=rol_admin.id,
+            modulos_visibles_list=modulos_admin,
+            permisos_modulo_dict=permisos_admin,
+        )
+        db.add(administrador)
+        db.commit()
+        print("[PREVIEW ADMIN] Cuenta administradora de pruebas creada correctamente.", flush=True)
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
+
+
 # Las migraciones incrementales siguen ejecutándose en su orden original.
 app.router.on_startup.insert(
     0,
@@ -2773,5 +2840,6 @@ app.router.on_startup.insert(4, reparar_vinculos_apoderado_expedientes)
 # Solo el servicio aislado de preview activa la creación inicial del esquema.
 if os.getenv("MOLSAN_PREVIEW_BOOTSTRAP_SCHEMA", "").strip().lower() in {"1", "true", "yes", "si", "sí"}:
     app.router.on_startup.insert(0, inicializar_esquema_base_preview)
+    app.router.on_startup.insert(1, crear_administrador_preview)
 
 instrumentar_inicio_aplicacion()
