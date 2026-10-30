@@ -1349,7 +1349,7 @@ function Boton({
 }) {
   const clases = {
     primary:
-      "border-blue-600 bg-blue-600 text-white hover:bg-blue-700",
+      "border-[var(--molsan-primary)] bg-[var(--molsan-primary)] text-white hover:bg-[var(--molsan-primary-hover)]",
 
     secondary:
       "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
@@ -4889,7 +4889,7 @@ async function descargarPDFCalificacion(defecto) {
               mt-4
               inline-flex
               rounded-xl
-              bg-blue-600
+              bg-[var(--molsan-primary)]
               px-4
               py-2.5
               text-xs
@@ -7293,7 +7293,7 @@ const cuantiaFincasParaEnvio =
                                 return abrir;
                               });
                             }}
-                            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-700"
+                            className="inline-flex items-center gap-2 rounded-lg bg-[var(--molsan-primary)] px-4 py-2 text-xs font-bold text-white hover:bg-[var(--molsan-primary-hover)]"
                           >
                             ＋ Registrar gasto
                           </button>
