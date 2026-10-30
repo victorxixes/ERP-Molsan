@@ -3856,10 +3856,10 @@ def generar_documento_factura_honorarios(
         fecha_factura = fecha_es(datos.get("fecha_factura"))
         cliente = str(datos.get("cliente") or " ".join(filter(None, [valor(expediente, "facturacion_nombre"), valor(expediente, "facturacion_apellidos")])) or valor(expediente, "nombre_solicitante", "nombre_titular") or "").strip()
         nif_cliente = str(datos.get("nif_cliente") or valor(expediente, "facturacion_dni_nif", "nif_solicitante", "dni_solicitante", "nif_titular") or "").strip()
-        direccion_facturacion = str(datos.get("direccion_facturacion") or valor(expediente, "facturacion_direccion", "direccion_facturacion") or "").strip()
-        codigo_postal_facturacion = str(datos.get("codigo_postal_facturacion") or valor(expediente, "facturacion_codigo_postal", "codigo_postal_facturacion") or "").strip()
-        poblacion_facturacion = str(datos.get("poblacion_facturacion") or valor(expediente, "facturacion_poblacion", "poblacion_facturacion") or "").strip()
-        provincia_facturacion = str(datos.get("provincia_facturacion") or valor(expediente, "facturacion_provincia", "provincia_facturacion") or "").strip()
+        direccion_facturacion = str(datos.get("direccion_facturacion") or valor(expediente, "facturacion_direccion") or "").strip()
+        codigo_postal_facturacion = str(datos.get("codigo_postal_facturacion") or valor(expediente, "facturacion_codigo_postal") or "").strip()
+        poblacion_facturacion = str(datos.get("poblacion_facturacion") or valor(expediente, "facturacion_poblacion") or "").strip()
+        provincia_facturacion = str(datos.get("provincia_facturacion") or valor(expediente, "facturacion_provincia") or "").strip()
         concepto_factura = str(datos.get("concepto") or "Honorarios de gestoría").strip()
         base = Decimal(str(datos.get("base_imponible") or 0).replace(",", ".")).quantize(Decimal("0.01"))
         impuesto = Decimal(str(datos.get("importe_impuesto") or 0).replace(",", ".")).quantize(Decimal("0.01"))
@@ -3941,7 +3941,7 @@ def generar_documento_factura_honorarios(
         ]
         tabla_cabecera = Table(cabecera_datos, colWidths=[58*mm, 43*mm, 73*mm])
         tabla_cabecera.setStyle(TableStyle([
-            ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#edf2f8")),
+            ("BACKGROUND", (0,0), (-1,-1), colors.white),
             ("BOX", (0,0), (-1,-1), .5, colors.HexColor("#d5deea")),
             ("INNERGRID", (0,0), (-1,-1), .35, colors.HexColor("#d5deea")),
             ("VALIGN", (0,0), (-1,-1), "TOP"), ("LEFTPADDING", (0,0), (-1,-1), 7),
@@ -3971,7 +3971,21 @@ def generar_documento_factura_honorarios(
             ("RIGHTPADDING", (0,0), (-1,-1), 7), ("TOPPADDING", (0,0), (-1,-1), 7),
             ("BOTTOMPADDING", (0,0), (-1,-1), 7),
         ]))
-        story.extend([datos_cliente, Paragraph("DETALLE DE FACTURACIÓN", styles["FacturaSeccionMolsan"])])
+        story.extend([datos_cliente, Paragraph("DATOS DEL EXPEDIENTE", styles["FacturaSeccionMolsan"])])
+        datos_expediente = [
+            [Paragraph("<b>N.º Expediente</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Documento</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Notario</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Protocolo</b>", styles["FacturaCeldaMolsan"]), Paragraph("<b>Fecha de firma</b>", styles["FacturaCeldaMolsan"])],
+            [Paragraph(escape(numero_expediente), styles["FacturaCeldaMolsan"]), Paragraph(escape(tipo_documento_expediente), styles["FacturaCeldaMolsan"]), Paragraph(escape(notario), styles["FacturaCeldaMolsan"]), Paragraph(escape(protocolo), styles["FacturaCeldaMolsan"]), Paragraph(escape(fecha_firma), styles["FacturaCeldaMolsan"])],
+        ]
+        tabla_exp = Table(datos_expediente, colWidths=[31*mm, 34*mm, 43*mm, 28*mm, 38*mm])
+        tabla_exp.setStyle(TableStyle([
+            ("BACKGROUND", (0,0), (-1,-1), colors.white),
+            ("BOX", (0,0), (-1,-1), .5, colors.HexColor("#d5deea")),
+            ("INNERGRID", (0,0), (-1,-1), .35, colors.HexColor("#d5deea")),
+            ("VALIGN", (0,0), (-1,-1), "TOP"),
+            ("LEFTPADDING", (0,0), (-1,-1), 5), ("RIGHTPADDING", (0,0), (-1,-1), 5),
+            ("TOPPADDING", (0,0), (-1,-1), 6), ("BOTTOMPADDING", (0,0), (-1,-1), 6),
+        ]))
+        story.extend([tabla_exp, Paragraph("DETALLE DE FACTURACIÓN", styles["FacturaSeccionMolsan"])])
         story.append(Paragraph(f"<b>Concepto:</b> {escape(concepto_factura)}", styles["FacturaCeldaMolsan"]))
         story.append(Spacer(1, 3*mm))
         importe_honorarios_bruto = base + descuento if (es_empleado or descuento > 0) else base
@@ -4007,7 +4021,7 @@ def generar_documento_factura_honorarios(
         tabla_resumen = Table(resumen, colWidths=[125*mm, 49*mm], hAlign="RIGHT")
         tabla_resumen.setStyle(TableStyle([
             ("LINEABOVE", (0,0), (-1,0), .8, colors.HexColor("#9aabc2")),
-            ("BACKGROUND", (0,-1), (-1,-1), colors.HexColor("#edf2f8")),
+            ("BACKGROUND", (0,-1), (-1,-1), colors.white),
             ("LEFTPADDING", (0,0), (-1,-1), 7), ("RIGHTPADDING", (0,0), (-1,-1), 7),
             ("TOPPADDING", (0,0), (-1,-1), 6), ("BOTTOMPADDING", (0,0), (-1,-1), 6),
         ]))
