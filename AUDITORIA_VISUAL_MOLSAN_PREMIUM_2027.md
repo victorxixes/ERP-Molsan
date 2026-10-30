@@ -451,3 +451,13 @@ Se mantiene pendiente el recorrido del resto de herramientas: importaciones, mod
 - El modal de envío a notario se renderiza mediante portal cuando funciona como ventana independiente y también admite modo integrado en línea. El panel interior no tenía semántica de diálogo en ninguno de los dos modos.
 - Se ha añadido `role="dialog"`, `aria-modal` y una etiqueta accesible únicamente cuando se presenta como modal independiente; el modo inline no recibe atributos de diálogo falsos.
 - Se conserva el diseño de ancho amplio, el formulario, los datos de notaría, los controles de firma y las operaciones existentes.
+
+
+## Vigésima quinta pasada: shell principal y navegación global
+
+### Estructura confirmada
+- `Layout.jsx` es el shell de ERP interno: Sidebar, notificaciones WebSocket, modal de perfil y `Outlet`. ApoderaGest, NotarGest y EncargaGest usan shells independientes; seguridad/panel técnico mantienen su tratamiento especializado.
+- El contenedor `erp-main-inner` tiene padding global en CSS y además clases de padding Tailwind en JSX. Muchas páginas hijas también declaran su propio padding responsive. Esto puede acumular gutters (doble margen) en algunos módulos.
+- **Decisión:** no retirar el padding global todavía, porque existen rutas antiguas que dependen de él y otras que ya incluyen padding propio. Se registra como punto de QA visual del shell: comprobar ruta por ruta y dejar un único propietario del gutter en cada una.
+- La navegación se mantiene en Sidebar centralizado; los estilos de transición están acotados a enlaces y botones del sidebar. La ventana de notificaciones se ha corregido para que el rol de diálogo esté en el panel.
+- El shell principal no se ha reestructurado en esta pasada para evitar alterar la anchura útil de los portales y módulos que no comparten el mismo patrón.
