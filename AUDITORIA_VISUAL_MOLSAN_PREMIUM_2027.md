@@ -89,3 +89,28 @@ No se autoriza tocar la base de datos productiva ni los servicios actuales de Re
 ## Condición de cierre
 
 La auditoría solo se considerará completa cuando todos los bloques estén revisados, las correcciones estén aplicadas en esta rama, CI/build estén verdes y exista QA visual real de las pantallas y modales en escritorio, tablet y móvil. La PR no se integrará antes de ese cierre.
+
+
+## Ampliación del inventario de ventanas modales
+
+El árbol del frontend contiene, al menos, estos componentes dedicados a modales:
+
+- `components/SidebarPerfilModal.jsx`
+- `components/agenda/ModalNuevaCita.jsx`
+- `components/ctn/ModalCtnDetalle.jsx`
+- `components/empleados/ModalEmpleado.jsx`
+- `components/expedientes/CarpetaDigitalModal.jsx`
+- `components/expedientes/EnviarANotarioModal.jsx`
+- `components/expedientes/LiquidarExpedienteModal.jsx`
+- `components/expedientes/ProvisionesModal.jsx`
+
+Además, las páginas de ApoderaGest, NotarGest y EncargaGest contienen diálogos y modales propios; FichaExpediente también contiene varios diálogos inline y un portal para la orden de pago. Esta lista es un inventario inicial por nombre de archivo, no una lista exhaustiva de todas las ventanas que se abren en la aplicación.
+
+## Actualización de validación técnica
+
+En el commit `69d37549e939a10743cff55ed2635293024fd82b`, los tres workflows asociados a la PR terminaron correctamente:
+- Validar Fichaje Molsan: build frontend y sintaxis backend correctos.
+- Validar Control Apoderados: build frontend y sintaxis backend correctos.
+- EncargaGest checks: build frontend y sintaxis backend correctos.
+
+Esto no equivale a QA visual ni a una prueba de todas las rutas.
