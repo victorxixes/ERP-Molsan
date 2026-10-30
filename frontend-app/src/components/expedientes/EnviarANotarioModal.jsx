@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import AutocompleteNotario from "../agenda/AutocompleteNotario";
 import axios from "../../api/axios";
+import useAccessibleDialog from "../ui/useAccessibleDialog";
 import "../../css/ModalesOperativosPremium.css";
 
 // ============================================================
@@ -273,6 +274,10 @@ export default function EnviarANotarioModal({
           : (expediente?.capital_documento_notarial ?? expediente?.capital),
     })
   );
+
+  const dialogRef = useRef(null);
+  useAccessibleDialog({ open: !inline, onClose, dialogRef });
+
 
   // Lista de documentos de escritura. El primero conserva la cuantía
   // procedente de Fincas y Registros; los adicionales tienen cuantía propia.
@@ -644,7 +649,7 @@ export default function EnviarANotarioModal({
 
   const contenido = (
     <div className={inline ? "w-full min-w-0" : "expediente-operativo-modal fixed inset-0 z-[10050] flex items-center justify-center bg-slate-950/60 p-2 backdrop-blur-sm sm:p-3"} onMouseDown={(event) => { if (!inline && event.target === event.currentTarget && !loading) onClose(); }}>
-      <div role={inline ? undefined : "dialog"} aria-modal={inline ? undefined : true} aria-label={inline ? undefined : "Envío de expediente a notario"} className={inline ? "flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-800 shadow-sm" : "flex h-[97vh] max-h-[98vh] w-[min(98vw,1750px)] max-w-[1750px] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white text-slate-800 shadow-2xl"} onMouseDown={(event) => event.stopPropagation()}>
+      <div ref={dialogRef} tabIndex={inline ? undefined : -1} role={inline ? undefined : "dialog"} aria-modal={inline ? undefined : true} aria-label={inline ? undefined : "Envío de expediente a notario"} className={inline ? "flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-800 shadow-sm" : "flex h-[97vh] max-h-[98vh] w-[min(98vw,1750px)] max-w-[1750px] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white text-slate-800 shadow-2xl"} onMouseDown={(event) => event.stopPropagation()}>
 
         {!inline && (
           <div className="flex shrink-0 items-center justify-end border-b border-slate-200 bg-white px-5 py-3 sm:px-7">
