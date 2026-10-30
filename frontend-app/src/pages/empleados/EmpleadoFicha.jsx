@@ -99,7 +99,7 @@ export default function EmpleadoFicha({
   if (!empleadoId) {
 
     return (
-      <div className="erp-page">
+      <div className="erp-page empleado-ficha-premium min-w-0">
 
         <div className="erp-card max-w-[1700px] mx-auto p-8">
 
@@ -117,7 +117,7 @@ export default function EmpleadoFicha({
   if (loading) {
 
     return (
-      <div className="erp-page">
+      <div className="erp-page empleado-ficha-premium min-w-0">
 
         <div className="erp-card max-w-[1700px] mx-auto p-8">
 
@@ -140,7 +140,7 @@ export default function EmpleadoFicha({
   if (error) {
 
     return (
-      <div className="erp-page">
+      <div className="erp-page empleado-ficha-premium min-w-0">
 
         <div className="erp-card max-w-[1700px] mx-auto p-8">
 
