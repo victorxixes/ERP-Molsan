@@ -32,11 +32,17 @@ export default function useAccessibleDialog({ open, onClose, dialogRef }) {
     const dialog = dialogRef.current;
     const previousFocus = document.activeElement;
     const focusable = () =>
-      Array.from(dialog.querySelectorAll(FOCUSABLE)).filter((element) =>
-        element.getClientRects().length > 0 &&
-        !element.closest('[aria-hidden="true"]') &&
-        !element.closest("[inert]")
-      );
+      Array.from(dialog.querySelectorAll(FOCUSABLE)).filter((element) => {
+        const style = window.getComputedStyle(element);
+        return (
+          element.getClientRects().length > 0 &&
+          style.visibility !== "hidden" &&
+          style.display !== "none" &&
+          !element.hasAttribute("disabled") &&
+          !element.closest('[aria-hidden="true"]') &&
+          !element.closest("[inert]")
+        );
+      });
 
     const first = focusable()[0];
     (first || dialog).focus({ preventScroll: true });
