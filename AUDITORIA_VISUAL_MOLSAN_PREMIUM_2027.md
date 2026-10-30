@@ -718,7 +718,7 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 
 ### Pendientes que se mantienen abiertos
 - El modal agrupado de ApoderaGest y los cambios del selector deben probarse con teclado real, especialmente al cambiar de grupo, seleccionar opciones y cerrar diálogos anidados.
-- La ruta administrativa `/herramientas/utilidades/control-apoderados` está dentro del árbol autenticado, pero no lleva el mismo `RequireModule` que las rutas `/apoderagest` y `/apoderagest/liquidaciones`. No se modifica a ciegas: falta confirmar la política de autorización del endpoint administrativo y el criterio de rol antes de imponer un guard de frontend.
+- La ruta administrativa `/herramientas/utilidades/control-apoderados` está dentro del árbol `RequireAuth`, aunque no lleva el mismo `RequireModule` que `/apoderagest` y `/apoderagest/liquidaciones`. Se verificó en `backend/app/apoderagest/liquidaciones.py` que todos los endpoints `/admin` llaman a `_exigir_admin(usuario)`, que aplica el rol administrativo o permisos de edición de Utilidades/Seguridad. La API sí protege los datos y acciones; queda como mejora opcional añadir un guard equivalente en frontend para evitar mostrar una pantalla que terminaría respondiendo 403.
 - La cascada CSS de NotarGest, EncargaGest y la capa global sigue necesitando consolidación selectiva; no conviene borrar `!important` sin una comparación visual.
 - QA en navegador real con escritorio, tablet y móvil; teclado/lector de pantalla; zoom 125–200 %; scroll horizontal de tablas; modales anidados; formularios largos y estados de carga. No se ha realizado ninguna operación con expedientes ni datos productivos.
 
