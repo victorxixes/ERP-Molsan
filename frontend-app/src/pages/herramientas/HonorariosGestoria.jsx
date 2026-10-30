@@ -171,7 +171,7 @@ export default function HonorariosGestoria({ soloPlantilla = false } = {}) {
             </div>
             <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Descripción / notas</span><textarea rows={3} maxLength={2000} value={form.descripcion} onChange={e=>setForm(a=>({...a,descripcion:e.target.value}))} className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm" /></label>
             <label className="flex items-center gap-2 rounded-xl bg-slate-50 p-3 text-sm"><input type="checkbox" checked={form.activo} onChange={e=>setForm(a=>({...a,activo:e.target.checked}))} />Honorario disponible en «Añadir pagos»</label>
-            <div className="flex flex-wrap gap-2"><button disabled={guardando} className="rounded-xl bg-[var(--molsan-primary)] px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">{guardando ? "Guardando…" : "Guardar honorario"}</button><button type="button" onClick={nuevo} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-600">Limpiar</button></div>
+            <div className="flex flex-wrap gap-2"><button type="submit" disabled={guardando} className="rounded-xl bg-[var(--molsan-primary)] px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">{guardando ? "Guardando…" : "Guardar honorario"}</button><button type="button" onClick={nuevo} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-600">Limpiar</button></div>
           </form>
         </section>
         </div>}
