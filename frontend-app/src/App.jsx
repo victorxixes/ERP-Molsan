@@ -786,7 +786,7 @@ export default function App() {
 
           <Route
             path="/fusiones"
-            element={<Fusiones />}
+            element={protegerModulo("fusiones", <Fusiones />)}
           />
 
 
