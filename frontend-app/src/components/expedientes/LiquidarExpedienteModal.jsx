@@ -52,28 +52,17 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
   const totalPagado = useMemo(() => filas.filter((f) => f._pagado).reduce((sum, f) => sum + Number(f.importe_total_bruto ?? f.importe ?? f.importe_resultante ?? 0), 0), [filas]);
   const saldoLiquidacion = Math.round((importeInicial - totalPagado) * 100) / 100;
 
-  const cambiar = (campo, dato) => { setCierreDocumental(null); setForm((actual) => ({ ...actual, [campo]: dato })); };
+  // Liquidar es una pantalla de consulta: los datos maestros y los movimientos
+  // proceden de sus módulos de origen y nunca se escriben desde este modal.
   const guardar = async () => {
     setGuardando(true); setError(""); setMensaje("");
     try {
       const id = expediente?.id ?? expediente?.id_expediente;
       if (!id) throw new Error("No se ha identificado el expediente.");
-      await axios.put(`/expedientes/${encodeURIComponent(id)}/actividad`, { campos: form });
-      for (const fila of filas) {
-        if (!fila.id) continue;
-        const actual = movimientos.find((g) => String(g.id) === String(fila.id));
-        // El modal de liquidación puede corregir el concepto, pero no simular pagos.
-        // Los estados de pago solo se actualizan al registrar movimientos reales.
-        if (actual && String(actual.tipo || actual.descripcion || "Gasto") !== fila._tipo) {
-          await axios.put(`/expedientes/${encodeURIComponent(id)}/gastos/${encodeURIComponent(fila.id)}`, {
-            tipo: fila._tipo,
-          });
-        }
-      }
-      setMensaje("Datos de facturación y conceptos guardados. Los pagos solo se confirman desde Gestión económica.");
+      setMensaje("Datos enlazados revisados. No se han modificado datos del expediente ni movimientos económicos.");
       return true;
     } catch (e) {
-      setError(e?.response?.data?.detail || e?.message || "No se pudieron guardar los datos de liquidación.");
+      setError(e?.message || "No se han podido validar los datos de liquidación.");
       return false;
     } finally { setGuardando(false); }
   };
@@ -157,7 +146,7 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
             <h3 className="mb-3 text-sm font-extrabold text-slate-800">Tipo de documento</h3>
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="text-xs font-bold text-slate-600">Tipo de documento (enlazado con Envío a notario)
-                <input value={form.tipo_documento || ""} onChange={(e) => cambiar("tipo_documento", e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-normal text-slate-800" />
+                <input value={form.tipo_documento || ""} readOnly aria-readonly="true" className="mt-1 w-full cursor-not-allowed rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-normal text-slate-600" />
               </label>
               <label className="text-xs font-bold text-slate-600">ID del documento
                 <input value={valor(expediente, "id_documento", "id_documento_notarial", "numero_documento") || "Se conserva el identificador existente"} readOnly className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-normal text-slate-600" />
@@ -173,11 +162,11 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
                   <tr className="border-t border-slate-100"><td className="px-3 py-2">—</td><td className="px-3 py-2 font-bold">Provisión de fondos inicial</td><td className="px-3 py-2 text-right font-bold">{dinero(importeInicial)}</td><td className="px-3 py-2 text-slate-500">Provisión registrada</td></tr>
                   {filas.map((fila, idx) => <tr key={fila.id || idx} className="border-t border-slate-100">
                     <td className="whitespace-nowrap px-3 py-2">{String(fila.fecha_pago || fila.fecha || fila.fecha_factura || "").slice(0,10) || "—"}</td>
-                    <td className="px-3 py-2"><input aria-label="Tipo de documento o movimiento" value={fila._tipo} onChange={(e) => { setCierreDocumental(null); setFilas((prev) => prev.map((f, i) => i === idx ? { ...f, _tipo: e.target.value } : f)); }} className="w-full rounded-md border border-slate-300 px-2 py-1.5" /></td>
+                    <td className="px-3 py-2 text-slate-700">{fila._tipo}</td>
                     <td className="whitespace-nowrap px-3 py-2 text-right font-semibold">{dinero(fila.importe_total_bruto ?? fila.importe ?? fila.importe_resultante)}</td>
                     <td className="px-3 py-2"><span className={fila._pagado ? "font-bold text-emerald-700" : "font-semibold text-amber-700"}>{fila._pagado ? "Pagado" : "Pendiente · registrar desde Pagar"}</span></td>
                   </tr>)}
-                  <tr className="border-t-2 border-indigo-200 bg-indigo-50/60"><td className="px-3 py-2"><input aria-label="Fecha de liquidación" type="date" value={form.fecha_fin_actividad || ""} onChange={(e) => cambiar("fecha_fin_actividad", e.target.value)} className="rounded-md border border-slate-300 bg-white px-2 py-1.5" /></td><td className="px-3 py-2 font-extrabold text-indigo-900">Liquidación final</td><td className="px-3 py-2 text-right font-extrabold text-indigo-900">{dinero(saldoLiquidacion)}</td><td className="px-3 py-2 text-slate-600">Saldo calculado</td></tr>
+                  <tr className="border-t-2 border-indigo-200 bg-indigo-50/60"><td className="whitespace-nowrap px-3 py-2 text-slate-600">{form.fecha_fin_actividad || "—"}</td><td className="px-3 py-2 font-extrabold text-indigo-900">Liquidación final</td><td className="px-3 py-2 text-right font-extrabold text-indigo-900">{dinero(saldoLiquidacion)}</td><td className="px-3 py-2 text-slate-600">Saldo calculado</td></tr>
                 </tbody>
               </table>
             </div>
@@ -188,7 +177,7 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {[
                 ["facturacion_nombre","Nombre / razón social"],["facturacion_apellidos","Apellidos"],["facturacion_dni_nif","DNI / NIF"],["facturacion_direccion","Dirección"],["facturacion_codigo_postal","Código postal"],["facturacion_poblacion","Población"],["facturacion_provincia","Provincia"],["facturacion_telefono","Teléfono"],["facturacion_email","Email"],
-              ].map(([campo, etiqueta]) => <label key={campo} className="text-xs font-bold text-slate-600">{etiqueta}<input value={form[campo] || ""} onChange={(e) => cambiar(campo, e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-normal text-slate-800" /></label>)}
+              ].map(([campo, etiqueta]) => <label key={campo} className="text-xs font-bold text-slate-600">{etiqueta}<input value={form[campo] || ""} readOnly aria-readonly="true" className="mt-1 w-full cursor-not-allowed rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-normal text-slate-600" /></label>)}
             </div>
           </section>
           <section className="rounded-xl border border-slate-200 bg-white p-4">
