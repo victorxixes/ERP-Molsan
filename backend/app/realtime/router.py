@@ -24,6 +24,17 @@ router = APIRouter(prefix="/ws/realtime", tags=["Realtime"])
 MAX_TEXTO = 10_000
 
 
+def _codigo_cierre_autenticacion(exc: HTTPException) -> tuple[int, str]:
+    """Distingue rechazos definitivos de fallos temporales del servidor."""
+    if exc.status_code == 401:
+        return 4401, "Sesión no válida"
+    if exc.status_code == 403:
+        return 4403, "Permiso insuficiente"
+    if exc.status_code >= 500:
+        return 1013, "Servicio temporalmente no disponible"
+    return 4403, "Solicitud o permiso no válido"
+
+
 async def _rechazar_websocket(websocket: WebSocket, codigo: int, motivo: str) -> None:
     """Acepta solo para poder enviar un código de cierre reconocible por el navegador.
 
@@ -75,14 +86,14 @@ async def realtime_ws(websocket: WebSocket):
             # permiso de Mensajes para establecer el canal de presencia.
             usuario_id = autenticar_websocket(token)
         except HTTPException as exc:
-            await _rechazar_websocket(
-                websocket,
-                4403 if exc.status_code == 403 else 4401,
-                "Permiso insuficiente" if exc.status_code == 403 else "Token ausente, no válido o usuario inactivo",
-            )
+            codigo, motivo = _codigo_cierre_autenticacion(exc)
+            await _rechazar_websocket(websocket, codigo, motivo)
             return
         except Exception:
-            await _rechazar_websocket(websocket, 4401, "No se pudo validar la sesión")
+            # Un fallo inesperado al consultar/validar la sesión puede ser
+            # transitorio (por ejemplo, una indisponibilidad de PostgreSQL).
+            # No debe bloquear la reconexión como si el JWT fuese inválido.
+            await _rechazar_websocket(websocket, 1013, "Servicio temporalmente no disponible")
             return
 
         if usuario_id_param is not None:
