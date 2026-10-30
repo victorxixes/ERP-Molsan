@@ -48,3 +48,17 @@
 @media (prefers-reduced-motion: reduce) {
   .panel-tecnico-premium * { scroll-behavior: auto !important; }
 }
+
+
+
+/* Panel técnico: continuidad visual con los espacios internos */
+.panel-tecnico-premium {
+  font-family: var(--molsan-font-family,Inter,system-ui,sans-serif);
+}
+.panel-tecnico-premium > section:not(:first-child) {
+  border-color: var(--molsan-border,#dce4ef);
+  border-radius: var(--molsan-radius-card,14px);
+  box-shadow: var(--molsan-shadow-card,0 4px 14px rgba(36,50,74,.06));
+}
+.panel-tecnico-premium table { font-variant-numeric: tabular-nums; }
+.panel-tecnico-premium table thead th { background:#f5f7fb; color:var(--molsan-text-secondary,#526176); }
