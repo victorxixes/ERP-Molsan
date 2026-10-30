@@ -844,3 +844,8 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 ### Última comprobación de la utilidad de foco y CI
 - El filtro del ciclo de foco también excluye elementos con `visibility:hidden`, `display:none` y atributo `disabled`, evitando que el Tab se detenga en controles invisibles o no utilizables. Commit `794b69ad`.
 - En la tanda CI asociada a `794b69ad`, el job de sintaxis Python de EncargaGest ya terminó en `success`; su build frontend seguía `in_progress`; Backend audit seguía `in_progress`; los jobs de Fichajes, Post Firma y Control Apoderados seguían `queued`. No se declara el conjunto como verde hasta que todos finalicen.
+
+### Cierre de coherencia entre Sidebar y catálogo central
+- Se detectó que `mantenimiento-tecnico` estaba en el Sidebar con ruta/etiqueta locales, pero faltaba en `MODULOS_ERP`. Se añadió al catálogo central con ruta `/herramientas/mantenimiento-tecnico`, permiso `utilidades` e icono `settings`.
+- Revisión posterior: 33 claves en el catálogo, sin claves duplicadas; las 22 claves de navegación del Sidebar están cubiertas por el catálogo y las 28 rutas reales del catálogo tienen correspondencia exacta en `App.jsx`.
+- Commit: `225a4aa`. Esto elimina la última excepción de navegación detectada en el Sidebar para un módulo con ruta real.
