@@ -419,3 +419,11 @@ Se mantiene pendiente el recorrido del resto de herramientas: importaciones, mod
 - **Dashboard:** ya usa `erp-page`, `dashboard-cancelagest` y `molsan-page`, con hoja específica de dashboard; no se ha forzado otra clase.
 - **Intranet** y **Logs** ya tienen sus ámbitos premium propios.
 - Se conservan gráficos, filtros, navegación de informes, información de CTN y contenido de intranet.
+
+
+## Vigésima segunda pasada: Fusiones, Logs y Notificaciones
+
+- **Fusiones:** su hoja `Fusiones.css` estaba escrita bajo el selector raíz `.fusiones-page`, pero el contenedor solo tenía `fusiones-premium-page`. Se ha añadido la clase prevista y `min-w-0` para activar la hoja local y evitar desbordes.
+- **Logs:** se ha retirado el color Tailwind fijo del contenedor raíz; la página hereda el color del sistema visual y conserva los colores específicos de severidad/evento dentro de la tabla.
+- **Notificaciones:** ya utiliza el ámbito `notificaciones-premium-page` y espaciado responsive; no se han cambiado los estados de lectura ni el significado de las alertas.
+- **Selector de módulos:** su ventana de ayuda ya activa `panel-modal-premium` y tiene semántica de diálogo; el shell de selección mantiene su composición actual.
