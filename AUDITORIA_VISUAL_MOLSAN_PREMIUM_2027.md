@@ -877,3 +877,9 @@ La cascada de ambos portales queda clasificada como **deuda de mantenimiento pri
 - En los restantes archivos JSX inspeccionados no se detectaron botones sin tipo. Un patrón de búsqueda simple produjo un falso positivo en `SelectSJ.jsx` por el operador flecha dentro de un atributo JSX; la inspección del fragmento confirmó que el botón de opción ya declara `type=button`.
 - Correcciones añadidas: `6d198c27` (ProvisionesModal), `be2d96b8` (Verifacti) y `c52b8077` (Honorarios Gestoría).
 - El barrido sigue siendo estático y no demuestra por sí mismo el comportamiento de envío/cancelación en navegador; la prueba funcional interactiva permanece pendiente.
+
+### Resultado CI tras las correcciones de accesibilidad de herramientas
+
+- Los cinco workflows asociados al último commit funcional `c52b8077` terminaron en `success`: Validar Fichaje Molsan, Consolidación Post Firma checks, Backend audit, EncargaGest checks y Validar Control Apoderados.
+- El commit posterior `8305c00e` solo actualiza esta documentación; no modifica código ni requiere una nueva compilación.
+- Estado consultado de PR #374: abierta, en borrador, no fusionada, mergeable; rama 367 commits por delante de `main` y 0 por detrás.
