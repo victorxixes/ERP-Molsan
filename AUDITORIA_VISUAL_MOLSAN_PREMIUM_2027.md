@@ -366,3 +366,11 @@ Se mantiene pendiente el recorrido del resto de herramientas: importaciones, mod
 - **Modelos Documentales:** el `main` carecía de ámbito global aunque la página incorpora un editor de factura, vista previa y subcomponentes de provisiones/honorarios. Se ha añadido `modelos-documentos-premium utilidades-premium-page`.
 - **Catálogo de Fichajes** ya estaba cubierto por `catalogos-premium-page`.
 - Se ha respetado la composición interna de los editores, especialmente la vista previa de documentos y los componentes reutilizados; no se han cambiado cálculos, almacenamiento de plantillas ni generación de documentos.
+
+
+## Decimosexta pasada: Agenda
+
+- **Agenda principal:** el contenedor pasaba 24px de padding en todos los tamaños. Se ha convertido en espaciado progresivo (12px móvil, 16px intermedio, 24px escritorio) y añadido `min-w-0` para evitar que el calendario fuerce el ancho de la página.
+- **Modal Nueva Cita:** ya estaba conectado al estilo compartido `panel-modal-premium`; ahora el panel interior tiene `role="dialog"`, `aria-modal` y nombre dinámico según la acción (crear, editar o ver cita).
+- **Vistas Día/Mes/Semana:** mantienen sus componentes propios de calendario. El diseño de semana usa siete columnas y requiere comprobación real en móvil para confirmar que el desplazamiento horizontal queda contenido en el calendario, no en toda la página.
+- Se mantienen los colores semánticos de tipo de cita y los estados de carga.
