@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import "./SeguridadSubpaginasPremium.css";
+import "../../css/ModalesHerramientasPremium.css";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
 
@@ -583,6 +584,7 @@ function ModalDetalle({
   return (
     <div
       className="
+        panel-modal-premium
         fixed
         inset-0
         z-50
