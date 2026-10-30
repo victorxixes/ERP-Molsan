@@ -70,7 +70,7 @@ export default function ReglasActividadesExpediente() {
   return (
     <main className="utilidades-premium-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
       <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
+        <div className="absolute inset-x-0 top-0 h-1 bg-[var(--molsan-primary)]" />
         <div className="relative flex flex-wrap items-start justify-between gap-4">
           <div className="flex items-start gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[var(--molsan-primary-border)] bg-[var(--molsan-primary-soft)] text-2xl">⚙️</div>
@@ -118,7 +118,7 @@ export default function ReglasActividadesExpediente() {
                 </label>
               ))}
             </div>
-            <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4 text-sm leading-5 text-blue-900">
+            <div className="rounded-xl border border-[var(--molsan-primary-border)] bg-[var(--molsan-primary-soft)] p-4 text-sm leading-5 text-[var(--molsan-text)]">
               <strong>Condición de avance</strong>
               <p className="mt-1">El envío a notaría se registra con su fecha. Una vez registrada la fecha de envío, la actividad cambia automáticamente a Sede notarial, siempre que estén los tres documentos requeridos.</p>
             </div>
