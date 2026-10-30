@@ -168,7 +168,7 @@ export default function CatalogoAbsis() {
   return (
     <main className="catalogo-absis-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
+        <div className="absolute inset-x-0 top-0 h-1 bg-[var(--molsan-primary)]" />
         <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
           <div>
             <p className="text-xs font-bold uppercase tracking-[.18em] text-[var(--molsan-primary)]">MOLSAN ERP · DATOS ABSIS</p>
