@@ -901,3 +901,34 @@
     max-height: calc(100dvh - 16px);
   }
 }
+
+
+
+/* NotarGest: acabados comunes sin intervenir en estados ni acciones */
+.notargest {
+  --ng-border: var(--molsan-border,#dce4ef);
+  --ng-text: var(--molsan-text,#17243a);
+  --ng-muted: var(--molsan-text-muted,#64748b);
+  font-family: var(--molsan-font-family,Inter,system-ui,sans-serif);
+}
+.notargest .ng-panel {
+  border-color: var(--molsan-border,#dce4ef);
+  border-radius: var(--molsan-radius-card,14px);
+  box-shadow: var(--molsan-shadow-card,0 4px 14px rgba(36,50,74,.06));
+  background: var(--molsan-surface,#fff);
+}
+.notargest .ng-panel-titulo {
+  background: linear-gradient(180deg,#fff,#fbfcff);
+  border-bottom-color: var(--molsan-border-light,#e8edf4);
+}
+.notargest .ng-panel-titulo h2 { color: var(--molsan-text,#17243a); }
+.notargest .ng-tabla { font-variant-numeric: tabular-nums; }
+.notargest .ng-tabla th {
+  background: #f5f7fb;
+  color: var(--molsan-text-secondary,#526176);
+}
+.notargest .ng-tabla tbody tr:hover { background: #f7f9fd; }
+.notargest .ng-filtros input {
+  border-color: var(--molsan-border-strong,#c7d2e0);
+  border-radius: var(--molsan-radius-control,9px);
+}
