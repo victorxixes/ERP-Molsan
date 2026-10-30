@@ -49,3 +49,19 @@ Archivos revisados: `ApoderaGest.jsx`, `NotarGest.jsx`, `EncargaGest.jsx` y sus 
 - QA visual real de las bandejas, formularios, gráficos, visor, foco y retorno de foco sigue pendiente en escritorio/tablet/móvil.
 
 Esta pasada no modifica la lógica de negocio ni abre datos reales.
+
+
+## Tercera pasada — detalles de accesibilidad y diálogos anidados
+Revisión de código actual de `LiquidarExpedienteModal.jsx`, `EnviarANotarioModal.jsx` y `CarpetaDigitalModal.jsx`.
+
+- `LiquidarExpedienteModal.jsx`: el diálogo principal y la vista previa de cierre tienen semántica de diálogo y nombre accesible. No se observó manejador de Escape ni control de foco explícito. El flujo de cierre documental requiere prueba interactiva para confirmar el orden de apertura, aceptación y cierre de la vista previa.
+- `EnviarANotarioModal.jsx`: el diálogo tiene nombre accesible y manejador de Escape condicionado a que no esté cargando. El componente admite modo integrado y modo modal; debe comprobarse que al integrarlo dentro de Carpeta Digital no se anuncie dos veces como modal ni se bloquee el fondo de forma incorrecta.
+- `CarpetaDigitalModal.jsx`: tiene diálogo principal, diálogo/estado de actividad y visor de documento. Hay más de un uso de `aria-modal` según el modo de actividad; probar combinaciones de carpeta → envío a notario → visor para detectar modales anidados, cierre inesperado o foco perdido.
+- Los tres componentes tienen tratamiento de errores/carga en las operaciones examinadas. Esto no verifica la respuesta del servidor ni garantiza que todos los errores se comuniquen con lector de pantalla.
+- No se han añadido listeners de teclado ni cambios de foco en esta pasada: la solución correcta depende de cómo se componen los overlays y podría empeorar los diálogos anidados si se parchea aisladamente.
+
+### Criterios de aceptación interactiva pendientes
+1. Abrir y cerrar cada modal con teclado; comprobar foco inicial, tabulación cíclica cuando corresponda y retorno al botón invocador.
+2. Abrir/cerrar el visor y la vista previa de cierre sin perder el estado del modal padre.
+3. Durante cargas, Escape no debe descartar una operación activa ni dejar el overlay huérfano.
+4. Con zoom de navegador al 125 % y viewport estrecho, las acciones principales deben seguir visibles o alcanzables por scroll.
