@@ -76,6 +76,7 @@ const SubirDocumento = lazy(() => import("./pages/herramientas/SubirDocumento.js
 const Informes = lazy(() => import("./pages/informes/Informes.jsx"));
 const MantenimientoTecnico = lazy(() => import("./pages/herramientas/MantenimientoTecnico.jsx"));
 const CambiarGestorExpediente = lazy(() => import("./pages/herramientas/CambiarGestorExpediente.jsx"));
+const ReasignarNotarioExpediente = lazy(() => import("./pages/herramientas/ReasignarNotarioExpediente.jsx"));
 const AsignarExpedientesPromociones = lazy(() => import("./pages/herramientas/AsignarExpedientesPromociones.jsx"));
 const ComplementosSaldo = lazy(() => import("./pages/herramientas/ComplementosSaldo.jsx"));
 const ProcesoAbsis = lazy(() => import("./pages/herramientas/ProcesoAbsis.jsx"));
@@ -738,6 +739,10 @@ export default function App() {
           <Route
             path="herramientas/utilidades/cambiar-gestor"
             element={<CambiarGestorExpediente />}
+          />
+          <Route
+            path="herramientas/utilidades/reasignar-notario"
+            element={<ReasignarNotarioExpediente />}
           />
           <Route
             path="herramientas/utilidades/asignar-promociones"
