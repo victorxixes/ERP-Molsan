@@ -1003,3 +1003,14 @@ Se ha cerrado el hallazgo de navegación directa en `frontend-app/src/App.jsx` m
 - Las rutas de portales externos NotarGest/EncargaGest, que se encuentran fuera del grupo privado y tienen su propio flujo de autenticación de portal, no se han alterado.
 
 La protección de rutas frontend complementa, pero no sustituye, los permisos del backend. Quedan pruebas con perfiles reales para verificar que la lista de módulos visibles y los permisos asignados producen los 200/403 esperados y no bloquean módulos legítimos.
+
+### Revalidación CI tras las correcciones — 30/10/2026
+
+La ejecución asociada al commit `423144ec36bff7adead6750d5203577f57bac038` finalizó correctamente en los cinco workflows:
+- Validar Fichaje Molsan: success.
+- Validar Control Apoderados: success.
+- EncargaGest checks: success.
+- Consolidación Post Firma checks: success.
+- Backend audit: success; `compileall` correcto y `84 passed, 1 warning, 21 subtests passed`.
+
+Esta ejecución ya incluye las correcciones backend de autenticación y el cambio de instalación de dependencias opcionales. Después se incorporaron los guards de rutas frontend; sus cinco workflows se han lanzado de nuevo para el commit `c0945ef78ed3d0f7aef0315a907220b2ff550d64` y estaban en curso en el momento de esta anotación. No se declara todavía la última ejecución como verde.
