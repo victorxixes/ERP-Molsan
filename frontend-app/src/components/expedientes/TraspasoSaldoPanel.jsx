@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import axios from "../../api/axios";
+import useAccessibleDialog from "../ui/useAccessibleDialog";
 
 const euros = (value) => value === null || value === undefined || value === "" || !Number.isFinite(Number(value))
   ? "—"
@@ -16,6 +17,8 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
   const [contexto, setContexto] = useState(null);
   const [cargando, setCargando] = useState(false);
   const [abierto, setAbierto] = useState(false);
+  const dialogRef = useRef(null);
+  useAccessibleDialog({ open: abierto, onClose: () => setAbierto(false), dialogRef });
   const [receptorNumero, setReceptorNumero] = useState(numeroActual);
   const [origenesSeleccionados, setOrigenesSeleccionados] = useState([]);
   const [importeReceptor, setImporteReceptor] = useState("");
@@ -179,7 +182,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
 
       {abierto && (
         <div className="traspaso-saldo-modal fixed inset-0 z-[110] flex items-center justify-center overflow-y-auto bg-slate-950/55 p-3 backdrop-blur-sm sm:p-6" onMouseDown={(event) => { if (event.target === event.currentTarget) setAbierto(false); }}>
-          <section role="dialog" aria-modal="true" aria-labelledby="modal-traspaso-saldo-titulo" className="my-auto max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl sm:p-5">
+          <section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="modal-traspaso-saldo-titulo" className="my-auto max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl sm:p-5">
             <header className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div className="flex min-w-0 items-center gap-3">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--molsan-primary-soft)] text-xl">⇄</span>
