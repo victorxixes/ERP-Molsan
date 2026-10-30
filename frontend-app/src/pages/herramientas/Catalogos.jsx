@@ -157,18 +157,18 @@ export default function Catalogos() {
   return (
     <main className="catalogos-premium-page min-h-full space-y-7 p-4 sm:p-6 lg:p-8 animate-fadeIn">
       <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
+        <div className="absolute inset-x-0 top-0 h-1 bg-[var(--molsan-primary)]" />
         <div className="relative flex items-center gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[var(--molsan-primary-border)] bg-[var(--molsan-primary-soft)] text-2xl shadow-sm">▦</div>
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--molsan-primary)]">MOLSAN ERP PREMIUM 2027</p>
-            <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Catálogos</h1>
-            <p className="mt-1 text-sm text-slate-500">Centraliza los datos maestros que utilizan los módulos y procesos de la gestoría.</p>
+            <h1 className="mt-1 text-2xl font-bold tracking-tight text-[var(--molsan-text)] sm:text-3xl">Catálogos</h1>
+            <p className="mt-1 text-sm text-[var(--molsan-text-muted)]">Centraliza los datos maestros que utilizan los módulos y procesos de la gestoría.</p>
           </div>
         </div>
       </header>
 
-      <div className="rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 text-sm text-blue-900">
+      <div className="rounded-2xl border border-[var(--molsan-primary-border)] bg-[var(--molsan-primary-soft)] px-4 py-3 text-sm text-[var(--molsan-text)]">
         Los catálogos conservan sus datos y pantallas actuales. Esta sección los reúne en un único acceso para facilitar su mantenimiento.
       </div>
 
@@ -176,16 +176,16 @@ export default function Catalogos() {
         const items = CATALOGOS.filter((item) => item.grupo === grupo);
         return (
           <section key={grupo} className="space-y-3">
-            <h2 className="text-lg font-bold tracking-tight text-slate-800">{grupo}</h2>
+            <h2 className="text-lg font-bold tracking-tight text-[var(--molsan-text)]">{grupo}</h2>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {items.map((item) => (
                 <Link
                   key={item.ruta}
                   to={item.ruta}
-                  className={`group relative overflow-hidden rounded-[22px] border p-5 shadow-[0_12px_35px_rgba(15,23,42,0.07)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(15,23,42,0.11)] active:scale-[0.98] ${item.destacado ? "border-blue-200/80 bg-blue-50/70" : "border-slate-200/80 bg-white/85"}`}
+                  className={`group relative overflow-hidden rounded-[22px] border p-5 shadow-[0_12px_35px_rgba(15,23,42,0.07)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(15,23,42,0.11)] active:scale-[0.98] ${item.destacado ? "border-[var(--molsan-primary-border)] bg-[var(--molsan-primary-soft)]" : "border-[var(--molsan-border)] bg-[var(--molsan-surface)]"}`}
                 >
                   <div className="flex items-start gap-4">
-                    <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl ${item.destacado ? "border-blue-200 bg-blue-100" : "border-slate-200 bg-slate-50"}`}>
+                    <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl ${item.destacado ? "border-[var(--molsan-primary-border)] bg-[var(--molsan-primary-soft)]" : "border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)]"}`}>
                       {item.icon}
                     </div>
                     <div className="min-w-0 flex-1">
@@ -202,7 +202,7 @@ export default function Catalogos() {
                         </div>
                       )}
                     </div>
-                    <span className="text-slate-300 transition-all group-hover:translate-x-1 group-hover:text-blue-500">→</span>
+                    <span className="text-slate-300 transition-all group-hover:translate-x-1 group-hover:text-[var(--molsan-primary)]">→</span>
                   </div>
                 </Link>
               ))}
