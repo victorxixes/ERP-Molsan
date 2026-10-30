@@ -32,7 +32,7 @@ from backend.app.tipos_carga_hipotecaria.models import TipoCargaHipotecaria
 # ============================================================
 
 router = APIRouter(
-    prefix="/expedientes/defectos",
+    prefix="/expedientes",
     tags=["Defectos de expedientes"],
     dependencies=[Depends(get_current_user)],
 )
