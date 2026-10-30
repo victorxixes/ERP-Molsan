@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import "../../css/ComponentesOperativosPremium.css";
 
 const VACIO = { nombre: "", categoria: "impuesto", impuesto: "IVA", porcentaje: "", territorio: "Territorio común", descripcion: "", activo: true };
 const fmt = (n) => n === null || n === undefined || n === "" ? "—" : `${Number(n).toLocaleString("es-ES", { maximumFractionDigits: 3 })}%`;
@@ -62,7 +63,7 @@ export default function TiposImpositivos() {
   };
 
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+    <main className="tipos-impositivos-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-400" />
         <p className="text-xs font-bold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP PREMIUM 2027</p>
