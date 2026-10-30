@@ -269,3 +269,49 @@
     transition-duration: .01ms !important;
   }
 }
+
+
+/* Datos Molsan: identidad corporativa y campos compartidos con facturación. */
+.datos-molsan-premium {
+  min-width: 0;
+  max-width: 100%;
+  color: var(--molsan-text, #17243a);
+  font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
+}
+.datos-molsan-premium > header,
+.datos-molsan-premium form > section {
+  min-width: 0;
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
+}
+.datos-molsan-premium > header > div:first-child {
+  background: linear-gradient(90deg, var(--molsan-primary, #3156b3), var(--molsan-primary-hover, #274694), #9bb2e5);
+}
+.datos-molsan-premium .text-indigo-600 { color: var(--molsan-primary, #3156b3); }
+.datos-molsan-premium .bg-indigo-50 { background-color: var(--molsan-primary-soft, #edf3ff); }
+.datos-molsan-premium .border-indigo-100 { border-color: var(--molsan-primary-border, #cbd7ee); }
+.datos-molsan-premium .bg-indigo-600 { background-color: var(--molsan-primary, #3156b3); }
+.datos-molsan-premium .bg-indigo-600:hover:not(:disabled) { background-color: var(--molsan-primary-hover, #274694); }
+.datos-molsan-premium :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),select,textarea) {
+  min-width: 0;
+  max-width: 100%;
+  border-color: var(--molsan-border-strong, #c4d0df);
+  border-radius: var(--molsan-radius-control, 9px);
+  color: var(--molsan-text, #17243a);
+}
+.datos-molsan-premium :is(input,select,textarea,button):focus-visible {
+  outline: 2px solid var(--molsan-primary, #3156b3);
+  outline-offset: 2px;
+}
+.datos-molsan-premium img { max-width: 100%; object-fit: contain; }
+@media (max-width: 640px) {
+  .datos-molsan-premium { padding-left: 12px; padding-right: 12px; }
+  .datos-molsan-premium > header { padding: 16px; }
+  .datos-molsan-premium form > section { padding: 16px; }
+  .datos-molsan-premium form > div:last-child { align-items: stretch; flex-direction: column; }
+  .datos-molsan-premium form > div:last-child button { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .datos-molsan-premium * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
