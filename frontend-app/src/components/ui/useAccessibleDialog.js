@@ -48,6 +48,12 @@ export default function useAccessibleDialog({ open, onClose, dialogRef }) {
       return dialogs[dialogs.length - 1] === dialog;
     };
 
+    const handleFocusIn = (event) => {
+      if (!isTopDialog() || dialog.contains(event.target)) return;
+      const elements = focusable();
+      (elements[0] || dialog).focus({ preventScroll: true });
+    };
+
     const handleKeyDown = (event) => {
       if (!isTopDialog()) return;
 
@@ -80,8 +86,10 @@ export default function useAccessibleDialog({ open, onClose, dialogRef }) {
     };
 
     document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("focusin", handleFocusIn);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("focusin", handleFocusIn);
       if (previousFocus?.isConnected && typeof previousFocus.focus === "function") {
         previousFocus.focus({ preventScroll: true });
       }
