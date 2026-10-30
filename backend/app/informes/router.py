@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
 from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 from backend.app.informes.service import (
     obtener_tabla,
     obtener_ranking,
@@ -11,10 +12,15 @@ from backend.app.informes.service import (
 from backend.app.informes.schemas import InformeFila, InformeIndividual
 
 
+def _autorizar_informes(usuario=Depends(get_current_user)):
+    require_perm_modulo(usuario, "informes", "ver")
+    return usuario
+
+
 router = APIRouter(
     prefix="/informes/apoderados",
     tags=["Informes"],
-    dependencies=[Depends(get_current_user)],
+    dependencies=[Depends(get_current_user), Depends(_autorizar_informes)],
 )
 
 
