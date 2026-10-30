@@ -335,3 +335,10 @@ Se mantiene pendiente el recorrido del resto de herramientas: importaciones, mod
 - **Municipios:** sus dos ventanas (importación Excel y alta/edición) activan ahora el sistema de modal compartido. Los paneles interiores contienen `role="dialog"`, `aria-modal` y una etiqueta contextual.
 - **Oficinas Liquidadoras:** los diálogos de alta/edición e importación Excel activan el mismo sistema; las etiquetas accesibles están en los paneles y no en el overlay.
 - Se conservan las anchuras propias (2xl/xl/4xl) y el contenido de los formularios. No se han alterado guardado, importación ni reglas de negocio.
+
+
+## Duodécima pasada: registros de propiedad
+
+- **Registros de Propiedad:** el modal de importación Excel y el modal de alta/edición activan ahora `panel-modal-premium`; los paneles interiores declaran su rol de diálogo y nombre accesible.
+- Se mantienen los anchos de importación (3xl) y edición (4xl), así como el scroll vertical del formulario largo.
+- **PPAD, Proceso ABSIS y Reasignar Notario:** no presentan overlays propios en el JSX inspeccionado; conservan sus ámbitos de subpágina y componentes compartidos. Se revisarán los controles integrados en el recorrido funcional visual.
