@@ -6,8 +6,8 @@ import HonorariosGestoria from "./HonorariosGestoria";
 import ProvisionesFondosPage from "../provisiones/ProvisionesFondosPage";
 
 const documentos = [
-  { id: "liquidacion", titulo: "Hoja de liquidación", subtitulo: "Cierre del expediente", estado: "Implementada · diseño cerrado", color: "emerald", descripcion: "Diseño cerrado. La hoja oficial se genera desde Liquidar expediente con los datos disponibles del expediente y Gestión económica; se previsualiza y solo se guarda cuando se acepta.", campos: ["Titular y NIF", "Número de expediente", "Contrato y oficina CaixaBank", "Datos de la gestoría", "Documentos realizados e importes", "Provisión de fondos", "Movimientos de Gestión económica", "Documentación entregada", "Lugar, fecha y conformidad"] },
-  { id: "provision", titulo: "Hoja de provisión de fondos", subtitulo: "Provisiones de fondos", estado: "Implementada · diseño cerrado", color: "blue", descripcion: "Diseño cerrado y conectado al PDF oficial de provisión. Se mantienen en Provisiones de fondos los catálogos, tarifas, tramos, reglas fiscales e importes calculados.", campos: ["Datos del cliente", "Oficina de origen", "Garantías y conceptos", "Importes calculados", "Observaciones"] },
+  { id: "liquidacion", titulo: "Hoja de liquidación", subtitulo: "Cierre del expediente", estado: "Editor visual ampliado", color: "emerald", descripcion: "PDF oficial conservado tal como está confeccionado. Se añade un editor visual independiente para ajustar la distribución sin alterar el documento emitido. La hoja oficial se genera desde Liquidar expediente con los datos disponibles del expediente y Gestión económica; se previsualiza y solo se guarda cuando se acepta.", campos: ["Titular y NIF", "Número de expediente", "Contrato y oficina CaixaBank", "Datos de la gestoría", "Documentos realizados e importes", "Provisión de fondos", "Movimientos de Gestión económica", "Documentación entregada", "Lugar, fecha y conformidad"] },
+  { id: "provision", titulo: "Hoja de provisión de fondos", subtitulo: "Provisiones de fondos", estado: "Editor visual ampliado", color: "blue", descripcion: "PDF oficial conservado tal como está confeccionado. Se añade un editor visual independiente para ajustar la distribución sin alterar cálculos ni documento emitido. Se mantienen en Provisiones de fondos los catálogos, tarifas, tramos, reglas fiscales e importes calculados.", campos: ["Datos del cliente", "Oficina de origen", "Garantías y conceptos", "Importes calculados", "Observaciones"] },
   { id: "factura", titulo: "Factura de honorarios de gestoría", subtitulo: "Facturación de honorarios", estado: "Preparación del diseño", color: "amber", descripcion: "Editor visual preparado para diseñar la factura tomando como referencia el Word oficial. La conexión al PDF de emisión se hará después de validar el diseño.", campos: ["Número de factura", "Expediente", "Datos fiscales del cliente", "Base imponible e impuestos", "Totales"] },
 ];
 
@@ -294,7 +294,7 @@ function DocumentoLayoutDesigner({ tipo }) {
         {cargando&&<p className="text-xs text-slate-500">Cargando distribución guardada…</p>}
         {error&&<p role="alert" className="text-xs text-rose-700">{error}</p>}
         {mensaje&&<p role="status" className="text-xs font-semibold text-emerald-700">{mensaje}</p>}
-        <p className="text-[10px] leading-4 text-slate-500">Esta configuración se guarda por separado para cada documento. No modifica tarifas, impuestos, gastos, pagos ni los datos del expediente.</p>
+        <p className="text-[10px] leading-4 text-slate-500">Esta configuración se guarda por separado para cada documento. El PDF oficial conserva su composición actual: este editor no altera la emisión, tarifas, impuestos, gastos, pagos ni datos del expediente.</p>
       </aside>
     </div>
   </section>;
