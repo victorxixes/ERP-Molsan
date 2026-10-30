@@ -387,8 +387,7 @@
    workspace operativo y al sidebar; no cambia lógica ni datos.
    ============================================================ */
 
-:is(.cg-page, .cg-unified-workspace) {
-  --molsan-page-bg: #f1f5fb;
+ :is(.cg-page, .cg-unified-workspace) {
   color: var(--molsan-text, #18263c);
   font-family: var(--molsan-font-family, Inter, "Segoe UI", sans-serif);
 }
@@ -518,9 +517,6 @@
   .agenda-vista-premium,
   .informe-apoderado-premium
 ) {
-  --molsan-card-border: #d8e1ef;
-  --molsan-card-shadow: 0 8px 24px rgba(25, 43, 74, .075);
-  --molsan-card-shadow-hover: 0 12px 30px rgba(25, 43, 74, .11);
   min-width: 0;
   color: var(--molsan-text, #18263c);
 }
