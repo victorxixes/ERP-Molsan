@@ -358,3 +358,11 @@ Se mantiene pendiente el recorrido del resto de herramientas: importaciones, mod
 - **Mantenimiento Técnico:** el contenido autorizado carecía del ámbito raíz premium (solo lo tenía el estado de acceso restringido). Se añadió `mantenimiento-tecnico-premium utilidades-premium-page` al `main` real.
 - **Verifacti** contiene componentes de formulario internos y no un shell de página autónomo en el archivo inspeccionado; se mantiene el ámbito de componente y no se fuerza una clase de página a cada campo.
 - **Utilidades, Lectura Copias y Lectura CancelaI** conservan sus ámbitos operativos existentes. No se detectaron modales propios en los archivos revisados de esta pasada.
+
+
+## Decimoquinta pasada: cobertura de páginas de documentos
+
+- **Alta de Expediente:** el formulario ya consume tokens de Molsan para campos y botones, pero su `main` no tenía un ámbito de página reconocido por la capa transversal. Se ha añadido `alta-expediente-premium utilidades-premium-page`.
+- **Modelos Documentales:** el `main` carecía de ámbito global aunque la página incorpora un editor de factura, vista previa y subcomponentes de provisiones/honorarios. Se ha añadido `modelos-documentos-premium utilidades-premium-page`.
+- **Catálogo de Fichajes** ya estaba cubierto por `catalogos-premium-page`.
+- Se ha respetado la composición interna de los editores, especialmente la vista previa de documentos y los componentes reutilizados; no se han cambiado cálculos, almacenamiento de plantillas ni generación de documentos.
