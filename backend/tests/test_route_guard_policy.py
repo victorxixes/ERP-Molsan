@@ -33,6 +33,11 @@ class RouteGuardPolicyTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertEqual(_resolver_accion(path, {"POST"}), "editar")
 
+    def test_absis_expediente_import_uses_utilidades_edit_permission(self):
+        path = "/api/utilidades/importador-absis/expedientes"
+        self.assertEqual(_resolver_modulo(path, {"POST"}), "utilidades")
+        self.assertEqual(_resolver_accion(path, {"POST"}), "editar")
+
     def test_portal_access_routes_use_their_own_dynamic_permissions(self):
         expected = {
             "/api/ctn/accesos-portales/resumen",
