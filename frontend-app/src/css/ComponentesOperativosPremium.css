@@ -355,3 +355,77 @@
   .verifacti-page-premium { padding-left: 12px; padding-right: 12px; }
   .verifacti-page-premium > header { padding: 16px; }
 }
+
+
+/* Utilidades: modelos documentales, administración de empleados e importador histórico. */
+:is(.modelos-documentos-premium, .administracion-empleados-config-premium, .importador-postfirma-premium) {
+  min-width: 0;
+  max-width: 100%;
+  color: var(--molsan-text, #17243a);
+  font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
+}
+:is(.modelos-documentos-premium, .administracion-empleados-config-premium, .importador-postfirma-premium) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),select,textarea) {
+  min-width: 0;
+  max-width: 100%;
+  border-color: var(--molsan-border-strong, #c4d0df);
+  border-radius: var(--molsan-radius-control, 9px);
+}
+:is(.modelos-documentos-premium, .administracion-empleados-config-premium, .importador-postfirma-premium) :is(button,input,select,textarea,a):focus-visible {
+  outline: 2px solid var(--molsan-primary, #3156b3);
+  outline-offset: 2px;
+}
+.modelos-documentos-premium > :is(section,article,div),
+.administracion-empleados-config-premium > :is(header,section),
+.importador-postfirma-premium > :is(header,section,article) {
+  min-width: 0;
+}
+.modelos-documentos-premium .text-sky-700,
+.modelos-documentos-premium .text-indigo-700,
+.administracion-empleados-config-premium .text-blue-600,
+.importador-postfirma-premium .text-blue-700 {
+  color: var(--molsan-primary, #3156b3);
+}
+.modelos-documentos-premium .bg-indigo-50,
+.importador-postfirma-premium .bg-blue-50 {
+  background-color: var(--molsan-primary-soft, #edf3ff);
+}
+.modelos-documentos-premium .border-indigo-200,
+.importador-postfirma-premium .border-blue-200 {
+  border-color: var(--molsan-primary-border, #cbd7ee);
+}
+.modelos-documentos-premium .bg-indigo-600,
+.administracion-empleados-config-premium .bg-blue-600,
+.importador-postfirma-premium .bg-blue-600 {
+  background-color: var(--molsan-primary, #3156b3);
+}
+.modelos-documentos-premium .bg-indigo-600:hover:not(:disabled),
+.administracion-empleados-config-premium .bg-blue-600:hover:not(:disabled),
+.importador-postfirma-premium .bg-blue-600:hover:not(:disabled) {
+  background-color: var(--molsan-primary-hover, #274694);
+}
+:is(.modelos-documentos-premium, .administracion-empleados-config-premium, .importador-postfirma-premium) .overflow-x-auto {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+:is(.modelos-documentos-premium, .administracion-empleados-config-premium, .importador-postfirma-premium) table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+:is(.modelos-documentos-premium, .administracion-empleados-config-premium, .importador-postfirma-premium) thead th {
+  background: var(--molsan-surface-soft, #f7f9fc);
+  color: var(--molsan-text-secondary, #526176);
+}
+@media (max-width: 640px) {
+  .modelos-documentos-premium { padding-left: 12px; padding-right: 12px; }
+  .administracion-empleados-config-premium { padding-left: 12px; padding-right: 12px; }
+  .importador-postfirma-premium { padding: 12px; }
+  .importador-postfirma-premium .overflow-x-auto table { min-width: 1100px; }
+  .modelos-documentos-premium :is(header,section) { padding-left: 14px; padding-right: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.modelos-documentos-premium, .administracion-empleados-config-premium, .importador-postfirma-premium) * {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
