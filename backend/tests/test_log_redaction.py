@@ -35,6 +35,25 @@ class LogRedactionTests(unittest.TestCase):
             "/ws/?access_token=[REDACTED]&refresh_token=[REDACTED]",
         )
 
+    def test_record_factory_redacts_logs_from_any_logger(self):
+        from backend.app.auth.log_redaction import instalar_filtro_credenciales_websocket
+
+        instalar_filtro_credenciales_websocket()
+        logger = logging.getLogger("uvicorn.protocols.websockets.test")
+        record = logger.makeRecord(
+            logger.name,
+            logging.INFO,
+            __file__,
+            1,
+            'WebSocket "%s" [accepted]',
+            ("/ws/?token=secret.jwt.value",),
+            None,
+        )
+
+        rendered = record.getMessage()
+        self.assertIn("token=[REDACTED]", rendered)
+        self.assertNotIn("secret.jwt.value", rendered)
+
 
 if __name__ == "__main__":
     unittest.main()
