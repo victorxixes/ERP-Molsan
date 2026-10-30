@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { renderAsync } from "docx-preview";
-import "docx-preview/dist/docx-preview.css";
 import axios from "../../api/axios";
 import { Link } from "react-router-dom";
 import HonorariosGestoria from "./HonorariosGestoria";
