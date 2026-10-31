@@ -21,6 +21,7 @@ import App from "./App";
 // El sidebar queda expresamente excluido.
 import "./css/NeutralizarPresentacion.css";
 import "./css/MolsanFase3.css";
+import "./css/MolsanFase3Portales.css";
 
 // ============================================================
 // Root — Inicialización del ERP
