@@ -23,7 +23,16 @@
   --molsan-warning: #94651b;
   --molsan-warning-soft: #fbf5e9;
   --molsan-danger: #a33b42;
+  --molsan-danger-hover: #8f3038;
   --molsan-danger-soft: #fbefef;
+
+  /* Glass Luxe discreto: transparencia y profundidad sin competir con el contenido. */
+  --molsan-glass-surface: rgba(255, 255, 255, 0.88);
+  --molsan-glass-soft: rgba(242, 247, 251, 0.72);
+  --molsan-glass-border: rgba(216, 228, 236, 0.92);
+  --molsan-glass-highlight: rgba(255, 255, 255, 0.78);
+  --molsan-glass-shadow: 0 8px 24px rgba(6, 70, 117, 0.055);
+  --molsan-glass-shadow-hover: 0 11px 28px rgba(6, 70, 117, 0.085);
   --molsan-info: var(--molsan-blue);
   --molsan-info-soft: var(--molsan-blue-soft);
 
@@ -709,19 +718,9 @@ body {
 
 /* ==========================================================
    FASE 2 — GLASS LUXE DISCRETO
-   Aplicación piloto y deliberadamente acotada a Dashboard y CTN.
-   Cristal mate muy leve: reflejo superior, fondo translúcido,
-   borde fino y elevación contenida. Sin alterar la legibilidad.
+   Los tokens Glass Luxe viven en el :root único, junto a la paleta.
+   Aplicación visual limitada a las superficies autorizadas.
 ========================================================== */
-
-:root {
-  --molsan-glass-surface: rgba(255, 255, 255, 0.88);
-  --molsan-glass-soft: rgba(242, 247, 251, 0.72);
-  --molsan-glass-border: rgba(216, 228, 236, 0.92);
-  --molsan-glass-highlight: rgba(255, 255, 255, 0.78);
-  --molsan-glass-shadow: 0 8px 24px rgba(6, 70, 117, 0.055);
-  --molsan-glass-shadow-hover: 0 11px 28px rgba(6, 70, 117, 0.085);
-}
 
 /* Dashboard: KPI, tarjetas de actividad y bloques de firmas */
 .dashboard-cancelagest .dashboard-kpi,
@@ -1377,15 +1376,15 @@ body {
 
 .erp-route-content input::placeholder,
 .erp-route-content textarea::placeholder {
-  color: #8295a4;
+  color: var(--molsan-muted);
   opacity: 1;
 }
 
 .erp-route-content input:disabled,
 .erp-route-content select:disabled,
 .erp-route-content textarea:disabled {
-  color: #718493;
-  background-color: #f2f6f9;
+  color: var(--molsan-muted);
+  background-color: var(--molsan-panel);
   cursor: not-allowed;
 }
 
@@ -1397,11 +1396,14 @@ body {
 .erp-route-content .molsan-btn {
   box-sizing: border-box;
   display: inline-flex;
+  min-width: 0;
   min-height: var(--molsan-control-height);
   align-items: center;
   justify-content: center;
   gap: 8px;
   padding: 8px 14px;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
   color: var(--molsan-blue);
   background: var(--molsan-white);
   border: 1px solid var(--molsan-border);
@@ -1468,8 +1470,8 @@ body {
 
 .erp-route-content .molsan-btn--danger {
   color: #fff;
-  background: #a33b42;
-  border-color: #a33b42;
+  background: var(--molsan-danger);
+  border-color: var(--molsan-danger);
 }
 
 .erp-route-content .molsan-btn--compact {
@@ -1672,20 +1674,14 @@ body {
 ========================================================== */
 
 /* Botones Molsan: geometría y estados comunes para todas las variantes. */
-.erp-route-content .molsan-btn {
-  min-width: 0;
-  white-space: nowrap;
-  -webkit-tap-highlight-color: transparent;
-}
-
 .erp-route-content .molsan-btn:active:not(:disabled) {
   transform: translateY(0);
   box-shadow: inset 0 1px 2px rgba(6,70,117,.12);
 }
 
 .erp-route-content .molsan-btn--danger:hover:not(:disabled) {
-  background: #8f3038;
-  border-color: #8f3038;
+  background: var(--molsan-danger-hover);
+  border-color: var(--molsan-danger-hover);
   box-shadow: 0 2px 8px rgba(143,48,56,.14);
 }
 
@@ -1979,7 +1975,7 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
 
 #root main :is(input, select, textarea)::placeholder,
 body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) :is(input, textarea)::placeholder {
-  color: #8195a5;
+  color: var(--molsan-muted);
   opacity: 1;
 }
 
@@ -2081,26 +2077,8 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
    Patrones semánticos compartidos; no alteran flujos ni datos.
 ========================================================== */
 
-/* Indicadores compactos reutilizables (Agenda y otros resúmenes). */
-.molsan-stat-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-  min-width: 0;
-}
-.molsan-stat-card {
-  display: flex;
-  min-width: 0;
-  min-height: 86px;
-  align-items: center;
-  gap: 12px;
-  padding: 15px 16px;
-  color: var(--molsan-text);
-  background: var(--molsan-white);
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-card);
-  box-shadow: var(--molsan-shadow-card);
-}
+/* Iconografía y texto auxiliar de métricas. La rejilla, tarjeta y
+   tipografía principal se definen una sola vez en MÉTRICAS COMPARTIDAS. */
 .molsan-stat-icon {
   display: grid;
   flex: 0 0 38px;
@@ -2112,21 +2090,6 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
   border: 1px solid var(--molsan-border);
   border-radius: 10px;
   font-size: 17px;
-}
-.molsan-stat-label {
-  display: block;
-  color: var(--molsan-muted);
-  font-size: var(--molsan-font-size-xs);
-  font-weight: var(--molsan-font-weight-medium);
-}
-.molsan-stat-card strong {
-  display: block;
-  margin-top: 3px;
-  color: var(--molsan-blue);
-  font-size: 23px;
-  font-weight: var(--molsan-font-weight-bold);
-  line-height: 1.15;
-  font-variant-numeric: tabular-nums;
 }
 .molsan-stat-card small {
   display: block;
@@ -4395,6 +4358,7 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
 .molsan-stat-card {
   display: block;
   min-width: 0;
+  min-height: 86px;
   padding: 15px;
   color: var(--molsan-text);
   background: var(--molsan-white);
