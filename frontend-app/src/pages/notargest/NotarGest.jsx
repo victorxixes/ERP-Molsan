@@ -638,7 +638,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
               <div className="ng-control-identidad">
                 <div className="ng-control-logo"><img src="/img/logo.jpg" alt="MOLSAN" /></div>
                 <div className="ng-control-titulos">
-                  <span className="ng-control-eyebrow">MOLSAN ERP · PREMIUM 2027</span>
+                  
                   <h2>NotarGest</h2>
                   <p>Visión global del trabajo notarial y detalle operativo de cada notaría habilitada.</p>
                 </div>
