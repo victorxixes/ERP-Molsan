@@ -9,7 +9,7 @@ import { useSeguridad } from "../../hooks/useSeguridad";
 
 /**
  * ============================================================
- * LOGS TÉCNICOS — MOLSAN ERP SAAS PREMIUM 2027
+ * LOGS TÉCNICOS
  * ============================================================
  *
  * IMPORTANTE:
@@ -909,7 +909,7 @@ export default function SeguridadLogs() {
 
   return (
 
-    <div className="seguridad-logs-premium seguridad-subpagina-premium space-y-6">
+    <div className="space-y-6">
 
 
       {/* ====================================================
@@ -1352,7 +1352,7 @@ export default function SeguridadLogs() {
             onClick={
               descargarExcel
             }
-            className="molsan-export-excel"
+            className=""
           >
 
             <Icono
