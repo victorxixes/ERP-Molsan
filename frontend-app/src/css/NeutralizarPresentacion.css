@@ -1480,9 +1480,9 @@ body {
 
 /* Superficies modales compartidas: los módulos pueden adoptar esta clase
    sin tener que reproducir cabecera, cuerpo y pie en su CSS particular. */
-.erp-route-content .molsan-modal,
-.erp-route-content .molsan-modal__panel,
-.erp-route-content .erp-modal-panel {
+.molsan-modal,
+.molsan-modal__panel,
+.erp-modal-panel {
   box-sizing: border-box;
   color: var(--molsan-text);
   background: linear-gradient(150deg, #fff 0%, rgba(242, 247, 251, 0.98) 100%);
@@ -1491,35 +1491,35 @@ body {
   box-shadow: var(--molsan-shadow-modal);
 }
 
-.erp-route-content .molsan-modal__header,
-.erp-route-content .molsan-modal__footer {
+.molsan-modal__header,
+.molsan-modal__footer {
   background: rgba(234, 242, 248, 0.76);
   border-color: var(--molsan-border);
 }
 
-.erp-route-content .molsan-modal__header {
+.molsan-modal__header {
   border-bottom: 1px solid var(--molsan-border);
   border-radius: var(--molsan-radius-modal) var(--molsan-radius-modal) 0 0;
 }
 
-.erp-route-content .molsan-modal__footer {
+.molsan-modal__footer {
   border-top: 1px solid var(--molsan-border);
   border-radius: 0 0 var(--molsan-radius-modal) var(--molsan-radius-modal);
 }
 
-.erp-route-content .molsan-modal__body {
+.molsan-modal__body {
   min-width: 0;
   background: #fff;
 }
 
 @media (max-width: 720px) {
-  .erp-route-content .molsan-btn {
+  .molsan-btn {
     min-height: 40px;
   }
 
-  .erp-route-content .molsan-modal,
-  .erp-route-content .molsan-modal__panel,
-  .erp-route-content .erp-modal-panel {
+  .molsan-modal,
+  .molsan-modal__panel,
+  .erp-modal-panel {
     width: min(100%, calc(100vw - 20px));
     max-height: calc(100dvh - 20px);
     overflow: auto;
@@ -1528,11 +1528,11 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .erp-route-content .molsan-btn {
+  .molsan-btn {
     transition: none;
   }
 
-  .erp-route-content .molsan-btn:hover:not(:disabled) {
+  .molsan-btn:hover:not(:disabled) {
     transform: none;
   }
 }
@@ -1546,9 +1546,9 @@ body {
 
 /* Barra de filtros: agrupa controles relacionados sin crear
    tarjetas individuales alrededor de cada campo. */
-.erp-route-content .molsan-filter-bar,
-.erp-route-content .molsan-filters,
-.erp-route-content [data-molsan-filter-bar] {
+.molsan-filter-bar,
+.molsan-filters,
+[data-molsan-filter-bar] {
   display: flex;
   flex-wrap: wrap;
   align-items: end;
@@ -1562,19 +1562,19 @@ body {
   box-shadow: inset 0 1px 0 var(--molsan-glass-highlight), 0 3px 12px rgba(6,70,117,.035);
 }
 
-.erp-route-content .molsan-filter-bar > *,
-.erp-route-content .molsan-filters > *,
-.erp-route-content [data-molsan-filter-bar] > * {
+.molsan-filter-bar > *,
+.molsan-filters > *,
+[data-molsan-filter-bar] > * {
   min-width: 0;
 }
 
-.erp-route-content .molsan-filter-bar .molsan-field,
-.erp-route-content .molsan-filters .molsan-field,
-.erp-route-content [data-molsan-filter-bar] .molsan-field {
+.molsan-filter-bar .molsan-field,
+.molsan-filters .molsan-field,
+[data-molsan-filter-bar] .molsan-field {
   flex: 1 1 170px;
 }
 
-.erp-route-content .molsan-filter-actions {
+.molsan-filter-actions {
   display: flex;
   flex: 0 0 auto;
   flex-wrap: wrap;
@@ -1585,37 +1585,37 @@ body {
 
 /* Campos y grupos de formulario. Las páginas conservan sus
    columnas y agrupaciones funcionales; aquí se normaliza el control. */
-.erp-route-content .molsan-form,
-.erp-route-content .molsan-form-section {
+.molsan-form,
+.molsan-form-section {
   min-width: 0;
 }
 
-.erp-route-content .molsan-form-grid {
+.molsan-form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   min-width: 0;
 }
 
-.erp-route-content .molsan-field {
+.molsan-field {
   display: flex;
   flex-direction: column;
   gap: 6px;
   min-width: 0;
 }
 
-.erp-route-content .molsan-field__label,
-.erp-route-content .molsan-field > label {
+.molsan-field__label,
+.molsan-field > label {
   color: var(--molsan-muted);
   font-size: var(--molsan-font-size-xs);
   font-weight: var(--molsan-font-weight-semibold);
   line-height: 1.35;
 }
 
-.erp-route-content .molsan-field__control,
-.erp-route-content .molsan-field input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
-.erp-route-content .molsan-field select,
-.erp-route-content .molsan-field textarea {
+.molsan-field__control,
+.molsan-field input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.molsan-field select,
+.molsan-field textarea {
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
@@ -1629,50 +1629,50 @@ body {
   transition: border-color var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast);
 }
 
-.erp-route-content .molsan-field textarea,
-.erp-route-content .molsan-field textarea.molsan-field__control {
+.molsan-field textarea,
+.molsan-field textarea.molsan-field__control {
   min-height: 88px;
   resize: vertical;
 }
 
-.erp-route-content .molsan-field__control:focus,
-.erp-route-content .molsan-field input:focus,
-.erp-route-content .molsan-field select:focus,
-.erp-route-content .molsan-field textarea:focus {
+.molsan-field__control:focus,
+.molsan-field input:focus,
+.molsan-field select:focus,
+.molsan-field textarea:focus {
   border-color: var(--molsan-blue);
   outline: none;
   box-shadow: var(--molsan-focus-ring);
 }
 
-.erp-route-content .molsan-field__help {
+.molsan-field__help {
   color: var(--molsan-muted);
   font-size: var(--molsan-font-size-xs);
   line-height: 1.4;
 }
 
-.erp-route-content .molsan-field__error,
-.erp-route-content .molsan-field [aria-invalid="true"] ~ .molsan-field__help {
+.molsan-field__error,
+.molsan-field [aria-invalid="true"] ~ .molsan-field__help {
   color: var(--molsan-danger);
 }
 
-.erp-route-content .molsan-field [aria-invalid="true"] {
+.molsan-field [aria-invalid="true"] {
   border-color: var(--molsan-danger);
   box-shadow: 0 0 0 3px rgba(163,59,66,.09);
 }
 
-.erp-route-content .molsan-field__required {
+.molsan-field__required {
   color: var(--molsan-danger);
   margin-inline-start: 3px;
 }
 
-.erp-route-content .molsan-form-section {
+.molsan-form-section {
   padding: 16px;
   background: rgba(242,247,251,.52);
   border: 1px solid rgba(216,228,236,.82);
   border-radius: var(--molsan-radius-card);
 }
 
-.erp-route-content .molsan-form-section__title {
+.molsan-form-section__title {
   margin: 0 0 14px;
   color: var(--molsan-blue);
   font-size: var(--molsan-font-size-md);
@@ -1680,29 +1680,29 @@ body {
 }
 
 @media (max-width: 720px) {
-  .erp-route-content .molsan-filter-bar,
-  .erp-route-content .molsan-filters,
-  .erp-route-content [data-molsan-filter-bar] {
+  .molsan-filter-bar,
+  .molsan-filters,
+  [data-molsan-filter-bar] {
     padding: 11px;
     gap: 10px;
   }
 
-  .erp-route-content .molsan-form-grid {
+  .molsan-form-grid {
     grid-template-columns: minmax(0, 1fr);
     gap: 12px;
   }
 
-  .erp-route-content .molsan-filter-actions {
+  .molsan-filter-actions {
     width: 100%;
     margin-inline-start: 0;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .erp-route-content .molsan-field__control,
-  .erp-route-content .molsan-field input,
-  .erp-route-content .molsan-field select,
-  .erp-route-content .molsan-field textarea {
+  .molsan-field__control,
+  .molsan-field input,
+  .molsan-field select,
+  .molsan-field textarea {
     transition: none;
   }
 }
@@ -1757,9 +1757,9 @@ body {
 
 /* Estructura de diálogo: overlay separado, panel con scroll interno
    y cabecera/pie persistentes cuando el módulo adopta estas clases. */
-.erp-route-content .molsan-modal-overlay,
+.molsan-modal-overlay,
 .molsan-modal-backdrop,
-.erp-route-content [data-molsan-modal-overlay] {
+[data-molsan-modal-overlay] {
   position: fixed;
   inset: 0;
   z-index: 1000;
@@ -1772,9 +1772,9 @@ body {
   backdrop-filter: blur(3px);
 }
 
-.erp-route-content .molsan-modal,
-.erp-route-content .molsan-modal__panel,
-.erp-route-content .erp-modal-panel {
+.molsan-modal,
+.molsan-modal__panel,
+.erp-modal-panel {
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -1783,34 +1783,34 @@ body {
   overflow: hidden;
 }
 
-.erp-route-content .molsan-modal--sm { width: min(420px, calc(100vw - 32px)); }
-.erp-route-content .molsan-modal--md { width: min(640px, calc(100vw - 32px)); }
-.erp-route-content .molsan-modal--lg { width: min(860px, calc(100vw - 32px)); }
-.erp-route-content .molsan-modal--xl { width: min(1100px, calc(100vw - 32px)); }
+.molsan-modal--sm { width: min(420px, calc(100vw - 32px)); }
+.molsan-modal--md { width: min(640px, calc(100vw - 32px)); }
+.molsan-modal--lg { width: min(860px, calc(100vw - 32px)); }
+.molsan-modal--xl { width: min(1100px, calc(100vw - 32px)); }
 
-.erp-route-content .molsan-modal__header,
-.erp-route-content .molsan-modal__footer {
+.molsan-modal__header,
+.molsan-modal__footer {
   flex: 0 0 auto;
   padding: 14px 18px;
 }
 
-.erp-route-content .molsan-modal__header {
+.molsan-modal__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
 }
 
-.erp-route-content .molsan-modal__header h1,
-.erp-route-content .molsan-modal__header h2,
-.erp-route-content .molsan-modal__header h3 {
+.molsan-modal__header h1,
+.molsan-modal__header h2,
+.molsan-modal__header h3 {
   margin: 0;
   color: var(--molsan-blue);
   font-size: var(--molsan-font-size-lg);
   font-weight: var(--molsan-font-weight-semibold);
 }
 
-.erp-route-content .molsan-modal__body {
+.molsan-modal__body {
   flex: 1 1 auto;
   min-height: 0;
   overflow: auto;
@@ -1818,7 +1818,7 @@ body {
   padding: 18px;
 }
 
-.erp-route-content .molsan-modal__footer {
+.molsan-modal__footer {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -1826,7 +1826,7 @@ body {
   gap: 8px;
 }
 
-.erp-route-content .molsan-modal__close {
+.molsan-modal__close {
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
@@ -1840,51 +1840,51 @@ body {
   cursor: pointer;
 }
 
-.erp-route-content .molsan-modal__close:hover {
+.molsan-modal__close:hover {
   color: var(--molsan-blue);
   background: rgba(255,255,255,.82);
   border-color: var(--molsan-border);
 }
 
-.erp-route-content .molsan-modal__close:focus-visible {
+.molsan-modal__close:focus-visible {
   outline: none;
   box-shadow: var(--molsan-focus-ring);
 }
 
 @media (max-width: 720px) {
-  .erp-route-content .molsan-modal-overlay,
-  .erp-route-content .molsan-modal-backdrop,
-  .erp-route-content [data-molsan-modal-overlay] {
+  .molsan-modal-overlay,
+  .molsan-modal-backdrop,
+  [data-molsan-modal-overlay] {
     align-items: flex-end;
     padding: 10px;
   }
 
-  .erp-route-content .molsan-modal,
-  .erp-route-content .molsan-modal__panel,
-  .erp-route-content .erp-modal-panel,
-  .erp-route-content .molsan-modal--sm,
-  .erp-route-content .molsan-modal--md,
-  .erp-route-content .molsan-modal--lg,
-  .erp-route-content .molsan-modal--xl {
+  .molsan-modal,
+  .molsan-modal__panel,
+  .erp-modal-panel,
+  .molsan-modal--sm,
+  .molsan-modal--md,
+  .molsan-modal--lg,
+  .molsan-modal--xl {
     width: 100%;
     max-width: none;
     max-height: calc(100dvh - 20px);
     border-radius: 14px;
   }
 
-  .erp-route-content .molsan-modal__header,
-  .erp-route-content .molsan-modal__footer {
+  .molsan-modal__header,
+  .molsan-modal__footer {
     padding: 12px 14px;
   }
 
-  .erp-route-content .molsan-modal__body {
+  .molsan-modal__body {
     padding: 14px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .erp-route-content .molsan-modal-overlay,
-  .erp-route-content [data-molsan-modal-overlay] {
+  .molsan-modal-overlay,
+  [data-molsan-modal-overlay] {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
