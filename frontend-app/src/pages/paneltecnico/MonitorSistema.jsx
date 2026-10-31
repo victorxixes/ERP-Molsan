@@ -225,7 +225,7 @@ export default function MonitorSistema() {
             <div>
 
               <h1
-                className=""
+               
               >
                 Monitor del Sistema
               </h1>
@@ -296,7 +296,7 @@ export default function MonitorSistema() {
           <div>
 
             <h2
-              className=""
+             
             >
               Diagnóstico de base de datos
             </h2>
@@ -355,13 +355,13 @@ export default function MonitorSistema() {
                 >
 
                   <h3
-                    className=""
+                   
                   >
                     Tablas
                   </h3>
 
                   <span
-                    className=""
+                   
                   >
                     BD
                   </span>
@@ -535,7 +535,7 @@ export default function MonitorSistema() {
                   </div>
 
                   <h3
-                    className=""
+                   
                   >
                     Selecciona una tabla
                   </h3>
@@ -585,7 +585,7 @@ export default function MonitorSistema() {
                         </svg>
 
                         <h3
-                          className=""
+                         
                         >
                           {tablaSeleccionada}
                         </h3>
@@ -661,7 +661,7 @@ export default function MonitorSistema() {
                         <div>
 
                           <h4
-                            className=""
+                           
                           >
                             Estructura
                           </h4>
@@ -692,7 +692,7 @@ export default function MonitorSistema() {
                           <thead>
 
                             <tr
-                              className=""
+                             
                             >
 
                               <th
@@ -745,7 +745,7 @@ export default function MonitorSistema() {
 
                                   <tr
                                     key={i}
-                                    className=""
+                                   
                                   >
 
                                     <td
@@ -812,7 +812,7 @@ export default function MonitorSistema() {
                         <div>
 
                           <h4
-                            className=""
+                           
                           >
                             Contenido
                           </h4>
@@ -851,7 +851,7 @@ export default function MonitorSistema() {
                           >
 
                             <tr
-                              className=""
+                             
                             >
 
                               {columnasMemo.map(
@@ -904,7 +904,7 @@ export default function MonitorSistema() {
 
                                   <tr
                                     key={i}
-                                    className=""
+                                   
                                   >
 
                                     {columnasMemo.map(
@@ -935,7 +935,7 @@ export default function MonitorSistema() {
                                             valor === undefined ? (
 
                                               <span
-                                                className=""
+                                               
                                               >
                                                 —
                                               </span>
