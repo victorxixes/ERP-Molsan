@@ -206,7 +206,7 @@ function Toast({
  top-0
  bottom-0
  w-[3px]
- ${configuracion.color}`}
+ `}
       />
 
 
@@ -330,7 +330,7 @@ function obtenerConfiguracion(
       return {
         icono: "💬",
         titulo: "Nuevo mensaje",
-        color: "bg-blue-400",
+
       };
 
 
@@ -339,7 +339,7 @@ function obtenerConfiguracion(
       return {
         icono: "📎",
         titulo: "Nuevo archivo",
-        color: "bg-purple-400",
+
       };
 
 
@@ -348,7 +348,7 @@ function obtenerConfiguracion(
       return {
         icono: "🟢",
         titulo: "Usuario conectado",
-        color: "bg-emerald-400",
+
       };
 
 
@@ -357,7 +357,7 @@ function obtenerConfiguracion(
       return {
         icono: "⚫",
         titulo: "Usuario desconectado",
-        color: "bg-slate-400",
+
       };
 
 
@@ -366,7 +366,7 @@ function obtenerConfiguracion(
       return {
         icono: "⛔",
         titulo: "Error",
-        color: "bg-red-400",
+
       };
 
 
@@ -375,7 +375,7 @@ function obtenerConfiguracion(
       return {
         icono: "⚠️",
         titulo: "Advertencia",
-        color: "bg-yellow-400",
+
       };
 
 
@@ -384,7 +384,7 @@ function obtenerConfiguracion(
       return {
         icono: "🔔",
         titulo: "Nueva notificación",
-        color: "bg-blue-400",
+
       };
 
   }
