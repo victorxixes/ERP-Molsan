@@ -14,8 +14,9 @@ import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 // CONFIGURACIÓN API
 // ============================================================
 
-const API_ORIGEN =
-  "https://agenda-intranet-b.onrender.com";
+const API_ORIGEN = String(
+  import.meta.env.VITE_API_URL || "https://agenda-intranet-b.onrender.com/api"
+).replace(/\/api\/?$/, "");
 
 const API_BASE =
   `${API_ORIGEN}/api/tipos-carga-hipotecaria`;
