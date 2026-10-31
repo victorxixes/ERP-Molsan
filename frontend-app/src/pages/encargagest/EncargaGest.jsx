@@ -109,7 +109,7 @@ function Campo({ etiqueta, children, className = "" }) {
   );
 }
 
-const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100";
+const inputClass = "w-full px-3 py-2.5";
 
 export default function EncargaGest({ accessMode = "auto" } = {}) {
   const navigate = useNavigate();
@@ -1008,7 +1008,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
             {cargando ? <div className="p-10">Cargando encargos…</div> : !filas.length ? (
               <div className="p-10"><div className="mx-auto grid h-12 w-12 place-items-center">▤</div><h3 className="mt-3">Todavía no hay encargos</h3><p className="mt-1">Cuando una notaría registre un encargo, aparecerá aquí automáticamente.</p></div>
             ) : (
-              <div className="divide-y divide-slate-100">
+              <div className="">
                 {filas.map((item) => (
                   <button type="button" key={item.id} onClick={() => { setSeleccionadoId(item.id); setErrorAccion(""); }} className={"block w-full p-4" + (seleccionadoId === item.id ? "" : "")}>
                     <div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="">{item.referencia || ("EG-" + item.id)}</p><h3 className="mt-1 truncate">{item.titular}</h3><p className="mt-1 truncate">{item.notaria_nombre}</p></div><EtiquetaEstado estado={item.estado} /></div>
