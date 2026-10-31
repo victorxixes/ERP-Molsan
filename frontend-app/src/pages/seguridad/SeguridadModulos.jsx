@@ -483,18 +483,7 @@ export default function SeguridadModulos() {
  px-4
  py-3
  
- ${
- activo
- ?`
-                            border-blue-200
-                            bg-blue-50
-                            hover:bg-blue-100/70
-                          `:`
-                            border-[var(--erp-border)]
-                            bg-[var(--erp-bg)]
-                            hover:border-blue-200
-                            hover:bg-blue-50/40
-                          `}`}
+ `}
                   >
 
                     <div
