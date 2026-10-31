@@ -149,11 +149,6 @@ const NIVELES = {
 
     icon: "clipboard",
 
-    classes:
-      "bg-[var(--erp-primary-soft)] " +
-      "text-[var(--erp-primary)] " +
-      "border-[var(--erp-border)]",
-
   },
 
 
@@ -162,11 +157,6 @@ const NIVELES = {
     label: "WARNING",
 
     icon: "shield",
-
-    classes:
-      "bg-amber-50 " +
-      "text-amber-700 " +
-      "border-amber-100",
 
   },
 
@@ -177,11 +167,6 @@ const NIVELES = {
 
     icon: "shield",
 
-    classes:
-      "bg-red-50 " +
-      "text-red-700 " +
-      "border-red-100",
-
   },
 
 
@@ -190,11 +175,6 @@ const NIVELES = {
     label: "CRITICAL",
 
     icon: "shield",
-
-    classes:
-      "bg-red-100 " +
-      "text-red-800 " +
-      "border-red-200",
 
   },
 
@@ -227,7 +207,7 @@ function NivelBadge({
  
  
  whitespace-nowrap
- ${configuracion.classes}`}
+ `}
     >
 
       <Icono
