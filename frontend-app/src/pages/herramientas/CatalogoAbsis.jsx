@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuthStore } from "../../store/authStore";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { API_BASE } from "../../api/config";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
@@ -169,23 +170,10 @@ export default function CatalogoAbsis() {
   }
 
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden p-6 sm:p-8">
-        <div className="absolute inset-x-0 top-0 h-1" />
-        <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
-          <div>
-            <p className="uppercase">MOLSAN ERP · DATOS ABSIS</p>
-            <h1 className="mt-2">Catálogo ABSIS</h1>
-            <p className="mt-2 max-w-3xl">Gestiona en una única pantalla los estados y listas auxiliares que utiliza la integración ABSIS. Cada lista se mantiene por separado y sus cambios quedan guardados en el servidor.</p>
-          </div>
-          <div className="px-5 py-4">
-            <p>{filas.filter((f) => f.activo).length}</p>
-            <p>entradas activas</p>
-          </div>
-        </div>
-      </header>
+    <main className="erp-page min-w-0 space-y-6">
+      <MolsanPageHeader mark="AB" title="Catálogo ABSIS" description="Gestiona los estados y listas auxiliares utilizados por la integración ABSIS. Los cambios se guardan en el servidor." />
 
-      <section className="p-4 sm:p-5">
+      <section className="erp-card molsan-filter-bar p-4 sm:p-5">
         <label className="mb-2 block" htmlFor="absis-categoria">Lista que quieres gestionar</label>
         <div className="flex flex-col gap-3 sm:flex-row">
           <select id="absis-categoria" value={categoria} onChange={(e) => { setCategoria(e.target.value); setBusqueda(""); setMensaje(""); }} className="min-w-0 flex-1 px-3 py-3">
@@ -205,7 +193,7 @@ export default function CatalogoAbsis() {
       {error && <div role="alert" className="px-4 py-3">{error}</div>}
       {mensaje && !modal && <div role="status" className="px-4 py-3">{mensaje}</div>}
 
-      <section className="overflow-hidden">
+      <section className="erp-card overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4">
           <div><h2>{categoria}</h2><p className="mt-1">Listado editable · datos persistentes</p></div>
           <button type="button" onClick={cargar} className="px-3 py-2">Actualizar</button>
@@ -227,8 +215,8 @@ export default function CatalogoAbsis() {
         }
       </section>
 
-      {modalNuevaLista && <div className="fixed inset-0 z-[110] flex items-center justify-center p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !creandoLista) setModalNuevaLista(false); }}>
-        <section ref={nuevaListaDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="absis-nueva-lista-titulo" className="w-full max-w-lg">
+      {modalNuevaLista && <div className="molsan-modal-overlay fixed inset-0 z-[110] flex items-center justify-center p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !creandoLista) setModalNuevaLista(false); }}>
+        <section ref={nuevaListaDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="absis-nueva-lista-titulo" className="molsan-modal__panel w-full max-w-lg">
           <form onSubmit={crearLista}>
             <div className="px-6 py-5">
               <h2 id="absis-nueva-lista-titulo">Crear nueva lista ABSIS</h2>
@@ -248,8 +236,8 @@ export default function CatalogoAbsis() {
         </section>
       </div>}
 
-      {modal && <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !guardando) setModal(false); }}>
-        <section ref={entradaDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="absis-modal-titulo" className="my-auto w-full max-w-2xl">
+      {modal && <div className="molsan-modal-overlay fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !guardando) setModal(false); }}>
+        <section ref={entradaDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="absis-modal-titulo" className="molsan-modal__panel my-auto w-full max-w-2xl">
           <form onSubmit={guardar}>
             <div className="px-6 py-5"><h2 id="absis-modal-titulo">{editando ? "Editar entrada" : "Añadir entrada"} · {categoria}</h2><p className="mt-1">Elige la lista y rellena los datos. El código es opcional.</p></div>
             <div className="grid gap-4 p-6 sm:grid-cols-2">
