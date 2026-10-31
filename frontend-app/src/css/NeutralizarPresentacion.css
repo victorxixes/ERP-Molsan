@@ -2576,3 +2576,17 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
   font-size: 22px;
   font-weight: var(--molsan-font-weight-bold);
 }
+
+
+.molsan-chat-attach {
+  color: var(--molsan-blue);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  cursor: pointer;
+  transition: background var(--molsan-transition-fast), border-color var(--molsan-transition-fast);
+}
+.molsan-chat-attach:hover {
+  background: var(--molsan-blue-soft);
+  border-color: rgba(6,70,117,.3);
+}
