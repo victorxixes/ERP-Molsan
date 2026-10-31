@@ -2132,7 +2132,7 @@ const permisosDisponibles =
   return (
 
     <div
-      className="empleado-operativo-modal
+      className={`empleado-operativo-modal ${preservarEstilosSidebar ? "" : "molsan-modal-overlay"}
  fixed
  inset-0
  z-[100]
@@ -2167,7 +2167,7 @@ const permisosDisponibles =
         aria-modal="true"
         aria-label="Ficha de empleado"
         data-molsan-style-exempt={preservarEstilosSidebar ? "sidebar-profile" : undefined}
-        className="relative
+        className={`relative
  z-10
  flex
  w-full
@@ -2175,7 +2175,7 @@ const permisosDisponibles =
  max-w-7xl
  max-h-[94vh]
  flex-col
- overflow-hidden"
+ overflow-hidden ${preservarEstilosSidebar ? "" : "molsan-modal__panel"}`}
         onClick={(
           event
         ) =>
@@ -2189,18 +2189,12 @@ const permisosDisponibles =
         ==================================================== */}
 
         <div
-          className="relative
+          className={`molsan-modal__header relative
  shrink-0
  overflow-hidden
- 
- 
- 
- 
- 
- 
  px-5
  py-5
- sm:px-7"
+ sm:px-7 ${preservarEstilosSidebar ? "" : ""}`}
         >
 
           <div
@@ -2305,12 +2299,7 @@ const permisosDisponibles =
             <button
               type="button"
               onClick={cerrarModalEmpleado}
-              className="flex
- h-10
- w-10
- shrink-0
- items-center
- justify-center"
+              className={`flex h-10 w-10 shrink-0 items-center justify-center ${preservarEstilosSidebar ? "" : "molsan-btn molsan-btn--ghost molsan-btn--icon"}`}
               aria-label="Cerrar"
             >
               ×
@@ -2326,15 +2315,12 @@ const permisosDisponibles =
         ==================================================== */}
 
         <div
-          className="flex
+          className={`molsan-modal__tabs flex
  shrink-0
  gap-1
  overflow-x-auto
- 
- 
- 
  px-4
- sm:px-6"
+ sm:px-6`}
         >
 
           {pestanasVisibles.map(
@@ -2345,6 +2331,7 @@ const permisosDisponibles =
                   item.id
                 }
                 type="button"
+                aria-pressed={pestana === item.id}
                 onClick={() =>
                   setPestana(
                     item.id
@@ -2401,12 +2388,11 @@ const permisosDisponibles =
         {pestana === "visibilidad-tablas" && <div className="p-4 sm:p-6"><div className="mb-4 p-4"><h3>Configuración administrativa por actividad</h3><p className="mt-1">Define las columnas de Excel y los repositorios disponibles para este empleado. Esta configuración es independiente de sus preferencias personales.</p></div><VisibilidadTablas empleadoId={empleadoId} ambito="administracion" modal={false} titulo="Visibilidad de tablas del empleado" onClose={() => setPestana("basicos")} /></div>}
 
         <div
-          className="min-h-0
+          className={`molsan-modal__body min-h-0
  flex-1
  overflow-y-auto
- 
  p-4
- sm:p-6"
+ sm:p-6`}
         >
 
           {pestana === "mi-visibilidad" ? (
