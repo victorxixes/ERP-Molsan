@@ -136,13 +136,13 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
     }
   };
   const contenido = (
-    <div className="liquidar-expediente-modal fixed inset-0 z-[10000] flex items-center justify-center p-2 sm:p-5">
-      <section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="liquidar-expediente-titulo" className="flex max-h-[96vh] w-full max-w-6xl flex-col overflow-hidden">
-        <header className="flex items-start justify-between gap-3 px-5 py-4">
+    <div className="molsan-modal-overlay liquidar-expediente-modal fixed inset-0 z-[10000] flex items-center justify-center p-2 sm:p-5">
+      <section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="liquidar-expediente-titulo" className="molsan-modal__panel flex max-h-[96vh] w-full max-w-6xl flex-col overflow-hidden">
+        <header className="molsan-modal__header flex items-start justify-between gap-3 px-5 py-4">
           <div><p className="uppercase">MOLSAN ERP · Cierre</p><h2 id="liquidar-expediente-titulo" className="mt-1">Liquidar expediente</h2><p className="mt-1">Expediente {expediente?.id_expediente || expediente?.id || "—"}. Revisar y guardar no cierra el expediente.</p></div>
           <button type="button" onClick={onClose} className="px-3 py-2" aria-label="Cerrar modal">×</button>
         </header>
-        <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4 sm:p-5">
+        <div className="molsan-modal__body min-h-0 flex-1 space-y-5 overflow-y-auto p-4 sm:p-5">
           {error && <p role="alert" className="px-3 py-2">{String(error)}</p>}
           {mensaje && <p role="status" className="px-3 py-2">{mensaje}</p>}
           <section className="p-4">
@@ -206,7 +206,7 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
             </div>
           </section>
         </div>
-        <footer className="flex flex-wrap items-center justify-between gap-2 px-5 py-4">
+        <footer className="molsan-modal__footer flex flex-wrap items-center justify-between gap-2 px-5 py-4">
           <button type="button" onClick={onClose} className="px-4 py-2">Cerrar sin liquidar</button>
           <div className="flex flex-wrap gap-2"><button type="button" disabled={guardando} onClick={guardar} className="px-4 py-2">{guardando ? "Validando datos…" : "Validar datos"}</button><button type="button" disabled={guardando || cargandoCierre || !cierreDocumental?.guardado} onClick={confirmar} className="px-4 py-2">{cargandoCierre ? "Validando cierre…" : !cierreDocumental?.guardado ? "Acepta el PDF para poder cerrar" : "Confirmar liquidación y cerrar expediente"}</button></div>
         </footer>
@@ -214,15 +214,15 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
     </div>
   );
   const vistaPrevia = vistaPreviaUrl ? (
-    <div className="vista-previa-cierre-modal fixed inset-0 z-[10010] flex items-center justify-center p-2 sm:p-5">
-      <section ref={previewDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="vista-previa-cierre-titulo" className="flex h-[96vh] w-full max-w-6xl flex-col overflow-hidden">
-        <header className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
+    <div className="molsan-modal-overlay vista-previa-cierre-modal fixed inset-0 z-[10010] flex items-center justify-center p-2 sm:p-5">
+      <section ref={previewDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="vista-previa-cierre-titulo" className="molsan-modal__panel flex h-[96vh] w-full max-w-6xl flex-col overflow-hidden">
+        <header className="molsan-modal__header flex flex-wrap items-center justify-between gap-3 px-5 py-3">
           <div><h2 id="vista-previa-cierre-titulo">Vista previa · Expediente digital completo</h2><p className="mt-1">Aún no está guardado. Revísalo antes de aceptar.</p></div>
           <button type="button" onClick={cerrarVistaPrevia} className="px-3 py-2">Cancelar</button>
         </header>
         {metadataVistaPrevia?.documentos_faltantes?.length > 0 && <p className="px-4 py-2">Faltan documentos: {metadataVistaPrevia.documentos_faltantes.join(", ")}. Puedes revisar el PDF, pero comprueba si quieres aceptarlo incompleto.</p>}
         <iframe title="Vista previa del PDF de cierre" src={vistaPreviaUrl} className="min-h-0 flex-1" />
-        <footer className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
+        <footer className="molsan-modal__footer flex flex-wrap items-center justify-between gap-3 px-5 py-3">
           <p>{Number(metadataVistaPrevia?.paginas || 0)} páginas · {Array.isArray(metadataVistaPrevia?.documentos_incluidos) ? metadataVistaPrevia.documentos_incluidos.length : 0} documento(s)</p>
           <div className="flex gap-2"><button type="button" onClick={cerrarVistaPrevia} className="px-4 py-2">Cancelar</button><button type="button" onClick={aceptarCierreDocumental} disabled={guardandoCierreDocumental} className="px-4 py-2">{guardandoCierreDocumental ? "Guardando PDF…" : "Aceptar y guardar en Carpeta digital"}</button></div>
         </footer>
