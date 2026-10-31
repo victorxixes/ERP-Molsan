@@ -2,11 +2,9 @@ import { useCallback } from "react";
 import { useIntranet } from "../../hooks/useIntranet";
 
 /**
- * NOTICIAS FEED — MOLSAN ERP SAAS PREMIUM 2027
+ * NOTICIAS FEED
  *
  * Diseño:
- * - Glass Luxe claro
- * - Tarjetas premium
  * - Azul corporativo
  * - Responsive
  * - Animaciones suaves
@@ -30,7 +28,7 @@ export default function NoticiasFeed() {
   );
 
   return (
-    <div className="intranet-noticias-feed-premium space-y-4">
+    <div className="space-y-4">
 
       {noticias.length === 0 ? (
 
