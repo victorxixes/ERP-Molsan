@@ -35,9 +35,9 @@ export default function CatalogoFichajes() {
     {error && <div role="alert" className="p-3">{error}</div>}
     {mensaje && <div role="status" className="p-3">{mensaje}</div>}
     <section className="p-5">
-      <h2 className="">Añadir tipo de ausencia</h2>
+      <h2>Añadir tipo de ausencia</h2>
       <form onSubmit={guardar} className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto_auto] md:items-end">
-        <label className="">Nombre del tipo
+        <label>Nombre del tipo
           <input required maxLength={120} value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Ej. Acompañamiento médico" className="mt-1 w-full px-3 py-2.5" />
         </label>
         <label className="flex items-center gap-2 pb-3"><input type="checkbox" checked={requiereJustificante} onChange={(e) => setRequiereJustificante(e.target.checked)} /> Requiere justificante</label>
@@ -45,8 +45,8 @@ export default function CatalogoFichajes() {
       </form>
     </section>
     <section className="overflow-hidden">
-      <div className="px-5 py-4"><h2 className="">Tipos disponibles</h2><p className="">{tipos.length} tipos configurados</p></div>
-      {cargando ? <p className="p-5">Cargando catálogo…</p> : <div className="overflow-x-auto"><table className="w-full"><thead className="uppercase"><tr><th className="px-5 py-3">Tipo de ausencia</th><th className="px-5 py-3">Justificante</th></tr></thead><tbody>{tipos.map((t) => <tr key={t.id} className=""><td className="px-5 py-3">{t.nombre}</td><td className="px-5 py-3">{t.requiere_justificante ? <span className="px-2.5 py-1">Sí</span> : <span className="">No</span>}</td></tr>)}</tbody></table></div>}
+      <div className="px-5 py-4"><h2>Tipos disponibles</h2><p>{tipos.length} tipos configurados</p></div>
+      {cargando ? <p className="p-5">Cargando catálogo…</p> : <div className="overflow-x-auto"><table className="w-full"><thead className="uppercase"><tr><th className="px-5 py-3">Tipo de ausencia</th><th className="px-5 py-3">Justificante</th></tr></thead><tbody>{tipos.map((t) => <tr key={t.id}><td className="px-5 py-3">{t.nombre}</td><td className="px-5 py-3">{t.requiere_justificante ? <span className="px-2.5 py-1">Sí</span> : <span>No</span>}</td></tr>)}</tbody></table></div>}
     </section>
   </main>;
 }
