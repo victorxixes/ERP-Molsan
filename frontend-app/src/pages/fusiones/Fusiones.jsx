@@ -90,14 +90,14 @@ export default function Fusiones() {
       </div>
     </section>
 
-    {error && <div role="alert" className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="">No se han podido cargar las solicitudes</p><p className="mt-1">{error}</p></div><button type="button" onClick={cargarSolicitudes} className="shrink-0 px-3 py-2">Reintentar</button></div>}
+    {error && <div role="alert" className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"><div><p>No se han podido cargar las solicitudes</p><p className="mt-1">{error}</p></div><button type="button" onClick={cargarSolicitudes} className="shrink-0 px-3 py-2">Reintentar</button></div>}
 
     <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
       {indicadores.map(([titulo, valor, detalle, tono, filtro]) => <Indicador key={titulo} titulo={titulo} valor={valor} detalle={detalle} tono={tono} activo={estado === filtro} onClick={() => setEstado(estado === filtro && filtro !== "Todos" ? "Todos" : filtro)} />)}
     </section>
 
     <section className="overflow-hidden">
-      <div className="p-4 sm:p-5"><div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between"><div><h2 className="">Solicitudes de fusión</h2><p className="mt-1">Busca por expediente, registro, entrada, factura o registrador.</p></div>
+      <div className="p-4 sm:p-5"><div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between"><div><h2>Solicitudes de fusión</h2><p className="mt-1">Busca por expediente, registro, entrada, factura o registrador.</p></div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center"><label className="relative block min-w-0 sm:w-80"><span className="sr-only">Buscar solicitudes</span><span className="pointer-events-none absolute left-3 top-1/2"><Icon name="search" size={17} /></span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar solicitudes…" className="min-h-10 w-full py-2 pl-10 pr-3" /></label>
         <label><span className="sr-only">Filtrar por estado</span><select value={estado} onChange={(e) => setEstado(e.target.value)} className="min-h-10 w-full px-3 py-2 sm:w-44"><option value="Todos">Todos los estados</option>{ESTADOS.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>
         {(busqueda || estado !== "Todos") && <button type="button" onClick={limpiar} className="min-h-10 px-3 py-2">Limpiar</button>}</div>
@@ -107,11 +107,11 @@ export default function Fusiones() {
       </tr></thead><tbody>
         {cargando && solicitudes.length === 0 ? <tr><td colSpan={8} className="px-4 py-12"><span className="inline-flex items-center gap-2"><span className="h-4 w-4" />Cargando solicitudes reales…</span></td></tr>
         : filtradas.length === 0 ? <tr><td colSpan={8} className="px-4 py-12"><div className="mx-auto flex h-11 w-11 items-center justify-center"><Icon name="file" size={21} /></div><p className="mt-3">{error ? "No hay datos disponibles" : solicitudes.length ? "No hay resultados para estos filtros" : "Todavía no hay solicitudes de fusión"}</p><p className="mt-1">{error ? "Revisa la conexión con el servidor y vuelve a intentarlo." : solicitudes.length ? "Prueba otra búsqueda o limpia los filtros." : "Las solicitudes enviadas desde CancelaGest aparecerán aquí."}</p>{(busqueda || estado !== "Todos") && <button type="button" onClick={limpiar} className="mt-3 px-3 py-2">Limpiar filtros</button>}</td></tr>
-        : filtradas.map((item) => <tr key={item.id} className="">
+        : filtradas.map((item) => <tr key={item.id}>
           <td className="whitespace-nowrap px-4 py-3">#{item.id}</td><td className="whitespace-nowrap px-4 py-3">{item.numero_expediente || "—"}</td><td className="max-w-[250px] px-4 py-3"><span className="block truncate" title={item.registro || ""}>{item.registro || "—"}</span></td><td className="whitespace-nowrap px-4 py-3">{item.numero_entrada || "—"}</td><td className="max-w-[230px] px-4 py-3"><span className="block truncate" title={item.serie_numero_factura || item.tipo_factura || ""}>{item.serie_numero_factura || item.tipo_factura || "—"}</span></td><td className="whitespace-nowrap px-4 py-3">{fechaCorta(item.fecha_factura || item.creado_en)}</td><td className="whitespace-nowrap px-4 py-3 tabular-nums">{euros(item.importe)}</td><td className="whitespace-nowrap px-4 py-3"><BadgeEstado estado={item.estado} /></td>
         </tr>)}
       </tbody></table></div>
-      <footer className="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"><span>Mostrando <strong className="">{filtradas.length}</strong> de <strong className="">{solicitudes.length}</strong> solicitudes</span><span>Datos conectados a la API de Fusiones</span></footer>
+      <footer className="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"><span>Mostrando <strong>{filtradas.length}</strong> de <strong>{solicitudes.length}</strong> solicitudes</span><span>Datos conectados a la API de Fusiones</span></footer>
     </section>
   </main>;
 }
