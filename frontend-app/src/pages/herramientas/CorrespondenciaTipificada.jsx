@@ -254,7 +254,7 @@ export default function CorrespondenciaTipificada() {
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center">✉️</div>
             <div>
-              <Link to="/herramientas/catalogos" className="">← Volver a Catálogos</Link>
+              <Link to="/herramientas/catalogos">← Volver a Catálogos</Link>
               <h1 className="mt-1">Correspondencia tipificada</h1>
               <p className="mt-1">Plantillas reutilizables con campos vinculados a los expedientes.</p>
             </div>
@@ -269,7 +269,7 @@ export default function CorrespondenciaTipificada() {
       {!vistaFicha ? (
         <section className="overflow-hidden">
           <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
-            <div><h2 className="">Plantillas creadas</h2><p className="mt-1">Consulta y administra los modelos de correspondencia del ERP.</p></div>
+            <div><h2>Plantillas creadas</h2><p className="mt-1">Consulta y administra los modelos de correspondencia del ERP.</p></div>
             <span className="inline-flex w-fit items-center px-3 py-1.5">{plantillas.length} plantillas</span>
           </div>
           <div className="grid grid-cols-1 gap-3 p-4 md:grid-cols-[minmax(0,1fr)_240px]">
@@ -277,11 +277,11 @@ export default function CorrespondenciaTipificada() {
             <select value={categoriaFiltro} onChange={(e) => setCategoriaFiltro(e.target.value)} className={inputClass}><option value="Todas">Todas las tipologías</option>{CATEGORIAS.map((cat) => <option key={cat} value={cat}>{cat}</option>)}</select>
           </div>
           {cargando ? <p className="p-8">Cargando plantillas…</p> : plantillasFiltradas.length === 0 ? (
-            <div className="p-10"><div className="">✉️</div><h3 className="mt-3">{plantillas.length ? "No hay plantillas que coincidan" : "Todavía no hay plantillas creadas"}</h3><p className="mt-1">{plantillas.length ? "Prueba con otra búsqueda o categoría." : "Pulsa «Nueva plantilla» para crear el primer modelo de correspondencia."}</p>{!plantillas.length && <button type="button" onClick={nuevaPlantilla} className="mt-4 px-4 py-2.5">＋ Nueva plantilla</button>}</div>
+            <div className="p-10"><div>✉️</div><h3 className="mt-3">{plantillas.length ? "No hay plantillas que coincidan" : "Todavía no hay plantillas creadas"}</h3><p className="mt-1">{plantillas.length ? "Prueba con otra búsqueda o categoría." : "Pulsa «Nueva plantilla» para crear el primer modelo de correspondencia."}</p>{!plantillas.length && <button type="button" onClick={nuevaPlantilla} className="mt-4 px-4 py-2.5">＋ Nueva plantilla</button>}</div>
           ) : (
             <div className="overflow-x-auto"><table className="w-full min-w-[820px]">
               <thead className="uppercase"><tr><th className="px-5 py-3">Nombre de la plantilla</th><th className="px-5 py-3">Tipología / proceso</th><th className="px-5 py-3">Asunto</th><th className="px-5 py-3">Estado</th><th className="px-5 py-3">Acciones</th></tr></thead>
-              <tbody className="">{plantillasFiltradas.map((item) => <tr key={item.id} className="">
+              <tbody>{plantillasFiltradas.map((item) => <tr key={item.id}>
                 <td className="px-5 py-4"><span className="block">{item.nombre || "Sin nombre"}</span><span className="mt-1 block">Modelo de correo reutilizable</span></td>
                 <td className="px-5 py-4">{item.categoria || "General"}</td>
                 <td className="max-w-[280px] px-5 py-4"><span className="block truncate" title={item.asunto || ""}>{item.asunto || "Sin asunto"}</span></td>
@@ -299,7 +299,7 @@ export default function CorrespondenciaTipificada() {
         <aside className="space-y-4">
           <section className="p-4">
             <div className="mb-3 flex items-center justify-between gap-2">
-              <h2 className="">Catálogo de plantillas</h2>
+              <h2>Catálogo de plantillas</h2>
               <span className="px-2.5 py-1">{plantillas.length}</span>
             </div>
             <input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar plantilla…" className={inputClass} />
@@ -325,7 +325,7 @@ export default function CorrespondenciaTipificada() {
             </div>
           </section>
           <section className="p-4">
-            <h3 className="">Cómo insertar datos</h3>
+            <h3>Cómo insertar datos</h3>
             <p className="mt-1">Coloca el cursor en el cuerpo del email y pulsa un campo. El ERP lo guardará como marcador y lo sustituirá por el dato real al generar la vista previa.</p>
             <p className="mt-2">Ejemplo: <code>{"{{expediente.numero}}"}</code></p>
           </section>
@@ -335,11 +335,11 @@ export default function CorrespondenciaTipificada() {
           <section className="p-4 sm:p-6">
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="">{plantillaId ? "Editar plantilla" : "Nueva plantilla"}</h2>
+                <h2>{plantillaId ? "Editar plantilla" : "Nueva plantilla"}</h2>
                 <p className="mt-1">Los marcadores se escriben con doble llave, por ejemplo {"{{solicitante.nombre}}"}.</p>
               </div>
               <label className="flex items-center gap-2">
-                <input type="checkbox" checked={plantilla.activo} onChange={(e) => actualizar("activo", e.target.checked)} className="" />
+                <input type="checkbox" checked={plantilla.activo} onChange={(e) => actualizar("activo", e.target.checked)} />
                 Plantilla activa
               </label>
             </div>
@@ -373,7 +373,7 @@ export default function CorrespondenciaTipificada() {
             <div className="mt-4 p-3">
               <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                 <h3 className="uppercase">Insertar campo dinámico</h3>
-                <span className="">{campos.length} campos disponibles</span>
+                <span>{campos.length} campos disponibles</span>
               </div>
               <div className="flex flex-wrap gap-2">
                 {campos.map((campo) => <button key={campo.clave} type="button" title={"Insertar " + campo.clave} onClick={() => insertarCampo(campo.clave)} className="px-2.5 py-1.5">{campo.etiqueta}</button>)}
@@ -391,7 +391,7 @@ export default function CorrespondenciaTipificada() {
           {mostrarVistaPrevia && (
             <section className="p-4 sm:p-6">
               <div className="mb-4">
-                <h2 className="">Vista previa y generación</h2>
+                <h2>Vista previa y generación</h2>
                 <p className="mt-1">Carga un expediente para sustituir los marcadores por datos reales.</p>
               </div>
               <div className="flex flex-col gap-2 sm:flex-row">
@@ -399,7 +399,7 @@ export default function CorrespondenciaTipificada() {
                 <button type="button" onClick={() => cargarContexto(numeroExpediente)} disabled={cargandoExpediente} className="px-4 py-2.5">{cargandoExpediente ? "Buscando…" : "Cargar expediente"}</button>
               </div>
               {expedienteContexto && <p className="mt-2">Expediente cargado: {expedienteContexto}</p>}
-              {faltantes.length > 0 && <div className="mt-3 p-3"><p className="">Campos sin valor en este expediente</p><p className="mt-1">{faltantes.join(", ")}</p><p className="mt-1">Revisa los datos o modifica la plantilla antes de preparar el correo.</p></div>}
+              {faltantes.length > 0 && <div className="mt-3 p-3"><p>Campos sin valor en este expediente</p><p className="mt-1">{faltantes.join(", ")}</p><p className="mt-1">Revisa los datos o modifica la plantilla antes de preparar el correo.</p></div>}
               <div className="mt-4 space-y-3 p-4">
                 <div><span className="uppercase">Para</span><p className="mt-1 break-words">{destinatarioFinal || "—"}</p></div>
                 {ccFinal && <div><span className="uppercase">CC</span><p className="mt-1 break-words">{ccFinal}</p></div>}
@@ -408,7 +408,7 @@ export default function CorrespondenciaTipificada() {
               </div>
               <div className="mt-4 flex flex-wrap items-center gap-3">
                 <button type="button" onClick={abrirCorreo} disabled={hayFaltantes} className="px-4 py-2.5">Abrir en mi correo</button>
-                <span className="">Se abrirá tu aplicación de correo con el mensaje preparado; el envío se confirma desde esa aplicación.</span>
+                <span>Se abrirá tu aplicación de correo con el mensaje preparado; el envío se confirma desde esa aplicación.</span>
               </div>
             </section>
           )}
