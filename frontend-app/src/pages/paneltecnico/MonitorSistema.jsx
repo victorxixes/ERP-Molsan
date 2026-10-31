@@ -1,6 +1,8 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import MonitorRealtime from "./MonitorRealtime";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 import {
   listarTablas,
   describirTabla,
@@ -175,6 +177,9 @@ export default function MonitorSistema() {
     () => contenido,
     [contenido]
   );
+
+  const ordenColumnas = useSortableData(columnasMemo);
+  const ordenContenido = useSortableData(contenidoMemo);
 
   // ============================================================
   // RENDER
@@ -611,33 +616,7 @@ export default function MonitorSistema() {
 
                           <thead>
 
-                            <tr
-                             
-                            >
-
-                              <th
-                                className="py-3
- px-4
- 
- 
- 
- uppercase"
-                              >
-                                Columna
-                              </th>
-
-                              <th
-                                className="py-3
- px-4
- 
- 
- 
- uppercase"
-                              >
-                                Tipo
-                              </th>
-
-                            </tr>
+                            <tr><MolsanSortableTh label="Columna" sortKey="columna" sortConfig={ordenColumnas.sortConfig} onSort={ordenColumnas.requestSort} className="py-3 px-4 uppercase" /><MolsanSortableTh label="Tipo" sortKey="tipo" sortConfig={ordenColumnas.sortConfig} onSort={ordenColumnas.requestSort} className="py-3 px-4 uppercase" /></tr>
 
                           </thead>
 
@@ -660,7 +639,7 @@ export default function MonitorSistema() {
 
                             ) : (
 
-                              columnasMemo.map(
+                              ordenColumnas.items.map(
                                 (c, i) => (
 
                                   <tr
@@ -770,30 +749,7 @@ export default function MonitorSistema() {
  z-10"
                           >
 
-                            <tr
-                             
-                            >
-
-                              {columnasMemo.map(
-                                (c, i) => (
-
-                                  <th
-                                    key={i}
-                                    className="py-3
- px-4
- 
- whitespace-nowrap
- 
- 
- uppercase"
-                                  >
-                                    {c.columna}
-                                  </th>
-
-                                )
-                              )}
-
-                            </tr>
+                            <tr>{columnasMemo.map((columna, i) => <MolsanSortableTh key={i} label={columna.columna} sortKey={columna.columna} sortConfig={ordenContenido.sortConfig} onSort={ordenContenido.requestSort} className="py-3 px-4 whitespace-nowrap uppercase" />)}</tr>
 
                           </thead>
 
@@ -819,7 +775,7 @@ export default function MonitorSistema() {
 
                             ) : (
 
-                              contenidoMemo.map(
+                              ordenContenido.items.map(
                                 (fila, i) => (
 
                                   <tr
