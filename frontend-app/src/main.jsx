@@ -1,5 +1,5 @@
 // ============================================================
-// ERP SJ-2026 — Punto de entrada principal
+// ERP MOLSAN — Punto de entrada principal
 // ============================================================
 
 import React, { useEffect } from "react";
@@ -11,24 +11,18 @@ import { useAuthStore } from "./store/authStore";
 // Añade JWT a llamadas fetch antiguas al backend; Axios ya lo hace solo.
 import "./api/fetchAuth";
 
-// Estilos heredados y utilidades globales SJ-2026.
+// Base de utilidades y estructura. Se retiran las capas visuales antiguas.
 import "./css/index.css";
-// Tokens primero; las reglas del design system los consumen después.
-import "./css/molsan-tokens.css";
-// Capa opt-in consolidada: estructura, tablas, controles y componentes.
-import "./css/molsan-design-system.css";
-import "./css/molsan-tables.css";
-import "./css/molsan-controls.css";
+
 // Componentes y módulos funcionales.
 import App from "./App";
-// Capa de armonización general.
-import "./css/MolsanRedesign2027.css";
-// Aplicación global visible de Glass Luxe 2027 en todas las pantallas del ERP.
-import "./css/MolsanGlassLuxeGlobal2027.css";
-// Última capa: neutraliza diferencias visuales propias de los módulos.
+
+// Neutralización visual global, cargada después de los estilos de los módulos.
+// El sidebar queda expresamente excluido.
+import "./css/MolsanVisualReset2027.css";
 
 // ============================================================
-// Root — Inicialización del ERP SJ-2026
+// Root — Inicialización del ERP
 // ============================================================
 
 function Root() {
@@ -39,8 +33,6 @@ function Root() {
       try {
         await useAuthStore.getState().init();
       } catch (error) {
-        // Última protección: si init falla fuera de su control interno,
-        // mostrar el login en lugar de dejar el ERP en carga indefinida.
         console.error("Fallo inesperado al inicializar la sesión.");
 
         try {
@@ -76,10 +68,4 @@ function Root() {
   );
 }
 
-// ============================================================
-// Render principal
-// ============================================================
-
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <Root />
-);
+ReactDOM.createRoot(document.getElementById("root")).render(<Root />);
