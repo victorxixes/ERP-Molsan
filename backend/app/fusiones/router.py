@@ -8,16 +8,8 @@ from sqlalchemy.orm import Session
 
 from backend.app.database import Base, get_db
 from backend.app.auth.dependencies import get_current_user
-from backend.app.auth.permissions import require_perm_modulo
 from backend.app.expedientes.models import Expediente
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
-
-def _permiso_fusiones(accion):
-    def comprobar(usuario=Depends(get_current_user)):
-        require_perm_modulo(usuario, "fusiones", accion)
-        return usuario
-    return comprobar
-
 
 router = APIRouter(
     prefix="/fusiones",
@@ -89,7 +81,6 @@ def crear_solicitud_fusion(
     id_expediente: str,
     payload: SolicitudFusionPayload,
     db: Session = Depends(get_db),
-    _usuario=Depends(_permiso_fusiones("crear")),
 ):
     expediente = db.query(Expediente).filter(
         Expediente.id_expediente == str(id_expediente)
@@ -151,7 +142,6 @@ def crear_solicitud_fusion(
 def listar_solicitudes_fusion(
     id_expediente: Optional[str] = None,
     db: Session = Depends(get_db),
-    _usuario=Depends(_permiso_fusiones("ver")),
 ):
     consulta = db.query(SolicitudFusion)
     if id_expediente:
