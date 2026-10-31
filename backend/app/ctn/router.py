@@ -4,6 +4,7 @@ import base64
 import unicodedata
 import hashlib
 import secrets
+import math
 from datetime import datetime
 
 
@@ -12,6 +13,7 @@ from fastapi.responses import StreamingResponse
 from cryptography.fernet import Fernet, InvalidToken
 from sqlalchemy import Column, ForeignKey, Integer, Table, and_, case, cast, Float, func, or_, text
 from sqlalchemy.orm import Session, aliased
+from sqlalchemy.dialects.postgresql import aggregate_order_by
 from openpyxl import Workbook
 
 from backend.app.database import Base, get_db, engine
@@ -217,26 +219,30 @@ def _notaria_basica(notaria):
 
 
 def _asociaciones_de(db: Session, notaria_id: int):
-    filas = (
-        db.query(notarios_asociados_table.c.asociado_id)
+    # La relación es un conjunto; no se debe depender del orden físico
+    # de las filas de la tabla intermedia para presentar ni ordenar CTN.
+    notarias = (
+        db.query(Notaria)
+        .join(
+            notarios_asociados_table,
+            Notaria.id == notarios_asociados_table.c.asociado_id,
+        )
         .filter(notarios_asociados_table.c.notario_id == notaria_id)
+        .order_by(
+            func.lower(func.concat_ws(" ", Notaria.nombre, Notaria.apellidos)).asc(),
+            Notaria.id.asc(),
+        )
         .all()
     )
-    ids = [fila[0] for fila in filas]
-    if not ids:
-        return []
-    notarias = db.query(Notaria).filter(Notaria.id.in_(ids)).all()
-    por_id = {notaria.id: notaria for notaria in notarias}
     return [
         {
-            "id": por_id[ident].id,
-            "nombre": por_id[ident].nombre,
-            "apellidos": por_id[ident].apellidos,
-            "nombre_completo": _nombre_completo(por_id[ident]),
-            "nif": por_id[ident].nif,
+            "id": notaria.id,
+            "nombre": notaria.nombre,
+            "apellidos": notaria.apellidos,
+            "nombre_completo": _nombre_completo(notaria),
+            "nif": notaria.nif,
         }
-        for ident in ids
-        if ident in por_id
+        for notaria in notarias
     ]
 
 
@@ -415,7 +421,15 @@ def _distancia_de_notaria(notaria):
         lng = getattr(notaria, "lng", None)
         if lat is None or lng is None:
             return None
-        return distancia_km(MOLSAN_LAT, MOLSAN_LNG, float(lat), float(lng))
+        lat = float(lat)
+        lng = float(lng)
+        # Mantener el mismo criterio que la expresión SQL de ordenación:
+        # coordenadas finitas y dentro de los límites geográficos válidos.
+        if not math.isfinite(lat) or not math.isfinite(lng):
+            return None
+        if not -90 <= lat <= 90 or not -180 <= lng <= 180:
+            return None
+        return distancia_km(MOLSAN_LAT, MOLSAN_LNG, lat, lng)
     except (TypeError, ValueError):
         return None
 
@@ -467,10 +481,17 @@ def listar_notarias(
     # Las columnas calculadas se ordenan en SQL antes de paginar. Así el orden
     # es global y no cambia al avanzar entre páginas.
     notaria_asociada = aliased(Notaria)
+    nombre_asociado_orden = func.concat_ws(
+        " ", notaria_asociada.nombre, notaria_asociada.apellidos
+    )
     asociaciones_orden = (
         db.query(
             func.string_agg(
-                func.concat_ws(" ", notaria_asociada.nombre, notaria_asociada.apellidos),
+                aggregate_order_by(
+                    nombre_asociado_orden,
+                    func.lower(nombre_asociado_orden),
+                    notaria_asociada.id,
+                ),
                 ", ",
             )
         )
@@ -493,8 +514,14 @@ def listar_notarias(
     # formato numérico válido, evitando errores por valores vacíos o corruptos.
     lat_valida = Notaria.lat.op("~")(r"^-?[0-9]+(\.[0-9]+)?$")
     lng_valida = Notaria.lng.op("~")(r"^-?[0-9]+(\.[0-9]+)?$")
-    latitud = case([(lat_valida, cast(Notaria.lat, Float))], else_=None)
-    longitud = case([(lng_valida, cast(Notaria.lng, Float))], else_=None)
+    latitud_parseada = case([(lat_valida, cast(Notaria.lat, Float))], else_=None)
+    longitud_parseada = case([(lng_valida, cast(Notaria.lng, Float))], else_=None)
+    latitud = case([
+        (and_(latitud_parseada >= -90, latitud_parseada <= 90), latitud_parseada)
+    ], else_=None)
+    longitud = case([
+        (and_(longitud_parseada >= -180, longitud_parseada <= 180), longitud_parseada)
+    ], else_=None)
     lat_rad = func.radians(latitud)
     lng_rad = func.radians(longitud)
     lat_origen = func.radians(MOLSAN_LAT)
@@ -526,7 +553,13 @@ def listar_notarias(
     }
     columna_orden = columnas_ordenables.get(sort_by)
     if columna_orden is None:
-        orden_query = (Notaria.apellidos.asc().nullslast(), Notaria.nombre.asc().nullslast())
+        # Desempate estable obligatorio para que la paginación no duplique
+        # ni omita notarios cuando apellidos/nombre coinciden.
+        orden_query = (
+            Notaria.apellidos.asc().nullslast(),
+            Notaria.nombre.asc().nullslast(),
+            Notaria.id.asc(),
+        )
     else:
         criterio = columna_orden.asc() if sort_order.lower() == "asc" else columna_orden.desc()
         orden_query = (criterio.nullslast(), Notaria.id.asc())
