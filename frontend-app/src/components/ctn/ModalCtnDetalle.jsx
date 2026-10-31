@@ -347,7 +347,7 @@ export default function ModalCtnDetalle({
       <section
         ref={dialogRef}
         tabIndex={-1}
-        className=" "
+       
         role="dialog"
         aria-modal="true"
         aria-labelledby="ctn-ficha-titulo"
