@@ -23,6 +23,8 @@ import "./css/molsan-controls.css";
 import App from "./App";
 // Capa de armonización general.
 import "./css/MolsanRedesign2027.css";
+// Aplicación global visible de Glass Luxe 2027 en todas las pantallas del ERP.
+import "./css/MolsanGlassLuxeGlobal2027.css";
 // Última capa: neutraliza diferencias visuales propias de los módulos.
 
 // ============================================================
