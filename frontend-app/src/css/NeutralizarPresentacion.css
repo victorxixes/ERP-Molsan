@@ -6564,3 +6564,84 @@ body [role="dialog"]:not([data-molsan-style-exempt]) button:disabled {
     width: 100%;
   }
 }
+
+
+/* MOLSAN ERP PREMIUM 2027 · PORTALES REACT Y COMPONENTES COMPARTIDOS */
+/* Los portales se montan en document.body y quedan fuera de #root.
+   Estas reglas aplican la misma base visual sin depender del árbol de rutas. */
+.molsan-modal--wide {
+  width: min(1280px, calc(100vw - 32px));
+  max-width: min(1280px, calc(100vw - 32px));
+}
+
+.molsan-modal__panel :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea),
+.expediente-operativo-modal-panel :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
+  box-sizing: border-box;
+  min-height: var(--molsan-control-height);
+  color: var(--molsan-text);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font: inherit;
+  font-size: var(--molsan-font-size-sm);
+}
+
+.molsan-modal__panel :is(input, select, textarea):focus,
+.expediente-operativo-modal-panel :is(input, select, textarea):focus {
+  border-color: var(--molsan-blue);
+  outline: none;
+  box-shadow: var(--molsan-focus-ring);
+}
+
+.molsan-modal__panel :is(button, input, select, textarea):focus-visible,
+.expediente-operativo-modal-panel :is(button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--molsan-blue);
+  outline-offset: 2px;
+}
+
+.molsan-modal__panel button,
+.expediente-operativo-modal-panel button {
+  border-radius: var(--molsan-radius-control);
+  transition: background-color var(--molsan-transition-fast),
+              border-color var(--molsan-transition-fast),
+              box-shadow var(--molsan-transition-fast),
+              color var(--molsan-transition-fast);
+}
+
+.molsan-modal__panel table,
+.expediente-operativo-modal-panel table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+}
+
+.molsan-modal__panel table thead th,
+.expediente-operativo-modal-panel table thead th {
+  color: var(--molsan-blue);
+  background: var(--molsan-table-head);
+  border-bottom: 1px solid var(--molsan-border);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+  text-align: left;
+}
+
+.molsan-modal__panel table tbody td,
+.expediente-operativo-modal-panel table tbody td {
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+@media (max-width: 720px) {
+  .molsan-modal__panel,
+  .molsan-modal--wide {
+    width: 100%;
+    max-width: none;
+    max-height: calc(100dvh - 20px);
+    border-radius: 14px;
+  }
+
+  .molsan-modal__body {
+    padding: 14px;
+  }
+}
