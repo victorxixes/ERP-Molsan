@@ -211,10 +211,10 @@ export default function ProvisionesModal({ idExpediente, onClose }) {
         <button type="button" className="px-3 py-2" onClick={onClose} aria-label="Cerrar">×</button>
       </header>
       <nav className="flex flex-wrap gap-2 px-4 py-3 sm:px-6">
-        <button type="button" className={`${clsBoton} ${vista === "historial" ? "bg-slate-900 : "bg-slate-100`} onClick={() => { setVista("historial"); setError(""); }}>Histórico</button>
-        <button type="button" className={`${clsBoton} ${vista === "formulario" ? "bg-slate-900 : "bg-slate-100`} onClick={() => crearNuevo("provision")}>Nueva provisión</button>
-        <button type="button" className={`${clsBoton} ${vista === "formulario" && form.tipo === "cancelacion" ? "bg-slate-900 : "bg-slate-100`} onClick={() => crearNuevo("cancelacion")}>Nueva cancelación</button>
-        <button type="button" className={`${clsBoton} ${vista === "tarifas" ? "bg-slate-900 : "bg-slate-100`} onClick={() => { setVista("tarifas"); setError(""); setAviso(""); }}>Gestionar tarifas</button>
+        <button type="button" className={clsBoton} onClick={() => { setVista("historial"); setError(""); }}>Histórico</button>
+        <button type="button" className={clsBoton} onClick={() => crearNuevo("provision")}>Nueva provisión</button>
+        <button type="button" className={clsBoton} onClick={() => crearNuevo("cancelacion")}>Nueva cancelación</button>
+        <button type="button" className={clsBoton} onClick={() => { setVista("tarifas"); setError(""); setAviso(""); }}>Gestionar tarifas</button>
       </nav>
       <div className="flex-1 overflow-y-auto p-4 sm:p-6">
         {error && <div className="mb-4 px-4 py-3">{String(error)}</div>}
