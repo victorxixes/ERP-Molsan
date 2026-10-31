@@ -156,10 +156,7 @@ export default function VistaDia({
  ? "ring-2 
  : 
  }`}
-              style={{
-                top: cita.top,
-                height: cita.height,
-              }}
+              style={{ top: cita.top, height: cita.height }}
               onClick={() =>
                 onCitaClick(cita)
               }
