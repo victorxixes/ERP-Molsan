@@ -264,7 +264,7 @@ export default function MantenimientoTecnico() {
     return (
       <div className="p-6">
         <div className="mx-auto max-w-3xl p-6">
-          <div className="">🔒 Acceso restringido</div>
+          <div>🔒 Acceso restringido</div>
           <p className="mt-2">
             Tu usuario no tiene habilitado el módulo Utilidades. Si necesitas
             acceder, solicita que se active desde la ficha del empleado.
@@ -289,7 +289,7 @@ export default function MantenimientoTecnico() {
                 {validacionTecnica ? "Diagnóstico técnico correcto" : "Pendiente de validación técnica"}
               </span>
             </div>
-            <h1 className="">
+            <h1>
               Mantenimiento técnico
             </h1>
             <p className="mt-2 max-w-3xl">
@@ -312,7 +312,7 @@ export default function MantenimientoTecnico() {
           <div className="mb-4 flex items-start gap-3">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center">🔎</div>
             <div>
-              <h2 className="">Diagnóstico rápido</h2>
+              <h2>Diagnóstico rápido</h2>
               <p className="mt-1">
                 Consultas de solo lectura para revisar el estado técnico sin abrir herramientas externas.
               </p>
@@ -323,7 +323,7 @@ export default function MantenimientoTecnico() {
             {DIAGNOSTICOS.map((item) => (
               <div key={item.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <div className="">{item.titulo}</div>
+                  <div>{item.titulo}</div>
                   <p className="mt-1">{item.descripcion}</p>
                 </div>
                 <button
@@ -343,7 +343,7 @@ export default function MantenimientoTecnico() {
           <div className="mb-4 flex items-start gap-3">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center">🧱</div>
             <div>
-              <h2 className="">Inspección de tablas</h2>
+              <h2>Inspección de tablas</h2>
               <p className="mt-1">
                 Consulta la estructura de una tabla: columnas, índices y claves foráneas. Los endpoints están protegidos para administradores y no muestran filas ni datos personales.
               </p>
@@ -461,7 +461,7 @@ export default function MantenimientoTecnico() {
         <div className="flex items-start gap-3">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center">⚠️</div>
           <div>
-            <h2 className="">Migraciones y mantenimiento</h2>
+            <h2>Migraciones y mantenimiento</h2>
             <p className="mt-1 max-w-3xl">
               Estas acciones se ejecutan desde el ERP. Lee cada descripción y confirma expresamente antes de lanzar una migración o tarea de mantenimiento.
               No se ofrecen acciones para borrar tablas ni resetear la intranet.
@@ -473,7 +473,7 @@ export default function MantenimientoTecnico() {
           {MIGRACIONES.map((item) => (
             <article key={item.id} className="flex flex-col justify-between gap-4 p-4">
               <div>
-                <h3 className="">{item.titulo}</h3>
+                <h3>{item.titulo}</h3>
                 <p className="mt-1">{item.descripcion}</p>
                 <code className="mt-2 inline-block break-all px-2 py-1">
                   Acción técnica protegida · requiere permiso administrativo
