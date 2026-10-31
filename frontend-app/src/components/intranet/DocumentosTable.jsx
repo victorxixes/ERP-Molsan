@@ -52,7 +52,7 @@ export default function DocumentosTable() {
           <div>
 
             <h3
-              className=""
+             
             >
               Documentos internos
             </h3>
@@ -103,7 +103,7 @@ export default function DocumentosTable() {
           <thead>
 
             <tr
-              className=""
+             
             >
 
               <th
@@ -219,7 +219,7 @@ export default function DocumentosTable() {
                     </div>
 
                     <p
-                      className=""
+                     
                     >
                       No hay documentos disponibles.
                     </p>
@@ -242,7 +242,7 @@ export default function DocumentosTable() {
 
                 <tr
                   key={d.id}
-                  className=""
+                 
                   
                 >
 
@@ -266,7 +266,7 @@ export default function DocumentosTable() {
                   >
 
                     <div
-                      className=""
+                     
                     >
                       {d.titulo || "Sin título"}
                     </div>
@@ -284,7 +284,7 @@ export default function DocumentosTable() {
                   >
 
                     <span
-                      className=""
+                     
                     >
                       {d.concepto || "—"}
                     </span>
