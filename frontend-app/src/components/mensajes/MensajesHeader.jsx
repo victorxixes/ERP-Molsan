@@ -27,7 +27,7 @@ export default function MensajesHeader({
 
   return (
     <div
-      className="mb-4
+      className="molsan-chat-header erp-card mb-4
  flex
  items-center
  justify-between
