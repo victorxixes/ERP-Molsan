@@ -4,31 +4,6 @@ import "../../css/ComponentesCompartidosPremium.css";
 
 const DIAS_SEMANA = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 
-const colorPorTipo = (tipo) => {
-  switch (tipo) {
-    case "Firma notarial":
-      return {
-        box: "bg-[var(--erp-primary-soft)] border-[var(--erp-primary)]/30",
-        text: "text-[var(--erp-primary)]",
-        accent: "bg-[var(--erp-primary)]",
-      };
-
-    case "Reunión":
-      return {
-        box: "bg-emerald-50 border-emerald-200",
-        text: "text-emerald-700",
-        accent: "bg-emerald-500",
-      };
-
-    default:
-      return {
-        box: "bg-[var(--erp-surface-soft)] border-[var(--erp-border)]",
-        text: "text-[var(--erp-text)]",
-        accent: "bg-slate-400",
-      };
-  }
-};
-
 function generarMatriz(fechaBase) {
   const f = new Date(fechaBase);
 
@@ -215,9 +190,6 @@ export default function VistaMes({
                 >
                   {citasDia.map((c) => {
 
-                    const colores =
-                      colorPorTipo(c.tipo_cita);
-
                     const resaltada =
                       resaltadaId === c.id;
 
@@ -231,8 +203,8 @@ export default function VistaMes({
  
  
  truncate
- ${colores.box}
- ${colores.text}
+ 
+ 
  
  
  ${
@@ -253,7 +225,7 @@ export default function VistaMes({
  bottom-0
  w-1
  
- ${colores.accent}`}
+ `}
                         />
 
                         <div className="truncate pl-1">
