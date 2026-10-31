@@ -50,7 +50,7 @@ _PREFIJOS_MODULO = (
     ("/api/asignar-password", "seguridad"),
     ("/api/permisos-repair", "seguridad"),
     ("/api/permisos", "seguridad"),
-    ("/api/catalogos-absis", "maestros"),
+    ("/api/catalogos-absis", "catalogos"),
     ("/api/oficinas-catalogo", "catalogos"),
     ("/api/tipos-impositivos", "maestros"),
     ("/api/acciones-expediente", "expedientes"),
