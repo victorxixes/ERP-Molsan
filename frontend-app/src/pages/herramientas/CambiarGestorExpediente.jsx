@@ -62,7 +62,7 @@ export default function CambiarGestorExpediente() {
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex h-14 w-14 items-center justify-center">🔁</div>
           <div className="min-w-0 flex-1">
-            <h1 className="">Cambiar gestor de expediente</h1>
+            <h1>Cambiar gestor de expediente</h1>
             <p className="mt-1">Busca el expediente y reasígnalo manualmente. El cambio quedará registrado en el historial de gestores.</p>
           </div>
           <Link to="/herramientas/utilidades" className="px-4 py-2">← Volver a Utilidades</Link>
@@ -71,7 +71,7 @@ export default function CambiarGestorExpediente() {
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.85fr)]">
         <form onSubmit={consultar} className="p-6">
-          <h2 className="">1. Buscar expediente</h2>
+          <h2>1. Buscar expediente</h2>
           <p className="mt-1">Introduce el número exactamente como aparece en la ficha del expediente.</p>
           <label className="mt-5 block" htmlFor="numero-expediente">Número de expediente</label>
           <div className="mt-2 flex flex-col gap-3 sm:flex-row">
@@ -81,13 +81,13 @@ export default function CambiarGestorExpediente() {
           {expediente && <div className="mt-5 p-4">
             <p className="uppercase">Expediente encontrado</p>
             <p className="mt-1">{expediente.numero_expediente}</p>
-            <p className="mt-2">Actividad actual: <span className="">{expediente.actividad_actual || "Sin actividad indicada"}</span></p>
-            <p className="mt-1">Gestor actual: <span className="">{expediente.gestor_nombre || "Sin asignar"}</span></p>
+            <p className="mt-2">Actividad actual: <span>{expediente.actividad_actual || "Sin actividad indicada"}</span></p>
+            <p className="mt-1">Gestor actual: <span>{expediente.gestor_nombre || "Sin asignar"}</span></p>
           </div>}
         </form>
 
         <form onSubmit={guardar} className="p-6">
-          <h2 className="">2. Seleccionar nuevo gestor</h2>
+          <h2>2. Seleccionar nuevo gestor</h2>
           <p className="mt-1">La reasignación afecta al gestor responsable del expediente; no cambia el apoderado ni el notario.</p>
           <label className="mt-5 block" htmlFor="gestor-destino">Gestor de destino</label>
           <select id="gestor-destino" value={gestorId} onChange={(e) => setGestorId(e.target.value)} disabled={cargandoGestores || !expediente} className="mt-2 w-full px-4 py-3">
