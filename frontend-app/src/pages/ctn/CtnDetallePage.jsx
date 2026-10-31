@@ -151,8 +151,8 @@ export default function CtnDetallePage() {
   const firmasPresenciales = Number(totales.total_presencial || 0);
   const modalidadTexto = modalModalidad === "VC" ? "Videoconferencia" : "Presencial";
 
-  if (cargando) return <div className=" "><p>Cargando ficha CTN…</p></div>;
-  if (!notaria) return <div className=""><p>{error || "No se ha encontrado el notario."}</p><button type="button" onClick={() => navigate(-1)}>Volver</button></div>;
+  if (cargando) return <div><p>Cargando ficha CTN…</p></div>;
+  if (!notaria) return <div><p>{error || "No se ha encontrado el notario."}</p><button type="button" onClick={() => navigate(-1)}>Volver</button></div>;
 
   return (
     <div className=" --content">
