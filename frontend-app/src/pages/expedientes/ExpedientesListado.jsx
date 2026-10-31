@@ -2534,7 +2534,7 @@ export default function ExpedientesListado() {
       {/* Acciones principales: agrupadas justo debajo de los bloques de tarjetas */}
       <section className="w-full flex flex-wrap items-center justify-start gap-2 -mt-2" aria-label="Acciones de expedientes">
         <button type="button" onClick={exportarExcel} disabled={loading} className="molsan-export-excel"><span className="molsan-export-excel__icon" aria-hidden="true">📗</span>{loading ? "Preparando Excel…" : "Exportar a Excel"}</button>
-        <button type="button" onClick={() => setMostrarFiltros(true)} className="px-4 py-2.5" 🔎 Filtros avanzados</button>
+        <button type="button" onClick={() => setMostrarFiltros(true)} className="px-4 py-2.5">🔎 Filtros avanzados</button>
         <button
           type="button"
           onClick={() => setMostrarAyudaControlPlazos(true)}
@@ -2549,7 +2549,7 @@ export default function ExpedientesListado() {
       <section className="space-y-3" aria-label="Expedientes por actividad">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div><h3 className="">{(configuracionesVisibilidad.find((item) => item.actividad_key === actividadSeleccionada)?.nombre_tabla) || "Expedientes por actividad"}</h3><p className="">Pulsa un grid para ver debajo la tabla con los expedientes de esa actividad.</p></div>
-          {actividadSeleccionada && <button type="button" onClick={() => { setActividadSeleccionada(""); setAlertaSeleccionada(""); setColumnasVisibles(COLUMNAS_POR_DEFECTO); setFiltroActividad(""); setFiltrosAplicados((actual) => ({ ...actual, actividad: "" })); setPagina(1); }} className="self-start px-3 py-2" Ver todas las actividades</button>}
+          {actividadSeleccionada && <button type="button" onClick={() => { setActividadSeleccionada(""); setAlertaSeleccionada(""); setColumnasVisibles(COLUMNAS_POR_DEFECTO); setFiltroActividad(""); setFiltrosAplicados((actual) => ({ ...actual, actividad: "" })); setPagina(1); }} className="self-start px-3 py-2">Ver todas las actividades</button>}
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {ACTIVIDADES_EXPEDIENTES.map((actividad) => {
@@ -2580,14 +2580,14 @@ export default function ExpedientesListado() {
               <div className="mt-3">{actividad.label}</div>
               <div className="mt-3">
                 {loadingAlertasControl ? (
-                  <span className="inline-flex items-center px-2.5 py-1" Calculando plazos…</span>
+                  <span className="inline-flex items-center px-2.5 py-1">Calculando plazos…</span>
                 ) : reglaPlazo ? (
                   <span className={`inline-flex items-center px-2.5 py-1 ${cantidadPlazo > 0 ? "" : ""}`}>
                     {cantidadPlazo > 0 ? "⚠ " : "✓ "}{reglaPlazo.etiqueta(formatearNumero(cantidadPlazo))}
                   </span>
                 ) : (
                   actividad.key !== "documentacion-previa" ? (
-                    <span className="inline-flex items-center px-2.5 py-1" Sin alerta de plazo</span>
+                    <span className="inline-flex items-center px-2.5 py-1">Sin alerta de plazo</span>
                   ) : null
                 )}
               </div>
@@ -2626,11 +2626,11 @@ export default function ExpedientesListado() {
               className="w-full py-3 pl-10 pr-3"
                           />
           </div>
-          <button type="submit" className="px-5 py-3" 
+          <button type="submit" className="px-5 py-3">
             Buscar
           </button>
           {(busquedaRapida || busquedaAplicada) && (
-            <button type="button" onClick={() => { setBusquedaRapida(""); setBusquedaAplicada(""); setPagina(1); }} className="px-4 py-3" 
+            <button type="button" onClick={() => { setBusquedaRapida(""); setBusquedaAplicada(""); setPagina(1); }} className="px-4 py-3">
               Limpiar búsqueda
             </button>
           )}
@@ -3071,27 +3071,27 @@ export default function ExpedientesListado() {
             </div>
 
             <div className="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              <div className="md:col-span-2 xl:col-span-3 pb-2" <h4 className="" Identificación y fechas</h4><p className="mt-1" Localiza el expediente por número, oficina o fecha de alta.</p></div>
+              <div className="md:col-span-2 xl:col-span-3 pb-2"><h4>Identificación y fechas</h4><p className="mt-1">Localiza el expediente por número, oficina o fecha de alta.</p></div>
               <FiltroInput label="N.º expediente" value={filtroNumeroExpediente} onChange={setFiltroNumeroExpediente} placeholder="Número completo o parte del expediente" />
               <FiltroSelect label="Oficina" value={filtroOficina} onChange={setFiltroOficina} options={catalogosListado.oficinas} emptyLabel="Todas las oficinas" />
               <FiltroInput label="Fecha de alta desde" type="date" value={filtroFechaInicio} onChange={setFiltroFechaInicio} />
               <FiltroInput label="Fecha de alta hasta" type="date" value={filtroFechaFin} onChange={setFiltroFechaFin} />
-              <div className="md:col-span-2 xl:col-span-3 pb-2 mt-2" <h4 className="" Personas y notaría</h4><p className="mt-1" Titular, solicitante y notario asociados al expediente.</p></div>
+              <div className="md:col-span-2 xl:col-span-3 pb-2 mt-2"><h4>Personas y notaría</h4><p className="mt-1">Titular, solicitante y notario asociados al expediente.</p></div>
               <FiltroInput label="NIF titular" value={filtroNifTitular} onChange={setFiltroNifTitular} placeholder="NIF / CIF titular" />
               <FiltroInput label="Nombre titular" value={filtroNombreTitular} onChange={setFiltroNombreTitular} placeholder="Nombre o razón social" />
               <FiltroInput label="NIF solicitante" value={filtroNifSolicitante} onChange={setFiltroNifSolicitante} placeholder="NIF / CIF solicitante" />
               <FiltroInput label="Nombre solicitante" value={filtroNombreSolicitante} onChange={setFiltroNombreSolicitante} placeholder="Nombre o razón social" />
               <FiltroSelect label="Notario" value={filtroNotario} onChange={setFiltroNotario} options={catalogosListado.notarios} emptyLabel="Todos los notarios" />
               <FiltroInput label="NIF notario" value={filtroNifNotario} onChange={setFiltroNifNotario} placeholder="NIF notario" />
-              <div className="md:col-span-2 xl:col-span-3 pb-2 mt-2" <h4 className="" Registro y economía</h4><p className="mt-1" Finca, registro, importes, observaciones y estado de tramitación.</p></div>
+              <div className="md:col-span-2 xl:col-span-3 pb-2 mt-2"><h4>Registro y economía</h4><p className="mt-1">Finca, registro, importes, observaciones y estado de tramitación.</p></div>
               <FiltroInput label="Finca" value={filtroFinca} onChange={setFiltroFinca} placeholder="Número o referencia de finca" />
               <div>
-                <label className="block mb-1" Registro de la Propiedad</label>
-                <select value={filtroRegistroPropiedad} onChange={(event) => setFiltroRegistroPropiedad(event.target.value)} className="w-full px-3 py-2.5" 
+                <label className="block mb-1">Registro de la Propiedad</label>
+                <select value={filtroRegistroPropiedad} onChange={(event) => setFiltroRegistroPropiedad(event.target.value)} className="w-full px-3 py-2.5">
                   <option value="">Todos los registros</option>
                   {(catalogosListado.registros.length ? catalogosListado.registros : [...new Set(expedientes.map((item) => item.registro_propiedad || item.nombre_registro || item.registro).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es"))).map((registro) => <option key={registro} value={registro}>{registro}</option>)}
                 </select>
-                <p className="mt-1" Opciones del catálogo completo de registros, independientemente de la página del listado.</p>
+                <p className="mt-1">Opciones del catálogo completo de registros, independientemente de la página del listado.</p>
               </div>
               <FiltroInput label="Saldo real" type="number" value={filtroSaldoReal} onChange={setFiltroSaldoReal} placeholder="Importe exacto" />
               <FiltroInput label="Saldo disponible" type="number" value={filtroSaldoDisponible} onChange={setFiltroSaldoDisponible} placeholder="Importe exacto" />
@@ -3099,29 +3099,29 @@ export default function ExpedientesListado() {
               <FiltroInput label="Observaciones" value={filtroObservaciones} onChange={setFiltroObservaciones} placeholder="Texto a buscar" />
               <FiltroInput label="Promoción" value={filtroPromocion} onChange={setFiltroPromocion} placeholder="Referencia interna" />
               <div>
-                <label className="block mb-1" Estado actividad</label>
+                <label className="block mb-1">Estado actividad</label>
                 <select value={filtroEstadoActividad} onChange={(event) => setFiltroEstadoActividad(event.target.value)} className="w-full px-3 py-2.5" 
                   <option value="">Todos los estados</option>
                   {(catalogosListado.estados_actividad.length ? catalogosListado.estados_actividad : [...new Set(expedientes.map((item) => item.estado_actividad).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es"))).map((estado) => <option key={estado} value={estado}>{estado}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block mb-1" Actividad actual</label>
+                <label className="block mb-1">Actividad actual</label>
                 <select value={filtroActividad} onChange={(event) => setFiltroActividad(event.target.value)} className="w-full px-3 py-2.5" 
                   <option value="">Todas las actividades</option>
                   {(catalogosListado.actividades.length ? catalogosListado.actividades : actividades).map((item) => <option key={item.actividad} value={item.actividad}>{item.actividad}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block mb-1" Estado expediente</label>
+                <label className="block mb-1">Estado expediente</label>
                 <select value={filtroEstadoExpediente} onChange={(event) => setFiltroEstadoExpediente(event.target.value)} className="w-full px-3 py-2.5" 
                   <option value="">Todos los estados</option>
                   {(catalogosListado.estados_expediente.length ? catalogosListado.estados_expediente : [...new Set(expedientes.map((item) => item.estado_expediente).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es"))).map((estado) => <option key={estado} value={estado}>{estado}</option>)}
                 </select>
               </div>
               <div className="md:col-span-2 xl:col-span-3 pb-2 mt-2" 
-                <h4 className="" Clasificación ABSIS</h4>
-                <p className="mt-1" Filtros de categorías importadas; puedes combinarlos entre sí.</p>
+                <h4>Clasificación ABSIS</h4>
+                <p className="mt-1">Filtros de categorías importadas; puedes combinarlos entre sí.</p>
               </div>
               <FiltroSelect label="Origen Bankia" value={filtroOrigenBankia} onChange={setFiltroOrigenBankia} options={catalogosListado.origenes_bankia} emptyLabel="Todos los orígenes" />
               <FiltroSelect label="Producto GTG" value={filtroProductoGtg} onChange={setFiltroProductoGtg} options={catalogosListado.productos_gtg} emptyLabel="Todos los productos" />
@@ -3147,7 +3147,7 @@ export default function ExpedientesListado() {
               <FiltroSelect label="Estado facturación" value={filtroEstadoFacturacion} onChange={setFiltroEstadoFacturacion} options={catalogosListado.estados_facturacion} emptyLabel="Todos los estados de facturación" />
             </div>
 
-            <div className="px-6 py-4 flex flex-wrap items-center justify-end gap-3" 
+            <div className="px-6 py-4 flex flex-wrap items-center justify-end gap-3">
               <button
                 type="button"
                 onClick={limpiarFiltros}
