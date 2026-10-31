@@ -186,37 +186,7 @@ function KPI({
   titulo,
   valor,
   descripcion,
-  accent = "primary",
 }) {
-
-  const estilos = {
-
-    primary: {
-      bg: "bg-[var(--erp-primary-soft)]",
-      color: "text-[var(--erp-primary)]",
-    },
-
-    success: {
-      bg: "bg-emerald-50",
-      color: "text-emerald-600",
-    },
-
-    warning: {
-      bg: "bg-amber-50",
-      color: "text-amber-600",
-    },
-
-    danger: {
-      bg: "bg-red-50",
-      color: "text-red-600",
-    },
-
-  };
-
-
-  const estilo =
-    estilos[accent] ||
-    estilos.primary;
 
 
   return (
@@ -262,8 +232,7 @@ function KPI({
  items-center
  justify-center
  flex-shrink-0
- ${estilo.bg}
- ${estilo.color}`}
+ `}
         >
 
           <Icono
