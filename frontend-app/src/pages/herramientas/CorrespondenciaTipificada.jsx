@@ -2,6 +2,8 @@ import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import axios from "../../api/axios";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 const PLANTILLA_VACIA = {
   nombre: "",
@@ -125,6 +127,8 @@ export default function CorrespondenciaTipificada() {
     const coincideCategoria = categoriaFiltro === "Todas" || item.categoria === categoriaFiltro;
     return coincideTexto && coincideCategoria;
   }), [plantillas, busqueda, categoriaFiltro]);
+
+  const ordenPlantillas = useSortableData(plantillasFiltradas);
 
   const camposUsados = useMemo(() => extraerCampos(plantilla.asunto + "\n" + plantilla.destinatario + "\n" + plantilla.cc + "\n" + plantilla.cuerpo), [plantilla]);
   const faltantes = useMemo(() => camposUsados.filter((clave) => !String(contexto[clave] ?? "").trim()), [camposUsados, contexto]);
@@ -269,8 +273,14 @@ export default function CorrespondenciaTipificada() {
             <div className="p-10"><div>✉️</div><h3 className="mt-3">{plantillas.length ? "No hay plantillas que coincidan" : "Todavía no hay plantillas creadas"}</h3><p className="mt-1">{plantillas.length ? "Prueba con otra búsqueda o categoría." : "Pulsa «Nueva plantilla» para crear el primer modelo de correspondencia."}</p>{!plantillas.length && <button type="button" onClick={nuevaPlantilla} className="mt-4 px-4 py-2.5">＋ Nueva plantilla</button>}</div>
           ) : (
             <div className="overflow-x-auto"><table className="w-full min-w-[820px]">
-              <thead className="uppercase"><tr><th className="px-5 py-3">Nombre de la plantilla</th><th className="px-5 py-3">Tipología / proceso</th><th className="px-5 py-3">Asunto</th><th className="px-5 py-3">Estado</th><th className="px-5 py-3">Acciones</th></tr></thead>
-              <tbody>{plantillasFiltradas.map((item) => <tr key={item.id}>
+              <thead className="uppercase"><tr>
+                <MolsanSortableTh label="Nombre de la plantilla" sortKey="nombre" sortConfig={ordenPlantillas.sortConfig} onSort={ordenPlantillas.requestSort} className="px-5 py-3" />
+                <MolsanSortableTh label="Tipología / proceso" sortKey="categoria" sortConfig={ordenPlantillas.sortConfig} onSort={ordenPlantillas.requestSort} className="px-5 py-3" />
+                <MolsanSortableTh label="Asunto" sortKey="asunto" sortConfig={ordenPlantillas.sortConfig} onSort={ordenPlantillas.requestSort} className="px-5 py-3" />
+                <MolsanSortableTh label="Estado" sortKey="activo" sortConfig={ordenPlantillas.sortConfig} onSort={ordenPlantillas.requestSort} className="px-5 py-3" />
+                <th className="px-5 py-3">Acciones</th>
+              </tr></thead>
+              <tbody>{ordenPlantillas.items.map((item) => <tr key={item.id}>
                 <td className="px-5 py-4"><span className="block">{item.nombre || "Sin nombre"}</span><span className="mt-1 block">Modelo de correo reutilizable</span></td>
                 <td className="px-5 py-4">{item.categoria || "General"}</td>
                 <td className="max-w-[280px] px-5 py-4"><span className="block truncate" title={item.asunto || ""}>{item.asunto || "Sin asunto"}</span></td>
