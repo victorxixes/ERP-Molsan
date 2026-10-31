@@ -89,7 +89,7 @@ function FacturaDocumentoPreview({ posiciones, datosMolsan = {} }) {
     <div className="overflow-auto p-3 sm:p-5">
       <article className="relative mx-auto aspect-[210/297] w-full max-w-[620px] overflow-hidden">
         <div className="absolute inset-x-[6%] top-[1.2%] pb-1">FACTURA DE HONORARIOS DE GESTORÍA</div>
-        {FACTURA_CAMPOS.map(c => { const p = posiciones[c.id] || c; return <div key={c.id} style={{left:p.x+"%",top:p.y+"%",width:p.w+"%",height:p.h+"%",textAlign:p.align||"left",fontSize:(p.fontSize||9)+"px",paddingLeft:(p.padL??1.2)+"%",paddingRight:(p.padR??1.2)+"%",paddingTop:(p.padT??1.2)+"%",paddingBottom:(p.padB??1.2)+"%",display:"flex",alignItems:p.valign==="center"?"center":p.valign==="bottom"?"flex-end":"flex-start",fontWeight:p.bold?"700":"400",fontStyle:p.italic?"italic":"normal"}} className="absolute overflow-hidden">{valores[c.id]}</div>; })}
+        {FACTURA_CAMPOS.map(c => { const p = posiciones[c.id] || c; return <div key={c.id} style={{ left:p.x+"%", top:p.y+"%", width:p.w+"%", height:p.h+"%", paddingLeft:(p.padL??1.2)+"%", paddingRight:(p.padR??1.2)+"%", paddingTop:(p.padT??1.2)+"%", paddingBottom:(p.padB??1.2)+"%", display:"flex", alignItems:p.valign==="center"?"center":p.valign==="bottom"?"flex-end":"flex-start" }} className="absolute overflow-hidden">{valores[c.id]}</div>; })}
         <div className="absolute bottom-[2%] left-[6%] right-[6%] pt-1">MOLSAN · Documento de ejemplo · No válido como factura</div>
       </article>
     </div>
@@ -164,7 +164,7 @@ function FacturaLayoutDesigner({ datosMolsan = {} }) {
     <div className="mt-4 grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(360px,.95fr)]">
       <div className="overflow-auto p-3">
         <div onDragOver={e => e.preventDefault()} onDrop={soltarCampo} className="relative mx-auto aspect-[210/297] w-full max-w-[520px] overflow-hidden">
-          {FACTURA_CAMPOS.map(c => { const p = posiciones[c.id] || c; const activo = campoActivo === c.id; return <div key={c.id} draggable onClick={() => setCampoActivo(c.id)} onDragStart={e => { setCampoActivo(c.id); e.dataTransfer.setData("text/plain", c.id); }} style={{ left: p.x + "%", top: p.y + "%", width: p.w + "%", height: p.h + "%", textAlign:p.align||"left",fontSize:(p.fontSize||9)+"px",paddingLeft:(p.padL??1.2)+"%",paddingRight:(p.padR??1.2)+"%",paddingTop:(p.padT??1.2)+"%",paddingBottom:(p.padB??1.2)+"%" }} className={`absolute flex items-center ${activo ? "z-10" : ""}`}>{c.label}</div>; })}
+          {FACTURA_CAMPOS.map(c => { const p = posiciones[c.id] || c; const activo = campoActivo === c.id; return <div key={c.id} draggable onClick={() => setCampoActivo(c.id)} onDragStart={e => { setCampoActivo(c.id); e.dataTransfer.setData("text/plain", c.id); }} style={{ left: p.x + "%", top: p.y + "%", width: p.w + "%", height: p.h + "%", paddingLeft:(p.padL??1.2)+"%", paddingRight:(p.padR??1.2)+"%", paddingTop:(p.padT??1.2)+"%", paddingBottom:(p.padB??1.2)+"%" }} className={`absolute flex items-center ${activo ? "z-10" : ""}`}>{c.label}</div>; })}
           <div className="pointer-events-none absolute bottom-2 left-2">MOLSAN · FACTURA DE HONORARIOS</div>
         </div>
       </div>
