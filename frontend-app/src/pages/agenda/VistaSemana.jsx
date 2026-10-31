@@ -98,12 +98,8 @@ export default function VistaSemana({
   return (
     <div
       className="agenda-vista-premium agenda-vista-semana-premium 
-        grid grid-cols-[70px,repeat(7,minmax(0,1fr))]
-        gap-1
-        text-xs
-        bg-[var(--erp-surface)]
-        animate-fade-in
-      "
+ grid grid-cols-[70px,repeat(7,minmax(0,1fr))]
+ gap-1"
     >
 
       {/* CABECERA */}
@@ -113,17 +109,11 @@ export default function VistaSemana({
       {DIAS.map((d) => (
         <div
           key={d}
-          className="
-            py-3
-            text-center
-            font-semibold
-            text-[var(--erp-text-soft)]
-            uppercase
-            tracking-wide
-            bg-[var(--erp-surface-soft)]
-            border border-[var(--erp-border)]
-            rounded-lg
-          "
+          className="py-3
+ 
+ 
+ 
+ uppercase"
         >
           {d}
         </div>
@@ -141,15 +131,11 @@ export default function VistaSemana({
             {/* HORA */}
 
             <div
-              className="
-                h-20
-                flex items-start
-                justify-end
-                pr-3
-                pt-2
-                text-[var(--erp-text-soft)]
-                font-medium
-              "
+              className="h-20
+ flex items-start
+ justify-end
+ pr-3
+ pt-2"
             >
               {h}
             </div>
@@ -167,16 +153,14 @@ export default function VistaSemana({
               return (
                 <div
                   key={`${h}-${idx}`}
-                  className="
-                    h-20
-                    border border-[var(--erp-border)]
-                    rounded-lg
-                    bg-[var(--erp-surface-soft)]
-                    hover:bg-white
-                    transition-all duration-200
-                    cursor-pointer
-                    relative
-                  "
+                  className="h-20
+ 
+ 
+ 
+ 
+ 
+ 
+ relative"
                   onDoubleClick={() =>
                     onCrearCita(
                       obtenerFechaDia(idx)
@@ -230,20 +214,20 @@ export default function VistaSemana({
                           `}
                         />
 
-                        <div className="font-semibold truncate pl-1">
+                        <div className="truncate pl-1">
                           {c.tipo_cita} — {c.hora_inicio}
                         </div>
-                        {String(c.tipo_cita || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es").includes("firma") ? (() => { const realizada = Boolean(c.firma_realizada) || /FIRMA\s+REALIZADA|FIRMADA/.test(String(c.observaciones || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()); return <div className={`mt-1 inline-flex items-center rounded-md border px-1.5 py-0.5 text-[10px] font-bold ${realizada ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-700"}`}>{realizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</div>; })() : null}
+                        {String(c.tipo_cita || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es").includes("firma") ? (() => { const realizada = Boolean(c.firma_realizada) || /FIRMA\s+REALIZADA|FIRMADA/.test(String(c.observaciones || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()); return <div className={`mt-1 inline-flex items-center rounded-md border px-1.5 py-0.5 text-[10px] font-bold ${realizada ? "" : ""}`}>{realizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</div>; })() : null}
 
-                        <div className="truncate text-[var(--erp-text-soft)] pl-1">
+                        <div className="truncate pl-1">
                           Notario: {c.notario_nombre || "—"}
                         </div>
 
-                        <div className="truncate text-[var(--erp-text-soft)] pl-1">
+                        <div className="truncate pl-1">
                           Firma: {c.tipo_firma}
                         </div>
 
-                        <div className="truncate text-[var(--erp-text-soft)] pl-1">
+                        <div className="truncate pl-1">
                           Apoderado: {c.apoderado || "—"}
                         </div>
 
