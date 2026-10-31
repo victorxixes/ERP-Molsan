@@ -1629,7 +1629,57 @@ export default function FichaExpediente() {
       const obligacion = Number(gasto.importe_resultante ?? gasto.importe ?? 0);
       if (obligacion > 0 && totalPagado > 0) return totalPagado + 0.005 < obligacion;
       return !estadosPagoConfirmado.includes(estado);
+    });
 
+  const filasLibro = useMemo(() => {
+    const pendientes = gastosPendientesResumen.map((gasto) => {
+      const importe = Math.abs(Number(gasto.importe_resultante ?? gasto.importe ?? 0));
+      const base = Number(gasto.base_imponible ?? gasto.base_sujeta_impuestos ?? gasto.base_exenta_impuestos ?? 0);
+      const impuesto = Number(gasto.importe_impuesto ?? gasto.impuesto ?? gasto.iva ?? 0);
+      return {
+        tipoFila: "pendiente",
+        source: gasto,
+        key: "pendiente-" + gasto.id,
+        numero: gasto.numero_documento || ("GAS-" + String(gasto.id).padStart(6, "0")),
+        fecha: gasto.fecha_factura || gasto.fecha || gasto.created_at,
+        tipoDocumento: gasto.tipo || "Gasto registrado",
+        descripcion: gasto.descripcion || "",
+        cuantia: base > 0 ? base : importe,
+        impuesto,
+        total: importe,
+        estado: "Pendiente",
+        saldo: importeInicialDisponible ? resumenEconomico.saldoActual : null,
+      };
+    });
+    const pagos = resumenEconomico.movimientos.map((movimiento) => {
+      const importeMovimiento = Math.abs(Number(movimiento.importeMovimiento ?? movimiento.importe_resultante ?? movimiento.importe ?? 0));
+      const textoMovimiento = normalizarTexto([movimiento.tipo, movimiento.concepto_pago, movimiento.descripcion, movimiento.tipo_impuesto].filter(Boolean).join(" "));
+      const esPagoImpuesto = movimiento.es_movimiento_pago && /impuesto|ajd|itp|tribut/.test(textoMovimiento);
+      const cuantia = esPagoImpuesto ? null : numeroDecimalGasto(cuantiaFincasParaEnvio);
+      const impuesto = esPagoImpuesto ? importeMovimiento : 0;
+      const total = movimiento.es_movimiento_pago ? importeMovimiento : Math.abs(Number(movimiento.importe_resultante ?? movimiento.importe ?? movimiento.importe_total_bruto ?? importeMovimiento));
+      const estado = movimiento.es_movimiento_pago ? (movimiento.anulado_en ? "Anulado" : "Pagado") : String(movimiento.estado_pago || "Pagado").trim();
+      return {
+        tipoFila: "movimiento",
+        source: movimiento,
+        key: "movimiento-" + movimiento.id,
+        numero: movimiento.numero_documento || ("PAG-" + String(movimiento.pago_id || movimiento.id).padStart(6, "0")),
+        fecha: movimiento.fecha || movimiento.fecha_factura,
+        tipoDocumento: movimiento.tipo || "Documento",
+        descripcion: movimiento.concepto_pago || movimiento.descripcion || movimiento.tipo_impuesto || "",
+        cuantia,
+        impuesto,
+        total,
+        estado,
+        saldo: importeInicialDisponible ? Number(movimiento.saldoCalculado) : null,
+      };
+    });
+    return [...pendientes, ...pagos];
+  }, [gastosPendientesResumen, resumenEconomico.movimientos, importeInicialDisponible, resumenEconomico.saldoActual, cuantiaFincasParaEnvio]);
+  const ordenLibro = useSortableData(filasLibro);
+
+  const [
+    mostrarFincas,
     setMostrarFincas,
   ] = useState(false);
 
