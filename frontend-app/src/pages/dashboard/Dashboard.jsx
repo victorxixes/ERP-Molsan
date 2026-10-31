@@ -188,13 +188,6 @@ function FirmaCard({ icono, titulo, total, porcentajeValor }) {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const fechaActual = new Intl.DateTimeFormat("es-ES", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date());
-
   const {
     totalExpedientes,
     expedientesPorActividad,
@@ -276,28 +269,7 @@ export default function Dashboard() {
             <p>Resumen operativo de expedientes, actividad del circuito y firmas realizadas.</p>
           </div>
         </div>
-        <div className="ag-hero-acciones molsan-page-header__actions">
-          <div className="ag-fecha-actual">
-            <span className="ag-punto-vivo" aria-hidden="true" />
-            <span>{fechaActual}</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigate("/modulos")}
-            className="flex items-center gap-2 px-3 py-2"
-          >
-            <span aria-hidden="true">▦</span> Ir a módulos
-          </button>
-          <button
-            type="button"
-            className="ag-boton-actualizar"
-            onClick={cargarDashboard}
-            disabled={loading}
-          >
-            <span aria-hidden="true" className={loading ? "ag-icono-girando" : ""}>↻</span>
-            {loading ? "Actualizando…" : "Actualizar datos"}
-          </button>
-        </div>
+
       </header>
 
       {/* ERRORES DE CARGA */}
