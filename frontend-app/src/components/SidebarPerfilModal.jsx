@@ -20,6 +20,7 @@ export default function EmpleadoPerfilModal({
       open={true}
       empleadoId={idNum}
       onClose={onClose}
+      preservarEstilosSidebar={true}
     />
   );
 }
