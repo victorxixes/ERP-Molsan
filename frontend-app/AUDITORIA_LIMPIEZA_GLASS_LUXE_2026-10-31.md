@@ -184,3 +184,60 @@ Se ha inspeccionado el contenido de las 52 hojas CSS del frontend en la rama: 49
 - Vite transformó 274 módulos y terminó el build correctamente.
 - Se mantienen tres avisos de análisis JSX no bloqueantes ya identificados en `ModelosDocumentos.jsx`, `FichaExpediente.jsx` y `CarpetaDigitalModal.jsx` (carácter `}` dentro de JSX). No se han corregido en este lote porque requieren revisión contextual aparte y no forman parte de la limpieza de atributos vacíos.
 - La fase visual del punto 5 permanece sin iniciar.
+
+
+---
+
+## Fase 4 — auditoría integral del frontend (31/10/2026)
+
+### Alcance e inventario verificado en la rama Preview
+
+- Rama: `molsan-premium-2027-glass-luxe`.
+- Commit de partida: `73dd33b3c4ceedb10a74d49908d550a919c2d80a`.
+- Inventario: 209 archivos bajo `frontend-app`; 187 archivos de código JS/JSX en `src`.
+- Hojas CSS actuales: cinco (`index.css`, `NeutralizarPresentacion.css`, `SidebarBase.css`, `MolsanFase3.css`, `MolsanFase3Portales.css`). Esto actualiza la documentación anterior que indicaba tres hojas: las dos hojas Fase 3 se incorporaron después.
+- `NeutralizarPresentacion.css`: 6.421 líneas, 810 bloques de reglas CSS, 35 media queries, 277 reglas/selector(es) con referencias específicas de módulos y 6 declaraciones `!important` distribuidas en tres bloques. No es únicamente un reset: concentra tokens, estilos comunes y una gran cantidad de reglas específicas de módulos.
+- `MolsanFase3.css` (88 líneas) y `MolsanFase3Portales.css` (118 líneas) también se importan desde `main.jsx`. La arquitectura real tiene, por tanto, tres capas globales de estilo además de Tailwind y el CSS protegido del Sidebar.
+- No se han encontrado importaciones CSS locales en la muestra amplia de páginas y componentes consultada; el Sidebar conserva su hoja propia protegida.
+
+### Hallazgo corregido — protección de rutas internas
+
+Se detectó que las rutas internas `/encargagest`, sus cuatro espacios de trabajo (`ctn`, `agenda`, `mensajes`, `intranet`) y las rutas de compatibilidad `/encargagestweb` y `/notargestweb`, además de `/notargest`, no aplicaban explícitamente los guards de sesión y permiso usados por el resto de módulos.
+
+Corrección aplicada en `src/App.jsx`:
+- Las rutas internas de EncargaGest ahora requieren `RequireAuth` y permiso `encargagest`.
+- Las rutas internas de NotarGest ahora requieren `RequireAuth` y permiso `notargest`.
+- Se protegen también las rutas de compatibilidad internas.
+- Se mantienen sin cambios las rutas explícitas de acceso externo de notarías (`accessMode="external"`), que conservan su autenticación independiente.
+
+Commit: `312f30a483bb8ddf923f2e0505046ae403e8c2af`.
+
+### Validación de este cambio
+
+- Preview Render: `molsan-glass-luxe-preview`.
+- Deploy: `dep-dbj4gvcs728c738qgbbg`.
+- Resultado: `live`.
+- Vite: `✓ built in 4.83s`.
+- Producción, backend y base de datos: sin cambios.
+
+### Hallazgos pendientes — tablas y ordenación
+
+El análisis estático de las páginas y componentes identifica tablas de datos que no muestran lógica de ordenación propia. Ejemplos confirmados para revisión y migración:
+- `ControlApoderados.jsx`: cinco tablas sin lógica de ordenación detectada.
+- `FestivosCompensaciones.jsx`: ocho tablas sin lógica de ordenación detectada.
+- `Fichajes.jsx`: dos tablas sin lógica de ordenación detectada.
+- `DocumentosAdmin.jsx`: una tabla sin lógica de ordenación detectada.
+- `CtnDetallePage.jsx` y `ModalCtnDetalle.jsx`: dos tablas cada uno sin lógica de ordenación detectada.
+- `CatalogoOficinas.jsx`, `CorrespondenciaTipificada.jsx`, `MensajeriaMolsan.jsx` y `NotarGest.jsx`: contienen tablas de datos sin lógica de ordenación detectada.
+
+La detección es estática: cada tabla debe clasificarse antes de cambiarla para excluir correctamente calendarios, vistas de impresión, tablas documentales fijas y resúmenes que no sean listados operativos. La ordenación debe actuar sobre los datos de React y conservar paginación, filtros y estados; no se aplicará reordenación directa del DOM.
+
+### Estado de Fase 4
+
+- Inventario frontend y capas CSS: realizado.
+- Primera corrección de navegación/permisos: implementada y desplegada en Preview.
+- Revisión y migración completa de tablas: pendiente.
+- Revisión individual de todos los formularios, modales y componentes secundarios: pendiente.
+- Revisión responsive real en navegador autenticado y validación funcional de cada flujo: pendiente; no se certifica con una compilación.
+- Eliminación/refactor de reglas CSS heredadas: pendiente de mapa de dependencias y pruebas para evitar regresiones.
+- La Fase 4 continúa abierta. No se declara completada.
