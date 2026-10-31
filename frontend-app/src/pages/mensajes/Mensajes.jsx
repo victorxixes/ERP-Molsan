@@ -634,13 +634,7 @@ export default function Mensajes({
  lg:h-[calc(100dvh-96px)]
  lg:min-h-0
 
- overflow-hidden
-
- px-4
- py-4
-
- sm:px-6
- sm:py-6"
+ overflow-hidden"
     >
 
       {/* =================================================

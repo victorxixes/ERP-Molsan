@@ -168,7 +168,7 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
   const input = "mt-1 w-full px-3 py-2.5";
   const label = "block";
 
-  return <div className="p-4 sm:p-6">
+  return <div className="w-full min-w-0">
     <section className="mb-5 p-4">
       <h2>Asignación anual de vacaciones</h2><p className="mt-1">Configura los días iniciales de cada empleado; las solicitudes aprobadas descuentan el saldo.</p>
       <form className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" onSubmit={async (e) => { e.preventDefault(); setGuardando(true); setError(""); setMensaje(""); try { const d = new FormData(); d.append("empleado_id", empleadoBolsaId); d.append("anio", anioBolsa); d.append("dias_asignados", diasBolsa); await axios.post("/fichajes/admin/vacaciones-bolsa", d); setMensaje("Bolsa anual de vacaciones guardada."); } catch (err) { setError(err?.response?.data?.detail || "No se pudo guardar la bolsa de vacaciones."); } finally { setGuardando(false); } }}>

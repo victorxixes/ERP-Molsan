@@ -416,7 +416,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
   // ============================================================
 
   return (
-    <div className="min-w-0 space-y-5 p-3 sm:p-4 lg:p-6">
+    <div className="w-full min-w-0 space-y-5">
       <MolsanPageHeader mark="AG" title="Agenda" description="Planificación y seguimiento de citas, firmas y actividad notarial." />
       {/* CABECERA Y NAVEGACIÓN */}
 
