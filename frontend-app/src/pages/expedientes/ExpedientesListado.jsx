@@ -2475,12 +2475,11 @@ export default function ExpedientesListado() {
                 </div>
                 <div className="mt-4 flex items-end justify-between gap-3">
                   <div>
-                    <div className="tabular-nums" 
-                      {loadingAlertasControl ? "—" : formatearNumero(total)}
+                    <div className="tabular-nums">{loadingAlertasControl ? "—" : formatearNumero(total)}
                     </div>
                     <div className="">expedientes fuera de plazo</div>
                   </div>
-                  <div className="" 
+                  <div>
                     {activa ? "Circuito seleccionado ✓" : "Ver expedientes →"}
                   </div>
                 </div>
