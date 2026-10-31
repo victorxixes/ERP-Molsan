@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import { Link } from "react-router-dom";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 const DOCUMENTOS_INICIALES = [
   { id: "solicitud", nombre: "Hoja de solicitud", detalle: "Debe estar incorporada en la carpeta digital del resumen del expediente." },
@@ -67,29 +68,17 @@ export default function ReglasActividadesExpediente() {
   };
 
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden p-6 sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1" />
-        <div className="relative flex flex-wrap items-start justify-between gap-4">
-          <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center">⚙️</div>
-            <div>
-              <p className="uppercase">Configuración del expediente</p>
-              <h1 className="mt-1">Reglas de actividades expediente</h1>
-              <p className="mt-2 max-w-3xl">Define los documentos, campos y validaciones de cada fase, y deja identificadas las integraciones y reglas que requieren revisión técnica.</p>
-            </div>
-          </div>
-          <Link to="/herramientas/utilidades" className="inline-flex items-center px-4 py-2.5">← Volver a Utilidades</Link>
-        </div>
-      </header>
+    <main className="erp-page min-w-0 space-y-6">
+      <MolsanPageHeader mark="RA" title="Reglas de actividades del expediente" description="Define los documentos, campos y validaciones de cada fase, e identifica las integraciones que requieren revisión técnica." />
+      <div className="flex justify-end"><Link to="/herramientas/utilidades" className="molsan-btn molsan-btn--secondary">← Volver a Utilidades</Link></div>
 
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <section className="molsan-stat-grid">
         <Resumen icono="📂" titulo="Actividad inicial" valor="Documentación previa" />
         <Resumen icono="📄" titulo="Documentos requeridos" valor={`${documentosActivos} de ${DOCUMENTOS_INICIALES.length}`} />
         <Resumen icono="📨" titulo="Flujo principal" valor="5 transiciones" />
       </section>
 
-      <section className="overflow-hidden">
+      <section className="erp-card overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-6">
           <div>
             <p className="uppercase">Regla 01</p>
@@ -107,7 +96,7 @@ export default function ReglasActividadesExpediente() {
             </div>
             <div className="space-y-3">
               {DOCUMENTOS_INICIALES.map((doc) => (
-                <label key={doc.id} className="flex items-start gap-3 p-4">
+                <label key={doc.id} className="molsan-field flex items-start gap-3 p-4">
                   <input type="checkbox" checked={Boolean(documentos[doc.id])} onChange={(e) => { setDocumentos((actual) => ({ ...actual, [doc.id]: e.target.checked })); setMensaje(""); }} className="mt-1 h-4 w-4" />
                   <span className="min-w-0 flex-1">
                     <span className="block">{doc.nombre}</span>
