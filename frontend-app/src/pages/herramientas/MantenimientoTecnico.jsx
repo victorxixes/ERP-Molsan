@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios from "../../api/axios";
 import { API_BASE } from "../../api/config";
 import { puedeVerModulo } from "../../utils/permisos";
@@ -275,8 +276,8 @@ export default function MantenimientoTecnico() {
   }
 
   return (
-    <main className="min-h-full min-w-0 space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden p-6 sm:p-8">
+    <main className="erp-page min-h-full min-w-0 space-y-6">
+      <header className="molsan-subpage-header">
         <div className="absolute inset-x-0 top-0 h-1" />
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>

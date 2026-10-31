@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios from "../../api/axios";
 
 const euros = (value) => Number(value || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
@@ -141,13 +142,9 @@ export default function HonorariosGestoria({ soloPlantilla = false } = {}) {
   }
 
   return (
-    <div className={`w-full max-w-none space-y-6 ${soloPlantilla ? "p-0" : "p-4 sm:p-6 lg:p-8"}`}>
+    <div className={`erp-page w-full max-w-none space-y-6 ${soloPlantilla ? "p-0" : ""}`}>
       {!soloPlantilla && <>
-      <header className="p-6">
-        <p className="uppercase">Utilidades · Catálogo económico</p>
-        <h1 className="mt-2">Honorarios de gestoría</h1>
-        <p className="mt-2 max-w-3xl">Administra las tarifas vigentes. Los cambios se aplican al seleccionar el honorario en «Añadir pagos»; los importes ya registrados no se modifican.</p>
-      </header>
+      <MolsanPageHeader mark="HG" title="Honorarios de gestoría" description="Administra las tarifas vigentes. Los cambios se aplican al seleccionar el honorario en Añadir pagos; los importes ya registrados no se modifican." />
 
       {(error || mensaje) && <div role="status" className={`px-4 py-3 ${error ? "" : ""}`}>{error || mensaje}</div>}
       </>}

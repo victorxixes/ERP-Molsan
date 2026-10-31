@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { renderAsync } from "docx-preview";
 import axios from "../../api/axios";
 import { Link } from "react-router-dom";
@@ -413,8 +414,9 @@ export default function ModelosDocumentos() {
     lector.readAsDataURL(archivo);
   };
 
-  return <main className="modelos-documentos-premium utilidades-premium-page min-h-full min-w-0 space-y-6 p-4 sm:p-6 lg:p-8">
-    <header className="relative overflow-hidden p-6 sm:p-7"><div className="absolute inset-x-0 top-0 h-1"/><div className="relative flex items-start gap-4"><div className="flex h-12 w-12 shrink-0 items-center justify-center">▤</div><div className="min-w-0 flex-1"><p className="uppercase">MOLSAN ERP · UTILIDADES · PREMIUM 2027</p><h1 className="mt-1">Modelos de documentos</h1><p className="mt-2 max-w-3xl">Diseño corporativo unificado. Las plantillas no alteran tarifas, cálculos, pagos ni numeración oficial.</p></div><Link to="/herramientas/utilidades" className="hidden px-3 py-2 sm:inline-flex">← Utilidades</Link></div></header>
+  return <main className="erp-page modelos-documentos-premium utilidades-premium-page min-h-full min-w-0 space-y-6">
+    <MolsanPageHeader mark="MD" title="Modelos de documentos" description="Plantillas corporativas para documentos del ERP, sin alterar tarifas, cálculos, pagos ni numeración oficial." />
+    <div className="flex justify-end"><Link to="/herramientas/utilidades" className="inline-flex px-3 py-2">← Volver a Utilidades</Link></div>
     <section className="grid grid-cols-1 gap-4 md:grid-cols-3">{documentos.map(doc=><button key={doc.id} type="button" onClick={()=>setSeleccionado(doc.id)} className={`p-4 ${seleccionado===doc.id?"":""}`}><div className="flex items-start justify-between gap-3"><span>{doc.id==="liquidacion"?"▤":doc.id==="provision"?"€":"▧"}</span><span className="px-2.5 py-1">{doc.estado}</span></div><h2 className="mt-3">{doc.titulo}</h2><p className="mt-1">{doc.subtitulo}</p></button>)}</section>
     {actual.id==="liquidacion" ? <section className="space-y-3"><div className="flex flex-wrap items-end justify-between gap-3"><div><p className="uppercase">Diseño aprobado · referencia visual</p><h2 className="mt-1">Hoja de liquidación · Cancelación</h2><p className="mt-1">Maqueta visual basada en tu propuesta, con identidad MOLSAN PREMIUM 2027.</p></div><span className="px-3 py-1">PDF oficial conectado en Liquidar expediente</span></div><div className="grid grid-cols-1 items-stretch gap-3 lg:grid-cols-2"><section className="p-4">
       <div className="flex flex-wrap items-center justify-between gap-4">
