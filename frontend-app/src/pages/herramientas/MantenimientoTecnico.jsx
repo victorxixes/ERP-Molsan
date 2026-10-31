@@ -282,7 +282,7 @@ export default function MantenimientoTecnico() {
         title="Mantenimiento técnico"
         description="Centro de diagnóstico y mantenimiento integrado en el ERP. Ejecuta primero las comprobaciones y revisa el resultado antes de realizar cambios."
       />
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="molsan-filter-bar flex flex-wrap items-center justify-between gap-3 p-3">
         <span className={`inline-flex items-center gap-2 px-3 py-1 ${validacionTecnica ? "" : ""}`}>
           <span className={`h-2 w-2 ${validacionTecnica ? "" : ""}`} />
           {validacionTecnica ? "Diagnóstico técnico correcto" : "Pendiente de validación técnica"}
@@ -291,14 +291,14 @@ export default function MantenimientoTecnico() {
           type="button"
           disabled={Boolean(cargando)}
           onClick={ejecutarDiagnosticoCompleto}
-          className="shrink-0 px-4 py-3"
+          className="molsan-btn molsan-btn--primary shrink-0"
         >
           {cargando === "diagnostico-completo" ? "Ejecutando diagnóstico…" : "▶ Ejecutar diagnóstico completo"}
         </button>
       </div>
 
       <section className="grid grid-cols-1 gap-5 xl:grid-cols-2">
-        <div className="p-5">
+        <div className="erp-card p-5">
           <div className="mb-4 flex items-start gap-3">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center">🔎</div>
             <div>
@@ -311,7 +311,7 @@ export default function MantenimientoTecnico() {
 
           <div className="space-y-3">
             {DIAGNOSTICOS.map((item) => (
-              <div key={item.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div key={item.id} className="erp-data-item flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <div>{item.titulo}</div>
                   <p className="mt-1">{item.descripcion}</p>
@@ -320,7 +320,7 @@ export default function MantenimientoTecnico() {
                   type="button"
                   disabled={Boolean(cargando)}
                   onClick={() => ejecutarGet(item.id, item.titulo, item.url)}
-                  className="shrink-0 px-4 py-2"
+                  className="molsan-btn molsan-btn--secondary shrink-0"
                 >
                   {cargando === item.id ? "Consultando…" : "Consultar"}
                 </button>
@@ -348,7 +348,7 @@ export default function MantenimientoTecnico() {
               type="button"
               disabled={cargandoTablas || Boolean(cargando)}
               onClick={cargarListaTablas}
-              className="px-3 py-1.5"
+              className="molsan-btn molsan-btn--secondary"
             >
               {cargandoTablas ? "Cargando tablas…" : "Cargar lista real de tablas"}
             </button>
@@ -447,7 +447,7 @@ export default function MantenimientoTecnico() {
         </div>
       </section>
 
-      <section className="p-5 sm:p-6">
+      <section className="erp-card p-5 sm:p-6">
         <div className="flex items-start gap-3">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center">⚠️</div>
           <div>
@@ -461,7 +461,7 @@ export default function MantenimientoTecnico() {
 
         <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
           {MIGRACIONES.map((item) => (
-            <article key={item.id} className="flex flex-col justify-between gap-4 p-4">
+            <article key={item.id} className="erp-data-item flex flex-col justify-between gap-4 p-4">
               <div>
                 <h3>{item.titulo}</h3>
                 <p className="mt-1">{item.descripcion}</p>
@@ -473,7 +473,7 @@ export default function MantenimientoTecnico() {
                 type="button"
                 disabled={Boolean(cargando)}
                 onClick={() => ejecutarMigracion(item)}
-                className="w-full px-4 py-2.5"
+                className="molsan-btn molsan-btn--primary w-full"
               >
                 {cargando === item.id ? "Ejecutando…" : "Ejecutar con confirmación"}
               </button>
@@ -483,7 +483,7 @@ export default function MantenimientoTecnico() {
       </section>
 
       {(resultado || errorVisible) && (
-        <section className="overflow-hidden">
+        <section className="erp-card overflow-hidden">
           <div className={`flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between ${errorVisible ? "" : ""}`}>
             <div>
               <h2 className={`${errorVisible ? "" : ""}`}>
@@ -499,7 +499,7 @@ export default function MantenimientoTecnico() {
                 setResultado(null);
                 setErrorVisible("");
               }}
-              className="self-start px-3 py-1.5 sm:self-auto"
+              className="molsan-btn molsan-btn--secondary self-start sm:self-auto"
             >
               Limpiar resultado
             </button>
