@@ -3052,10 +3052,10 @@ export default function ExpedientesListado() {
               className="sticky top-0 z-10 px-6 py-5 flex items-start justify-between gap-4"
                           >
               <div>
-                <h3 id="modal-filtros-titulo" className="" 
+                <h3 id="modal-filtros-titulo">
                   Filtros avanzados
                 </h3>
-                <p className="mt-1" 
+                <p className="mt-1">
                   Empieza por los datos que conozcas. Puedes combinar varios criterios; los campos están agrupados por tema.
                 </p>
               </div>
@@ -3106,14 +3106,14 @@ export default function ExpedientesListado() {
               </div>
               <div>
                 <label className="block mb-1">Actividad actual</label>
-                <select value={filtroActividad} onChange={(event) => setFiltroActividad(event.target.value)} className="w-full px-3 py-2.5" 
+                <select value={filtroActividad} onChange={(event) => setFiltroActividad(event.target.value)} className="w-full px-3 py-2.5">
                   <option value="">Todas las actividades</option>
                   {(catalogosListado.actividades.length ? catalogosListado.actividades : actividades).map((item) => <option key={item.actividad} value={item.actividad}>{item.actividad}</option>)}
                 </select>
               </div>
               <div>
                 <label className="block mb-1">Estado expediente</label>
-                <select value={filtroEstadoExpediente} onChange={(event) => setFiltroEstadoExpediente(event.target.value)} className="w-full px-3 py-2.5" 
+                <select value={filtroEstadoExpediente} onChange={(event) => setFiltroEstadoExpediente(event.target.value)} className="w-full px-3 py-2.5">
                   <option value="">Todos los estados</option>
                   {(catalogosListado.estados_expediente.length ? catalogosListado.estados_expediente : [...new Set(expedientes.map((item) => item.estado_expediente).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es"))).map((estado) => <option key={estado} value={estado}>{estado}</option>)}
                 </select>
