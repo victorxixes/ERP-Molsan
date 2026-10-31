@@ -258,3 +258,100 @@ body {
     transition-duration: .01ms !important;
   }
 }
+
+
+/* ============================================================
+   GLASS LUXE 2027 · SELECTORES REALES DE LOS MÓDULOS
+   Corrección de cobertura: los módulos utilizan clases cg-*,
+   dashboard-* y utilidades Tailwind, no solo erp-card/molsan-panel.
+   ============================================================ */
+
+/* Cabeceras reales de CancelaGest, Dashboard y módulos hermanos. */
+.erp-main-inner :is(
+  .cg-hero, .ag-hero, .dashboard-header, .ng-cabecera,
+  .eg-hero, .molsan-page-header, .page-header, .pagina-header,
+  .listado-header, .cabecera-pagina
+) {
+  color: #172943 !important;
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(113,151,229,.16), transparent 48%),
+    linear-gradient(118deg, rgba(255,255,255,.98), rgba(237,244,255,.94)) !important;
+  border: 1px solid #cbd8eb !important;
+  border-radius: 22px !important;
+  box-shadow: 0 14px 36px rgba(28,48,82,.105), inset 0 1px 0 rgba(255,255,255,.95) !important;
+  padding: 22px 26px !important;
+  margin-bottom: 24px !important;
+}
+
+/* Tarjetas identificadas en el código real: KPIs, paneles y accesos. */
+.erp-main-inner :is(
+  .erp-card, .erp-card-soft, .cg-kpi, .cg-panel, .cg-module-card,
+  .dashboard-kpi, .dashboard-card, .ag-kpi, .ag-card, .ag-panel,
+  .ng-panel, .ng-contador, .ng-tarea, .ng-acceso,
+  .eg-panel, .eg-kpi, .eg-card, .card-sj
+) {
+  color: #1b2c49 !important;
+  background: linear-gradient(145deg, rgba(255,255,255,.97), rgba(244,248,255,.91)) !important;
+  border: 1px solid #d1ddef !important;
+  border-radius: 18px !important;
+  box-shadow: 0 10px 28px rgba(27,47,82,.085), 0 2px 5px rgba(27,47,82,.035), inset 0 1px 0 rgba(255,255,255,.96) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
+  backdrop-filter: blur(16px) saturate(140%) !important;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease !important;
+}
+
+.erp-main-inner :is(.cg-module-card, .cg-kpi, .dashboard-kpi, .erp-card):hover {
+  border-color: #aebfe0 !important;
+  box-shadow: 0 15px 34px rgba(35,59,101,.13), inset 0 1px 0 rgba(255,255,255,.98) !important;
+}
+
+/* Secciones y bloques de contenido que actúan como superficies. */
+.erp-main-inner :is(.cg-section, .cg-charts-grid, .dashboard-main-grid) > :is(article, section, .cg-panel),
+.erp-main-inner :is(.cg-section, .cg-charts-grid) .cg-panel {
+  background: linear-gradient(145deg, rgba(255,255,255,.97), rgba(244,248,255,.92)) !important;
+  border: 1px solid #d1ddef !important;
+  border-radius: 19px !important;
+  box-shadow: 0 10px 28px rgba(27,47,82,.08) !important;
+}
+
+/* Cabeceras internas de panel: banda diferenciada y tipografía uniforme. */
+.erp-main-inner :is(.cg-section-heading, .card-sj-header, .panel-header, .section-header) {
+  color: #263b5e !important;
+}
+.erp-main-inner :is(.cg-section-heading h2, .cg-section-heading h3) {
+  color: #1b2d4b !important;
+  font-weight: 750 !important;
+  letter-spacing: -.03em !important;
+}
+.erp-main-inner :is(.cg-kicker, .cg-eyebrow, .ag-eyebrow) {
+  color: #5272ad !important;
+  letter-spacing: .12em !important;
+  font-weight: 800 !important;
+}
+
+/* Cabeceras de tabla: más contraste y presencia visual. */
+.erp-main-inner table thead th {
+  color: #405575 !important;
+  background: linear-gradient(180deg, #e9f0fb, #e2eaf6) !important;
+  border-bottom: 1px solid #cbd8ea !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: .045em !important;
+  text-transform: uppercase;
+}
+
+/* Fondos Tailwind frecuentes en tarjetas heredadas. */
+.erp-main-inner :is(
+  [class~="bg-white"], [class~="bg-slate-50"], [class~="bg-gray-50"]
+):is([class*="rounded-"], [class*="shadow"], [class*="border"]) {
+  background: linear-gradient(145deg, rgba(255,255,255,.97), rgba(244,248,255,.92)) !important;
+  border-color: #d1ddef !important;
+  box-shadow: 0 9px 25px rgba(27,47,82,.075) !important;
+}
+
+@media (max-width: 640px) {
+  .erp-main-inner :is(.cg-hero, .ag-hero, .dashboard-header, .molsan-page-header) {
+    padding: 16px !important;
+    border-radius: 17px !important;
+  }
+}
