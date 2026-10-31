@@ -1,7 +1,1 @@
-/* MOLSAN ERP · base técnica neutra
-   Tailwind conserva las utilidades de estructura y posicionamiento.
-   Se eliminan las hojas corporativas heredadas de presentación.
-*/
-@import "tailwindcss";
-@import "./layout.css";
-@config "../../tailwind.config.js";
+/* Sin estilos globales. El navegador utiliza sus valores nativos. */
