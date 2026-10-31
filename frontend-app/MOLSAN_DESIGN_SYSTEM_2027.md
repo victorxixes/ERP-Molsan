@@ -134,3 +134,13 @@ Los colores de éxito, advertencia, error e información son semánticos y solo 
 6. La composición se adapta a tablet y móvil sin desbordamiento horizontal de página.
 7. Sidebar, API, datos, permisos y lógica permanecen intactos.
 
+### Fase 2 — Glass Luxe discreto (pilotos Dashboard y CTN)
+
+- Se añade una capa de cristal mate muy sutil: degradado blanco/azul hielo translúcido, reflejo interior superior, borde corporativo y sombra difusa de baja intensidad.
+- Dashboard: aplicación limitada a tarjetas KPI, actividad y bloques de firmas.
+- CTN: aplicación limitada al panel de filtros, tarjetas de resumen y contenedor de tabla. Las celdas mantienen superficies prácticamente opacas para proteger la lectura.
+- Hover: elevación máxima de 1 px y sombra ligeramente reforzada; sin animaciones estructurales.
+- Desenfoque de fondo limitado a 8 px y acompañado de superficies opacas de respaldo.
+- Se respeta `prefers-reduced-motion`.
+- No se modifican lógica, datos, permisos, API, navegación ni Sidebar. No se extiende todavía a otros módulos.
+- Validación pendiente: revisar visualmente Dashboard y CTN en Render Preview en escritorio y una anchura reducida antes de aprobar la extensión global.
