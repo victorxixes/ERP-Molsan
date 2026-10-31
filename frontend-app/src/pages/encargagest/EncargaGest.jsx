@@ -827,13 +827,6 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
     );
   }
 
-  const fechaActual = new Intl.DateTimeFormat("es-ES", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date());
-
   return (
     <div className="apoderagest encargagest">
       {modo === "interno" && (
@@ -857,24 +850,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         <Sidebar
           brandName="EncargaGest"
           navigationItems={[]}
-          headerActions={
-            <>
-              <div aria-label={`Fecha actual: ${fechaActual}`}>
-                <span aria-hidden="true" />
-                <span>{fechaActual}</span>
-              </div>
-              <button
-                type="button"
-                onClick={cargarTodo}
-                disabled={cargando}
-               
-                aria-live="polite"
-              >
-                <span className={cargando ? "" : ""} aria-hidden="true">↻</span>
-                {cargando ? "Actualizando…" : "Actualizar datos"}
-              </button>
-            </>
-          }
+
           onProfileClick={() => {
             setPerfilAbierto(true);
             setMensajePasswordPerfil("");
@@ -893,22 +869,9 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
             <p className="molsan-page-header__description">{modo === "externo" ? "Portal profesional · " + (sesion?.notaria_nombre || "Sesión externa") : "Recepción y seguimiento de encargos notariales externos."}</p>
           </div>
         </div>
-        <div>
-          {modo === "interno" && (
-            <>
-              <div>
-                <span aria-hidden="true" />
-                <span>{fechaActual}</span>
-              </div>
-              <button type="button" onClick={irAModulos} className="eg-secondary"><span aria-hidden="true">▦</span> Ir a módulos</button>
-              <button type="button" onClick={salirEncargaGest} className="eg-secondary">Cerrar sesión</button>
-              <button type="button" onClick={cargarTodo} disabled={cargando}>
-                <span className={cargando ? "" : ""} aria-hidden="true">↻</span>
-                {cargando ? "Actualizando…" : "Actualizar datos"}
-              </button>
-            </>
-          )}
-        </div>
+        {modo === "interno" && (
+          <button type="button" onClick={salirEncargaGest} className="eg-secondary">Cerrar sesión</button>
+        )}
       </header>
 
       <main className="eg-main w-full max-w-none px-1 pb-4">
