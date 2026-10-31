@@ -186,8 +186,6 @@ export default function MonitorSistema() {
       <MolsanPageHeader mark="MS" title="Monitor del sistema" description="Supervisión técnica, WebSocket y diagnóstico de base de datos." />
       <div className="molsan-filter-bar flex justify-end p-3"><span className="molsan-status-pill">Sistema operativo</span></div>
 
-          MONITOR REALTIME
-          ====================================================== */}
 
    <MonitorRealtime />
 
