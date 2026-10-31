@@ -2,8 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
-import "../../css/ComponentesOperativosPremium.css";
-import "../../css/ModalesHerramientasPremium.css";
 
 const mesActual = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; };
 const moverMes = (periodo, delta) => { const [y, m] = periodo.split("-").map(Number); const d = new Date(y, m - 1 + delta, 1); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; };
@@ -140,7 +138,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
     } catch (e) { setError(e?.response?.data?.detail || "No se ha podido descargar la factura."); }
   };
 
-  return <div className="control-apoderados-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+  return <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
     <header className="p-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div><p className="uppercase">MOLSAN ERP · APODERAGEST</p>
