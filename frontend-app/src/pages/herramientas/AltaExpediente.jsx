@@ -125,7 +125,7 @@ export default function AltaExpediente() {
     }
   }
 
-  return <main className="alta-expediente-premium utilidades-premium-page min-h-full min-w-0 space-y-6 p-4 sm:p-6 lg:p-8">
+  return <main className="min-h-full min-w-0 space-y-6 p-4 sm:p-6 lg:p-8">
     <header className="relative overflow-hidden p-6 sm:p-8">
       <div className="absolute inset-x-0 top-0 h-1" />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
