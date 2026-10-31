@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
-import "../../css/ComponentesOperativosPremium.css";
 
 const inputClass = "w-full px-3 py-2.5";
 const initial = { nombre: "", contacto: "", email: "", telefono: "", codigo_cliente: "", url_portal: "", notas: "", principal: false, activo: true };
@@ -42,7 +41,7 @@ export default function MensajeriaProveedores() {
     finally { setGuardando(false); }
   };
 
-  return <section className="mensajeria-proveedores-premium space-y-4 p-5">
+  return <section className="space-y-4 p-5">
     <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="">Proveedores de mensajería</h2><p className="mt-1">Alta y mantenimiento de una o dos empresas. Los datos de API se configurarán cuando el proveedor facilite su documentación técnica.</p></div><span className="px-3 py-1">{items.length}/2 empresas</span></div>
     {error && <div role="alert" className="p-3">{error}</div>}
     {aviso && <div role="status" className="p-3">{aviso}</div>}
