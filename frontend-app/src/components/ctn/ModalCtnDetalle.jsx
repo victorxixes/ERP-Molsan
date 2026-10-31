@@ -393,7 +393,7 @@ export default function ModalCtnDetalle({
         </button>
       </header>
 
-      <div className="ctn-modal-contenido">
+      <div className="ctn-modal-contenido molsan-modal__body min-h-0 flex-1 overflow-y-auto">
       <nav className="ctn-ficha-pestanas" role="tablist" aria-label="Secciones de la ficha del notario">
         {[
           ["ficha", "Ficha del notario"],
