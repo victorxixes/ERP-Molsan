@@ -91,10 +91,9 @@ _PREFIJOS_MODULO = (
     ("/api/noticias", "noticias"),
     ("/api/realtime", "realtime"),
     ("/api/dashboard", "dashboard"),
-    # El catálogo de permisos no define un módulo "informes" independiente.
-    # Los informes y exportaciones generales se gestionan dentro de utilidades.
-    ("/api/informes-sla", "utilidades"),
-    ("/api/informes", "utilidades"),
+    # Informes es un módulo propio en la navegación y en la matriz de permisos.
+    ("/api/informes-sla", "informes"),
+    ("/api/informes", "informes"),
     ("/api/utilidades", "utilidades"),
     ("/api/absis", "utilidades"),
     ("/api/importador-absis", "utilidades"),
