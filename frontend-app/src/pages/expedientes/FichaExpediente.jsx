@@ -883,27 +883,23 @@ function EstadoBadge({
 
   return (
     <span
-      className={`
-        inline-flex
-        max-w-full
-        items-center
-        gap-1.5
-        rounded-full
-        border
-        px-2.5
-        py-1
-        text-[11px]
-        font-bold
-        ${clases}
-      `}
+      className={`inline-flex
+ max-w-full
+ items-center
+ gap-1.5
+ 
+ 
+ px-2.5
+ py-1
+ 
+ 
+ ${clases}`}
     >
       <span
-        className={`
-          h-1.5
-          w-1.5
-          rounded-full
-          ${punto}
-        `}
+        className={`h-1.5
+ w-1.5
+ 
+ ${punto}`}
       />
 
       <span className="truncate">
@@ -968,26 +964,22 @@ function Seccion({
   return (
     <section
       id={id}
-      className={`
-        scroll-mt-24
-        rounded-2xl
-        border
-        border-white/80
-        bg-white/85
-        shadow-[0_15px_40px_rgba(15,23,42,0.07)]
-        overflow-hidden
-        ${className}
-      `}
+      className={`scroll-mt-24
+ 
+ 
+ 
+ 
+ 
+ overflow-hidden
+ ${className}`}
     >
       <div
-        className={`
-          flex
-          items-center
-          gap-3
-          border-b
-          border-slate-100
-          ${compacto ? "px-2.5 py-2" : "px-5 py-4"}
-        `}
+        className={`flex
+ items-center
+ gap-3
+ 
+ 
+ ${compacto ? "px-2.5 py-2" : "px-5 py-4"}`}
       >
         <div
           className="flex
@@ -1078,17 +1070,15 @@ function Dato({
 
   return (
     <div
-      className={`
-        min-w-0
-        rounded-xl
-        border
-        ${compacto ? "px-1.5 py-1.5" : "px-2 py-2"}
-        ${
-          destaque
-            ? "border-blue-100 bg-blue-50/60"
-            : "border-slate-100 bg-white"
-        }
-      `}
+      className={`min-w-0
+ 
+ 
+ ${compacto ? "px-1.5 py-1.5" : "px-2 py-2"}
+ ${
+ destaque
+ ? "border-blue-100 
+ : "border-slate-100 
+ }`}
     >
       <p
         className="mb-1
@@ -1106,20 +1096,18 @@ function Dato({
         />
       ) : (
         <div
-          className={`
-            ${compacto ? "" : ""}
-            font-medium
-            ${
-              destaque
-                ? "text-blue-700"
-                : "text-slate-700"
-            }
-            ${
-              multilinea
-                ? "whitespace-pre-wrap"
-                : "break-words"
-            }
-          `}
+          className={`${compacto ? "" : ""}
+ 
+ ${
+ destaque
+ ? "text-blue-700"
+ : "text-slate-700"
+ }
+ ${
+ multilinea
+ ? "whitespace-pre-wrap"
+ : "break-words"
+ }`}
         >
           {contenido}
         </div>
@@ -1170,21 +1158,14 @@ function Modal({
       }}
     >
       <div
-        className={`
-          expediente-operativo-modal-panel
-          relative
-          flex
-          max-h-[92vh]
-          w-full
-          ${ancho}
-          flex-col
-          overflow-hidden
-          rounded-2xl
-          border
-          border-slate-200
-          bg-white
-          shadow-2xl
-        `}
+        className={`expediente-operativo-modal-panel
+ relative
+ flex
+ max-h-[92vh]
+ w-full
+ ${ancho}
+ flex-col
+ overflow-hidden`}
         ref={dialogRef}
         tabIndex={-1}
         role="dialog"
@@ -1302,23 +1283,21 @@ function Boton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`
-        inline-flex
-        items-center
-        justify-center
-        gap-2
-        rounded-xl
-        border
-        px-4
-        py-2.5
-        text-xs
-        font-bold
-        transition
-        disabled:cursor-not-allowed
-        disabled:opacity-50
-        ${clases[tipo] || clases.secondary}
-        ${className}
-      `}
+      className={`inline-flex
+ items-center
+ justify-center
+ gap-2
+ 
+ 
+ px-4
+ py-2.5
+ 
+ 
+ 
+ 
+ 
+ ${clases[tipo] || clases.secondary}
+ ${className}`}
     >
       {children}
     </button>
@@ -5137,18 +5116,18 @@ const cuantiaFincasParaEnvio =
                                     key={fase.key}
                                     type="button"
                                     onClick={() => onNavigate?.(fase.key)}
-                                    className={`group w-full min-w-0 rounded-xl border p-3 text-left transition hover:-translate-y-px hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 ${completa ? "" : actual ? "" : ""}`}
+                                    className={`group w-full min-w-0 p-3 ${completa ? "" : actual ? "" : ""}`}
                                     aria-label={"Ir a " + fase.label + ". " + (completa ? "Control superado" : pendientes.length + " tareas pendientes")}
                                   >
                                     <span className="flex items-center gap-3">
-                                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-lg ${completa ? "" : actual ? "" : ""}`}>{completa ? "✓" : fase.icono}</span>
+                                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center ${completa ? "" : actual ? "" : ""}`}>{completa ? "✓" : fase.icono}</span>
                                       <span className="min-w-0 flex-1">
                                         <span className="block">{fase.icono} {fase.label}</span>
-                                        <span className={`mt-1 block text-xs font-semibold ${completa ? "" : actual ? "" : ""}`}>
+                                        <span className={`mt-1 block ${completa ? "" : actual ? "" : ""}`}>
                                           {completa ? "Control superado" : actual ? "Actividad actual · requiere revisión" : "Con incidencias pendientes"}
                                         </span>
                                       </span>
-                                      <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-extrabold ${completa ? "" : ""}`}>
+                                      <span className={`shrink-0 px-2.5 py-1 ${completa ? "" : ""}`}>
                                         {completa ? "✓ Correcto" : pendientes.length + " pendiente(s)"}
                                       </span>
                                     </span>
@@ -5181,18 +5160,18 @@ const cuantiaFincasParaEnvio =
                                 const completa = pendientes.length === 0;
                                 const actual = fase.key === actividadActual;
                                 return (
-                                  <article key={fase.key} className={`min-w-0 rounded-xl border p-3 ${completa ? "" : actual ? "" : ""}`}>
+                                  <article key={fase.key} className={`min-w-0 p-3 ${completa ? "" : actual ? "" : ""}`}>
                                     <div className="flex items-center gap-3">
-                                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-extrabold ${completa ? "" : actual ? "" : ""}`}>
+                                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center ${completa ? "" : actual ? "" : ""}`}>
                                         {completa ? "✓" : actual ? "●" : indice + 1}
                                       </div>
                                       <div className="min-w-0 flex-1">
                                         <p className="">{fase.icono} {fase.label}</p>
-                                        <p className={`mt-0.5 text-[10px] font-semibold ${completa ? "" : actual ? "" : ""}`}>
+                                        <p className={`mt-0.5 ${completa ? "" : actual ? "" : ""}`}>
                                           {completa ? "Control superado" : actual ? "Actividad actual · requiere revisión" : "Con incidencias pendientes"}
                                         </p>
                                       </div>
-                                      <span className={`rounded-full px-2 py-1 text-[10px] font-bold ${completa ? "" : ""}`}>
+                                      <span className={`px-2 py-1 ${completa ? "" : ""}`}>
                                         {completa ? "✓ Correcto" : `${pendientes.length} pendiente(s)`}
                                       </span>
                                       <button
@@ -5211,7 +5190,7 @@ const cuantiaFincasParaEnvio =
                                           <span
                                             aria-label={check.ok ? "Correcto" : "Pendiente"}
                                             title={check.ok ? "Correcto" : "Pendiente"}
-                                            className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] font-black ${check.ok ? "" : ""}`}
+                                            className={`inline-flex h-4 w-4 shrink-0 items-center justify-center ${check.ok ? "" : ""}`}
                                           >
                                             {check.ok ? "✓" : "✕"}
                                           </span>
@@ -5526,9 +5505,9 @@ const cuantiaFincasParaEnvio =
                       key="control-calidad-expediente"
                       type="button"
                       onClick={() => { setMostrarControlCalidad(true); cargarDocumentosCierre(); }}
-                      className={`flex h-[84px] w-[190px] min-w-[190px] shrink-0 flex-col justify-start rounded-xl border px-3 py-2 text-left transition ${mostrarControlCalidad ? "" : ""}`}
+                      className={`flex h-[84px] w-[190px] min-w-[190px] shrink-0 flex-col justify-start px-3 py-2 ${mostrarControlCalidad ? "" : ""}`}
                     >
-                      <span className={`text-xs font-bold ${mostrarControlCalidad ? "" : ""}`}>🛡️ Control de calidad</span>
+                      <span className={`${mostrarControlCalidad ? "" : ""}`}>🛡️ Control de calidad</span>
                       <span className="mt-2">Revisión independiente</span>
                     </button>
                   )}
@@ -5585,14 +5564,12 @@ const cuantiaFincasParaEnvio =
                       setErrorActividad("");
                       setMensajeActividad("");
                     }}
-                    className={`
-                      flex h-[84px] w-[190px] min-w-[190px] shrink-0 flex-col justify-start rounded-xl border px-3 py-2 text-left transition
-                      ${
-                        activa
-                          ? ""
-                          : ""
-                      }
-                    `}
+                    className={`flex h-[84px] w-[190px] min-w-[190px] shrink-0 flex-col justify-start px-3 py-2 
+ ${
+ activa
+ ? ""
+ : ""
+ }`}
                   >
 
                     <div
@@ -5611,20 +5588,18 @@ const cuantiaFincasParaEnvio =
                       </span>
 
                       <span
-                        className={`
-                          min-w-0
-                          flex-1
-                          break-words
-                          text-left
-                          text-xs
-                          leading-tight
-                          font-bold
-                          ${
-                            activa
-                              ? ""
-                              : ""
-                          }
-                        `}
+                        className={`min-w-0
+ flex-1
+ break-words
+ 
+ 
+ 
+ 
+ ${
+ activa
+ ? ""
+ : ""
+ }`}
                       >
                         {
                           actividad.label
@@ -5780,7 +5755,7 @@ const cuantiaFincasParaEnvio =
                         </div>
                         <div className="p-4">
                           <p className="uppercase">Saldo pendiente</p>
-                          <p className={`mt-2 text-xl font-extrabold tabular-nums ${resumenEconomico.saldoActual < 0 ? "" : ""}`}>{importeInicialDisponible ? `${resumenEconomico.saldoActual.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
+                          <p className={`mt-2 tabular-nums ${resumenEconomico.saldoActual < 0 ? "" : ""}`}>{importeInicialDisponible ? `${resumenEconomico.saldoActual.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
                           <p className="mt-1">Tras descontar pagos confirmados</p>
                         </div>
                         <div className="p-4">
@@ -5797,7 +5772,7 @@ const cuantiaFincasParaEnvio =
                       {importeInicialDisponible && importeInicialProvision > 0 && (
                         <div className="mt-4">
                           <div className="mb-2 flex items-center justify-between gap-3"><span className="">Consumo del saldo inicial</span><span className="tabular-nums">{Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100)).toLocaleString("es-ES", { maximumFractionDigits: 1 })}%</span></div>
-                          <div className="h-2 overflow-hidden"><div className={`h-full rounded-full ${resumenEconomico.saldoActual < 0 ? "" : ""}`} style={{ width: `${Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100))}%` }}/></div>
+                          <div className="h-2 overflow-hidden"><div className={`h-full ${resumenEconomico.saldoActual < 0 ? "" : ""}`} style={{ width: `${Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100))}%` }}/></div>
                         </div>
                       )}
                       <div className="mt-5">
@@ -5810,7 +5785,7 @@ const cuantiaFincasParaEnvio =
                           <div className="overflow-x-auto">
                             <table className="w-full min-w-[1080px]">
                               <thead className="uppercase"><tr><th className="px-3 py-3">ID de pago</th><th className="px-3 py-3">Fecha</th><th className="px-3 py-3">Tipo de documento</th><th className="px-3 py-3">Cuantía documento</th><th className="px-3 py-3">Impuesto</th><th className="px-3 py-3">Total</th><th className="px-3 py-3">Estado</th><th className="px-3 py-3">Saldo tras pago</th><th className="px-3 py-3">Acciones</th></tr></thead>
-                              <tbody className="divide-y divide-slate-100">
+                              <tbody className="">
                                 {resumenEconomico.movimientos.length === 0 && gastosPendientesResumen.length === 0 && <tr><td colSpan={9} className="px-4 py-6">Todavía no hay gastos ni pagos registrados.</td></tr>}
                                 {gastosPendientesResumen.map((gasto) => { const fmtPendiente = (valor) => Number(valor ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); const importe = Math.abs(Number(gasto.importe_resultante ?? gasto.importe ?? 0)); const base = Number(gasto.base_imponible ?? gasto.base_sujeta_impuestos ?? gasto.base_exenta_impuestos ?? 0); const impuesto = Number(gasto.importe_impuesto ?? gasto.impuesto ?? gasto.iva ?? 0); return <tr key={"pendiente-" + gasto.id} className=""><td className="whitespace-nowrap px-3 py-3">{gasto.numero_documento || ("GAS-" + String(gasto.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(gasto.fecha_factura || gasto.fecha || gasto.created_at)}</td><td className="px-3 py-3"><span className="">{gasto.tipo || "Gasto registrado"}</span>{gasto.descripcion ? <span className="mt-1 block">{gasto.descripcion}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 tabular-nums">{fmtPendiente(base > 0 ? base : importe)} €</td><td className="whitespace-nowrap px-3 py-3 tabular-nums">{impuesto > 0 ? `${fmtPendiente(impuesto)} €` : "—"}</td><td className="whitespace-nowrap px-3 py-3 tabular-nums">{fmtPendiente(importe)} €</td><td className="whitespace-nowrap px-3 py-3"><span className="px-2 py-1">Pendiente</span></td><td className="whitespace-nowrap px-3 py-3 tabular-nums">{importeInicialDisponible ? `${fmtPendiente(resumenEconomico.saldoActual)} €` : "—"}</td><td className="px-3 py-3">{esAdministradorSesion ? <button type="button" onClick={() => abrirOrdenPago(gasto)} disabled={importe <= 0} className="px-2.5 py-1.5">Pagar</button> : <span className="">Solo administración</span>}</td></tr>; })}}
                                 {resumenEconomico.movimientos.map((movimiento) => {
@@ -6639,7 +6614,7 @@ const cuantiaFincasParaEnvio =
                             <article key={finca.id || String(numeroFinca || "finca") + "-garantia-" + indice} className="p-3">
                               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                                 <h5 className="">Garantía {indice + 1} · Finca {numeroFinca || "No identificada"}</h5>
-                                <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${datosPendientes ? "" : ""}`}>Datos pendientes: {datosPendientes ? "Sí" : "No"}</span>
+                                <span className={`px-2.5 py-1 ${datosPendientes ? "" : ""}`}>Datos pendientes: {datosPendientes ? "Sí" : "No"}</span>
                               </div>
                               <div className="p-3">
                                 <h6 className="mb-2 uppercase">Datos de la garantía</h6>
@@ -6787,7 +6762,7 @@ const cuantiaFincasParaEnvio =
             {ppadItems.length > 0 && (
               <div className="w-full space-y-2">
                 {ppadItems.map((item) => (
-                  <div key={item.id} className={`rounded-lg border px-3 py-2 ${item.compensado ? "" : ""}`}>
+                  <div key={item.id} className={`px-3 py-2 ${item.compensado ? "" : ""}`}>
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="min-w-0 break-words">{item.concepto || "PPAD"}</span>
                       <span className="">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</span>
@@ -6833,7 +6808,7 @@ const cuantiaFincasParaEnvio =
                     <p className="px-3 py-5">Todavía no hay conceptos PPAD añadidos.</p>
                   )}
                   {ppadItems.map((item) => (
-                    <article key={item.id} className={`rounded-xl border p-3 ${item.compensado ? "" : ""}`}>
+                    <article key={item.id} className={`p-3 ${item.compensado ? "" : ""}`}>
                       <p className="mb-2">Realizado por: <strong>{item.usuario_creador || "Usuario no registrado"}</strong>{item.fecha_creacion ? ` · ${formatearFecha(item.fecha_creacion)}` : ""}</p>
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                         <div className="min-w-0">
@@ -6990,7 +6965,7 @@ const cuantiaFincasParaEnvio =
                     <time dateTime={observacionesExpediente[0].fecha}>{observacionesExpediente[0].fecha ? new Date(observacionesExpediente[0].fecha).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : "Fecha no disponible"}</time>
                   </div>
                   {observacionesExpediente[0].visibilidad === "Gestor" && (
-                    <p className={`mt-2 text-[11px] font-semibold ${observacionesExpediente[0].estado_validacion === "Validada" ? "" : ""}`}>
+                    <p className={`mt-2 ${observacionesExpediente[0].estado_validacion === "Validada" ? "" : ""}`}>
                       {observacionesExpediente[0].estado_validacion === "Validada" ? "✓ Validada por el destinatario" : "⏳ Pendiente de validación del destinatario"}
                     </p>
                   )}
@@ -7015,14 +6990,12 @@ const cuantiaFincasParaEnvio =
       ====================================================== */}
 
       <div
-        className={`
-          grid
-           w-full
-          grid-cols-1
-          gap-3
-          xl:grid-cols-12
-          ${mostrarControlCalidad ? "hidden" : ""}
-        `}
+        className={`grid
+ w-full
+ grid-cols-1
+ gap-3
+ xl:grid-cols-12
+ ${mostrarControlCalidad ? "hidden" : ""}`}
       >
 
         {/* ===================================================
@@ -7230,7 +7203,7 @@ const cuantiaFincasParaEnvio =
                           </div>
                           <div className="p-4">
                             <p className="uppercase">Saldo real actual</p>
-                            <p className={`mt-1 text-2xl font-extrabold tabular-nums ${resumenEconomico.saldoActual < 0 ? "" : ""}`}>{importeInicialDisponible ? `${resumenEconomico.saldoActual.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
+                            <p className={`mt-1 tabular-nums ${resumenEconomico.saldoActual < 0 ? "" : ""}`}>{importeInicialDisponible ? `${resumenEconomico.saldoActual.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
                             <p className="mt-1">Importe inicial menos pagos confirmados</p>
                           </div>
                         </div>
@@ -7258,12 +7231,12 @@ const cuantiaFincasParaEnvio =
                                 </thead>
                                 <tbody>
                                   {resumenEconomico.movimientos.map((movimiento, indice) => (
-                                    <tr key={movimiento.id} className={`border-t border-slate-100 transition-colors hover:bg-indigo-50/40 ${indice % 2 === 1 ? "" : ""}`}>
+                                    <tr key={movimiento.id} className={`${indice % 2 === 1 ? "" : ""}`}>
                                       <td className="whitespace-nowrap px-5 py-4">{movimiento.numero_documento || `PAG-${String(movimiento.id).padStart(6, "0")}`}</td>
                                       <td className="whitespace-nowrap px-5 py-4">{movimiento.fecha ? formatearFecha(movimiento.fecha) : "—"}</td>
                                       <td className="px-5 py-4">{movimiento.descripcion || movimiento.tipo || "Gasto"}</td>
                                       <td className="whitespace-nowrap px-5 py-4">{movimiento.importeMovimiento === 0 ? "0,00 €" : `−${Math.abs(movimiento.importeMovimiento).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}</td>
-                                      <td className={`whitespace-nowrap px-5 py-4 text-right text-base font-extrabold ${movimiento.saldoCalculado < 0 ? "" : ""}`}>{movimiento.saldoCalculado.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</td>
+                                      <td className={`whitespace-nowrap px-5 py-4 ${movimiento.saldoCalculado < 0 ? "" : ""}`}>{movimiento.saldoCalculado.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</td>
                                     </tr>
                                   ))}
                                 </tbody>
@@ -7389,9 +7362,9 @@ const cuantiaFincasParaEnvio =
                                       {gasto.fecha && <span>Fecha: {formatearFecha(gasto.fecha)}</span>}
                                       {gasto.id_gasto_absis && <span className="px-2 py-1">IDGASTO: {gasto.id_gasto_absis}</span>}
                                       {gasto.tipo_concepto_absis && <span className="px-2 py-1">TIPOCONCEPTO: {gasto.tipo_concepto_absis}</span>}
-                                      {gasto.estado_consolidacion && <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${gasto.estado_consolidacion === "Consolidado" ? "" : gasto.estado_consolidacion === "Pendiente envío" ? "" : ""}`}>{gasto.estado_consolidacion}</span>}
+                                      {gasto.estado_consolidacion && <span className={`px-2.5 py-1 ${gasto.estado_consolidacion === "Consolidado" ? "" : gasto.estado_consolidacion === "Pendiente envío" ? "" : ""}`}>{gasto.estado_consolidacion}</span>}
                                       {gasto.fecha_ultima_sincronizacion && <span>Sincronizado: {formatearFecha(gasto.fecha_ultima_sincronizacion)}</span>}
-                                      <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${String(gasto.estado_pago || "Pendiente").toLowerCase().includes("pag") || String(gasto.estado_pago || "").toLowerCase().includes("abon") ? "" : ""}`}>{gasto.estado_pago || "Pendiente"}</span>
+                                      <span className={`px-2.5 py-1 ${String(gasto.estado_pago || "Pendiente").toLowerCase().includes("pag") || String(gasto.estado_pago || "").toLowerCase().includes("abon") ? "" : ""}`}>{gasto.estado_pago || "Pendiente"}</span>
                                     </div>
                                   </div>
                                   <span className="whitespace-nowrap">
@@ -8559,20 +8532,18 @@ const cuantiaFincasParaEnvio =
                       </span>
 
                       <span
-                        className={`
-                          inline-flex
-                          w-fit
-                          rounded-full
-                          px-2.5
-                          py-1
-                          text-[10px]
-                          font-bold
-                          ${
-                            relacionado._manual
-                              ? ""
-                              : ""
-                          }
-                        `}
+                        className={`inline-flex
+ w-fit
+ 
+ px-2.5
+ py-1
+ 
+ 
+ ${
+ relacionado._manual
+ ? ""
+ : ""
+ }`}
                       >
                         {
                           relacionado._manual
@@ -8807,7 +8778,7 @@ const cuantiaFincasParaEnvio =
                     </div>
                     {observacion.visibilidad === "Gestor" && (
                       <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-                        <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${observacion.estado_validacion === "Validada" ? "" : ""}`}>
+                        <span className={`px-2.5 py-1 ${observacion.estado_validacion === "Validada" ? "" : ""}`}>
                           {observacion.estado_validacion === "Validada" ? `✓ Validada por ${observacion.validado_por || "empleado destinatario"} · ${observacion.validado_en ? new Date(observacion.validado_en).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : ""}` : "⏳ Pendiente de validación"}
                         </span>
                         {Number(empleadoSesion?.id) === Number(observacion.empleado_destinatario_id) && observacion.estado_validacion !== "Validada" && (
@@ -8863,7 +8834,7 @@ const cuantiaFincasParaEnvio =
               <p className="uppercase">Saldo disponible (dato del expediente)</p>
               <p className="mt-1">{Number(String(facturaHonorariosForm.saldoDisponible || "0").replace(",", "." ) || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</p>
             </div>
-            <div className={`rounded-xl border p-3 ${empleadoEnFactura ? "" : ""}`}>
+            <div className={`p-3 ${empleadoEnFactura ? "" : ""}`}>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <label htmlFor="empleado-factura-honorarios" className="">Empleado</label>
                 <select
@@ -8968,11 +8939,11 @@ const cuantiaFincasParaEnvio =
                   ];
                   const completos = items.every((item) => item.ok);
                   return <>
-                    <div className={`mb-3 rounded-lg border px-3 py-2 text-xs font-bold ${completos ? "" : ""}`}>
+                    <div className={`mb-3 px-3 py-2 ${completos ? "" : ""}`}>
                       {completos ? "✓ Checklist completo según datos/documentos encontrados" : `${items.filter((item) => item.ok).length} de ${items.length} comprobaciones completas`}
                     </div>
                     <div className="grid gap-2 sm:grid-cols-2">
-                      {items.map((item) => <div key={item.nombre} className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs ${item.ok ? "" : ""}`}><span className="">{item.ok ? "✓" : "□"}</span><span>{item.nombre}</span></div>)}
+                      {items.map((item) => <div key={item.nombre} className={`flex items-center gap-2 px-3 py-2 ${item.ok ? "" : ""}`}><span className="">{item.ok ? "✓" : "□"}</span><span>{item.nombre}</span></div>)}
                     </div>
                   </>;
                 })()}
@@ -9022,13 +8993,13 @@ const cuantiaFincasParaEnvio =
         </div>
         )}
         {actividadSeleccionada !== "sede-notarial-protocolo" && !["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadSeleccionada) && (
-        <section className={`rounded-2xl p-3 sm:p-4 ${["gestion-economica", "defectos-registrales", "facturacion-cierre"].includes(actividadSeleccionada) ? "" : ""}`}>
+        <section className={`p-3 sm:p-4 ${["gestion-economica", "defectos-registrales", "facturacion-cierre"].includes(actividadSeleccionada) ? "" : ""}`}>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key) && !(actividadSeleccionada === "defectos-registrales" && ["tiene_defectos_abiertos", "tipo_error", "falta_defecto", "descripcion_error", "fcierre_defecto", "tipo_documento", "motivos_defecto", "fecha_notificacion_registro", "fecha_vencimiento_presentacion_registro", "observaciones_defecto_registral"].includes(campo.key))).map((campo) => {
             const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
             const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
             return (
-              <label key={campo.key} className={`min-w-0 text-xs font-bold text-slate-600 ${campo.multilinea ? "sm:col-span-2 lg:col-span-3" : ""}`}>
+              <label key={campo.key} className={`min-w-0 ${campo.multilinea ? "sm:col-span-2 lg:col-span-3" : ""}`}>
                 <span className="mb-1.5 block">{campo.label}</span>
                 {Array.isArray(campo.opciones) ? (
                   <select value={valor ?? ""} onChange={(event) => cambiar(event.target.value)} className="w-full px-3 py-2.5">
@@ -9616,21 +9587,19 @@ function CheckboxVision({
 }) {
   return (
     <label
-      className={`
-        flex
-        ${disabled ? "" : ""}
-        items-center
-        gap-3
-        rounded-xl
-        border
-        p-4
-        transition
-        ${
-          checked
-            ? "border-blue-200 bg-blue-50"
-            : "border-slate-200 bg-white hover:bg-slate-50"
-        }
-      `}
+      className={`flex
+ ${disabled ? "" : ""}
+ items-center
+ gap-3
+ 
+ 
+ p-4
+ 
+ ${
+ checked
+ ? "border-blue-200 
+ : "border-slate-200 
+ }`}
     >
 
       <input
@@ -9649,15 +9618,11 @@ function CheckboxVision({
       />
 
       <span
-        className={`
-          text-xs
-          font-bold
-          ${
-            checked
-              ? ""
-              : ""
-          }
-        `}
+        className={`${
+ checked
+ ? ""
+ : ""
+ }`}
       >
         {label}
       </span>
