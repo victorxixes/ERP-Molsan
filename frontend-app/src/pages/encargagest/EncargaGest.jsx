@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PortalLogin from "../../components/PortalLogin";
@@ -860,19 +861,11 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         />
       )}
       <div aria-hidden="true" />
-      <header className=" eg-hero molsan-page-header">
-        <div className=" molsan-page-header__identity">
-          <div className=" eg-marca" aria-label="EncargaGest">EG</div>
-          <div>
-            <div>MOLSAN ERP</div>
-            <h1 className="molsan-page-header__title">EncargaGest</h1>
-            <p className="molsan-page-header__description">{modo === "externo" ? "Portal profesional · " + (sesion?.notaria_nombre || "Sesión externa") : "Recepción y seguimiento de encargos notariales externos."}</p>
-          </div>
-        </div>
-        {modo === "interno" && (
-          <button type="button" onClick={salirEncargaGest} className="eg-secondary">Cerrar sesión</button>
-        )}
-      </header>
+      <MolsanPageHeader
+        mark="EG"
+        title="EncargaGest"
+        description={modo === "externo" ? "Portal profesional · " + (sesion?.notaria_nombre || "Sesión externa") : "Recepción y seguimiento de encargos notariales externos."}
+      />
 
       <main className="eg-main w-full max-w-none px-1 pb-4">
         <section role="status" aria-live="polite" className="mb-5 flex items-start gap-3 px-4 py-3">
