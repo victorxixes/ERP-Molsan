@@ -571,3 +571,104 @@ textarea:focus-visible {
   padding: 10px 12px;
   border-bottom: 1px solid var(--molsan-border);
 }
+
+
+/* ==========================================================
+   CAPA TRANSVERSAL · TODOS LOS MÓDULOS DEL ERP OPERATIVO
+   No alcanza el sidebar: se limita al área de contenido central.
+   ========================================================== */
+.erp-main-inner {
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+}
+.erp-main-inner h1 {
+  color: var(--molsan-blue);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.erp-main-inner h2 {
+  color: var(--molsan-blue);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.erp-main-inner h3 {
+  color: var(--molsan-blue);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.erp-main-inner input:not([type="checkbox"]):not([type="radio"]),
+.erp-main-inner select,
+.erp-main-inner textarea {
+  min-height: var(--molsan-control-height);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  background-color: var(--molsan-white);
+  color: var(--molsan-text);
+}
+.erp-main-inner input:focus-visible,
+.erp-main-inner select:focus-visible,
+.erp-main-inner textarea:focus-visible {
+  border-color: var(--molsan-blue);
+  outline: 2px solid rgba(6, 70, 117, .14);
+  outline-offset: 1px;
+}
+.erp-main-inner button:not(:disabled) {
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+.erp-main-inner button:focus-visible,
+.erp-main-inner a:focus-visible {
+  outline: 2px solid var(--molsan-blue);
+  outline-offset: 2px;
+}
+.erp-main-inner button:disabled,
+.erp-main-inner input:disabled,
+.erp-main-inner select:disabled,
+.erp-main-inner textarea:disabled {
+  cursor: not-allowed;
+  opacity: .58;
+}
+.erp-main-inner table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--molsan-text);
+}
+.erp-main-inner thead th {
+  min-height: var(--molsan-row-height);
+  padding: 11px 12px;
+  color: var(--molsan-blue);
+  background: var(--molsan-table-head);
+  border-bottom: 1px solid var(--molsan-border);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: left;
+}
+.erp-main-inner tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--molsan-border);
+  color: var(--molsan-text);
+  font-size: 13px;
+  vertical-align: middle;
+}
+.erp-main-inner tbody tr:hover { background: var(--molsan-blue-soft); }
+.erp-main-inner [role="dialog"] {
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: 16px;
+  box-shadow: 0 20px 56px rgba(6, 40, 65, .18);
+}
+.erp-main-inner [role="alert"] {
+  border-color: #e8c7c7;
+}
+.erp-main-inner [aria-invalid="true"] {
+  border-color: #b42318;
+}
+@media (max-width: 720px) {
+  .erp-main-inner { padding-top: 16px; }
+  .erp-main-inner thead th,
+  .erp-main-inner tbody td { padding: 9px 10px; }
+}
