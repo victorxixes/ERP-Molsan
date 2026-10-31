@@ -235,18 +235,19 @@ export default function CtnDetallePage() {
       </section>
 
       {modalAbierto && (
-        <div className="ctn-detalle-overlay" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }}>
-          <div ref={historicoDialogRef} tabIndex={-1} className="ctn-detalle-modal" role="dialog" aria-modal="true" aria-label={`Firmas realizadas: ${modalidadTexto}`}>
-            <div className="ctn-detalle-modal-header">
+        <div className="ctn-detalle-overlay molsan-modal-overlay fixed inset-0 z-[100] p-3 sm:p-5" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }}>
+          <div ref={historicoDialogRef} tabIndex={-1} className="ctn-detalle-modal molsan-modal__panel flex max-h-[90vh] w-full max-w-6xl flex-col overflow-hidden" role="dialog" aria-modal="true" aria-label={`Firmas realizadas: ${modalidadTexto}`}>
+            <div className="ctn-detalle-modal-header molsan-modal__header flex items-start justify-between gap-4">
               <div><h2 className="ctn-detalle-modal-title">Firmas realizadas · {modalidadTexto}</h2><p className="ctn-detalle-muted ctn-detalle-modal-subtitle">{nombreNotario(notaria)}</p></div>
               <button type="button" onClick={() => setModalAbierto(false)}>Cerrar</button>
             </div>
-            <form className="ctn-detalle-search-form" onSubmit={buscarHistorico}>
+            <div className="molsan-modal__body min-h-0 flex-1 overflow-y-auto p-4">
+            <form className="ctn-detalle-search-form flex flex-wrap gap-3" onSubmit={buscarHistorico}>
               <input value={filtroHistorico} onChange={(e) => setFiltroHistorico(e.target.value)} placeholder="Buscar expediente, titular, NIF o protocolo" className="ctn-detalle-search ctn-detalle-search--grow" />
               <button type="submit">Buscar</button>
             </form>
             {cargandoHistorico ? <p>Cargando firmas…</p> : historico.length === 0 ? <p>No se han encontrado firmas registradas para esta modalidad.</p> : (
-              <div className="ctn-detalle-history-table-wrap">
+              <div className="ctn-detalle-history-table-wrap overflow-x-auto">
                 <table className="ctn-detalle-table ctn-detalle-table--history">
                   <thead><tr>{["Fecha firma", "Expediente", "Titular", "NIF titular", "Solicitante", "Protocolo", "Oficina", "Importe"].map((x) => <th key={x} className="ctn-detalle-th">{x}</th>)}</tr></thead>
                   <tbody>
@@ -267,6 +268,7 @@ export default function CtnDetallePage() {
               </div>
             )}
             <div className="ctn-detalle-muted ctn-detalle-results-count"> {historico.length}</div>
+            </div>
           </div>
         </div>
       )}

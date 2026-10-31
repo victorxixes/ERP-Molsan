@@ -2992,10 +2992,13 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
 }
 
 .ng-modal {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
   width: min(100%, 900px);
   max-height: calc(100dvh - 36px);
-  overflow: auto;
-  padding: 20px;
+  overflow: hidden;
+  padding: 0;
   border-radius: var(--molsan-radius-modal);
   box-shadow: var(--molsan-shadow-modal);
 }
@@ -3009,6 +3012,9 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
 
 .ng-modal-lista {
   display: grid;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
   gap: 10px;
 }
 
@@ -3930,7 +3936,17 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
   font-size: var(--molsan-font-size-sm);
 }
 
+.eg-modal-header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
 .eg-modal-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  background: var(--molsan-white);
   display: flex;
   justify-content: flex-end;
   flex-wrap: wrap;
@@ -5711,14 +5727,11 @@ body [role="dialog"]:not([data-molsan-style-exempt]) button:disabled {
 }
 
 .ng-resumen-expedientes-contenido {
-  width: min(100%, 1160px);
-  max-height: calc(100dvh - 32px);
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
   overflow: auto;
   padding: 18px;
-  background: #fff;
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-modal);
-  box-shadow: var(--molsan-shadow-modal);
 }
 
 .ng-tabla-pagos,
