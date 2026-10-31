@@ -53,66 +53,6 @@ export default function Notificaciones() {
   // ESTILOS POR TIPO
   // ==========================================================
 
-  const estilosTipo = {
-
-    error: {
-      borde: "border-red-200",
-      fondo: "bg-red-50",
-      icono: "bg-red-50 border-red-200 text-red-600",
-      barra: "bg-red-500",
-    },
-
-    security: {
-      borde: "border-purple-200",
-      fondo: "bg-purple-50",
-      icono: "bg-purple-50 border-purple-200 text-purple-600",
-      barra: "bg-purple-500",
-    },
-
-    warning: {
-      borde: "border-amber-200",
-      fondo: "bg-amber-50",
-      icono: "bg-amber-50 border-amber-200 text-amber-600",
-      barra: "bg-amber-500",
-    },
-
-    success: {
-      borde: "border-emerald-200",
-      fondo: "bg-emerald-50",
-      icono: "bg-emerald-50 border-emerald-200 text-emerald-600",
-      barra: "bg-emerald-500",
-    },
-
-    noticia: {
-      borde: "border-blue-200",
-      fondo: "bg-blue-50",
-      icono: "bg-blue-50 border-blue-200 text-blue-600",
-      barra: "bg-blue-500",
-    },
-
-    sistema: {
-      borde: "border-cyan-200",
-      fondo: "bg-cyan-50",
-      icono: "bg-cyan-50 border-cyan-200 text-cyan-600",
-      barra: "bg-cyan-500",
-    },
-
-    info: {
-      borde: "border-sky-200",
-      fondo: "bg-sky-50",
-      icono: "bg-sky-50 border-sky-200 text-sky-600",
-      barra: "bg-sky-500",
-    },
-
-    default: {
-      borde: "border-[var(--erp-border)]",
-      fondo: "bg-white",
-      icono: "bg-[var(--erp-primary-soft)] border-[var(--erp-border)] text-[var(--erp-primary)]",
-      barra: "bg-[var(--erp-primary)]",
-    },
-
-  };
-
   // ==========================================================
   // HELPERS
   // ==========================================================
@@ -141,16 +81,6 @@ export default function Notificaciones() {
     );
   };
 
-
-  const obtenerEstilo = (tipo) => {
-
-    const tipoNormalizado = obtenerTipo(tipo);
-
-    return (
-      estilosTipo[tipoNormalizado] ||
-      estilosTipo.default
-    );
-  };
 
 
   const formatearFecha = (fecha) => {
@@ -438,8 +368,8 @@ export default function Notificaciones() {
  overflow-hidden
  
  
- ${estilo.borde}
- ${estilo.fondo}
+ 
+ 
  p-4
  md:p-5`}
               >
@@ -455,7 +385,7 @@ export default function Notificaciones() {
  bottom-4
  w-[3px]
  
- ${estilo.barra}`}
+ `}
                 />
 
 
@@ -473,7 +403,7 @@ export default function Notificaciones() {
  w-11
  h-11
  
- ${estilo.icono}
+ 
  
  flex
  items-center
