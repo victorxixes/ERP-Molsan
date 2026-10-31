@@ -743,10 +743,10 @@ function CeldaRepositorioDigital({ expedienteId, repositorioKey, valor, onAbrir 
       {hover && (
         <div className="absolute z-50 left-0 top-full mt-2 w-[min(560px,80vw)] p-3" onMouseEnter={() => setHover(true)}>
           <div className="mb-2 flex items-center justify-between gap-2">
-            <strong className="">{REPOSITORIOS_CARPETA_DIGITAL.find((item) => item.key === repositorioKey)?.label || "Documentos"}</strong>
+            <strong>{REPOSITORIOS_CARPETA_DIGITAL.find((item) => item.key === repositorioKey)?.label || "Documentos"}</strong>
             <span>{cantidad} archivo(s)</span>
           </div>
-          {cargandoDocs ? <p className="">Cargando documentos…</p> : errorDocs ? <p className="">{errorDocs}</p> : documentos.length === 0 ? <p>No se han podido localizar los archivos de esta categoría.</p> : (
+          {cargandoDocs ? <p>Cargando documentos…</p> : errorDocs ? <p>{errorDocs}</p> : documentos.length === 0 ? <p>No se han podido localizar los archivos de esta categoría.</p> : (
             <div className="grid gap-3 sm:grid-cols-[minmax(140px,0.8fr)_minmax(0,1.4fr)]">
               <div className="max-h-56 space-y-1 overflow-auto">
                 {documentos.map((doc) => (
@@ -2403,19 +2403,19 @@ export default function ExpedientesListado() {
       {/* Área principal de trabajo de expedientes */}
 
       <main className="min-w-0 w-full space-y-6">
-        <header className=" ">
-          <div className="">
-            <div className=" " aria-hidden="true">EXP</div>
+        <header>
+          <div>
+            <div aria-hidden="true">EXP</div>
             <div className="min-w-0">
-              <p className=" ">MOLSAN ERP</p>
-              <h1 className="">Expedientes</h1>
-              <p className="">
+              <p>MOLSAN ERP</p>
+              <h1>Expedientes</h1>
+              <p>
                 Consulta, seguimiento y control de la tramitación de expedientes.
               </p>
             </div>
           </div>
-          <div className="">
-            <span className="">Gestión y seguimiento</span>
+          <div>
+            <span>Gestión y seguimiento</span>
           </div>
         </header>
 
@@ -2424,8 +2424,8 @@ export default function ExpedientesListado() {
       {/* SLA GLOBAL: CIRCUITOS DIFERENCIADOS */}
       <section className="space-y-3" aria-label="SLA global por circuito">
         <div>
-          <h3 className="">SLA global por circuito</h3>
-          <p className="">Controles independientes de los plazos de cada actividad. Pulsa un circuito para ver sus expedientes fuera de plazo.</p>
+          <h3>SLA global por circuito</h3>
+          <p>Controles independientes de los plazos de cada actividad. Pulsa un circuito para ver sus expedientes fuera de plazo.</p>
         </div>
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
           {[
@@ -2467,7 +2467,7 @@ export default function ExpedientesListado() {
                   <div className="flex min-w-0 items-center gap-3">
                     <span className="flex h-12 w-12 shrink-0 items-center justify-center">{circuito.icono}</span>
                     <div className="min-w-0">
-                      <div className="">{circuito.titulo}</div>
+                      <div>{circuito.titulo}</div>
                       <div className="mt-1">{circuito.descripcion}</div>
                     </div>
                   </div>
@@ -2477,7 +2477,7 @@ export default function ExpedientesListado() {
                   <div>
                     <div className="tabular-nums">{loadingAlertasControl ? "—" : formatearNumero(total)}
                     </div>
-                    <div className="">expedientes fuera de plazo</div>
+                    <div>expedientes fuera de plazo</div>
                   </div>
                   <div>
                     {activa ? "Circuito seleccionado ✓" : "Ver expedientes →"}
@@ -2487,14 +2487,14 @@ export default function ExpedientesListado() {
             );
           })}
         </div>
-        <p className="">Se calcula desde la fecha de envío hasta Fin actividad o la fecha actual si sigue abierto. Hipotecario y Crédito Stock quedan excluidos.</p>
+        <p>Se calcula desde la fecha de envío hasta Fin actividad o la fecha actual si sigue abierto. Hipotecario y Crédito Stock quedan excluidos.</p>
         </section>
 
       {/* ESTADOS DIFERENCIALES: son estados del expediente, no actividades ni SLA */}
       <section className="space-y-1" aria-label="Estados diferenciales del expediente">
         <div>
-          <h3 className="">Estados diferenciales</h3>
-          <p className="">Estos filtros se basan en el estado del expediente. No son actividades y no calculan SLA.</p>
+          <h3>Estados diferenciales</h3>
+          <p>Estos filtros se basan en el estado del expediente. No son actividades y no calculan SLA.</p>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {[
@@ -2548,7 +2548,7 @@ export default function ExpedientesListado() {
       {/* GRIDS DE ACTIVIDAD */}
       <section className="space-y-3" aria-label="Expedientes por actividad">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-          <div><h3 className="">{(configuracionesVisibilidad.find((item) => item.actividad_key === actividadSeleccionada)?.nombre_tabla) || "Expedientes por actividad"}</h3><p className="">Pulsa un grid para ver debajo la tabla con los expedientes de esa actividad.</p></div>
+          <div><h3>{(configuracionesVisibilidad.find((item) => item.actividad_key === actividadSeleccionada)?.nombre_tabla) || "Expedientes por actividad"}</h3><p>Pulsa un grid para ver debajo la tabla con los expedientes de esa actividad.</p></div>
           {actividadSeleccionada && <button type="button" onClick={() => { setActividadSeleccionada(""); setAlertaSeleccionada(""); setColumnasVisibles(COLUMNAS_POR_DEFECTO); setFiltroActividad(""); setFiltrosAplicados((actual) => ({ ...actual, actividad: "" })); setPagina(1); }} className="self-start px-3 py-2">Ver todas las actividades</button>}
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
@@ -2601,7 +2601,7 @@ export default function ExpedientesListado() {
                 aria-label="Buscar expedientes"
       >
         <div>
-          <h3 className="">¿Qué expediente necesitas?</h3>
+          <h3>¿Qué expediente necesitas?</h3>
           <p className="mt-1">
             Escribe cualquier dato que conozcas: número, nombre, NIF, notario, oficina, finca o registro.
           </p>
@@ -2635,7 +2635,7 @@ export default function ExpedientesListado() {
           )}
         </form>
         {busquedaAplicada && (
-          <p className="" role="status">
+          <p role="status">
             Búsqueda activa: <strong>{busquedaAplicada}</strong>. Puedes combinarla con los filtros avanzados.
           </p>
         )}
@@ -2692,7 +2692,6 @@ export default function ExpedientesListado() {
               <thead>
 
                 <tr
-                  className=""
                 >
 
                   {columnasActivas.map(
@@ -2758,7 +2757,6 @@ export default function ExpedientesListado() {
 
 
                           <span
-                            className=""
                           >
                             {
                               iconoOrden(
@@ -2796,8 +2794,6 @@ export default function ExpedientesListado() {
                         expediente.id ||
                         indice
                       }
-
-                      className=""
                     >
 
                       {columnasActivas.map(
@@ -2894,7 +2890,6 @@ export default function ExpedientesListado() {
           Total de expedientes:{" "}
 
           <strong
-            className=""
           >
             {
               formatearNumero(
@@ -2911,7 +2906,6 @@ export default function ExpedientesListado() {
           Mostrando{" "}
 
           <strong
-            className=""
           >
             {
               expedientes.length
@@ -2969,13 +2963,11 @@ export default function ExpedientesListado() {
 
 
         <span
-          className=""
         >
 
           Página{" "}
 
           <strong
-            className=""
           >
             {
               pagina
@@ -2985,7 +2977,6 @@ export default function ExpedientesListado() {
           {" "}de{" "}
 
           <strong
-            className=""
           >
             {
               totalPaginas
