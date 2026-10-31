@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import "../../css/EncargaGestWorkspace.css";
 import Sidebar from "../../components/Sidebar";
 import EncargaGest from "./EncargaGest";
 import Ctn from "../ctn/Ctn";
