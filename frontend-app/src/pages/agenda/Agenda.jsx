@@ -497,16 +497,14 @@ export default function Agenda({ soloApoderado = false } = {}) {
                   type="button"
                   onClick={() => setVista(opcion)}
                   aria-pressed={activo}
-                  className={`
-                    px-4 py-2 rounded-lg
-                    text-sm font-medium
-                    transition-all duration-200
-                    ${
-                      activo
-                        ? ""
-                        : ""
-                    }
-                  `}
+                  className={`px-4 py-2 
+ 
+ 
+ ${
+ activo
+ ? ""
+ : ""
+ }`}
                 >
                   {opcion.charAt(0).toUpperCase() + opcion.slice(1)}
                 </button>
