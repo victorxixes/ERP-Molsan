@@ -867,7 +867,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         description={modo === "externo" ? "Portal profesional · " + (sesion?.notaria_nombre || "Sesión externa") : "Recepción y seguimiento de encargos notariales externos."}
       />
 
-      <main className="eg-main w-full max-w-none px-1 pb-4">
+      <main className="eg-main w-full max-w-none pb-4">
         <section role="status" aria-live="polite" className="mb-5 flex items-start gap-3 px-4 py-3">
           <span aria-hidden="true" className="mt-0.5">⚠️</span>
           <div>
