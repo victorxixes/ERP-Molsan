@@ -234,7 +234,7 @@ export default function Fichajes({ modo = "empleado" }) {
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-700 via-cyan-500 to-emerald-400" />
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-[10px] font-extrabold tracking-[.2em] text-blue-700">MOLSAN ERP · PREMIUM 2027</p>
+            <p className="text-[10px] font-extrabold tracking-[.2em] text-blue-700">MOLSAN ERP</p>
             <h1 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">{esAdminVista ? "Control de Fichajes" : "Fichaje Molsan"}</h1>
             <p className="mt-2 text-sm text-[var(--erp-text-soft)]">{esAdminVista ? "Supervisión de marcajes de la plantilla." : "Registro de jornada y gestión de justificantes personales."}</p>
           </div>
