@@ -5195,10 +5195,14 @@ const cuantiaFincasParaEnvio =
                 ← Expedientes
               </Link>
             </div>
-
-
           </div>
 
+          <MolsanPageHeader
+            className="w-full"
+            mark="EX"
+            title={`Expediente ${valorVisible(expediente.id_expediente)}`}
+            description="Ficha completa del expediente"
+          />
 
         {/* ===================================================
             BLOQUES SUPERIORES
@@ -5312,7 +5316,7 @@ const cuantiaFincasParaEnvio =
 
           {/* Ficha y acciones en una sola línea, debajo de los bloques principales */}
           <div className="mt-3 flex w-full min-w-0 flex-wrap items-center gap-2 overflow-x-hidden px-3 py-2">
-            <MolsanPageHeader className="w-full" mark="EX" title={`Expediente ${valorVisible(expediente.id_expediente)}`} description="Ficha completa del expediente" />
+            
             <div className="flex min-w-0 flex-wrap items-center gap-2 px-2 py-1.5">
               <label htmlFor="ficha-promocion" className="shrink-0 uppercase">Promoción</label>
               <input id="ficha-promocion" type="text" value={expediente?.promocion || ""} readOnly placeholder="Sin asignar" className="w-36 min-w-[100px] px-2 py-1.5 sm:w-44" aria-label="Promoción asignada al expediente" title="La promoción se asigna desde Utilidades → Gestión de expedientes." />
