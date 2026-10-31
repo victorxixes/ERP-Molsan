@@ -6,6 +6,8 @@ import FestivosCompensaciones from "./FestivosCompensaciones.jsx";
 import ControlFichajesAdmin from "./ControlFichajesAdmin.jsx";
 import SolicitudesAusencia from "./SolicitudesAusencia.jsx";
 import DocumentosAdmin from "./DocumentosAdmin.jsx";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 const TIPOS = [
   { value: "ENTRADA", label: "Entrada a trabajar", icon: "↗", tone: "emerald" },
@@ -126,6 +128,9 @@ export default function Fichajes({ modo = "empleado" }) {
     const q = busqueda.trim().toLocaleLowerCase("es");
     return marcajes.filter((m) => !q || [formatearTipo(m.tipo), m.observaciones, fechaLarga(m.fecha_hora), hora(m.fecha_hora)].some((v) => String(v || "").toLocaleLowerCase("es").includes(q)));
   }, [marcajes, busqueda]);
+
+  const ordenMarcajes = useSortableData(marcajesFiltrados);
+  const ordenVacaciones = useSortableData(vacacionesAdmin);
 
   const calendario = useMemo(() => {
     const primero = inicioMes(mes);
@@ -300,7 +305,7 @@ export default function Fichajes({ modo = "empleado" }) {
             {!esAdminVista && pestana === "resumen" && (
               <div className="p-4 sm:p-6">
                 <div className="flex flex-wrap items-end justify-between gap-3"><div><h2>Resumen de marcajes</h2><p>Busca por tipo, fecha, hora u observaciones.</p></div><label className="w-full max-w-sm">Buscar<input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Ej. Entrada, 09:00…" className="mt-1 w-full px-3 py-2.5" /></label></div>
-                <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[560px]"><thead><tr className="uppercase"><th className="px-3 py-3">Fecha</th><th className="px-3 py-3">Hora</th><th className="px-3 py-3">Marcaje</th><th className="px-3 py-3">Observaciones</th></tr></thead><tbody>{marcajesFiltrados.map((m) => <tr key={m.id}><td className="px-3 py-3">{fechaLarga(m.fecha_hora)}</td><td className="px-3 py-3 tabular-nums">{hora(m.fecha_hora)}</td><td className="px-3 py-3"><span className="px-2.5 py-1.5">{formatearTipo(m.tipo)}</span></td><td className="px-3 py-3">{m.observaciones || "—"}</td></tr>)}{marcajesFiltrados.length === 0 && <tr><td colSpan="4" className="px-3 py-10">No hay marcajes para esta búsqueda.</td></tr>}</tbody></table></div>
+                <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[560px]"><thead><tr className="uppercase"><MolsanSortableTh label="Fecha" sortKey="fecha_hora" sortConfig={ordenMarcajes.sortConfig} onSort={ordenMarcajes.requestSort} className="px-3 py-3" /><MolsanSortableTh label="Hora" sortKey="fecha_hora" sortConfig={ordenMarcajes.sortConfig} onSort={ordenMarcajes.requestSort} className="px-3 py-3" /><MolsanSortableTh label="Marcaje" sortKey="tipo" sortConfig={ordenMarcajes.sortConfig} onSort={ordenMarcajes.requestSort} className="px-3 py-3" /><MolsanSortableTh label="Observaciones" sortKey="observaciones" sortConfig={ordenMarcajes.sortConfig} onSort={ordenMarcajes.requestSort} className="px-3 py-3" /></tr></thead><tbody>{ordenMarcajes.items.map((m) => <tr key={m.id}><td className="px-3 py-3">{fechaLarga(m.fecha_hora)}</td><td className="px-3 py-3 tabular-nums">{hora(m.fecha_hora)}</td><td className="px-3 py-3"><span className="px-2.5 py-1.5">{formatearTipo(m.tipo)}</span></td><td className="px-3 py-3">{m.observaciones || "—"}</td></tr>)}{marcajesFiltrados.length === 0 && <tr><td colSpan="4" className="px-3 py-10">No hay marcajes para esta búsqueda.</td></tr>}</tbody></table></div>
               </div>
             )}
 
@@ -341,8 +346,8 @@ export default function Fichajes({ modo = "empleado" }) {
                 <div className="mb-4 grid gap-3 sm:grid-cols-2"><label>Filtrar empleado<select value={empleadoFiltro} onChange={e => setEmpleadoFiltro(e.target.value)} className="mt-1 w-full px-3 py-2.5"><option value="">Toda la plantilla</option>{empleados.map(e => <option key={e.id} value={e.id}>{e.nombre}</option>)}</select></label><div className="flex items-end"><button type="button" onClick={() => recargarAdmin().catch(e => setError(e?.response?.data?.detail || "No se pudieron actualizar las solicitudes."))} className="px-4 py-2.5">Actualizar solicitudes</button></div></div>
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[850px]">
-                    <thead><tr className="uppercase"><th className="p-3">Empleado</th><th className="p-3">Desde</th><th className="p-3">Hasta</th><th className="p-3">Días</th><th className="p-3">Estado</th><th className="p-3">Observaciones</th><th className="p-3">Acciones</th></tr></thead>
-                    <tbody>{vacacionesAdmin.map(v => <tr key={v.id}>
+                    <thead><tr className="uppercase"><MolsanSortableTh label="Empleado" sortKey="empleado_nombre" sortConfig={ordenVacaciones.sortConfig} onSort={ordenVacaciones.requestSort} className="p-3" /><MolsanSortableTh label="Desde" sortKey="fecha_inicio" sortConfig={ordenVacaciones.sortConfig} onSort={ordenVacaciones.requestSort} className="p-3" /><MolsanSortableTh label="Hasta" sortKey="fecha_fin" sortConfig={ordenVacaciones.sortConfig} onSort={ordenVacaciones.requestSort} className="p-3" /><MolsanSortableTh label="Días" sortKey="dias" sortConfig={ordenVacaciones.sortConfig} onSort={ordenVacaciones.requestSort} className="p-3" /><MolsanSortableTh label="Estado" sortKey="estado" sortConfig={ordenVacaciones.sortConfig} onSort={ordenVacaciones.requestSort} className="p-3" /><MolsanSortableTh label="Observaciones" sortKey="observaciones" sortConfig={ordenVacaciones.sortConfig} onSort={ordenVacaciones.requestSort} className="p-3" /><th className="p-3">Acciones</th></tr></thead>
+                    <tbody>{ordenVacaciones.items.map(v => <tr key={v.id}>
                       <td className="p-3">{v.empleado_nombre}</td><td className="p-3">{fechaLarga(v.fecha_inicio)}</td><td className="p-3">{fechaLarga(v.fecha_fin)}</td><td className="p-3">{v.dias}</td><td className="p-3"><span className={v.estado === "SOLICITADO" ? "px-2 py-1" : v.estado === "APROBADO" ? "px-2 py-1" : "px-2 py-1"}>{v.estado === "SOLICITADO" ? "Pendiente" : v.estado === "APROBADO" ? "Aprobada" : "Rechazada"}</span></td>
                       <td className="max-w-[220px] p-3">{v.observaciones || "—"}</td><td className="p-3">{v.estado === "SOLICITADO" ? <div className="flex gap-2"><button type="button" disabled={guardando} onClick={() => resolverVacaciones(v, "APROBADO")} className="px-3 py-2">Aprobar</button><button type="button" disabled={guardando} onClick={() => resolverVacaciones(v, "RECHAZADO")} className="px-3 py-2">Rechazar</button></div> : "Resuelta"}</td>
                     </tr>)}{!vacacionesAdmin.length && <tr><td colSpan="7" className="p-10">No hay solicitudes de vacaciones registradas.</td></tr>}</tbody>
