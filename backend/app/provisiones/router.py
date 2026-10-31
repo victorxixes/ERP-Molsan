@@ -166,9 +166,16 @@ def _buscar_expediente(db: Session, id_expediente: str) -> Expediente:
 
 
 def _buscar_tarifa(db: Session, tipo: str, entidad: str, capital: Decimal, territorio: str = "Península") -> Optional[TarifaProvision]:
-    # La tarifa se busca por entidad (o tarifa genérica), territorio y tramo de capital.
-    # El tipo de operación y el estado activo no intervienen en esta selección.
-    tarifas = db.query(TarifaProvision).all()
+    # Solo pueden participar tarifas activas del mismo circuito (provisión o
+    # cancelación), además de coincidir entidad, territorio y tramo de capital.
+    tarifas = (
+        db.query(TarifaProvision)
+        .filter(
+            TarifaProvision.tipo == tipo,
+            TarifaProvision.activo.is_(True),
+        )
+        .all()
+    )
     key_entidad = _normalizar(entidad)
     aplicables = []
     for tarifa in tarifas:
