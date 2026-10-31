@@ -36,13 +36,7 @@ function highlight(text, query) {
       regex.test(part) ? (
         <span
           key={i}
-          className="
-            bg-yellow-200
-            text-yellow-900
-            font-semibold
-            px-0.5
-            rounded
-          "
+          className="px-0.5"
         >
           {part}
         </span>
@@ -541,20 +535,18 @@ export default function AutocompleteNotario({
         {/* AVATAR */}
 
         <span
-          className="
-            inline-flex
-            items-center
-            justify-center
-            w-7
-            h-7
-            rounded-full
-            bg-blue-600
-            text-white
-            text-xs
-            font-bold
-            shadow-sm
-            shrink-0
-          "
+          className="inline-flex
+ items-center
+ justify-center
+ w-7
+ h-7
+ 
+ 
+ 
+ 
+ 
+ 
+ shrink-0"
         >
           {currentLabel
             ? currentLabel
@@ -575,14 +567,10 @@ export default function AutocompleteNotario({
         <input
           type="text"
           disabled={disabled}
-          className="
-            w-full
-            bg-transparent
-            text-slate-700
-            placeholder-slate-400
-            focus:outline-none
-            disabled:text-slate-400
-          "
+          className="w-full
+ 
+ 
+ placeholder-slate-400"
           placeholder="Buscar notario por nombre, apellidos, municipio o provincia…"
           value={currentLabel}
           onChange={
@@ -608,15 +596,12 @@ export default function AutocompleteNotario({
         {loading && (
 
           <div
-            className="
-              animate-spin
-              h-4 w-4
-              border-2
-              border-slate-300
-              border-t-blue-500
-              rounded-full
-              shrink-0
-            "
+            className="h-4 w-4
+ 
+ 
+ 
+ 
+ shrink-0"
           />
 
         )}
@@ -631,33 +616,26 @@ export default function AutocompleteNotario({
       {open && !disabled && (
 
         <div
-          className="
-            absolute
-            left-0
-            right-0
-            mt-2
-            bg-white
-            border border-slate-200
-            rounded-xl
-            shadow-2xl
-            shadow-slate-900/10
-            overflow-hidden
-            z-[110]
-            max-h-80
-            overflow-y-auto
-            animate-fade-in
-          "
+          className="absolute
+ left-0
+ right-0
+ mt-2
+ 
+ 
+ 
+ 
+ 
+ overflow-hidden
+ z-[110]
+ max-h-80
+ overflow-y-auto"
         >
 
           {notarios.length === 0 &&
           !loading ? (
 
             <div
-              className="
-                px-4 py-4
-                text-sm
-                text-slate-400
-              "
+              className="px-4 py-4"
             >
               {searchError || (query.trim().length < 2
                 ? "Escribe al menos dos caracteres para buscar."
@@ -733,47 +711,40 @@ export default function AutocompleteNotario({
                   onClick={() =>
                     seleccionar(n)
                   }
-                  className="
-                    w-full
-                    text-left
-                    px-4 py-3
-                    cursor-pointer
-                    text-sm
-                    hover:bg-slate-50
-                    transition
-                    border-b
-                    border-slate-100
-                    last:border-b-0
-                    flex
-                    gap-3
-                  "
+                  className="w-full
+ 
+ px-4 py-3
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ flex
+ gap-3"
                 >
 
                   {/* AVATAR / KM */}
 
                   <div
-                    className="
-                      flex
-                      flex-col
-                      items-center
-                      justify-start
-                      shrink-0
-                    "
+                    className="flex
+ flex-col
+ items-center
+ justify-start
+ shrink-0"
                   >
 
                     <div
-                      className="
-                        w-9 h-9
-                        rounded-full
-                        bg-blue-600
-                        text-white
-                        text-xs
-                        font-bold
-                        flex
-                        items-center
-                        justify-center
-                        shadow-sm
-                      "
+                      className="w-9 h-9
+ 
+ 
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
                     >
                       {iniciales}
                     </div>
@@ -782,13 +753,11 @@ export default function AutocompleteNotario({
                     {km !== null && (
 
                       <div
-                        className="
-                          mt-1
-                          text-[10px]
-                          text-blue-600
-                          font-semibold
-                          whitespace-nowrap
-                        "
+                        className="mt-1
+ 
+ 
+ 
+ whitespace-nowrap"
                       >
                         🚗{" "}
                         {km.toFixed(1)} km
@@ -802,18 +771,12 @@ export default function AutocompleteNotario({
                   {/* DATOS */}
 
                   <div
-                    className="
-                      flex-1
-                      min-w-0
-                    "
+                    className="flex-1
+ min-w-0"
                   >
 
                     <div
-                      className="
-                        font-semibold
-                        text-slate-800
-                        truncate
-                      "
+                      className="truncate"
                     >
                       {highlight(
                         nombreCompleto,
@@ -823,12 +786,8 @@ export default function AutocompleteNotario({
 
 
                     <div
-                      className="
-                        text-xs
-                        text-slate-500
-                        truncate
-                        mt-0.5
-                      "
+                      className="truncate
+ mt-0.5"
                     >
                       {highlight(
                         `${n.municipio || ""} — ${
@@ -842,12 +801,8 @@ export default function AutocompleteNotario({
                     {direccionCompleta && (
 
                       <div
-                        className="
-                          text-[11px]
-                          text-slate-400
-                          truncate
-                          mt-0.5
-                        "
+                        className="truncate
+ mt-0.5"
                       >
                         {highlight(
                           direccionCompleta,
@@ -861,12 +816,8 @@ export default function AutocompleteNotario({
                     {apoderadoLabel && (
 
                       <div
-                        className="
-                          text-[11px]
-                          text-emerald-600
-                          truncate
-                          mt-0.5
-                        "
+                        className="truncate
+ mt-0.5"
                       >
                         Apoderado:{" "}
                         {highlight(
@@ -883,14 +834,12 @@ export default function AutocompleteNotario({
                   {/* ESTADO */}
 
                   <div
-                    className="
-                      flex
-                      flex-col
-                      items-end
-                      justify-start
-                      gap-1
-                      shrink-0
-                    "
+                    className="flex
+ flex-col
+ items-end
+ justify-start
+ gap-1
+ shrink-0"
                   >
 
                     <span
@@ -917,10 +866,7 @@ export default function AutocompleteNotario({
                     {n.codigo && (
 
                       <span
-                        className="
-                          text-[10px]
-                          text-slate-400
-                        "
+                        className=""
                       >
                         {n.codigo}
                       </span>
