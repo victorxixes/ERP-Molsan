@@ -7,6 +7,8 @@ import React, {
   useRef,
 } from "react";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 
 // ============================================================
@@ -494,6 +496,8 @@ export default function OficinasLiquidadoras() {
   // PAGINACIÓN
   // ==========================================================
 
+  const ordenOficinas = useSortableData(oficinas);
+
   const totalPaginas =
     Math.max(
       1,
@@ -505,7 +509,7 @@ export default function OficinasLiquidadoras() {
 
 
   const oficinasPagina =
-    oficinas.slice(
+    ordenOficinas.items.slice(
       (pagina - 1) *
         POR_PAGINA,
       pagina *
@@ -1562,94 +1566,49 @@ export default function OficinasLiquidadoras() {
  min-w-[1250px]"
           >
 
-            <thead>
+            <MolsanSortableTh label="Oficina Liquidadora" sortKey="oficina_liquidadora" sortConfig={ordenOficinas.sortConfig} onSort={ordenOficinas.requestSort} className="" />
 
-              <tr
-               
-              >
-
-                <th
-                  className="px-4
+                <MolsanSortableTh label="Dirección" sortKey="direccion" sortConfig={ordenOficinas.sortConfig} onSort={ordenOficinas.requestSort} className="px-4
  py-3
  
- whitespace-nowrap"
-                >
-                  Oficina Liquidadora
-                </th>
+ whitespace-nowrap" />
 
-                <th
-                  className="px-4
- py-3
- 
- whitespace-nowrap"
-                >
-                  Dirección
-                </th>
-
-                <th
-                  className="px-4
+                <MolsanSortableTh label="Código Postal" sortKey="codigo_postal" sortConfig={ordenOficinas.sortConfig} onSort={ordenOficinas.requestSort} className="px-4
  py-3
  
  
- whitespace-nowrap"
-                >
-                  Código Postal
-                </th>
+ whitespace-nowrap" />
 
-                <th
-                  className="px-4
+                <MolsanSortableTh label="Población" sortKey="poblacion" sortConfig={ordenOficinas.sortConfig} onSort={ordenOficinas.requestSort} className="px-4
  py-3
  
- whitespace-nowrap"
-                >
-                  Población
-                </th>
+ whitespace-nowrap" />
 
-                <th
-                  className="px-4
+                <MolsanSortableTh label="Provincia" sortKey="provincia" sortConfig={ordenOficinas.sortConfig} onSort={ordenOficinas.requestSort} className="px-4
  py-3
  
- whitespace-nowrap"
-                >
-                  Provincia
-                </th>
+ whitespace-nowrap" />
 
-                <th
-                  className="px-4
+                <MolsanSortableTh label="Teléfono" sortKey="telefono" sortConfig={ordenOficinas.sortConfig} onSort={ordenOficinas.requestSort} className="px-4
  py-3
  
- whitespace-nowrap"
-                >
-                  Teléfono
-                </th>
+ whitespace-nowrap" />
 
-                <th
-                  className="px-4
+                <MolsanSortableTh label="Email" sortKey="email" sortConfig={ordenOficinas.sortConfig} onSort={ordenOficinas.requestSort} className="px-4
  py-3
  
- whitespace-nowrap"
-                >
-                  Email
-                </th>
+ whitespace-nowrap" />
 
-                <th
-                  className="px-4
+                <MolsanSortableTh label="Horario" sortKey="horario" sortConfig={ordenOficinas.sortConfig} onSort={ordenOficinas.requestSort} className="px-4
  py-3
  
- whitespace-nowrap"
-                >
-                  Horario
-                </th>
+ whitespace-nowrap" />
 
-                <th
-                  className="px-4
+                <MolsanSortableTh label="Estado" sortKey="activo" sortConfig={ordenOficinas.sortConfig} onSort={ordenOficinas.requestSort} className="px-4
  py-3
  
  
- whitespace-nowrap"
-                >
-                  Estado
-                </th>
+ whitespace-nowrap" />
 
                 <th
                   className="px-4
