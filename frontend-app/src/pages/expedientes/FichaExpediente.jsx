@@ -7107,8 +7107,7 @@ const cuantiaFincasParaEnvio =
                             <p className="mt-1">Importe inicial menos pagos confirmados</p>
                           </div>
                         </div>
-
-                  
+                      </section>
                 )}
 
                         <div className="mt-4">
