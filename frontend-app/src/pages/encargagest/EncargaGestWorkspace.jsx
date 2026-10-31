@@ -45,7 +45,7 @@ export default function EncargaGestWorkspace({ page }) {
         {page === "mensajes" && (
           empleado?.id
             ? <Mensajes usuarioId={empleado.id} />
-            : <div className="p-6 text-white/70">Cargando módulo de mensajes…</div>
+            : <div className="p-6">Cargando módulo de mensajes…</div>
         )}
       </main>
     </div>
