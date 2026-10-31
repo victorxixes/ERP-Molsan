@@ -495,7 +495,7 @@ function TablaEncargos({ encargos, onFirmado }) {
             </button>
             {abierto ? createPortal((
               <div className="molsan-modal-overlay panel-modal-premium fixed inset-0 z-[1000] flex items-center justify-center p-3 sm:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget) setGrupoEncargosAbierto(null); }}>
-                <div ref={grupoDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={`Encargos de ${grupo.nombre}`} className="molsan-modal__panel flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden">
+                <div ref={grupoDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={`Encargos de ${grupo.nombre}`} className="molsan-modal__panel molsan-modal--wide flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden">
                   <header className="molsan-modal__header flex items-center justify-between gap-4 px-5 py-4">
                     <div><span className="uppercase">APODERAGEST · BLOQUE DE APODERADO</span><h3 className="mt-1">{grupo.nombre}</h3><p>{grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas registradas · {grupo.expedientes.length} encargos</p></div>
                     <button type="button" className="px-4 py-2" onClick={() => setGrupoEncargosAbierto(null)}>Cerrar ✕</button>
