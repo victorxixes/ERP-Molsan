@@ -2,8 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
 
-const campo = "w-full rounded-xl border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface)] px-3 py-2.5 text-sm text-[var(--molsan-text)] outline-none transition focus:border-[var(--molsan-primary)] focus:ring-4 focus:ring-[var(--molsan-primary)]/10";
-const botonSecundario = "rounded-xl border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface)] px-3 py-2 text-sm font-semibold text-[var(--molsan-text)] transition hover:border-[var(--molsan-primary)] hover:bg-[var(--molsan-surface-soft)]";
+const campo = "w-full px-3 py-2.5";
+const botonSecundario = "px-3 py-2";
 const fincaVacia = () => ({ finca: "", cru_idufir: "", registro: "", provincia: "", poblacion: "", seccion: "", inscripcion: "", cuantia: "", contrato: "", entidad_original: "" });
 const hipotecaVacia = () => ({ acreedor: "", numero: "", capital: "", contrato: "", observaciones: "" });
 
