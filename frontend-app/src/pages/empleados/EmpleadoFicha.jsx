@@ -237,18 +237,16 @@ export default function EmpleadoFicha({
                 </span>
 
                 <span
-                  className={`
-                    px-2.5
-                    py-1
-                    rounded-lg
-                    text-xs
-                    font-medium
-                    ${
-                      empleado.activo
-                        ? ""
-                        : ""
-                    }
-                  `}
+                  className={`px-2.5
+ py-1
+ 
+ 
+ 
+ ${
+ empleado.activo
+ ? ""
+ : ""
+ }`}
                 >
                   {empleado.activo
                     ? "Activo"
@@ -627,15 +625,11 @@ function Dato({
       </div>
 
       <div
-        className={`
-          text-sm
-          text-[var(--erp-text)]
-          ${
-            multiline
-              ? "whitespace-pre-wrap"
-              : ""
-          }
-        `}
+        className={`${
+ multiline
+ ? "whitespace-pre-wrap"
+ : ""
+ }`}
       >
         {value ||
           "—"}
