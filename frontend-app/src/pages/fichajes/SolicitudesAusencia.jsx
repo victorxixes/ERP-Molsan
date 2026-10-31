@@ -64,8 +64,8 @@ export default function SolicitudesAusencia({ modo = "empleado", empleados = [] 
     finally { setGuardando(false); }
   };
 
-  const label = "block text-xs font-bold text-slate-600";
-  const input = "mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal";
+  const label = "block";
+  const input = "mt-1 w-full px-3 py-2.5";
   return <div className="fichajes-premium-page fichajes-solicitudes-premium p-4 sm:p-6">
     <div className="mb-4"><h2 className="">{admin ? "Solicitudes de ausencias y permisos" : "Solicitar ausencia o permiso"}</h2><p className="mt-1">{admin ? "Revisa las peticiones, registra el motivo de cada decisión y evita solapamientos." : "Envía una solicitud para que administración la revise. Registrar una solicitud no equivale a su aprobación."}</p></div>
     {!admin && <form onSubmit={enviar} className="mb-6 grid gap-3 p-4 sm:grid-cols-2">
