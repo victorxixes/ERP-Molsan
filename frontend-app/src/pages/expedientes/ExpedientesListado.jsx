@@ -2997,7 +2997,7 @@ export default function ExpedientesListado() {
 
       {mostrarFiltros && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+          className="molsan-modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
           role="presentation"
         >
           <button
@@ -3013,10 +3013,10 @@ export default function ExpedientesListado() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-filtros-titulo"
-            className="relative z-10 w-full max-w-5xl max-h-[88vh] overflow-y-auto"
+            className="molsan-modal__panel relative z-10 flex max-h-[88vh] w-full max-w-5xl flex-col overflow-hidden"
                       >
             <div
-              className="sticky top-0 z-10 px-6 py-5 flex items-start justify-between gap-4"
+              className="molsan-modal__header z-10 flex items-start justify-between gap-4"
                           >
               <div>
                 <h3 id="modal-filtros-titulo">
@@ -3036,7 +3036,7 @@ export default function ExpedientesListado() {
               </button>
             </div>
 
-            <div className="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="molsan-modal__body min-h-0 flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               <div className="md:col-span-2 xl:col-span-3 pb-2"><h4>Identificación y fechas</h4><p className="mt-1">Localiza el expediente por número, oficina o fecha de alta.</p></div>
               <FiltroInput label="N.º expediente" value={filtroNumeroExpediente} onChange={setFiltroNumeroExpediente} placeholder="Número completo o parte del expediente" />
               <FiltroSelect label="Oficina" value={filtroOficina} onChange={setFiltroOficina} options={catalogosListado.oficinas} emptyLabel="Todas las oficinas" />
@@ -3113,7 +3113,7 @@ export default function ExpedientesListado() {
               <FiltroSelect label="Estado facturación" value={filtroEstadoFacturacion} onChange={setFiltroEstadoFacturacion} options={catalogosListado.estados_facturacion} emptyLabel="Todos los estados de facturación" />
             </div>
 
-            <div className="px-6 py-4 flex flex-wrap items-center justify-end gap-3">
+            <div className="molsan-modal__footer flex flex-wrap items-center justify-end gap-3">
               <button
                 type="button"
                 onClick={limpiarFiltros}
@@ -3134,16 +3134,16 @@ export default function ExpedientesListado() {
       )}
 
       {mostrarAyudaControlPlazos && (
-        <div className="fixed inset-0 z-[11000] flex items-center justify-center p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setMostrarAyudaControlPlazos(false); }}>
-          <section ref={plazosDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="titulo-control-plazos" className="w-full max-w-2xl overflow-hidden">
-            <header className="flex items-start justify-between gap-4 px-5 py-4">
+        <div className="molsan-modal-overlay fixed inset-0 z-[11000] flex items-center justify-center p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setMostrarAyudaControlPlazos(false); }}>
+          <section ref={plazosDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="titulo-control-plazos" className="molsan-modal__panel flex max-h-[88vh] w-full max-w-2xl flex-col overflow-hidden">
+            <header className="molsan-modal__header flex items-start justify-between gap-4">
               <div>
                 <p className="uppercase">MOLSAN ERP · Expedientes</p>
                 <h2 id="titulo-control-plazos" className="mt-1">📌 Control de plazos</h2>
               </div>
               <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} aria-label="Cerrar" className="px-3 py-2">✕</button>
             </header>
-            <div className="space-y-3 px-5 py-5">
+            <div className="molsan-modal__body min-h-0 flex-1 space-y-3 overflow-y-auto">
               <p>Los recuentos por actividad son independientes del SLA global:</p>
               <ul className="list-disc space-y-1 pl-5">
                 <li>Sede notarial: 5 días.</li>
@@ -3157,7 +3157,7 @@ export default function ExpedientesListado() {
               <p className="px-4 py-3">SLA global superado: {formatearNumero(Number(alertasControl.find((item) => item.key === "sla_global")?.total || 0))} expedientes.</p>
               <p>El SLA global se calcula desde el envío hasta Fin actividad o hoy: 40 días para Propia entidad/Vinculada propia entidad y 70 días para Vinculada otra entidad/Otra entidad. Hipotecario y Crédito Stock se excluyen.</p>
             </div>
-            <footer className="flex justify-end px-5 py-3">
+            <footer className="molsan-modal__footer flex justify-end">
               <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} className="px-4 py-2">Cerrar</button>
             </footer>
           </section>

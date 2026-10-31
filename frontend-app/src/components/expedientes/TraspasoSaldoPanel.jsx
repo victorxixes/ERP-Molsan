@@ -182,8 +182,8 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
 
       {abierto && (
         <div className="molsan-modal-overlay traspaso-saldo-modal fixed inset-0 z-[110] flex items-center justify-center overflow-y-auto p-3 sm:p-6" onMouseDown={(event) => { if (event.target === event.currentTarget) setAbierto(false); }}>
-          <section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="modal-traspaso-saldo-titulo" className="molsan-modal__panel my-auto max-h-[92vh] w-full max-w-5xl overflow-y-auto p-4 sm:p-5">
-            <header className="molsan-modal__header mb-4 flex flex-wrap items-center justify-between gap-3 pb-4">
+          <section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="modal-traspaso-saldo-titulo" className="molsan-modal__panel my-auto max-h-[92vh] w-full max-w-5xl">
+            <header className="molsan-modal__header flex flex-wrap items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center">⇄</span>
                 <div>
@@ -193,6 +193,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
               </div>
               <button type="button" onClick={() => setAbierto(false)} className="px-3 py-2">✕ Cerrar</button>
             </header>
+            <div className="molsan-modal__body min-h-0 flex-1 overflow-y-auto p-4 sm:p-5">
             {cargando && <p className="mb-3">Consultando expedientes relacionados…</p>}
             {error && <div role="alert" className="mb-3 p-3">{error}</div>}
             {mensaje && <div role="status" className="mb-3 p-3">{mensaje}</div>}
@@ -313,6 +314,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
             </div>
             <p className="mt-2">Reglas: todos deben compartir VINCCANC y ser «Cancelación con provisión»; el receptor necesita fecha de firma real y protocolo. Cada origen solo puede estar en un traspaso activo. Las validaciones también se aplican en el servidor.</p>
           </div>
+            </div>
             </div>
           </section>
         </div>
