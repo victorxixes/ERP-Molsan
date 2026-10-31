@@ -5,20 +5,9 @@ from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
 from backend.app.auth.dependencies import get_current_user
-from backend.app.auth.permissions import require_perm_modulo
-
-def _permiso_catalogos(accion):
-    def comprobar(usuario=Depends(get_current_user)):
-        require_perm_modulo(usuario, "catalogos", accion)
-        return usuario
-    return comprobar
-
 
 router = APIRouter(
-    dependencies=[Depends(get_current_user)],
-    prefix="/catalogos-absis",
-    tags=["Catálogo ABSIS"],
-)
+    dependencies=[Depends(get_current_user)],prefix="/catalogos-absis", tags=["Catálogo ABSIS"])
 
 
 class EntradaCatalogo(BaseModel):
@@ -56,10 +45,7 @@ def asegurar_tabla_categorias(db: Session):
 
 
 @router.get("/categorias")
-def listar_categorias(
-    db: Session = Depends(get_db),
-    _usuario=Depends(_permiso_catalogos("ver")),
-):
+def listar_categorias(db: Session = Depends(get_db)):
     asegurar_tabla_categorias(db)
     filas = db.execute(text("""
         SELECT categoria FROM public.catalogos_absis_categorias
@@ -71,11 +57,7 @@ def listar_categorias(
 
 
 @router.post("/categorias")
-def crear_categoria(
-    datos: NuevaCategoria,
-    db: Session = Depends(get_db),
-    _usuario=Depends(_permiso_catalogos("editar")),
-):
+def crear_categoria(datos: NuevaCategoria, db: Session = Depends(get_db)):
     asegurar_tabla_categorias(db)
     categoria = datos.categoria.strip()
     if not categoria:
@@ -99,11 +81,7 @@ def crear_categoria(
 
 
 @router.get("")
-def listar_catalogo(
-    categoria: str | None = None,
-    db: Session = Depends(get_db),
-    _usuario=Depends(_permiso_catalogos("ver")),
-):
+def listar_catalogo(categoria: str | None = None, db: Session = Depends(get_db)):
     consulta = """
         SELECT id, categoria, valor, codigo, descripcion, activo
         FROM catalogos_absis
@@ -118,11 +96,7 @@ def listar_catalogo(
 
 
 @router.post("")
-def crear_entrada(
-    datos: EntradaCatalogo,
-    db: Session = Depends(get_db),
-    _usuario=Depends(_permiso_catalogos("editar")),
-):
+def crear_entrada(datos: EntradaCatalogo, db: Session = Depends(get_db)):
     categoria = datos.categoria.strip()
     valor = datos.valor.strip()
     codigo = datos.codigo.strip() if datos.codigo and datos.codigo.strip() else None
@@ -156,12 +130,7 @@ def crear_entrada(
 
 
 @router.put("/{entrada_id}")
-def actualizar_entrada(
-    entrada_id: int,
-    datos: EntradaCatalogo,
-    db: Session = Depends(get_db),
-    _usuario=Depends(_permiso_catalogos("editar")),
-):
+def actualizar_entrada(entrada_id: int, datos: EntradaCatalogo, db: Session = Depends(get_db)):
     categoria = datos.categoria.strip()
     valor = datos.valor.strip()
     codigo = datos.codigo.strip() if datos.codigo and datos.codigo.strip() else None
@@ -201,11 +170,7 @@ def actualizar_entrada(
 
 
 @router.delete("/{entrada_id}")
-def eliminar_entrada(
-    entrada_id: int,
-    db: Session = Depends(get_db),
-    _usuario=Depends(_permiso_catalogos("editar")),
-):
+def eliminar_entrada(entrada_id: int, db: Session = Depends(get_db)):
     resultado = db.execute(
         text("DELETE FROM catalogos_absis WHERE id = :id RETURNING id"),
         {"id": entrada_id},
