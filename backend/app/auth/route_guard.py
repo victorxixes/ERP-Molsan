@@ -119,6 +119,12 @@ _RUTAS_CON_AUTORIZACION_INTERNA = {
     # o Agenda:ver y oculta los IBAN a quien solo tiene acceso a Agenda.
     "/api/ctn/notarias": "ctn",
     "/api/ctn/notarias/{notaria_id}": "ctn",
+    # Entidades bancarias se consume desde Utilidades y Provisiones/Catálogos;
+    # sus endpoints aplican permisos alternativos según lectura o edición.
+    "/api/entidades-bancarias": "maestros",
+    "/api/entidades-bancarias/auditoria-sucesiones": "maestros",
+    "/api/entidades-bancarias/importar-excel": "maestros",
+    "/api/entidades-bancarias/{entidad_id}": "maestros",
     "/api/ctn/notarias/{notaria_id}/accesos-portales": "ctn",
     "/api/ctn/notarias/{notaria_id}/accesos-portales/{portal}/password": "ctn",
     "/api/ctn/notarias/{notaria_id}/accesos-portales/{portal}/habilitado": "ctn",
