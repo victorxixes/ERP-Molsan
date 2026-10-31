@@ -207,11 +207,7 @@ export default function VistaMes({
  
  
  
- ${
- resaltada
- ? "ring-2 
- : 
- }`}
+ `}
                         onClick={(e) => {
                           e.stopPropagation();
                           onCitaClick(c);
