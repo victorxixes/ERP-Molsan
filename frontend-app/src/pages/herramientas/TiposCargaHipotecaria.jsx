@@ -629,7 +629,7 @@ export default function TiposCargaHipotecaria() {
               <div>
 
                 <h1
-                  className=""
+                 
                 >
                   Tipos de Carga Hipotecaria
                 </h1>
@@ -658,7 +658,7 @@ export default function TiposCargaHipotecaria() {
  px-4
  py-2.5"
           >
-            <span className="">
+            <span>
               ＋
             </span>
 
@@ -877,7 +877,7 @@ export default function TiposCargaHipotecaria() {
             <thead>
 
               <tr
-                className=""
+               
               >
 
                 <th
@@ -943,7 +943,7 @@ export default function TiposCargaHipotecaria() {
 
                     <tr
                       key={tipo.id}
-                      className=""
+                     
                     >
 
                       <td
@@ -1098,7 +1098,7 @@ export default function TiposCargaHipotecaria() {
               <div>
 
                 <h2
-                  className=""
+                 
                 >
                   {modoEdicion
                     ? "Editar tipo de carga hipotecaria"
@@ -1195,7 +1195,7 @@ export default function TiposCargaHipotecaria() {
                 />
 
                 <span
-                  className=""
+                 
                 >
                   Tipo de carga activo
                 </span>
