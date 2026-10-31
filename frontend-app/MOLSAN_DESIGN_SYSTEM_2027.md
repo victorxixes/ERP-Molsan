@@ -205,3 +205,21 @@ Este cierre **no afirma que cada una de las 97 pantallas y cada modal hayan sido
 - [x] Build de producción de Preview: correcto con Vite 6.4.5; compilación completada en 5,54 s y despliegue Render en estado LIVE (`dep-dbj043jbc2fs73bftb40`, 31/10/2026).
 - [ ] Revisión visual individual de todas las pantallas y modales: pendiente, no se considera realizada por la auditoría estática.
 
+## Fase 2 — Requisitos funcionales y visuales de tablas (criterio obligatorio)
+
+### Ordenación de columnas
+- Todas las columnas que representen datos deben permitir ordenación ascendente y descendente: identificadores, referencias, nombres, estados, fechas, importes, cantidades y cualquier otro dato visible.
+- Las columnas dedicadas exclusivamente a acciones (editar, eliminar, abrir, descargar, etc.) quedan excluidas de la ordenación.
+- Cada cabecera ordenable debe ser operable con ratón y teclado, exponer el estado mediante `aria-sort` y mostrar un indicador discreto de dirección.
+- El comparador debe respetar el tipo real del dato: numérico para importes/cantidades/IDs, cronológico para fechas y alfabético natural en español para texto. Los valores vacíos deben mantener un criterio estable.
+- En listados paginados, la ordenación debe afectar al conjunto completo filtrado, no solo a las filas de la página visible. Si los datos se consultan al servidor, se enviarán parámetros de orden al backend y este aplicará el orden antes de paginar. No se aceptará como solución ordenar únicamente la página cargada.
+- Al cambiar el criterio de orden, se volverá a la primera página cuando corresponda y se conservarán los filtros activos.
+- La exportación debe respetar los filtros y el criterio de orden activo siempre que el endpoint de exportación admita ese criterio.
+- No se alterarán las reglas de negocio ni el significado de los campos para hacerlos ordenables.
+
+### Método de implantación
+- Inventariar todas las tablas reales de pantallas, componentes, modales y vistas especializadas.
+- Clasificar cada tabla como local, paginada en cliente, paginada en servidor, agrupada/jerárquica o solo de presentación/impresión.
+- Aplicar el patrón visual común a todas las tablas sin modificar la estructura de datos.
+- Incorporar la ordenación funcional tabla por tabla, validando los tipos de dato y la paginación. Las tablas de impresión o solo lectura documental se documentarán como excepción cuando ordenar no tenga sentido en su función.
+- Mantener fuera del alcance el Sidebar, la base de datos, los datos históricos y los cambios no solicitados de lógica de negocio.
