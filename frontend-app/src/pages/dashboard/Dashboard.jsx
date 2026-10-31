@@ -127,7 +127,7 @@ function ActividadCard({ actividad, total, porcentajeValor }) {
         {actividad.icono}
       </div>
       <div className="min-w-0 flex-1">
-        <div className="" >
+        <div >
           {actividad.nombre}
         </div>
         <div className="mt-0.5" >
@@ -159,18 +159,18 @@ function FirmaCard({ icono, titulo, total, porcentajeValor }) {
           {icono}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="" >
+          <div >
             {titulo}
           </div>
           <div className="mt-1" >
             Firmas realizadas
           </div>
         </div>
-        <div className="">
-          <div className="" >
+        <div>
+          <div >
             {numero(total)}
           </div>
-          <div className="" >
+          <div >
             {porcentaje(porcentajeValor)}
           </div>
         </div>
@@ -303,13 +303,13 @@ export default function Dashboard() {
       {/* ERRORES DE CARGA */}
       {error && (
         <div role="alert" aria-live="assertive" className="mb-6 px-4 py-3" >
-          <strong className="">No se ha podido cargar el Dashboard.</strong>
+          <strong>No se ha podido cargar el Dashboard.</strong>
           <div className="mt-1">{error}</div>
         </div>
       )}
       {errorFirmas && (
         <div role="alert" aria-live="assertive" className="mb-6 px-4 py-3" >
-          <strong className="">No se han podido cargar las firmas reales.</strong>
+          <strong>No se han podido cargar las firmas reales.</strong>
           <div className="mt-1">{errorFirmas}</div>
         </div>
       )}
@@ -327,7 +327,7 @@ export default function Dashboard() {
       {/* ACTIVIDADES */}
       <section className="min-w-0">
         <div className="mb-4">
-          <h2 className="" >Expedientes por actividad</h2>
+          <h2 >Expedientes por actividad</h2>
           <p className="mt-1" >
             Situación actual de los expedientes dentro del circuito de trabajo.
           </p>
@@ -348,7 +348,7 @@ export default function Dashboard() {
         {/* MEDIA DE FIRMA POR TIPO DE OPERACIÓN */}
         <section className="min-w-0">
           <div className="mb-4">
-            <h2 className="" >
+            <h2 >
               Tiempo medio hasta firma
             </h2>
             <p className="mt-1" >
@@ -361,7 +361,7 @@ export default function Dashboard() {
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[600px]">
                   <thead>
-                    <tr className="" >
+                    <tr >
                       <th className="px-4 py-3 uppercase" >
                         Tipo de operación
                       </th>
@@ -377,7 +377,7 @@ export default function Dashboard() {
                     {mediaFirmaPorTipoOperacion.map((fila, indice) => (
                       <tr
                         key={`${fila?.tipo_operacion || "sin-tipo"}-${indice}`}
-                        className=""
+                       
                         
                       >
                         <td className="px-4 py-4" >
@@ -397,7 +397,7 @@ export default function Dashboard() {
             ) : (
               <div className="px-5 py-10">
                 <div className="mb-2">📊</div>
-                <div className="" >
+                <div >
                   Todavía no hay datos de firmas por tipo de operación.
                 </div>
                 <div className="mt-1" >
@@ -417,8 +417,8 @@ export default function Dashboard() {
       {/* FIRMAS REALIZADAS */}
       <section className="min-w-0">
         <div className="mb-4 flex flex-col gap-1">
-          <h2 className="" >Firmas realizadas</h2>
-          <p className="" >
+          <h2 >Firmas realizadas</h2>
+          <p >
             Distribución de las firmas realizadas según la modalidad seleccionada en el encargo al notario.
           </p>
         </div>
