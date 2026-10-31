@@ -3148,6 +3148,18 @@ function InformeFacturacion() {
   const resumen = (modalidad) => resumenFacturacionPorTipo(datosTarjetas.filter((fila) => fila.tipo_cancelacion === modalidad));
   const euros = (v) => Number(v || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
   const campo = "block w-full rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm text-[var(--molsan-text)] outline-none focus:border-[var(--molsan-blue)] focus:ring-2 focus:ring-[var(--molsan-blue-soft)]";
+  const estadosAgrupados = datosTarjetas.reduce((acumulado, fila) => {
+    const estado = String(fila.estado ?? "").trim() || "(vacío)";
+    if (!acumulado[estado]) acumulado[estado] = { filas: 0, importe: 0 };
+    acumulado[estado].filas += 1;
+    acumulado[estado].importe += Number(fila.imp_gasto || 0);
+    return acumulado;
+  }, {});
+  const listaEstados = Object.entries(estadosAgrupados)
+    .map(([estado, dato]) => ({ estado, ...dato }))
+    .sort((a, b) => a.estado === "(vacío)" ? 1 : b.estado === "(vacío)" ? -1 : a.estado.localeCompare(b.estado, "es"));
+  const ordenEstados = useSortableData(listaEstados);
+
   const grupos = [
     { key: "con_provision", titulo: "Cancelación con provisión", descripcion: "TIPOOPERACION: CANCELACIÓN / CANCELACIÓN CON PROVISIÓN", icono: "🏦", acento: "emerald" },
     { key: "sin_provision", titulo: "Cancelación sin provisión", descripcion: "TIPOOPERACION: CANCELACIÓN SIN PROVISIÓN", icono: "📄", acento: "amber" },
@@ -3245,46 +3257,37 @@ function InformeFacturacion() {
             );
           })}
         </div>
-        {(() => {
-          const estados = datosTarjetas.reduce((acumulado, fila) => {
-            const estado = String(fila.estado ?? "").trim() || "(vacío)";
-            if (!acumulado[estado]) acumulado[estado] = { filas: 0, importe: 0 };
-            acumulado[estado].filas += 1;
-            acumulado[estado].importe += Number(fila.imp_gasto || 0);
-            return acumulado;
-          }, {});
-          const listaEstados = Object.entries(estados).sort((a, b) => {
-            if (a[0] === "(vacío)") return 1;
-            if (b[0] === "(vacío)") return -1;
-            return a[0].localeCompare(b[0], "es");
-          });
-          return loadingTarjetas ? (
-            <div className="mt-4 p-4">Cargando estados ABSIS…</div>
-          ) : listaEstados.length === 0 ? (
-            <div className="mt-4 p-4">No hay registros para el periodo seleccionado.</div>
-          ) : (
-            <div className="mt-4 overflow-x-auto">
-              <table className="w-full min-w-[640px]">
-                <thead className="uppercase"><tr><th className="px-4 py-3">ESTADO (Excel ABSIS)</th><th className="px-4 py-3">Registros</th><th className="px-4 py-3">Importe IMPGASTO</th><th className="px-4 py-3">Consulta</th></tr></thead>
-                <tbody>
-                  {listaEstados.map(([estado, dato]) => (
-                    <tr key={estado}>
-                      <td className="px-4 py-3">{estado}</td>
-                      <td className="px-4 py-3 tabular-nums">{numeroInforme(dato.filas)}</td>
-                      <td className="px-4 py-3 tabular-nums">{euros(dato.importe)}</td>
-                      <td className="px-4 py-3">{estado === "(vacío)" ? <span>Sin código</span> : <button type="button" onClick={() => {
-                        const siguiente = { ...filtros, modalidad: "todas", estado };
-                        setFiltros(siguiente);
-                        setAplicados(siguiente);
-                        setModalAbierto(true);
-                      }} className="px-3 py-1.5">Ver registros</button>}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          );
-        })()}
+        {loadingTarjetas ? (
+          <div className="mt-4 p-4">Cargando estados ABSIS…</div>
+        ) : ordenEstados.items.length === 0 ? (
+          <div className="mt-4 p-4">No hay registros para el periodo seleccionado.</div>
+        ) : (
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full min-w-[640px]">
+              <thead className="uppercase"><tr>
+                <MolsanSortableTh label="ESTADO (Excel ABSIS)" sortKey="estado" sortConfig={ordenEstados.sortConfig} onSort={ordenEstados.requestSort} className="px-4 py-3" />
+                <MolsanSortableTh label="Registros" sortKey="filas" sortConfig={ordenEstados.sortConfig} onSort={ordenEstados.requestSort} className="px-4 py-3" />
+                <MolsanSortableTh label="Importe IMPGASTO" sortKey="importe" sortConfig={ordenEstados.sortConfig} onSort={ordenEstados.requestSort} className="px-4 py-3" />
+                <th className="px-4 py-3">Consulta</th>
+              </tr></thead>
+              <tbody>
+                {ordenEstados.items.map(({ estado, filas, importe }) => (
+                  <tr key={estado}>
+                    <td className="px-4 py-3">{estado}</td>
+                    <td className="px-4 py-3 tabular-nums">{numeroInforme(filas)}</td>
+                    <td className="px-4 py-3 tabular-nums">{euros(importe)}</td>
+                    <td className="px-4 py-3">{estado === "(vacío)" ? <span>Sin código</span> : <button type="button" onClick={() => {
+                      const siguiente = { ...filtros, modalidad: "todas", estado };
+                      setFiltros(siguiente);
+                      setAplicados(siguiente);
+                      setModalAbierto(true);
+                    }} className="px-3 py-1.5">Ver registros</button>}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
         <p className="mt-3">Las tarjetas muestran los ocho códigos acordados de ESTADO. Los códigos originales se conservan; los valores vacíos o desconocidos siguen apareciendo en el desglose inferior. PAG_RETRO no se contabiliza como cobro efectivo. La consulta no modifica datos.</p>
       </section>
 
