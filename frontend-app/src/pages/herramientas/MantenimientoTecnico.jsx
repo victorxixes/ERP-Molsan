@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useState } from "react";
-import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios from "../../api/axios";
 import { API_BASE } from "../../api/config";
 import { puedeVerModulo } from "../../utils/permisos";
