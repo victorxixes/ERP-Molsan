@@ -1,9 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import axios from "../../api/axios";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
-import "../../css/ComponentesOperativosPremium.css";
-import "../../css/ModalesOperativosPremium.css";
-import "../../css/ModalesHerramientasPremium.css";
 
 const TIPOS = [
   ["ENTRADA", "Entrada a trabajar"], ["PAUSA_DESAYUNO_INICIO", "Pausa desayuno"], ["PAUSA_DESAYUNO_FIN", "Regreso desayuno"],
