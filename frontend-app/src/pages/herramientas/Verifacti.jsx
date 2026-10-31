@@ -50,7 +50,7 @@ function Panel({ title, description, children, action }) {
 }
 
 function Metric({ icon, label, value, hint }) {
-  return <div className="p-4">
+  return <div className="min-w-0">
     <div className="flex items-center justify-between"><span className="uppercase">{label}</span><span className="flex h-9 w-9 items-center justify-center">{icon}</span></div>
     <div className="mt-3">{value}</div><p className="mt-1">{hint}</p>
   </div>;
@@ -93,7 +93,7 @@ export default function Verifacti() {
       <MolsanPageHeader mark="VF" title="Veri*Factu" description="Panel de control de facturación electrónica y registros VERI*FACTU." />
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[245px_minmax(0,1fr)]">
-        <aside className="h-fit p-3">
+        <aside className="erp-card h-fit p-3">
           <p className="px-3 pb-2 pt-1 uppercase">Panel de control</p>
           <nav className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 xl:grid-cols-1">
             {SECCIONES.map((item) => <button key={item.id} type="button" onClick={() => cambiarSeccion(item.id)}
@@ -101,7 +101,7 @@ export default function Verifacti() {
               <span className="flex h-7 w-7 items-center justify-center">{item.icon}</span><span>{item.label}</span>
             </button>)}
           </nav>
-          <div className="mt-4 p-3">
+          <div className="molsan-panel mt-4 p-3">
             <p>Modo de preparación</p>
             <p className="mt-1">Los formularios permiten preparar y revisar los datos. Para consultar o enviar datos reales hace falta conectar el backend y configurar la API key de forma segura.</p>
           </div>
