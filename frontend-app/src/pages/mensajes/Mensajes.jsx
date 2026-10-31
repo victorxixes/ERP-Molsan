@@ -927,19 +927,7 @@ export default function Mensajes({
  
  
 
- ${
- seleccionado
- ?`
-                            border-blue-200
-                            bg-blue-50
-                            shadow-[0_8px_25px_rgba(37,99,235,0.10)]
-                          `:`
-                            border-slate-200/80
-                            bg-white/70
-                            hover:border-blue-200
-                            hover:bg-white
-                            hover:shadow-[0_8px_25px_rgba(15,23,42,0.07)]
-                          `}
+ 
 
  ${
  pendientes > 0
