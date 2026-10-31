@@ -4,11 +4,10 @@ import "./PanelTecnicoSubmodulos.css";
 
 /**
  * ============================================================
- * LOGS TÉCNICOS — MOLSAN ERP PREMIUM 2027
+ * LOGS TÉCNICOS
  * ============================================================
  *
  * - Buscador
- * - Tabla técnica premium
  * - Diseño integrado con ERP
  * - Sin modificar la lógica de API
  * ============================================================
@@ -74,7 +73,7 @@ export default function LogsAvanzados() {
   // ============================================================
 
   return (
-    <div className="logs-avanzados-premium panel-tecnico-submodulo-premium space-y-6">
+    <div className="space-y-6">
 
       {/* ======================================================
           CABECERA
