@@ -1,13 +1,14 @@
 /* MOLSAN ERP PREMIUM 2027
- * Base neutral y geometría compartida.
- * El diseño de módulos se construirá sobre estos tokens; no añadir aquí
- * estilos específicos de páginas, tarjetas, tablas, formularios o modales.
+ * Fuente única de tokens y geometría compartida.
+ * Los módulos no deben crear paletas ni estilos de presentación independientes.
  * Sidebar excluido: mantiene SidebarBase.css y sus estilos propios.
  */
 
 :root {
+  /* Identidad corporativa */
   --molsan-blue: #064675;
-  --molsan-blue-deep: #04385d;
+  --molsan-blue-hover: #04385d;
+  --molsan-blue-active: #032f4f;
   --molsan-blue-soft: #f2f7fb;
   --molsan-panel: #f2f7fb;
   --molsan-table-head: #eaf2f8;
@@ -15,11 +16,64 @@
   --molsan-text: #18364b;
   --molsan-muted: #617789;
   --molsan-border: #d8e4ec;
+
+  /* Estados funcionales: nunca como identidad cromática de módulos */
+  --molsan-success: #23734d;
+  --molsan-success-soft: #edf7f1;
+  --molsan-warning: #94651b;
+  --molsan-warning-soft: #fbf5e9;
+  --molsan-danger: #a33b42;
+  --molsan-danger-soft: #fbefef;
+  --molsan-info: var(--molsan-blue);
+  --molsan-info-soft: var(--molsan-blue-soft);
+
+  /* Tipografía */
+  --molsan-font-family: Inter, "Segoe UI", Arial, sans-serif;
+  --molsan-font-size-xs: 0.75rem;
+  --molsan-font-size-sm: 0.8125rem;
+  --molsan-font-size-md: 0.875rem;
+  --molsan-font-size-base: 1rem;
+  --molsan-font-size-lg: 1.125rem;
+  --molsan-font-size-xl: 1.25rem;
+  --molsan-font-size-2xl: 1.5rem;
+  --molsan-line-height: 1.45;
+
+  /* Espaciado: escala base de 4 px */
+  --molsan-space-1: 0.25rem;
+  --molsan-space-2: 0.5rem;
+  --molsan-space-3: 0.75rem;
+  --molsan-space-4: 1rem;
+  --molsan-space-5: 1.25rem;
+  --molsan-space-6: 1.5rem;
+  --molsan-space-8: 2rem;
+  --molsan-space-10: 2.5rem;
+  --molsan-space-12: 3rem;
+
+  /* Dimensiones y densidad */
   --molsan-row-height: 44px;
+  --molsan-control-height-sm: 32px;
   --molsan-control-height: 38px;
-  --molsan-radius-card: 12px;
+  --molsan-control-height-lg: 42px;
+  --molsan-page-header-height: 62px;
+  --molsan-content-gutter: 24px;
+
+  /* Formas y elevación */
+  --molsan-radius-sm: 6px;
   --molsan-radius-control: 9px;
-  --molsan-shadow: 0 2px 8px rgba(6, 70, 117, 0.04);
+  --molsan-radius-card: 12px;
+  --molsan-radius-modal: 16px;
+  --molsan-shadow-card: 0 2px 8px rgba(6, 70, 117, 0.04);
+  --molsan-shadow-popover: 0 8px 24px rgba(6, 70, 117, 0.12);
+  --molsan-shadow-modal: 0 18px 48px rgba(6, 40, 65, 0.18);
+
+  /* Interacción */
+  --molsan-focus-ring: 0 0 0 3px rgba(6, 70, 117, 0.14);
+  --molsan-transition-fast: 120ms ease;
+  --molsan-transition-normal: 180ms ease;
+  --molsan-z-sticky: 20;
+  --molsan-z-dropdown: 40;
+  --molsan-z-overlay: 80;
+  --molsan-z-modal: 100;
 }
 
 html {
@@ -31,7 +85,8 @@ body {
   margin: 0;
   background: var(--molsan-white);
   color: var(--molsan-text);
-  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  font-family: var(--molsan-font-family);
+  line-height: var(--molsan-line-height);
 }
 
 .erp-app-shell,
@@ -54,7 +109,7 @@ body {
   gap: 12px;
   width: 100%;
   min-width: 0;
-  min-height: 62px;
+  min-height: var(--molsan-page-header-height);
   margin: 0 0 18px;
   padding: 0 0 10px;
   color: var(--molsan-blue);
