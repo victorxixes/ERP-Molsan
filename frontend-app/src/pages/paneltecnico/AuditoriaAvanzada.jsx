@@ -7,7 +7,7 @@ import "./PanelTecnicoSubmodulos.css";
 
 /**
  * ============================================================
- * AUDITORÍA AVANZADA — MOLSAN ERP PREMIUM 2027
+ * AUDITORÍA AVANZADA
  * ============================================================
  *
  * - Métricas técnicas
@@ -87,7 +87,7 @@ export default function AuditoriaAvanzada() {
   // ============================================================
 
   return (
-    <div className="auditoria-avanzada-premium panel-tecnico-submodulo-premium space-y-6">
+    <div className="space-y-6">
 
       {/* ======================================================
           CABECERA
