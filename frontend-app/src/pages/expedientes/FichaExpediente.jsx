@@ -5171,7 +5171,7 @@ const cuantiaFincasParaEnvio =
                                 <span className="tabular-nums">{completadas}/7 fases completas · {checksOk}/{totalChecks} comprobaciones</span>
                               </div>
                               <div className="h-2 overflow-hidden">
-                                <div className="h-full" style={{ width: `${porcentaje}%` }} />
+                                <div className="h-full" style={{ width: `${porcentaje}%` } }}/>
                               </div>
                               <p className="mt-2">Una fase solo se marca como completa cuando todos sus requisitos configurados están cumplidos. La falta de datos no se considera correcta por el mero hecho de haber avanzado de actividad.</p>
                             </div>
@@ -5797,7 +5797,7 @@ const cuantiaFincasParaEnvio =
                       {importeInicialDisponible && importeInicialProvision > 0 && (
                         <div className="mt-4">
                           <div className="mb-2 flex items-center justify-between gap-3"><span className="">Consumo del saldo inicial</span><span className="tabular-nums">{Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100)).toLocaleString("es-ES", { maximumFractionDigits: 1 })}%</span></div>
-                          <div className="h-2 overflow-hidden"><div className={`h-full rounded-full ${resumenEconomico.saldoActual < 0 ? "" : ""}`} style={{ width: `${Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100))}%` }} /></div>
+                          <div className="h-2 overflow-hidden"><div className={`h-full rounded-full ${resumenEconomico.saldoActual < 0 ? "" : ""}`} style={{ width: `${Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100))}%` } }}/></div>
                         </div>
                       )}
                       <div className="mt-5">
