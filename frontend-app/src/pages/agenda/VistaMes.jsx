@@ -1,6 +1,5 @@
 import { useMemo, useCallback } from "react";
 import { useAgendaStore } from "../../store/agendaStore";
-import "../../css/ComponentesCompartidosPremium.css";
 
 const DIAS_SEMANA = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 
@@ -82,7 +81,7 @@ export default function VistaMes({
   const hoyStr = new Date().toLocaleDateString("sv-SE");
 
   return (
-    <div className="agenda-vista-premium agenda-vista-mes-premium">
+    <div className=" ">
 
       {/* CABECERA DÍAS */}
 
