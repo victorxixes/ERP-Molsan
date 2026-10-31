@@ -4,7 +4,6 @@ import axios from "../../api/axios";
 import { API_BASE } from "../../api/config";
 import Chart from "chart.js/auto";
 import SelectSJ from "../../components/ui/SelectSJ";
-import "../../css/ModalesHerramientasPremium.css";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 const MESES = [
@@ -24,8 +23,8 @@ const MESES = [
 
 
 /* ============================================================
-   INFORMES — MOLSAN ERP PREMIUM 2027
-   ESTILO GLASS LUXE CLARO
+   INFORMES
+   
 ============================================================ */
 
 function InformeCitasApoderados() {
@@ -1613,7 +1612,7 @@ function InformeCitasApoderados() {
 
           <button type="button"
             onClick={exportarExcel}
-            className="molsan-export-excel"
+            className=""
           >
             <span className="molsan-export-excel__icon" aria-hidden="true">📗</span>
             Exportar a Excel
@@ -3466,7 +3465,7 @@ export default function Informes() {
   };
 
   return (
-    <div className="informes-premium-page utilidades-premium-page herramientas-subpagina-premium min-h-full min-w-0 space-y-5 p-4 md:p-6">
+    <div className="utilidades-premium-page herramientas-subpagina-premium min-h-full min-w-0 space-y-5 p-4 md:p-6">
       <header className="overflow-hidden p-5 md:p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
