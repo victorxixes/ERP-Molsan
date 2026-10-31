@@ -2140,7 +2140,7 @@ const permisosDisponibles =
  items-center
  justify-center
  p-3
- sm:p-6"
+ sm:p-6`}
     >
 
       {/* ======================================================
