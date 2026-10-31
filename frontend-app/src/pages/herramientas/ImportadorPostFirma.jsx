@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios from "../../api/axios";
 
 const CAMPO = "block w-full px-3 py-2.5";
@@ -105,16 +106,8 @@ export default function ImportadorPostFirma() {
   };
 
   return (
-    <main className="min-h-full min-w-0 space-y-5 p-4 md:p-6">
-      <header className="p-5 md:p-6">
-        <div className="flex items-start gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center">📦</div>
-          <div>
-            <h1>Importador ABSIS · Post Firma</h1>
-            <p className="mt-2 max-w-3xl">Carga histórica pura y aislada. Los ficheros de distintos meses permanecen separados y no se aplican a expedientes ni a los gastos operativos del ERP.</p>
-          </div>
-        </div>
-      </header>
+    <main className="erp-page min-h-full min-w-0 space-y-5">
+      <MolsanPageHeader mark="PF" title="Importador Post Firma" description="Carga y consulta el histórico ABSIS sin aplicarlo a expedientes ni a gastos operativos." />
 
       <section className="p-5 md:p-6">
         <h2>1. Seleccionar Excel</h2>

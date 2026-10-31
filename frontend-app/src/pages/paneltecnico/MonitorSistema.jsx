@@ -180,7 +180,7 @@ export default function MonitorSistema() {
   // ============================================================
 
   return (
-    <div className="min-w-0 p-4 sm:p-6 space-y-6">
+    <div className="min-w-0 space-y-6">
 
       {/* ======================================================
           CABECERA

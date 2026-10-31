@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useSeguridad } from "../../hooks/useSeguridad";
 import EmpleadosListado from "../empleados/EmpleadosListado";
 import { API_BASE } from "../../api/config";
@@ -306,34 +307,7 @@ export default function SeguridadUsuarios() {
   return (
     <div className="erp-page seguridad-usuarios-premium">
 
-      {/* ======================================================
-          CABECERA
-      ====================================================== */}
-
-      <div className="erp-page-header">
-
-        <div>
-          <div className="erp-eyebrow">
-            SEGURIDAD
-          </div>
-
-          <h1 className="erp-page-title">
-            Usuarios y seguridad
-          </h1>
-
-          <p className="erp-page-description">
-            Gestión de usuarios, permisos, estado de acceso,
-            auditoría y actividad de seguridad.
-          </p>
-        </div>
-
-        <div className="erp-page-header-status">
-          <span className="erp-badge erp-badge-primary">
-            Centro de Seguridad
-          </span>
-        </div>
-
-      </div>
+      <MolsanPageHeader mark="US" title="Usuarios y seguridad" description="Gestión de usuarios, permisos, estado de acceso, auditoría y actividad de seguridad." />
 
       {/* ======================================================
           CONTENIDO PRINCIPAL
