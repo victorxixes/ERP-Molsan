@@ -1655,7 +1655,17 @@ export default function FichaExpediente() {
       const importeMovimiento = Math.abs(Number(movimiento.importeMovimiento ?? movimiento.importe_resultante ?? movimiento.importe ?? 0));
       const textoMovimiento = normalizarTexto([movimiento.tipo, movimiento.concepto_pago, movimiento.descripcion, movimiento.tipo_impuesto].filter(Boolean).join(" "));
       const esPagoImpuesto = movimiento.es_movimiento_pago && /impuesto|ajd|itp|tribut/.test(textoMovimiento);
-      const cuantia = esPagoImpuesto ? null : numeroDecimalGasto(cuantiaFincasParaEnvio);
+      // La cuantía de finca pertenece al envío a notaría, no al libro contable.
+      // En el libro se muestra la base del documento si existe; en su defecto,
+      // el importe de la obligación/pago, sin arrastrar datos de otra sección.
+      const baseDocumento = [
+        movimiento.base_imponible,
+        movimiento.base_sujeta_impuestos,
+        movimiento.base_exenta_impuestos,
+      ].find((valor) => valor !== null && valor !== undefined && valor !== "");
+      const cuantia = esPagoImpuesto
+        ? null
+        : numeroDecimalGasto(baseDocumento ?? movimiento.importe_resultante ?? movimiento.importe ?? importeMovimiento);
       const impuesto = esPagoImpuesto ? importeMovimiento : 0;
       const total = movimiento.es_movimiento_pago ? importeMovimiento : Math.abs(Number(movimiento.importe_resultante ?? movimiento.importe ?? movimiento.importe_total_bruto ?? importeMovimiento));
       const estado = movimiento.es_movimiento_pago ? (movimiento.anulado_en ? "Anulado" : "Pagado") : String(movimiento.estado_pago || "Pagado").trim();
