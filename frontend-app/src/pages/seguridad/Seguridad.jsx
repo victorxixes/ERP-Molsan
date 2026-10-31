@@ -100,7 +100,7 @@ export default function Seguridad() {
               <Icono name="shield" className="h-6 w-6" />
             </span>
             <div>
-              <h1 className="">Centro de seguridad</h1>
+              <h1>Centro de seguridad</h1>
               <p className="mt-1">Resumen general y accesos a la administración de seguridad de Molsan ERP.</p>
             </div>
           </div>
@@ -113,7 +113,7 @@ export default function Seguridad() {
 
       <section aria-labelledby="seguridad-resumen-title" className="space-y-3">
         <div>
-          <h2 id="seguridad-resumen-title" className="">Resumen</h2>
+          <h2 id="seguridad-resumen-title">Resumen</h2>
           <p className="mt-0.5">Indicadores informativos; no sustituyen la revisión de incidencias.</p>
         </div>
         {loading ? (
@@ -133,7 +133,7 @@ export default function Seguridad() {
 
       <section aria-labelledby="seguridad-accesos-title" className="space-y-3">
         <div>
-          <h2 id="seguridad-accesos-title" className="">Administración de seguridad</h2>
+          <h2 id="seguridad-accesos-title">Administración de seguridad</h2>
           <p className="mt-0.5">Cada función tiene su propia pantalla para evitar formularios y listados duplicados.</p>
         </div>
         <div className="seguridad-accesos-grid">
@@ -147,15 +147,15 @@ export default function Seguridad() {
       <section aria-labelledby="seguridad-actividad-title" className="overflow-hidden">
         <div className="flex flex-col gap-1 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 id="seguridad-actividad-title" className="">Actividad reciente</h2>
+            <h2 id="seguridad-actividad-title">Actividad reciente</h2>
             <p className="mt-0.5">Últimos eventos disponibles en los datos de auditoría cargados.</p>
           </div>
-          <Link to="/auditoria" className="">Ver auditoría →</Link>
+          <Link to="/auditoria">Ver auditoría →</Link>
         </div>
         {actividadReciente.length === 0 ? (
           <p className="px-5 py-8">No hay eventos de auditoría disponibles para mostrar.</p>
         ) : (
-          <ul className="">
+          <ul>
             {actividadReciente.map((item, index) => {
               const usuario = texto(item?.usuario || item?.empleado || item?.nombre_usuario, "Sistema");
               const accion = texto(item?.accion || item?.evento, "Actividad");
@@ -182,7 +182,7 @@ export default function Seguridad() {
         <div className="flex items-start gap-3">
           <Icono name="shield" className="mt-0.5 h-5 w-5" />
           <div>
-            <p className="">Supervisión técnica</p>
+            <p>Supervisión técnica</p>
             <p className="mt-0.5">{logsList.length} registros técnicos cargados. Consulta los logs para revisar errores y advertencias.</p>
           </div>
         </div>
