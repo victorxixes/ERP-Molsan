@@ -33,53 +33,38 @@ export default function PanelTecnico() {
   );
 
   return (
-    <div className="panel-tecnico-premium w-full space-y-8 animate-fade-in">
+    <div className="panel-tecnico-premium w-full space-y-8">
 
       {/* ======================================================
           CABECERA
           ====================================================== */}
 
       <section
-        className="
-          relative
-          overflow-hidden
-          rounded-3xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          shadow-sm
-        "
+        className="relative
+ overflow-hidden"
       >
 
         {/* Decoración superior */}
 
         <div
-          className="
-            absolute
-            inset-x-0
-            top-0
-            h-1
-            bg-gradient-to-r
-            from-[var(--erp-primary)]
-            via-blue-400
-            to-cyan-400
-          "
+          className="absolute
+ inset-x-0
+ top-0
+ h-1"
         />
 
         <div
-          className="
-            relative
-            px-6
-            py-6
-            lg:px-8
-            lg:py-7
-            flex
-            flex-col
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-            gap-5
-          "
+          className="relative
+ px-6
+ py-6
+ lg:px-8
+ lg:py-7
+ flex
+ flex-col
+ lg:flex-row
+ lg:items-center
+ lg:justify-between
+ gap-5"
         >
 
           {/* TÍTULO */}
@@ -87,25 +72,21 @@ export default function PanelTecnico() {
           <div>
 
             <div
-              className="
-                flex
-                items-center
-                gap-3
-                mb-2
-              "
+              className="flex
+ items-center
+ gap-3
+ mb-2"
             >
 
               <div
-                className="
-                  w-11
-                  h-11
-                  rounded-2xl
-                  bg-[var(--erp-primary-soft)]
-                  text-[var(--erp-primary)]
-                  flex
-                  items-center
-                  justify-center
-                "
+                className="w-11
+ h-11
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
               >
                 <svg className="w-5 h-5" aria-hidden="true">
                   <use href="/icons/icons.svg#shield" />
@@ -115,23 +96,13 @@ export default function PanelTecnico() {
               <div>
 
                 <h1
-                  className="
-                    text-2xl
-                    lg:text-3xl
-                    font-bold
-                    text-[var(--erp-text)]
-                    tracking-tight
-                  "
+                  className=""
                 >
                   Panel Técnico
                 </h1>
 
                 <p
-                  className="
-                    text-sm
-                    text-[var(--erp-text-soft)]
-                    mt-0.5
-                  "
+                  className="mt-0.5"
                 >
                   Administración, diagnóstico y supervisión del sistema
                 </p>
@@ -146,31 +117,17 @@ export default function PanelTecnico() {
           {/* ESTADO */}
 
           <div
-            className="
-              inline-flex
-              items-center
-              gap-2
-              w-fit
-              px-3
-              py-2
-              rounded-xl
-              border
-              border-emerald-200
-              bg-emerald-50
-              text-emerald-700
-              text-xs
-              font-semibold
-            "
+            className="inline-flex
+ items-center
+ gap-2
+ w-fit
+ px-3
+ py-2"
           >
 
             <span
-              className="
-                w-2
-                h-2
-                rounded-full
-                bg-emerald-500
-                animate-pulse
-              "
+              className="w-2
+ h-2"
             />
 
             Sistema operativo
@@ -191,21 +148,13 @@ export default function PanelTecnico() {
         <div className="mb-4">
 
           <h2
-            className="
-              text-lg
-              font-semibold
-              text-[var(--erp-text)]
-            "
+            className=""
           >
             Monitor del sistema
           </h2>
 
           <p
-            className="
-              text-sm
-              text-[var(--erp-text-soft)]
-              mt-1
-            "
+            className="mt-1"
           >
             Supervisión de conexiones, WebSockets y estado de la base de datos.
           </p>
@@ -226,21 +175,13 @@ export default function PanelTecnico() {
         <div className="mb-4">
 
           <h2
-            className="
-              text-lg
-              font-semibold
-              text-[var(--erp-text)]
-            "
+            className=""
           >
             Auditoría
           </h2>
 
           <p
-            className="
-              text-sm
-              text-[var(--erp-text-soft)]
-              mt-1
-            "
+            className="mt-1"
           >
             Registro y análisis de las operaciones realizadas en el ERP.
           </p>
@@ -261,21 +202,13 @@ export default function PanelTecnico() {
         <div className="mb-4">
 
           <h2
-            className="
-              text-lg
-              font-semibold
-              text-[var(--erp-text)]
-            "
+            className=""
           >
             Logs técnicos
           </h2>
 
           <p
-            className="
-              text-sm
-              text-[var(--erp-text-soft)]
-              mt-1
-            "
+            className="mt-1"
           >
             Información técnica y eventos registrados por el sistema.
           </p>
@@ -298,21 +231,13 @@ export default function PanelTecnico() {
           <div className="mb-4">
 
             <h2
-              className="
-                text-lg
-                font-semibold
-                text-[var(--erp-text)]
-              "
+              className=""
             >
               Gestión de empleados
             </h2>
 
             <p
-              className="
-                text-sm
-                text-[var(--erp-text-soft)]
-                mt-1
-              "
+              className="mt-1"
             >
               Administración y supervisión de los empleados del ERP.
             </p>
@@ -321,39 +246,28 @@ export default function PanelTecnico() {
 
 
           <div
-            className="
-              overflow-hidden
-              rounded-2xl
-              border
-              border-[var(--erp-border)]
-              bg-[var(--erp-surface)]
-              shadow-sm
-            "
+            className="overflow-hidden"
           >
 
             <div
-              className="
-                px-6
-                py-4
-                border-b
-                border-[var(--erp-border)]
-                flex
-                items-center
-                gap-3
-              "
+              className="px-6
+ py-4
+ 
+ 
+ flex
+ items-center
+ gap-3"
             >
 
               <div
-                className="
-                  w-9
-                  h-9
-                  rounded-xl
-                  bg-[var(--erp-primary-soft)]
-                  text-[var(--erp-primary)]
-                  flex
-                  items-center
-                  justify-center
-                "
+                className="w-9
+ h-9
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
               >
                 <svg className="w-4 h-4" aria-hidden="true">
                   <use href="/icons/icons.svg#user-group" />
@@ -363,21 +277,13 @@ export default function PanelTecnico() {
               <div>
 
                 <h3
-                  className="
-                    text-sm
-                    font-semibold
-                    text-[var(--erp-text)]
-                  "
+                  className=""
                 >
                   Empleados 2026
                 </h3>
 
                 <p
-                  className="
-                    text-xs
-                    text-[var(--erp-text-soft)]
-                    mt-0.5
-                  "
+                  className="mt-0.5"
                 >
                   Gestión de usuarios y empleados
                 </p>
