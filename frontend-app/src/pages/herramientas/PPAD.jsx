@@ -115,7 +115,7 @@ export default function PPAD() {
       {error && <div className="px-4 py-3">{error}</div>}
       {mensaje && <div className="px-4 py-3">{mensaje}</div>}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="molsan-stat-grid">
         <Metrica titulo="PPAD pendientes" valor={resumen.pendientes_total} detalle="Registros por compensar" />
         <Metrica titulo="Importe pendiente" valor={euros(resumen.pendientes_importe)} detalle="Total pendiente de compensar" />
         <Metrica titulo="PPAD compensados" valor={resumen.compensados_total} detalle="Registros compensados" positivo />
@@ -132,8 +132,8 @@ export default function PPAD() {
 function TablaPPAD({ titulo, lista, tipo, busqueda, setBusqueda, compensar, accionId, descargarExcel, cargando }) {
     const esPendiente = tipo === "pendiente";
     return (
-      <section className="overflow-hidden">
-        <div className="flex flex-col gap-3 p-4 lg:flex-row lg:items-center lg:justify-between">
+      <section className="erp-card overflow-hidden">
+        <div className="molsan-filter-bar flex flex-col gap-3 p-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2>{titulo}</h2>
             <p className="mt-1">{lista.length} registros en la búsqueda · importe {euros(lista.reduce((s, x) => s + Number(x.importe || 0), 0))}</p>
