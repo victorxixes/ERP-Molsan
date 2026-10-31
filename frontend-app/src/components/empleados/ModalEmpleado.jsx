@@ -430,6 +430,7 @@ export default function ModalEmpleado({
   onClose,
   modoAdministracion = false,
   pestanaInicial = "basicos",
+  preservarEstilosSidebar = false,
 }) {
 
   /* ==========================================================
@@ -2165,6 +2166,7 @@ const permisosDisponibles =
         role="dialog"
         aria-modal="true"
         aria-label="Ficha de empleado"
+        data-molsan-style-exempt={preservarEstilosSidebar ? "sidebar-profile" : undefined}
         className="relative
  z-10
  flex
