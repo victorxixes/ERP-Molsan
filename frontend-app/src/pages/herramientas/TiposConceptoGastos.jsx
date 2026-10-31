@@ -831,16 +831,7 @@ export default function TiposConceptoGastos() {
  
  
  px-5
- py-3
- 
- 
- 
- 
- 
- 
- 
- 
- hover:-translate-y-0.5"
+ py-3"
           >
 
             <svg
@@ -917,11 +908,7 @@ export default function TiposConceptoGastos() {
           {/* TOTAL */}
 
           <div
-            className="p-5
- 
- 
- 
- hover:-translate-y-0.5"
+            className="p-5"
           >
 
             <div
@@ -987,11 +974,7 @@ export default function TiposConceptoGastos() {
           {/* ACTIVOS */}
 
           <div
-            className="p-5
- 
- 
- 
- hover:-translate-y-0.5"
+            className="p-5"
           >
 
             <div
@@ -1053,11 +1036,7 @@ export default function TiposConceptoGastos() {
           {/* INACTIVOS */}
 
           <div
-            className="p-5
- 
- 
- 
- hover:-translate-y-0.5"
+            className="p-5"
           >
 
             <div
@@ -1461,9 +1440,7 @@ export default function TiposConceptoGastos() {
           >
 
             <table
-              className="min-w-full
- divide-y
- divide-slate-200"
+              className="min-w-full"
             >
 
               <thead
@@ -1522,8 +1499,7 @@ export default function TiposConceptoGastos() {
 
 
               <tbody
-                className="divide-y
- divide-slate-100"
+                className=""
               >
 
                 {!cargando &&
@@ -1743,22 +1719,18 @@ export default function TiposConceptoGastos() {
                                   `:`
                                     bg-slate-100
                                     text-slate-500
-                                  `
-                              }
-                            `}
+                                  `}`}
                           >
 
                             <span
-                              className={`
-                                h-2
-                                w-2
-                                rounded-full
-                                ${
-                                  tipo.activo
-                                    ? ""
-                                    : ""
-                                }
-                              `}
+                              className={`h-2
+ w-2
+ 
+ ${
+ tipo.activo
+ ? ""
+ : ""
+ }`}
                             />
 
                             {tipo.activo
@@ -1871,9 +1843,7 @@ export default function TiposConceptoGastos() {
                                       bg-emerald-50
                                       text-emerald-600
                                       hover:bg-emerald-100
-                                    `
-                                }
-                              `}
+                                    `}`}
                             >
 
                               {tipo.activo ? (
@@ -2274,36 +2244,32 @@ export default function TiposConceptoGastos() {
                         !actual
                     )
                   }
-                  className={`
-                    relative
-                    h-7
-                    w-12
-                    rounded-full
-                    transition-all
-                    ${
-                      activo
-                        ? ""
-                        : ""
-                    }
-                  `}
+                  className={`relative
+ h-7
+ w-12
+ 
+ 
+ ${
+ activo
+ ? ""
+ : ""
+ }`}
                 >
 
                   <span
-                    className={`
-                      absolute
-                      top-1
-                      h-5
-                      w-5
-                      rounded-full
-                      bg-white
-                      shadow-sm
-                      transition-all
-                      ${
-                        activo
-                          ? "left-6"
-                          : "left-1"
-                      }
-                    `}
+                    className={`absolute
+ top-1
+ h-5
+ w-5
+ 
+ 
+ 
+ 
+ ${
+ activo
+ ? "left-6"
+ : "left-1"
+ }`}
                   />
 
                 </button>
