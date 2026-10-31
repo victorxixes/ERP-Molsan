@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios from "../../api/axios";
 import EnviarANotarioModal from "../../components/expedientes/EnviarANotarioModal";
 import { enviarExpedienteANotario } from "../../api/expedientes";
@@ -84,25 +85,12 @@ export default function ReasignarNotarioExpediente() {
   }
 
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden p-6">
-        <div className="absolute inset-x-0 top-0 h-1" />
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center">🏛️</div>
-          <div className="min-w-0 flex-1">
-            <h1>Reasignar expediente a notario</h1>
-            <p className="mt-1">
-              Busca el expediente para recuperar su ficha de Envío a notario, corregir sus datos y guardar la nueva asignación.
-            </p>
-          </div>
-          <Link to="/herramientas/utilidades" className="px-4 py-2">
-            ← Volver a Utilidades
-          </Link>
-        </div>
-      </header>
+    <main className="erp-page min-w-0 space-y-6">
+      <MolsanPageHeader mark="RN" title="Reasignar expediente a notario" description="Recupera la ficha de Envío a notario, corrige sus datos y guarda la nueva asignación." />
+      <div className="flex justify-end"><Link to="/herramientas/utilidades" className="molsan-btn molsan-btn--secondary">← Volver a Utilidades</Link></div>
 
-      <section className="p-6">
-        <form onSubmit={consultar}>
+      <section className="erp-card p-6">
+        <form onSubmit={consultar} className="molsan-form">
           <h2>1. Buscar expediente</h2>
           <p className="mt-1">
             Introduce el número de expediente. Se cargarán los datos notariales que ya están guardados, sin crear un expediente nuevo.
