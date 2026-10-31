@@ -1,5 +1,7 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useState, useMemo, useCallback } from "react";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 import {
   getAuditoria,
   getAuditoriaMetricas,
@@ -56,6 +58,7 @@ export default function AuditoriaAvanzada() {
       return texto.includes(q);
     });
   }, [registros, busqueda]);
+  const ordenFiltrados = useSortableData(filtrados);
 
   // ============================================================
   // BUSCADOR
@@ -622,78 +625,14 @@ export default function AuditoriaAvanzada() {
 
             <thead>
 
-              <tr
-               
-              >
-
-                <th
-                  className="px-5
- py-3
- 
- 
- whitespace-nowrap"
-                >
-                  Fecha
-                </th>
-
-                <th
-                  className="px-5
- py-3
- 
- 
- whitespace-nowrap"
-                >
-                  Usuario
-                </th>
-
-                <th
-                  className="px-5
- py-3
- 
- 
- whitespace-nowrap"
-                >
-                  Módulo
-                </th>
-
-                <th
-                  className="px-5
- py-3
- 
- 
- whitespace-nowrap"
-                >
-                  Acción
-                </th>
-
-                <th
-                  className="px-5
- py-3
- 
- 
- min-w-[360px]"
-                >
-                  Descripción
-                </th>
-
-                <th
-                  className="px-5
- py-3
- 
- 
- whitespace-nowrap"
-                >
-                  IP
-                </th>
-
-              </tr>
+              <tr><MolsanSortableTh label="Fecha" sortKey="fecha" sortConfig={ordenFiltrados.sortConfig} onSort={ordenFiltrados.requestSort} className="px-5 py-3 whitespace-nowrap" /><MolsanSortableTh label="Usuario" sortKey="usuario" sortConfig={ordenFiltrados.sortConfig} onSort={ordenFiltrados.requestSort} className="px-5 py-3 whitespace-nowrap" /><MolsanSortableTh label="Módulo" sortKey="modulo" sortConfig={ordenFiltrados.sortConfig} onSort={ordenFiltrados.requestSort} className="px-5 py-3 whitespace-nowrap" /><MolsanSortableTh label="Acción" sortKey="accion" sortConfig={ordenFiltrados.sortConfig} onSort={ordenFiltrados.requestSort} className="px-5 py-3 whitespace-nowrap" /><MolsanSortableTh label="Descripción" sortKey="descripcion" sortConfig={ordenFiltrados.sortConfig} onSort={ordenFiltrados.requestSort} className="px-5 py-3 min-w-[360px]" /><MolsanSortableTh label="IP" sortKey="ip" sortConfig={ordenFiltrados.sortConfig} onSort={ordenFiltrados.requestSort} className="px-5 py-3 whitespace-nowrap" /></tr>
 
             </thead>
 
 
             <tbody>
 
-              {filtrados.map((r) => (
+              {ordenFiltrados.items.map((r) => (
 
                 <tr
                   key={r.id}
