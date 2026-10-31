@@ -1466,8 +1466,6 @@ export default function Municipios() {
         <button type="button" className="molsan-btn molsan-btn--primary" onClick={abrirNuevo}>＋ Nuevo municipio</button>
       </div>
 
-          MENSAJE
-      ===================================================== */}
 
       {mensaje && (
 
