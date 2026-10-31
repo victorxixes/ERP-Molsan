@@ -99,8 +99,9 @@ export default function EmpleadoFicha({
   if (!empleadoId) {
 
     return (
-      <div className="erp-page  min-w-0">
+      <div className="erp-page min-w-0 space-y-5">
 
+        <MolsanPageHeader mark="EF" title="Ficha de empleado" description="Consulta de datos básicos, personales, laborales y actividad del empleado." />
         <div className="erp-card p-8">
 
           <p>
@@ -117,9 +118,10 @@ export default function EmpleadoFicha({
   if (loading) {
 
     return (
-      <div className="erp-page  min-w-0">
+      <div className="erp-page min-w-0 space-y-5">
 
-        <div className="erp-card max-w-[1700px] mx-auto p-8">
+        <MolsanPageHeader mark="EF" title="Ficha de empleado" description="Consulta de datos básicos, personales, laborales y actividad del empleado." />
+        <div className="erp-card p-8">
 
           <div className="py-16">
             Cargando ficha del empleado…
@@ -135,9 +137,10 @@ export default function EmpleadoFicha({
   if (error) {
 
     return (
-      <div className="erp-page  min-w-0">
+      <div className="erp-page min-w-0 space-y-5">
 
-        <div className="erp-card max-w-[1700px] mx-auto p-8">
+        <MolsanPageHeader mark="EF" title="Ficha de empleado" description="Consulta de datos básicos, personales, laborales y actividad del empleado." />
+        <div className="erp-card p-8">
 
           <div className="px-4
  py-3">
@@ -166,8 +169,6 @@ export default function EmpleadoFicha({
       =================================================== */}
 
       <section className="erp-card
- max-w-[1700px]
- mx-auto
  p-5">
 
         <div className="flex
@@ -285,8 +286,6 @@ export default function EmpleadoFicha({
       =================================================== */}
 
       <section className="erp-card
- max-w-[1700px]
- mx-auto
  p-5">
 
         <h2 className="mb-5">
@@ -344,8 +343,6 @@ export default function EmpleadoFicha({
       =================================================== */}
 
       <section className="erp-card
- max-w-[1700px]
- mx-auto
  p-5">
 
         <h2 className="mb-5">
@@ -419,8 +416,6 @@ export default function EmpleadoFicha({
       =================================================== */}
 
       <section className="erp-card
- max-w-[1700px]
- mx-auto
  p-5">
 
         <h2 className="mb-5">
@@ -478,8 +473,6 @@ export default function EmpleadoFicha({
       =================================================== */}
 
       <section className="erp-card
- max-w-[1700px]
- mx-auto
  p-5">
 
         <div className="flex
