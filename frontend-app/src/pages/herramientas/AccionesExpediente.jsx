@@ -1,5 +1,7 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 import React, {
   useCallback,
   useEffect,
@@ -647,8 +649,9 @@ export default function AccionesExpediente() {
     );
 
 
+  const ordenAcciones = useSortableData(acciones);
   const accionesPagina =
-    acciones.slice(
+    ordenAcciones.items.slice(
       (pagina - 1) *
         POR_PAGINA,
       pagina *
@@ -1574,28 +1577,15 @@ export default function AccionesExpediente() {
                
               >
 
-                <th className="px-4 py-3">
-                  Departamento
-                </th>
+                <MolsanSortableTh label="Departamento" sortKey="departamento" sortConfig={ordenAcciones.sortConfig} onSort={ordenAcciones.requestSort} className="px-4 py-3" />
 
-                <th className="px-4 py-3">
-                  Sección
-                </th>
+                <MolsanSortableTh label="Sección" sortKey="seccion" sortConfig={ordenAcciones.sortConfig} onSort={ordenAcciones.requestSort} className="px-4 py-3" />
 
-                <th className="px-4 py-3">
-                  Actividad
-                </th>
+                <MolsanSortableTh label="Actividad" sortKey="actividad" sortConfig={ordenAcciones.sortConfig} onSort={ordenAcciones.requestSort} className="px-4 py-3" />
 
-                <th className="px-4 py-3">
-                  Descripción
-                </th>
+                <MolsanSortableTh label="Descripción" sortKey="descripcion" sortConfig={ordenAcciones.sortConfig} onSort={ordenAcciones.requestSort} className="px-4 py-3" />
 
-                <th
-                  className="px-4
- py-3"
-                >
-                  Estado
-                </th>
+                <MolsanSortableTh label="Estado" sortKey="activo" sortConfig={ordenAcciones.sortConfig} onSort={ordenAcciones.requestSort} className="px-4 py-3" />
 
                 <th
                   className="px-4
