@@ -208,9 +208,9 @@ function TablaPPAD({ titulo, lista, tipo, busqueda, setBusqueda, compensar, acci
 
 function Metrica({ titulo, valor, detalle, positivo = false }) {
   return (
-    <div className={`rounded-2xl border p-5 ${positivo ? "" : ""}`}>
+    <div className={`p-5 ${positivo ? "" : ""}`}>
       <p className="uppercase">{titulo}</p>
-      <p className={`mt-2 text-2xl font-extrabold ${positivo ? "" : ""}`}>{valor}</p>
+      <p className={`mt-2 ${positivo ? "" : ""}`}>{valor}</p>
       <p className="mt-1">{detalle}</p>
     </div>
   );
