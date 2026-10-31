@@ -201,6 +201,67 @@ textarea:focus-visible {
   background: var(--molsan-blue-soft);
 }
 
+/* Base transversal del área de trabajo: afecta al contenido, nunca al sidebar. */
+.erp-main-inner,
+.erp-main-inner > div,
+.erp-main-inner main,
+.apoderagest,
+.notargest,
+.encargagest {
+  color: var(--molsan-text);
+  background-color: var(--molsan-white);
+}
+
+/* Controles de formulario coherentes en todas las páginas del ERP. */
+.erp-main-inner main input:not([type="checkbox"]):not([type="radio"]),
+.erp-main-inner main select,
+.erp-main-inner main textarea,
+.apoderagest input:not([type="checkbox"]):not([type="radio"]),
+.apoderagest select,
+.apoderagest textarea,
+.notargest input:not([type="checkbox"]):not([type="radio"]),
+.notargest select,
+.notargest textarea,
+.encargagest input:not([type="checkbox"]):not([type="radio"]),
+.encargagest select,
+.encargagest textarea {
+  color: var(--molsan-text);
+  background-color: var(--molsan-white);
+  border-color: var(--molsan-border);
+}
+
+.erp-main-inner main input:focus-visible,
+.erp-main-inner main select:focus-visible,
+.erp-main-inner main textarea:focus-visible {
+  border-color: var(--molsan-blue);
+  outline: 2px solid rgba(6, 70, 117, 0.16);
+  outline-offset: 1px;
+}
+
+/* Tablas del ERP: mismo tono de encabezado y mismo lenguaje de filas. */
+.erp-main-inner main table,
+.apoderagest table,
+.notargest table,
+.encargagest table {
+  color: var(--molsan-text);
+  border-color: var(--molsan-border);
+}
+
+.erp-main-inner main thead th,
+.apoderagest thead th,
+.notargest thead th,
+.encargagest thead th {
+  color: var(--molsan-blue);
+  background-color: #EAF2F8;
+}
+
+.erp-main-inner main tbody tr:hover,
+.apoderagest tbody tr:hover,
+.notargest tbody tr:hover,
+.encargagest tbody tr:hover {
+  background-color: #EAF3F9;
+}
+
 /* Paneles de contenido compartidos. */
 .molsan-panel,
 .molsan-card,
