@@ -2466,3 +2466,54 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
     height: 32px;
   }
 }
+
+
+.molsan-chat-header__name {
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-md);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+.molsan-chat-header__presence {
+  background: #2f8b61;
+  border-radius: 999px;
+  box-shadow: 0 0 0 3px rgba(47,139,97,.12);
+}
+.molsan-chat-header__tag {
+  padding: 6px 10px;
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-medium);
+}
+.agenda-filters {
+  justify-content: flex-start;
+}
+.agenda-search {
+  display: flex;
+  flex: 1 1 260px;
+  min-width: min(100%, 220px);
+  align-items: center;
+  gap: 8px;
+  padding: 0 11px;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+}
+.agenda-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.agenda-filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.agenda-month-day[aria-current="date"] {
+  background: var(--molsan-panel);
+  border-color: var(--molsan-blue);
+  box-shadow: inset 0 0 0 1px rgba(6,70,117,.12);
+}
