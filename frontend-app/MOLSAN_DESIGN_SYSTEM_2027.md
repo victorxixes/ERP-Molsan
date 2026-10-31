@@ -267,3 +267,20 @@ Este cierre **no afirma que cada una de las 97 pantallas y cada modal hayan sido
 - La base está preparada para adopción progresiva; no se afirma que todas las instancias de botones y modales del ERP hayan sido migradas en esta entrega.
 - No se cambian acciones, permisos, validaciones, navegación, datos ni flujos funcionales.
 - Sidebar, producción, rama `main` y base de datos permanecen fuera del alcance.
+
+
+### Fase 2 — adopción transversal de módulos heredados
+
+- Se amplía la hoja global para que formularios, controles, botones, tablas y diálogos heredados reciban la identidad Molsan sin exigir que cada módulo reconstruya su JSX.
+- Alcance de compatibilidad: formularios dentro de las áreas principales y diálogos, controles de texto/selección, estados de foco y deshabilitado, botones, tablas con cabecera azul hielo, separadores y hover, paneles de diálogo y contenedores de filtros reconocibles.
+- La regla excluye el Sidebar y no cambia estructura, valores, validaciones, acciones, permisos, API ni datos.
+- La adaptación visual se hereda en pantallas que utilizan esos patrones; no equivale a una migración semántica individual de cada formulario, modal o botón, ni a una validación visual manual de cada pantalla.
+- Las tablas reciben exclusivamente el patrón visual. No se añade un indicador de ordenación a cabeceras que todavía no dispongan de ordenación real.
+
+### Estado de la ordenación funcional tras la auditoría inicial
+
+- El requisito sigue siendo ordenar todas las columnas de datos en ambos sentidos y sobre el conjunto completo filtrado.
+- No es correcto simular una ordenación universal manipulando el DOM: React puede volver a renderizar las filas y, en tablas paginadas en servidor, ese método solo ordenaría la página visible.
+- La finalización requiere migrar los componentes de tabla y sus consultas/endpoints de servidor, verificando por cada listado si pagina en cliente o servidor y manteniendo filtros, paginación y exportación.
+- En esta entrega no se declara completada la ordenación de todas las tablas. Tampoco se declara completada la auditoría visual uno a uno de todas las pantallas y diálogos.
+- Próxima comprobación técnica: inventario completo de tablas y endpoints, clasificación por estrategia de paginación, incorporación del contrato de ordenación en backend y frontend en Preview, pruebas de tipos (texto, fechas, importes e identificadores), y control visual responsive.
