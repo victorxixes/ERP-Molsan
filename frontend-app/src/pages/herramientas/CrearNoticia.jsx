@@ -1,10 +1,9 @@
 import { useState, useCallback, useMemo } from "react";
 import { useUtilidades } from "../../hooks/useUtilidades";
 
-import "../../css/ComponentesOperativosPremium.css";
 
 /**
- * CREAR NOTICIA — MOLSAN ERP PREMIUM 2027
+ * CREAR NOTICIA
  */
 
 export default function CrearNoticia() {
@@ -52,7 +51,7 @@ export default function CrearNoticia() {
   ]);
 
   return (
-    <div className="crear-noticia-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6">
+    <div className="min-h-full p-4 sm:p-6 lg:p-8 space-y-6">
 
       {/* =====================================================
           CABECERA
