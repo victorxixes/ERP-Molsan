@@ -1,6 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
 
-import "../../css/ComponentesOperativosPremium.css";
 
 export default function SelectSJ({
   value,
