@@ -1,5 +1,4 @@
 import { useCallback, useEffect } from "react";
-import "./Logs.css";
 
 import { useLogs } from "../../hooks/useLogs";
 
