@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/CatalogosMaestrosPremium.css";
 
 const euroFecha = (v) => {
   if (!v) return "—";
@@ -81,7 +79,7 @@ export default function ProcesoAbsis() {
     } finally { setExportando(false); }
   }
 
-  return <main className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+  return <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
     <header className="relative overflow-hidden p-6">
       <div className="absolute inset-x-0 top-0 h-1" />
       <Link to="/herramientas/utilidades" className="">← Volver a Utilidades</Link>
