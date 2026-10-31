@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import "../../css/HerramientasPremium.css";
 
 /**
- * CENTRAL DE CATÁLOGOS — MOLSAN ERP PREMIUM 2027 · GLASS LUXE
+ * CENTRAL DE CATÁLOGOS — MOLSAN ERP
  * Reúne las pantallas de mantenimiento de datos maestros existentes.
  * Cada tarjeta conserva la ruta y el origen de datos de su catálogo.
  */
@@ -161,7 +161,7 @@ export default function Catalogos() {
         <div className="relative flex items-center gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[var(--molsan-primary-border)] bg-[var(--molsan-primary-soft)] text-2xl shadow-sm">▦</div>
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--molsan-primary)]">MOLSAN ERP PREMIUM 2027</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--molsan-primary)]">MOLSAN ERP</p>
             <h1 className="mt-1 text-2xl font-bold tracking-tight text-[var(--molsan-text)] sm:text-3xl">Catálogos</h1>
             <p className="mt-1 text-sm text-[var(--molsan-text-muted)]">Centraliza los datos maestros que utilizan los módulos y procesos de la gestoría.</p>
           </div>
