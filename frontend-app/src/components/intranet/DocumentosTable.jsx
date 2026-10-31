@@ -1,5 +1,7 @@
 import { useCallback } from "react";
 import { useIntranet } from "../../hooks/useIntranet";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../ui/MolsanSortableTh";
 
 /**
  * DOCUMENTOS TABLE
@@ -19,6 +21,8 @@ export default function DocumentosTable() {
     documentos,
     eliminarDocumento,
   } = useIntranet();
+
+  const ordenDocumentos = useSortableData(documentos);
 
   const handleEliminar = useCallback(
     (id) => {
@@ -106,61 +110,10 @@ export default function DocumentosTable() {
              
             >
 
-              <th
-                className="px-5
- py-3.5
-
- 
-
- 
- 
-
- uppercase"
-              >
-                ID
-              </th>
-
-              <th
-                className="px-5
- py-3.5
-
- 
-
- 
- 
-
- uppercase"
-              >
-                Título
-              </th>
-
-              <th
-                className="px-5
- py-3.5
-
- 
-
- 
- 
-
- uppercase"
-              >
-                Concepto
-              </th>
-
-              <th
-                className="px-5
- py-3.5
-
- 
-
- 
- 
-
- uppercase"
-              >
-                Fecha
-              </th>
+              <MolsanSortableTh label="ID" sortKey="id" sortConfig={ordenDocumentos.sortConfig} onSort={ordenDocumentos.requestSort} className="px-5 py-3.5 uppercase" />
+              <MolsanSortableTh label="Título" sortKey="titulo" sortConfig={ordenDocumentos.sortConfig} onSort={ordenDocumentos.requestSort} className="px-5 py-3.5 uppercase" />
+              <MolsanSortableTh label="Concepto" sortKey="concepto" sortConfig={ordenDocumentos.sortConfig} onSort={ordenDocumentos.requestSort} className="px-5 py-3.5 uppercase" />
+              <MolsanSortableTh label="Fecha" sortKey="fecha_publicacion" sortConfig={ordenDocumentos.sortConfig} onSort={ordenDocumentos.requestSort} className="px-5 py-3.5 uppercase" />
 
               <th
                 className="px-5
@@ -238,7 +191,7 @@ export default function DocumentosTable() {
 
             ) : (
 
-              documentos.map((d) => (
+              ordenDocumentos.items.map((d) => (
 
                 <tr
                   key={d.id}
