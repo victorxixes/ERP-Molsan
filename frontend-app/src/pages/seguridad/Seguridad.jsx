@@ -93,7 +93,7 @@ export default function Seguridad() {
   }, [auditoriaList]);
 
   return (
-    <div className="space-y-6">
+    <div className="erp-page space-y-6">
       <MolsanPageHeader mark="SE" title="Centro de seguridad" description="Resumen general y accesos a la administración de seguridad de Molsan ERP." />
       <div className="flex justify-end"><span className="molsan-panel inline-flex items-center gap-2 px-3 py-2">Panel de administración</span></div>
 

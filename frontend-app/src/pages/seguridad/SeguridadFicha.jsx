@@ -1486,7 +1486,7 @@ const permisosGlobales =
 
   return (
     <div
-      className="w-full space-y-4"
+      className="erp-page w-full space-y-4"
     >
 
       {/* ======================================================
@@ -1494,7 +1494,7 @@ const permisosGlobales =
       ====================================================== */}
 
       <section
-        className="p-5"
+        className="molsan-subpage-header p-5"
       >
 
         <div
