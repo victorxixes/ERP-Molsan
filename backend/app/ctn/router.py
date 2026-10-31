@@ -61,9 +61,29 @@ def _exigir_permiso_portal(usuario, portal, accion="ver"):
         )
 
 
+def _tiene_permiso_modulo(usuario, modulo, accion="ver"):
+    try:
+        require_perm_modulo(usuario, modulo, accion)
+        return True
+    except HTTPException:
+        return False
+
+
 def _exigir_permiso_ctn(usuario, accion="ver"):
     """Aplica permisos CTN también en API; la protección visual no es suficiente."""
     require_perm_modulo(usuario, "ctn", accion)
+
+
+def _exigir_permiso_ctn_o_agenda(usuario):
+    """Permite el selector de notarios de Agenda sin abrir el módulo CTN completo."""
+    if not (
+        _tiene_permiso_modulo(usuario, "ctn", "ver")
+        or _tiene_permiso_modulo(usuario, "agenda", "ver")
+    ):
+        raise HTTPException(
+            status_code=403,
+            detail="No tienes permiso para consultar el catálogo de notarios desde CTN o Agenda.",
+        )
 
 
 # ============================================================
@@ -439,7 +459,8 @@ def listar_notarias(
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
-    _exigir_permiso_ctn(usuario, "ver")
+    _exigir_permiso_ctn_o_agenda(usuario)
+    puede_ver_ctn = _tiene_permiso_modulo(usuario, "ctn", "ver")
     query = _aplicar_filtros_notarias(db, provincia, municipio, vc, apoderado, q, asociado)
     total = query.count()
 
@@ -520,6 +541,10 @@ def listar_notarias(
     for notaria in filas:
         data = _notaria_con_asociaciones(db, notaria)
         data["distancia_km"] = _distancia_de_notaria(notaria)
+        if not puede_ver_ctn:
+            # Agenda necesita datos de contacto para crear citas, no datos bancarios.
+            data["iban_1"] = None
+            data["iban_2"] = None
         items.append(data)
     return {"items": items, "total": total, "page": page, "page_size": page_size}
 
@@ -586,11 +611,17 @@ def detalle_notaria(
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
-    _exigir_permiso_ctn(usuario, "ver")
+    _exigir_permiso_ctn_o_agenda(usuario)
     notaria = obtener_notaria(db, notaria_id)
     if notaria is None:
         raise HTTPException(status_code=404, detail="Notario no encontrado")
-    return _notaria_con_asociaciones(db, notaria)
+    data = _notaria_con_asociaciones(db, notaria)
+    if not _tiene_permiso_modulo(usuario, "ctn", "ver"):
+        # Agenda necesita datos de contacto para mostrar la ficha de la cita,
+        # pero no debe recibir los IBAN almacenados en el catálogo CTN.
+        data["iban_1"] = None
+        data["iban_2"] = None
+    return data
 
 
 @router.put("/notarias/{notaria_id}/datos-bancarios")
