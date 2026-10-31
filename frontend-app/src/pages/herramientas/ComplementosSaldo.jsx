@@ -76,7 +76,7 @@ export default function ComplementosSaldo() {
     </section>
 
     <section className="erp-card overflow-hidden">
-      <div className="p-4 sm:p-5"><div className="flex flex-col gap-3 xl:flex-row xl:items-end">
+      <div className="molsan-filter-bar p-4 sm:p-5"><div className="flex flex-col gap-3 xl:flex-row xl:items-end">
         <label className="min-w-0 flex-1"><span className="mb-1.5 block uppercase">Buscar expediente</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="N.º de expediente…" className="w-full px-3.5 py-2.5" /></label>
         <label className="w-full xl:w-48"><span className="mb-1.5 block uppercase">Estado</span><select value={estadoFiltro} onChange={(e) => setEstadoFiltro(e.target.value)} className="w-full px-3.5 py-2.5"><option value="">Todos</option><option value="Pendiente">Pendiente</option><option value="Compensado">Compensado</option></select></label>
         <label className="w-full xl:w-56"><span className="mb-1.5 block uppercase">Oficina</span><input value={oficinaFiltro} onChange={(e) => setOficinaFiltro(e.target.value)} placeholder="Todas las oficinas" className="w-full px-3.5 py-2.5" /></label>
@@ -101,7 +101,7 @@ export default function ComplementosSaldo() {
 }
 
 function Metrica({ titulo, valor, detalle, icono, alerta = false, verde = false }) {
-  return <div className={`p-4 ${alerta ? "" : verde ? "" : ""}`}>
+  return <div className={`molsan-stat-card p-4 ${alerta ? "" : verde ? "" : ""}`}>
     <div className="flex items-start justify-between gap-2"><p className="uppercase">{titulo}</p><span className="flex h-9 w-9 items-center justify-center">{icono}</span></div><p className="mt-3">{valor}</p><p className="mt-1">{detalle}</p>
   </div>;
 }
