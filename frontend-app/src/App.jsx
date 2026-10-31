@@ -176,7 +176,7 @@ function MensajesWrapper() {
   if (!empleado || !empleado.id) {
 
     return (
-      <div className="p-6 text-white/70">
+      <div className="p-6">
         Cargando módulo de mensajes…
       </div>
     );
@@ -324,12 +324,12 @@ export default function App() {
 
   return (
 
-    <div className="animate-fade-in">
+    <div className="">
       <AppErrorBoundary>
 
       {empleado && token ? <RealtimeGlobal /> : null}
 
-      <Suspense fallback={<div className="flex min-h-[40vh] items-center justify-center p-8 text-sm font-semibold text-slate-500">Cargando módulo…</div>}>
+      <Suspense fallback={<div className="flex min-h-[40vh] items-center justify-center p-8">Cargando módulo…</div>}>
       <Routes>
 
         {/* ====================================================
