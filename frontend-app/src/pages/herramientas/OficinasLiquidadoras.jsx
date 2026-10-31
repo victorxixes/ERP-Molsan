@@ -121,11 +121,7 @@ function Campo({
       `}
     >
       <span
-        className="
-          text-xs
-          font-semibold
-          text-[var(--erp-text)]
-        "
+        className=""
       >
         {label}
       </span>
@@ -139,23 +135,13 @@ function Campo({
           )
         }
         placeholder={placeholder}
-        className="
-          w-full
-          rounded-xl
-          border
-          border-[var(--erp-border)]
-          bg-white
-          px-3
-          py-2.5
-          text-sm
-          text-[var(--erp-text)]
-          outline-none
-          transition
-
-          focus:border-[var(--erp-primary)]
-          focus:ring-2
-          focus:ring-[var(--erp-primary-soft)]
-        "
+        className="w-full
+ 
+ 
+ 
+ 
+ px-3
+ py-2.5"
       />
     </label>
   );
@@ -171,25 +157,23 @@ function BadgeActivo({
 }) {
   return (
     <span
-      className={`
-        inline-flex
-        items-center
-        gap-1.5
-        rounded-lg
-        border
-        px-2.5
-        py-1
-        text-xs
-        font-semibold
+      className={`inline-flex
+ items-center
+ gap-1.5
+ 
+ 
+ px-2.5
+ py-1
+ 
+ 
 
-        ${
-          activo
-            ? `
+ ${
+ activo
+ ?`
               border-green-200
               bg-green-50
               text-green-700
-            `
-            : `
+            `:`
               border-red-200
               bg-red-50
               text-red-700
@@ -205,8 +189,8 @@ function BadgeActivo({
 
           ${
             activo
-              ? "bg-green-500"
-              : "bg-red-500"
+              ? ""
+              : ""
           }
         `}
       />
@@ -1092,17 +1076,14 @@ export default function OficinasLiquidadoras() {
 
   return (
     <div
-      className="
-        oficinas-liquidadoras-premium herramientas-subpagina-premium
-        erp-page
-        min-h-full
-        p-4
-        sm:p-6
-        lg:p-8
-        text-[var(--erp-text)]
-        space-y-6
-        animate-fade-in
-      "
+      className="oficinas-liquidadoras-premium herramientas-subpagina-premium
+ erp-page
+ min-h-full
+ p-4
+ sm:p-6
+ lg:p-8
+ 
+ space-y-6"
     >
 
       {/* =====================================================
@@ -1110,40 +1091,34 @@ export default function OficinasLiquidadoras() {
       ===================================================== */}
 
       <div
-        className="
-          max-w-[1700px]
-          mx-auto
-          flex
-          flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-5
-        "
+        className="max-w-[1700px]
+ mx-auto
+ flex
+ flex-col
+ lg:flex-row
+ lg:items-center
+ lg:justify-between
+ gap-5"
       >
 
         <div
-          className="
-            flex
-            items-center
-            gap-4
-          "
+          className="flex
+ items-center
+ gap-4"
         >
 
           <div
-            className="
-              w-12
-              h-12
-              rounded-2xl
-              bg-[var(--erp-primary-soft)]
-              text-[var(--erp-primary)]
-              border
-              border-[var(--erp-border)]
-              flex
-              items-center
-              justify-center
-              shrink-0
-            "
+            className="w-12
+ h-12
+ 
+ 
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center
+ shrink-0"
           >
             <Icono
               name="database"
@@ -1155,22 +1130,13 @@ export default function OficinasLiquidadoras() {
           <div>
 
             <h1
-              className="
-                text-2xl
-                sm:text-3xl
-                font-bold
-                text-[var(--erp-text)]
-              "
+              className=""
             >
               Oficinas Liquidadoras
             </h1>
 
             <p
-              className="
-                text-sm
-                text-[var(--erp-text-soft)]
-                mt-0.5
-              "
+              className="mt-0.5"
             >
               Gestión y consulta del catálogo
               de Oficinas Liquidadoras
@@ -1182,12 +1148,10 @@ export default function OficinasLiquidadoras() {
 
 
         <div
-          className="
-            flex
-            flex-wrap
-            items-center
-            gap-2
-          "
+          className="flex
+ flex-wrap
+ items-center
+ gap-2"
         >
 
           <button
@@ -1195,26 +1159,11 @@ export default function OficinasLiquidadoras() {
             onClick={
               abrirImportacion
             }
-            className="
-              inline-flex
-              items-center
-              gap-2
-              px-4
-              py-2.5
-              rounded-xl
-              bg-white
-              border
-              border-[var(--erp-border)]
-              text-[var(--erp-text)]
-              text-sm
-              font-semibold
-              shadow-sm
-              hover:bg-[var(--erp-primary-soft)]
-              hover:text-[var(--erp-primary)]
-              hover:border-[var(--erp-primary)]
-              transition-all
-              duration-200
-            "
+            className="inline-flex
+ items-center
+ gap-2
+ px-4
+ py-2.5"
           >
             <Icono
               name="database"
@@ -1230,27 +1179,14 @@ export default function OficinasLiquidadoras() {
             onClick={
               abrirNueva
             }
-            className="
-              inline-flex
-              items-center
-              gap-2
-              px-4
-              py-2.5
-              rounded-xl
-              bg-[var(--erp-primary)]
-              hover:brightness-95
-              text-white
-              text-sm
-              font-semibold
-              shadow-sm
-              transition
-            "
+            className="inline-flex
+ items-center
+ gap-2
+ px-4
+ py-2.5"
           >
             <span
-              className="
-                text-lg
-                leading-none
-              "
+              className=""
             >
               +
             </span>
@@ -1270,18 +1206,14 @@ export default function OficinasLiquidadoras() {
       {mensaje && (
 
         <div
-          className="
-            max-w-[1700px]
-            mx-auto
-            rounded-xl
-            border
-            border-green-200
-            bg-green-50
-            px-4
-            py-3
-            text-sm
-            text-green-700
-          "
+          className="max-w-[1700px]
+ mx-auto
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
         >
           {mensaje}
         </div>
@@ -1292,18 +1224,14 @@ export default function OficinasLiquidadoras() {
       {error && (
 
         <div
-          className="
-            max-w-[1700px]
-            mx-auto
-            rounded-xl
-            border
-            border-red-200
-            bg-red-50
-            px-4
-            py-3
-            text-sm
-            text-red-700
-          "
+          className="max-w-[1700px]
+ mx-auto
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
         >
           {error}
         </div>
@@ -1316,54 +1244,37 @@ export default function OficinasLiquidadoras() {
       ===================================================== */}
 
       <section
-        className="
-          max-w-[1700px]
-          mx-auto
-          grid
-          grid-cols-1
-          sm:grid-cols-2
-          lg:grid-cols-3
-          gap-4
-        "
+        className="max-w-[1700px]
+ mx-auto
+ grid
+ grid-cols-1
+ sm:grid-cols-2
+ lg:grid-cols-3
+ gap-4"
       >
 
         <div
-          className="
-            erp-card
-            p-5
-          "
+          className="erp-card
+ p-5"
         >
 
           <div
-            className="
-              flex
-              items-center
-              justify-between
-              gap-4
-            "
+            className="flex
+ items-center
+ justify-between
+ gap-4"
           >
 
             <div>
 
               <p
-                className="
-                  text-xs
-                  font-medium
-                  uppercase
-                  tracking-wide
-                  text-[var(--erp-text-soft)]
-                "
+                className="uppercase"
               >
                 Total oficinas
               </p>
 
               <p
-                className="
-                  text-3xl
-                  font-bold
-                  text-[var(--erp-text)]
-                  mt-1
-                "
+                className="mt-1"
               >
                 {totalOficinas}
               </p>
@@ -1372,16 +1283,14 @@ export default function OficinasLiquidadoras() {
 
 
             <div
-              className="
-                w-11
-                h-11
-                rounded-xl
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-              "
+              className="w-11
+ h-11
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
             >
               <Icono
                 name="database"
@@ -1395,42 +1304,27 @@ export default function OficinasLiquidadoras() {
 
 
         <div
-          className="
-            erp-card
-            p-5
-          "
+          className="erp-card
+ p-5"
         >
 
           <div
-            className="
-              flex
-              items-center
-              justify-between
-              gap-4
-            "
+            className="flex
+ items-center
+ justify-between
+ gap-4"
           >
 
             <div>
 
               <p
-                className="
-                  text-xs
-                  font-medium
-                  uppercase
-                  tracking-wide
-                  text-[var(--erp-text-soft)]
-                "
+                className="uppercase"
               >
                 Oficinas activas
               </p>
 
               <p
-                className="
-                  text-3xl
-                  font-bold
-                  text-[var(--erp-text)]
-                  mt-1
-                "
+                className="mt-1"
               >
                 {oficinasActivas}
               </p>
@@ -1439,24 +1333,18 @@ export default function OficinasLiquidadoras() {
 
 
             <div
-              className="
-                w-11
-                h-11
-                rounded-xl
-                bg-green-50
-                text-green-600
-                flex
-                items-center
-                justify-center
-              "
+              className="w-11
+ h-11
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
             >
               <span
-                className="
-                  w-2.5
-                  h-2.5
-                  rounded-full
-                  bg-green-500
-                "
+                className="w-2.5
+ h-2.5"
               />
             </div>
 
@@ -1466,42 +1354,27 @@ export default function OficinasLiquidadoras() {
 
 
         <div
-          className="
-            erp-card
-            p-5
-          "
+          className="erp-card
+ p-5"
         >
 
           <div
-            className="
-              flex
-              items-center
-              justify-between
-              gap-4
-            "
+            className="flex
+ items-center
+ justify-between
+ gap-4"
           >
 
             <div>
 
               <p
-                className="
-                  text-xs
-                  font-medium
-                  uppercase
-                  tracking-wide
-                  text-[var(--erp-text-soft)]
-                "
+                className="uppercase"
               >
                 Con datos de contacto
               </p>
 
               <p
-                className="
-                  text-3xl
-                  font-bold
-                  text-[var(--erp-text)]
-                  mt-1
-                "
+                className="mt-1"
               >
                 {oficinasConContacto}
               </p>
@@ -1510,22 +1383,17 @@ export default function OficinasLiquidadoras() {
 
 
             <div
-              className="
-                w-11
-                h-11
-                rounded-xl
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-              "
+              className="w-11
+ h-11
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
             >
               <span
-                className="
-                  text-lg
-                  font-bold
-                "
+                className=""
               >
                 @
               </span>
@@ -1543,43 +1411,30 @@ export default function OficinasLiquidadoras() {
       ===================================================== */}
 
       <section
-        className="
-          erp-card
-          max-w-[1700px]
-          mx-auto
-          p-4
-          shadow-sm
-        "
+        className="erp-card
+ max-w-[1700px]
+ mx-auto
+ p-4"
       >
 
         <div
-          className="
-            flex
-            items-center
-            justify-between
-            gap-3
-            mb-4
-          "
+          className="flex
+ items-center
+ justify-between
+ gap-3
+ mb-4"
         >
 
           <div>
 
             <h2
-              className="
-                text-base
-                font-semibold
-                text-[var(--erp-text)]
-              "
+              className=""
             >
               Buscar y filtrar
             </h2>
 
             <p
-              className="
-                text-xs
-                text-[var(--erp-text-soft)]
-                mt-1
-              "
+              className="mt-1"
             >
               Localiza rápidamente una Oficina
               Liquidadora
@@ -1599,12 +1454,7 @@ export default function OficinasLiquidadoras() {
               setPagina(1);
 
             }}
-            className="
-              text-xs
-              font-semibold
-              text-[var(--erp-primary)]
-              hover:underline
-            "
+            className=""
           >
             Limpiar filtros
           </button>
@@ -1613,31 +1463,23 @@ export default function OficinasLiquidadoras() {
 
 
         <div
-          className="
-            grid
-            grid-cols-1
-            md:grid-cols-2
-            xl:grid-cols-4
-            gap-3
-          "
+          className="grid
+ grid-cols-1
+ md:grid-cols-2
+ xl:grid-cols-4
+ gap-3"
         >
 
           <label
-            className="
-              md:col-span-2
-              xl:col-span-1
-              flex
-              flex-col
-              gap-1.5
-            "
+            className="md:col-span-2
+ xl:col-span-1
+ flex
+ flex-col
+ gap-1.5"
           >
 
             <span
-              className="
-                text-xs
-                font-semibold
-                text-[var(--erp-text)]
-              "
+              className=""
             >
               Buscar
             </span>
@@ -1653,42 +1495,26 @@ export default function OficinasLiquidadoras() {
                 Oficina, dirección, población,
                 teléfono, email...
               "
-              className="
-                w-full
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-white
-                px-3
-                py-2.5
-                text-sm
-                text-[var(--erp-text)]
-                outline-none
-                transition
-
-                focus:border-[var(--erp-primary)]
-                focus:ring-2
-                focus:ring-[var(--erp-primary-soft)]
-              "
+              className="w-full
+ 
+ 
+ 
+ 
+ px-3
+ py-2.5"
             />
 
           </label>
 
 
           <label
-            className="
-              flex
-              flex-col
-              gap-1.5
-            "
+            className="flex
+ flex-col
+ gap-1.5"
           >
 
             <span
-              className="
-                text-xs
-                font-semibold
-                text-[var(--erp-text)]
-              "
+              className=""
             >
               Provincia
             </span>
@@ -1702,23 +1528,13 @@ export default function OficinasLiquidadoras() {
                   event.target.value
                 )
               }
-              className="
-                w-full
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-white
-                px-3
-                py-2.5
-                text-sm
-                text-[var(--erp-text)]
-                outline-none
-                transition
-
-                focus:border-[var(--erp-primary)]
-                focus:ring-2
-                focus:ring-[var(--erp-primary-soft)]
-              "
+              className="w-full
+ 
+ 
+ 
+ 
+ px-3
+ py-2.5"
             >
 
               <option value="">
@@ -1748,19 +1564,13 @@ export default function OficinasLiquidadoras() {
 
 
           <label
-            className="
-              flex
-              flex-col
-              gap-1.5
-            "
+            className="flex
+ flex-col
+ gap-1.5"
           >
 
             <span
-              className="
-                text-xs
-                font-semibold
-                text-[var(--erp-text)]
-              "
+              className=""
             >
               Población
             </span>
@@ -1774,23 +1584,13 @@ export default function OficinasLiquidadoras() {
                   event.target.value
                 )
               }
-              className="
-                w-full
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-white
-                px-3
-                py-2.5
-                text-sm
-                text-[var(--erp-text)]
-                outline-none
-                transition
-
-                focus:border-[var(--erp-primary)]
-                focus:ring-2
-                focus:ring-[var(--erp-primary-soft)]
-              "
+              className="w-full
+ 
+ 
+ 
+ 
+ px-3
+ py-2.5"
             >
 
               <option value="">
@@ -1820,19 +1620,13 @@ export default function OficinasLiquidadoras() {
 
 
           <label
-            className="
-              flex
-              flex-col
-              gap-1.5
-            "
+            className="flex
+ flex-col
+ gap-1.5"
           >
 
             <span
-              className="
-                text-xs
-                font-semibold
-                text-[var(--erp-text)]
-              "
+              className=""
             >
               Estado
             </span>
@@ -1846,23 +1640,13 @@ export default function OficinasLiquidadoras() {
                   event.target.value
                 )
               }
-              className="
-                w-full
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-white
-                px-3
-                py-2.5
-                text-sm
-                text-[var(--erp-text)]
-                outline-none
-                transition
-
-                focus:border-[var(--erp-primary)]
-                focus:ring-2
-                focus:ring-[var(--erp-primary-soft)]
-              "
+              className="w-full
+ 
+ 
+ 
+ 
+ px-3
+ py-2.5"
             >
 
               <option value="true">
@@ -1891,47 +1675,35 @@ export default function OficinasLiquidadoras() {
       ===================================================== */}
 
       <section
-        className="
-          erp-card
-          max-w-[1700px]
-          mx-auto
-          overflow-hidden
-        "
+        className="erp-card
+ max-w-[1700px]
+ mx-auto
+ overflow-hidden"
       >
 
         <div
-          className="
-            px-5
-            py-4
-            border-b
-            border-[var(--erp-border)]
-            flex
-            flex-col
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
-            gap-3
-          "
+          className="px-5
+ py-4
+ 
+ 
+ flex
+ flex-col
+ sm:flex-row
+ sm:items-center
+ sm:justify-between
+ gap-3"
         >
 
           <div>
 
             <h2
-              className="
-                text-base
-                font-semibold
-                text-[var(--erp-text)]
-              "
+              className=""
             >
               Oficinas Liquidadoras
             </h2>
 
             <p
-              className="
-                text-xs
-                text-[var(--erp-text-soft)]
-                mt-1
-              "
+              className="mt-1"
             >
               {totalOficinas} registros
             </p>
@@ -1940,30 +1712,24 @@ export default function OficinasLiquidadoras() {
 
 
           <div
-            className="
-              inline-flex
-              items-center
-              gap-2
-              px-3
-              py-1.5
-              rounded-xl
-              bg-[var(--erp-primary-soft)]
-              border
-              border-[var(--erp-border)]
-              text-xs
-              font-semibold
-              text-[var(--erp-primary)]
-              w-fit
-            "
+            className="inline-flex
+ items-center
+ gap-2
+ px-3
+ py-1.5
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ w-fit"
           >
 
             <span
-              className="
-                w-2
-                h-2
-                rounded-full
-                bg-[var(--erp-primary)]
-              "
+              className="w-2
+ h-2"
             />
 
             Catálogo activo
@@ -1976,133 +1742,105 @@ export default function OficinasLiquidadoras() {
         <div className="overflow-x-auto">
 
           <table
-            className="
-              w-full
-              min-w-[1250px]
-              text-sm
-              text-[var(--erp-text)]
-            "
+            className="w-full
+ min-w-[1250px]"
           >
 
             <thead>
 
               <tr
-                className="
-                  bg-[var(--erp-primary)]
-                  text-white
-                  text-left
-                "
+                className=""
               >
 
                 <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    whitespace-nowrap
-                  "
+                  className="px-4
+ py-3
+ 
+ whitespace-nowrap"
                 >
                   Oficina Liquidadora
                 </th>
 
                 <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    whitespace-nowrap
-                  "
+                  className="px-4
+ py-3
+ 
+ whitespace-nowrap"
                 >
                   Dirección
                 </th>
 
                 <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    text-center
-                    whitespace-nowrap
-                  "
+                  className="px-4
+ py-3
+ 
+ 
+ whitespace-nowrap"
                 >
                   Código Postal
                 </th>
 
                 <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    whitespace-nowrap
-                  "
+                  className="px-4
+ py-3
+ 
+ whitespace-nowrap"
                 >
                   Población
                 </th>
 
                 <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    whitespace-nowrap
-                  "
+                  className="px-4
+ py-3
+ 
+ whitespace-nowrap"
                 >
                   Provincia
                 </th>
 
                 <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    whitespace-nowrap
-                  "
+                  className="px-4
+ py-3
+ 
+ whitespace-nowrap"
                 >
                   Teléfono
                 </th>
 
                 <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    whitespace-nowrap
-                  "
+                  className="px-4
+ py-3
+ 
+ whitespace-nowrap"
                 >
                   Email
                 </th>
 
                 <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    whitespace-nowrap
-                  "
+                  className="px-4
+ py-3
+ 
+ whitespace-nowrap"
                 >
                   Horario
                 </th>
 
                 <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    text-center
-                    whitespace-nowrap
-                  "
+                  className="px-4
+ py-3
+ 
+ 
+ whitespace-nowrap"
                 >
                   Estado
                 </th>
 
                 <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    text-center
-                    whitespace-nowrap
-                  "
+                  className="px-4
+ py-3
+ 
+ 
+ whitespace-nowrap"
                 >
                   Acciones
                 </th>
@@ -2122,30 +1860,19 @@ export default function OficinasLiquidadoras() {
 
                   <td
                     colSpan="10"
-                    className="
-                      px-4
-                      py-14
-                      text-center
-                      text-[var(--erp-text-soft)]
-                    "
+                    className="px-4
+ py-14"
                   >
 
                     <div
-                      className="
-                        inline-flex
-                        items-center
-                        gap-2
-                      "
+                      className="inline-flex
+ items-center
+ gap-2"
                     >
 
                       <span
-                        className="
-                          w-2
-                          h-2
-                          rounded-full
-                          bg-[var(--erp-primary)]
-                          animate-pulse
-                        "
+                        className="w-2
+ h-2"
                       />
 
                       Cargando oficinas…
@@ -2163,12 +1890,8 @@ export default function OficinasLiquidadoras() {
 
                   <td
                     colSpan="10"
-                    className="
-                      px-4
-                      py-14
-                      text-center
-                      text-[var(--erp-text-soft)]
-                    "
+                    className="px-4
+ py-14"
                   >
 
                     No hay Oficinas Liquidadoras
@@ -2187,20 +1910,12 @@ export default function OficinasLiquidadoras() {
                       key={
                         oficina.id
                       }
-                      className="
-                        border-b
-                        border-[var(--erp-border)]
-                        hover:bg-[var(--erp-primary-soft)]
-                        transition-colors
-                      "
+                      className=""
                     >
 
                       <td
-                        className="
-                          px-4
-                          py-3.5
-                          font-semibold
-                        "
+                        className="px-4
+ py-3.5"
                       >
                         {
                           oficina.oficina_liquidadora
@@ -2209,11 +1924,8 @@ export default function OficinasLiquidadoras() {
 
 
                       <td
-                        className="
-                          px-4
-                          py-3.5
-                          text-[var(--erp-text-soft)]
-                        "
+                        className="px-4
+ py-3.5"
                       >
                         {
                           oficina.direccion ||
@@ -2223,12 +1935,10 @@ export default function OficinasLiquidadoras() {
 
 
                       <td
-                        className="
-                          px-4
-                          py-3.5
-                          text-center
-                          tabular-nums
-                        "
+                        className="px-4
+ py-3.5
+ 
+ tabular-nums"
                       >
                         {
                           oficina.codigo_postal ||
@@ -2238,10 +1948,8 @@ export default function OficinasLiquidadoras() {
 
 
                       <td
-                        className="
-                          px-4
-                          py-3.5
-                        "
+                        className="px-4
+ py-3.5"
                       >
                         {
                           oficina.poblacion ||
@@ -2251,10 +1959,8 @@ export default function OficinasLiquidadoras() {
 
 
                       <td
-                        className="
-                          px-4
-                          py-3.5
-                        "
+                        className="px-4
+ py-3.5"
                       >
                         {
                           oficina.provincia ||
@@ -2264,11 +1970,9 @@ export default function OficinasLiquidadoras() {
 
 
                       <td
-                        className="
-                          px-4
-                          py-3.5
-                          whitespace-nowrap
-                        "
+                        className="px-4
+ py-3.5
+ whitespace-nowrap"
                       >
                         {
                           oficina.telefono ||
@@ -2278,11 +1982,8 @@ export default function OficinasLiquidadoras() {
 
 
                       <td
-                        className="
-                          px-4
-                          py-3.5
-                          text-[var(--erp-text-soft)]
-                        "
+                        className="px-4
+ py-3.5"
                       >
                         {
                           oficina.email ||
@@ -2292,16 +1993,12 @@ export default function OficinasLiquidadoras() {
 
 
                       <td
-                        className="
-                          px-4
-                          py-3.5
-                          max-w-[220px]
-                        "
+                        className="px-4
+ py-3.5
+ max-w-[220px]"
                       >
                         <span
-                          className="
-                            line-clamp-2
-                          "
+                          className="line-clamp-2"
                         >
                           {
                             oficina.horario ||
@@ -2312,11 +2009,8 @@ export default function OficinasLiquidadoras() {
 
 
                       <td
-                        className="
-                          px-4
-                          py-3.5
-                          text-center
-                        "
+                        className="px-4
+ py-3.5"
                       >
                         <BadgeActivo
                           activo={
@@ -2328,19 +2022,15 @@ export default function OficinasLiquidadoras() {
 
 
                       <td
-                        className="
-                          px-4
-                          py-3.5
-                        "
+                        className="px-4
+ py-3.5"
                       >
 
                         <div
-                          className="
-                            flex
-                            items-center
-                            justify-center
-                            gap-2
-                          "
+                          className="flex
+ items-center
+ justify-center
+ gap-2"
                         >
 
                           <button
@@ -2351,21 +2041,16 @@ export default function OficinasLiquidadoras() {
                               )
                             }
                             title="Editar"
-                            className="
-                              w-9
-                              h-9
-                              rounded-xl
-                              bg-white
-                              border
-                              border-[var(--erp-border)]
-                              text-[var(--erp-primary)]
-                              flex
-                              items-center
-                              justify-center
-                              hover:bg-[var(--erp-primary-soft)]
-                              hover:border-[var(--erp-primary)]
-                              transition
-                            "
+                            className="w-9
+ h-9
+ 
+ 
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
                           >
                             ✎
                           </button>
@@ -2379,20 +2064,16 @@ export default function OficinasLiquidadoras() {
                               )
                             }
                             title="Eliminar"
-                            className="
-                              w-9
-                              h-9
-                              rounded-xl
-                              bg-white
-                              border
-                              border-red-200
-                              text-red-600
-                              flex
-                              items-center
-                              justify-center
-                              hover:bg-red-50
-                              transition
-                            "
+                            className="w-9
+ h-9
+ 
+ 
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
                           >
                             ×
                           </button>
@@ -2420,39 +2101,30 @@ export default function OficinasLiquidadoras() {
         =================================================== */}
 
         <div
-          className="
-            px-5
-            py-4
-            border-t
-            border-[var(--erp-border)]
-            flex
-            flex-col
-            sm:flex-row
-            items-center
-            justify-between
-            gap-4
-          "
+          className="px-5
+ py-4
+ 
+ 
+ flex
+ flex-col
+ sm:flex-row
+ items-center
+ justify-between
+ gap-4"
         >
 
           <div
-            className="
-              text-sm
-              text-[var(--erp-text-soft)]
-            "
+            className=""
           >
             Mostrando{" "}
             <strong
-              className="
-                text-[var(--erp-text)]
-              "
+              className=""
             >
               {oficinasPagina.length}
             </strong>{" "}
             de{" "}
             <strong
-              className="
-                text-[var(--erp-text)]
-              "
+              className=""
             >
               {totalOficinas}
             </strong>{" "}
@@ -2461,11 +2133,9 @@ export default function OficinasLiquidadoras() {
 
 
           <div
-            className="
-              flex
-              items-center
-              gap-2
-            "
+            className="flex
+ items-center
+ gap-2"
           >
 
             <button
@@ -2483,39 +2153,20 @@ export default function OficinasLiquidadoras() {
                     )
                 )
               }
-              className="
-                px-4
-                py-2
-                rounded-xl
-                bg-white
-                border
-                border-[var(--erp-border)]
-                text-[var(--erp-text)]
-                text-sm
-                font-medium
-                hover:bg-[var(--erp-surface-soft)]
-                transition
-                disabled:opacity-40
-                disabled:cursor-not-allowed
-              "
+              className="px-4
+ py-2"
             >
               Anterior
             </button>
 
 
             <span
-              className="
-                px-3
-                text-sm
-                text-[var(--erp-text-soft)]
-              "
+              className="px-3"
             >
               Página{" "}
 
               <strong
-                className="
-                  text-[var(--erp-text)]
-                "
+                className=""
               >
                 {pagina}
               </strong>
@@ -2523,9 +2174,7 @@ export default function OficinasLiquidadoras() {
               {" "}de{" "}
 
               <strong
-                className="
-                  text-[var(--erp-text)]
-                "
+                className=""
               >
                 {totalPaginas}
               </strong>
@@ -2548,21 +2197,8 @@ export default function OficinasLiquidadoras() {
                     )
                 )
               }
-              className="
-                px-4
-                py-2
-                rounded-xl
-                bg-white
-                border
-                border-[var(--erp-border)]
-                text-[var(--erp-text)]
-                text-sm
-                font-medium
-                hover:bg-[var(--erp-surface-soft)]
-                transition
-                disabled:opacity-40
-                disabled:cursor-not-allowed
-              "
+              className="px-4
+ py-2"
             >
               Siguiente
             </button>
@@ -2581,18 +2217,15 @@ export default function OficinasLiquidadoras() {
       {mostrarModal && (
 
         <div
-          className="
-        panel-modal-premium
-            fixed
-            inset-0
-            z-[200]
-            flex
-            items-center
-            justify-center
-            bg-slate-950/45
-            p-4
-            backdrop-blur-sm
-          "
+          className="panel-modal-premium
+ fixed
+ inset-0
+ z-[200]
+ flex
+ items-center
+ justify-center
+ 
+ p-4"
         >
 
           <div
@@ -2601,40 +2234,27 @@ export default function OficinasLiquidadoras() {
             role="dialog"
             aria-modal="true"
             aria-label={modoEdicion ? "Editar oficina liquidadora" : "Nueva oficina liquidadora"}
-            className="
-              w-full
-              max-w-4xl
-              max-h-[92vh]
-              overflow-y-auto
-              rounded-2xl
-              bg-[var(--erp-surface)]
-              border
-              border-[var(--erp-border)]
-              shadow-2xl
-            "
+            className="w-full
+ max-w-4xl
+ max-h-[92vh]
+ overflow-y-auto"
           >
 
             <div
-              className="
-                px-5
-                py-4
-                border-b
-                border-[var(--erp-border)]
-                flex
-                items-center
-                justify-between
-                gap-4
-              "
+              className="px-5
+ py-4
+ 
+ 
+ flex
+ items-center
+ justify-between
+ gap-4"
             >
 
               <div>
 
                 <h2
-                  className="
-                    text-lg
-                    font-semibold
-                    text-[var(--erp-text)]
-                  "
+                  className=""
                 >
                   {modoEdicion
                     ? "Editar Oficina Liquidadora"
@@ -2642,11 +2262,7 @@ export default function OficinasLiquidadoras() {
                 </h2>
 
                 <p
-                  className="
-                    text-xs
-                    text-[var(--erp-text-soft)]
-                    mt-1
-                  "
+                  className="mt-1"
                 >
                   Completa los datos del catálogo
                 </p>
@@ -2659,17 +2275,8 @@ export default function OficinasLiquidadoras() {
                 onClick={
                   cerrarModal
                 }
-                className="
-                  w-9
-                  h-9
-                  rounded-xl
-                  bg-[var(--erp-surface-soft)]
-                  border
-                  border-[var(--erp-border)]
-                  text-[var(--erp-text-soft)]
-                  hover:text-[var(--erp-text)]
-                  transition
-                "
+                className="w-9
+ h-9"
               >
                 ×
               </button>
@@ -2684,13 +2291,11 @@ export default function OficinasLiquidadoras() {
             >
 
               <div
-                className="
-                  p-5
-                  grid
-                  grid-cols-1
-                  md:grid-cols-2
-                  gap-4
-                "
+                className="p-5
+ grid
+ grid-cols-1
+ md:grid-cols-2
+ gap-4"
               >
 
                 <Campo
@@ -2817,18 +2422,15 @@ export default function OficinasLiquidadoras() {
 
 
                 <label
-                  className="
-                    flex
-                    items-center
-                    gap-3
-                    rounded-xl
-                    border
-                    border-[var(--erp-border)]
-                    bg-[var(--erp-surface-soft)]
-                    px-4
-                    py-3
-                    cursor-pointer
-                  "
+                  className="flex
+ items-center
+ gap-3
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
                 >
 
                   <input
@@ -2842,30 +2444,21 @@ export default function OficinasLiquidadoras() {
                         event.target.checked
                       )
                     }
-                    className="
-                      w-4
-                      h-4
-                      accent-[var(--erp-primary)]
-                    "
+                    className="w-4
+ h-4
+ accent-[var(--erp-primary)]"
                   />
 
                   <div>
 
                     <div
-                      className="
-                        text-sm
-                        font-semibold
-                        text-[var(--erp-text)]
-                      "
+                      className=""
                     >
                       Oficina activa
                     </div>
 
                     <div
-                      className="
-                        text-xs
-                        text-[var(--erp-text-soft)]
-                      "
+                      className=""
                     >
                       Disponible en el catálogo
                     </div>
@@ -2878,15 +2471,13 @@ export default function OficinasLiquidadoras() {
 
 
               <div
-                className="
-                  px-5
-                  py-4
-                  border-t
-                  border-[var(--erp-border)]
-                  flex
-                  justify-end
-                  gap-2
-                "
+                className="px-5
+ py-4
+ 
+ 
+ flex
+ justify-end
+ gap-2"
               >
 
                 <button
@@ -2895,20 +2486,8 @@ export default function OficinasLiquidadoras() {
                     cerrarModal
                   }
                   disabled={loading}
-                  className="
-                    px-4
-                    py-2.5
-                    rounded-xl
-                    bg-white
-                    border
-                    border-[var(--erp-border)]
-                    text-[var(--erp-text)]
-                    text-sm
-                    font-semibold
-                    hover:bg-[var(--erp-surface-soft)]
-                    transition
-                    disabled:opacity-50
-                  "
+                  className="px-4
+ py-2.5"
                 >
                   Cancelar
                 </button>
@@ -2917,19 +2496,8 @@ export default function OficinasLiquidadoras() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="
-                    px-4
-                    py-2.5
-                    rounded-xl
-                    bg-[var(--erp-primary)]
-                    text-white
-                    text-sm
-                    font-semibold
-                    shadow-sm
-                    hover:brightness-95
-                    transition
-                    disabled:opacity-50
-                  "
+                  className="px-4
+ py-2.5"
                 >
                   {loading
                     ? "Guardando..."
@@ -2954,17 +2522,14 @@ export default function OficinasLiquidadoras() {
       {mostrarImportar && (
 
         <div
-          className="
-            fixed
-            inset-0
-            z-[210]
-            flex
-            items-center
-            justify-center
-            bg-slate-950/45
-            p-4
-            backdrop-blur-sm
-          "
+          className="fixed
+ inset-0
+ z-[210]
+ flex
+ items-center
+ justify-center
+ 
+ p-4"
         >
 
           <div
@@ -2973,48 +2538,31 @@ export default function OficinasLiquidadoras() {
             role="dialog"
             aria-modal="true"
             aria-label="Importar oficinas liquidadoras desde Excel"
-            className="
-              w-full
-              max-w-xl
-              rounded-2xl
-              bg-[var(--erp-surface)]
-              border
-              border-[var(--erp-border)]
-              shadow-2xl
-            "
+            className="w-full
+ max-w-xl"
           >
 
             <div
-              className="
-                px-5
-                py-4
-                border-b
-                border-[var(--erp-border)]
-                flex
-                items-center
-                justify-between
-                gap-4
-              "
+              className="px-5
+ py-4
+ 
+ 
+ flex
+ items-center
+ justify-between
+ gap-4"
             >
 
               <div>
 
                 <h2
-                  className="
-                    text-lg
-                    font-semibold
-                    text-[var(--erp-text)]
-                  "
+                  className=""
                 >
                   Importar Oficinas Liquidadoras
                 </h2>
 
                 <p
-                  className="
-                    text-xs
-                    text-[var(--erp-text-soft)]
-                    mt-1
-                  "
+                  className="mt-1"
                 >
                   Carga el catálogo desde Excel
                 </p>
@@ -3030,18 +2578,8 @@ export default function OficinasLiquidadoras() {
                 disabled={
                   importando
                 }
-                className="
-                  w-9
-                  h-9
-                  rounded-xl
-                  bg-[var(--erp-surface-soft)]
-                  border
-                  border-[var(--erp-border)]
-                  text-[var(--erp-text-soft)]
-                  hover:text-[var(--erp-text)]
-                  transition
-                  disabled:opacity-50
-                "
+                className="w-9
+ h-9"
               >
                 ×
               </button>
@@ -3056,37 +2594,25 @@ export default function OficinasLiquidadoras() {
             >
 
               <div
-                className="
-                  p-5
-                  space-y-4
-                "
+                className="p-5
+ space-y-4"
               >
 
                 <div
-                  className="
-                    rounded-2xl
-                    border-2
-                    border-dashed
-                    border-[var(--erp-border)]
-                    bg-[var(--erp-surface-soft)]
-                    p-7
-                    text-center
-                  "
+                  className="p-7"
                 >
 
                   <div
-                    className="
-                      mx-auto
-                      w-12
-                      h-12
-                      rounded-2xl
-                      bg-[var(--erp-primary)]
-                      text-white
-                      flex
-                      items-center
-                      justify-center
-                      mb-4
-                    "
+                    className="mx-auto
+ w-12
+ h-12
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center
+ mb-4"
                   >
                     <Icono
                       name="database"
@@ -3095,46 +2621,27 @@ export default function OficinasLiquidadoras() {
                   </div>
 
                   <p
-                    className="
-                      text-sm
-                      font-semibold
-                      text-[var(--erp-text)]
-                    "
+                    className=""
                   >
                     Selecciona el fichero Excel
                   </p>
 
                   <p
-                    className="
-                      text-xs
-                      text-[var(--erp-text-soft)]
-                      mt-1
-                    "
+                    className="mt-1"
                   >
                     .xlsx, .xls o .xlsm
                   </p>
 
 
                   <label
-                    className="
-                      mt-4
-                      inline-flex
-                      cursor-pointer
-                      items-center
-                      justify-center
-                      gap-2
-                      px-4
-                      py-2.5
-                      rounded-xl
-                      bg-white
-                      border
-                      border-[var(--erp-border)]
-                      text-sm
-                      font-semibold
-                      text-[var(--erp-text)]
-                      hover:bg-[var(--erp-primary-soft)]
-                      transition
-                    "
+                    className="mt-4
+ inline-flex
+ 
+ items-center
+ justify-center
+ gap-2
+ px-4
+ py-2.5"
                   >
 
                     Elegir archivo
@@ -3163,34 +2670,23 @@ export default function OficinasLiquidadoras() {
                   {archivo && (
 
                     <div
-                      className="
-                        mt-4
-                        rounded-xl
-                        border
-                        border-[var(--erp-border)]
-                        bg-white
-                        px-4
-                        py-3
-                        text-left
-                        text-sm
-                        text-[var(--erp-text)]
-                      "
+                      className="mt-4
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
                     >
 
                       <div
-                        className="
-                          font-semibold
-                        "
+                        className=""
                       >
                         {archivo.name}
                       </div>
 
                       <div
-                        className="
-                          text-xs
-                          text-[var(--erp-text-soft)]
-                          mt-0.5
-                        "
+                        className="mt-0.5"
                       >
                         Archivo seleccionado
                       </div>
@@ -3203,22 +2699,12 @@ export default function OficinasLiquidadoras() {
 
 
                 <div
-                  className="
-                    rounded-xl
-                    border
-                    border-[var(--erp-border)]
-                    bg-[var(--erp-surface-soft)]
-                    px-4
-                    py-3
-                    text-xs
-                    text-[var(--erp-text-soft)]
-                  "
+                  className="px-4
+ py-3"
                 >
                   El Excel debe contener:
                   <strong
-                    className="
-                      text-[var(--erp-text)]
-                    "
+                    className=""
                   >
                     {" "}
                     Oficina Liquidadora,
@@ -3232,15 +2718,13 @@ export default function OficinasLiquidadoras() {
 
 
               <div
-                className="
-                  px-5
-                  py-4
-                  border-t
-                  border-[var(--erp-border)]
-                  flex
-                  justify-end
-                  gap-2
-                "
+                className="px-5
+ py-4
+ 
+ 
+ flex
+ justify-end
+ gap-2"
               >
 
                 <button
@@ -3251,20 +2735,8 @@ export default function OficinasLiquidadoras() {
                   disabled={
                     importando
                   }
-                  className="
-                    px-4
-                    py-2.5
-                    rounded-xl
-                    bg-white
-                    border
-                    border-[var(--erp-border)]
-                    text-[var(--erp-text)]
-                    text-sm
-                    font-semibold
-                    hover:bg-[var(--erp-surface-soft)]
-                    transition
-                    disabled:opacity-50
-                  "
+                  className="px-4
+ py-2.5"
                 >
                   Cancelar
                 </button>
@@ -3276,20 +2748,8 @@ export default function OficinasLiquidadoras() {
                     importando ||
                     !archivo
                   }
-                  className="
-                    px-4
-                    py-2.5
-                    rounded-xl
-                    bg-[var(--erp-primary)]
-                    text-white
-                    text-sm
-                    font-semibold
-                    shadow-sm
-                    hover:brightness-95
-                    transition
-                    disabled:opacity-50
-                    disabled:cursor-not-allowed
-                  "
+                  className="px-4
+ py-2.5"
                 >
                   {importando
                     ? "Importando..."
