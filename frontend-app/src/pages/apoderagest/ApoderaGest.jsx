@@ -509,16 +509,16 @@ function TablaEncargos({ encargos, onFirmado }) {
               <span className="ag-notario-contadores">
                 <span className="ag-contador ag-contador-firmas">✓ {grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas</span>
                 <span className="ag-contador">{grupo.expedientes.length} {grupo.expedientes.length === 1 ? "encargo" : "encargos"}</span>
-                <span className={`ag-contador-bloqueados${expedientesBloqueados > 0 ? " tiene-bloqueados" : ""}`}>{expedientesBloqueados} {expedientesBloqueados === 1 ? "bloqueado" : "bloqueados"}</span>
+                <span className={`ag-contador-bloqueados${expedientesBloqueados > 0 ? "tiene-bloqueados" : ""}`}>{expedientesBloqueados} {expedientesBloqueados === 1 ? "bloqueado" : "bloqueados"}</span>
                 <span className="ag-contador">Ver encargos →</span>
               </span>
             </button>
             {abierto ? createPortal((
-              <div className="ag-encargos-modal-overlay panel-modal-premium fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget) setGrupoEncargosAbierto(null); }}>
-                <div ref={grupoDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={`Encargos de ${grupo.nombre}`} className="flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
-                  <header className="flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4">
-                    <div><span className="text-xs font-semibold uppercase tracking-widest text-slate-500">APODERAGEST · BLOQUE DE APODERADO</span><h3 className="mt-1 text-xl font-bold text-slate-900">{grupo.nombre}</h3><p className="text-sm text-slate-600">{grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas registradas · {grupo.expedientes.length} encargos</p></div>
-                    <button type="button" className="rounded-xl border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-slate-100" onClick={() => setGrupoEncargosAbierto(null)}>Cerrar ✕</button>
+              <div className="ag-encargos-modal-overlay panel-modal-premium fixed inset-0 z-[1000] flex items-center justify-center p-3 sm:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget) setGrupoEncargosAbierto(null); }}>
+                <div ref={grupoDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={`Encargos de ${grupo.nombre}`} className="flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden">
+                  <header className="flex items-center justify-between gap-4 px-5 py-4">
+                    <div><span className="uppercase">APODERAGEST · BLOQUE DE APODERADO</span><h3 className="mt-1">{grupo.nombre}</h3><p className="">{grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas registradas · {grupo.expedientes.length} encargos</p></div>
+                    <button type="button" className="px-4 py-2" onClick={() => setGrupoEncargosAbierto(null)}>Cerrar ✕</button>
                   </header>
                   <div className="ag-encargos-detalle-lista ag-ficha-premium overflow-y-auto p-4">
                 {grupo.expedientes.map((encargo, indice) => {
@@ -881,7 +881,7 @@ export default function ApoderaGest() {
   }).format(new Date());
 
   return (
-    <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)] apoderagest">
+    <div className="min-h-screen apoderagest">
       <Sidebar
         brandName="ApoderaGest"
         navigationItems={[
@@ -918,7 +918,7 @@ export default function ApoderaGest() {
           <button
             type="button"
             onClick={() => navigate("/modulos")}
-            className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"
+            className="flex items-center gap-2 px-3 py-2"
           >
             <span aria-hidden="true">▦</span> Ir a módulos
           </button>
