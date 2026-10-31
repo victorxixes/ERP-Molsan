@@ -1036,8 +1036,6 @@ export default function OficinasLiquidadoras() {
         <button type="button" onClick={abrirNueva} className="molsan-btn molsan-btn--primary">＋ Nueva oficina</button>
       </div>
 
-          MENSAJES
-      ===================================================== */}
 
       {mensaje && (
 
