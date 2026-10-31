@@ -161,30 +161,8 @@ function BadgeActivo({
  
  
 
- ${
- activo
- ?`
-              border-green-200
-              bg-green-50
-              text-green-700
-            `:`
-              border-red-200
-              bg-red-50
-              text-red-700
-            `}`}
+ `}
     >
-
-      <span
-        className={`w-1.5
- h-1.5
- 
-
- ${
- activo
- ? ""
- : ""
- }`}
-      />
 
       {activo
         ? "Activa"
