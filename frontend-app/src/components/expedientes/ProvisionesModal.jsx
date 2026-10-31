@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "../../api/axios";
 import useAccessibleDialog from "../ui/useAccessibleDialog";
-import "../../css/ModalesOperativosPremium.css";
 
 const hoy = () => new Date().toISOString().slice(0, 10);
 const importe = (valor) => {
