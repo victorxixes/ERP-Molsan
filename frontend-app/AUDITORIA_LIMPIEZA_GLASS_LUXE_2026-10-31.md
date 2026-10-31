@@ -55,8 +55,10 @@ De las 52 hojas CSS:
 ## Comprobación de compilación
 
 - Los despliegues Preview anteriores habían fallado por el cierre JSX ausente en el modal PPAD de `FichaExpediente.jsx`.
-- La corrección ya está en la rama; queda verificar el siguiente build de Preview antes de darlo por resuelto.
+- La corrección PPAD ya está en la rama.
+- Un build posterior reveló dos defectos adicionales en `Fusiones.jsx` (expresión de clase incompleta) y `FichaExpediente.jsx` (llave de cierre sobrante); ambos se han corregido de forma localizada.
 - En `ModelosDocumentos.jsx` Render emitió además un aviso de análisis JSX sobre un carácter `}`. No se ha alterado esa zona porque primero hay que aislar si es un aviso no bloqueante o un defecto real.
+- Pendiente: ejecutar y confirmar un build completo con estos últimos arreglos.
 
 ## Estado
 
