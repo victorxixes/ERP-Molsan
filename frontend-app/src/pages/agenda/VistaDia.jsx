@@ -138,26 +138,24 @@ export default function VistaDia({
           return (
             <div
               key={cita.id}
-              className={`
-                absolute
-                left-4
-                right-4
-                mt-1
-                p-3
-                rounded-xl
-                border
-                shadow-sm
-                cursor-pointer
-                overflow-hidden
-                ${colores.box}
-                ${colores.text}
-                transition-all duration-200
-                ${
-                  resaltada
-                    ? "ring-2 ring-amber-400 bg-amber-50"
-                    : "hover:shadow-md hover:scale-[1.005]"
-                }
-              `}
+              className={`absolute
+ left-4
+ right-4
+ mt-1
+ p-3
+ 
+ 
+ 
+ 
+ overflow-hidden
+ ${colores.box}
+ ${colores.text}
+ 
+ ${
+ resaltada
+ ? "ring-2 
+ : 
+ }`}
               style={{
                 top: cita.top,
                 height: cita.height,
@@ -170,14 +168,12 @@ export default function VistaDia({
               {/* ACENTO */}
 
               <span
-                className={`
-                  absolute
-                  left-0
-                  top-0
-                  bottom-0
-                  w-1
-                  ${colores.accent}
-                `}
+                className={`absolute
+ left-0
+ top-0
+ bottom-0
+ w-1
+ ${colores.accent}`}
               />
 
               <div className="truncate pl-1">
@@ -185,7 +181,7 @@ export default function VistaDia({
                 {cita.hora_inicio} -{" "}
                 {cita.hora_fin}
               </div>
-              {String(cita.tipo_cita || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es").includes("firma") ? (() => { const realizada = Boolean(cita.firma_realizada) || /FIRMA\s+REALIZADA|FIRMADA/.test(String(cita.observaciones || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()); return <div className={`mt-1 inline-flex items-center rounded-md border px-2 py-1 text-[11px] font-bold ${realizada ? "" : ""}`}>{realizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</div>; })() : null}
+              {String(cita.tipo_cita || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es").includes("firma") ? (() => { const realizada = Boolean(cita.firma_realizada) || /FIRMA\s+REALIZADA|FIRMADA/.test(String(cita.observaciones || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()); return <div className={`mt-1 inline-flex items-center px-2 py-1 ${realizada ? "" : ""}`}>{realizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</div>; })() : null}
 
               <div className="truncate pl-1">
                 Notario:{" "}
