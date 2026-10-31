@@ -46,7 +46,7 @@ export default function FirmasEmail() {
       <div className="absolute inset-x-0 top-0 h-1" />
       <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <Link to="/herramientas/catalogos" className="">← Volver a Catálogos</Link>
+          <Link to="/herramientas/catalogos">← Volver a Catálogos</Link>
           <h1 className="mt-2">Firma corporativa de email</h1>
           <p className="mt-1">Configura el pie común que acompaña a la firma personal del empleado remitente.</p>
         </div>
@@ -56,7 +56,7 @@ export default function FirmasEmail() {
     {mensaje && <div role="status" className="px-4 py-3">{mensaje}</div>}
     {cargando ? <div className="p-8">Cargando configuración…</div> : <section className="p-5 sm:p-6 space-y-5">
       <div>
-        <h2 className="">Firma personal automática + pie corporativo</h2>
+        <h2>Firma personal automática + pie corporativo</h2>
         <p className="mt-1">El nombre y apellidos, departamento y cargo se obtienen de la FichaEmpleado del usuario que envía el correo. Aquí solo se configura el pie corporativo común.</p>
       </div>
       <div className="p-4">
