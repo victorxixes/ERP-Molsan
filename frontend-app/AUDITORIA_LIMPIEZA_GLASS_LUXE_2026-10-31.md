@@ -46,6 +46,13 @@ De las 52 hojas CSS:
 4. No modificar backend, datos, documentos ni producción.
 5. Cada lote de cambios debe compilarse y revisarse antes de continuar.
 
+## Primer cambio aplicado
+
+- Archivo: `src/pages/provisiones/ProvisionesFondosPage.jsx`.
+- Eliminados dos rótulos puramente decorativos que mostraban `MOLSAN ERP PREMIUM 2027` (catálogos económicos y Glass Luxe).
+- Se mantienen los encabezados funcionales, el título de cada pantalla, las explicaciones, los controles y la lógica de provisiones.
+- Commit del cambio: `7e7fe7b8ff30b75e6bd6f7e6fb02c70471f8268c`.
+
 ## Estado
 
-Auditoría inicial en curso. Este documento registra únicamente hechos comprobados en la revisión del 31/10/2026; no representa una certificación de limpieza total.
+Auditoría y limpieza en curso. El primer cambio selectivo está aplicado en la rama de Preview. No se declara ningún archivo JSX completamente limpio hasta completar el recorrido de sus estilos y referencias. Este documento registra únicamente hechos comprobados en la revisión del 31/10/2026; no representa una certificación de limpieza total.
