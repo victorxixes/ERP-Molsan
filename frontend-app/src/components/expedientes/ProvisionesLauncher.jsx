@@ -15,7 +15,7 @@ export default function ProvisionesLauncher() {
     <button
       type="button"
       onClick={() => setAbierto(true)}
-      className="provisiones-launcher-premium fixed bottom-5 right-5 z-40 px-5 py-3 hover:-translate-y-0.5"
+      className="provisiones-launcher-premium fixed bottom-5 right-5 z-40 px-5 py-3"
       title="Abrir provisiones de fondos y cancelaciones"
     >€ Provisiones / Cancelaciones</button>
     {abierto && <ProvisionesModal idExpediente={idExpediente} onClose={() => setAbierto(false)} />}
