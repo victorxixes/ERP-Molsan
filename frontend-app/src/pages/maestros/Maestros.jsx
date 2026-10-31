@@ -1,5 +1,7 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 import {
   getMaestros,
@@ -74,6 +76,8 @@ export default function Maestros() {
 
   const [datos, setDatos] =
     useState([]);
+
+  const ordenDatos = useSortableData(datos);
 
   const [cargando, setCargando] =
     useState(false);
@@ -778,30 +782,9 @@ export default function Maestros() {
                        
                       >
 
-                        <th
-                          className="py-3
- px-4
- 
- 
- 
- uppercase
- 
- 
- w-24"
-                        >
-                          ID
-                        </th>
+                        <MolsanSortableTh label="ID" sortKey="id" sortConfig={ordenDatos.sortConfig} onSort={ordenDatos.requestSort} className="py-3 px-4 uppercase w-24" />
 
-                        <th
-                          className="py-3
- px-4
- 
- 
- 
- uppercase"
-                        >
-                          Nombre
-                        </th>
+                        <MolsanSortableTh label="Nombre" sortKey="nombre" sortConfig={ordenDatos.sortConfig} onSort={ordenDatos.requestSort} className="py-3 px-4 uppercase" />
 
                         <th
                           className="py-3
@@ -824,7 +807,7 @@ export default function Maestros() {
 
                     <tbody>
 
-                      {datos.map((registro) => (
+                      {ordenDatos.items.map((registro) => (
 
                         <tr
                           key={registro.id}
