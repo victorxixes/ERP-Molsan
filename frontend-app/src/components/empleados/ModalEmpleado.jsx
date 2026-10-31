@@ -2132,15 +2132,14 @@ const permisosDisponibles =
 
     <div
       className="empleado-operativo-modal
-        fixed
-        inset-0
-        z-[100]
-        flex
-        items-center
-        justify-center
-        p-3
-        sm:p-6
-      "
+ fixed
+ inset-0
+ z-[100]
+ flex
+ items-center
+ justify-center
+ p-3
+ sm:p-6"
     >
 
       {/* ======================================================
@@ -2148,12 +2147,8 @@ const permisosDisponibles =
       ====================================================== */}
 
       <div
-        className="
-          absolute
-          inset-0
-          bg-slate-950/55
-          backdrop-blur-md
-        "
+        className="absolute
+ inset-0"
         onClick={
           onClose
         }
@@ -2170,23 +2165,15 @@ const permisosDisponibles =
         role="dialog"
         aria-modal="true"
         aria-label="Ficha de empleado"
-        className="
-          relative
-          z-10
-          flex
-          w-full
-          w-[min(96vw,1600px)]
-          max-w-7xl
-          max-h-[94vh]
-          flex-col
-          overflow-hidden
-          rounded-[28px]
-          border
-          border-slate-200/80
-          bg-white
-          shadow-[0_30px_100px_rgba(15,23,42,0.30)]
-          animate-slideUp
-        "
+        className="relative
+ z-10
+ flex
+ w-full
+ w-[min(96vw,1600px)]
+ max-w-7xl
+ max-h-[94vh]
+ flex-col
+ overflow-hidden"
         onClick={(
           event
         ) =>
@@ -2200,54 +2187,43 @@ const permisosDisponibles =
         ==================================================== */}
 
         <div
-          className="
-            relative
-            shrink-0
-            overflow-hidden
-            border-b
-            border-slate-200
-            bg-gradient-to-br
-            from-slate-50
-            via-white
-            to-blue-50/60
-            px-5
-            py-5
-            sm:px-7
-          "
+          className="relative
+ shrink-0
+ overflow-hidden
+ 
+ 
+ 
+ 
+ 
+ 
+ px-5
+ py-5
+ sm:px-7"
         >
 
           <div
-            className="
-              pointer-events-none
-              absolute
-              -right-20
-              -top-20
-              h-56
-              w-56
-              rounded-full
-              bg-blue-400/10
-              blur-3xl
-            "
+            className="pointer-events-none
+ absolute
+ -right-20
+ -top-20
+ h-56
+ w-56"
           />
 
 
           <div
-            className="
-              relative
-              flex
-              items-center
-              justify-between
-              gap-4
-            "
+            className="relative
+ flex
+ items-center
+ justify-between
+ gap-4"
           >
 
             <div
-              className="
-                flex
-                min-w-0
-                items-center
-                gap-4
-              "
+              className="flex
+ min-w-0
+ items-center
+ gap-4"
             >
 
               <div className="relative shrink-0">
@@ -2259,35 +2235,22 @@ const permisosDisponibles =
                     alt={
                       nombreEmpleado
                     }
-                    className="
-                      h-16
-                      w-16
-                      rounded-2xl
-                      border
-                      border-white
-                      object-cover
-                      shadow-lg
-                    "
+                    className="h-16
+ w-16
+ 
+ 
+ 
+ object-cover"
                   />
 
                 ) : (
 
                   <div
-                    className="
-                      flex
-                      h-16
-                      w-16
-                      items-center
-                      justify-center
-                      rounded-2xl
-                      bg-gradient-to-br
-                      from-blue-600
-                      to-cyan-500
-                      text-xl
-                      font-bold
-                      text-white
-                      shadow-lg
-                    "
+                    className="flex
+ h-16
+ w-16
+ items-center
+ justify-center"
                   >
                     {iniciales}
                   </div>
@@ -2300,40 +2263,22 @@ const permisosDisponibles =
               <div className="min-w-0">
 
                 <div
-                  className="
-                    flex
-                    flex-wrap
-                    items-center
-                    gap-2
-                  "
+                  className="flex
+ flex-wrap
+ items-center
+ gap-2"
                 >
 
                   <h2
-                    className="
-                      truncate
-                      text-xl
-                      font-bold
-                      tracking-tight
-                      text-slate-900
-                      sm:text-2xl
-                    "
+                    className="truncate"
                   >
                     {nombreEmpleado}
                   </h2>
 
 
                   <span
-                    className="
-                      rounded-full
-                      border
-                      border-blue-200
-                      bg-blue-50
-                      px-2.5
-                      py-1
-                      text-[11px]
-                      font-semibold
-                      text-blue-700
-                    "
+                    className="px-2.5
+ py-1"
                   >
                     {rol}
                   </span>
@@ -2342,11 +2287,7 @@ const permisosDisponibles =
 
 
                 <p
-                  className="
-                    mt-1
-                    text-sm
-                    text-slate-500
-                  "
+                  className="mt-1"
                 >
                   Ficha de empleado
                   {empleadoId
@@ -2362,25 +2303,12 @@ const permisosDisponibles =
             <button
               type="button"
               onClick={cerrarModalEmpleado}
-              className="
-                flex
-                h-10
-                w-10
-                shrink-0
-                items-center
-                justify-center
-                rounded-xl
-                border
-                border-slate-200
-                bg-white
-                text-xl
-                text-slate-400
-                shadow-sm
-                transition
-                hover:border-slate-300
-                hover:bg-slate-50
-                hover:text-slate-700
-              "
+              className="flex
+ h-10
+ w-10
+ shrink-0
+ items-center
+ justify-center"
               aria-label="Cerrar"
             >
               ×
@@ -2396,17 +2324,15 @@ const permisosDisponibles =
         ==================================================== */}
 
         <div
-          className="
-            flex
-            shrink-0
-            gap-1
-            overflow-x-auto
-            border-b
-            border-slate-200
-            bg-white
-            px-4
-            sm:px-6
-          "
+          className="flex
+ shrink-0
+ gap-1
+ overflow-x-auto
+ 
+ 
+ 
+ px-4
+ sm:px-6"
         >
 
           {pestanasVisibles.map(
@@ -2451,15 +2377,11 @@ const permisosDisponibles =
                   item.id && (
 
                   <span
-                    className="
-                      absolute
-                      bottom-0
-                      left-2
-                      right-2
-                      h-0.5
-                      rounded-full
-                      bg-blue-600
-                    "
+                    className="absolute
+ bottom-0
+ left-2
+ right-2
+ h-0.5"
                   />
 
                 )}
@@ -2476,17 +2398,15 @@ const permisosDisponibles =
             CONTENIDO
         ==================================================== */}
 
-        {pestana === "visibilidad-tablas" && <div className="p-4 sm:p-6"><div className="mb-4 rounded-xl border border-blue-100 bg-blue-50 p-4"><h3 className="text-sm font-extrabold text-blue-900">Configuración administrativa por actividad</h3><p className="mt-1 text-xs text-blue-800">Define las columnas de Excel y los repositorios disponibles para este empleado. Esta configuración es independiente de sus preferencias personales.</p></div><VisibilidadTablas empleadoId={empleadoId} ambito="administracion" modal={false} titulo="Visibilidad de tablas del empleado" onClose={() => setPestana("basicos")} /></div>}
+        {pestana === "visibilidad-tablas" && <div className="p-4 sm:p-6"><div className="mb-4 p-4"><h3 className="">Configuración administrativa por actividad</h3><p className="mt-1">Define las columnas de Excel y los repositorios disponibles para este empleado. Esta configuración es independiente de sus preferencias personales.</p></div><VisibilidadTablas empleadoId={empleadoId} ambito="administracion" modal={false} titulo="Visibilidad de tablas del empleado" onClose={() => setPestana("basicos")} /></div>}
 
         <div
-          className="
-            min-h-0
-            flex-1
-            overflow-y-auto
-            bg-slate-50/60
-            p-4
-            sm:p-6
-          "
+          className="min-h-0
+ flex-1
+ overflow-y-auto
+ 
+ p-4
+ sm:p-6"
         >
 
           {pestana === "mi-visibilidad" ? (
@@ -2506,36 +2426,22 @@ const permisosDisponibles =
           {cargando && (
 
             <div
-              className="
-                flex
-                min-h-[300px]
-                items-center
-                justify-center
-              "
+              className="flex
+ min-h-[300px]
+ items-center
+ justify-center"
             >
 
-              <div className="text-center">
+              <div className="">
 
                 <div
-                  className="
-                    mx-auto
-                    h-10
-                    w-10
-                    animate-spin
-                    rounded-full
-                    border-4
-                    border-blue-100
-                    border-t-blue-600
-                  "
+                  className="mx-auto
+ h-10
+ w-10"
                 />
 
                 <p
-                  className="
-                    mt-4
-                    text-sm
-                    font-medium
-                    text-slate-500
-                  "
+                  className="mt-4"
                 >
                   Cargando ficha...
                 </p>
@@ -2554,17 +2460,13 @@ const permisosDisponibles =
             error && (
 
               <div
-                className="
-                  mb-5
-                  rounded-2xl
-                  border
-                  border-red-200
-                  bg-red-50
-                  px-4
-                  py-3
-                  text-sm
-                  text-red-700
-                "
+                className="mb-5
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
               >
                 {String(error)}
               </div>
@@ -2580,18 +2482,13 @@ const permisosDisponibles =
             mensaje && (
 
               <div
-                className="
-                  mb-5
-                  rounded-2xl
-                  border
-                  border-emerald-200
-                  bg-emerald-50
-                  px-4
-                  py-3
-                  text-sm
-                  font-medium
-                  text-emerald-700
-                "
+                className="mb-5
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
               >
                 {String(mensaje)}
               </div>
@@ -2617,34 +2514,19 @@ const permisosDisponibles =
 
 
                     <section
-                      className="
-                        rounded-2xl
-                        border
-                        border-slate-200
-                        bg-white
-                        p-5
-                        shadow-sm
-                      "
+                      className="p-5"
                     >
 
                       <div className="mb-5">
 
                         <h3
-                          className="
-                            text-base
-                            font-bold
-                            text-slate-900
-                          "
+                          className=""
                         >
                           Datos básicos
                         </h3>
 
                         <p
-                          className="
-                            mt-1
-                            text-sm
-                            text-slate-500
-                          "
+                          className="mt-1"
                         >
                           Información principal y datos
                           de identificación del empleado.
@@ -2654,13 +2536,11 @@ const permisosDisponibles =
 
 
                       <div
-                        className="
-                          grid
-                          grid-cols-1
-                          gap-4
-                          md:grid-cols-2
-                          lg:grid-cols-3
-                        "
+                        className="grid
+ grid-cols-1
+ gap-4
+ md:grid-cols-2
+ lg:grid-cols-3"
                       >
 
                         <CampoEditable
@@ -2787,24 +2667,15 @@ const permisosDisponibles =
                     {/* FOTO */}
 
                     <section
-                      className="
-                        rounded-2xl
-                        border
-                        border-slate-200
-                        bg-white
-                        p-5
-                        shadow-sm
-                      "
+                      className="p-5"
                     >
 
                       <div
-                        className="
-                          flex
-                          flex-col
-                          gap-5
-                          sm:flex-row
-                          sm:items-center
-                        "
+                        className="flex
+ flex-col
+ gap-5
+ sm:flex-row
+ sm:items-center"
                       >
 
                         <div className="shrink-0">
@@ -2816,35 +2687,22 @@ const permisosDisponibles =
                               alt={
                                 nombreEmpleado
                               }
-                              className="
-                                h-28
-                                w-28
-                                rounded-3xl
-                                border
-                                border-slate-200
-                                object-cover
-                                shadow-md
-                              "
+                              className="h-28
+ w-28
+ 
+ 
+ 
+ object-cover"
                             />
 
                           ) : (
 
                             <div
-                              className="
-                                flex
-                                h-28
-                                w-28
-                                items-center
-                                justify-center
-                                rounded-3xl
-                                bg-gradient-to-br
-                                from-blue-600
-                                to-cyan-500
-                                text-3xl
-                                font-bold
-                                text-white
-                                shadow-md
-                              "
+                              className="flex
+ h-28
+ w-28
+ items-center
+ justify-center"
                             >
                               {iniciales}
                             </div>
@@ -2857,21 +2715,13 @@ const permisosDisponibles =
                         <div className="flex-1">
 
                           <h3
-                            className="
-                              text-base
-                              font-bold
-                              text-slate-900
-                            "
+                            className=""
                           >
                             Fotografía
                           </h3>
 
                           <p
-                            className="
-                              mt-1
-                              text-sm
-                              text-slate-500
-                            "
+                            className="mt-1"
                           >
                             Actualiza la fotografía
                             del empleado.
@@ -2879,27 +2729,17 @@ const permisosDisponibles =
 
 
                           <label
-                            className="
-                              mt-4
-                              inline-flex
-                              cursor-pointer
-                              items-center
-                              gap-2
-                              rounded-xl
-                              border
-                              border-slate-200
-                              bg-white
-                              px-4
-                              py-2.5
-                              text-sm
-                              font-semibold
-                              text-slate-700
-                              shadow-sm
-                              transition
-                              hover:border-blue-200
-                              hover:bg-blue-50
-                              hover:text-blue-700
-                            "
+                            className="mt-4
+ inline-flex
+ 
+ items-center
+ gap-2
+ 
+ 
+ 
+ 
+ px-4
+ py-2.5"
                           >
 
                             {subiendoFoto
@@ -2951,34 +2791,19 @@ const permisosDisponibles =
                   <fieldset disabled={!esAdministrador && !esPropiaFicha} className={!esAdministrador && !esPropiaFicha ? "space-y-5 [&_input]:cursor-default [&_textarea]:cursor-default [&_button]:hidden" : "space-y-5"}>
 
                     <section
-                      className="
-                        rounded-2xl
-                        border
-                        border-slate-200
-                        bg-white
-                        p-5
-                        shadow-sm
-                      "
+                      className="p-5"
                     >
 
                       <div className="mb-5">
 
                         <h3
-                          className="
-                            text-base
-                            font-bold
-                            text-slate-900
-                          "
+                          className=""
                         >
                           Datos personales
                         </h3>
 
                         <p
-                          className="
-                            mt-1
-                            text-sm
-                            text-slate-500
-                          "
+                          className="mt-1"
                         >
                           Información personal y de
                           contacto del empleado.
@@ -2988,13 +2813,11 @@ const permisosDisponibles =
 
 
                       <div
-                        className="
-                          grid
-                          grid-cols-1
-                          gap-4
-                          md:grid-cols-2
-                          lg:grid-cols-3
-                        "
+                        className="grid
+ grid-cols-1
+ gap-4
+ md:grid-cols-2
+ lg:grid-cols-3"
                       >
 
                         <CampoEditable
@@ -3155,34 +2978,19 @@ const permisosDisponibles =
                   <div className="space-y-5">
 
                     <section
-                      className="
-                        rounded-2xl
-                        border
-                        border-slate-200
-                        bg-white
-                        p-5
-                        shadow-sm
-                      "
+                      className="p-5"
                     >
 
                       <div className="mb-5">
 
                         <h3
-                          className="
-                            text-base
-                            font-bold
-                            text-slate-900
-                          "
+                          className=""
                         >
                           Datos laborales
                         </h3>
 
                         <p
-                          className="
-                            mt-1
-                            text-sm
-                            text-slate-500
-                          "
+                          className="mt-1"
                         >
                           Información profesional y
                           situación laboral.
@@ -3192,13 +3000,11 @@ const permisosDisponibles =
 
 
                       <div
-                        className="
-                          grid
-                          grid-cols-1
-                          gap-4
-                          md:grid-cols-2
-                          lg:grid-cols-3
-                        "
+                        className="grid
+ grid-cols-1
+ gap-4
+ md:grid-cols-2
+ lg:grid-cols-3"
                       >
 
                         {/* DEPARTAMENTO */}
@@ -3308,45 +3114,28 @@ const permisosDisponibles =
                     {/* ESTADO */}
 
                     <section
-                      className="
-                        rounded-2xl
-                        border
-                        border-slate-200
-                        bg-white
-                        p-5
-                        shadow-sm
-                      "
+                      className="p-5"
                     >
 
                       <div
-                        className="
-                          flex
-                          flex-col
-                          gap-4
-                          sm:flex-row
-                          sm:items-center
-                          sm:justify-between
-                        "
+                        className="flex
+ flex-col
+ gap-4
+ sm:flex-row
+ sm:items-center
+ sm:justify-between"
                       >
 
                         <div>
 
                           <h3
-                            className="
-                              text-base
-                              font-bold
-                              text-slate-900
-                            "
+                            className=""
                           >
                             Estado del empleado
                           </h3>
 
                           <p
-                            className="
-                              mt-1
-                              text-sm
-                              text-slate-500
-                            "
+                            className="mt-1"
                           >
                             Puedes activar o desactivar
                             el empleado.
@@ -3356,12 +3145,10 @@ const permisosDisponibles =
 
 
                         <label
-                          className="
-                            inline-flex
-                            cursor-pointer
-                            items-center
-                            gap-3
-                          "
+                          className="inline-flex
+ 
+ items-center
+ gap-3"
                         >
 
                           <input
@@ -3377,11 +3164,9 @@ const permisosDisponibles =
                                 event.target.checked
                               )
                             }
-                            className="
-                              h-5
-                              w-5
-                              accent-blue-600
-                            "
+                            className="h-5
+ w-5
+ accent-blue-600"
                           />
 
                           <span
@@ -3431,18 +3216,18 @@ const permisosDisponibles =
 
                 {pestana === "honorarios" && esAdministrador && Boolean(empleadoFormulario.es_colaborador) && (
                   <section className="space-y-5">
-                    <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5">
-                      <p className="text-xs font-bold uppercase tracking-wider text-emerald-800">Liquidación mensual · ApoderaGest</p>
-                      <h3 className="mt-1 text-lg font-bold text-slate-900">Honorario por protocolo</h3>
-                      <p className="mt-2 text-sm text-slate-600">Este importe se aplica una sola vez por número de protocolo y notario, aunque el protocolo agrupe varios expedientes del mismo cliente.</p>
+                    <div className="p-5">
+                      <p className="uppercase">Liquidación mensual · ApoderaGest</p>
+                      <h3 className="mt-1">Honorario por protocolo</h3>
+                      <p className="mt-2">Este importe se aplica una sola vez por número de protocolo y notario, aunque el protocolo agrupe varios expedientes del mismo cliente.</p>
                     </div>
-                    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                      <label className="block text-sm font-semibold text-slate-700" htmlFor="honorarios-valor-empleado">Precio / valor de los honorarios (€ netos por protocolo)</label>
+                    <section className="p-5">
+                      <label className="block" htmlFor="honorarios-valor-empleado">Precio / valor de los honorarios (€ netos por protocolo)</label>
                       <div className="mt-2 flex max-w-sm items-center gap-3">
-                        <input id="honorarios-valor-empleado" type="number" min="0" step="0.01" value={empleadoFormulario.honorarios_valor ?? 0} onChange={(e) => cambiarCampo("honorarios_valor", e.target.value === "" ? 0 : Number(e.target.value))} disabled={!esAdministrador} className="w-full rounded-xl border border-slate-300 px-4 py-3 text-lg font-bold text-slate-900" />
-                        <span className="text-lg font-bold text-slate-500">€</span>
+                        <input id="honorarios-valor-empleado" type="number" min="0" step="0.01" value={empleadoFormulario.honorarios_valor ?? 0} onChange={(e) => cambiarCampo("honorarios_valor", e.target.value === "" ? 0 : Number(e.target.value))} disabled={!esAdministrador} className="w-full px-4 py-3" />
+                        <span className="">€</span>
                       </div>
-                      <p className="mt-3 text-xs text-slate-500">La base neta se calcula con el número de protocolos únicos. El IVA se calcula por separado en Control Apoderados y Mi liquidación.</p>
+                      <p className="mt-3">La base neta se calcula con el número de protocolos únicos. El IVA se calcula por separado en Control Apoderados y Mi liquidación.</p>
                     </section>
                   </section>
                 )}
@@ -3453,11 +3238,11 @@ const permisosDisponibles =
                   <fieldset disabled={!esAdministrador} className={!esAdministrador ? "space-y-5 opacity-40 grayscale pointer-events-none select-none [&_input]:cursor-not-allowed [&_select]:cursor-not-allowed [&_button]:cursor-not-allowed [&_textarea]:cursor-not-allowed" : "space-y-5"}>
                   <div className="space-y-5">
 
-                    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <section className="p-5">
                       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-center">
                         <div>
-                          <h3 className="text-base font-bold text-slate-900">Rol del empleado</h3>
-                          <p className="mt-1 text-sm text-slate-500">Define el nivel de acceso general al ERP.</p>
+                          <h3 className="">Rol del empleado</h3>
+                          <p className="mt-1">Define el nivel de acceso general al ERP.</p>
                         </div>
                         <select
                           value={empleadoFormulario.rol_id ?? empleadoFormulario.rol?.id ?? ""}
@@ -3471,7 +3256,7 @@ const permisosDisponibles =
                           ))}
                         </select>
                       </div>
-                      {!esAdministrador && <p className="mt-3 text-xs font-medium text-slate-500">Solo un administrador puede modificar el rol y la configuración de accesos.</p>}
+                      {!esAdministrador && <p className="mt-3">Solo un administrador puede modificar el rol y la configuración de accesos.</p>}
                     </section>
 
 
@@ -3479,11 +3264,11 @@ const permisosDisponibles =
 
                     {/* VISIBILIDAD EN EL MÓDULO EMPLEADOS */}
                     {esAdministrador && modoAdministracion && (
-                      <div className="mb-5 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                      <div className="mb-5 p-5">
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                           <div>
-                            <h4 className="font-bold text-slate-800">Mostrar empleado en el listado</h4>
-                            <p className="mt-1 text-sm text-slate-600">
+                            <h4 className="">Mostrar empleado en el listado</h4>
+                            <p className="mt-1">
                               {empleadoEdit.visible_en_listado === false
                                 ? "Este empleado está oculto en las tarjetas del módulo Empleados. Su cuenta y sus datos se mantienen."
                                 : "Este empleado aparece en las tarjetas del módulo Empleados."}
@@ -3501,7 +3286,7 @@ const permisosDisponibles =
                             <span className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-transform ${empleadoEdit.visible_en_listado === false ? "translate-x-1" : "translate-x-9"}`} />
                           </button>
                         </div>
-                        <div className="mt-2 text-xs font-semibold text-slate-600">
+                        <div className="mt-2">
                           {guardandoVisibilidadEmpleado ? "Guardando…" : empleadoEdit.visible_en_listado === false ? "OCULTO" : "VISIBLE"}
                         </div>
                       </div>
@@ -3510,46 +3295,29 @@ const permisosDisponibles =
                     {/* MÓDULOS */}
 
                     <section
-                      className="
-                        rounded-2xl
-                        border
-                        border-slate-200
-                        bg-white
-                        p-5
-                        shadow-sm
-                      "
+                      className="p-5"
                     >
 
                       <div
-                        className="
-                          mb-5
-                          flex
-                          flex-col
-                          gap-2
-                          sm:flex-row
-                          sm:items-center
-                          sm:justify-between
-                        "
+                        className="mb-5
+ flex
+ flex-col
+ gap-2
+ sm:flex-row
+ sm:items-center
+ sm:justify-between"
                       >
 
                         <div>
 
                           <h3
-                            className="
-                              text-base
-                              font-bold
-                              text-slate-900
-                            "
+                            className=""
                           >
                             Módulos visibles
                           </h3>
 
                           <p
-                            className="
-                              mt-1
-                              text-sm
-                              text-slate-500
-                            "
+                            className="mt-1"
                           >
                             Selecciona los módulos que
                             puede visualizar el empleado.
@@ -3559,17 +3327,12 @@ const permisosDisponibles =
 
 
                         <span
-                          className="
-                            inline-flex
-                            w-fit
-                            rounded-full
-                            bg-blue-50
-                            px-3
-                            py-1
-                            text-xs
-                            font-semibold
-                            text-blue-700
-                          "
+                          className="inline-flex
+ w-fit
+ 
+ 
+ px-3
+ py-1"
                         >
                           {modulosVisibles.length}
                           {" "}
@@ -3583,13 +3346,11 @@ const permisosDisponibles =
                       0 ? (
 
                         <div
-                          className="
-                            grid
-                            grid-cols-1
-                            gap-2
-                            sm:grid-cols-2
-                            lg:grid-cols-3
-                          "
+                          className="grid
+ grid-cols-1
+ gap-2
+ sm:grid-cols-2
+ lg:grid-cols-3"
                         >
 
                           {modulosDisponibles.map(
@@ -3636,11 +3397,9 @@ const permisosDisponibles =
                                         modulo
                                       )
                                     }
-                                    className="
-                                      h-4
-                                      w-4
-                                      accent-blue-600
-                                    "
+                                    className="h-4
+ w-4
+ accent-blue-600"
                                   />
 
 
@@ -3669,22 +3428,11 @@ const permisosDisponibles =
                       ) : (
 
                         <div
-                          className="
-                            rounded-xl
-                            border
-                            border-dashed
-                            border-slate-300
-                            bg-slate-50
-                            p-6
-                            text-center
-                          "
+                          className="p-6"
                         >
 
                           <p
-                            className="
-                              text-sm
-                              text-slate-500
-                            "
+                            className=""
                           >
                             No hay módulos disponibles.
                           </p>
@@ -3699,34 +3447,19 @@ const permisosDisponibles =
                     {/* PERMISOS */}
 
                     <section
-                      className="
-                        rounded-2xl
-                        border
-                        border-slate-200
-                        bg-white
-                        p-5
-                        shadow-sm
-                      "
+                      className="p-5"
                     >
 
                       <div className="mb-5">
 
                         <h3
-                          className="
-                            text-base
-                            font-bold
-                            text-slate-900
-                          "
+                          className=""
                         >
                           Permisos por módulo
                         </h3>
 
                         <p
-                          className="
-                            mt-1
-                            text-sm
-                            text-slate-500
-                          "
+                          className="mt-1"
                         >
                           Configura las operaciones
                           permitidas para cada módulo.
@@ -3767,46 +3500,27 @@ const permisosDisponibles =
                                   key={
                                     modulo
                                   }
-                                  className="
-                                    rounded-2xl
-                                    border
-                                    border-slate-200
-                                    bg-slate-50/60
-                                    p-4
-                                  "
+                                  className="p-4"
                                 >
 
                                   <div
-                                    className="
-                                      mb-3
-                                      flex
-                                      items-center
-                                      justify-between
-                                      gap-3
-                                    "
+                                    className="mb-3
+ flex
+ items-center
+ justify-between
+ gap-3"
                                   >
 
                                     <span
-                                      className="
-                                        text-sm
-                                        font-bold
-                                        text-slate-800
-                                      "
+                                      className=""
                                     >
                                       {MODULOS_ERP.find((item) => item.key === modulo)?.label || capitalizar(modulo)}
                                     </span>
 
 
                                     <span
-                                      className="
-                                        rounded-full
-                                        bg-white
-                                        px-2.5
-                                        py-1
-                                        text-[11px]
-                                        font-semibold
-                                        text-slate-500
-                                      "
+                                      className="px-2.5
+ py-1"
                                     >
                                       {activos.length}
                                       {" "}
@@ -3820,11 +3534,9 @@ const permisosDisponibles =
                                   0 ? (
 
                                     <div
-                                      className="
-                                        flex
-                                        flex-wrap
-                                        gap-2
-                                      "
+                                      className="flex
+ flex-wrap
+ gap-2"
                                     >
 
                                       {disponibles.map(
@@ -3874,11 +3586,9 @@ const permisosDisponibles =
                                                     permiso
                                                   )
                                                 }
-                                                className="
-                                                  h-3.5
-                                                  w-3.5
-                                                  accent-blue-600
-                                                "
+                                                className="h-3.5
+ w-3.5
+ accent-blue-600"
                                               />
 
                                               {capitalizar(
@@ -3896,10 +3606,7 @@ const permisosDisponibles =
                                   ) : (
 
                                     <span
-                                      className="
-                                        text-xs
-                                        text-slate-400
-                                      "
+                                      className=""
                                     >
                                       Sin permisos
                                       definidos para
@@ -3919,22 +3626,11 @@ const permisosDisponibles =
                       ) : (
 
                         <div
-                          className="
-                            rounded-xl
-                            border
-                            border-dashed
-                            border-slate-300
-                            bg-slate-50
-                            p-6
-                            text-center
-                          "
+                          className="p-6"
                         >
 
                           <p
-                            className="
-                              text-sm
-                              text-slate-500
-                            "
+                            className=""
                           >
                             No hay módulos disponibles
                             para configurar permisos.
@@ -3967,30 +3663,30 @@ const permisosDisponibles =
                 ================================================= */}
                 {pestana === "encargagest" && (
                   <div className="space-y-5">
-                    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <section className="p-5">
                       <div className="mb-5">
-                        <h3 className="text-base font-bold text-slate-900">Notarios CTN · habilitación y gestor responsable</h3>
-                        <p className="mt-1 text-sm text-slate-500">Busca un notario, habilítalo para la gestión interna de EncargaGest y asigna el gestor responsable. Cada cambio se guarda individualmente.</p>
+                        <h3 className="">Notarios CTN · habilitación y gestor responsable</h3>
+                        <p className="mt-1">Busca un notario, habilítalo para la gestión interna de EncargaGest y asigna el gestor responsable. Cada cambio se guarda individualmente.</p>
                       </div>
-                      {!esAdministrador && <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">Solo un administrador puede modificar las notarías asignadas.</p>}
-                      {errorNotariasEncargaGest && <p role="alert" className="mb-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorNotariasEncargaGest}</p>}
-                      {mensajeNotariasEncargaGest && <p role="status" className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{mensajeNotariasEncargaGest}</p>}
-                      <input type="search" value={busquedaNotariaEncargaGest} onChange={(e) => setBusquedaNotariaEncargaGest(e.target.value)} placeholder="Buscar notario, NIF, municipio o provincia…" className="mb-3 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm" />
+                      {!esAdministrador && <p className="p-4">Solo un administrador puede modificar las notarías asignadas.</p>}
+                      {errorNotariasEncargaGest && <p role="alert" className="mb-3 p-3">{errorNotariasEncargaGest}</p>}
+                      {mensajeNotariasEncargaGest && <p role="status" className="mb-3 p-3">{mensajeNotariasEncargaGest}</p>}
+                      <input type="search" value={busquedaNotariaEncargaGest} onChange={(e) => setBusquedaNotariaEncargaGest(e.target.value)} placeholder="Buscar notario, NIF, municipio o provincia…" className="mb-3 w-full px-4 py-3" />
                       {cargandoNotariasEncargaGest ? (
-                        <p className="py-8 text-center text-sm text-slate-500">Cargando catálogo CTN…</p>
+                        <p className="py-8">Cargando catálogo CTN…</p>
                       ) : (
                         <div className="max-h-[440px] space-y-2 overflow-y-auto pr-1">
                           {notariasEncargaGest.filter((n) => [n.nombre, n.nif, n.municipio, n.provincia].some((v) => String(v || "").toLowerCase().includes(busquedaNotariaEncargaGest.trim().toLowerCase()))).map((notaria) => {
                             const id = Number(notaria.id);
                             return (
-                              <div key={id} className="grid gap-3 rounded-xl border border-slate-200 bg-white p-3 md:grid-cols-[minmax(0,1fr)_220px_auto] md:items-center">
-                                <span className="min-w-0"><strong className="block text-sm text-slate-800">{notaria.nombre}</strong><small className="block text-xs text-slate-500">{[notaria.nif, notaria.municipio, notaria.provincia].filter(Boolean).join(" · ") || "Sin datos adicionales"}</small></span>
-                                <select value={notaria.gestor_id || ""} disabled={!esAdministrador || guardandoNotariasEncargaGest} onChange={(e) => setNotariasEncargaGest((actual) => actual.map((n) => Number(n.id) === id ? { ...n, gestor_id: e.target.value ? Number(e.target.value) : null } : n))} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                              <div key={id} className="grid gap-3 p-3 md:grid-cols-[minmax(0,1fr)_220px_auto] md:items-center">
+                                <span className="min-w-0"><strong className="block">{notaria.nombre}</strong><small className="block">{[notaria.nif, notaria.municipio, notaria.provincia].filter(Boolean).join(" · ") || "Sin datos adicionales"}</small></span>
+                                <select value={notaria.gestor_id || ""} disabled={!esAdministrador || guardandoNotariasEncargaGest} onChange={(e) => setNotariasEncargaGest((actual) => actual.map((n) => Number(n.id) === id ? { ...n, gestor_id: e.target.value ? Number(e.target.value) : null } : n))} className="px-3 py-2">
                                   <option value="">Seleccionar gestor…</option>
                                   {empleadosReparto.map((empleado) => <option key={empleado.id} value={empleado.id}>{[empleado.nombre, empleado.apellidos].filter(Boolean).join(" ") || empleado.usuario || ("Empleado " + empleado.id)}</option>)}
                                 </select>
                                 <div className="flex items-center gap-3">
-                                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-700"><input type="checkbox" checked={Boolean(notaria._habilitadaDraft ?? notaria.habilitada)} disabled={!esAdministrador || guardandoNotariasEncargaGest} onChange={(e) => setNotariasEncargaGest((actual) => actual.map((n) => Number(n.id) === id ? { ...n, _habilitadaDraft: e.target.checked } : n))} className="h-4 w-4 accent-emerald-600" />Habilitar</label>
+                                  <label className="flex items-center gap-2"><input type="checkbox" checked={Boolean(notaria._habilitadaDraft ?? notaria.habilitada)} disabled={!esAdministrador || guardandoNotariasEncargaGest} onChange={(e) => setNotariasEncargaGest((actual) => actual.map((n) => Number(n.id) === id ? { ...n, _habilitadaDraft: e.target.checked } : n))} className="h-4 w-4 accent-emerald-600" />Habilitar</label>
                                   <button type="button" disabled={!esAdministrador || guardandoNotariasEncargaGest || Boolean((notaria._habilitadaDraft ?? notaria.habilitada) && !notaria.gestor_id)} onClick={async () => {
                                     setGuardandoNotariasEncargaGest(true); setErrorNotariasEncargaGest(""); setMensajeNotariasEncargaGest("");
                                     try {
@@ -4000,15 +3696,15 @@ const permisosDisponibles =
                                       setMensajeNotariasEncargaGest("Configuración guardada para " + notaria.nombre + ".");
                                     } catch (e) { setErrorNotariasEncargaGest(e?.response?.data?.detail || "No se pudo guardar la configuración."); }
                                     finally { setGuardandoNotariasEncargaGest(false); }
-                                  }} className="rounded-lg bg-blue-600 px-3 py-2 text-xs font-bold text-white disabled:opacity-50">Guardar</button>
+                                  }} className="px-3 py-2">Guardar</button>
                                 </div>
                               </div>
                             );
                           })}
-                          {notariasEncargaGest.length === 0 && <p className="rounded-xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500">No hay notarías en el catálogo CTN.</p>}
+                          {notariasEncargaGest.length === 0 && <p className="p-6">No hay notarías en el catálogo CTN.</p>}
                         </div>
                       )}
-                      <p className="mt-4 border-t border-slate-100 pt-3 text-xs text-slate-500">Cada notaría se guarda individualmente para evitar cambios accidentales en otras asignaciones.</p>
+                      <p className="mt-4 pt-3">Cada notaría se guarda individualmente para evitar cambios accidentales en otras asignaciones.</p>
                     </section>
                   </div>
                 )}
@@ -4018,47 +3714,47 @@ const permisosDisponibles =
                 ================================================= */}
                 {pestana === "asignaciones" && (
                   <div className="space-y-5">
-                    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <section className="p-5">
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div>
-                          <h3 className="text-base font-bold text-slate-900">Reglas de reparto de expedientes</h3>
-                          <p className="mt-1 max-w-3xl text-sm text-slate-500">Conserva las reglas existentes y añade criterios por oficina, Producto GTG y tipo de operación. Puedes tener varias reglas para una misma actividad si corresponden a oficinas o productos diferentes.</p>
+                          <h3 className="">Reglas de reparto de expedientes</h3>
+                          <p className="mt-1 max-w-3xl">Conserva las reglas existentes y añade criterios por oficina, Producto GTG y tipo de operación. Puedes tener varias reglas para una misma actividad si corresponden a oficinas o productos diferentes.</p>
                         </div>
-                        <button type="button" disabled={!esAdministrador || cargandoReparto || !gestorRepartoId} onClick={() => setReglasReparto((actual) => [...actual, { _key: "nueva-" + Date.now() + "-" + actual.length, actividad: actividadesReparto[0]?.key || "", departamento: "", oficina_tipo: "", oficinas: "", producto_gtg: "", tipo_operacion: "", estados_expediente: [], zona_territorial: false, comunidades: [], comunidad: "", porcentaje: 100, apoderado_id: "", activa: true }])} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">+ Añadir regla</button>
+                        <button type="button" disabled={!esAdministrador || cargandoReparto || !gestorRepartoId} onClick={() => setReglasReparto((actual) => [...actual, { _key: "nueva-" + Date.now() + "-" + actual.length, actividad: actividadesReparto[0]?.key || "", departamento: "", oficina_tipo: "", oficinas: "", producto_gtg: "", tipo_operacion: "", estados_expediente: [], zona_territorial: false, comunidades: [], comunidad: "", porcentaje: 100, apoderado_id: "", activa: true }])} className="px-4 py-2.5">+ Añadir regla</button>
                       </div>
-                      <div className="mt-4 grid gap-3 rounded-xl border border-blue-100 bg-blue-50/60 p-4 md:grid-cols-[minmax(220px,360px)_1fr] md:items-end">
-                        <label className="block text-xs font-bold text-slate-700">Gestor
-                          <select value={gestorRepartoId} onChange={(e) => setGestorRepartoId(e.target.value)} disabled={!esAdministrador || cargandoReparto} className="mt-1 w-full rounded-lg border border-blue-200 bg-white px-3 py-2.5 text-sm font-normal">
+                      <div className="mt-4 grid gap-3 p-4 md:grid-cols-[minmax(220px,360px)_1fr] md:items-end">
+                        <label className="block">Gestor
+                          <select value={gestorRepartoId} onChange={(e) => setGestorRepartoId(e.target.value)} disabled={!esAdministrador || cargandoReparto} className="mt-1 w-full px-3 py-2.5">
                             <option value="">Seleccionar gestor…</option>
                             {empleadosReparto.map((gestor) => <option key={gestor.id} value={gestor.id}>{[gestor.nombre, gestor.apellidos].filter(Boolean).join(" ") || gestor.usuario || ("Empleado " + gestor.id)}</option>)}
                           </select>
                         </label>
-                        <p className="text-sm text-blue-900">Selecciona cualquier gestor y configura todas las actividades que puede tramitar. Un mismo gestor puede tener múltiples actividades y varias zonas territoriales dentro de cada regla.</p>
+                        <p className="">Selecciona cualquier gestor y configura todas las actividades que puede tramitar. Un mismo gestor puede tener múltiples actividades y varias zonas territoriales dentro de cada regla.</p>
                       </div>
-                      {errorReparto && <p role="alert" className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorReparto}</p>}
-                      {mensajeReparto && <p role="status" className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{mensajeReparto}</p>}
-                      {cargandoReparto ? <p className="py-8 text-center text-sm text-slate-500">Cargando reglas de reparto…</p> : (
+                      {errorReparto && <p role="alert" className="mt-3 p-3">{errorReparto}</p>}
+                      {mensajeReparto && <p role="status" className="mt-3 p-3">{mensajeReparto}</p>}
+                      {cargandoReparto ? <p className="py-8">Cargando reglas de reparto…</p> : (
                         <div className="mt-4 space-y-4">
                           {reglasReparto.map((regla, indice) => (
-                            <article key={regla._key || indice} className="rounded-xl border border-slate-200 p-4">
+                            <article key={regla._key || indice} className="p-4">
                               <div className="mb-3 flex items-center justify-between gap-3">
-                                <strong className="text-sm text-slate-800">Actividad / regla {indice + 1}</strong>
+                                <strong className="">Actividad / regla {indice + 1}</strong>
                                 <div className="flex items-center gap-3">
-                                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-600"><input type="checkbox" checked={regla.activa !== false} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, activa: e.target.checked } : r))} className="h-4 w-4 accent-blue-600" />Activa</label>
-                                  <button type="button" onClick={() => setReglasReparto((actual) => actual.filter((_, i) => i !== indice))} className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-bold text-red-700 hover:bg-red-50">Eliminar</button>
+                                  <label className="flex items-center gap-2"><input type="checkbox" checked={regla.activa !== false} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, activa: e.target.checked } : r))} className="h-4 w-4 accent-blue-600" />Activa</label>
+                                  <button type="button" onClick={() => setReglasReparto((actual) => actual.filter((_, i) => i !== indice))} className="px-3 py-1.5">Eliminar</button>
                                 </div>
                               </div>
                               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                                <label className="block text-xs font-bold text-slate-600">Departamento<select value={regla.departamento || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, departamento: e.target.value } : r))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal"><option value="">Todos los departamentos</option>{regla.departamento && !departamentos.some((d) => String(d.nombre || "").trim() === String(regla.departamento).trim()) && <option value={regla.departamento}>{regla.departamento} (asignación existente)</option>}{departamentos.map((departamento) => <option key={departamento.id} value={departamento.nombre}>{departamento.nombre}</option>)}</select></label>
-                                <label className="block text-xs font-bold text-slate-600">Actividad<select value={regla.actividad || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, actividad: e.target.value } : r))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal"><option value="">Seleccionar actividad…</option>{actividadesReparto.map((a) => <option key={a.key} value={a.key}>{a.label}</option>)}</select></label>
-                                <label className="block text-xs font-bold text-slate-600">Tipo de oficina<select value={regla.oficina_tipo || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, oficina_tipo: e.target.value } : r))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal"><option value="">Todas</option><option value="oficina">Oficina (excepto 5316)</option><option value="cancela">Cancela (5316)</option></select></label>
-                                <label className="block text-xs font-bold text-slate-600">Producto GTG<select value={regla.producto_gtg || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, producto_gtg: e.target.value } : r))} disabled={cargandoCatalogosReparto} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal"><option value="">Todos los productos</option>{regla.producto_gtg && !productosGtgReparto.includes(regla.producto_gtg) && <option value={regla.producto_gtg}>{regla.producto_gtg} (valor existente)</option>}{productosGtgReparto.map((producto) => <option key={producto} value={producto}>{producto}</option>)}</select></label>
-                                <label className="block text-xs font-bold text-slate-600">Tipo de operación<select value={regla.tipo_operacion || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, tipo_operacion: e.target.value } : r))} disabled={cargandoCatalogosReparto} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal"><option value="">Todos los tipos</option>{regla.tipo_operacion && !tiposOperacionReparto.includes(regla.tipo_operacion) && <option value={regla.tipo_operacion}>{regla.tipo_operacion} (valor existente)</option>}{tiposOperacionReparto.map((tipo) => <option key={tipo} value={tipo}>{tipo}</option>)}</select></label>
-                                <div className="rounded-lg border border-slate-200 bg-white p-3 md:col-span-2 xl:col-span-3">
-                                  <div className="mb-2 text-xs font-bold text-slate-700">Estado expediente (marca uno o varios; sin marcar = todos)</div>
+                                <label className="block">Departamento<select value={regla.departamento || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, departamento: e.target.value } : r))} className="mt-1 w-full px-3 py-2"><option value="">Todos los departamentos</option>{regla.departamento && !departamentos.some((d) => String(d.nombre || "").trim() === String(regla.departamento).trim()) && <option value={regla.departamento}>{regla.departamento} (asignación existente)</option>}{departamentos.map((departamento) => <option key={departamento.id} value={departamento.nombre}>{departamento.nombre}</option>)}</select></label>
+                                <label className="block">Actividad<select value={regla.actividad || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, actividad: e.target.value } : r))} className="mt-1 w-full px-3 py-2"><option value="">Seleccionar actividad…</option>{actividadesReparto.map((a) => <option key={a.key} value={a.key}>{a.label}</option>)}</select></label>
+                                <label className="block">Tipo de oficina<select value={regla.oficina_tipo || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, oficina_tipo: e.target.value } : r))} className="mt-1 w-full px-3 py-2"><option value="">Todas</option><option value="oficina">Oficina (excepto 5316)</option><option value="cancela">Cancela (5316)</option></select></label>
+                                <label className="block">Producto GTG<select value={regla.producto_gtg || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, producto_gtg: e.target.value } : r))} disabled={cargandoCatalogosReparto} className="mt-1 w-full px-3 py-2"><option value="">Todos los productos</option>{regla.producto_gtg && !productosGtgReparto.includes(regla.producto_gtg) && <option value={regla.producto_gtg}>{regla.producto_gtg} (valor existente)</option>}{productosGtgReparto.map((producto) => <option key={producto} value={producto}>{producto}</option>)}</select></label>
+                                <label className="block">Tipo de operación<select value={regla.tipo_operacion || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, tipo_operacion: e.target.value } : r))} disabled={cargandoCatalogosReparto} className="mt-1 w-full px-3 py-2"><option value="">Todos los tipos</option>{regla.tipo_operacion && !tiposOperacionReparto.includes(regla.tipo_operacion) && <option value={regla.tipo_operacion}>{regla.tipo_operacion} (valor existente)</option>}{tiposOperacionReparto.map((tipo) => <option key={tipo} value={tipo}>{tipo}</option>)}</select></label>
+                                <div className="p-3 md:col-span-2 xl:col-span-3">
+                                  <div className="mb-2">Estado expediente (marca uno o varios; sin marcar = todos)</div>
                                   <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
                                     {[...new Set([...(Array.isArray(regla.estados_expediente) ? regla.estados_expediente : []), ...estadosExpedienteReparto])].filter(Boolean).map((estado) => (
-                                      <label key={estado} className="flex items-center gap-2 rounded-md border border-slate-100 px-2 py-1.5 text-sm text-slate-700 hover:bg-slate-50">
+                                      <label key={estado} className="flex items-center gap-2 px-2 py-1.5">
                                         <input type="checkbox" className="h-4 w-4 accent-blue-600" checked={(Array.isArray(regla.estados_expediente) ? regla.estados_expediente : []).includes(estado)} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => {
                                           if (i !== indice) return r;
                                           const seleccionados = Array.isArray(r.estados_expediente) ? r.estados_expediente : [];
@@ -4068,26 +3764,26 @@ const permisosDisponibles =
                                       </label>
                                     ))}
                                   </div>
-                                  {cargandoCatalogosReparto && <p className="mt-2 text-xs text-slate-500">Cargando estados del catálogo…</p>}
+                                  {cargandoCatalogosReparto && <p className="mt-2">Cargando estados del catálogo…</p>}
                                 </div>
-                                <label className="block text-xs font-bold text-slate-600">Porcentaje de reparto (%)<input type="number" min="0" max="100" step="1" value={regla.porcentaje ?? 0} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, porcentaje: e.target.value } : r))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-normal" /></label>
-                                <label className="flex items-center gap-2 self-end rounded-lg bg-slate-50 px-3 py-3 text-sm font-semibold text-slate-700"><input type="checkbox" checked={Boolean(regla.zona_territorial)} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, zona_territorial: e.target.checked, comunidades: e.target.checked ? ((Array.isArray(r.comunidades) && r.comunidades.length) ? r.comunidades : (r.comunidad ? [r.comunidad] : ["Cataluña"])) : [], comunidad: "" } : r))} className="h-4 w-4 accent-blue-600" />Limitar por zona territorial</label>
-                                {regla.zona_territorial && <div className="rounded-lg border border-slate-200 p-3 md:col-span-2 xl:col-span-3">
-                                  <div className="mb-2 text-xs font-bold text-slate-700">Zonas territoriales (puedes marcar varias)</div>
+                                <label className="block">Porcentaje de reparto (%)<input type="number" min="0" max="100" step="1" value={regla.porcentaje ?? 0} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, porcentaje: e.target.value } : r))} className="mt-1 w-full px-3 py-2" /></label>
+                                <label className="flex items-center gap-2 self-end px-3 py-3"><input type="checkbox" checked={Boolean(regla.zona_territorial)} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, zona_territorial: e.target.checked, comunidades: e.target.checked ? ((Array.isArray(r.comunidades) && r.comunidades.length) ? r.comunidades : (r.comunidad ? [r.comunidad] : ["Cataluña"])) : [], comunidad: "" } : r))} className="h-4 w-4 accent-blue-600" />Limitar por zona territorial</label>
+                                {regla.zona_territorial && <div className="p-3 md:col-span-2 xl:col-span-3">
+                                  <div className="mb-2">Zonas territoriales (puedes marcar varias)</div>
                                   <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                                    {comunidadesReparto.map((comunidad) => <label key={comunidad} className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-slate-700 hover:bg-slate-50"><input type="checkbox" checked={(Array.isArray(regla.comunidades) ? regla.comunidades : (regla.comunidad ? [regla.comunidad] : [])).includes(comunidad)} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => { if (i !== indice) return r; const zonas = Array.isArray(r.comunidades) ? r.comunidades : (r.comunidad ? [r.comunidad] : []); const nuevasZonas = e.target.checked ? [...new Set([...zonas, comunidad])] : zonas.filter((z) => z !== comunidad); return { ...r, comunidades: nuevasZonas, comunidad: "" }; }))} className="h-4 w-4 accent-blue-600" />{comunidad}</label>)}
+                                    {comunidadesReparto.map((comunidad) => <label key={comunidad} className="flex items-center gap-2 px-2 py-1.5"><input type="checkbox" checked={(Array.isArray(regla.comunidades) ? regla.comunidades : (regla.comunidad ? [regla.comunidad] : [])).includes(comunidad)} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => { if (i !== indice) return r; const zonas = Array.isArray(r.comunidades) ? r.comunidades : (r.comunidad ? [r.comunidad] : []); const nuevasZonas = e.target.checked ? [...new Set([...zonas, comunidad])] : zonas.filter((z) => z !== comunidad); return { ...r, comunidades: nuevasZonas, comunidad: "" }; }))} className="h-4 w-4 accent-blue-600" />{comunidad}</label>)}
                                   </div>
-                                  {!(Array.isArray(regla.comunidades) && regla.comunidades.length) && <p className="mt-2 text-xs text-amber-700">Selecciona al menos una comunidad autónoma.</p>}
+                                  {!(Array.isArray(regla.comunidades) && regla.comunidades.length) && <p className="mt-2">Selecciona al menos una comunidad autónoma.</p>}
                                 </div>}
-                                <label className="block text-xs font-bold text-slate-600">Apoderado relacionado (opcional)<select value={regla.apoderado_id || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, apoderado_id: e.target.value } : r))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal"><option value="">Sin apoderado específico</option>{apoderadosReparto.map((a) => <option key={a.id} value={a.id}>{[a.nombre, a.apellidos].filter(Boolean).join(" ") || a.usuario || ("Empleado " + a.id)}</option>)}</select></label>
+                                <label className="block">Apoderado relacionado (opcional)<select value={regla.apoderado_id || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, apoderado_id: e.target.value } : r))} className="mt-1 w-full px-3 py-2"><option value="">Sin apoderado específico</option>{apoderadosReparto.map((a) => <option key={a.id} value={a.id}>{[a.nombre, a.apellidos].filter(Boolean).join(" ") || a.usuario || ("Empleado " + a.id)}</option>)}</select></label>
                               </div>
                             </article>
                           ))}
-                          {reglasReparto.length === 0 && <p className="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">Todavía no hay actividades configuradas. Pulsa «Añadir actividad» para añadir la primera y repite el proceso para cada actividad que pueda tramitar este gestor.</p>}
+                          {reglasReparto.length === 0 && <p className="p-8">Todavía no hay actividades configuradas. Pulsa «Añadir actividad» para añadir la primera y repite el proceso para cada actividad que pueda tramitar este gestor.</p>}
                         </div>
                       )}
-                      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
-                        <p className="text-xs text-slate-500">{reglasReparto.filter((r) => r.activa !== false).length} regla(s) activa(s)</p>
+                      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 pt-4">
+                        <p className="">{reglasReparto.filter((r) => r.activa !== false).length} regla(s) activa(s)</p>
                         <button type="button" disabled={!esAdministrador || guardandoReparto || cargandoReparto || !gestorRepartoId || reglasReparto.some((r) => !r.actividad || r.zona_territorial && !(Array.isArray(r.comunidades) ? r.comunidades.length : r.comunidad))} onClick={async () => {
                           setGuardandoReparto(true); setErrorReparto(""); setMensajeReparto("");
                           try {
@@ -4129,7 +3825,7 @@ const permisosDisponibles =
                             setMensajeReparto("Guardado y verificado: " + payload.length + " regla(s) de reparto para " + (empleadosReparto.find((e) => String(e.id) === String(gestorRepartoId))?.nombre || "el gestor seleccionado") + ".");
                           } catch (e) { setErrorReparto(e?.response?.data?.detail || "No se pudieron guardar las reglas de reparto."); }
                           finally { setGuardandoReparto(false); }
-                        }} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50">{guardandoReparto ? "Guardando…" : "Guardar reglas de reparto"}</button>
+                        }} className="px-4 py-2.5">{guardandoReparto ? "Guardando…" : "Guardar reglas de reparto"}</button>
                       </div>
                     </section>
                   </div>
@@ -4145,34 +3841,19 @@ const permisosDisponibles =
                   <div className="space-y-5">
 
                     <section
-                      className="
-                        rounded-2xl
-                        border
-                        border-slate-200
-                        bg-white
-                        p-5
-                        shadow-sm
-                      "
+                      className="p-5"
                     >
 
                       <div className="mb-5">
 
                         <h3
-                          className="
-                            text-base
-                            font-bold
-                            text-slate-900
-                          "
+                          className=""
                         >
                           Seguridad
                         </h3>
 
                         <p
-                          className="
-                            mt-1
-                            text-sm
-                            text-slate-500
-                          "
+                          className="mt-1"
                         >
                           Gestiona las credenciales
                           del empleado.
@@ -4184,43 +3865,28 @@ const permisosDisponibles =
 
 
                       <div
-                        className="
-                          rounded-2xl
-                          border
-                          border-amber-200
-                          bg-amber-50
-                          p-5
-                        "
+                        className="p-5"
                       >
 
                         <div
-                          className="
-                            flex
-                            flex-col
-                            gap-4
-                            sm:flex-row
-                            sm:items-center
-                            sm:justify-between
-                          "
+                          className="flex
+ flex-col
+ gap-4
+ sm:flex-row
+ sm:items-center
+ sm:justify-between"
                         >
 
                           <div>
 
                             <h4
-                              className="
-                                font-bold
-                                text-slate-800
-                              "
+                              className=""
                             >
                               Restablecer contraseña
                             </h4>
 
                             <p
-                              className="
-                                mt-1
-                                text-sm
-                                text-slate-600
-                              "
+                              className="mt-1"
                             >
                               Genera una nueva
                               contraseña temporal
@@ -4239,18 +3905,8 @@ const permisosDisponibles =
                                   true
                                 )
                               }
-                              className="
-                                rounded-xl
-                                bg-amber-500
-                                px-4
-                                py-2.5
-                                text-sm
-                                font-semibold
-                                text-white
-                                shadow-sm
-                                transition
-                                hover:bg-amber-600
-                              "
+                              className="px-4
+ py-2.5"
                             >
                               Restablecer
                             </button>
@@ -4258,11 +3914,9 @@ const permisosDisponibles =
                           ) : (
 
                             <div
-                              className="
-                                flex
-                                flex-wrap
-                                gap-2
-                              "
+                              className="flex
+ flex-wrap
+ gap-2"
                             >
 
                               <button
@@ -4275,19 +3929,8 @@ const permisosDisponibles =
                                 disabled={
                                   resettingPassword
                                 }
-                                className="
-                                  rounded-xl
-                                  border
-                                  border-slate-200
-                                  bg-white
-                                  px-4
-                                  py-2.5
-                                  text-sm
-                                  font-semibold
-                                  text-slate-600
-                                  transition
-                                  hover:bg-slate-50
-                                "
+                                className="px-4
+ py-2.5"
                               >
                                 Cancelar
                               </button>
@@ -4301,19 +3944,8 @@ const permisosDisponibles =
                                 disabled={
                                   resettingPassword
                                 }
-                                className="
-                                  rounded-xl
-                                  bg-red-600
-                                  px-4
-                                  py-2.5
-                                  text-sm
-                                  font-semibold
-                                  text-white
-                                  transition
-                                  hover:bg-red-700
-                                  disabled:cursor-not-allowed
-                                  disabled:opacity-50
-                                "
+                                className="px-4
+ py-2.5"
                               >
                                 {resettingPassword
                                   ? "Restableciendo..."
@@ -4345,34 +3977,19 @@ const permisosDisponibles =
                   <div className="space-y-5">
 
                     <section
-                      className="
-                        rounded-2xl
-                        border
-                        border-slate-200
-                        bg-white
-                        p-5
-                        shadow-sm
-                      "
+                      className="p-5"
                     >
 
                       <div className="mb-5">
 
                         <h3
-                          className="
-                            text-base
-                            font-bold
-                            text-slate-900
-                          "
+                          className=""
                         >
                           Auditoría
                         </h3>
 
                         <p
-                          className="
-                            mt-1
-                            text-sm
-                            text-slate-500
-                          "
+                          className="mt-1"
                         >
                           Historial de acciones
                           relacionadas con el empleado.
@@ -4402,22 +4019,14 @@ const permisosDisponibles =
                                   item.id ||
                                   `audit-${index}`
                                 }
-                                className="
-                                  rounded-2xl
-                                  border
-                                  border-slate-200
-                                  bg-slate-50/60
-                                  p-5
-                                "
+                                className="p-5"
                               >
 
                                 <div
-                                  className="
-                                    grid
-                                    grid-cols-1
-                                    gap-4
-                                    md:grid-cols-2
-                                  "
+                                  className="grid
+ grid-cols-1
+ gap-4
+ md:grid-cols-2"
                                 >
 
                                   <DatoSimple
@@ -4458,28 +4067,15 @@ const permisosDisponibles =
                         ) : (
 
                           <div
-                            className="
-                              rounded-2xl
-                              border
-                              border-dashed
-                              border-slate-300
-                              bg-slate-50
-                              p-8
-                              text-center
-                            "
+                            className="p-8"
                           >
 
-                            <div className="text-3xl">
+                            <div className="">
                               📋
                             </div>
 
                             <p
-                              className="
-                                mt-3
-                                text-sm
-                                font-medium
-                                text-slate-500
-                              "
+                              className="mt-3"
                             >
                               No hay registros de
                               auditoría disponibles.
@@ -4511,57 +4107,40 @@ const permisosDisponibles =
         ==================================================== */}
 
         <div
-          className="
-            flex
-            shrink-0
-            flex-col
-            gap-3
-            border-t
-            border-slate-200
-            bg-white
-            px-5
-            py-4
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
-            sm:px-6
-          "
+          className="flex
+ shrink-0
+ flex-col
+ gap-3
+ 
+ 
+ 
+ px-5
+ py-4
+ sm:flex-row
+ sm:items-center
+ sm:justify-between
+ sm:px-6"
         >
 
           <p
-            className="
-              text-xs
-              text-slate-400
-            "
+            className=""
           >
             Molsan ERP · Perfil de empleado
           </p>
 
 
           <div
-            className="
-              flex
-              items-center
-              justify-end
-              gap-2
-            "
+            className="flex
+ items-center
+ justify-end
+ gap-2"
           >
 
             <button
               type="button"
               onClick={cerrarModalEmpleado}
-              className="
-                rounded-xl
-                bg-slate-900
-                px-5
-                py-2.5
-                text-sm
-                font-semibold
-                text-white
-                shadow-sm
-                transition
-                hover:bg-slate-800
-              "
+              className="px-5
+ py-2.5"
             >
               Cerrar
             </button>
@@ -4594,15 +4173,11 @@ function CampoEditable({
     <label className="block">
 
       <span
-        className="
-          mb-2
-          block
-          text-[11px]
-          font-semibold
-          uppercase
-          tracking-wide
-          text-slate-400
-        "
+        className="mb-2
+ block
+ 
+ 
+ uppercase"
       >
         {label}
       </span>
@@ -4622,27 +4197,13 @@ function CampoEditable({
           )
         }
         disabled={disabled}
-        className="
-          h-11
-          w-full
-          rounded-xl
-          border
-          border-slate-200
-          bg-white
-          px-4
-          text-sm
-          font-medium
-          text-slate-800
-          outline-none
-          transition
-          placeholder:text-slate-300
-          focus:border-blue-400
-          focus:ring-2
-          focus:ring-blue-100
-          disabled:cursor-not-allowed
-          disabled:bg-slate-100
-          disabled:text-slate-400
-        "
+        className="h-11
+ w-full
+ 
+ 
+ 
+ 
+ px-4"
       />
 
     </label>
@@ -4667,15 +4228,11 @@ function CampoSelect({
     <label className="block">
 
       <span
-        className="
-          mb-2
-          block
-          text-[11px]
-          font-semibold
-          uppercase
-          tracking-wide
-          text-slate-400
-        "
+        className="mb-2
+ block
+ 
+ 
+ uppercase"
       >
         {label}
       </span>
@@ -4693,23 +4250,13 @@ function CampoSelect({
             event.target.value
           )
         }
-        className="
-          h-11
-          w-full
-          rounded-xl
-          border
-          border-slate-200
-          bg-white
-          px-4
-          text-sm
-          font-medium
-          text-slate-800
-          outline-none
-          transition
-          focus:border-blue-400
-          focus:ring-2
-          focus:ring-blue-100
-        "
+        className="h-11
+ w-full
+ 
+ 
+ 
+ 
+ px-4"
       >
 
         <option value="">
@@ -4751,15 +4298,11 @@ function CampoTextarea({
     <label className="block">
 
       <span
-        className="
-          mb-2
-          block
-          text-[11px]
-          font-semibold
-          uppercase
-          tracking-wide
-          text-slate-400
-        "
+        className="mb-2
+ block
+ 
+ 
+ uppercase"
       >
         {label}
       </span>
@@ -4778,25 +4321,14 @@ function CampoTextarea({
             event.target.value
           )
         }
-        className="
-          w-full
-          resize-y
-          rounded-xl
-          border
-          border-slate-200
-          bg-white
-          px-4
-          py-3
-          text-sm
-          font-medium
-          text-slate-800
-          outline-none
-          transition
-          placeholder:text-slate-300
-          focus:border-blue-400
-          focus:ring-2
-          focus:ring-blue-100
-        "
+        className="w-full
+ resize-y
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
       />
 
     </label>
@@ -4818,25 +4350,17 @@ function DatoSimple({
     <div>
 
       <div
-        className="
-          mb-1
-          text-[11px]
-          font-semibold
-          uppercase
-          tracking-wide
-          text-slate-400
-        "
+        className="mb-1
+ 
+ 
+ uppercase"
       >
         {label}
       </div>
 
 
       <div
-        className="
-          break-words
-          text-sm
-          text-slate-800
-        "
+        className="break-words"
       >
         {value ||
           "—"}
@@ -4859,34 +4383,22 @@ function GuardarButton({
   return (
 
     <div
-      className="
-        flex
-        justify-end
-        pt-1
-      "
+      className="flex
+ justify-end
+ pt-1"
     >
 
       <button
         type="button"
         disabled={loading}
         onClick={onClick}
-        className="
-          inline-flex
-          items-center
-          justify-center
-          rounded-xl
-          bg-blue-600
-          px-5
-          py-2.5
-          text-sm
-          font-semibold
-          text-white
-          shadow-sm
-          transition
-          hover:bg-blue-700
-          disabled:cursor-not-allowed
-          disabled:opacity-50
-        "
+        className="inline-flex
+ items-center
+ justify-center
+ 
+ 
+ px-5
+ py-2.5"
       >
 
         {loading
