@@ -156,63 +156,6 @@ function BadgeAccion({
   accion,
 }) {
 
-  const valor =
-    normalizarTexto(
-      accion
-    );
-
-
-  let clases =
-    "bg-[var(--erp-primary-soft)] text-[var(--erp-primary)] border-[var(--erp-primary)]";
-
-
-  if (
-    valor === "login" ||
-    valor === "login_success" ||
-    valor === "acceso"
-  ) {
-
-    clases =
-      "bg-emerald-50 text-emerald-700 border-emerald-200";
-
-  } else if (
-    valor === "login_error" ||
-    valor === "error" ||
-    valor.includes("fall")
-  ) {
-
-    clases =
-      "bg-red-50 text-red-700 border-red-200";
-
-  } else if (
-    valor.includes("delete") ||
-    valor.includes("elimin") ||
-    valor.includes("borr")
-  ) {
-
-    clases =
-      "bg-red-50 text-red-700 border-red-200";
-
-  } else if (
-    valor.includes("update") ||
-    valor.includes("actualiz") ||
-    valor.includes("editar")
-  ) {
-
-    clases =
-      "bg-amber-50 text-amber-700 border-amber-200";
-
-  } else if (
-    valor.includes("create") ||
-    valor.includes("crear") ||
-    valor.includes("alta")
-  ) {
-
-    clases =
-      "bg-blue-50 text-blue-700 border-blue-200";
-  }
-
-
   return (
     <span
       className={`inline-flex
@@ -224,7 +167,7 @@ function BadgeAccion({
  
  
  whitespace-nowrap
- ${clases}`}
+ `}
     >
       {textoSeguro(accion) || "Actividad"}
     </span>
