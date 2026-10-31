@@ -89,17 +89,15 @@ function Chip({
 
   return (
     <span
-      className={`
-        inline-flex
-        items-center
-        rounded-full
-        border
-        px-2.5
-        py-1
-        text-[11px]
-        font-semibold
-        ${estilos[tone] || estilos.neutral}
-      `}
+      className={`inline-flex
+ items-center
+ 
+ 
+ px-2.5
+ py-1
+ 
+ 
+ ${estilos[tone] || estilos.neutral}`}
     >
       {children}
     </span>
@@ -1564,23 +1562,21 @@ const permisosGlobales =
               />
 
               <span
-                className={`
-                  absolute
-                  -bottom-2
-                  -right-2
-                  rounded-full
-                  border-2
-                  border-[var(--erp-surface)]
-                  px-2
-                  py-0.5
-                  text-[9px]
-                  font-bold
-                  ${
-                    empleado.activo
-                      ? ""
-                      : ""
-                  }
-                `}
+                className={`absolute
+ -bottom-2
+ -right-2
+ 
+ 
+ 
+ px-2
+ py-0.5
+ 
+ 
+ ${
+ empleado.activo
+ ? ""
+ : ""
+ }`}
               >
                 {empleado.activo
                   ? "ACTIVO"
@@ -1729,7 +1725,7 @@ const permisosGlobales =
             type="button"
             onClick={cambiarVisibilidadEmpleado}
             disabled={guardandoVisibilidad}
-            className={`rounded-xl border px-4 py-2.5 text-sm font-semibold transition disabled:cursor-wait disabled:opacity-60 ${empleado.visible_en_listado === false ? "" : ""}`}
+            className={`px-4 py-2.5 ${empleado.visible_en_listado === false ? "" : ""}`}
           >
             {guardandoVisibilidad
               ? "Guardando…"
@@ -2018,7 +2014,7 @@ const permisosGlobales =
             {mensajeRol && (
               <p
                 role="status"
-                className={`mt-3 text-sm ${mensajeRol === "Rol guardado correctamente." ? "" : ""}`}
+                className={`mt-3 ${mensajeRol === "Rol guardado correctamente." ? "" : ""}`}
               >
                 {mensajeRol}
               </p>
@@ -2071,35 +2067,31 @@ const permisosGlobales =
               return (
                 <label
                   key={modulo}
-                  className={`
-                    flex
-                    cursor-pointer
-                    items-center
-                    justify-between
-                    gap-3
-                    rounded-xl
-                    border
-                    px-3
-                    py-2.5
-                    ${
-                      visible
-                        ? ""
-                        : ""
-                    }
-                  `}
+                  className={`flex
+ 
+ items-center
+ justify-between
+ gap-3
+ 
+ 
+ px-3
+ py-2.5
+ ${
+ visible
+ ? ""
+ : ""
+ }`}
                 >
 
                   <span
-                    className={`
-                      truncate
-                      text-sm
-                      font-medium
-                      ${
-                        visible
-                          ? ""
-                          : ""
-                      }
-                    `}
+                    className={`truncate
+ 
+ 
+ ${
+ visible
+ ? ""
+ : ""
+ }`}
                   >
                     {modulo}
                   </span>
@@ -2113,9 +2105,7 @@ const permisosGlobales =
                       )
                     }
                     className="h-4
- w-4
- 
- accent-blue-500"
+ w-4"
                   />
 
                 </label>
@@ -2311,22 +2301,20 @@ const permisosGlobales =
                           return (
                             <label
                               key={`${modulo}-${permiso}`}
-                              className={`
-                                flex
-                                cursor-pointer
-                                items-center
-                                gap-2
-                                rounded-lg
-                                border
-                                px-3
-                                py-2.5
-                                text-sm
-                                ${
-                                  checked
-                                    ? ""
-                                    : ""
-                                }
-                              `}
+                              className={`flex
+ 
+ items-center
+ gap-2
+ 
+ 
+ px-3
+ py-2.5
+ 
+ ${
+ checked
+ ? ""
+ : ""
+ }`}
                             >
 
                               <input
@@ -2341,9 +2329,7 @@ const permisosGlobales =
                                   )
                                 }
                                 className="h-4
- w-4
- 
- accent-purple-500"
+ w-4"
                               />
 
                               <span className="truncate">
