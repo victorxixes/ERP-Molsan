@@ -2107,7 +2107,7 @@ export default function RegistrosPropiedad() {
             >
 
               <thead><tr>
-              <MolsanSortableTh label="Registro" sortKey="registro_propiedad" sortConfig={ordenRegistros.sortConfig} onSort={ordenRegistros.requestSort} className="" />
+              <MolsanSortableTh label="Registro" sortKey="registro_propiedad" sortConfig={ordenRegistros.sortConfig} onSort={ordenRegistros.requestSort} className="min-w-[220px] px-5 py-3.5 uppercase" />
 
 
                   <MolsanSortableTh label="Registrador" sortKey="nombre_registrador" sortConfig={ordenRegistros.sortConfig} onSort={ordenRegistros.requestSort} className="min-w-[190px]
