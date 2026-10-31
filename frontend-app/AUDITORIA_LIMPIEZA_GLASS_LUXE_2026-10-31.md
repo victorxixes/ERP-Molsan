@@ -144,3 +144,34 @@ Se ha inspeccionado el contenido de las 52 hojas CSS del frontend en la rama: 49
 - Punto 3: pendiente de la confirmación exhaustiva del punto 2.
 - Punto 4: racionalización segura aplicada; el reset global se conserva temporalmente.
 - Punto 5: expresamente no iniciado. No se ha realizado comprobación visual de módulos.
+
+
+## Cierre de los puntos 1–3 — barrido completo de la rama (31/10/2026)
+
+### Punto 1 — barrido de atributos vacíos
+- Revisados los 187 archivos JavaScript/JSX/TS/TSX de `frontend-app/src`.
+- Eliminados 1.505 atributos literales `className=""` en 104 archivos.
+- Se mantuvieron intactas las expresiones de clase dinámicas y las clases no vacías. No se hizo sustitución global de clases ni de estilos inline.
+- En el barrido completo no se identificaron más atributos literales vacíos de ese patrón tras aplicar las correcciones.
+
+### Punto 2 — referencias CSS en la rama
+- Revisados los 187 archivos de código de `frontend-app/src` para referencias CSS en cadenas, imports y rutas.
+- Las únicas referencias CSS encontradas son:
+  - `src/main.jsx` → `./css/index.css` y `./css/NeutralizarPresentacion.css`.
+  - `src/components/Sidebar.jsx` → `../css/SidebarBase.css`.
+  - `src/components/SidebarPerfilModal.jsx` → `../css/SidebarBase.css`.
+- Revisados también `index.html`, `package.json`, `postcss.config.js`, `tailwind.config.js` y `vite.config.js`: no contienen referencias a las hojas candidatas.
+- Se conserva el trío anterior. No hay importaciones estáticas ni referencias de archivo CSS detectadas para las 49 hojas vaciadas.
+
+### Punto 3 — eliminación de CSS vacíos
+- Eliminadas las 49 hojas CSS de 62 bytes que contenían únicamente el comentario marcador.
+- Inventario resultante: 3 hojas CSS, todas justificadas y en uso:
+  - `index.css` (Tailwind).
+  - `NeutralizarPresentacion.css` (neutralización temporal).
+  - `SidebarBase.css` (navegación, foco, scroll y perfil).
+
+### Estado actualizado
+- Puntos 1, 2 y 3: completados en la rama Preview.
+- Punto 4: racionalización segura aplicada; se conserva el reset global temporal y las excepciones funcionales/accesibles.
+- Punto 5: no iniciado, conforme a la instrucción. La comprobación visual de módulos queda pendiente.
+- Pendiente antes de declarar cerrado este lote: ejecutar build de Preview y verificar el resultado del despliegue.
