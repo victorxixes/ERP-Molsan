@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios from "../../api/axios";
 
 const hoy = () => new Date().toLocaleDateString("sv-SE");
@@ -63,23 +64,18 @@ export default function ComplementosSaldo() {
     finally { setExportando(false); }
   }
 
-  return <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-    <header className="relative overflow-hidden p-6">
-      <div className="absolute inset-x-0 top-0 h-1" />
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div><Link to="/herramientas/utilidades">← Volver a Utilidades</Link><h1 className="mt-2">Complementos de saldo</h1><p className="mt-1">Control de solicitudes, importes y estado de cada complemento.</p></div>
-        <button type="button" onClick={cargar} className="px-4 py-2.5">↻ Actualizar</button>
-      </div>
-    </header>
+  return <div className="erp-page min-w-0 space-y-6">
+    <MolsanPageHeader mark="CS" title="Complementos de saldo" description="Control de solicitudes, importes y estado de cada complemento." />
+    <div className="molsan-filter-bar flex flex-wrap items-center justify-between gap-3 p-3"><Link to="/herramientas/utilidades" className="molsan-btn molsan-btn--secondary">← Volver a Utilidades</Link><button type="button" onClick={cargar} className="molsan-btn molsan-btn--secondary">↻ Actualizar</button></div>
 
-    <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <section className="molsan-stat-grid">
       <Metrica titulo="Peticiones de complemento" valor={metricas.total} detalle="Solicitudes según los filtros" icono="▤" />
       <Metrica titulo="Importe total solicitado" valor={euros(metricas.importe)} detalle="Suma de los complementos" icono="€" />
       <Metrica titulo="Pendientes" valor={metricas.pendientes} detalle={`Importe abierto: ${euros(metricas.importePendiente)}`} icono="◷" alerta />
       <Metrica titulo="Compensados" valor={metricas.cerrados} detalle="Solicitudes regularizadas" icono="✓" verde />
     </section>
 
-    <section className="overflow-hidden">
+    <section className="erp-card overflow-hidden">
       <div className="p-4 sm:p-5"><div className="flex flex-col gap-3 xl:flex-row xl:items-end">
         <label className="min-w-0 flex-1"><span className="mb-1.5 block uppercase">Buscar expediente</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="N.º de expediente…" className="w-full px-3.5 py-2.5" /></label>
         <label className="w-full xl:w-48"><span className="mb-1.5 block uppercase">Estado</span><select value={estadoFiltro} onChange={(e) => setEstadoFiltro(e.target.value)} className="w-full px-3.5 py-2.5"><option value="">Todos</option><option value="Pendiente">Pendiente</option><option value="Compensado">Compensado</option></select></label>
