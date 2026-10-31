@@ -1203,135 +1203,15 @@ export default function AccionesExpediente() {
 
   return (
     <div
-      className="erp-page
- min-h-full
- p-4
- sm:p-6
- lg:p-8
- 
- space-y-6"
+      className="erp-page min-w-0 space-y-6"
     >
 
-      {/* =====================================================
-          CABECERA
-      ===================================================== */}
-
-      <div
-        className="molsan-subpage-header flex
- flex-col
- lg:flex-row
- lg:items-center
- lg:justify-between
- gap-5"
-      >
-
-        <div
-          className="flex
- items-center
- gap-4"
-        >
-
-          <div
-            className="w-12
- h-12
- 
- 
- 
- 
- 
- flex
- items-center
- justify-center
- shrink-0"
-          >
-
-            <Icono
-              name="clipboard"
-              className="w-6
- h-6"
-            />
-
-          </div>
-
-
-          <div>
-
-            <h1
-             
-            >
-              Acciones del expediente
-            </h1>
-
-            <p
-              className="mt-0.5"
-            >
-              Catálogo de acciones y actividades
-              disponibles para los expedientes
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div
-          className="flex
- flex-wrap
- items-center
- gap-2"
-        >
-
-          <button
-            type="button"
-            onClick={
-              abrirImportar
-            }
-            className="inline-flex
- items-center
- gap-2
- px-4
- py-2.5"
-          >
-
-            <Icono
-              name="database"
-              className="w-4
- h-4"
-            />
-
-            Importar Excel
-
-          </button>
-
-
-          <button
-            type="button"
-            onClick={
-              abrirNueva
-            }
-            className="inline-flex
- items-center
- gap-2
- px-4
- py-2.5"
-          >
-
-            <span
-             
-            >
-              +
-            </span>
-
-            Nueva acción
-
-          </button>
-
-        </div>
-
+      <MolsanPageHeader mark="AE" title="Acciones del expediente" description="Catálogo de acciones y actividades disponibles para los expedientes." />
+      <div className="molsan-filter-bar flex flex-wrap justify-end gap-2 p-3">
+        <button type="button" onClick={abrirImportar} className="molsan-btn molsan-btn--secondary"><Icono name="database" className="w-4 h-4" /> Importar Excel</button>
+        <button type="button" onClick={abrirNueva} className="molsan-btn molsan-btn--primary">＋ Nueva acción</button>
       </div>
 
-
-      {/* =====================================================
           MENSAJES
       ===================================================== */}
 
