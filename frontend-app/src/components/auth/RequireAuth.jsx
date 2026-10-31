@@ -21,21 +21,15 @@ export default function RequireAuth({ children }) {
   if (!authReady || loading) {
     return (
       <div
-        className="
-          w-full h-screen flex items-center justify-center
-          bg-black/40 backdrop-blur-xl
-        "
+        className="w-full h-screen flex items-center justify-center"
       >
         <div className="flex flex-col items-center gap-4">
           {/* Spinner premium */}
           <div
-            className="
-              w-12 h-12 border-4 border-white/20 border-t-white
-              rounded-full animate-spin
-            "
+            className="w-12 h-12"
           />
 
-          <p className="text-white/80 text-sm tracking-wide">
+          <p className="">
             Cargando sesión…
           </p>
         </div>
