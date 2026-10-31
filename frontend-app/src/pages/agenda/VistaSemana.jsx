@@ -8,31 +8,6 @@ const HORAS = Array.from(
   (_, i) => `${9 + i}:00`
 );
 
-const colorPorTipo = (tipo) => {
-  switch (tipo) {
-    case "Firma notarial":
-      return {
-        box: "bg-[var(--erp-primary-soft)] border-[var(--erp-primary)]/30",
-        text: "text-[var(--erp-primary)]",
-        accent: "bg-[var(--erp-primary)]",
-      };
-
-    case "Reunión":
-      return {
-        box: "bg-emerald-50 border-emerald-200",
-        text: "text-emerald-700",
-        accent: "bg-emerald-500",
-      };
-
-    default:
-      return {
-        box: "bg-[var(--erp-surface-soft)] border-[var(--erp-border)]",
-        text: "text-[var(--erp-text)]",
-        accent: "bg-slate-400",
-      };
-  }
-};
-
 export default function VistaSemana({
   fechaBase,
   citas = [],
@@ -170,9 +145,6 @@ export default function VistaSemana({
 
                   {citasEnCelda.map((c) => {
 
-                    const colores =
-                      colorPorTipo(c.tipo_cita);
-
                     const resaltada =
                       resaltadaId === c.id;
 
@@ -188,8 +160,8 @@ export default function VistaSemana({
  
  
  overflow-hidden
- ${colores.box}
- ${colores.text}
+ 
+ 
  
  ${
  resaltada
@@ -207,7 +179,7 @@ export default function VistaSemana({
  top-0
  bottom-0
  w-1
- ${colores.accent}`}
+ `}
                         />
 
                         <div className="truncate pl-1">
