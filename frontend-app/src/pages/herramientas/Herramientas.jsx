@@ -121,39 +121,35 @@ function Card({
   return (
     <Link
       to={link}
-      className={`
-        group relative overflow-hidden
-        rounded-[22px]
-        border
-        bg-white/80
-        backdrop-blur-xl
-        p-5
-        shadow-[0_12px_35px_rgba(15,23,42,0.07)]
-        transition-all duration-300
-        hover:-translate-y-1
-        hover:shadow-[0_20px_45px_rgba(15,23,42,0.11)]
-        active:scale-[0.98]
+      className={`group relative overflow-hidden
+ 
+ 
+ 
+ 
+ p-5
+ 
+ 
+ 
+ 
+ 
 
-        ${
-          destacado
-            ? ""
-            : ""
-        }
-      `}
+ ${
+ destacado
+ ? ""
+ : ""
+ }`}
     >
 
       {/* Línea superior */}
 
       <div
-        className={`
-          absolute inset-x-0 top-0 h-px
-          transition-opacity
-          ${
-            destacado
-              ? ""
-              : ""
-          }
-        `}
+        className={`absolute inset-x-0 top-0 h-px
+ 
+ ${
+ destacado
+ ? ""
+ : ""
+ }`}
       />
 
       <div className="flex items-start gap-4">
@@ -161,20 +157,18 @@ function Card({
         {/* ICONO */}
 
         <div
-          className={`
-            flex h-12 w-12 shrink-0
-            items-center justify-center
-            rounded-2xl
-            border
-            text-xl
-            transition-all duration-300
-            group-hover:scale-105
-            ${
-              destacado
-                ? ""
-                : ""
-            }
-          `}
+          className={`flex h-12 w-12 shrink-0
+ items-center justify-center
+ 
+ 
+ 
+ 
+ 
+ ${
+ destacado
+ ? ""
+ : ""
+ }`}
         >
           {icon}
         </div>
