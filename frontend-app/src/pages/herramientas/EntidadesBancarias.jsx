@@ -4,13 +4,11 @@ import {
   useRef,
   useState,
 } from "react";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/CatalogosMaestrosPremium.css";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 /**
  * ============================================================
- * ENTIDADES BANCARIAS — MOLSAN ERP PREMIUM 2027
+ * ENTIDADES BANCARIAS
  * ============================================================
  *
  * Maestro de entidades bancarias.
@@ -1524,7 +1522,7 @@ export default function EntidadesBancarias() {
   return (
 
     <div
-      className="entidades-bancarias-premium herramientas-subpagina-premium catalogo-maestro-modal-premium 
+      className="
  min-h-full
  p-4 sm:p-6 lg:p-8
  space-y-6"
@@ -1642,7 +1640,7 @@ export default function EntidadesBancarias() {
               type="button"
               onClick={descargarExcel}
               disabled={cargando || entidadesOrdenadas.length === 0}
-              className="molsan-export-excel"
+              className=""
               title="Descargar el catálogo filtrado en Excel"
             >
               <span className="molsan-export-excel__icon" aria-hidden="true">📗</span>
