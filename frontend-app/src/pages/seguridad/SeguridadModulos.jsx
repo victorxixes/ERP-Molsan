@@ -494,9 +494,7 @@ export default function SeguridadModulos() {
                             bg-[var(--erp-bg)]
                             hover:border-blue-200
                             hover:bg-blue-50/40
-                          `
-                      }
-                    `}
+                          `}`}
                   >
 
                     <div
@@ -507,30 +505,26 @@ export default function SeguridadModulos() {
                     >
 
                       <span
-                        className={`
-                          h-2.5
-                          w-2.5
-                          shrink-0
-                          rounded-full
-                          ${
-                            activo
-                              ? ""
-                              : ""
-                          }
-                        `}
+                        className={`h-2.5
+ w-2.5
+ shrink-0
+ 
+ ${
+ activo
+ ? ""
+ : ""
+ }`}
                       />
 
                       <span
-                        className={`
-                          truncate
-                          text-sm
-                          font-semibold
-                          ${
-                            activo
-                              ? ""
-                              : ""
-                          }
-                        `}
+                        className={`truncate
+ 
+ 
+ ${
+ activo
+ ? ""
+ : ""
+ }`}
                       >
                         {modulo}
                       </span>
@@ -548,9 +542,7 @@ export default function SeguridadModulos() {
                       }
                       className="h-4
  w-4
- shrink-0
- 
- accent-blue-500"
+ shrink-0"
                     />
 
                   </label>
