@@ -523,7 +523,7 @@ export default function MonitorRealtime() {
           ====================================================== */}
 
       <div
-        className="px-6
+        className="molsan-subpage-header px-6
  py-5
  
  

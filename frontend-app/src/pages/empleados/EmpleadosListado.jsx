@@ -921,7 +921,7 @@ export default function EmpleadosListado({
 
   return (
 
-    <div className="space-y-5" aria-busy={cargando}>
+    <div className="erp-page space-y-5" aria-busy={cargando}>
 
       {/* ======================================================
           CABECERA
