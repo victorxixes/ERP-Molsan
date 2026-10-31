@@ -8,7 +8,6 @@ import {
   asociarNotarios,
   desasociarNotarios,
 } from "../../api/ctn";
-import "../../css/CtnListadoPage.css";
 import useAccessibleDialog from "../ui/useAccessibleDialog";
 import AutocompleteNotario from "../agenda/AutocompleteNotario";
 import PortalAccessTabs from "./PortalAccessTabs";
