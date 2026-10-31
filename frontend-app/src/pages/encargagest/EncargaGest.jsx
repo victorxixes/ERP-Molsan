@@ -3,9 +3,6 @@ import { useNavigate } from "react-router-dom";
 import PortalLogin from "../../components/PortalLogin";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import Sidebar from "../../components/Sidebar";
-import "../../css/PortalProfesionalShared.css";
-import "../../css/EncargaGest.css";
-import "../../css/ModalesHerramientasPremium.css";
 import axios, { configurarSesionEncargaGest, limpiarSesionEncargaGest } from "../../api/encargagest";
 import { useAuthStore } from "../../store/authStore";
 
