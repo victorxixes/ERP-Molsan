@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
-import "../../css/ComponentesOperativosPremium.css";
 
 const hoy = () => {
   const d = new Date();
