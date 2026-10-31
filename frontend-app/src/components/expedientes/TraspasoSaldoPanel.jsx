@@ -187,7 +187,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
               <div className="flex min-w-0 items-center gap-3">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center">⇄</span>
                 <div>
-                  <h3 id="modal-traspaso-saldo-titulo" className="">Control de traspasos de saldo</h3>
+                  <h3 id="modal-traspaso-saldo-titulo">Control de traspasos de saldo</h3>
                   <p className="mt-1 max-w-3xl">Solo para expedientes relacionados con «Cancelación con provisión». Permite agrupar varios orígenes en un único receptor, verificar el importe manualmente y registrar el email al cliente.</p>
                 </div>
               </div>
@@ -219,7 +219,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
               {contexto.operaciones.map((op) => (
                 <article key={op.id} className="p-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="">Traspaso #{op.id} · receptor {op.receptor_numero}</div>
+                    <div>Traspaso #{op.id} · receptor {op.receptor_numero}</div>
                     <span className={`px-2.5 py-1 uppercase ${op.estado === "cerrado" ? "" : op.estado === "cancelado" ? "" : ""}`}>{op.estado.replaceAll("_", " ")}</span>
                   </div>
                   <p className="mt-1">Orígenes: {op.origenes.map((item) => item.numero).join(", ") || "—"} · Importe receptor verificado: {euros(op.importe_receptor_actualizado)}</p>
@@ -233,13 +233,13 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
 
           {operacionActiva?.estado === "pendiente_verificacion" && (
             <div className="p-4">
-              <h4 className="">1. Verificar importe en la base de datos externa</h4>
+              <h4>1. Verificar importe en la base de datos externa</h4>
               <p className="mt-1">El importe se actualiza únicamente con la cifra confirmada por el gestor. El campo Saldo disponible no se modifica.</p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
-                <label className="">Importe confirmado del receptor (€)
+                <label>Importe confirmado del receptor (€)
                   <input type="number" min="0" step="0.01" value={importeReceptor} onChange={(e) => setImporteReceptor(e.target.value)} className="mt-1 w-full px-3 py-2" />
                 </label>
-                <label className="">Email del cliente
+                <label>Email del cliente
                   <input type="email" value={destinatario} onChange={(e) => setDestinatario(e.target.value)} placeholder="cliente@ejemplo.com" className="mt-1 w-full px-3 py-2" />
                 </label>
                 <label className="md:col-span-2">Asunto
@@ -258,14 +258,14 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
 
           {operacionActiva?.estado === "pendiente_email" && (
             <div className="p-4">
-              <h4 className="">2. Enviar email y cerrar el traspaso</h4>
+              <h4>2. Enviar email y cerrar el traspaso</h4>
               <p className="mt-1">El Importe del receptor ya se ha actualizado. Al enviar correctamente el email, los expedientes de origen pasarán a «Liquidado sin tramitar».</p>
               <p className="mt-2">Importe verificado: <strong>{euros(operacionActiva.importe_receptor_actualizado)}</strong></p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
-                <label className="">Email del cliente
+                <label>Email del cliente
                   <input type="email" value={destinatario} onChange={(e) => setDestinatario(e.target.value)} className="mt-1 w-full px-3 py-2" />
                 </label>
-                <label className="">Asunto
+                <label>Asunto
                   <input value={asunto} onChange={(e) => setAsunto(e.target.value)} className="mt-1 w-full px-3 py-2" />
                 </label>
                 <label className="md:col-span-2">Cuerpo del email
@@ -284,31 +284,31 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
             <h4 className="uppercase">Crear nuevo traspaso agrupado</h4>
             <p className="mt-1">Los saldos de origen son informativos; el ERP no los suma ni los transfiere automáticamente.</p>
             <div className="mt-3 grid gap-3 md:grid-cols-2">
-              <label className="">Expediente receptor
+              <label>Expediente receptor
                 <select value={receptorNumero} onChange={(e) => { setReceptorNumero(e.target.value); setOrigenesSeleccionados([]); setOperacionActiva(null); }} className="mt-1 w-full px-3 py-2.5">
                   {candidatos.map((item) => <option key={item.numero} value={item.numero}>{item.numero}{item.faltan_requisitos_receptor.length ? " · firma/protocolo pendiente" : ""}</option>)}
                 </select>
               </label>
               <div className="p-3">
-                <p className="">Requisitos del receptor</p>
+                <p>Requisitos del receptor</p>
                 {faltanFirma.length ? <p className="mt-1">Bloqueado: falta {faltanFirma.join(" y ")}.</p> : <p className="mt-1">Firma y protocolo informados · {fecha(receptor?.fecha_firma)} · protocolo {receptor?.protocolo}</p>}
               </div>
             </div>
             <div className="mt-3 space-y-2">
-              <p className="">Selecciona uno o varios expedientes de origen</p>
+              <p>Selecciona uno o varios expedientes de origen</p>
               {origenes.length === 0 && <p className="p-3">No hay otros expedientes con el mismo VincCanc y tipo de operación.</p>}
               {origenes.map((item) => {
                 const bloqueado = item.bloqueado_por_traspaso || item.liquidado_sin_tramitar;
                 return <label key={item.numero} className={`flex flex-wrap items-center gap-3 p-3 ${bloqueado ? "" : ""}`}>
                   <input type="checkbox" checked={origenesSeleccionados.includes(item.numero)} disabled={bloqueado} onChange={() => alternarOrigen(item.numero)} className="h-4 w-4" />
-                  <span className="min-w-0 flex-1"><strong className="">{item.numero}</strong><span className="ml-2">{item.bloqueado_por_traspaso ? item.motivo_bloqueo_traspaso : item.liquidado_sin_tramitar ? "Liquidado sin tramitar" : "Disponible para incluir"}</span></span>
-                  <span className=""><span className="block">Importe</span><strong>{euros(item.importe)}</strong></span>
-                  <span className=""><span className="block">Saldo disponible</span><strong>{euros(item.saldo_disponible)}</strong></span>
+                  <span className="min-w-0 flex-1"><strong>{item.numero}</strong><span className="ml-2">{item.bloqueado_por_traspaso ? item.motivo_bloqueo_traspaso : item.liquidado_sin_tramitar ? "Liquidado sin tramitar" : "Disponible para incluir"}</span></span>
+                  <span><span className="block">Importe</span><strong>{euros(item.importe)}</strong></span>
+                  <span><span className="block">Saldo disponible</span><strong>{euros(item.saldo_disponible)}</strong></span>
                 </label>;
               })}
             </div>
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-              <p className="">Suma informativa de saldos seleccionados: <strong>{euros(sumaReferencia)}</strong></p>
+              <p>Suma informativa de saldos seleccionados: <strong>{euros(sumaReferencia)}</strong></p>
               <button type="button" disabled={guardando || !contexto?.expediente?.vinccanc || !receptorNumero || seleccionados.length === 0 || Boolean(origenBloqueado) || faltanFirma.length > 0} onClick={crear} className="px-4 py-2.5">{guardando ? "Creando…" : "Crear control de traspaso"}</button>
             </div>
             <p className="mt-2">Reglas: todos deben compartir VINCCANC y ser «Cancelación con provisión»; el receptor necesita fecha de firma real y protocolo. Cada origen solo puede estar en un traspaso activo. Las validaciones también se aplican en el servidor.</p>
