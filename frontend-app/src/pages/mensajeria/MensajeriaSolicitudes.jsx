@@ -3,8 +3,6 @@ import axios from "../../api/axios";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import { listarNotarios } from "../../api/notarios";
 import { useAuthStore } from "../../store/authStore";
-import "../../css/HerramientasPremium.css";
-import "../../css/ModalesHerramientasPremium.css";
 
 const inputClass = "w-full px-3 py-2.5";
 const nuevaUbicacion = () => ({ tipo: "Otros", busqueda: "", referencia_id: "", direccion: "", codigo_postal: "", poblacion: "", provincia: "", contacto: "", telefono: "", mapa: "" });
@@ -208,10 +206,10 @@ export default function MensajeriaSolicitudes() {
     finally { setGuardando(false); }
   };
 
-  return <main className="catalogos-premium-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+  return <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
     <header className="relative overflow-hidden p-6 sm:p-7">
       <div className="absolute inset-x-0 top-0 h-1" />
-      <p className="uppercase">MOLSAN ERP PREMIUM 2027</p>
+      <p className="uppercase">MOLSAN ERP</p>
       <h1 className="mt-2">Mensajería</h1>
       <p className="mt-2 max-w-3xl">Solicita envíos y recogidas, consulta el estado de tus encargos y mantén la comunicación con la responsable desde aquí.</p>
     </header>
@@ -268,6 +266,6 @@ export default function MensajeriaSolicitudes() {
         })}</div>}
       </section>
     </section>
-    {seleccionada && <div className="panel-modal-premium fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-4" role="presentation"><section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Seguimiento del encargo" className="my-auto max-h-[90vh] w-full max-w-2xl overflow-y-auto p-5 sm:p-7"><div className="flex items-start justify-between gap-3"><div><p className="uppercase">Seguimiento del encargo</p><h2 className="mt-1">ID encargo: {seleccionada.referencia}</h2><p className="mt-1">{seleccionada.origen} → {seleccionada.destino}</p></div><button type="button" onClick={cerrarSeguimiento} disabled={guardando} className="px-3 py-1.5">Cerrar</button></div><div className="mt-4 p-4"><b>Estado:</b> <span className={`ml-2 px-2.5 py-1 `}>{seleccionada.estado}</span><p className="mt-3"><b>Seguimiento del proveedor:</b> {seleccionada.estado_proveedor || "Todavía sin actualización"}</p>{seleccionada.incidencia && <p className="mt-2"><b>Incidencia:</b> {seleccionada.incidencia}</p>}<p className="mt-2"><b>Instrucciones:</b> {seleccionada.descripcion || "—"}</p></div><h3 className="mt-5">Comunicación con Mensajería Gestión</h3><div className="mt-3 max-h-56 space-y-2 overflow-y-auto p-3">{comunicaciones.map((m) => <div key={m.id} className={`p-3 ${m.autor_tipo === "empleado" ? "" : ""}`}><div className="flex justify-between gap-2"><b>{m.autor_nombre}</b><span className="">{m.creado_en ? new Date(m.creado_en).toLocaleString("es-ES") : ""}</span></div><p className="mt-1 whitespace-pre-wrap">{m.mensaje}</p></div>)}{!comunicaciones.length && <p className="">Todavía no hay mensajes. Puedes escribir a la responsable debajo.</p>}</div><form onSubmit={enviarMensaje} className="mt-3 space-y-2"><textarea className={inputClass} rows="3" value={mensajeChat} onChange={(e) => setMensajeChat(e.target.value)} placeholder="Escribe una consulta o aporta información adicional…" required /><button type="submit" disabled={guardando || !mensajeChat.trim()} className="px-4 py-2.5">Enviar mensaje</button></form></section></div>}
+    {seleccionada && <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-4" role="presentation"><section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Seguimiento del encargo" className="my-auto max-h-[90vh] w-full max-w-2xl overflow-y-auto p-5 sm:p-7"><div className="flex items-start justify-between gap-3"><div><p className="uppercase">Seguimiento del encargo</p><h2 className="mt-1">ID encargo: {seleccionada.referencia}</h2><p className="mt-1">{seleccionada.origen} → {seleccionada.destino}</p></div><button type="button" onClick={cerrarSeguimiento} disabled={guardando} className="px-3 py-1.5">Cerrar</button></div><div className="mt-4 p-4"><b>Estado:</b> <span className={`ml-2 px-2.5 py-1 `}>{seleccionada.estado}</span><p className="mt-3"><b>Seguimiento del proveedor:</b> {seleccionada.estado_proveedor || "Todavía sin actualización"}</p>{seleccionada.incidencia && <p className="mt-2"><b>Incidencia:</b> {seleccionada.incidencia}</p>}<p className="mt-2"><b>Instrucciones:</b> {seleccionada.descripcion || "—"}</p></div><h3 className="mt-5">Comunicación con Mensajería Gestión</h3><div className="mt-3 max-h-56 space-y-2 overflow-y-auto p-3">{comunicaciones.map((m) => <div key={m.id} className={`p-3 ${m.autor_tipo === "empleado" ? "" : ""}`}><div className="flex justify-between gap-2"><b>{m.autor_nombre}</b><span className="">{m.creado_en ? new Date(m.creado_en).toLocaleString("es-ES") : ""}</span></div><p className="mt-1 whitespace-pre-wrap">{m.mensaje}</p></div>)}{!comunicaciones.length && <p className="">Todavía no hay mensajes. Puedes escribir a la responsable debajo.</p>}</div><form onSubmit={enviarMensaje} className="mt-3 space-y-2"><textarea className={inputClass} rows="3" value={mensajeChat} onChange={(e) => setMensajeChat(e.target.value)} placeholder="Escribe una consulta o aporta información adicional…" required /><button type="submit" disabled={guardando || !mensajeChat.trim()} className="px-4 py-2.5">Enviar mensaje</button></form></section></div>}
   </main>;
 }
