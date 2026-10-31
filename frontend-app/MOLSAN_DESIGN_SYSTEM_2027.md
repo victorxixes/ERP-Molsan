@@ -223,3 +223,25 @@ Este cierre **no afirma que cada una de las 97 pantallas y cada modal hayan sido
 - Aplicar el patrón visual común a todas las tablas sin modificar la estructura de datos.
 - Incorporar la ordenación funcional tabla por tabla, validando los tipos de dato y la paginación. Las tablas de impresión o solo lectura documental se documentarán como excepción cuando ordenar no tenga sentido en su función.
 - Mantener fuera del alcance el Sidebar, la base de datos, los datos históricos y los cambios no solicitados de lógica de negocio.
+
+## Fase 2 — Primera implantación de patrones globales (31/10/2026)
+
+### Implementado en la rama Preview
+- Se amplía `NeutralizarPresentacion.css` con una base global para tablas de trabajo dentro de `.erp-route-content`: cabeceras azul hielo, texto Molsan, bordes suaves, separación de filas, hover discreto y cifras tabulares.
+- Se normalizan globalmente los estados visuales de campos de formulario: foco corporativo, placeholders, deshabilitados y acento de controles.
+- Se consolidan las variantes compartidas `.molsan-btn`: primario, secundario, contorno, ghost, destructivo y compacto, con foco accesible y estados disabled.
+- Se definen superficies reutilizables para modales: `.molsan-modal`, `.molsan-modal__panel`, `.erp-modal-panel`, junto con modificadores de cabecera, cuerpo y pie.
+- Se excluyen explícitamente el Sidebar y las vistas de impresión/calendario de la normalización general.
+- Se mantiene el sistema de tarjetas/cabeceras ya aprobado; esta implantación no los rediseña.
+- Se conservan los colores semánticos cuando representan estados de negocio.
+
+### Requisito de ordenación: no declarar todavía completado
+- La auditoría de CTN confirma que el endpoint `GET /ctn/notarias` pagina en servidor y actualmente no acepta parámetros de ordenación. El listado de interfaz ordena solo las filas de la página ya recibida y solo ofrece controles para parte de sus columnas.
+- No se modifica el backend conectado a producción ni se ordena falsamente solo la página visible.
+- La ordenación completa de todas las columnas de todas las tablas queda como requisito obligatorio de implantación funcional por tabla. Requiere identificar paginación, endpoint y tipos de datos; las tablas paginadas necesitan soporte de ordenación del lado servidor.
+- Los estilos de cabeceras ordenables y `aria-sort` quedan preparados para los componentes que incorporen esa funcionalidad. La presencia de estilo no significa que una columna ya sea funcionalmente ordenable.
+
+### Alcance y validación
+- Esta entrega es una primera capa visual transversal, no la migración terminada de todos los componentes de filtros, formularios y modales.
+- No se han modificado lógica de negocio, permisos, datos, API, base de datos, Sidebar ni producción.
+- La validación de build y el despliegue Preview se registrarán tras su ejecución. La revisión visual final de módulos y modales sigue pendiente.
