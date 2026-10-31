@@ -82,7 +82,7 @@ export default function CrearNoticia() {
 
           <div>
 
-            <h1 className="">
+            <h1>
               Crear noticia
             </h1>
 
