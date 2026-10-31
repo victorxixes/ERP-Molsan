@@ -4150,3 +4150,342 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
     flex-direction: column;
   }
 }
+
+
+/* ==========================================================
+   COMPONENTES ERP HEREDADOS · SEGURIDAD Y ADMINISTRACIÓN
+   Compatibilidad visual para la familia erp-* que seguía
+   utilizándose fuera de los componentes Molsan compartidos.
+========================================================== */
+
+.erp-card,
+.molsan-card {
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.erp-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 15px 18px;
+  background: var(--molsan-panel);
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.erp-card-title,
+.erp-page-title {
+  margin: 0;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-lg);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.erp-card-description,
+.erp-page-subtitle,
+.erp-section-description {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-sm);
+}
+
+.erp-card-body {
+  min-width: 0;
+  padding: 18px;
+}
+
+.erp-section-title {
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-md);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.erp-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: 13px;
+  border-bottom: 2px solid var(--molsan-panel);
+}
+
+.erp-eyebrow {
+  color: var(--molsan-muted);
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-bold);
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.erp-btn {
+  display: inline-flex;
+  min-height: var(--molsan-control-height);
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 13px;
+  color: var(--molsan-blue);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-semibold);
+  transition: background var(--molsan-transition-fast), border-color var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast);
+}
+
+.erp-btn:hover:not(:disabled) {
+  background: var(--molsan-panel);
+  border-color: rgba(6, 70, 117, .3);
+}
+
+.erp-btn-primary {
+  color: #fff;
+  background: var(--molsan-blue);
+  border-color: var(--molsan-blue);
+}
+
+.erp-btn-primary:hover:not(:disabled) {
+  color: #fff;
+  background: var(--molsan-blue-hover);
+}
+
+.erp-btn-secondary {
+  color: var(--molsan-blue);
+  background: #fff;
+}
+
+.erp-btn-danger {
+  color: var(--molsan-danger);
+  background: var(--molsan-danger-soft);
+  border-color: rgba(163, 59, 66, .24);
+}
+
+.erp-btn-success {
+  color: var(--molsan-success);
+  background: var(--molsan-success-soft);
+  border-color: rgba(35, 115, 77, .22);
+}
+
+.erp-btn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.erp-badge {
+  display: inline-flex;
+  min-height: 22px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 3px 8px;
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-semibold);
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.erp-badge-neutral,
+.erp-badge-purple {
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border-color: var(--molsan-border);
+}
+
+.erp-badge-primary {
+  color: var(--molsan-blue);
+  background: var(--molsan-blue-soft);
+  border-color: rgba(6, 70, 117, .2);
+}
+
+.erp-badge-success {
+  color: var(--molsan-success);
+  background: var(--molsan-success-soft);
+  border-color: rgba(35, 115, 77, .22);
+}
+
+.erp-badge-danger {
+  color: var(--molsan-danger);
+  background: var(--molsan-danger-soft);
+  border-color: rgba(163, 59, 66, .22);
+}
+
+.erp-alert {
+  padding: 12px 14px;
+  border: 1px solid;
+  border-radius: 9px;
+  font-size: var(--molsan-font-size-sm);
+}
+
+.erp-alert-info {
+  color: var(--molsan-blue);
+  background: var(--molsan-blue-soft);
+  border-color: rgba(6, 70, 117, .2);
+}
+
+.erp-alert-success {
+  color: var(--molsan-success);
+  background: var(--molsan-success-soft);
+  border-color: rgba(35, 115, 77, .22);
+}
+
+.erp-alert-warning {
+  color: var(--molsan-warning);
+  background: var(--molsan-warning-soft);
+  border-color: rgba(148, 101, 27, .22);
+}
+
+.erp-alert-danger {
+  color: var(--molsan-danger);
+  background: var(--molsan-danger-soft);
+  border-color: rgba(163, 59, 66, .22);
+}
+
+.erp-empty-state,
+.erp-empty-inline {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 26px 18px;
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border: 1px dashed var(--molsan-border);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.erp-empty-state-icon {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 12px;
+}
+
+.erp-empty-state-title {
+  color: var(--molsan-blue);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.erp-empty-state-description {
+  max-width: 560px;
+  font-size: var(--molsan-font-size-sm);
+}
+
+.erp-data-item,
+.erp-stat-card,
+.erp-activity-item {
+  min-width: 0;
+  padding: 13px;
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.erp-data-label,
+.erp-stat-label {
+  display: block;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.erp-data-value,
+.erp-stat-value {
+  display: block;
+  margin-top: 4px;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-lg);
+  font-weight: var(--molsan-font-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.erp-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 9px;
+  padding-top: 13px;
+  border-top: 1px solid var(--molsan-border);
+}
+
+.seguridad-accesos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.seguridad-acceso {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  color: var(--molsan-text);
+  background: var(--molsan-glass-surface);
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-glass-shadow);
+  text-decoration: none;
+  transition: border-color var(--molsan-transition-normal), box-shadow var(--molsan-transition-normal), transform var(--molsan-transition-normal);
+}
+
+.seguridad-acceso:hover {
+  border-color: rgba(6, 70, 117, .3);
+  box-shadow: var(--molsan-glass-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.seguridad-acceso-icon {
+  display: grid;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 11px;
+}
+
+.seguridad-acceso-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.seguridad-acceso-title {
+  display: block;
+  color: var(--molsan-blue);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.seguridad-acceso-description {
+  display: block;
+  margin-top: 4px;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+  line-height: var(--molsan-line-height-relaxed);
+}
+
+.seguridad-acceso-arrow {
+  color: var(--molsan-blue);
+  font-weight: var(--molsan-font-weight-bold);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .erp-btn,
+  .seguridad-acceso {
+    transition: none;
+  }
+}
