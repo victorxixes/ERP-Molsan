@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import MonitorRealtime from "./MonitorRealtime";
 import {
@@ -182,88 +183,9 @@ export default function MonitorSistema() {
   return (
     <div className="erp-page min-w-0 space-y-6">
 
-      {/* ======================================================
-          CABECERA
-          ====================================================== */}
+      <MolsanPageHeader mark="MS" title="Monitor del sistema" description="Supervisión técnica, WebSocket y diagnóstico de base de datos." />
+      <div className="molsan-filter-bar flex justify-end p-3"><span className="molsan-status-pill">Sistema operativo</span></div>
 
-      <div
-        className="molsan-subpage-header flex
- flex-col
- md:flex-row
- md:items-center
- md:justify-between
- gap-3"
-      >
-
-        <div>
-
-          <div
-            className="flex
- items-center
- gap-3"
-          >
-
-            <div
-              className="w-11
- h-11
- 
- 
- 
- 
- flex
- items-center
- justify-center"
-            >
-              <svg
-                className="w-5 h-5"
-                aria-hidden="true"
-              >
-                <use href="/icons/icons.svg#monitor" />
-              </svg>
-            </div>
-
-            <div>
-
-              <h1
-               
-              >
-                Monitor del Sistema
-              </h1>
-
-              <p
-                className="mt-0.5"
-              >
-                Supervisión técnica, WebSocket y diagnóstico de base de datos
-              </p>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div
-          className="inline-flex
- items-center
- gap-2
- px-3
- py-2"
-        >
-
-          <span
-            className="w-2
- h-2"
-          />
-
-          Sistema operativo
-
-        </div>
-
-      </div>
-
-
-      {/* ======================================================
           MONITOR REALTIME
           ====================================================== */}
 
