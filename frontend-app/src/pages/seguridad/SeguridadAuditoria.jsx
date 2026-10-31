@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useMemo, useRef, useState } from "react";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
@@ -1149,96 +1150,8 @@ export default function SeguridadAuditoria() {
       className="erp-page space-y-6"
     >
 
-      {/* ======================================================
-          CABECERA
-          ====================================================== */}
-
-      <section
-        className="molsan-subpage-header px-6
- py-5"
-      >
-
-        <div
-          className="flex
- flex-col
- lg:flex-row
- lg:items-center
- lg:justify-between
- gap-5"
-        >
-
-          <div
-            className="flex
- items-center
- gap-4"
-          >
-
-            <div
-              className="w-12
- h-12
- 
- 
- 
- flex
- items-center
- justify-center"
-            >
-
-              <Icono
-                name="clipboard"
-                className="w-6 h-6"
-              />
-
-            </div>
-
-
-            <div>
-
-              <h1
-               
-              >
-                Auditoría
-              </h1>
-
-              <p
-                className="mt-1"
-              >
-                Registro de actividad y operaciones de seguridad del ERP
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div
-            className="flex
- items-center
- gap-2
- px-3
- py-2
- 
- 
- 
- 
- 
- 
- w-fit"
-          >
-
-            <span
-              className="w-1.5
- h-1.5"
-            />
-
-            Histórico protegido
-
-          </div>
-
-        </div>
-
-      </section>
-
+      <MolsanPageHeader mark="SE" title="Auditoría" description="Registro de actividad y operaciones de seguridad del ERP." />
+      <div className="flex justify-end"><span className="molsan-panel px-3 py-2 text-sm">Histórico protegido</span></div>
 
       {/* ======================================================
           KPIs
