@@ -152,8 +152,8 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
         <header className="flex flex-wrap items-center gap-3 px-5 py-4">
           <div className="flex h-11 w-11 items-center justify-center">⚙️</div>
           <div className="min-w-0 flex-1">
-            <h2 className="">{titulo || (ambito === "personal" ? "Mi visibilidad de tablas" : "Visibilidad tablas")}</h2>
-            <p className="">{ambito === "personal" ? "Personaliza tus preferencias sin modificar la configuración general." : `Empleado ID ${empleadoId ?? "actual"} · Columnas de Excel y repositorios de carpeta digital por actividad`}</p>
+            <h2>{titulo || (ambito === "personal" ? "Mi visibilidad de tablas" : "Visibilidad tablas")}</h2>
+            <p>{ambito === "personal" ? "Personaliza tus preferencias sin modificar la configuración general." : `Empleado ID ${empleadoId ?? "actual"} · Columnas de Excel y repositorios de carpeta digital por actividad`}</p>
           </div>
           {modal && <button type="button" onClick={onClose} className="px-3 py-2">Cerrar ✕</button>}
         </header>
@@ -181,7 +181,7 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
               <section className="p-4">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                   <div>
-                    <h3 className="">Columnas del Excel</h3>
+                    <h3>Columnas del Excel</h3>
                     <p className="mt-1">Marca las columnas y ordénalas con las flechas. La exportación de esta actividad respetará esta selección.</p>
                   </div>
                   <span className="px-3 py-1">{columnas.length} seleccionadas</span>
@@ -216,7 +216,7 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
 
               <section className="p-4">
                 <div className="mb-3">
-                  <h3 className="">Repositorios de la carpeta digital</h3>
+                  <h3>Repositorios de la carpeta digital</h3>
                   <p className="mt-1">Selecciona las categorías que se mostrarán en el espacio de esta actividad. Los archivos almacenados no se borran ni se mueven.</p>
                 </div>
                 <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
@@ -229,7 +229,7 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
                 </div>
               </section>
               <footer className="flex flex-wrap items-center justify-between gap-3 pt-4">
-                <p className="">{configuracionActual ? "Esta actividad ya tiene una configuración guardada." : "Se mostrarán valores iniciales hasta que guardes la configuración."}</p>
+                <p>{configuracionActual ? "Esta actividad ya tiene una configuración guardada." : "Se mostrarán valores iniciales hasta que guardes la configuración."}</p>
                 <div className="flex gap-2">
                   {modal && <button type="button" onClick={onClose} className="erp-btn-secondary px-4 py-2.5">Cancelar</button>}
                   <button type="button" disabled={guardando} onClick={guardar} className="erp-btn-primary px-5 py-2.5">{guardando ? "Guardando…" : "Guardar configuración"}</button>
