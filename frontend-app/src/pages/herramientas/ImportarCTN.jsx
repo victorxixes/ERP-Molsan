@@ -1,5 +1,4 @@
 import { useState } from "react";
-import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useUtilidades } from "../../hooks/useUtilidades";
 
 /**
@@ -25,7 +24,7 @@ export default function ImportarCTN() {
       ===================================================== */}
 
       <div
-        className="relative overflow-hidden
+        className="molsan-subpage-header relative overflow-hidden
  
  
  

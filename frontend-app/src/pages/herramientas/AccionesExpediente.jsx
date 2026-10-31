@@ -1217,7 +1217,7 @@ export default function AccionesExpediente() {
       ===================================================== */}
 
       <div
-        className="flex
+        className="molsan-subpage-header flex
  flex-col
  lg:flex-row
  lg:items-center
