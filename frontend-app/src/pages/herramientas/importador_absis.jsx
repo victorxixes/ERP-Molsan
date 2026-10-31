@@ -178,7 +178,7 @@ export default function ImportadorAbsis() {
                     >
 
                         <span
-                            className=""
+                           
                         >
                             📥
                         </span>
@@ -191,7 +191,7 @@ export default function ImportadorAbsis() {
                     <div className="min-w-0">
 
                         <h1
-                            className=""
+                           
                         >
                             Importador ABSIS
                         </h1>
@@ -249,13 +249,13 @@ export default function ImportadorAbsis() {
                     <div>
 
                         <h2
-                            className=""
+                           
                         >
                             Configuración de la importación
                         </h2>
 
                         <p
-                            className=""
+                           
                         >
                             Selecciona la fecha y el archivo Excel ABSIS.
                         </p>
@@ -432,7 +432,7 @@ export default function ImportadorAbsis() {
                                 <>
 
                                     <div
-                                        className=""
+                                       
                                     >
                                         Selecciona el Excel ABSIS
                                     </div>
@@ -507,7 +507,7 @@ export default function ImportadorAbsis() {
                             >
 
                                 <span
-                                    className=""
+                                   
                                 >
                                     ⟳
                                 </span>
@@ -560,7 +560,7 @@ export default function ImportadorAbsis() {
                             >
 
                                 <span
-                                    className=""
+                                   
                                 >
                                     ⟳
                                 </span>
@@ -626,7 +626,7 @@ export default function ImportadorAbsis() {
                         <div>
 
                             <h3
-                                className=""
+                               
                             >
                                 Error en la importación
                             </h3>
@@ -685,13 +685,13 @@ export default function ImportadorAbsis() {
                         <div>
 
                             <h2
-                                className=""
+                               
                             >
                                 Importación completada
                             </h2>
 
                             <p
-                                className=""
+                               
                             >
                                 El proceso ABSIS ha finalizado correctamente.
                             </p>
