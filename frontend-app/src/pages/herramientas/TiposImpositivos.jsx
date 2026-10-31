@@ -124,7 +124,7 @@ export default function TiposImpositivos() {
         {cargando ? <p className="p-8">Cargando catálogo…</p> : filtrados.length === 0 ? <p className="p-8">No hay tipos para este filtro.</p> : (
           <div className="overflow-x-auto"><table className="min-w-full">
             <thead className="uppercase"><tr><th className="px-4 py-3">Nombre</th><th className="px-4 py-3">Categoría</th><th className="px-4 py-3">Tributo</th><th className="px-4 py-3">Porcentaje</th><th className="px-4 py-3">Territorio</th><th className="px-4 py-3">Estado</th><th className="px-4 py-3">Acciones</th></tr></thead>
-            <tbody className="divide-y divide-slate-100">{filtrados.map((x) => <tr key={x.id} className="">
+            <tbody className="">{filtrados.map((x) => <tr key={x.id} className="">
               <td className="px-4 py-3"><div className="">{x.nombre}</div>{x.descripcion && <div className="mt-1 max-w-sm">{x.descripcion}</div>}</td>
               <td className="px-4 py-3">{x.categoria === "retencion" ? "Retención" : "Impuesto"}</td><td className="px-4 py-3">{x.impuesto}</td><td className="px-4 py-3 tabular-nums">{fmt(x.porcentaje)}</td><td className="px-4 py-3">{x.territorio}</td>
               <td className="px-4 py-3"><span className={x.activo ? "px-2.5 py-1" : "px-2.5 py-1"}>{x.activo ? "Activo" : "Inactivo"}</span></td>
