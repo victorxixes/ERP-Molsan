@@ -490,9 +490,7 @@ export default function InformeApoderado({
           valor={
             data.total_presencial ?? 0
           }
-          fondo="bg-emerald-50"
-          borde="border-emerald-100"
-          icono="text-emerald-600"
+
         />
 
 
@@ -502,9 +500,7 @@ export default function InformeApoderado({
           valor={
             data.total_vc ?? 0
           }
-          fondo="bg-blue-50"
-          borde="border-blue-100"
-          icono="text-blue-600"
+
         />
 
 
@@ -515,9 +511,7 @@ export default function InformeApoderado({
             data.km_totales,
             1
           )} km`}
-          fondo="bg-rose-50"
-          borde="border-rose-100"
-          icono="text-rose-600"
+
         />
 
 
@@ -528,9 +522,7 @@ export default function InformeApoderado({
             data.tiempo_medio_dias,
             1
           )} días`}
-          fondo="bg-violet-50"
-          borde="border-violet-100"
-          icono="text-violet-600"
+
         />
 
       </div>
@@ -753,17 +745,13 @@ function Kpi({
   icon,
   titulo,
   valor,
-  fondo,
-  borde,
-  icono,
+
 }) {
 
   return (
 
     <div
-      className={`${borde}
- ${fondo}
- p-5`}
+      className="p-5"
     >
 
       <div
@@ -773,17 +761,7 @@ function Kpi({
       >
 
         <div
-          className={`flex
- h-10
- w-10
- items-center
- justify-center
- 
- 
- 
- 
- 
- ${icono}`}
+          className="flex h-10 w-10 items-center justify-center"
         >
           {icon}
         </div>
