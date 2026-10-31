@@ -796,7 +796,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
             for (let i=5;i>=0;i--) { const d=new Date(ahora.getFullYear(),ahora.getMonth()-i,1); meses.push({key:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`,label:d.toLocaleDateString("es-ES",{month:"short",year:"2-digit"}),valor:0}); }
             expedientes.filter(x=>x.fecha_firma && x.protocolo).forEach(x=>{const key=String(x.fecha_firma).slice(0,7);const m=meses.find(z=>z.key===key);if(m)m.valor++;});
             const max=Math.max(1,...meses.map(m=>m.valor));
-            return <div className="ng-barras-meses">{meses.map(m=><div className="ng-barra-mes" key={m.key}><strong>{m.valor}</strong><div className="ng-barra-pista"><span style={{height:`${Math.max(m.valor?6:0,m.valor/max*100)}%`}} /></div><small>{m.label}</small></div>)}</div>;
+            return <div className="ng-barras-meses">{meses.map(m=><div className="ng-barra-mes" key={m.key}><strong>{m.valor}</strong><div className="ng-barra-pista"><span style={{ height:`${Math.max(m.valor?6:0,m.valor/max*100)}%` }} /></div><small>{m.label}</small></div>)}</div>;
           })()}
         </section>
         <section className="ng-dashboard-grafico ng-dashboard-pagos ng-dashboard-economica">
@@ -825,7 +825,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
             const max = Math.max(1, ...meses.map(x => x.valor));
             return <div className="ng-pagos-grafico">
               <div className="ng-pagos-grafico-titulo"><strong>Cuantías pagadas por mes</strong><span>Últimos 6 meses</span></div>
-              <div className="ng-barras-meses ng-barras-pagos">{meses.map(x => <div className="ng-barra-mes" key={x.key}><strong>{euros(x.valor)}</strong><div className="ng-barra-pista"><span style={{height:`${x.valor ? Math.max(5,x.valor/max*100) : 0}%`}} /></div><small>{x.label}</small></div>)}</div>
+              <div className="ng-barras-meses ng-barras-pagos">{meses.map(x => <div className="ng-barra-mes" key={x.key}><strong>{euros(x.valor)}</strong><div className="ng-barra-pista"><span style={{ height:`${x.valor ? Math.max(5,x.valor/max*100) : 0}%` }} /></div><small>{x.label}</small></div>)}</div>
             </div>;
           })()}
         </section>
@@ -842,7 +842,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
             const diferencia=(a,b)=>{if(!a||!b)return null;const n=Math.round((new Date(String(b).slice(0,10)+"T00:00:00")-new Date(String(a).slice(0,10)+"T00:00:00"))/86400000);return Number.isFinite(n)&&n>=0?n:null;};
             const medias=etapas.map(e=>{const ds=expedientes.map(x=>diferencia(valorFecha(x,e.desde),valorFecha(x,e.hasta))).filter(n=>n!==null);return {...e,media:ds.length?ds.reduce((a,b)=>a+b,0)/ds.length: null,n:ds.length};});
             const max=Math.max(1,...medias.map(x=>x.media||0));
-            return <div className="ng-barras-medias">{medias.map(e=><div className="ng-media-row" key={e.label}><div><strong>{e.label}</strong><small>{e.media===null?"Sin datos suficientes":`${e.media.toFixed(1)} días de media · ${e.n} expedientes`}</small></div><div className="ng-media-pista"><span style={{width:`${e.media===null?0:e.media/max*100}%`}} /></div></div>)}</div>;
+            return <div className="ng-barras-medias">{medias.map(e=><div className="ng-media-row" key={e.label}><div><strong>{e.label}</strong><small>{e.media===null?"Sin datos suficientes":`${e.media.toFixed(1)} días de media · ${e.n} expedientes`}</small></div><div className="ng-media-pista"><span style={{ width:`${e.media===null?0:e.media/max*100}%` }} /></div></div>)}</div>;
           })()}
         </section>
       </div>
