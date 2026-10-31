@@ -19,7 +19,7 @@ export default function ModuloPendiente({ nombre }) {
                 {esEncargaGest ? "EG" : esFichajes ? "FI" : "M"}
               </div>
               <div>
-                <p className="">
+                <p>
                   MOLSAN ERP
                 </p>
                 <h1 className="mt-2">
@@ -42,7 +42,7 @@ export default function ModuloPendiente({ nombre }) {
 
           {esFichajes ? (
             <div className="mt-8 p-5 sm:p-6">
-              <h2 className="">Estamos preparando Fichajes</h2>
+              <h2>Estamos preparando Fichajes</h2>
               <p className="mt-2">
                 Este módulo permitirá registrar la jornada laboral de los empleados y consultar sus entradas y salidas. La funcionalidad de fichaje todavía no está activa.
               </p>
@@ -50,7 +50,7 @@ export default function ModuloPendiente({ nombre }) {
           ) : esEncargaGest ? (
             <>
               <div className="mt-8 p-5 sm:p-6">
-                <h2 className="">
+                <h2>
                   Estamos preparando EncargaGest
                 </h2>
                 <p className="mt-2">
@@ -64,7 +64,7 @@ export default function ModuloPendiente({ nombre }) {
               </div>
 
               <div className="mt-7">
-                <p className="">
+                <p>
                   FUNCIONALIDADES PREVISTAS
                 </p>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -98,7 +98,7 @@ export default function ModuloPendiente({ nombre }) {
                         {item.numero}
                       </span>
                       <div>
-                        <h3 className="">{item.titulo}</h3>
+                        <h3>{item.titulo}</h3>
                         <p className="mt-1">{item.detalle}</p>
                       </div>
                     </div>
@@ -107,7 +107,7 @@ export default function ModuloPendiente({ nombre }) {
               </div>
 
               <div className="mt-6 px-4 py-3">
-                <p className="">
+                <p>
                   <strong>Módulo independiente:</strong> EncargaGest tendrá su propio acceso y
                   flujo de trabajo. No dependerá de NotarGest, ApoderaGest ni CancelaGest.
                   Su vinculación funcional será con el CTN para identificar y gestionar la
@@ -129,7 +129,7 @@ export default function ModuloPendiente({ nombre }) {
             >
               Volver al selector
             </button>
-            <span className="">
+            <span>
               {esEncargaGest || esFichajes
                 ? "La pantalla operativa se incorporará en una siguiente fase."
                 : "MOLSAN ERP"}
