@@ -90,7 +90,7 @@ export default function AsignarExpedientesPromociones() {
       </header>
 
       {(error || mensaje) && (
-        <div role="status" className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${error ? "" : ""}`}>
+        <div role="status" className={`px-4 py-3 ${error ? "" : ""}`}>
           {error || mensaje}
         </div>
       )}
