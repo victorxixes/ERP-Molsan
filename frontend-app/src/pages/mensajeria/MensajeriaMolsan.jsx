@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios from "../../api/axios";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import { useAuthStore } from "../../store/authStore";
@@ -124,11 +125,12 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
   const modalTitle = { solicitud: editing ? "Editar solicitud" : "Nueva solicitud de mensajería", servicio: editing ? "Editar servicio y tarifa" : "Nuevo servicio y tarifa", albaran: editing ? "Editar albarán" : "Registrar albarán", factura: editing ? "Editar factura" : "Registrar factura de mensajería" }[modal];
 
   return <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-    <header className="relative overflow-hidden p-6 sm:p-7">
-      <div className="absolute inset-x-0 top-0 h-1" />
-      <p className="uppercase">MOLSAN ERP</p>
-      <div className="flex flex-wrap items-start justify-between gap-4"><div><h1 className="mt-2">{vistaCatalogo ? "Mensajería · Servicios y tarifas" : vistaGestion ? "Mensajería Gestión" : "Mensajería"}</h1><p className="mt-2 max-w-3xl">{vistaCatalogo ? "Catálogo interno de servicios, tarifas, suplementos e impuestos." : "Gestiona las solicitudes recibidas, los pedidos al proveedor, las incidencias, los albaranes y las facturas."}</p></div><button type="button" onClick={cargar} className="px-4 py-2">↻ Actualizar</button></div>
-    </header>
+    <MolsanPageHeader
+      mark="ME"
+      title={vistaCatalogo ? "Mensajería · Servicios y tarifas" : vistaGestion ? "Mensajería Gestión" : "Mensajería"}
+      description={vistaCatalogo ? "Catálogo interno de servicios, tarifas, suplementos e impuestos." : "Gestiona las solicitudes recibidas, los pedidos al proveedor, las incidencias, los albaranes y las facturas."}
+    />
+    <div className="flex justify-end"><button type="button" onClick={cargar} className="px-4 py-2">↻ Actualizar</button></div>
     {vistaGestion && <section className="p-4"><div className="flex items-start gap-3"><span>⚠️</span><div><b>Integración API con la empresa de mensajería pendiente.</b><p className="mt-1">La conexión automática todavía debe desarrollarse y validarse con la documentación técnica del proveedor. Mientras tanto, la gestión de solicitudes, estados y comunicaciones funciona dentro del ERP; no se envían pedidos reales al transportista desde esta pantalla.</p></div></div></section>}
     {error && <div role="alert" className="p-3">{error}</div>}
     {mensaje && <div role="status" className="p-3">{mensaje}</div>}

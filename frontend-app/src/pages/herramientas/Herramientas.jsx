@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { Link } from "react-router-dom";
 
 
@@ -19,40 +20,7 @@ export default function Herramientas() {
           CABECERA
       ===================================================== */}
 
-      <div
-        className="relative overflow-hidden
- 
- 
- 
- 
- 
- p-6 sm:p-7"
-      >
-        <div
-          className="absolute inset-x-0 top-0 h-px"
-        />
-
-        <div className="relative flex items-center gap-4">
-
-          <div
-            className="flex h-12 w-12 shrink-0
- items-center justify-center"
-          >
-            🛠️
-          </div>
-
-          <div>
-            <h1>
-              Herramientas
-            </h1>
-
-            <p className="mt-1">
-              Herramientas y procesos auxiliares del sistema.
-            </p>
-          </div>
-
-        </div>
-      </div>
+      <MolsanPageHeader mark="HE" title="Herramientas" description="Herramientas y procesos auxiliares del sistema." />
 
 
       {/* =====================================================

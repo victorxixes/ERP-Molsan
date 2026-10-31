@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios from "../../api/axios";
 import FichajesResumen from "./FichajesResumen.jsx";
 import FestivosCompensaciones from "./FestivosCompensaciones.jsx";
@@ -230,17 +231,12 @@ export default function Fichajes({ modo = "empleado" }) {
 
   return (
     <main className="mx-auto w-full max-w-[1500px] space-y-6 p-4 sm:p-6">
-      <header className="relative overflow-hidden p-6 sm:p-8">
-        <div className="absolute inset-x-0 top-0 h-1" />
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p>MOLSAN ERP</p>
-            <h1 className="mt-2">{esAdminVista ? "Control de Fichajes" : "Fichajes"}</h1>
-            <p className="mt-2">{esAdminVista ? "Supervisión de marcajes de la plantilla." : "Registro de jornada y gestión de justificantes personales."}</p>
-          </div>
-          {!esAdminVista && perfil && <div className="px-4 py-3"><p>Empleado</p><p>{perfil.nombre}</p><p>{perfil.usuario}</p></div>}
-        </div>
-      </header>
+      <MolsanPageHeader
+        mark="FI"
+        title={esAdminVista ? "Control de Fichajes" : "Fichajes"}
+        description={esAdminVista ? "Supervisión de marcajes de la plantilla." : "Registro de jornada y gestión de justificantes personales."}
+      />
+      {!esAdminVista && perfil && <div className="molsan-panel mb-4 px-4 py-3"><p className="text-xs font-semibold uppercase">Empleado</p><p className="font-semibold">{perfil.nombre}</p><p className="text-sm">{perfil.usuario}</p></div>}
 
       {mensaje && <div role="status" className="px-4 py-3">{mensaje}</div>}
       {error && <div role="alert" className="px-4 py-3">{error}</div>}
