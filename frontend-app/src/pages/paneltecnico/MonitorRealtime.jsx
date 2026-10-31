@@ -7,7 +7,6 @@ import {
 
 import { buildRealtimeWsUrl } from "../../api/monitorRealtime";
 import { useAuthStore } from "../../store/authStore";
-import "./PanelTecnicoSubmodulos.css";
 
 /**
  * ============================================================
