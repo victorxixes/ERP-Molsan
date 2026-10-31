@@ -295,3 +295,22 @@ Este cierre **no afirma que cada una de las 97 pantallas y cada modal hayan sido
 - La implantación es transversal para las pantallas que utilizan controles HTML y diálogos accesibles. No sustituye la comprobación visual real de cada ruta ni la revisión de modales heredados que no expongan un contenedor accesible identificable.
 - No se modifican APIs, backend, permisos, lógica de negocio, datos, base de datos, rama `main` ni servicios de producción.
 - Pendiente de esta fase: revisión visual en navegador de todas las rutas y corrección puntual de excepciones de composición. La ordenación funcional de tablas queda fuera de esta entrega y requiere una auditoría posterior de frontend, endpoints y paginación en backend.
+
+
+## Cierre técnico de Fases 1 y 2 — revisión de diálogos (31/10/2026)
+
+- Se revisaron los diálogos identificados en las páginas y componentes operativos del frontend. Los diálogos operativos inspeccionados emplean `useAccessibleDialog` para restauración y contención del foco, navegación con Tab y cierre con Escape.
+- `EnviarANotarioModal` ya tenía `role="dialog"`, `aria-modal="true"`, nombre accesible y `useAccessibleDialog` cuando se muestra en modo modal. El rol es condicional porque el mismo componente también se usa embebido; no se duplican atributos ni se altera su flujo.
+- `VisibilidadTablas` se ha completado con `useAccessibleDialog`, referencia al panel y foco inicial cuando `modal=true`. En modo embebido no activa el comportamiento modal.
+- El perfil de empleado abierto desde el Sidebar queda marcado como excepción visual explícita. La normalización global excluye ese diálogo para conservar su presentación previa.
+- El diálogo de notificaciones del Sidebar también queda fuera de los selectores globales mediante su contenedor `.panel-modal-premium`. No se modifica el componente Sidebar, su navegación, menús, campana ni sus estilos.
+- Los demás diálogos operativos conservan la normalización global de controles, botones, tablas, tipografía y estados de foco.
+- Esta revisión es estática del código y de los selectores CSS. No equivale a una prueba de interacción en navegador de cada diálogo.
+
+## Estado de cierre técnico
+
+- Fase 1: base visual global y tokens corporativos implantados en Preview.
+- Fase 2: normalización transversal de filtros, formularios, controles, botones, tablas y diálogos implantada en Preview; revisión estática de diálogos completada.
+- La ordenación funcional de todas las columnas continúa expresamente fuera de estas fases y requiere auditoría de endpoints/paginación.
+- La reorganización de tarjetas y bloques continúa reservada a Fase 3.
+- El cierre visual definitivo requiere la comprobación de aceptación en Preview descrita en `QA_CIERRE_FASES_1_2.md`.
