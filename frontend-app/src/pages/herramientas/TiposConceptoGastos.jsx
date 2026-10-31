@@ -7,6 +7,8 @@ import React, {
 } from "react";
 import axios from "../../api/axios";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 
 // ============================================================
@@ -95,6 +97,7 @@ export default function TiposConceptoGastos() {
   // ----------------------------------------------------------
 
   const [tipos, setTipos] = useState([]);
+  const ordenTipos = useSortableData(tipos);
 
   const [cargando, setCargando] =
     useState(false);
@@ -1289,27 +1292,9 @@ export default function TiposConceptoGastos() {
                     #
                   </th>
 
-                  <th
-                    className="px-5
- py-4
- 
- 
- 
- uppercase"
-                  >
-                    Tipo concepto de gastos
-                  </th>
+                  <MolsanSortableTh label="Tipo concepto de gastos" sortKey="nombre" sortConfig={ordenTipos.sortConfig} onSort={ordenTipos.requestSort} className="px-5 py-4 uppercase" />
 
-                  <th
-                    className="px-5
- py-4
- 
- 
- 
- uppercase"
-                  >
-                    Estado
-                  </th>
+                  <MolsanSortableTh label="Estado" sortKey="activo" sortConfig={ordenTipos.sortConfig} onSort={ordenTipos.requestSort} className="px-5 py-4 uppercase" />
 
                   <th
                     className="px-5
@@ -1405,7 +1390,7 @@ export default function TiposConceptoGastos() {
 
                 ) : (
 
-                  tipos.map(
+                  ordenTipos.items.map(
                     (tipo, index) => (
 
                       <tr
