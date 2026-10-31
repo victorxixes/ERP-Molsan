@@ -133,7 +133,7 @@ export default function PPAD() {
 
       <TablaPPAD titulo="PPAD pendientes de compensar" lista={pendientes} tipo="pendiente" busqueda={busquedaPendientes} setBusqueda={setBusquedaPendientes} compensar={compensar} accionId={accionId} descargarExcel={descargarExcel} cargando={cargando} />
       <TablaPPAD titulo="PPAD compensados" lista={compensados} tipo="compensado" busqueda={busquedaCompensados} setBusqueda={setBusquedaCompensados} compensar={compensar} accionId={accionId} descargarExcel={descargarExcel} cargando={cargando} />
-      {cargando && <p className="">Actualizando datos PPAD…</p>}
+      {cargando && <p>Actualizando datos PPAD…</p>}
     </div>
   );
 }
@@ -144,7 +144,7 @@ function TablaPPAD({ titulo, lista, tipo, busqueda, setBusqueda, compensar, acci
       <section className="overflow-hidden">
         <div className="flex flex-col gap-3 p-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h2 className="">{titulo}</h2>
+            <h2>{titulo}</h2>
             <p className="mt-1">{lista.length} registros en la búsqueda · importe {euros(lista.reduce((s, x) => s + Number(x.importe || 0), 0))}</p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row">
@@ -171,9 +171,9 @@ function TablaPPAD({ titulo, lista, tipo, busqueda, setBusqueda, compensar, acci
             </thead>
             <tbody>
               {lista.map((item) => (
-                <tr key={item.id} className="">
+                <tr key={item.id}>
                   <td className="whitespace-nowrap px-3 py-3">
-                    <Link to={`/expedientes/${encodeURIComponent(item.expediente_id)}`} className="">{item.expediente_id || "—"}</Link>
+                    <Link to={`/expedientes/${encodeURIComponent(item.expediente_id)}`}>{item.expediente_id || "—"}</Link>
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">{item.documento || `PPAD-${item.id}`}</td>
                   <td className="whitespace-nowrap px-3 py-3">{fecha(item.fecha_alta)}</td>
