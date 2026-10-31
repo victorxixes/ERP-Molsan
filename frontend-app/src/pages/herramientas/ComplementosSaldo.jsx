@@ -67,7 +67,7 @@ export default function ComplementosSaldo() {
     <header className="relative overflow-hidden p-6">
       <div className="absolute inset-x-0 top-0 h-1" />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div><Link to="/herramientas/utilidades" className="">← Volver a Utilidades</Link><h1 className="mt-2">Complementos de saldo</h1><p className="mt-1">Control de solicitudes, importes y estado de cada complemento.</p></div>
+        <div><Link to="/herramientas/utilidades">← Volver a Utilidades</Link><h1 className="mt-2">Complementos de saldo</h1><p className="mt-1">Control de solicitudes, importes y estado de cada complemento.</p></div>
         <button type="button" onClick={cargar} className="px-4 py-2.5">↻ Actualizar</button>
       </div>
     </header>
@@ -91,9 +91,9 @@ export default function ComplementosSaldo() {
       <div className="overflow-x-auto"><table className="w-full min-w-[1250px]">
         <thead className="uppercase"><tr>{["Expediente", "Provisionado", "Saldo disponible", "Fecha de petición", "Saldo a solicitar", "Motivo", "Acciones", "Estado"].map((n) => <th key={n} className="px-4 py-3.5">{n}</th>)}</tr></thead>
         <tbody>{cargando ? <tr><td colSpan={8} className="px-5 py-14">Cargando solicitudes…</td></tr>
-          : items.length === 0 ? <tr><td colSpan={8} className="px-5 py-14"><div className="">📋</div><p className="mt-2">No hay solicitudes que mostrar</p><p className="mt-1">Cuando se solicite un complemento desde la ficha de un expediente, aparecerá aquí.</p></td></tr>
-          : items.map((item) => { const cerrado = ["compensado", "cerrado"].includes(String(item.estado).toLowerCase()); return <tr key={item.id} className="">
-            <td className="px-4 py-3.5"><Link to={item.expediente_id ? `/expedientes/${item.expediente_id}` : "/expedientes"} className="">{item.numero_expediente}</Link></td>
+          : items.length === 0 ? <tr><td colSpan={8} className="px-5 py-14"><div>📋</div><p className="mt-2">No hay solicitudes que mostrar</p><p className="mt-1">Cuando se solicite un complemento desde la ficha de un expediente, aparecerá aquí.</p></td></tr>
+          : items.map((item) => { const cerrado = ["compensado", "cerrado"].includes(String(item.estado).toLowerCase()); return <tr key={item.id}>
+            <td className="px-4 py-3.5"><Link to={item.expediente_id ? `/expedientes/${item.expediente_id}` : "/expedientes"}>{item.numero_expediente}</Link></td>
             <td className="whitespace-nowrap px-4 py-3.5">{euros(item.provisionado)}</td><td className="whitespace-nowrap px-4 py-3.5">{euros(item.saldo_disponible)}</td><td className="whitespace-nowrap px-4 py-3.5">{fecha(item.fecha_solicitud)}</td><td className="whitespace-nowrap px-4 py-3.5 tabular-nums">{euros(item.importe)}</td><td className="max-w-[280px] whitespace-normal px-4 py-3.5">{item.motivo || item.observaciones || "—"}</td>
                         <td className="px-4 py-3.5"><button type="button" disabled={cerrado} onClick={() => cambiarEstado(item)} className={`px-3 py-2 ${cerrado ? "" : ""}`}>{cerrado ? "Regularizado" : "Compensar"}</button></td>
             <td className="px-4 py-3.5"><span className={`inline-flex px-2.5 py-1 ${cerrado ? "" : ""}`}>{cerrado ? "Compensado" : "Pendiente"}</span></td>
