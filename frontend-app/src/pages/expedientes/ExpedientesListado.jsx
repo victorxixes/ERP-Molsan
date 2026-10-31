@@ -2465,13 +2465,13 @@ export default function ExpedientesListado() {
                               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-12 w-12 shrink-0 items-center justify-center" {circuito.icono}</span>
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center">{circuito.icono}</span>
                     <div className="min-w-0">
                       <div className="">{circuito.titulo}</div>
                       <div className="mt-1">{circuito.descripcion}</div>
                     </div>
                   </div>
-                  <span className="px-3 py-1 whitespace-nowrap" {circuito.plazo}</span>
+                  <span className="px-3 py-1 whitespace-nowrap">{circuito.plazo}</span>
                 </div>
                 <div className="mt-4 flex items-end justify-between gap-3">
                   <div>
@@ -2521,12 +2521,12 @@ export default function ExpedientesListado() {
                 className="min-h-[116px] p-4"
                               >
                 <div className="flex items-start justify-between gap-3">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center" {estado.icono}</span>
-                  <span className="tabular-nums" {loading ? "…" : formatearNumero(totalesEstadosDiferenciales[estado.codigo])}</span>
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center">{estado.icono}</span>
+                  <span className="tabular-nums">{loading ? "…" : formatearNumero(totalesEstadosDiferenciales[estado.codigo])}</span>
                 </div>
                 <div className="mt-3">{estado.titulo}</div>
                 <div className="mt-1">Estado ABSIS: {estado.codigo}</div>
-                <div className="mt-2" {activa ? "Estado seleccionado · pulsa para quitar" : "Ver expedientes →"}</div>
+                <div className="mt-2">{activa ? "Estado seleccionado · pulsa para quitar" : "Ver expedientes →"}</div>
               </button>
             );
           })}
@@ -2577,7 +2577,7 @@ export default function ExpedientesListado() {
               }}
               className="min-h-[148px] p-4"
               
-              <div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center" {actividad.icono}</span><span className="tabular-nums" {loadingActividades ? "…" : formatearNumero(total)}</span></div>
+              <div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center">{actividad.icono}</span><span className="tabular-nums">{loadingActividades ? "…" : formatearNumero(total)}</span></div>
               <div className="mt-3">{actividad.label}</div>
               <div className="mt-3">
                 {loadingAlertasControl ? (
@@ -2592,7 +2592,7 @@ export default function ExpedientesListado() {
                   ) : null
                 )}
               </div>
-              <div className="mt-2" {activa ? "Actividad seleccionada · pulsa para quitar" : "Ver expedientes →"}</div>
+              <div className="mt-2">{activa ? "Actividad seleccionada · pulsa para quitar" : "Ver expedientes →"}</div>
             </button>;
           })}
         </div>
@@ -3221,7 +3221,7 @@ export default function ExpedientesListado() {
 function FiltroSelect({ label, value, onChange, options = [], emptyLabel = "Todos" }) {
   return (
     <div>
-      <label className="block mb-1" {label}</label>
+      <label className="block mb-1">{label}</label>
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
