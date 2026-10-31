@@ -6,6 +6,8 @@ import {
   useState,
 } from "react";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 /**
  * ============================================================
@@ -574,6 +576,16 @@ export default function RegistrosPropiedad() {
   // PAGINACIÓN
   // ==========================================================
 
+  const registrosOrdenables = useMemo(
+    () => registrosFiltrados.map((registro) => ({
+      ...registro,
+      _emailOrden: registro.email_1 || registro.email_2 || "",
+      _oficinaOrden: registro.tiene_of_liq ? "Sí" : "No",
+    })),
+    [registrosFiltrados]
+  );
+  const ordenRegistros = useSortableData(registrosOrdenables);
+
   const totalPaginas =
     Math.max(
       1,
@@ -604,7 +616,7 @@ export default function RegistrosPropiedad() {
 
 
   const registrosPagina =
-    registrosFiltrados.slice(
+    ordenRegistros.items.slice(
       (
         pagina - 1
       ) *
@@ -2094,127 +2106,79 @@ export default function RegistrosPropiedad() {
  min-w-[1500px]"
             >
 
-              <thead>
+              <MolsanSortableTh label="Registro" sortKey="registro_propiedad" sortConfig={ordenRegistros.sortConfig} onSort={ordenRegistros.requestSort} className="" />
 
-                <tr
-                 
-                >
 
-                  <th
-                    className="min-w-[220px]
+                  <MolsanSortableTh label="Registrador" sortKey="nombre_registrador" sortConfig={ordenRegistros.sortConfig} onSort={ordenRegistros.requestSort} className="min-w-[190px]
  px-5
  py-3.5
  
  
  
- uppercase"
-                  >
-                    Registro
-                  </th>
+ uppercase" />
 
 
-                  <th
-                    className="min-w-[190px]
+                  <MolsanSortableTh label="Dirección" sortKey="direccion" sortConfig={ordenRegistros.sortConfig} onSort={ordenRegistros.requestSort} className="min-w-[300px]
  px-5
  py-3.5
  
  
  
- uppercase"
-                  >
-                    Registrador
-                  </th>
+ uppercase" />
 
 
-                  <th
-                    className="min-w-[300px]
+                  <MolsanSortableTh label="C.P." sortKey="codigo_postal" sortConfig={ordenRegistros.sortConfig} onSort={ordenRegistros.requestSort} className="w-[100px]
  px-5
  py-3.5
  
  
  
- uppercase"
-                  >
-                    Dirección
-                  </th>
+ uppercase" />
 
 
-                  <th
-                    className="w-[100px]
+                  <MolsanSortableTh label="Población" sortKey="poblacion" sortConfig={ordenRegistros.sortConfig} onSort={ordenRegistros.requestSort} className="w-[170px]
  px-5
  py-3.5
  
  
  
- uppercase"
-                  >
-                    C.P.
-                  </th>
+ uppercase" />
 
 
-                  <th
-                    className="w-[170px]
+                  <MolsanSortableTh label="Provincia" sortKey="provincia" sortConfig={ordenRegistros.sortConfig} onSort={ordenRegistros.requestSort} className="w-[150px]
  px-5
  py-3.5
  
  
  
- uppercase"
-                  >
-                    Población
-                  </th>
+ uppercase" />
 
 
-                  <th
-                    className="w-[150px]
+                  <MolsanSortableTh label="Teléfono" sortKey="telefono" sortConfig={ordenRegistros.sortConfig} onSort={ordenRegistros.requestSort} className="w-[150px]
  px-5
  py-3.5
  
  
  
- uppercase"
-                  >
-                    Provincia
-                  </th>
+ uppercase" />
 
 
-                  <th
-                    className="w-[150px]
+                  <MolsanSortableTh label="Email" sortKey="_emailOrden" sortConfig={ordenRegistros.sortConfig} onSort={ordenRegistros.requestSort} className="w-[160px]
  px-5
  py-3.5
  
  
  
- uppercase"
-                  >
-                    Teléfono
-                  </th>
+ uppercase" />
 
 
-                  <th
-                    className="w-[160px]
+                  <MolsanSortableTh label="Of. Liq." sortKey="_oficinaOrden" sortConfig={ordenRegistros.sortConfig} onSort={ordenRegistros.requestSort} className="w-[150px]
  px-5
  py-3.5
  
  
  
- uppercase"
-                  >
-                    Email
-                  </th>
-
-
-                  <th
-                    className="w-[150px]
- px-5
- py-3.5
- 
- 
- 
- uppercase"
-                  >
-                    Of. Liq.
-                  </th>
+ uppercase" />
 
 
                   <th
