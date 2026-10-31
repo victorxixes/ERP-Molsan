@@ -275,7 +275,7 @@ export default function Logs() {
             >
 
               <span
-                className=""
+               
                 aria-hidden="true"
               >
                 📋
@@ -287,7 +287,7 @@ export default function Logs() {
             <div>
 
               <h1
-                className=""
+               
               >
                 Logs del sistema
               </h1>
