@@ -115,9 +115,9 @@ function Grupo({ titulo, descripcion, children }) {
 
 function MetricaAbsis({ titulo, valor, alerta = false }) {
   return (
-    <div className={`rounded-2xl border p-3.5 ${alerta ? "" : ""}`}>
+    <div className={`p-3.5 ${alerta ? "" : ""}`}>
       <p className="">{titulo}</p>
-      <p className={`mt-2 text-2xl font-bold ${alerta ? "" : ""}`}>{valor}</p>
+      <p className={`mt-2 ${alerta ? "" : ""}`}>{valor}</p>
     </div>
   );
 }
@@ -140,7 +140,7 @@ function Card({
       />
       <div className="flex items-start gap-4">
         <div
-          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl transition-all duration-300 group-hover:scale-105 ${destacado ? "" : ""}`}
+          className={`flex h-12 w-12 shrink-0 items-center justify-center ${destacado ? "" : ""}`}
         >
           {icon}
         </div>
@@ -180,7 +180,7 @@ function Card({
   }
 
   if (onClick) {
-    return <button type="button" onClick={onClick} className={`${clases} w-full text-left`}>{contenido}</button>;
+    return <button type="button" onClick={onClick} className={`${clases} w-full`}>{contenido}</button>;
   }
 
   return (
