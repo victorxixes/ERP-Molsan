@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import React, {
   useCallback,
@@ -1208,7 +1209,7 @@ export default function AccionesExpediente() {
 
       <MolsanPageHeader mark="AE" title="Acciones del expediente" description="Catálogo de acciones y actividades disponibles para los expedientes." />
       <div className="molsan-filter-bar flex flex-wrap justify-end gap-2 p-3">
-        <button type="button" onClick={abrirImportar} className="molsan-btn molsan-btn--secondary"><Icono name="database" className="w-4 h-4" /> Importar Excel</button>
+        <button type="button" onClick={abrirImportar} className="molsan-btn molsan-btn--secondary"><span aria-hidden="true">🗂️</span> Importar Excel</button>
         <button type="button" onClick={abrirNueva} className="molsan-btn molsan-btn--primary">＋ Nueva acción</button>
       </div>
 
