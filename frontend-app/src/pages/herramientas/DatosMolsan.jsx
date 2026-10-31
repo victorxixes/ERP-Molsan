@@ -97,7 +97,7 @@ export default function DatosMolsan() {
         <form onSubmit={guardar} className="space-y-5">
           {secciones.map((seccion) => (
             <section key={seccion.titulo} className="p-5 sm:p-6">
-              <h2 className="">{seccion.titulo}</h2>
+              <h2>{seccion.titulo}</h2>
               <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {seccion.campos.map(([campo, titulo, tipo, requerido]) => (
                   <label key={campo} className={label}>
@@ -110,7 +110,7 @@ export default function DatosMolsan() {
           ))}
 
           <section className="p-5 sm:p-6">
-            <h2 className="">Logotipo corporativo</h2>
+            <h2>Logotipo corporativo</h2>
             <p className="mt-1">Imagen PNG, JPG o WEBP de hasta 1 MB.</p>
             <div className="mt-4 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
               {datos.logo_data_url ? <img src={datos.logo_data_url} alt="Logotipo Molsan" className="max-h-24 max-w-56 p-2 object-contain" /> : <div className="flex h-20 w-48 items-center justify-center">Sin logotipo cargado</div>}
@@ -120,7 +120,7 @@ export default function DatosMolsan() {
           </section>
 
           <section className="p-5 sm:p-6">
-            <h2 className="">Texto habitual de factura</h2>
+            <h2>Texto habitual de factura</h2>
             <textarea className={input + "min-h-28"} value={datos.pie_factura || ""} onChange={(e) => cambiar("pie_factura", e.target.value)} maxLength={3000} placeholder="Texto o condiciones que deban aparecer habitualmente al pie de la factura…" />
             <p className="mt-2">La serie y los datos guardados aquí quedan centralizados; la emisión y numeración definitiva deberán validarse en el flujo de facturación antes de aplicarse a facturas emitidas.</p>
           </section>
@@ -128,7 +128,7 @@ export default function DatosMolsan() {
           {error && <div role="alert" className="px-4 py-3">{error}</div>}
           {mensaje && <div role="status" className="px-4 py-3">{mensaje}</div>}
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="">Los cambios se guardan en la base de datos compartida del ERP.</p>
+            <p>Los cambios se guardan en la base de datos compartida del ERP.</p>
             <button type="submit" disabled={guardando} className="inline-flex items-center justify-center px-5 py-3">{guardando ? "Guardando…" : "Guardar datos Molsan"}</button>
           </div>
         </form>
