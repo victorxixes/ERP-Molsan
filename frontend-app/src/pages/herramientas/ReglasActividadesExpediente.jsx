@@ -109,12 +109,12 @@ export default function ReglasActividadesExpediente() {
             <div className="space-y-3">
               {DOCUMENTOS_INICIALES.map((doc) => (
                 <label key={doc.id} className="flex items-start gap-3 p-4">
-                  <input type="checkbox" checked={Boolean(documentos[doc.id])} onChange={(e) => { setDocumentos((actual) => ({ ...actual, [doc.id]: e.target.checked })); setMensaje(""); }} className="mt-1 h-4 w-4 accent-[var(--molsan-primary)]" />
+                  <input type="checkbox" checked={Boolean(documentos[doc.id])} onChange={(e) => { setDocumentos((actual) => ({ ...actual, [doc.id]: e.target.checked })); setMensaje(""); }} className="mt-1 h-4 w-4" />
                   <span className="min-w-0 flex-1">
                     <span className="block">{doc.nombre}</span>
                     <span className="mt-1 block">{doc.detalle}</span>
                   </span>
-                  <span className={`rounded-full px-2 py-1 text-[10px] font-bold ${documentos[doc.id] ? "" : ""}`}>{documentos[doc.id] ? "Requerido" : "Opcional"}</span>
+                  <span className={`px-2 py-1 ${documentos[doc.id] ? "" : ""}`}>{documentos[doc.id] ? "Requerido" : "Opcional"}</span>
                 </label>
               ))}
             </div>
@@ -144,7 +144,7 @@ export default function ReglasActividadesExpediente() {
               </div>
               <p className="mt-2">No serán obligatorios para permitir el envío, pero el sistema debe advertir si faltan datos de facturación para que se completen.</p>
               <label className="mt-3 flex items-center gap-2">
-                <input type="checkbox" checked={avisoFacturacion} onChange={(e) => { setAvisoFacturacion(e.target.checked); setMensaje(""); }} className="h-4 w-4 accent-[var(--molsan-primary)]" />
+                <input type="checkbox" checked={avisoFacturacion} onChange={(e) => { setAvisoFacturacion(e.target.checked); setMensaje(""); }} className="h-4 w-4" />
                 Mostrar aviso si faltan datos de facturación
               </label>
             </div>
@@ -365,7 +365,7 @@ function Resumen({ icono, titulo, valor }) {
 function Opcion({ checked, onChange, titulo, descripcion }) {
   return (
     <label className="flex items-start gap-3 p-4">
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="mt-1 h-4 w-4 accent-[var(--molsan-primary)]" />
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="mt-1 h-4 w-4" />
       <span>
         <span className="block">{titulo}</span>
         <span className="mt-1 block">{descripcion}</span>
