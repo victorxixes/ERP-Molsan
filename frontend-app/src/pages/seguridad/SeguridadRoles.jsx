@@ -1136,7 +1136,7 @@ export default function SeguridadRoles() {
                                 (permiso, index) => (
                                   <Chip
                                     key={`${permiso}-${index}`}
-                                    tone="purple"
+                                    tone="primary"
                                   >
                                     {String(
                                       permiso

@@ -1576,7 +1576,7 @@ const permisosGlobales =
               <p className="font-semibold">@{empleado.usuario || "-"}</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 <Chip tone="primary">ID #{empleadoIdSeguro}</Chip>
-                <Chip tone="purple">{nombreRol}</Chip>
+                <Chip tone="primary">{nombreRol}</Chip>
                 <Chip tone={empleado.activo ? "success" : "danger"}>
                   {empleado.activo ? "Cuenta activa" : "Cuenta bloqueada"}
                 </Chip>
