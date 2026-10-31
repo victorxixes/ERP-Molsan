@@ -635,7 +635,7 @@ export default function SeguridadRoles() {
           <div>
 
             <h2
-              className=""
+             
             >
               Roles de seguridad
             </h2>
@@ -998,7 +998,7 @@ export default function SeguridadRoles() {
                           <div>
 
                             <h4
-                              className=""
+                             
                             >
                               👥 Usuarios asignados
                             </h4>
@@ -1092,7 +1092,7 @@ export default function SeguridadRoles() {
                           {rol.usuarios.length >
                             8 && (
                             <p
-                              className=""
+                             
                             >
                               Mostrando los primeros 8 usuarios.
                             </p>
@@ -1110,7 +1110,7 @@ export default function SeguridadRoles() {
                       >
 
                         <h4
-                          className=""
+                         
                         >
                           🔐 Configuración del rol
                         </h4>
@@ -1157,7 +1157,7 @@ export default function SeguridadRoles() {
                             {rol.modulosRol.length ===
                               0 && (
                               <span
-                                className=""
+                               
                               >
                                 Sin módulos específicos.
                               </span>
@@ -1203,7 +1203,7 @@ export default function SeguridadRoles() {
                             {rol.permisosRol.length ===
                               0 && (
                               <span
-                                className=""
+                               
                               >
                                 Sin permisos específicos.
                               </span>
@@ -1232,7 +1232,7 @@ export default function SeguridadRoles() {
             className="p-10"
           >
 
-            <div className="">
+            <div>
               🛡️
             </div>
 
