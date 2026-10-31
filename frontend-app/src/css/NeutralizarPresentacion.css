@@ -5487,3 +5487,82 @@ button.molsan-stat-card[aria-pressed="true"] {
     flex-direction: column;
   }
 }
+
+
+/* Modales operativos que se montan directamente en document.body. */
+.liquidar-expediente-modal,
+.vista-previa-cierre-modal,
+.expediente-operativo-modal,
+.traspaso-saldo-modal {
+  background: rgba(18, 39, 54, .44);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+.liquidar-expediente-modal > section,
+.vista-previa-cierre-modal > section,
+.expediente-operativo-modal > section,
+.traspaso-saldo-modal > section {
+  min-width: 0;
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-modal);
+  box-shadow: var(--molsan-shadow-modal);
+}
+
+.liquidar-expediente-modal > section > div:first-child,
+.vista-previa-cierre-modal > section > div:first-child,
+.expediente-operativo-modal > section > div:first-child,
+.traspaso-saldo-modal > section > div:first-child {
+  background: var(--molsan-panel);
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.liquidar-expediente-modal h2,
+.vista-previa-cierre-modal h2,
+.expediente-operativo-modal h2,
+.traspaso-saldo-modal h2 {
+  color: var(--molsan-blue);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.liquidar-expediente-modal [role="alert"],
+.expediente-operativo-modal [role="alert"],
+.traspaso-saldo-modal [role="alert"] {
+  color: var(--molsan-danger);
+  background: var(--molsan-danger-soft);
+  border: 1px solid rgba(163, 59, 66, .22);
+  border-radius: 9px;
+}
+
+.liquidar-expediente-modal [role="status"],
+.expediente-operativo-modal [role="status"],
+.traspaso-saldo-modal [role="status"] {
+  color: var(--molsan-success);
+  background: var(--molsan-success-soft);
+  border: 1px solid rgba(35, 115, 77, .22);
+  border-radius: 9px;
+}
+
+body [role="dialog"] button:not([class*="molsan-"]):not([class*="ctn-"]):not([class*="ng-"]):not([class*="eg-"]):not([class*="bg-"]) {
+  min-height: 34px;
+  padding: 7px 11px;
+  color: var(--molsan-blue);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+body [role="dialog"] button[type="submit"]:not([class*="bg-"]) {
+  color: #fff;
+  background: var(--molsan-blue);
+  border-color: var(--molsan-blue);
+}
+
+body [role="dialog"] button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
