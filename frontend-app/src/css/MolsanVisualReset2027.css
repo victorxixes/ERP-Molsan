@@ -1,38 +1,44 @@
-/* MOLSAN ERP · BASE NEUTRA 2027
-   Neutraliza la presentación heredada sin alterar estructura ni lógica.
-   Se excluyen deliberadamente el sidebar y su modal de perfil.
+/* MOLSAN ERP · RESET VISUAL NEUTRO 2027
+   Neutraliza la apariencia heredada de CSS, Tailwind y estilos inline.
+   Conserva layout, medidas, flex/grid, posicionamiento, scroll y accesibilidad.
+   Sidebar y modal de perfil quedan excluidos intencionadamente.
 */
 :where(body *):not(.mol-sidebar-premium):not(.mol-sidebar-premium *):not(.sidebar-perfil-modal-premium):not(.sidebar-perfil-modal-premium *) {
   color: inherit !important;
   font-family: inherit !important;
+  font-size: inherit !important;
+  font-style: normal !important;
   font-weight: inherit !important;
-  font-style: inherit !important;
+  font-variant: normal !important;
+  line-height: inherit !important;
   letter-spacing: normal !important;
+  text-align: inherit !important;
+  text-decoration: none !important;
   text-transform: none !important;
   text-shadow: none !important;
   box-shadow: none !important;
   filter: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+  background-color: transparent !important;
   background-image: none !important;
+  border-color: currentColor !important;
   border-radius: 0 !important;
+  opacity: 1 !important;
+  transform: none !important;
   transition: none !important;
   animation: none !important;
 }
-:where(body *):not(.mol-sidebar-premium):not(.mol-sidebar-premium *):not(.sidebar-perfil-modal-premium):not(.sidebar-perfil-modal-premium *):not(.modal-overlay-sj):not([role="dialog"]) {
-  background-color: transparent !important;
-}
-:where(body *):not(.mol-sidebar-premium):not(.mol-sidebar-premium *):not(.sidebar-perfil-modal-premium):not(.sidebar-perfil-modal-premium *) {
-  border-color: currentColor !important;
-}
 :where(button,input,select,textarea):not(.mol-sidebar-premium *):not(.sidebar-perfil-modal-premium *) {
-  font: inherit;
+  color: inherit !important;
+  font: inherit !important;
+  background-color: transparent !important;
   box-shadow: none !important;
   border-radius: 0 !important;
 }
 :where(a):not(.mol-sidebar-premium *):not(.sidebar-perfil-modal-premium *) {
   color: inherit !important;
-  text-decoration: underline;
+  text-decoration: none !important;
 }
 :where(*):not(.mol-sidebar-premium *):not(.sidebar-perfil-modal-premium *):focus-visible {
   outline: 2px solid currentColor !important;
