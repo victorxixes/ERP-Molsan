@@ -69,7 +69,7 @@ export default function EmpleadosModulo2026() {
   return (
 
     <div className="erp-page
- empleados-premium-page
+ 
  space-y-6">
 
       {/* =====================================================
