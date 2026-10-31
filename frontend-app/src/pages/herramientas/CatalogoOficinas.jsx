@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 const COLUMNAS = [
   ["oficina", "Oficina"], ["nombre", "Nombre"], ["direccion", "Dirección"],
@@ -17,6 +18,7 @@ export default function CatalogoOficinas() {
   const [oficinas, setOficinas] = useState([]);
   const [total, setTotal] = useState(0);
   const [pagina, setPagina] = useState(0);
+  const [orden, setOrden] = useState({ campo: "oficina", direccion: "asc" });
   const [cargando, setCargando] = useState(false);
   const [archivo, setArchivo] = useState(null);
   const [previsualizacion, setPrevisualizacion] = useState(null);
@@ -30,7 +32,7 @@ export default function CatalogoOficinas() {
     setCargando(true);
     setError("");
     try {
-      const respuesta = await axios.get(API, { params: { q: busqueda, limit: limite, offset: pagina * limite } });
+      const respuesta = await axios.get(API, { params: { q: busqueda, limit: limite, offset: pagina * limite, sort_by: orden.campo, sort_dir: orden.direccion } });
       setOficinas(respuesta.data.items || []);
       setTotal(Number(respuesta.data.total || 0));
     } catch (e) {
@@ -38,7 +40,7 @@ export default function CatalogoOficinas() {
     } finally {
       setCargando(false);
     }
-  }, [busqueda, pagina, recarga]);
+  }, [busqueda, pagina, recarga, orden]);
 
   useEffect(() => { cargarOficinas(); }, [cargarOficinas]);
 
@@ -165,7 +167,7 @@ export default function CatalogoOficinas() {
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-[1200px] w-full">
-            <thead className="uppercase"><tr>{columnasVisibles.map(([campo, titulo]) => <th key={campo} className="whitespace-nowrap px-3 py-3">{titulo}</th>)}</tr></thead>
+            <thead className="uppercase"><tr>{columnasVisibles.map(([campo, titulo]) => <MolsanSortableTh key={campo} label={titulo} sortKey={campo} sortConfig={{ key: orden.campo, direction: orden.direccion }} onSort={(key) => { setOrden((actual) => ({ campo: key, direccion: actual.campo === key && actual.direccion === "asc" ? "desc" : "asc" })); setPagina(0); }} className="whitespace-nowrap px-3 py-3" />)}</tr></thead>
             <tbody>
               {cargando ? <tr><td colSpan={COLUMNAS.length} className="px-4 py-10">Cargando catálogo…</td></tr>
                 : oficinas.length ? oficinas.map((fila) => <tr key={fila.id}>{columnasVisibles.map(([campo]) => <td key={campo} className="max-w-64 truncate px-3 py-3" title={fila[campo]}>{fila[campo] || "—"}</td>)}</tr>)
