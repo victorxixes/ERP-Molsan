@@ -30,6 +30,7 @@ app = FastAPI(title="Agenda Intranet Backend")
 
 origins = [
     "https://agenda-intranet-f.onrender.com",
+    "https://molsan-glass-luxe-preview.onrender.com",
     "https://agenda-intranet-b.onrender.com",
     "https://molsan-glass-luxe-preview.onrender.com",
     "http://localhost:5173",
