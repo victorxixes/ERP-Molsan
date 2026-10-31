@@ -536,7 +536,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)] notargest">
+    <div className="min-h-screen notargest">
       <Sidebar
         brandName="NotarGest"
         navigationItems={[]}
@@ -589,13 +589,13 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
             <div className="ng-perfil-datos">{[["Nombre",notario?.nombre],["NIF",notario?.nif],["Usuario",notario?.nif],["Teléfono",notario?.telefono],["Dirección",notario?.direccion],["Código postal",notario?.cp],["Municipio",notario?.municipio],["Provincia",notario?.provincia],["Código CTN",notario?.codigo],["Videoconferencia",notario?.vc],["Apoderado asociado",notario?.apoderado],["Departamento cancelaciones",notario?.departamento_cancelaciones],["Departamento copias",notario?.departamento_copias],["Otros departamentos",notario?.otros_departamentos]].map(([label,value]) => <div className="ng-dato" key={label}><small>{label}</small><strong>{texto(value)}</strong></div>)}</div>
             {notario?.observacion && <div className="ng-perfil-observacion"><small>Observaciones CTN</small><p>{notario.observacion}</p></div>}
           </div>
-          <form onSubmit={cambiarPasswordPerfil} className="h-fit space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
-            <div><h3 className="text-sm font-extrabold text-slate-900">Seguridad de la cuenta</h3><p className="mt-1 text-xs leading-5 text-slate-500">Usuario: NIF completo registrado en CTN. Si aún no has cambiado la contraseña inicial, utiliza tu NIF como contraseña.</p></div>
-            {mensajePasswordPerfil && <p role="status" className="rounded-lg bg-emerald-50 p-2 text-xs text-emerald-800">{mensajePasswordPerfil}</p>}
-            {errorPasswordPerfil && <p role="alert" className="rounded-lg bg-rose-50 p-2 text-xs text-rose-700">{errorPasswordPerfil}</p>}
-            <label className="block text-xs font-semibold text-slate-600">Contraseña actual<input required type="password" autoComplete="current-password" value={passwordActualPerfil} onChange={e=>setPasswordActualPerfil(e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm" /></label>
-            <label className="block text-xs font-semibold text-slate-600">Nueva contraseña<input required minLength={8} type="password" autoComplete="new-password" value={passwordNuevaPerfil} onChange={e=>setPasswordNuevaPerfil(e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm" /></label>
-            <label className="block text-xs font-semibold text-slate-600">Repetir nueva contraseña<input required minLength={8} type="password" autoComplete="new-password" value={passwordConfirmarPerfil} onChange={e=>setPasswordConfirmarPerfil(e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm" /></label>
+          <form onSubmit={cambiarPasswordPerfil} className="h-fit space-y-3 p-4 sm:p-5">
+            <div><h3 className="">Seguridad de la cuenta</h3><p className="mt-1">Usuario: NIF completo registrado en CTN. Si aún no has cambiado la contraseña inicial, utiliza tu NIF como contraseña.</p></div>
+            {mensajePasswordPerfil && <p role="status" className="p-2">{mensajePasswordPerfil}</p>}
+            {errorPasswordPerfil && <p role="alert" className="p-2">{errorPasswordPerfil}</p>}
+            <label className="block">Contraseña actual<input required type="password" autoComplete="current-password" value={passwordActualPerfil} onChange={e=>setPasswordActualPerfil(e.target.value)} className="mt-1 w-full px-3 py-2.5" /></label>
+            <label className="block">Nueva contraseña<input required minLength={8} type="password" autoComplete="new-password" value={passwordNuevaPerfil} onChange={e=>setPasswordNuevaPerfil(e.target.value)} className="mt-1 w-full px-3 py-2.5" /></label>
+            <label className="block">Repetir nueva contraseña<input required minLength={8} type="password" autoComplete="new-password" value={passwordConfirmarPerfil} onChange={e=>setPasswordConfirmarPerfil(e.target.value)} className="mt-1 w-full px-3 py-2.5" /></label>
             <button type="submit" disabled={guardandoPasswordPerfil} className="ng-login-submit w-full">{guardandoPasswordPerfil ? "Guardando contraseña…" : "Cambiar contraseña"}</button>
           </form>
           </div>
@@ -756,7 +756,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         </div>
       </div>
       <div className="ag-hero-acciones">
-        {accesoERP && <button type="button" onClick={() => navigate("/modulos")} className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"><span aria-hidden="true">▦</span> Ir a módulos</button>}
+        {accesoERP && <button type="button" onClick={() => navigate("/modulos")} className="flex items-center gap-2 px-3 py-2"><span aria-hidden="true">▦</span> Ir a módulos</button>}
       </div>
     </header>
     <nav className="ng-modulos-grid" aria-label="Secciones de NotarGest">
