@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import "../../css/ComponentesCompartidosPremium.css";
 
 /**
  * MENSAJES HEADER — MOLSAN ERP SAAS PREMIUM 2027
