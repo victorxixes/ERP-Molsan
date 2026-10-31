@@ -230,7 +230,7 @@ export default function Fichajes({ modo = "empleado" }) {
     : [{ id: "resumen", label: "Resumen de marcajes" }, { id: "calendario", label: "Calendario mensual" }, { id: "documentos", label: "Documentos" }, { id: "personal", label: "Información personal" }, { id: "ausencias", label: "Solicitudes de ausencia" }, { id: "compensaciones", label: "Festivos y compensaciones" }];
 
   return (
-    <main className="w-full min-w-0 space-y-5">
+    <main className="erp-page w-full min-w-0 space-y-5">
       <MolsanPageHeader
         mark="FI"
         title={esAdminVista ? "Control de Fichajes" : "Fichajes"}

@@ -737,7 +737,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
   };
 
 
-  if (soloEditorPlantilla) return <main className="provisiones-fondos-page w-full min-w-0 p-3 md:p-6 space-y-4">
+  if (soloEditorPlantilla) return <main className="erp-page provisiones-fondos-page min-w-0 space-y-4">
     <section className="p-4">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1"><p className="uppercase">Datos corporativos vinculados</p><h3 className="mt-1">Datos Molsan</h3><p className="mt-1">La cabecera utiliza la información guardada en Utilidades → Datos Molsan. Los cambios de razón social, CIF, domicilio y contacto se gestionan allí.</p>
@@ -755,7 +755,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
     </section>
     <div className="provision-editor-layout provision-editor-layout-solo"><div className="provision-editor-designer min-w-0"><DocumentoLayoutDesigner tipo="provision" datosMolsan={datosCorporativos} /></div></div>
   </main>;
-  if (modoCatalogo) return <main className="provisiones-fondos-page w-full min-w-0 space-y-6 p-3 md:p-6"><MolsanPageHeader mark="PF" title="Tabla Provisiones de fondos" description="Configura importes estimativos y criterios iniciales. Estos valores sirven de referencia para nuevas provisiones; los registros históricos no se recalculan al cambiar la tabla." /><ConfiguracionConceptosProvisiones /></main>;
+  if (modoCatalogo) return <main className="erp-page provisiones-fondos-page min-w-0 space-y-6"><MolsanPageHeader mark="PF" title="Tabla Provisiones de fondos" description="Configura importes estimativos y criterios iniciales. Estos valores sirven de referencia para nuevas provisiones; los registros históricos no se recalculan al cambiar la tabla." /><ConfiguracionConceptosProvisiones /></main>;
 
   return <main className="provisiones-fondos-page w-full min-w-0 space-y-6 p-3 md:p-6">
     <MolsanPageHeader mark="PF" title="Provisión estimativa" description="Gestión de presupuestos independientes, con histórico y documento PDF." />

@@ -801,8 +801,6 @@ textarea:focus-visible {
    el contenedor .erp-page. El Layout es el único dueño del
    margen exterior; no se alteran superficies internas.
    ========================================================== */
-.erp-route-content > .min-w-0.space-y-5,
-.erp-route-content > .provisiones-fondos-page,
 .erp-route-content > .mensajes-premium-page,
 .erp-route-content > main.mx-auto {
   width: 100% !important;
@@ -810,13 +808,6 @@ textarea:focus-visible {
   max-width: none !important;
   margin: 0 !important;
   padding: 0 !important;
-}
-
-/* Agenda y Provisiones conservan su cabecera común alineada
-   con el Dashboard, sin el padding propio de la página. */
-.erp-route-content > .min-w-0.space-y-5 > .molsan-page-header,
-.erp-route-content > .provisiones-fondos-page > .molsan-page-header {
-  margin: 0 0 18px !important;
 }
 
 /* El chat mantiene su distribución interna y altura funcional,
