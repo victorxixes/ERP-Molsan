@@ -379,7 +379,7 @@ function RegistroAuditoria({
 
         {/* FECHA */}
 
-        <div className="">
+        <div>
 
           <p
             className="whitespace-nowrap"
@@ -500,7 +500,7 @@ function ModalDetalle({
             <div>
 
               <h2
-                className=""
+               
               >
                 Detalle de auditoría
               </h2>
@@ -1129,7 +1129,7 @@ export default function SeguridadAuditoria() {
  h-8"
           />
 
-          <span className="">
+          <span>
             Cargando auditoría…
           </span>
 
@@ -1195,7 +1195,7 @@ export default function SeguridadAuditoria() {
             <div>
 
               <h1
-                className=""
+               
               >
                 Auditoría
               </h1>
@@ -1319,7 +1319,7 @@ export default function SeguridadAuditoria() {
           <div>
 
             <h2
-              className=""
+             
             >
               Filtros
             </h2>
@@ -1596,7 +1596,7 @@ export default function SeguridadAuditoria() {
           <div>
 
             <h2
-              className=""
+             
             >
               Registro de actividad
             </h2>
@@ -1615,7 +1615,7 @@ export default function SeguridadAuditoria() {
 
 
           <div
-            className=""
+           
           >
             Mostrando el histórico disponible
           </div>
@@ -1657,7 +1657,7 @@ export default function SeguridadAuditoria() {
               Descripción
             </div>
 
-            <div className="">
+            <div>
               Fecha
             </div>
 
@@ -1697,7 +1697,7 @@ export default function SeguridadAuditoria() {
 
 
             <h3
-              className=""
+             
             >
               {hayFiltros
                 ? "No hay resultados"
@@ -1811,7 +1811,7 @@ export default function SeguridadAuditoria() {
             <div>
 
               <p
-                className=""
+               
               >
                 Auditoría centralizada
               </p>
@@ -1828,7 +1828,7 @@ export default function SeguridadAuditoria() {
 
 
           <div
-            className=""
+           
           >
             Molsan ERP · Seguridad · Auditoría
           </div>
