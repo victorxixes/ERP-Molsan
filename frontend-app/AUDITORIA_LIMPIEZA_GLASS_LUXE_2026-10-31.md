@@ -119,3 +119,28 @@ Auditoría y limpieza en curso. El primer cambio selectivo está aplicado en la 
 ### Comprobación completa de hojas CSS
 
 Se ha inspeccionado el contenido de las 52 hojas CSS del frontend en la rama: 49 contienen únicamente el comentario de hoja vaciada; las tres restantes son index.css (importa Tailwind), NeutralizarPresentacion.css (reset global temporal) y SidebarBase.css (navegación/perfil protegidos). Las 49 hojas vacías no se eliminan todavía hasta cerrar la comprobación final de referencias en todos los ficheros JS/JSX y asegurar que no quedan imports dinámicos o referencias de documentación.
+
+
+## Tercera fase — limpieza selectiva y racionalización (31/10/2026)
+
+### Punto 1 — atributos visuales vacíos
+- Retirados 769 atributos `className=""` en 27 componentes/páginas de Agenda, CTN, Expedientes, ApoderaGest, EncargaGest, NotarGest, Provisiones, Empleados, Fichajes, Seguridad, Mensajería, Intranet, Informes, Dashboard, Login y componentes compartidos.
+- La operación se limitó a atributos cuyo valor era literalmente una cadena vacía. No se modificaron clases no vacías, expresiones dinámicas, eventos, datos ni lógica.
+- Esta cifra corresponde a los archivos revisados en esta fase; no se certifica aún que no queden más atributos vacíos en el resto de los 187 archivos.
+
+### Punto 2 — referencias CSS
+- Se ha confirmado que las 49 hojas candidatas siguen teniendo solo el comentario marcador de vaciado (62 bytes cada una).
+- Se han retirado importaciones conocidas de hojas vacías en Fusiones, AccesosNotariales, ModelosDocumentos y cuatro pantallas de Panel Técnico.
+- No se eliminan todavía las 49 hojas: falta una búsqueda exhaustiva, específica de esta rama, de imports estáticos, imports dinámicos y referencias desde configuración/HTML. La búsqueda indexada de GitHub consultada no está sincronizada con esta rama y no se considera evidencia válida para borrar archivos.
+
+### Punto 4 — NeutralizarPresentacion.css
+- Retirados los bloques específicos redundantes para controles y enlaces: sus propiedades ya estaban cubiertas por el selector global de neutralización.
+- Se mantienen el reset temporal, la exclusión del sidebar y su modal, el foco visible accesible, el hover aprobado de las tarjetas del selector y la regla de movimiento reducido.
+- No se ha debilitado el reset global en esta fase para evitar que reaparezcan estilos heredados antes de implantar y probar el sistema visual definitivo.
+
+### Estado de esta fase
+- Punto 1: limpieza selectiva avanzada; queda pendiente barrido final de los archivos restantes.
+- Punto 2: inventario de hojas completado; confirmación de dependencias no completada, por lo que no se borran las 49 hojas.
+- Punto 3: pendiente de la confirmación exhaustiva del punto 2.
+- Punto 4: racionalización segura aplicada; el reset global se conserva temporalmente.
+- Punto 5: expresamente no iniciado. No se ha realizado comprobación visual de módulos.
