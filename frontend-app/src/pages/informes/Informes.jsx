@@ -3257,8 +3257,8 @@ function InformeFacturacion() {
 
       {modalAbierto && (
         <div className="panel-modal-premium fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-5" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }}>
-          <section ref={modalFacturacionRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="modal-facturacion-titulo" className="flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden">
-            <header className="flex flex-wrap items-start justify-between gap-3 px-5 py-4">
+          <section ref={modalFacturacionRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="modal-facturacion-titulo" className="molsan-modal__panel flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden">
+            <header className="molsan-modal__header flex flex-wrap items-start justify-between gap-3">
               <div><h2 id="modal-facturacion-titulo">Detalle de facturación</h2><p className="mt-1">Tabla Excel con los registros que cumplen los filtros seleccionados.</p></div>
               <button type="button" onClick={() => setModalAbierto(false)} aria-label="Cerrar ventana" className="px-3 py-2">✕ Cerrar</button>
             </header>

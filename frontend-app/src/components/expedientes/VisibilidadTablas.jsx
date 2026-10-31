@@ -151,9 +151,9 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
   }
 
   return (
-    <div className={modal ? "erp-page fixed inset-0 z-[12000] overflow-y-auto p-3 sm:p-6" : "erp-page w-full"} ref={dialogRef} tabIndex={modal ? -1 : undefined} role={modal ? "dialog" : undefined} aria-modal={modal ? "true" : undefined} aria-label={titulo || "Visibilidad tablas"}>
-      <div className={"mx-auto" + (modal ? "my-2" : "") + "max-w-7xl overflow-hidden"}>
-        <header className="flex flex-wrap items-center gap-3 px-5 py-4">
+    <div className={modal ? "erp-page molsan-modal-overlay fixed inset-0 z-[12000] flex items-center justify-center overflow-y-auto p-3 sm:p-6" : "erp-page w-full"} role={modal ? "presentation" : undefined}>
+      <div ref={dialogRef} tabIndex={modal ? -1 : undefined} role={modal ? "dialog" : undefined} aria-modal={modal ? "true" : undefined} aria-label={titulo || "Visibilidad tablas"} className={modal ? "molsan-modal__panel flex max-h-[calc(100dvh-2rem)] w-full max-w-7xl flex-col overflow-hidden" : "mx-auto max-w-7xl overflow-hidden"}>
+        <header className={modal ? "molsan-modal__header flex flex-wrap items-center gap-3" : "flex flex-wrap items-center gap-3 px-5 py-4"}>
           <div className="flex h-11 w-11 items-center justify-center">⚙️</div>
           <div className="min-w-0 flex-1">
             <h2>{titulo || (ambito === "personal" ? "Mi visibilidad de tablas" : "Visibilidad tablas")}</h2>
@@ -162,7 +162,7 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
           {modal && <button type="button" onClick={onClose} className="px-3 py-2">Cerrar ✕</button>}
         </header>
 
-        <div className="space-y-5 p-4 sm:p-6">
+        <div className={modal ? "molsan-modal__body min-h-0 flex-1 space-y-5 overflow-y-auto p-4 sm:p-6" : "space-y-5 p-4 sm:p-6"}>
           {error && <div className="px-4 py-3">{String(error)}</div>}
           {mensaje && <div className="px-4 py-3">{mensaje}</div>}
           {cargando ? <p className="py-12">Cargando configuración…</p> : (
@@ -232,7 +232,7 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
                   ))}
                 </div>
               </section>
-              <footer className="flex flex-wrap items-center justify-between gap-3 pt-4">
+              <footer className={modal ? "molsan-modal__footer flex flex-wrap items-center justify-between gap-3" : "flex flex-wrap items-center justify-between gap-3 pt-4"}>
                 <p>{configuracionActual ? "Esta actividad ya tiene una configuración guardada." : "Se mostrarán valores iniciales hasta que guardes la configuración."}</p>
                 <div className="flex gap-2">
                   {modal && <button type="button" onClick={onClose} className="erp-btn-secondary px-4 py-2.5">Cancelar</button>}
