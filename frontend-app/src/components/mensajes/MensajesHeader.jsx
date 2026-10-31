@@ -1,13 +1,12 @@
 import { useMemo } from "react";
 
 /**
- * MENSAJES HEADER — MOLSAN ERP SAAS PREMIUM 2027
+ * MENSAJES HEADER
  *
  * Cabecera de conversación:
  * - Avatar
  * - Estado online
  * - Nombre completo
- * - Glass Luxe claro
  */
 
 export default function MensajesHeader({
