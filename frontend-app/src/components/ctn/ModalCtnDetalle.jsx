@@ -9,6 +9,8 @@ import {
   desasociarNotarios,
 } from "../../api/ctn";
 import useAccessibleDialog from "../ui/useAccessibleDialog";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../ui/MolsanSortableTh";
 import AutocompleteNotario from "../agenda/AutocompleteNotario";
 import PortalAccessTabs from "./PortalAccessTabs";
 
@@ -304,9 +306,21 @@ export default function ModalCtnDetalle({
   };
 
   const listadoFirmas = useMemo(
-    () => firmas,
+    () => firmas.map((f) => ({
+      ...f,
+      _expedienteOrden: f.expediente ?? f.numero_expediente ?? f.id_expediente ?? "",
+      _fechaAltaOrden: f.fecha_alta ?? f.fecha_creacion ?? f.fecha_apertura ?? "",
+      _solicitanteOrden: f.nombre_solicitante || f.solicitante || [f.solicitante_nombre, f.solicitante_apellidos].filter(Boolean).join(" "),
+      _nifSolicitanteOrden: f.nif_solicitante ?? f.cif_solicitante ?? "",
+      _operacionOrden: f.tipo_operacion ?? f.tipo_operación ?? f.operacion ?? "",
+      _contratoOrden: f.contrato ?? f.numero_contrato ?? f.referencia_contrato ?? "",
+      _protocoloOrden: f.protocolo ?? f.numero_protocolo ?? "",
+    })),
     [firmas]
   );
+  const ordenFirmas = useSortableData(listadoFirmas);
+  const asociadasOrdenables = useMemo(() => asociadas.map((n) => ({ ...n, _nombreOrden: nombreNotario(n) })), [asociadas]);
+  const ordenAsociadas = useSortableData(asociadasOrdenables);
 
   if (!open || !notaria || !id) return null;
 
@@ -834,19 +848,19 @@ export default function ModalCtnDetalle({
             <table className="ctn-modal-tabla">
               <thead>
                 <tr>
-                  <th>Expediente</th>
-                  <th>Fecha alta</th>
-                  <th>Nombre solicitante</th>
-                  <th>NIF solicitante</th>
-                  <th>Tipo operación</th>
-                  <th>Contrato</th>
-                  <th>Fecha firma</th>
-                  <th>Protocolo</th>
+                  <MolsanSortableTh label="Expediente" sortKey="_expedienteOrden" sortConfig={ordenFirmas.sortConfig} onSort={ordenFirmas.requestSort} />
+                  <MolsanSortableTh label="Fecha alta" sortKey="_fechaAltaOrden" sortConfig={ordenFirmas.sortConfig} onSort={ordenFirmas.requestSort} />
+                  <MolsanSortableTh label="Nombre solicitante" sortKey="_solicitanteOrden" sortConfig={ordenFirmas.sortConfig} onSort={ordenFirmas.requestSort} />
+                  <MolsanSortableTh label="NIF solicitante" sortKey="_nifSolicitanteOrden" sortConfig={ordenFirmas.sortConfig} onSort={ordenFirmas.requestSort} />
+                  <MolsanSortableTh label="Tipo operación" sortKey="_operacionOrden" sortConfig={ordenFirmas.sortConfig} onSort={ordenFirmas.requestSort} />
+                  <MolsanSortableTh label="Contrato" sortKey="_contratoOrden" sortConfig={ordenFirmas.sortConfig} onSort={ordenFirmas.requestSort} />
+                  <MolsanSortableTh label="Fecha firma" sortKey="fecha_firma" sortConfig={ordenFirmas.sortConfig} onSort={ordenFirmas.requestSort} />
+                  <MolsanSortableTh label="Protocolo" sortKey="_protocoloOrden" sortConfig={ordenFirmas.sortConfig} onSort={ordenFirmas.requestSort} />
                 </tr>
               </thead>
 
               <tbody>
-                {listadoFirmas.map((f, i) => (
+                {ordenFirmas.items.map((f, i) => (
                   <tr
                     key={
                       f.id ??
@@ -939,16 +953,16 @@ export default function ModalCtnDetalle({
             <table className="ctn-modal-tabla">
               <thead>
                 <tr>
-                  <th>Notario asociado</th>
-                  <th>NIF</th>
-                  <th>Municipio</th>
-                  <th>Provincia</th>
+                  <MolsanSortableTh label="Notario asociado" sortKey="_nombreOrden" sortConfig={ordenAsociadas.sortConfig} onSort={ordenAsociadas.requestSort} />
+                  <MolsanSortableTh label="NIF" sortKey="nif" sortConfig={ordenAsociadas.sortConfig} onSort={ordenAsociadas.requestSort} />
+                  <MolsanSortableTh label="Municipio" sortKey="municipio" sortConfig={ordenAsociadas.sortConfig} onSort={ordenAsociadas.requestSort} />
+                  <MolsanSortableTh label="Provincia" sortKey="provincia" sortConfig={ordenAsociadas.sortConfig} onSort={ordenAsociadas.requestSort} />
                   <th>Acciones</th>
                 </tr>
               </thead>
 
               <tbody>
-                {asociadas.map((n) => (
+                {ordenAsociadas.items.map((n) => (
                   <tr key={n.id ?? n.asociada_id}>
                     <td>
                       <strong>{nombreNotario(n)}</strong>
