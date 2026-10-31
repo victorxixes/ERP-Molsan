@@ -153,3 +153,15 @@ Los colores de éxito, advertencia, error e información son semánticos y solo 
 - Cabeceras y celdas conservan fondos prácticamente opacos; el hover usa azul hielo de baja intensidad.
 - No se reorganizan tarjetas, filtros, bloques SLA ni actividades. No se modifican columnas, datos, permisos, API ni flujos funcionales.
 - La extensión queda pendiente de revisión visual en Render Preview antes de aplicarla a otros módulos.
+
+
+### Extensión Fase 1 + Fase 2 — piloto FichaExpediente
+
+- FichaExpediente adopta la tipografía, escala, colores corporativos, espaciado, bordes, foco y densidad definidos en la Fase 1.
+- Las secciones de titulares, notario, información crediticia y demás paneles usan superficies Glass Luxe discretas con cabeceras azul hielo.
+- Los datos individuales se presentan en superficies secundarias blancas, con etiquetas en texto gris azulado y valores en azul/texto principal.
+- El selector de actividades, los controles, las tablas y los formularios comparten el mismo lenguaje visual de Dashboard, CTN y Expedientes.
+- Los modales operativos reciben el mismo tratamiento de superficies, controles, cabecera y pie.
+- La extensión es exclusivamente visual: no modifica cálculos, importes, pagos, actividades, documentos, integraciones, API, permisos, datos ni Sidebar.
+- La reorganización de bloques y tarjetas queda expresamente aplazada a la fase de composición final.
+- Validación visual pendiente en Render Preview: revisar ficha completa, formularios, tablas y modales en escritorio y móvil antes de aprobar el piloto.
