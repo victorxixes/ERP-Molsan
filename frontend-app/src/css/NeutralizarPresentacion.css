@@ -5545,7 +5545,7 @@ button.molsan-stat-card[aria-pressed="true"] {
   border-radius: 9px;
 }
 
-body [role="dialog"] button:not([class*="molsan-"]):not([class*="ctn-"]):not([class*="ng-"]):not([class*="eg-"]):not([class*="bg-"]) {
+body [role="dialog"]:not([data-molsan-style-exempt]) button:not([class*="molsan-"]):not([class*="ctn-"]):not([class*="ng-"]):not([class*="eg-"]):not([class*="bg-"]) {
   min-height: 34px;
   padding: 7px 11px;
   color: var(--molsan-blue);
@@ -5562,7 +5562,7 @@ body [role="dialog"] button[type="submit"]:not([class*="bg-"]) {
   border-color: var(--molsan-blue);
 }
 
-body [role="dialog"] button:disabled {
+body [role="dialog"]:not([data-molsan-style-exempt]) button:disabled {
   opacity: .55;
   cursor: not-allowed;
 }
