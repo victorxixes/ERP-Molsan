@@ -99,7 +99,7 @@ export default function LoginPage() {
 
   return (
     <main className="login-principal relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-8">
-      <section className="relative z-10 w-full max-w-[430px] p-7 sm:p-9">
+      <section className="login-card relative z-10 w-full max-w-[430px] p-7 sm:p-9">
         <header className="mb-8">
           <div className="mb-6 flex justify-center">
             <img src="/img/logo.jpg" alt="Molsan" className="h-20 w-auto object-contain sm:h-24" />
@@ -162,7 +162,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={cargando}
-            className="w-full py-3.5"
+            className="molsan-btn molsan-btn--primary w-full py-3.5"
           >
             <span className="flex items-center justify-center gap-2">
               {cargando ? (
