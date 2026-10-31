@@ -362,7 +362,7 @@ export default function EmpleadoEditar({
 
           <div>
 
-            <div className="">
+            <div>
               Estado del empleado
             </div>
 
@@ -435,7 +435,7 @@ export default function EmpleadoEditar({
  gap-4
  pt-2">
 
-        <div className="">
+        <div>
 
           {guardado &&
             "✓ Cambios guardados correctamente"}
