@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/CatalogosMaestrosPremium.css";
 
 function fecha(valor) {
   if (!valor) return "—";
@@ -110,7 +108,7 @@ export default function PPAD() {
   }
 
   return (
-    <div className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <header className="overflow-hidden">
         <div className="h-1" />
         <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
