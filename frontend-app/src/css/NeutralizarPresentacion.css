@@ -223,3 +223,30 @@ textarea:focus-visible {
     animation-iteration-count: 1 !important;
   }
 }
+
+
+/* Selector de módulos: se conserva el hover aprobado. */
+.selector-modulos-premium button.group {
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+.selector-modulos-premium button.group:hover {
+  transform: translateY(-4px);
+  border-color: var(--molsan-blue);
+  box-shadow: 0 18px 38px rgba(6, 70, 117, 0.12);
+}
+.selector-modulos-premium button.group > div:nth-of-type(2) > div:first-child,
+.selector-modulos-premium button.group > div:nth-of-type(2) > span,
+.selector-modulos-premium button.group > div:last-of-type > span:last-child {
+  transition: transform 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+.selector-modulos-premium button.group:hover > div:nth-of-type(2) > div:first-child {
+  transform: scale(1.04);
+}
+.selector-modulos-premium button.group:hover > div:nth-of-type(2) > span {
+  border-color: var(--molsan-ice-strong);
+  color: var(--molsan-blue);
+}
+.selector-modulos-premium button.group:hover > div:last-of-type > span:last-child {
+  transform: translateX(4px);
+  color: var(--molsan-blue);
+}
