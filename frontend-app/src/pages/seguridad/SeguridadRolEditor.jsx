@@ -421,7 +421,7 @@ export default function SeguridadRolEditor() {
 
   return (
 
-    <div className="erp-page seguridad-subpagina-premium seguridad-rol-editor-premium space-y-6">
+    <div className="erp-page space-y-6">
 
       {/* ======================================================
           CABECERA
