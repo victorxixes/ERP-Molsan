@@ -269,7 +269,7 @@ export default function CtnListadoPage() {
 
       <section className=" molsan-panel" aria-label="Filtros del listado CTN">
         <h2>Filtros de búsqueda</h2>
-        <form onSubmit={aplicarFiltros}>
+        <form className="molsan-filter-bar" onSubmit={aplicarFiltros}>
           <div>
             <label>Buscar notario
               <input className="molsan-field__control" value={filtros.q} onChange={(e) => cambiarFiltro("q", e.target.value)} placeholder="Nombre, apellidos, NIF o código" />
@@ -294,9 +294,9 @@ export default function CtnListadoPage() {
               </select>
             </label>
           </div>
-          <div>
-            <button type="button" onClick={limpiarFiltros}>Limpiar</button>
-            <button type="submit" className="  molsan-btn molsan-btn--primary">Buscar</button>
+          <div className="molsan-filter-actions">
+            <button type="button" className="molsan-btn molsan-btn--secondary" onClick={limpiarFiltros}>Limpiar</button>
+            <button type="submit" className="molsan-btn molsan-btn--primary">Buscar</button>
           </div>
         </form>
       </section>
