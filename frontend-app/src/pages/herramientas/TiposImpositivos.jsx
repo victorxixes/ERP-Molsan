@@ -76,25 +76,25 @@ export default function TiposImpositivos() {
 
       <section id="formulario-tipo-impositivo" className="p-5 sm:p-6">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div><h2 className="">{editando ? "Editar tipo impositivo" : "Crear tipo impositivo"}</h2><p className="mt-1">Los tipos desactivados no aparecerán en los desplegables nuevos.</p></div>
+          <div><h2>{editando ? "Editar tipo impositivo" : "Crear tipo impositivo"}</h2><p className="mt-1">Los tipos desactivados no aparecerán en los desplegables nuevos.</p></div>
           {editando && <button type="button" onClick={nuevo} className="px-3 py-2">Cancelar edición</button>}
         </div>
         <form onSubmit={guardar} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          <label className="">Nombre visible *
+          <label>Nombre visible *
             <input required maxLength={160} value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} placeholder="Ej. IVA general 21%" className="mt-1.5 w-full px-3 py-2.5" />
           </label>
-          <label className="">Categoría *
+          <label>Categoría *
             <select value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value, impuesto: e.target.value === "retencion" ? "IRPF" : "IVA", territorio: e.target.value === "retencion" ? "España" : "Territorio común" })} className="mt-1.5 w-full px-3 py-2.5"><option value="impuesto">Impuesto</option><option value="retencion">Retención</option></select>
           </label>
-          <label className="">Tributo *
+          <label>Tributo *
             <select value={form.impuesto} onChange={(e) => setForm({ ...form, impuesto: e.target.value })} className="mt-1.5 w-full px-3 py-2.5">
               {(form.categoria === "impuesto" ? ["IVA", "IGIC", "IPSI", "ITP", "AJD", "IS", "Otro"] : ["IRPF", "IS", "IRNR", "Otro"]).map((x) => <option key={x}>{x}</option>)}
             </select>
           </label>
-          <label className="">Porcentaje (%)
+          <label>Porcentaje (%)
             <input type="number" min="0" max="100" step="0.001" value={form.porcentaje} onChange={(e) => setForm({ ...form, porcentaje: e.target.value })} placeholder="Vacío si no aplica" className="mt-1.5 w-full px-3 py-2.5" />
           </label>
-          <label className="">Territorio *
+          <label>Territorio *
             <input required maxLength={80} value={form.territorio} onChange={(e) => setForm({ ...form, territorio: e.target.value })} placeholder="España, Canarias…" className="mt-1.5 w-full px-3 py-2.5" />
           </label>
           <label className="sm:col-span-2 xl:col-span-1">Descripción
@@ -113,7 +113,7 @@ export default function TiposImpositivos() {
 
       <section className="overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
-          <div><h2 className="">Catálogo configurado</h2><p className="">{filtrados.length} registro(s) mostrados</p></div>
+          <div><h2>Catálogo configurado</h2><p>{filtrados.length} registro(s) mostrados</p></div>
           <div className="flex flex-wrap items-center gap-2">
             <select aria-label="Filtrar por categoría" value={categoriaFiltro} onChange={(e) => setCategoriaFiltro(e.target.value)} className="px-3 py-2"><option value="todos">Todos</option><option value="impuesto">Impuestos</option><option value="retencion">Retenciones</option></select>
             <label className="flex items-center gap-2"><input type="checkbox" checked={mostrarInactivos} onChange={(e) => setMostrarInactivos(e.target.checked)} />Mostrar inactivos</label>
@@ -123,8 +123,8 @@ export default function TiposImpositivos() {
         {cargando ? <p className="p-8">Cargando catálogo…</p> : filtrados.length === 0 ? <p className="p-8">No hay tipos para este filtro.</p> : (
           <div className="overflow-x-auto"><table className="min-w-full">
             <thead className="uppercase"><tr><th className="px-4 py-3">Nombre</th><th className="px-4 py-3">Categoría</th><th className="px-4 py-3">Tributo</th><th className="px-4 py-3">Porcentaje</th><th className="px-4 py-3">Territorio</th><th className="px-4 py-3">Estado</th><th className="px-4 py-3">Acciones</th></tr></thead>
-            <tbody className="">{filtrados.map((x) => <tr key={x.id} className="">
-              <td className="px-4 py-3"><div className="">{x.nombre}</div>{x.descripcion && <div className="mt-1 max-w-sm">{x.descripcion}</div>}</td>
+            <tbody>{filtrados.map((x) => <tr key={x.id}>
+              <td className="px-4 py-3"><div>{x.nombre}</div>{x.descripcion && <div className="mt-1 max-w-sm">{x.descripcion}</div>}</td>
               <td className="px-4 py-3">{x.categoria === "retencion" ? "Retención" : "Impuesto"}</td><td className="px-4 py-3">{x.impuesto}</td><td className="px-4 py-3 tabular-nums">{fmt(x.porcentaje)}</td><td className="px-4 py-3">{x.territorio}</td>
               <td className="px-4 py-3"><span className={x.activo ? "px-2.5 py-1" : "px-2.5 py-1"}>{x.activo ? "Activo" : "Inactivo"}</span></td>
               <td className="px-4 py-3 whitespace-nowrap"><button type="button" onClick={() => editar(x)} className="mr-2 px-3 py-1.5">Editar</button>{x.activo && <button type="button" onClick={() => desactivar(x)} className="px-3 py-1.5">Eliminar</button>}</td>
