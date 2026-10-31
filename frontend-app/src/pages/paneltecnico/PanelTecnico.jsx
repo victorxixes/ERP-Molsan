@@ -34,7 +34,7 @@ export default function PanelTecnico() {
   );
 
   return (
-    <div className="w-full space-y-8">
+    <div className="erp-page w-full space-y-8">
 
       {/* ======================================================
           CABECERA

@@ -86,14 +86,14 @@ export default function AuditoriaAvanzada() {
   // ============================================================
 
   return (
-    <div className="space-y-6">
+    <div className="erp-page space-y-6">
 
       {/* ======================================================
           CABECERA
           ====================================================== */}
 
       <div
-        className="flex
+        className="molsan-subpage-header flex
  flex-col
  lg:flex-row
  lg:items-center

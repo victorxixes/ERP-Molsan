@@ -180,14 +180,14 @@ export default function MonitorSistema() {
   // ============================================================
 
   return (
-    <div className="min-w-0 space-y-6">
+    <div className="erp-page min-w-0 space-y-6">
 
       {/* ======================================================
           CABECERA
           ====================================================== */}
 
       <div
-        className="flex
+        className="molsan-subpage-header flex
  flex-col
  md:flex-row
  md:items-center
