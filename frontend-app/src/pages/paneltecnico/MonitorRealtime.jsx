@@ -610,29 +610,25 @@ export default function MonitorRealtime() {
         {/* ESTADO */}
 
         <div
-          className={`
-            inline-flex
-            items-center
-            gap-2
-            px-3
-            py-2
-            rounded-xl
-            border
-            text-xs
-            font-medium
-            ${estadoActual.fondo}
-            ${estadoActual.borde}
-            ${estadoActual.textoClase}
-          `}
+          className={`inline-flex
+ items-center
+ gap-2
+ px-3
+ py-2
+ 
+ 
+ 
+ 
+ ${estadoActual.fondo}
+ ${estadoActual.borde}
+ ${estadoActual.textoClase}`}
         >
 
           <span
-            className={`
-              w-2
-              h-2
-              rounded-full
-              ${estadoActual.punto}
-            `}
+            className={`w-2
+ h-2
+ 
+ ${estadoActual.punto}`}
           />
 
           {estadoActual.texto}
