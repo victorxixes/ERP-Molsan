@@ -6706,7 +6706,7 @@ const cuantiaFincasParaEnvio =
           {mostrarModalPpad && (
             <div
               className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-3 sm:p-6"
-              onMouseDown={(event) => { if (event.target === event.currentTarget) { setMostrarModalPpad(false); cancelarPpad(); }}
+              onMouseDown={(event) => { if (event.target === event.currentTarget) { setMostrarModalPpad(false); cancelarPpad(); }}}
             >
               <section
                 ref={ppadDialogRef}
