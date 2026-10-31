@@ -59,8 +59,7 @@
    que oscurece la pantalla. Esa capa no es el panel y debe conservar
    su fondo, geometría y comportamiento de scroll originales. */
 body :where(
-  [role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal)
-    :not(.molsan-modal):not(.molsan-modal__panel):not(.erp-modal-panel)
+  [role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal):not(.molsan-modal):not(.molsan-modal__panel):not(.erp-modal-panel)
     :not(.expediente-operativo-modal-panel):not(.ng-modal):not(.eg-modal-form):not(.eg-modal-perfil)
     :not(.ctn-detalle-modal)
 ) {
@@ -77,8 +76,7 @@ body :where(
   }
 
   body :where(
-    [role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal)
-      :not(.molsan-modal):not(.molsan-modal__panel):not(.erp-modal-panel)
+    [role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal):not(.molsan-modal):not(.molsan-modal__panel):not(.erp-modal-panel)
       :not(.expediente-operativo-modal-panel):not(.ng-modal):not(.eg-modal-form):not(.eg-modal-perfil)
       :not(.ctn-detalle-modal)
   ) {
