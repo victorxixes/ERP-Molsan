@@ -228,7 +228,7 @@ export default function MonitorSistema() {
             <div>
 
               <h1
-                className="drop-shadow-sm"
+                className=""
               >
                 Monitor del Sistema
               </h1>
@@ -458,20 +458,7 @@ export default function MonitorSistema() {
  
  
 
- ${
- activa
- ?`
-                                bg-[var(--erp-primary)]
-                                border-[var(--erp-primary)]
-                                text-white
-                                shadow-sm
-                              `:`
-                                bg-transparent
-                                border-transparent
-                                text-[var(--erp-text)]
-                                hover:bg-[var(--erp-primary-soft)]
-                                hover:border-[var(--erp-border)]
-                              `}`}
+ `}
                       >
 
                         <svg
