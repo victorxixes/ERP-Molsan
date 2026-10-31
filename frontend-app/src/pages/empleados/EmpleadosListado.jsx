@@ -920,7 +920,7 @@ export default function EmpleadosListado({
 
   return (
 
-    <div className="empleados-listado-premium space-y-5" aria-busy={cargando}>
+    <div className="space-y-5" aria-busy={cargando}>
 
       {/* ======================================================
           CABECERA
