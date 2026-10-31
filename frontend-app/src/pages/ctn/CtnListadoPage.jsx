@@ -256,7 +256,7 @@ export default function CtnListadoPage() {
   };
 
   return (
-    <main className="erp-page min-w-0 space-y-6" aria-busy={cargando}>
+    <main className="erp-page ctn-listado-page min-w-0 space-y-6" aria-busy={cargando}>
       <MolsanPageHeader mark="CTN" title="Listado CTN" description="Consulta, filtra y gestiona los notarios y sus asociaciones." />
       <div className="flex flex-wrap justify-end gap-2">
         <button type="button" className="molsan-btn molsan-export-excel" onClick={exportarExcel} disabled={exportando}>
