@@ -1,66 +1,225 @@
-/* Base neutral de presentación.
-   Conserva el layout, los controles accesibles y los estilos del sidebar.
-   El único movimiento recuperado expresamente es el hover del selector. */
-:where(body *):not(.mol-sidebar-premium):not(.mol-sidebar-premium *):not(.sidebar-perfil-modal-premium):not(.sidebar-perfil-modal-premium *) {
-  color: inherit !important;
-  font-family: inherit !important;
-  font-size: inherit !important;
-  font-style: normal !important;
-  font-weight: inherit !important;
-  font-variant: normal !important;
-  line-height: inherit !important;
-  letter-spacing: normal !important;
-  text-align: inherit !important;
-  text-decoration: none !important;
-  text-transform: none !important;
-  text-shadow: none !important;
-  box-shadow: none !important;
-  filter: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  background-color: transparent !important;
-  background-image: none !important;
-  border-color: transparent !important;
-  border-radius: 0 !important;
-  opacity: 1 !important;
-  transform: none !important;
-  transition: none !important;
-  animation: none !important;
+/* ==========================================================
+   MOLSAN ERP PREMIUM 2027 · Sistema visual corporativo
+   Base compartida para todos los módulos. El sidebar mantiene
+   su hoja y diseño propios.
+   ========================================================== */
+
+:root {
+  --molsan-blue: #064675;
+  --molsan-blue-deep: #04385d;
+  --molsan-blue-soft: #eaf3f9;
+  --molsan-ice: #f2f7fb;
+  --molsan-ice-strong: #e5eff6;
+  --molsan-white: #ffffff;
+  --molsan-text: #18364b;
+  --molsan-muted: #617789;
+  --molsan-border: #d8e4ec;
+  --molsan-shadow: 0 8px 24px rgba(6, 70, 117, 0.07);
+  --molsan-radius: 14px;
 }
-:where(*):not(.mol-sidebar-premium *):not(.sidebar-perfil-modal-premium *):focus-visible {
-  outline: 2px solid currentColor !important;
+
+html {
+  color-scheme: light;
+  background: var(--molsan-white);
+}
+
+body {
+  margin: 0;
+  background: var(--molsan-white);
+  color: var(--molsan-text);
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+
+/* El contenido de trabajo utiliza siempre una superficie blanca. */
+.erp-app-shell,
+.erp-main-content,
+.erp-main-inner,
+.molsan-page,
+.apoderagest,
+.notargest,
+.encargagest {
+  color: var(--molsan-text);
+}
+
+.erp-main-content,
+.erp-main-inner {
+  background: var(--molsan-white);
+}
+
+/* Cabecera común de módulo: identidad clara y acento corporativo. */
+.molsan-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-width: 0;
+  margin-bottom: 22px;
+  padding: 20px 24px;
+  color: var(--molsan-blue);
+  background: linear-gradient(105deg, var(--molsan-white) 0%, var(--molsan-ice) 100%);
+  border: 1px solid var(--molsan-border);
+  border-left: 4px solid var(--molsan-blue);
+  border-radius: var(--molsan-radius);
+  box-shadow: var(--molsan-shadow);
+}
+
+.molsan-page-header__identity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.molsan-page-header__identity > div:first-child {
+  display: grid;
+  flex: 0 0 46px;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  color: var(--molsan-white);
+  background: var(--molsan-blue);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+}
+
+.molsan-page-header__title,
+.molsan-page-header h1 {
+  margin: 0;
+  color: var(--molsan-blue);
+  font-size: clamp(20px, 2vw, 25px);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.molsan-page-header__description {
+  margin: 5px 0 0;
+  color: var(--molsan-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Controles comunes. Los botones de navegación del sidebar quedan fuera. */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+.molsan-page button:not(:disabled),
+.apoderagest button:not(:disabled),
+.notargest button:not(:disabled),
+.encargagest button:not(:disabled) {
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+.molsan-page button:focus-visible,
+.apoderagest button:focus-visible,
+.notargest button:focus-visible,
+.encargagest button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--molsan-blue);
   outline-offset: 2px;
 }
 
-/* Movimiento deliberadamente limitado a las tarjetas del selector. */
-.selector-modulos-premium button.group {
-  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease !important;
+/* Campos de edición con contraste y borde uniforme. */
+.molsan-page input:not([type="checkbox"]):not([type="radio"]),
+.molsan-page select,
+.molsan-page textarea,
+.apoderagest input:not([type="checkbox"]):not([type="radio"]),
+.apoderagest select,
+.apoderagest textarea,
+.notargest input:not([type="checkbox"]):not([type="radio"]),
+.notargest select,
+.notargest textarea,
+.encargagest input:not([type="checkbox"]):not([type="radio"]),
+.encargagest select,
+.encargagest textarea {
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
 }
-.selector-modulos-premium button.group:hover {
-  transform: translateY(-4px) !important;
-  border-color: #bfdbfe !important;
-  box-shadow: 0 18px 38px rgba(31, 48, 79, 0.11) !important;
+
+.molsan-page input:focus,
+.molsan-page select:focus,
+.molsan-page textarea:focus,
+.apoderagest input:focus,
+.apoderagest select:focus,
+.apoderagest textarea:focus,
+.notargest input:focus,
+.notargest select:focus,
+.notargest textarea:focus,
+.encargagest input:focus,
+.encargagest select:focus,
+.encargagest textarea:focus {
+  border-color: var(--molsan-blue);
+  box-shadow: 0 0 0 3px rgba(6, 70, 117, 0.10);
 }
-.selector-modulos-premium button.group > div:nth-of-type(2) > div:first-child,
-.selector-modulos-premium button.group > div:nth-of-type(2) > span,
-.selector-modulos-premium button.group > div:last-of-type > span:last-child {
-  transition: transform 200ms ease, color 200ms ease, border-color 200ms ease !important;
+
+/* Tablas: cabecera azul hielo, títulos en azul corporativo y filas limpias. */
+.molsan-page table,
+.apoderagest table,
+.notargest table,
+.encargagest table {
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--molsan-text);
 }
-.selector-modulos-premium button.group:hover > div:nth-of-type(2) > div:first-child {
-  transform: scale(1.04) !important;
+
+.molsan-page thead th,
+.apoderagest thead th,
+.notargest thead th,
+.encargagest thead th {
+  color: var(--molsan-blue);
+  background: var(--molsan-ice-strong);
+  font-weight: 700;
 }
-.selector-modulos-premium button.group:hover > div:nth-of-type(2) > span {
-  border-color: #dbeafe !important;
-  color: #1d4ed8 !important;
+
+.molsan-page tbody tr:nth-child(even),
+.apoderagest tbody tr:nth-child(even),
+.notargest tbody tr:nth-child(even),
+.encargagest tbody tr:nth-child(even) {
+  background: #f8fbfd;
 }
-.selector-modulos-premium button.group:hover > div:last-of-type > span:last-child {
-  transform: translateX(4px) !important;
-  color: #1d4ed8 !important;
+
+.molsan-page tbody tr:hover,
+.apoderagest tbody tr:hover,
+.notargest tbody tr:hover,
+.encargagest tbody tr:hover {
+  background: var(--molsan-blue-soft);
 }
+
+/* Paneles de contenido compartidos. */
+.molsan-panel,
+.molsan-card,
+.molsan-page section > article {
+  border-color: var(--molsan-border);
+  border-radius: var(--molsan-radius);
+}
+
+@media (max-width: 720px) {
+  .molsan-page-header {
+    align-items: flex-start;
+    padding: 16px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .selector-modulos-premium button.group,
-  .selector-modulos-premium button.group * {
-    transition: none !important;
-    animation: none !important;
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
