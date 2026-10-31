@@ -1513,7 +1513,7 @@ body {
 }
 
 @media (max-width: 720px) {
-  .molsan-btn {
+  .erp-route-content .molsan-btn {
     min-height: 40px;
   }
 
@@ -1528,11 +1528,11 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .molsan-btn {
+  .erp-route-content .molsan-btn {
     transition: none;
   }
 
-  .molsan-btn:hover:not(:disabled) {
+  .erp-route-content .molsan-btn:hover:not(:disabled) {
     transform: none;
   }
 }
