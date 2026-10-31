@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import axios from "../../api/axios";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/ComponentesOperativosPremium.css";
 
 const CAMPO = "block w-full px-3 py-2.5";
 
@@ -107,7 +105,7 @@ export default function ImportadorPostFirma() {
   };
 
   return (
-    <main className="importador-postfirma-premium utilidades-premium-page herramientas-subpagina-premium min-h-full min-w-0 space-y-5 p-4 md:p-6">
+    <main className="min-h-full min-w-0 space-y-5 p-4 md:p-6">
       <header className="p-5 md:p-6">
         <div className="flex items-start gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center">📦</div>
