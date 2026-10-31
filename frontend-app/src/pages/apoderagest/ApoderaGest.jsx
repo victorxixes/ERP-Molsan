@@ -1110,7 +1110,7 @@ export default function ApoderaGest() {
         </div>
       ) : null}
 
-      <footer className=""><span><strong>MOLSAN ERP</strong> · ApoderaGest</span><span>Premium 2027</span></footer>
+      <footer className=""><span><strong>MOLSAN ERP</strong> · ApoderaGest</span></footer>
           </div>
         </div>
       </main>
