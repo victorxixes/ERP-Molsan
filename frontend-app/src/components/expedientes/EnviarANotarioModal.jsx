@@ -212,9 +212,9 @@ function CampoTexto({
 }) {
   return (
     <div>
-      <label className="mb-1 block text-xs font-semibold text-slate-700">
+      <label className="mb-1 block">
         {label}
-        {required && <span className="text-red-500"> *</span>}
+        {required && <span className=""> *</span>}
       </label>
 
       <input
@@ -234,11 +234,11 @@ function CampoTexto({
 function CampoAutomatico({ label, valor }) {
   return (
     <div>
-      <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+      <label className="mb-1 block uppercase">
         {label}
       </label>
 
-      <div className="flex min-h-[42px] items-center rounded-xl border border-slate-200 bg-slate-100 px-3 text-sm font-medium text-slate-600">
+      <div className="flex min-h-[42px] items-center px-3">
         {valor || "—"}
       </div>
     </div>
@@ -248,9 +248,9 @@ function CampoAutomatico({ label, valor }) {
 function TituloSeccion({ titulo, descripcion }) {
   return (
     <div className="mb-3">
-      <h3 className="text-sm font-bold text-slate-800">{titulo}</h3>
+      <h3 className="">{titulo}</h3>
       {descripcion && (
-        <p className="mt-1 text-xs leading-relaxed text-slate-500">
+        <p className="mt-1">
           {descripcion}
         </p>
       )}
@@ -642,8 +642,8 @@ export default function EnviarANotarioModal({
       <div ref={dialogRef} tabIndex={inline ? undefined : -1} role={inline ? undefined : "dialog"} aria-modal={inline ? undefined : true} aria-label={inline ? undefined : "Envío de expediente a notario"} className={inline ? "flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-800 shadow-sm" : "flex h-[97vh] max-h-[98vh] w-[min(98vw,1750px)] max-w-[1750px] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white text-slate-800 shadow-2xl"} onMouseDown={(event) => event.stopPropagation()}>
 
         {!inline && (
-          <div className="flex shrink-0 items-center justify-end border-b border-slate-200 bg-white px-5 py-3 sm:px-7">
-            <button type="button" disabled={loading} onClick={onClose} aria-label="Cerrar modal" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50">✕</button>
+          <div className="flex shrink-0 items-center justify-end px-5 py-3 sm:px-7">
+            <button type="button" disabled={loading} onClick={onClose} aria-label="Cerrar modal" className="flex h-9 w-9 shrink-0 items-center justify-center">✕</button>
           </div>
         )}
 
@@ -657,7 +657,7 @@ export default function EnviarANotarioModal({
             {/* BLOQUES EN UNA FILA EN PANTALLAS GRANDES; SE ADAPTAN A 2 O 1 COLUMNA */}
 
             <div className="contents">
-              <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+              <section className="min-w-0 p-3">
                 <TituloSeccion
                   titulo="Envío al notario"
                   descripcion="Indica la fecha en que se envía el expediente al notario. Los datos de solicitud PNC y planificación de firma se gestionan desde ApoderaGest."
@@ -676,7 +676,7 @@ export default function EnviarANotarioModal({
                   </div>
 
                   <div className="min-w-0">
-                    <label className="mb-1 block text-xs font-semibold text-slate-700">
+                    <label className="mb-1 block">
                       ¿La escritura está firmada?
                     </label>
                     <div className="grid grid-cols-2 gap-2">
@@ -702,11 +702,11 @@ export default function EnviarANotarioModal({
                   </div>
 
                   <div className="min-w-0">
-                    <label className="mb-1 block text-xs font-semibold text-slate-700">
+                    <label className="mb-1 block">
                       Firma urgente
                     </label>
-                    <div className="flex min-h-[42px] items-center rounded-xl border border-slate-200 bg-white px-3 py-2">
-                      <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700">
+                    <div className="flex min-h-[42px] items-center px-3 py-2">
+                      <label className="flex items-center gap-2">
                         <input
                           type="checkbox"
                           checked={Boolean(form.firma_urgente)}
@@ -723,7 +723,7 @@ export default function EnviarANotarioModal({
               {/* DATOS DEL NOTARIO */}
               {/* NOTARIO */}
 
-              <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3 xl:col-span-2">
+              <section className="min-w-0 p-3 xl:col-span-2">
                 <TituloSeccion
                   titulo="Datos del notario"
                   descripcion="Selecciona el notario desde el catálogo CTN."
@@ -741,7 +741,7 @@ export default function EnviarANotarioModal({
                       type="button"
                       disabled={loading}
                       onClick={() => seleccionarNotario(null)}
-                      className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="px-3 py-2"
                     >
                       ✕ Quitar notario y buscar otro
                     </button>
@@ -791,7 +791,7 @@ export default function EnviarANotarioModal({
                 )}
               </section>              {/* TIPO DE DOCUMENTO Y NUEVOS CAMPOS */}
 
-              <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3 xl:col-span-2">
+              <section className="min-w-0 p-3 xl:col-span-2">
                 <TituloSeccion
                   titulo="Tipo de documento"
                   descripcion="Selecciona el documento, el formato de escritura y la modalidad de tramitación."
@@ -803,8 +803,8 @@ export default function EnviarANotarioModal({
                   <CampoTexto label="Tipo de operación" value={form.tipo_operacion} disabled={loading} onChange={(v) => cambiarCampo("tipo_operacion", v)} placeholder="Tipo de operación" />
                   <CampoTexto label="Importe con provisión (€)" value={form.importe} disabled={loading} type="number" onChange={(v) => cambiarCampo("importe", v)} placeholder="0,00" />
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-700">
-                      Formato de escritura <span className="text-red-500">*</span>
+                    <label className="mb-1 block">
+                      Formato de escritura <span className="">*</span>
                     </label>
                     <select
                       value={form.formato_escritura}
@@ -817,8 +817,8 @@ export default function EnviarANotarioModal({
                     </select>
                   </div>
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-700">
-                      Tipo de trámite <span className="text-red-500">*</span>
+                    <label className="mb-1 block">
+                      Tipo de trámite <span className="">*</span>
                     </label>
                     <select
                       value={form.tipo_tramite}
@@ -836,10 +836,10 @@ export default function EnviarANotarioModal({
                   {documentosEscritura.map((documento, indice) => (
                     <div
                       key={documento.id}
-                      className="rounded-xl border border-slate-200 bg-slate-50/70 p-3 sm:p-4"
+                      className="p-3 sm:p-4"
                     >
                       <div className="mb-3 flex items-center justify-between gap-3">
-                        <span className="text-sm font-bold text-slate-700">
+                        <span className="">
                           Documento {indice + 1}
                         </span>
                         {documentosEscritura.length > 1 && (
@@ -847,15 +847,15 @@ export default function EnviarANotarioModal({
                             type="button"
                             disabled={loading}
                             onClick={() => setDocumentosEscritura((actuales) => actuales.filter((item) => item.id !== documento.id))}
-                            className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+                            className="px-3 py-1.5"
                           >
                             Quitar documento
                           </button>
                         )}
                       </div>
 
-                      <label className="mb-1 block text-xs font-semibold text-slate-700">
-                        Tipo de documento <span className="text-red-500">*</span>
+                      <label className="mb-1 block">
+                        Tipo de documento <span className="">*</span>
                       </label>
                       <select
                         value={documento.tipo_documento}
@@ -892,7 +892,7 @@ export default function EnviarANotarioModal({
                       </select>
 
                       <div className="mt-3">
-                        <label className="mb-1 block text-xs font-semibold text-slate-700">
+                        <label className="mb-1 block">
                           Cuantía
                         </label>
                         <input
@@ -906,7 +906,7 @@ export default function EnviarANotarioModal({
                           className={clasesInput()}
                         />
                         {indice === 0 && (
-                          <p className="mt-1 text-xs text-slate-500">Se propone el importe de Fincas y Registros; puedes corregirlo antes de guardar.</p>
+                          <p className="mt-1">Se propone el importe de Fincas y Registros; puedes corregirlo antes de guardar.</p>
                         )}
                       </div>
                     </div>
@@ -919,15 +919,15 @@ export default function EnviarANotarioModal({
                       ...actuales,
                       { id: Date.now(), tipo_documento: "", cuantia: "" },
                     ]))}
-                    className="w-full rounded-xl border border-dashed border-indigo-300 bg-indigo-50/50 px-3 py-2.5 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50 disabled:opacity-50"
+                    className="w-full px-3 py-2.5"
                   >
                     + Añadir otro documento de escritura
                   </button>
 
                   <div className="mt-3">
-                    <label className="mb-1 block text-xs font-semibold text-slate-700">
+                    <label className="mb-1 block">
                       Idioma del documento
-                      <span className="text-red-500"> *</span>
+                      <span className=""> *</span>
                     </label>
                     <select
                       value={form.idioma}
@@ -955,13 +955,13 @@ export default function EnviarANotarioModal({
             {/* DATOS DE FACTURACIÓN — CUARTO BLOQUE: ocupa todo el ancho disponible */}
 
             <div className="min-w-0 w-full col-span-full">
-              <section className="w-full min-w-0 rounded-xl border border-[var(--erp-primary)]/20 bg-slate-50/70 p-4 sm:p-5">
+              <section className="w-full min-w-0 p-4 sm:p-5">
                 <div className="mb-5 flex items-start gap-3">
                   <div>
-                    <h3 className="text-base font-bold text-slate-800">
+                    <h3 className="">
                       Datos de facturación
                     </h3>
-                    <p className="mt-1 text-xs leading-relaxed text-slate-500">
+                    <p className="mt-1">
                       Revisa y completa los datos de facturación.
                       Todos estos campos son editables.
                     </p>
@@ -970,12 +970,12 @@ export default function EnviarANotarioModal({
 
                 <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-5">
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-700">¿El cliente es empleado?</label>
+                    <label className="mb-1 block">¿El cliente es empleado?</label>
                     <select value={form.facturacion_empleado} disabled={loading} onChange={(event) => cambiarCampo("facturacion_empleado", event.target.value)} className={clasesInput()}>
                       <option value="No">No</option>
                       <option value="Sí">Sí — descuento del 50 % en honorarios</option>
                     </select>
-                    <p className="mt-1 text-[11px] text-slate-500">Si seleccionas Sí, se aplicará el descuento de empleado en la factura de gestoría.</p>
+                    <p className="mt-1">Si seleccionas Sí, se aplicará el descuento de empleado en la factura de gestoría.</p>
                   </div>
                   <CampoTexto
                     label="Nombre"
@@ -1042,7 +1042,7 @@ export default function EnviarANotarioModal({
                     />
 
                     <div className="relative min-w-0">
-                      <label className="mb-1 block text-xs font-semibold text-slate-700">
+                      <label className="mb-1 block">
                         Población
                       </label>
                       <input
@@ -1077,7 +1077,7 @@ export default function EnviarANotarioModal({
                       {municipiosAbierto && !loading && form.facturacion_poblacion.trim() && (
                         <div
                           role="listbox"
-                          className="absolute z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-xl"
+                          className="absolute z-50 mt-1 max-h-56 w-full overflow-y-auto p-1"
                         >
                           {municipios
                             .filter((item) =>
@@ -1102,23 +1102,23 @@ export default function EnviarANotarioModal({
                                   setMunicipiosAbierto(false);
                                   setError("");
                                 }}
-                                className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm hover:bg-indigo-50"
+                                className="flex w-full items-center justify-between gap-3 px-3 py-2"
                               >
-                                <span className="font-medium text-slate-800">{item.municipio}</span>
-                                <span className="text-xs text-slate-500">{item.provincia}</span>
+                                <span className="">{item.municipio}</span>
+                                <span className="">{item.provincia}</span>
                               </button>
                             ))}
                           {municipios.filter((item) =>
                             normalizarMunicipio(item.municipio).includes(normalizarMunicipio(form.facturacion_poblacion)) ||
                             normalizarMunicipio(item.provincia).includes(normalizarMunicipio(form.facturacion_poblacion))
                           ).length === 0 && (
-                            <p className="px-3 py-2 text-xs text-slate-500">
+                            <p className="px-3 py-2">
                               No se encuentra en el catálogo. Comprueba la población en Utilidades → Municipios.
                             </p>
                           )}
                         </div>
                       )}
-                      <p className="mt-1 text-[11px] text-slate-500">
+                      <p className="mt-1">
                         {municipiosLoading
                           ? "Cargando catálogo de municipios…"
                           : "Selecciona un municipio para completar automáticamente la provincia."}
@@ -1172,7 +1172,7 @@ export default function EnviarANotarioModal({
           {error && (
             <div
               role="alert"
-              className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-relaxed text-red-700"
+              className="mt-5 px-4 py-3"
             >
               {error}
             </div>
@@ -1181,14 +1181,14 @@ export default function EnviarANotarioModal({
 
         {/* PIE FIJO */}
 
-        <div className="flex shrink-0 flex-col-reverse gap-3 border-t border-slate-200 bg-white px-4 py-4 sm:flex-row sm:justify-between sm:px-6">
-          <p className="self-center text-xs text-slate-400">
-            Los campos con <span className="text-red-500">*</span>{" "}
+        <div className="flex shrink-0 flex-col-reverse gap-3 px-4 py-4 sm:flex-row sm:justify-between sm:px-6">
+          <p className="self-center">
+            Los campos con <span className="">*</span>{" "}
             son obligatorios.
           </p>
 
           <div className="flex flex-col-reverse gap-3 sm:flex-row">
-            {!inline && <button type="button" disabled={loading} onClick={onClose} className="rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 disabled:opacity-50">Cancelar</button>}
+            {!inline && <button type="button" disabled={loading} onClick={onClose} className="px-5 py-2.5">Cancelar</button>}
 
             <button
               type="button"
@@ -1203,7 +1203,7 @@ export default function EnviarANotarioModal({
                 !form.fecha_envio
               }
               onClick={guardar}
-              className="rounded-xl bg-[var(--erp-primary)] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+              className="px-5 py-2.5"
             >
               {loading ? "Guardando..." : "Enviar a notario"}
             </button>
