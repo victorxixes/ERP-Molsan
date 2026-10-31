@@ -1,0 +1,47 @@
+/* MOLSAN ERP · BASE NEUTRA 2027
+   Neutraliza la presentación heredada sin alterar estructura ni lógica.
+   Se excluyen deliberadamente el sidebar y su modal de perfil.
+*/
+:where(body *) :not(.mol-sidebar-premium):not(.mol-sidebar-premium *):not(.sidebar-perfil-modal-premium):not(.sidebar-perfil-modal-premium *) {
+  color: inherit !important;
+  font-family: inherit !important;
+  font-weight: inherit !important;
+  font-style: inherit !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background-image: none !important;
+  border-radius: 0 !important;
+  transition: none !important;
+  animation: none !important;
+}
+:where(body *) :not(.mol-sidebar-premium):not(.mol-sidebar-premium *):not(.sidebar-perfil-modal-premium):not(.sidebar-perfil-modal-premium *):not(.modal-overlay-sj):not([role="dialog"]) {
+  background-color: transparent !important;
+}
+:where(body *) :not(.mol-sidebar-premium):not(.mol-sidebar-premium *):not(.sidebar-perfil-modal-premium):not(.sidebar-perfil-modal-premium *) {
+  border-color: currentColor !important;
+}
+:where(button,input,select,textarea):not(.mol-sidebar-premium *):not(.sidebar-perfil-modal-premium *) {
+  font: inherit;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+:where(a):not(.mol-sidebar-premium *):not(.sidebar-perfil-modal-premium *) {
+  color: inherit !important;
+  text-decoration: underline;
+}
+:where(*):not(.mol-sidebar-premium *):not(.sidebar-perfil-modal-premium *):focus-visible {
+  outline: 2px solid currentColor !important;
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(body *) :not(.mol-sidebar-premium *):not(.sidebar-perfil-modal-premium *) {
+    scroll-behavior: auto !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}
