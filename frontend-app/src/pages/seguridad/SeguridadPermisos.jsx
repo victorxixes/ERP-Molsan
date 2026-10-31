@@ -674,7 +674,7 @@ export default function SeguridadPermisos() {
       <div
         className="p-10"
       >
-        <div className="">
+        <div>
           🔑
         </div>
 
@@ -785,7 +785,7 @@ export default function SeguridadPermisos() {
           <p className="mt-1">
             {modulos.length}
           </p>
-          <p className="">
+          <p>
             catálogo completo
           </p>
         </div>
@@ -800,7 +800,7 @@ export default function SeguridadPermisos() {
           <p className="mt-1">
             {totalPermisos}
           </p>
-          <p className="">
+          <p>
             permisos del catálogo
           </p>
         </div>
@@ -815,7 +815,7 @@ export default function SeguridadPermisos() {
           <p className="mt-1">
             {permisosAsignados}
           </p>
-          <p className="">
+          <p>
             permisos válidos
           </p>
         </div>
@@ -829,7 +829,7 @@ export default function SeguridadPermisos() {
           </p>
 
           <div className="mt-1 flex items-center justify-between">
-            <p className="">
+            <p>
               {porcentajeAsignado}%
             </p>
           </div>
@@ -950,7 +950,7 @@ export default function SeguridadPermisos() {
         <div className="mb-3">
 
           <h3
-            className=""
+           
           >
             Configuración de permisos
           </h3>
@@ -1132,7 +1132,7 @@ export default function SeguridadPermisos() {
 
 
                         <span
-                          className=""
+                         
                         >
                           {abierto
                             ? "▲"
