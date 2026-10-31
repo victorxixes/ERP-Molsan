@@ -134,7 +134,6 @@ export default function Notificaciones() {
 
       {/* ======================================================
           CABECERA
-          ====================================================== */}
 
       <MolsanPageHeader mark="NO" title="Notificaciones" description="Actividad y avisos en tiempo real del ERP." />
       <div className="molsan-filter-bar flex flex-wrap items-center justify-between gap-3 p-3">
@@ -142,8 +141,6 @@ export default function Notificaciones() {
         <button type="button" className="molsan-btn molsan-btn--secondary" onClick={clearNotificaciones} disabled={lista.length === 0}>Limpiar notificaciones</button>
       </div>
 
-          ESTADO VACÍO
-          ====================================================== */}
 
       {lista.length === 0 ? (
 
