@@ -2396,7 +2396,7 @@ const permisosDisponibles =
             CONTENIDO
         ==================================================== */}
 
-        {pestana === "visibilidad-tablas" && <div className="p-4 sm:p-6"><div className="mb-4 p-4"><h3 className="">Configuración administrativa por actividad</h3><p className="mt-1">Define las columnas de Excel y los repositorios disponibles para este empleado. Esta configuración es independiente de sus preferencias personales.</p></div><VisibilidadTablas empleadoId={empleadoId} ambito="administracion" modal={false} titulo="Visibilidad de tablas del empleado" onClose={() => setPestana("basicos")} /></div>}
+        {pestana === "visibilidad-tablas" && <div className="p-4 sm:p-6"><div className="mb-4 p-4"><h3>Configuración administrativa por actividad</h3><p className="mt-1">Define las columnas de Excel y los repositorios disponibles para este empleado. Esta configuración es independiente de sus preferencias personales.</p></div><VisibilidadTablas empleadoId={empleadoId} ambito="administracion" modal={false} titulo="Visibilidad de tablas del empleado" onClose={() => setPestana("basicos")} /></div>}
 
         <div
           className="min-h-0
@@ -2430,7 +2430,7 @@ const permisosDisponibles =
  justify-center"
             >
 
-              <div className="">
+              <div>
 
                 <div
                   className="mx-auto
@@ -2518,7 +2518,7 @@ const permisosDisponibles =
                       <div className="mb-5">
 
                         <h3
-                          className=""
+                         
                         >
                           Datos básicos
                         </h3>
@@ -2713,7 +2713,7 @@ const permisosDisponibles =
                         <div className="flex-1">
 
                           <h3
-                            className=""
+                           
                           >
                             Fotografía
                           </h3>
@@ -2795,7 +2795,7 @@ const permisosDisponibles =
                       <div className="mb-5">
 
                         <h3
-                          className=""
+                         
                         >
                           Datos personales
                         </h3>
@@ -2982,7 +2982,7 @@ const permisosDisponibles =
                       <div className="mb-5">
 
                         <h3
-                          className=""
+                         
                         >
                           Datos laborales
                         </h3>
@@ -3127,7 +3127,7 @@ const permisosDisponibles =
                         <div>
 
                           <h3
-                            className=""
+                           
                           >
                             Estado del empleado
                           </h3>
@@ -3219,7 +3219,7 @@ const permisosDisponibles =
                       <label className="block" htmlFor="honorarios-valor-empleado">Precio / valor de los honorarios (€ netos por protocolo)</label>
                       <div className="mt-2 flex max-w-sm items-center gap-3">
                         <input id="honorarios-valor-empleado" type="number" min="0" step="0.01" value={empleadoFormulario.honorarios_valor ?? 0} onChange={(e) => cambiarCampo("honorarios_valor", e.target.value === "" ? 0 : Number(e.target.value))} disabled={!esAdministrador} className="w-full px-4 py-3" />
-                        <span className="">€</span>
+                        <span>€</span>
                       </div>
                       <p className="mt-3">La base neta se calcula con el número de protocolos únicos. El IVA se calcula por separado en Control Apoderados y Mi liquidación.</p>
                     </section>
@@ -3235,7 +3235,7 @@ const permisosDisponibles =
                     <section className="p-5">
                       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-center">
                         <div>
-                          <h3 className="">Rol del empleado</h3>
+                          <h3>Rol del empleado</h3>
                           <p className="mt-1">Define el nivel de acceso general al ERP.</p>
                         </div>
                         <select
@@ -3261,7 +3261,7 @@ const permisosDisponibles =
                       <div className="mb-5 p-5">
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                           <div>
-                            <h4 className="">Mostrar empleado en el listado</h4>
+                            <h4>Mostrar empleado en el listado</h4>
                             <p className="mt-1">
                               {empleadoEdit.visible_en_listado === false
                                 ? "Este empleado está oculto en las tarjetas del módulo Empleados. Su cuenta y sus datos se mantienen."
@@ -3305,7 +3305,7 @@ const permisosDisponibles =
                         <div>
 
                           <h3
-                            className=""
+                           
                           >
                             Módulos visibles
                           </h3>
@@ -3419,7 +3419,7 @@ const permisosDisponibles =
                         >
 
                           <p
-                            className=""
+                           
                           >
                             No hay módulos disponibles.
                           </p>
@@ -3440,7 +3440,7 @@ const permisosDisponibles =
                       <div className="mb-5">
 
                         <h3
-                          className=""
+                         
                         >
                           Permisos por módulo
                         </h3>
@@ -3499,7 +3499,7 @@ const permisosDisponibles =
                                   >
 
                                     <span
-                                      className=""
+                                     
                                     >
                                       {MODULOS_ERP.find((item) => item.key === modulo)?.label || capitalizar(modulo)}
                                     </span>
@@ -3590,7 +3590,7 @@ const permisosDisponibles =
                                   ) : (
 
                                     <span
-                                      className=""
+                                     
                                     >
                                       Sin permisos
                                       definidos para
@@ -3614,7 +3614,7 @@ const permisosDisponibles =
                         >
 
                           <p
-                            className=""
+                           
                           >
                             No hay módulos disponibles
                             para configurar permisos.
@@ -3649,7 +3649,7 @@ const permisosDisponibles =
                   <div className="space-y-5">
                     <section className="p-5">
                       <div className="mb-5">
-                        <h3 className="">Notarios CTN · habilitación y gestor responsable</h3>
+                        <h3>Notarios CTN · habilitación y gestor responsable</h3>
                         <p className="mt-1">Busca un notario, habilítalo para la gestión interna de EncargaGest y asigna el gestor responsable. Cada cambio se guarda individualmente.</p>
                       </div>
                       {!esAdministrador && <p className="p-4">Solo un administrador puede modificar las notarías asignadas.</p>}
@@ -3701,7 +3701,7 @@ const permisosDisponibles =
                     <section className="p-5">
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div>
-                          <h3 className="">Reglas de reparto de expedientes</h3>
+                          <h3>Reglas de reparto de expedientes</h3>
                           <p className="mt-1 max-w-3xl">Conserva las reglas existentes y añade criterios por oficina, Producto GTG y tipo de operación. Puedes tener varias reglas para una misma actividad si corresponden a oficinas o productos diferentes.</p>
                         </div>
                         <button type="button" disabled={!esAdministrador || cargandoReparto || !gestorRepartoId} onClick={() => setReglasReparto((actual) => [...actual, { _key: "nueva-" + Date.now() + "-" + actual.length, actividad: actividadesReparto[0]?.key || "", departamento: "", oficina_tipo: "", oficinas: "", producto_gtg: "", tipo_operacion: "", estados_expediente: [], zona_territorial: false, comunidades: [], comunidad: "", porcentaje: 100, apoderado_id: "", activa: true }])} className="px-4 py-2.5">+ Añadir regla</button>
@@ -3713,7 +3713,7 @@ const permisosDisponibles =
                             {empleadosReparto.map((gestor) => <option key={gestor.id} value={gestor.id}>{[gestor.nombre, gestor.apellidos].filter(Boolean).join(" ") || gestor.usuario || ("Empleado " + gestor.id)}</option>)}
                           </select>
                         </label>
-                        <p className="">Selecciona cualquier gestor y configura todas las actividades que puede tramitar. Un mismo gestor puede tener múltiples actividades y varias zonas territoriales dentro de cada regla.</p>
+                        <p>Selecciona cualquier gestor y configura todas las actividades que puede tramitar. Un mismo gestor puede tener múltiples actividades y varias zonas territoriales dentro de cada regla.</p>
                       </div>
                       {errorReparto && <p role="alert" className="mt-3 p-3">{errorReparto}</p>}
                       {mensajeReparto && <p role="status" className="mt-3 p-3">{mensajeReparto}</p>}
@@ -3722,7 +3722,7 @@ const permisosDisponibles =
                           {reglasReparto.map((regla, indice) => (
                             <article key={regla._key || indice} className="p-4">
                               <div className="mb-3 flex items-center justify-between gap-3">
-                                <strong className="">Actividad / regla {indice + 1}</strong>
+                                <strong>Actividad / regla {indice + 1}</strong>
                                 <div className="flex items-center gap-3">
                                   <label className="flex items-center gap-2"><input type="checkbox" checked={regla.activa !== false} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, activa: e.target.checked } : r))} className="h-4 w-4" />Activa</label>
                                   <button type="button" onClick={() => setReglasReparto((actual) => actual.filter((_, i) => i !== indice))} className="px-3 py-1.5">Eliminar</button>
@@ -3767,7 +3767,7 @@ const permisosDisponibles =
                         </div>
                       )}
                       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 pt-4">
-                        <p className="">{reglasReparto.filter((r) => r.activa !== false).length} regla(s) activa(s)</p>
+                        <p>{reglasReparto.filter((r) => r.activa !== false).length} regla(s) activa(s)</p>
                         <button type="button" disabled={!esAdministrador || guardandoReparto || cargandoReparto || !gestorRepartoId || reglasReparto.some((r) => !r.actividad || r.zona_territorial && !(Array.isArray(r.comunidades) ? r.comunidades.length : r.comunidad))} onClick={async () => {
                           setGuardandoReparto(true); setErrorReparto(""); setMensajeReparto("");
                           try {
@@ -3831,7 +3831,7 @@ const permisosDisponibles =
                       <div className="mb-5">
 
                         <h3
-                          className=""
+                         
                         >
                           Seguridad
                         </h3>
@@ -3864,7 +3864,7 @@ const permisosDisponibles =
                           <div>
 
                             <h4
-                              className=""
+                             
                             >
                               Restablecer contraseña
                             </h4>
@@ -3967,7 +3967,7 @@ const permisosDisponibles =
                       <div className="mb-5">
 
                         <h3
-                          className=""
+                         
                         >
                           Auditoría
                         </h3>
@@ -4054,7 +4054,7 @@ const permisosDisponibles =
                             className="p-8"
                           >
 
-                            <div className="">
+                            <div>
                               📋
                             </div>
 
@@ -4107,7 +4107,7 @@ const permisosDisponibles =
         >
 
           <p
-            className=""
+           
           >
             Molsan ERP · Perfil de empleado
           </p>
