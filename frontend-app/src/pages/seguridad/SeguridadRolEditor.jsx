@@ -454,7 +454,7 @@ export default function SeguridadRolEditor() {
             className="erp-btn erp-btn-primary inline-flex items-center justify-center gap-2 px-5 py-2.5"
           >
 
-            <span className="">
+            <span>
               +
             </span>
 
@@ -481,7 +481,7 @@ export default function SeguridadRolEditor() {
  px-4 py-3"
         >
 
-          <span className="">
+          <span>
             ✓
           </span>
 
@@ -504,7 +504,7 @@ export default function SeguridadRolEditor() {
  px-4 py-3"
         >
 
-          <span className="">
+          <span>
             !
           </span>
 
@@ -536,7 +536,7 @@ export default function SeguridadRolEditor() {
 
             <div>
 
-              <h2 className="">
+              <h2>
                 Roles existentes
               </h2>
 
@@ -572,7 +572,7 @@ export default function SeguridadRolEditor() {
               <thead>
 
                 <tr
-                  className=""
+                 
                 >
 
                   <th
@@ -645,7 +645,7 @@ export default function SeguridadRolEditor() {
 
                         <tr
                           key={String(rol.id)}
-                          className=""
+                         
                         >
 
                           <td className="px-6 py-4">
@@ -682,7 +682,7 @@ export default function SeguridadRolEditor() {
                               <div>
 
                                 <div
-                                  className=""
+                                 
                                 >
                                   {rol.nombre}
                                 </div>
@@ -796,7 +796,7 @@ export default function SeguridadRolEditor() {
 
               <div>
 
-                <h2 className="">
+                <h2>
                   {modo === "crear"
                     ? "Crear nuevo rol"
                     : "Editar rol"}
