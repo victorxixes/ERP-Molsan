@@ -220,7 +220,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
                 <article key={op.id} className="p-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="">Traspaso #{op.id} · receptor {op.receptor_numero}</div>
-                    <span className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase ${op.estado === "cerrado" ? "" : op.estado === "cancelado" ? "" : ""}`}>{op.estado.replaceAll("_", " ")}</span>
+                    <span className={`px-2.5 py-1 uppercase ${op.estado === "cerrado" ? "" : op.estado === "cancelado" ? "" : ""}`}>{op.estado.replaceAll("_", " ")}</span>
                   </div>
                   <p className="mt-1">Orígenes: {op.origenes.map((item) => item.numero).join(", ") || "—"} · Importe receptor verificado: {euros(op.importe_receptor_actualizado)}</p>
                   {op.email_estado === "enviado" && <p className="mt-1">Email enviado · {fecha(op.email_enviado_en)}</p>}
@@ -299,7 +299,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
               {origenes.length === 0 && <p className="p-3">No hay otros expedientes con el mismo VincCanc y tipo de operación.</p>}
               {origenes.map((item) => {
                 const bloqueado = item.bloqueado_por_traspaso || item.liquidado_sin_tramitar;
-                return <label key={item.numero} className={`flex flex-wrap items-center gap-3 rounded-lg border p-3 ${bloqueado ? "" : ""}`}>
+                return <label key={item.numero} className={`flex flex-wrap items-center gap-3 p-3 ${bloqueado ? "" : ""}`}>
                   <input type="checkbox" checked={origenesSeleccionados.includes(item.numero)} disabled={bloqueado} onChange={() => alternarOrigen(item.numero)} className="h-4 w-4" />
                   <span className="min-w-0 flex-1"><strong className="">{item.numero}</strong><span className="ml-2">{item.bloqueado_por_traspaso ? item.motivo_bloqueo_traspaso : item.liquidado_sin_tramitar ? "Liquidado sin tramitar" : "Disponible para incluir"}</span></span>
                   <span className=""><span className="block">Importe</span><strong>{euros(item.importe)}</strong></span>
