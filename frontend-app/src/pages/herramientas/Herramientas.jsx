@@ -42,7 +42,7 @@ export default function Herramientas() {
           </div>
 
           <div>
-            <h1 className="">
+            <h1>
               Herramientas
             </h1>
 
@@ -175,7 +175,7 @@ function Card({
 
         <div className="min-w-0 flex-1">
 
-          <h2 className="">
+          <h2>
             {titulo}
           </h2>
 
