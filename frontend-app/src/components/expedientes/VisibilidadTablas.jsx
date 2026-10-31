@@ -147,7 +147,7 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
   }
 
   return (
-    <div className={modal ? "visibilidad-tablas-premium erp-page fixed inset-0 z-[12000] overflow-y-auto p-3 sm:p-6" : "visibilidad-tablas-premium erp-page w-full"} role={modal ? "dialog" : undefined} aria-modal={modal ? "true" : undefined} aria-label={titulo || "Visibilidad tablas"}>
+    <div className={modal ? "erp-page fixed inset-0 z-[12000] overflow-y-auto p-3 sm:p-6" : "erp-page w-full"} role={modal ? "dialog" : undefined} aria-modal={modal ? "true" : undefined} aria-label={titulo || "Visibilidad tablas"}>
       <div className={"mx-auto" + (modal ? "my-2" : "") + "max-w-7xl overflow-hidden"}>
         <header className="flex flex-wrap items-center gap-3 px-5 py-4">
           <div className="flex h-11 w-11 items-center justify-center">⚙️</div>
