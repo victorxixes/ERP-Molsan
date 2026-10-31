@@ -1475,8 +1475,7 @@ function InformeCitasApoderados() {
               <span
                 className="absolute
  left-3
- top-1/2
- -translate-y-1/2"
+ top-1/2"
               >
                 🔎
               </span>
@@ -2063,18 +2062,16 @@ function KpiCard({
   return (
 
     <div
-      className={`
-        relative
-        overflow-hidden
-        rounded-2xl
-        border
-        p-5
-        shadow-[0_8px_25px_rgba(55,85,120,0.08)]
-        transition
-        hover:-translate-y-0.5
-        hover:shadow-[0_12px_30px_rgba(55,85,120,0.12)]
-        ${fondos[clase]}
-      `}
+      className={`relative
+ overflow-hidden
+ 
+ 
+ p-5
+ 
+ 
+ 
+ 
+ ${fondos[clase]}`}
     >
 
       <div
@@ -2110,20 +2107,18 @@ function KpiCard({
 
 
         <div
-          className={`
-            w-11
-            h-11
-            rounded-xl
-            bg-white/70
-            border
-            border-white
-            flex
-            items-center
-            justify-center
-            text-xl
-            shadow-sm
-            ${colores[clase]}
-          `}
+          className={`w-11
+ h-11
+ 
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center
+ 
+ 
+ ${colores[clase]}`}
         >
           {icon}
         </div>
@@ -2156,21 +2151,19 @@ function ThOrden({
   return (
 
     <th
-      className={`
-        py-3.5
-        px-6
-        font-semibold
-        text-blue-800/80
-        cursor-pointer
-        select-none
-        hover:text-blue-900
-        transition
-        ${
-          align === "center"
-            ? ""
-            : ""
-        }
-      `}
+      className={`py-3.5
+ px-6
+ 
+ 
+ 
+ 
+ 
+ 
+ ${
+ align === "center"
+ ? ""
+ : ""
+ }`}
       onClick={() =>
         ordenar(campo)
       }
@@ -2186,15 +2179,11 @@ function ThOrden({
 
 
         <span
-          className={`
-            text-[10px]
-            transition
-            ${
-              activo
-                ? ""
-                : ""
-            }
-          `}
+          className={`${
+ activo
+ ? ""
+ : ""
+ }`}
         >
 
           {activo
@@ -2855,7 +2844,7 @@ function InformeNotarios() {
         {loading ? <PanelEstadoInforme loading /> : topNotarios.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas de notarios para este periodo y filtros." /> : (
           <div className="space-y-4 p-5">
             {topNotarios.map((fila, indice) => (
-              <button key={fila.clave_notario} type="button" onClick={() => setClaveNotarioSeleccionado((actual) => actual === fila.clave_notario ? "" : fila.clave_notario)} className={`w-full rounded-xl border p-3 text-left transition hover:border-blue-200 hover:bg-blue-50/40 ${claveNotarioSeleccionado === fila.clave_notario ? "" : ""}`}>
+              <button key={fila.clave_notario} type="button" onClick={() => setClaveNotarioSeleccionado((actual) => actual === fila.clave_notario ? "" : fila.clave_notario)} className={`w-full p-3 ${claveNotarioSeleccionado === fila.clave_notario ? "" : ""}`}>
                 <div className="mb-2 flex items-center justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center">{indice + 1}</span><span className="min-w-0"><span className="block truncate">{fila.nombre_notario}</span><span className="block">{fila.nif_notario || "NIF no informado"}</span></span></div>
                   <span className="shrink-0">{numeroInforme(fila.total_firmas)}</span>
@@ -2877,7 +2866,7 @@ function InformeNotarios() {
           </div>
         </div>
         {loading ? <PanelEstadoInforme loading /> : porNotario.length === 0 ? <PanelEstadoInforme vacio /> : (
-          <div className="max-h-[620px] overflow-auto"><table className="w-full min-w-[1400px]"><thead className="sticky top-0 z-10 uppercase"><tr><th className="whitespace-nowrap px-4 py-3">Notario</th><th className="whitespace-nowrap px-4 py-3">NIF</th><th className="whitespace-nowrap px-4 py-3">Firmados</th><th className="whitespace-nowrap px-4 py-3">VC</th><th className="whitespace-nowrap px-4 py-3">Presencial</th><th className="whitespace-nowrap px-4 py-3">Sin clasificar</th><th className="whitespace-nowrap px-4 py-3">Con protocolo</th><th className="whitespace-nowrap px-4 py-3">Media días</th><th className="whitespace-nowrap px-4 py-3">Última firma</th><th className="whitespace-nowrap px-4 py-3">Operaciones</th><th className="whitespace-nowrap px-4 py-3">Detalle</th></tr></thead><tbody>{porNotario.map((f) => <tr key={f.clave_notario} className={`border-t border-slate-100 hover:bg-blue-50/40 ${claveNotarioSeleccionado === f.clave_notario ? "" : ""}`}><td className="px-4 py-3">{f.nombre_notario}</td><td className="whitespace-nowrap px-4 py-3">{f.nif_notario || "—"}</td><td className="px-4 py-3">{numeroInforme(f.total_firmas)}</td><td className="px-4 py-3">{numeroInforme(f.vc)}</td><td className="px-4 py-3">{numeroInforme(f.presencial)}</td><td className="px-4 py-3">{numeroInforme(f.sin_clasificar)}</td><td className="px-4 py-3">{numeroInforme(f.con_protocolo)}</td><td className="px-4 py-3">{f.media_dias_envio_firma == null ? "—" : numeroInforme(f.media_dias_envio_firma, 1)}</td><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.ultima_firma)}</td><td className="px-4 py-3" title={(f.tipos_operacion || []).join(", ")}>{numeroInforme(f.numero_tipos_operacion)}</td><td className="px-4 py-3"><button type="button" onClick={() => setClaveNotarioSeleccionado((actual) => actual === f.clave_notario ? "" : f.clave_notario)} className="whitespace-nowrap px-3 py-2">{claveNotarioSeleccionado === f.clave_notario ? "Ocultar" : "Ver firmas"}</button></td></tr>)}</tbody></table></div>
+          <div className="max-h-[620px] overflow-auto"><table className="w-full min-w-[1400px]"><thead className="sticky top-0 z-10 uppercase"><tr><th className="whitespace-nowrap px-4 py-3">Notario</th><th className="whitespace-nowrap px-4 py-3">NIF</th><th className="whitespace-nowrap px-4 py-3">Firmados</th><th className="whitespace-nowrap px-4 py-3">VC</th><th className="whitespace-nowrap px-4 py-3">Presencial</th><th className="whitespace-nowrap px-4 py-3">Sin clasificar</th><th className="whitespace-nowrap px-4 py-3">Con protocolo</th><th className="whitespace-nowrap px-4 py-3">Media días</th><th className="whitespace-nowrap px-4 py-3">Última firma</th><th className="whitespace-nowrap px-4 py-3">Operaciones</th><th className="whitespace-nowrap px-4 py-3">Detalle</th></tr></thead><tbody>{porNotario.map((f) => <tr key={f.clave_notario} className={`${claveNotarioSeleccionado === f.clave_notario ? "" : ""}`}><td className="px-4 py-3">{f.nombre_notario}</td><td className="whitespace-nowrap px-4 py-3">{f.nif_notario || "—"}</td><td className="px-4 py-3">{numeroInforme(f.total_firmas)}</td><td className="px-4 py-3">{numeroInforme(f.vc)}</td><td className="px-4 py-3">{numeroInforme(f.presencial)}</td><td className="px-4 py-3">{numeroInforme(f.sin_clasificar)}</td><td className="px-4 py-3">{numeroInforme(f.con_protocolo)}</td><td className="px-4 py-3">{f.media_dias_envio_firma == null ? "—" : numeroInforme(f.media_dias_envio_firma, 1)}</td><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.ultima_firma)}</td><td className="px-4 py-3" title={(f.tipos_operacion || []).join(", ")}>{numeroInforme(f.numero_tipos_operacion)}</td><td className="px-4 py-3"><button type="button" onClick={() => setClaveNotarioSeleccionado((actual) => actual === f.clave_notario ? "" : f.clave_notario)} className="whitespace-nowrap px-3 py-2">{claveNotarioSeleccionado === f.clave_notario ? "Ocultar" : "Ver firmas"}</button></td></tr>)}</tbody></table></div>
         )}
       </section>
 
@@ -2975,7 +2964,7 @@ function InformeSLA() {
       <AvisoInforme error={error} />
       <section className="overflow-hidden">
         <div className="px-5 py-4"><h3 className="">SLA global por circuito</h3><p className="mt-1">Desde el inicio registrado de la primera actividad hasta el fin de Cierre del expediente. Gestión económica utiliza el objetivo global como referencia propia.</p></div>
-        {loading ? <PanelEstadoInforme loading /> : items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay expedientes que coincidan con los filtros." /> : <div className="max-h-[520px] overflow-auto"><table className="w-full min-w-[1050px]"><thead className="sticky top-0 uppercase"><tr>{["Expediente","Titular","Grupo","Entidad","Días globales","Objetivo","Estado"].map((x) => <th key={x} className="whitespace-nowrap px-4 py-3">{x}</th>)}</tr></thead><tbody>{items.map((item) => <Fragment key={item.id}><tr className=""><td className="px-4 py-3">{item.id_expediente || "—"}</td><td className="px-4 py-3">{item.titular || "—"}</td><td className="px-4 py-3">{item.grupo}</td><td className="px-4 py-3">{item.entidad}</td><td className="px-4 py-3">{item.dias_global == null ? "—" : numeroInforme(item.dias_global)}</td><td className="px-4 py-3">{item.excluido_global ? "Excluido" : `${item.objetivo_global} días`}</td><td className="px-4 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-bold ${item.estado_global === "Dentro de plazo" ? "" : item.estado_global === "Fuera de plazo" ? "" : item.estado_global === "Excluido" ? "" : ""}`}>{item.estado_global}</span><button type="button" onClick={() => setExpandido((v) => v === String(item.id) ? "" : String(item.id))} className="ml-3 px-2.5 py-1.5">{expandido === String(item.id) ? "Ocultar actividades" : "Ver actividades"}</button></td></tr>{expandido === String(item.id) && <tr><td colSpan={7} className="px-4 py-4"><div className="overflow-x-auto"><table className="w-full min-w-[950px]"><thead className=""><tr>{["Actividad","Inicio","Fin","Duración","Objetivo","Estado"].map((x) => <th key={x} className="whitespace-nowrap px-3 py-2.5">{x}</th>)}</tr></thead><tbody>{item.actividades.map((a) => <tr key={a.actividad_key} className=""><td className="px-3 py-2.5">{a.actividad}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_inicio)}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_fin)}</td><td className="px-3 py-2.5">{a.dias == null ? "—" : `${a.dias} días`}</td><td className="px-3 py-2.5">{a.objetivo_dias == null ? "Sin objetivo" : `${a.objetivo_dias} días`}</td><td className="px-3 py-2.5">{a.estado}</td></tr>)}</tbody></table></div></td></tr>}</Fragment>)}</tbody></table></div>}
+        {loading ? <PanelEstadoInforme loading /> : items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay expedientes que coincidan con los filtros." /> : <div className="max-h-[520px] overflow-auto"><table className="w-full min-w-[1050px]"><thead className="sticky top-0 uppercase"><tr>{["Expediente","Titular","Grupo","Entidad","Días globales","Objetivo","Estado"].map((x) => <th key={x} className="whitespace-nowrap px-4 py-3">{x}</th>)}</tr></thead><tbody>{items.map((item) => <Fragment key={item.id}><tr className=""><td className="px-4 py-3">{item.id_expediente || "—"}</td><td className="px-4 py-3">{item.titular || "—"}</td><td className="px-4 py-3">{item.grupo}</td><td className="px-4 py-3">{item.entidad}</td><td className="px-4 py-3">{item.dias_global == null ? "—" : numeroInforme(item.dias_global)}</td><td className="px-4 py-3">{item.excluido_global ? "Excluido" : `${item.objetivo_global} días`}</td><td className="px-4 py-3"><span className={`px-2.5 py-1 ${item.estado_global === "Dentro de plazo" ? "" : item.estado_global === "Fuera de plazo" ? "" : item.estado_global === "Excluido" ? "" : ""}`}>{item.estado_global}</span><button type="button" onClick={() => setExpandido((v) => v === String(item.id) ? "" : String(item.id))} className="ml-3 px-2.5 py-1.5">{expandido === String(item.id) ? "Ocultar actividades" : "Ver actividades"}</button></td></tr>{expandido === String(item.id) && <tr><td colSpan={7} className="px-4 py-4"><div className="overflow-x-auto"><table className="w-full min-w-[950px]"><thead className=""><tr>{["Actividad","Inicio","Fin","Duración","Objetivo","Estado"].map((x) => <th key={x} className="whitespace-nowrap px-3 py-2.5">{x}</th>)}</tr></thead><tbody>{item.actividades.map((a) => <tr key={a.actividad_key} className=""><td className="px-3 py-2.5">{a.actividad}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_inicio)}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_fin)}</td><td className="px-3 py-2.5">{a.dias == null ? "—" : `${a.dias} días`}</td><td className="px-3 py-2.5">{a.objetivo_dias == null ? "Sin objetivo" : `${a.objetivo_dias} días`}</td><td className="px-3 py-2.5">{a.estado}</td></tr>)}</tbody></table></div></td></tr>}</Fragment>)}</tbody></table></div>}
       </section>
       <section className="overflow-hidden">
         <div className="px-5 py-4"><h3 className="">Expedientes por actividad</h3><p className="mt-1">Medias, objetivos y número de incumplimientos por actividad para los expedientes filtrados.</p></div>
@@ -3249,7 +3238,7 @@ function InformeFacturacion() {
                 setFiltros(siguiente);
                 setAplicados(siguiente);
                 setModalAbierto(true);
-              }} className={"p-4 hover:-translate-y-0.5" + acento}>
+              }} className={"p-4" + acento}>
                 <div className="uppercase">{estadoInfo.etiqueta}</div>
                 <div className="mt-2 tabular-nums">{loadingTarjetas ? "…" : numeroInforme(filasEstado.length)}</div>
                 <div className="mt-1 tabular-nums">{loadingTarjetas ? "…" : euros(importeEstado)}</div>
@@ -3280,7 +3269,7 @@ function InformeFacturacion() {
             <div className="mt-4 overflow-x-auto">
               <table className="w-full min-w-[640px]">
                 <thead className="uppercase"><tr><th className="px-4 py-3">ESTADO (Excel ABSIS)</th><th className="px-4 py-3">Registros</th><th className="px-4 py-3">Importe IMPGASTO</th><th className="px-4 py-3">Consulta</th></tr></thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="">
                   {listaEstados.map(([estado, dato]) => (
                     <tr key={estado} className="">
                       <td className="px-4 py-3">{estado}</td>
@@ -3331,7 +3320,7 @@ function InformeFacturacion() {
               {loading ? <PanelEstadoInforme loading /> : datos.items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay filas Post Firma para los filtros seleccionados." /> : (
                 <div className="max-h-[58vh] overflow-auto"><table className="min-w-[2600px] w-full">
                   <thead className="sticky top-0 z-10"><tr>{COLUMNAS_POSTFIRMA.map((h, i) => <th key={h + "-" + i} className="whitespace-nowrap px-3 py-3">{h}</th>)}</tr></thead>
-                  <tbody className="divide-y divide-slate-100">{datos.items.map((fila, i) => <tr key={(fila.id_gasto_absis || fila.id_expediente || "registro") + "-" + i} className="">{COLUMNAS_POSTFIRMA.map((h, j) => <td key={h + "-" + j} className="whitespace-nowrap px-3 py-3">{valorColumnaPostFirma(fila, h)}</td>)}</tr>)}</tbody>
+                  <tbody className="">{datos.items.map((fila, i) => <tr key={(fila.id_gasto_absis || fila.id_expediente || "registro") + "-" + i} className="">{COLUMNAS_POSTFIRMA.map((h, j) => <td key={h + "-" + j} className="whitespace-nowrap px-3 py-3">{valorColumnaPostFirma(fila, h)}</td>)}</tr>)}</tbody>
                 </table></div>
               )}
             </div>
@@ -3387,7 +3376,7 @@ function InformeHistoricoPostFirma() {
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4"><label className="sm:col-span-2">Fichero importado<select value={cargaSeleccionada} onChange={(e)=>{setCargaSeleccionada(e.target.value);setOffset(0);}} className="mt-1 block w-full px-3 py-2.5" disabled={cargandoCargas||!cargas.length}>{!cargas.length&&<option value="">No hay cargas disponibles</option>}{cargas.map((c)=><option key={c.id} value={String(c.id)}>{c.nombre_archivo} · carga #{c.id} · {c.filas_guardadas} filas</option>)}</select></label><div className="p-3"><p className="">Filas Excel</p><p className="mt-1">{cargaActual?.filas_excel??"—"}</p></div><div className="p-3"><p className="">Filas guardadas</p><p className="mt-1">{cargaActual?.filas_guardadas??"—"}</p></div></div>
       {cargaActual&&<p className="break-all">Fecha de carga: {cargaActual.fecha_carga||"—"} · SHA-256: {cargaActual.sha256||"—"}</p>}{error&&<p role="alert" className="p-3">{error}</p>}
       <div className="overflow-hidden"><div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"><div><h3 className="">Filas originales</h3><p className="">Columnas dinámicas del Excel, incluida TIPOCONCEPTO cuando exista.</p></div><span className="">{total.toLocaleString("es-ES")} filas</span></div>
-      {cargandoCargas||cargandoFilas?<p className="p-8">Cargando histórico…</p>:!cargaSeleccionada?<p className="p-8">Todavía no hay ficheros Post Firma importados.</p>:<div className="max-h-[58vh] overflow-auto"><table className="min-w-max w-full"><thead className="sticky top-0 z-10"><tr><th className="whitespace-nowrap px-3 py-3">Fila Excel</th>{columnas.map((c,i)=><th key={String(c)+"-"+i} className="whitespace-nowrap px-3 py-3">{c||"(columna sin título)"}</th>)}</tr></thead><tbody className="divide-y divide-slate-100">{registros.map((fila)=><tr key={fila.id} className=""><td className="whitespace-nowrap px-3 py-2">{fila.numero_fila}</td>{columnas.map((c,i)=><td key={String(c)+"-"+i} className="max-w-xs whitespace-nowrap px-3 py-2">{mostrarValor(fila.datos?.[c])}</td>)}</tr>)}{!registros.length&&<tr><td colSpan={Math.max(columnas.length+1,1)} className="px-4 py-8">Esta carga no contiene filas con datos.</td></tr>}</tbody></table></div>}
+      {cargandoCargas||cargandoFilas?<p className="p-8">Cargando histórico…</p>:!cargaSeleccionada?<p className="p-8">Todavía no hay ficheros Post Firma importados.</p>:<div className="max-h-[58vh] overflow-auto"><table className="min-w-max w-full"><thead className="sticky top-0 z-10"><tr><th className="whitespace-nowrap px-3 py-3">Fila Excel</th>{columnas.map((c,i)=><th key={String(c)+"-"+i} className="whitespace-nowrap px-3 py-3">{c||"(columna sin título)"}</th>)}</tr></thead><tbody className="">{registros.map((fila)=><tr key={fila.id} className=""><td className="whitespace-nowrap px-3 py-2">{fila.numero_fila}</td>{columnas.map((c,i)=><td key={String(c)+"-"+i} className="max-w-xs whitespace-nowrap px-3 py-2">{mostrarValor(fila.datos?.[c])}</td>)}</tr>)}{!registros.length&&<tr><td colSpan={Math.max(columnas.length+1,1)} className="px-4 py-8">Esta carga no contiene filas con datos.</td></tr>}</tbody></table></div>}
       {cargaSeleccionada&&<div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"><p className="">Mostrando {total?offset+1:0}–{Math.min(offset+registros.length,total)} de {total.toLocaleString("es-ES")}</p><div className="flex gap-2"><button type="button" disabled={offset===0||cargandoFilas} onClick={()=>setOffset((v)=>Math.max(0,v-limite))} className="px-3 py-2">Anterior</button><button type="button" disabled={offset+limite>=total||cargandoFilas} onClick={()=>setOffset((v)=>v+limite)} className="px-3 py-2">Siguiente</button></div></div>}
       </div>
     </section>
@@ -3498,7 +3487,7 @@ export default function Informes() {
               key={apartado.key}
               type="button"
               onClick={() => navigate(`/informes/${apartado.key}`)}
-              className="group flex min-h-[150px] items-start gap-4 p-5 hover:-translate-y-1"
+              className="group flex min-h-[150px] items-start gap-4 p-5"
             >
               <span className="flex h-12 w-12 shrink-0 items-center justify-center">{apartado.icono}</span>
               <span className="min-w-0 flex-1">
