@@ -5,6 +5,7 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 import MODULOS_ERP from "../../config/modulos";
 
@@ -256,26 +257,16 @@ export default function SeguridadModulos() {
     typeof ficha !== "object"
   ) {
     return (
-      <div
-        className="p-10"
-      >
-
-        <div>
-          📦
-        </div>
-
-        <p
-          className="mt-3"
-        >
-          Selecciona un empleado
-        </p>
-
-        <p
-          className="mt-1"
-        >
-          La configuración de módulos aparecerá aquí.
-        </p>
-
+      <div className="erp-page w-full space-y-4">
+        <MolsanPageHeader
+          mark="SE"
+          title="Módulos visibles"
+          description="Configura los módulos que puede visualizar cada empleado."
+        />
+        <section className="molsan-panel p-10">
+          <p className="font-semibold">Selecciona un empleado</p>
+          <p className="mt-1">La configuración de módulos aparecerá aquí.</p>
+        </section>
       </div>
     );
   }
@@ -286,96 +277,11 @@ export default function SeguridadModulos() {
       className="erp-page w-full space-y-4"
     >
 
-      {/* CABECERA */}
-
-      <div
-        className="molsan-subpage-header flex
- flex-col
- gap-4
- 
- 
- 
- 
- p-5
- 
- md:flex-row
- md:items-center
- md:justify-between"
-      >
-
-        <div
-          className="flex
- items-center
- gap-3"
-        >
-
-          <div
-            className="flex
- h-11
- w-11
- shrink-0
- items-center
- justify-center"
-          >
-            📦
-          </div>
-
-          <div>
-
-            <h2
-             
-            >
-              Módulos visibles
-            </h2>
-
-            <p
-              className="mt-0.5"
-            >
-              Configura los módulos que puede visualizar este empleado.
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div
-          className="flex
- flex-wrap
- items-center
- gap-2"
-        >
-
-          <span
-            className="inline-flex
- items-center
- 
- 
- 
- 
- px-3
- py-1.5"
-          >
-            {modulosGlobales.length} disponibles
-          </span>
-
-          <span
-            className="inline-flex
- items-center
- 
- 
- 
- 
- px-3
- py-1.5"
-          >
-            {modulosVisibles.length} visibles
-          </span>
-
-        </div>
-
-      </div>
-
+      <MolsanPageHeader
+        mark="SE"
+        title="Módulos visibles"
+        description="Configura los módulos que puede visualizar este empleado."
+      />
 
       {/* FILTRO */}
 
