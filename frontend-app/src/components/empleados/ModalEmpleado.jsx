@@ -57,7 +57,7 @@ const PERMISOS_ESTANDAR = [
 
 /**
  * ============================================================
- * MODAL EMPLEADO — MOLSAN ERP SAAS PREMIUM 2027
+ * MODAL EMPLEADO
  * ============================================================
  *
  * PESTAÑAS:
