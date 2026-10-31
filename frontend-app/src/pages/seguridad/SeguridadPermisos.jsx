@@ -34,22 +34,7 @@ const ETIQUETAS_MODULOS = {
 
 function Chip({
   children,
-  tone = "neutral",
 }) {
-
-  const estilos = {
-    neutral:
-      "border-[var(--erp-border)] bg-[var(--erp-bg)] text-[var(--erp-text-soft)]",
-
-    primary:
-      "border-blue-200 bg-blue-50 text-blue-700",
-
-    success:
-      "border-emerald-200 bg-emerald-50 text-emerald-700",
-
-    purple:
-      "border-purple-200 bg-purple-50 text-purple-700",
-  };
 
   return (
     <span
@@ -61,7 +46,7 @@ function Chip({
  py-1
  
  
- ${estilos[tone] || estilos.neutral}`}
+ `}
     >
       {children}
     </span>
