@@ -153,7 +153,7 @@ function Campo({ titulo, valor, onChange, tipo = "text", requerido = false, plac
   const [enfocado, setEnfocado] = useState(false);
   const esMoneda = tipo === "number";
   const mostrar = esMoneda && !enfocado && valor !== "" && valor != null && Number.isFinite(Number(valor)) ? dinero(valor) : (valor ?? "");
-  return <label className={label}>{titulo}<input className={`${input} ${disabled ? "cursor-not-allowed : ""}`} type={tipo === "number" ? "text" : tipo} inputMode={tipo === "number" ? "decimal" : undefined} value={mostrar} onFocus={() => setEnfocado(true)} onBlur={() => setEnfocado(false)} onChange={(e) => onChange(e.target.value.replace(/€/g, "").replace(/\s/g, "").replace(",", "."))} required={requerido} placeholder={placeholder} disabled={disabled} list={listId} autoComplete={listId ? "off" : undefined} /></label>;
+  return <label className={label}>{titulo}<input className={`${input} ${disabled ? "cursor-not-allowed" : ""}`} type={tipo === "number" ? "text" : tipo} inputMode={tipo === "number" ? "decimal" : undefined} value={mostrar} onFocus={() => setEnfocado(true)} onBlur={() => setEnfocado(false)} onChange={(e) => onChange(e.target.value.replace(/€/g, "").replace(/\s/g, "").replace(",", "."))} required={requerido} placeholder={placeholder} disabled={disabled} list={listId} autoComplete={listId ? "off" : undefined} /></label>;
 }
 
 function normalizarCatalogo(valor) {
