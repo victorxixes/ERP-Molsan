@@ -929,11 +929,7 @@ export default function Mensajes({
 
  
 
- ${
- pendientes > 0
- ? "ring-1 
- : ""
- }`}
+ `}
                   >
 
                     {/* AVATAR */}
