@@ -1525,11 +1525,9 @@ export default function EntidadesBancarias() {
 
     <div
       className="entidades-bancarias-premium herramientas-subpagina-premium catalogo-maestro-modal-premium 
-        min-h-full
-        p-4 sm:p-6 lg:p-8
-        space-y-6
-        animate-fadeIn
-      "
+ min-h-full
+ p-4 sm:p-6 lg:p-8
+ space-y-6"
     >
 
       {/* =====================================================
@@ -1537,68 +1535,46 @@ export default function EntidadesBancarias() {
       ===================================================== */}
 
       <div
-        className="
-          relative
-          overflow-hidden
-          rounded-[24px]
-          border
-          border-slate-200/80
-          bg-white/80
-          p-6 sm:p-7
-          shadow-[0_18px_50px_rgba(15,23,42,0.08)]
-          backdrop-blur-xl
-        "
+        className="relative
+ overflow-hidden
+ 
+ 
+ 
+ 
+ p-6 sm:p-7"
       >
 
         <div
-          className="
-            absolute
-            inset-x-0
-            top-0
-            h-px
-            bg-gradient-to-r
-            from-transparent
-            via-blue-400/60
-            to-transparent
-          "
+          className="absolute
+ inset-x-0
+ top-0
+ h-px"
         />
 
 
         <div
-          className="
-            relative
-            flex
-            flex-col
-            gap-5
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-          "
+          className="relative
+ flex
+ flex-col
+ gap-5
+ lg:flex-row
+ lg:items-center
+ lg:justify-between"
         >
 
           <div
-            className="
-              flex
-              items-center
-              gap-4
-            "
+            className="flex
+ items-center
+ gap-4"
           >
 
             <div
-              className="
-                flex
-                h-14
-                w-14
-                shrink-0
-                items-center
-                justify-center
-                rounded-2xl
-                border
-                border-indigo-100
-                bg-indigo-50
-                text-2xl
-                shadow-sm
-              "
+              className="flex
+ h-14
+ w-14
+ shrink-0
+ items-center
+ justify-center"
             >
               🏦
             </div>
@@ -1607,24 +1583,14 @@ export default function EntidadesBancarias() {
             <div>
 
               <h1
-                className="
-                  text-2xl
-                  font-bold
-                  tracking-tight
-                  text-slate-800
-                  sm:text-3xl
-                "
+                className=""
               >
                 Entidades Bancarias
               </h1>
 
 
               <p
-                className="
-                  mt-1
-                  text-sm
-                  text-slate-500
-                "
+                className="mt-1"
               >
                 Maestro de entidades de crédito,
                 instituciones financieras y datos bancarios.
@@ -1640,12 +1606,10 @@ export default function EntidadesBancarias() {
           ================================================= */}
 
           <div
-            className="
-              flex
-              flex-col
-              gap-2
-              sm:flex-row
-            "
+            className="flex
+ flex-col
+ gap-2
+ sm:flex-row"
           >
 
             <button
@@ -1653,30 +1617,25 @@ export default function EntidadesBancarias() {
               onClick={
                 abrirImportacionExcel
               }
-              className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-xl
-                border
-                border-emerald-200
-                bg-emerald-50
-                px-5
-                py-2.5
-                text-sm
-                font-semibold
-                text-emerald-700
-                shadow-sm
-                transition-all
-                hover:-translate-y-0.5
-                hover:border-emerald-300
-                hover:bg-emerald-100
-                active:scale-[0.98]
-              "
+              className="inline-flex
+ items-center
+ justify-center
+ gap-2
+ 
+ 
+ 
+ 
+ px-5
+ py-2.5
+ 
+ 
+ 
+ 
+ 
+ hover:-translate-y-0.5"
             >
 
-              <span className="text-lg">
+              <span className="">
                 📊
               </span>
 
@@ -1702,27 +1661,23 @@ export default function EntidadesBancarias() {
               onClick={
                 abrirNuevo
               }
-              className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-xl
-                bg-[var(--molsan-primary)]
-                px-5
-                py-2.5
-                text-sm
-                font-semibold
-                text-white
-                shadow-[0_8px_20px_rgba(49,86,179,0.20)]
-                transition-all
-                hover:-translate-y-0.5
-                hover:bg-[var(--molsan-primary-hover)]
-                active:scale-[0.98]
-              "
+              className="inline-flex
+ items-center
+ justify-center
+ gap-2
+ 
+ 
+ px-5
+ py-2.5
+ 
+ 
+ 
+ 
+ 
+ hover:-translate-y-0.5"
             >
 
-              <span className="text-lg">
+              <span className="">
                 +
               </span>
 
@@ -1753,8 +1708,8 @@ export default function EntidadesBancarias() {
             font-medium
             ${
               tipoMensaje === "error"
-                ? "border-red-200 bg-red-50 text-red-700"
-                : "border-emerald-200 bg-emerald-50 text-emerald-700"
+                ? ""
+                : ""
             }
           `}
         >
@@ -1771,16 +1726,8 @@ export default function EntidadesBancarias() {
       {error && (
 
         <div
-          className="
-            rounded-2xl
-            border
-            border-red-200
-            bg-red-50
-            px-5
-            py-4
-            text-sm
-            text-red-700
-          "
+          className="px-5
+ py-4"
         >
           {error}
         </div>
@@ -1793,26 +1740,16 @@ export default function EntidadesBancarias() {
       ===================================================== */}
 
       <div
-        className="
-          rounded-[22px]
-          border
-          border-slate-200/80
-          bg-white/80
-          p-5
-          shadow-[0_12px_35px_rgba(15,23,42,0.06)]
-          backdrop-blur-xl
-        "
+        className="p-5"
       >
 
         <div
-          className="
-            grid
-            grid-cols-1
-            gap-4
-            md:grid-cols-2
-            xl:grid-cols-[minmax(320px,1fr)_300px_auto]
-            xl:items-end
-          "
+          className="grid
+ grid-cols-1
+ gap-4
+ md:grid-cols-2
+ xl:grid-cols-[minmax(320px,1fr)_300px_auto]
+ xl:items-end"
         >
 
           {/* BUSCADOR */}
@@ -1820,15 +1757,11 @@ export default function EntidadesBancarias() {
           <div>
 
             <label
-              className="
-                mb-1.5
-                block
-                text-xs
-                font-semibold
-                uppercase
-                tracking-wide
-                text-slate-500
-              "
+              className="mb-1.5
+ block
+ 
+ 
+ uppercase"
             >
               Buscar
             </label>
@@ -1837,14 +1770,11 @@ export default function EntidadesBancarias() {
             <div className="relative">
 
               <span
-                className="
-                  pointer-events-none
-                  absolute
-                  left-3
-                  top-1/2
-                  -translate-y-1/2
-                  text-slate-400
-                "
+                className="pointer-events-none
+ absolute
+ left-3
+ top-1/2
+ -translate-y-1/2"
               >
                 🔎
               </span>
@@ -1861,23 +1791,14 @@ export default function EntidadesBancarias() {
                   )
                 }
                 placeholder="Código, LEI, nombre, categoría o dirección..."
-                className="
-                  w-full
-                  rounded-xl
-                  border
-                  border-slate-200
-                  bg-white
-                  py-2.5
-                  pl-10
-                  pr-4
-                  text-sm
-                  text-slate-700
-                  outline-none
-                  transition
-                  focus:border-blue-400
-                  focus:ring-4
-                  focus:ring-blue-100
-                "
+                className="w-full
+ 
+ 
+ 
+ 
+ py-2.5
+ pl-10
+ pr-4"
               />
 
             </div>
@@ -1890,15 +1811,11 @@ export default function EntidadesBancarias() {
           <div>
 
             <label
-              className="
-                mb-1.5
-                block
-                text-xs
-                font-semibold
-                uppercase
-                tracking-wide
-                text-slate-500
-              "
+              className="mb-1.5
+ block
+ 
+ 
+ uppercase"
             >
               Categoría
             </label>
@@ -1913,22 +1830,13 @@ export default function EntidadesBancarias() {
                   e.target.value
                 )
               }
-              className="
-                w-full
-                rounded-xl
-                border
-                border-slate-200
-                bg-white
-                px-3
-                py-2.5
-                text-sm
-                text-slate-700
-                outline-none
-                transition
-                focus:border-blue-400
-                focus:ring-4
-                focus:ring-blue-100
-              "
+              className="w-full
+ 
+ 
+ 
+ 
+ px-3
+ py-2.5"
             >
 
               <option value="">
@@ -1965,20 +1873,8 @@ export default function EntidadesBancarias() {
             onClick={
               limpiarFiltros
             }
-            className="
-              rounded-xl
-              border
-              border-slate-200
-              bg-white
-              px-4
-              py-2.5
-              text-sm
-              font-medium
-              text-slate-600
-              transition
-              hover:border-slate-300
-              hover:bg-slate-50
-            "
+            className="px-4
+ py-2.5"
           >
             Limpiar filtros
           </button>
@@ -1993,30 +1889,22 @@ export default function EntidadesBancarias() {
       ===================================================== */}
 
       <div
-        className="
-          flex
-          flex-col
-          gap-2
-          sm:flex-row
-          sm:items-center
-          sm:justify-between
-        "
+        className="flex
+ flex-col
+ gap-2
+ sm:flex-row
+ sm:items-center
+ sm:justify-between"
       >
 
         <div
-          className="
-            text-sm
-            text-slate-500
-          "
+          className=""
         >
 
           Mostrando{" "}
 
           <span
-            className="
-              font-semibold
-              text-slate-700
-            "
+            className=""
           >
             {entidadesFiltradas.length.toLocaleString(
               "es-ES"
@@ -2033,10 +1921,7 @@ export default function EntidadesBancarias() {
               {" "}de{" "}
 
               <span
-                className="
-                  font-semibold
-                  text-slate-700
-                "
+                className=""
               >
                 {entidades.length.toLocaleString(
                   "es-ES"
@@ -2050,10 +1935,7 @@ export default function EntidadesBancarias() {
 
 
         <div
-          className="
-            text-xs
-            text-slate-400
-          "
+          className=""
         >
           Página {pagina} de {totalPaginas}
         </div>
@@ -2066,43 +1948,25 @@ export default function EntidadesBancarias() {
       ===================================================== */}
 
       <div
-        className="
-          overflow-hidden
-          rounded-[22px]
-          border
-          border-slate-200/80
-          bg-white/90
-          shadow-[0_12px_35px_rgba(15,23,42,0.06)]
-        "
+        className="overflow-hidden"
       >
 
         {cargando ? (
 
           <div
-            className="
-              flex
-              min-h-[300px]
-              items-center
-              justify-center
-              text-sm
-              text-slate-400
-            "
+            className="flex
+ min-h-[300px]
+ items-center
+ justify-center"
           >
 
-            <div className="text-center">
+            <div className="">
 
               <div
-                className="
-                  mx-auto
-                  mb-3
-                  h-8
-                  w-8
-                  animate-spin
-                  rounded-full
-                  border-2
-                  border-slate-200
-                  border-t-blue-500
-                "
+                className="mx-auto
+ mb-3
+ h-8
+ w-8"
               />
 
               Cargando entidades bancarias...
@@ -2114,51 +1978,35 @@ export default function EntidadesBancarias() {
         ) : entidadesPagina.length === 0 ? (
 
           <div
-            className="
-              flex
-              min-h-[300px]
-              flex-col
-              items-center
-              justify-center
-              px-6
-              text-center
-            "
+            className="flex
+ min-h-[300px]
+ flex-col
+ items-center
+ justify-center
+ px-6"
           >
 
             <div
-              className="
-                mb-3
-                flex
-                h-14
-                w-14
-                items-center
-                justify-center
-                rounded-2xl
-                bg-slate-50
-                text-2xl
-              "
+              className="mb-3
+ flex
+ h-14
+ w-14
+ items-center
+ justify-center"
             >
               🏦
             </div>
 
 
             <h3
-              className="
-                text-base
-                font-semibold
-                text-slate-700
-              "
+              className=""
             >
               No se han encontrado entidades
             </h3>
 
 
             <p
-              className="
-                mt-1
-                text-sm
-                text-slate-400
-              "
+              className="mt-1"
             >
               Prueba con otro texto o limpia los filtros.
             </p>
@@ -2170,37 +2018,26 @@ export default function EntidadesBancarias() {
           <div className="overflow-x-auto">
 
             <table
-              className="
-                w-full
-                min-w-[1250px]
-                border-collapse
-              "
+              className="w-full
+ min-w-[1250px]"
             >
 
               <thead>
 
                 <tr
-                  className="
-                    border-b
-                    border-slate-200
-                    bg-slate-50/80
-                  "
+                  className=""
                 >
 
                   <th
-                    className="
-                      w-[140px]
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
+                    className="w-[140px]
+ px-5
+ py-3.5
+ 
+ 
+ 
+ uppercase"
                   >
-                    <button type="button" onClick={() => ordenarPor("codigo_europeo")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Código Europeo">
+                    <button type="button" onClick={() => ordenarPor("codigo_europeo")} className="inline-flex items-center gap-1.5" title="Ordenar por Código Europeo">
                       Código Europeo
                       <span aria-hidden="true">{ordenColumna === "codigo_europeo" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
                     </button>
@@ -2208,19 +2045,15 @@ export default function EntidadesBancarias() {
 
 
                   <th
-                    className="
-                      w-[220px]
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
+                    className="w-[220px]
+ px-5
+ py-3.5
+ 
+ 
+ 
+ uppercase"
                   >
-                    <button type="button" onClick={() => ordenarPor("lei")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por LEI">
+                    <button type="button" onClick={() => ordenarPor("lei")} className="inline-flex items-center gap-1.5" title="Ordenar por LEI">
                       LEI
                       <span aria-hidden="true">{ordenColumna === "lei" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
                     </button>
@@ -2228,19 +2061,15 @@ export default function EntidadesBancarias() {
 
 
                   <th
-                    className="
-                      min-w-[280px]
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
+                    className="min-w-[280px]
+ px-5
+ py-3.5
+ 
+ 
+ 
+ uppercase"
                   >
-                    <button type="button" onClick={() => ordenarPor("nombre")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Nombre">
+                    <button type="button" onClick={() => ordenarPor("nombre")} className="inline-flex items-center gap-1.5" title="Ordenar por Nombre">
                       Nombre
                       <span aria-hidden="true">{ordenColumna === "nombre" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
                     </button>
@@ -2248,19 +2077,15 @@ export default function EntidadesBancarias() {
 
 
                   <th
-                    className="
-                      w-[190px]
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
+                    className="w-[190px]
+ px-5
+ py-3.5
+ 
+ 
+ 
+ uppercase"
                   >
-                    <button type="button" onClick={() => ordenarPor("categoria")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Categoría">
+                    <button type="button" onClick={() => ordenarPor("categoria")} className="inline-flex items-center gap-1.5" title="Ordenar por Categoría">
                       Categoría
                       <span aria-hidden="true">{ordenColumna === "categoria" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
                     </button>
@@ -2268,38 +2093,30 @@ export default function EntidadesBancarias() {
 
 
                   <th
-                    className="
-                      min-w-[220px]
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
+                    className="min-w-[220px]
+ px-5
+ py-3.5
+ 
+ 
+ 
+ uppercase"
                   >
-                    <button type="button" onClick={() => ordenarPor("entidad_actual")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Entidad actual">
+                    <button type="button" onClick={() => ordenarPor("entidad_actual")} className="inline-flex items-center gap-1.5" title="Ordenar por Entidad actual">
                       Entidad actual
                       <span aria-hidden="true">{ordenColumna === "entidad_actual" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
                     </button>
                   </th>
 
                   <th
-                    className="
-                      min-w-[350px]
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
+                    className="min-w-[350px]
+ px-5
+ py-3.5
+ 
+ 
+ 
+ uppercase"
                   >
-                    <button type="button" onClick={() => ordenarPor("direccion")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Dirección">
+                    <button type="button" onClick={() => ordenarPor("direccion")} className="inline-flex items-center gap-1.5" title="Ordenar por Dirección">
                       Dirección
                       <span aria-hidden="true">{ordenColumna === "direccion" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
                     </button>
@@ -2307,17 +2124,13 @@ export default function EntidadesBancarias() {
 
 
                   <th
-                    className="
-                      w-[130px]
-                      px-5
-                      py-3.5
-                      text-right
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
+                    className="w-[130px]
+ px-5
+ py-3.5
+ 
+ 
+ 
+ uppercase"
                   >
                     Acciones
                   </th>
@@ -2336,39 +2149,25 @@ export default function EntidadesBancarias() {
                       key={
                         entidad.id
                       }
-                      className="
-                        group
-                        border-b
-                        border-slate-100
-                        transition-colors
-                        hover:bg-blue-50/40
-                      "
+                      className="group"
                     >
 
                       {/* CÓDIGO */}
 
                       <td
-                        className="
-                          px-5
-                          py-3.5
-                          align-top
-                        "
+                        className="px-5
+ py-3.5
+ align-top"
                       >
 
                         <span
-                          className="
-                            inline-flex
-                            rounded-lg
-                            border
-                            border-indigo-100
-                            bg-indigo-50
-                            px-2.5
-                            py-1
-                            font-mono
-                            text-xs
-                            font-semibold
-                            text-indigo-700
-                          "
+                          className="inline-flex
+ 
+ 
+ 
+ 
+ px-2.5
+ py-1"
                         >
                           {entidad.codigo_europeo}
                         </span>
@@ -2379,21 +2178,15 @@ export default function EntidadesBancarias() {
                       {/* LEI */}
 
                       <td
-                        className="
-                          px-5
-                          py-3.5
-                          align-top
-                          text-xs
-                          text-slate-500
-                        "
+                        className="px-5
+ py-3.5
+ align-top"
                       >
 
                         {entidad.lei ? (
 
                           <span
-                            className="
-                              font-mono
-                            "
+                            className=""
                           >
                             {entidad.lei}
                           </span>
@@ -2401,10 +2194,7 @@ export default function EntidadesBancarias() {
                         ) : (
 
                           <span
-                            className="
-                              italic
-                              text-slate-300
-                            "
+                            className=""
                           >
                             Sin LEI
                           </span>
@@ -2417,20 +2207,13 @@ export default function EntidadesBancarias() {
                       {/* NOMBRE */}
 
                       <td
-                        className="
-                          px-5
-                          py-3.5
-                          align-top
-                        "
+                        className="px-5
+ py-3.5
+ align-top"
                       >
 
                         <div
-                          className="
-                            text-sm
-                            font-semibold
-                            leading-5
-                            text-slate-700
-                          "
+                          className=""
                         >
                           {entidad.nombre}
                         </div>
@@ -2441,26 +2224,19 @@ export default function EntidadesBancarias() {
                       {/* CATEGORÍA */}
 
                       <td
-                        className="
-                          px-5
-                          py-3.5
-                          align-top
-                        "
+                        className="px-5
+ py-3.5
+ align-top"
                       >
 
                         <span
-                          className="
-                            inline-flex
-                            rounded-full
-                            border
-                            border-slate-200
-                            bg-slate-50
-                            px-3
-                            py-1
-                            text-xs
-                            font-medium
-                            text-slate-600
-                          "
+                          className="inline-flex
+ 
+ 
+ 
+ 
+ px-3
+ py-1"
                         >
                           {entidad.categoria}
                         </span>
@@ -2471,34 +2247,26 @@ export default function EntidadesBancarias() {
                       {/* ENTIDAD ACTUAL */}
 
                       <td
-                        className="px-5 py-3.5 align-top text-sm text-slate-600"
+                        className="px-5 py-3.5 align-top"
                       >
                         {entidad.entidad_actual_id
                           ? (nombreEntidadActual(entidad) || "Entidad no disponible")
-                          : <span className="italic text-slate-300">Sin cambio</span>}
+                          : <span className="">Sin cambio</span>}
                       </td>
 
 
                       {/* DIRECCIÓN */}
 
                       <td
-                        className="
-                          px-5
-                          py-3.5
-                          align-top
-                          text-sm
-                          leading-5
-                          text-slate-500
-                        "
+                        className="px-5
+ py-3.5
+ align-top"
                       >
 
                         {entidad.direccion || (
 
                           <span
-                            className="
-                              italic
-                              text-slate-300
-                            "
+                            className=""
                           >
                             Sin dirección
                           </span>
@@ -2511,19 +2279,15 @@ export default function EntidadesBancarias() {
                       {/* ACCIONES */}
 
                       <td
-                        className="
-                          px-5
-                          py-3.5
-                          align-top
-                        "
+                        className="px-5
+ py-3.5
+ align-top"
                       >
 
                         <div
-                          className="
-                            flex
-                            justify-end
-                            gap-2
-                          "
+                          className="flex
+ justify-end
+ gap-2"
                         >
 
                           <button
@@ -2534,22 +2298,11 @@ export default function EntidadesBancarias() {
                               )
                             }
                             title="Editar entidad bancaria"
-                            className="
-                              flex
-                              h-9
-                              w-9
-                              items-center
-                              justify-center
-                              rounded-lg
-                              border
-                              border-slate-200
-                              bg-white
-                              text-slate-500
-                              transition
-                              hover:border-blue-200
-                              hover:bg-blue-50
-                              hover:text-blue-600
-                            "
+                            className="flex
+ h-9
+ w-9
+ items-center
+ justify-center"
                           >
                             ✏️
                           </button>
@@ -2563,22 +2316,11 @@ export default function EntidadesBancarias() {
                               )
                             }
                             title="Eliminar entidad bancaria"
-                            className="
-                              flex
-                              h-9
-                              w-9
-                              items-center
-                              justify-center
-                              rounded-lg
-                              border
-                              border-slate-200
-                              bg-white
-                              text-slate-500
-                              transition
-                              hover:border-red-200
-                              hover:bg-red-50
-                              hover:text-red-600
-                            "
+                            className="flex
+ h-9
+ w-9
+ items-center
+ justify-center"
                           >
                             🗑️
                           </button>
@@ -2611,17 +2353,15 @@ export default function EntidadesBancarias() {
         entidadesFiltradas.length > 0 && (
 
         <div
-          className="
-            flex
-            items-center
-            justify-between
-            rounded-[18px]
-            border
-            border-slate-200/80
-            bg-white/70
-            px-4
-            py-3
-          "
+          className="flex
+ items-center
+ justify-between
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
         >
 
           <button
@@ -2638,37 +2378,21 @@ export default function EntidadesBancarias() {
                   )
               )
             }
-            className="
-              rounded-lg
-              border
-              border-slate-200
-              bg-white
-              px-3
-              py-2
-              text-sm
-              font-medium
-              text-slate-600
-              transition
-              hover:bg-slate-50
-              disabled:cursor-not-allowed
-              disabled:opacity-40
-            "
+            className="px-3
+ py-2"
           >
             ← Anterior
           </button>
 
 
           <span
-            className="
-              text-sm
-              text-slate-500
-            "
+            className=""
           >
 
             Página{" "}
 
             <strong
-              className="text-slate-700"
+              className=""
             >
               {pagina}
             </strong>
@@ -2676,7 +2400,7 @@ export default function EntidadesBancarias() {
             {" "}de{" "}
 
             <strong
-              className="text-slate-700"
+              className=""
             >
               {totalPaginas}
             </strong>
@@ -2699,21 +2423,8 @@ export default function EntidadesBancarias() {
                   )
               )
             }
-            className="
-              rounded-lg
-              border
-              border-slate-200
-              bg-white
-              px-3
-              py-2
-              text-sm
-              font-medium
-              text-slate-600
-              transition
-              hover:bg-slate-50
-              disabled:cursor-not-allowed
-              disabled:opacity-40
-            "
+            className="px-3
+ py-2"
           >
             Siguiente →
           </button>
@@ -2817,18 +2528,15 @@ function ModalImportarExcel({
   return (
 
     <div
-      className="
-        panel-modal-premium
-        fixed
-        inset-0
-        z-50
-        flex
-        items-center
-        justify-center
-        bg-slate-950/40
-        p-4
-        backdrop-blur-sm
-      "
+      className="panel-modal-premium
+ fixed
+ inset-0
+ z-50
+ flex
+ items-center
+ justify-center
+ 
+ p-4"
       onMouseDown={(e) => {
 
         if (
@@ -2850,59 +2558,36 @@ function ModalImportarExcel({
         role="dialog"
         aria-modal="true"
         aria-label="Importar entidades bancarias desde Excel"
-        className="
-          w-full
-          max-w-2xl
-          overflow-hidden
-          rounded-[26px]
-          border
-          border-slate-200
-          bg-white
-          shadow-[0_30px_80px_rgba(15,23,42,0.22)]
-        "
+        className="w-full
+ max-w-2xl
+ overflow-hidden"
       >
 
         {/* CABECERA */}
 
         <div
-          className="
-            border-b
-            border-slate-100
-            bg-slate-50/80
-            px-6
-            py-5
-          "
+          className="px-6
+ py-5"
         >
 
           <div
-            className="
-              flex
-              items-center
-              justify-between
-            "
+            className="flex
+ items-center
+ justify-between"
           >
 
             <div
-              className="
-                flex
-                items-center
-                gap-3
-              "
+              className="flex
+ items-center
+ gap-3"
             >
 
               <div
-                className="
-                  flex
-                  h-11
-                  w-11
-                  items-center
-                  justify-center
-                  rounded-xl
-                  border
-                  border-emerald-100
-                  bg-emerald-50
-                  text-xl
-                "
+                className="flex
+ h-11
+ w-11
+ items-center
+ justify-center"
               >
                 📊
               </div>
@@ -2911,22 +2596,14 @@ function ModalImportarExcel({
               <div>
 
                 <h2
-                  className="
-                    text-lg
-                    font-bold
-                    text-slate-800
-                  "
+                  className=""
                 >
                   Importar entidades bancarias desde Excel
                 </h2>
 
 
                 <p
-                  className="
-                    mt-1
-                    text-xs
-                    text-slate-500
-                  "
+                  className="mt-1"
                 >
                   Carga masiva del catálogo financiero.
                 </p>
@@ -2944,20 +2621,11 @@ function ModalImportarExcel({
               onClick={
                 onCerrar
               }
-              className="
-                flex
-                h-9
-                w-9
-                items-center
-                justify-center
-                rounded-lg
-                text-slate-400
-                transition
-                hover:bg-slate-100
-                hover:text-slate-700
-                disabled:cursor-not-allowed
-                disabled:opacity-40
-              "
+              className="flex
+ h-9
+ w-9
+ items-center
+ justify-center"
             >
               ✕
             </button>
@@ -2974,24 +2642,16 @@ function ModalImportarExcel({
           {/* INFORMACIÓN */}
 
           <div
-            className="
-              rounded-2xl
-              border
-              border-blue-100
-              bg-blue-50/70
-              px-4
-              py-4
-            "
+            className="px-4
+ py-4"
           >
 
             <div
-              className="
-                flex
-                gap-3
-              "
+              className="flex
+ gap-3"
             >
 
-              <div className="text-lg">
+              <div className="">
                 ℹ️
               </div>
 
@@ -2999,23 +2659,14 @@ function ModalImportarExcel({
               <div>
 
                 <p
-                  className="
-                    text-sm
-                    font-semibold
-                    text-blue-800
-                  "
+                  className=""
                 >
                   Formato esperado
                 </p>
 
 
                 <p
-                  className="
-                    mt-1
-                    text-xs
-                    leading-5
-                    text-blue-700
-                  "
+                  className="mt-1"
                 >
                   El Excel debe contener las columnas
                   <strong> Código Europeo</strong>,
@@ -3037,13 +2688,8 @@ function ModalImportarExcel({
           <div className="mt-5">
 
             <label
-              className="
-                mb-2
-                block
-                text-sm
-                font-semibold
-                text-slate-700
-              "
+              className="mb-2
+ block"
             >
               Archivo Excel
             </label>
@@ -3078,60 +2724,37 @@ function ModalImportarExcel({
               onClick={() =>
                 inputExcelRef.current?.click()
               }
-              className="
-                w-full
-                rounded-2xl
-                border-2
-                border-dashed
-                border-slate-200
-                bg-slate-50/70
-                px-6
-                py-8
-                text-center
-                transition
-                hover:border-emerald-300
-                hover:bg-emerald-50/40
-                disabled:cursor-not-allowed
-                disabled:opacity-60
-              "
+              className="w-full
+ 
+ 
+ 
+ 
+ 
+ px-6
+ py-8"
             >
 
               <div
-                className="
-                  mx-auto
-                  flex
-                  h-14
-                  w-14
-                  items-center
-                  justify-center
-                  rounded-2xl
-                  bg-white
-                  text-2xl
-                  shadow-sm
-                "
+                className="mx-auto
+ flex
+ h-14
+ w-14
+ items-center
+ justify-center"
               >
                 📁
               </div>
 
 
               <p
-                className="
-                  mt-3
-                  text-sm
-                  font-semibold
-                  text-slate-700
-                "
+                className="mt-3"
               >
                 Haz clic para seleccionar el Excel
               </p>
 
 
               <p
-                className="
-                  mt-1
-                  text-xs
-                  text-slate-400
-                "
+                className="mt-1"
               >
                 Formatos admitidos: .xlsx y .xls
               </p>
@@ -3146,72 +2769,51 @@ function ModalImportarExcel({
           {archivo && (
 
             <div
-              className="
-                mt-4
-                flex
-                items-center
-                justify-between
-                gap-4
-                rounded-2xl
-                border
-                border-emerald-200
-                bg-emerald-50/70
-                px-4
-                py-3
-              "
+              className="mt-4
+ flex
+ items-center
+ justify-between
+ gap-4
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
             >
 
               <div
-                className="
-                  flex
-                  min-w-0
-                  items-center
-                  gap-3
-                "
+                className="flex
+ min-w-0
+ items-center
+ gap-3"
               >
 
                 <div
-                  className="
-                    flex
-                    h-10
-                    w-10
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-xl
-                    bg-white
-                    text-lg
-                    shadow-sm
-                  "
+                  className="flex
+ h-10
+ w-10
+ shrink-0
+ items-center
+ justify-center"
                 >
                   📄
                 </div>
 
 
                 <div
-                  className="
-                    min-w-0
-                  "
+                  className="min-w-0"
                 >
 
                   <p
-                    className="
-                      truncate
-                      text-sm
-                      font-semibold
-                      text-emerald-800
-                    "
+                    className="truncate"
                   >
                     {archivo.name}
                   </p>
 
 
                   <p
-                    className="
-                      mt-0.5
-                      text-xs
-                      text-emerald-600
-                    "
+                    className="mt-0.5"
                   >
                     {formatearTamano(
                       archivo.size
@@ -3230,17 +2832,10 @@ function ModalImportarExcel({
                   onClick={
                     onQuitar
                   }
-                  className="
-                    shrink-0
-                    rounded-lg
-                    px-2
-                    py-1
-                    text-xs
-                    font-medium
-                    text-slate-500
-                    hover:bg-white
-                    hover:text-red-600
-                  "
+                  className="shrink-0
+ 
+ px-2
+ py-1"
                 >
                   Quitar
                 </button>
@@ -3257,15 +2852,13 @@ function ModalImportarExcel({
         {/* BOTONES */}
 
         <div
-          className="
-            flex
-            justify-end
-            gap-3
-            border-t
-            border-slate-100
-            px-6
-            py-5
-          "
+          className="flex
+ justify-end
+ gap-3
+ 
+ 
+ px-6
+ py-5"
         >
 
           <button
@@ -3276,21 +2869,8 @@ function ModalImportarExcel({
             onClick={
               onCerrar
             }
-            className="
-              rounded-xl
-              border
-              border-slate-200
-              bg-white
-              px-5
-              py-2.5
-              text-sm
-              font-medium
-              text-slate-600
-              transition
-              hover:bg-slate-50
-              disabled:cursor-not-allowed
-              disabled:opacity-50
-            "
+            className="px-5
+ py-2.5"
           >
             Cancelar
           </button>
@@ -3305,39 +2885,22 @@ function ModalImportarExcel({
             onClick={
               onImportar
             }
-            className="
-              inline-flex
-              min-w-[190px]
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              bg-emerald-600
-              px-5
-              py-2.5
-              text-sm
-              font-semibold
-              text-white
-              shadow-[0_8px_20px_rgba(5,150,105,0.18)]
-              transition
-              hover:bg-emerald-700
-              disabled:cursor-not-allowed
-              disabled:opacity-50
-            "
+            className="inline-flex
+ min-w-[190px]
+ items-center
+ justify-center
+ gap-2
+ 
+ 
+ px-5
+ py-2.5"
           >
 
             {importando && (
 
               <span
-                className="
-                  h-4
-                  w-4
-                  animate-spin
-                  rounded-full
-                  border-2
-                  border-white/40
-                  border-t-white
-                "
+                className="h-4
+ w-4"
               />
 
             )}
@@ -3443,18 +3006,15 @@ function ModalEntidadBancaria({
   return (
 
     <div
-      className="
-        panel-modal-premium
-        fixed
-        inset-0
-        z-50
-        flex
-        items-center
-        justify-center
-        bg-slate-950/40
-        p-4
-        backdrop-blur-sm
-      "
+      className="panel-modal-premium
+ fixed
+ inset-0
+ z-50
+ flex
+ items-center
+ justify-center
+ 
+ p-4"
       onMouseDown={(e) => {
 
         if (
@@ -3476,46 +3036,28 @@ function ModalEntidadBancaria({
         role="dialog"
         aria-modal="true"
         aria-label={modo === "nuevo" ? "Nueva entidad bancaria" : "Editar entidad bancaria"}
-        className="
-          w-full
-          max-w-2xl
-          overflow-hidden
-          rounded-[24px]
-          border
-          border-slate-200
-          bg-white
-          shadow-[0_30px_80px_rgba(15,23,42,0.22)]
-        "
+        className="w-full
+ max-w-2xl
+ overflow-hidden"
       >
 
         {/* CABECERA */}
 
         <div
-          className="
-            border-b
-            border-slate-100
-            bg-slate-50/70
-            px-6
-            py-5
-          "
+          className="px-6
+ py-5"
         >
 
           <div
-            className="
-              flex
-              items-center
-              justify-between
-            "
+            className="flex
+ items-center
+ justify-between"
           >
 
             <div>
 
               <h2
-                className="
-                  text-lg
-                  font-bold
-                  text-slate-800
-                "
+                className=""
               >
                 {modo ===
                 "nuevo"
@@ -3525,11 +3067,7 @@ function ModalEntidadBancaria({
 
 
               <p
-                className="
-                  mt-1
-                  text-xs
-                  text-slate-500
-                "
+                className="mt-1"
               >
                 Datos identificativos y financieros de la entidad.
               </p>
@@ -3545,19 +3083,11 @@ function ModalEntidadBancaria({
               onClick={
                 onCerrar
               }
-              className="
-                flex
-                h-9
-                w-9
-                items-center
-                justify-center
-                rounded-lg
-                text-slate-400
-                transition
-                hover:bg-slate-100
-                hover:text-slate-700
-                disabled:opacity-50
-              "
+              className="flex
+ h-9
+ w-9
+ items-center
+ justify-center"
             >
               ✕
             </button>
@@ -3581,12 +3111,10 @@ function ModalEntidadBancaria({
             {/* FILA 1 */}
 
             <div
-              className="
-                grid
-                grid-cols-1
-                gap-4
-                sm:grid-cols-2
-              "
+              className="grid
+ grid-cols-1
+ gap-4
+ sm:grid-cols-2"
             >
 
               {/* CÓDIGO EUROPEO */}
@@ -3594,13 +3122,8 @@ function ModalEntidadBancaria({
               <div>
 
                 <label
-                  className="
-                    mb-1.5
-                    block
-                    text-sm
-                    font-semibold
-                    text-slate-700
-                  "
+                  className="mb-1.5
+ block"
                 >
                   Código Europeo (opcional)
                 </label>
@@ -3620,23 +3143,13 @@ function ModalEntidadBancaria({
                   placeholder="Puedes dejarlo vacío"
                   maxLength={50}
                   autoFocus
-                  className="
-                    w-full
-                    rounded-xl
-                    border
-                    border-slate-200
-                    bg-white
-                    px-4
-                    py-2.5
-                    font-mono
-                    text-sm
-                    text-slate-700
-                    outline-none
-                    transition
-                    focus:border-blue-400
-                    focus:ring-4
-                    focus:ring-blue-100
-                  "
+                  className="w-full
+ 
+ 
+ 
+ 
+ px-4
+ py-2.5"
                 />
 
               </div>
@@ -3647,13 +3160,8 @@ function ModalEntidadBancaria({
               <div>
 
                 <label
-                  className="
-                    mb-1.5
-                    block
-                    text-sm
-                    font-semibold
-                    text-slate-700
-                  "
+                  className="mb-1.5
+ block"
                 >
                   LEI
                 </label>
@@ -3672,23 +3180,13 @@ function ModalEntidadBancaria({
                   }
                   placeholder="Código LEI"
                   maxLength={50}
-                  className="
-                    w-full
-                    rounded-xl
-                    border
-                    border-slate-200
-                    bg-white
-                    px-4
-                    py-2.5
-                    font-mono
-                    text-sm
-                    text-slate-700
-                    outline-none
-                    transition
-                    focus:border-blue-400
-                    focus:ring-4
-                    focus:ring-blue-100
-                  "
+                  className="w-full
+ 
+ 
+ 
+ 
+ px-4
+ py-2.5"
                 />
 
               </div>
@@ -3701,13 +3199,8 @@ function ModalEntidadBancaria({
             <div>
 
               <label
-                className="
-                  mb-1.5
-                  block
-                  text-sm
-                  font-semibold
-                  text-slate-700
-                "
+                className="mb-1.5
+ block"
               >
                 Nombre *
               </label>
@@ -3726,22 +3219,13 @@ function ModalEntidadBancaria({
                 }
                 placeholder="Nombre completo de la entidad"
                 maxLength={250}
-                className="
-                  w-full
-                  rounded-xl
-                  border
-                  border-slate-200
-                  bg-white
-                  px-4
-                  py-2.5
-                  text-sm
-                  text-slate-700
-                  outline-none
-                  transition
-                  focus:border-blue-400
-                  focus:ring-4
-                  focus:ring-blue-100
-                "
+                className="w-full
+ 
+ 
+ 
+ 
+ px-4
+ py-2.5"
               />
 
             </div>
@@ -3752,13 +3236,8 @@ function ModalEntidadBancaria({
             <div>
 
               <label
-                className="
-                  mb-1.5
-                  block
-                  text-sm
-                  font-semibold
-                  text-slate-700
-                "
+                className="mb-1.5
+ block"
               >
                 Categoría *
               </label>
@@ -3778,22 +3257,13 @@ function ModalEntidadBancaria({
                 }
                 placeholder="Ej. Entidad de crédito"
                 maxLength={150}
-                className="
-                  w-full
-                  rounded-xl
-                  border
-                  border-slate-200
-                  bg-white
-                  px-4
-                  py-2.5
-                  text-sm
-                  text-slate-700
-                  outline-none
-                  transition
-                  focus:border-blue-400
-                  focus:ring-4
-                  focus:ring-blue-100
-                "
+                className="w-full
+ 
+ 
+ 
+ 
+ px-4
+ py-2.5"
               />
 
 
@@ -3812,13 +3282,13 @@ function ModalEntidadBancaria({
             {/* ENTIDAD ACTUAL */}
 
             <div>
-              <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+              <label className="mb-1.5 block">
                 Entidad actual
               </label>
               <select
                 value={formulario.entidad_actual_id}
                 onChange={(e) => cambiarCampo("entidad_actual_id", e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                className="w-full px-4 py-2.5"
               >
                 <option value="">La misma entidad / no especificada</option>
                 {entidades
@@ -3827,7 +3297,7 @@ function ModalEntidadBancaria({
                     <option key={e.id} value={e.id}>{e.nombre}</option>
                   ))}
               </select>
-              <p className="mt-1 text-xs text-slate-400">Si esta entidad fue absorbida o cambió de nombre, selecciona aquí la entidad sucesora.</p>
+              <p className="mt-1">Si esta entidad fue absorbida o cambió de nombre, selecciona aquí la entidad sucesora.</p>
             </div>
 
 
@@ -3836,13 +3306,8 @@ function ModalEntidadBancaria({
             <div>
 
               <label
-                className="
-                  mb-1.5
-                  block
-                  text-sm
-                  font-semibold
-                  text-slate-700
-                "
+                className="mb-1.5
+ block"
               >
                 Dirección
               </label>
@@ -3861,24 +3326,14 @@ function ModalEntidadBancaria({
                 placeholder="Dirección completa"
                 maxLength={400}
                 rows={3}
-                className="
-                  w-full
-                  resize-none
-                  rounded-xl
-                  border
-                  border-slate-200
-                  bg-white
-                  px-4
-                  py-2.5
-                  text-sm
-                  leading-5
-                  text-slate-700
-                  outline-none
-                  transition
-                  focus:border-blue-400
-                  focus:ring-4
-                  focus:ring-blue-100
-                "
+                className="w-full
+ resize-none
+ 
+ 
+ 
+ 
+ px-4
+ py-2.5"
               />
 
             </div>
@@ -3889,15 +3344,13 @@ function ModalEntidadBancaria({
           {/* BOTONES */}
 
           <div
-            className="
-              mt-7
-              flex
-              justify-end
-              gap-3
-              border-t
-              border-slate-100
-              pt-5
-            "
+            className="mt-7
+ flex
+ justify-end
+ gap-3
+ 
+ 
+ pt-5"
           >
 
             <button
@@ -3908,20 +3361,8 @@ function ModalEntidadBancaria({
               onClick={
                 onCerrar
               }
-              className="
-                rounded-xl
-                border
-                border-slate-200
-                bg-white
-                px-4
-                py-2.5
-                text-sm
-                font-medium
-                text-slate-600
-                transition
-                hover:bg-slate-50
-                disabled:opacity-50
-              "
+              className="px-4
+ py-2.5"
             >
               Cancelar
             </button>
@@ -3932,39 +3373,22 @@ function ModalEntidadBancaria({
               disabled={
                 guardando
               }
-              className="
-                inline-flex
-                min-w-[150px]
-                items-center
-                justify-center
-                gap-2
-                rounded-xl
-                bg-[var(--molsan-primary)]
-                px-5
-                py-2.5
-                text-sm
-                font-semibold
-                text-white
-                shadow-sm
-                transition
-                hover:bg-[var(--molsan-primary-hover)]
-                disabled:cursor-not-allowed
-                disabled:opacity-60
-              "
+              className="inline-flex
+ min-w-[150px]
+ items-center
+ justify-center
+ gap-2
+ 
+ 
+ px-5
+ py-2.5"
             >
 
               {guardando && (
 
                 <span
-                  className="
-                    h-4
-                    w-4
-                    animate-spin
-                    rounded-full
-                    border-2
-                    border-white/40
-                    border-t-white
-                  "
+                  className="h-4
+ w-4"
                 />
 
               )}
