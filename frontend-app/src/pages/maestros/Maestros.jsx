@@ -496,19 +496,7 @@ export default function Maestros() {
  
  
 
- ${
- activo
- ?`
-                          bg-[var(--erp-primary)]
-                          border-[var(--erp-primary)]
-                          text-white
-                          shadow-sm
-                        `:`
-                          bg-[var(--erp-surface)]
-                          border-[var(--erp-border)]
-                          text-[var(--erp-text)]
-                          hover:bg-[var(--erp-primary-soft)]
-                        `}`}
+ `}
                 >
 
                   <svg
