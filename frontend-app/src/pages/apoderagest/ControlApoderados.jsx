@@ -145,22 +145,22 @@ export default function ControlApoderados({ modo = "colaborador" }) {
           <h1 className="mt-2">{admin ? "Control Apoderados" : "Mi actividad y liquidaciones"}</h1>
           <p className="mt-2">{admin ? "Gestiona colaboradores, relaciones mensuales y revisión de facturas." : "Revisa las firmas reales del mes, valida la relación y presenta tu factura."}</p>
         </div>
-        <div className="flex items-center gap-3">{!admin && <label className="">Periodo <input type="month" value={periodo} onChange={(e) => setPeriodo(e.target.value)} className="ml-2 px-3 py-2" /></label>}<button type="button" onClick={cargar} className="px-4 py-2" disabled={cargando}>↻ Actualizar</button></div>
+        <div className="flex items-center gap-3">{!admin && <label>Periodo <input type="month" value={periodo} onChange={(e) => setPeriodo(e.target.value)} className="ml-2 px-3 py-2" /></label>}<button type="button" onClick={cargar} className="px-4 py-2" disabled={cargando}>↻ Actualizar</button></div>
       </div>
     </header>
     {error && <div role="alert" className="p-4">{error}</div>}
     {mensaje && <div role="status" className="p-4">{mensaje}</div>}
-    {cargando && <p className="">Cargando información…</p>}
+    {cargando && <p>Cargando información…</p>}
     {admin ? <>
       <section className="p-5">
         <div className="mb-4">
-          <h2 className="">Colaboradores habilitados</h2>
+          <h2>Colaboradores habilitados</h2>
           <p className="mt-1">Activa aquí el acceso a «Mi liquidación» para cada empleado. El cambio se guarda en su ficha y determina quién puede validar firmas y presentar facturas.</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[560px]">
             <thead><tr className="uppercase"><th className="p-3">Empleado</th><th className="p-3">Estado laboral</th><th className="p-3">Acceso a liquidaciones</th></tr></thead>
-            <tbody>{colaboradores.map((e) => <tr key={e.id} className="">
+            <tbody>{colaboradores.map((e) => <tr key={e.id}>
               <td className="p-3">{e.nombre}</td>
               <td className="p-3">{e.activo ? "Activo" : "Inactivo"}</td>
               <td className="p-3"><label className="inline-flex items-center gap-2"><input type="checkbox" checked={Boolean(e.es_colaborador)} disabled={cargando || !e.activo} onChange={(ev) => cambiarColaborador(e, ev.target.checked)} className="h-4 w-4" />{e.es_colaborador ? "Habilitado" : "No habilitado"}</label></td>
@@ -171,12 +171,12 @@ export default function ControlApoderados({ modo = "colaborador" }) {
       <section className="p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="">Liquidación mensual de colaboradores</h2>
+            <h2>Liquidación mensual de colaboradores</h2>
             <p className="mt-1">Periodo natural completo: del día 1 al último día del mes. Un protocolo cuenta una sola vez por colaborador, notario y número de protocolo.</p>
           </div>
           <div className="flex items-center gap-2">
             <button type="button" aria-label="Mes anterior" onClick={() => setPeriodo(moverMes(periodo, -1))} className="px-3 py-2">←</button>
-            <label className="">Mes
+            <label>Mes
               <input type="month" value={periodo} onChange={(e) => setPeriodo(e.target.value)} className="ml-2 px-3 py-2" />
             </label>
             <button type="button" aria-label="Mes siguiente" onClick={() => setPeriodo(moverMes(periodo, 1))} className="px-3 py-2">→</button>
@@ -184,25 +184,25 @@ export default function ControlApoderados({ modo = "colaborador" }) {
         </div>
       </section>
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        <div className="p-5"><p className="">Protocolos firmados</p><p className="mt-2">{items.reduce((s, x) => s + Number(x.protocolos_firmados ?? x.expedientes?.length ?? 0), 0)}</p><p className="mt-1">Protocolos únicos, no número de expedientes</p></div>
-        <div className="p-5"><p className="">Cancelaciones sin provisión</p><p className="mt-2">{items.reduce((s, x) => s + Number(x.cancelaciones_sin_provision || 0), 0)}</p></div>
-        <div className="p-5"><p className="">Cancelaciones con provisión</p><p className="mt-2">{items.reduce((s, x) => s + Number(x.cancelaciones_con_provision || 0), 0)}</p></div>
-        <div className="p-5"><p className="">Facturación neta total</p><p className="mt-2">{euros(items.reduce((s, x) => s + Number(x.base_neta ?? x.honorarios ?? 0), 0))}</p></div>
-        <div className="p-5"><p className="">IVA total (21%)</p><p className="mt-2">{euros(items.reduce((s, x) => s + Number(x.iva || 0), 0))}</p></div>
-        <div className="p-5"><p className="">Total facturación</p><p className="mt-2">{euros(items.reduce((s, x) => s + Number(x.total ?? (Number(x.base_neta || 0) + Number(x.iva || 0))), 0))}</p></div>
+        <div className="p-5"><p>Protocolos firmados</p><p className="mt-2">{items.reduce((s, x) => s + Number(x.protocolos_firmados ?? x.expedientes?.length ?? 0), 0)}</p><p className="mt-1">Protocolos únicos, no número de expedientes</p></div>
+        <div className="p-5"><p>Cancelaciones sin provisión</p><p className="mt-2">{items.reduce((s, x) => s + Number(x.cancelaciones_sin_provision || 0), 0)}</p></div>
+        <div className="p-5"><p>Cancelaciones con provisión</p><p className="mt-2">{items.reduce((s, x) => s + Number(x.cancelaciones_con_provision || 0), 0)}</p></div>
+        <div className="p-5"><p>Facturación neta total</p><p className="mt-2">{euros(items.reduce((s, x) => s + Number(x.base_neta ?? x.honorarios ?? 0), 0))}</p></div>
+        <div className="p-5"><p>IVA total (21%)</p><p className="mt-2">{euros(items.reduce((s, x) => s + Number(x.iva || 0), 0))}</p></div>
+        <div className="p-5"><p>Total facturación</p><p className="mt-2">{euros(items.reduce((s, x) => s + Number(x.total ?? (Number(x.base_neta || 0) + Number(x.iva || 0))), 0))}</p></div>
       </section>
       <section className="p-5">
-        <div className="mb-4 flex flex-wrap items-end justify-between gap-3"><div><h2 className="">Relación del mes · {periodo}</h2><p className="mt-1">Las firmas se obtienen de la fecha de firma real en FichaExpediente. La factura solo se puede validar tras revisar la relación mensual.</p></div><span className="px-3 py-1">{items.length} colaboradores</span></div>
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3"><div><h2>Relación del mes · {periodo}</h2><p className="mt-1">Las firmas se obtienen de la fecha de firma real en FichaExpediente. La factura solo se puede validar tras revisar la relación mensual.</p></div><span className="px-3 py-1">{items.length} colaboradores</span></div>
         {items.length === 0 ? <p className="p-5">No hay colaboradores habilitados ni relaciones para este periodo.</p> : <div className="overflow-x-auto"><table className="w-full min-w-[1250px]">
           <thead><tr className="uppercase">
             <th className="p-3">Colaborador</th><th className="p-3">Cancelaciones sin provisión</th><th className="p-3">Cancelaciones con provisión</th><th className="p-3">Honorarios</th><th className="p-3">Base neta</th><th className="p-3">Total</th><th className="p-3">Ver factura</th><th className="p-3">Justificante</th><th className="p-3">Validar</th><th className="p-3">Ver firmas</th>
           </tr></thead>
-          <tbody>{items.map((x) => <tr key={x.id} className="">
-            <td className="p-3"><p className="">{x.colaborador}</p><p className="mt-1">{x.protocolos_firmados ?? x.expedientes?.length ?? 0} protocolo(s) · {estado(x.estado_relacion)}</p><p className="mt-1">Factura: {estado(x.estado_factura)}</p></td>
+          <tbody>{items.map((x) => <tr key={x.id}>
+            <td className="p-3"><p>{x.colaborador}</p><p className="mt-1">{x.protocolos_firmados ?? x.expedientes?.length ?? 0} protocolo(s) · {estado(x.estado_relacion)}</p><p className="mt-1">Factura: {estado(x.estado_factura)}</p></td>
             <td className="p-3">{x.cancelaciones_sin_provision ?? 0}</td><td className="p-3">{x.cancelaciones_con_provision ?? 0}</td>
             <td className="p-3">{euros(x.honorarios_unitarios)}</td><td className="p-3">{euros(x.base_neta ?? x.honorarios)}</td><td className="p-3">{euros(x.total ?? (Number(x.base_neta || 0) + Number(x.iva || 0)))}</td>
-            <td className="p-3">{x.tiene_factura ? <button type="button" onClick={() => descargar(x)} className="px-3 py-2">Ver factura</button> : <span className="">Pendiente</span>}</td>
-            <td className="p-3">{x.justificante_nombre ? <button type="button" onClick={() => descargarJustificante(x)} className="px-3 py-2">Ver justificante</button> : <span className="">No aportado</span>}</td>
+            <td className="p-3">{x.tiene_factura ? <button type="button" onClick={() => descargar(x)} className="px-3 py-2">Ver factura</button> : <span>Pendiente</span>}</td>
+            <td className="p-3">{x.justificante_nombre ? <button type="button" onClick={() => descargarJustificante(x)} className="px-3 py-2">Ver justificante</button> : <span>No aportado</span>}</td>
             <td className="p-3"><div className="flex min-w-[190px] flex-col gap-2">
               <textarea value={observaciones[x.id] || ""} onChange={(ev) => setObservaciones((prev) => ({ ...prev, [x.id]: ev.target.value }))} maxLength={2000} placeholder="Observaciones de factura…" className="min-h-16 p-2" aria-label={`Observaciones de factura de ${x.colaborador}`} />
               {x.tiene_factura && <button type="button" onClick={() => revisar(x, "aceptada")} className="px-3 py-2">Aceptar factura</button>}
@@ -220,41 +220,41 @@ export default function ControlApoderados({ modo = "colaborador" }) {
       {firmasAbiertas && <div className="panel-modal-premium fixed inset-0 z-[12000] flex items-center justify-center p-4">
         <section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Listado de firmas" className="max-h-[85vh] w-full max-w-4xl overflow-hidden">
           <header className="flex items-start justify-between gap-4 p-5"><div><p className="uppercase">Control Apoderados · {periodo}</p><h2 className="mt-1">Firmas de {firmasAbiertas.colaborador}</h2><p className="mt-1">{firmasAbiertas.protocolos_firmados ?? firmasAbiertas.expedientes?.length ?? 0} protocolos únicos · {firmasAbiertas.expedientes?.length || 0} expedientes</p></div><button type="button" onClick={() => setFirmasAbiertas(null)} className="px-3 py-2">Cerrar ✕</button></header>
-          <div className="max-h-[65vh] overflow-auto p-5">{(firmasAbiertas.expedientes || []).length ? <table className="w-full"><thead><tr className=""><th className="p-3">Expediente</th><th className="p-3">Fecha firma</th><th className="p-3">Notario</th><th className="p-3">Protocolo</th><th className="p-3">Operación</th></tr></thead><tbody>{firmasAbiertas.expedientes.map((e) => <tr key={e.expediente_id} className=""><td className="p-3">{e.id_expediente}</td><td className="p-3">{fecha(e.fecha_firma)}</td><td className="p-3">{e.notario || "—"}</td><td className="p-3">{e.protocolo || "Sin protocolo"}</td><td className="p-3">{e.tipo_operacion || "—"}</td></tr>)}</tbody></table> : <p className="p-5">No hay firmas registradas en este periodo.</p>}</div>
+          <div className="max-h-[65vh] overflow-auto p-5">{(firmasAbiertas.expedientes || []).length ? <table className="w-full"><thead><tr><th className="p-3">Expediente</th><th className="p-3">Fecha firma</th><th className="p-3">Notario</th><th className="p-3">Protocolo</th><th className="p-3">Operación</th></tr></thead><tbody>{firmasAbiertas.expedientes.map((e) => <tr key={e.expediente_id}><td className="p-3">{e.id_expediente}</td><td className="p-3">{fecha(e.fecha_firma)}</td><td className="p-3">{e.notario || "—"}</td><td className="p-3">{e.protocolo || "Sin protocolo"}</td><td className="p-3">{e.tipo_operacion || "—"}</td></tr>)}</tbody></table> : <p className="p-5">No hay firmas registradas en este periodo.</p>}</div>
         </section>
       </div>}
     </> : item ? <>
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        <div className="p-5"><p className="">Protocolos firmados</p><p className="mt-2">{item.protocolos_firmados ?? item.expedientes?.length ?? 0}</p><p className="mt-1">Un protocolo se cuenta una sola vez por notario</p></div>
-        <div className="p-5"><p className="">Cancelaciones sin provisión</p><p className="mt-2">{item.cancelaciones_sin_provision ?? 0}</p></div>
-        <div className="p-5"><p className="">Cancelaciones con provisión</p><p className="mt-2">{item.cancelaciones_con_provision ?? 0}</p></div>
-        <div className="p-5"><p className="">Honorarios netos</p><p className="mt-2">{euros(item.honorarios)}</p><p className="mt-1">{euros(item.honorarios_unitarios)} por protocolo</p></div>
-        <div className="p-5"><p className="">IVA (21%)</p><p className="mt-2">{euros(item.iva)}</p></div>
-        <div className="p-5"><p className="">Total</p><p className="mt-2">{euros(item.total)}</p></div>
+        <div className="p-5"><p>Protocolos firmados</p><p className="mt-2">{item.protocolos_firmados ?? item.expedientes?.length ?? 0}</p><p className="mt-1">Un protocolo se cuenta una sola vez por notario</p></div>
+        <div className="p-5"><p>Cancelaciones sin provisión</p><p className="mt-2">{item.cancelaciones_sin_provision ?? 0}</p></div>
+        <div className="p-5"><p>Cancelaciones con provisión</p><p className="mt-2">{item.cancelaciones_con_provision ?? 0}</p></div>
+        <div className="p-5"><p>Honorarios netos</p><p className="mt-2">{euros(item.honorarios)}</p><p className="mt-1">{euros(item.honorarios_unitarios)} por protocolo</p></div>
+        <div className="p-5"><p>IVA (21%)</p><p className="mt-2">{euros(item.iva)}</p></div>
+        <div className="p-5"><p>Total</p><p className="mt-2">{euros(item.total)}</p></div>
       </section>
       <section className="p-5">
-        <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="">Relación de expedientes firmados</h2><p className="mt-1">Solo se incluyen expedientes cuya fecha de firma real pertenece al mes seleccionado y cuya ficha identifica este colaborador como apoderado.</p></div><span className="px-3 py-1">{item.protocolos_firmados ?? item.expedientes?.length ?? 0} protocolos</span></div>
-        {item.expedientes?.length ? <div className="mt-4 overflow-x-auto"><table className="w-full"><thead><tr className=""><th className="p-3">Expediente</th><th className="p-3">Fecha firma</th><th className="p-3">Protocolo</th><th className="p-3">Notario</th></tr></thead><tbody>{item.expedientes.map((e) => <tr key={e.expediente_id} className=""><td className="p-3">{e.id_expediente}</td><td className="p-3">{fecha(e.fecha_firma)}</td><td className="p-3">{e.protocolo || "—"}</td><td className="p-3">{e.notario || "—"}</td></tr>)}</tbody></table></div> : <p className="mt-4 p-5">No constan firmas reales a tu nombre en este periodo.</p>}
-        <div className="mt-5 p-4"><p className="">Estado: {estado(item.estado_relacion)}</p>{item.validado_en && <p className="mt-1">Validada el {fecha(item.validado_en)} · versión {item.validado_version}</p>}
+        <div className="flex flex-wrap items-center justify-between gap-3"><div><h2>Relación de expedientes firmados</h2><p className="mt-1">Solo se incluyen expedientes cuya fecha de firma real pertenece al mes seleccionado y cuya ficha identifica este colaborador como apoderado.</p></div><span className="px-3 py-1">{item.protocolos_firmados ?? item.expedientes?.length ?? 0} protocolos</span></div>
+        {item.expedientes?.length ? <div className="mt-4 overflow-x-auto"><table className="w-full"><thead><tr><th className="p-3">Expediente</th><th className="p-3">Fecha firma</th><th className="p-3">Protocolo</th><th className="p-3">Notario</th></tr></thead><tbody>{item.expedientes.map((e) => <tr key={e.expediente_id}><td className="p-3">{e.id_expediente}</td><td className="p-3">{fecha(e.fecha_firma)}</td><td className="p-3">{e.protocolo || "—"}</td><td className="p-3">{e.notario || "—"}</td></tr>)}</tbody></table></div> : <p className="mt-4 p-5">No constan firmas reales a tu nombre en este periodo.</p>}
+        <div className="mt-5 p-4"><p>Estado: {estado(item.estado_relacion)}</p>{item.validado_en && <p className="mt-1">Validada el {fecha(item.validado_en)} · versión {item.validado_version}</p>}
           {item.estado_relacion !== "validada" ? <><label className="mt-4 block">Observaciones o discrepancias (opcional)<textarea value={discrepancia} onChange={(e) => setDiscrepancia(e.target.value)} maxLength={2000} className="mt-1 min-h-24 w-full p-3" placeholder="Indica si falta una firma o hay algún dato incorrecto…" /></label><button type="button" onClick={validar} disabled={cargando} className="mt-3 px-5 py-3">Validar relación mensual</button></> : <p className="mt-2">Relación validada. Ya puedes presentar la factura del periodo.</p>}
         </div>
       </section>
-      <section className="p-5"><h2 className="">Presentar factura mensual</h2><p className="mt-1">Se habilita únicamente después de validar la relación. Formatos admitidos: PDF, XML, JPG o PNG; máximo 10 MB.</p>
+      <section className="p-5"><h2>Presentar factura mensual</h2><p className="mt-1">Se habilita únicamente después de validar la relación. Formatos admitidos: PDF, XML, JPG o PNG; máximo 10 MB.</p>
         {item.factura_nombre && <p className="mt-3">Archivo presentado: <strong>{item.factura_nombre}</strong> · {estado(item.estado_factura)}</p>}
         {item.estado_relacion === "validada" ? <div className="mt-4 flex flex-wrap items-center gap-3"><input type="file" accept=".pdf,.xml,.jpg,.jpeg,.png" onChange={(e) => setArchivo(e.target.files?.[0] || null)} className="max-w-full" /><button type="button" onClick={subir} disabled={!archivo || cargando} className="px-5 py-3">{item.factura_nombre ? "Sustituir factura" : "Enviar factura"}</button></div> : <p className="mt-3 p-3">Primero valida la relación de expedientes.</p>}
         {item.factura_observaciones && <p className="mt-3 p-3">Observaciones de Molsan: {item.factura_observaciones}</p>}
         <div className="mt-5 p-4">
-          <h3 className="">Justificante</h3>
+          <h3>Justificante</h3>
           <p className="mt-1">{item.justificante_nombre ? `Adjuntado: ${item.justificante_nombre}` : "Adjunta el justificante correspondiente a esta liquidación."} Formatos PDF, XML, JPG o PNG; máximo 10 MB.</p>
           <div className="mt-3 flex flex-wrap items-center gap-3"><input type="file" accept=".pdf,.xml,.jpg,.jpeg,.png" onChange={(e) => setJustificanteArchivo(e.target.files?.[0] || null)} className="max-w-full" /><button type="button" onClick={subirJustificante} disabled={!justificanteArchivo || cargando} className="px-4 py-2">{item.justificante_nombre ? "Sustituir justificante" : "Subir justificante"}</button></div>
         </div>
       </section>
       <section className="p-5">
-        <h2 className="">Histórico de liquidaciones</h2>
+        <h2>Histórico de liquidaciones</h2>
         <p className="mb-3 mt-1">Consulta el estado de las relaciones y facturas de otros meses.</p>
-        {historial.length ? <div className="overflow-x-auto"><table className="w-full"><thead><tr className=""><th className="p-3">Periodo</th><th className="p-3">Firmas</th><th className="p-3">Relación</th><th className="p-3">Factura</th><th className="p-3">Consulta</th></tr></thead><tbody>{historial.map((h) => <tr key={h.id} className=""><td className="p-3">{h.periodo}</td><td className="p-3">{h.protocolos_firmados ?? h.expedientes?.length ?? 0}</td><td className="p-3">{estado(h.estado_relacion)}</td><td className="p-3">{estado(h.estado_factura)}</td><td className="p-3"><button type="button" onClick={() => setPeriodo(h.periodo)} className="">Abrir mes</button></td></tr>)}</tbody></table></div> : <p className="p-4">Todavía no hay otros periodos registrados.</p>}
+        {historial.length ? <div className="overflow-x-auto"><table className="w-full"><thead><tr><th className="p-3">Periodo</th><th className="p-3">Firmas</th><th className="p-3">Relación</th><th className="p-3">Factura</th><th className="p-3">Consulta</th></tr></thead><tbody>{historial.map((h) => <tr key={h.id}><td className="p-3">{h.periodo}</td><td className="p-3">{h.protocolos_firmados ?? h.expedientes?.length ?? 0}</td><td className="p-3">{estado(h.estado_relacion)}</td><td className="p-3">{estado(h.estado_factura)}</td><td className="p-3"><button type="button" onClick={() => setPeriodo(h.periodo)}>Abrir mes</button></td></tr>)}</tbody></table></div> : <p className="p-4">Todavía no hay otros periodos registrados.</p>}
       </section>
     </> : !cargando && <section className="p-6">No se ha podido cargar la relación mensual. Si eres colaborador, solicita que habiliten tu ficha desde Utilidades → Control Apoderados.</section>}
-    <div><button type="button" onClick={() => navigate(admin ? "/herramientas/utilidades" : "/apoderagest")} className="">← Volver</button></div>
+    <div><button type="button" onClick={() => navigate(admin ? "/herramientas/utilidades" : "/apoderagest")}>← Volver</button></div>
   </div>;
 }
