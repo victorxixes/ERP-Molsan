@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
-import "../../css/ComponentesOperativosPremium.css";
 
 const ISO = (d) => d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
 const FECHA = (v) => v ? new Date(v + "T12:00:00").toLocaleDateString("es-ES") : "—";
