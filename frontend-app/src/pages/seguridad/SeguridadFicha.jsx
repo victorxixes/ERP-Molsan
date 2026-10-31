@@ -1486,7 +1486,7 @@ const permisosGlobales =
 
   return (
     <div
-      className="seguridad-subpagina-premium seguridad-ficha-premium w-full space-y-4"
+      className="w-full space-y-4"
     >
 
       {/* ======================================================
