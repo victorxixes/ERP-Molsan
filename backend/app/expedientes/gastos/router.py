@@ -40,6 +40,36 @@ def _redondear(valor: Decimal) -> Decimal:
     return valor.quantize(CENTIMO, rounding=ROUND_HALF_UP)
 
 
+def _estado_pago_desde_totales(obligacion, total_pagado) -> str:
+    """Deriva el estado exclusivamente de movimientos de pago reales."""
+    obligacion = _decimal_opcional(obligacion) or Decimal("0.00")
+    total_pagado = _decimal_opcional(total_pagado) or Decimal("0.00")
+    if obligacion <= 0 or total_pagado <= 0:
+        return "Pendiente"
+    if total_pagado >= obligacion:
+        return "Pagado"
+    return "Parcial"
+
+
+def _crear_obligacion_pendiente(
+    expediente_id: int,
+    tipo: str,
+    descripcion: str,
+    fecha,
+    documento_carpeta_id: int,
+):
+    """Adjuntar una factura crea una obligación, nunca un pago."""
+    return ExpedienteGasto(
+        expediente_id=expediente_id,
+        tipo=tipo,
+        descripcion=descripcion,
+        fecha=fecha,
+        documento_carpeta_id=documento_carpeta_id,
+        estado_pago="Pendiente",
+        origen_registro="ERP",
+    )
+
+
 class GastoBase(BaseModel):
     tipo: Optional[str] = Field(None, max_length=200)
     descripcion: Optional[str] = Field(None, max_length=500)
@@ -278,14 +308,12 @@ def vincular_documento_a_gasto(
     ).first()
     if existente_mismo_nombre:
         return {"ok": True, "duplicado": True, "gasto": existente_mismo_nombre}
-    gasto = ExpedienteGasto(
+    gasto = _crear_obligacion_pendiente(
         expediente_id=expediente.id,
         tipo=tipo,
         descripcion=payload.nombre_documento.strip(),
         fecha=payload.fecha or date.today(),
         documento_carpeta_id=payload.documento_carpeta_id,
-        estado_pago="Pendiente",
-        origen_registro="ERP",
     )
     db.add(gasto)
     try:
@@ -400,12 +428,8 @@ def registrar_pago_gasto(
             "key": payload.idempotency_key,
         }).mappings().first()
         total = total_previo + payload.importe
-        if total >= obligacion:
-            gasto.estado_pago = "Pagado"
-            gasto.fecha_pago = payload.fecha
-        else:
-            gasto.estado_pago = "Parcial"
-            gasto.fecha_pago = None
+        gasto.estado_pago = _estado_pago_desde_totales(obligacion, total)
+        gasto.fecha_pago = payload.fecha if gasto.estado_pago == "Pagado" else None
 
         # El importe inicial no se modifica. El saldo persistido se recalcula
         # únicamente con pagos reales y gastos históricos ya marcados como pagados
@@ -485,12 +509,12 @@ def anular_pago_gasto(
             WHERE gasto_id = :gasto_id AND anulado_en IS NULL
         """), {"gasto_id": gasto.id}).scalar()
         obligacion = _decimal_opcional(gasto.importe_resultante if gasto.importe_resultante is not None else gasto.importe) or Decimal("0.00")
-        if total >= obligacion and obligacion > 0:
-            gasto.estado_pago, gasto.fecha_pago = "Pagado", ultima_fecha_pago or date.today()
-        elif total > 0:
-            gasto.estado_pago, gasto.fecha_pago = "Parcial", None
-        else:
-            gasto.estado_pago, gasto.fecha_pago = "Pendiente", None
+        gasto.estado_pago = _estado_pago_desde_totales(obligacion, total)
+        gasto.fecha_pago = (
+            (ultima_fecha_pago or date.today())
+            if gasto.estado_pago == "Pagado"
+            else None
+        )
         if expediente.importe is not None:
             pagos_expediente = _decimal_opcional(db.execute(text("""
                 SELECT COALESCE(SUM(p.importe), 0)
