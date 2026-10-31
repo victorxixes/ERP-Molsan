@@ -151,11 +151,11 @@ export default function CtnDetallePage() {
   const firmasPresenciales = Number(totales.total_presencial || 0);
   const modalidadTexto = modalModalidad === "VC" ? "Videoconferencia" : "Presencial";
 
-  if (cargando) return <div className="ctn-detalle-page ctn-workspace-premium"><p>Cargando ficha CTN…</p></div>;
-  if (!notaria) return <div className="ctn-detalle-page"><p>{error || "No se ha encontrado el notario."}</p><button type="button" onClick={() => navigate(-1)}>Volver</button></div>;
+  if (cargando) return <div className=" "><p>Cargando ficha CTN…</p></div>;
+  if (!notaria) return <div className=""><p>{error || "No se ha encontrado el notario."}</p><button type="button" onClick={() => navigate(-1)}>Volver</button></div>;
 
   return (
-    <div className="ctn-detalle-page ctn-detalle-page--content">
+    <div className=" --content">
       <div className="ctn-detalle-header">
         <div>
           <h1 className="ctn-detalle-title">{nombreNotario(notaria)}</h1>
@@ -197,7 +197,7 @@ export default function CtnDetallePage() {
         </div>
       </section>
 
-      <section className="ctn-detalle-panel ctn-detalle-panel--associations">
+      <section className=" --associations">
         <h2 className="ctn-detalle-section-title ctn-detalle-section-title--flush">Notarios asociados</h2>
         <p className="ctn-detalle-muted">Las asociaciones se guardan en ambos sentidos. Eliminar una asociación desde cualquiera de las dos fichas la elimina para ambos notarios.</p>
         <label className="ctn-detalle-label">Buscar notario por nombre, apellidos o NIF</label>
