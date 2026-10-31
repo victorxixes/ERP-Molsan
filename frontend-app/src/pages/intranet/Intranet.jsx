@@ -139,7 +139,7 @@ export default function Intranet() {
   if (!authReady || loading) return <div role="status" aria-live="polite" className="flex min-h-[360px] items-center justify-center"><div className="px-6 py-4">Cargando Intranet…</div></div>;
   if (error && !noticias.length && !documentos.length) return <div role="alert" aria-live="assertive" className="p-8"><b>No se ha podido cargar la Intranet</b><p className="mt-2">{error}</p><button className={`${secondary} mt-4`} onClick={() => cargar(true)}>Reintentar</button></div>;
 
-  return <div className="relative space-y-6">
+  return <div className="erp-page min-w-0 space-y-6">
     <MolsanPageHeader mark="IN" title="Intranet" description="Noticias, documentación y actividad interna de Molsan." />
     <div className="flex justify-end"><span className="molsan-panel inline-flex w-fit items-center gap-2 px-4 py-2">Actualización automática activa</span></div>
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">

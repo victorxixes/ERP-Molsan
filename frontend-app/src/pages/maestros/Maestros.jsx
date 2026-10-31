@@ -360,7 +360,7 @@ export default function Maestros() {
   ---------------------------------------------------------- */
 
   return (
-    <div className="min-w-0 p-4 sm:p-6 space-y-6">
+    <div className="erp-page min-w-0 space-y-6">
 
       {/* ======================================================
           CABECERA

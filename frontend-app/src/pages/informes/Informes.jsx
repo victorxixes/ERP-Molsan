@@ -3466,9 +3466,9 @@ export default function Informes() {
   };
 
   return (
-    <div className="utilidades-premium-page herramientas-subpagina-premium min-h-full min-w-0 space-y-5 p-4 md:p-6">
+    <div className="erp-page utilidades-premium-page herramientas-subpagina-premium min-h-full min-w-0 space-y-5">
       <MolsanPageHeader
-        mark="IN"
+        mark="IF"
         title={apartadoSeleccionado ? apartadoSeleccionado.titulo : "Informes"}
         description={apartadoSeleccionado ? apartadoSeleccionado.descripcion : "Selecciona el tipo de informe que quieres consultar."}
       />
