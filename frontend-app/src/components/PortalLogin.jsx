@@ -37,13 +37,13 @@ export default function PortalLogin({
                 <img src="/img/logo.jpg" alt="Molsan" className="h-20 w-auto object-contain sm:h-24" />
               </div>
             </div>
-            <h1 className="">{title}</h1>
+            <h1>{title}</h1>
             <p className="mt-2">{subtitle}</p>
           </div>
 
           {error ? (
             <div role="alert" className="mb-5 px-4 py-3">
-              <p className="">{error}</p>
+              <p>{error}</p>
             </div>
           ) : null}
 
@@ -99,7 +99,7 @@ export default function PortalLogin({
               disabled={loading}
               className="relative w-full py-3.5"
             >
-              <span className="" />
+              <span />
               <span className="relative flex items-center justify-center gap-2">
                 {loading ? (
                   <>
@@ -112,7 +112,7 @@ export default function PortalLogin({
           </form>
 
           <div className="mt-8 pt-5">
-            <p className="">{footnote}</p>
+            <p>{footnote}</p>
                       </div>
         </div>
       </div>
