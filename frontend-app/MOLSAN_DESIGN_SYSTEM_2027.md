@@ -284,3 +284,14 @@ Este cierre **no afirma que cada una de las 97 pantallas y cada modal hayan sido
 - La finalización requiere migrar los componentes de tabla y sus consultas/endpoints de servidor, verificando por cada listado si pagina en cliente o servidor y manteniendo filtros, paginación y exportación.
 - En esta entrega no se declara completada la ordenación de todas las tablas. Tampoco se declara completada la auditoría visual uno a uno de todas las pantallas y diálogos.
 - Próxima comprobación técnica: inventario completo de tablas y endpoints, clasificación por estrategia de paginación, incorporación del contrato de ordenación en backend y frontend en Preview, pruebas de tipos (texto, fechas, importes e identificadores), y control visual responsive.
+
+## Fase 2 — normalización global de controles y diálogos (31/10/2026)
+
+- Se amplía la capa común para cubrir los campos de texto, selección y área de texto de todas las vistas operativas, también cuando no están dentro de un formulario HTML.
+- Se unifican geometría, tipografía, bordes, foco accesible, estados deshabilitados y respuesta de botones sin sobrescribir sus variantes semánticas ni sus acciones.
+- Los diálogos con `role="dialog"` reciben los mismos criterios aunque se monten mediante `createPortal` fuera de `#root`.
+- Se homogeneizan tablas en presentación, cabeceras, separadores y hover. Esta capa es exclusivamente visual: no incorpora ordenación ni indicadores que la simulen.
+- El ámbito de las reglas es el contenido principal y los diálogos; el Sidebar queda excluido por estructura y no se modifica.
+- La implantación es transversal para las pantallas que utilizan controles HTML y diálogos accesibles. No sustituye la comprobación visual real de cada ruta ni la revisión de modales heredados que no expongan un contenedor accesible identificable.
+- No se modifican APIs, backend, permisos, lógica de negocio, datos, base de datos, rama `main` ni servicios de producción.
+- Pendiente de esta fase: revisión visual en navegador de todas las rutas y corrección puntual de excepciones de composición. La ordenación funcional de tablas queda fuera de esta entrega y requiere una auditoría posterior de frontend, endpoints y paginación en backend.
