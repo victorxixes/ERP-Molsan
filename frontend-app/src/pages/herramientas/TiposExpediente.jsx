@@ -5,7 +5,7 @@ import "../../css/CatalogosMaestrosPremium.css";
 import "../../css/ModalesHerramientasPremium.css";
 
 const API = "/tipos-expediente";
-const CAMPO = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-[var(--molsan-primary)] focus:ring-4 focus:ring-[var(--molsan-primary-soft)]";
+const CAMPO = "w-full px-3 py-2.5";
 
 export default function TiposExpediente() {
   const [tipos, setTipos] = useState([]);
