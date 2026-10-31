@@ -1738,26 +1738,10 @@ function InformeCitasApoderados() {
 
           <button type="button"
             onClick={exportarExcel}
-            className="
-              px-4
-              py-2.5
-              rounded-xl
-              bg-emerald-500
-              hover:bg-emerald-600
-              border border-emerald-400
-              text-white
-              text-sm
-              font-semibold
-              shadow-[0_6px_18px_rgba(16,185,129,0.22)]
-              transition
-              active:scale-[0.97]
-              flex
-              items-center
-              gap-2
-            "
+            className="molsan-export-excel"
           >
-            <span>📗</span>
-            Exportar Excel
+            <span className="molsan-export-excel__icon" aria-hidden="true">📗</span>
+            Exportar a Excel
           </button>
 
 
