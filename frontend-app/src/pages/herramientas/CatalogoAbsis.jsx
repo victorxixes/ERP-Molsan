@@ -179,8 +179,8 @@ export default function CatalogoAbsis() {
             <p className="mt-2 max-w-3xl">Gestiona en una única pantalla los estados y listas auxiliares que utiliza la integración ABSIS. Cada lista se mantiene por separado y sus cambios quedan guardados en el servidor.</p>
           </div>
           <div className="px-5 py-4">
-            <p className="">{filas.filter((f) => f.activo).length}</p>
-            <p className="">entradas activas</p>
+            <p>{filas.filter((f) => f.activo).length}</p>
+            <p>entradas activas</p>
           </div>
         </div>
       </header>
@@ -193,12 +193,12 @@ export default function CatalogoAbsis() {
           </select>
           <button type="button" onClick={() => { setNombreNuevaLista(""); setError(""); setModalNuevaLista(true); }} className="inline-flex items-center justify-center gap-2 px-4 py-3">+ Crear lista</button>
           <button type="button" onClick={abrirNuevo} className="inline-flex items-center justify-center gap-2 px-5 py-3">
-            <span aria-hidden="true" className="">+</span> Añadir entrada
+            <span aria-hidden="true">+</span> Añadir entrada
           </button>
         </div>
         <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <input type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar código, valor o descripción…" aria-label="Buscar en el catálogo seleccionado" className="w-full px-3 py-2.5 sm:max-w-md" />
-          <p className="">{visibles.length} entradas en esta lista</p>
+          <p>{visibles.length} entradas en esta lista</p>
         </div>
       </section>
 
@@ -207,16 +207,16 @@ export default function CatalogoAbsis() {
 
       <section className="overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4">
-          <div><h2 className="">{categoria}</h2><p className="mt-1">Listado editable · datos persistentes</p></div>
+          <div><h2>{categoria}</h2><p className="mt-1">Listado editable · datos persistentes</p></div>
           <button type="button" onClick={cargar} className="px-3 py-2">Actualizar</button>
         </div>
         {cargando ? <div className="p-10">Cargando listado…</div> :
-          visibles.length === 0 ? <div className="p-10"><p className="">Todavía no hay entradas en esta lista</p><p className="mt-1">Usa «Añadir entrada» para incorporar el primer valor.</p></div> :
+          visibles.length === 0 ? <div className="p-10"><p>Todavía no hay entradas en esta lista</p><p className="mt-1">Usa «Añadir entrada» para incorporar el primer valor.</p></div> :
           <div className="overflow-x-auto"><table className="w-full min-w-[680px]">
             <thead className="uppercase"><tr>
               <th className="px-5 py-3">Código</th><th className="px-5 py-3">Valor</th><th className="px-5 py-3">Descripción</th><th className="px-5 py-3">Estado</th><th className="px-5 py-3">Acciones</th>
             </tr></thead>
-            <tbody className="">{visibles.map((fila) => <tr key={fila.id} className="">
+            <tbody>{visibles.map((fila) => <tr key={fila.id}>
               <td className="whitespace-nowrap px-5 py-3">{fila.codigo || "—"}</td>
               <td className="px-5 py-3">{fila.valor || "—"}</td>
               <td className="max-w-xl px-5 py-3">{fila.descripcion || "—"}</td>
@@ -231,14 +231,14 @@ export default function CatalogoAbsis() {
         <section ref={nuevaListaDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="absis-nueva-lista-titulo" className="w-full max-w-lg">
           <form onSubmit={crearLista}>
             <div className="px-6 py-5">
-              <h2 id="absis-nueva-lista-titulo" className="">Crear nueva lista ABSIS</h2>
+              <h2 id="absis-nueva-lista-titulo">Crear nueva lista ABSIS</h2>
               <p className="mt-1">Ponle un nombre único. Después podrás añadir todos los valores que necesites.</p>
             </div>
             <div className="space-y-3 p-6">
               <label className="flex flex-col gap-1.5">Nombre de la lista
                 <input autoFocus value={nombreNuevaLista} onChange={(e) => setNombreNuevaLista(e.target.value)} maxLength={100} required placeholder="Ej. TIPOFACTURA" className="px-3 py-2.5" />
               </label>
-              {error && <p role="alert" className="">{error}</p>}
+              {error && <p role="alert">{error}</p>}
             </div>
             <div className="flex justify-end gap-3 px-6 py-4">
               <button type="button" disabled={creandoLista} onClick={() => setModalNuevaLista(false)} className="px-4 py-2.5">Cancelar</button>
@@ -251,7 +251,7 @@ export default function CatalogoAbsis() {
       {modal && <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !guardando) setModal(false); }}>
         <section ref={entradaDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="absis-modal-titulo" className="my-auto w-full max-w-2xl">
           <form onSubmit={guardar}>
-            <div className="px-6 py-5"><h2 id="absis-modal-titulo" className="">{editando ? "Editar entrada" : "Añadir entrada"} · {categoria}</h2><p className="mt-1">Elige la lista y rellena los datos. El código es opcional.</p></div>
+            <div className="px-6 py-5"><h2 id="absis-modal-titulo">{editando ? "Editar entrada" : "Añadir entrada"} · {categoria}</h2><p className="mt-1">Elige la lista y rellena los datos. El código es opcional.</p></div>
             <div className="grid gap-4 p-6 sm:grid-cols-2">
               <label className="flex flex-col gap-1.5 sm:col-span-2">Lista
                 <select value={formulario.categoria} onChange={(e) => setFormulario((f) => ({ ...f, categoria: e.target.value }))} className="px-3 py-2.5" required>{categorias.map((item) => <option key={item} value={item}>{item}</option>)}</select>
