@@ -838,7 +838,6 @@ textarea:focus-visible {
 .erp-route-content > .min-w-0.space-y-5,
 .erp-route-content > .provisiones-fondos-page,
 .erp-route-content > .mensajes-premium-page,
-.erp-route-content > .logs-premium-page,
 .erp-route-content > main.mx-auto {
   width: 100% !important;
   min-width: 0 !important;
