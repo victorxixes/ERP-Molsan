@@ -39,7 +39,7 @@ function BadgeEstado({ estado }) {
 }
 function Indicador({ titulo, valor, detalle, tono, activo, onClick }) {
   const colors = { slate: "bg-slate-100 text-slate-700", amber: "bg-amber-50 text-amber-700", blue: "bg-blue-50 text-blue-700", green: "bg-emerald-50 text-emerald-700", red: "bg-rose-50 text-rose-700", violet: "bg-violet-50 text-violet-700" };
-  return <button type="button" onClick={onClick} className={"group min-w-0 p-4 hover:-translate-y-0.5 sm:p-5" + (activo ? "" : "")}>
+  return <button type="button" onClick={onClick} className={"group min-w-0 p-4 sm:p-5" + (activo ? "" : "")}>
     <div className="flex items-start justify-between gap-2"><div className="min-w-0"><p className="uppercase">{titulo}</p><p className="mt-2 tabular-nums">{valor}</p></div><span className={"flex h-10 w-10 shrink-0 items-center justify-center" + (colors[tono] || colors.slate)}><Icon name={titulo === "Total solicitudes" ? "file" : "clock"} size={19} /></span></div>
     <p className="mt-2">{detalle}</p>
   </button>;
@@ -102,7 +102,7 @@ export default function Fusiones() {
 
     <section className="overflow-hidden">
       <div className="p-4 sm:p-5"><div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between"><div><h2 className="">Solicitudes de fusión</h2><p className="mt-1">Busca por expediente, registro, entrada, factura o registrador.</p></div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center"><label className="relative block min-w-0 sm:w-80"><span className="sr-only">Buscar solicitudes</span><span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2"><Icon name="search" size={17} /></span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar solicitudes…" className="min-h-10 w-full py-2 pl-10 pr-3" /></label>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center"><label className="relative block min-w-0 sm:w-80"><span className="sr-only">Buscar solicitudes</span><span className="pointer-events-none absolute left-3 top-1/2"><Icon name="search" size={17} /></span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar solicitudes…" className="min-h-10 w-full py-2 pl-10 pr-3" /></label>
         <label><span className="sr-only">Filtrar por estado</span><select value={estado} onChange={(e) => setEstado(e.target.value)} className="min-h-10 w-full px-3 py-2 sm:w-44"><option value="Todos">Todos los estados</option>{ESTADOS.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>
         {(busqueda || estado !== "Todos") && <button type="button" onClick={limpiar} className="min-h-10 px-3 py-2">Limpiar</button>}</div>
       </div></div>
