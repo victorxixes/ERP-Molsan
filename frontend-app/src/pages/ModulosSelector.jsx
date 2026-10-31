@@ -227,13 +227,13 @@ export default function ModulosSelector() {
   }
 
   return (
-    <main className="selector-modulos-premium relative isolate min-h-[calc(100vh-110px)] overflow-hidden px-5 py-8 sm:px-8 sm:py-10">
+    <main className="selector-modulos-premium relative isolate min-h-[calc(100vh-110px)] overflow-hidden">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -right-24 -top-28 -z-10 h-80 w-80"
       />
 
-      <header className="mb-9 flex flex-wrap items-center justify-between gap-5">
+      <header className="molsan-module-selector-header mb-9 flex flex-wrap items-center justify-between gap-5">
         <div className="flex items-center gap-4">
           <div className="grid h-14 w-14 place-items-center">
             M
@@ -262,7 +262,7 @@ export default function ModulosSelector() {
               logout();
               navigate("/login", { replace: true });
             }}
-            className="inline-flex min-h-10 items-center justify-center gap-2 px-4"
+            className="molsan-btn molsan-btn--secondary inline-flex min-h-10 items-center justify-center gap-2"
           >
             <span aria-hidden="true">↪</span>
             Cerrar sesión
@@ -278,7 +278,7 @@ export default function ModulosSelector() {
       </div>
 
       {modulosDisponibles.length === 0 ? (
-        <section className="p-6">
+        <section className="erp-empty-state p-6">
           <h2>
             No hay módulos disponibles para esta cuenta
           </h2>
@@ -291,13 +291,13 @@ export default function ModulosSelector() {
         </section>
       ) : (
         <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="molsan-module-selector-grid grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {modulosDisponibles.map((modulo) => (
               <button
                 key={modulo.clave}
                 type="button"
                 onClick={() => modulo.portalSoporte ? abrirSelectorSoporte(modulo.portalSoporte) : navigate(modulo.ruta)}
-                className="group relative flex min-h-[220px] flex-col overflow-hidden p-6"
+                className="molsan-module-selector-card group relative flex min-h-[220px] flex-col overflow-hidden p-6"
               >
                 <div
                   aria-hidden="true"
@@ -314,7 +314,7 @@ export default function ModulosSelector() {
 
                 <div className="flex w-full items-start justify-between gap-4">
                   <div
-                    className={`grid h-14 w-14 place-items-center ${
+                    className={`molsan-module-selector-icon grid h-14 w-14 place-items-center ${
  modulo.estilo === "ag"
  ? ""
  : modulo.estilo === "cg"
@@ -361,8 +361,8 @@ export default function ModulosSelector() {
 
       {modalSoporte && (
         <div className="panel-modal-premium fixed inset-0 z-[100] flex items-center justify-center p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !abriendoNotaria) setModalSoporte(null); }}>
-          <section ref={soporteDialogRef} tabIndex={-1} className="flex max-h-[min(86vh,760px)] w-full max-w-2xl flex-col overflow-hidden" role="dialog" aria-modal="true" aria-labelledby="soporte-notaria-titulo">
-            <header className="flex items-start justify-between gap-4 px-6 py-5">
+          <section ref={soporteDialogRef} tabIndex={-1} className="molsan-modal__panel flex max-h-[min(86vh,760px)] w-full max-w-2xl flex-col overflow-hidden" role="dialog" aria-modal="true" aria-labelledby="soporte-notaria-titulo">
+            <header className="molsan-modal__header flex items-start justify-between gap-4 px-6 py-5">
               <div>
                 <p>ACCESO DE SOPORTE</p>
                 <h2 id="soporte-notaria-titulo" className="mt-1">{modalSoporte === "notargest" ? "NotarGest – Notarios" : "EncargaGest – Notarios"}</h2>
