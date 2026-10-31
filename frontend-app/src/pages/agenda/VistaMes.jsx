@@ -86,16 +86,12 @@ export default function VistaMes({
       {/* CABECERA DÍAS */}
 
       <div
-        className="grid grid-cols-7 gap-2 mb-2"
+        className="agenda-weekday-grid grid grid-cols-7 gap-2 mb-2"
       >
         {DIAS_SEMANA.map((d) => (
           <div
             key={d}
-            className="py-3
- 
- 
- 
- uppercase"
+            className="agenda-weekday py-3 uppercase"
           >
             {d}
           </div>
@@ -130,11 +126,7 @@ export default function VistaMes({
             return (
               <div
                 key={`${wi}-${di}`}
-                className={`min-h-32
- 
- 
- p-2
- flex flex-col
+                className={`agenda-month-day min-h-32 p-2 flex flex-col
  
  
  ${
@@ -195,10 +187,7 @@ export default function VistaMes({
                     return (
                       <div
                         key={c.id}
-                        className={`relative
- 
- px-2
- py-1.5
+                        className={`agenda-appointment relative px-2 py-1.5
  
  
  truncate
