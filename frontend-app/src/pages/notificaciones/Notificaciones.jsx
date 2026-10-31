@@ -433,23 +433,15 @@ export default function Notificaciones() {
                   n.id ??
                   `notificacion-${index}`
                 }
-                className={`
-                  group
-                  relative
-                  overflow-hidden
-                  rounded-2xl
-                  border
-                  ${estilo.borde}
-                  ${estilo.fondo}
-                  p-4
-                  md:p-5
-                  shadow-sm
-                  transition-all
-                  duration-200
-                  hover:-translate-y-[1px]
-                  hover:shadow-md
-                  animate-fade-in
-                `}
+                className={`group
+ relative
+ overflow-hidden
+ 
+ 
+ ${estilo.borde}
+ ${estilo.fondo}
+ p-4
+ md:p-5`}
               >
 
                 {/* ==================================================
@@ -457,15 +449,13 @@ export default function Notificaciones() {
                     ================================================== */}
 
                 <div
-                  className={`
-                    absolute
-                    left-0
-                    top-4
-                    bottom-4
-                    w-[3px]
-                    rounded-r-full
-                    ${estilo.barra}
-                  `}
+                  className={`absolute
+ left-0
+ top-4
+ bottom-4
+ w-[3px]
+ 
+ ${estilo.barra}`}
                 />
 
 
@@ -479,19 +469,15 @@ export default function Notificaciones() {
                       ================================================== */}
 
                   <div
-                    className={`
-                      flex-shrink-0
-                      w-11
-                      h-11
-                      rounded-xl
-                      ${estilo.icono}
-                      border
-                      flex
-                      items-center
-                      justify-center
-                      text-xl
-                      shadow-sm
-                    `}
+                    className={`flex-shrink-0
+ w-11
+ h-11
+ 
+ ${estilo.icono}
+ 
+ flex
+ items-center
+ justify-center`}
                   >
                     {icono}
                   </div>
