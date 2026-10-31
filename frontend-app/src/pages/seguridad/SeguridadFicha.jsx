@@ -6,6 +6,7 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 import MODULOS_ERP from "../../config/modulos";
 import { editarEmpleado } from "../../api/empleados";
@@ -1493,8 +1494,14 @@ const permisosGlobales =
           CABECERA
       ====================================================== */}
 
+      <MolsanPageHeader
+        mark="SE"
+        title={`${textoSeguro(empleado.nombre)}${empleado.apellidos ? ` ${empleado.apellidos}` : ""}`}
+        description={`Ficha individual de seguridad · @${empleado.usuario || "-"}`}
+      />
+
       <section
-        className="molsan-subpage-header p-5"
+        className="molsan-panel p-5"
       >
 
         <div
@@ -1566,61 +1573,14 @@ const permisosGlobales =
 
 
             <div className="min-w-0">
-
-              <p
-                className="uppercase"
-              >
-                Centro de seguridad
-              </p>
-
-              <h1
-                className="mt-1
- truncate"
-              >
-                {textoSeguro(
-                  empleado.nombre
-                )}
-
-                {empleado.apellidos
-                  ? ` ${empleado.apellidos}`
-                  : ""}
-              </h1>
-
-              <p
-                className="mt-0.5"
-              >
-                @{empleado.usuario || "-"}
-              </p>
-
-              <div
-                className="mt-2
- flex
- flex-wrap
- gap-2"
-              >
-
-                <Chip tone="primary">
-                  ID #{empleadoIdSeguro}
+              <p className="font-semibold">@{empleado.usuario || "-"}</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <Chip tone="primary">ID #{empleadoIdSeguro}</Chip>
+                <Chip tone="purple">{nombreRol}</Chip>
+                <Chip tone={empleado.activo ? "success" : "danger"}>
+                  {empleado.activo ? "Cuenta activa" : "Cuenta bloqueada"}
                 </Chip>
-
-                <Chip tone="purple">
-                  {nombreRol}
-                </Chip>
-
-                <Chip
-                  tone={
-                    empleado.activo
-                      ? "success"
-                      : "danger"
-                  }
-                >
-                  {empleado.activo
-                    ? "Cuenta activa"
-                    : "Cuenta bloqueada"}
-                </Chip>
-
               </div>
-
             </div>
 
           </div>
