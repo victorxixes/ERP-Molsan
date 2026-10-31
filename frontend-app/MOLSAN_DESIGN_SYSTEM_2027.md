@@ -144,3 +144,12 @@ Los colores de éxito, advertencia, error e información son semánticos y solo 
 - Se respeta `prefers-reduced-motion`.
 - No se modifican lógica, datos, permisos, API, navegación ni Sidebar. No se extiende todavía a otros módulos.
 - Validación pendiente: revisar visualmente Dashboard y CTN en Render Preview en escritorio y una anchura reducida antes de aprobar la extensión global.
+
+
+### Extensión Glass Luxe discreta — piloto Expedientes
+
+- Se incorpora el listado de Expedientes como tercer piloto visual.
+- El cristal mate se limita a la tarjeta exterior que contiene la tabla y al contenedor de la tabla.
+- Cabeceras y celdas conservan fondos prácticamente opacos; el hover usa azul hielo de baja intensidad.
+- No se reorganizan tarjetas, filtros, bloques SLA ni actividades. No se modifican columnas, datos, permisos, API ni flujos funcionales.
+- La extensión queda pendiente de revisión visual en Render Preview antes de aplicarla a otros módulos.
