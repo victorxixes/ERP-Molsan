@@ -249,7 +249,7 @@ export default function Fichajes({ modo = "empleado" }) {
           {!esAdminVista && (
             <section className="p-5 sm:p-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div><h2>Jornada de hoy</h2><p className="mt-1">{reloj.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p><p className="mt-2 tabular-nums">{reloj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</p><p>Hora local · reloj en tiempo real</p></div>
+                <div><h2>Jornada de hoy</h2><p className="mt-2 tabular-nums">{reloj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</p><p>Hora local · reloj en tiempo real</p></div>
                 <div className="px-3 py-2"><span>Último movimiento: </span><strong>{ultimoMarcaje ? formatearTipo(ultimoMarcaje.tipo) : "Sin marcajes hoy"}</strong>{ultimoMarcaje && <span className="ml-2">{hora(ultimoMarcaje.fecha_hora)}</span>}</div>
               </div>
               <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
