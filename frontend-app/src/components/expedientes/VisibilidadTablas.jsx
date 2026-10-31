@@ -189,7 +189,7 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
                 <input value={busquedaColumna} onChange={(e) => setBusquedaColumna(e.target.value)} className={CLASE_INPUT + "mb-3"} placeholder="Buscar columna Excel…" />
                 <div className="grid max-h-[34vh] gap-2 overflow-y-auto sm:grid-cols-2 xl:grid-cols-3">
                   {columnasFiltradas.map((item) => (
-                    <label key={item.key} className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-xs ${columnas.includes(item.key) ? "" : ""}`}>
+                    <label key={item.key} className={`flex items-center gap-2 px-3 py-2 ${columnas.includes(item.key) ? "" : ""}`}>
                       <input type="checkbox" checked={columnas.includes(item.key)} onChange={(e) => alternar(setColumnas, columnas, item.key, e.target.checked)} className="h-4 w-4" />
                       <span className="min-w-0 flex-1">{item.label}</span>
                     </label>
@@ -221,7 +221,7 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
                 </div>
                 <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                   {repositoriosVisibles.map((item) => (
-                    <label key={item.key} className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-xs ${repositorios.includes(item.key) ? "" : ""}`}>
+                    <label key={item.key} className={`flex items-center gap-2 px-3 py-2 ${repositorios.includes(item.key) ? "" : ""}`}>
                       <input type="checkbox" checked={repositorios.includes(item.key)} onChange={(e) => alternar(setRepositorios, repositorios, item.key, e.target.checked)} className="h-4 w-4" />
                       <span>{item.label}</span>
                     </label>
