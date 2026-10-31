@@ -211,7 +211,7 @@ function CampoTexto({
     <div>
       <label className="mb-1 block">
         {label}
-        {required && <span className=""> *</span>}
+        {required && <span> *</span>}
       </label>
 
       <input
@@ -245,7 +245,7 @@ function CampoAutomatico({ label, valor }) {
 function TituloSeccion({ titulo, descripcion }) {
   return (
     <div className="mb-3">
-      <h3 className="">{titulo}</h3>
+      <h3>{titulo}</h3>
       {descripcion && (
         <p className="mt-1">
           {descripcion}
@@ -801,7 +801,7 @@ export default function EnviarANotarioModal({
                   <CampoTexto label="Importe con provisión (€)" value={form.importe} disabled={loading} type="number" onChange={(v) => cambiarCampo("importe", v)} placeholder="0,00" />
                   <div>
                     <label className="mb-1 block">
-                      Formato de escritura <span className="">*</span>
+                      Formato de escritura <span>*</span>
                     </label>
                     <select
                       value={form.formato_escritura}
@@ -815,7 +815,7 @@ export default function EnviarANotarioModal({
                   </div>
                   <div>
                     <label className="mb-1 block">
-                      Tipo de trámite <span className="">*</span>
+                      Tipo de trámite <span>*</span>
                     </label>
                     <select
                       value={form.tipo_tramite}
@@ -836,7 +836,7 @@ export default function EnviarANotarioModal({
                       className="p-3 sm:p-4"
                     >
                       <div className="mb-3 flex items-center justify-between gap-3">
-                        <span className="">
+                        <span>
                           Documento {indice + 1}
                         </span>
                         {documentosEscritura.length > 1 && (
@@ -852,7 +852,7 @@ export default function EnviarANotarioModal({
                       </div>
 
                       <label className="mb-1 block">
-                        Tipo de documento <span className="">*</span>
+                        Tipo de documento <span>*</span>
                       </label>
                       <select
                         value={documento.tipo_documento}
@@ -924,7 +924,7 @@ export default function EnviarANotarioModal({
                   <div className="mt-3">
                     <label className="mb-1 block">
                       Idioma del documento
-                      <span className=""> *</span>
+                      <span> *</span>
                     </label>
                     <select
                       value={form.idioma}
@@ -955,7 +955,7 @@ export default function EnviarANotarioModal({
               <section className="w-full min-w-0 p-4 sm:p-5">
                 <div className="mb-5 flex items-start gap-3">
                   <div>
-                    <h3 className="">
+                    <h3>
                       Datos de facturación
                     </h3>
                     <p className="mt-1">
@@ -1101,8 +1101,8 @@ export default function EnviarANotarioModal({
                                 }}
                                 className="flex w-full items-center justify-between gap-3 px-3 py-2"
                               >
-                                <span className="">{item.municipio}</span>
-                                <span className="">{item.provincia}</span>
+                                <span>{item.municipio}</span>
+                                <span>{item.provincia}</span>
                               </button>
                             ))}
                           {municipios.filter((item) =>
@@ -1180,7 +1180,7 @@ export default function EnviarANotarioModal({
 
         <div className="flex shrink-0 flex-col-reverse gap-3 px-4 py-4 sm:flex-row sm:justify-between sm:px-6">
           <p className="self-center">
-            Los campos con <span className="">*</span>{" "}
+            Los campos con <span>*</span>{" "}
             son obligatorios.
           </p>
 
