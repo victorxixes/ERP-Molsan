@@ -118,7 +118,7 @@ export default function CambiosActividadAbsis() {
                 <td className="px-3 py-4">{seleccionado.actividad}</td>
                 <td className="px-3 py-4 min-w-[200px]"><select value={actividadDeseada} onChange={(e) => setActividadDeseada(e.target.value)} className="w-full px-3 py-2"><option value="">Selecciona actividad…</option>{ACTIVIDADES.filter((a) => a !== seleccionado.actividad).map((a) => <option key={a} value={a}>{a}</option>)}</select></td>
                 <td className="px-3 py-4 whitespace-nowrap">{solicitudes[seleccionado.expediente]?.fechaInicio || "—"}</td>
-                <td className="px-3 py-4 whitespace-nowrap"><span className={`inline-flex rounded-full border px-2 py-1 font-bold ${solicitudes[seleccionado.expediente]?.estado === "Consolidado en ABSIS" ? "" : solicitudes[seleccionado.expediente]?.estado === "Iniciado" ? "" : ""}`}>{solicitudes[seleccionado.expediente]?.estado || "Pendiente"}</span></td>
+                <td className="px-3 py-4 whitespace-nowrap"><span className={`inline-flex px-2 py-1 ${solicitudes[seleccionado.expediente]?.estado === "Consolidado en ABSIS" ? "" : solicitudes[seleccionado.expediente]?.estado === "Iniciado" ? "" : ""}`}>{solicitudes[seleccionado.expediente]?.estado || "Pendiente"}</span></td>
                 <td className="px-3 py-4 whitespace-nowrap">{fechaHoy(solicitudes[seleccionado.expediente]?.fechaConsolidacion)}</td>
               </tr></tbody>
             </table>
