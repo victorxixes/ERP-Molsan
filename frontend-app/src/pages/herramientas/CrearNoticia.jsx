@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useUtilidades } from "../../hooks/useUtilidades";
 
 
@@ -59,15 +60,13 @@ export default function CrearNoticia() {
 
       <MolsanPageHeader mark="IN" title="Crear noticia" description="Redacta y publica una noticia para la intranet de Molsan." />
 
-      </div>
-
 
       {/* =====================================================
           FORMULARIO
       ===================================================== */}
 
       <div
-        className="max-w-3xl
+        className="erp-card max-w-3xl
  relative overflow-hidden
  
  
