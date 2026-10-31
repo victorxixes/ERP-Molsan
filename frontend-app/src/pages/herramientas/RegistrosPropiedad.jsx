@@ -1711,7 +1711,7 @@ export default function RegistrosPropiedad() {
             <div>
 
               <h1
-                className=""
+               
               >
                 Registros de la Propiedad
               </h1>
@@ -1757,7 +1757,7 @@ export default function RegistrosPropiedad() {
  py-2.5"
             >
 
-              <span className="">
+              <span>
                 📊
               </span>
 
@@ -1781,7 +1781,7 @@ export default function RegistrosPropiedad() {
  py-2.5"
             >
 
-              <span className="">
+              <span>
                 +
               </span>
 
@@ -2107,13 +2107,13 @@ export default function RegistrosPropiedad() {
       >
 
         <div
-          className=""
+         
         >
 
           Mostrando{" "}
 
           <span
-            className=""
+           
           >
             {registrosFiltrados.length.toLocaleString(
               "es-ES"
@@ -2130,7 +2130,7 @@ export default function RegistrosPropiedad() {
               {" "}de{" "}
 
               <span
-                className=""
+               
               >
                 {registros.length.toLocaleString(
                   "es-ES"
@@ -2144,7 +2144,7 @@ export default function RegistrosPropiedad() {
 
 
         <div
-          className=""
+         
         >
           Página {pagina} de {totalPaginas}
         </div>
@@ -2169,7 +2169,7 @@ export default function RegistrosPropiedad() {
  justify-center"
           >
 
-            <div className="">
+            <div>
 
               <div
                 className="mx-auto
@@ -2208,7 +2208,7 @@ export default function RegistrosPropiedad() {
 
 
             <h3
-              className=""
+             
             >
               No se han encontrado registros
             </h3>
@@ -2234,7 +2234,7 @@ export default function RegistrosPropiedad() {
               <thead>
 
                 <tr
-                  className=""
+                 
                 >
 
                   <th
@@ -2392,7 +2392,7 @@ export default function RegistrosPropiedad() {
                       >
 
                         <div
-                          className=""
+                         
                         >
                           {
                             registro.registro_propiedad
@@ -2413,7 +2413,7 @@ export default function RegistrosPropiedad() {
                           registro.nombre_registrador ||
                           (
                             <span
-                              className=""
+                             
                             >
                               Sin registrar
                             </span>
@@ -2433,7 +2433,7 @@ export default function RegistrosPropiedad() {
                           registro.direccion ||
                           (
                             <span
-                              className=""
+                             
                             >
                               Sin dirección
                             </span>
@@ -2666,13 +2666,13 @@ export default function RegistrosPropiedad() {
 
 
           <span
-            className=""
+           
           >
 
             Página{" "}
 
             <strong
-              className=""
+             
             >
               {pagina}
             </strong>
@@ -2680,7 +2680,7 @@ export default function RegistrosPropiedad() {
             {" "}de{" "}
 
             <strong
-              className=""
+             
             >
               {totalPaginas}
             </strong>
@@ -2871,7 +2871,7 @@ function ModalImportarExcel({
               <div>
 
                 <h2
-                  className=""
+                 
                 >
                   Importar Registros de la Propiedad
                 </h2>
@@ -2926,7 +2926,7 @@ function ModalImportarExcel({
  gap-3"
             >
 
-              <div className="">
+              <div>
                 ℹ️
               </div>
 
@@ -2934,7 +2934,7 @@ function ModalImportarExcel({
               <div>
 
                 <p
-                  className=""
+                 
                 >
                   Formato esperado
                 </p>
@@ -3395,7 +3395,7 @@ function ModalRegistroPropiedad({
             <div>
 
               <h2
-                className=""
+               
               >
                 {modo ===
                 "nuevo"
