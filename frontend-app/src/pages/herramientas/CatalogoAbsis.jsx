@@ -3,6 +3,8 @@ import { useAuthStore } from "../../store/authStore";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { API_BASE } from "../../api/config";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 const API_URL = `${API_BASE}/catalogos-absis`;
 
@@ -90,6 +92,7 @@ export default function CatalogoAbsis() {
   const visibles = filas.filter((fila) => fila.categoria === categoria && [
     fila.codigo, fila.valor, fila.descripcion
   ].some((dato) => String(dato || "").toLocaleLowerCase("es").includes(busqueda.trim().toLocaleLowerCase("es"))));
+  const ordenVisibles = useSortableData(visibles);
 
   async function crearLista(event) {
     event.preventDefault();
@@ -202,9 +205,13 @@ export default function CatalogoAbsis() {
           visibles.length === 0 ? <div className="p-10"><p>Todavía no hay entradas en esta lista</p><p className="mt-1">Usa «Añadir entrada» para incorporar el primer valor.</p></div> :
           <div className="overflow-x-auto"><table className="w-full min-w-[680px]">
             <thead className="uppercase"><tr>
-              <th className="px-5 py-3">Código</th><th className="px-5 py-3">Valor</th><th className="px-5 py-3">Descripción</th><th className="px-5 py-3">Estado</th><th className="px-5 py-3">Acciones</th>
+              <MolsanSortableTh label="Código" sortKey="codigo" sortConfig={ordenVisibles.sortConfig} onSort={ordenVisibles.requestSort} className="px-5 py-3" />
+              <MolsanSortableTh label="Valor" sortKey="valor" sortConfig={ordenVisibles.sortConfig} onSort={ordenVisibles.requestSort} className="px-5 py-3" />
+              <MolsanSortableTh label="Descripción" sortKey="descripcion" sortConfig={ordenVisibles.sortConfig} onSort={ordenVisibles.requestSort} className="px-5 py-3" />
+              <MolsanSortableTh label="Estado" sortKey="activo" sortConfig={ordenVisibles.sortConfig} onSort={ordenVisibles.requestSort} className="px-5 py-3" />
+              <th className="px-5 py-3">Acciones</th>
             </tr></thead>
-            <tbody>{visibles.map((fila) => <tr key={fila.id}>
+            <tbody>{ordenVisibles.items.map((fila) => <tr key={fila.id}>
               <td className="whitespace-nowrap px-5 py-3">{fila.codigo || "—"}</td>
               <td className="px-5 py-3">{fila.valor || "—"}</td>
               <td className="max-w-xl px-5 py-3">{fila.descripcion || "—"}</td>
