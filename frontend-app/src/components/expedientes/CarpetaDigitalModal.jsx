@@ -1173,7 +1173,6 @@ export default function CarpetaDigitalModal({
                             ))}
                           </div>
                         </section>
-                        )}
                       </div>
                     ) : (
                     actividadId === "gestion-economica" ? (
