@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import axios from "../../api/axios";
-import "../../css/ComponentesOperativosPremium.css";
 
 const VACIO = {
   razon_social: "", nif: "", domicilio_fiscal: "", codigo_postal: "",
@@ -81,7 +80,7 @@ export default function DatosMolsan() {
   };
 
   return (
-    <div className="datos-molsan-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <header className="relative overflow-hidden p-6 sm:p-7">
         <div className="absolute inset-x-0 top-0 h-1" />
         <div className="flex items-start gap-4">
