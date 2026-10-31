@@ -1458,11 +1458,9 @@ export default function Municipios() {
 
     <div
       className="municipios-premium herramientas-subpagina-premium catalogo-maestro-modal-premium 
-        min-h-full
-        p-4 sm:p-6 lg:p-8
-        space-y-6
-        animate-fadeIn
-      "
+ min-h-full
+ p-4 sm:p-6 lg:p-8
+ space-y-6"
     >
 
       {/* =====================================================
@@ -1470,55 +1468,36 @@ export default function Municipios() {
       ===================================================== */}
 
       <div
-        className="
-          relative overflow-hidden
-          rounded-[24px]
-          border border-slate-200/80
-          bg-white/80
-          backdrop-blur-xl
-          shadow-[0_18px_50px_rgba(15,23,42,0.08)]
-          p-6 sm:p-7
-        "
+        className="relative overflow-hidden
+ 
+ 
+ 
+ 
+ 
+ p-6 sm:p-7"
       >
 
         <div
-          className="
-            absolute inset-x-0 top-0 h-px
-            bg-gradient-to-r
-            from-transparent
-            via-blue-400/60
-            to-transparent
-          "
+          className="absolute inset-x-0 top-0 h-px"
         />
 
 
         <div
-          className="
-            relative
-            flex flex-col
-            gap-5
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-          "
+          className="relative
+ flex flex-col
+ gap-5
+ lg:flex-row
+ lg:items-center
+ lg:justify-between"
         >
 
           <div
-            className="
-              flex items-center gap-4
-            "
+            className="flex items-center gap-4"
           >
 
             <div
-              className="
-                flex h-14 w-14 shrink-0
-                items-center justify-center
-                rounded-2xl
-                bg-indigo-50
-                border border-indigo-100
-                text-2xl
-                shadow-sm
-              "
+              className="flex h-14 w-14 shrink-0
+ items-center justify-center"
             >
               🏘️
             </div>
@@ -1527,23 +1506,14 @@ export default function Municipios() {
             <div>
 
               <h1
-                className="
-                  text-2xl sm:text-3xl
-                  font-bold
-                  tracking-tight
-                  text-slate-800
-                "
+                className=""
               >
                 Municipios
               </h1>
 
 
               <p
-                className="
-                  mt-1
-                  text-sm
-                  text-slate-500
-                "
+                className="mt-1"
               >
                 Maestro de comunidades autónomas,
                 provincias y municipios.
@@ -1559,12 +1529,10 @@ export default function Municipios() {
           ================================================= */}
 
           <div
-            className="
-              flex
-              flex-col
-              sm:flex-row
-              gap-2
-            "
+            className="flex
+ flex-col
+ sm:flex-row
+ gap-2"
           >
 
             <button
@@ -1572,9 +1540,9 @@ export default function Municipios() {
               onClick={cargarCodigosPostalesNacionales}
               disabled={importandoCodigosNacionales}
               title="Cargar códigos postales desde datos abiertos derivados del INE"
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-4 py-2.5 text-sm font-semibold text-violet-700 shadow-sm transition-all hover:border-violet-300 hover:bg-violet-100 disabled:cursor-wait disabled:opacity-60"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5"
             >
-              <span className="text-lg">{importandoCodigosNacionales ? "⏳" : "📮"}</span>
+              <span className="">{importandoCodigosNacionales ? "⏳" : "📮"}</span>
               {importandoCodigosNacionales ? "Cargando códigos…" : "Cargar códigos postales de España"}
             </button>
 
@@ -1584,29 +1552,26 @@ export default function Municipios() {
               onClick={
                 abrirImportacionExcel
               }
-              className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-xl
-                border border-emerald-200
-                bg-emerald-50
-                px-5
-                py-2.5
-                text-sm
-                font-semibold
-                text-emerald-700
-                shadow-sm
-                transition-all
-                hover:border-emerald-300
-                hover:bg-emerald-100
-                hover:-translate-y-0.5
-                active:scale-[0.98]
-              "
+              className="inline-flex
+ items-center
+ justify-center
+ gap-2
+ 
+ 
+ 
+ px-5
+ py-2.5
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ hover:-translate-y-0.5"
             >
 
-              <span className="text-lg">
+              <span className="">
                 📊
               </span>
 
@@ -1620,27 +1585,24 @@ export default function Municipios() {
               onClick={
                 abrirNuevo
               }
-              className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-xl
-                bg-[var(--molsan-primary)]
-                px-5
-                py-2.5
-                text-sm
-                font-semibold
-                text-white
-                shadow-[0_8px_20px_rgba(49,86,179,0.20)]
-                transition-all
-                hover:bg-[var(--molsan-primary-hover)]
-                hover:-translate-y-0.5
-                active:scale-[0.98]
-              "
+              className="inline-flex
+ items-center
+ justify-center
+ gap-2
+ 
+ 
+ px-5
+ py-2.5
+ 
+ 
+ 
+ 
+ 
+ 
+ hover:-translate-y-0.5"
             >
 
-              <span className="text-lg">
+              <span className="">
                 +
               </span>
 
@@ -1670,8 +1632,8 @@ export default function Municipios() {
             font-medium
             ${
               tipoMensaje === "error"
-                ? "border-red-200 bg-red-50 text-red-700"
-                : "border-emerald-200 bg-emerald-50 text-emerald-700"
+                ? ""
+                : ""
             }
           `}
         >
@@ -1688,14 +1650,7 @@ export default function Municipios() {
       {error && (
 
         <div
-          className="
-            rounded-2xl
-            border border-red-200
-            bg-red-50
-            px-5 py-4
-            text-sm
-            text-red-700
-          "
+          className="px-5 py-4"
         >
           {error}
         </div>
@@ -1708,25 +1663,16 @@ export default function Municipios() {
       ===================================================== */}
 
       <div
-        className="
-          rounded-[22px]
-          border border-slate-200/80
-          bg-white/80
-          backdrop-blur-xl
-          shadow-[0_12px_35px_rgba(15,23,42,0.06)]
-          p-5
-        "
+        className="p-5"
       >
 
         <div
-          className="
-            grid
-            grid-cols-1
-            md:grid-cols-2
-            xl:grid-cols-[minmax(280px,1fr)_240px_240px_auto]
-            gap-4
-            items-end
-          "
+          className="grid
+ grid-cols-1
+ md:grid-cols-2
+ xl:grid-cols-[minmax(280px,1fr)_240px_240px_auto]
+ gap-4
+ items-end"
         >
 
           {/* BUSCADOR */}
@@ -1734,15 +1680,11 @@ export default function Municipios() {
           <div>
 
             <label
-              className="
-                mb-1.5
-                block
-                text-xs
-                font-semibold
-                uppercase
-                tracking-wide
-                text-slate-500
-              "
+              className="mb-1.5
+ block
+ 
+ 
+ uppercase"
             >
               Buscar
             </label>
@@ -1751,14 +1693,11 @@ export default function Municipios() {
             <div className="relative">
 
               <span
-                className="
-                  pointer-events-none
-                  absolute
-                  left-3
-                  top-1/2
-                  -translate-y-1/2
-                  text-slate-400
-                "
+                className="pointer-events-none
+ absolute
+ left-3
+ top-1/2
+ -translate-y-1/2"
               >
                 🔎
               </span>
@@ -1775,22 +1714,13 @@ export default function Municipios() {
                   )
                 }
                 placeholder="Municipio, provincia o CCAA..."
-                className="
-                  w-full
-                  rounded-xl
-                  border border-slate-200
-                  bg-white
-                  py-2.5
-                  pl-10
-                  pr-4
-                  text-sm
-                  text-slate-700
-                  outline-none
-                  transition
-                  focus:border-blue-400
-                  focus:ring-4
-                  focus:ring-blue-100
-                "
+                className="w-full
+ 
+ 
+ 
+ py-2.5
+ pl-10
+ pr-4"
               />
 
             </div>
@@ -1803,15 +1733,11 @@ export default function Municipios() {
           <div>
 
             <label
-              className="
-                mb-1.5
-                block
-                text-xs
-                font-semibold
-                uppercase
-                tracking-wide
-                text-slate-500
-              "
+              className="mb-1.5
+ block
+ 
+ 
+ uppercase"
             >
               Comunidad autónoma
             </label>
@@ -1826,21 +1752,12 @@ export default function Municipios() {
                   e.target.value
                 )
               }
-              className="
-                w-full
-                rounded-xl
-                border border-slate-200
-                bg-white
-                px-3
-                py-2.5
-                text-sm
-                text-slate-700
-                outline-none
-                transition
-                focus:border-blue-400
-                focus:ring-4
-                focus:ring-blue-100
-              "
+              className="w-full
+ 
+ 
+ 
+ px-3
+ py-2.5"
             >
 
               <option value="">
@@ -1871,15 +1788,11 @@ export default function Municipios() {
           <div>
 
             <label
-              className="
-                mb-1.5
-                block
-                text-xs
-                font-semibold
-                uppercase
-                tracking-wide
-                text-slate-500
-              "
+              className="mb-1.5
+ block
+ 
+ 
+ uppercase"
             >
               Provincia
             </label>
@@ -1894,21 +1807,12 @@ export default function Municipios() {
                   e.target.value
                 )
               }
-              className="
-                w-full
-                rounded-xl
-                border border-slate-200
-                bg-white
-                px-3
-                py-2.5
-                text-sm
-                text-slate-700
-                outline-none
-                transition
-                focus:border-blue-400
-                focus:ring-4
-                focus:ring-blue-100
-              "
+              className="w-full
+ 
+ 
+ 
+ px-3
+ py-2.5"
             >
 
               <option value="">
@@ -1941,19 +1845,8 @@ export default function Municipios() {
             onClick={
               limpiarFiltros
             }
-            className="
-              rounded-xl
-              border border-slate-200
-              bg-white
-              px-4
-              py-2.5
-              text-sm
-              font-medium
-              text-slate-600
-              transition
-              hover:border-slate-300
-              hover:bg-slate-50
-            "
+            className="px-4
+ py-2.5"
           >
             Limpiar filtros
           </button>
@@ -1968,30 +1861,22 @@ export default function Municipios() {
       ===================================================== */}
 
       <div
-        className="
-          flex
-          flex-col
-          gap-2
-          sm:flex-row
-          sm:items-center
-          sm:justify-between
-        "
+        className="flex
+ flex-col
+ gap-2
+ sm:flex-row
+ sm:items-center
+ sm:justify-between"
       >
 
         <div
-          className="
-            text-sm
-            text-slate-500
-          "
+          className=""
         >
 
           Mostrando{" "}
 
           <span
-            className="
-              font-semibold
-              text-slate-700
-            "
+            className=""
           >
             {municipiosFiltrados.length.toLocaleString(
               "es-ES"
@@ -2008,10 +1893,7 @@ export default function Municipios() {
               {" "}de{" "}
 
               <span
-                className="
-                  font-semibold
-                  text-slate-700
-                "
+                className=""
               >
                 {municipios.length.toLocaleString(
                   "es-ES"
@@ -2025,10 +1907,7 @@ export default function Municipios() {
 
 
         <div
-          className="
-            text-xs
-            text-slate-400
-          "
+          className=""
         >
           Página {pagina} de {totalPaginas}
         </div>
@@ -2041,42 +1920,25 @@ export default function Municipios() {
       ===================================================== */}
 
       <div
-        className="
-          overflow-hidden
-          rounded-[22px]
-          border border-slate-200/80
-          bg-white/90
-          shadow-[0_12px_35px_rgba(15,23,42,0.06)]
-        "
+        className="overflow-hidden"
       >
 
         {cargando ? (
 
           <div
-            className="
-              flex
-              min-h-[300px]
-              items-center
-              justify-center
-              text-sm
-              text-slate-400
-            "
+            className="flex
+ min-h-[300px]
+ items-center
+ justify-center"
           >
 
-            <div className="text-center">
+            <div className="">
 
               <div
-                className="
-                  mx-auto
-                  mb-3
-                  h-8
-                  w-8
-                  animate-spin
-                  rounded-full
-                  border-2
-                  border-slate-200
-                  border-t-blue-500
-                "
+                className="mx-auto
+ mb-3
+ h-8
+ w-8"
               />
 
               Cargando municipios...
@@ -2088,51 +1950,35 @@ export default function Municipios() {
         ) : municipiosPagina.length === 0 ? (
 
           <div
-            className="
-              flex
-              min-h-[300px]
-              flex-col
-              items-center
-              justify-center
-              px-6
-              text-center
-            "
+            className="flex
+ min-h-[300px]
+ flex-col
+ items-center
+ justify-center
+ px-6"
           >
 
             <div
-              className="
-                mb-3
-                flex
-                h-14
-                w-14
-                items-center
-                justify-center
-                rounded-2xl
-                bg-slate-50
-                text-2xl
-              "
+              className="mb-3
+ flex
+ h-14
+ w-14
+ items-center
+ justify-center"
             >
               🔎
             </div>
 
 
             <h3
-              className="
-                text-base
-                font-semibold
-                text-slate-700
-              "
+              className=""
             >
               No se han encontrado municipios
             </h3>
 
 
             <p
-              className="
-                mt-1
-                text-sm
-                text-slate-400
-              "
+              className="mt-1"
             >
               Prueba con otro texto o limpia los filtros.
             </p>
@@ -2144,86 +1990,63 @@ export default function Municipios() {
           <div className="overflow-x-auto">
 
             <table
-              className="
-                w-full
-                min-w-[800px]
-                border-collapse
-              "
+              className="w-full
+ min-w-[800px]"
             >
 
               <thead>
 
                 <tr
-                  className="
-                    border-b
-                    border-slate-200
-                    bg-slate-50/80
-                  "
+                  className=""
                 >
 
                   <th
-                    className="
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
+                    className="px-5
+ py-3.5
+ 
+ 
+ 
+ uppercase"
                   >
                     Comunidad autónoma
                   </th>
 
 
                   <th
-                    className="
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
+                    className="px-5
+ py-3.5
+ 
+ 
+ 
+ uppercase"
                   >
                     Provincia
                   </th>
 
 
                   <th
-                    className="
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
+                    className="px-5
+ py-3.5
+ 
+ 
+ 
+ uppercase"
                   >
                     Municipio
                   </th>
 
-                  <th className="px-5 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  <th className="px-5 py-3.5 uppercase">
                     Códigos postales
                   </th>
 
                   <th
-                    className="
-                      w-[150px]
-                      px-5
-                      py-3.5
-                      text-right
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
+                    className="w-[150px]
+ px-5
+ py-3.5
+ 
+ 
+ 
+ uppercase"
                   >
                     Acciones
                   </th>
@@ -2242,73 +2065,50 @@ export default function Municipios() {
                       key={
                         municipio.id
                       }
-                      className="
-                        group
-                        border-b
-                        border-slate-100
-                        transition-colors
-                        hover:bg-blue-50/40
-                      "
+                      className="group"
                     >
 
                       <td
-                        className="
-                          px-5
-                          py-3.5
-                          text-sm
-                          text-slate-600
-                        "
+                        className="px-5
+ py-3.5"
                       >
                         {municipio.ccaa}
                       </td>
 
 
                       <td
-                        className="
-                          px-5
-                          py-3.5
-                          text-sm
-                          text-slate-600
-                        "
+                        className="px-5
+ py-3.5"
                       >
                         {municipio.provincia}
                       </td>
 
 
                       <td
-                        className="
-                          px-5
-                          py-3.5
-                          text-sm
-                          font-semibold
-                          text-slate-700
-                        "
+                        className="px-5
+ py-3.5"
                       >
                         {municipio.municipio}
                       </td>
 
-                      <td className="px-5 py-3.5 text-sm text-slate-600">
+                      <td className="px-5 py-3.5">
                         {(municipio.codigos_postales || []).length ? (
                           <span title={"Códigos: " + municipio.codigos_postales.join(", ")}>
                             <strong>{municipio.codigo_postal_principal || municipio.codigos_postales[0]}</strong>
-                            {(municipio.codigos_postales.length > 1) && <span className="ml-2 text-xs text-slate-400">+{municipio.codigos_postales.length - 1}</span>}
+                            {(municipio.codigos_postales.length > 1) && <span className="ml-2">+{municipio.codigos_postales.length - 1}</span>}
                           </span>
-                        ) : <span className="text-slate-400">Sin asignar</span>}
+                        ) : <span className="">Sin asignar</span>}
                       </td>
 
                       <td
-                        className="
-                          px-5
-                          py-3.5
-                        "
+                        className="px-5
+ py-3.5"
                       >
 
                         <div
-                          className="
-                            flex
-                            justify-end
-                            gap-2
-                          "
+                          className="flex
+ justify-end
+ gap-2"
                         >
 
                           <button
@@ -2319,22 +2119,11 @@ export default function Municipios() {
                               )
                             }
                             title="Editar municipio"
-                            className="
-                              flex
-                              h-9
-                              w-9
-                              items-center
-                              justify-center
-                              rounded-lg
-                              border
-                              border-slate-200
-                              bg-white
-                              text-slate-500
-                              transition
-                              hover:border-blue-200
-                              hover:bg-blue-50
-                              hover:text-blue-600
-                            "
+                            className="flex
+ h-9
+ w-9
+ items-center
+ justify-center"
                           >
                             ✏️
                           </button>
@@ -2348,22 +2137,11 @@ export default function Municipios() {
                               )
                             }
                             title="Eliminar municipio"
-                            className="
-                              flex
-                              h-9
-                              w-9
-                              items-center
-                              justify-center
-                              rounded-lg
-                              border
-                              border-slate-200
-                              bg-white
-                              text-slate-500
-                              transition
-                              hover:border-red-200
-                              hover:bg-red-50
-                              hover:text-red-600
-                            "
+                            className="flex
+ h-9
+ w-9
+ items-center
+ justify-center"
                           >
                             🗑️
                           </button>
@@ -2396,17 +2174,15 @@ export default function Municipios() {
         municipiosFiltrados.length > 0 && (
 
         <div
-          className="
-            flex
-            items-center
-            justify-between
-            rounded-[18px]
-            border
-            border-slate-200/80
-            bg-white/70
-            px-4
-            py-3
-          "
+          className="flex
+ items-center
+ justify-between
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
         >
 
           <button
@@ -2423,35 +2199,20 @@ export default function Municipios() {
                   )
               )
             }
-            className="
-              rounded-lg
-              border border-slate-200
-              bg-white
-              px-3
-              py-2
-              text-sm
-              font-medium
-              text-slate-600
-              transition
-              hover:bg-slate-50
-              disabled:cursor-not-allowed
-              disabled:opacity-40
-            "
+            className="px-3
+ py-2"
           >
             ← Anterior
           </button>
 
 
           <span
-            className="
-              text-sm
-              text-slate-500
-            "
+            className=""
           >
             Página{" "}
 
             <strong
-              className="text-slate-700"
+              className=""
             >
               {pagina}
             </strong>
@@ -2459,7 +2220,7 @@ export default function Municipios() {
             {" "}de{" "}
 
             <strong
-              className="text-slate-700"
+              className=""
             >
               {totalPaginas}
             </strong>
@@ -2481,20 +2242,8 @@ export default function Municipios() {
                   )
               )
             }
-            className="
-              rounded-lg
-              border border-slate-200
-              bg-white
-              px-3
-              py-2
-              text-sm
-              font-medium
-              text-slate-600
-              transition
-              hover:bg-slate-50
-              disabled:cursor-not-allowed
-              disabled:opacity-40
-            "
+            className="px-3
+ py-2"
           >
             Siguiente →
           </button>
@@ -2593,18 +2342,15 @@ function ModalImportarExcel({
   return (
 
     <div
-      className="
-        panel-modal-premium
-        fixed
-        inset-0
-        z-50
-        flex
-        items-center
-        justify-center
-        bg-slate-950/40
-        p-4
-        backdrop-blur-sm
-      "
+      className="panel-modal-premium
+ fixed
+ inset-0
+ z-50
+ flex
+ items-center
+ justify-center
+ 
+ p-4"
       onMouseDown={(e) => {
 
         if (
@@ -2626,16 +2372,9 @@ function ModalImportarExcel({
         role="dialog"
         aria-modal="true"
         aria-label="Importar municipios desde Excel"
-        className="
-          w-full
-          max-w-2xl
-          overflow-hidden
-          rounded-[26px]
-          border
-          border-slate-200
-          bg-white
-          shadow-[0_30px_80px_rgba(15,23,42,0.22)]
-        "
+        className="w-full
+ max-w-2xl
+ overflow-hidden"
       >
 
         {/* =================================================
@@ -2643,44 +2382,28 @@ function ModalImportarExcel({
         ================================================= */}
 
         <div
-          className="
-            border-b
-            border-slate-100
-            bg-slate-50/80
-            px-6
-            py-5
-          "
+          className="px-6
+ py-5"
         >
 
           <div
-            className="
-              flex
-              items-center
-              justify-between
-            "
+            className="flex
+ items-center
+ justify-between"
           >
 
             <div
-              className="
-                flex
-                items-center
-                gap-3
-              "
+              className="flex
+ items-center
+ gap-3"
             >
 
               <div
-                className="
-                  flex
-                  h-11
-                  w-11
-                  items-center
-                  justify-center
-                  rounded-xl
-                  bg-emerald-50
-                  text-xl
-                  border
-                  border-emerald-100
-                "
+                className="flex
+ h-11
+ w-11
+ items-center
+ justify-center"
               >
                 📊
               </div>
@@ -2689,22 +2412,14 @@ function ModalImportarExcel({
               <div>
 
                 <h2
-                  className="
-                    text-lg
-                    font-bold
-                    text-slate-800
-                  "
+                  className=""
                 >
                   Importar municipios desde Excel
                 </h2>
 
 
                 <p
-                  className="
-                    mt-1
-                    text-xs
-                    text-slate-500
-                  "
+                  className="mt-1"
                 >
                   Carga masiva del catálogo territorial.
                 </p>
@@ -2722,20 +2437,11 @@ function ModalImportarExcel({
               onClick={
                 onCerrar
               }
-              className="
-                flex
-                h-9
-                w-9
-                items-center
-                justify-center
-                rounded-lg
-                text-slate-400
-                transition
-                hover:bg-slate-100
-                hover:text-slate-700
-                disabled:cursor-not-allowed
-                disabled:opacity-40
-              "
+              className="flex
+ h-9
+ w-9
+ items-center
+ justify-center"
             >
               ✕
             </button>
@@ -2754,24 +2460,16 @@ function ModalImportarExcel({
           {/* INFORMACIÓN */}
 
           <div
-            className="
-              rounded-2xl
-              border
-              border-blue-100
-              bg-blue-50/70
-              px-4
-              py-4
-            "
+            className="px-4
+ py-4"
           >
 
             <div
-              className="
-                flex
-                gap-3
-              "
+              className="flex
+ gap-3"
             >
 
-              <div className="text-lg">
+              <div className="">
                 ℹ️
               </div>
 
@@ -2779,23 +2477,14 @@ function ModalImportarExcel({
               <div>
 
                 <p
-                  className="
-                    text-sm
-                    font-semibold
-                    text-blue-800
-                  "
+                  className=""
                 >
                   Formato esperado
                 </p>
 
 
                 <p
-                  className="
-                    mt-1
-                    text-xs
-                    leading-5
-                    text-blue-700
-                  "
+                  className="mt-1"
                 >
                   El Excel debe contener las columnas
                   <strong> CCAA</strong>,
@@ -2817,13 +2506,8 @@ function ModalImportarExcel({
           <div className="mt-5">
 
             <label
-              className="
-                mb-2
-                block
-                text-sm
-                font-semibold
-                text-slate-700
-              "
+              className="mb-2
+ block"
             >
               Archivo Excel
             </label>
@@ -2858,60 +2542,37 @@ function ModalImportarExcel({
               onClick={() =>
                 inputExcelRef.current?.click()
               }
-              className="
-                w-full
-                rounded-2xl
-                border-2
-                border-dashed
-                border-slate-200
-                bg-slate-50/70
-                px-6
-                py-8
-                text-center
-                transition
-                hover:border-emerald-300
-                hover:bg-emerald-50/40
-                disabled:cursor-not-allowed
-                disabled:opacity-60
-              "
+              className="w-full
+ 
+ 
+ 
+ 
+ 
+ px-6
+ py-8"
             >
 
               <div
-                className="
-                  mx-auto
-                  flex
-                  h-14
-                  w-14
-                  items-center
-                  justify-center
-                  rounded-2xl
-                  bg-white
-                  text-2xl
-                  shadow-sm
-                "
+                className="mx-auto
+ flex
+ h-14
+ w-14
+ items-center
+ justify-center"
               >
                 📁
               </div>
 
 
               <p
-                className="
-                  mt-3
-                  text-sm
-                  font-semibold
-                  text-slate-700
-                "
+                className="mt-3"
               >
                 Haz clic para seleccionar el Excel
               </p>
 
 
               <p
-                className="
-                  mt-1
-                  text-xs
-                  text-slate-400
-                "
+                className="mt-1"
               >
                 Formatos admitidos: .xlsx y .xls
               </p>
@@ -2926,72 +2587,51 @@ function ModalImportarExcel({
           {archivo && (
 
             <div
-              className="
-                mt-4
-                flex
-                items-center
-                justify-between
-                gap-4
-                rounded-2xl
-                border
-                border-emerald-200
-                bg-emerald-50/70
-                px-4
-                py-3
-              "
+              className="mt-4
+ flex
+ items-center
+ justify-between
+ gap-4
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
             >
 
               <div
-                className="
-                  flex
-                  min-w-0
-                  items-center
-                  gap-3
-                "
+                className="flex
+ min-w-0
+ items-center
+ gap-3"
               >
 
                 <div
-                  className="
-                    flex
-                    h-10
-                    w-10
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-xl
-                    bg-white
-                    text-lg
-                    shadow-sm
-                  "
+                  className="flex
+ h-10
+ w-10
+ shrink-0
+ items-center
+ justify-center"
                 >
                   📄
                 </div>
 
 
                 <div
-                  className="
-                    min-w-0
-                  "
+                  className="min-w-0"
                 >
 
                   <p
-                    className="
-                      truncate
-                      text-sm
-                      font-semibold
-                      text-emerald-800
-                    "
+                    className="truncate"
                   >
                     {archivo.name}
                   </p>
 
 
                   <p
-                    className="
-                      mt-0.5
-                      text-xs
-                      text-emerald-600
-                    "
+                    className="mt-0.5"
                   >
                     {formatearTamano(
                       archivo.size
@@ -3010,17 +2650,10 @@ function ModalImportarExcel({
                   onClick={
                     onQuitar
                   }
-                  className="
-                    shrink-0
-                    rounded-lg
-                    px-2
-                    py-1
-                    text-xs
-                    font-medium
-                    text-slate-500
-                    hover:bg-white
-                    hover:text-red-600
-                  "
+                  className="shrink-0
+ 
+ px-2
+ py-1"
                 >
                   Quitar
                 </button>
@@ -3039,15 +2672,13 @@ function ModalImportarExcel({
         ================================================= */}
 
         <div
-          className="
-            flex
-            justify-end
-            gap-3
-            border-t
-            border-slate-100
-            px-6
-            py-5
-          "
+          className="flex
+ justify-end
+ gap-3
+ 
+ 
+ px-6
+ py-5"
         >
 
           <button
@@ -3058,21 +2689,8 @@ function ModalImportarExcel({
             onClick={
               onCerrar
             }
-            className="
-              rounded-xl
-              border
-              border-slate-200
-              bg-white
-              px-5
-              py-2.5
-              text-sm
-              font-medium
-              text-slate-600
-              transition
-              hover:bg-slate-50
-              disabled:cursor-not-allowed
-              disabled:opacity-50
-            "
+            className="px-5
+ py-2.5"
           >
             Cancelar
           </button>
@@ -3087,39 +2705,22 @@ function ModalImportarExcel({
             onClick={
               onImportar
             }
-            className="
-              inline-flex
-              min-w-[180px]
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              bg-emerald-600
-              px-5
-              py-2.5
-              text-sm
-              font-semibold
-              text-white
-              shadow-[0_8px_20px_rgba(5,150,105,0.18)]
-              transition
-              hover:bg-emerald-700
-              disabled:cursor-not-allowed
-              disabled:opacity-50
-            "
+            className="inline-flex
+ min-w-[180px]
+ items-center
+ justify-center
+ gap-2
+ 
+ 
+ px-5
+ py-2.5"
           >
 
             {importando && (
 
               <span
-                className="
-                  h-4
-                  w-4
-                  animate-spin
-                  rounded-full
-                  border-2
-                  border-white/40
-                  border-t-white
-                "
+                className="h-4
+ w-4"
               />
 
             )}
@@ -3226,18 +2827,15 @@ function ModalMunicipio({
   return (
 
     <div
-      className="
-        panel-modal-premium
-        fixed
-        inset-0
-        z-50
-        flex
-        items-center
-        justify-center
-        bg-slate-950/40
-        p-4
-        backdrop-blur-sm
-      "
+      className="panel-modal-premium
+ fixed
+ inset-0
+ z-50
+ flex
+ items-center
+ justify-center
+ 
+ p-4"
       onMouseDown={(e) => {
 
         if (
@@ -3259,46 +2857,28 @@ function ModalMunicipio({
         role="dialog"
         aria-modal="true"
         aria-label={modo === "nuevo" ? "Nuevo municipio" : "Editar municipio"}
-        className="
-          w-full
-          max-w-xl
-          overflow-hidden
-          rounded-[24px]
-          border
-          border-slate-200
-          bg-white
-          shadow-[0_30px_80px_rgba(15,23,42,0.22)]
-        "
+        className="w-full
+ max-w-xl
+ overflow-hidden"
       >
 
         {/* CABECERA */}
 
         <div
-          className="
-            border-b
-            border-slate-100
-            bg-slate-50/70
-            px-6
-            py-5
-          "
+          className="px-6
+ py-5"
         >
 
           <div
-            className="
-              flex
-              items-center
-              justify-between
-            "
+            className="flex
+ items-center
+ justify-between"
           >
 
             <div>
 
               <h2
-                className="
-                  text-lg
-                  font-bold
-                  text-slate-800
-                "
+                className=""
               >
                 {modo ===
                 "nuevo"
@@ -3308,11 +2888,7 @@ function ModalMunicipio({
 
 
               <p
-                className="
-                  mt-1
-                  text-xs
-                  text-slate-500
-                "
+                className="mt-1"
               >
                 Datos territoriales del municipio.
               </p>
@@ -3328,18 +2904,11 @@ function ModalMunicipio({
               onClick={
                 onCerrar
               }
-              className="
-                flex
-                h-9
-                w-9
-                items-center
-                justify-center
-                rounded-lg
-                text-slate-400
-                transition
-                hover:bg-slate-100
-                hover:text-slate-700
-              "
+              className="flex
+ h-9
+ w-9
+ items-center
+ justify-center"
             >
               ✕
             </button>
@@ -3365,13 +2934,8 @@ function ModalMunicipio({
             <div>
 
               <label
-                className="
-                  mb-1.5
-                  block
-                  text-sm
-                  font-semibold
-                  text-slate-700
-                "
+                className="mb-1.5
+ block"
               >
                 Comunidad autónoma
               </label>
@@ -3390,21 +2954,12 @@ function ModalMunicipio({
                 }
                 placeholder="Ej. Cataluña"
                 autoFocus
-                className="
-                  w-full
-                  rounded-xl
-                  border border-slate-200
-                  bg-white
-                  px-4
-                  py-2.5
-                  text-sm
-                  text-slate-700
-                  outline-none
-                  transition
-                  focus:border-blue-400
-                  focus:ring-4
-                  focus:ring-blue-100
-                "
+                className="w-full
+ 
+ 
+ 
+ px-4
+ py-2.5"
               />
 
             </div>
@@ -3415,13 +2970,8 @@ function ModalMunicipio({
             <div>
 
               <label
-                className="
-                  mb-1.5
-                  block
-                  text-sm
-                  font-semibold
-                  text-slate-700
-                "
+                className="mb-1.5
+ block"
               >
                 Provincia
               </label>
@@ -3439,21 +2989,12 @@ function ModalMunicipio({
                   )
                 }
                 placeholder="Ej. Barcelona"
-                className="
-                  w-full
-                  rounded-xl
-                  border border-slate-200
-                  bg-white
-                  px-4
-                  py-2.5
-                  text-sm
-                  text-slate-700
-                  outline-none
-                  transition
-                  focus:border-blue-400
-                  focus:ring-4
-                  focus:ring-blue-100
-                "
+                className="w-full
+ 
+ 
+ 
+ px-4
+ py-2.5"
               />
 
             </div>
@@ -3464,13 +3005,8 @@ function ModalMunicipio({
             <div>
 
               <label
-                className="
-                  mb-1.5
-                  block
-                  text-sm
-                  font-semibold
-                  text-slate-700
-                "
+                className="mb-1.5
+ block"
               >
                 Municipio
               </label>
@@ -3488,28 +3024,19 @@ function ModalMunicipio({
                   )
                 }
                 placeholder="Ej. Barcelona"
-                className="
-                  w-full
-                  rounded-xl
-                  border border-slate-200
-                  bg-white
-                  px-4
-                  py-2.5
-                  text-sm
-                  text-slate-700
-                  outline-none
-                  transition
-                  focus:border-blue-400
-                  focus:ring-4
-                  focus:ring-blue-100
-                "
+                className="w-full
+ 
+ 
+ 
+ px-4
+ py-2.5"
               />
 
             </div>
 
             {/* CÓDIGOS POSTALES */}
             <div>
-              <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+              <label className="mb-1.5 block">
                 Códigos postales
               </label>
               <input
@@ -3525,16 +3052,16 @@ function ModalMunicipio({
                   }
                 }}
                 placeholder="Ej. 08001, 08002, 08003"
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                className="w-full px-4 py-2.5"
               />
-              <p className="mt-1 text-xs text-slate-500">Introduce códigos de 5 dígitos separados por comas o espacios. Se guardan como texto para conservar ceros iniciales.</p>
-              <label className="mb-1.5 mt-3 block text-sm font-semibold text-slate-700">
+              <p className="mt-1">Introduce códigos de 5 dígitos separados por comas o espacios. Se guardan como texto para conservar ceros iniciales.</p>
+              <label className="mb-1.5 mt-3 block">
                 Código postal principal
               </label>
               <select
                 value={formulario.codigo_postal_principal}
                 onChange={(e) => cambiarCampo("codigo_postal_principal", e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                className="w-full px-4 py-2.5"
               >
                 <option value="">Sin código postal principal</option>
                 {(formulario.codigos_postales_texto || "").split(/[;,\s]+/).map((cp) => cp.trim()).filter((cp, i, lista) => cp && lista.indexOf(cp) === i && /^\d{5}$/.test(cp)).map((cp) => <option key={cp} value={cp}>{cp}</option>)}
@@ -3547,15 +3074,13 @@ function ModalMunicipio({
           {/* BOTONES */}
 
           <div
-            className="
-              mt-7
-              flex
-              justify-end
-              gap-3
-              border-t
-              border-slate-100
-              pt-5
-            "
+            className="mt-7
+ flex
+ justify-end
+ gap-3
+ 
+ 
+ pt-5"
           >
 
             <button
@@ -3566,19 +3091,8 @@ function ModalMunicipio({
               onClick={
                 onCerrar
               }
-              className="
-                rounded-xl
-                border border-slate-200
-                bg-white
-                px-4
-                py-2.5
-                text-sm
-                font-medium
-                text-slate-600
-                transition
-                hover:bg-slate-50
-                disabled:opacity-50
-              "
+              className="px-4
+ py-2.5"
             >
               Cancelar
             </button>
@@ -3589,39 +3103,22 @@ function ModalMunicipio({
               disabled={
                 guardando
               }
-              className="
-                inline-flex
-                min-w-[130px]
-                items-center
-                justify-center
-                gap-2
-                rounded-xl
-                bg-[var(--molsan-primary)]
-                px-5
-                py-2.5
-                text-sm
-                font-semibold
-                text-white
-                shadow-sm
-                transition
-                hover:bg-[var(--molsan-primary-hover)]
-                disabled:cursor-not-allowed
-                disabled:opacity-60
-              "
+              className="inline-flex
+ min-w-[130px]
+ items-center
+ justify-center
+ gap-2
+ 
+ 
+ px-5
+ py-2.5"
             >
 
               {guardando && (
 
                 <span
-                  className="
-                    h-4
-                    w-4
-                    animate-spin
-                    rounded-full
-                    border-2
-                    border-white/40
-                    border-t-white
-                  "
+                  className="h-4
+ w-4"
                 />
 
               )}
