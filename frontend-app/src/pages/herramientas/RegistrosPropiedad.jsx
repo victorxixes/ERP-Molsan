@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import {
   useEffect,
   useMemo,
@@ -1652,151 +1653,15 @@ export default function RegistrosPropiedad() {
   return (
 
     <div
-      className="
- min-h-full
- p-4 sm:p-6 lg:p-8
- space-y-6"
+      className="erp-page min-w-0 space-y-6"
     >
 
-      {/* =====================================================
-          CABECERA
-      ===================================================== */}
-
-      <div
-        className="molsan-subpage-header relative
- overflow-hidden
- 
- 
- 
- 
- p-6 sm:p-7"
-      >
-
-        <div
-          className="absolute
- inset-x-0
- top-0
- h-px"
-        />
-
-
-        <div
-          className="relative
- flex
- flex-col
- gap-5
- lg:flex-row
- lg:items-center
- lg:justify-between"
-        >
-
-          <div
-            className="flex
- items-center
- gap-4"
-          >
-
-            <div
-              className="flex
- h-14
- w-14
- shrink-0
- items-center
- justify-center"
-            >
-              🏛️
-            </div>
-
-
-            <div>
-
-              <h1
-               
-              >
-                Registros de la Propiedad
-              </h1>
-
-
-              <p
-                className="mt-1"
-              >
-                Maestro de registros, registradores,
-                oficinas y datos de contacto.
-              </p>
-
-            </div>
-
-          </div>
-
-
-          {/* =================================================
-              BOTONES
-          ================================================= */}
-
-          <div
-            className="flex
- flex-col
- gap-2
- sm:flex-row"
-          >
-
-            <button
-              type="button"
-              onClick={
-                abrirImportacionExcel
-              }
-              className="inline-flex
- items-center
- justify-center
- gap-2
- 
- 
- 
- 
- px-5
- py-2.5"
-            >
-
-              <span>
-                📊
-              </span>
-
-              Importar Excel
-
-            </button>
-
-
-            <button
-              type="button"
-              onClick={
-                abrirNuevo
-              }
-              className="inline-flex
- items-center
- justify-center
- gap-2
- 
- 
- px-5
- py-2.5"
-            >
-
-              <span>
-                +
-              </span>
-
-              Nuevo registro
-
-            </button>
-
-          </div>
-
-        </div>
-
+      <MolsanPageHeader mark="RP" title="Registros de la Propiedad" description="Maestro de registros, registradores, oficinas y datos de contacto." />
+      <div className="molsan-filter-bar flex flex-wrap justify-end gap-2 p-3">
+        <button type="button" className="molsan-btn molsan-btn--secondary" onClick={abrirImportacionExcel}>📊 Importar Excel</button>
+        <button type="button" className="molsan-btn molsan-btn--primary" onClick={abrirNuevo}>＋ Nuevo registro</button>
       </div>
 
-
-      {/* =====================================================
           MENSAJE
       ===================================================== */}
 
