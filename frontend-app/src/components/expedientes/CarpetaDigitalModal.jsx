@@ -648,13 +648,13 @@ export default function CarpetaDigitalModal({
 
     return (
       <div
-        className="molsan-modal-backdrop fixed inset-0 z-[10000] flex items-center justify-center p-2 sm:p-4"
+        className="molsan-modal-overlay molsan-modal-backdrop fixed inset-0 z-[10000] flex items-center justify-center p-2 sm:p-4"
         onMouseDown={(event) => {
           if (event.target === event.currentTarget) onClose?.();
         }}
       >
-        <section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Carpeta digital del expediente" className="flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden">
-          <header className="flex items-center justify-between gap-4 px-4 py-3 sm:px-5">
+        <section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Carpeta digital del expediente" className="molsan-modal__panel molsan-modal--wide flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden">
+          <header className="molsan-modal__header flex items-center justify-between gap-4 px-4 py-3 sm:px-5">
             <div className="min-w-0">
               <p className="uppercase">MOLSAN ERP · Documentación</p>
               <h2 className="mt-1">Carpeta digital</h2>
@@ -668,7 +668,7 @@ export default function CarpetaDigitalModal({
 
           {error && <div role="alert" className="mx-3 mt-3 px-3 py-2 sm:mx-4">{error}</div>}
 
-          <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-y-auto p-3 sm:p-4 lg:grid-cols-[190px_minmax(220px,0.72fr)_minmax(320px,1fr)] lg:overflow-hidden">
+          <div className="molsan-modal__body grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-y-auto p-3 sm:p-4 lg:grid-cols-[190px_minmax(220px,0.72fr)_minmax(320px,1fr)] lg:overflow-hidden">
             <nav aria-label="Actividades de la carpeta digital" className="min-w-0 space-y-2 lg:overflow-y-auto lg:pr-1">
               <p className="px-1 pb-1 uppercase">Actividades</p>
               {BLOQUES.map((bloque) => {
@@ -892,7 +892,7 @@ export default function CarpetaDigitalModal({
   return (
     <>
       <div
-        className={modoActividad ? "w-full space-y-3" : "molsan-modal-backdrop fixed inset-0 z-[10000] flex items-center justify-center p-3 sm:p-6"}
+        className={modoActividad ? "w-full space-y-3" : "molsan-modal-overlay molsan-modal-backdrop fixed inset-0 z-[10000] flex items-center justify-center p-3 sm:p-6"}
         onMouseDown={(event) => {
           if (!modoActividad && event.target === event.currentTarget) onClose?.();
         }}
@@ -903,10 +903,10 @@ export default function CarpetaDigitalModal({
           aria-label="Carpeta digital del expediente"
           className={modoActividad
             ? "w-full space-y-3"
-            : "molsan-modal-panel flex max-h-[94vh] w-full max-w-[1500px] flex-col overflow-hidden"}
+            : "molsan-modal-panel molsan-modal__panel molsan-modal--wide flex max-h-[94vh] w-full max-w-[1500px] flex-col overflow-hidden"}
         >
           {!modoActividad && (
-            <header className="flex items-center justify-between gap-4 px-5 py-4">
+            <header className="molsan-modal__header flex items-center justify-between gap-4 px-5 py-4">
               <div>
                 <p className="uppercase">MOLSAN ERP · Documentación</p>
                 <h2 className="mt-1">Carpeta digital</h2>
@@ -1285,8 +1285,8 @@ export default function CarpetaDigitalModal({
       </div>
 
       {modoActividad && documentoVistaPrevia && (
-        <div className="fixed inset-0 z-[11000] flex items-center justify-center p-3 sm:p-6">
-          <div ref={viewerDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Visor de documento" className="molsan-modal-panel h-[88vh] max-h-[900px] w-full max-w-6xl">
+        <div className="molsan-modal-overlay fixed inset-0 z-[11000] flex items-center justify-center p-3 sm:p-6">
+          <div ref={viewerDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Visor de documento" className="molsan-modal-panel molsan-modal__panel molsan-modal--xl h-[88vh] max-h-[900px] w-full max-w-6xl">
             {renderVisor()}
           </div>
         </div>
