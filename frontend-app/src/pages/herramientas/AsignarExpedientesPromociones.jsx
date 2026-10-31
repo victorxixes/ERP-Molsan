@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios from "../../api/axios";
 
 export default function AsignarExpedientesPromociones() {
@@ -74,18 +75,9 @@ export default function AsignarExpedientesPromociones() {
   }
 
   return (
-    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden p-6">
-        <div className="absolute inset-x-0 top-0 h-1" />
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center">🏷️</div>
-          <div className="min-w-0 flex-1">
-            <h1>Asignar expedientes a promociones</h1>
-            <p className="mt-1">Asocia cada expediente a un tipo activo del catálogo oficial. La ficha mostrará la promoción asignada automáticamente.</p>
-          </div>
-          <Link to="/herramientas/utilidades" className="px-4 py-2">← Volver a Utilidades</Link>
-        </div>
-      </header>
+    <div className="erp-page min-w-0 space-y-6">
+      <MolsanPageHeader mark="PR" title="Asignar expedientes a promociones" description="Asocia cada expediente a un tipo activo del catálogo oficial y refleja la promoción en su ficha." />
+      <div className="flex justify-end"><Link to="/herramientas/utilidades" className="molsan-btn molsan-btn--secondary">← Volver a Utilidades</Link></div>
 
       {(error || mensaje) && (
         <div role="status" className={`px-4 py-3 ${error ? "" : ""}`}>
@@ -94,7 +86,7 @@ export default function AsignarExpedientesPromociones() {
       )}
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.85fr)]">
-        <form onSubmit={consultar} className="p-6">
+        <form onSubmit={consultar} className="erp-card molsan-form p-6">
           <h2>1. Buscar expediente</h2>
           <p className="mt-1">Introduce el número tal como aparece en la ficha del expediente.</p>
           <label className="mt-5 block" htmlFor="numero-expediente-promocion">Número de expediente</label>
@@ -113,7 +105,7 @@ export default function AsignarExpedientesPromociones() {
           )}
         </form>
 
-        <form onSubmit={guardar} className="p-6">
+        <form onSubmit={guardar} className="erp-card molsan-form p-6">
           <h2>2. Seleccionar tipo de expediente</h2>
           <p className="mt-1">La promoción se toma directamente del catálogo Tipos de expediente; no se escribe manualmente en la ficha.</p>
           <label className="mt-5 block" htmlFor="tipo-promocion-destino">Tipo de expediente / promoción</label>
