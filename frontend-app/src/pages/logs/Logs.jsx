@@ -7,7 +7,7 @@ import TablaLogs from "../../components/logs/TablaLogs";
 
 /**
  * ============================================================
- * LOGS — MOLSAN ERP SAAS PREMIUM 2027
+ * LOGS
  * ============================================================
  *
  * Monitorización de:
