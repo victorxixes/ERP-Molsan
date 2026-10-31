@@ -60,8 +60,8 @@ De las 52 hojas CSS:
 - En `ModelosDocumentos.jsx` Render emitió además un aviso de análisis JSX sobre un carácter `}`. No se ha alterado esa zona porque primero hay que aislar si es un aviso no bloqueante o un defecto real.
 - El siguiente build ha superado los errores de sintaxis anteriores y ha descubierto otro `className` incompleto en `EncargaGest.jsx`; ya está corregido.
 - Siguen apareciendo avisos JSX no bloqueantes en `ModelosDocumentos.jsx` y `FichaExpediente.jsx`; se revisarán por separado.
-- El build de Preview del commit `87e889469c69041566b688b844aed05840c51107` terminó en estado `live`; la compilación pasó con avisos JSX de `ModelosDocumentos.jsx`, `FichaExpediente.jsx` y `CarpetaDigitalModal.jsx` que requieren revisión.
-- Los dos últimos cambios de cabecera en NotarGest y ApoderaGest todavía deben pasar por el siguiente build.
+- El build de Preview del commit `653c30484ac08c204bec3ab1ec708fe20c9f0b7d` terminó en estado `live` (deploy `dep-dbirup0ae00c73chfpqg`). Las limpiezas de cabecera de NotarGest y ApoderaGest también han pasado compilación.
+- La compilación aún emite avisos JSX no bloqueantes en `ModelosDocumentos.jsx`, `FichaExpediente.jsx` y `CarpetaDigitalModal.jsx`; quedan pendientes de análisis para determinar si generan texto residual o esconden cierres de expresiones incorrectos.
 
 ## Estado
 
