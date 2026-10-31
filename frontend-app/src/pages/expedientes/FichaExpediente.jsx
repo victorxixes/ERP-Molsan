@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { Link, useParams } from "react-router-dom";
-import "../../css/ModalesOperativosPremium.css";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import axios from "../../api/axios";
 
@@ -13,7 +12,6 @@ import LiquidarExpedienteModal from "../../components/expedientes/LiquidarExpedi
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
 import TraspasoSaldoPanel from "../../components/expedientes/TraspasoSaldoPanel";
 import { useAuthStore } from "../../store/authStore";
-import "./FichaExpedientePremium.css";
 
 import { obtenerCatalogoAcciones, obtenerAccionesExpediente, asignarAccionExpediente, eliminarAccionExpediente } from "../../api/expedienteAcciones";
 
