@@ -1,4 +1,6 @@
 import { useState } from "react";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 import axios from "../../api/axios";
 
 export default function DocumentosAdmin({ documentos = [], descargar, recargar, guardando, setGuardando, setError, setMensaje }) {
