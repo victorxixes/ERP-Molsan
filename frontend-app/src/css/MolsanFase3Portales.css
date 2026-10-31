@@ -81,3 +81,37 @@ body :where(
     overflow: auto;
   }
 }
+
+/* FASE 3 · Contrato técnico común para diálogos heredados.
+   Se excluyen overlays y paneles que ya implementan su propio contrato.
+   Los paneles legacy conservan su ancho declarado, pero nunca exceden el viewport
+   y pueden desplazar su contenido sin ensanchar el documento. */
+body :where(
+  [role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal):not(.molsan-modal):not(.molsan-modal__panel):not(.erp-modal-panel):not(.expediente-operativo-modal-panel):not(.ng-modal):not(.eg-modal-form):not(.eg-modal-perfil):not(.ctn-detalle-modal)
+) {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: calc(100vw - 32px);
+  max-height: min(88dvh, 900px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+@supports selector(body:has([role="dialog"][aria-modal="true"])) {
+  body:has([role="dialog"][aria-modal="true"]) {
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+}
+
+@media (max-width: 720px) {
+  body :where(
+    [role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal):not(.molsan-modal):not(.molsan-modal__panel):not(.erp-modal-panel):not(.expediente-operativo-modal-panel):not(.ng-modal):not(.eg-modal-form):not(.eg-modal-perfil):not(.ctn-detalle-modal)
+  ) {
+    max-width: calc(100vw - 20px);
+    max-height: calc(100dvh - 20px);
+    border-radius: 14px;
+  }
+}
