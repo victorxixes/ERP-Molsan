@@ -28,7 +28,7 @@ export default function EncargaGestWorkspace({ page }) {
   };
 
   return (
-    <div className="encargagest-workspace-premium apoderagest encargagest min-h-screen">
+    <div className="min-h-screen">
       <Sidebar
         brandName="EncargaGest"
         navigationItems={items}
