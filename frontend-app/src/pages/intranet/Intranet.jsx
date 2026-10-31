@@ -4,10 +4,10 @@ import { useAuthStore } from "../../store/authStore";
 
 const MAX_BYTES = 20 * 1024 * 1024;
 const EXT = [".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".txt", ".csv", ".png", ".jpg", ".jpeg"];
-const input = "mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-100";
-const primary = "inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50";
-const secondary = "inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50";
-const danger = "inline-flex items-center justify-center rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-100";
+const input = "mt-1 w-full px-3 py-2.5";
+const primary = "inline-flex items-center justify-center px-4 py-2.5";
+const secondary = "inline-flex items-center justify-center px-3 py-2";
+const danger = "inline-flex items-center justify-center px-3 py-2";
 const errorText = (e, fallback) => e?.response?.data?.detail || e?.response?.data?.error || fallback;
 const prettyDate = (value) => value && !Number.isNaN(new Date(value).getTime()) ? new Date(value).toLocaleString("es-ES", { dateStyle: "medium", timeStyle: "short" }) : "—";
 const dateKey = (value) => { if (!value || Number.isNaN(new Date(value).getTime())) return ""; const d = new Date(value); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
