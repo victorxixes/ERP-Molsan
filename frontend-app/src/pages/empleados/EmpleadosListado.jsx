@@ -953,7 +953,7 @@ export default function EmpleadosListado({
 
               <div>
 
-                <h1 className="">
+                <h1>
                   Empleados
                 </h1>
 
@@ -983,7 +983,7 @@ export default function EmpleadosListado({
  px-5"
           >
 
-            <span className="">
+            <span>
               +
             </span>
 
@@ -1015,8 +1015,8 @@ export default function EmpleadosListado({
       {incluirOcultos && (
         <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
           <div>
-            <div className="">Visibilidad de usuarios</div>
-            <p className="">Los usuarios ocultos no aparecen en los listados habituales, pero se pueden recuperar desde Seguridad.</p>
+            <div>Visibilidad de usuarios</div>
+            <p>Los usuarios ocultos no aparecen en los listados habituales, pero se pueden recuperar desde Seguridad.</p>
           </div>
           <label className="inline-flex items-center gap-2">
             <input type="checkbox" checked={mostrarOcultos} onChange={(event) => setMostrarOcultos(event.target.checked)} />
@@ -1125,13 +1125,13 @@ export default function EmpleadosListado({
  justify-between
  px-1">
 
-          <span className="">
+          <span>
             {empleadosMemo.length} empleados
           </span>
 
           {cargando && (
 
-            <span className="">
+            <span>
               Actualizando…
             </span>
 
@@ -1206,7 +1206,7 @@ export default function EmpleadosListado({
             👤
           </div>
 
-          <div className="">
+          <div>
             No se han encontrado empleados
           </div>
 
@@ -1358,7 +1358,7 @@ export default function EmpleadosListado({
 
                     <div>
 
-                      <h2 className="">
+                      <h2>
                         Nuevo empleado
                       </h2>
 
@@ -1419,7 +1419,7 @@ export default function EmpleadosListado({
 
                   <div className="mb-4">
 
-                    <h3 className="">
+                    <h3>
                       Datos personales
                     </h3>
 
@@ -1510,7 +1510,7 @@ export default function EmpleadosListado({
 
                   <div className="mb-4">
 
-                    <h3 className="">
+                    <h3>
                       Acceso al ERP
                     </h3>
 
@@ -1571,7 +1571,7 @@ export default function EmpleadosListado({
 
                   <div className="mb-4">
 
-                    <h3 className="">
+                    <h3>
                       Datos corporativos
                     </h3>
 
