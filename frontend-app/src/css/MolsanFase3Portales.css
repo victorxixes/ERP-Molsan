@@ -68,37 +68,6 @@ body :where(
   box-shadow: var(--molsan-shadow-modal, 0 18px 48px rgba(6, 40, 65, .18));
 }
 
-body :where([role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal)) :where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
-  box-sizing: border-box;
-  max-width: 100%;
-  color: var(--molsan-text, #18364b);
-  background: #fff;
-  border: 1px solid var(--molsan-border, #d8e4ec);
-  border-radius: var(--molsan-radius-control, 9px);
-  font: inherit;
-  font-size: var(--molsan-font-size-sm, .8125rem);
-}
-
-body :where([role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal)) :where(input, select, textarea):focus {
-  border-color: var(--molsan-blue, #064675);
-  outline: 0;
-  box-shadow: 0 0 0 3px rgba(6, 70, 117, .13);
-}
-
-body :where([role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal)) :where(table) {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  color: var(--molsan-text, #18364b);
-}
-
-body :where([role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal)) :where(table thead th) {
-  color: var(--molsan-blue, #064675);
-  background: var(--molsan-table-head, #eaf2f8);
-  border-bottom: 1px solid var(--molsan-border, #d8e4ec);
-  text-align: left;
-}
-
 @media (max-width: 720px) {
   :where(.apoderagest, .notargest, .encargagest) {
     overflow-wrap: anywhere;
