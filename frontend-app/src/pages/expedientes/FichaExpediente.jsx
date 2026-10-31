@@ -5171,7 +5171,7 @@ const cuantiaFincasParaEnvio =
                                 <span className="tabular-nums">{completadas}/7 fases completas · {checksOk}/{totalChecks} comprobaciones</span>
                               </div>
                               <div className="h-2 overflow-hidden">
-                                <div className="h-full" style={{ width: `${porcentaje}%` } }}/>
+                                <div className="h-full" style={{ width: `${porcentaje}%` }}/>
                               </div>
                               <p className="mt-2">Una fase solo se marca como completa cuando todos sus requisitos configurados están cumplidos. La falta de datos no se considera correcta por el mero hecho de haber avanzado de actividad.</p>
                             </div>
@@ -5797,7 +5797,7 @@ const cuantiaFincasParaEnvio =
                       {importeInicialDisponible && importeInicialProvision > 0 && (
                         <div className="mt-4">
                           <div className="mb-2 flex items-center justify-between gap-3"><span className="">Consumo del saldo inicial</span><span className="tabular-nums">{Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100)).toLocaleString("es-ES", { maximumFractionDigits: 1 })}%</span></div>
-                          <div className="h-2 overflow-hidden"><div className={`h-full rounded-full ${resumenEconomico.saldoActual < 0 ? "" : ""}`} style={{ width: `${Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100))}%` } }}/></div>
+                          <div className="h-2 overflow-hidden"><div className={`h-full rounded-full ${resumenEconomico.saldoActual < 0 ? "" : ""}`} style={{ width: `${Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100))}%` }}/></div>
                         </div>
                       )}
                       <div className="mt-5">
@@ -5847,7 +5847,7 @@ const cuantiaFincasParaEnvio =
                             <section ref={ordenPagoDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="orden-pago-titulo" className="expediente-operativo-modal-panel flex max-h-[96vh] w-full max-w-6xl flex-col overflow-hidden">
                               <header className="flex items-start justify-between gap-3 px-5 py-4 sm:px-6">
                                 <div><p className="uppercase">MOLSAN ERP · Gestión económica</p><h2 id="orden-pago-titulo" className="mt-1">Orden de pago</h2><p className="mt-1">Expediente {expediente?.id_expediente || expediente?.id || id || "—"} · Preparar la orden no ejecuta una transferencia bancaria.</p></div>
-                                <button type="button" onClick={() => { if (!guardandoPagoReal) { setMostrarFormularioPagoReal(false); setPagoGastoSeleccionadoId(""); } }} disabled={guardandoPagoReal} className="px-3 py-2" aria-label="Cerrar orden de pago">×</button>
+                                <button type="button" onClick={() => { if (!guardandoPagoReal) { setMostrarFormularioPagoReal(false); setPagoGastoSeleccionadoId(""); }} disabled={guardandoPagoReal} className="px-3 py-2" aria-label="Cerrar orden de pago">×</button>
                               </header>
                               <form onSubmit={registrarPagoObligacion} className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
                                 <section className="mb-4 p-4">
@@ -5944,7 +5944,7 @@ const cuantiaFincasParaEnvio =
                                 {errorPagoReal && <p role="alert" className="mb-4 px-3 py-2">{errorPagoReal}</p>}
                                 <footer className="flex flex-wrap items-center justify-between gap-3 px-4 py-4">
                                   <p className="max-w-xl">Al confirmar, se guardarán los datos de la factura en la obligación y se registrará un movimiento en el histórico. No se ordena ninguna transferencia bancaria desde el ERP.</p>
-                                  <div className="flex gap-2"><button type="button" onClick={() => { if (!guardandoPagoReal) { setMostrarFormularioPagoReal(false); setPagoGastoSeleccionadoId(""); } }} disabled={guardandoPagoReal} className="px-4 py-2.5">Cancelar</button><button type="submit" disabled={guardandoPagoReal || !pagoGastoSeleccionadoId} className="px-5 py-2.5">{guardandoPagoReal ? "Registrando pago…" : "Pagar"}</button></div>
+                                  <div className="flex gap-2"><button type="button" onClick={() => { if (!guardandoPagoReal) { setMostrarFormularioPagoReal(false); setPagoGastoSeleccionadoId(""); }} disabled={guardandoPagoReal} className="px-4 py-2.5">Cancelar</button><button type="submit" disabled={guardandoPagoReal || !pagoGastoSeleccionadoId} className="px-5 py-2.5">{guardandoPagoReal ? "Registrando pago…" : "Pagar"}</button></div>
                                 </footer>
                               </form>
                             </section>
@@ -5985,7 +5985,7 @@ const cuantiaFincasParaEnvio =
                                       porcentaje_retencion: "0",
                                       tipo_retencion: "Sin retención",
                                     }));
-                                  } }} className="w-full px-3 py-2"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · base {Number(x.base_imponible ?? x.importe ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € + {String(x.tipo_impuesto || "IVA").toUpperCase()} {Number(x.porcentaje_impuesto ?? 21)}% · total {Number(x.importe || 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</option>)}</select><span className="mt-1 block">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
+                                  }} className="w-full px-3 py-2"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · base {Number(x.base_imponible ?? x.importe ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € + {String(x.tipo_impuesto || "IVA").toUpperCase()} {Number(x.porcentaje_impuesto ?? 21)}% · total {Number(x.importe || 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</option>)}</select><span className="mt-1 block">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
                                 <label className="block"><span className="mb-1 block">Concepto del gasto *</span><select required value={gastoForm.tipo} onChange={(e) => setGastoForm((a) => ({...a, tipo:e.target.value, descripcion:a.descripcion || e.target.options[e.target.selectedIndex]?.text || e.target.value}))} className="w-full px-3 py-2"><option value="">{cargandoConceptosGasto ? "Cargando catálogo…" : "Selecciona un concepto"}</option>{conceptosGasto.map((c) => <option key={String(c.value)} value={String(c.value)}>{c.label}</option>)}{!conceptosGasto.some((c) => String(c.value) === "Honorarios de gestoría") && <option value="Honorarios de gestoría">Honorarios de gestoría</option>}</select></label>
                                 <label className="block"><span className="mb-1 block">Tipo de concepto ABSIS (TIPOCONCEPTO)</span><select value={gastoForm.tipo_concepto_absis} onChange={(e) => setGastoForm((a) => ({ ...a, tipo_concepto_absis: e.target.value }))} className="w-full px-3 py-2"><option value="">{cargandoTiposConceptoAbsis ? "Cargando catálogo ABSIS…" : tiposConceptoAbsis.length ? "Selecciona el tipo ABSIS" : "Sin valores activos en Catálogo ABSIS"}</option>{tiposConceptoAbsis.map((item) => <option key={item.id} value={String(item.codigo || item.valor || "")}>{item.codigo ? `${item.codigo} — ${item.valor}` : item.valor}</option>)}</select><span className="mt-1 block">Opcional hasta validar con Informática los códigos oficiales y su correspondencia con el concepto interno.</span></label>
                                 <div className="grid gap-3 sm:grid-cols-2">
@@ -6351,7 +6351,7 @@ const cuantiaFincasParaEnvio =
                 }
                 return (
                   <label key={campo.key} className="block min-w-0 p-3">
-                    <span className="mb-1.5 flex items-center justify-between gap-2">{campo.label}{campo.key === "oficina" && <button type="button" onClick={async () => { setOficinaDetalleAbierta(true); setCargandoOficinaDetalle(true); setOficinaCatalogoDetalle(null); try { const respuesta = await axios.get("/oficinas-catalogo", { params: { q: expediente?.oficina || "", limit: 200 } }); const items = Array.isArray(respuesta?.data?.items) ? respuesta.data.items : []; const valor = normalizarTexto(expediente?.oficina || ""); const encontrada = items.find((item) => normalizarTexto(item.oficina) === valor || normalizarTexto(item.nombre) === valor) || items.find((item) => valor && (normalizarTexto(item.oficina).includes(valor) || normalizarTexto(item.nombre).includes(valor) || valor.includes(normalizarTexto(item.oficina)))); setOficinaCatalogoDetalle(encontrada || null); } catch (error) { setOficinaCatalogoDetalle(null); } finally { setCargandoOficinaDetalle(false); } }} className="px-2 py-1">ⓘ Ver catálogo</button>}</span>
+                    <span className="mb-1.5 flex items-center justify-between gap-2">{campo.label}{campo.key === "oficina" && <button type="button" onClick={async () => { setOficinaDetalleAbierta(true); setCargandoOficinaDetalle(true); setOficinaCatalogoDetalle(null); try { const respuesta = await axios.get("/oficinas-catalogo", { params: { q: expediente?.oficina || "", limit: 200 } }); const items = Array.isArray(respuesta?.data?.items) ? respuesta.data.items : []; const valor = normalizarTexto(expediente?.oficina || ""); const encontrada = items.find((item) => normalizarTexto(item.oficina) === valor || normalizarTexto(item.nombre) === valor) || items.find((item) => valor && (normalizarTexto(item.oficina).includes(valor) || normalizarTexto(item.nombre).includes(valor) || valor.includes(normalizarTexto(item.oficina)))); setOficinaCatalogoDetalle(encontrada || null); } catch (error) { setOficinaCatalogoDetalle(null); } finally { setCargandoOficinaDetalle(false); }} className="px-2 py-1">ⓘ Ver catálogo</button>}</span>
                     {campo.multilinea ? (
                       <textarea
                         rows={3}
@@ -6809,7 +6809,7 @@ const cuantiaFincasParaEnvio =
           {mostrarModalPpad && (
             <div
               className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-3 sm:p-6"
-              onMouseDown={(event) => { if (event.target === event.currentTarget) { setMostrarModalPpad(false); cancelarPpad(); } }}
+              onMouseDown={(event) => { if (event.target === event.currentTarget) { setMostrarModalPpad(false); cancelarPpad(); }}
             >
               <section
                 ref={ppadDialogRef}
@@ -7319,7 +7319,7 @@ const cuantiaFincasParaEnvio =
                                       porcentaje_retencion: "0",
                                       tipo_retencion: "Sin retención",
                                     }));
-                                  } }} className="w-full px-3 py-2"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · base {Number(x.base_imponible ?? x.importe ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € + {String(x.tipo_impuesto || "IVA").toUpperCase()} {Number(x.porcentaje_impuesto ?? 21)}% · total {Number(x.importe || 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</option>)}</select><span className="mt-1 block">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
+                                  }} className="w-full px-3 py-2"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · base {Number(x.base_imponible ?? x.importe ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € + {String(x.tipo_impuesto || "IVA").toUpperCase()} {Number(x.porcentaje_impuesto ?? 21)}% · total {Number(x.importe || 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</option>)}</select><span className="mt-1 block">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
                                 <label className="block"><span className="mb-1 block">Concepto del gasto *</span><select required value={gastoForm.tipo} onChange={(e) => setGastoForm((a) => ({...a, tipo:e.target.value, descripcion:a.descripcion || e.target.options[e.target.selectedIndex]?.text || e.target.value}))} className="w-full px-3 py-2"><option value="">{cargandoConceptosGasto ? "Cargando catálogo…" : "Selecciona un concepto"}</option>{conceptosGasto.map((c) => <option key={String(c.value)} value={String(c.value)}>{c.label}</option>)}{!conceptosGasto.some((c) => String(c.value) === "Honorarios de gestoría") && <option value="Honorarios de gestoría">Honorarios de gestoría</option>}</select></label>
                                 <div className="grid gap-3 sm:grid-cols-2">
                                   <label className="block"><span className="mb-1 block">NIF/CIF/NIE notario</span><input value={gastoForm.nif_notario} onChange={(e)=>setGastoForm(a=>({...a,nif_notario:e.target.value}))} className="w-full px-3 py-2" /></label>
