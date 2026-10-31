@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import axios from "../../api/axios";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
-import "../../css/CatalogosMaestrosPremium.css";
-import "../../css/ModalesHerramientasPremium.css";
 
 const API = "/tipos-expediente";
 const CAMPO = "w-full px-3 py-2.5";
@@ -105,7 +103,7 @@ export default function TiposExpediente() {
   const activos = tipos.filter((t) => t.activo !== false).length;
 
   return (
-    <main className="catalogo-maestro-page-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <header className="relative overflow-hidden p-6">
         <div className="absolute inset-x-0 top-0 h-1" />
         <p className="uppercase">MOLSAN ERP</p>
@@ -121,7 +119,7 @@ export default function TiposExpediente() {
 
       {(error || mensaje) && <div role="status" className={`px-4 py-3 ${error ? "" : ""}`}>{error || mensaje}</div>}
 
-      {mostrarModal && <div className="panel-modal-premium fixed inset-0 z-[1000] flex items-center justify-center p-4" onMouseDown={(e) => { if (e.target === e.currentTarget) cerrarModal(); }}><div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="tipo-expediente-modal-title" className="max-h-[90vh] w-full max-w-3xl overflow-y-auto p-5 sm:p-6">
+      {mostrarModal && <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4" onMouseDown={(e) => { if (e.target === e.currentTarget) cerrarModal(); }}><div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="tipo-expediente-modal-title" className="max-h-[90vh] w-full max-w-3xl overflow-y-auto p-5 sm:p-6">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div><h2 id="tipo-expediente-modal-title" className="">{editando ? "Editar tipo de expediente" : "Nuevo tipo de expediente"}</h2><p className="mt-1">Los identificadores históricos se conservan; las nuevas altas reciben un ID automático.</p></div>
           <button type="button" onClick={cerrarModal} disabled={guardando} aria-label="Cerrar ventana" className="px-4 py-2">Cerrar ✕</button>
