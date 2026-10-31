@@ -258,36 +258,21 @@ export default function SeguridadModulos() {
   ) {
     return (
       <div
-        className="
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-10
-          text-center
-        "
+        className="p-10"
       >
 
-        <div className="text-3xl">
+        <div className="">
           📦
         </div>
 
         <p
-          className="
-            mt-3
-            font-semibold
-            text-[var(--erp-text)]
-          "
+          className="mt-3"
         >
           Selecciona un empleado
         </p>
 
         <p
-          className="
-            mt-1
-            text-sm
-            text-[var(--erp-text-soft)]
-          "
+          className="mt-1"
         >
           La configuración de módulos aparecerá aquí.
         </p>
@@ -305,42 +290,33 @@ export default function SeguridadModulos() {
       {/* CABECERA */}
 
       <div
-        className="
-          flex
-          flex-col
-          gap-4
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-5
-          shadow-sm
-          md:flex-row
-          md:items-center
-          md:justify-between
-        "
+        className="flex
+ flex-col
+ gap-4
+ 
+ 
+ 
+ 
+ p-5
+ 
+ md:flex-row
+ md:items-center
+ md:justify-between"
       >
 
         <div
-          className="
-            flex
-            items-center
-            gap-3
-          "
+          className="flex
+ items-center
+ gap-3"
         >
 
           <div
-            className="
-              flex
-              h-11
-              w-11
-              shrink-0
-              items-center
-              justify-center
-              rounded-xl
-              bg-blue-50
-              text-xl
-            "
+            className="flex
+ h-11
+ w-11
+ shrink-0
+ items-center
+ justify-center"
           >
             📦
           </div>
@@ -348,21 +324,13 @@ export default function SeguridadModulos() {
           <div>
 
             <h2
-              className="
-                text-xl
-                font-bold
-                text-[var(--erp-text)]
-              "
+              className=""
             >
               Módulos visibles
             </h2>
 
             <p
-              className="
-                mt-0.5
-                text-sm
-                text-[var(--erp-text-soft)]
-              "
+              className="mt-0.5"
             >
               Configura los módulos que puede visualizar este empleado.
             </p>
@@ -373,46 +341,34 @@ export default function SeguridadModulos() {
 
 
         <div
-          className="
-            flex
-            flex-wrap
-            items-center
-            gap-2
-          "
+          className="flex
+ flex-wrap
+ items-center
+ gap-2"
         >
 
           <span
-            className="
-              inline-flex
-              items-center
-              rounded-full
-              border
-              border-blue-200
-              bg-blue-50
-              px-3
-              py-1.5
-              text-xs
-              font-semibold
-              text-blue-700
-            "
+            className="inline-flex
+ items-center
+ 
+ 
+ 
+ 
+ px-3
+ py-1.5"
           >
             {modulosGlobales.length} disponibles
           </span>
 
           <span
-            className="
-              inline-flex
-              items-center
-              rounded-full
-              border
-              border-emerald-200
-              bg-emerald-50
-              px-3
-              py-1.5
-              text-xs
-              font-semibold
-              text-emerald-700
-            "
+            className="inline-flex
+ items-center
+ 
+ 
+ 
+ 
+ px-3
+ py-1.5"
           >
             {modulosVisibles.length} visibles
           </span>
@@ -425,14 +381,7 @@ export default function SeguridadModulos() {
       {/* FILTRO */}
 
       <div
-        className="
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-4
-          shadow-sm
-        "
+        className="p-4"
       >
 
         <input
@@ -444,22 +393,13 @@ export default function SeguridadModulos() {
             )
           }
           placeholder="Buscar módulo..."
-          className="
-            w-full
-            rounded-xl
-            border
-            border-[var(--erp-border)]
-            bg-[var(--erp-bg)]
-            px-4
-            py-2.5
-            text-sm
-            text-[var(--erp-text)]
-            outline-none
-            placeholder:text-[var(--erp-text-soft)]
-            focus:border-[var(--erp-primary)]
-            focus:ring-2
-            focus:ring-[var(--erp-primary-soft)]
-          "
+          className="w-full
+ 
+ 
+ 
+ 
+ px-4
+ py-2.5"
         />
 
       </div>
@@ -468,44 +408,27 @@ export default function SeguridadModulos() {
       {/* LISTADO */}
 
       <div
-        className="
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-4
-          shadow-sm
-        "
+        className="p-4"
       >
 
         <div
-          className="
-            mb-3
-            flex
-            items-center
-            justify-between
-            gap-3
-          "
+          className="mb-3
+ flex
+ items-center
+ justify-between
+ gap-3"
         >
 
           <div>
 
             <h3
-              className="
-                text-base
-                font-semibold
-                text-[var(--erp-text)]
-              "
+              className=""
             >
               Módulos del sistema
             </h3>
 
             <p
-              className="
-                mt-0.5
-                text-xs
-                text-[var(--erp-text-soft)]
-              "
+              className="mt-0.5"
             >
               Activa o desactiva el acceso visual.
             </p>
@@ -513,10 +436,7 @@ export default function SeguridadModulos() {
           </div>
 
           <span
-            className="
-              text-xs
-              text-[var(--erp-text-soft)]
-            "
+            className=""
           >
             {modulosFiltrados.length} mostrados
           </span>
@@ -527,28 +447,17 @@ export default function SeguridadModulos() {
         {modulosFiltrados.length ===
           0 ? (
           <div
-            className="
-              rounded-xl
-              border
-              border-dashed
-              border-[var(--erp-border)]
-              p-8
-              text-center
-              text-sm
-              text-[var(--erp-text-soft)]
-            "
+            className="p-8"
           >
             No hay módulos que coincidan con la búsqueda.
           </div>
         ) : (
           <div
-            className="
-              grid
-              grid-cols-1
-              gap-2.5
-              md:grid-cols-2
-              xl:grid-cols-3
-            "
+            className="grid
+ grid-cols-1
+ gap-2.5
+ md:grid-cols-2
+ xl:grid-cols-3"
           >
 
             {modulosFiltrados.map(
@@ -563,26 +472,24 @@ export default function SeguridadModulos() {
                 return (
                   <label
                     key={modulo}
-                    className={`
-                      group
-                      flex
-                      cursor-pointer
-                      items-center
-                      justify-between
-                      gap-3
-                      rounded-xl
-                      border
-                      px-4
-                      py-3
-                      transition
-                      ${
-                        activo
-                          ? `
+                    className={`group
+ flex
+ 
+ items-center
+ justify-between
+ gap-3
+ 
+ 
+ px-4
+ py-3
+ 
+ ${
+ activo
+ ?`
                             border-blue-200
                             bg-blue-50
                             hover:bg-blue-100/70
-                          `
-                          : `
+                          `:`
                             border-[var(--erp-border)]
                             bg-[var(--erp-bg)]
                             hover:border-blue-200
@@ -593,12 +500,10 @@ export default function SeguridadModulos() {
                   >
 
                     <div
-                      className="
-                        flex
-                        min-w-0
-                        items-center
-                        gap-3
-                      "
+                      className="flex
+ min-w-0
+ items-center
+ gap-3"
                     >
 
                       <span
@@ -609,8 +514,8 @@ export default function SeguridadModulos() {
                           rounded-full
                           ${
                             activo
-                              ? "bg-emerald-500"
-                              : "bg-slate-300"
+                              ? ""
+                              : ""
                           }
                         `}
                       />
@@ -622,8 +527,8 @@ export default function SeguridadModulos() {
                           font-semibold
                           ${
                             activo
-                              ? "text-blue-800"
-                              : "text-[var(--erp-text)]"
+                              ? ""
+                              : ""
                           }
                         `}
                       >
@@ -641,13 +546,11 @@ export default function SeguridadModulos() {
                           modulo
                         )
                       }
-                      className="
-                        h-4
-                        w-4
-                        shrink-0
-                        cursor-pointer
-                        accent-blue-500
-                      "
+                      className="h-4
+ w-4
+ shrink-0
+ 
+ accent-blue-500"
                     />
 
                   </label>
