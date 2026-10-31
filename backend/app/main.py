@@ -2904,4 +2904,15 @@ if os.getenv("MOLSAN_PREVIEW_BOOTSTRAP_SCHEMA", "").strip().lower() in {"1", "tr
 if os.getenv("MOLSAN_PREVIEW_BOOTSTRAP_ADMIN", "").strip().lower() in {"1", "true", "yes", "si", "sí"}:
     app.router.on_startup.append(crear_administrador_preview)
 
+
+def verificar_base_datos_preview_inicio():
+    """Verifica siempre el destino DB en el servicio Preview, antes de migraciones."""
+    hostname = os.getenv("RENDER_EXTERNAL_HOSTNAME", "").strip().lower()
+    if hostname == "molsan-glass-luxe-preview-api.onrender.com":
+        _exigir_base_datos_preview()
+
+
+# Se inserta después de registrar las demás tareas para ejecutarse la primera.
+app.router.on_startup.insert(0, verificar_base_datos_preview_inicio)
+
 instrumentar_inicio_aplicacion()
