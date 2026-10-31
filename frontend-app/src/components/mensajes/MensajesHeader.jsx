@@ -83,7 +83,7 @@ export default function MensajesHeader({
 
         <div className="min-w-0">
           <div
-            className="truncate"
+            className="molsan-chat-header__name truncate"
           >
             {usuario?.nombre}{" "}
             {usuario?.apellidos}
@@ -96,7 +96,7 @@ export default function MensajesHeader({
  gap-1.5"
           >
             <span
-              className={`h-1.5
+              className={`molsan-chat-header__presence h-1.5
  w-1.5
  
  ${
@@ -126,7 +126,7 @@ export default function MensajesHeader({
       ===================================================== */}
 
       <div
-        className="hidden
+        className="molsan-chat-header__tag hidden
  sm:flex
  items-center
  
