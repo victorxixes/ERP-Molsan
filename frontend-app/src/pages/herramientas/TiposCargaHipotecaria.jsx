@@ -6,6 +6,8 @@ import React, {
   useRef,
 } from "react";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 
 // ============================================================
@@ -84,6 +86,7 @@ export default function TiposCargaHipotecaria() {
     tipos,
     setTipos,
   ] = useState([]);
+  const ordenTipos = useSortableData(tipos);
 
   const [
     cargando,
@@ -792,19 +795,9 @@ export default function TiposCargaHipotecaria() {
                
               >
 
-                <th
-                  className="px-5
- py-3"
-                >
-                  Tipo de carga
-                </th>
+                <MolsanSortableTh label="Tipo de carga" sortKey="nombre" sortConfig={ordenTipos.sortConfig} onSort={ordenTipos.requestSort} className="px-5 py-3" />
 
-                <th
-                  className="px-5
- py-3"
-                >
-                  Estado
-                </th>
+                <MolsanSortableTh label="Estado" sortKey="activo" sortConfig={ordenTipos.sortConfig} onSort={ordenTipos.requestSort} className="px-5 py-3" />
 
                 <th
                   className="px-5
@@ -850,7 +843,7 @@ export default function TiposCargaHipotecaria() {
 
               ) : (
 
-                tipos.map(
+                ordenTipos.items.map(
                   (tipo) => (
 
                     <tr
