@@ -189,13 +189,12 @@ function crearFormularioDesdeExpediente(expediente) {
 
 function clasesInput(extra = "") {
   return `
-    w-full rounded-xl border border-slate-300 bg-white
-    px-2.5 py-2 text-sm text-slate-700 outline-none
-    transition
-    focus:border-[var(--erp-primary)]
-    focus:ring-2 focus:ring-[var(--erp-primary-soft)]
-    disabled:cursor-not-allowed disabled:bg-slate-100
-    disabled:opacity-70
+    w-full 
+    px-2.5 py-2 
+    
+    
+    disabled:cursor-not-allowed 
+    
     ${extra}
   `;
 }
