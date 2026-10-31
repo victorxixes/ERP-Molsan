@@ -46,12 +46,17 @@ De las 52 hojas CSS:
 4. No modificar backend, datos, documentos ni producción.
 5. Cada lote de cambios debe compilarse y revisarse antes de continuar.
 
-## Primer cambio aplicado
+## Cambios selectivos aplicados
 
-- Archivo: `src/pages/provisiones/ProvisionesFondosPage.jsx`.
-- Eliminados dos rótulos puramente decorativos que mostraban `MOLSAN ERP PREMIUM 2027` (catálogos económicos y Glass Luxe).
-- Se mantienen los encabezados funcionales, el título de cada pantalla, las explicaciones, los controles y la lógica de provisiones.
-- Commit del cambio: `7e7fe7b8ff30b75e6bd6f7e6fb02c70471f8268c`.
+1. `src/pages/provisiones/ProvisionesFondosPage.jsx`: eliminados dos rótulos puramente decorativos `MOLSAN ERP PREMIUM 2027` (catálogos económicos y Glass Luxe). Se conservan títulos funcionales, explicaciones, controles y lógica de provisiones. Commit: `7e7fe7b8ff30b75e6bd6f7e6fb02c70471f8268c`.
+2. `src/pages/herramientas/ModelosDocumentos.jsx`: retirado el import de `ComponentesOperativosPremium.css` (hoja vacía); retiradas las menciones obsoletas `PREMIUM 2027` del encabezado y pie de la vista previa documental, conservando la marca MOLSAN y el contenido del documento. Commit: `9259485eb4298ff9da4947c773a1da502c9c4cf6`.
+3. `src/pages/expedientes/FichaExpediente.jsx`: corregido el cierre de la expresión JSX en el `onMouseDown` del modal PPAD. Era un error de sintaxis que bloqueaba la compilación; se ha conservado la lógica del manejador. Commit: `c80e3776b37523f16f5782dc10499cde1b13db1a`.
+
+## Comprobación de compilación
+
+- Los despliegues Preview anteriores habían fallado por el cierre JSX ausente en el modal PPAD de `FichaExpediente.jsx`.
+- La corrección ya está en la rama; queda verificar el siguiente build de Preview antes de darlo por resuelto.
+- En `ModelosDocumentos.jsx` Render emitió además un aviso de análisis JSX sobre un carácter `}`. No se ha alterado esa zona porque primero hay que aislar si es un aviso no bloqueante o un defecto real.
 
 ## Estado
 
