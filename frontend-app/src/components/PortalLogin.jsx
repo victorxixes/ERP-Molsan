@@ -27,27 +27,15 @@ export default function PortalLogin({
   const idPassword = variant + "-password";
 
   return (
-    <div className="portal-login-premium min-h-screen relative flex items-center justify-center overflow-hidden px-4 py-8 bg-slate-50 animate-fadeIn">
-      {/* Fondo decorativo del diseño anterior */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        <div className="absolute -top-56 -left-56 w-[620px] h-[620px] rounded-full bg-blue-400/10 blur-3xl" />
-        <div className="absolute -bottom-56 -right-56 w-[620px] h-[620px] rounded-full bg-cyan-300/10 blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 w-[760px] h-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/80 blur-3xl" />
-        <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50/60 to-blue-50/70" />
-        <div className="absolute inset-0 opacity-[0.025] bg-[linear-gradient(rgba(15,23,42,1)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,1)_1px,transparent_1px)] bg-[size:32px_32px]" />
-      </div>
-
-      <div className="relative z-10 w-full max-w-[430px] animate-slideUp">
-        <div className="relative overflow-hidden rounded-[30px] border border-white/90 bg-white/80 backdrop-blur-2xl shadow-[0_30px_100px_rgba(15,23,42,0.12)] p-7 sm:p-9">
-          {/* Brillo superior */}
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
-          <div className="absolute -top-24 left-1/2 w-64 h-64 -translate-x-1/2 rounded-full bg-blue-400/[0.035] blur-3xl pointer-events-none" />
+    <div className="portal-login-premium relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-8">
+      <div className="relative z-10 w-full max-w-[430px]">
+        <div className="relative w-full p-7 sm:p-9">
 
           <div className="relative text-center mb-8">
             <div className="flex justify-center mb-6">
-              <div className="relative p-2 rounded-[22px] bg-white border border-slate-200/80 shadow-[0_14px_35px_rgba(15,23,42,0.10)]">
-                <div className="absolute inset-0 rounded-[22px] ring-1 ring-blue-500/5 pointer-events-none" />
-                <img src="/img/logo.jpg" alt="Molsan" className="relative h-20 sm:h-24 w-auto rounded-[16px] object-contain" />
+              <div className="relative p-2">
+                <div className="hidden" />
+                <img src="/img/logo.jpg" alt="Molsan" className="h-20 w-auto object-contain sm:h-24" />
               </div>
             </div>
             <h1 className="text-3xl sm:text-[34px] font-bold tracking-[-0.03em] text-slate-800">{title}</h1>
