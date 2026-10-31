@@ -909,7 +909,7 @@ export default function SeguridadLogs() {
 
   return (
 
-    <div className="space-y-6">
+    <div className="erp-page space-y-6">
 
 
       {/* ====================================================
@@ -917,7 +917,7 @@ export default function SeguridadLogs() {
       ==================================================== */}
 
       <section
-        className="px-6
+        className="molsan-subpage-header px-6
  py-5"
       >
 

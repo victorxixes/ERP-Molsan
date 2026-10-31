@@ -283,13 +283,13 @@ export default function SeguridadModulos() {
 
   return (
     <div
-      className="w-full space-y-4"
+      className="erp-page w-full space-y-4"
     >
 
       {/* CABECERA */}
 
       <div
-        className="flex
+        className="molsan-subpage-header flex
  flex-col
  gap-4
  

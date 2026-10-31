@@ -772,3 +772,42 @@ textarea:focus-visible {
 @media (max-width: 720px) {
   .erp-page > header:first-of-type:not(.molsan-page-header) { align-items: flex-start; }
 }
+
+/* Cabeceras de subpantallas: misma coordenada y jerarquía que la cabecera principal. */
+.molsan-subpage-header,
+.erp-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-width: 0;
+  min-height: 62px;
+  margin: 0 0 18px !important;
+  padding: 0 0 10px !important;
+  color: var(--molsan-blue);
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 2px solid var(--molsan-ice-strong) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.molsan-subpage-header h1,
+.molsan-subpage-header h2,
+.erp-page-header h1,
+.erp-page-header h2 {
+  margin: 0;
+  color: var(--molsan-blue);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.molsan-subpage-header p,
+.erp-page-header p {
+  margin-top: 3px;
+  color: var(--molsan-muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+.molsan-subpage-header > div:first-child,
+.erp-page-header > div:first-child { min-width: 0; }
