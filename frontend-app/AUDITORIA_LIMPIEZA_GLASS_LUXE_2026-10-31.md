@@ -283,3 +283,35 @@ Criterio aplicado:
 - Completar la auditoría de formularios y modales restantes, incluidos estados de error, carga, guardado, cancelación y validación.
 - Completar el mapa de CSS heredado y su uso real antes de eliminar reglas; no borrar estilos por coincidencia de nombre.
 - Validación visual autenticada en escritorio, tablet y móvil pendiente. La compilación no equivale a validación visual ni funcional.
+
+
+---
+
+## Continuación de auditoría y ordenación transversal — 31/10/2026 (21:10 UTC)
+
+### Correcciones añadidas tras el inventario inicial
+
+- FichaExpediente: se separa la cuantía de finca (dato del envío a notaría) de los importes del libro contable. El libro toma la base del documento si está disponible y, en su defecto, el importe de la obligación/pago. No se han ejecutado pagos ni modificado saldos persistidos.
+- Ordenación local estable añadida a Correspondencia tipificada, Catálogo ABSIS, Honorarios de gestoría, Tipos de concepto de gastos, Acciones del expediente, Solicitudes de ausencia, Catálogo de tipos de ausencia, Tipos de expediente, Tipos impositivos, Tipos de carga hipotecaria, Maestros e Intranet (registro de auditoría).
+- En Acciones del expediente y en los catálogos con paginación local, la ordenación se aplica al conjunto filtrado antes de calcular la página visible.
+- Registros de la Propiedad, Municipios y Oficinas Liquidadoras: ordenación por columnas de datos sobre el conjunto filtrado antes de paginar. Se conservan las columnas de acciones sin ordenación.
+- EncargaGest: el directorio CTN incorpora parámetros de ordenación de servidor con lista blanca de campos (nombre, nif, municipio, provincia, estado) y dirección ascendente/descendente.
+- Catálogo de Oficinas: el endpoint de listado incorpora sort_by y sort_dir validados mediante lista blanca; la pantalla solicita la ordenación al servidor, respetando limit y offset.
+- El listado de CTN mantiene su ordenación previa para los campos que ya estaban implementados. Los campos calculados/de acceso y la ordenación global entre páginas requieren una revisión específica adicional; no se certifican como resueltos por esta pasada.
+
+### Despliegues y validación
+
+- Preview frontend: deploy dep-dbj5i70ae00c73d9d0pg, commit 579d8f7216fbb213ebd779dfcb906712694128a3, estado live; Vite finalizó con ✓ built in 5.09s.
+- Preview API: deploy dep-dbj5f6p42hec73c326f0, commit 7ce1417e1a80341f32399f68ad35943d17239f7b, estado live. Este servicio corresponde a molsan-glass-luxe-preview-api; no se ha desplegado el backend de producción.
+- La primera compilación posterior a la migración de tres catálogos falló por la pérdida de las etiquetas contenedoras thead/tr. Se restauraron esas etiquetas y las anchuras de las cabeceras; el despliegue posterior quedó live.
+- Los workflows de validación de backend, fichajes, control de apoderados, EncargaGest y Post Firma se han ejecutado para los commits de esta pasada. El backend audit y otros checks finalizaron en éxito; en el momento de esta anotación todavía había algunos jobs de frontend en ejecución. No se declaran completados hasta consultar su resultado final.
+
+### Límites de aceptación que permanecen abiertos
+
+- No hay navegador autenticado disponible en esta sesión. No se han ejecutado pruebas reales de interacción con perfiles de empleado, colaborador, notaría externa y administrador; tampoco se han comprobado los códigos HTTP 401/403/200 con la matriz real de SeguridadUsuarios.
+- No se ha completado la prueba visual de escritorio, tablet y móvil ni la secuencia de teclado en todos los modales anidados.
+- No se han ejecutado operaciones de negocio reales (pagos, liquidaciones, importaciones, traspasos, envíos de correo o cambios de permisos). No se deben simular sobre datos productivos.
+- NeutralizarPresentacion.css se conserva como capa global temporal: no se elimina ni se debilita en bloque sin validar los estilos de estados, foco, navegación y componentes de cada módulo.
+- El listado CTN todavía necesita una solución completa de ordenación de servidor para campos derivados de asociaciones, accesos y distancia, sin limitarse a ordenar la página ya cargada.
+
+**Estado de cierre:** los cambios estáticos y los despliegues Preview anteriores quedan registrados; la Fase 3 no se declara cerrada mientras permanezcan pendientes las pruebas interactivas autenticadas, la validación responsive real y la ordenación global de los campos derivados de CTN.
