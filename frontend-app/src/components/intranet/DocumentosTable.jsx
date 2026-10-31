@@ -245,9 +245,7 @@ export default function DocumentosTable() {
                 <tr
                   key={d.id}
                   className=""
-                  style={{
-                    animationFillMode: "both",
-                  }}
+                  
                 >
 
                   {/* ID */}
