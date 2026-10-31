@@ -4,7 +4,6 @@ import {
 } from "react";
 
 import axios from "axios";
-import "./EmpleadoFicha.css";
 
 import {
   API_BASE,
