@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import "./CtnDetallePage.css";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import { useNavigate, useParams } from "react-router-dom";
 import {
