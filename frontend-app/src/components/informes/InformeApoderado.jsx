@@ -653,36 +653,31 @@ export default function InformeApoderado({
  
  
  
- p-3
- 
- 
- hover:-translate-y-0.5"
+ p-3"
                 >
 
                   {/* POSICIÓN */}
 
                   <div
-                    className={`
-                      flex
-                      h-9
-                      w-9
-                      shrink-0
-                      items-center
-                      justify-center
-                      rounded-xl
-                      text-sm
-                      font-bold
+                    className={`flex
+ h-9
+ w-9
+ shrink-0
+ items-center
+ justify-center
+ 
+ 
+ 
 
-                      ${
-                        i === 0
-                          ? ""
-                          : i === 1
-                          ? ""
-                          : i === 2
-                          ? ""
-                          : ""
-                      }
-                    `}
+ ${
+ i === 0
+ ? ""
+ : i === 1
+ ? ""
+ : i === 2
+ ? ""
+ : ""
+ }`}
                   >
                     {i + 1}
                   </div>
@@ -766,18 +761,9 @@ function Kpi({
   return (
 
     <div
-      className={`
-        rounded-2xl
-        border
-        ${borde}
-        ${fondo}
-        p-5
-        shadow-sm
-        transition-all
-        duration-200
-        hover:-translate-y-0.5
-        hover:shadow-md
-      `}
+      className={`${borde}
+ ${fondo}
+ p-5`}
     >
 
       <div
@@ -787,20 +773,17 @@ function Kpi({
       >
 
         <div
-          className={`
-            flex
-            h-10
-            w-10
-            items-center
-            justify-center
-            rounded-xl
-            bg-white/80
-            border
-            border-white
-            text-lg
-            ${icono}
-            shadow-sm
-          `}
+          className={`flex
+ h-10
+ w-10
+ items-center
+ justify-center
+ 
+ 
+ 
+ 
+ 
+ ${icono}`}
         >
           {icon}
         </div>
