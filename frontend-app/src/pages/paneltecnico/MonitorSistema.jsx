@@ -471,23 +471,19 @@ export default function MonitorSistema() {
                                 text-[var(--erp-text)]
                                 hover:bg-[var(--erp-primary-soft)]
                                 hover:border-[var(--erp-border)]
-                              `
-                          }
-                        `}
+                              `}`}
                       >
 
                         <svg
-                          className={`
-                            w-4
-                            h-4
-                            flex-shrink-0
+                          className={`w-4
+ h-4
+ flex-shrink-0
 
-                            ${
-                              activa
-                                ? ""
-                                : ""
-                            }
-                          `}
+ ${
+ activa
+ ? ""
+ : ""
+ }`}
                           aria-hidden="true"
                         >
                           <use href="/icons/icons.svg#database" />
