@@ -251,7 +251,7 @@ export default function EmpleadoEditar({
   return (
 
     <div className="erp-card
- empleado-editar-premium
+ 
  min-w-0
  p-4 sm:p-6
  space-y-6">
