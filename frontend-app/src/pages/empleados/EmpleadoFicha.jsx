@@ -102,7 +102,7 @@ export default function EmpleadoFicha({
 
         <div className="erp-card max-w-[1700px] mx-auto p-8">
 
-          <p className="">
+          <p>
             No se ha seleccionado ningún empleado.
           </p>
 
@@ -209,11 +209,11 @@ export default function EmpleadoFicha({
 
             <div>
 
-              <div className="">
+              <div>
                 Ficha de empleado
               </div>
 
-              <h1 className="">
+              <h1>
                 {empleado.nombre}{" "}
                 {empleado.apellidos}
               </h1>
@@ -224,15 +224,15 @@ export default function EmpleadoFicha({
  gap-2
  mt-1">
 
-                <span className="">
+                <span>
                   ID #{empleado.id}
                 </span>
 
-                <span className="">
+                <span>
                   ·
                 </span>
 
-                <span className="">
+                <span>
                   {empleado.usuario || "Sin usuario"}
                 </span>
 
@@ -486,11 +486,11 @@ export default function EmpleadoFicha({
  justify-between
  mb-4">
 
-          <h2 className="">
+          <h2>
             Auditoría reciente
           </h2>
 
-          <span className="">
+          <span>
             {auditoria.length} registros
           </span>
 
@@ -511,7 +511,7 @@ export default function EmpleadoFicha({
 
               <thead>
 
-                <tr className="">
+                <tr>
 
                   <th className="px-4 py-3">
                     Fecha
@@ -542,7 +542,7 @@ export default function EmpleadoFicha({
 
                     <tr
                       key={registro.id}
-                      className=""
+                     
                     >
 
                       <td className="px-4
