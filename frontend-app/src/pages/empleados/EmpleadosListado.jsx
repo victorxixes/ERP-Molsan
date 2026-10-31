@@ -929,7 +929,7 @@ export default function EmpleadosListado({
 
       <MolsanPageHeader mark="EM" title="Empleados" description="Gestión y administración de empleados." />
       <div className="flex justify-end">
-        <button type="button" onClick={abrirNuevo} className="inline-flex items-center justify-center gap-2 px-5 py-2.5">
+        <button type="button" onClick={abrirNuevo} className="molsan-btn molsan-btn--primary inline-flex items-center justify-center gap-2 px-5 py-2.5">
           <span>＋</span><span>Nuevo empleado</span>
         </button>
       </div>
@@ -965,7 +965,7 @@ export default function EmpleadosListado({
           FILTROS
       ====================================================== */}
 
-      <div className="p-4">
+      <div className="erp-card p-4">
 
         <div className="molsan-filter-bar flex
  flex-col
@@ -1181,7 +1181,7 @@ export default function EmpleadosListado({
                   type="button"
                   key={empleado.id}
                   onClick={() => onSeleccionar(empleado.id)}
-                  className={`group flex w-full min-w-0 items-center gap-3
+                  className={`molsan-employee-card group flex w-full min-w-0 items-center gap-3
  
  px-3 py-3`}
                 >
@@ -1204,8 +1204,7 @@ export default function EmpleadosListado({
                     </div>
                   </div>
                   <span
-                    className={`shrink-0 px-2.5 py-1 
- ${empleado.activo
+                    className={`molsan-status-pill shrink-0 px-2.5 py-1 ${empleado.activo
  ? ""
  : ""}`}
                   >
@@ -1230,7 +1229,7 @@ export default function EmpleadosListado({
       {mostrarNuevo && (
 
         <div
-          className="empleado-operativo-modal
+          className="empleado-operativo-modal molsan-modal-overlay
  fixed
  inset-0
  z-[100]
@@ -1261,7 +1260,7 @@ export default function EmpleadosListado({
             role="dialog"
             aria-modal="true"
             aria-label="Nuevo empleado"
-            className="w-full
+            className="molsan-modal__panel w-full
  max-w-4xl
  overflow-hidden"
           >
@@ -1270,7 +1269,7 @@ export default function EmpleadosListado({
                 CABECERA MODAL
             ================================================= */}
 
-            <div className="px-6
+            <div className="molsan-modal__header px-6
  py-5">
 
               <div className="flex
@@ -1342,7 +1341,7 @@ export default function EmpleadosListado({
               }
             >
 
-              <div className="max-h-[70vh]
+              <div className="molsan-modal__body max-h-[70vh]
  overflow-y-auto
  px-6
  py-6">
@@ -1599,7 +1598,7 @@ export default function EmpleadosListado({
                   FOOTER MODAL
               ============================================== */}
 
-              <div className="flex
+              <div className="molsan-modal__footer flex
  flex-col-reverse
  gap-3
  
