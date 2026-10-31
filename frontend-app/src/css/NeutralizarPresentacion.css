@@ -1762,11 +1762,9 @@ body {
 [data-molsan-modal-overlay] {
   position: fixed;
   inset: 0;
-  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
   background: rgba(18, 39, 54, .38);
   -webkit-backdrop-filter: blur(3px);
   backdrop-filter: blur(3px);
@@ -1856,7 +1854,6 @@ body {
   .molsan-modal-backdrop,
   [data-molsan-modal-overlay] {
     align-items: flex-end;
-    padding: 10px;
   }
 
   .molsan-modal,
