@@ -81,7 +81,7 @@ export default function VistaMes({
   const hoyStr = new Date().toLocaleDateString("sv-SE");
 
   return (
-    <div className=" ">
+    <div>
 
       {/* CABECERA DÍAS */}
 
