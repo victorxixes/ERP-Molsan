@@ -1,5 +1,6 @@
 import { Fragment, useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios from "../../api/axios";
 import { API_BASE } from "../../api/config";
 import Chart from "chart.js/auto";
@@ -3466,18 +3467,12 @@ export default function Informes() {
 
   return (
     <div className="utilidades-premium-page herramientas-subpagina-premium min-h-full min-w-0 space-y-5 p-4 md:p-6">
-      <header className="overflow-hidden p-5 md:p-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center">📊</div>
-            <div>
-              <h1>{apartadoSeleccionado ? apartadoSeleccionado.titulo : "Informes"}</h1>
-              <p className="mt-1">{apartadoSeleccionado ? apartadoSeleccionado.descripcion : "Selecciona el tipo de informe que quieres consultar."}</p>
-            </div>
-          </div>
-          {claveApartado && <button type="button" onClick={() => navigate("/informes")} className="inline-flex items-center gap-2 px-4 py-2.5">← Volver a Informes</button>}
-        </div>
-      </header>
+      <MolsanPageHeader
+        mark="IN"
+        title={apartadoSeleccionado ? apartadoSeleccionado.titulo : "Informes"}
+        description={apartadoSeleccionado ? apartadoSeleccionado.descripcion : "Selecciona el tipo de informe que quieres consultar."}
+      />
+      {claveApartado && <div className="flex justify-end"><button type="button" onClick={() => navigate("/informes")} className="inline-flex items-center gap-2 px-4 py-2.5">← Volver a Informes</button></div>}
 
       {!claveApartado ? (
         <nav aria-label="Apartados de informes" className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">

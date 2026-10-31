@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useAgendaWS } from "../../hooks/useAgendaWS";
 import { useAgendaStore } from "../../store/agendaStore";
 import { useAuthStore } from "../../store/authStore";
@@ -416,6 +417,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
 
   return (
     <div className="min-w-0 space-y-5 p-3 sm:p-4 lg:p-6">
+      <MolsanPageHeader mark="AG" title="Agenda" description="Planificación y seguimiento de citas, firmas y actividad notarial." />
       {/* CABECERA Y NAVEGACIÓN */}
 
       <div className="erp-card p-4">

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
 
 const API_BASE = (
@@ -256,24 +257,15 @@ export default function CtnListadoPage() {
 
   return (
     <main aria-busy={cargando}>
-      <header>
-        <div>
-          <div aria-hidden="true">CTN</div>
-          <div className="min-w-0">
-            <p>MOLSAN ERP</p>
-            <h1>Listado CTN</h1>
-            <p>Consulta, filtra y gestiona los notarios y sus asociaciones.</p>
-          </div>
-        </div>
-        <div>
-          <button type="button" className="  molsan-btn molsan-export-excel" onClick={exportarExcel} disabled={exportando}>
-            <><span className="molsan-export-excel__icon" aria-hidden="true">📗</span>{exportando ? "Preparando Excel…" : "Exportar a Excel"}</>
-          </button>
-          <button type="button" className="  molsan-btn molsan-btn--secondary" onClick={() => cargarListado(pagina, filtrosAplicados)} disabled={cargando}>
-            {cargando ? "Actualizando…" : "↻ Actualizar"}
-          </button>
-        </div>
-      </header>
+      <MolsanPageHeader mark="CTN" title="Listado CTN" description="Consulta, filtra y gestiona los notarios y sus asociaciones." />
+      <div className="flex flex-wrap justify-end gap-2">
+        <button type="button" className="molsan-btn molsan-export-excel" onClick={exportarExcel} disabled={exportando}>
+          <><span className="molsan-export-excel__icon" aria-hidden="true">📗</span>{exportando ? "Preparando Excel…" : "Exportar a Excel"}</>
+        </button>
+        <button type="button" className="molsan-btn molsan-btn--secondary" onClick={() => cargarListado(pagina, filtrosAplicados)} disabled={cargando}>
+          {cargando ? "Actualizando…" : "↻ Actualizar"}
+        </button>
+      </div>
 
       <section className=" molsan-panel" aria-label="Filtros del listado CTN">
         <h2>Filtros de búsqueda</h2>
