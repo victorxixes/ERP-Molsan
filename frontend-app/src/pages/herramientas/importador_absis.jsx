@@ -138,85 +138,17 @@ export default function ImportadorAbsis() {
     return (
 
         <div
-            className="utilidades-premium-page
- herramientas-subpagina-premium
- w-full
- p-4
- lg:p-6
- space-y-5"
+            className="utilidades-premium-page herramientas-subpagina-premium erp-page min-w-0 space-y-5"
         >
 
 
-            {/* ==================================================
-                CABECERA
-                ================================================== */}
+            <MolsanPageHeader mark="IA" title="Importador ABSIS" description="Importa expedientes desde el Excel matriz ABSIS seleccionando el día que deseas procesar." />
 
-            <section
-                className="p-5
- lg:p-6"
-            >
-
-                <div
-                    className="flex
- items-center
- gap-4"
-                >
-
-                    {/* ICONO */}
-
-                    <div
-                        className="w-12
- h-12
- 
- 
- 
- 
- flex
- items-center
- justify-center
- flex-shrink-0"
-                    >
-
-                        <span
-                           
-                        >
-                            📥
-                        </span>
-
-                    </div>
-
-
-                    {/* TEXTO */}
-
-                    <div className="min-w-0">
-
-                        <h1
-                           
-                        >
-                            Importador ABSIS
-                        </h1>
-
-                        <p
-                            className="mt-1"
-                        >
-                            Importa expedientes desde el Excel matriz ABSIS
-                            seleccionando el día que deseas procesar.
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-
-            {/* ==================================================
                 PANEL PRINCIPAL
                 ================================================== */}
 
             <section
-                className="p-5
+                className="erp-card p-5
  lg:p-6"
             >
 
