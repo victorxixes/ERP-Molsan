@@ -51,7 +51,7 @@ export default function PortalLogin({
             <div>
               <label htmlFor={idUsuario} className="mb-2 block">{usernameLabel}</label>
               <div className="relative">
-                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2" aria-hidden="true">👤</span>
+                <span className="pointer-events-none absolute left-4 top-1/2" aria-hidden="true">👤</span>
                 <input
                   id={idUsuario}
                   type="text"
@@ -70,7 +70,7 @@ export default function PortalLogin({
             <div>
               <label htmlFor={idPassword} className="mb-2 block">Contraseña</label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true">🔒</span>
+                <span className="absolute left-4 top-1/2 pointer-events-none" aria-hidden="true">🔒</span>
                 <input
                   id={idPassword}
                   type={mostrarPass ? "text" : "password"}
@@ -87,7 +87,7 @@ export default function PortalLogin({
                   onClick={() => setMostrarPass((valor) => !valor)}
                   disabled={loading}
                   aria-label={mostrarPass ? "Ocultar contraseña" : "Mostrar contraseña"}
-                  className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center"
+                  className="absolute right-3 top-1/2 flex h-9 w-9 items-center justify-center"
                 >
                   {mostrarPass ? "🙈" : "👁️"}
                 </button>
