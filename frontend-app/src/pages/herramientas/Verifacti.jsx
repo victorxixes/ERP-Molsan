@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { Link } from "react-router-dom";
 
 
@@ -88,21 +89,8 @@ export default function Verifacti() {
   }
 
   return (
-    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden p-5 sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1" />
-        <div className="absolute -right-10 -top-16 h-48 w-48" />
-        <div className="relative flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center">🧾</div>
-            <div><div className="mb-1 flex flex-wrap items-center gap-2"><span className="uppercase">MOLSAN ERP · Integraciones</span><EstadoPendiente /></div>
-              <h1>Verifacti</h1>
-              <p className="mt-1 max-w-2xl">Panel de control de facturación electrónica y registros VERI*FACTU.</p>
-            </div>
-          </div>
-          <a href="https://www.verifacti.com/docs" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-4 py-2.5">Documentación oficial <span>↗</span></a>
-        </div>
-      </header>
+    <div className="erp-page min-h-full space-y-6">
+      <MolsanPageHeader mark="VF" title="Veri*Factu" description="Panel de control de facturación electrónica y registros VERI*FACTU." />
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[245px_minmax(0,1fr)]">
         <aside className="h-fit p-3">

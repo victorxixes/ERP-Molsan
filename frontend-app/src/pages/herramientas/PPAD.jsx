@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
 
@@ -108,18 +109,8 @@ export default function PPAD() {
   }
 
   return (
-    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="overflow-hidden">
-        <div className="h-1" />
-        <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
-          <div>
-            <p className="uppercase">Utilidades · Control económico</p>
-            <h1 className="mt-1">Control de PPAD</h1>
-            <p className="mt-2">Seguimiento de importes pendientes de compensar y compensados.</p>
-          </div>
-          <Link to="/herramientas/utilidades" className="self-start px-4 py-2">← Volver a Utilidades</Link>
-        </div>
-      </header>
+    <div className="erp-page min-h-full space-y-6">
+      <MolsanPageHeader mark="PP" title="PPAD" description="Consulta y administración de procesos y documentos asociados al circuito de expedientes." />
 
       {error && <div className="px-4 py-3">{error}</div>}
       {mensaje && <div className="px-4 py-3">{mensaje}</div>}

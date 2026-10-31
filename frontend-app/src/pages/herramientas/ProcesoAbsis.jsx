@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
 
@@ -79,15 +80,8 @@ export default function ProcesoAbsis() {
     } finally { setExportando(false); }
   }
 
-  return <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-    <header className="relative overflow-hidden p-6">
-      <div className="absolute inset-x-0 top-0 h-1" />
-      <Link to="/herramientas/utilidades">← Volver a Utilidades</Link>
-      <div className="mt-2 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div><h1>Proceso de ABSIS</h1><p className="mt-1">Seguimiento de expedientes enviados, incidencias y acciones de envío.</p></div>
-        <button onClick={() => Promise.all([cargarActividades(), cargarItems()])} className="px-4 py-2.5">↻ Actualizar</button>
-      </div>
-    </header>
+  return <main className="erp-page min-h-full space-y-6">
+    <MolsanPageHeader mark="AB" title="Proceso ABSIS" description="Consulta y seguimiento de los envíos de expedientes y sus incidencias con ABSIS." />
 
     <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       <Kpi titulo="Expedientes enviados al ABSIS" valor={totalEnvios} icono="↗" />
