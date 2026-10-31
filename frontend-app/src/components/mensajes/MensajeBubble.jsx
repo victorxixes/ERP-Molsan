@@ -95,7 +95,7 @@ export default function MensajeBubble({
           <img
             src={avatarUrl || "/no-foto.png"}
             alt=""
-            className="h-8 w-8 object-cover"
+            className="h-8 w-8 rounded-full object-cover"
           />
           {online && (
             <span className="absolute bottom-0 right-0 h-2.5 w-2.5" />
@@ -103,11 +103,7 @@ export default function MensajeBubble({
         </div>
       )}
 
-      <div className={`max-w-[78%] px-4 py-2.5 ${
- propio
- ? ""
- : ""
- }`}>
+      <div className={`molsan-message-bubble max-w-[78%] px-4 py-2.5 ${propio ? "is-own" : "is-other"}`}>
         {mensaje.contenido && (
           <p className="whitespace-pre-wrap">
             {mensaje.contenido}
@@ -158,7 +154,7 @@ export default function MensajeBubble({
           </a>
         )}
 
-        <div className={`mt-1.5 ${propio ? "" : ""}`}>
+        <div className="molsan-message-time mt-1.5">
           {fecha}
         </div>
       </div>
@@ -168,7 +164,7 @@ export default function MensajeBubble({
           <img
             src={avatarUrl || "/no-foto.png"}
             alt=""
-            className="h-full w-full object-cover"
+            className="h-full w-full rounded-full object-cover"
           />
         </div>
       )}
