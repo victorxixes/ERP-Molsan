@@ -1887,3 +1887,188 @@ body {
     backdrop-filter: none;
   }
 }
+
+
+/* ==========================================================
+   MOLSAN ERP PREMIUM 2027 · ADOPCIÓN TRANSVERSAL
+   Compatibilidad visual para módulos que aún conservan markup
+   heredado. Sidebar expresamente excluido.
+========================================================== */
+
+/* Formularios: normalización de controles existentes sin alterar
+   su estructura, validaciones, nombres ni comportamiento. */
+#root main form:not([data-unstyled="true"]) label {
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-medium);
+}
+#root main form input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+#root main form select,
+#root main form textarea,
+#root [role="dialog"] form input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+#root [role="dialog"] form select,
+#root [role="dialog"] form textarea {
+  box-sizing: border-box;
+  min-height: var(--molsan-control-height);
+  color: var(--molsan-text);
+  background-color: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font: inherit;
+  font-size: var(--molsan-font-size-sm);
+  transition: border-color var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast);
+}
+#root main form input:focus,
+#root main form select:focus,
+#root main form textarea:focus,
+#root [role="dialog"] form input:focus,
+#root [role="dialog"] form select:focus,
+#root [role="dialog"] form textarea:focus {
+  border-color: var(--molsan-blue);
+  outline: none;
+  box-shadow: var(--molsan-focus-ring);
+}
+#root main form input:disabled,
+#root main form select:disabled,
+#root main form textarea:disabled,
+#root [role="dialog"] form input:disabled,
+#root [role="dialog"] form select:disabled,
+#root [role="dialog"] form textarea:disabled {
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  cursor: not-allowed;
+}
+
+/* Botones de trabajo: identidad única y jerarquía discreta.
+   Se preservan colores semánticos de estados y botones de Sidebar. */
+#root main button:not([data-unstyled="true"]),
+#root [role="dialog"] button:not([data-unstyled="true"]) {
+  border-radius: var(--molsan-radius-control);
+  transition: background-color var(--molsan-transition-fast),
+              border-color var(--molsan-transition-fast),
+              box-shadow var(--molsan-transition-fast),
+              color var(--molsan-transition-fast);
+}
+#root main button:focus-visible,
+#root [role="dialog"] button:focus-visible {
+  outline: none;
+  box-shadow: var(--molsan-focus-ring);
+}
+#root main button:disabled,
+#root [role="dialog"] button:disabled {
+  cursor: not-allowed;
+}
+
+/* Tablas heredadas: superficie, cabecera, separadores y lectura
+   homogéneos. No se añade ordenación visual ficticia. */
+#root main table,
+#root [role="dialog"] table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+  font-variant-numeric: tabular-nums;
+}
+#root main table thead th,
+#root [role="dialog"] table thead th {
+  color: var(--molsan-blue);
+  background: var(--molsan-table-head);
+  border-bottom: 1px solid var(--molsan-border);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+  letter-spacing: .01em;
+  text-align: left;
+  vertical-align: middle;
+}
+#root main table tbody td,
+#root [role="dialog"] table tbody td {
+  border-bottom: 1px solid rgba(216,228,236,.78);
+  vertical-align: middle;
+}
+#root main table tbody tr,
+#root [role="dialog"] table tbody tr {
+  background: #fff;
+  transition: background-color var(--molsan-transition-fast);
+}
+#root main table tbody tr:hover,
+#root [role="dialog"] table tbody tr:hover {
+  background: rgba(242,247,251,.78);
+}
+#root main table tbody tr:last-child td,
+#root [role="dialog"] table tbody tr:last-child td {
+  border-bottom-color: transparent;
+}
+
+/* Diálogos y paneles heredados de los portales operativos. */
+#root [role="dialog"],
+#root .panel-modal-premium,
+#root .ng-modal {
+  color: var(--molsan-text);
+}
+#root [role="dialog"] > header,
+#root .ng-modal > header {
+  color: var(--molsan-blue);
+  border-bottom: 1px solid var(--molsan-border);
+}
+#root [role="dialog"] h1,
+#root [role="dialog"] h2,
+#root [role="dialog"] h3 {
+  color: var(--molsan-blue);
+}
+#root [role="dialog"] section,
+#root [role="dialog"] article {
+  border-color: var(--molsan-border);
+}
+
+/* Barras de filtros reconocibles por su contenido semántico.
+   No se convierten en tarjetas independientes los campos. */
+#root main form[role="search"],
+#root main [data-molsan-filter-bar],
+#root main .molsan-filter-bar,
+#root main .molsan-filters {
+  background: linear-gradient(145deg, rgba(255,255,255,.96), rgba(242,247,251,.78));
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: 0 3px 12px rgba(6,70,117,.035);
+}
+
+/* Responsive: los contenedores de tablas conservan scroll propio;
+   no se fuerza el ancho de la página. */
+#root main :is(.overflow-x-auto, .table-responsive, .ng-tabla-contenedor) {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+#root main table th,
+#root main table td,
+#root [role="dialog"] table th,
+#root [role="dialog"] table td {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 720px) {
+  #root main form input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  #root main form select,
+  #root main form textarea,
+  #root [role="dialog"] form input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  #root [role="dialog"] form select,
+  #root [role="dialog"] form textarea {
+    max-width: 100%;
+  }
+  #root [role="dialog"] {
+    max-width: calc(100vw - 20px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #root main form input,
+  #root main form select,
+  #root main form textarea,
+  #root main button,
+  #root main table tbody tr,
+  #root [role="dialog"] button,
+  #root [role="dialog"] table tbody tr {
+    transition: none;
+  }
+}
