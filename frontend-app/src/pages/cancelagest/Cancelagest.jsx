@@ -82,7 +82,7 @@ export default function Cancelagest() {
       <header className="cg-hero">
         <div className="cg-hero-identidad">
           <div className="cg-logo"><img src="/img/logo.jpg" alt="MOLSAN" /></div>
-          <div><div className="cg-eyebrow">MOLSAN ERP · PREMIUM 2027</div><h1>CancelaGest</h1><p>Centro de gestión de cancelaciones, provisiones, firmas y seguimiento registral.</p></div>
+          <div><div className="cg-eyebrow">MOLSAN ERP</div><h1>CancelaGest</h1><p>Centro de gestión de cancelaciones, provisiones, firmas y seguimiento registral.</p></div>
         </div>
         <div className="cg-hero-acciones">
           <div className="cg-fecha">{fechaActual}</div>
@@ -127,5 +127,5 @@ export default function Cancelagest() {
         <div className="cg-circuito-nota"><strong>Hitos medidos</strong><span>Firma → presentación tributaria</span><span>Presentación tributaria → presentación en Registro</span><span>Presentación en Registro → inscripción</span><span>Inscripción → cierre</span></div>
       </section>
 
-      <footer className="cg-footer">MOLSAN ERP · PREMIUM 2027 · CancelaGest{ultimaActualizacion ? ` · Actualizado a las ${ultimaActualizacion.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}` : ""}</footer></main>;
+      <footer className="cg-footer">MOLSAN ERP · CancelaGest{ultimaActualizacion ? ` · Actualizado a las ${ultimaActualizacion.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}` : ""}</footer></main>;
 }
