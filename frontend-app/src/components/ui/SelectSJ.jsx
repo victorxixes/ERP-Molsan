@@ -97,7 +97,7 @@ export default function SelectSJ({
   return (
     <div
       ref={selectRef}
-      className={`relative select-sj-premium ${className}`}
+      className={`relative select-sj ${className}`}
     >
       {/* =====================================================
           BOTÓN PRINCIPAL
