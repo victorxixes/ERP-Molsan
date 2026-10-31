@@ -1,4 +1,3 @@
-import "../../css/ModalesOperativosPremium.css";
 import useAccessibleDialog from "../ui/useAccessibleDialog";
 
 import {
