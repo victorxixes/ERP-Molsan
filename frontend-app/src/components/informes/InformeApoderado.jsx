@@ -265,7 +265,7 @@ export default function InformeApoderado({
           />
 
           <span
-            className=""
+           
           >
             Cargando informe…
           </span>
@@ -312,7 +312,7 @@ export default function InformeApoderado({
           <div>
 
             <h3
-              className=""
+             
             >
               No se ha podido cargar el informe
             </h3>
@@ -409,7 +409,7 @@ export default function InformeApoderado({
           <div>
 
             <h2
-              className=""
+             
             >
               Informe del apoderado
             </h2>
@@ -572,13 +572,13 @@ export default function InformeApoderado({
             <div>
 
               <h3
-                className=""
+               
               >
                 Ranking de apoderados
               </h3>
 
               <p
-                className=""
+               
               >
                 Actividad acumulada durante el periodo
               </p>
@@ -613,7 +613,7 @@ export default function InformeApoderado({
             >
 
               <div
-                className=""
+               
               >
                 🏆
               </div>
@@ -703,7 +703,7 @@ export default function InformeApoderado({
                   >
 
                     <div
-                      className=""
+                     
                     >
                       {numero(r.km, 1)} km
                     </div>
