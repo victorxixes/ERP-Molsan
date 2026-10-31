@@ -1,3 +1,5 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+
 import {
   useEffect,
   useState,
@@ -235,13 +237,15 @@ export default function EmpleadoEditar({
 
     return (
 
-      <div className="erp-card
- p-8">
+      <div className="erp-page min-w-0 space-y-5">
+        <MolsanPageHeader mark="EM" title="Editar empleado" description="Actualiza los datos corporativos del empleado." />
+        <div className="erp-card p-8">
 
         <div className="py-10">
           Cargando datos del empleado…
         </div>
 
+        </div>
       </div>
 
     );
@@ -250,37 +254,9 @@ export default function EmpleadoEditar({
 
   return (
 
-    <div className="erp-card
- 
- min-w-0
- p-4 sm:p-6
- space-y-6">
-
-      {/* CABECERA */}
-
-      <div className="flex
- items-center
- justify-between
- gap-4">
-
-        <div>
-
-          <div className="uppercase">
-            Configuración
-          </div>
-
-          <h2 className="mt-1">
-            Editar empleado
-          </h2>
-
-          <p className="mt-1">
-            Actualiza los datos corporativos del empleado.
-          </p>
-
-        </div>
-
-      </div>
-
+    <div className="erp-page min-w-0 space-y-5">
+      <MolsanPageHeader mark="EM" title="Editar empleado" description="Actualiza los datos corporativos del empleado." />
+      <div className="erp-card min-w-0 p-4 sm:p-6 space-y-6">
 
       {/* ERROR */}
 
@@ -447,7 +423,7 @@ export default function EmpleadoEditar({
           type="button"
           disabled={guardando}
           onClick={guardar}
-          className="inline-flex
+          className="molsan-btn molsan-btn--primary inline-flex
  items-center
  justify-center
  px-5
@@ -460,6 +436,7 @@ export default function EmpleadoEditar({
 
       </div>
 
+      </div>
     </div>
   );
 }
