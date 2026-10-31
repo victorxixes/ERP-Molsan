@@ -526,7 +526,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
 
       {/* FILTROS Y CALENDARIO */}
       <div className="erp-card p-4 agenda-calendar-card">
-        <div className="agenda-filters">
+        <div className="agenda-filters molsan-filter-bar" data-molsan-filter-bar>
           <label className="agenda-search"><span aria-hidden="true">⌕</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar cita, notario, apoderado…" aria-label="Buscar citas" /></label>
           <div className="agenda-filter-buttons" aria-label="Filtrar por modalidad">{[["todas", "Todas"], ["presencial", "Presencial"], ["videoconferencia", "Videoconferencia"]].map(([valor, etiqueta]) => <button key={valor} type="button" aria-pressed={modalidadFiltro === valor} onClick={() => setModalidadFiltro(valor)}>{etiqueta}</button>)}</div>
           {(busqueda || modalidadFiltro !== "todas") && <button type="button" className="agenda-clear-filters" onClick={() => { setBusqueda(""); setModalidadFiltro("todas"); }}>Limpiar filtros</button>}
