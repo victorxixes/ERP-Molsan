@@ -634,7 +634,7 @@ export default function Mensajes({
 
  min-h-0
 
- lg:h-[calc(100dvh-96px)]
+ lg:h-[calc(100dvh-176px)]
  lg:min-h-0
 
  overflow-hidden"
