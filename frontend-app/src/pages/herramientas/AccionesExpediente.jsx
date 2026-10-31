@@ -1217,9 +1217,7 @@ export default function AccionesExpediente() {
       ===================================================== */}
 
       <div
-        className="max-w-[1700px]
- mx-auto
- flex
+        className="flex
  flex-col
  lg:flex-row
  lg:items-center
@@ -1340,13 +1338,7 @@ export default function AccionesExpediente() {
       {mensaje && (
 
         <div
-          className="max-w-[1700px]
- mx-auto
- 
- 
- 
- 
- px-4
+          className="px-4
  py-3"
         >
           {mensaje}
@@ -1358,13 +1350,7 @@ export default function AccionesExpediente() {
       {error && (
 
         <div
-          className="max-w-[1700px]
- mx-auto
- 
- 
- 
- 
- px-4
+          className="px-4
  py-3"
         >
           {error}
@@ -1378,9 +1364,7 @@ export default function AccionesExpediente() {
       ===================================================== */}
 
       <section
-        className="max-w-[1700px]
- mx-auto
- grid
+        className="grid
  grid-cols-1
  sm:grid-cols-3
  gap-4"
@@ -1454,8 +1438,6 @@ export default function AccionesExpediente() {
 
       <section
         className="erp-card
- max-w-[1700px]
- mx-auto
  p-4"
       >
 
@@ -1665,8 +1647,6 @@ export default function AccionesExpediente() {
 
       <section
         className="erp-card
- max-w-[1700px]
- mx-auto
  overflow-hidden"
       >
 
