@@ -6,13 +6,11 @@ import React, {
 } from "react";
 import axios from "../../api/axios";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/CatalogosMaestrosPremium.css";
 
 
 // ============================================================
 // TIPOS DE CONCEPTO DE GASTOS
-// MOLSAN ERP — PREMIUM 2027
+// MOLSAN ERP
 // ============================================================
 
 
@@ -689,7 +687,7 @@ export default function TiposConceptoGastos() {
 
   return (
     <div
-      className="tipos-concepto-gastos-premium herramientas-subpagina-premium
+      className="herramientas-subpagina-premium
  min-h-screen
  
  p-4
