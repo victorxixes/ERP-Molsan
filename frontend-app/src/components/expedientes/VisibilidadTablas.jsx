@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 
-import "../../css/ComponentesOperativosPremium.css";
 
 const ACTIVIDADES = [
   { key: "documentacion-previa", label: "Documentación general y previa" },
