@@ -4,8 +4,6 @@ import React, {
   useState,
   useRef,
 } from "react";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/CatalogosMaestrosPremium.css";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 
@@ -581,7 +579,7 @@ export default function TiposCargaHipotecaria() {
 
   return (
     <div
-      className="catalogo-maestro-page-premium herramientas-subpagina-premium
+      className="herramientas-subpagina-premium
  erp-page
  space-y-5"
     >
