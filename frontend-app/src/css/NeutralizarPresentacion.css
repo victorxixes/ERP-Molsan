@@ -5809,3 +5809,342 @@ body [role="dialog"]:not([data-molsan-style-exempt]) button:disabled {
   font-size: var(--molsan-font-size-xs);
   font-weight: var(--molsan-font-weight-semibold);
 }
+
+
+/* Detalle de fichas, pagos, documentos y paneles secundarios NotarGest. */
+.ng-modal-pagos-amplio {
+  width: min(100%, 1180px);
+}
+
+.ng-modal-overlay-scroll,
+.ng-modal-perfil-scroll,
+.ng-resumen-expedientes-overlay {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.ng-resumen-expedientes-overlay {
+  position: fixed;
+  z-index: var(--molsan-z-overlay);
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(18, 39, 54, .42);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+.ng-resumen-expedientes-contenido {
+  width: min(100%, 1160px);
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  padding: 18px;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-modal);
+  box-shadow: var(--molsan-shadow-modal);
+}
+
+.ng-tabla-pagos,
+.ng-resumen-expedientes-tabla {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ng-tabla-pagos th,
+.ng-resumen-expedientes-tabla th {
+  padding: 10px 11px;
+  color: var(--molsan-blue);
+  background: var(--molsan-table-head);
+  border-bottom: 1px solid var(--molsan-border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.ng-tabla-pagos td,
+.ng-resumen-expedientes-tabla td {
+  padding: 10px 11px;
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.ng-admin-kpis-global {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ng-admin-circuito-icono-fiscal {
+  color: var(--molsan-warning);
+  background: var(--molsan-warning-soft);
+  border-color: rgba(148, 101, 27, .22);
+}
+
+.ng-dashboard-actividad,
+.ng-dashboard-pagos,
+.ng-dashboard-economica,
+.ng-dashboard-etapas,
+.ng-dashboard-hitos {
+  min-width: 0;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.ng-ficha-premium,
+.ng-carpeta-premium,
+.ng-visor-documentos {
+  min-width: 0;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.ng-ficha-cabecera,
+.ng-visor-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 15px 17px;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.ng-alerta {
+  padding: 12px 14px;
+  color: var(--molsan-warning);
+  background: var(--molsan-warning-soft);
+  border: 1px solid rgba(148, 101, 27, .22);
+  border-radius: 9px;
+  font-size: var(--molsan-font-size-sm);
+}
+
+.ng-bloqueo-expediente {
+  padding: 13px;
+  color: var(--molsan-danger);
+  background: var(--molsan-danger-soft);
+  border: 1px solid rgba(163, 59, 66, .24);
+  border-radius: 9px;
+}
+
+.ng-alerta-icono {
+  display: grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  color: var(--molsan-warning);
+  background: var(--molsan-warning-soft);
+  border: 1px solid rgba(148, 101, 27, .22);
+  border-radius: 9px;
+}
+
+.ng-bloque-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ng-acordeon-ficha {
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ng-acordeon-ficha > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px 15px;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  cursor: pointer;
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ng-acordeon-flecha {
+  color: var(--molsan-blue);
+  transition: transform var(--molsan-transition-fast);
+}
+
+.ng-acordeon-ficha[open] .ng-acordeon-flecha {
+  transform: rotate(180deg);
+}
+
+.ng-firma-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 14px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ng-tipo-documento-bloque,
+.ng-datos-facturacion {
+  min-width: 0;
+  padding: 13px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.ng-subtitulo-detalle {
+  margin: 0 0 10px;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-md);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ng-datos-envio,
+.ng-datos-operacion,
+.ng-datos-facturacion-bloque {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ng-datos-envio > div,
+.ng-datos-operacion > div,
+.ng-datos-facturacion-bloque > div {
+  min-width: 0;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+
+.ng-comentarios-gestor {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ng-archivo-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 11px 12px;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.ng-pdf-icon {
+  display: grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-bold);
+}
+
+.ng-archivo-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ng-archivo-info strong {
+  display: block;
+  overflow-wrap: anywhere;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+}
+
+.ng-archivo-info small {
+  display: block;
+  margin-top: 3px;
+  color: var(--molsan-muted);
+  font-size: 10px;
+}
+
+.ng-vacio-categoria,
+.ng-visor-vacio {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  padding: 20px;
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border: 1px dashed var(--molsan-border);
+  border-radius: 9px;
+  text-align: center;
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ng-visor-documentos {
+  display: flex;
+  max-height: min(78vh, 820px);
+  flex-direction: column;
+}
+
+.ng-visor-documentos iframe,
+.ng-visor-documentos embed {
+  flex: 1;
+  width: 100%;
+  min-height: 420px;
+  border: 0;
+}
+
+.ng-pie {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 9px;
+  padding: 13px 16px;
+  border-top: 1px solid var(--molsan-border);
+}
+
+.eg-modal-datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 760px) {
+  .ng-admin-kpis-global {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ng-datos-envio,
+  .ng-datos-operacion,
+  .ng-datos-facturacion-bloque,
+  .ng-firma-form,
+  .eg-modal-datos {
+    grid-template-columns: 1fr;
+  }
+}
