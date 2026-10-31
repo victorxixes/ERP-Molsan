@@ -712,37 +712,7 @@ export default function TablaLogs({
                 onClick={
                   descargarExcel
                 }
-                className="
-                  inline-flex
-                  items-center
-                  justify-center
-                  gap-2
-
-                  rounded-xl
-
-                  border
-                  border-emerald-200
-
-                  bg-emerald-50
-
-                  px-4
-                  py-2.5
-
-                  text-sm
-                  font-semibold
-
-                  text-emerald-700
-
-                  shadow-sm
-
-                  transition-all
-                  duration-200
-
-                  hover:bg-emerald-100
-                  hover:border-emerald-300
-
-                  active:scale-[0.98]
-                "
+                className="molsan-export-excel"
               >
                 <span
                   aria-hidden="true"
