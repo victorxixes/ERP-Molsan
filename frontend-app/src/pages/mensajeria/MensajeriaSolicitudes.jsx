@@ -71,7 +71,7 @@ function SelectorUbicacion({ titulo, valor, onChange, notarias, registros, munic
 
   return <section className="space-y-3 p-4">
     <div className="flex flex-wrap items-center justify-between gap-2">
-      <h3 className="">{titulo}</h3>
+      <h3>{titulo}</h3>
       {urlMapa(valor) && <a href={urlMapa(valor)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 px-3 py-1.5">⌖ Abrir mapa ↗</a>}
     </div>
     <label className="block uppercase">Tipo de ubicación
@@ -84,7 +84,7 @@ function SelectorUbicacion({ titulo, valor, onChange, notarias, registros, munic
         <input className={inputClass + "mt-1.5"} value={busqueda || valor.busqueda} onChange={(e) => { const texto = e.target.value; setBusqueda(texto); onChange({ ...valor, busqueda: texto, referencia_id: "" }); }} placeholder={valor.tipo === "Notaria" ? "Nombre, apellidos, NIF, código o población…" : "Nombre del registro, registrador o población…"} />
       </label>
       {busqueda && <div className="max-h-44 overflow-y-auto">{filtradas.map((item) => <button type="button" key={item.id} onClick={() => elegir(item)} className="block w-full px-3 py-2.5"><span className="block">{valor.tipo === "Notaria" ? (item.nombre_completo || [item.nombre, item.apellidos].filter(Boolean).join(" ")) : item.registro_propiedad}</span><span className="block">{[item.direccion, item.cp || item.codigo_postal, item.municipio || item.poblacion, item.provincia].filter(Boolean).join(" · ") || "Sin dirección en el catálogo"}</span></button>)}{!filtradas.length && <p className="p-3">No hay coincidencias en el catálogo.</p>}</div>}
-      {valor.referencia_id && <p className="">✓ Datos cargados desde el catálogo. Puedes revisar la dirección.</p>}
+      {valor.referencia_id && <p>✓ Datos cargados desde el catálogo. Puedes revisar la dirección.</p>}
     </>}
     <div className="grid gap-3 sm:grid-cols-2">
       <label className="block uppercase sm:col-span-2">Dirección
@@ -108,7 +108,7 @@ function SelectorUbicacion({ titulo, valor, onChange, notarias, registros, munic
       </label>
     </div>
     {urlMapa(valor) && <iframe title={`Mapa de ${titulo}`} src={`https://maps.google.com/maps?q=${encodeURIComponent(textoDireccion(valor))}&output=embed`} loading="lazy" referrerPolicy="no-referrer-when-downgrade" className="h-44 w-full" />}
-    {valor.tipo === "Otros" && <p className="">Introduce dirección, CP y provincia manualmente. La población se puede elegir del catálogo de municipios.</p>}
+    {valor.tipo === "Otros" && <p>Introduce dirección, CP y provincia manualmente. La población se puede elegir del catálogo de municipios.</p>}
   </section>;
 }
 
@@ -217,7 +217,7 @@ export default function MensajeriaSolicitudes() {
     {aviso && <div role="status" className="p-3">{aviso}</div>}
     <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
       <form onSubmit={crearSolicitud} className="space-y-4 p-5">
-        <div><h2 className="">Nuevo encargo de mensajería</h2><p className="mt-1">Selecciona el origen y el destino. Las ubicaciones de notaría y registro se completan desde sus catálogos.</p></div>
+        <div><h2>Nuevo encargo de mensajería</h2><p className="mt-1">Selecciona el origen y el destino. Las ubicaciones de notaría y registro se completan desde sus catálogos.</p></div>
         <SelectorUbicacion titulo="Origen / recogida" valor={origen} onChange={setOrigen} notarias={notarias} registros={registros} municipios={municipios} />
         <SelectorUbicacion titulo="Destino / entrega" valor={destino} onChange={setDestino} notarias={notarias} registros={registros} municipios={municipios} />
         <div className="grid gap-4 sm:grid-cols-2">
@@ -229,9 +229,9 @@ export default function MensajeriaSolicitudes() {
         <label className="block uppercase">Instrucciones<textarea className={inputClass + "mt-1.5"} rows="3" value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} placeholder="Contenido, horario, indicaciones de recogida o entrega…" /></label>
         <button type="submit" disabled={guardando} className="w-full px-5 py-3">{guardando ? "Creando encargo…" : "Crear encargo"}</button>
       </form>
-      <section className="">
-        <div className="p-5"><h2 className="">Mis encargos</h2><p className="mt-1">El sistema genera automáticamente un ID único para cada encargo.</p></div>
-        {cargando ? <p className="p-5">Cargando encargos…</p> : !solicitudes.length ? <p className="p-8">Todavía no has creado encargos de mensajería.</p> : <div className="">{solicitudes.map((s) => {
+      <section>
+        <div className="p-5"><h2>Mis encargos</h2><p className="mt-1">El sistema genera automáticamente un ID único para cada encargo.</p></div>
+        {cargando ? <p className="p-5">Cargando encargos…</p> : !solicitudes.length ? <p className="p-8">Todavía no has creado encargos de mensajería.</p> : <div>{solicitudes.map((s) => {
           const origenFicha = desglosarUbicacion(s.origen);
           const destinoFicha = desglosarUbicacion(s.destino);
           return <button type="button" key={s.id} onClick={() => abrirSeguimiento(s)} className="group block w-full p-4 sm:p-5">
@@ -255,17 +255,17 @@ export default function MensajeriaSolicitudes() {
                 </div>
               </div>
               <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 px-3.5 py-2.5">
-                <span className=""><span className="">Fecha solicitada:</span> {s.fecha_solicitada ? new Date(s.fecha_solicitada).toLocaleDateString("es-ES") : "Sin fecha"}</span>
-                <span className=""><span className="">Prioridad:</span> {s.prioridad || "Normal"}</span>
+                <span><span>Fecha solicitada:</span> {s.fecha_solicitada ? new Date(s.fecha_solicitada).toLocaleDateString("es-ES") : "Sin fecha"}</span>
+                <span><span>Prioridad:</span> {s.prioridad || "Normal"}</span>
               </div>
               <div className="mt-4 flex items-center justify-between gap-3">
-                <span className="">Ver estado y comunicación</span><span className="flex h-8 w-8 items-center justify-center">→</span>
+                <span>Ver estado y comunicación</span><span className="flex h-8 w-8 items-center justify-center">→</span>
               </div>
             </div>
           </button>;
         })}</div>}
       </section>
     </section>
-    {seleccionada && <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-4" role="presentation"><section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Seguimiento del encargo" className="my-auto max-h-[90vh] w-full max-w-2xl overflow-y-auto p-5 sm:p-7"><div className="flex items-start justify-between gap-3"><div><p className="uppercase">Seguimiento del encargo</p><h2 className="mt-1">ID encargo: {seleccionada.referencia}</h2><p className="mt-1">{seleccionada.origen} → {seleccionada.destino}</p></div><button type="button" onClick={cerrarSeguimiento} disabled={guardando} className="px-3 py-1.5">Cerrar</button></div><div className="mt-4 p-4"><b>Estado:</b> <span className={`ml-2 px-2.5 py-1 `}>{seleccionada.estado}</span><p className="mt-3"><b>Seguimiento del proveedor:</b> {seleccionada.estado_proveedor || "Todavía sin actualización"}</p>{seleccionada.incidencia && <p className="mt-2"><b>Incidencia:</b> {seleccionada.incidencia}</p>}<p className="mt-2"><b>Instrucciones:</b> {seleccionada.descripcion || "—"}</p></div><h3 className="mt-5">Comunicación con Mensajería Gestión</h3><div className="mt-3 max-h-56 space-y-2 overflow-y-auto p-3">{comunicaciones.map((m) => <div key={m.id} className={`p-3 ${m.autor_tipo === "empleado" ? "" : ""}`}><div className="flex justify-between gap-2"><b>{m.autor_nombre}</b><span className="">{m.creado_en ? new Date(m.creado_en).toLocaleString("es-ES") : ""}</span></div><p className="mt-1 whitespace-pre-wrap">{m.mensaje}</p></div>)}{!comunicaciones.length && <p className="">Todavía no hay mensajes. Puedes escribir a la responsable debajo.</p>}</div><form onSubmit={enviarMensaje} className="mt-3 space-y-2"><textarea className={inputClass} rows="3" value={mensajeChat} onChange={(e) => setMensajeChat(e.target.value)} placeholder="Escribe una consulta o aporta información adicional…" required /><button type="submit" disabled={guardando || !mensajeChat.trim()} className="px-4 py-2.5">Enviar mensaje</button></form></section></div>}
+    {seleccionada && <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-4" role="presentation"><section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Seguimiento del encargo" className="my-auto max-h-[90vh] w-full max-w-2xl overflow-y-auto p-5 sm:p-7"><div className="flex items-start justify-between gap-3"><div><p className="uppercase">Seguimiento del encargo</p><h2 className="mt-1">ID encargo: {seleccionada.referencia}</h2><p className="mt-1">{seleccionada.origen} → {seleccionada.destino}</p></div><button type="button" onClick={cerrarSeguimiento} disabled={guardando} className="px-3 py-1.5">Cerrar</button></div><div className="mt-4 p-4"><b>Estado:</b> <span className={`ml-2 px-2.5 py-1 `}>{seleccionada.estado}</span><p className="mt-3"><b>Seguimiento del proveedor:</b> {seleccionada.estado_proveedor || "Todavía sin actualización"}</p>{seleccionada.incidencia && <p className="mt-2"><b>Incidencia:</b> {seleccionada.incidencia}</p>}<p className="mt-2"><b>Instrucciones:</b> {seleccionada.descripcion || "—"}</p></div><h3 className="mt-5">Comunicación con Mensajería Gestión</h3><div className="mt-3 max-h-56 space-y-2 overflow-y-auto p-3">{comunicaciones.map((m) => <div key={m.id} className={`p-3 ${m.autor_tipo === "empleado" ? "" : ""}`}><div className="flex justify-between gap-2"><b>{m.autor_nombre}</b><span>{m.creado_en ? new Date(m.creado_en).toLocaleString("es-ES") : ""}</span></div><p className="mt-1 whitespace-pre-wrap">{m.mensaje}</p></div>)}{!comunicaciones.length && <p>Todavía no hay mensajes. Puedes escribir a la responsable debajo.</p>}</div><form onSubmit={enviarMensaje} className="mt-3 space-y-2"><textarea className={inputClass} rows="3" value={mensajeChat} onChange={(e) => setMensajeChat(e.target.value)} placeholder="Escribe una consulta o aporta información adicional…" required /><button type="submit" disabled={guardando || !mensajeChat.trim()} className="px-4 py-2.5">Enviar mensaje</button></form></section></div>}
   </main>;
 }
