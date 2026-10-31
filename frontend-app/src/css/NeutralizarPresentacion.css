@@ -2613,3 +2613,980 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
   border-bottom-color: var(--molsan-blue);
   font-weight: var(--molsan-font-weight-semibold);
 }
+
+
+/* ==========================================================
+   ADOPCIÓN TRANSVERSAL · NOTARGEST Y APODERAGEST
+   Las vistas notariales conservaban clases de presentación sin
+   reglas activas. Se centraliza aquí su lenguaje visual.
+========================================================== */
+
+.notargest-workspace-premium,
+.notargest.ng-content,
+.apoderagest > main > div > .apoderagest {
+  min-width: 0;
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+}
+
+.notargest.ng-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--molsan-section-gap);
+}
+
+.ng-kicker {
+  display: inline-block;
+  color: var(--molsan-muted);
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-bold);
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.ng-modulos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  min-width: 0;
+}
+
+.ng-modulo-card {
+  display: flex;
+  min-width: 0;
+  min-height: 76px;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  color: var(--molsan-text);
+  text-align: left;
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+  transition: background var(--molsan-transition-fast), border-color var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast);
+}
+
+.ng-modulo-card:hover,
+.ng-modulo-card.activa {
+  background: var(--molsan-panel);
+  border-color: rgba(6, 70, 117, .32);
+  box-shadow: 0 3px 12px rgba(6, 70, 117, .06);
+}
+
+.ng-modulo-card.activa {
+  box-shadow: inset 3px 0 0 var(--molsan-blue), var(--molsan-shadow-card);
+}
+
+.ng-modulo-card.urgente {
+  border-color: rgba(163, 59, 66, .38);
+}
+
+.ng-modulo-icono,
+.ng-admin-notaria-icono,
+.ng-admin-circuito-icono,
+.ng-perfil-avatar {
+  display: grid;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+  font-weight: var(--molsan-font-weight-bold);
+}
+
+.ng-modulo-label {
+  flex: 1;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-semibold);
+  line-height: 1.35;
+}
+
+.ng-modulo-count {
+  display: inline-flex;
+  min-width: 25px;
+  min-height: 25px;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 7px;
+  color: var(--molsan-blue);
+  background: var(--molsan-table-head);
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: var(--molsan-font-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.ng-dashboard-analitica,
+.ng-dashboard-graficos {
+  min-width: 0;
+}
+
+.ng-dashboard-graficos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ng-dashboard-graficos-tres-columnas {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ng-dashboard-grafico,
+.ng-panel,
+.ng-detalle-bloque,
+.ng-admin-notarias-grid > article,
+.ng-modal,
+.ng-modal-pagos,
+.ng-modal-perfil,
+.ng-resumen-expedientes-modal {
+  min-width: 0;
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.ng-dashboard-grafico {
+  padding: 18px;
+}
+
+.ng-bloque-heading,
+.ng-panel-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.ng-bloque-heading h3,
+.ng-panel-titulo h2,
+.ng-admin-global-titulo,
+.ng-admin-individual-titulo,
+.ng-admin-notaria-titulo,
+.ng-pagos-grafico-titulo strong {
+  margin: 0;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-lg);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ng-descripcion,
+.ng-panel-titulo p,
+.ng-admin-global-eyebrow,
+.ng-admin-metricas span,
+.ng-admin-resumen-secundario span,
+.ng-dato,
+.ng-ayuda-campo {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ng-barras-meses {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: end;
+  gap: 10px;
+  min-height: 170px;
+  padding-top: 12px;
+}
+
+.ng-barra-mes {
+  display: flex;
+  min-width: 0;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  color: var(--molsan-muted);
+  font-size: 10px;
+  text-align: center;
+}
+
+.ng-barra-mes strong {
+  color: var(--molsan-blue);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ng-barra-pista {
+  display: flex;
+  width: min(100%, 30px);
+  height: 112px;
+  align-items: flex-end;
+  overflow: hidden;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 7px;
+}
+
+.ng-barra-pista span {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  background: linear-gradient(180deg, rgba(6, 70, 117, .72), var(--molsan-blue));
+  border-radius: 5px 5px 0 0;
+}
+
+.ng-pagos-resumen,
+.ng-pagos-grafico {
+  padding: 13px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ng-pagos-grafico {
+  margin-top: 12px;
+}
+
+.ng-pagos-grafico-titulo {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.ng-pagos-grafico-titulo span {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ng-barras-pagos {
+  min-height: 150px;
+}
+
+.ng-barras-medias {
+  display: grid;
+  gap: 14px;
+}
+
+.ng-media-row {
+  display: grid;
+  grid-template-columns: minmax(150px, .9fr) minmax(100px, 1.1fr);
+  align-items: center;
+  gap: 14px;
+}
+
+.ng-media-row > div:first-child {
+  display: grid;
+  gap: 3px;
+}
+
+.ng-media-row strong {
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+}
+
+.ng-media-row small {
+  color: var(--molsan-muted);
+  font-size: 11px;
+}
+
+.ng-media-pista {
+  height: 10px;
+  overflow: hidden;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+}
+
+.ng-media-pista span {
+  display: block;
+  height: 100%;
+  background: var(--molsan-blue);
+  border-radius: inherit;
+}
+
+.ng-panel {
+  padding: 18px;
+}
+
+.ng-panel-titulo {
+  padding-bottom: 13px;
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.ng-filtros {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 14px 0;
+  padding: 12px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ng-filtros label {
+  display: grid;
+  flex: 1 1 280px;
+  gap: 5px;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-medium);
+}
+
+.ng-tabla-contenedor,
+.ng-pagos-tabla-wrap,
+.ng-resumen-expedientes-tabla-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+.ng-tabla {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+}
+
+.ng-tabla thead th {
+  padding: 11px 12px;
+  color: var(--molsan-blue);
+  background: var(--molsan-table-head);
+  border-bottom: 1px solid var(--molsan-border);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.ng-tabla tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--molsan-border);
+  vertical-align: middle;
+}
+
+.ng-tabla tbody tr:hover td {
+  background: var(--molsan-panel);
+}
+
+.ng-documentos {
+  display: grid;
+  gap: 10px;
+}
+
+.ng-documento,
+.ng-aviso-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 14px;
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ng-documento p,
+.ng-aviso-contenido p {
+  margin: 5px 0;
+  color: var(--molsan-text);
+}
+
+.ng-documento small,
+.ng-aviso-contenido small {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ng-mensaje,
+.ng-modal-vacio,
+.ng-admin-vacio {
+  padding: 24px;
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border: 1px dashed var(--molsan-border);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.ng-error,
+.ng-success {
+  padding: 12px 15px;
+  border: 1px solid;
+  border-radius: 9px;
+  font-size: var(--molsan-font-size-sm);
+}
+
+.ng-error {
+  color: var(--molsan-danger);
+  background: var(--molsan-danger-soft);
+  border-color: rgba(163, 59, 66, .24);
+}
+
+.ng-success {
+  color: var(--molsan-success);
+  background: var(--molsan-success-soft);
+  border-color: rgba(35, 115, 77, .22);
+}
+
+.ng-login-submit,
+.ng-admin-entrar {
+  display: inline-flex;
+  min-height: var(--molsan-control-height);
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  color: #fff;
+  background: var(--molsan-blue);
+  border: 1px solid var(--molsan-blue);
+  border-radius: var(--molsan-radius-control);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ng-login-submit:hover:not(:disabled),
+.ng-admin-entrar:hover:not(:disabled) {
+  background: var(--molsan-blue-hover);
+}
+
+.ng-boton-secundario,
+.ng-abrir,
+.ng-volver,
+.ng-admin-ver-expedientes {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 6px 11px;
+  color: var(--molsan-blue);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ng-boton-secundario:hover,
+.ng-abrir:hover,
+.ng-volver:hover,
+.ng-admin-ver-expedientes:hover {
+  background: var(--molsan-panel);
+  border-color: rgba(6, 70, 117, .28);
+}
+
+.ng-adjuntar {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  cursor: pointer;
+}
+
+.ng-adjuntar input {
+  max-width: 190px;
+  font-size: 11px;
+}
+
+.ng-modal-overlay {
+  position: fixed;
+  z-index: var(--molsan-z-overlay);
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 18px;
+  background: rgba(18, 39, 54, .42);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+.ng-modal {
+  width: min(100%, 900px);
+  max-height: calc(100dvh - 36px);
+  overflow: auto;
+  padding: 20px;
+  border-radius: var(--molsan-radius-modal);
+  box-shadow: var(--molsan-shadow-modal);
+}
+
+.ng-modal-avisos,
+.ng-modal-pagos,
+.ng-modal-perfil,
+.ng-resumen-expedientes-modal {
+  width: min(100%, 1080px);
+}
+
+.ng-modal-lista {
+  display: grid;
+  gap: 10px;
+}
+
+.ng-aviso-icono {
+  display: grid;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ng-aviso-icono-observacion {
+  color: var(--molsan-warning);
+  background: var(--molsan-warning-soft);
+  border-color: rgba(148, 101, 27, .22);
+}
+
+.ng-aviso-contenido {
+  flex: 1;
+  min-width: 0;
+}
+
+.ng-aviso-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ng-perfil-identidad {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ng-perfil-avatar {
+  flex-basis: 52px;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  font-size: 18px;
+}
+
+.ng-perfil-datos,
+.ng-admin-metricas,
+.ng-admin-resumen,
+.ng-admin-circuitos {
+  display: grid;
+  gap: 10px;
+}
+
+.ng-perfil-datos {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ng-dato,
+.ng-admin-metricas > div,
+.ng-admin-resumen-principal,
+.ng-admin-resumen-secundario {
+  min-width: 0;
+  padding: 11px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.ng-admin-global-resumen {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 18px;
+  background: linear-gradient(145deg, var(--molsan-glass-surface), var(--molsan-glass-soft));
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-glass-shadow);
+}
+
+.ng-admin-global-eyebrow {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: var(--molsan-font-weight-bold);
+  letter-spacing: .08em;
+}
+
+.ng-admin-global-total {
+  display: block;
+  color: var(--molsan-blue);
+  font-size: 30px;
+  font-weight: var(--molsan-font-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.ng-admin-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ng-admin-kpi-button {
+  min-height: 76px;
+  padding: 13px;
+  color: var(--molsan-blue);
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ng-admin-kpi-button:hover {
+  background: var(--molsan-panel);
+  border-color: rgba(6, 70, 117, .3);
+}
+
+.ng-admin-notarias-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 14px;
+}
+
+.ng-admin-notarias-grid > article {
+  overflow: hidden;
+}
+
+.ng-admin-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px;
+  background: var(--molsan-panel);
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.ng-admin-notaria-identidad {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+}
+
+.ng-admin-notaria-titulo {
+  font-size: var(--molsan-font-size-md);
+}
+
+.ng-admin-resumen {
+  grid-template-columns: 1fr 1fr;
+  padding: 14px;
+}
+
+.ng-admin-resumen-principal strong,
+.ng-admin-resumen-secundario strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--molsan-blue);
+  font-size: 22px;
+  font-weight: var(--molsan-font-weight-bold);
+}
+
+.ng-admin-resumen-secundario.es-defecto {
+  color: var(--molsan-danger);
+  background: var(--molsan-danger-soft);
+  border-color: rgba(163, 59, 66, .24);
+}
+
+.ng-admin-circuitos {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 0 14px 14px;
+}
+
+.ng-admin-circuito {
+  padding: 12px;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.ng-admin-circuito-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.ng-admin-circuito-icono {
+  flex-basis: 28px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 10px;
+}
+
+.ng-admin-metricas {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ng-admin-metricas strong {
+  display: block;
+  margin-top: 3px;
+  color: var(--molsan-blue);
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ng-cifra-urgente {
+  color: var(--molsan-danger) !important;
+}
+
+.ng-admin-ver-expedientes,
+.ng-admin-entrar {
+  width: calc(100% - 28px);
+  margin: 0 14px 10px;
+}
+
+.ng-admin-entrar {
+  width: calc(100% - 28px);
+  margin-bottom: 14px;
+  color: #fff;
+  background: var(--molsan-blue);
+}
+
+.ng-admin-notaria-activa {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 15px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+}
+
+.ng-ficha-cuerpo,
+.ng-documentacion-layout,
+.ng-carpeta-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, .85fr);
+  gap: 14px;
+}
+
+.ng-detalle-bloque {
+  padding: 15px;
+}
+
+.ng-detalle-bloque > summary,
+.ng-panel-titulo h2 {
+  color: var(--molsan-blue);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ng-datos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ng-datos-superiores {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ng-fincas-lista,
+.ng-carpeta-categorias {
+  display: grid;
+  gap: 10px;
+}
+
+.ng-finca-card,
+.ng-categoria-documental {
+  padding: 12px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.ng-workflow-form,
+.ng-comentario-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ng-ayuda-campo {
+  display: block;
+  margin-top: 4px;
+}
+
+.ng-comentarios-historico {
+  display: grid;
+  gap: 9px;
+}
+
+.ng-observacion,
+.ng-perfil-observacion {
+  padding: 12px;
+  background: var(--molsan-panel);
+  border-left: 3px solid var(--molsan-blue);
+  border-radius: 8px;
+}
+
+.ng-categoria-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 9px;
+  color: var(--molsan-blue);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ng-adjuntar-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ng-pdf-link {
+  color: var(--molsan-blue);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ng-volver {
+  flex: 0 0 auto;
+}
+
+.ng-login-submit:disabled,
+.ng-boton-secundario:disabled,
+.ng-abrir:disabled,
+.ng-admin-ver-expedientes:disabled,
+.ng-admin-entrar:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.apoderagest > main > div > .apoderagest > section {
+  min-width: 0;
+  margin-bottom: var(--molsan-section-gap);
+  padding: var(--molsan-card-padding);
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.apoderagest > main > div > .apoderagest > section > div:first-child {
+  color: var(--molsan-text);
+}
+
+.apoderagest > main > div > .apoderagest > section h2,
+.apoderagest > main > div > .apoderagest > section h3 {
+  color: var(--molsan-blue);
+}
+
+@media (max-width: 900px) {
+  .ng-dashboard-graficos-tres-columnas,
+  .ng-admin-circuitos,
+  .ng-ficha-cuerpo,
+  .ng-documentacion-layout,
+  .ng-carpeta-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .ng-admin-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .ng-dashboard-graficos,
+  .ng-perfil-datos,
+  .ng-datos-grid,
+  .ng-datos-superiores,
+  .ng-workflow-form,
+  .ng-comentario-form,
+  .ng-admin-resumen {
+    grid-template-columns: 1fr;
+  }
+
+  .ng-panel,
+  .ng-dashboard-grafico,
+  .ng-modal {
+    padding: 13px;
+  }
+
+  .ng-modulos-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ng-barra-mes strong {
+    font-size: 9px;
+  }
+
+  .ng-filtros {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+/* Superficies de informes y avisos con el mismo patrón de tarjeta. */
+.informes-premium-page > nav button {
+  min-height: 145px;
+  padding: 18px;
+  color: var(--molsan-text);
+  text-align: left;
+  background: var(--molsan-glass-surface);
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-glass-shadow);
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+  transition: border-color var(--molsan-transition-normal), box-shadow var(--molsan-transition-normal), transform var(--molsan-transition-normal);
+}
+
+.informes-premium-page > nav button:hover {
+  border-color: rgba(6, 70, 117, .28);
+  box-shadow: var(--molsan-glass-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.informes-premium-page > nav button > span:first-child {
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.notificaciones-premium-page > div[role="article"],
+.notificaciones-premium-page article {
+  padding: 16px;
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ng-modulo-card,
+  .ng-dashboard-grafico,
+  .informes-premium-page > nav button {
+    transition: none;
+  }
+}
