@@ -99,7 +99,7 @@ export default function AgendaToast() {
           {/* MENSAJE */}
 
           <div className="flex-1 min-w-0">
-            <div className="">
+            <div>
               Agenda
             </div>
 
