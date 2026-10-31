@@ -214,10 +214,10 @@ export default function EmpleadoFicha({
                 Ficha de empleado
               </div>
 
-              <h1>
+              <h2>
                 {empleado.nombre}{" "}
                 {empleado.apellidos}
-                </h2>
+              </h2>
 
               <div className="flex
  flex-wrap
