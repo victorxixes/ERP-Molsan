@@ -1627,7 +1627,7 @@ export default function EmpleadosListado({
                   disabled={
                     guardandoNuevo
                   }
-                  className="px-5
+                  className="molsan-btn molsan-btn--primary px-5
  py-2.5"
                 >
                   {guardandoNuevo
