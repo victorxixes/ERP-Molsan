@@ -215,18 +215,16 @@ function BadgeAccion({
 
   return (
     <span
-      className={`
-        inline-flex
-        items-center
-        px-2.5
-        py-1
-        rounded-lg
-        border
-        text-[11px]
-        font-semibold
-        whitespace-nowrap
-        ${clases}
-      `}
+      className={`inline-flex
+ items-center
+ px-2.5
+ py-1
+ 
+ 
+ 
+ 
+ whitespace-nowrap
+ ${clases}`}
     >
       {textoSeguro(accion) || "Actividad"}
     </span>
@@ -314,17 +312,15 @@ function KPI({
 
 
         <div
-          className={`
-            w-10
-            h-10
-            rounded-xl
-            flex
-            items-center
-            justify-center
-            flex-shrink-0
-            ${estilo.bg}
-            ${estilo.color}
-          `}
+          className={`w-10
+ h-10
+ 
+ flex
+ items-center
+ justify-center
+ flex-shrink-0
+ ${estilo.bg}
+ ${estilo.color}`}
         >
 
           <Icono
@@ -1471,7 +1467,7 @@ export default function SeguridadAuditoria() {
                 className="absolute
  left-3
  top-1/2
- -translate-y-1/2
+ 
  w-4
  h-4"
               />
