@@ -284,7 +284,7 @@ body {
 }
 
 .erp-card:hover {
-  border-color: #c8d9e6;
+  border-color: rgba(6, 70, 117, 0.18);
   box-shadow: 0 3px 12px rgba(6, 70, 117, 0.06);
 }
 
@@ -630,7 +630,7 @@ body {
   height: var(--molsan-row-height);
   padding: 8px 12px;
   background: var(--molsan-white);
-  border-bottom: 1px solid #e8eff4;
+  border-bottom: 1px solid rgba(6, 70, 117, 0.08);
   vertical-align: middle;
 }
 
@@ -639,7 +639,7 @@ body {
 }
 
 .molsan-table tbody tr:hover td {
-  background: #f8fbfd;
+  background: rgba(6, 70, 117, 0.025);
 }
 
 .molsan-table-wrap > footer {
