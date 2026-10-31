@@ -693,3 +693,49 @@ header.ag-hero.ng-hero-apoderagest,
 @media (max-width:700px) {
   .erp-main-inner header.ag-hero.eg-hero { padding-left:14px !important; }
 }
+
+
+/* ============================================================
+   EXPORTACIÓN EXCEL — PATRÓN ÚNICO GLASS LUXE 2027
+   Verde Excel como acento semántico, sin competir con el módulo.
+============================================================ */
+.erp-main-inner .molsan-export-excel,
+.molsan-export-excel {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  min-height: 38px;
+  padding: 8px 13px !important;
+  border: 1px solid rgba(33, 115, 70, .24) !important;
+  border-radius: 12px !important;
+  background: linear-gradient(145deg, rgba(239, 249, 242, .96), rgba(229, 243, 233, .82)) !important;
+  color: #216e43 !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  letter-spacing: .01em;
+  box-shadow: 0 2px 8px rgba(33, 115, 70, .07), inset 0 1px 0 rgba(255,255,255,.9) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease !important;
+  white-space: nowrap;
+}
+.erp-main-inner .molsan-export-excel:not(:disabled):hover,
+.molsan-export-excel:not(:disabled):hover {
+  border-color: rgba(33, 115, 70, .42) !important;
+  background: linear-gradient(145deg, #f4fbf6, #e1f1e6) !important;
+  color: #185b36 !important;
+  box-shadow: 0 5px 13px rgba(33, 115, 70, .13), inset 0 1px 0 #fff !important;
+  transform: translateY(-1px);
+}
+.erp-main-inner .molsan-export-excel:not(:disabled):active,
+.molsan-export-excel:not(:disabled):active { transform: translateY(0) scale(.985); }
+.erp-main-inner .molsan-export-excel:focus-visible,
+.molsan-export-excel:focus-visible { outline: 3px solid rgba(33,115,70,.2); outline-offset: 2px; }
+.erp-main-inner .molsan-export-excel:disabled,
+.molsan-export-excel:disabled { cursor: not-allowed; opacity: .48; box-shadow: none !important; }
+.molsan-export-excel .molsan-export-excel__icon { font-size: 15px; line-height: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .molsan-export-excel { transition: none !important; }
+}
