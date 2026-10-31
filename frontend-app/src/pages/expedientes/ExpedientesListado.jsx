@@ -3,6 +3,7 @@ import {
   useRef,
   useState
             } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
@@ -2403,21 +2404,7 @@ export default function ExpedientesListado() {
       {/* Área principal de trabajo de expedientes */}
 
       <main className="min-w-0 w-full space-y-6">
-        <header>
-          <div>
-            <div aria-hidden="true">EXP</div>
-            <div className="min-w-0">
-              <p>MOLSAN ERP</p>
-              <h1>Expedientes</h1>
-              <p>
-                Consulta, seguimiento y control de la tramitación de expedientes.
-              </p>
-            </div>
-          </div>
-          <div>
-            <span>Gestión y seguimiento</span>
-          </div>
-        </header>
+        <MolsanPageHeader mark="EX" title="Expedientes" description="Consulta, seguimiento y control de la tramitación de expedientes." />
 
       <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-12">
         <div className="space-y-3 xl:col-span-4">

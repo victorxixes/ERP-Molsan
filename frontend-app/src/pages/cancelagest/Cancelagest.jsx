@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { puedeVerModulo } from "../../utils/permisos";
@@ -75,13 +76,7 @@ export default function Cancelagest() {
     .filter((modulo) => modulo && puedeVerModulo(modulo.key));
 
   return <main>
-      <header>
-        <div>
-          <div><img src="/img/logo.jpg" alt="MOLSAN" /></div>
-          <div><div>MOLSAN ERP</div><h1>CancelaGest</h1><p>Centro de gestión de cancelaciones, provisiones, firmas y seguimiento registral.</p></div>
-        </div>
-
-      </header>
+      <MolsanPageHeader mark="CG" title="CancelaGest" description="Centro de gestión de cancelaciones, provisiones, firmas y seguimiento registral." />
 
       {error && <div role="alert"><strong>No se han podido cargar los indicadores.</strong><p>{error}</p><button onClick={cargar}>Reintentar</button></div>}
 
