@@ -967,7 +967,7 @@ export default function EmpleadosListado({
 
       <div className="p-4">
 
-        <div className="flex
+        <div className="molsan-filter-bar flex
  flex-col
  gap-3">
 
