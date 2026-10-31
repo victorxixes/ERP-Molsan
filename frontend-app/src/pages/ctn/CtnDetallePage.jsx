@@ -156,7 +156,7 @@ export default function CtnDetallePage() {
   if (!notaria) return <div><p>{error || "No se ha encontrado el notario."}</p><button type="button" onClick={() => navigate(-1)}>Volver</button></div>;
 
   return (
-    <div className=" --content">
+    <div className="erp-page min-w-0 space-y-6">
       <MolsanPageHeader mark="CTN" title={nombreNotario(notaria)} description={`Ficha CTN · NIF: ${valor(notaria.nif)} · Código: ${valor(notaria.codigo)}`} />
       <div className="flex justify-end"><button type="button" onClick={() => navigate(-1)}>Volver al listado</button></div>
 

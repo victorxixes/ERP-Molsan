@@ -82,7 +82,7 @@ export default function Fusiones() {
     ["Facturadas", contar("Facturadas"), "Con factura o pre-factura indicada", "violet", "Facturadas"]
   ];
 
-  return <main className="min-h-full min-w-0 space-y-6 p-4 sm:p-6 lg:p-8">
+  return <main className="erp-page min-h-full min-w-0 space-y-6">
     <MolsanPageHeader mark="FU" title="Gestión de fusiones" description="Consulta y seguimiento de solicitudes de fusión recibidas desde la gestión de expedientes." />
     <div className="flex justify-end"><button type="button" onClick={cargarSolicitudes} disabled={cargando} className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 px-4 py-2"><Icon name="refresh" size={17} />{cargando ? "Actualizando…" : "Actualizar datos"}</button></div>
 
