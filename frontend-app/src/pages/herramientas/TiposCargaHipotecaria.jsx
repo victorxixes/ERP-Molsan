@@ -586,8 +586,6 @@ export default function TiposCargaHipotecaria() {
       <MolsanPageHeader mark="CH" title="Tipos de carga hipotecaria" description="Catálogo de tipos de carga hipotecaria utilizados en los expedientes." />
       <div className="molsan-filter-bar flex justify-end p-3"><button type="button" onClick={abrirNuevo} className="molsan-btn molsan-btn--primary">＋ Nuevo tipo de carga</button></div>
 
-          MENSAJES
-      ==================================================== */}
 
       {mensaje && (
 
