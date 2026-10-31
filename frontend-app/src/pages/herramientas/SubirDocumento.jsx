@@ -86,7 +86,7 @@ export default function SubirDocumento() {
 
           <div>
 
-            <h1 className="">
+            <h1>
               Subir documento
             </h1>
 
@@ -192,18 +192,18 @@ export default function SubirDocumento() {
  px-5"
             >
 
-              <span className="">
+              <span>
                 {file ? "📎" : "☁️"}
               </span>
 
-              <span className="">
+              <span>
                 {file
                   ? file.name
                   : "Selecciona un archivo"}
               </span>
 
               {!file && (
-                <span className="">
+                <span>
                   Haz clic para seleccionar el documento
                 </span>
               )}
