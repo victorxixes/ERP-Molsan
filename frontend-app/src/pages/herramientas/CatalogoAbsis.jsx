@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
-import "../../css/ComponentesOperativosPremium.css";
-import "../../css/ModalesHerramientasPremium.css";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 const API_URL = `${API_BASE}/catalogos-absis`;
@@ -171,7 +169,7 @@ export default function CatalogoAbsis() {
   }
 
   return (
-    <main className="catalogo-absis-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <header className="relative overflow-hidden p-6 sm:p-8">
         <div className="absolute inset-x-0 top-0 h-1" />
         <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
@@ -229,7 +227,7 @@ export default function CatalogoAbsis() {
         }
       </section>
 
-      {modalNuevaLista && <div className="panel-modal-premium fixed inset-0 z-[110] flex items-center justify-center p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !creandoLista) setModalNuevaLista(false); }}>
+      {modalNuevaLista && <div className="fixed inset-0 z-[110] flex items-center justify-center p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !creandoLista) setModalNuevaLista(false); }}>
         <section ref={nuevaListaDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="absis-nueva-lista-titulo" className="w-full max-w-lg">
           <form onSubmit={crearLista}>
             <div className="px-6 py-5">
@@ -250,7 +248,7 @@ export default function CatalogoAbsis() {
         </section>
       </div>}
 
-      {modal && <div className="panel-modal-premium fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !guardando) setModal(false); }}>
+      {modal && <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !guardando) setModal(false); }}>
         <section ref={entradaDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="absis-modal-titulo" className="my-auto w-full max-w-2xl">
           <form onSubmit={guardar}>
             <div className="px-6 py-5"><h2 id="absis-modal-titulo" className="">{editando ? "Editar entrada" : "Añadir entrada"} · {categoria}</h2><p className="mt-1">Elige la lista y rellena los datos. El código es opcional.</p></div>
