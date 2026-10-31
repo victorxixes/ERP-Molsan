@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import {
   useMemo,
   useState,
@@ -599,64 +600,8 @@ export default function SeguridadRoles() {
       className="erp-page w-full space-y-4"
     >
 
-      {/* CABECERA */}
-
-      <div
-        className="molsan-subpage-header flex
- flex-col
- gap-4
- 
- 
- 
- 
- p-5
- md:flex-row
- md:items-center
- md:justify-between"
-      >
-
-        <div
-          className="flex
- items-center
- gap-3"
-        >
-
-          <div
-            className="flex
- h-11
- w-11
- shrink-0
- items-center
- justify-center"
-          >
-            🛡️
-          </div>
-
-          <div>
-
-            <h2
-             
-            >
-              Roles de seguridad
-            </h2>
-
-            <p
-              className="mt-0.5"
-            >
-              Perfiles y niveles de acceso.
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <Chip tone="primary">
-          {estadisticas.total} roles
-        </Chip>
-
-      </div>
-
+      <MolsanPageHeader mark="SE" title="Roles de seguridad" description="Perfiles y niveles de acceso." />
+      <div className="flex justify-end"><Chip tone="primary">{estadisticas.total} roles</Chip></div>
 
       {/* KPIS */}
 
