@@ -235,17 +235,10 @@ export default function EmpleadoEditar({
 
     return (
 
-      <div className="
-        erp-card
-        p-8
-      ">
+      <div className="erp-card
+ p-8">
 
-        <div className="
-          text-center
-          py-10
-          text-[var(--erp-text-soft)]
-          animate-pulse
-        ">
+        <div className="py-10">
           Cargando datos del empleado…
         </div>
 
@@ -257,49 +250,30 @@ export default function EmpleadoEditar({
 
   return (
 
-    <div className="
-      erp-card
-      empleado-editar-premium
-      min-w-0
-      p-4 sm:p-6
-      space-y-6
-    ">
+    <div className="erp-card
+ empleado-editar-premium
+ min-w-0
+ p-4 sm:p-6
+ space-y-6">
 
       {/* CABECERA */}
 
-      <div className="
-        flex
-        items-center
-        justify-between
-        gap-4
-      ">
+      <div className="flex
+ items-center
+ justify-between
+ gap-4">
 
         <div>
 
-          <div className="
-            text-xs
-            uppercase
-            tracking-[0.15em]
-            text-[var(--erp-primary)]
-            font-semibold
-          ">
+          <div className="uppercase">
             Configuración
           </div>
 
-          <h2 className="
-            text-2xl
-            font-semibold
-            text-[var(--erp-text)]
-            mt-1
-          ">
+          <h2 className="mt-1">
             Editar empleado
           </h2>
 
-          <p className="
-            text-sm
-            text-[var(--erp-text-soft)]
-            mt-1
-          ">
+          <p className="mt-1">
             Actualiza los datos corporativos del empleado.
           </p>
 
@@ -312,16 +286,8 @@ export default function EmpleadoEditar({
 
       {error && (
 
-        <div className="
-          rounded-xl
-          border
-          border-red-200
-          bg-red-50
-          text-red-700
-          px-4
-          py-3
-          text-sm
-        ">
+        <div className="px-4
+ py-3">
           {error}
         </div>
 
@@ -330,12 +296,10 @@ export default function EmpleadoEditar({
 
       {/* FORMULARIO */}
 
-      <div className="
-        grid
-        grid-cols-1
-        md:grid-cols-2
-        gap-5
-      ">
+      <div className="grid
+ grid-cols-1
+ md:grid-cols-2
+ gap-5">
 
         <Campo
           label="Nombre"
@@ -389,36 +353,20 @@ export default function EmpleadoEditar({
 
       {/* ACTIVO */}
 
-      <div className="
-        rounded-2xl
-        border
-        border-[var(--erp-border)]
-        bg-[var(--erp-surface-soft)]
-        p-4
-      ">
+      <div className="p-4">
 
-        <div className="
-          flex
-          items-center
-          justify-between
-          gap-4
-        ">
+        <div className="flex
+ items-center
+ justify-between
+ gap-4">
 
           <div>
 
-            <div className="
-              text-sm
-              font-semibold
-              text-[var(--erp-text)]
-            ">
+            <div className="">
               Estado del empleado
             </div>
 
-            <div className="
-              text-xs
-              text-[var(--erp-text-soft)]
-              mt-1
-            ">
+            <div className="mt-1">
               {form.activo
                 ? "El empleado está actualmente activo."
                 : "El empleado está marcado como inactivo."}
@@ -449,8 +397,8 @@ export default function EmpleadoEditar({
               shrink-0
               ${
                 form.activo
-                  ? "bg-emerald-500"
-                  : "bg-slate-300"
+                  ? ""
+                  : ""
               }
             `}
           >
@@ -468,8 +416,8 @@ export default function EmpleadoEditar({
                 duration-200
                 ${
                   form.activo
-                    ? "translate-x-8"
-                    : "translate-x-1"
+                    ? ""
+                    : ""
                 }
               `}
             />
@@ -483,21 +431,15 @@ export default function EmpleadoEditar({
 
       {/* FOOTER */}
 
-      <div className="
-        flex
-        flex-col
-        sm:flex-row
-        sm:items-center
-        sm:justify-between
-        gap-4
-        pt-2
-      ">
+      <div className="flex
+ flex-col
+ sm:flex-row
+ sm:items-center
+ sm:justify-between
+ gap-4
+ pt-2">
 
-        <div className="
-          text-sm
-          text-emerald-600
-          font-medium
-        ">
+        <div className="">
 
           {guardado &&
             "✓ Cambios guardados correctamente"}
@@ -509,22 +451,11 @@ export default function EmpleadoEditar({
           type="button"
           disabled={guardando}
           onClick={guardar}
-          className="
-            inline-flex
-            items-center
-            justify-center
-            px-5
-            py-2.5
-            rounded-xl
-            bg-[var(--erp-primary)]
-            hover:bg-[var(--erp-primary-dark)]
-            disabled:opacity-50
-            disabled:cursor-not-allowed
-            text-white
-            font-medium
-            shadow-sm
-            transition
-          "
+          className="inline-flex
+ items-center
+ justify-center
+ px-5
+ py-2.5"
         >
           {guardando
             ? "Guardando…"
@@ -551,17 +482,13 @@ function Campo({
 
   return (
 
-    <label className="
-      block
-    ">
+    <label className="block">
 
-      <span className="
-        block
-        text-xs
-        font-semibold
-        text-[var(--erp-text-soft)]
-        mb-2
-      ">
+      <span className="block
+ 
+ 
+ 
+ mb-2">
         {label}
       </span>
 
@@ -573,21 +500,14 @@ function Campo({
             e.target.value
           )
         }
-        className="
-          w-full
-          h-11
-          rounded-xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          text-[var(--erp-text)]
-          px-4
-          outline-none
-          transition
-          focus:border-[var(--erp-primary)]
-          focus:ring-2
-          focus:ring-[var(--erp-primary-soft)]
-        "
+        className="w-full
+ h-11
+ 
+ 
+ 
+ 
+ 
+ px-4"
       />
 
     </label>
