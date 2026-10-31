@@ -256,7 +256,7 @@ export default function SeguridadResumen({ empleadoId }) {
 
   if (!fichaSegura) {
     return (
-      <div className="erp-page seguridad-subpagina-premium seguridad-resumen-premium">
+      <div className="erp-page seguridad-resumen-premium">
 
         <div className="erp-page-header">
 
