@@ -1270,7 +1270,7 @@ function InformeCitasApoderados() {
               <div>
 
                 <h1
-                  className=""
+                 
                 >
                   Informes de Apoderados
                 </h1>
@@ -1305,7 +1305,7 @@ function InformeCitasApoderados() {
               Periodo:
 
               <strong
-                className=""
+               
               >
                 {mesActual} {año}
               </strong>
@@ -1351,13 +1351,13 @@ function InformeCitasApoderados() {
           <div>
 
             <h2
-              className=""
+             
             >
               Filtros del informe
             </h2>
 
             <p
-              className=""
+             
             >
               Selecciona el periodo y filtra los resultados.
             </p>
@@ -1393,7 +1393,7 @@ function InformeCitasApoderados() {
 
 
             <div
-              className=""
+             
             >
 
               <SelectSJ
@@ -1589,7 +1589,7 @@ function InformeCitasApoderados() {
         <div>
 
           <div
-            className=""
+           
           >
             Exportar informe
           </div>
@@ -1612,7 +1612,7 @@ function InformeCitasApoderados() {
 
           <button type="button"
             onClick={exportarExcel}
-            className=""
+           
           >
             <span className="molsan-export-excel__icon" aria-hidden="true">📗</span>
             Exportar a Excel
@@ -1667,7 +1667,7 @@ function InformeCitasApoderados() {
           <div>
 
             <h2
-              className=""
+             
             >
               Detalle por apoderado
             </h2>
@@ -1701,7 +1701,7 @@ function InformeCitasApoderados() {
           >
 
             <thead
-              className=""
+             
             >
 
               <tr>
@@ -1765,7 +1765,7 @@ function InformeCitasApoderados() {
 
 
                     <div
-                      className=""
+                     
                     >
                       No hay datos para los filtros seleccionados.
                     </div>
@@ -1815,7 +1815,7 @@ function InformeCitasApoderados() {
 
 
                           <span
-                            className=""
+                           
                           >
                             {row.nombre ||
                               "Sin nombre"}
@@ -1933,7 +1933,7 @@ function InformeCitasApoderados() {
           <div>
 
             <h2
-              className=""
+             
             >
               Análisis gráfico
             </h2>
@@ -2247,7 +2247,7 @@ function GraficoCard({
           <div>
 
             <h3
-              className=""
+             
             >
               {titulo}
             </h3>
@@ -2578,11 +2578,11 @@ function InformeFirmas() {
   return (
     <section className="space-y-5">
       <header className="p-5 md:p-6">
-        <div className="flex items-start gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center">✍️</span><div><h2 className="">Informe de firmas</h2><p className="mt-1">Histórico de firmas reales a partir de expedientes con fecha de firma registrada. Las citas de Agenda no se consideran firmas realizadas.</p></div></div>
+        <div className="flex items-start gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center">✍️</span><div><h2>Informe de firmas</h2><p className="mt-1">Histórico de firmas reales a partir de expedientes con fecha de firma registrada. Las citas de Agenda no se consideran firmas realizadas.</p></div></div>
       </header>
 
       <form onSubmit={aplicar} className="p-5 md:p-6">
-        <div className="mb-4 flex items-center justify-between gap-3"><div><h3 className="">Filtros del informe</h3><p className="mt-1">El periodo se aplica a la fecha real de firma.</p></div><button type="button" onClick={limpiar} className="px-3 py-2">Restablecer</button></div>
+        <div className="mb-4 flex items-center justify-between gap-3"><div><h3>Filtros del informe</h3><p className="mt-1">El periodo se aplica a la fecha real de firma.</p></div><button type="button" onClick={limpiar} className="px-3 py-2">Restablecer</button></div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <CampoFiltroInforme label="Fecha firma desde" type="date" value={filtros.fecha_desde} onChange={(v) => cambiar("fecha_desde", v)} />
           <CampoFiltroInforme label="Fecha firma hasta" type="date" value={filtros.fecha_hasta} onChange={(v) => cambiar("fecha_hasta", v)} />
@@ -2599,7 +2599,7 @@ function InformeFirmas() {
       {mensajeEdicionFirma && <div role="status" className="px-4 py-3">{mensajeEdicionFirma}</div>}
       {(firmasSinClasificar > 0 || firmasSinTiempo > 0) && (
         <div className="px-4 py-3">
-          <p className="">Hay datos históricos pendientes de completar</p>
+          <p>Hay datos históricos pendientes de completar</p>
           <p className="mt-1">
             {firmasSinClasificar > 0 ? `${numeroInforme(firmasSinClasificar)} firma(s) sin modalidad confirmada. ` : ""}
             {firmasSinTiempo > 0 ? `${numeroInforme(firmasSinTiempo)} firma(s) sin fecha de envío válida. ` : ""}
@@ -2616,19 +2616,19 @@ function InformeFirmas() {
       </div>
 
       <section className="overflow-hidden">
-        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"><div><h3 className="">Resumen por tipo de operación</h3><p className="mt-1">Conteo de firmas reales y días medios cuando existen fecha de envío y de firma.</p></div><span className="px-3 py-1.5">{periodo}</span></div>
-        {loading ? <PanelEstadoInforme loading /> : datos.por_tipo_operacion.length === 0 ? <PanelEstadoInforme vacio /> : <div className="overflow-x-auto"><table className="w-full min-w-[650px]"><thead className="uppercase"><tr><th className="px-5 py-3">Tipo de operación</th><th className="px-5 py-3">Firmas</th><th className="px-5 py-3">VC</th><th className="px-5 py-3">Presencial</th><th className="px-5 py-3">Media días</th></tr></thead><tbody>{datos.por_tipo_operacion.map((f, i) => <tr key={`${f.tipo_operacion}-${i}`} className=""><td className="px-5 py-3">{f.tipo_operacion}</td><td className="px-5 py-3">{numeroInforme(f.total_firmas)}</td><td className="px-5 py-3">{numeroInforme(f.vc)}</td><td className="px-5 py-3">{numeroInforme(f.presencial)}</td><td className="px-5 py-3">{f.media_dias == null ? "—" : `${numeroInforme(f.media_dias, 1)} días`}</td></tr>)}</tbody></table></div>}
+        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"><div><h3>Resumen por tipo de operación</h3><p className="mt-1">Conteo de firmas reales y días medios cuando existen fecha de envío y de firma.</p></div><span className="px-3 py-1.5">{periodo}</span></div>
+        {loading ? <PanelEstadoInforme loading /> : datos.por_tipo_operacion.length === 0 ? <PanelEstadoInforme vacio /> : <div className="overflow-x-auto"><table className="w-full min-w-[650px]"><thead className="uppercase"><tr><th className="px-5 py-3">Tipo de operación</th><th className="px-5 py-3">Firmas</th><th className="px-5 py-3">VC</th><th className="px-5 py-3">Presencial</th><th className="px-5 py-3">Media días</th></tr></thead><tbody>{datos.por_tipo_operacion.map((f, i) => <tr key={`${f.tipo_operacion}-${i}`}><td className="px-5 py-3">{f.tipo_operacion}</td><td className="px-5 py-3">{numeroInforme(f.total_firmas)}</td><td className="px-5 py-3">{numeroInforme(f.vc)}</td><td className="px-5 py-3">{numeroInforme(f.presencial)}</td><td className="px-5 py-3">{f.media_dias == null ? "—" : `${numeroInforme(f.media_dias, 1)} días`}</td></tr>)}</tbody></table></div>}
       </section>
 
       <section className="overflow-hidden">
-        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"><div><h3 className="">Detalle de firmas</h3><p className="mt-1">{numeroInforme(filas.length)} registros recibidos del backend. Puedes completar modalidad y fecha de envío desde la columna de acciones.</p></div><div className="flex flex-wrap gap-2"><button type="button" disabled={loading || exportando} onClick={exportarExcel} className="molsan-export-excel">{exportando ? "Exportando…" : "📗 Exportar Excel"}</button><button type="button" disabled={loading || filas.length === 0} onClick={() => imprimirInforme("Informe de firmas reales", periodo, columnasPDF, filas)} className="px-3 py-2">📄 Exportar PDF</button></div></div>
+        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"><div><h3>Detalle de firmas</h3><p className="mt-1">{numeroInforme(filas.length)} registros recibidos del backend. Puedes completar modalidad y fecha de envío desde la columna de acciones.</p></div><div className="flex flex-wrap gap-2"><button type="button" disabled={loading || exportando} onClick={exportarExcel} className="molsan-export-excel">{exportando ? "Exportando…" : "📗 Exportar Excel"}</button><button type="button" disabled={loading || filas.length === 0} onClick={() => imprimirInforme("Informe de firmas reales", periodo, columnasPDF, filas)} className="px-3 py-2">📄 Exportar PDF</button></div></div>
         {loading ? <PanelEstadoInforme loading /> : filas.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales para el periodo y los filtros seleccionados." /> : <div className="max-h-[700px] overflow-auto"><table className="w-full min-w-[1420px]"><thead className="sticky top-0 z-10 uppercase"><tr>{columnasPDF.map((c) => <th key={c.key} className="whitespace-nowrap px-4 py-3">{c.label}</th>)}<th className="whitespace-nowrap px-4 py-3">Acciones</th></tr></thead><tbody>{filas.map((f, i) => <Fragment key={f.id ?? `${f.id_expediente}-${i}`}>
-          <tr className="">
+          <tr>
             <td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_firma)}</td>
             <td className="px-4 py-3">{f.id_expediente || "—"}</td>
             <td className="max-w-[240px] px-4 py-3">{f.nombre_titular || "—"}</td>
             <td className="px-4 py-3">{f.tipo_operacion || "—"}</td>
-            <td className="px-4 py-3">{f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : <span className="">Sin clasificar</span>}</td>
+            <td className="px-4 py-3">{f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : <span>Sin clasificar</span>}</td>
             <td className="px-4 py-3">{f.nombre_notario || "—"}</td>
             <td className="px-4 py-3">{f.apoderado || "—"}</td>
             <td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_envio)}</td>
@@ -2637,7 +2637,7 @@ function InformeFirmas() {
             <td className="whitespace-nowrap px-4 py-3"><button type="button" onClick={() => String(editandoId) === String(f.id_expediente) ? setEditandoId("") : iniciarEdicionFirma(f)} className="px-3 py-2">{String(editandoId) === String(f.id_expediente) ? "Cancelar" : (f.modalidad === "SIN_CLASIFICAR" || !f.fecha_envio ? "Completar datos" : "Editar datos")}</button></td>
           </tr>
           {String(editandoId) === String(f.id_expediente) && (
-            <tr key={`${f.id_expediente}-editar`} className="">
+            <tr key={`${f.id_expediente}-editar`}>
               <td colSpan={11} className="px-4 py-4">
                 <div className="grid grid-cols-1 items-end gap-3 p-4 md:grid-cols-[minmax(220px,1fr)_minmax(220px,1fr)_auto]">
                   <label className="block min-w-0"><span className="mb-1.5 block uppercase">Fecha real de envío al notario</span><input type="date" max={String(f.fecha_firma || "").slice(0, 10)} value={edicionFirma.fecha_envio} disabled={guardandoDatosFirma} onChange={(e) => setEdicionFirma((actual) => ({ ...actual, fecha_envio: e.target.value }))} className="w-full px-3 py-2.5" /></label>
@@ -2790,7 +2790,7 @@ function InformeNotarios() {
         <div className="flex items-start gap-3">
           <span className="flex h-11 w-11 shrink-0 items-center justify-center">🏛️</span>
           <div>
-            <h2 className="">Informes de notarios</h2>
+            <h2>Informes de notarios</h2>
             <p className="mt-1">Actividad notarial medida por expedientes con fecha de firma real. Se distinguen las firmas por videoconferencia, presenciales y las pendientes de clasificar.</p>
           </div>
         </div>
@@ -2798,7 +2798,7 @@ function InformeNotarios() {
 
       <form onSubmit={aplicar} className="p-5 md:p-6">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div><h3 className="">Filtros del informe</h3><p className="mt-1">Las fechas se aplican a la firma realizada, no a las citas previstas de Agenda.</p></div>
+          <div><h3>Filtros del informe</h3><p className="mt-1">Las fechas se aplican a la firma realizada, no a las citas previstas de Agenda.</p></div>
           <button type="button" onClick={limpiar} className="px-3 py-2">Restablecer</button>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -2826,7 +2826,7 @@ function InformeNotarios() {
 
       {(Number(resumen.sin_clasificar || 0) > 0 || Number(resumen.sin_notario_identificado || 0) > 0 || (Number(resumen.total_firmas || 0) > Number(resumen.firmas_con_tiempo_calculable || 0))) && (
         <div className="px-4 py-3">
-          <p className="">Calidad de los datos del histórico</p>
+          <p>Calidad de los datos del histórico</p>
           <p className="mt-1">
             {Number(resumen.sin_clasificar || 0) > 0 ? `${numeroInforme(resumen.sin_clasificar)} firma(s) sin modalidad confirmada. ` : ""}
             {Number(resumen.sin_notario_identificado || 0) > 0 ? `${numeroInforme(resumen.sin_notario_identificado)} grupo(s) sin notario identificado. ` : ""}
@@ -2837,7 +2837,7 @@ function InformeNotarios() {
 
       <section className="overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
-          <div><h3 className="">Ranking de actividad por notario</h3><p className="mt-1">Los primeros puestos se ordenan por número de expedientes firmados en el periodo.</p></div>
+          <div><h3>Ranking de actividad por notario</h3><p className="mt-1">Los primeros puestos se ordenan por número de expedientes firmados en el periodo.</p></div>
           <span className="px-3 py-1.5">{periodo}</span>
         </div>
         {loading ? <PanelEstadoInforme loading /> : topNotarios.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas de notarios para este periodo y filtros." /> : (
@@ -2849,7 +2849,7 @@ function InformeNotarios() {
                   <span className="shrink-0">{numeroInforme(fila.total_firmas)}</span>
                 </div>
                 <div className="h-2 overflow-hidden"><div className="h-full" style={{ width: `${Math.min(100, Math.max(0, (Number(fila.total_firmas || 0) / maxFirmasNotario) * 100))}%` }} /></div>
-                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1"><span>VC: <strong className="">{numeroInforme(fila.vc)}</strong></span><span>Presencial: <strong className="">{numeroInforme(fila.presencial)}</strong></span><span>Sin clasificar: <strong className="">{numeroInforme(fila.sin_clasificar)}</strong></span><span>Última firma: <strong className="">{fechaInformeVisible(fila.ultima_firma)}</strong></span></div>
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1"><span>VC: <strong>{numeroInforme(fila.vc)}</strong></span><span>Presencial: <strong>{numeroInforme(fila.presencial)}</strong></span><span>Sin clasificar: <strong>{numeroInforme(fila.sin_clasificar)}</strong></span><span>Última firma: <strong>{fechaInformeVisible(fila.ultima_firma)}</strong></span></div>
               </button>
             ))}
           </div>
@@ -2858,7 +2858,7 @@ function InformeNotarios() {
 
       <section className="overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
-          <div><h3 className="">Resumen por notario</h3><p className="mt-1">Incluye firmas por modalidad, media entre envío y firma, protocolo y tipos de operación.</p></div>
+          <div><h3>Resumen por notario</h3><p className="mt-1">Incluye firmas por modalidad, media entre envío y firma, protocolo y tipos de operación.</p></div>
           <div className="flex flex-wrap gap-2">
             <button type="button" disabled={loading || exportando} onClick={exportarExcel} className="molsan-export-excel">{exportando ? "Exportando…" : "📗 Excel resumen"}</button>
             <button type="button" disabled={loading || porNotario.length === 0} onClick={exportarResumenPDF} className="px-3 py-2">📄 PDF resumen</button>
@@ -2871,7 +2871,7 @@ function InformeNotarios() {
 
       <section className="overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
-          <div><h3 className="">{grupoSeleccionado ? `Firmas de ${grupoSeleccionado.nombre_notario}` : "Detalle de firmas por notario"}</h3><p className="mt-1">{numeroInforme(detalle.length)} expediente(s) con fecha de firma real. {grupoSeleccionado ? "Se ha filtrado el detalle por el notario seleccionado." : "Puedes seleccionar un notario en el ranking o en el resumen para acotar la lista."}</p></div>
+          <div><h3>{grupoSeleccionado ? `Firmas de ${grupoSeleccionado.nombre_notario}` : "Detalle de firmas por notario"}</h3><p className="mt-1">{numeroInforme(detalle.length)} expediente(s) con fecha de firma real. {grupoSeleccionado ? "Se ha filtrado el detalle por el notario seleccionado." : "Puedes seleccionar un notario en el ranking o en el resumen para acotar la lista."}</p></div>
           <div className="flex flex-wrap gap-2">
             {claveNotarioSeleccionado && <button type="button" onClick={() => setClaveNotarioSeleccionado("")} className="px-3 py-2">Ver todos</button>}
             <button type="button" disabled={loading || exportandoDetalle} onClick={exportarDetalleExcel} className="molsan-export-excel">{exportandoDetalle ? "Exportando…" : "📗 Excel detalle"}</button>
@@ -2879,7 +2879,7 @@ function InformeNotarios() {
           </div>
         </div>
         {loading ? <PanelEstadoInforme loading /> : detalle.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales con los filtros seleccionados." /> : (
-          <div className="max-h-[650px] overflow-auto"><table className="w-full min-w-[1250px]"><thead className="sticky top-0 z-10 uppercase"><tr><th className="whitespace-nowrap px-4 py-3">Fecha firma</th><th className="whitespace-nowrap px-4 py-3">N.º expediente</th><th className="whitespace-nowrap px-4 py-3">Titular</th><th className="whitespace-nowrap px-4 py-3">Tipo operación</th><th className="whitespace-nowrap px-4 py-3">Modalidad</th><th className="whitespace-nowrap px-4 py-3">Notario</th><th className="whitespace-nowrap px-4 py-3">Apoderado</th><th className="whitespace-nowrap px-4 py-3">Fecha envío</th><th className="whitespace-nowrap px-4 py-3">Días envío-firma</th><th className="whitespace-nowrap px-4 py-3">Protocolo</th><th className="whitespace-nowrap px-4 py-3">Oficina</th></tr></thead><tbody>{detalle.map((f, i) => <tr key={f.id ?? `${f.id_expediente}-${i}`} className=""><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_firma)}</td><td className="px-4 py-3">{f.id_expediente || "—"}</td><td className="px-4 py-3">{f.nombre_titular || "—"}</td><td className="px-4 py-3">{f.tipo_operacion || "—"}</td><td className="px-4 py-3">{f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : <span className="">Sin clasificar</span>}</td><td className="px-4 py-3">{f.nombre_notario || "—"}</td><td className="px-4 py-3">{f.apoderado || "—"}</td><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_envio)}</td><td className="px-4 py-3">{f.dias_envio_firma == null ? "—" : numeroInforme(f.dias_envio_firma)}</td><td className="px-4 py-3">{f.protocolo || "—"}</td><td className="px-4 py-3">{f.oficina || "—"}</td></tr>)}</tbody></table></div>
+          <div className="max-h-[650px] overflow-auto"><table className="w-full min-w-[1250px]"><thead className="sticky top-0 z-10 uppercase"><tr><th className="whitespace-nowrap px-4 py-3">Fecha firma</th><th className="whitespace-nowrap px-4 py-3">N.º expediente</th><th className="whitespace-nowrap px-4 py-3">Titular</th><th className="whitespace-nowrap px-4 py-3">Tipo operación</th><th className="whitespace-nowrap px-4 py-3">Modalidad</th><th className="whitespace-nowrap px-4 py-3">Notario</th><th className="whitespace-nowrap px-4 py-3">Apoderado</th><th className="whitespace-nowrap px-4 py-3">Fecha envío</th><th className="whitespace-nowrap px-4 py-3">Días envío-firma</th><th className="whitespace-nowrap px-4 py-3">Protocolo</th><th className="whitespace-nowrap px-4 py-3">Oficina</th></tr></thead><tbody>{detalle.map((f, i) => <tr key={f.id ?? `${f.id_expediente}-${i}`}><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_firma)}</td><td className="px-4 py-3">{f.id_expediente || "—"}</td><td className="px-4 py-3">{f.nombre_titular || "—"}</td><td className="px-4 py-3">{f.tipo_operacion || "—"}</td><td className="px-4 py-3">{f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : <span>Sin clasificar</span>}</td><td className="px-4 py-3">{f.nombre_notario || "—"}</td><td className="px-4 py-3">{f.apoderado || "—"}</td><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_envio)}</td><td className="px-4 py-3">{f.dias_envio_firma == null ? "—" : numeroInforme(f.dias_envio_firma)}</td><td className="px-4 py-3">{f.protocolo || "—"}</td><td className="px-4 py-3">{f.oficina || "—"}</td></tr>)}</tbody></table></div>
         )}
       </section>
     </section>
@@ -2942,7 +2942,7 @@ function InformeSLA() {
     <section className="space-y-5">
       <header className="p-5 md:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="flex items-start gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center">⏱️</span><div><h2 className="">Informe SLA’s</h2><p className="mt-1">Control de duración y cumplimiento por actividad, grupo de cancelación y entidad.</p></div></div>
+          <div className="flex items-start gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center">⏱️</span><div><h2>Informe SLA’s</h2><p className="mt-1">Control de duración y cumplimiento por actividad, grupo de cancelación y entidad.</p></div></div>
           <button type="button" onClick={() => setRecarga((v) => v + 1)} className="px-3 py-2">↻ Actualizar datos</button>
         </div>
       </header>
@@ -2958,16 +2958,16 @@ function InformeSLA() {
             <option value="todos">Todos los grupos</option><option value="con-provision">Cancelaciones con provisión</option><option value="sin-provision">Cancelaciones sin provisión</option>
           </SelectFiltroInforme>
         </div>
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><p className="">{numeroInforme(items.length)} expedientes · días naturales. Los expedientes Hipotecario y Crédito Stock quedan excluidos del SLA global.</p><button type="button" onClick={exportar} disabled={actividadesPlanas.length === 0} className="px-4 py-2.5">📊 Exportar Excel (CSV)</button></div>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><p>{numeroInforme(items.length)} expedientes · días naturales. Los expedientes Hipotecario y Crédito Stock quedan excluidos del SLA global.</p><button type="button" onClick={exportar} disabled={actividadesPlanas.length === 0} className="px-4 py-2.5">📊 Exportar Excel (CSV)</button></div>
       </section>
       <AvisoInforme error={error} />
       <section className="overflow-hidden">
-        <div className="px-5 py-4"><h3 className="">SLA global por circuito</h3><p className="mt-1">Desde el inicio registrado de la primera actividad hasta el fin de Cierre del expediente. Gestión económica utiliza el objetivo global como referencia propia.</p></div>
-        {loading ? <PanelEstadoInforme loading /> : items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay expedientes que coincidan con los filtros." /> : <div className="max-h-[520px] overflow-auto"><table className="w-full min-w-[1050px]"><thead className="sticky top-0 uppercase"><tr>{["Expediente","Titular","Grupo","Entidad","Días globales","Objetivo","Estado"].map((x) => <th key={x} className="whitespace-nowrap px-4 py-3">{x}</th>)}</tr></thead><tbody>{items.map((item) => <Fragment key={item.id}><tr className=""><td className="px-4 py-3">{item.id_expediente || "—"}</td><td className="px-4 py-3">{item.titular || "—"}</td><td className="px-4 py-3">{item.grupo}</td><td className="px-4 py-3">{item.entidad}</td><td className="px-4 py-3">{item.dias_global == null ? "—" : numeroInforme(item.dias_global)}</td><td className="px-4 py-3">{item.excluido_global ? "Excluido" : `${item.objetivo_global} días`}</td><td className="px-4 py-3"><span className={`px-2.5 py-1 ${item.estado_global === "Dentro de plazo" ? "" : item.estado_global === "Fuera de plazo" ? "" : item.estado_global === "Excluido" ? "" : ""}`}>{item.estado_global}</span><button type="button" onClick={() => setExpandido((v) => v === String(item.id) ? "" : String(item.id))} className="ml-3 px-2.5 py-1.5">{expandido === String(item.id) ? "Ocultar actividades" : "Ver actividades"}</button></td></tr>{expandido === String(item.id) && <tr><td colSpan={7} className="px-4 py-4"><div className="overflow-x-auto"><table className="w-full min-w-[950px]"><thead className=""><tr>{["Actividad","Inicio","Fin","Duración","Objetivo","Estado"].map((x) => <th key={x} className="whitespace-nowrap px-3 py-2.5">{x}</th>)}</tr></thead><tbody>{item.actividades.map((a) => <tr key={a.actividad_key} className=""><td className="px-3 py-2.5">{a.actividad}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_inicio)}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_fin)}</td><td className="px-3 py-2.5">{a.dias == null ? "—" : `${a.dias} días`}</td><td className="px-3 py-2.5">{a.objetivo_dias == null ? "Sin objetivo" : `${a.objetivo_dias} días`}</td><td className="px-3 py-2.5">{a.estado}</td></tr>)}</tbody></table></div></td></tr>}</Fragment>)}</tbody></table></div>}
+        <div className="px-5 py-4"><h3>SLA global por circuito</h3><p className="mt-1">Desde el inicio registrado de la primera actividad hasta el fin de Cierre del expediente. Gestión económica utiliza el objetivo global como referencia propia.</p></div>
+        {loading ? <PanelEstadoInforme loading /> : items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay expedientes que coincidan con los filtros." /> : <div className="max-h-[520px] overflow-auto"><table className="w-full min-w-[1050px]"><thead className="sticky top-0 uppercase"><tr>{["Expediente","Titular","Grupo","Entidad","Días globales","Objetivo","Estado"].map((x) => <th key={x} className="whitespace-nowrap px-4 py-3">{x}</th>)}</tr></thead><tbody>{items.map((item) => <Fragment key={item.id}><tr><td className="px-4 py-3">{item.id_expediente || "—"}</td><td className="px-4 py-3">{item.titular || "—"}</td><td className="px-4 py-3">{item.grupo}</td><td className="px-4 py-3">{item.entidad}</td><td className="px-4 py-3">{item.dias_global == null ? "—" : numeroInforme(item.dias_global)}</td><td className="px-4 py-3">{item.excluido_global ? "Excluido" : `${item.objetivo_global} días`}</td><td className="px-4 py-3"><span className={`px-2.5 py-1 ${item.estado_global === "Dentro de plazo" ? "" : item.estado_global === "Fuera de plazo" ? "" : item.estado_global === "Excluido" ? "" : ""}`}>{item.estado_global}</span><button type="button" onClick={() => setExpandido((v) => v === String(item.id) ? "" : String(item.id))} className="ml-3 px-2.5 py-1.5">{expandido === String(item.id) ? "Ocultar actividades" : "Ver actividades"}</button></td></tr>{expandido === String(item.id) && <tr><td colSpan={7} className="px-4 py-4"><div className="overflow-x-auto"><table className="w-full min-w-[950px]"><thead><tr>{["Actividad","Inicio","Fin","Duración","Objetivo","Estado"].map((x) => <th key={x} className="whitespace-nowrap px-3 py-2.5">{x}</th>)}</tr></thead><tbody>{item.actividades.map((a) => <tr key={a.actividad_key}><td className="px-3 py-2.5">{a.actividad}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_inicio)}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_fin)}</td><td className="px-3 py-2.5">{a.dias == null ? "—" : `${a.dias} días`}</td><td className="px-3 py-2.5">{a.objetivo_dias == null ? "Sin objetivo" : `${a.objetivo_dias} días`}</td><td className="px-3 py-2.5">{a.estado}</td></tr>)}</tbody></table></div></td></tr>}</Fragment>)}</tbody></table></div>}
       </section>
       <section className="overflow-hidden">
-        <div className="px-5 py-4"><h3 className="">Expedientes por actividad</h3><p className="mt-1">Medias, objetivos y número de incumplimientos por actividad para los expedientes filtrados.</p></div>
-        {loading ? <PanelEstadoInforme loading /> : <div className="overflow-x-auto"><table className="w-full min-w-[800px]"><thead className="uppercase"><tr>{["Actividad","Objetivo","Con fechas","Duración media","Dentro de plazo","Fuera de plazo"].map((x) => <th key={x} className="whitespace-nowrap px-4 py-3">{x}</th>)}</tr></thead><tbody>{resumenActividades.map((a) => <tr key={a.key} className=""><td className="px-4 py-3">{a.label}</td><td className="px-4 py-3">{a.objetivo === "global" ? "40 / 70 días según grupo" : a.objetivo == null ? "Sin objetivo SLA" : `${a.objetivo} días`}</td><td className="px-4 py-3">{numeroInforme(a.medidas)}</td><td className="px-4 py-3">{a.media == null ? "—" : `${numeroInforme(a.media, 1)} días`}</td><td className="px-4 py-3">{numeroInforme(a.cumplen)}</td><td className="px-4 py-3">{numeroInforme(a.incumplen)}</td></tr>)}</tbody></table></div>}
+        <div className="px-5 py-4"><h3>Expedientes por actividad</h3><p className="mt-1">Medias, objetivos y número de incumplimientos por actividad para los expedientes filtrados.</p></div>
+        {loading ? <PanelEstadoInforme loading /> : <div className="overflow-x-auto"><table className="w-full min-w-[800px]"><thead className="uppercase"><tr>{["Actividad","Objetivo","Con fechas","Duración media","Dentro de plazo","Fuera de plazo"].map((x) => <th key={x} className="whitespace-nowrap px-4 py-3">{x}</th>)}</tr></thead><tbody>{resumenActividades.map((a) => <tr key={a.key}><td className="px-4 py-3">{a.label}</td><td className="px-4 py-3">{a.objetivo === "global" ? "40 / 70 días según grupo" : a.objetivo == null ? "Sin objetivo SLA" : `${a.objetivo} días`}</td><td className="px-4 py-3">{numeroInforme(a.medidas)}</td><td className="px-4 py-3">{a.media == null ? "—" : `${numeroInforme(a.media, 1)} días`}</td><td className="px-4 py-3">{numeroInforme(a.cumplen)}</td><td className="px-4 py-3">{numeroInforme(a.incumplen)}</td></tr>)}</tbody></table></div>}
       </section>
     </section>
   );
@@ -3157,8 +3157,8 @@ function InformeFacturacion() {
     <section key={grupo.key} className="space-y-4 p-4 sm:p-5">
         <div className="flex flex-wrap items-center gap-3">
           <span className={"flex h-12 w-12 items-center justify-center" + (grupo.acento === "emerald" ? "" : "")}>{grupo.icono}</span>
-          <div><h3 className="">{grupo.titulo}</h3><p className="">{grupo.descripcion}</p></div>
-          <div className="ml-auto"><div className="uppercase">Registros del periodo</div><div className="">{loadingTarjetas ? "…" : numeroInforme(r.registros)}</div></div>
+          <div><h3>{grupo.titulo}</h3><p>{grupo.descripcion}</p></div>
+          <div className="ml-auto"><div className="uppercase">Registros del periodo</div><div>{loadingTarjetas ? "…" : numeroInforme(r.registros)}</div></div>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <InformeKpi titulo="Gastos Post Firma" valor={loadingTarjetas ? "…" : euros(r.total_gasto)} subtitulo={numeroInforme(r.registros) + " registros"} icono="🧾" />
@@ -3167,10 +3167,10 @@ function InformeFacturacion() {
           <InformeKpi titulo="Impuestos" valor={loadingTarjetas ? "…" : euros(r.total_impuesto)} subtitulo="Importe total de impuesto" icono="💶" />
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div className="p-4"><div className="">Cobrado</div><div className="mt-1">{loadingTarjetas ? "…" : euros(r.total_cobrado)}</div><div className="mt-1">{numeroInforme(r.cobrado)} registros</div></div>
-          <div className="p-4"><div className="">Pendiente de cobro</div><div className="mt-1">{loadingTarjetas ? "…" : euros(r.total_pendiente_cobro)}</div><div className="mt-1">{numeroInforme(r.pendiente_cobro)} registros</div></div>
-          <div className="p-4"><div className="">Pendiente de factura</div><div className="mt-1">{loadingTarjetas ? "…" : euros(r.total_pendiente_factura)}</div><div className="mt-1">{numeroInforme(r.pendiente_factura)} registros</div></div>
-          <div className="p-4"><div className="">Importe con incidencias</div><div className="mt-1">{loadingTarjetas ? "…" : euros(r.total_incidencias)}</div><div className="mt-1">{numeroInforme(r.incidencias)} registros</div></div>
+          <div className="p-4"><div>Cobrado</div><div className="mt-1">{loadingTarjetas ? "…" : euros(r.total_cobrado)}</div><div className="mt-1">{numeroInforme(r.cobrado)} registros</div></div>
+          <div className="p-4"><div>Pendiente de cobro</div><div className="mt-1">{loadingTarjetas ? "…" : euros(r.total_pendiente_cobro)}</div><div className="mt-1">{numeroInforme(r.pendiente_cobro)} registros</div></div>
+          <div className="p-4"><div>Pendiente de factura</div><div className="mt-1">{loadingTarjetas ? "…" : euros(r.total_pendiente_factura)}</div><div className="mt-1">{numeroInforme(r.pendiente_factura)} registros</div></div>
+          <div className="p-4"><div>Importe con incidencias</div><div className="mt-1">{loadingTarjetas ? "…" : euros(r.total_incidencias)}</div><div className="mt-1">{numeroInforme(r.incidencias)} registros</div></div>
         </div>
         <div className="flex justify-center pt-4">
           <button
@@ -3194,17 +3194,17 @@ function InformeFacturacion() {
     <>
     <section className="space-y-5">
       <div role="note" className="flex items-start gap-3 px-4 py-3">
-        <span aria-hidden="true" className="">ℹ️</span>
+        <span aria-hidden="true">ℹ️</span>
         <p><strong>Importante:</strong> para que cada gasto quede correctamente asociado a su expediente en el ERP, debe relacionarse el <strong>IDGASTO</strong> del Excel ABSIS con el expediente correspondiente. Los gastos sin esa relación deben revisarse; este informe no crea el vínculo automáticamente.</p>
       </div>
       <div className="p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div><h2 className="">Informes de facturación</h2><p className="mt-1">Indicadores de Post Firma por tipo de operación y por estado original de ABSIS. El periodo se filtra por FPAGO.</p></div>
+          <div><h2>Informes de facturación</h2><p className="mt-1">Indicadores de Post Firma por tipo de operación y por estado original de ABSIS. El periodo se filtra por FPAGO.</p></div>
           <button type="button" onClick={() => setRecarga((v) => v + 1)} className="px-4 py-2">↻ Actualizar</button>
         </div>
         <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label className="">Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
-          <label className="">Fecha hasta<input className={campo} type="date" value={filtros.fecha_hasta} onChange={(e) => cambiar("fecha_hasta", e.target.value)} /></label>
+          <label>Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
+          <label>Fecha hasta<input className={campo} type="date" value={filtros.fecha_hasta} onChange={(e) => cambiar("fecha_hasta", e.target.value)} /></label>
         </div>
         <p className="mt-2">Por defecto se muestran todos los registros Post Firma importados. Puedes limitar el informe a un periodo seleccionando las fechas; las tarjetas se actualizarán automáticamente.</p>
       </div>
@@ -3217,7 +3217,7 @@ function InformeFacturacion() {
       <section className="p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h3 className="">Seguimiento por estado ABSIS</h3>
+            <h3>Seguimiento por estado ABSIS</h3>
             <p className="mt-1">Desglose de las filas Post Firma que cumplen el concepto y beneficiario seleccionados, agrupadas por el ESTADO original del Excel.</p>
           </div>
           <span className="px-3 py-1.5">{loadingTarjetas ? "Actualizando…" : numeroInforme(datosTarjetas.length) + " registros analizados"}</span>
@@ -3268,13 +3268,13 @@ function InformeFacturacion() {
             <div className="mt-4 overflow-x-auto">
               <table className="w-full min-w-[640px]">
                 <thead className="uppercase"><tr><th className="px-4 py-3">ESTADO (Excel ABSIS)</th><th className="px-4 py-3">Registros</th><th className="px-4 py-3">Importe IMPGASTO</th><th className="px-4 py-3">Consulta</th></tr></thead>
-                <tbody className="">
+                <tbody>
                   {listaEstados.map(([estado, dato]) => (
-                    <tr key={estado} className="">
+                    <tr key={estado}>
                       <td className="px-4 py-3">{estado}</td>
                       <td className="px-4 py-3 tabular-nums">{numeroInforme(dato.filas)}</td>
                       <td className="px-4 py-3 tabular-nums">{euros(dato.importe)}</td>
-                      <td className="px-4 py-3">{estado === "(vacío)" ? <span className="">Sin código</span> : <button type="button" onClick={() => {
+                      <td className="px-4 py-3">{estado === "(vacío)" ? <span>Sin código</span> : <button type="button" onClick={() => {
                         const siguiente = { ...filtros, modalidad: "todas", estado };
                         setFiltros(siguiente);
                         setAplicados(siguiente);
@@ -3296,30 +3296,30 @@ function InformeFacturacion() {
         <div className="panel-modal-premium fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-5" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }}>
           <section ref={modalFacturacionRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="modal-facturacion-titulo" className="flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden">
             <header className="flex flex-wrap items-start justify-between gap-3 px-5 py-4">
-              <div><h2 id="modal-facturacion-titulo" className="">Detalle de facturación</h2><p className="mt-1">Tabla Excel con los registros que cumplen los filtros seleccionados.</p></div>
+              <div><h2 id="modal-facturacion-titulo">Detalle de facturación</h2><p className="mt-1">Tabla Excel con los registros que cumplen los filtros seleccionados.</p></div>
               <button type="button" onClick={() => setModalAbierto(false)} aria-label="Cerrar ventana" className="px-3 py-2">✕ Cerrar</button>
             </header>
             <form onSubmit={aplicar} className="grid grid-cols-1 gap-3 overflow-y-auto px-5 py-4 sm:grid-cols-2 xl:grid-cols-4">
-              <label className="">Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
-              <label className="">Fecha hasta<input className={campo} type="date" value={filtros.fecha_hasta} onChange={(e) => cambiar("fecha_hasta", e.target.value)} /></label>
-              <label className="">Clasificación<select className={campo} value={filtros.modalidad} onChange={(e) => cambiar("modalidad", e.target.value)}><option value="todas">Todas</option><option value="con_provision">Cancelación con provisión</option><option value="sin_provision">Cancelación sin provisión</option><option value="otros">Otros tipos de operación</option></select></label>
-              <label className="">Tipo operación<input className={campo} value={filtros.tipo_operacion || ""} onChange={(e) => cambiar("tipo_operacion", e.target.value)} placeholder="Filtrar operación" /></label>
-              <label className="">Estado ABSIS<input className={campo} value={filtros.estado || ""} onChange={(e) => cambiar("estado", e.target.value)} placeholder="Filtrar estado" /></label>
-              <label className="">Estado justificante<input className={campo} value={filtros.estado_justificante || ""} onChange={(e) => cambiar("estado_justificante", e.target.value)} placeholder="Filtrar justificante" /></label>
-              <label className="">Situación económica<select className={campo} value={filtros.situacion} onChange={(e) => cambiar("situacion", e.target.value)}><option value="">Todas</option><option value="cobrado">Cobrado (estado ABSIS)</option><option value="pendiente_cobro">Pendiente de cobro</option><option value="pendiente_factura">Pendiente de factura</option><option value="incidencia">Con incidencia</option></select></label>
-              <label className="">Buscar expediente / factura<input className={campo} value={filtros.q || ""} onChange={(e) => cambiar("q", e.target.value)} placeholder="Nº expediente, IDGASTO o factura" /></label>
+              <label>Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
+              <label>Fecha hasta<input className={campo} type="date" value={filtros.fecha_hasta} onChange={(e) => cambiar("fecha_hasta", e.target.value)} /></label>
+              <label>Clasificación<select className={campo} value={filtros.modalidad} onChange={(e) => cambiar("modalidad", e.target.value)}><option value="todas">Todas</option><option value="con_provision">Cancelación con provisión</option><option value="sin_provision">Cancelación sin provisión</option><option value="otros">Otros tipos de operación</option></select></label>
+              <label>Tipo operación<input className={campo} value={filtros.tipo_operacion || ""} onChange={(e) => cambiar("tipo_operacion", e.target.value)} placeholder="Filtrar operación" /></label>
+              <label>Estado ABSIS<input className={campo} value={filtros.estado || ""} onChange={(e) => cambiar("estado", e.target.value)} placeholder="Filtrar estado" /></label>
+              <label>Estado justificante<input className={campo} value={filtros.estado_justificante || ""} onChange={(e) => cambiar("estado_justificante", e.target.value)} placeholder="Filtrar justificante" /></label>
+              <label>Situación económica<select className={campo} value={filtros.situacion} onChange={(e) => cambiar("situacion", e.target.value)}><option value="">Todas</option><option value="cobrado">Cobrado (estado ABSIS)</option><option value="pendiente_cobro">Pendiente de cobro</option><option value="pendiente_factura">Pendiente de factura</option><option value="incidencia">Con incidencia</option></select></label>
+              <label>Buscar expediente / factura<input className={campo} value={filtros.q || ""} onChange={(e) => cambiar("q", e.target.value)} placeholder="Nº expediente, IDGASTO o factura" /></label>
               <div className="flex flex-wrap items-center gap-2 sm:col-span-2 xl:col-span-4">
                 <button type="submit" className="px-4 py-2.5">Aplicar filtros</button>
                 <button type="button" onClick={exportar} disabled={exportando} className="molsan-export-excel">{exportando ? "Exportando…" : "↓ Descargar Excel"}</button>
-                <span className="">La selección de fechas también actualiza las tarjetas del informe.</span>
+                <span>La selección de fechas también actualiza las tarjetas del informe.</span>
               </div>
             </form>
             <div className="flex-1 overflow-auto">
-              <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3"><div className="">{loading ? "Consultando registros…" : numeroInforme(datos.items.length) + " registros encontrados"}</div><div className="">Filtro del informe: CONCEPTOGASTO = HONORARIOS GESTORÍA y BENEFICIARIO = *MOLSAN. IDPAGO sigue desconectado.</div></div>
+              <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3"><div>{loading ? "Consultando registros…" : numeroInforme(datos.items.length) + " registros encontrados"}</div><div>Filtro del informe: CONCEPTOGASTO = HONORARIOS GESTORÍA y BENEFICIARIO = *MOLSAN. IDPAGO sigue desconectado.</div></div>
               {loading ? <PanelEstadoInforme loading /> : datos.items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay filas Post Firma para los filtros seleccionados." /> : (
                 <div className="max-h-[58vh] overflow-auto"><table className="min-w-[2600px] w-full">
                   <thead className="sticky top-0 z-10"><tr>{COLUMNAS_POSTFIRMA.map((h, i) => <th key={h + "-" + i} className="whitespace-nowrap px-3 py-3">{h}</th>)}</tr></thead>
-                  <tbody className="">{datos.items.map((fila, i) => <tr key={(fila.id_gasto_absis || fila.id_expediente || "registro") + "-" + i} className="">{COLUMNAS_POSTFIRMA.map((h, j) => <td key={h + "-" + j} className="whitespace-nowrap px-3 py-3">{valorColumnaPostFirma(fila, h)}</td>)}</tr>)}</tbody>
+                  <tbody>{datos.items.map((fila, i) => <tr key={(fila.id_gasto_absis || fila.id_expediente || "registro") + "-" + i}>{COLUMNAS_POSTFIRMA.map((h, j) => <td key={h + "-" + j} className="whitespace-nowrap px-3 py-3">{valorColumnaPostFirma(fila, h)}</td>)}</tr>)}</tbody>
                 </table></div>
               )}
             </div>
@@ -3371,12 +3371,12 @@ function InformeHistoricoPostFirma() {
   };
   return (
     <section className="space-y-4 p-5">
-      <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="">Histórico bruto Post Firma</h2><p className="mt-1 max-w-3xl">Consulta las filas originales por fichero y mes. No vincula expedientes, no modifica Gestión económica y no consolida movimientos.</p></div><button type="button" onClick={actualizar} disabled={cargandoCargas} className="px-4 py-2">↻ Actualizar cargas</button></div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4"><label className="sm:col-span-2">Fichero importado<select value={cargaSeleccionada} onChange={(e)=>{setCargaSeleccionada(e.target.value);setOffset(0);}} className="mt-1 block w-full px-3 py-2.5" disabled={cargandoCargas||!cargas.length}>{!cargas.length&&<option value="">No hay cargas disponibles</option>}{cargas.map((c)=><option key={c.id} value={String(c.id)}>{c.nombre_archivo} · carga #{c.id} · {c.filas_guardadas} filas</option>)}</select></label><div className="p-3"><p className="">Filas Excel</p><p className="mt-1">{cargaActual?.filas_excel??"—"}</p></div><div className="p-3"><p className="">Filas guardadas</p><p className="mt-1">{cargaActual?.filas_guardadas??"—"}</p></div></div>
+      <div className="flex flex-wrap items-start justify-between gap-3"><div><h2>Histórico bruto Post Firma</h2><p className="mt-1 max-w-3xl">Consulta las filas originales por fichero y mes. No vincula expedientes, no modifica Gestión económica y no consolida movimientos.</p></div><button type="button" onClick={actualizar} disabled={cargandoCargas} className="px-4 py-2">↻ Actualizar cargas</button></div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4"><label className="sm:col-span-2">Fichero importado<select value={cargaSeleccionada} onChange={(e)=>{setCargaSeleccionada(e.target.value);setOffset(0);}} className="mt-1 block w-full px-3 py-2.5" disabled={cargandoCargas||!cargas.length}>{!cargas.length&&<option value="">No hay cargas disponibles</option>}{cargas.map((c)=><option key={c.id} value={String(c.id)}>{c.nombre_archivo} · carga #{c.id} · {c.filas_guardadas} filas</option>)}</select></label><div className="p-3"><p>Filas Excel</p><p className="mt-1">{cargaActual?.filas_excel??"—"}</p></div><div className="p-3"><p>Filas guardadas</p><p className="mt-1">{cargaActual?.filas_guardadas??"—"}</p></div></div>
       {cargaActual&&<p className="break-all">Fecha de carga: {cargaActual.fecha_carga||"—"} · SHA-256: {cargaActual.sha256||"—"}</p>}{error&&<p role="alert" className="p-3">{error}</p>}
-      <div className="overflow-hidden"><div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"><div><h3 className="">Filas originales</h3><p className="">Columnas dinámicas del Excel, incluida TIPOCONCEPTO cuando exista.</p></div><span className="">{total.toLocaleString("es-ES")} filas</span></div>
-      {cargandoCargas||cargandoFilas?<p className="p-8">Cargando histórico…</p>:!cargaSeleccionada?<p className="p-8">Todavía no hay ficheros Post Firma importados.</p>:<div className="max-h-[58vh] overflow-auto"><table className="min-w-max w-full"><thead className="sticky top-0 z-10"><tr><th className="whitespace-nowrap px-3 py-3">Fila Excel</th>{columnas.map((c,i)=><th key={String(c)+"-"+i} className="whitespace-nowrap px-3 py-3">{c||"(columna sin título)"}</th>)}</tr></thead><tbody className="">{registros.map((fila)=><tr key={fila.id} className=""><td className="whitespace-nowrap px-3 py-2">{fila.numero_fila}</td>{columnas.map((c,i)=><td key={String(c)+"-"+i} className="max-w-xs whitespace-nowrap px-3 py-2">{mostrarValor(fila.datos?.[c])}</td>)}</tr>)}{!registros.length&&<tr><td colSpan={Math.max(columnas.length+1,1)} className="px-4 py-8">Esta carga no contiene filas con datos.</td></tr>}</tbody></table></div>}
-      {cargaSeleccionada&&<div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"><p className="">Mostrando {total?offset+1:0}–{Math.min(offset+registros.length,total)} de {total.toLocaleString("es-ES")}</p><div className="flex gap-2"><button type="button" disabled={offset===0||cargandoFilas} onClick={()=>setOffset((v)=>Math.max(0,v-limite))} className="px-3 py-2">Anterior</button><button type="button" disabled={offset+limite>=total||cargandoFilas} onClick={()=>setOffset((v)=>v+limite)} className="px-3 py-2">Siguiente</button></div></div>}
+      <div className="overflow-hidden"><div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"><div><h3>Filas originales</h3><p>Columnas dinámicas del Excel, incluida TIPOCONCEPTO cuando exista.</p></div><span>{total.toLocaleString("es-ES")} filas</span></div>
+      {cargandoCargas||cargandoFilas?<p className="p-8">Cargando histórico…</p>:!cargaSeleccionada?<p className="p-8">Todavía no hay ficheros Post Firma importados.</p>:<div className="max-h-[58vh] overflow-auto"><table className="min-w-max w-full"><thead className="sticky top-0 z-10"><tr><th className="whitespace-nowrap px-3 py-3">Fila Excel</th>{columnas.map((c,i)=><th key={String(c)+"-"+i} className="whitespace-nowrap px-3 py-3">{c||"(columna sin título)"}</th>)}</tr></thead><tbody>{registros.map((fila)=><tr key={fila.id}><td className="whitespace-nowrap px-3 py-2">{fila.numero_fila}</td>{columnas.map((c,i)=><td key={String(c)+"-"+i} className="max-w-xs whitespace-nowrap px-3 py-2">{mostrarValor(fila.datos?.[c])}</td>)}</tr>)}{!registros.length&&<tr><td colSpan={Math.max(columnas.length+1,1)} className="px-4 py-8">Esta carga no contiene filas con datos.</td></tr>}</tbody></table></div>}
+      {cargaSeleccionada&&<div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"><p>Mostrando {total?offset+1:0}–{Math.min(offset+registros.length,total)} de {total.toLocaleString("es-ES")}</p><div className="flex gap-2"><button type="button" disabled={offset===0||cargandoFilas} onClick={()=>setOffset((v)=>Math.max(0,v-limite))} className="px-3 py-2">Anterior</button><button type="button" disabled={offset+limite>=total||cargandoFilas} onClick={()=>setOffset((v)=>v+limite)} className="px-3 py-2">Siguiente</button></div></div>}
       </div>
     </section>
   );
@@ -3424,7 +3424,7 @@ function ApartadoInformePendiente({ apartado }) {
             {apartado.icono}
           </div>
           <div>
-            <h2 className="">{detalle.encabezado}</h2>
+            <h2>{detalle.encabezado}</h2>
             <p className="mt-1">{detalle.descripcion}</p>
           </div>
         </div>
@@ -3438,7 +3438,7 @@ function ApartadoInformePendiente({ apartado }) {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {detalle.indicadores.map((indicador) => (
             <div key={indicador.titulo} className="p-4">
-              <div className="">{indicador.titulo}</div>
+              <div>{indicador.titulo}</div>
               <p className="mt-2">{indicador.texto}</p>
             </div>
           ))}
@@ -3471,7 +3471,7 @@ export default function Informes() {
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center">📊</div>
             <div>
-              <h1 className="">{apartadoSeleccionado ? apartadoSeleccionado.titulo : "Informes"}</h1>
+              <h1>{apartadoSeleccionado ? apartadoSeleccionado.titulo : "Informes"}</h1>
               <p className="mt-1">{apartadoSeleccionado ? apartadoSeleccionado.descripcion : "Selecciona el tipo de informe que quieres consultar."}</p>
             </div>
           </div>
@@ -3492,7 +3492,7 @@ export default function Informes() {
               <span className="min-w-0 flex-1">
                 <span className="block">{apartado.titulo}</span>
                 <span className="mt-2 block">{apartado.descripcion}</span>
-                <span className="mt-5 inline-flex items-center gap-2">Abrir informe <span aria-hidden="true" className="">→</span></span>
+                <span className="mt-5 inline-flex items-center gap-2">Abrir informe <span aria-hidden="true">→</span></span>
               </span>
             </button>
           ))}
@@ -3501,7 +3501,7 @@ export default function Informes() {
         renderInforme()
       ) : (
         <section className="p-8">
-          <div className="">📊</div>
+          <div>📊</div>
           <h2 className="mt-3">Informe no encontrado</h2>
           <p className="mt-1">El apartado solicitado no existe.</p>
           <button type="button" onClick={() => navigate("/informes")} className="mt-4 px-4 py-2.5">Ver los cinco informes</button>
