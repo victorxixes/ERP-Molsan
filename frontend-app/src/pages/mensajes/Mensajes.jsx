@@ -677,9 +677,7 @@ export default function Mensajes({
  left-1/2
  top-1/2
  h-[700px]
- w-[700px]
- -translate-x-1/2
- -translate-y-1/2"
+ w-[700px]"
         />
 
       </div>
@@ -941,15 +939,13 @@ export default function Mensajes({
                             hover:border-blue-200
                             hover:bg-white
                             hover:shadow-[0_8px_25px_rgba(15,23,42,0.07)]
-                          `
-                      }
+                          `}
 
-                      ${
-                        pendientes > 0
-                          ? "ring-1 ring-red-100"
-                          : ""
-                      }
-                    `}
+ ${
+ pendientes > 0
+ ? "ring-1 
+ : ""
+ }`}
                   >
 
                     {/* AVATAR */}
