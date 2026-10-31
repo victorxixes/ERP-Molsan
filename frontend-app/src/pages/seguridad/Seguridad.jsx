@@ -20,7 +20,7 @@ function texto(value, fallback = "") {
 
 function Indicador({ icon, label, value, detail }) {
   return (
-    <div className="p-5 hover:-translate-y-0.5">
+    <div className="p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="uppercase">{label}</p>
@@ -155,7 +155,7 @@ export default function Seguridad() {
         {actividadReciente.length === 0 ? (
           <p className="px-5 py-8">No hay eventos de auditoría disponibles para mostrar.</p>
         ) : (
-          <ul className="divide-y divide-[var(--erp-border)]">
+          <ul className="">
             {actividadReciente.map((item, index) => {
               const usuario = texto(item?.usuario || item?.empleado || item?.nombre_usuario, "Sistema");
               const accion = texto(item?.accion || item?.evento, "Actividad");
