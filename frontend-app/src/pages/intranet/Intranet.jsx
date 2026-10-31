@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
@@ -139,13 +140,13 @@ export default function Intranet() {
   if (error && !noticias.length && !documentos.length) return <div role="alert" aria-live="assertive" className="p-8"><b>No se ha podido cargar la Intranet</b><p className="mt-2">{error}</p><button className={`${secondary} mt-4`} onClick={() => cargar(true)}>Reintentar</button></div>;
 
   return <div className="relative space-y-6">
-    <header className="p-6 sm:p-8">
-      <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
-        <div className="flex items-center gap-4"><div className="flex h-14 w-14 items-center justify-center">🏢</div><div><h1>Intranet</h1><p className="mt-1">Noticias, documentación y actividad interna de Molsan</p></div></div>
-        <span className="inline-flex w-fit items-center gap-2 px-4 py-2"><span className="h-2 w-2" />Actualización automática activa</span>
-      </div>
-      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3"><div className="p-4"><p className="uppercase">Noticias publicadas</p><p className="mt-1">{noticias.length}</p></div><div className="p-4"><p className="uppercase">Documentos internos</p><p className="mt-1">{documentos.length}</p></div><div className="p-4"><p className="uppercase">Sesión</p><p className="mt-1 truncate">{empleado?.nombre || empleado?.username || empleado?.email || "Empleado conectado"}</p></div></div>
-    </header>
+    <MolsanPageHeader mark="IN" title="Intranet" description="Noticias, documentación y actividad interna de Molsan." />
+    <div className="flex justify-end"><span className="molsan-panel inline-flex w-fit items-center gap-2 px-4 py-2">Actualización automática activa</span></div>
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="molsan-card p-4"><p className="text-xs font-semibold uppercase">Noticias publicadas</p><p className="mt-1">{noticias.length}</p></div>
+      <div className="molsan-card p-4"><p className="text-xs font-semibold uppercase">Documentos internos</p><p className="mt-1">{documentos.length}</p></div>
+      <div className="molsan-card p-4"><p className="text-xs font-semibold uppercase">Sesión</p><p className="mt-1 truncate">{empleado?.nombre || empleado?.username || empleado?.email || "Empleado conectado"}</p></div>
+    </div>
 
     {(mensaje || error) && <div role="status" className={`px-4 py-3 ${error || /no se ha podido|no permitido|supera|selecciona|obligatorio|completa/i.test(mensaje) ? "" : ""}`}>{mensaje || error}</div>}
 

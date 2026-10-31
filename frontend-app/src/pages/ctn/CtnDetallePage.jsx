@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useRef, useState } from "react";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import { useNavigate, useParams } from "react-router-dom";
@@ -156,13 +157,8 @@ export default function CtnDetallePage() {
 
   return (
     <div className=" --content">
-      <div className="ctn-detalle-header">
-        <div>
-          <h1 className="ctn-detalle-title">{nombreNotario(notaria)}</h1>
-          <div className="ctn-detalle-meta">Ficha CTN · NIF: {valor(notaria.nif)} · Código: {valor(notaria.codigo)}</div>
-        </div>
-        <button type="button" onClick={() => navigate(-1)}>Volver al listado</button>
-      </div>
+      <MolsanPageHeader mark="CTN" title={nombreNotario(notaria)} description={`Ficha CTN · NIF: ${valor(notaria.nif)} · Código: ${valor(notaria.codigo)}`} />
+      <div className="flex justify-end"><button type="button" onClick={() => navigate(-1)}>Volver al listado</button></div>
 
       {error && <div role="alert" className="ctn-detalle-alert">{error}</div>}
 

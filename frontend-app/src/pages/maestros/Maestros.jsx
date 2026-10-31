@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
@@ -365,87 +366,8 @@ export default function Maestros() {
           CABECERA
       ====================================================== */}
 
-      <div
-        className="flex
- flex-col
- lg:flex-row
- lg:items-center
- lg:justify-between
- gap-4"
-      >
-
-        <div>
-
-          <div
-            className="flex
- items-center
- gap-3"
-          >
-
-            <div
-              className="w-12
- h-12
- 
- 
- 
- 
- 
- flex
- items-center
- justify-center"
-            >
-
-              <svg
-                className="w-6 h-6"
-                aria-hidden="true"
-              >
-                <use
-                  href="/icons/icons.svg#database"
-                />
-              </svg>
-
-            </div>
-
-
-            <div>
-
-              <h1
-               
-              >
-                Maestros
-              </h1>
-
-              <p
-                className="mt-1"
-              >
-                Gestión de departamentos, secciones y cargos
-              </p>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div
-          className="inline-flex
- items-center
- gap-2
- px-3
- py-2"
-        >
-
-          <span
-            className="w-2
- h-2"
-          />
-
-          Gestión de datos maestros
-
-        </div>
-
-      </div>
+      <MolsanPageHeader mark="MA" title="Maestros" description="Gestión de departamentos, secciones y cargos." />
+      <div className="flex justify-end"><span className="molsan-panel inline-flex items-center gap-2 px-3 py-2">Gestión de datos maestros</span></div>
 
 
       {/* ======================================================

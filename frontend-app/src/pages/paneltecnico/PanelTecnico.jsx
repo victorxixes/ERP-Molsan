@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useMemo } from "react";
 import { useAuthStore } from "../../store/authStore";
 import EmpleadosModulo2026 from "../empleados/EmpleadosModulo2026";
@@ -39,104 +40,8 @@ export default function PanelTecnico() {
           CABECERA
           ====================================================== */}
 
-      <section
-        className="relative
- overflow-hidden"
-      >
-
-        {/* Decoración superior */}
-
-        <div
-          className="absolute
- inset-x-0
- top-0
- h-1"
-        />
-
-        <div
-          className="relative
- px-6
- py-6
- lg:px-8
- lg:py-7
- flex
- flex-col
- lg:flex-row
- lg:items-center
- lg:justify-between
- gap-5"
-        >
-
-          {/* TÍTULO */}
-
-          <div>
-
-            <div
-              className="flex
- items-center
- gap-3
- mb-2"
-            >
-
-              <div
-                className="w-11
- h-11
- 
- 
- 
- flex
- items-center
- justify-center"
-              >
-                <svg className="w-5 h-5" aria-hidden="true">
-                  <use href="/icons/icons.svg#shield" />
-                </svg>
-              </div>
-
-              <div>
-
-                <h1
-                 
-                >
-                  Panel Técnico
-                </h1>
-
-                <p
-                  className="mt-0.5"
-                >
-                  Administración, diagnóstico y supervisión del sistema
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          {/* ESTADO */}
-
-          <div
-            className="inline-flex
- items-center
- gap-2
- w-fit
- px-3
- py-2"
-          >
-
-            <span
-              className="w-2
- h-2"
-            />
-
-            Sistema operativo
-
-          </div>
-
-        </div>
-
-      </section>
+      <MolsanPageHeader mark="PT" title="Panel Técnico" description="Administración, diagnóstico y supervisión del sistema." />
+      <div className="flex justify-end"><span className="molsan-panel inline-flex items-center gap-2 px-3 py-2">● Sistema operativo</span></div>
 
 
       {/* ======================================================

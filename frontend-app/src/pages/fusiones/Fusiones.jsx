@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 
@@ -82,13 +83,8 @@ export default function Fusiones() {
   ];
 
   return <main className="min-h-full min-w-0 space-y-6 p-4 sm:p-6 lg:p-8">
-    <section className="relative overflow-hidden">
-      <div className="h-1" />
-      <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
-        <div className="flex min-w-0 items-start gap-4"><div className="flex h-12 w-12 shrink-0 items-center justify-center"><Icon name="merge" size={25} /></div><div className="min-w-0"><p className="uppercase">MOLSAN ERP</p><h1 className="mt-1">Gestión de fusiones</h1><p className="mt-2 max-w-2xl">Consulta y seguimiento de solicitudes de fusión recibidas desde la gestión de expedientes.</p></div></div>
-        <button type="button" onClick={cargarSolicitudes} disabled={cargando} className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 px-4 py-2"><Icon name="refresh" size={17} />{cargando ? "Actualizando…" : "Actualizar datos"}</button>
-      </div>
-    </section>
+    <MolsanPageHeader mark="FU" title="Gestión de fusiones" description="Consulta y seguimiento de solicitudes de fusión recibidas desde la gestión de expedientes." />
+    <div className="flex justify-end"><button type="button" onClick={cargarSolicitudes} disabled={cargando} className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 px-4 py-2"><Icon name="refresh" size={17} />{cargando ? "Actualizando…" : "Actualizar datos"}</button></div>
 
     {error && <div role="alert" className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"><div><p>No se han podido cargar las solicitudes</p><p className="mt-1">{error}</p></div><button type="button" onClick={cargarSolicitudes} className="shrink-0 px-3 py-2">Reintentar</button></div>}
 

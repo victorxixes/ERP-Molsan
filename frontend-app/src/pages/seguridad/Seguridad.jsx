@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useSeguridad } from "../../hooks/useSeguridad";
@@ -93,23 +94,8 @@ export default function Seguridad() {
 
   return (
     <div className="space-y-6">
-      <header className="px-6 py-5">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center">
-              <Icono name="shield" className="h-6 w-6" />
-            </span>
-            <div>
-              <h1>Centro de seguridad</h1>
-              <p className="mt-1">Resumen general y accesos a la administración de seguridad de Molsan ERP.</p>
-            </div>
-          </div>
-          <span className="inline-flex w-fit items-center gap-2 px-3 py-2">
-            <Icono name="folder" className="h-4 w-4" />
-            Panel de administración
-          </span>
-        </div>
-      </header>
+      <MolsanPageHeader mark="SE" title="Centro de seguridad" description="Resumen general y accesos a la administración de seguridad de Molsan ERP." />
+      <div className="flex justify-end"><span className="molsan-panel inline-flex items-center gap-2 px-3 py-2">Panel de administración</span></div>
 
       <section aria-labelledby="seguridad-resumen-title" className="space-y-3">
         <div>
