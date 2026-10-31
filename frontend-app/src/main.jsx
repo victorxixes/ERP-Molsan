@@ -20,6 +20,7 @@ import App from "./App";
 // Neutralización visual global, cargada después de los estilos de los módulos.
 // El sidebar queda expresamente excluido.
 import "./css/NeutralizarPresentacion.css";
+import "./css/MolsanFase3.css";
 
 // ============================================================
 // Root — Inicialización del ERP
