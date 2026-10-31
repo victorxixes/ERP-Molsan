@@ -79,7 +79,7 @@
 }
 
 /* Tablas: mismo lenguaje visual en todos los módulos y listados. */
-.erp-route-content table,
+.erp-route-content table:not(.ag-print-table):not(.ag-calendar-table),
 .molsan-modal__panel table,
 .expediente-operativo-modal-panel table,
 .ctn-modal-dialog table {
@@ -89,7 +89,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-.erp-route-content table thead th,
+.erp-route-content table:not(.ag-print-table):not(.ag-calendar-table) thead th,
 .molsan-modal__panel table thead th,
 .expediente-operativo-modal-panel table thead th,
 .ctn-modal-dialog table thead th {
@@ -102,7 +102,7 @@
   text-align: left;
 }
 
-.erp-route-content table tbody td,
+.erp-route-content table:not(.ag-print-table):not(.ag-calendar-table) tbody td,
 .molsan-modal__panel table tbody td,
 .expediente-operativo-modal-panel table tbody td,
 .ctn-modal-dialog table tbody td {
@@ -110,11 +110,11 @@
   vertical-align: middle;
 }
 
-.erp-route-content table tbody tr:hover td {
+.erp-route-content table:not(.ag-print-table):not(.ag-calendar-table) tbody tr:hover td {
   background-color: var(--molsan-surface-hover);
 }
 
-.erp-route-content table tbody tr:last-child td,
+.erp-route-content table:not(.ag-print-table):not(.ag-calendar-table) tbody tr:last-child td,
 .molsan-modal__panel table tbody tr:last-child td,
 .expediente-operativo-modal-panel table tbody tr:last-child td {
   border-bottom-color: transparent;
