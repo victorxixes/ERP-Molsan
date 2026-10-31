@@ -1,6 +1,8 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useMemo, useRef, useState } from "react";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 /**
  * ============================================================
@@ -521,6 +523,15 @@ export default function Municipios() {
   // PAGINACIÓN
   // ==========================================================
 
+  const municipiosOrdenables = useMemo(
+    () => municipiosFiltrados.map((municipio) => ({
+      ...municipio,
+      _codigosPostalesOrden: municipio.codigo_postal_principal || municipio.codigos_postales?.[0] || "",
+    })),
+    [municipiosFiltrados]
+  );
+  const ordenMunicipios = useSortableData(municipiosOrdenables);
+
   const totalPaginas =
     Math.max(
       1,
@@ -551,7 +562,7 @@ export default function Municipios() {
 
 
   const municipiosPagina =
-    municipiosFiltrados.slice(
+    ordenMunicipios.items.slice(
       (pagina - 1) *
         FILAS_POR_PAGINA,
 
@@ -1835,50 +1846,25 @@ export default function Municipios() {
  min-w-[800px]"
             >
 
-              <thead>
+              <MolsanSortableTh label="Comunidad autónoma" sortKey="ccaa" sortConfig={ordenMunicipios.sortConfig} onSort={ordenMunicipios.requestSort} className="" />
 
-                <tr
-                 
-                >
 
-                  <th
-                    className="px-5
+                  <MolsanSortableTh label="Provincia" sortKey="provincia" sortConfig={ordenMunicipios.sortConfig} onSort={ordenMunicipios.requestSort} className="px-5
  py-3.5
  
  
  
- uppercase"
-                  >
-                    Comunidad autónoma
-                  </th>
+ uppercase" />
 
 
-                  <th
-                    className="px-5
+                  <MolsanSortableTh label="Municipio" sortKey="municipio" sortConfig={ordenMunicipios.sortConfig} onSort={ordenMunicipios.requestSort} className="px-5
  py-3.5
  
  
  
- uppercase"
-                  >
-                    Provincia
-                  </th>
+ uppercase" />
 
-
-                  <th
-                    className="px-5
- py-3.5
- 
- 
- 
- uppercase"
-                  >
-                    Municipio
-                  </th>
-
-                  <th className="px-5 py-3.5 uppercase">
-                    Códigos postales
-                  </th>
+                  <MolsanSortableTh label="Códigos postales" sortKey="_codigosPostalesOrden" sortConfig={ordenMunicipios.sortConfig} onSort={ordenMunicipios.requestSort} className="px-5 py-3.5 uppercase" />
 
                   <th
                     className="w-[150px]
