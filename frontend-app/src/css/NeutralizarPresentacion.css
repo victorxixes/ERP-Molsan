@@ -726,7 +726,7 @@ textarea:focus-visible {
 
 /* Geometría única de página: el padding pertenece al contenedor del Layout,
    no a cada módulo. Evita desplazamientos y dobles márgenes respecto al Dashboard. */
-.erp-main-inner .erp-page {
+.erp-route-content > .erp-page {
   display: block;
   width: 100%;
   min-width: 0;
@@ -734,13 +734,13 @@ textarea:focus-visible {
   margin: 0 !important;
   padding: 0 !important;
 }
-.erp-main-inner .erp-page > .molsan-page-header,
-.erp-main-inner .erp-page > .erp-page-header,
-.erp-main-inner .erp-page > header:first-of-type {
+.erp-route-content > .erp-page > .molsan-page-header,
+.erp-route-content > .erp-page > .erp-page-header,
+.erp-route-content > .erp-page > header:first-of-type {
   margin: 0 0 18px !important;
 }
 @media (max-width: 720px) {
-  .erp-main-inner .erp-page > header:first-of-type:not(.molsan-page-header) { align-items: flex-start; }
+  .erp-route-content > .erp-page > header:first-of-type:not(.molsan-page-header) { align-items: flex-start; }
 }
 
 /* Cabeceras de subpantallas: misma coordenada y jerarquía que la cabecera principal. */
