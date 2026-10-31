@@ -60,10 +60,6 @@ export default function Cancelagest() {
 
   useEffect(() => { cargar(); }, [cargar]);
 
-  const fechaActual = useMemo(() => new Intl.DateTimeFormat("es-ES", {
-    weekday: "long", day: "numeric", month: "long", year: "numeric",
-  }).format(new Date()), []);
-
   const firmasMensuales = (datos?.firmas_mensuales || []).slice(-12).map((x) => ({ ...x, mesLabel: fmtMes(x.mes) }));
   const categorias = datos?.categorias_firma || [];
   const tiempos = datos?.tiempos_circuito || [];
@@ -84,10 +80,7 @@ export default function Cancelagest() {
           <div><img src="/img/logo.jpg" alt="MOLSAN" /></div>
           <div><div>MOLSAN ERP</div><h1>CancelaGest</h1><p>Centro de gestión de cancelaciones, provisiones, firmas y seguimiento registral.</p></div>
         </div>
-        <div>
-          <div>{fechaActual}</div>
-          <button type="button" onClick={cargar} disabled={cargando}>{cargando ? "Actualizando…" : "↻ Actualizar datos"}</button>
-        </div>
+
       </header>
 
       {error && <div role="alert"><strong>No se han podido cargar los indicadores.</strong><p>{error}</p><button onClick={cargar}>Reintentar</button></div>}
