@@ -234,11 +234,11 @@ export default function Fichajes({ modo = "empleado" }) {
         <div className="absolute inset-x-0 top-0 h-1" />
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="">MOLSAN ERP</p>
+            <p>MOLSAN ERP</p>
             <h1 className="mt-2">{esAdminVista ? "Control de Fichajes" : "Fichajes"}</h1>
             <p className="mt-2">{esAdminVista ? "Supervisión de marcajes de la plantilla." : "Registro de jornada y gestión de justificantes personales."}</p>
           </div>
-          {!esAdminVista && perfil && <div className="px-4 py-3"><p className="">Empleado</p><p className="">{perfil.nombre}</p><p className="">{perfil.usuario}</p></div>}
+          {!esAdminVista && perfil && <div className="px-4 py-3"><p>Empleado</p><p>{perfil.nombre}</p><p>{perfil.usuario}</p></div>}
         </div>
       </header>
 
@@ -249,8 +249,8 @@ export default function Fichajes({ modo = "empleado" }) {
           {!esAdminVista && (
             <section className="p-5 sm:p-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div><h2 className="">Jornada de hoy</h2><p className="mt-1">{reloj.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p><p className="mt-2 tabular-nums">{reloj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</p><p className="">Hora local · reloj en tiempo real</p></div>
-                <div className="px-3 py-2"><span className="">Último movimiento: </span><strong>{ultimoMarcaje ? formatearTipo(ultimoMarcaje.tipo) : "Sin marcajes hoy"}</strong>{ultimoMarcaje && <span className="ml-2">{hora(ultimoMarcaje.fecha_hora)}</span>}</div>
+                <div><h2>Jornada de hoy</h2><p className="mt-1">{reloj.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p><p className="mt-2 tabular-nums">{reloj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</p><p>Hora local · reloj en tiempo real</p></div>
+                <div className="px-3 py-2"><span>Último movimiento: </span><strong>{ultimoMarcaje ? formatearTipo(ultimoMarcaje.tipo) : "Sin marcajes hoy"}</strong>{ultimoMarcaje && <span className="ml-2">{hora(ultimoMarcaje.fecha_hora)}</span>}</div>
               </div>
               <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 {TIPOS.map((t) => (
@@ -280,7 +280,7 @@ export default function Fichajes({ modo = "empleado" }) {
             {!esAdminVista && pestana === "calendario" && (
               <div className="p-4 sm:p-6">
                 <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-                  <div><h2 className="">Calendario de marcajes</h2><p className="">Consulta tus registros por día y navega entre meses y años.</p></div>
+                  <div><h2>Calendario de marcajes</h2><p>Consulta tus registros por día y navega entre meses y años.</p></div>
                   <div className="flex items-center gap-2"><button type="button" onClick={() => setMes(new Date(mes.getFullYear() - 1, mes.getMonth(), 1))} className="px-3 py-2" aria-label="Año anterior">«</button><button type="button" onClick={() => setMes(new Date(mes.getFullYear(), mes.getMonth() - 1, 1))} className="px-3 py-2" aria-label="Mes anterior">‹</button><span className="min-w-36 capitalize">{mes.toLocaleDateString("es-ES", { month: "long", year: "numeric" })}</span><button type="button" onClick={() => setMes(new Date(mes.getFullYear(), mes.getMonth() + 1, 1))} className="px-3 py-2" aria-label="Mes siguiente">›</button><button type="button" onClick={() => setMes(new Date(mes.getFullYear() + 1, mes.getMonth(), 1))} className="px-3 py-2" aria-label="Año siguiente">»</button></div>
                 </div>
                 <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
@@ -294,7 +294,7 @@ export default function Fichajes({ modo = "empleado" }) {
                     const ausenciasDia = dia ? solicitudesAusencia.filter((a) => a.fecha_inicio <= claveDia && a.fecha_fin >= claveDia && ["SOLICITADO", "APROBADO"].includes(a.estado)) : [];
                     const esHoy = dia && claveDia === fechaISO(FECHA_HOY);
                     return <div key={dia ? fechaISO(dia) : "vacio-" + i} className={`min-h-[78px] p-2 sm:min-h-[105px] ${!dia ? "" : esHoy ? "" : ""}`}>
-                      {dia && <><div className={`${esHoy ? "" : ""}`}>{dia.getDate()}</div><div className="mt-1 space-y-1">{registros.slice(0, 3).map((m) => <div key={m.id} title={formatearTipo(m.tipo)} className="truncate px-1.5 py-1">{hora(m.fecha_hora)} {formatearTipo(m.tipo)}</div>)}{registros.length > 3 && <p className="">+{registros.length - 3} más</p>}{calendarioFestivosDia.map((f) => <div key={"calendario-festivo-" + f.id} className="truncate px-1.5 py-1" title={f.nombre}>{f.nombre}</div>)}{festivosDia.map((f) => <div key={"festivo-" + f.id} className="truncate px-1.5 py-1" title="Festivo trabajado">{f.estado === "VALIDADO" ? "Festivo validado" : f.estado === "RECHAZADO" ? "Festivo rechazado" : "Festivo pendiente"}</div>)}{solicitudesDia.map((s) => <div key={"comp-" + s.id} className="truncate px-1.5 py-1" title="Compensación">{s.estado === "SOLICITADO" ? "Compensación solicitada" : s.estado === "APROBADO" ? "Compensación aprobada" : "Compensación disfrutada"}</div>)}{ausenciasDia.map((a) => <div key={"ausencia-" + a.id} className={"truncate px-1.5 py-1" + (a.estado === "SOLICITADO" ? "" : "")} title={a.tipo_ausencia}>{a.estado === "SOLICITADO" ? "Ausencia pendiente" : "Ausencia aprobada"} · {a.tipo_ausencia}</div>)}</div></>}
+                      {dia && <><div className={`${esHoy ? "" : ""}`}>{dia.getDate()}</div><div className="mt-1 space-y-1">{registros.slice(0, 3).map((m) => <div key={m.id} title={formatearTipo(m.tipo)} className="truncate px-1.5 py-1">{hora(m.fecha_hora)} {formatearTipo(m.tipo)}</div>)}{registros.length > 3 && <p>+{registros.length - 3} más</p>}{calendarioFestivosDia.map((f) => <div key={"calendario-festivo-" + f.id} className="truncate px-1.5 py-1" title={f.nombre}>{f.nombre}</div>)}{festivosDia.map((f) => <div key={"festivo-" + f.id} className="truncate px-1.5 py-1" title="Festivo trabajado">{f.estado === "VALIDADO" ? "Festivo validado" : f.estado === "RECHAZADO" ? "Festivo rechazado" : "Festivo pendiente"}</div>)}{solicitudesDia.map((s) => <div key={"comp-" + s.id} className="truncate px-1.5 py-1" title="Compensación">{s.estado === "SOLICITADO" ? "Compensación solicitada" : s.estado === "APROBADO" ? "Compensación aprobada" : "Compensación disfrutada"}</div>)}{ausenciasDia.map((a) => <div key={"ausencia-" + a.id} className={"truncate px-1.5 py-1" + (a.estado === "SOLICITADO" ? "" : "")} title={a.tipo_ausencia}>{a.estado === "SOLICITADO" ? "Ausencia pendiente" : "Ausencia aprobada"} · {a.tipo_ausencia}</div>)}</div></>}
                     </div>;
                   })}
                 </div>
@@ -303,21 +303,21 @@ export default function Fichajes({ modo = "empleado" }) {
 
             {!esAdminVista && pestana === "resumen" && (
               <div className="p-4 sm:p-6">
-                <div className="flex flex-wrap items-end justify-between gap-3"><div><h2 className="">Resumen de marcajes</h2><p className="">Busca por tipo, fecha, hora u observaciones.</p></div><label className="w-full max-w-sm">Buscar<input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Ej. Entrada, 09:00…" className="mt-1 w-full px-3 py-2.5" /></label></div>
-                <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[560px]"><thead><tr className="uppercase"><th className="px-3 py-3">Fecha</th><th className="px-3 py-3">Hora</th><th className="px-3 py-3">Marcaje</th><th className="px-3 py-3">Observaciones</th></tr></thead><tbody>{marcajesFiltrados.map((m) => <tr key={m.id} className=""><td className="px-3 py-3">{fechaLarga(m.fecha_hora)}</td><td className="px-3 py-3 tabular-nums">{hora(m.fecha_hora)}</td><td className="px-3 py-3"><span className="px-2.5 py-1.5">{formatearTipo(m.tipo)}</span></td><td className="px-3 py-3">{m.observaciones || "—"}</td></tr>)}{marcajesFiltrados.length === 0 && <tr><td colSpan="4" className="px-3 py-10">No hay marcajes para esta búsqueda.</td></tr>}</tbody></table></div>
+                <div className="flex flex-wrap items-end justify-between gap-3"><div><h2>Resumen de marcajes</h2><p>Busca por tipo, fecha, hora u observaciones.</p></div><label className="w-full max-w-sm">Buscar<input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Ej. Entrada, 09:00…" className="mt-1 w-full px-3 py-2.5" /></label></div>
+                <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[560px]"><thead><tr className="uppercase"><th className="px-3 py-3">Fecha</th><th className="px-3 py-3">Hora</th><th className="px-3 py-3">Marcaje</th><th className="px-3 py-3">Observaciones</th></tr></thead><tbody>{marcajesFiltrados.map((m) => <tr key={m.id}><td className="px-3 py-3">{fechaLarga(m.fecha_hora)}</td><td className="px-3 py-3 tabular-nums">{hora(m.fecha_hora)}</td><td className="px-3 py-3"><span className="px-2.5 py-1.5">{formatearTipo(m.tipo)}</span></td><td className="px-3 py-3">{m.observaciones || "—"}</td></tr>)}{marcajesFiltrados.length === 0 && <tr><td colSpan="4" className="px-3 py-10">No hay marcajes para esta búsqueda.</td></tr>}</tbody></table></div>
               </div>
             )}
 
             {!esAdminVista && pestana === "documentos" && (
               <div className="grid gap-6 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] sm:p-6">
                 <form onSubmit={subirDocumento} className="space-y-4 p-4">
-                  <div><h2 className="">Adjuntar justificante</h2><p className="mt-1">Los archivos quedan guardados junto con su tipo y fecha.</p></div>
+                  <div><h2>Adjuntar justificante</h2><p className="mt-1">Los archivos quedan guardados junto con su tipo y fecha.</p></div>
                   <label className="block">Tipo de justificación<select value={tipoDocumento} onChange={(e) => setTipoDocumento(e.target.value)} className="mt-1 w-full px-3 py-3">{TIPOS_DOCUMENTO.map((t) => <option key={t}>{t}</option>)}</select></label>
                   <label className="block">Fecha del documento<input type="date" value={fechaDocumento} onChange={(e) => setFechaDocumento(e.target.value)} required className="mt-1 w-full px-3 py-3" /></label>
                   <label className="block">Archivo<input type="file" required onChange={(e) => setArchivo(e.target.files?.[0] || null)} className="mt-1 block w-full p-2" /><span className="mt-1 block">Máximo 10 MB por archivo.</span></label>
                   <button type="submit" disabled={guardando} className="w-full px-4 py-3">{guardando ? "Guardando…" : "Guardar documento"}</button>
                 </form>
-                <div><h2 className="">Historial de documentos</h2><div className="mt-3 space-y-2">{documentos.map((d) => <div key={d.id} className="flex flex-wrap items-center justify-between gap-3 p-3"><div className="min-w-0"><p className="truncate">{d.nombre_archivo}</p><p className="mt-1">{d.tipo_justificante} · Fecha: {d.fecha_documento} · Subido: {d.subido_en ? fechaLarga(d.subido_en) : "—"}</p><p className="mt-1">Revisión: {d.revision_estado === "APROBADO" ? "Aprobado" : d.revision_estado === "RECHAZADO" ? "Rechazado" : "Pendiente"}</p>{d.revision_motivo && <p className="mt-1">{d.revision_motivo}</p>}</div><button type="button" onClick={() => descargar(d)} className="px-3 py-2">Descargar</button></div>)}{documentos.length === 0 && <p className="p-8">Todavía no has adjuntado documentos.</p>}</div></div>
+                <div><h2>Historial de documentos</h2><div className="mt-3 space-y-2">{documentos.map((d) => <div key={d.id} className="flex flex-wrap items-center justify-between gap-3 p-3"><div className="min-w-0"><p className="truncate">{d.nombre_archivo}</p><p className="mt-1">{d.tipo_justificante} · Fecha: {d.fecha_documento} · Subido: {d.subido_en ? fechaLarga(d.subido_en) : "—"}</p><p className="mt-1">Revisión: {d.revision_estado === "APROBADO" ? "Aprobado" : d.revision_estado === "RECHAZADO" ? "Rechazado" : "Pendiente"}</p>{d.revision_motivo && <p className="mt-1">{d.revision_motivo}</p>}</div><button type="button" onClick={() => descargar(d)} className="px-3 py-2">Descargar</button></div>)}{documentos.length === 0 && <p className="p-8">Todavía no has adjuntado documentos.</p>}</div></div>
               </div>
             )}
 
@@ -327,7 +327,7 @@ export default function Fichajes({ modo = "empleado" }) {
 
             {!esAdminVista && pestana === "personal" && perfil && (
               <div className="grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-3 sm:p-6">
-                {[["Nombre completo", perfil.nombre], ["Usuario", perfil.usuario], ["Correo electrónico", perfil.email], ["Departamento", perfil.departamento_id ? `ID ${perfil.departamento_id}` : "No indicado"], ["Cargo", perfil.cargo_id ? `ID ${perfil.cargo_id}` : "No indicado"]].map(([label, valor]) => <div key={label} className="p-4"><p className="">{label}</p><p className="mt-2 break-words">{valor || "No indicado"}</p></div>)}
+                {[["Nombre completo", perfil.nombre], ["Usuario", perfil.usuario], ["Correo electrónico", perfil.email], ["Departamento", perfil.departamento_id ? `ID ${perfil.departamento_id}` : "No indicado"], ["Cargo", perfil.cargo_id ? `ID ${perfil.cargo_id}` : "No indicado"]].map(([label, valor]) => <div key={label} className="p-4"><p>{label}</p><p className="mt-2 break-words">{valor || "No indicado"}</p></div>)}
                 <p className="sm:col-span-2 lg:col-span-3">La información se obtiene de tu ficha de empleado del ERP. Para modificarla, utiliza el procedimiento de actualización de tu ficha personal.</p>
               </div>
             )}
@@ -339,14 +339,14 @@ export default function Fichajes({ modo = "empleado" }) {
             {esAdminVista && pestana === "solicitudes" && (
               <div className="p-4 sm:p-6">
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                  <div><h2 className="">Solicitudes de vacaciones</h2><p className="">Revisa, aprueba o rechaza las solicitudes recibidas desde Fichajes.</p></div>
+                  <div><h2>Solicitudes de vacaciones</h2><p>Revisa, aprueba o rechaza las solicitudes recibidas desde Fichajes.</p></div>
                   <div className="px-4 py-2">Pendientes: {vacacionesAdmin.filter(v => v.estado === "SOLICITADO").length}</div>
                 </div>
-                <div className="mb-4 grid gap-3 sm:grid-cols-2"><label className="">Filtrar empleado<select value={empleadoFiltro} onChange={e => setEmpleadoFiltro(e.target.value)} className="mt-1 w-full px-3 py-2.5"><option value="">Toda la plantilla</option>{empleados.map(e => <option key={e.id} value={e.id}>{e.nombre}</option>)}</select></label><div className="flex items-end"><button type="button" onClick={() => recargarAdmin().catch(e => setError(e?.response?.data?.detail || "No se pudieron actualizar las solicitudes."))} className="px-4 py-2.5">Actualizar solicitudes</button></div></div>
+                <div className="mb-4 grid gap-3 sm:grid-cols-2"><label>Filtrar empleado<select value={empleadoFiltro} onChange={e => setEmpleadoFiltro(e.target.value)} className="mt-1 w-full px-3 py-2.5"><option value="">Toda la plantilla</option>{empleados.map(e => <option key={e.id} value={e.id}>{e.nombre}</option>)}</select></label><div className="flex items-end"><button type="button" onClick={() => recargarAdmin().catch(e => setError(e?.response?.data?.detail || "No se pudieron actualizar las solicitudes."))} className="px-4 py-2.5">Actualizar solicitudes</button></div></div>
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[850px]">
                     <thead><tr className="uppercase"><th className="p-3">Empleado</th><th className="p-3">Desde</th><th className="p-3">Hasta</th><th className="p-3">Días</th><th className="p-3">Estado</th><th className="p-3">Observaciones</th><th className="p-3">Acciones</th></tr></thead>
-                    <tbody>{vacacionesAdmin.map(v => <tr key={v.id} className="">
+                    <tbody>{vacacionesAdmin.map(v => <tr key={v.id}>
                       <td className="p-3">{v.empleado_nombre}</td><td className="p-3">{fechaLarga(v.fecha_inicio)}</td><td className="p-3">{fechaLarga(v.fecha_fin)}</td><td className="p-3">{v.dias}</td><td className="p-3"><span className={v.estado === "SOLICITADO" ? "px-2 py-1" : v.estado === "APROBADO" ? "px-2 py-1" : "px-2 py-1"}>{v.estado === "SOLICITADO" ? "Pendiente" : v.estado === "APROBADO" ? "Aprobada" : "Rechazada"}</span></td>
                       <td className="max-w-[220px] p-3">{v.observaciones || "—"}</td><td className="p-3">{v.estado === "SOLICITADO" ? <div className="flex gap-2"><button type="button" disabled={guardando} onClick={() => resolverVacaciones(v, "APROBADO")} className="px-3 py-2">Aprobar</button><button type="button" disabled={guardando} onClick={() => resolverVacaciones(v, "RECHAZADO")} className="px-3 py-2">Rechazar</button></div> : "Resuelta"}</td>
                     </tr>)}{!vacacionesAdmin.length && <tr><td colSpan="7" className="p-10">No hay solicitudes de vacaciones registradas.</td></tr>}</tbody>
