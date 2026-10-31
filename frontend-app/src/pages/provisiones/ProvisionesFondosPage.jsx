@@ -769,7 +769,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
 
     
 
-    <form onSubmit={guardar} className="space-y-5">
+    <form onSubmit={guardar} className="molsan-form space-y-5">
       <div className="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-2">
       <Seccion titulo="1. Datos del cliente" detalle="Datos de contacto del cliente que solicita la provisión estimativa.">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
