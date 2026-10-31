@@ -1,6 +1,8 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useRef, useState } from "react";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   listarNotarias,
@@ -36,6 +38,8 @@ export default function CtnDetallePage() {
   const [totales, setTotales] = useState({ total: 0, total_vc: 0, total_presencial: 0, total_sin_clasificar: 0 });
   const historicoDialogRef = useRef(null);
   useAccessibleDialog({ open: modalAbierto, onClose: () => setModalAbierto(false), dialogRef: historicoDialogRef });
+  const ordenAsociadas = useSortableData(asociadas);
+  const ordenHistorico = useSortableData(historico);
 
   const cargarFicha = useCallback(async () => {
     if (!notariaId) return;
@@ -218,9 +222,9 @@ export default function CtnDetallePage() {
         {asociadas.length === 0 ? <p>No hay notarios asociados.</p> : (
           <div className="ctn-detalle-table-wrap">
             <table className="ctn-detalle-table">
-              <thead><tr><th className="ctn-detalle-th">Notario</th><th className="ctn-detalle-th">NIF</th><th className="ctn-detalle-th">Municipio</th><th className="ctn-detalle-th">Acción</th></tr></thead>
+              <thead><tr><MolsanSortableTh label="Notario" sortKey="nombre_completo" sortConfig={ordenAsociadas.sortConfig} onSort={ordenAsociadas.requestSort} className="ctn-detalle-th" /><MolsanSortableTh label="NIF" sortKey="nif" sortConfig={ordenAsociadas.sortConfig} onSort={ordenAsociadas.requestSort} className="ctn-detalle-th" /><MolsanSortableTh label="Municipio" sortKey="municipio" sortConfig={ordenAsociadas.sortConfig} onSort={ordenAsociadas.requestSort} className="ctn-detalle-th" /><th className="ctn-detalle-th">Acción</th></tr></thead>
               <tbody>
-                {asociadas.map((n) => (
+                {ordenAsociadas.items.map((n) => (
                   <tr key={n.id}>
                     <td className="ctn-detalle-td">{nombreNotario(n)}</td>
                     <td className="ctn-detalle-td">{valor(n.nif)}</td>
@@ -249,9 +253,9 @@ export default function CtnDetallePage() {
             {cargandoHistorico ? <p>Cargando firmas…</p> : historico.length === 0 ? <p>No se han encontrado firmas registradas para esta modalidad.</p> : (
               <div className="ctn-detalle-history-table-wrap overflow-x-auto">
                 <table className="ctn-detalle-table ctn-detalle-table--history min-w-[900px] w-full">
-                  <thead><tr>{["Fecha firma", "Expediente", "Titular", "NIF titular", "Solicitante", "Protocolo", "Oficina", "Importe"].map((x) => <th key={x} className="ctn-detalle-th">{x}</th>)}</tr></thead>
+                  <thead><tr><MolsanSortableTh label="Fecha firma" sortKey="fecha_firma" sortConfig={ordenHistorico.sortConfig} onSort={ordenHistorico.requestSort} className="ctn-detalle-th" /><MolsanSortableTh label="Expediente" sortKey="id_expediente" sortConfig={ordenHistorico.sortConfig} onSort={ordenHistorico.requestSort} className="ctn-detalle-th" /><MolsanSortableTh label="Titular" sortKey="nombre_titular" sortConfig={ordenHistorico.sortConfig} onSort={ordenHistorico.requestSort} className="ctn-detalle-th" /><MolsanSortableTh label="NIF titular" sortKey="nif_titular" sortConfig={ordenHistorico.sortConfig} onSort={ordenHistorico.requestSort} className="ctn-detalle-th" /><MolsanSortableTh label="Solicitante" sortKey="nombre_solicitante" sortConfig={ordenHistorico.sortConfig} onSort={ordenHistorico.requestSort} className="ctn-detalle-th" /><MolsanSortableTh label="Protocolo" sortKey="protocolo" sortConfig={ordenHistorico.sortConfig} onSort={ordenHistorico.requestSort} className="ctn-detalle-th" /><MolsanSortableTh label="Oficina" sortKey="oficina" sortConfig={ordenHistorico.sortConfig} onSort={ordenHistorico.requestSort} className="ctn-detalle-th" /><MolsanSortableTh label="Importe" sortKey="importe" sortConfig={ordenHistorico.sortConfig} onSort={ordenHistorico.requestSort} className="ctn-detalle-th" /></tr></thead>
                   <tbody>
-                    {historico.map((f, i) => (
+                    {ordenHistorico.items.map((f, i) => (
                       <tr key={f.id ?? `${f.id_expediente}-${i}`}>
                         <td className="ctn-detalle-td">{valor(f.fecha_firma)}</td>
                         <td className="ctn-detalle-td">{valor(f.id_expediente)}</td>
