@@ -2737,6 +2737,25 @@ def reparar_vinculos_apoderado_expedientes():
 # ORDEN DE ARRANQUE
 # ============================================================
 
+# Nombre de la base PostgreSQL creada exclusivamente para Glass Luxe Preview.
+# La comprobación se ejecuta ANTES de cualquier bootstrap o escritura de prueba.
+PREVIEW_DATABASE_NAME = "molsan_glass_luxe_preview_db"
+
+
+def _exigir_base_datos_preview():
+    with engine.connect() as conexion_preview:
+        nombre_bd = conexion_preview.execute(
+            text("SELECT current_database()")
+        ).scalar()
+    if nombre_bd != PREVIEW_DATABASE_NAME:
+        raise RuntimeError(
+            "[PREVIEW DB] Bootstrap bloqueado: DATABASE_URL no apunta a "
+            f"{PREVIEW_DATABASE_NAME!r} (base detectada: {nombre_bd!r})."
+        )
+    print(f"[PREVIEW DB] Conexión confirmada: {nombre_bd}.", flush=True)
+    return nombre_bd
+
+
 # La base de datos de pruebas parte vacía. En esa instancia aislada se
 # materializan primero las tablas definidas por los modelos SQLAlchemy y,
 # a continuación, se ejecutan las migraciones incrementales habituales.
@@ -2748,6 +2767,7 @@ def inicializar_esquema_base_preview():
         print("[PREVIEW SCHEMA] Bootstrap desactivado; se conserva el flujo normal.", flush=True)
         return
 
+    _exigir_base_datos_preview()
     print("[PREVIEW SCHEMA] Creando únicamente tablas ausentes desde los modelos registrados...", flush=True)
     Base.metadata.create_all(bind=engine, checkfirst=True)
     with engine.connect() as conexion_preview:
@@ -2781,6 +2801,8 @@ def crear_administrador_preview():
         raise RuntimeError(
             "[PREVIEW ADMIN] Bootstrap bloqueado: el servicio no es la API de preview autorizada."
         )
+
+    _exigir_base_datos_preview()
 
     usuario = os.getenv("MOLSAN_PREVIEW_ADMIN_USERNAME", "").strip()
     password = os.getenv("MOLSAN_PREVIEW_ADMIN_PASSWORD", "")
