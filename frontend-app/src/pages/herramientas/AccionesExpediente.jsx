@@ -171,23 +171,19 @@ function BadgeActivo({
               border-red-200
               bg-red-50
               text-red-700
-            `
-        }
-      `}
+            `}`}
     >
 
       <span
-        className={`
-          w-1.5
-          h-1.5
-          rounded-full
+        className={`w-1.5
+ h-1.5
+ 
 
-          ${
-            activo
-              ? ""
-              : ""
-          }
-        `}
+ ${
+ activo
+ ? ""
+ : ""
+ }`}
       />
 
       {activo
