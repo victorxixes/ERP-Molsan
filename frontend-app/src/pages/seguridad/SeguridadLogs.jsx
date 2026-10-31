@@ -959,7 +959,7 @@ export default function SeguridadLogs() {
             <div>
 
               <h1
-                className=""
+               
               >
                 Logs técnicos
               </h1>
@@ -1332,7 +1332,7 @@ export default function SeguridadLogs() {
           <div>
 
             <h2
-              className=""
+             
             >
               Eventos técnicos
             </h2>
@@ -1352,7 +1352,7 @@ export default function SeguridadLogs() {
             onClick={
               descargarExcel
             }
-            className=""
+           
           >
 
             <Icono
@@ -1375,7 +1375,7 @@ export default function SeguridadLogs() {
           >
 
             <thead
-              className=""
+             
             >
 
               <tr>
@@ -1457,7 +1457,7 @@ export default function SeguridadLogs() {
                         `${log.fecha}-${log.evento}-${indice}`
                       )
                     }
-                    className=""
+                   
                   >
 
                     <td
@@ -1578,7 +1578,7 @@ export default function SeguridadLogs() {
 
 
             <h3
-              className=""
+             
             >
               No se encontraron eventos
             </h3>
@@ -1611,13 +1611,13 @@ export default function SeguridadLogs() {
       >
 
         <p
-          className=""
+         
         >
 
           Página{" "}
 
           <span
-            className=""
+           
           >
             {paginaSegura + 1}
           </span>
@@ -1625,7 +1625,7 @@ export default function SeguridadLogs() {
           {" "}de{" "}
 
           <span
-            className=""
+           
           >
             {totalPaginas}
           </span>
