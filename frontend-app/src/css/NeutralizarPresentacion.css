@@ -36,7 +36,16 @@
   --molsan-font-size-lg: 1.125rem;
   --molsan-font-size-xl: 1.25rem;
   --molsan-font-size-2xl: 1.5rem;
+  --molsan-line-height-tight: 1.2;
   --molsan-line-height: 1.45;
+  --molsan-line-height-relaxed: 1.6;
+  --molsan-font-weight-normal: 400;
+  --molsan-font-weight-medium: 500;
+  --molsan-font-weight-semibold: 600;
+  --molsan-font-weight-bold: 700;
+  --molsan-letter-spacing-tight: -0.025em;
+  --molsan-letter-spacing-normal: 0;
+  --molsan-letter-spacing-wide: 0.02em;
 
   /* Espaciado: escala base de 4 px */
   --molsan-space-1: 0.25rem;
@@ -48,16 +57,31 @@
   --molsan-space-8: 2rem;
   --molsan-space-10: 2.5rem;
   --molsan-space-12: 3rem;
+  --molsan-space-16: 4rem;
+  --molsan-space-20: 5rem;
+
+  /* Ritmo de composición: el Layout controla el gutter exterior */
+  --molsan-content-gutter: clamp(16px, 2vw, 28px);
+  --molsan-section-gap: 24px;
+  --molsan-card-padding: 20px;
+  --molsan-card-padding-compact: 16px;
+  --molsan-form-field-gap: 16px;
+  --molsan-table-cell-padding-x: 14px;
+  --molsan-table-cell-padding-y: 10px;
 
   /* Dimensiones y densidad */
   --molsan-row-height: 44px;
+  --molsan-row-height-compact: 38px;
+  --molsan-row-height-comfortable: 48px;
   --molsan-control-height-sm: 32px;
   --molsan-control-height: 38px;
   --molsan-control-height-lg: 42px;
   --molsan-page-header-height: 62px;
-  --molsan-content-gutter: 24px;
+  --molsan-page-header-gap: 18px;
+  --molsan-page-header-mark-size: 34px;
 
   /* Formas y elevación */
+  --molsan-radius-xs: 4px;
   --molsan-radius-sm: 6px;
   --molsan-radius-control: 9px;
   --molsan-radius-card: 12px;
@@ -65,11 +89,16 @@
   --molsan-shadow-card: 0 2px 8px rgba(6, 70, 117, 0.04);
   --molsan-shadow-popover: 0 8px 24px rgba(6, 70, 117, 0.12);
   --molsan-shadow-modal: 0 18px 48px rgba(6, 40, 65, 0.18);
+  --molsan-shadow-none: none;
 
-  /* Interacción */
+  /* Interacción y estados de superficie */
+  --molsan-hover-overlay: rgba(6, 70, 117, 0.035);
+  --molsan-pressed-overlay: rgba(6, 70, 117, 0.07);
+  --molsan-selected-overlay: rgba(6, 70, 117, 0.06);
   --molsan-focus-ring: 0 0 0 3px rgba(6, 70, 117, 0.14);
   --molsan-transition-fast: 120ms ease;
   --molsan-transition-normal: 180ms ease;
+  --molsan-transition-slow: 240ms ease;
   --molsan-z-sticky: 20;
   --molsan-z-dropdown: 40;
   --molsan-z-overlay: 80;
@@ -77,8 +106,15 @@
 }
 
 html {
+  min-height: 100%;
   color-scheme: light;
   background: var(--molsan-white);
+  scroll-behavior: smooth;
+}
+
+body,
+#root {
+  min-height: 100%;
 }
 
 body {
@@ -86,7 +122,24 @@ body {
   background: var(--molsan-white);
   color: var(--molsan-text);
   font-family: var(--molsan-font-family);
+  font-size: var(--molsan-font-size-md);
+  font-weight: var(--molsan-font-weight-normal);
   line-height: var(--molsan-line-height);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  color: var(--molsan-blue);
+  background: rgba(6, 70, 117, 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 .erp-app-shell,
