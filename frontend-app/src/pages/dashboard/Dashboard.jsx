@@ -139,7 +139,7 @@ function ActividadCard({ actividad, total, porcentajeValor }) {
       </div>
       <div className="dashboard-activity-inline" aria-label={actividad.nombre + ': ' + porcentaje(porcentajeValor) + ' del total'}>
         <div className="dashboard-activity-track h-1.5 overflow-hidden rounded-full" >
-          <div className="dashboard-activity-bar h-full rounded-full" style={{ width: Math.min(Math.max(Number(porcentajeValor || 0) }} />
+          <div className="dashboard-activity-bar h-full rounded-full" style={{ width: Math.min(Math.max(Number(porcentajeValor || 0), 0), 100) + "%" }} />
         </div>
         <span className="text-xs tabular-nums" >{porcentaje(porcentajeValor)}</span>
       </div>
