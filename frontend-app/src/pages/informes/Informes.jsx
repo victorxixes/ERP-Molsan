@@ -346,10 +346,10 @@ function InformeCitasApoderados() {
               padding: 40px;
 
               background:
-                #f3f7fc;
+                #ffffff;
 
               color:
-                #24344d;
+                #18364b;
             }
 
 
@@ -365,7 +365,7 @@ function InformeCitasApoderados() {
                 18px;
 
               border:
-                1px solid #dbe7f4;
+                1px solid #d8e4ec;
 
               box-shadow:
                 0 10px 30px
@@ -382,7 +382,7 @@ function InformeCitasApoderados() {
                 5px;
 
               color:
-                #183b66;
+                #064675;
             }
 
 
@@ -395,7 +395,7 @@ function InformeCitasApoderados() {
                 0;
 
               color:
-                #6f86a3;
+                #617789;
             }
 
 
@@ -418,19 +418,19 @@ function InformeCitasApoderados() {
             th {
 
               background:
-                #edf4fc;
+                #eaf2f8;
 
               padding:
                 11px;
 
               border-bottom:
-                2px solid #d4e2f1;
+                2px solid #d8e4ec;
 
               text-align:
                 left;
 
               color:
-                #31577f;
+                #064675;
             }
 
 
@@ -440,14 +440,14 @@ function InformeCitasApoderados() {
                 9px;
 
               border-bottom:
-                1px solid #e4edf6;
+                1px solid #d8e4ec;
             }
 
 
             tr:nth-child(even) {
 
               background:
-                #f8fbfe;
+                #f2f7fb;
             }
 
 
@@ -463,7 +463,7 @@ function InformeCitasApoderados() {
                 600;
 
               color:
-                #31577f;
+                #064675;
             }
 
 
@@ -630,7 +630,7 @@ function InformeCitasApoderados() {
 
 
     const colorTexto =
-      "#7186a3";
+      "#617789";
 
     const colorGrid =
       "rgba(102, 135, 170, 0.13)";
@@ -667,10 +667,10 @@ function InformeCitasApoderados() {
                 ),
 
               backgroundColor:
-                "rgba(96, 165, 250, 0.78)",
+                "rgba(6, 70, 117, 0.78)",
 
               borderColor:
-                "#60a5fa",
+                "#064675",
 
               borderWidth:
                 1,
@@ -743,7 +743,7 @@ function InformeCitasApoderados() {
 
               border: {
                 color:
-                  "#dbe7f4",
+                  "#d8e4ec",
               },
 
             },
@@ -772,7 +772,7 @@ function InformeCitasApoderados() {
 
               border: {
                 color:
-                  "#dbe7f4",
+                  "#d8e4ec",
               },
 
             },
@@ -816,10 +816,10 @@ function InformeCitasApoderados() {
                 ),
 
               backgroundColor:
-                "rgba(52, 211, 153, 0.78)",
+                "rgba(6, 70, 117, 0.78)",
 
               borderColor:
-                "#34d399",
+                "#064675",
 
               borderWidth:
                 1,
@@ -892,7 +892,7 @@ function InformeCitasApoderados() {
 
               border: {
                 color:
-                  "#dbe7f4",
+                  "#d8e4ec",
               },
 
             },
@@ -921,7 +921,7 @@ function InformeCitasApoderados() {
 
               border: {
                 color:
-                  "#dbe7f4",
+                  "#d8e4ec",
               },
 
             },
@@ -965,7 +965,7 @@ function InformeCitasApoderados() {
                 ),
 
               borderColor:
-                "#f43f5e",
+                "#064675",
 
               backgroundColor:
                 "rgba(244, 63, 94, 0.10)",
@@ -986,7 +986,7 @@ function InformeCitasApoderados() {
                 6,
 
               pointBackgroundColor:
-                "#f43f5e",
+                "#064675",
 
               pointBorderColor:
                 "#ffffff",
@@ -1056,7 +1056,7 @@ function InformeCitasApoderados() {
 
               border: {
                 color:
-                  "#dbe7f4",
+                  "#d8e4ec",
               },
 
             },
@@ -1085,7 +1085,7 @@ function InformeCitasApoderados() {
 
               border: {
                 color:
-                  "#dbe7f4",
+                  "#d8e4ec",
               },
 
             },
@@ -2019,44 +2019,10 @@ function KpiCard({
   clase,
 }) {
 
-  const fondos = {
-
-    blue:
-      "bg-blue-50/80 border-blue-200",
-
-    green:
-      "bg-emerald-50/80 border-emerald-200",
-
-    red:
-      "bg-rose-50/80 border-rose-200",
-
-    purple:
-      "bg-purple-50/80 border-purple-200",
-
-    orange:
-      "bg-orange-50/80 border-orange-200",
-
-  };
-
-
-  const colores = {
-
-    blue:
-      "text-blue-700",
-
-    green:
-      "text-emerald-700",
-
-    red:
-      "text-rose-700",
-
-    purple:
-      "text-purple-700",
-
-    orange:
-      "text-orange-700",
-
-  };
+  const fondoCorporativo = "bg-[var(--molsan-panel)] border-[var(--molsan-border)]";
+  const colorCorporativo = "text-[var(--molsan-blue)]";
+  const fondos = Object.fromEntries(["blue", "green", "red", "purple", "orange"].map((key) => [key, fondoCorporativo]));
+  const colores = Object.fromEntries(["blue", "green", "red", "purple", "orange"].map((key) => [key, colorCorporativo]));
 
 
   return (
@@ -2377,7 +2343,7 @@ function imprimirInforme(titulo, periodo, columnas, filas) {
   const th = columnas.map((c) => `<th>${escaparHTMLInforme(c.label)}</th>`).join("");
   const trs = filas.map((fila) => `<tr>${columnas.map((c) => `<td>${escaparHTMLInforme(c.render ? c.render(fila) : fila[c.key])}</td>`).join("")}</tr>`).join("");
   ventana.document.write(`<!doctype html><html lang="es"><head><meta charset="utf-8"/><title>${escaparHTMLInforme(titulo)}</title><style>
-    @page{size:landscape;margin:12mm}body{font-family:Arial,sans-serif;color:#24344d;padding:12px}h1{color:#183b66;margin:0 0 4px}p{color:#7186a3;margin:0 0 18px;font-size:12px}table{border-collapse:collapse;width:100%;font-size:9px}th{background:#edf4fc;color:#31577f;text-align:left}th,td{border:1px solid #dbe7f4;padding:6px;vertical-align:top}tr:nth-child(even){background:#f8fbfe}
+    @page{size:landscape;margin:12mm}body{font-family:Arial,sans-serif;color:#18364b;padding:12px}h1{color:#064675;margin:0 0 4px}p{color:#617789;margin:0 0 18px;font-size:12px}table{border-collapse:collapse;width:100%;font-size:9px}th{background:#eaf2f8;color:#064675;text-align:left}th,td{border:1px solid #d8e4ec;padding:6px;vertical-align:top}tr:nth-child(even){background:#f2f7fb}
     </style></head><body><h1>${escaparHTMLInforme(titulo)}</h1><p>Periodo: ${escaparHTMLInforme(periodo)} · Registros: ${filas.length}</p><table><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table><script>window.onload=()=>window.print();</script></body></html>`);
   ventana.document.close();
 }
@@ -3146,7 +3112,7 @@ function InformeFacturacion() {
 
   const resumen = (modalidad) => resumenFacturacionPorTipo(datosTarjetas.filter((fila) => fila.tipo_cancelacion === modalidad));
   const euros = (v) => Number(v || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
-  const campo = "block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
+  const campo = "block w-full rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm text-[var(--molsan-text)] outline-none focus:border-[var(--molsan-blue)] focus:ring-2 focus:ring-[var(--molsan-blue-soft)]";
   const grupos = [
     { key: "con_provision", titulo: "Cancelación con provisión", descripcion: "TIPOOPERACION: CANCELACIÓN / CANCELACIÓN CON PROVISIÓN", icono: "🏦", acento: "emerald" },
     { key: "sin_provision", titulo: "Cancelación sin provisión", descripcion: "TIPOOPERACION: CANCELACIÓN SIN PROVISIÓN", icono: "📄", acento: "amber" },
@@ -3227,11 +3193,7 @@ function InformeFacturacion() {
           {ESTADOS_ABSIS_INFORME.map((estadoInfo) => {
             const filasEstado = datosTarjetas.filter((fila) => String(fila.estado ?? "").trim().toUpperCase().replace(/\s+/g, " ") === estadoInfo.codigo);
             const importeEstado = filasEstado.reduce((total, fila) => total + (Number(fila.imp_gasto) || 0), 0);
-            const acento = estadoInfo.color === "emerald" ? "border-emerald-200 bg-emerald-50/70 text-emerald-800"
-              : estadoInfo.color === "rose" ? "border-rose-200 bg-rose-50/70 text-rose-800"
-              : estadoInfo.color === "amber" ? "border-amber-200 bg-amber-50/70 text-amber-800"
-              : estadoInfo.color === "blue" ? "border-blue-200 bg-blue-50/70 text-blue-800"
-              : "border-slate-200 bg-slate-50 text-slate-800";
+            const acento = "border-[var(--molsan-border)] bg-[var(--molsan-panel)] text-[var(--molsan-blue)]";
             return (
               <button key={estadoInfo.codigo} type="button" disabled={loadingTarjetas} onClick={() => {
                 const siguiente = { ...filtros, modalidad: "todas", estado: estadoInfo.codigo };
