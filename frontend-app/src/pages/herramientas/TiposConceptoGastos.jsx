@@ -1714,11 +1714,11 @@ export default function TiposConceptoGastos() {
  ${
  tipo.activo
  ?`
-                                    bg-emerald-50
-                                    text-emerald-700
+                                    
+                                    
                                   `:`
-                                    bg-slate-100
-                                    text-slate-500
+                                    
+                                    
                                   `}`}
                           >
 
@@ -1834,13 +1834,13 @@ export default function TiposConceptoGastos() {
  ${
  tipo.activo
  ?`
-                                      border-amber-200
+                                      
                                       bg-amber-50
                                       text-amber-600
                                       hover:bg-amber-100
                                     `:`
                                       border-emerald-200
-                                      bg-emerald-50
+                                      
                                       text-emerald-600
                                       hover:bg-emerald-100
                                     `}`}
