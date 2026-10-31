@@ -2,6 +2,7 @@ import {
   useEffect,
   useState,
   useCallback,
+  useRef,
 } from "react";
 
 import AutocompleteNotario from "./AutocompleteNotario";
@@ -428,53 +429,6 @@ export default function ModalNuevaCita({
 
 
   // ==========================================================
-  // ESC
-  // ==========================================================
-
-  useEffect(() => {
-
-    if (!fecha)
-      return;
-
-    const handleEscape =
-      (event) => {
-
-        if (
-          event.key ===
-            "Escape" &&
-          !loading
-        ) {
-
-          onClose();
-
-        }
-
-      };
-
-
-    window.addEventListener(
-      "keydown",
-      handleEscape
-    );
-
-
-    return () => {
-
-      window.removeEventListener(
-        "keydown",
-        handleEscape
-      );
-
-    };
-
-  }, [
-    fecha,
-    loading,
-    onClose,
-  ]);
-
-
-  // ==========================================================
   // GUARDAR
   // ==========================================================
 
@@ -727,7 +681,7 @@ export default function ModalNuevaCita({
   return (
 
     <div
-      className="modal-nueva-cita
+      className="modal-nueva-cita molsan-modal-overlay
  fixed inset-0
  
  
@@ -755,7 +709,7 @@ export default function ModalNuevaCita({
         role="dialog"
         aria-modal="true"
         aria-label={titulo}
-        className="w-full
+        className="molsan-modal__panel w-full
  max-w-2xl
  max-h-[92vh]
  overflow-y-auto"
@@ -769,7 +723,7 @@ export default function ModalNuevaCita({
            ==================================================== */}
 
         <div
-          className="sticky top-0 z-20
+          className="molsan-modal__header sticky top-0 z-20
  
  
  px-6 py-4
@@ -798,8 +752,7 @@ export default function ModalNuevaCita({
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="w-9 h-9
- 
+            className="molsan-btn molsan-btn--ghost molsan-btn--icon w-9 h-9
  flex items-center justify-center"
             aria-label="Cerrar"
           >
@@ -814,7 +767,7 @@ export default function ModalNuevaCita({
            ==================================================== */}
 
         <div
-          className="p-6
+          className="molsan-modal__body p-6
  space-y-5"
         >
 
@@ -1332,7 +1285,7 @@ export default function ModalNuevaCita({
            ==================================================== */}
 
         <div
-          className="px-6 py-4
+          className="molsan-modal__footer px-6 py-4
  flex flex-col-reverse
  sm:flex-row
  justify-between
@@ -1348,7 +1301,7 @@ export default function ModalNuevaCita({
                 <button
                   type="button"
                   disabled={loading}
-                  className="px-4 py-2"
+                  className="molsan-btn molsan-btn--danger px-4 py-2"
                   onClick={
                     onDelete
                   }
@@ -1371,7 +1324,7 @@ export default function ModalNuevaCita({
               type="button"
               disabled={loading}
               onClick={onClose}
-              className="px-4 py-2"
+              className="molsan-btn molsan-btn--secondary px-4 py-2"
             >
               {
                 soloLectura
@@ -1387,7 +1340,7 @@ export default function ModalNuevaCita({
                 type="button"
                 disabled={loading}
                 onClick={guardar}
-                className="px-5 py-2"
+                className="molsan-btn molsan-btn--primary px-5 py-2"
               >
                 {
                   loading
