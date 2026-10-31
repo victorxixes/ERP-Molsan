@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import axios from "../../api/axios";
 import useAccessibleDialog from "../ui/useAccessibleDialog";
 import { useAuthStore } from "../../store/authStore";
-import "../../css/ModalesHerramientasPremium.css";
 
 // Se conservan las categorías del repositorio actual para no romper
 // los documentos ya almacenados.
