@@ -75,7 +75,7 @@ export default function Cancelagest() {
     })
     .filter((modulo) => modulo && puedeVerModulo(modulo.key));
 
-  return <main className="erp-page min-w-0 space-y-6">
+  return <main className="erp-page cancelagest-premium min-w-0 space-y-6">
       <MolsanPageHeader mark="CG" title="CancelaGest" description="Centro de gestión de cancelaciones, provisiones, firmas y seguimiento registral." />
 
       {error && <div role="alert"><strong>No se han podido cargar los indicadores.</strong><p>{error}</p><button onClick={cargar}>Reintentar</button></div>}
@@ -89,7 +89,7 @@ export default function Cancelagest() {
 
       <section>
         <div><div><span>ACCESOS DIRECTOS</span><h2>Módulos de trabajo</h2><p>Accede a las herramientas principales del ERP sin salir del entorno corporativo.</p></div></div>
-        <div>{modulosVisibles.map((modulo) => <button type="button" key={modulo.titulo} onClick={() => navigate(modulo.ruta)}>
+        <div className="cancelagest-module-grid">{modulosVisibles.map((modulo) => <button type="button" key={modulo.titulo} className="molsan-module-card" onClick={() => navigate(modulo.ruta)}>
           <span>{modulo.icono}</span><span><strong>{modulo.titulo}</strong><small>{modulo.descripcion}</small></span><span>↗</span>
         </button>)}</div>
       </section>
