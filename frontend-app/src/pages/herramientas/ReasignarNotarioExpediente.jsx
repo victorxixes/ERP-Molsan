@@ -90,7 +90,7 @@ export default function ReasignarNotarioExpediente() {
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex h-14 w-14 items-center justify-center">🏛️</div>
           <div className="min-w-0 flex-1">
-            <h1 className="">Reasignar expediente a notario</h1>
+            <h1>Reasignar expediente a notario</h1>
             <p className="mt-1">
               Busca el expediente para recuperar su ficha de Envío a notario, corregir sus datos y guardar la nueva asignación.
             </p>
@@ -103,7 +103,7 @@ export default function ReasignarNotarioExpediente() {
 
       <section className="p-6">
         <form onSubmit={consultar}>
-          <h2 className="">1. Buscar expediente</h2>
+          <h2>1. Buscar expediente</h2>
           <p className="mt-1">
             Introduce el número de expediente. Se cargarán los datos notariales que ya están guardados, sin crear un expediente nuevo.
           </p>
@@ -138,10 +138,10 @@ export default function ReasignarNotarioExpediente() {
             <p className="uppercase">Expediente encontrado</p>
             <p className="mt-1">{expediente.id_expediente}</p>
             <p className="mt-1">
-              Notario actual: <span className="">{expediente.nombre_notario || expediente.notario || "Sin notario asignado"}</span>
+              Notario actual: <span>{expediente.nombre_notario || expediente.notario || "Sin notario asignado"}</span>
             </p>
             <p className="mt-1">
-              Fecha de envío: <span className="">{expediente.fecha_envio_notario || expediente.fecha_envio || "Sin fecha registrada"}</span>
+              Fecha de envío: <span>{expediente.fecha_envio_notario || expediente.fecha_envio || "Sin fecha registrada"}</span>
             </p>
           </div>
         )}
@@ -150,7 +150,7 @@ export default function ReasignarNotarioExpediente() {
       {expediente && (
         <section className="p-6 space-y-4">
           <div>
-            <h2 className="">3. Cambiar actividad en NotarGest</h2>
+            <h2>3. Cambiar actividad en NotarGest</h2>
             <p className="mt-1">Puedes mover el expediente libremente a cualquiera de las bandejas. El cambio no elimina la fecha de firma, el protocolo ni los documentos ya registrados.</p>
           </div>
           <div className="px-4 py-3">
@@ -195,7 +195,7 @@ export default function ReasignarNotarioExpediente() {
       {expediente && (
         <section className="space-y-3">
           <div>
-            <h2 className="">2. Revisar y corregir el envío a notario</h2>
+            <h2>2. Revisar y corregir el envío a notario</h2>
             <p className="mt-1">
               La ficha se abre con los datos actuales. Puedes cambiar el notario, la fecha de envío y los demás campos del formulario; los cambios se guardan en el expediente existente.
             </p>
