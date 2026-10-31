@@ -176,7 +176,7 @@ export default function LoginPage() {
         </form>
 
         <footer className="mt-8 pt-5">
-          <p className="">Molsan ERP · Plataforma empresarial</p>
+          <p>Molsan ERP · Plataforma empresarial</p>
         </footer>
       </section>
     </main>
