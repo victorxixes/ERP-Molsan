@@ -2348,22 +2348,20 @@ const permisosDisponibles =
                     item.id
                   )
                 }
-                className={`
-                  relative
-                  shrink-0
-                  px-3
-                  py-3.5
-                  text-sm
-                  font-semibold
-                  transition
-                  sm:px-4
-                  ${
-                    pestana ===
-                    item.id
-                      ? ""
-                      : ""
-                  }
-                `}
+                className={`relative
+ shrink-0
+ px-3
+ py-3.5
+ 
+ 
+ 
+ sm:px-4
+ ${
+ pestana ===
+ item.id
+ ? ""
+ : ""
+ }`}
               >
 
                 <span className="mr-2">
@@ -3165,23 +3163,19 @@ const permisosDisponibles =
                               )
                             }
                             className="h-5
- w-5
- accent-blue-600"
+ w-5"
                           />
 
                           <span
-                            className={`
-                              rounded-full
-                              px-3
-                              py-1
-                              text-xs
-                              font-semibold
-                              ${
-                                empleadoFormulario.activo
-                                  ? ""
-                                  : ""
-                              }
-                            `}
+                            className={`px-3
+ py-1
+ 
+ 
+ ${
+ empleadoFormulario.activo
+ ? ""
+ : ""
+ }`}
                           >
                             {empleadoFormulario.activo
                               ? "Activo"
@@ -3280,10 +3274,10 @@ const permisosDisponibles =
                             aria-checked={empleadoEdit.visible_en_listado !== false}
                             onClick={cambiarVisibilidadEmpleado}
                             disabled={guardandoVisibilidadEmpleado}
-                            className={`relative inline-flex h-8 w-16 shrink-0 items-center rounded-full transition-colors disabled:cursor-wait disabled:opacity-60 ${empleadoEdit.visible_en_listado === false ? "" : ""}`}
+                            className={`relative inline-flex h-8 w-16 shrink-0 items-center ${empleadoEdit.visible_en_listado === false ? "" : ""}`}
                             aria-label={empleadoEdit.visible_en_listado === false ? "Mostrar empleado en el listado" : "Ocultar empleado del listado"}
                           >
-                            <span className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-transform ${empleadoEdit.visible_en_listado === false ? "" : ""}`} />
+                            <span className={`inline-block h-6 w-6 ${empleadoEdit.visible_en_listado === false ? "" : ""}`} />
                           </button>
                         </div>
                         <div className="mt-2">
@@ -3369,22 +3363,20 @@ const permisosDisponibles =
                                   key={
                                     modulo
                                   }
-                                  className={`
-                                    flex
-                                    cursor-pointer
-                                    items-center
-                                    gap-3
-                                    rounded-xl
-                                    border
-                                    px-4
-                                    py-3
-                                    transition
-                                    ${
-                                      activo
-                                        ? ""
-                                        : ""
-                                    }
-                                  `}
+                                  className={`flex
+ 
+ items-center
+ gap-3
+ 
+ 
+ px-4
+ py-3
+ 
+ ${
+ activo
+ ? ""
+ : ""
+ }`}
                                 >
 
                                   <input
@@ -3398,21 +3390,16 @@ const permisosDisponibles =
                                       )
                                     }
                                     className="h-4
- w-4
- accent-blue-600"
+ w-4"
                                   />
 
 
                                   <span
-                                    className={`
-                                      text-sm
-                                      font-medium
-                                      ${
-                                        activo
-                                          ? ""
-                                          : ""
-                                      }
-                                    `}
+                                    className={`${
+ activo
+ ? ""
+ : ""
+ }`}
                                   >
                                     {MODULOS_ERP.find((item) => item.key === modulo)?.label || capitalizar(modulo)}
                                   </span>
@@ -3555,24 +3542,22 @@ const permisosDisponibles =
                                               key={
                                                 permiso
                                               }
-                                              className={`
-                                                flex
-                                                cursor-pointer
-                                                items-center
-                                                gap-2
-                                                rounded-xl
-                                                border
-                                                px-3
-                                                py-2
-                                                text-xs
-                                                font-semibold
-                                                transition
-                                                ${
-                                                  activo
-                                                    ? ""
-                                                    : ""
-                                                }
-                                              `}
+                                              className={`flex
+ 
+ items-center
+ gap-2
+ 
+ 
+ px-3
+ py-2
+ 
+ 
+ 
+ ${
+ activo
+ ? ""
+ : ""
+ }`}
                                             >
 
                                               <input
@@ -3587,8 +3572,7 @@ const permisosDisponibles =
                                                   )
                                                 }
                                                 className="h-3.5
- w-3.5
- accent-blue-600"
+ w-3.5"
                                               />
 
                                               {capitalizar(
@@ -3686,7 +3670,7 @@ const permisosDisponibles =
                                   {empleadosReparto.map((empleado) => <option key={empleado.id} value={empleado.id}>{[empleado.nombre, empleado.apellidos].filter(Boolean).join(" ") || empleado.usuario || ("Empleado " + empleado.id)}</option>)}
                                 </select>
                                 <div className="flex items-center gap-3">
-                                  <label className="flex items-center gap-2"><input type="checkbox" checked={Boolean(notaria._habilitadaDraft ?? notaria.habilitada)} disabled={!esAdministrador || guardandoNotariasEncargaGest} onChange={(e) => setNotariasEncargaGest((actual) => actual.map((n) => Number(n.id) === id ? { ...n, _habilitadaDraft: e.target.checked } : n))} className="h-4 w-4 accent-emerald-600" />Habilitar</label>
+                                  <label className="flex items-center gap-2"><input type="checkbox" checked={Boolean(notaria._habilitadaDraft ?? notaria.habilitada)} disabled={!esAdministrador || guardandoNotariasEncargaGest} onChange={(e) => setNotariasEncargaGest((actual) => actual.map((n) => Number(n.id) === id ? { ...n, _habilitadaDraft: e.target.checked } : n))} className="h-4 w-4" />Habilitar</label>
                                   <button type="button" disabled={!esAdministrador || guardandoNotariasEncargaGest || Boolean((notaria._habilitadaDraft ?? notaria.habilitada) && !notaria.gestor_id)} onClick={async () => {
                                     setGuardandoNotariasEncargaGest(true); setErrorNotariasEncargaGest(""); setMensajeNotariasEncargaGest("");
                                     try {
@@ -3740,7 +3724,7 @@ const permisosDisponibles =
                               <div className="mb-3 flex items-center justify-between gap-3">
                                 <strong className="">Actividad / regla {indice + 1}</strong>
                                 <div className="flex items-center gap-3">
-                                  <label className="flex items-center gap-2"><input type="checkbox" checked={regla.activa !== false} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, activa: e.target.checked } : r))} className="h-4 w-4 accent-blue-600" />Activa</label>
+                                  <label className="flex items-center gap-2"><input type="checkbox" checked={regla.activa !== false} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, activa: e.target.checked } : r))} className="h-4 w-4" />Activa</label>
                                   <button type="button" onClick={() => setReglasReparto((actual) => actual.filter((_, i) => i !== indice))} className="px-3 py-1.5">Eliminar</button>
                                 </div>
                               </div>
@@ -3755,7 +3739,7 @@ const permisosDisponibles =
                                   <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
                                     {[...new Set([...(Array.isArray(regla.estados_expediente) ? regla.estados_expediente : []), ...estadosExpedienteReparto])].filter(Boolean).map((estado) => (
                                       <label key={estado} className="flex items-center gap-2 px-2 py-1.5">
-                                        <input type="checkbox" className="h-4 w-4 accent-blue-600" checked={(Array.isArray(regla.estados_expediente) ? regla.estados_expediente : []).includes(estado)} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => {
+                                        <input type="checkbox" className="h-4 w-4" checked={(Array.isArray(regla.estados_expediente) ? regla.estados_expediente : []).includes(estado)} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => {
                                           if (i !== indice) return r;
                                           const seleccionados = Array.isArray(r.estados_expediente) ? r.estados_expediente : [];
                                           return { ...r, estados_expediente: e.target.checked ? [...seleccionados.filter((x) => x !== estado), estado] : seleccionados.filter((x) => x !== estado) };
@@ -3767,11 +3751,11 @@ const permisosDisponibles =
                                   {cargandoCatalogosReparto && <p className="mt-2">Cargando estados del catálogo…</p>}
                                 </div>
                                 <label className="block">Porcentaje de reparto (%)<input type="number" min="0" max="100" step="1" value={regla.porcentaje ?? 0} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, porcentaje: e.target.value } : r))} className="mt-1 w-full px-3 py-2" /></label>
-                                <label className="flex items-center gap-2 self-end px-3 py-3"><input type="checkbox" checked={Boolean(regla.zona_territorial)} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, zona_territorial: e.target.checked, comunidades: e.target.checked ? ((Array.isArray(r.comunidades) && r.comunidades.length) ? r.comunidades : (r.comunidad ? [r.comunidad] : ["Cataluña"])) : [], comunidad: "" } : r))} className="h-4 w-4 accent-blue-600" />Limitar por zona territorial</label>
+                                <label className="flex items-center gap-2 self-end px-3 py-3"><input type="checkbox" checked={Boolean(regla.zona_territorial)} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, zona_territorial: e.target.checked, comunidades: e.target.checked ? ((Array.isArray(r.comunidades) && r.comunidades.length) ? r.comunidades : (r.comunidad ? [r.comunidad] : ["Cataluña"])) : [], comunidad: "" } : r))} className="h-4 w-4" />Limitar por zona territorial</label>
                                 {regla.zona_territorial && <div className="p-3 md:col-span-2 xl:col-span-3">
                                   <div className="mb-2">Zonas territoriales (puedes marcar varias)</div>
                                   <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                                    {comunidadesReparto.map((comunidad) => <label key={comunidad} className="flex items-center gap-2 px-2 py-1.5"><input type="checkbox" checked={(Array.isArray(regla.comunidades) ? regla.comunidades : (regla.comunidad ? [regla.comunidad] : [])).includes(comunidad)} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => { if (i !== indice) return r; const zonas = Array.isArray(r.comunidades) ? r.comunidades : (r.comunidad ? [r.comunidad] : []); const nuevasZonas = e.target.checked ? [...new Set([...zonas, comunidad])] : zonas.filter((z) => z !== comunidad); return { ...r, comunidades: nuevasZonas, comunidad: "" }; }))} className="h-4 w-4 accent-blue-600" />{comunidad}</label>)}
+                                    {comunidadesReparto.map((comunidad) => <label key={comunidad} className="flex items-center gap-2 px-2 py-1.5"><input type="checkbox" checked={(Array.isArray(regla.comunidades) ? regla.comunidades : (regla.comunidad ? [regla.comunidad] : [])).includes(comunidad)} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => { if (i !== indice) return r; const zonas = Array.isArray(r.comunidades) ? r.comunidades : (r.comunidad ? [r.comunidad] : []); const nuevasZonas = e.target.checked ? [...new Set([...zonas, comunidad])] : zonas.filter((z) => z !== comunidad); return { ...r, comunidades: nuevasZonas, comunidad: "" }; }))} className="h-4 w-4" />{comunidad}</label>)}
                                   </div>
                                   {!(Array.isArray(regla.comunidades) && regla.comunidades.length) && <p className="mt-2">Selecciona al menos una comunidad autónoma.</p>}
                                 </div>}
