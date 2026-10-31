@@ -434,6 +434,44 @@ def _distancia_de_notaria(notaria):
         return None
 
 
+def _agregado_nombres_asociados(notaria_asociada):
+    nombre = func.concat_ws(
+        " ", notaria_asociada.nombre, notaria_asociada.apellidos
+    )
+    # PostgreSQL necesita el ORDER BY dentro de STRING_AGG para que el
+    # criterio compuesto sea determinista aunque cambie el plan de consulta.
+    return func.string_agg(
+        aggregate_order_by(
+            nombre,
+            func.lower(nombre),
+            notaria_asociada.id,
+        ),
+        ", ",
+    )
+
+
+def _ordenar_query_ctn(query, columna_orden, sort_order, page, page_size):
+    """Aplica un orden total y estable antes del OFFSET/LIMIT del servidor."""
+    if columna_orden is None:
+        criterios = (
+            Notaria.apellidos.asc().nullslast(),
+            Notaria.nombre.asc().nullslast(),
+            Notaria.id.asc(),
+        )
+    else:
+        criterio = (
+            columna_orden.asc()
+            if str(sort_order or "asc").lower() == "asc"
+            else columna_orden.desc()
+        )
+        criterios = (criterio.nullslast(), Notaria.id.asc())
+    return (
+        query.order_by(*criterios)
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+    )
+
+
 # ============================================================
 # GEOCODIFICACIÓN Y MIGRACIÓN
 # ============================================================
@@ -481,20 +519,8 @@ def listar_notarias(
     # Las columnas calculadas se ordenan en SQL antes de paginar. Así el orden
     # es global y no cambia al avanzar entre páginas.
     notaria_asociada = aliased(Notaria)
-    nombre_asociado_orden = func.concat_ws(
-        " ", notaria_asociada.nombre, notaria_asociada.apellidos
-    )
     asociaciones_orden = (
-        db.query(
-            func.string_agg(
-                aggregate_order_by(
-                    nombre_asociado_orden,
-                    func.lower(nombre_asociado_orden),
-                    notaria_asociada.id,
-                ),
-                ", ",
-            )
-        )
+        db.query(_agregado_nombres_asociados(notaria_asociada))
         .select_from(
             notarios_asociados_table.join(
                 notaria_asociada,
@@ -552,24 +578,9 @@ def listar_notarias(
         "distancia_km": distancia_orden,
     }
     columna_orden = columnas_ordenables.get(sort_by)
-    if columna_orden is None:
-        # Desempate estable obligatorio para que la paginación no duplique
-        # ni omita notarios cuando apellidos/nombre coinciden.
-        orden_query = (
-            Notaria.apellidos.asc().nullslast(),
-            Notaria.nombre.asc().nullslast(),
-            Notaria.id.asc(),
-        )
-    else:
-        criterio = columna_orden.asc() if sort_order.lower() == "asc" else columna_orden.desc()
-        orden_query = (criterio.nullslast(), Notaria.id.asc())
-
-    filas = (
-        query.order_by(*orden_query)
-        .offset((page - 1) * page_size)
-        .limit(page_size)
-        .all()
-    )
+    filas = _ordenar_query_ctn(
+        query, columna_orden, sort_order, page, page_size
+    ).all()
     items = []
     for notaria in filas:
         data = _notaria_con_asociaciones(db, notaria)
