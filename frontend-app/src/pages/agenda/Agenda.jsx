@@ -415,24 +415,15 @@ export default function Agenda({ soloApoderado = false } = {}) {
   // ============================================================
 
   return (
-    <div className="agenda-premium-page min-w-0 space-y-5 p-3 text-[var(--erp-text)] animate-fade-in sm:p-4 lg:p-6">
+    <div className="agenda-premium-page min-w-0 space-y-5 p-3 sm:p-4 lg:p-6">
       {/* CABECERA Y NAVEGACIÓN */}
 
-      <div className="erp-card p-4 shadow-sm">
+      <div className="erp-card p-4">
         <div className="flex flex-wrap items-center gap-3">
           <button
             type="button"
             onClick={mesAnterior}
-            className="
-              w-10 h-10 rounded-xl
-              border border-[var(--erp-border)]
-              bg-[var(--erp-surface-soft)]
-              text-[var(--erp-text)]
-              hover:bg-[var(--erp-primary-soft)]
-              hover:text-[var(--erp-primary)]
-              transition
-              font-semibold
-            "
+            className="w-10 h-10"
             title="Mes anterior"
             aria-label="Mes anterior"
           >
@@ -466,16 +457,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
           <button
             type="button"
             onClick={mesSiguiente}
-            className="
-              w-10 h-10 rounded-xl
-              border border-[var(--erp-border)]
-              bg-[var(--erp-surface-soft)]
-              text-[var(--erp-text)]
-              hover:bg-[var(--erp-primary-soft)]
-              hover:text-[var(--erp-primary)]
-              transition
-              font-semibold
-            "
+            className="w-10 h-10"
             title="Mes siguiente"
             aria-label="Mes siguiente"
           >
@@ -491,13 +473,8 @@ export default function Agenda({ soloApoderado = false } = {}) {
 
           {esMesActual && (
             <span
-              className="
-                hidden sm:inline-flex
-                px-3 py-1.5 rounded-full
-                text-xs font-semibold
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-              "
+              className="hidden sm:inline-flex
+ px-3 py-1.5"
             >
               Mes actual
             </span>
@@ -508,12 +485,8 @@ export default function Agenda({ soloApoderado = false } = {}) {
           {/* SELECTOR DE VISTA */}
 
           <div
-            className="
-              ml-auto flex items-center gap-1
-              p-1 rounded-xl
-              bg-[var(--erp-surface-soft)]
-              border border-[var(--erp-border)]
-            "
+            className="ml-auto flex items-center gap-1
+ p-1"
           >
             {["mes", "semana", "dia"].map((opcion) => {
               const activo = vista === opcion;
@@ -530,8 +503,8 @@ export default function Agenda({ soloApoderado = false } = {}) {
                     transition-all duration-200
                     ${
                       activo
-                        ? "bg-[var(--erp-primary)] text-white shadow-sm"
-                        : "text-[var(--erp-text-soft)] hover:text-[var(--erp-text)] hover:bg-white"
+                        ? ""
+                        : ""
                     }
                   `}
                 >
@@ -552,7 +525,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
       </section>
 
       {/* FILTROS Y CALENDARIO */}
-      <div className="erp-card p-4 shadow-sm agenda-calendar-card">
+      <div className="erp-card p-4 agenda-calendar-card">
         <div className="agenda-filters">
           <label className="agenda-search"><span aria-hidden="true">⌕</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar cita, notario, apoderado…" aria-label="Buscar citas" /></label>
           <div className="agenda-filter-buttons" aria-label="Filtrar por modalidad">{[["todas", "Todas"], ["presencial", "Presencial"], ["videoconferencia", "Videoconferencia"]].map(([valor, etiqueta]) => <button key={valor} type="button" aria-pressed={modalidadFiltro === valor} onClick={() => setModalidadFiltro(valor)}>{etiqueta}</button>)}</div>
