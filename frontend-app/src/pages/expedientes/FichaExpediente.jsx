@@ -5765,7 +5765,7 @@ const cuantiaFincasParaEnvio =
                             <section ref={ordenPagoDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="orden-pago-titulo" className="expediente-operativo-modal-panel flex max-h-[96vh] w-full max-w-6xl flex-col overflow-hidden">
                               <header className="flex items-start justify-between gap-3 px-5 py-4 sm:px-6">
                                 <div><p className="uppercase">MOLSAN ERP · Gestión económica</p><h2 id="orden-pago-titulo" className="mt-1">Orden de pago</h2><p className="mt-1">Expediente {expediente?.id_expediente || expediente?.id || id || "—"} · Preparar la orden no ejecuta una transferencia bancaria.</p></div>
-                                <button type="button" onClick={() => { if (!guardandoPagoReal) { setMostrarFormularioPagoReal(false); setPagoGastoSeleccionadoId(""); }} disabled={guardandoPagoReal} className="px-3 py-2" aria-label="Cerrar orden de pago">×</button>
+                                <button type="button" onClick={() => { if (!guardandoPagoReal) { setMostrarFormularioPagoReal(false); setPagoGastoSeleccionadoId(""); }}} disabled={guardandoPagoReal} className="px-3 py-2" aria-label="Cerrar orden de pago">×</button>
                               </header>
                               <form onSubmit={registrarPagoObligacion} className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
                                 <section className="mb-4 p-4">
@@ -5862,7 +5862,7 @@ const cuantiaFincasParaEnvio =
                                 {errorPagoReal && <p role="alert" className="mb-4 px-3 py-2">{errorPagoReal}</p>}
                                 <footer className="flex flex-wrap items-center justify-between gap-3 px-4 py-4">
                                   <p className="max-w-xl">Al confirmar, se guardarán los datos de la factura en la obligación y se registrará un movimiento en el histórico. No se ordena ninguna transferencia bancaria desde el ERP.</p>
-                                  <div className="flex gap-2"><button type="button" onClick={() => { if (!guardandoPagoReal) { setMostrarFormularioPagoReal(false); setPagoGastoSeleccionadoId(""); }} disabled={guardandoPagoReal} className="px-4 py-2.5">Cancelar</button><button type="submit" disabled={guardandoPagoReal || !pagoGastoSeleccionadoId} className="px-5 py-2.5">{guardandoPagoReal ? "Registrando pago…" : "Pagar"}</button></div>
+                                  <div className="flex gap-2"><button type="button" onClick={() => { if (!guardandoPagoReal) { setMostrarFormularioPagoReal(false); setPagoGastoSeleccionadoId(""); }}} disabled={guardandoPagoReal} className="px-4 py-2.5">Cancelar</button><button type="submit" disabled={guardandoPagoReal || !pagoGastoSeleccionadoId} className="px-5 py-2.5">{guardandoPagoReal ? "Registrando pago…" : "Pagar"}</button></div>
                                 </footer>
                               </form>
                             </section>
