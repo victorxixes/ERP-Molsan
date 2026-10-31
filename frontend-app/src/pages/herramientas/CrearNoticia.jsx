@@ -58,7 +58,7 @@ export default function CrearNoticia() {
       ===================================================== */}
 
       <div
-        className="relative overflow-hidden
+        className="molsan-subpage-header relative overflow-hidden
  
  
  

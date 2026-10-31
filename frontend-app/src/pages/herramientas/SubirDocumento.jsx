@@ -62,7 +62,7 @@ export default function SubirDocumento() {
       ===================================================== */}
 
       <div
-        className="relative overflow-hidden
+        className="molsan-subpage-header relative overflow-hidden
  
  
  
