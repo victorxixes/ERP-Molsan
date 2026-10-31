@@ -191,7 +191,7 @@ function CampoSelect({
     >
 
       <span
-        className=""
+       
       >
         {label}
       </span>
@@ -1259,7 +1259,7 @@ export default function AccionesExpediente() {
           <div>
 
             <h1
-              className=""
+             
             >
               Acciones del expediente
             </h1>
@@ -1319,7 +1319,7 @@ export default function AccionesExpediente() {
           >
 
             <span
-              className=""
+             
             >
               +
             </span>
@@ -1470,7 +1470,7 @@ export default function AccionesExpediente() {
           <div>
 
             <h2
-              className=""
+             
             >
               Buscar y filtrar
             </h2>
@@ -1496,7 +1496,7 @@ export default function AccionesExpediente() {
               setPagina(1);
 
             }}
-            className=""
+           
           >
             Limpiar filtros
           </button>
@@ -1684,7 +1684,7 @@ export default function AccionesExpediente() {
           <div>
 
             <h2
-              className=""
+             
             >
               Acciones disponibles
             </h2>
@@ -1712,7 +1712,7 @@ export default function AccionesExpediente() {
             <thead>
 
               <tr
-                className=""
+               
               >
 
                 <th className="px-4 py-3">
@@ -1792,7 +1792,7 @@ export default function AccionesExpediente() {
                       key={
                         accion.id
                       }
-                      className=""
+                     
                     >
 
                       <td
@@ -1929,12 +1929,12 @@ export default function AccionesExpediente() {
         >
 
           <div
-            className=""
+           
           >
             Mostrando{" "}
 
             <strong
-              className=""
+             
             >
               {
                 accionesPagina.length
@@ -1944,7 +1944,7 @@ export default function AccionesExpediente() {
             {" "}de{" "}
 
             <strong
-              className=""
+             
             >
               {totalAcciones}
             </strong>
@@ -1988,7 +1988,7 @@ export default function AccionesExpediente() {
               Página{" "}
 
               <strong
-                className=""
+               
               >
                 {pagina}
               </strong>
@@ -1996,7 +1996,7 @@ export default function AccionesExpediente() {
               {" "}de{" "}
 
               <strong
-                className=""
+               
               >
                 {totalPaginas}
               </strong>
@@ -2074,7 +2074,7 @@ export default function AccionesExpediente() {
               <div>
 
                 <h2
-                  className=""
+                 
                 >
                   {modoEdicion
                     ? "Editar acción del expediente"
@@ -2197,13 +2197,13 @@ export default function AccionesExpediente() {
                   <div>
 
                     <div
-                      className=""
+                     
                     >
                       Acción activa
                     </div>
 
                     <div
-                      className=""
+                     
                     >
                       Disponible en el catálogo
                     </div>
@@ -2221,7 +2221,7 @@ export default function AccionesExpediente() {
                 >
 
                   <span
-                    className=""
+                   
                   >
                     Descripción *
                   </span>
@@ -2344,7 +2344,7 @@ export default function AccionesExpediente() {
               <div>
 
                 <h2
-                  className=""
+                 
                 >
                   Importar Acciones del expediente
                 </h2>
@@ -2410,7 +2410,7 @@ export default function AccionesExpediente() {
 
 
                   <p
-                    className=""
+                   
                   >
                     Selecciona el fichero Excel
                   </p>
@@ -2472,7 +2472,7 @@ export default function AccionesExpediente() {
                     >
 
                       <div
-                        className=""
+                       
                       >
                         {archivo.name}
                       </div>
@@ -2496,7 +2496,7 @@ export default function AccionesExpediente() {
                 >
                   Columnas esperadas:
                   <strong
-                    className=""
+                   
                   >
                     {" "}
                     Departamento, Sección,
