@@ -147,7 +147,7 @@ export default function Intranet() {
       <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3"><div className="p-4"><p className="uppercase">Noticias publicadas</p><p className="mt-1">{noticias.length}</p></div><div className="p-4"><p className="uppercase">Documentos internos</p><p className="mt-1">{documentos.length}</p></div><div className="p-4"><p className="uppercase">Sesión</p><p className="mt-1 truncate">{empleado?.nombre || empleado?.username || empleado?.email || "Empleado conectado"}</p></div></div>
     </header>
 
-    {(mensaje || error) && <div role="status" className={`rounded-2xl border px-4 py-3 text-sm ${error || /no se ha podido|no permitido|supera|selecciona|obligatorio|completa/i.test(mensaje) ? "" : ""}`}>{mensaje || error}</div>}
+    {(mensaje || error) && <div role="status" className={`px-4 py-3 ${error || /no se ha podido|no permitido|supera|selecciona|obligatorio|completa/i.test(mensaje) ? "" : ""}`}>{mensaje || error}</div>}
 
     <section className="p-4"><div className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(220px,1fr)_180px_180px_auto] md:items-end"><label className="block">Buscar noticias y documentos<input className={input} value={buscar} onChange={(e) => setBuscar(e.target.value)} placeholder="Título, contenido o concepto…" /></label><label className="block">Publicado desde<input type="date" className={input} value={desde} onChange={(e) => setDesde(e.target.value)} /></label><label className="block">Publicado hasta<input type="date" className={input} value={hasta} onChange={(e) => setHasta(e.target.value)} /></label><button className={secondary} onClick={() => { setBuscar(""); setDesde(""); setHasta(""); }}>Limpiar filtros</button></div></section>
 
