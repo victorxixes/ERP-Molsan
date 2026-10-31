@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-import "../../css/ComponentesOperativosPremium.css";
 
 const SECCIONES = [
   { id: "resumen", label: "Resumen", icon: "◫" },
@@ -28,7 +27,7 @@ const ENDPOINTS = [
 
 function Campo({ label, value, onChange, placeholder = "", type = "text", required = false, help }) {
   return (
-    <label className="verifacti-premium block min-w-0">
+    <label className="block min-w-0">
       <span className="mb-1.5 block uppercase">{label}{required && <span className=""> *</span>}</span>
       <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} required={required}
         className="w-full px-3.5 py-2.5" />
@@ -89,7 +88,7 @@ export default function Verifacti() {
   }
 
   return (
-    <div className="verifacti-page-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <header className="relative overflow-hidden p-5 sm:p-7">
         <div className="absolute inset-x-0 top-0 h-1" />
         <div className="absolute -right-10 -top-16 h-48 w-48" />
