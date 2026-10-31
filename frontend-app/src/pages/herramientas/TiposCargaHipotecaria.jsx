@@ -581,11 +581,9 @@ export default function TiposCargaHipotecaria() {
 
   return (
     <div
-      className="
-        catalogo-maestro-page-premium herramientas-subpagina-premium
-        erp-page
-        space-y-5
-      "
+      className="catalogo-maestro-page-premium herramientas-subpagina-premium
+ erp-page
+ space-y-5"
     >
 
       {/* ====================================================
@@ -593,48 +591,39 @@ export default function TiposCargaHipotecaria() {
       ==================================================== */}
 
       <section
-        className="
-          erp-card
-          max-w-[1700px]
-          mx-auto
-          p-5
-        "
+        className="erp-card
+ max-w-[1700px]
+ mx-auto
+ p-5"
       >
 
         <div
-          className="
-            flex
-            flex-col
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-            gap-4
-          "
+          className="flex
+ flex-col
+ lg:flex-row
+ lg:items-center
+ lg:justify-between
+ gap-4"
         >
 
           <div>
 
             <div
-              className="
-                flex
-                items-center
-                gap-3
-              "
+              className="flex
+ items-center
+ gap-3"
             >
 
               <div
-                className="
-                  w-11
-                  h-11
-                  rounded-xl
-                  bg-[var(--erp-primary-soft)]
-                  border
-                  border-[var(--erp-border)]
-                  flex
-                  items-center
-                  justify-center
-                  text-xl
-                "
+                className="w-11
+ h-11
+ 
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
               >
                 🏠
               </div>
@@ -642,21 +631,13 @@ export default function TiposCargaHipotecaria() {
               <div>
 
                 <h1
-                  className="
-                    text-2xl
-                    font-bold
-                    text-[var(--erp-text)]
-                  "
+                  className=""
                 >
                   Tipos de Carga Hipotecaria
                 </h1>
 
                 <p
-                  className="
-                    text-sm
-                    text-[var(--erp-text-soft)]
-                    mt-0.5
-                  "
+                  className="mt-0.5"
                 >
                   Catálogo de tipos de carga hipotecaria
                 </p>
@@ -671,24 +652,15 @@ export default function TiposCargaHipotecaria() {
           <button
             type="button"
             onClick={abrirNuevo}
-            className="
-              inline-flex
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              px-4
-              py-2.5
-              bg-[var(--erp-primary)]
-              text-white
-              text-sm
-              font-semibold
-              shadow-sm
-              hover:opacity-90
-              transition
-            "
+            className="inline-flex
+ items-center
+ justify-center
+ gap-2
+ 
+ px-4
+ py-2.5"
           >
-            <span className="text-lg">
+            <span className="">
               ＋
             </span>
 
@@ -708,19 +680,15 @@ export default function TiposCargaHipotecaria() {
       {mensaje && (
 
         <div
-          className="
-            max-w-[1700px]
-            mx-auto
-            rounded-xl
-            border
-            border-green-200
-            bg-green-50
-            text-green-700
-            px-4
-            py-3
-            text-sm
-            font-medium
-          "
+          className="max-w-[1700px]
+ mx-auto
+ 
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
         >
           {mensaje}
         </div>
@@ -731,19 +699,15 @@ export default function TiposCargaHipotecaria() {
       {error && (
 
         <div
-          className="
-            max-w-[1700px]
-            mx-auto
-            rounded-xl
-            border
-            border-red-200
-            bg-red-50
-            text-red-700
-            px-4
-            py-3
-            text-sm
-            font-medium
-          "
+          className="max-w-[1700px]
+ mx-auto
+ 
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
         >
           {error}
         </div>
@@ -756,42 +720,27 @@ export default function TiposCargaHipotecaria() {
       ==================================================== */}
 
       <section
-        className="
-          max-w-[1700px]
-          mx-auto
-          grid
-          grid-cols-1
-          sm:grid-cols-3
-          gap-4
-        "
+        className="max-w-[1700px]
+ mx-auto
+ grid
+ grid-cols-1
+ sm:grid-cols-3
+ gap-4"
       >
 
         <div
-          className="
-            erp-card
-            p-5
-          "
+          className="erp-card
+ p-5"
         >
 
           <div
-            className="
-              text-xs
-              uppercase
-              tracking-wide
-              text-[var(--erp-text-soft)]
-              font-semibold
-            "
+            className="uppercase"
           >
             Total
           </div>
 
           <div
-            className="
-              text-3xl
-              font-bold
-              text-[var(--erp-text)]
-              mt-1
-            "
+            className="mt-1"
           >
             {tipos.length}
           </div>
@@ -800,31 +749,18 @@ export default function TiposCargaHipotecaria() {
 
 
         <div
-          className="
-            erp-card
-            p-5
-          "
+          className="erp-card
+ p-5"
         >
 
           <div
-            className="
-              text-xs
-              uppercase
-              tracking-wide
-              text-[var(--erp-text-soft)]
-              font-semibold
-            "
+            className="uppercase"
           >
             Activos
           </div>
 
           <div
-            className="
-              text-3xl
-              font-bold
-              text-green-600
-              mt-1
-            "
+            className="mt-1"
           >
             {totalActivos}
           </div>
@@ -833,31 +769,18 @@ export default function TiposCargaHipotecaria() {
 
 
         <div
-          className="
-            erp-card
-            p-5
-          "
+          className="erp-card
+ p-5"
         >
 
           <div
-            className="
-              text-xs
-              uppercase
-              tracking-wide
-              text-[var(--erp-text-soft)]
-              font-semibold
-            "
+            className="uppercase"
           >
             Inactivos
           </div>
 
           <div
-            className="
-              text-3xl
-              font-bold
-              text-slate-500
-              mt-1
-            "
+            className="mt-1"
           >
             {totalInactivos}
           </div>
@@ -872,21 +795,17 @@ export default function TiposCargaHipotecaria() {
       ==================================================== */}
 
       <section
-        className="
-          erp-card
-          max-w-[1700px]
-          mx-auto
-          p-5
-        "
+        className="erp-card
+ max-w-[1700px]
+ mx-auto
+ p-5"
       >
 
         <div
-          className="
-            grid
-            grid-cols-1
-            md:grid-cols-[1fr_220px]
-            gap-3
-          "
+          className="grid
+ grid-cols-1
+ md:grid-cols-[1fr_220px]
+ gap-3"
         >
 
           <input
@@ -898,20 +817,13 @@ export default function TiposCargaHipotecaria() {
               )
             }
             placeholder="Buscar tipo de carga..."
-            className="
-              w-full
-              rounded-xl
-              border
-              border-[var(--erp-border)]
-              bg-[var(--erp-surface)]
-              px-4
-              py-3
-              text-sm
-              text-[var(--erp-text)]
-              outline-none
-              focus:ring-2
-              focus:ring-[var(--erp-primary)]
-            "
+            className="w-full
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
           />
 
 
@@ -922,17 +834,8 @@ export default function TiposCargaHipotecaria() {
                 e.target.value
               )
             }
-            className="
-              rounded-xl
-              border
-              border-[var(--erp-border)]
-              bg-[var(--erp-surface)]
-              px-4
-              py-3
-              text-sm
-              text-[var(--erp-text)]
-              outline-none
-            "
+            className="px-4
+ py-3"
           >
 
             <option value="true">
@@ -959,65 +862,43 @@ export default function TiposCargaHipotecaria() {
       ==================================================== */}
 
       <section
-        className="
-          erp-card
-          max-w-[1700px]
-          mx-auto
-          overflow-hidden
-        "
+        className="erp-card
+ max-w-[1700px]
+ mx-auto
+ overflow-hidden"
       >
 
         <div
-          className="
-            overflow-x-auto
-          "
+          className="overflow-x-auto"
         >
 
           <table
-            className="
-              w-full
-              text-sm
-            "
+            className="w-full"
           >
 
             <thead>
 
               <tr
-                className="
-                  bg-[var(--erp-primary)]
-                  text-white
-                "
+                className=""
               >
 
                 <th
-                  className="
-                    px-5
-                    py-3
-                    text-left
-                    font-semibold
-                  "
+                  className="px-5
+ py-3"
                 >
                   Tipo de carga
                 </th>
 
                 <th
-                  className="
-                    px-5
-                    py-3
-                    text-center
-                    font-semibold
-                  "
+                  className="px-5
+ py-3"
                 >
                   Estado
                 </th>
 
                 <th
-                  className="
-                    px-5
-                    py-3
-                    text-right
-                    font-semibold
-                  "
+                  className="px-5
+ py-3"
                 >
                   Acciones
                 </th>
@@ -1035,12 +916,8 @@ export default function TiposCargaHipotecaria() {
 
                   <td
                     colSpan={3}
-                    className="
-                      px-5
-                      py-12
-                      text-center
-                      text-[var(--erp-text-soft)]
-                    "
+                    className="px-5
+ py-12"
                   >
                     Cargando catálogo…
                   </td>
@@ -1053,12 +930,8 @@ export default function TiposCargaHipotecaria() {
 
                   <td
                     colSpan={3}
-                    className="
-                      px-5
-                      py-12
-                      text-center
-                      text-[var(--erp-text-soft)]
-                    "
+                    className="px-5
+ py-12"
                   >
                     No hay tipos de carga para los filtros seleccionados.
                   </td>
@@ -1072,32 +945,20 @@ export default function TiposCargaHipotecaria() {
 
                     <tr
                       key={tipo.id}
-                      className="
-                        border-t
-                        border-[var(--erp-border)]
-                        hover:bg-[var(--erp-primary-soft)]
-                        transition
-                      "
+                      className=""
                     >
 
                       <td
-                        className="
-                          px-5
-                          py-4
-                          text-[var(--erp-text)]
-                          font-medium
-                        "
+                        className="px-5
+ py-4"
                       >
                         {tipo.nombre}
                       </td>
 
 
                       <td
-                        className="
-                          px-5
-                          py-4
-                          text-center
-                        "
+                        className="px-5
+ py-4"
                       >
 
                         <button
@@ -1107,29 +968,19 @@ export default function TiposCargaHipotecaria() {
                               tipo
                             )
                           }
-                          className="
-                            inline-flex
-                            items-center
-                            rounded-full
-                            px-3
-                            py-1
-                            text-xs
-                            font-semibold
-                            transition
-                          "
+                          className="inline-flex
+ items-center
+ 
+ px-3
+ py-1"
                           title="Cambiar estado"
                         >
 
                           {tipo.activo ? (
 
                             <span
-                              className="
-                                rounded-full
-                                bg-green-100
-                                text-green-700
-                                px-3
-                                py-1
-                              "
+                              className="px-3
+ py-1"
                             >
                               Activo
                             </span>
@@ -1137,13 +988,8 @@ export default function TiposCargaHipotecaria() {
                           ) : (
 
                             <span
-                              className="
-                                rounded-full
-                                bg-slate-100
-                                text-slate-600
-                                px-3
-                                py-1
-                              "
+                              className="px-3
+ py-1"
                             >
                               Inactivo
                             </span>
@@ -1156,19 +1002,14 @@ export default function TiposCargaHipotecaria() {
 
 
                       <td
-                        className="
-                          px-5
-                          py-4
-                          text-right
-                        "
+                        className="px-5
+ py-4"
                       >
 
                         <div
-                          className="
-                            inline-flex
-                            items-center
-                            gap-2
-                          "
+                          className="inline-flex
+ items-center
+ gap-2"
                         >
 
                           <button
@@ -1178,18 +1019,8 @@ export default function TiposCargaHipotecaria() {
                                 tipo
                               )
                             }
-                            className="
-                              rounded-lg
-                              border
-                              border-[var(--erp-border)]
-                              bg-white
-                              px-3
-                              py-2
-                              text-xs
-                              font-semibold
-                              text-[var(--erp-text)]
-                              hover:bg-slate-50
-                            "
+                            className="px-3
+ py-2"
                           >
                             Editar
                           </button>
@@ -1202,18 +1033,8 @@ export default function TiposCargaHipotecaria() {
                                 tipo
                               )
                             }
-                            className="
-                              rounded-lg
-                              border
-                              border-red-200
-                              bg-red-50
-                              px-3
-                              py-2
-                              text-xs
-                              font-semibold
-                              text-red-600
-                              hover:bg-red-100
-                            "
+                            className="px-3
+ py-2"
                           >
                             Eliminar
                           </button>
@@ -1245,17 +1066,15 @@ export default function TiposCargaHipotecaria() {
       {mostrarModal && (
 
         <div
-          className="
-            panel-modal-premium
-            fixed
-            inset-0
-            z-[100]
-            flex
-            items-center
-            justify-center
-            bg-black/40
-            p-4
-          "
+          className="panel-modal-premium
+ fixed
+ inset-0
+ z-[100]
+ flex
+ items-center
+ justify-center
+ 
+ p-4"
         >
 
           <div
@@ -1264,37 +1083,24 @@ export default function TiposCargaHipotecaria() {
             role="dialog"
             aria-modal="true"
             aria-label={modoEdicion ? "Editar tipo de carga hipotecaria" : "Nuevo tipo de carga hipotecaria"}
-            className="
-              w-full
-              max-w-xl
-              rounded-2xl
-              bg-white
-              shadow-2xl
-              border
-              border-slate-200
-            "
+            className="w-full
+ max-w-xl"
           >
 
             <div
-              className="
-                px-6
-                py-5
-                border-b
-                border-slate-200
-                flex
-                items-center
-                justify-between
-              "
+              className="px-6
+ py-5
+ 
+ 
+ flex
+ items-center
+ justify-between"
             >
 
               <div>
 
                 <h2
-                  className="
-                    text-lg
-                    font-bold
-                    text-slate-800
-                  "
+                  className=""
                 >
                   {modoEdicion
                     ? "Editar tipo de carga hipotecaria"
@@ -1302,11 +1108,7 @@ export default function TiposCargaHipotecaria() {
                 </h2>
 
                 <p
-                  className="
-                    text-xs
-                    text-slate-500
-                    mt-1
-                  "
+                  className="mt-1"
                 >
                   El nombre se guardará automáticamente en minúsculas.
                 </p>
@@ -1317,15 +1119,8 @@ export default function TiposCargaHipotecaria() {
               <button
                 type="button"
                 onClick={cerrarModal}
-                className="
-                  w-9
-                  h-9
-                  rounded-lg
-                  border
-                  border-slate-200
-                  text-slate-500
-                  hover:bg-slate-50
-                "
+                className="w-9
+ h-9"
               >
                 ×
               </button>
@@ -1334,22 +1129,18 @@ export default function TiposCargaHipotecaria() {
 
 
             <div
-              className="
-                p-6
-                space-y-5
-              "
+              className="p-6
+ space-y-5"
             >
 
               <div>
 
                 <label
-                  className="
-                    block
-                    text-sm
-                    font-semibold
-                    text-slate-700
-                    mb-2
-                  "
+                  className="block
+ 
+ 
+ 
+ mb-2"
                 >
                   Tipo de carga
                 </label>
@@ -1376,31 +1167,21 @@ export default function TiposCargaHipotecaria() {
                   }}
                   placeholder="Ejemplo: prestamo hipotecario"
                   autoFocus
-                  className="
-                    w-full
-                    rounded-xl
-                    border
-                    border-slate-300
-                    px-4
-                    py-3
-                    text-sm
-                    text-slate-800
-                    outline-none
-                    focus:ring-2
-                    focus:ring-blue-500
-                  "
+                  className="w-full
+ 
+ 
+ 
+ px-4
+ py-3"
                 />
 
               </div>
 
 
               <label
-                className="
-                  flex
-                  items-center
-                  gap-3
-                  cursor-pointer
-                "
+                className="flex
+ items-center
+ gap-3"
               >
 
                 <input
@@ -1411,18 +1192,12 @@ export default function TiposCargaHipotecaria() {
                       e.target.checked
                     )
                   }
-                  className="
-                    w-4
-                    h-4
-                  "
+                  className="w-4
+ h-4"
                 />
 
                 <span
-                  className="
-                    text-sm
-                    font-medium
-                    text-slate-700
-                  "
+                  className=""
                 >
                   Tipo de carga activo
                 </span>
@@ -1433,33 +1208,21 @@ export default function TiposCargaHipotecaria() {
 
 
             <div
-              className="
-                px-6
-                py-4
-                border-t
-                border-slate-200
-                flex
-                justify-end
-                gap-3
-              "
+              className="px-6
+ py-4
+ 
+ 
+ flex
+ justify-end
+ gap-3"
             >
 
               <button
                 type="button"
                 onClick={cerrarModal}
                 disabled={guardando}
-                className="
-                  rounded-xl
-                  border
-                  border-slate-300
-                  bg-white
-                  px-4
-                  py-2.5
-                  text-sm
-                  font-semibold
-                  text-slate-700
-                  hover:bg-slate-50
-                "
+                className="px-4
+ py-2.5"
               >
                 Cancelar
               </button>
@@ -1469,17 +1232,8 @@ export default function TiposCargaHipotecaria() {
                 type="button"
                 onClick={guardar}
                 disabled={guardando}
-                className="
-                  rounded-xl
-                  bg-[var(--erp-primary)]
-                  px-5
-                  py-2.5
-                  text-sm
-                  font-semibold
-                  text-white
-                  hover:opacity-90
-                  disabled:opacity-50
-                "
+                className="px-5
+ py-2.5"
               >
                 {guardando
                   ? "Guardando…"
