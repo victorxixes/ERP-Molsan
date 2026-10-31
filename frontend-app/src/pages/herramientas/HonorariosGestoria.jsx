@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios from "../../api/axios";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 const euros = (value) => Number(value || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
 
@@ -23,6 +25,7 @@ export default function HonorariosGestoria({ soloPlantilla = false } = {}) {
   const [descargandoPlantilla, setDescargandoPlantilla] = useState(false);
   const [errorPlantilla, setErrorPlantilla] = useState("");
   const [mensajePlantilla, setMensajePlantilla] = useState("");
+  const ordenItems = useSortableData(items);
 
   async function cargar() {
     setCargando(true);
@@ -152,7 +155,14 @@ export default function HonorariosGestoria({ soloPlantilla = false } = {}) {
         {!soloPlantilla && <div className="min-w-0 space-y-6">
         <section className="overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4"><div><h2>Tarifas configuradas</h2><p className="mt-1">Base, tipo de impuesto y porcentaje son configurables; el total se calcula automáticamente.</p></div><button type="button" onClick={nuevo} className="px-4 py-2">＋ Nuevo honorario</button></div>
-          {cargando ? <p className="p-6">Cargando tarifas…</p> : items.length === 0 ? <p className="p-6">Todavía no hay tarifas.</p> : <div className="overflow-x-auto"><table className="w-full min-w-[620px]"><thead className="uppercase"><tr><th className="px-4 py-3">Honorario</th><th className="px-4 py-3">Base</th><th className="px-4 py-3">Impuesto</th><th className="px-4 py-3">Total</th><th className="px-4 py-3">Estado</th><th className="px-4 py-3">Acciones</th></tr></thead><tbody>{items.map((item)=><tr key={item.id} className={item.activo ? "" : ""}><td className="px-4 py-3"><div>{item.nombre}</div>{item.descripcion && <div className="mt-1 max-w-md">{item.descripcion}</div>}</td><td className="whitespace-nowrap px-4 py-3 tabular-nums">{euros(item.base_imponible ?? item.importe)}</td><td className="whitespace-nowrap px-4 py-3">{item.tipo_impuesto || "IVA"} {Number(item.porcentaje_impuesto ?? 0)}%<div className="mt-1">{euros(Number(item.base_imponible ?? item.importe) * (item.tipo_impuesto === "EXENTO" ? 0 : Number(item.porcentaje_impuesto ?? 0)) / 100)}</div></td><td className="whitespace-nowrap px-4 py-3 tabular-nums">{euros(item.importe)}</td><td className="px-4 py-3"><span className={`px-2.5 py-1 ${item.activo ? "" : ""}`}>{item.activo ? "Activo" : "Inactivo"}</span></td><td className="whitespace-nowrap px-4 py-3"><button type="button" onClick={()=>editar(item)} className="px-3 py-1.5">Editar</button>{item.activo && <button type="button" onClick={()=>desactivar(item)} className="ml-2 px-3 py-1.5">Desactivar</button>}</td></tr>)}</tbody></table></div>}
+          {cargando ? <p className="p-6">Cargando tarifas…</p> : items.length === 0 ? <p className="p-6">Todavía no hay tarifas.</p> : <div className="overflow-x-auto"><table className="w-full min-w-[620px]"><thead className="uppercase"><tr>
+            <MolsanSortableTh label="Honorario" sortKey="nombre" sortConfig={ordenItems.sortConfig} onSort={ordenItems.requestSort} className="px-4 py-3" />
+            <MolsanSortableTh label="Base" sortKey="base_imponible" sortConfig={ordenItems.sortConfig} onSort={ordenItems.requestSort} className="px-4 py-3" />
+            <MolsanSortableTh label="Impuesto" sortKey="porcentaje_impuesto" sortConfig={ordenItems.sortConfig} onSort={ordenItems.requestSort} className="px-4 py-3" />
+            <MolsanSortableTh label="Total" sortKey="importe" sortConfig={ordenItems.sortConfig} onSort={ordenItems.requestSort} className="px-4 py-3" />
+            <MolsanSortableTh label="Estado" sortKey="activo" sortConfig={ordenItems.sortConfig} onSort={ordenItems.requestSort} className="px-4 py-3" />
+            <th className="px-4 py-3">Acciones</th>
+          </tr></thead><tbody>{ordenItems.items.map((item)=><tr key={item.id} className={item.activo ? "" : ""}><td className="px-4 py-3"><div>{item.nombre}</div>{item.descripcion && <div className="mt-1 max-w-md">{item.descripcion}</div>}</td><td className="whitespace-nowrap px-4 py-3 tabular-nums">{euros(item.base_imponible ?? item.importe)}</td><td className="whitespace-nowrap px-4 py-3">{item.tipo_impuesto || "IVA"} {Number(item.porcentaje_impuesto ?? 0)}%<div className="mt-1">{euros(Number(item.base_imponible ?? item.importe) * (item.tipo_impuesto === "EXENTO" ? 0 : Number(item.porcentaje_impuesto ?? 0)) / 100)}</div></td><td className="whitespace-nowrap px-4 py-3 tabular-nums">{euros(item.importe)}</td><td className="px-4 py-3"><span className={`px-2.5 py-1 ${item.activo ? "" : ""}`}>{item.activo ? "Activo" : "Inactivo"}</span></td><td className="whitespace-nowrap px-4 py-3"><button type="button" onClick={()=>editar(item)} className="px-3 py-1.5">Editar</button>{item.activo && <button type="button" onClick={()=>desactivar(item)} className="ml-2 px-3 py-1.5">Desactivar</button>}</td></tr>)}</tbody></table></div>}
         </section>
         <section className="p-5">
           <div className="mb-4"><h2>{editando ? "Editar honorario" : "Crear honorario"}</h2><p className="mt-1">Configura la base imponible y selecciona IVA, IGIC o exento. El impuesto y el total se calculan automáticamente.</p></div>
