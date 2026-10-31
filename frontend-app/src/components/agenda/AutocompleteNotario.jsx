@@ -526,8 +526,8 @@ export default function AutocompleteNotario({
 
           ${
             disabled
-              ? "border-slate-200 bg-slate-100"
-              : "border-slate-300 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-500/10"
+              ? ""
+              : ""
           }
         `}
       >
@@ -854,8 +854,8 @@ export default function AutocompleteNotario({
 
                         ${
                           esVC
-                            ? "bg-purple-100 text-purple-700"
-                            : "bg-sky-100 text-sky-700"
+                            ? ""
+                            : ""
                         }
                       `}
                     >
