@@ -2578,7 +2578,7 @@ export default function ExpedientesListado() {
       </section>
       {/* Acciones principales: agrupadas justo debajo de los bloques de tarjetas */}
       <section className="w-full flex flex-wrap items-center justify-start gap-2 -mt-2" aria-label="Acciones de expedientes">
-        <button type="button" onClick={exportarExcel} disabled={loading} className="rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50" style={{ background: "var(--erp-success)" }}>📊 Exportar Excel</button>
+        <button type="button" onClick={exportarExcel} disabled={loading} className="molsan-export-excel" style={{}}><span className="molsan-export-excel__icon" aria-hidden="true">📗</span>{loading ? "Preparando Excel…" : "Exportar a Excel"}</button>
         <button type="button" onClick={() => setMostrarFiltros(true)} className="rounded-xl border px-4 py-2.5 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)", background: "var(--erp-surface)" }}>🔎 Filtros avanzados</button>
         <button
           type="button"
