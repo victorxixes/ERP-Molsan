@@ -711,7 +711,7 @@ export default function ModalNuevaCita({
         aria-label={titulo}
         className="molsan-modal__panel w-full
  max-w-2xl
- max-h-[92vh]
+ max-h-[calc(100dvh-2rem)]
  overflow-y-auto"
         onMouseDown={(e) =>
           e.stopPropagation()
