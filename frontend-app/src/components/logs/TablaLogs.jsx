@@ -527,7 +527,7 @@ export default function TablaLogs({
  left-3.5
  top-1/2
 
- -translate-y-1/2
+ 
 
  
 
@@ -676,15 +676,11 @@ export default function TablaLogs({
                           </span>
 
                           <span
-                            className={`
-                              text-[10px]
-
-                              ${
-                                activo
-                                  ? ""
-                                  : ""
-                              }
-                            `}
+                            className={`${
+ activo
+ ? ""
+ : ""
+ }`}
                           >
                             {activo
                               ? orden.asc
