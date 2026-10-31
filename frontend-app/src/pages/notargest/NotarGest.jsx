@@ -613,23 +613,15 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         </div>
       )}
       {accesoERP && esAdminNotarGest && (
-        <section className="ng-admin-notarias">
-          {!tokenAdminNotaria ? <>
-            <header className="ng-control-hero">
-              <div className="ng-control-identidad">
-                <div className="ng-control-logo"><img src="/img/logo.jpg" alt="MOLSAN" /></div>
-                <div className="ng-control-titulos">
-                  
-                  <h2>NotarGest</h2>
-                  <p>Visión global del trabajo notarial y detalle operativo de cada notaría habilitada.</p>
-                </div>
-              </div>
-              <div className="ng-control-acciones">
-                <div className="ng-control-botones">
-
-                </div>
-              </div>
-            </header>
+        <main className="relative min-h-[calc(100vh-70px)]">
+          <div className="w-full px-4 py-6 lg:px-6">
+            <section className="erp-page min-w-0 space-y-6 ng-admin-notarias">
+              {!tokenAdminNotaria ? <>
+                <MolsanPageHeader
+                  mark="NG"
+                  title="NotarGest"
+                  description="Visión global del trabajo notarial y detalle operativo de cada notaría habilitada."
+                />
             {cargandoSelectorNotaria && <p className="ng-mensaje">Calculando pendientes de las notarías…</p>}
             {!cargandoSelectorNotaria && notariasSeleccionables.length === 0 && <div className="ng-admin-vacio"><strong>No hay notarías habilitadas</strong><p>Activa el acceso NotarGest desde la ficha CTN de cada notaría.</p></div>}
             <section className="ng-admin-global-resumen" aria-label="Resumen global de todas las notarías">
@@ -721,7 +713,9 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
               })}
             </div>
           </> : <div className="ng-admin-notaria-activa"><div><span className="ng-kicker">NOTARÍA SELECCIONADA</span><h2>{notariasSeleccionables.find(x=>String(x.id)===String(notariaAdminSeleccionada))?.nombre || notario?.nombre || "Notaría"}</h2><p>Estás gestionando esta notaría como administrador.</p></div><button type="button" className="ng-boton-secundario" onClick={()=>seleccionarNotariaAdmin("")}>← Volver al control de notarías</button></div>}
-        </section>
+            </section>
+          </div>
+        </main>
       )}
       {(!accesoERP || !esAdminNotarGest || Boolean(tokenAdminNotaria)) && <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
