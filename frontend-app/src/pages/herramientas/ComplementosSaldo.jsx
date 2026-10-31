@@ -97,8 +97,8 @@ export default function ComplementosSaldo() {
           : items.map((item) => { const cerrado = ["compensado", "cerrado"].includes(String(item.estado).toLowerCase()); return <tr key={item.id} className="">
             <td className="px-4 py-3.5"><Link to={item.expediente_id ? `/expedientes/${item.expediente_id}` : "/expedientes"} className="">{item.numero_expediente}</Link></td>
             <td className="whitespace-nowrap px-4 py-3.5">{euros(item.provisionado)}</td><td className="whitespace-nowrap px-4 py-3.5">{euros(item.saldo_disponible)}</td><td className="whitespace-nowrap px-4 py-3.5">{fecha(item.fecha_solicitud)}</td><td className="whitespace-nowrap px-4 py-3.5 tabular-nums">{euros(item.importe)}</td><td className="max-w-[280px] whitespace-normal px-4 py-3.5">{item.motivo || item.observaciones || "—"}</td>
-                        <td className="px-4 py-3.5"><button type="button" disabled={cerrado} onClick={() => cambiarEstado(item)} className={`rounded-lg border px-3 py-2 text-xs font-bold ${cerrado ? "" : ""}`}>{cerrado ? "Regularizado" : "Compensar"}</button></td>
-            <td className="px-4 py-3.5"><span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-bold ${cerrado ? "" : ""}`}>{cerrado ? "Compensado" : "Pendiente"}</span></td>
+                        <td className="px-4 py-3.5"><button type="button" disabled={cerrado} onClick={() => cambiarEstado(item)} className={`px-3 py-2 ${cerrado ? "" : ""}`}>{cerrado ? "Regularizado" : "Compensar"}</button></td>
+            <td className="px-4 py-3.5"><span className={`inline-flex px-2.5 py-1 ${cerrado ? "" : ""}`}>{cerrado ? "Compensado" : "Pendiente"}</span></td>
           </tr>; })}</tbody>
       </table></div>
       <footer className="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"><span>{items.length} solicitud(es) en el resultado actual</span><span>Los indicadores se actualizan con los filtros aplicados.</span></footer>
@@ -107,7 +107,7 @@ export default function ComplementosSaldo() {
 }
 
 function Metrica({ titulo, valor, detalle, icono, alerta = false, verde = false }) {
-  return <div className={`rounded-2xl border p-4 shadow-sm ${alerta ? "" : verde ? "" : ""}`}>
+  return <div className={`p-4 ${alerta ? "" : verde ? "" : ""}`}>
     <div className="flex items-start justify-between gap-2"><p className="uppercase">{titulo}</p><span className="flex h-9 w-9 items-center justify-center">{icono}</span></div><p className="mt-3">{valor}</p><p className="mt-1">{detalle}</p>
   </div>;
 }
