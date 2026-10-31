@@ -739,7 +739,7 @@ textarea:focus-visible {
 .erp-main-inner .erp-page > header:first-of-type {
   margin: 0 0 18px !important;
 }
-.erp-main-inner .erp-main-inner @media (max-width: 720px) {
+@media (max-width: 720px) {
   .erp-main-inner .erp-page > header:first-of-type:not(.molsan-page-header) { align-items: flex-start; }
 }
 
