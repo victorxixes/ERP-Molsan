@@ -60,8 +60,6 @@ export default function SubirDocumento() {
 
       <MolsanPageHeader mark="SD" title="Subir documento" description="Añade documentos para ponerlos a disposición de la intranet." />
 
-          FORMULARIO
-      ===================================================== */}
 
       <div
         className="erp-card max-w-3xl
