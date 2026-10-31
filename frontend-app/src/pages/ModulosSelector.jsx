@@ -262,7 +262,7 @@ export default function ModulosSelector() {
               logout();
               navigate("/login", { replace: true });
             }}
-            className="inline-flex min-h-10 items-center justify-center gap-2 px-4 hover:-translate-y-0.5"
+            className="inline-flex min-h-10 items-center justify-center gap-2 px-4"
           >
             <span aria-hidden="true">↪</span>
             Cerrar sesión
@@ -297,32 +297,32 @@ export default function ModulosSelector() {
                 key={modulo.clave}
                 type="button"
                 onClick={() => modulo.portalSoporte ? abrirSelectorSoporte(modulo.portalSoporte) : navigate(modulo.ruta)}
-                className="group relative flex min-h-[220px] flex-col overflow-hidden p-6 hover:-translate-y-1"
+                className="group relative flex min-h-[220px] flex-col overflow-hidden p-6"
               >
                 <div
                   aria-hidden="true"
                   className={`absolute inset-x-0 top-0 h-1 ${
-                    modulo.estilo === "ag"
-                      ? ""
-                      : modulo.estilo === "cg"
-                        ? ""
-                        : modulo.estilo === "eg"
-                          ? ""
-                          : ""
-                  }`}
+ modulo.estilo === "ag"
+ ? ""
+ : modulo.estilo === "cg"
+ ? ""
+ : modulo.estilo === "eg"
+ ? ""
+ : ""
+ }`}
                 />
 
                 <div className="flex w-full items-start justify-between gap-4">
                   <div
-                    className={`grid h-14 w-14 place-items-center rounded-2xl border text-sm font-black tracking-wide transition group-hover:scale-[1.04] ${
-                      modulo.estilo === "ag"
-                        ? ""
-                        : modulo.estilo === "cg"
-                          ? ""
-                          : modulo.estilo === "eg"
-                            ? ""
-                            : ""
-                    }`}
+                    className={`grid h-14 w-14 place-items-center ${
+ modulo.estilo === "ag"
+ ? ""
+ : modulo.estilo === "cg"
+ ? ""
+ : modulo.estilo === "eg"
+ ? ""
+ : ""
+ }`}
                   >
                     {modulo.siglas}
                   </div>
