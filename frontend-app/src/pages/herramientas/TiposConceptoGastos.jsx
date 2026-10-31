@@ -1711,15 +1711,7 @@ export default function TiposConceptoGastos() {
  py-1.5
  
  
- ${
- tipo.activo
- ?`
-                                    
-                                    
-                                  `:`
-                                    
-                                    
-                                  `}`}
+ `}
                           >
 
                             <span
@@ -1831,19 +1823,7 @@ export default function TiposConceptoGastos() {
  
  p-2
  
- ${
- tipo.activo
- ?`
-                                      
-                                      bg-amber-50
-                                      text-amber-600
-                                      hover:bg-amber-100
-                                    `:`
-                                      border-emerald-200
-                                      
-                                      text-emerald-600
-                                      hover:bg-emerald-100
-                                    `}`}
+ `}
                             >
 
                               {tipo.activo ? (
