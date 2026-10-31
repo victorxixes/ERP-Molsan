@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/CatalogosMaestrosPremium.css";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
 
@@ -58,7 +56,7 @@ export default function CambiarGestorExpediente() {
   }
 
   return (
-    <div className="cambiar-gestor-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <header className="relative overflow-hidden p-6">
         <div className="absolute inset-x-0 top-0 h-1" />
         <div className="flex flex-wrap items-center gap-4">
