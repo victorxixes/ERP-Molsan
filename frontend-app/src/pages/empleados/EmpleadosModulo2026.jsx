@@ -3,7 +3,6 @@ import {
   useCallback,
 } from "react";
 
-import "./EmpleadosModulo2026.css";
 
 import EmpleadosListado
   from "./EmpleadosListado";
