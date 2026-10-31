@@ -167,7 +167,7 @@ function SeccionAcordeon({
           )}
 
           <span
-            className=""
+           
             aria-hidden="true"
           >
             {abierto ? "▲" : "▼"}
@@ -1419,7 +1419,7 @@ const permisosGlobales =
       >
 
         <div
-          className=""
+         
         >
 
           <div
@@ -1834,7 +1834,7 @@ const permisosGlobales =
         <div className="mb-3">
 
           <h2
-            className=""
+           
           >
             🔐 Credenciales y acceso
           </h2>
@@ -1862,7 +1862,7 @@ const permisosGlobales =
           >
 
             <h3
-              className=""
+             
             >
               🔑 Restablecer contraseña
             </h3>
@@ -1927,7 +1927,7 @@ const permisosGlobales =
           >
 
             <h3
-              className=""
+             
             >
               👤 Asignar rol
             </h3>
@@ -1937,7 +1937,7 @@ const permisosGlobales =
             >
               Rol actual:{" "}
 
-              <span className="">
+              <span>
                 {nombreRol}
               </span>
             </p>
@@ -2242,7 +2242,7 @@ const permisosGlobales =
                       </Chip>
 
                       <span
-                        className=""
+                       
                         aria-hidden="true"
                       >
                         {abierto
@@ -2476,7 +2476,7 @@ const permisosGlobales =
                         </Chip>
 
                         <span
-                          className=""
+                         
                         >
                           {item.modulo ||
                             "Sistema"}
@@ -2486,7 +2486,7 @@ const permisosGlobales =
 
 
                       <span
-                        className=""
+                       
                       >
                         {item.fecha || "-"}
                       </span>
@@ -2520,7 +2520,7 @@ const permisosGlobales =
           >
 
             <span
-              className=""
+             
             >
               Página{" "}
               {Math.min(
@@ -2732,7 +2732,7 @@ const permisosGlobales =
 
                           {item.ip && (
                             <span
-                              className=""
+                             
                             >
                               IP {item.ip}
                             </span>
@@ -2742,7 +2742,7 @@ const permisosGlobales =
 
 
                         <span
-                          className=""
+                         
                         >
                           {item.fecha || "-"}
                         </span>
@@ -2777,7 +2777,7 @@ const permisosGlobales =
           >
 
             <span
-              className=""
+             
             >
               Página{" "}
               {Math.min(
