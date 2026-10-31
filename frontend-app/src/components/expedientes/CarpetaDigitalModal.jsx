@@ -572,15 +572,15 @@ export default function CarpetaDigitalModal({
               {notaIntegracionRepositorio(categoria)}
             </div>
           )}
-          <label className={`inline-flex shrink-0 cursor-pointer items-center rounded-md border px-2 py-1 text-[11px] font-bold ${subiendo === categoria ? "" : ""}`}>
+          <label className={`inline-flex shrink-0 items-center px-2 py-1 ${subiendo === categoria ? "" : ""}`}>
             {subiendo === categoria ? "Subiendo…" : "＋ Adjuntar"}
             <input className="hidden" type="file" accept=".pdf,application/pdf" multiple onChange={(event) => subir(event, categoria)} disabled={!!subiendo} />
           </label>
         </div>
         {lista.length > 0 ? (
-          <ul className="mt-2 divide-y divide-slate-100">
+          <ul className="mt-2">
             {lista.map((doc) => (
-              <li key={doc.id} className={`flex min-w-0 flex-wrap items-center gap-2 rounded-md px-1 py-2 ${documentoVistaPrevia?.id === doc.id ? "" : ""}`}>
+              <li key={doc.id} className={`flex min-w-0 flex-wrap items-center gap-2 px-1 py-2 ${documentoVistaPrevia?.id === doc.id ? "" : ""}`}>
                 <button type="button" onClick={() => verDocumento(doc)} className="min-w-0 flex-1" title={doc.nombre_original}>
                   <span className="block truncate">{doc.nombre_original}</span>
                   <span className="block">{bytes(doc.tamano_bytes || 0)}{doc.fecha_subida ? ` · ${new Date(doc.fecha_subida).toLocaleString("es-ES")}` : ""}</span>
@@ -603,9 +603,9 @@ export default function CarpetaDigitalModal({
     const cantidad = contarBloque(bloque);
     return (
       <section key={bloque.id} className="overflow-hidden">
-        <button type="button" onClick={() => { if (modoActividad) setPanelDocumentosVisible(false); else setBloquesAbiertos((prev) => ({ ...prev, [bloque.id]: !prev[bloque.id] })); }} aria-expanded={modoActividad ? panelDocumentosVisible : abierto} title={modoActividad ? "Ocultar carpeta digital hacia la izquierda" : abierto ? "Contraer repositorios" : "Mostrar repositorios"} className={`flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left transition ${abierto ? "" : ""}`}>
+        <button type="button" onClick={() => { if (modoActividad) setPanelDocumentosVisible(false); else setBloquesAbiertos((prev) => ({ ...prev, [bloque.id]: !prev[bloque.id] })); }} aria-expanded={modoActividad ? panelDocumentosVisible : abierto} title={modoActividad ? "Ocultar carpeta digital hacia la izquierda" : abierto ? "Contraer repositorios" : "Mostrar repositorios"} className={`flex w-full items-center justify-between gap-3 px-3 py-2.5 ${abierto ? "" : ""}`}>
           <span className="flex min-w-0 items-center gap-3">
-            <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${cantidad ? "" : ""}`}>{cantidad}</span>
+            <span className={`flex h-8 w-8 shrink-0 items-center justify-center ${cantidad ? "" : ""}`}>{cantidad}</span>
             <span className="min-w-0"><span className="block">{bloque.titulo}</span><span className="block truncate">{bloque.descripcion}</span></span>
           </span>
           <span className="shrink-0">{modoActividad ? "‹" : abierto ? "⌃" : "⌄"}</span>
@@ -616,7 +616,7 @@ export default function CarpetaDigitalModal({
   };
 
   const renderVisor = () => (
-    <aside className={`flex min-h-[360px] min-w-0 flex-col overflow-hidden rounded-xl border border-slate-300 bg-white shadow-sm ${visorExpandido ? "fixed inset-3 z-[10500] h-[calc(100vh-1.5rem)]" : "h-full"}`}>
+    <aside className={`flex min-h-[360px] min-w-0 flex-col overflow-hidden ${visorExpandido ? "fixed inset-3 z-[10500] h-[calc(100vh-1.5rem)]" : "h-full"}`}>
       <header className="flex items-center gap-2 px-3 py-3">
         <span className="flex h-8 w-8 shrink-0 items-center justify-center">▤</span>
         <div className="min-w-0 flex-1"><h4 className="">Visor de documentos</h4><p className="truncate" title={documentoVistaPrevia?.nombre_original || "Sin documento seleccionado"}>{documentoVistaPrevia?.nombre_original || "Selecciona un archivo de la lista"}</p></div>
@@ -675,10 +675,10 @@ export default function CarpetaDigitalModal({
                 const cantidad = cantidadActividad(bloque);
                 const activo = actividadPrincipal === bloque.id;
                 return (
-                  <button key={bloque.id} type="button" onClick={() => seleccionarActividad(bloque.id)} aria-current={activo ? "page" : undefined} className={`flex w-full items-center gap-3 rounded-xl border px-3 py-3 text-left transition ${activo ? "" : ""}`}>
-                    <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${cantidad ? "" : ""}`}>{cantidad}</span>
-                    <span className="min-w-0 flex-1"><span className={`block text-xs font-extrabold ${activo ? "" : ""}`}>{bloque.titulo}</span><span className="mt-0.5 block">{bloque.categorias.length} categorías</span></span>
-                    <span className={`text-xs ${activo ? "" : ""}`}>›</span>
+                  <button key={bloque.id} type="button" onClick={() => seleccionarActividad(bloque.id)} aria-current={activo ? "page" : undefined} className={`flex w-full items-center gap-3 px-3 py-3 ${activo ? "" : ""}`}>
+                    <span className={`flex h-8 w-8 shrink-0 items-center justify-center ${cantidad ? "" : ""}`}>{cantidad}</span>
+                    <span className="min-w-0 flex-1"><span className={`block ${activo ? "" : ""}`}>{bloque.titulo}</span><span className="mt-0.5 block">{bloque.categorias.length} categorías</span></span>
+                    <span className={`${activo ? "" : ""}`}>›</span>
                   </button>
                 );
               })}
@@ -954,7 +954,7 @@ export default function CarpetaDigitalModal({
                     <section className="overflow-hidden">
                       <button type="button" onClick={() => setOtrosAbierto((v) => !v)} aria-expanded={otrosAbierto} className="flex w-full items-center justify-between gap-3 px-3 py-3">
                         <span className="flex min-w-0 items-center gap-3">
-                          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${otrosCantidad ? "" : ""}`}>{otrosCantidad}</span>
+                          <span className={`flex h-8 w-8 shrink-0 items-center justify-center ${otrosCantidad ? "" : ""}`}>{otrosCantidad}</span>
                           <span><span className="block">Otros</span><span className="block">Documentación complementaria y comunicaciones.</span></span>
                         </span>
                         <span className="">{otrosAbierto ? "⌃" : "⌄"}</span>
