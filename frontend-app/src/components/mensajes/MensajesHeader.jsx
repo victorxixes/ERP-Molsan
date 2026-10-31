@@ -99,11 +99,7 @@ export default function MensajesHeader({
               className={`molsan-chat-header__presence h-1.5
  w-1.5
  
- ${
- usuario
- ? ""
- : ""
- }`}
+ ${usuario ? "is-online" : "is-offline"}`}
             />
 
             <span
