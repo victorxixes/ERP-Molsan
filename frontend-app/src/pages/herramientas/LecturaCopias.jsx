@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 const EJEMPLOS = [
   { expediente: "2026480925", fecha: "24/10/2026", contrato: "CT-2026-01842", finca: "Finca 1842 · Registro 3", observaciones: "Copia recibida; pendiente de validación" },
@@ -43,23 +44,12 @@ export default function LecturaCopias() {
   };
 
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden p-6">
-        <div className="absolute inset-x-0 top-0 h-1" />
-        <Link to="/herramientas/utilidades">← Volver a Utilidades</Link>
-        <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h1>Lectura copias</h1>
-              <span className="px-2.5 py-1 uppercase">Demostración · datos ficticios</span>
-            </div>
-            <p className="mt-2 max-w-3xl">Selecciona la fecha de recepción y ejecuta el procesamiento de ejemplo para visualizar el progreso y el resultado esperado de la futura integración.</p>
-          </div>
-        </div>
-      </header>
+    <main className="erp-page min-w-0 space-y-6">
+      <MolsanPageHeader mark="LC" title="Lectura copias" description="Demostración de procesamiento de copias recibidas con datos ficticios. No consulta buzones ni modifica expedientes." />
+      <div className="molsan-filter-bar flex flex-wrap items-center justify-between gap-3 p-3"><Link to="/herramientas/utilidades" className="molsan-btn molsan-btn--secondary">← Volver a Utilidades</Link><span className="molsan-status-pill">Demostración · datos ficticios</span></div>
 
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(240px,0.8fr)]">
-        <div className="p-5 sm:p-6">
+        <div className="erp-card p-5 sm:p-6">
           <h2>Parámetros de procesamiento</h2>
           <p className="mt-1">Elige el día que se utilizaría para buscar las copias recibidas.</p>
           <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
