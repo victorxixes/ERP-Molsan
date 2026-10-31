@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import axios from "../../api/axios";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/CatalogosMaestrosPremium.css";
 
 const euros = (value) => Number(value || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
 
@@ -143,7 +141,7 @@ export default function HonorariosGestoria({ soloPlantilla = false } = {}) {
   }
 
   return (
-    <div className={`honorarios-gestoria-premium herramientas-subpagina-premium w-full max-w-none space-y-6 ${soloPlantilla ? "p-0" : "p-4 sm:p-6 lg:p-8"}`}>
+    <div className={`w-full max-w-none space-y-6 ${soloPlantilla ? "p-0" : "p-4 sm:p-6 lg:p-8"}`}>
       {!soloPlantilla && <>
       <header className="p-6">
         <p className="uppercase">Utilidades · Catálogo económico</p>
