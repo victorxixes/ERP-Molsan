@@ -103,11 +103,11 @@ export default function MensajeBubble({
         </div>
       )}
 
-      <div className={`max-w-[78%] rounded-2xl px-4 py-2.5 shadow-sm ${
-        propio
-          ? ""
-          : ""
-      }`}>
+      <div className={`max-w-[78%] px-4 py-2.5 ${
+ propio
+ ? ""
+ : ""
+ }`}>
         {mensaje.contenido && (
           <p className="whitespace-pre-wrap">
             {mensaje.contenido}
@@ -158,7 +158,7 @@ export default function MensajeBubble({
           </a>
         )}
 
-        <div className={`mt-1.5 text-[10px] ${propio ? "" : ""}`}>
+        <div className={`mt-1.5 ${propio ? "" : ""}`}>
           {fecha}
         </div>
       </div>
