@@ -58,7 +58,9 @@ De las 52 hojas CSS:
 - La corrección PPAD ya está en la rama.
 - Un build posterior reveló dos defectos adicionales en `Fusiones.jsx` (expresión de clase incompleta) y `FichaExpediente.jsx` (llave de cierre sobrante); ambos se han corregido de forma localizada.
 - En `ModelosDocumentos.jsx` Render emitió además un aviso de análisis JSX sobre un carácter `}`. No se ha alterado esa zona porque primero hay que aislar si es un aviso no bloqueante o un defecto real.
-- Pendiente: ejecutar y confirmar un build completo con estos últimos arreglos.
+- El siguiente build ha superado los errores de sintaxis anteriores y ha descubierto otro `className` incompleto en `EncargaGest.jsx`; ya está corregido.
+- Siguen apareciendo avisos JSX no bloqueantes en `ModelosDocumentos.jsx` y `FichaExpediente.jsx`; se revisarán por separado.
+- Pendiente: ejecutar y confirmar un build completo con la última corrección.
 
 ## Estado
 
