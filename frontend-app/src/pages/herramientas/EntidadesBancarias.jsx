@@ -1533,7 +1533,7 @@ export default function EntidadesBancarias() {
       ===================================================== */}
 
       <div
-        className="relative
+        className="molsan-subpage-header relative
  overflow-hidden
  
  

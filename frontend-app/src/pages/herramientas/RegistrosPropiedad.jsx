@@ -1663,7 +1663,7 @@ export default function RegistrosPropiedad() {
       ===================================================== */}
 
       <div
-        className="relative
+        className="molsan-subpage-header relative
  overflow-hidden
  
  
