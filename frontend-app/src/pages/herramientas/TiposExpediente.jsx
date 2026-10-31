@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import axios from "../../api/axios";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 const API = "/tipos-expediente";
@@ -103,28 +104,23 @@ export default function TiposExpediente() {
   const activos = tipos.filter((t) => t.activo !== false).length;
 
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden p-6">
-        <div className="absolute inset-x-0 top-0 h-1" />
-        <p className="uppercase">MOLSAN ERP</p>
-        <h1 className="mt-2">Tipos de expediente</h1>
-        <p className="mt-2 max-w-3xl">Catálogo maestro de tipos de expediente. Incluye los registros históricos de provisiones fuera del circuito GTG y los tipos para nuevas altas manuales.</p>
-      </header>
+    <main className="erp-page min-w-0 space-y-6">
+      <MolsanPageHeader mark="TE" title="Tipos de expediente" description="Catálogo maestro de tipos de expediente. Conserva referencias históricas y configura los tipos disponibles para nuevas altas." />
 
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="p-4"><p>Tipos registrados</p><p className="mt-1">{total}</p></div>
-        <div className="p-4"><p>Tipos activos</p><p className="mt-1">{activos}</p></div>
-        <div className="p-4"><p>Altas disponibles</p><p className="mt-1">Crear, editar y eliminar tipos</p></div>
+      <section className="molsan-stat-grid">
+        <div className="molsan-stat-card"><div><span className="molsan-stat-label">Tipos registrados</span><strong>{total}</strong></div></div>
+        <div className="molsan-stat-card"><div><span className="molsan-stat-label">Tipos activos</span><strong>{activos}</strong></div></div>
+        <div className="molsan-stat-card"><div><span className="molsan-stat-label">Altas disponibles</span><strong>Crear y mantener</strong></div></div>
       </section>
 
       {(error || mensaje) && <div role="status" className={`px-4 py-3 ${error ? "" : ""}`}>{error || mensaje}</div>}
 
-      {mostrarModal && <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4" onMouseDown={(e) => { if (e.target === e.currentTarget) cerrarModal(); }}><div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="tipo-expediente-modal-title" className="max-h-[90vh] w-full max-w-3xl overflow-y-auto p-5 sm:p-6">
-        <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+      {mostrarModal && <div className="molsan-modal-overlay fixed inset-0 z-[1000] flex items-center justify-center p-4" onMouseDown={(e) => { if (e.target === e.currentTarget) cerrarModal(); }}><div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="tipo-expediente-modal-title" className="molsan-modal__panel max-h-[90vh] w-full max-w-3xl overflow-y-auto p-5 sm:p-6">
+        <div className="molsan-modal__header flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div><h2 id="tipo-expediente-modal-title">{editando ? "Editar tipo de expediente" : "Nuevo tipo de expediente"}</h2><p className="mt-1">Los identificadores históricos se conservan; las nuevas altas reciben un ID automático.</p></div>
           <button type="button" onClick={cerrarModal} disabled={guardando} aria-label="Cerrar ventana" className="px-4 py-2">Cerrar ✕</button>
         </div>
-        <form onSubmit={guardar} className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-12">
+        <form onSubmit={guardar} className="molsan-form mt-5 grid grid-cols-1 gap-4 md:grid-cols-12">
           <label className="md:col-span-5">Descripción
             <input className={`${CAMPO} mt-2`} value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={250} required placeholder="Nombre del tipo de expediente" />
           </label>
@@ -140,8 +136,8 @@ export default function TiposExpediente() {
         </form>
       </div></div>}
 
-      <section className="overflow-hidden">
-        <div className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+      <section className="erp-card overflow-hidden">
+        <div className="molsan-filter-bar flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
           <div><h2>Tabla de tipos de expediente</h2><p className="mt-1">{tiposFiltrados.length} registros mostrados</p></div>
           <div className="flex flex-col gap-2 sm:flex-row">
             <input className={CAMPO} value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar por ID o descripción" />
