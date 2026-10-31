@@ -33,7 +33,7 @@ export default function FichaExpedienteDemo() {
         description="Vista de demostración del diseño MOLSAN ERP PREMIUM 2027"
       />
 
-      <div className="rounded-xl border px-4 py-3 text-sm" style={{ background: "#EAF2F8", borderColor: "#D8E4EC", color: "#064675" }}>
+      <div className="rounded-xl border px-4 py-3 text-sm" style={{ background: "var(--molsan-table-head)", borderColor: "var(--molsan-border)", color: "var(--molsan-blue)" }}>
         <strong>MODO DEMOSTRACIÓN · DATOS FICTICIOS</strong>
         <span className="ml-2">Esta vista es solo visual. No consulta ni guarda información en la base de datos.</span>
       </div>
@@ -41,17 +41,17 @@ export default function FichaExpedienteDemo() {
       <section className="molsan-card p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#617789" }}>Expediente de prueba</p>
-            <h2 className="mt-1 text-xl font-semibold" style={{ color: "#064675" }}>MOL-2026-0042 · Cancelación de hipoteca</h2>
-            <p className="mt-1 text-sm" style={{ color: "#617789" }}>Referencia ficticia · Oficina de Barcelona · Alta 21/10/2026</p>
+            <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--molsan-muted)" }}>Expediente de prueba</p>
+            <h2 className="mt-1 text-xl font-semibold" style={{ color: "var(--molsan-blue)" }}>MOL-2026-0042 · Cancelación de hipoteca</h2>
+            <p className="mt-1 text-sm" style={{ color: "var(--molsan-muted)" }}>Referencia ficticia · Oficina de Barcelona · Alta 21/10/2026</p>
           </div>
-          <span className="rounded-full border px-3 py-1.5 text-xs font-semibold" style={{ color: "#064675", borderColor: "#D8E4EC", background: "#F2F7FB" }}>EN TRAMITACIÓN</span>
+          <span className="rounded-full border px-3 py-1.5 text-xs font-semibold" style={{ color: "var(--molsan-blue)", borderColor: "var(--molsan-border)", background: "var(--molsan-panel)" }}>EN TRAMITACIÓN</span>
         </div>
         <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {[["Titular","María Ejemplo García"],["NIF","00000000T"],["Entidad","CaixaBank, S.A."],["Importe","148.500,00 €"],["Notario","Notaría de demostración"],["N.º protocolo","1.245 / 2026"],["Gestoría","Gestoría"],["Actividad actual",actividad]].map(([label,value]) => (
             <div className="molsan-data-point min-w-0" key={label}>
-              <p className="mb-1 text-xs font-semibold uppercase" style={{ color: "#617789" }}>{label}</p>
-              <div className="break-words font-medium" style={{ color: "#18364B" }}>{value}</div>
+              <p className="mb-1 text-xs font-semibold uppercase" style={{ color: "var(--molsan-muted)" }}>{label}</p>
+              <div className="break-words font-medium" style={{ color: "var(--molsan-text)" }}>{value}</div>
             </div>
           ))}
         </div>
@@ -60,8 +60,8 @@ export default function FichaExpedienteDemo() {
       <section className="molsan-card p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-base font-semibold" style={{ color: "#064675" }}>Circuito del expediente</h2>
-            <p className="mt-1 text-sm" style={{ color: "#617789" }}>Selecciona una actividad para comprobar el tratamiento visual</p>
+            <h2 className="text-base font-semibold" style={{ color: "var(--molsan-blue)" }}>Circuito del expediente</h2>
+            <p className="mt-1 text-sm" style={{ color: "var(--molsan-muted)" }}>Selecciona una actividad para comprobar el tratamiento visual</p>
           </div>
           <button type="button" className="molsan-btn molsan-btn--secondary" onClick={() => setModal("Datos de actividad")}>Editar datos de actividad</button>
         </div>
@@ -69,7 +69,7 @@ export default function FichaExpedienteDemo() {
           <div className="flex flex-wrap gap-2">
             {actividades.map((item, index) => (
               <button key={item} type="button" aria-pressed={actividad === item} onClick={() => setActividad(item)} className="px-3 py-2 text-sm">
-                <span className="mr-2 text-xs" style={{ color: "#617789" }}>{String(index + 1).padStart(2,"0")}</span>{item}
+                <span className="mr-2 text-xs" style={{ color: "var(--molsan-muted)" }}>{String(index + 1).padStart(2,"0")}</span>{item}
               </button>
             ))}
           </div>
@@ -79,7 +79,7 @@ export default function FichaExpedienteDemo() {
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
         <section className="molsan-card">
           <div className="flex items-center gap-3 px-5 py-4">
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ color: "#064675", background: "#F2F7FB" }}>▤</span>
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ color: "var(--molsan-blue)", background: "var(--molsan-panel)" }}>▤</span>
             <div><h2 className="font-semibold">Documentación de la actividad</h2><p className="text-xs">Documentos y seguimiento</p></div>
           </div>
           <div className="p-5">
@@ -93,7 +93,7 @@ export default function FichaExpedienteDemo() {
                   <tbody>{documentos.map(([nombre,estado,fecha]) => <tr key={nombre}><td className="px-3 py-3">{nombre}</td><td className="px-3 py-3">{estado}</td><td className="px-3 py-3">{fecha}</td></tr>)}</tbody>
                 </table>
               </div>
-            ) : <p className="rounded-lg p-4 text-sm" style={{ background: "#F2F7FB", color: "#617789" }}>28/10/2026 · Se incorpora documentación de prueba.</p>}
+            ) : <p className="rounded-lg p-4 text-sm" style={{ background: "var(--molsan-panel)", color: "var(--molsan-muted)" }}>28/10/2026 · Se incorpora documentación de prueba.</p>}
             <div className="mt-4 flex flex-wrap gap-2">
               <button className="molsan-btn molsan-btn--primary" type="button" onClick={() => setModal("Añadir documento")}>Añadir documento</button>
               <button className="molsan-btn" type="button" onClick={() => setModal("Ver carpeta digital")}>Ver carpeta digital</button>
@@ -103,11 +103,11 @@ export default function FichaExpedienteDemo() {
 
         <section className="molsan-card">
           <div className="flex items-center gap-3 px-5 py-4">
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ color: "#064675", background: "#F2F7FB" }}>€</span>
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ color: "var(--molsan-blue)", background: "var(--molsan-panel)" }}>€</span>
             <div><h2 className="font-semibold">Gestión económica</h2><p className="text-xs">Resumen ilustrativo de provisiones y pagos</p></div>
           </div>
           <div className="grid grid-cols-1 gap-3 p-5 sm:grid-cols-2">
-            {[["Provisión inicial","2.450,00 €"],["Total obligaciones","1.820,00 €"],["Total pagado","1.200,00 €"],["Saldo pendiente","620,00 €"]].map(([label,value]) => <div className="molsan-data-point" key={label}><p className="mb-1 text-xs font-semibold uppercase">{label}</p><div className="text-lg font-semibold" style={{ color: "#064675" }}>{value}</div></div>)}
+            {[["Provisión inicial","2.450,00 €"],["Total obligaciones","1.820,00 €"],["Total pagado","1.200,00 €"],["Saldo pendiente","620,00 €"]].map(([label,value]) => <div className="molsan-data-point" key={label}><p className="mb-1 text-xs font-semibold uppercase">{label}</p><div className="text-lg font-semibold" style={{ color: "var(--molsan-blue)" }}>{value}</div></div>)}
             <div className="sm:col-span-2 overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead><tr><th className="px-3 py-3">Concepto</th><th className="px-3 py-3">Estado</th><th className="px-3 py-3 text-right">Total</th></tr></thead>
