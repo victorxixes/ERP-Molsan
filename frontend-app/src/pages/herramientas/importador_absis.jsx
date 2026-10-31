@@ -1,12 +1,11 @@
 import { useState } from "react";
 import axios from "../../api/axios";
-import "../../css/ModalesHerramientasPremium.css";
 
 
 /**
  * ============================================================
  * IMPORTADOR ABSIS
- * MOLSAN ERP — TEMA CLARO PREMIUM
+ * MOLSAN ERP
  * ============================================================
  */
 
