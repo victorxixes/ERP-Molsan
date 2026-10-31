@@ -3,7 +3,6 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { API_BASE } from "../api/config";
 import { configurarSesionEncargaGest } from "../api/encargagest";
-import "../css/ModalesHerramientasPremium.css";
 import useAccessibleDialog from "../components/ui/useAccessibleDialog";
 
 const MODULOS = {
@@ -241,7 +240,7 @@ export default function ModulosSelector() {
           </div>
           <div>
             <p className="text-[10px] font-extrabold tracking-[0.2em] text-blue-700">
-              MOLSAN ERP · PREMIUM 2027
+              MOLSAN ERP
             </p>
             <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
               Espacio de trabajo
