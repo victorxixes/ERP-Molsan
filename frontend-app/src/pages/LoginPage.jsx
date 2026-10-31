@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 
 /**
- * LOGIN — MOLSAN ERP SAAS PREMIUM 2027
+ * Acceso al ERP Molsan
  *
  * Diseño:
  * - Premium / Glass Luxe
