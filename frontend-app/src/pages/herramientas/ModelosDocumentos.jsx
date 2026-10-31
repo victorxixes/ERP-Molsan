@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { renderAsync } from "docx-preview";
 import axios from "../../api/axios";
-import "../../css/ComponentesOperativosPremium.css";
 import { Link } from "react-router-dom";
 import HonorariosGestoria from "./HonorariosGestoria";
 import ProvisionesFondosPage, { DocumentoLayoutDesigner } from "../provisiones/ProvisionesFondosPage";
@@ -36,7 +35,7 @@ function LiquidacionPreview({ datosMolsan, logoCliente, expediente, gastos = [],
       <div className="pointer-events-none absolute right-0 top-0 h-32 w-32" />
       <header className="relative flex flex-wrap items-center justify-between gap-3 pb-3">
         <div className="flex min-w-0 items-center gap-3">{logoCliente ? <img src={logoCliente} alt="Logotipo del cliente" className="max-h-14 max-w-36 object-contain" /> : <div className="flex h-12 w-36 items-center justify-center px-2">Logotipo del cliente</div>}<div className="pl-3"><div className="">{datosMolsan.razon_social || "Nombre de la gestoría"}</div><div className="">{datosMolsan.nif ? `CIF: ${datosMolsan.nif}` : "CIF: configurar en Datos Molsan"}</div></div></div>
-        <div className=""><div className="uppercase">MOLSAN PREMIUM 2027</div><div className="mt-1">Fecha de emisión: {fechaEmision || "—"}</div></div>
+        <div className=""><div className="uppercase">MOLSAN</div><div className="mt-1">Fecha de emisión: {fechaEmision || "—"}</div></div>
       </header>
       <h3 className="relative mt-4">Hoja de liquidación de expediente</h3><p className="mt-1">Cancelación</p>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -53,7 +52,7 @@ function LiquidacionPreview({ datosMolsan, logoCliente, expediente, gastos = [],
         <Section title="Resultado de la liquidación"><Field label="Total fondos recibidos" value={Number.isFinite(importeProvision) && importeProvision ? euros(importeProvision) : "—"}/><Field label="Total gastos realizados" value={euros(totalGastos)}/><div className="mt-2 px-2 py-2"><div className="">Saldo a devolver / importe pendiente</div><div className="mt-1">{Number.isFinite(importeProvision) && importeProvision ? euros(importeProvision - totalPagado) : "—"}</div></div></Section>
         <Section title="Cierre y conformidad"><p className="">En Barcelona, a {fechaEmision || "—"}.</p><p className="mt-3">Recibido y conforme por parte del titular</p><div className="mt-8"/><p className="mt-2">{titular || "Titular no identificado"}</p><p className="">DNI: {nifTitular || "No consta"}</p></Section>
       </div>
-      <footer className="mt-4 flex flex-wrap justify-between gap-2 pt-2"><span>MOLSAN · Documento de liquidación del expediente</span><span>Diseño corporativo MOLSAN PREMIUM 2027</span></footer>
+      <footer className="mt-4 flex flex-wrap justify-between gap-2 pt-2"><span>MOLSAN · Documento de liquidación del expediente</span><span>Documento corporativo MOLSAN</span></footer>
       <p className="mt-3 p-2">{expediente ? "Vista previa conectada a datos del expediente. Los campos no disponibles se indican expresamente; revisar antes de emitir." : "Selecciona un expediente para cargar los datos fiables disponibles. No se inventan importes ni datos ausentes."}</p>
     </article>
   </div>;
