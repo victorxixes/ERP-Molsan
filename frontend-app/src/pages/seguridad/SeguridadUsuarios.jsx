@@ -416,14 +416,9 @@ export default function SeguridadUsuarios() {
                           : "/no-foto.png"
                       }
                       alt="Foto empleado"
-                      className="
-                        w-20 h-20
-                        rounded-2xl
-                        object-cover
-                        border
-                        border-[var(--erp-border)]
-                        shadow-sm
-                      "
+                      className="w-20 h-20
+ 
+ object-cover"
                     />
 
                   </div>
@@ -434,7 +429,7 @@ export default function SeguridadUsuarios() {
 
                     <div className="flex flex-wrap items-center gap-2 mb-1">
 
-                      <h2 className="text-xl font-bold text-[var(--erp-text)]">
+                      <h2 className="">
                         {empleadoBasicoSeguro.nombre}{" "}
                         {empleadoBasicoSeguro.apellidos}
                       </h2>
@@ -453,14 +448,14 @@ export default function SeguridadUsuarios() {
 
                     </div>
 
-                    <div className="text-sm text-[var(--erp-muted)] mb-3">
+                    <div className="mb-3">
                       Usuario:{" "}
-                      <strong className="text-[var(--erp-text)]">
+                      <strong className="">
                         {empleadoBasicoSeguro.usuario}
                       </strong>
                       {" · "}
                       ID:{" "}
-                      <strong className="text-[var(--erp-text)]">
+                      <strong className="">
                         {empleadoBasicoSeguro.id}
                       </strong>
                     </div>
@@ -471,7 +466,7 @@ export default function SeguridadUsuarios() {
                       <button type="button" onClick={cambiarVisibilidadListado} disabled={guardandoVisibilidad || loading} className="erp-btn erp-btn-secondary">
                         {guardandoVisibilidad ? "Guardando…" : empleadoBasico?.visible_en_listado === false ? "Mostrar en listados" : "Ocultar de los listados"}
                       </button>
-                      {mensajeVisibilidad && <p className="w-full text-sm text-[var(--erp-muted)]" role="status">{mensajeVisibilidad}</p>}
+                      {mensajeVisibilidad && <p className="w-full" role="status">{mensajeVisibilidad}</p>}
 
                       {empleadoBasicoSeguro.departamento_nombre !== "-" && (
                         <span className="erp-badge erp-badge-neutral">
@@ -491,8 +486,8 @@ export default function SeguridadUsuarios() {
                         </span>
                       )}
 
-                      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-[var(--erp-surface)] px-3 py-2">
-                        <span className="text-sm font-semibold text-[var(--erp-text)]">
+                      <div className="flex flex-wrap items-center gap-2 px-3 py-2">
+                        <span className="">
                           Colaborador de ApoderaGest
                         </span>
                         <span className={empleadoBasicoSeguro.es_colaborador ? "erp-badge erp-badge-success" : "erp-badge erp-badge-neutral"}>
@@ -503,8 +498,8 @@ export default function SeguridadUsuarios() {
                           onClick={cambiarColaboradorApoderaGest}
                           disabled={guardandoColaborador || loading}
                           className={`rounded-lg border px-3 py-1.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${empleadoBasicoSeguro.es_colaborador
-                            ? "border-[var(--erp-border)] text-[var(--erp-text)] hover:bg-[var(--erp-bg)]"
-                            : "border-[var(--erp-primary)] bg-[var(--erp-primary)] text-white hover:opacity-90"}`}
+                            ? ""
+                            : ""}`}
                         >
                           {guardandoColaborador
                             ? "Guardando…"
@@ -514,7 +509,7 @@ export default function SeguridadUsuarios() {
                         </button>
                       </div>
                       {mensajeColaborador && (
-                        <p className="w-full text-sm text-[var(--erp-muted)]" role="status">
+                        <p className="w-full" role="status">
                           {mensajeColaborador}
                         </p>
                       )}
@@ -573,8 +568,8 @@ export default function SeguridadUsuarios() {
                       aria-selected={pestanaActiva === tab.id}
                       onClick={() => setPestanaActiva(tab.id)}
                       className={`rounded-xl border px-4 py-2.5 text-sm font-semibold transition ${pestanaActiva === tab.id
-                        ? "border-[var(--erp-primary)] bg-[var(--erp-primary-soft)] text-[var(--erp-primary)] shadow-sm"
-                        : "border-[var(--erp-border)] bg-[var(--erp-surface)] text-[var(--erp-text-soft)] hover:bg-[var(--erp-bg)]"}`}
+                        ? ""
+                        : ""}`}
                     >
                       <span className="mr-2" aria-hidden="true">{tab.icon}</span>{tab.label}
                     </button>
@@ -970,13 +965,13 @@ export default function SeguridadUsuarios() {
 
                           <div className="min-w-0">
 
-                            <div className="font-semibold text-[var(--erp-text)]">
+                            <div className="">
                               {typeof item.accion === "string"
                                 ? item.accion
                                 : "Acción"}
                             </div>
 
-                            <div className="text-sm text-[var(--erp-muted)] mt-1">
+                            <div className="mt-1">
                               {typeof item.descripcion === "string"
                                 ? item.descripcion
                                 : "-"}
@@ -992,7 +987,7 @@ export default function SeguridadUsuarios() {
 
                         </div>
 
-                        <div className="text-xs text-[var(--erp-muted)] mt-2">
+                        <div className="mt-2">
                           {typeof item.fecha === "string"
                             ? item.fecha
                             : ""}
@@ -1058,13 +1053,13 @@ export default function SeguridadUsuarios() {
 
                           <div className="min-w-0">
 
-                            <div className="font-semibold text-[var(--erp-text)]">
+                            <div className="">
                               {typeof log.tipo === "string"
                                 ? log.tipo
                                 : "Log"}
                             </div>
 
-                            <div className="text-sm text-[var(--erp-muted)] mt-1 break-words">
+                            <div className="mt-1 break-words">
                               {typeof log.mensaje === "string"
                                 ? log.mensaje
                                 : "-"}
@@ -1081,7 +1076,7 @@ export default function SeguridadUsuarios() {
 
                         </div>
 
-                        <div className="text-xs text-[var(--erp-muted)] mt-2">
+                        <div className="mt-2">
                           {typeof log.fecha === "string"
                             ? log.fecha
                             : ""}
@@ -1147,10 +1142,10 @@ export default function SeguridadUsuarios() {
                   {rolesSeguros.map((rol) => {
                     const asignado = Number(rol.id) === rolActualId;
                     return (
-                      <div key={rol.id ?? rol.nombre} className="rounded-xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-4 flex items-start justify-between gap-3">
+                      <div key={rol.id ?? rol.nombre} className="p-4 flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <div className="font-semibold text-[var(--erp-text)]">{rol.nombre}</div>
-                          <p className="mt-1 text-sm text-[var(--erp-text-soft)]">{typeof rol.descripcion === "string" && rol.descripcion ? rol.descripcion : "Perfil de acceso de ERP-Molsan."}</p>
+                          <div className="">{rol.nombre}</div>
+                          <p className="mt-1">{typeof rol.descripcion === "string" && rol.descripcion ? rol.descripcion : "Perfil de acceso de ERP-Molsan."}</p>
                           {asignado && <span className="mt-2 inline-flex erp-badge erp-badge-success">Asignado actualmente</span>}
                         </div>
                         <button type="button" className={asignado ? "erp-btn erp-btn-secondary" : "erp-btn erp-btn-primary"} disabled={asignado || guardandoRol || !empleadoIdSeleccionado || !rol.id} onClick={() => asignarRolSeleccionado(rol.id)}>
@@ -1161,7 +1156,7 @@ export default function SeguridadUsuarios() {
                   })}
                 </div>
                 {rolesSeguros.length === 0 && <div className="erp-empty-inline">No hay roles disponibles para asignar.</div>}
-                <p className="text-xs text-[var(--erp-text-soft)]">Los permisos específicos por módulo se configuran en la pestaña Permisos. La asignación de rol no sustituye las comprobaciones de permisos del backend.</p>
+                <p className="">Los permisos específicos por módulo se configuran en la pestaña Permisos. La asignación de rol no sustituye las comprobaciones de permisos del backend.</p>
               </div>
             </div>
           )}
@@ -1182,11 +1177,11 @@ export default function SeguridadUsuarios() {
                       <div key={item.id ?? `${item.fecha}-${item.accion}-${index}`} className="erp-activity-item">
                         <div className="flex flex-wrap items-start justify-between gap-2">
                           <div className="min-w-0">
-                            <div className="font-semibold text-[var(--erp-text)]">{item.accion || item.evento || "Evento de seguridad"}</div>
-                            <p className="mt-1 text-sm text-[var(--erp-text-soft)] break-words">{item.descripcion || item.detalle || "Sin descripción adicional"}</p>
+                            <div className="">{item.accion || item.evento || "Evento de seguridad"}</div>
+                            <p className="mt-1 break-words">{item.descripcion || item.detalle || "Sin descripción adicional"}</p>
                             {item.modulo && <span className="mt-2 inline-flex erp-badge erp-badge-neutral">{item.modulo}</span>}
                           </div>
-                          <span className="text-xs text-[var(--erp-text-soft)]">{item.fecha || "Fecha no disponible"}</span>
+                          <span className="">{item.fecha || "Fecha no disponible"}</span>
                         </div>
                       </div>
                     ))}
