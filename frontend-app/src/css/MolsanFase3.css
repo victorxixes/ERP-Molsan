@@ -4,12 +4,6 @@
    Se excluye expresamente el Sidebar y no altera la lógica funcional.
    ============================================================ */
 
-:root {
-  --molsan-control-border: var(--molsan-border, #d8e4ec);
-  --molsan-control-focus: 0 0 0 3px rgba(6, 70, 117, .13);
-  --molsan-surface-hover: rgba(6, 70, 117, .025);
-}
-
 /* Base tipográfica y geometría de cualquier ruta operativa del ERP. */
 .erp-route-content,
 .erp-route-content :where(button, input, select, textarea, table) {
@@ -51,17 +45,8 @@
   scrollbar-width: thin;
 }
 
-/* Botones antiguos: geometría coherente sin borrar colores de acciones semánticas
-   ni clases corporativas ya migradas. */
-.erp-route-content button:not(.molsan-btn):not([class*="bg-"]):not([class*="btn-"]) {
-  border-radius: var(--molsan-radius-control, 9px);
-  transition: border-color 140ms ease, background-color 140ms ease,
-              color 140ms ease, box-shadow 140ms ease;
-}
-
-.erp-route-content button:not(.molsan-btn):not([class*="bg-"]):not([class*="btn-"]):hover:not(:disabled) {
-  border-color: rgba(6, 70, 117, .28);
-}
+/* La geometría y los estados comunes de botones se definen en
+   NeutralizarPresentacion.css; aquí no se replica esa capa. */
 
 /* Paneles y secciones: evitar desbordamientos en todas las páginas. */
 .erp-route-content :where(section, article, aside, header, footer) {
