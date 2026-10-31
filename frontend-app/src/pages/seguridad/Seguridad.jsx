@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useSeguridad } from "../../hooks/useSeguridad";
-import "./Seguridad.css";
 
 const Icono = ({ name, className = "h-5 w-5" }) => (
   <svg className={`${className} shrink-0`} aria-hidden="true">
