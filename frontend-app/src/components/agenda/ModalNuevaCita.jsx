@@ -1031,19 +1031,17 @@ export default function ModalNuevaCita({
 
 
                 <span
-                  className={`
-                    inline-flex
-                    px-2.5 py-1
-                    rounded-full
-                    text-xs
-                    font-semibold
-                    ${
-                      notarioSeleccionado.tipo_firma ===
-                      "Videoconferencia"
-                        ? ""
-                        : ""
-                    }
-                  `}
+                  className={`inline-flex
+ px-2.5 py-1
+ 
+ 
+ 
+ ${
+ notarioSeleccionado.tipo_firma ===
+ "Videoconferencia"
+ ? ""
+ : ""
+ }`}
                 >
                   {
                     notarioSeleccionado.tipo_firma
