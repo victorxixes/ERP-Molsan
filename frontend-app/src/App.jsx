@@ -284,24 +284,24 @@ class AppErrorBoundary extends Component {
       ].filter(Boolean).join("\\n");
 
       return (
-        <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, background: "#f8fafc", color: "#0f172a" }}>
-          <section style={{ width: "100%", maxWidth: 720, padding: 24, border: "1px solid #fecaca", borderRadius: 16, background: "#fff", boxShadow: "0 12px 36px rgba(15,23,42,.08)" }}>
-            <h1 style={{ margin: "0 0 10px", fontSize: 22, fontWeight: 800 }}>El ERP ha detectado un error</h1>
-            <p style={{ margin: "0 0 16px", fontSize: 14, lineHeight: 1.6 }}>La sesión no se ha cerrado. El diagnóstico siguiente ayuda a identificar qué ha fallado y qué revisar.</p>
-            <div style={{ marginBottom: 12, padding: 14, borderRadius: 10, background: "#fff7ed", border: "1px solid #fed7aa" }}>
+        <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+          <section style={{ width: "100%", maxWidth: 720, padding: 24 }}>
+            <h1 style={{ margin: "0 0 10px" }}>El ERP ha detectado un error</h1>
+            <p style={{ margin: "0 0 16px" }}>La sesión no se ha cerrado. El diagnóstico siguiente ayuda a identificar qué ha fallado y qué revisar.</p>
+            <div style={{ marginBottom: 12, padding: 14 }}>
               <strong style={{ display: "block", marginBottom: 5 }}>Posible causa</strong>
-              <p style={{ margin: 0, fontSize: 14, lineHeight: 1.55 }}>{diagnostico.causa}</p>
+              <p style={{ margin: 0 }}>{diagnostico.causa}</p>
             </div>
-            <div style={{ marginBottom: 12, padding: 14, borderRadius: 10, background: "#eff6ff", border: "1px solid #bfdbfe" }}>
+            <div style={{ marginBottom: 12, padding: 14 }}>
               <strong style={{ display: "block", marginBottom: 5 }}>Qué hacer</strong>
-              <p style={{ margin: 0, fontSize: 14, lineHeight: 1.55 }}>{diagnostico.accion}</p>
+              <p style={{ margin: 0 }}>{diagnostico.accion}</p>
             </div>
             <strong style={{ display: "block", marginBottom: 6 }}>Error técnico</strong>
-            <pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere", maxHeight: 180, overflow: "auto", padding: 12, borderRadius: 10, background: "#fff7f7", color: "#991b1b", fontSize: 12 }}>{String(error?.message || error || "Error de renderizado desconocido")}</pre>
-            <p style={{ margin: "10px 0 0", color: "#64748b", fontSize: 12 }}>Ruta: {window.location.pathname} · Fecha: {new Date().toLocaleString()}</p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 16 }}>
-              <button type="button" onClick={() => { try { navigator.clipboard?.writeText(detalle); } catch (e) { console.warn("No se pudo copiar el diagnóstico."); } }} style={{ padding: "10px 16px", borderRadius: 10, border: "1px solid #cbd5e1", background: "#fff", color: "#0f172a", fontWeight: 700 }}>Copiar diagnóstico</button>
-              <button type="button" onClick={() => window.location.reload()} style={{ padding: "10px 16px", borderRadius: 10, background: "#1d4ed8", color: "#fff", fontWeight: 700 }}>Recargar ERP</button>
+            <pre style={{ whiteSpace: "pre-wrap", maxHeight: 180, overflow: "auto", padding: 12 }}>{String(error?.message || error || "Error de renderizado desconocido")}</pre>
+            <p style={{ margin: "10px 0 0" }}>Ruta: {window.location.pathname} · Fecha: {new Date().toLocaleString()}</p>
+            <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+              <button type="button" onClick={() => { try { navigator.clipboard?.writeText(detalle); } catch (e) { console.warn("No se pudo copiar el diagnóstico."); } }} style={{ padding: "10px 16px" }}>Copiar diagnóstico</button>
+              <button type="button" onClick={() => window.location.reload()} style={{ padding: "10px 16px" }}>Recargar ERP</button>
             </div>
           </section>
         </main>
