@@ -1,6 +1,6 @@
 // ============================================================
-// ERP MOLSAN — DASHBOARD EXPEDIENTES
-// PREMIUM 2027 — MISMO ESTILO QUE EXPEDIENTES
+// ERP MOLSAN — DASHBOARD DE EXPEDIENTES
+// Resumen operativo
 // ============================================================
 
 import { useDashboard } from "../../hooks/useDashboard";
@@ -267,11 +267,11 @@ export default function Dashboard() {
   return (
     <div className="erp-page w-full dashboard-cancelagest molsan-page" aria-busy={loading}>
       {/* CABECERA UNIFICADA CON APODERAGEST Y NOTARGEST */}
-      <header className="ag-hero molsan-page-header dashboard-header" style={{ "--ag-muted": "#748198", "--ag-ink": "#17243a" }}>
+      <header className="ag-hero molsan-page-header dashboard-header">
         <div className="ag-hero-identidad molsan-page-header__identity">
           <div className="ag-marca cg-marca-cancelagest" aria-label="CancelaGest">CG</div>
           <div>
-            <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
+            <div className="ag-eyebrow">MOLSAN ERP</div>
             <h1>Dashboard</h1>
             <p>Resumen operativo de expedientes, actividad del circuito y firmas realizadas.</p>
           </div>
