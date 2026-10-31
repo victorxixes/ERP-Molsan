@@ -165,3 +165,43 @@ Los colores de éxito, advertencia, error e información son semánticos y solo 
 - La extensión es exclusivamente visual: no modifica cálculos, importes, pagos, actividades, documentos, integraciones, API, permisos, datos ni Sidebar.
 - La reorganización de bloques y tarjetas queda expresamente aplazada a la fase de composición final.
 - Validación visual pendiente en Render Preview: revisar ficha completa, formularios, tablas y modales en escritorio y móvil antes de aprobar el piloto.
+
+
+## Cierre de Fase 1 — auditoría global de implementación (31/10/2026)
+
+**Estado: Fase 1 cerrada como infraestructura visual global en la rama Preview.**
+
+### Alcance comprobado en el repositorio
+- Se han contado 192 archivos bajo `frontend-app/src/`.
+- Se han revisado estáticamente las 97 pantallas JSX/TSX y los 30 componentes JSX/TSX.
+- El frontend mantiene tres hojas CSS: `index.css`, `NeutralizarPresentacion.css` y `SidebarBase.css`.
+- `main.jsx` carga la neutralización visual después de la base y los estilos de los módulos, para que los fundamentos comunes alcancen las pantallas y los componentes que renderizan sus diálogos y modales.
+- La búsqueda estática no encontró paletas Tailwind alternativas ni códigos de color antiguos en las pantallas revisadas. Los colores semánticos de estado se conservan cuando comunican éxito, advertencia o error.
+- Los colores hexadecimales detectados en pantallas corresponden a la paleta corporativa; las excepciones de identidad y tratamiento del Sidebar permanecen expresamente fuera del alcance.
+- FichaExpediente, por su tamaño y complejidad, también fue inspeccionada estáticamente: no se detectaron colores hexadecimales, clases de paletas alternativas ni estilos inline de presentación en su componente principal.
+
+### Corrección final
+- El hover de `.molsan-btn` utilizaba el valor aislado `#b8ccdc`.
+- Se ha sustituido por `var(--molsan-border)`, manteniendo el mismo lenguaje cromático y evitando un color aislado.
+- Commit de corrección: `627c7e12cfe21729c0bcd6ce487a2be307570c04`.
+
+### Qué significa este cierre
+La paleta, tipografía, escalas, superficies, geometría base, espaciado, controles, foco, movimiento reducido y reglas de normalización están centralizados para todo el frontend y se heredan en sus pantallas, componentes, formularios y modales. No se han hecho sustituciones masivas de lógica ni cambios funcionales.
+
+Este cierre **no afirma que cada una de las 97 pantallas y cada modal hayan sido inspeccionados visualmente uno por uno en un navegador**. La revisión realizada es estática y de arquitectura/CSS. Las comprobaciones visuales por módulo, resoluciones e interacciones se registrarán durante la Fase 2 y la auditoría visual posterior. La compilación correcta tampoco sustituye esa revisión visual.
+
+### Límites preservados
+- Sidebar sin cambios.
+- Sin cambios en producción, rama `main`, base de datos, APIs, permisos, datos o lógica de negocio.
+- La distribución y reubicación de tarjetas y bloques queda aplazada a la fase de composición.
+
+### Criterio de aceptación de Fase 1
+- [x] Tokens corporativos y tipografía centralizados.
+- [x] Fundamentos globales conectados a Tailwind y cargados en el punto de entrada.
+- [x] Normalización global aplicada mediante una única hoja común.
+- [x] Auditoría estática de 97 pantallas y 30 componentes JSX/TSX.
+- [x] Corrección del último color aislado.
+- [x] Sidebar y funcionalidad excluidos de los cambios.
+- [ ] Build final de producción de Preview: pendiente de ejecución y resultado del despliegue.
+- [ ] Revisión visual individual de todas las pantallas y modales: pendiente, no se considera realizada por la auditoría estática.
+
