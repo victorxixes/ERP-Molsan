@@ -1,0 +1,260 @@
+/* ============================================================
+   MOLSAN ERP PREMIUM 2027 · GLASS LUXE — GLOBAL OVERRIDE
+   Capa visual deliberadamente visible para TODO el ERP interno.
+   Solo presentación: no modifica datos, rutas, permisos ni lógica.
+   ============================================================ */
+
+:root {
+  --molsan-page-bg: #edf2fa;
+  --molsan-surface: rgba(255,255,255,.88);
+  --molsan-surface-soft: #f5f8fd;
+  --molsan-border: #d7e1ef;
+  --molsan-border-light: #e7edf5;
+  --molsan-border-strong: #bdcbe0;
+  --molsan-text: #172640;
+  --molsan-text-secondary: #52647e;
+  --molsan-text-muted: #74839a;
+  --molsan-primary: #4169d5;
+  --molsan-primary-hover: #3155b8;
+  --molsan-primary-soft: #eaf0ff;
+  --molsan-radius-control: 10px;
+  --molsan-radius-card: 17px;
+  --molsan-radius-dialog: 21px;
+  --molsan-shadow-card: 0 8px 26px rgba(28,48,82,.075), 0 1px 3px rgba(28,48,82,.04);
+  --molsan-shadow-glass: 0 16px 42px rgba(28,48,82,.12);
+}
+
+html, body, #root { min-height: 100%; }
+html { background: #edf2fa; }
+body {
+  margin: 0;
+  color: var(--molsan-text);
+  background: #edf2fa;
+  font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+.erp-app-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 12% 0%, rgba(107,145,225,.19), transparent 34%),
+    radial-gradient(ellipse at 92% 12%, rgba(169,190,228,.22), transparent 32%),
+    linear-gradient(135deg,#f7f9fd 0%,#edf2fa 48%,#f4f7fc 100%) !important;
+}
+.erp-main-content {
+  min-width: 0;
+  background: transparent !important;
+}
+.erp-main-inner {
+  width: 100%;
+  max-width: 1880px;
+  margin-inline: auto;
+  padding: 28px clamp(16px,2.2vw,36px) 42px !important;
+}
+.erp-main-inner > div { min-width: 0; }
+
+/* Navegación principal: barra azul noche acristalada, muy visible. */
+.mol-sidebar-premium {
+  position: sticky !important;
+  top: 0;
+  z-index: 100;
+  color: #f7f9ff !important;
+  background: linear-gradient(112deg,rgba(15,29,55,.97),rgba(29,49,83,.96) 58%,rgba(37,60,99,.95)) !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(255,255,255,.16) !important;
+  box-shadow: 0 12px 34px rgba(16,31,58,.20) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(145%);
+  backdrop-filter: blur(22px) saturate(145%);
+}
+.mol-sidebar-premium > div {
+  min-height: 72px;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+.mol-sidebar-premium :is(.text-sm.font-bold,.text-\[11px\]) {
+  color: #f5f8ff !important;
+}
+.mol-sidebar-premium nav :is(a,button) {
+  min-height: 38px;
+  color: #e5ecfa !important;
+  background: rgba(255,255,255,.075) !important;
+  border: 1px solid rgba(255,255,255,.13) !important;
+  border-radius: 11px !important;
+  box-shadow: none !important;
+  transition: background .18s ease,border-color .18s ease,transform .18s ease !important;
+}
+.mol-sidebar-premium nav :is(a,button):hover {
+  color: #fff !important;
+  background: rgba(255,255,255,.16) !important;
+  border-color: rgba(255,255,255,.32) !important;
+  transform: translateY(-1px);
+}
+.mol-sidebar-premium nav a[aria-current="page"],
+.mol-sidebar-premium nav a.active,
+.mol-sidebar-premium nav button[aria-current="page"] {
+  color: #fff !important;
+  background: linear-gradient(135deg,#527ce5,#365ec4) !important;
+  border-color: rgba(190,211,255,.65) !important;
+  box-shadow: 0 5px 16px rgba(54,94,196,.35) !important;
+}
+.mol-sidebar-premium > div > div:last-child {
+  border-color: rgba(255,255,255,.20) !important;
+}
+.mol-sidebar-premium :is(button,a):focus-visible {
+  outline: 2px solid #a9c2ff !important;
+  outline-offset: 3px;
+}
+.mol-sidebar-dropdown-menu,
+.mol-sidebar-premium [role="menu"] {
+  color: #1b2b48 !important;
+  background: rgba(255,255,255,.97) !important;
+  border: 1px solid #d8e2f0 !important;
+  box-shadow: 0 20px 54px rgba(15,31,58,.22) !important;
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+.mol-sidebar-dropdown-menu a,
+.mol-sidebar-premium [role="menu"] a {
+  color: #253653 !important;
+}
+.mol-sidebar-dropdown-menu a:hover,
+.mol-sidebar-premium [role="menu"] a:hover {
+  color: #3155b8 !important;
+  background: #edf2ff !important;
+}
+
+/* Ritmo visual común para páginas, títulos y zonas de trabajo. */
+.erp-main-inner :is(h1,h2,h3) {
+  color: #192944;
+  letter-spacing: -.025em;
+}
+.erp-main-inner h1 { font-weight: 760; }
+.erp-main-inner h2 { font-weight: 720; }
+.erp-main-inner :is(p,small) { text-wrap: pretty; }
+.erp-main-inner :is(.cg-hero,.ag-hero,.ng-cabecera,.eg-hero,.page-header,.pagina-header,.listado-header) {
+  padding: 19px 22px;
+  margin-bottom: 22px;
+  color: #1b2b48;
+  background: linear-gradient(120deg,rgba(255,255,255,.96),rgba(244,248,255,.88)) !important;
+  border: 1px solid rgba(202,216,238,.9) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 9px 28px rgba(35,57,94,.07) !important;
+}
+
+/* Tarjetas y paneles de negocio: superficies Glass Luxe consistentes. */
+.erp-main-inner :is(
+  .erp-card,.erp-card-soft,.molsan-panel,.cg-panel,.cg-card,
+  .ag-panel,.ag-card,.ag-kpi,.ng-panel,.ng-contador,.ng-tarea,.ng-acceso,
+  .eg-panel,.eg-kpi,.eg-card,.maestros-panel,.logs-panel,
+  .agenda-upcoming-card,.ctn-portal-card,.ctn-portal-field-card,
+  [data-cg-panel="true"],[data-panel="true"]
+) {
+  min-width: 0;
+  color: #1b2b48;
+  background: rgba(255,255,255,.86) !important;
+  border: 1px solid rgba(207,219,237,.94) !important;
+  border-radius: 17px !important;
+  box-shadow: 0 8px 26px rgba(28,48,82,.075),0 1px 3px rgba(28,48,82,.035) !important;
+  -webkit-backdrop-filter: blur(15px) saturate(135%);
+  backdrop-filter: blur(15px) saturate(135%);
+}
+.erp-main-inner :is(.erp-card,.erp-card-soft,.molsan-panel,.cg-panel,.ag-panel,.ng-panel,.eg-panel):hover {
+  border-color: #bdcde5 !important;
+}
+
+/* Formularios: controles blancos, limpios y con foco azul. */
+.erp-main-inner :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+  select,textarea
+) {
+  max-width: 100%;
+  color: #1b2b48 !important;
+  background: rgba(255,255,255,.96) !important;
+  border: 1px solid #cbd6e5 !important;
+  border-radius: 10px !important;
+  box-shadow: inset 0 1px 2px rgba(25,42,70,.025);
+}
+.erp-main-inner :is(input,select,textarea):focus {
+  border-color: #4169d5 !important;
+  outline: 0 !important;
+  box-shadow: 0 0 0 3px rgba(65,105,213,.15) !important;
+}
+.erp-main-inner input[type="checkbox"],
+.erp-main-inner input[type="radio"] { accent-color: #4169d5; }
+
+/* Tablas: cabeceras azul grisáceo, líneas finas y hover discreto. */
+.erp-main-inner :is(.overflow-x-auto,.table-responsive,[data-table-scroll="true"]) {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+.erp-main-inner table {
+  color: #243550;
+  border-color: #e3eaf3;
+  font-variant-numeric: tabular-nums;
+}
+.erp-main-inner table thead th {
+  color: #52647e !important;
+  background: #eef3fa !important;
+  border-color: #dce5f1 !important;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: .025em;
+}
+.erp-main-inner table tbody td { border-color: #e8edf5; }
+.erp-main-inner table tbody tr:hover > td {
+  background: rgba(235,241,255,.72) !important;
+}
+
+/* Botones: radios y estados homogéneos sin borrar colores semánticos. */
+.erp-main-inner button,
+.erp-main-inner [role="button"] {
+  border-radius: 10px;
+  font-family: inherit;
+  transition: box-shadow .16s ease,border-color .16s ease,filter .16s ease;
+}
+.erp-main-inner :is(button,a,[role="button"],input,select,textarea):focus-visible {
+  outline: 2px solid rgba(65,105,213,.5);
+  outline-offset: 2px;
+}
+.erp-main-inner button:disabled { cursor: not-allowed; opacity: .58; }
+
+/* Modales y menús flotantes. */
+[role="dialog"] {
+  border-color: #d6e0ee !important;
+  border-radius: 20px !important;
+  box-shadow: 0 26px 76px rgba(18,34,62,.24) !important;
+}
+[role="listbox"],[data-radix-popper-content-wrapper] {
+  border-color: #d6e0ee;
+  border-radius: 14px;
+  box-shadow: 0 18px 48px rgba(18,34,62,.18);
+}
+
+@media (max-width: 900px) {
+  .mol-sidebar-premium > div { flex-wrap: wrap; }
+  .erp-main-inner { padding: 18px 16px 28px !important; }
+}
+@media (max-width: 640px) {
+  .mol-sidebar-premium { position: relative !important; }
+  .erp-main-inner { padding: 14px 12px 24px !important; }
+  .erp-main-inner table { min-width: 640px; }
+  .erp-main-inner :is(.cg-hero,.ag-hero,.ng-cabecera,.eg-hero,.page-header,.pagina-header,.listado-header) {
+    align-items: flex-start;
+    padding: 14px;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .mol-sidebar-premium,.erp-main-inner :is(.erp-card,.molsan-panel,.cg-panel,.ag-panel,.ng-panel,.eg-panel) {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: #fff !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .erp-app-shell *, .erp-app-shell *::before, .erp-app-shell *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
