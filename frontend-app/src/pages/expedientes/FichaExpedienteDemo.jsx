@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 /**
@@ -8,6 +9,8 @@ import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 export default function FichaExpedienteDemo() {
   const [actividad, setActividad] = useState("Documentación previa");
   const [modal, setModal] = useState("");
+  const dialogRef = useRef(null);
+  useAccessibleDialog({ open: Boolean(modal), onClose: () => setModal(""), dialogRef });
   const [pestana, setPestana] = useState("Documentos");
   const actividades = [
     "Documentación previa",
@@ -132,7 +135,7 @@ export default function FichaExpedienteDemo() {
       </section>
 
       {modal && <div className="expediente-operativo-modal fixed inset-0 z-[9999] flex items-center justify-center p-4" style={{ background: "rgba(18,42,60,.34)" }} onMouseDown={e => { if (e.target === e.currentTarget) setModal(""); }}>
-        <div className="expediente-operativo-modal-panel flex w-full max-w-xl flex-col overflow-hidden" role="dialog" aria-modal="true" aria-label={modal}>
+        <div ref={dialogRef} tabIndex={-1} className="expediente-operativo-modal-panel flex w-full max-w-xl flex-col overflow-hidden" role="dialog" aria-modal="true" aria-label={modal}>
           <div className="flex items-center justify-between gap-3 border-b px-6 py-5"><div><h2 className="font-semibold">{modal}</h2><p className="mt-1 text-xs">Vista de ejemplo · No se guardarán cambios</p></div><button type="button" className="molsan-btn" onClick={() => setModal("")}>Cerrar</button></div>
           <div className="space-y-4 p-6"><div className="molsan-data-point"><p className="mb-1 text-xs font-semibold uppercase">Expediente</p><div>MOL-2026-0042 · Datos ficticios</div></div><label className="block text-sm">Observaciones de demostración<textarea className="mt-2 w-full p-3" rows="3" defaultValue="Contenido de ejemplo para comprobar campos y superficies." /></label><div className="flex justify-end"><button type="button" className="molsan-btn molsan-btn--primary" onClick={() => setModal("")}>Cerrar demostración</button></div></div>
         </div>
