@@ -156,20 +156,18 @@ export default function VistaMes({
             return (
               <div
                 key={`${wi}-${di}`}
-                className={`
-                  min-h-32
-                  rounded-xl
-                  border
-                  p-2
-                  flex flex-col
-                  cursor-pointer
-                  transition-all duration-200
-                  ${
-                    esHoy
-                      ? ""
-                      : ""
-                  }
-                `}
+                className={`min-h-32
+ 
+ 
+ p-2
+ flex flex-col
+ 
+ 
+ ${
+ esHoy
+ ? ""
+ : ""
+ }`}
                 onClick={() =>
                   onDiaClick(fechaStr)
                 }
@@ -180,32 +178,26 @@ export default function VistaMes({
                 <div className="flex items-center justify-between mb-1">
 
                   <span
-                    className={`
-                      text-[11px]
-                      font-semibold
-                      ${
-                        esHoy
-                          ? ""
-                          : ""
-                      }
-                    `}
+                    className={`${
+ esHoy
+ ? ""
+ : ""
+ }`}
                   >
                     {esHoy ? "HOY" : ""}
                   </span>
 
                   <div
-                    className={`
-                      w-7 h-7
-                      flex items-center justify-center
-                      rounded-full
-                      text-xs
-                      font-semibold
-                      ${
-                        esHoy
-                          ? ""
-                          : ""
-                      }
-                    `}
+                    className={`w-7 h-7
+ flex items-center justify-center
+ 
+ 
+ 
+ ${
+ esHoy
+ ? ""
+ : ""
+ }`}
                   >
                     {day.getDate()}
                   </div>
@@ -232,24 +224,22 @@ export default function VistaMes({
                     return (
                       <div
                         key={c.id}
-                        className={`
-                          relative
-                          text-[11px]
-                          px-2
-                          py-1.5
-                          rounded-lg
-                          border
-                          truncate
-                          ${colores.box}
-                          ${colores.text}
-                          shadow-sm
-                          transition-all duration-200
-                          ${
-                            resaltada
-                              ? "ring-2 ring-amber-400 bg-amber-50"
-                              : "hover:shadow-md hover:-translate-y-[1px]"
-                          }
-                        `}
+                        className={`relative
+ 
+ px-2
+ py-1.5
+ 
+ 
+ truncate
+ ${colores.box}
+ ${colores.text}
+ 
+ 
+ ${
+ resaltada
+ ? "ring-2 
+ : 
+ }`}
                         onClick={(e) => {
                           e.stopPropagation();
                           onCitaClick(c);
@@ -257,22 +247,20 @@ export default function VistaMes({
                       >
 
                         <span
-                          className={`
-                            absolute
-                            left-0
-                            top-0
-                            bottom-0
-                            w-1
-                            rounded-l-lg
-                            ${colores.accent}
-                          `}
+                          className={`absolute
+ left-0
+ top-0
+ bottom-0
+ w-1
+ 
+ ${colores.accent}`}
                         />
 
                         <div className="truncate pl-1">
                           {c.tipo_cita} — {c.hora_inicio} →{" "}
                           {c.hora_fin}
                         </div>
-                        {String(c.tipo_cita || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es").includes("firma") ? (() => { const realizada = Boolean(c.firma_realizada) || /FIRMA\s+REALIZADA|FIRMADA/.test(String(c.observaciones || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()); return <div className={`mt-1 inline-flex items-center rounded-md border px-1.5 py-0.5 text-[10px] font-bold ${realizada ? "" : ""}`}>{realizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</div>; })() : null}
+                        {String(c.tipo_cita || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es").includes("firma") ? (() => { const realizada = Boolean(c.firma_realizada) || /FIRMA\s+REALIZADA|FIRMADA/.test(String(c.observaciones || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()); return <div className={`mt-1 inline-flex items-center px-1.5 py-0.5 ${realizada ? "" : ""}`}>{realizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</div>; })() : null}
 
                         <div className="truncate pl-1">
                           Notario: {c.notario_nombre || "—"}
