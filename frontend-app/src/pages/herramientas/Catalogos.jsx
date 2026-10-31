@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import "../../css/HerramientasPremium.css";
 
 /**
  * CENTRAL DE CATÁLOGOS — MOLSAN ERP
@@ -155,7 +154,7 @@ const GRUPOS = [
 
 export default function Catalogos() {
   return (
-    <main className="catalogos-premium-page min-h-full space-y-7 p-4 sm:p-6 lg:p-8">
+    <main className="min-h-full space-y-7 p-4 sm:p-6 lg:p-8">
       <header className="relative overflow-hidden p-6 sm:p-7">
         <div className="absolute inset-x-0 top-0 h-1" />
         <div className="relative flex items-center gap-4">
