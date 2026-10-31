@@ -24,8 +24,8 @@ export const useIntranetWS = () => {
 
     const configuredWs = String(import.meta.env.VITE_WS_URL || "").replace(/\/+$/, "");
     const configuredApi = String(
-      import.meta.env.VITE_API_URL || "https://agenda-intranet-b.onrender.com"
-    ).replace(/\/+$/, "");
+      import.meta.env.VITE_API_URL || "https://agenda-intranet-b.onrender.com/api"
+    ).replace(/\/api\/?$/, "").replace(/\/+$/, "");
     const wsBase = configuredWs || configuredApi.replace(/^http:/i, "ws:").replace(/^https:/i, "wss:");
     if (!wsBase) return undefined;
 
