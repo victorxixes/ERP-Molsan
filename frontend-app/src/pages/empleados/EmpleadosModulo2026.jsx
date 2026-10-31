@@ -68,25 +68,13 @@ export default function EmpleadosModulo2026() {
 
   return (
 
-    <div className="erp-page
- 
- space-y-6">
+    <div className="erp-page min-w-0 space-y-6">
 
       {/* =====================================================
           LISTADO
       ===================================================== */}
 
-      <section className="erp-card
- w-full
- p-5">
-
-        <EmpleadosListado
-          onSeleccionar={
-            abrirFicha
-          }
-        />
-
-      </section>
+      <EmpleadosListado onSeleccionar={abrirFicha} />
 
 
       {/* =====================================================
