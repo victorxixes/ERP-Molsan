@@ -66,7 +66,7 @@ export default function TiposImpositivos() {
     <main className="tipos-impositivos-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="absolute inset-x-0 top-0 h-1 bg-[var(--molsan-primary)]" />
-        <p className="text-xs font-bold uppercase tracking-[.18em] text-[var(--molsan-primary)]">MOLSAN ERP PREMIUM 2027</p>
+        <p className="text-xs font-bold uppercase tracking-[.18em] text-[var(--molsan-primary)]">MOLSAN ERP</p>
         <h1 className="mt-2 text-2xl font-extrabold text-slate-900">Tipos impositivos</h1>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Mantén en un único catálogo los impuestos indirectos y las retenciones utilizados en las órdenes de pago, gastos y otros procesos económicos.</p>
       </header>
