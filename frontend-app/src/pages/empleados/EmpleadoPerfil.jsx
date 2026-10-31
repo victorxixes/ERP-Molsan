@@ -577,23 +577,14 @@ export default function EmpleadoPerfil({
 
       <div className="empleado-perfil-premium erp-page">
 
-        <div className="
-          erp-card
-          p-8
-          text-center
-        ">
+        <div className="erp-card
+ p-8">
 
-          <div className="
-            text-4xl
-            mb-3
-          ">
+          <div className="mb-3">
             👤
           </div>
 
-          <div className="
-            text-[var(--erp-text)]
-            font-semibold
-          ">
+          <div className="">
             Selecciona un empleado válido.
           </div>
 
@@ -615,13 +606,8 @@ export default function EmpleadoPerfil({
 
       <div className="erp-page">
 
-        <div className="
-          erp-card
-          p-12
-          text-center
-          text-[var(--erp-text-soft)]
-          animate-pulse
-        ">
+        <div className="erp-card
+ p-12">
           Cargando perfil del empleado…
         </div>
 
@@ -641,20 +627,11 @@ export default function EmpleadoPerfil({
 
       <div className="erp-page">
 
-        <div className="
-          erp-card
-          p-6
-        ">
+        <div className="erp-card
+ p-6">
 
-          <div className="
-            rounded-xl
-            border
-            border-red-200
-            bg-red-50
-            text-red-700
-            px-4
-            py-3
-          ">
+          <div className="px-4
+ py-3">
             {error}
           </div>
 
@@ -717,53 +694,42 @@ export default function EmpleadoPerfil({
 
   return (
 
-    <div className="
-      erp-page
-      empleado-perfil-premium
-      space-y-5
-      animate-fade-in
-    ">
+    <div className="erp-page
+ empleado-perfil-premium
+ space-y-5">
 
 
       {/* ======================================================
           CABECERA
       ====================================================== */}
 
-      <section className="
-        erp-card
-        p-6
-      ">
+      <section className="erp-card
+ p-6">
 
-        <div className="
-          flex
-          flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-6
-        ">
+        <div className="flex
+ flex-col
+ lg:flex-row
+ lg:items-center
+ lg:justify-between
+ gap-6">
 
 
           {/* --------------------------------------------------
               IDENTIDAD
           -------------------------------------------------- */}
 
-          <div className="
-            flex
-            items-center
-            gap-5
-          ">
+          <div className="flex
+ items-center
+ gap-5">
 
-            <div className="
-              w-20
-              h-20
-              rounded-2xl
-              overflow-hidden
-              border
-              border-[var(--erp-border)]
-              bg-[var(--erp-surface-soft)]
-              shrink-0
-            ">
+            <div className="w-20
+ h-20
+ 
+ overflow-hidden
+ 
+ 
+ 
+ shrink-0">
 
               {(
                 fotoPreview ||
@@ -776,23 +742,18 @@ export default function EmpleadoPerfil({
                     `${API_BASE}${fotoURL}`
                   }
                   alt="Foto empleado"
-                  className="
-                    w-full
-                    h-full
-                    object-cover
-                  "
+                  className="w-full
+ h-full
+ object-cover"
                 />
 
               ) : (
 
-                <div className="
-                  w-full
-                  h-full
-                  flex
-                  items-center
-                  justify-center
-                  text-2xl
-                ">
+                <div className="w-full
+ h-full
+ flex
+ items-center
+ justify-center">
                   👤
                 </div>
 
@@ -803,23 +764,12 @@ export default function EmpleadoPerfil({
 
             <div>
 
-              <div className="
-                text-xs
-                uppercase
-                tracking-[0.16em]
-                font-semibold
-                text-[var(--erp-primary)]
-              ">
+              <div className="uppercase">
                 Perfil de empleado
               </div>
 
 
-              <h1 className="
-                text-2xl
-                font-semibold
-                text-[var(--erp-text)]
-                mt-1
-              ">
+              <h1 className="mt-1">
 
                 {empleado.nombre || ""}{" "}
 
@@ -828,34 +778,23 @@ export default function EmpleadoPerfil({
               </h1>
 
 
-              <div className="
-                flex
-                flex-wrap
-                gap-2
-                mt-2
-                items-center
-              ">
+              <div className="flex
+ flex-wrap
+ gap-2
+ mt-2
+ items-center">
 
-                <span className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                ">
+                <span className="">
                   ID #{empleado.id}
                 </span>
 
 
-                <span className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                ">
+                <span className="">
                   ·
                 </span>
 
 
-                <span className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                ">
+                <span className="">
                   {empleado.usuario ||
                     "Sin usuario"}
                 </span>
@@ -871,8 +810,8 @@ export default function EmpleadoPerfil({
                     border
                     ${
                       empleado.activo
-                        ? "bg-green-50 text-green-700 border-green-200"
-                        : "bg-red-50 text-red-700 border-red-200"
+                        ? ""
+                        : ""
                     }
                   `}
                 >
@@ -892,13 +831,11 @@ export default function EmpleadoPerfil({
               INFORMACIÓN LABORAL RESUMIDA
           -------------------------------------------------- */}
 
-          <div className="
-            grid
-            grid-cols-1
-            sm:grid-cols-3
-            gap-3
-            min-w-0
-          ">
+          <div className="grid
+ grid-cols-1
+ sm:grid-cols-3
+ gap-3
+ min-w-0">
 
             <ResumenCabecera
               label="Departamento"
@@ -934,16 +871,8 @@ export default function EmpleadoPerfil({
 
       {error && (
 
-        <div className="
-          rounded-xl
-          border
-          border-red-200
-          bg-red-50
-          text-red-700
-          px-4
-          py-3
-          text-sm
-        ">
+        <div className="px-4
+ py-3">
 
           {error}
 
@@ -954,16 +883,8 @@ export default function EmpleadoPerfil({
 
       {mensaje && (
 
-        <div className="
-          rounded-xl
-          border
-          border-emerald-200
-          bg-emerald-50
-          text-emerald-700
-          px-4
-          py-3
-          text-sm
-        ">
+        <div className="px-4
+ py-3">
 
           ✓ {mensaje}
 
@@ -976,16 +897,12 @@ export default function EmpleadoPerfil({
           TABS
       ====================================================== */}
 
-      <div className="
-        erp-card
-        p-2
-      ">
+      <div className="erp-card
+ p-2">
 
-        <div className="
-          flex
-          flex-wrap
-          gap-1
-        ">
+        <div className="flex
+ flex-wrap
+ gap-1">
 
           {[
             [
@@ -1033,8 +950,8 @@ export default function EmpleadoPerfil({
                   transition
                   ${
                     tab === key
-                      ? "bg-[var(--erp-primary)] text-white shadow-sm"
-                      : "text-[var(--erp-text-soft)] hover:bg-[var(--erp-surface-soft)] hover:text-[var(--erp-text)]"
+                      ? ""
+                      : ""
                   }
                 `}
               >
@@ -1061,24 +978,20 @@ export default function EmpleadoPerfil({
 
       {tab === "basicos" && (
 
-        <section className="
-          erp-card
-          p-6
-          space-y-6
-        ">
+        <section className="erp-card
+ p-6
+ space-y-6">
 
           <SectionTitle>
             Datos básicos
           </SectionTitle>
 
 
-          <div className="
-            grid
-            grid-cols-1
-            md:grid-cols-2
-            xl:grid-cols-3
-            gap-5
-          ">
+          <div className="grid
+ grid-cols-1
+ md:grid-cols-2
+ xl:grid-cols-3
+ gap-5">
 
             <Campo
               label="Nombre"
@@ -1198,33 +1111,23 @@ export default function EmpleadoPerfil({
               FOTO
           -------------------------------------------------- */}
 
-          <div className="
-            rounded-2xl
-            border
-            border-[var(--erp-border)]
-            bg-[var(--erp-surface-soft)]
-            p-5
-          ">
+          <div className="p-5">
 
-            <div className="
-              flex
-              flex-col
-              md:flex-row
-              md:items-center
-              gap-5
-            ">
+            <div className="flex
+ flex-col
+ md:flex-row
+ md:items-center
+ gap-5">
 
 
-              <div className="
-                w-24
-                h-24
-                rounded-2xl
-                overflow-hidden
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-surface)]
-                shrink-0
-              ">
+              <div className="w-24
+ h-24
+ 
+ overflow-hidden
+ 
+ 
+ 
+ shrink-0">
 
                 {(
                   fotoPreview ||
@@ -1237,23 +1140,18 @@ export default function EmpleadoPerfil({
                       `${API_BASE}${fotoURL}`
                     }
                     alt="Foto empleado"
-                    className="
-                      w-full
-                      h-full
-                      object-cover
-                    "
+                    className="w-full
+ h-full
+ object-cover"
                   />
 
                 ) : (
 
-                  <div className="
-                    w-full
-                    h-full
-                    flex
-                    items-center
-                    justify-center
-                    text-3xl
-                  ">
+                  <div className="w-full
+ h-full
+ flex
+ items-center
+ justify-center">
                     👤
                   </div>
 
@@ -1264,21 +1162,13 @@ export default function EmpleadoPerfil({
 
               <div>
 
-                <div className="
-                  text-sm
-                  font-semibold
-                  text-[var(--erp-text)]
-                ">
+                <div className="">
                   Fotografía
                 </div>
 
 
-                <div className="
-                  text-xs
-                  text-[var(--erp-text-soft)]
-                  mt-1
-                  mb-3
-                ">
+                <div className="mt-1
+ mb-3">
                   Selecciona una nueva fotografía del empleado.
                 </div>
 
@@ -1289,11 +1179,7 @@ export default function EmpleadoPerfil({
                   onChange={
                     handleFoto
                   }
-                  className="
-                    block
-                    text-sm
-                    text-[var(--erp-text-soft)]
-                  "
+                  className="block"
                 />
 
               </div>
@@ -1323,24 +1209,20 @@ export default function EmpleadoPerfil({
 
       {tab === "personales" && (
 
-        <section className="
-          erp-card
-          p-6
-          space-y-6
-        ">
+        <section className="erp-card
+ p-6
+ space-y-6">
 
           <SectionTitle>
             Datos personales
           </SectionTitle>
 
 
-          <div className="
-            grid
-            grid-cols-1
-            md:grid-cols-2
-            xl:grid-cols-3
-            gap-5
-          ">
+          <div className="grid
+ grid-cols-1
+ md:grid-cols-2
+ xl:grid-cols-3
+ gap-5">
 
             <Campo
               label="Dirección"
@@ -1464,13 +1346,11 @@ export default function EmpleadoPerfil({
 
           <div>
 
-            <label className="
-              block
-              text-xs
-              font-semibold
-              text-[var(--erp-text-soft)]
-              mb-2
-            ">
+            <label className="block
+ 
+ 
+ 
+ mb-2">
               Observaciones
             </label>
 
@@ -1487,22 +1367,16 @@ export default function EmpleadoPerfil({
                   e.target.value
                 )
               }
-              className="
-                w-full
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-surface)]
-                text-[var(--erp-text)]
-                px-4
-                py-3
-                outline-none
-                resize-y
-                transition
-                focus:border-[var(--erp-primary)]
-                focus:ring-2
-                focus:ring-[var(--erp-primary-soft)]
-              "
+              className="w-full
+ 
+ 
+ 
+ 
+ 
+ px-4
+ py-3
+ 
+ resize-y"
             />
 
           </div>
@@ -1528,11 +1402,9 @@ export default function EmpleadoPerfil({
 
       {tab === "laborales" && (
 
-        <section className="
-          erp-card
-          p-6
-          space-y-6
-        ">
+        <section className="erp-card
+ p-6
+ space-y-6">
 
           <SectionTitle>
             Datos laborales
@@ -1543,13 +1415,11 @@ export default function EmpleadoPerfil({
               MAESTROS
           -------------------------------------------------- */}
 
-          <div className="
-            grid
-            grid-cols-1
-            md:grid-cols-2
-            xl:grid-cols-3
-            gap-5
-          ">
+          <div className="grid
+ grid-cols-1
+ md:grid-cols-2
+ xl:grid-cols-3
+ gap-5">
 
 
             {/* ==================================================
@@ -1662,12 +1532,10 @@ export default function EmpleadoPerfil({
               INFORMACIÓN MAESTRA
           -------------------------------------------------- */}
 
-          <div className="
-            grid
-            grid-cols-1
-            md:grid-cols-3
-            gap-4
-          ">
+          <div className="grid
+ grid-cols-1
+ md:grid-cols-3
+ gap-4">
 
             <Dato
               label="Departamento actual"
@@ -1699,34 +1567,20 @@ export default function EmpleadoPerfil({
               ESTADO
           -------------------------------------------------- */}
 
-          <div className="
-            rounded-2xl
-            border
-            border-[var(--erp-border)]
-            bg-[var(--erp-surface-soft)]
-            p-4
-            flex
-            items-center
-            justify-between
-            gap-4
-          ">
+          <div className="p-4
+ flex
+ items-center
+ justify-between
+ gap-4">
 
             <div>
 
-              <div className="
-                text-sm
-                font-semibold
-                text-[var(--erp-text)]
-              ">
+              <div className="">
                 Estado
               </div>
 
 
-              <div className="
-                text-xs
-                text-[var(--erp-text-soft)]
-                mt-1
-              ">
+              <div className="mt-1">
                 Estado actual del empleado.
               </div>
 
@@ -1743,8 +1597,8 @@ export default function EmpleadoPerfil({
                 border
                 ${
                   empleado.activo
-                    ? "bg-green-50 text-green-700 border-green-200"
-                    : "bg-red-50 text-red-700 border-red-200"
+                    ? ""
+                    : ""
                 }
               `}
             >
@@ -1776,20 +1630,16 @@ export default function EmpleadoPerfil({
 
       {tab === "auditoria" && (
 
-        <section className="
-          erp-card
-          p-6
-        ">
+        <section className="erp-card
+ p-6">
 
           <SectionTitle>
             Auditoría
           </SectionTitle>
 
 
-          <div className="
-            space-y-3
-            mt-6
-          ">
+          <div className="space-y-3
+ mt-6">
 
             {(
               Array.isArray(
@@ -1799,16 +1649,7 @@ export default function EmpleadoPerfil({
                 : []
             ).length === 0 ? (
 
-              <div className="
-                rounded-2xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-surface-soft)]
-                p-6
-                text-center
-                text-sm
-                text-[var(--erp-text-soft)]
-              ">
+              <div className="p-6">
                 No hay registros de auditoría para este empleado.
               </div>
 
@@ -1831,22 +1672,13 @@ export default function EmpleadoPerfil({
                       item.id ||
                       `audit-${index}`
                     }
-                    className="
-                      rounded-2xl
-                      border
-                      border-[var(--erp-border)]
-                      bg-[var(--erp-surface-soft)]
-                      p-5
-                    "
+                    className="p-5"
                   >
 
-                    <div className="
-                      grid
-                      grid-cols-1
-                      md:grid-cols-2
-                      gap-4
-                      text-sm
-                    ">
+                    <div className="grid
+ grid-cols-1
+ md:grid-cols-2
+ gap-4">
 
                       <DatoSimple
                         label="Fecha"
@@ -1915,25 +1747,15 @@ function SectionTitle({
 
   return (
 
-    <div className="
-      flex
-      items-center
-      gap-3
-    ">
+    <div className="flex
+ items-center
+ gap-3">
 
-      <div className="
-        w-2
-        h-7
-        rounded-full
-        bg-[var(--erp-primary)]
-      " />
+      <div className="w-2
+ h-7" />
 
 
-      <h2 className="
-        text-xl
-        font-semibold
-        text-[var(--erp-text)]
-      ">
+      <h2 className="">
 
         {children}
 
@@ -1961,13 +1783,11 @@ function Campo({
 
     <label className="block">
 
-      <span className="
-        block
-        text-xs
-        font-semibold
-        text-[var(--erp-text-soft)]
-        mb-2
-      ">
+      <span className="block
+ 
+ 
+ 
+ mb-2">
 
         {label}
 
@@ -1984,21 +1804,14 @@ function Campo({
             e.target.value
           )
         }
-        className="
-          w-full
-          h-11
-          rounded-xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          text-[var(--erp-text)]
-          px-4
-          outline-none
-          transition
-          focus:border-[var(--erp-primary)]
-          focus:ring-2
-          focus:ring-[var(--erp-primary-soft)]
-        "
+        className="w-full
+ h-11
+ 
+ 
+ 
+ 
+ 
+ px-4"
       />
 
     </label>
@@ -2024,13 +1837,11 @@ function CampoSelect({
 
     <label className="block">
 
-      <span className="
-        block
-        text-xs
-        font-semibold
-        text-[var(--erp-text-soft)]
-        mb-2
-      ">
+      <span className="block
+ 
+ 
+ 
+ mb-2">
 
         {label}
 
@@ -2046,22 +1857,14 @@ function CampoSelect({
             e.target.value
           )
         }
-        className="
-          w-full
-          h-11
-          rounded-xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          text-[var(--erp-text)]
-          px-4
-          outline-none
-          transition
-          focus:border-[var(--erp-primary)]
-          focus:ring-2
-          focus:ring-[var(--erp-primary-soft)]
-          cursor-pointer
-        "
+        className="w-full
+ h-11
+ 
+ 
+ 
+ 
+ 
+ px-4"
       >
 
         <option value="">
@@ -2103,23 +1906,14 @@ function Dato({
 
   return (
 
-    <div className="
-      rounded-xl
-      border
-      border-[var(--erp-border)]
-      bg-[var(--erp-surface-soft)]
-      px-4
-      py-3
-    ">
+    <div className="px-4
+ py-3">
 
-      <div className="
-        text-[11px]
-        uppercase
-        tracking-wide
-        font-semibold
-        text-[var(--erp-text-soft)]
-        mb-1
-      ">
+      <div className="uppercase
+ 
+ 
+ 
+ mb-1">
 
         {label}
 
@@ -2164,24 +1958,18 @@ function DatoSimple({
 
     <div>
 
-      <div className="
-        text-[11px]
-        uppercase
-        tracking-wide
-        font-semibold
-        text-[var(--erp-text-soft)]
-        mb-1
-      ">
+      <div className="uppercase
+ 
+ 
+ 
+ mb-1">
 
         {label}
 
       </div>
 
 
-      <div className="
-        text-sm
-        text-[var(--erp-text)]
-      ">
+      <div className="">
 
         {value ||
           "—"}
@@ -2206,36 +1994,22 @@ function ResumenCabecera({
 
   return (
 
-    <div className="
-      rounded-xl
-      border
-      border-[var(--erp-border)]
-      bg-[var(--erp-surface-soft)]
-      px-4
-      py-3
-      min-w-0
-    ">
+    <div className="px-4
+ py-3
+ min-w-0">
 
-      <div className="
-        text-[10px]
-        uppercase
-        tracking-[0.12em]
-        font-semibold
-        text-[var(--erp-text-soft)]
-        mb-1
-      ">
+      <div className="uppercase
+ 
+ 
+ 
+ mb-1">
 
         {label}
 
       </div>
 
 
-      <div className="
-        text-sm
-        font-semibold
-        text-[var(--erp-text)]
-        truncate
-      ">
+      <div className="truncate">
 
         {value ||
           "—"}
@@ -2260,32 +2034,19 @@ function GuardarButton({
 
   return (
 
-    <div className="
-      flex
-      justify-end
-      pt-2
-    ">
+    <div className="flex
+ justify-end
+ pt-2">
 
       <button
         type="button"
         disabled={loading}
         onClick={onClick}
-        className="
-          inline-flex
-          items-center
-          justify-center
-          px-5
-          py-2.5
-          rounded-xl
-          bg-[var(--erp-primary)]
-          hover:bg-[var(--erp-primary-dark)]
-          disabled:opacity-50
-          disabled:cursor-not-allowed
-          text-white
-          font-medium
-          shadow-sm
-          transition
-        "
+        className="inline-flex
+ items-center
+ justify-center
+ px-5
+ py-2.5"
       >
 
         {loading
