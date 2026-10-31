@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 const COLUMNAS = [
   ["oficina", "Oficina"], ["nombre", "Nombre"], ["direccion", "Dirección"],
@@ -97,20 +98,10 @@ export default function CatalogoOficinas() {
   const totalPaginas = Math.max(1, Math.ceil(total / limite));
 
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden p-6 sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1" />
-        <div className="relative flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center">🏢</div>
-          <div className="min-w-0">
-            <p className="uppercase">MOLSAN ERP</p>
-            <h1 className="mt-1">Catálogo de oficinas</h1>
-            <p className="mt-1">Busca y administra únicamente las oficinas que importes desde tus archivos Excel.</p>
-          </div>
-        </div>
-      </header>
+    <main className="erp-page min-w-0 space-y-6">
+      <MolsanPageHeader mark="OF" title="Catálogo de oficinas" description="Busca y administra las oficinas que importes desde tus archivos Excel." />
 
-      <section className="p-5 space-y-4">
+      <section className="erp-card p-5 space-y-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2>Importar desde Excel</h2>
@@ -158,7 +149,7 @@ export default function CatalogoOficinas() {
       </section>
 
       <section className="p-5 space-y-4">
-        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div className="molsan-filter-bar flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
             <h2>Buscar oficinas</h2>
             <p>{total.toLocaleString("es-ES")} oficinas en el catálogo · búsqueda en los 13 campos</p>
