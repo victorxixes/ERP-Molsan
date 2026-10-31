@@ -89,14 +89,7 @@ export default function NoticiasFeed() {
 
  
 
- p-5
-
- 
-
- 
- 
-
- hover:-translate-y-0.5"
+ p-5"
             style={{
               animationFillMode: "both",
             }}
