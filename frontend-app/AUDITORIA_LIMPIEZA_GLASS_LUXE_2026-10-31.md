@@ -95,7 +95,7 @@ Auditoría y limpieza en curso. El primer cambio selectivo está aplicado en la 
 - src/pages/agenda/VistaDia.jsx: compactadas clases con espacios vacíos; retirada condición de clase vacía y variable de resaltado local no utilizada. Se conserva el posicionamiento dinámico de citas, los datos y los eventos. Commit: d5f6ba791702ae75bf2ae6d8a35a3d64d764148a.
 - src/pages/fusiones/Fusiones.jsx: eliminada importación de Fusiones.css, hoja vacía.
 - src/pages/herramientas/AccesosNotariales.jsx: eliminada importación de CtnListadoPage.css, hoja vacía.
-- src/pages/paneltecnico/LogsAvanzados.jsx: eliminada importación de PanelTecnicoSubmodulos.css, hoja vacía.
+- src/pages/paneltecnico/LogsAvanzados.jsx, AuditoriaAvanzada.jsx, MonitorRealtime.jsx y MonitorSistema.jsx: eliminadas importaciones de PanelTecnicoSubmodulos.css, hoja vacía.
 - src/pages/notargest/NotarGest.jsx: eliminado rótulo restante MOLSAN ERP · PREMIUM 2027.
 - src/pages/apoderagest/ApoderaGest.jsx: eliminado texto de pie Premium 2027.
 - src/pages/empleados/EmpleadoEditar.jsx: eliminados atributos className vacíos.
@@ -106,7 +106,7 @@ Auditoría y limpieza en curso. El primer cambio selectivo está aplicado en la 
 - Globales que se mantienen: css/index.css y css/NeutralizarPresentacion.css.
 - Sidebar protegido: css/SidebarBase.css, importado desde los componentes del sidebar/perfil.
 - Referencias a hojas vacías retiradas: Fusiones.css, CtnListadoPage.css y PanelTecnicoSubmodulos.css.
-- Queda al menos una importación pendiente de retirar en pages/paneltecnico/AuditoriaAvanzada.jsx hacia PanelTecnicoSubmodulos.css; el cambio no se ha aplicado todavía.
+- Retiradas las importaciones a PanelTecnicoSubmodulos.css en LogsAvanzados.jsx, AuditoriaAvanzada.jsx, MonitorRealtime.jsx y MonitorSistema.jsx.
 - No se eliminan todavía los archivos CSS vacíos porque falta cerrar el inventario completo de imports de toda la rama.
 
 ### Estado de validación
@@ -114,3 +114,8 @@ Auditoría y limpieza en curso. El primer cambio selectivo está aplicado en la 
 - El despliegue Preview anterior quedó live para el commit 3c9239d1260d6e741a5006b8c1e8bb5e0bd66b5e.
 - Los cambios posteriores de esta fase requieren un nuevo despliegue para comprobar compilación.
 - La auditoría sigue en curso; no se declara ningún módulo completamente limpio ni se da por terminada la limpieza global.
+
+
+### Comprobación completa de hojas CSS
+
+Se ha inspeccionado el contenido de las 52 hojas CSS del frontend en la rama: 49 contienen únicamente el comentario de hoja vaciada; las tres restantes son index.css (importa Tailwind), NeutralizarPresentacion.css (reset global temporal) y SidebarBase.css (navegación/perfil protegidos). Las 49 hojas vacías no se eliminan todavía hasta cerrar la comprobación final de referencias en todos los ficheros JS/JSX y asegurar que no quedan imports dinámicos o referencias de documentación.
