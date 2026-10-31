@@ -61,6 +61,11 @@ def _exigir_permiso_portal(usuario, portal, accion="ver"):
         )
 
 
+def _exigir_permiso_ctn(usuario, accion="ver"):
+    """Aplica permisos CTN también en API; la protección visual no es suficiente."""
+    require_perm_modulo(usuario, "ctn", accion)
+
+
 # ============================================================
 # TABLA DE ASOCIACIONES RECÍPROCAS
 # ============================================================
@@ -399,12 +404,20 @@ def _distancia_de_notaria(notaria):
 # GEOCODIFICACIÓN Y MIGRACIÓN
 # ============================================================
 @router.post("/geocode/notarias")
-def geocode_notarias(db: Session = Depends(get_db)):
+def geocode_notarias(
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    _exigir_permiso_ctn(usuario, "editar")
     return geocode_todas_notarias(db)
 
 
 @router.post("/migracion/agregar-coordenadas")
-def migrar_coordenadas(db: Session = Depends(get_db)):
+def migrar_coordenadas(
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    _exigir_permiso_ctn(usuario, "editar")
     return agregar_coordenadas(db)
 
 
@@ -424,7 +437,9 @@ def listar_notarias(
     sort_by: str | None = Query(None, max_length=40),
     sort_order: str = Query("asc", regex="^(?i:asc|desc)$"),
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
+    _exigir_permiso_ctn(usuario, "ver")
     query = _aplicar_filtros_notarias(db, provincia, municipio, vc, apoderado, q, asociado)
     total = query.count()
 
@@ -518,7 +533,9 @@ def exportar_notarias_excel(
     q: str | None = None,
     asociado: str | None = None,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
+    _exigir_permiso_ctn(usuario, "ver")
     query = _aplicar_filtros_notarias(db, provincia, municipio, vc, apoderado, q, asociado)
     filas = query.order_by(Notaria.apellidos.asc().nullslast(), Notaria.nombre.asc().nullslast()).all()
     libro = Workbook()
@@ -564,7 +581,12 @@ def exportar_notarias_excel(
 # FICHA Y ASOCIACIONES RECÍPROCAS
 # ============================================================
 @router.get("/notarias/{notaria_id}")
-def detalle_notaria(notaria_id: int, db: Session = Depends(get_db)):
+def detalle_notaria(
+    notaria_id: int,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    _exigir_permiso_ctn(usuario, "ver")
     notaria = obtener_notaria(db, notaria_id)
     if notaria is None:
         raise HTTPException(status_code=404, detail="Notario no encontrado")
@@ -576,8 +598,10 @@ def actualizar_datos_bancarios_notaria(
     notaria_id: int,
     payload: NotariaDatosBancariosUpdate,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
     """Guarda hasta dos IBAN para reutilizarlos al registrar pagos del notario."""
+    _exigir_permiso_ctn(usuario, "editar")
     notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
     if notaria is None:
         raise HTTPException(status_code=404, detail="Notario no encontrado")
@@ -594,7 +618,12 @@ def actualizar_datos_bancarios_notaria(
 
 
 @router.get("/notarias/{notaria_id}/asociadas")
-def listar_notarias_asociadas(notaria_id: int, db: Session = Depends(get_db)):
+def listar_notarias_asociadas(
+    notaria_id: int,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    _exigir_permiso_ctn(usuario, "ver")
     notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
     if notaria is None:
         raise HTTPException(status_code=404, detail="Notario no encontrado")
@@ -602,7 +631,13 @@ def listar_notarias_asociadas(notaria_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/notarias/{notaria_id}/asociadas/{asociada_id}")
-def asociar_notarios(notaria_id: int, asociada_id: int, db: Session = Depends(get_db)):
+def asociar_notarios(
+    notaria_id: int,
+    asociada_id: int,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    _exigir_permiso_ctn(usuario, "editar")
     if notaria_id == asociada_id:
         raise HTTPException(status_code=400, detail="Un notario no puede asociarse consigo mismo")
     notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
@@ -634,7 +669,13 @@ def asociar_notarios(notaria_id: int, asociada_id: int, db: Session = Depends(ge
 
 
 @router.delete("/notarias/{notaria_id}/asociadas/{asociada_id}")
-def desasociar_notarios(notaria_id: int, asociada_id: int, db: Session = Depends(get_db)):
+def desasociar_notarios(
+    notaria_id: int,
+    asociada_id: int,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    _exigir_permiso_ctn(usuario, "editar")
     notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
     asociada = db.query(Notaria).filter(Notaria.id == asociada_id).first()
     if notaria is None or asociada is None:
@@ -655,7 +696,12 @@ def desasociar_notarios(notaria_id: int, asociada_id: int, db: Session = Depends
 # RESUMEN LEGADO DE CITAS DE AGENDA (NO SON FIRMAS REALIZADAS)
 # ============================================================
 @router.get("/notarias/{notaria_id}/firmas")
-def obtener_resumen_citas_notario(notaria_id: int, db: Session = Depends(get_db)):
+def obtener_resumen_citas_notario(
+    notaria_id: int,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    _exigir_permiso_ctn(usuario, "ver")
     notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
     if notaria is None:
         raise HTTPException(status_code=404, detail="Notario no encontrado")
@@ -680,7 +726,9 @@ def historico_firmas_notario(
     modalidad: str | None = Query(None, description="VC o PRESENCIAL"),
     q: str | None = None,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
+    _exigir_permiso_ctn(usuario, "ver")
     notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
     if notaria is None:
         raise HTTPException(status_code=404, detail="Notario no encontrado")
