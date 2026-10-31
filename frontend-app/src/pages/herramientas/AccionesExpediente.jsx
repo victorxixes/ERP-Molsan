@@ -1213,8 +1213,6 @@ export default function AccionesExpediente() {
         <button type="button" onClick={abrirNueva} className="molsan-btn molsan-btn--primary">＋ Nueva acción</button>
       </div>
 
-          MENSAJES
-      ===================================================== */}
 
       {mensaje && (
 
