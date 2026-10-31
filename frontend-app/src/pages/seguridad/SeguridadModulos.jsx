@@ -260,7 +260,7 @@ export default function SeguridadModulos() {
         className="p-10"
       >
 
-        <div className="">
+        <div>
           📦
         </div>
 
@@ -323,7 +323,7 @@ export default function SeguridadModulos() {
           <div>
 
             <h2
-              className=""
+             
             >
               Módulos visibles
             </h2>
@@ -421,7 +421,7 @@ export default function SeguridadModulos() {
           <div>
 
             <h3
-              className=""
+             
             >
               Módulos del sistema
             </h3>
@@ -435,7 +435,7 @@ export default function SeguridadModulos() {
           </div>
 
           <span
-            className=""
+           
           >
             {modulosFiltrados.length} mostrados
           </span>
