@@ -145,7 +145,7 @@ export default function Notificaciones() {
       {lista.length === 0 ? (
 
         <div
-          className="min-h-[320px]
+          className="erp-empty-state min-h-[320px]
  flex
  flex-col
  items-center
@@ -242,7 +242,7 @@ export default function Notificaciones() {
                   n.id ??
                   `notificacion-${index}`
                 }
-                className={`group
+                className={`erp-card group
  relative
  overflow-hidden
  
