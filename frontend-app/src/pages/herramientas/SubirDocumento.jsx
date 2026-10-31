@@ -55,58 +55,15 @@ export default function SubirDocumento() {
   ]);
 
   return (
-    <div className="min-h-full p-4 sm:p-6 lg:p-8 space-y-6">
+    <div className="erp-page min-w-0 space-y-6">
 
-      {/* =====================================================
-          CABECERA
-      ===================================================== */}
+      <MolsanPageHeader mark="SD" title="Subir documento" description="Añade documentos para ponerlos a disposición de la intranet." />
 
-      <div
-        className="molsan-subpage-header relative overflow-hidden
- 
- 
- 
- 
- 
- p-6 sm:p-7"
-      >
-
-        <div
-          className="absolute inset-x-0 top-0 h-px"
-        />
-
-        <div className="flex items-center gap-4">
-
-          <div
-            className="flex h-12 w-12
- items-center justify-center"
-          >
-            📄
-          </div>
-
-          <div>
-
-            <h1>
-              Subir documento
-            </h1>
-
-            <p className="mt-1">
-              Añade documentos para ponerlos a disposición de la intranet.
-            </p>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      {/* =====================================================
           FORMULARIO
       ===================================================== */}
 
       <div
-        className="max-w-3xl
+        className="erp-card max-w-3xl
  relative overflow-hidden
  
  
