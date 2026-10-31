@@ -4489,3 +4489,353 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
     transition: none;
   }
 }
+
+
+/* ==========================================================
+   MÉTRICAS, ESTADOS Y GRÁFICOS COMPARTIDOS
+========================================================== */
+
+.molsan-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 205px), 1fr));
+  gap: 12px;
+  min-width: 0;
+}
+
+.molsan-stat-card {
+  display: block;
+  min-width: 0;
+  padding: 15px;
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+button.molsan-stat-card {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast), background var(--molsan-transition-fast), transform var(--molsan-transition-fast);
+}
+
+button.molsan-stat-card:hover {
+  background: var(--molsan-panel);
+  border-color: rgba(6, 70, 117, .3);
+  box-shadow: var(--molsan-glass-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.molsan-dashboard-card.is-active,
+button.molsan-stat-card[aria-pressed="true"] {
+  background: var(--molsan-panel);
+  border-color: rgba(6, 70, 117, .48);
+  box-shadow: inset 0 0 0 1px rgba(6, 70, 117, .16), var(--molsan-shadow-card);
+}
+
+.molsan-stat-label {
+  display: block;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-medium);
+}
+
+.molsan-stat-card strong {
+  display: block;
+  margin-top: 5px;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-xl);
+  font-weight: var(--molsan-font-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.molsan-status-pill {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 10px;
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.molsan-empty-state {
+  padding: 24px;
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border: 1px dashed var(--molsan-border);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.molsan-module-card {
+  display: flex;
+  min-width: 0;
+  min-height: 94px;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 15px;
+  color: var(--molsan-text);
+  text-align: left;
+  background: var(--molsan-glass-surface);
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-glass-shadow);
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+  transition: border-color var(--molsan-transition-normal), box-shadow var(--molsan-transition-normal), transform var(--molsan-transition-normal);
+}
+
+.molsan-module-card:hover {
+  border-color: rgba(6, 70, 117, .3);
+  box-shadow: var(--molsan-glass-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.molsan-module-card > span:first-child {
+  display: grid;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+  font-weight: var(--molsan-font-weight-bold);
+}
+
+.molsan-module-card strong {
+  display: block;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.molsan-module-card small {
+  display: block;
+  margin-top: 4px;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+  line-height: var(--molsan-line-height-relaxed);
+}
+
+.cancelagest-premium > section:first-of-type {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.cancelagest-premium .molsan-stat-card > span {
+  display: block;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.cancelagest-premium .molsan-stat-card small {
+  display: block;
+  margin-top: 5px;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.cancelagest-access-section {
+  padding: 18px;
+}
+
+.cancelagest-access-section h2,
+.cancelagest-charts-grid h2,
+.cancelagest-timing-section h2 {
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-lg);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.cancelagest-access-section > div:first-child p,
+.cancelagest-charts-grid article > div:first-child p,
+.cancelagest-timing-section > div:first-child p {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-sm);
+}
+
+.cancelagest-module-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.cancelagest-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.cancelagest-charts-grid article,
+.cancelagest-timing-section {
+  min-width: 0;
+  padding: 18px;
+}
+
+.molsan-month-bars {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: end;
+  gap: 7px;
+  min-height: 170px;
+  margin-top: 16px;
+}
+
+.molsan-month-bar {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  color: var(--molsan-muted);
+  font-size: 10px;
+}
+
+.molsan-month-bar strong {
+  color: var(--molsan-blue);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.molsan-month-track {
+  display: flex;
+  width: min(100%, 24px);
+  height: 112px;
+  align-items: flex-end;
+  overflow: hidden;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 6px;
+}
+
+.molsan-month-fill {
+  width: 100%;
+  min-height: 4px;
+  background: linear-gradient(180deg, rgba(6, 70, 117, .72), var(--molsan-blue));
+  border-radius: 5px 5px 0 0;
+}
+
+.molsan-chart-bars {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.molsan-chart-row {
+  display: grid;
+  grid-template-columns: minmax(120px, .85fr) minmax(100px, 1.5fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.molsan-chart-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+}
+
+.molsan-chart-track {
+  height: 11px;
+  overflow: hidden;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+}
+
+.molsan-chart-bar {
+  height: 100%;
+  min-width: 0;
+  background: var(--molsan-blue);
+  border-radius: inherit;
+}
+
+.molsan-chart-bar.is-empty {
+  background: var(--molsan-border);
+}
+
+.molsan-chart-row > strong {
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-sm);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.cancelagest-categories,
+.cancelagest-milestones {
+  display: grid;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.cancelagest-categories > div,
+.cancelagest-milestones > span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 8px;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.cancelagest-categories strong {
+  color: var(--molsan-blue);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 1000px) {
+  .cancelagest-premium > section:first-of-type {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cancelagest-module-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .cancelagest-charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .molsan-month-bars {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .molsan-chart-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .molsan-chart-track {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+@media (max-width: 480px) {
+  .cancelagest-premium > section:first-of-type,
+  .cancelagest-module-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button.molsan-stat-card,
+  .molsan-module-card {
+    transition: none;
+  }
+}
