@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
@@ -138,21 +139,17 @@ export default function ControlApoderados({ modo = "colaborador" }) {
     } catch (e) { setError(e?.response?.data?.detail || "No se ha podido descargar la factura."); }
   };
 
-  return <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-    <header className="p-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div><p className="uppercase">MOLSAN ERP · APODERAGEST</p>
-          <h1 className="mt-2">{admin ? "Control Apoderados" : "Mi actividad y liquidaciones"}</h1>
-          <p className="mt-2">{admin ? "Gestiona colaboradores, relaciones mensuales y revisión de facturas." : "Revisa las firmas reales del mes, valida la relación y presenta tu factura."}</p>
-        </div>
-        <div className="flex items-center gap-3">{!admin && <label>Periodo <input type="month" value={periodo} onChange={(e) => setPeriodo(e.target.value)} className="ml-2 px-3 py-2" /></label>}<button type="button" onClick={cargar} className="px-4 py-2" disabled={cargando}>↻ Actualizar</button></div>
-      </div>
-    </header>
+  return <div className="erp-page min-w-0 space-y-6">
+    <MolsanPageHeader mark="AP" title={admin ? "Control de apoderados" : "Mi actividad y liquidaciones"} description={admin ? "Gestiona colaboradores, relaciones mensuales y revisión de facturas." : "Revisa las firmas reales del mes, valida la relación y presenta tu factura."} />
+    <div className="molsan-filter-bar flex flex-wrap items-center justify-end gap-3 p-3">
+      {!admin && <label className="flex items-center gap-2">Periodo <input type="month" value={periodo} onChange={(e) => setPeriodo(e.target.value)} /> </label>}
+      <button type="button" className="molsan-btn molsan-btn--secondary" onClick={cargar} disabled={cargando}>↻ Actualizar</button>
+    </div>
     {error && <div role="alert" className="p-4">{error}</div>}
     {mensaje && <div role="status" className="p-4">{mensaje}</div>}
     {cargando && <p>Cargando información…</p>}
     {admin ? <>
-      <section className="p-5">
+      <section className="erp-card p-5">
         <div className="mb-4">
           <h2>Colaboradores habilitados</h2>
           <p className="mt-1">Activa aquí el acceso a «Mi liquidación» para cada empleado. El cambio se guarda en su ficha y determina quién puede validar firmas y presentar facturas.</p>
