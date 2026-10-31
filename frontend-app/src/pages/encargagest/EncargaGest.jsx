@@ -861,6 +861,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         />
       )}
       <div aria-hidden="true" />
+      <div className="relative min-h-[calc(100vh-70px)] w-full px-4 py-6 lg:px-6">
       <MolsanPageHeader
         mark="EG"
         title="EncargaGest"
@@ -1120,6 +1121,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         )}
         <p className="mt-6">MOLSAN ERP · EncargaGest · Portal independiente conectado al catálogo CTN</p>
       </main>
+      </div>
 
       {modalNuevo && (
         <div
