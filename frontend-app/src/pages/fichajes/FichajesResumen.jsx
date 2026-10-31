@@ -57,26 +57,26 @@ export default function FichajesResumen({ recargar }) {
 
   return <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
     <article className="p-5">
-      <p className="">Horas trabajadas · {horas?.anio || new Date().getFullYear()}</p>
+      <p>Horas trabajadas · {horas?.anio || new Date().getFullYear()}</p>
       <p className="mt-2">{horas?.horas_trabajadas ?? "—"} h</p>
       <p className="mt-1">Jornadas incompletas: {horas?.jornadas_incompletas ?? "—"}</p>
       {horas?.aviso && <p className="mt-2">{horas.aviso}</p>}
     </article>
 
     <article className="p-5">
-      <p className="">Vacaciones · {vacaciones?.anio || new Date().getFullYear()}</p>
+      <p>Vacaciones · {vacaciones?.anio || new Date().getFullYear()}</p>
       <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <div><p className="">Asignados</p><p className="">{vacaciones?.dias_asignados ?? "—"}</p></div>
-        <div><p className="">Disfrutados</p><p className="">{vacaciones?.dias_disfrutados ?? 0}</p></div>
-        <div><p className="">Reservados</p><p className="">{vacaciones?.dias_reservados ?? 0}</p></div>
-        <div><p className="">Disponibles</p><p className="">{vacaciones?.dias_restantes ?? "Pendiente"}</p></div>
+        <div><p>Asignados</p><p>{vacaciones?.dias_asignados ?? "—"}</p></div>
+        <div><p>Disfrutados</p><p>{vacaciones?.dias_disfrutados ?? 0}</p></div>
+        <div><p>Reservados</p><p>{vacaciones?.dias_reservados ?? 0}</p></div>
+        <div><p>Disponibles</p><p>{vacaciones?.dias_restantes ?? "Pendiente"}</p></div>
       </div>
       {vacaciones?.aviso && <p className="mt-2">{vacaciones.aviso}</p>}
       {vacaciones?.registros?.length > 0 && <div className="mt-3 space-y-1">{vacaciones.registros.map((v) => <p key={v.id} className="p-2">{v.fecha_inicio} – {v.fecha_fin} · {v.dias} días · {v.estado}</p>)}</div>}
     </article>
 
     <article className="p-5">
-      <p className="">Solicitar vacaciones</p>
+      <p>Solicitar vacaciones</p>
       <form className="mt-3 space-y-2" onSubmit={solicitar}>
         <label className="block">Desde<input required type="date" value={desde} onChange={(e) => setDesde(e.target.value)} className="mt-1 w-full p-2" /></label>
         <label className="block">Hasta<input required type="date" min={desde} value={hasta} onChange={(e) => setHasta(e.target.value)} className="mt-1 w-full p-2" /></label>
