@@ -1,8 +1,6 @@
-/* MOLSAN ERP · RESET VISUAL NEUTRO 2027
-   Neutraliza la apariencia heredada de CSS, Tailwind y estilos inline.
-   Conserva layout, medidas, flex/grid, posicionamiento, scroll y accesibilidad.
-   Sidebar y modal de perfil quedan excluidos intencionadamente.
-*/
+/* Neutralización de presentación de la interfaz.
+   Mantiene las utilidades estructurales de Tailwind y los estilos del sidebar.
+   No afecta a los documentos generados por el backend. */
 :where(body *):not(.mol-sidebar-premium):not(.mol-sidebar-premium *):not(.sidebar-perfil-modal-premium):not(.sidebar-perfil-modal-premium *) {
   color: inherit !important;
   font-family: inherit !important;
@@ -22,7 +20,7 @@
   -webkit-backdrop-filter: none !important;
   background-color: transparent !important;
   background-image: none !important;
-  border-color: currentColor !important;
+  border-color: transparent !important;
   border-radius: 0 !important;
   opacity: 1 !important;
   transform: none !important;
