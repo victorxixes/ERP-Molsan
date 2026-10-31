@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import { Link } from "react-router-dom";
-import "../../css/HerramientasPremium.css";
 
 const DOCUMENTOS_INICIALES = [
   { id: "solicitud", nombre: "Hoja de solicitud", detalle: "Debe estar incorporada en la carpeta digital del resumen del expediente." },
@@ -68,7 +67,7 @@ export default function ReglasActividadesExpediente() {
   };
 
   return (
-    <main className="utilidades-premium-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <header className="relative overflow-hidden p-6 sm:p-7">
         <div className="absolute inset-x-0 top-0 h-1" />
         <div className="relative flex flex-wrap items-start justify-between gap-4">
