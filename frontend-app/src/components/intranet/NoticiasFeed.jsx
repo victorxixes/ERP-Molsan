@@ -90,9 +90,7 @@ export default function NoticiasFeed() {
  
 
  p-5"
-            style={{
-              animationFillMode: "both",
-            }}
+            
           >
 
             {/* =================================================
