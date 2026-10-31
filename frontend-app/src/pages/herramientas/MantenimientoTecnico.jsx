@@ -285,8 +285,8 @@ export default function MantenimientoTecnico() {
               <span className="inline-flex items-center gap-2 px-3 py-1">
                 <span>⚙️</span> HERRAMIENTAS DEL SISTEMA
               </span>
-              <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-bold ${validacionTecnica ? "" : ""}`}>
-                <span className={`h-2 w-2 rounded-full ${validacionTecnica ? "" : ""}`} />
+              <span className={`inline-flex items-center gap-2 px-3 py-1 ${validacionTecnica ? "" : ""}`}>
+                <span className={`h-2 w-2 ${validacionTecnica ? "" : ""}`} />
                 {validacionTecnica ? "Diagnóstico técnico correcto" : "Pendiente de validación técnica"}
               </span>
             </div>
@@ -495,9 +495,9 @@ export default function MantenimientoTecnico() {
 
       {(resultado || errorVisible) && (
         <section className="overflow-hidden">
-          <div className={`flex flex-col gap-2 border-b px-5 py-4 sm:flex-row sm:items-center sm:justify-between ${errorVisible ? "" : ""}`}>
+          <div className={`flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between ${errorVisible ? "" : ""}`}>
             <div>
-              <h2 className={`font-bold ${errorVisible ? "" : ""}`}>
+              <h2 className={`${errorVisible ? "" : ""}`}>
                 {errorVisible ? "La operación ha devuelto un error" : "Resultado de la operación"}
               </h2>
               <p className="mt-1">
