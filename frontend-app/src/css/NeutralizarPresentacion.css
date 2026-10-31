@@ -2590,3 +2590,24 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
   background: var(--molsan-blue-soft);
   border-color: rgba(6,70,117,.3);
 }
+
+
+/* Navegación de pestañas dentro de la ficha modal de empleado. */
+.erp-route-content .molsan-modal__tabs {
+  background: rgba(242,247,251,.82);
+  border-bottom: 1px solid var(--molsan-border);
+}
+.erp-route-content .molsan-modal__tabs button {
+  min-height: 42px;
+  color: var(--molsan-muted);
+  border-bottom: 2px solid transparent;
+  border-radius: 8px 8px 0 0;
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-medium);
+}
+.erp-route-content .molsan-modal__tabs button[aria-pressed="true"] {
+  color: var(--molsan-blue);
+  background: #fff;
+  border-bottom-color: var(--molsan-blue);
+  font-weight: var(--molsan-font-weight-semibold);
+}
