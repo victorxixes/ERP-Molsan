@@ -410,7 +410,7 @@ export default function Maestros() {
             <div>
 
               <h1
-                className=""
+               
               >
                 Maestros
               </h1>
@@ -584,7 +584,7 @@ export default function Maestros() {
             <div>
 
               <h2
-                className=""
+               
               >
                 {tipoActual.label}
               </h2>
@@ -757,7 +757,7 @@ export default function Maestros() {
               />
 
               <p
-                className=""
+               
               >
                 Cargando {tipoActual.label.toLowerCase()}...
               </p>
@@ -814,7 +814,7 @@ export default function Maestros() {
                 </div>
 
                 <h3
-                  className=""
+                 
                 >
                   No hay registros
                 </h3>
@@ -853,7 +853,7 @@ export default function Maestros() {
                     <thead>
 
                       <tr
-                        className=""
+                       
                       >
 
                         <th
@@ -906,7 +906,7 @@ export default function Maestros() {
 
                         <tr
                           key={registro.id}
-                          className=""
+                         
                         >
 
                           <td
