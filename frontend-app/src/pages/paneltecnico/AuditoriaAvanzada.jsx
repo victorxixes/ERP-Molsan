@@ -123,7 +123,7 @@ export default function AuditoriaAvanzada() {
           <div>
 
             <h1
-              className=""
+             
             >
               Auditoría Avanzada
             </h1>
@@ -161,13 +161,13 @@ export default function AuditoriaAvanzada() {
           />
 
           <span
-            className=""
+           
           >
             {filtrados.length}
           </span>
 
           <span
-            className=""
+           
           >
             registros
           </span>
@@ -203,7 +203,7 @@ export default function AuditoriaAvanzada() {
             <div>
 
               <h2
-                className=""
+               
               >
                 Métricas de auditoría
               </h2>
@@ -298,13 +298,13 @@ export default function AuditoriaAvanzada() {
                 <div className="flex items-center justify-between mb-3">
 
                   <h3
-                    className=""
+                   
                   >
                     Actividad por módulo
                   </h3>
 
                   <span
-                    className=""
+                   
                   >
                     Módulos
                   </span>
@@ -365,13 +365,13 @@ export default function AuditoriaAvanzada() {
                 <div className="flex items-center justify-between mb-3">
 
                   <h3
-                    className=""
+                   
                   >
                     Actividad por acción
                   </h3>
 
                   <span
-                    className=""
+                   
                   >
                     Acciones
                   </span>
@@ -436,7 +436,7 @@ export default function AuditoriaAvanzada() {
                 <div>
 
                   <h3
-                    className=""
+                   
                   >
                     Últimos accesos
                   </h3>
@@ -482,7 +482,7 @@ export default function AuditoriaAvanzada() {
                       />
 
                       <span
-                        className=""
+                       
                       >
                         {l.usuario || "Usuario"}
                       </span>
@@ -490,7 +490,7 @@ export default function AuditoriaAvanzada() {
                     </div>
 
                     <span
-                      className=""
+                     
                     >
                       {formatearFecha(l.fecha)}
                     </span>
@@ -551,7 +551,7 @@ export default function AuditoriaAvanzada() {
             <button
               type="button"
               onClick={() => setBusqueda("")}
-              className=""
+             
               title="Limpiar búsqueda"
             >
               ×
@@ -585,7 +585,7 @@ export default function AuditoriaAvanzada() {
           <div>
 
             <h2
-              className=""
+             
             >
               Últimos registros
             </h2>
@@ -622,7 +622,7 @@ export default function AuditoriaAvanzada() {
             <thead>
 
               <tr
-                className=""
+               
               >
 
                 <th
@@ -696,7 +696,7 @@ export default function AuditoriaAvanzada() {
 
                 <tr
                   key={r.id}
-                  className=""
+                 
                 >
 
                   {/* FECHA */}
@@ -876,7 +876,7 @@ export default function AuditoriaAvanzada() {
             </div>
 
             <h3
-              className=""
+             
             >
               No hay registros
             </h3>
