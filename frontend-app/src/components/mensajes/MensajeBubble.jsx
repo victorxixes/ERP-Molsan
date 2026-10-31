@@ -89,7 +89,7 @@ export default function MensajeBubble({
   }, [mensaje.archivo_url, nombreArchivo]);
 
   return (
-    <div className={`mensaje-bubble-premium my-2 flex items-end gap-2 ${propio ? "justify-end" : "justify-start"}`}>
+    <div className={`my-2 flex items-end gap-2 ${propio ? "justify-end" : "justify-start"}`}>
       {!propio && (
         <div className="relative h-8 w-8 shrink-0">
           <img
