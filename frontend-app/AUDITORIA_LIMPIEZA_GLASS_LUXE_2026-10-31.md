@@ -241,3 +241,45 @@ La detección es estática: cada tabla debe clasificarse antes de cambiarla para
 - Revisión responsive real en navegador autenticado y validación funcional de cada flujo: pendiente; no se certifica con una compilación.
 - Eliminación/refactor de reglas CSS heredadas: pendiente de mapa de dependencias y pruebas para evitar regresiones.
 - La Fase 4 continúa abierta. No se declara completada.
+
+
+### Progreso de ordenación común — implementación en Preview
+
+Se ha creado una base reutilizable para que la ordenación sea consistente y accesible:
+- `src/hooks/useSortableData.js`: ordenación estable de arrays ya cargados, con comparación numérica, fechas ISO y fechas españolas, texto y valores vacíos. No modifica los datos originales.
+- `src/components/ui/MolsanSortableTh.jsx`: cabecera accesible con botón, indicador visual de dirección y atributo `aria-sort`; reutiliza el contrato CSS de Glass Luxe ya existente.
+
+Tablas operativas migradas a la nueva ordenación:
+- Fichajes de empleado, control administrativo de fichajes y tablas de festivos/compensaciones.
+- Control de ApoderaGest: colaboradores, relación mensual, firmas e histórico.
+- CTN: asociaciones e histórico, tanto en detalle como en el modal de detalle.
+- NotarGest: pagos, resúmenes, firmas urgentes, bandejas operativas y documentos de escritura.
+- Mensajería: servicios, solicitudes, albaranes y facturas.
+- Intranet: documentos internos y revisión administrativa de justificantes.
+- Utilidades: listado completo de accesos notariales.
+- Provisiones: histórico de provisiones.
+- FichaExpediente: libro contable combinado (gastos pendientes y pagos confirmados), pagos confirmados e histórico de emails.
+
+Criterio aplicado:
+- Se ordena en cliente únicamente cuando el conjunto mostrado ya está cargado y la ordenación no falsea la paginación.
+- Se excluyen columnas que solo contienen acciones.
+- Las tablas de impresión, plantillas y previsualizaciones de importación no se convierten en listados ordenables.
+- Se ha identificado que el directorio de EncargaGest y el catálogo de Oficinas usan paginación de servidor. No se aplica ordenación local parcial: requieren soporte de ordenación en la API para que el orden abarque todos los registros.
+
+### Validación del lote actual
+
+- Deploy Preview: `dep-dbj4roflk1mc7388u050`.
+- Commit desplegado: `c291f28ef8972b6ff980f7efa93eec6af19f78aa`.
+- Estado: `live`.
+- Compilación Vite correcta.
+- Hubo un deploy intermedio fallido durante la refactorización del libro contable de FichaExpediente; se corrigió el bloque JSX y el deploy posterior quedó `live`.
+- Producción, backend y base de datos continúan intactos.
+
+### Pendientes que siguen abiertos
+
+- Revisar/migrar las tablas restantes de Informes, Catálogos, Seguridad, Auditoría, Monitorización y otros módulos.
+- Confirmar campo por campo que las claves de ordenación reflejan exactamente el dato presentado (incluidos valores derivados y columnas con fallback).
+- Revisar filtros, paginación y persistencia de orden en cada listado; en listados paginados por servidor, acordar si la API soporta parámetros de ordenación antes de tocar backend.
+- Completar la auditoría de formularios y modales restantes, incluidos estados de error, carga, guardado, cancelación y validación.
+- Completar el mapa de CSS heredado y su uso real antes de eliminar reglas; no borrar estilos por coincidencia de nombre.
+- Validación visual autenticada en escritorio, tablet y móvil pendiente. La compilación no equivale a validación visual ni funcional.
