@@ -1847,7 +1847,7 @@ export default function Municipios() {
             >
 
               <thead><tr>
-              <MolsanSortableTh label="Comunidad autónoma" sortKey="ccaa" sortConfig={ordenMunicipios.sortConfig} onSort={ordenMunicipios.requestSort} className="" />
+              <MolsanSortableTh label="Comunidad autónoma" sortKey="ccaa" sortConfig={ordenMunicipios.sortConfig} onSort={ordenMunicipios.requestSort} className="px-5 py-3.5 uppercase" />
 
 
                   <MolsanSortableTh label="Provincia" sortKey="provincia" sortConfig={ordenMunicipios.sortConfig} onSort={ordenMunicipios.requestSort} className="px-5
