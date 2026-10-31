@@ -648,7 +648,7 @@ export default function CarpetaDigitalModal({
 
     return (
       <div
-        className="fixed inset-0 z-[10000] flex items-center justify-center p-2 sm:p-4"
+        className="molsan-modal-backdrop fixed inset-0 z-[10000] flex items-center justify-center p-2 sm:p-4"
         onMouseDown={(event) => {
           if (event.target === event.currentTarget) onClose?.();
         }}
@@ -892,7 +892,7 @@ export default function CarpetaDigitalModal({
   return (
     <>
       <div
-        className={modoActividad ? "w-full space-y-3" : "fixed inset-0 z-[10000] flex items-center justify-center p-3 sm:p-6"}
+        className={modoActividad ? "w-full space-y-3" : "molsan-modal-backdrop fixed inset-0 z-[10000] flex items-center justify-center p-3 sm:p-6"}
         onMouseDown={(event) => {
           if (!modoActividad && event.target === event.currentTarget) onClose?.();
         }}
@@ -903,7 +903,7 @@ export default function CarpetaDigitalModal({
           aria-label="Carpeta digital del expediente"
           className={modoActividad
             ? "w-full space-y-3"
-            : "flex max-h-[94vh] w-full max-w-[1500px] flex-col overflow-hidden"}
+            : "molsan-modal-panel flex max-h-[94vh] w-full max-w-[1500px] flex-col overflow-hidden"}
         >
           {!modoActividad && (
             <header className="flex items-center justify-between gap-4 px-5 py-4">
@@ -1286,7 +1286,7 @@ export default function CarpetaDigitalModal({
 
       {modoActividad && documentoVistaPrevia && (
         <div className="fixed inset-0 z-[11000] flex items-center justify-center p-3 sm:p-6">
-          <div ref={viewerDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Visor de documento" className="h-[88vh] max-h-[900px] w-full max-w-6xl">
+          <div ref={viewerDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Visor de documento" className="molsan-modal-panel h-[88vh] max-h-[900px] w-full max-w-6xl">
             {renderVisor()}
           </div>
         </div>

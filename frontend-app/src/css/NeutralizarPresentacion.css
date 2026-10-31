@@ -672,3 +672,57 @@ textarea:focus-visible {
   .erp-main-inner thead th,
   .erp-main-inner tbody td { padding: 9px 10px; }
 }
+
+
+/* Modales operativos de Expedientes: envío, carpeta, liquidación y traspasos. */
+.expediente-operativo-modal,
+.liquidar-expediente-modal,
+.vista-previa-cierre-modal,
+.traspaso-saldo-modal,
+.molsan-modal-backdrop {
+  background-color: rgba(13, 37, 54, .48);
+  backdrop-filter: blur(3px);
+}
+.expediente-operativo-modal > div:not(.expediente-operativo-modal-panel) {
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: 16px;
+  box-shadow: 0 24px 64px rgba(6, 40, 65, .22);
+}
+.liquidar-expediente-modal > section,
+.vista-previa-cierre-modal > section,
+.traspaso-saldo-modal > section,
+[aria-label="Carpeta digital del expediente"][role="dialog"],
+[aria-label="Visor de documento"][role="dialog"] {
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: 16px;
+  box-shadow: 0 24px 64px rgba(6, 40, 65, .22);
+  color: var(--molsan-text);
+}
+.liquidar-expediente-modal > section > header,
+.vista-previa-cierre-modal > section > header,
+.traspaso-saldo-modal > section > header,
+[aria-label="Carpeta digital del expediente"][role="dialog"] > header {
+  background: var(--molsan-panel);
+  border-bottom: 1px solid var(--molsan-border);
+}
+.liquidar-expediente-modal h2,
+.vista-previa-cierre-modal h2,
+.traspaso-saldo-modal h3,
+[aria-label="Carpeta digital del expediente"] h2 {
+  color: var(--molsan-blue);
+  font-weight: 700;
+}
+.liquidar-expediente-modal input:not([type="checkbox"]):not([type="radio"]),
+.liquidar-expediente-modal select,
+.liquidar-expediente-modal textarea,
+.traspaso-saldo-modal input:not([type="checkbox"]):not([type="radio"]),
+.traspaso-saldo-modal select,
+.traspaso-saldo-modal textarea {
+  min-height: var(--molsan-control-height);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  background: var(--molsan-white);
+  color: var(--molsan-text);
+}
