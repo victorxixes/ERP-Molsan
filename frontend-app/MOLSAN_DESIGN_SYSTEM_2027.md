@@ -245,3 +245,15 @@ Este cierre **no afirma que cada una de las 97 pantallas y cada modal hayan sido
 - Esta entrega es una primera capa visual transversal, no la migración terminada de todos los componentes de filtros, formularios y modales.
 - No se han modificado lógica de negocio, permisos, datos, API, base de datos, Sidebar ni producción.
 - La validación de build y el despliegue Preview se registrarán tras su ejecución. La revisión visual final de módulos y modales sigue pendiente.
+
+
+### Fase 2 — filtros y formularios (base compartida)
+
+- Se amplía la hoja central `NeutralizarPresentacion.css` con patrones reutilizables `.molsan-filter-bar`, `.molsan-filters`, `.molsan-filter-actions`, `.molsan-form-grid`, `.molsan-field` y `.molsan-form-section`.
+- Los filtros se agrupan en una única superficie blanca/azul hielo; no se convierten los campos en tarjetas individuales.
+- Los campos comparten etiqueta, altura, borde, radio, foco, ayuda, error, obligatorio y estado deshabilitado.
+- Se conserva la composición funcional de cada formulario; en móvil la rejilla común pasa a una columna.
+- La capa define el patrón compartido y permite la adopción progresiva por los módulos. No se afirma que todos los formularios y barras de filtros existentes hayan sido migrados en esta entrega.
+- No se cambian validaciones, valores, consultas, permisos, API ni flujos de negocio.
+- Sidebar, producción, rama `main` y base de datos permanecen fuera del alcance.
+- Botones y migración de modales continúan en las siguientes entregas de Fase 2; la ordenación funcional completa de tablas se abordará después.
