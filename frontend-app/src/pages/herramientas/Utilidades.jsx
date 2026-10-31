@@ -8,14 +8,14 @@ import "../../css/HerramientasPremium.css";
 export default function Utilidades() {
 
   return (
-    <div className="utilidades-premium-page min-h-full space-y-7 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-      <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
+    <div className="utilidades-premium-page min-h-full space-y-7 p-4 sm:p-6 lg:p-8">
+      <header className="relative overflow-hidden p-6 sm:p-7">
+        <div className="absolute inset-x-0 top-0 h-1" />
         <div className="relative flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl shadow-sm">⚙️</div>
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center">⚙️</div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Utilidades del sistema</h1>
-            <p className="mt-1 text-sm text-slate-500">Accede a importaciones, integraciones y herramientas de trabajo directamente desde el ERP.</p>
+            <h1 className="">Utilidades del sistema</h1>
+            <p className="mt-1">Accede a importaciones, integraciones y herramientas de trabajo directamente desde el ERP.</p>
           </div>
         </div>
       </header>
@@ -101,8 +101,8 @@ function Grupo({ titulo, descripcion, children }) {
   return (
     <section className="space-y-3">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-        <h2 className="text-lg font-bold tracking-tight text-slate-800">{titulo}</h2>
-        <p className="text-sm text-slate-500">{descripcion}</p>
+        <h2 className="">{titulo}</h2>
+        <p className="">{descripcion}</p>
       </div>
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">{children}</div>
     </section>
@@ -115,9 +115,9 @@ function Grupo({ titulo, descripcion, children }) {
 
 function MetricaAbsis({ titulo, valor, alerta = false }) {
   return (
-    <div className={`rounded-2xl border p-3.5 ${alerta ? "border-rose-100 bg-rose-50/60" : "border-slate-200 bg-white"}`}>
-      <p className="text-[11px] font-semibold leading-4 text-slate-500">{titulo}</p>
-      <p className={`mt-2 text-2xl font-bold ${alerta ? "text-rose-600" : "text-slate-800"}`}>{valor}</p>
+    <div className={`rounded-2xl border p-3.5 ${alerta ? "" : ""}`}>
+      <p className="">{titulo}</p>
+      <p className={`mt-2 text-2xl font-bold ${alerta ? "" : ""}`}>{valor}</p>
     </div>
   );
 }
@@ -136,34 +136,34 @@ function Card({
   const contenido = (
     <>
       <div
-        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent opacity-0 transition-opacity group-hover:opacity-100"
+        className="absolute inset-x-0 top-0 h-px"
       />
       <div className="flex items-start gap-4">
         <div
-          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl transition-all duration-300 group-hover:scale-105 ${destacado ? "bg-blue-100 border-blue-200" : "bg-slate-50 border-slate-200"}`}
+          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl transition-all duration-300 group-hover:scale-105 ${destacado ? "" : ""}`}
         >
           {icon}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-base font-semibold text-slate-800">{titulo}</h2>
+            <h2 className="">{titulo}</h2>
             {enConstruccion && (
-              <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700">
+              <span className="px-2 py-0.5 uppercase">
                 En construcción
               </span>
             )}
           </div>
-          <p className="mt-1.5 text-sm leading-5 text-slate-500">{descripcion}</p>
-          {etapa && <p className="mt-3 inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-700">{etapa}</p>}
-          {aviso && <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs leading-5 text-amber-900"><p className="font-bold">⚠️ Pendiente de revisión técnica</p><p className="mt-1">{aviso}</p></div>}
+          <p className="mt-1.5">{descripcion}</p>
+          {etapa && <p className="mt-3 inline-flex px-2.5 py-1">{etapa}</p>}
+          {aviso && <div className="mt-3 px-3 py-2.5"><p className="">⚠️ Pendiente de revisión técnica</p><p className="mt-1">{aviso}</p></div>}
           {enConstruccion && (
-            <p className="mt-3 text-xs font-medium text-amber-700">
+            <p className="mt-3">
               Próximamente: registro de envíos, respuestas y cambios de estado vía API.
             </p>
           )}
         </div>
         {!enConstruccion && (
-          <span className="text-slate-300 transition-all group-hover:translate-x-1 group-hover:text-blue-500">→</span>
+          <span className="">→</span>
         )}
       </div>
     </>
