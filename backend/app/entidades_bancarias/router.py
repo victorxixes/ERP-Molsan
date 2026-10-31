@@ -12,7 +12,6 @@ from sqlalchemy.orm import Session, aliased
 
 from backend.app.database import get_db
 from backend.app.auth.dependencies import get_current_user
-from backend.app.auth.permissions import require_perm_modulo
 from backend.app.uploads import MAX_EXCEL_UPLOAD_BYTES, read_upload_limited
 from backend.app.entidades_bancarias.models import (
     EntidadBancaria,
@@ -25,13 +24,6 @@ from backend.app.Utilidades.importadores.entidades_bancarias_importer import (
 # ============================================================
 # ROUTER
 # ============================================================
-
-def _permiso_entidades_bancarias(accion):
-    def comprobar(usuario=Depends(get_current_user)):
-        require_perm_modulo(usuario, "utilidades", accion)
-        return usuario
-    return comprobar
-
 
 router = APIRouter(
     dependencies=[Depends(get_current_user)],
@@ -153,7 +145,6 @@ from backend.app.entidades_bancarias.sincronizar_catalogo_historico import sincr
 )
 def listar_entidades_bancarias(
     db: Session = Depends(get_db),
-    _usuario=Depends(_permiso_entidades_bancarias("ver")),
 ):
 
     EntidadActual = aliased(EntidadBancaria)
@@ -194,7 +185,6 @@ def listar_entidades_bancarias(
 @router.get("/auditoria-sucesiones")
 def auditar_sucesiones_entidades_bancarias(
     db: Session = Depends(get_db),
-    _usuario=Depends(_permiso_entidades_bancarias("ver")),
 ):
     EntidadActual = aliased(EntidadBancaria)
     registros = (
@@ -235,7 +225,6 @@ def auditar_sucesiones_entidades_bancarias(
 def crear_entidad_bancaria(
     datos: EntidadBancariaCreate,
     db: Session = Depends(get_db),
-    _usuario=Depends(_permiso_entidades_bancarias("crear")),
 ):
 
     codigo = limpiar_opcional(
@@ -395,7 +384,6 @@ def crear_entidad_bancaria(
 async def importar_entidades_bancarias_excel(
     fichero: UploadFile = File(...),
     db: Session = Depends(get_db),
-    _usuario=Depends(_permiso_entidades_bancarias("crear")),
 ):
 
     # --------------------------------------------------------
@@ -498,7 +486,6 @@ def actualizar_entidad_bancaria(
     entidad_id: int,
     datos: EntidadBancariaUpdate,
     db: Session = Depends(get_db),
-    _usuario=Depends(_permiso_entidades_bancarias("editar")),
 ):
 
     entidad = (
@@ -639,7 +626,6 @@ def actualizar_entidad_bancaria(
 def eliminar_entidad_bancaria(
     entidad_id: int,
     db: Session = Depends(get_db),
-    _usuario=Depends(_permiso_entidades_bancarias("eliminar")),
 ):
 
     entidad = (
