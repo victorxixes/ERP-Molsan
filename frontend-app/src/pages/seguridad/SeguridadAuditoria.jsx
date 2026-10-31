@@ -7,7 +7,7 @@ import { useSeguridad } from "../../hooks/useSeguridad";
 /**
  * ============================================================
  * SEGURIDAD — AUDITORÍA
- * MOLSAN ERP SAAS PREMIUM 2027
+ * MOLSAN ERP
  * ============================================================
  *
  * Módulo completo de consulta de auditoría.
@@ -1146,7 +1146,7 @@ export default function SeguridadAuditoria() {
 
   return (
     <div
-      className="seguridad-auditoria-premium space-y-6"
+      className="space-y-6"
     >
 
       {/* ======================================================
