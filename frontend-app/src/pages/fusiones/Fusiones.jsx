@@ -34,13 +34,11 @@ function Icon({ name, size = 20 }) {
 }
 function BadgeEstado({ estado }) {
   const e = normalizarEstado(estado);
-  const tone = ({ "Pendiente": "border-amber-200 bg-amber-50 text-amber-800", "En curso": "border-blue-200 bg-blue-50 text-blue-800", "Aceptada": "border-emerald-200 bg-emerald-50 text-emerald-800", "Desestimada": "border-rose-200 bg-rose-50 text-rose-800", "Facturadas": "border-violet-200 bg-violet-50 text-violet-800" })[e] || "border-slate-200 bg-slate-50 text-slate-700";
-  return <span className={"inline-flex items-center gap-1.5 whitespace-nowrap px-2.5 py-1" + tone}><span className="h-1.5 w-1.5" />{e}</span>;
+  return <span className="inline-flex items-center gap-1.5 whitespace-nowrap px-2.5 py-1">{e}</span>;
 }
 function Indicador({ titulo, valor, detalle, tono, activo, onClick }) {
-  const colors = { slate: "bg-slate-100 text-slate-700", amber: "bg-amber-50 text-amber-700", blue: "bg-blue-50 text-blue-700", green: "bg-emerald-50 text-emerald-700", red: "bg-rose-50 text-rose-700", violet: "bg-violet-50 text-violet-700" };
   return <button type="button" onClick={onClick} className={"group min-w-0 p-4 sm:p-5" + (activo ? "" : "")}>
-    <div className="flex items-start justify-between gap-2"><div className="min-w-0"><p className="uppercase">{titulo}</p><p className="mt-2 tabular-nums">{valor}</p></div><span className={"flex h-10 w-10 shrink-0 items-center justify-center" + (colors[tono] || colors.slate)}><Icon name={titulo === "Total solicitudes" ? "file" : "clock"} size={19} /></span></div>
+    <div className="flex items-start justify-between gap-2"><div className="min-w-0"><p className="uppercase">{titulo}</p><p className="mt-2 tabular-nums">{valor}</p></div><span className={"flex h-10 w-10 shrink-0 items-center justify-center" + }><Icon name={titulo === "Total solicitudes" ? "file" : "clock"} size={19} /></span></div>
     <p className="mt-2">{detalle}</p>
   </button>;
 }
