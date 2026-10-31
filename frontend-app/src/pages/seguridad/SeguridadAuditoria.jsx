@@ -1,6 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import "./SeguridadSubpaginasPremium.css";
-import "../../css/ModalesHerramientasPremium.css";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
