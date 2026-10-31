@@ -48,7 +48,7 @@ export default function ImportarCTN() {
 
           <div>
 
-            <h1 className="">
+            <h1>
               Importar CTN
             </h1>
 
@@ -100,17 +100,17 @@ export default function ImportarCTN() {
  px-5"
             >
 
-              <span className="">
+              <span>
                 {file ? "📊" : "📁"}
               </span>
 
-              <span className="">
+              <span>
                 {file
                   ? file.name
                   : "Selecciona el fichero Excel"}
               </span>
 
-              <span className="">
+              <span>
                 Formato permitido: .xlsx
               </span>
 
@@ -143,7 +143,7 @@ export default function ImportarCTN() {
 
               <div className="min-w-0">
 
-                <div className="">
+                <div>
                   Archivo seleccionado
                 </div>
 
@@ -205,7 +205,7 @@ export default function ImportarCTN() {
 
                 <div>
 
-                  <div className="">
+                  <div>
                     Importación completada
                   </div>
 
