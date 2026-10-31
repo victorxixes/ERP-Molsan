@@ -7,7 +7,6 @@ import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
-import "./ExpedientesListado.css";
 
 import {
   Link,
