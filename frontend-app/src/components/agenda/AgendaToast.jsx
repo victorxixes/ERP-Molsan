@@ -75,10 +75,7 @@ export default function AgendaToast() {
  gap-3
  px-4
  py-3"
-          style={{
-            animationFillMode: "both",
-          }}
-        >
+                  >
           {/* ICONO */}
 
           <div
