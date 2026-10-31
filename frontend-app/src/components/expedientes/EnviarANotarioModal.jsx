@@ -688,11 +688,11 @@ export default function EnviarANotarioModal({
                             type="button"
                             disabled={loading}
                             onClick={() => cambiarEscrituraFirmada(opcion)}
-                            className={`rounded-lg border px-2 py-2 text-sm font-semibold transition ${
-                              activa
-                                ? ""
-                                : ""
-                            }`}
+                            className={`px-2 py-2 ${
+ activa
+ ? ""
+ : ""
+ }`}
                           >
                             {opcion === "Sí" ? "✓ Sí" : "○ No"}
                           </button>
