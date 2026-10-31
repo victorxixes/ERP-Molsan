@@ -44,17 +44,17 @@ function ProvisionDocumentoPreview({ posiciones = {}, datosMolsan = {} }) {
   const contacto = [datosMolsan.telefono, datosMolsan.email, datosMolsan.web].filter(Boolean).join(" · ");
 
   const bloques = [
-    { id:"cabecera", content:<div className="flex h-full items-center justify-between gap-3"><div className="flex min-w-0 items-center gap-3">{logo ? <img src={logo} alt="Logotipo Molsan" className="max-h-12 max-w-28 object-contain"/> : <div className="flex h-12 w-28 shrink-0 items-center justify-center">LOGOTIPO MOLSAN</div>}<div className="min-w-0"><div className="">{razon}</div><div className="">{[datosMolsan.nif ? "CIF: "+datosMolsan.nif : "",domicilio,contacto].filter(Boolean).join(" · ") || "Completa los datos en Utilidades · Datos Molsan"}</div></div></div><div className="">Documento de provisión</div></div> },
-    { id:"titulo", content:<div className="flex h-full items-center justify-between pb-1"><div><div className="">HOJA DE PROVISIÓN DE FONDOS</div><div className="">Estimación de gastos y servicios de tramitación</div></div><div className="">Fecha: DD/MM/AAAA<br/>N.º: PROV-000000</div></div> },
+    { id:"cabecera", content:<div className="flex h-full items-center justify-between gap-3"><div className="flex min-w-0 items-center gap-3">{logo ? <img src={logo} alt="Logotipo Molsan" className="max-h-12 max-w-28 object-contain"/> : <div className="flex h-12 w-28 shrink-0 items-center justify-center">LOGOTIPO MOLSAN</div>}<div className="min-w-0"><div>{razon}</div><div>{[datosMolsan.nif ? "CIF: "+datosMolsan.nif : "",domicilio,contacto].filter(Boolean).join(" · ") || "Completa los datos en Utilidades · Datos Molsan"}</div></div></div><div>Documento de provisión</div></div> },
+    { id:"titulo", content:<div className="flex h-full items-center justify-between pb-1"><div><div>HOJA DE PROVISIÓN DE FONDOS</div><div>Estimación de gastos y servicios de tramitación</div></div><div>Fecha: DD/MM/AAAA<br/>N.º: PROV-000000</div></div> },
     { id:"cliente", content:<div className="h-full p-2"><div className="mb-1 uppercase">Datos del cliente</div><div className="grid grid-cols-2 gap-x-3 gap-y-1"><span>Nombre / Razón social: <b>Nombre del titular</b></span><span>NIF: <b>00000000X</b></span><span>Dirección: Calle y número</span><span>CP / Población: 08000 · Barcelona</span><span>Teléfono: 600 000 000</span><span>Email: cliente@correo.es</span></div></div> },
     { id:"oficina", content:<div className="h-full p-2"><div className="mb-1 uppercase">Oficina de origen</div><div className="grid grid-cols-2 gap-x-3 gap-y-1"><span>Entidad: <b>CaixaBank / Otra entidad</b></span><span>Oficina: <b>0000</b></span><span>Persona de contacto: Nombre</span><span>Email: oficina@entidad.es</span><span>Expediente / operación: EXP-000000</span><span>Fecha de solicitud: DD/MM/AAAA</span></div></div> },
-    { id:"desglose", content:<div className="h-full overflow-hidden"><div className="px-2 py-1 uppercase">Desglose estimado de provisión por garantía</div><table className="w-full"><thead className=""><tr><th className="p-1">Concepto / garantía</th><th className="p-1">Notaría</th><th className="p-1">Impuestos</th><th className="p-1">Registro</th><th className="p-1">Gestión</th><th className="p-1">Total</th></tr></thead><tbody className=""><tr className=""><td className="p-1">Hipoteca · Capital 150.000,00 €</td><td className="p-1">XXX €</td><td className="p-1">XXX €</td><td className="p-1">XXX €</td><td className="p-1">XXX €</td><td className="p-1">X.XXX €</td></tr><tr className=""><td className="p-1">Otras garantías / conceptos</td><td className="p-1">—</td><td className="p-1">—</td><td className="p-1">—</td><td className="p-1">—</td><td className="p-1">—</td></tr></tbody></table></div> },
-    { id:"total", content:<div className="flex h-full items-center justify-between px-3"><span className="uppercase">Total provisión estimada</span><span className="">X.XXX,XX €</span></div> },
-    { id:"observaciones", content:<div className="h-full p-2"><div className="mb-1 uppercase">Observaciones</div><p className="">Importes estimados sujetos a las circunstancias de la operación, tarifas aplicables y liquidación definitiva de los organismos intervinientes.</p></div> },
+    { id:"desglose", content:<div className="h-full overflow-hidden"><div className="px-2 py-1 uppercase">Desglose estimado de provisión por garantía</div><table className="w-full"><thead><tr><th className="p-1">Concepto / garantía</th><th className="p-1">Notaría</th><th className="p-1">Impuestos</th><th className="p-1">Registro</th><th className="p-1">Gestión</th><th className="p-1">Total</th></tr></thead><tbody><tr><td className="p-1">Hipoteca · Capital 150.000,00 €</td><td className="p-1">XXX €</td><td className="p-1">XXX €</td><td className="p-1">XXX €</td><td className="p-1">XXX €</td><td className="p-1">X.XXX €</td></tr><tr><td className="p-1">Otras garantías / conceptos</td><td className="p-1">—</td><td className="p-1">—</td><td className="p-1">—</td><td className="p-1">—</td><td className="p-1">—</td></tr></tbody></table></div> },
+    { id:"total", content:<div className="flex h-full items-center justify-between px-3"><span className="uppercase">Total provisión estimada</span><span>X.XXX,XX €</span></div> },
+    { id:"observaciones", content:<div className="h-full p-2"><div className="mb-1 uppercase">Observaciones</div><p>Importes estimados sujetos a las circunstancias de la operación, tarifas aplicables y liquidación definitiva de los organismos intervinientes.</p></div> },
     { id:"aviso_firma", content:<div className="flex h-full items-end justify-between gap-3"><div className="max-w-[58%]">La presente provisión tiene carácter estimativo. Los importes finales se justificarán con los documentos y pagos correspondientes.</div><div className="w-[34%]"><div className="mb-1">Conforme del cliente</div><div className="h-8"/><div className="mt-1">Firma y fecha</div></div></div> },
   ];
   return <section className="p-5">
-    <div className="mb-3"><p className="uppercase">Previsualización de la provisión</p><h3 className="">Así quedaría la hoja · vista A4 en directo</h3><p className="mt-1">La distribución se actualiza al instante al mover los bloques del diseñador. Los textos e importes son una referencia visual, no una provisión emitida.</p></div>
+    <div className="mb-3"><p className="uppercase">Previsualización de la provisión</p><h3>Así quedaría la hoja · vista A4 en directo</h3><p className="mt-1">La distribución se actualiza al instante al mover los bloques del diseñador. Los textos e importes son una referencia visual, no una provisión emitida.</p></div>
     <div className="overflow-auto p-3 sm:p-5"><article className="relative mx-auto aspect-[210/297] w-full max-w-[620px] overflow-hidden">
       <div className="absolute inset-x-[5%] top-[1.5%] pb-1">MOLSAN · PROVISIÓN DE FONDOS</div>
       {bloques.map(b=>{const p=posiciones[b.id]||DOCUMENTO_LAYOUTS.provision.find(c=>c.id===b.id);if(!p)return null;return <div key={b.id} style={{ left:p.x+"%", top:p.y+"%", width:p.w+"%", height:p.h+"%", paddingLeft:(p.padL??1)+"%", paddingRight:(p.padR??1)+"%", paddingTop:(p.padT??1)+"%", paddingBottom:(p.padB??1)+"%" }} className="absolute overflow-hidden">{b.content}</div>;})}
@@ -113,7 +113,7 @@ export function DocumentoLayoutDesigner({ tipo, datosMolsan = {} }) {
   const cambiarNumero=(k,v)=>actualizar(activo,k,Number(v));
   return <><section className="p-5">
     <div className="flex flex-wrap items-center justify-between gap-3">
-      <div><p className="uppercase">Diseñador de distribución · A4</p><h3 className="">Diseñador de distribución</h3><p className="mt-1">Arrastra los bloques a la posición deseada. Recoloca los bloques dentro de la hoja y guarda la configuración.</p></div>
+      <div><p className="uppercase">Diseñador de distribución · A4</p><h3>Diseñador de distribución</h3><p className="mt-1">Arrastra los bloques a la posición deseada. Recoloca los bloques dentro de la hoja y guarda la configuración.</p></div>
       <button type="button" onClick={guardar} disabled={guardando||cargando} className="px-4 py-2">{guardando?"Guardando…":"Guardar distribución"}</button>
     </div>
     <div className="mt-4 grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(360px,.95fr)]">
@@ -125,23 +125,23 @@ export function DocumentoLayoutDesigner({ tipo, datosMolsan = {} }) {
         </div>
       </div>
       <aside className="grid min-w-0 content-start gap-3">
-        <div className="p-3"><p className="">1. Selecciona un campo</p><div className="mt-2 grid max-h-56 grid-cols-1 gap-1 overflow-y-auto sm:grid-cols-2 xl:grid-cols-1">{campos.map(c=><button key={c.id} type="button" draggable onClick={()=>setActivo(c.id)} onDragStart={e=>{setActivo(c.id);e.dataTransfer.setData("text/plain",c.id);}} className={"w-full px-3 py-2"+(activo===c.id?"":"")}>{c.label}</button>)}</div></div>
+        <div className="p-3"><p>1. Selecciona un campo</p><div className="mt-2 grid max-h-56 grid-cols-1 gap-1 overflow-y-auto sm:grid-cols-2 xl:grid-cols-1">{campos.map(c=><button key={c.id} type="button" draggable onClick={()=>setActivo(c.id)} onDragStart={e=>{setActivo(c.id);e.dataTransfer.setData("text/plain",c.id);}} className={"w-full px-3 py-2"+(activo===c.id?"":"")}>{c.label}</button>)}</div></div>
         <div className="space-y-3 p-3">
-          <div><p className="">2. Posición y tamaño</p><p className="">{campos.find(c=>c.id===activo)?.label}</p></div>
-          <div className="grid grid-cols-2 gap-2">{[["x","X · izquierda"],["y","Y · arriba"],["w","Ancho"],["h","Alto"]].map(([k,l])=><label key={k} className="">{l} (%)<input type="number" min="0" max="100" step="0.5" value={Number(p[k]??0)} onChange={e=>cambiarNumero(k,e.target.value)} className="mt-1 w-full px-2 py-1.5"/></label>)}</div>
-          <div className="flex items-center justify-between gap-2"><span className="">Ajuste fino</span><div className="grid grid-cols-3 gap-1"><span/><button type="button" onClick={()=>mover(activo,0,-0.5)} className="px-2 py-1">↑</button><span/><button type="button" onClick={()=>mover(activo,-0.5,0)} className="px-2 py-1">←</button><button type="button" onClick={()=>mover(activo,0,0.5)} className="px-2 py-1">↓</button><button type="button" onClick={()=>mover(activo,0.5,0)} className="px-2 py-1">→</button></div></div>
-          <div className="pt-2"><p className="">3. Texto y márgenes internos</p>
+          <div><p>2. Posición y tamaño</p><p>{campos.find(c=>c.id===activo)?.label}</p></div>
+          <div className="grid grid-cols-2 gap-2">{[["x","X · izquierda"],["y","Y · arriba"],["w","Ancho"],["h","Alto"]].map(([k,l])=><label key={k}>{l} (%)<input type="number" min="0" max="100" step="0.5" value={Number(p[k]??0)} onChange={e=>cambiarNumero(k,e.target.value)} className="mt-1 w-full px-2 py-1.5"/></label>)}</div>
+          <div className="flex items-center justify-between gap-2"><span>Ajuste fino</span><div className="grid grid-cols-3 gap-1"><span/><button type="button" onClick={()=>mover(activo,0,-0.5)} className="px-2 py-1">↑</button><span/><button type="button" onClick={()=>mover(activo,-0.5,0)} className="px-2 py-1">←</button><button type="button" onClick={()=>mover(activo,0,0.5)} className="px-2 py-1">↓</button><button type="button" onClick={()=>mover(activo,0.5,0)} className="px-2 py-1">→</button></div></div>
+          <div className="pt-2"><p>3. Texto y márgenes internos</p>
             <label className="mt-2 block">Alineación horizontal<select value={p.align||"left"} onChange={e=>actualizar(activo,"align",e.target.value)} className="mt-1 w-full px-2 py-1.5"><option value="left">Izquierda</option><option value="center">Centrada</option><option value="right">Derecha</option><option value="justify">Justificada</option></select></label>
             <label className="mt-2 block">Alineación vertical<select value={p.valign||"top"} onChange={e=>actualizar(activo,"valign",e.target.value)} className="mt-1 w-full px-2 py-1.5"><option value="top">Arriba</option><option value="center">Centro</option><option value="bottom">Abajo</option></select></label>
             <label className="mt-2 block">Tamaño de letra (px)<input type="number" min="5" max="24" step="0.5" value={p.fontSize||9} onChange={e=>cambiarNumero("fontSize",e.target.value)} className="mt-1 w-full px-2 py-1.5"/></label>
-            <div className="mt-2 grid grid-cols-2 gap-2">{[["padL","Margen izq."],["padR","Margen der."],["padT","Margen sup."],["padB","Margen inf."]].map(([k,l])=><label key={k} className="">{l} (%)<input type="number" min="0" max="8" step="0.2" value={p[k]??1} onChange={e=>cambiarNumero(k,e.target.value)} className="mt-1 w-full px-2 py-1.5"/></label>)}</div>
+            <div className="mt-2 grid grid-cols-2 gap-2">{[["padL","Margen izq."],["padR","Margen der."],["padT","Margen sup."],["padB","Margen inf."]].map(([k,l])=><label key={k}>{l} (%)<input type="number" min="0" max="8" step="0.2" value={p[k]??1} onChange={e=>cambiarNumero(k,e.target.value)} className="mt-1 w-full px-2 py-1.5"/></label>)}</div>
             <div className="mt-2 flex gap-3"><label className="flex items-center gap-1"><input type="checkbox" checked={!!p.bold} onChange={e=>actualizar(activo,"bold",e.target.checked)}/>Negrita</label><label className="flex items-center gap-1"><input type="checkbox" checked={!!p.italic} onChange={e=>actualizar(activo,"italic",e.target.checked)}/>Cursiva</label></div>
           </div>
         </div>
-        {cargando&&<p className="">Cargando distribución guardada…</p>}
-        {error&&<p role="alert" className="">{error}</p>}
-        {mensaje&&<p role="status" className="">{mensaje}</p>}
-        <p className="">Esta configuración se guarda por separado para cada documento. El PDF oficial conserva su composición actual: este editor no altera la emisión, tarifas, impuestos, gastos, pagos ni datos del expediente.</p>
+        {cargando&&<p>Cargando distribución guardada…</p>}
+        {error&&<p role="alert">{error}</p>}
+        {mensaje&&<p role="status">{mensaje}</p>}
+        <p>Esta configuración se guarda por separado para cada documento. El PDF oficial conserva su composición actual: este editor no altera la emisión, tarifas, impuestos, gastos, pagos ni datos del expediente.</p>
       </aside>
     </div>
   </section>{tipo==="provision"&&<div className="mt-5"><ProvisionDocumentoPreview posiciones={posiciones} datosMolsan={datosMolsan}/></div>}</>;
@@ -183,7 +183,7 @@ function AutocompleteCatalogo({ titulo, valor, opciones, etiqueta, detalle, onCh
         const texto = typeof etiqueta === "function" ? etiqueta(op) : String(op ?? "");
         const apoyo = detalle ? detalle(op) : "";
         return <button key={op?.id ?? texto + idx} type="button" role="option" onMouseDown={(e) => e.preventDefault()} onClick={() => { onSelect(op); setAbierto(false); }} className="flex w-full items-center justify-between gap-3 px-3 py-2">
-          <span className="">{texto}</span>{apoyo && <span className="">{apoyo}</span>}
+          <span>{texto}</span>{apoyo && <span>{apoyo}</span>}
         </button>;
       })}
       {!filtradas.length && <p className="px-3 py-2">No hay coincidencias en el catálogo. Revisa Utilidades → Catálogos.</p>}
@@ -194,7 +194,7 @@ function Selector({ titulo, valor, onChange, opciones, requerido = false }) {
   return <label className={label}>{titulo}<select className={input} value={valor ?? ""} onChange={(e) => onChange(e.target.value)} required={requerido}><option value="">Seleccionar…</option>{opciones.map((op) => <option key={typeof op === "string" ? op : op.nombre} value={typeof op === "string" ? op : op.nombre}>{typeof op === "string" ? op : op.nombre}</option>)}</select></label>;
 }
 function Seccion({ titulo, detalle, children, className = "" }) {
-  return <section className={`p-5 ${className}`}><div className="mb-4"><h2 className="">{titulo}</h2>{detalle && <p className="mt-1">{detalle}</p>}</div>{children}</section>;
+  return <section className={`p-5 ${className}`}><div className="mb-4"><h2>{titulo}</h2>{detalle && <p className="mt-1">{detalle}</p>}</div>{children}</section>;
 }
 
 
@@ -342,7 +342,7 @@ function ConfiguracionConceptosProvisiones({ soloEditorPlantilla = false } = {})
     const tablaAbierta = borradores[item.codigo]?.reglas?.tablas_abiertas?.[tipo] !== false;
     return <div className="mt-4 p-3">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <div><h3 className="">{titulo}</h3><p className="mt-1">{tramos.length} tramos · capital, notaría y registro editables; {honorariosEtiqueta.toLowerCase()} enlazada al catálogo.</p></div>
+        <div><h3>{titulo}</h3><p className="mt-1">{tramos.length} tramos · capital, notaría y registro editables; {honorariosEtiqueta.toLowerCase()} enlazada al catálogo.</p></div>
         <div className="flex flex-wrap gap-2"><button type="button" onClick={() => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), tablas_abiertas: { ...(draft.reglas?.tablas_abiertas || {}), [tipo]: !tablaAbierta } })} className="px-3 py-2">{tablaAbierta ? "− Ocultar tabla" : "+ Expandir tabla"}</button>{tablaAbierta && <button type="button" onClick={() => agregarTramo(item.codigo, tipo)} className={boton + ""}>＋ Añadir tramo</button>}</div>
       </div>
       {tablaAbierta && <>
@@ -353,7 +353,7 @@ function ConfiguracionConceptosProvisiones({ soloEditorPlantilla = false } = {})
       </div>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[1000px]">
-          <thead><tr className="">
+          <thead><tr>
             <th className="p-2">Principal desde (€)</th><th className="p-2">Principal hasta (€)</th><th className="p-2">Notaría (€)</th><th className="p-2">Registro (€)</th><th className="p-2">{honorariosEtiqueta} · catálogo</th><th className="p-2">Total (€)</th><th className="p-2">Acciones</th>
           </tr></thead>
           <tbody>{tramos.map((tramo, indice) => {
@@ -361,10 +361,10 @@ function ConfiguracionConceptosProvisiones({ soloEditorPlantilla = false } = {})
             const editando = Boolean(tramosEditando[claveEdicion]);
             const subtotal = Number(tramo.notaria || 0) + Number(tramo.registro || 0) + (importe ?? 0);
             const campos = [["desde", "Principal desde (€)"], ["hasta", "Principal hasta (€)"], ["notaria", "Notaría (€)"], ["registro", "Registro (€)"]];
-            return <tr key={claveEdicion} className="">
+            return <tr key={claveEdicion}>
               {campos.map(([campo, etiqueta]) => <td key={campo} className="p-2">{editando ? <input aria-label={etiqueta} className="w-36 px-2 py-1.5" type="text" inputMode="decimal" value={tramo[campo] ?? ""} onChange={(e) => cambiarTramo(item.codigo, tipo, indice, campo, e.target.value)} /> : <span>{tramo[campo] === "" || tramo[campo] == null ? "—" : dinero(tramo[campo])}</span>}</td>)}
-              <td className="p-2">{importe == null ? <span className="">Revisar catálogo</span> : dinero(importe)}</td>
-              <td className="p-2">{importe == null || tramo.notaria === "" || tramo.registro === "" ? <span className="">Pendiente</span> : dinero(subtotal)}</td>
+              <td className="p-2">{importe == null ? <span>Revisar catálogo</span> : dinero(importe)}</td>
+              <td className="p-2">{importe == null || tramo.notaria === "" || tramo.registro === "" ? <span>Pendiente</span> : dinero(subtotal)}</td>
               <td className="p-2"><div className="flex gap-1"><button type="button" onClick={() => setTramosEditando((prev) => ({ ...prev, [claveEdicion]: !prev[claveEdicion] }))} className="px-2 py-1.5">{editando ? "Terminar" : "Editar"}</button><button type="button" onClick={() => eliminarTramo(item.codigo, tipo, indice)} className="px-2 py-1.5">Eliminar</button></div></td>
             </tr>;
           })}</tbody>
@@ -383,7 +383,7 @@ function ConfiguracionConceptosProvisiones({ soloEditorPlantilla = false } = {})
         if (item.codigo === "notaria") {
           return <><div key={item.codigo} className={"p-4" + (soloEditorPlantilla ? "provision-editor-tarifas" : "")}>
             <div className="flex flex-wrap items-start justify-between gap-3">
-              <div><p className="">Tramos de provisión por capital</p><p className="mt-1 max-w-3xl">Configuración maestra del catálogo económico. Los cambios de tarifas se gestionan aquí y no se trasladan al editor documental.</p></div>
+              <div><p>Tramos de provisión por capital</p><p className="mt-1 max-w-3xl">Configuración maestra del catálogo económico. Los cambios de tarifas se gestionan aquí y no se trasladan al editor documental.</p></div>
               <button type="button" disabled={guardando === item.codigo} onClick={() => guardarConcepto(item)} className={boton + ""}>{guardando === item.codigo ? "Guardando…" : "Guardar tablas"}</button>
             </div>
             {renderTabla(item, draft, "caixabank")}
@@ -395,12 +395,12 @@ function ConfiguracionConceptosProvisiones({ soloEditorPlantilla = false } = {})
         }
         return <div key={item.codigo} className="p-4">
           <div className="grid gap-3 md:grid-cols-[1.2fr_1fr_1.4fr_auto] md:items-end">
-            <div><p className="">{item.nombre}</p><p className="mt-1">Reglas fiscales de referencia. Los porcentajes se aplican al capital del préstamo cuando corresponde la regla territorial.</p></div>
+            <div><p>{item.nombre}</p><p className="mt-1">Reglas fiscales de referencia. Los porcentajes se aplican al capital del préstamo cuando corresponde la regla territorial.</p></div>
             <div><label className="mb-1 block">Tratamiento</label><select className={input} value={draft.modo || "calculado"} onChange={(e) => cambiar(item.codigo, "modo", e.target.value)}><option value="previsto">Importe previsto</option><option value="calculado">Calculado (pendiente de regla fiscal)</option></select>{draft.modo === "previsto" && <><label className="mb-1 mt-2 block">Importe previsto (€)</label><input className={input} type="number" min="0" step="0.01" value={draft.importe_previsto ?? ""} onChange={(e) => cambiar(item.codigo, "importe_previsto", e.target.value)} placeholder="Introduce el importe" /></>}</div>
             <div><label className="mb-1 block">Descripción / criterio</label><textarea className={input + "min-h-16 resize-y"} value={draft.descripcion || ""} onChange={(e) => cambiar(item.codigo, "descripcion", e.target.value)} /></div>
             <button type="button" disabled={guardando === item.codigo} onClick={() => guardarConcepto(item)} className={boton + ""}>{guardando === item.codigo ? "Guardando…" : "Guardar reglas fiscales"}</button>
           </div>
-          <div className="mt-4 p-3"><p className="">Reglas iniciales de impuestos</p><p className="mt-1">La condición resolutoria tiene un porcentaje propio. En hipotecas, el porcentaje configurado para la provincia se multiplica por el capital del préstamo para calcular AJD / impuestos.</p><div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><label className={label}>Condición resolutoria · porcentaje<input className={input} type="number" min="0" step="0.01" value={draft.reglas?.porcentaje_condicion_resolutoria ?? 1.5} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), porcentaje_condicion_resolutoria: e.target.value === "" ? "" : Number(e.target.value) })} /></label>{["Gipuzkoa", "Álava", "Bizkaia"].map((provincia) => <label key={provincia} className={label}>Hipoteca · {provincia} (%)<input className={input} type="text" inputMode="decimal" placeholder="Por definir" value={draft.reglas?.porcentaje_hipoteca_provincia?.[provincia] ?? ""} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), porcentaje_hipoteca_provincia: { ...(draft.reglas?.porcentaje_hipoteca_provincia || {}), [provincia]: e.target.value } })} /></label>)}</div><p className="mt-2">Vitoria-Gasteiz queda cubierta por Álava. El porcentaje se aplica sobre el capital y el resultado se muestra en euros; valida siempre el criterio fiscal aplicable.</p></div>
+          <div className="mt-4 p-3"><p>Reglas iniciales de impuestos</p><p className="mt-1">La condición resolutoria tiene un porcentaje propio. En hipotecas, el porcentaje configurado para la provincia se multiplica por el capital del préstamo para calcular AJD / impuestos.</p><div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><label className={label}>Condición resolutoria · porcentaje<input className={input} type="number" min="0" step="0.01" value={draft.reglas?.porcentaje_condicion_resolutoria ?? 1.5} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), porcentaje_condicion_resolutoria: e.target.value === "" ? "" : Number(e.target.value) })} /></label>{["Gipuzkoa", "Álava", "Bizkaia"].map((provincia) => <label key={provincia} className={label}>Hipoteca · {provincia} (%)<input className={input} type="text" inputMode="decimal" placeholder="Por definir" value={draft.reglas?.porcentaje_hipoteca_provincia?.[provincia] ?? ""} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), porcentaje_hipoteca_provincia: { ...(draft.reglas?.porcentaje_hipoteca_provincia || {}), [provincia]: e.target.value } })} /></label>)}</div><p className="mt-2">Vitoria-Gasteiz queda cubierta por Álava. El porcentaje se aplica sobre el capital y el resultado se muestra en euros; valida siempre el criterio fiscal aplicable.</p></div>
         </div>;
       })}
     </div>}
@@ -745,7 +745,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
         <div className="flex min-w-[180px] flex-col items-start gap-2">
           {datosCorporativos.logo_data_url ? <img src={datosCorporativos.logo_data_url} alt="Logotipo corporativo Molsan" className="max-h-16 max-w-40 object-contain"/> : <div className="flex h-16 w-40 items-center justify-center">Sin logotipo</div>}
           <label className="px-3 py-2">{guardandoLogo ? "Guardando…" : datosCorporativos.logo_data_url ? "Cambiar logotipo" : "Subir logotipo"}<input type="file" accept="image/png,image/jpeg,image/webp" className="hidden" disabled={guardandoLogo} onChange={e => { subirLogoCorporativo(e.target.files?.[0]); e.target.value = ""; }}/></label>
-          <span className="">PNG, JPG o WEBP · máximo 1 MB</span>
+          <span>PNG, JPG o WEBP · máximo 1 MB</span>
         </div>
       </div>
       {cargandoDatosCorporativos && <p className="mt-2">Cargando Datos Molsan…</p>}
@@ -822,13 +822,13 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
         <datalist id="catalogo-entidades-bancarias">{entidadesBancarias.map((e) => <option key={e.id || e.nombre} value={e.nombre} />)}</datalist>
         <div className="space-y-4">
           {form.garantias.map((g, i) => <div key={i} className="p-4">
-            <div className="mb-4 flex items-center justify-between"><h3 className="">Garantía {i + 1}</h3>{form.garantias.length > 1 && <button type="button" onClick={() => setForm((f) => ({ ...f, garantias: f.garantias.filter((_, n) => n !== i) }))} className="">Eliminar</button>}</div>
+            <div className="mb-4 flex items-center justify-between"><h3>Garantía {i + 1}</h3>{form.garantias.length > 1 && <button type="button" onClick={() => setForm((f) => ({ ...f, garantias: f.garantias.filter((_, n) => n !== i) }))}>Eliminar</button>}</div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <AutocompleteCatalogo titulo="Entidad bancaria" valor={g.entidad} opciones={entidadesBancarias} etiqueta={(e) => e.nombre} detalle={(e) => e.entidad_actual || ""} placeholder="Escribe para buscar una entidad bancaria…" requerido onChange={(v) => cambiarGarantia(i, "entidad", v)} onSelect={(e) => cambiarGarantia(i, "entidad", e.nombre)} />
               {(() => {
                 const bancoCatalogo = entidadesBancarias.find((e) => compactarEntidad(e.nombre) === compactarEntidad(g.entidad));
                 const entidadActual = String(bancoCatalogo?.entidad_actual || entidadesBancarias.find((e) => bancoCatalogo?.entidad_actual_id != null && String(e.id) === String(bancoCatalogo.entidad_actual_id))?.nombre || "").trim();
-                return <p className="sm:col-span-2 lg:col-span-4 -mt-1">Entidad actual del catálogo: <strong className="">{entidadActual || "Sin entidad actual asignada; se aplicará tarifa de otra entidad"}</strong></p>;
+                return <p className="sm:col-span-2 lg:col-span-4 -mt-1">Entidad actual del catálogo: <strong>{entidadActual || "Sin entidad actual asignada; se aplicará tarifa de otra entidad"}</strong></p>;
               })()}
               <Campo titulo="Capital del préstamo (€)" tipo="number" valor={g.capital} onChange={(v) => cambiarGarantia(i, "capital", v)} requerido />
               <Campo titulo="N.º finca registral" valor={g.finca} onChange={(v) => cambiarGarantia(i, "finca", v)} />
@@ -870,7 +870,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
             </div>
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
               <button type="button" onClick={() => calcular(i)} className={`${boton}`}>Calcular con tarifario</button>
-              <div className=""><p className="uppercase">Total de la garantía</p><p className="">{dinero(totalConceptos(g))}</p></div>
+              <div><p className="uppercase">Total de la garantía</p><p>{dinero(totalConceptos(g))}</p></div>
             </div>
           </div>)}
           <button type="button" onClick={() => setForm((f) => ({ ...f, garantias: [...f.garantias, vaciaGarantia()] }))} className={`${boton}`}>＋ Añadir otra garantía / préstamo</button>
@@ -880,14 +880,14 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
       <Seccion titulo="4. Observaciones" ><textarea className={`${input} min-h-24 resize-y`} value={form.observaciones} onChange={(e) => setForm((f) => ({ ...f, observaciones: e.target.value }))} placeholder="Si se trata de un embargo u otra carga no hipotecaria, indica aquí qué carga debe cancelarse y cualquier detalle relevante. No se presupuestará gasto notarial para esas cargas." /></Seccion>
 
       <div className="sticky bottom-3 z-10 flex flex-col items-stretch justify-between gap-3 p-4 sm:flex-row sm:items-center">
-        <div><p className="uppercase">Importe total estimado</p><p className="">{dinero(form.garantias.reduce((s, g) => s + totalConceptos(g), 0))}</p></div>
+        <div><p className="uppercase">Importe total estimado</p><p>{dinero(form.garantias.reduce((s, g) => s + totalConceptos(g), 0))}</p></div>
         <div className="flex flex-wrap gap-2"><button type="button" onClick={nueva} className={`${boton}`}>Nueva / limpiar</button><button type="button" onClick={pdf} disabled={!form.id} className={`${boton}`}>Generar PDF</button><button type="button" onClick={() => abrirEmail(form)} disabled={!form.id} className={`${boton}`}>✉ Enviar por email</button><button type="submit" disabled={guardando} className={`${boton}`}>{guardando ? "Guardando…" : form.id ? "Guardar cambios" : "Guardar provisión"}</button></div>
       </div>
     </form>
 
     <Seccion titulo="Histórico de provisiones guardadas" detalle="Busca, recupera y modifica una provisión anterior o vuelve a generar su documento.">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row"><input className={`${input} mt-0 flex-1`} value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar por número, cliente, DNI/CIF o población…" /><button type="button" onClick={cargar} className={`${boton}`}>Actualizar</button></div>
-      {cargando ? <p role="status" aria-live="polite" className="py-8">Cargando histórico…</p> : filtrados.length === 0 ? <p className="py-8">Todavía no hay provisiones guardadas que coincidan con la búsqueda.</p> : <div className="overflow-x-auto"><table className="w-full min-w-[760px]"><thead><tr className="uppercase"><th className="px-3 py-3">Número / fecha</th><th className="px-3 py-3">Cliente</th><th className="px-3 py-3">Población</th><th className="px-3 py-3">Importe</th><th className="px-3 py-3">Acciones</th></tr></thead><tbody>{filtrados.map((it) => <tr key={it.id} className=""><td className="px-3 py-3"><p className="">{it.numero}</p><p className="">{it.fecha || "—"}</p></td><td className="px-3 py-3"><p className="">{it.cliente?.nombre || "—"}</p><p className="">{it.cliente?.nif || ""}</p></td><td className="px-3 py-3">{it.cliente?.poblacion || "—"}</td><td className="px-3 py-3 tabular-nums">{dinero(it.importe_total)}</td><td className="px-3 py-3"><div className="flex flex-col items-start gap-1"><button type="button" onClick={() => recuperar(it)} className="">Abrir / editar</button><button type="button" onClick={() => abrirEmail(it)} className="">Enviar por email</button></div></td></tr>)}</tbody></table></div>}
+      {cargando ? <p role="status" aria-live="polite" className="py-8">Cargando histórico…</p> : filtrados.length === 0 ? <p className="py-8">Todavía no hay provisiones guardadas que coincidan con la búsqueda.</p> : <div className="overflow-x-auto"><table className="w-full min-w-[760px]"><thead><tr className="uppercase"><th className="px-3 py-3">Número / fecha</th><th className="px-3 py-3">Cliente</th><th className="px-3 py-3">Población</th><th className="px-3 py-3">Importe</th><th className="px-3 py-3">Acciones</th></tr></thead><tbody>{filtrados.map((it) => <tr key={it.id}><td className="px-3 py-3"><p>{it.numero}</p><p>{it.fecha || "—"}</p></td><td className="px-3 py-3"><p>{it.cliente?.nombre || "—"}</p><p>{it.cliente?.nif || ""}</p></td><td className="px-3 py-3">{it.cliente?.poblacion || "—"}</td><td className="px-3 py-3 tabular-nums">{dinero(it.importe_total)}</td><td className="px-3 py-3"><div className="flex flex-col items-start gap-1"><button type="button" onClick={() => recuperar(it)}>Abrir / editar</button><button type="button" onClick={() => abrirEmail(it)}>Enviar por email</button></div></td></tr>)}</tbody></table></div>}
 
     </Seccion>
     {emailDraft && <div className="panel-modal-premium fixed inset-0 z-[120] flex items-center justify-center p-3 sm:p-6">
@@ -904,9 +904,9 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
           <label className={label}>Para · Email de la oficina de origen<input className={input} type="email" required value={emailDraft.destinatario} onChange={(e) => setEmailDraft((d) => ({ ...d, destinatario: e.target.value }))} /></label>
           <label className={label}>Asunto<input className={input} required maxLength={500} value={emailDraft.asunto} onChange={(e) => setEmailDraft((d) => ({ ...d, asunto: e.target.value }))} /></label>
           <label className={label}>Mensaje<textarea className={input + "min-h-56 resize-y"} required value={emailDraft.cuerpo} onChange={(e) => setEmailDraft((d) => ({ ...d, cuerpo: e.target.value }))} /></label>
-          {!emailDraft.smtp_configurado && <div role="status" className="flex items-start gap-3 p-3"><span className="">⚠️</span><div><p className="">Envío pendiente de configuración SMTP</p><p className="mt-1">La plantilla y el correo están preparados, pero todavía no se pueden enviar emails. Falta configurar el servicio SMTP en el backend. Cuando esté configurado, este botón permitirá realizar el envío.</p></div></div>}
-          <div className="flex items-center gap-3 p-3"><span className="">📎</span><div><p className="">PDF de la provisión</p><p className="">Se genera desde la provisión seleccionada y se adjunta al correo automáticamente.</p></div></div>
-          {emailDraft.historial?.length > 0 && <section className="p-3"><h3 className="mb-2">Últimos envíos</h3><div className="space-y-2">{emailDraft.historial.map((envio, i) => <div key={envio.creado_en || i} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2"><div><p className="">{envio.destinatario}</p><p className="">{envio.creado_en ? new Date(envio.creado_en).toLocaleString("es-ES") : "Fecha no disponible"}</p></div><span className={envio.estado === "enviado" ? "px-2 py-1" : "px-2 py-1"}>{envio.estado === "enviado" ? "Enviado" : "Error"}</span></div>)}</div></section>}
+          {!emailDraft.smtp_configurado && <div role="status" className="flex items-start gap-3 p-3"><span>⚠️</span><div><p>Envío pendiente de configuración SMTP</p><p className="mt-1">La plantilla y el correo están preparados, pero todavía no se pueden enviar emails. Falta configurar el servicio SMTP en el backend. Cuando esté configurado, este botón permitirá realizar el envío.</p></div></div>}
+          <div className="flex items-center gap-3 p-3"><span>📎</span><div><p>PDF de la provisión</p><p>Se genera desde la provisión seleccionada y se adjunta al correo automáticamente.</p></div></div>
+          {emailDraft.historial?.length > 0 && <section className="p-3"><h3 className="mb-2">Últimos envíos</h3><div className="space-y-2">{emailDraft.historial.map((envio, i) => <div key={envio.creado_en || i} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2"><div><p>{envio.destinatario}</p><p>{envio.creado_en ? new Date(envio.creado_en).toLocaleString("es-ES") : "Fecha no disponible"}</p></div><span className={envio.estado === "enviado" ? "px-2 py-1" : "px-2 py-1"}>{envio.estado === "enviado" ? "Enviado" : "Error"}</span></div>)}</div></section>}
           <div className="flex flex-wrap justify-end gap-2 pt-4">
             <button type="button" onClick={cerrarEmail} disabled={enviandoEmail} className={boton + ""}>Cancelar</button>
             <button type="submit" disabled={enviandoEmail || !emailDraft.smtp_configurado || !emailDraft.destinatario.trim() || !emailDraft.asunto.trim() || !emailDraft.cuerpo.trim()} className={boton + ""}>{enviandoEmail ? "Enviando…" : emailDraft.smtp_configurado ? "Enviar correo" : "SMTP pendiente"}</button>
