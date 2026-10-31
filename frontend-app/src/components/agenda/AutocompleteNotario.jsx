@@ -512,24 +512,22 @@ export default function AutocompleteNotario({
          ==================================================== */}
 
       <div
-        className={`
-          flex
-          items-center
-          gap-2
-          min-h-[42px]
-          bg-white
-          border
-          rounded-xl
-          px-3 py-2
-          shadow-sm
-          transition-all
+        className={`flex
+ items-center
+ gap-2
+ min-h-[42px]
+ 
+ 
+ 
+ px-3 py-2
+ 
+ 
 
-          ${
-            disabled
-              ? ""
-              : ""
-          }
-        `}
+ ${
+ disabled
+ ? ""
+ : ""
+ }`}
       >
 
         {/* AVATAR */}
@@ -843,21 +841,19 @@ export default function AutocompleteNotario({
                   >
 
                     <span
-                      className={`
-                        inline-flex
-                        items-center
-                        px-2
-                        py-0.5
-                        rounded-full
-                        text-[10px]
-                        font-semibold
+                      className={`inline-flex
+ items-center
+ px-2
+ py-0.5
+ 
+ 
+ 
 
-                        ${
-                          esVC
-                            ? ""
-                            : ""
-                        }
-                      `}
+ ${
+ esVC
+ ? ""
+ : ""
+ }`}
                     >
                       {vcLabel}
                     </span>
