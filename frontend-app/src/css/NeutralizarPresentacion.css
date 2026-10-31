@@ -2284,29 +2284,6 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
   font-size: var(--molsan-font-size-xs);
 }
 
-@media (max-width: 900px) {
-  .molsan-stat-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (max-width: 560px) {
-  .molsan-stat-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-  .molsan-stat-card {
-    min-height: 76px;
-    padding: 10px;
-    gap: 8px;
-  }
-  .molsan-stat-icon {
-    flex-basis: 32px;
-    width: 32px;
-    height: 32px;
-  }
-}
-
-
 .molsan-chat-header__name {
   color: var(--molsan-blue);
   font-size: var(--molsan-font-size-md);
@@ -6413,5 +6390,31 @@ body [role="dialog"]:not([data-molsan-style-exempt]) button:disabled {
 
   .ctn-portal-actions .ctn-portal-button {
     width: 100%;
+  }
+}
+
+/* Métricas: responsive al final de la hoja para que ninguna regla base
+   posterior vuelva a sobrescribir el número de columnas en móvil. */
+@media (max-width: 900px) {
+  .molsan-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .molsan-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .molsan-stat-card {
+    min-height: 76px;
+    padding: 10px;
+  }
+
+  .molsan-stat-icon {
+    flex-basis: 32px;
+    width: 32px;
+    height: 32px;
   }
 }
