@@ -108,3 +108,29 @@ Los colores de éxito, advertencia, error e información son semánticos y solo 
 - Sidebar y comportamiento funcional sin cambios.
 - Build de producción frontend correcto.
 - La validación visual por pantallas se documenta por separado; un deploy correcto no equivale a una auditoría visual completa.
+
+## Fase 2 — Lenguaje visual compartido (primera aplicación)
+
+### Componentes de superficie ya normalizados
+- `.erp-card`: tarjeta blanca con borde corporativo, radio común y elevación discreta.
+- `.molsan-panel`: panel secundario azul hielo para agrupar filtros y controles relacionados.
+- `.molsan-table-wrap`: contenedor de tabla blanco, con cabecera de sección y pie de paginación coherentes.
+- `.molsan-table`: cabecera azul hielo, filas blancas, separadores suaves y hover neutro.
+- `.molsan-btn`: botones primarios y secundarios con alturas, radios, foco y estados compartidos.
+- Campos `.molsan-field__control`: controles blancos sobre paneles secundarios, con foco visible.
+
+### Pilotos de aplicación
+- Dashboard: tarjetas KPI, indicadores de actividad, paneles de resumen y firmas.
+- CTN: filtros, resumen de resultados, tabla, acciones y paginación.
+- Los pilotos solo reciben reglas de presentación; no se modifican consultas, datos, permisos, navegación ni comportamiento funcional.
+- Los estilos se centralizan en `src/css/NeutralizarPresentacion.css`; no crear hojas visuales específicas por módulo.
+
+### Criterios de revisión de la Fase 2
+1. La tarjeta se distingue del fondo sin sombras fuertes ni grandes bloques de color.
+2. Los paneles secundarios usan azul hielo y contienen controles blancos.
+3. Los encabezados de sección mantienen una jerarquía tipográfica común.
+4. Las tablas son legibles, con densidad equilibrada y cabeceras azul hielo.
+5. Los botones mantienen una jerarquía clara entre acción primaria y secundaria.
+6. La composición se adapta a tablet y móvil sin desbordamiento horizontal de página.
+7. Sidebar, API, datos, permisos y lógica permanecen intactos.
+
