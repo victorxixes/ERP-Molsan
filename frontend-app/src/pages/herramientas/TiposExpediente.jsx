@@ -112,16 +112,16 @@ export default function TiposExpediente() {
       </header>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="p-4"><p className="">Tipos registrados</p><p className="mt-1">{total}</p></div>
-        <div className="p-4"><p className="">Tipos activos</p><p className="mt-1">{activos}</p></div>
-        <div className="p-4"><p className="">Altas disponibles</p><p className="mt-1">Crear, editar y eliminar tipos</p></div>
+        <div className="p-4"><p>Tipos registrados</p><p className="mt-1">{total}</p></div>
+        <div className="p-4"><p>Tipos activos</p><p className="mt-1">{activos}</p></div>
+        <div className="p-4"><p>Altas disponibles</p><p className="mt-1">Crear, editar y eliminar tipos</p></div>
       </section>
 
       {(error || mensaje) && <div role="status" className={`px-4 py-3 ${error ? "" : ""}`}>{error || mensaje}</div>}
 
       {mostrarModal && <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4" onMouseDown={(e) => { if (e.target === e.currentTarget) cerrarModal(); }}><div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="tipo-expediente-modal-title" className="max-h-[90vh] w-full max-w-3xl overflow-y-auto p-5 sm:p-6">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
-          <div><h2 id="tipo-expediente-modal-title" className="">{editando ? "Editar tipo de expediente" : "Nuevo tipo de expediente"}</h2><p className="mt-1">Los identificadores históricos se conservan; las nuevas altas reciben un ID automático.</p></div>
+          <div><h2 id="tipo-expediente-modal-title">{editando ? "Editar tipo de expediente" : "Nuevo tipo de expediente"}</h2><p className="mt-1">Los identificadores históricos se conservan; las nuevas altas reciben un ID automático.</p></div>
           <button type="button" onClick={cerrarModal} disabled={guardando} aria-label="Cerrar ventana" className="px-4 py-2">Cerrar ✕</button>
         </div>
         <form onSubmit={guardar} className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-12">
@@ -142,7 +142,7 @@ export default function TiposExpediente() {
 
       <section className="overflow-hidden">
         <div className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
-          <div><h2 className="">Tabla de tipos de expediente</h2><p className="mt-1">{tiposFiltrados.length} registros mostrados</p></div>
+          <div><h2>Tabla de tipos de expediente</h2><p className="mt-1">{tiposFiltrados.length} registros mostrados</p></div>
           <div className="flex flex-col gap-2 sm:flex-row">
             <input className={CAMPO} value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar por ID o descripción" />
             <select className={CAMPO} value={grupoFiltro} onChange={(e) => setGrupoFiltro(e.target.value)}><option value="todos">Todos los grupos</option><option>Tipos de expediente</option><option>Provisiones fuera circuito GTG</option></select>
@@ -152,8 +152,8 @@ export default function TiposExpediente() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[760px]">
             <thead className="uppercase"><tr><th className="px-5 py-3">ID</th><th className="px-5 py-3">Descripción</th><th className="px-5 py-3">Grupo</th><th className="px-5 py-3">Estado</th><th className="px-5 py-3">Acciones</th></tr></thead>
-            <tbody className="">
-              {cargando ? <tr><td colSpan="5" className="px-5 py-10">Cargando catálogo…</td></tr> : tiposFiltrados.length === 0 ? <tr><td colSpan="5" className="px-5 py-10">No hay tipos que coincidan con la búsqueda.</td></tr> : tiposFiltrados.map((tipo) => <tr key={tipo.id} className="">
+            <tbody>
+              {cargando ? <tr><td colSpan="5" className="px-5 py-10">Cargando catálogo…</td></tr> : tiposFiltrados.length === 0 ? <tr><td colSpan="5" className="px-5 py-10">No hay tipos que coincidan con la búsqueda.</td></tr> : tiposFiltrados.map((tipo) => <tr key={tipo.id}>
                 <td className="px-5 py-3">{tipo.id}</td><td className="px-5 py-3">{tipo.nombre}</td><td className="px-5 py-3">{tipo.grupo}</td><td className="px-5 py-3"><span className={`px-2.5 py-1 ${tipo.activo ? "" : ""}`}>{tipo.activo ? "Activo" : "Inactivo"}</span></td><td className="px-5 py-3"><div className="flex justify-end gap-2"><button type="button" onClick={() => abrirEditar(tipo)} className="px-3 py-1.5">Editar</button><button type="button" onClick={() => eliminar(tipo)} className="px-3 py-1.5">Eliminar</button></div></td>
               </tr>)}
             </tbody>
