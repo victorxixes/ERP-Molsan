@@ -3,6 +3,7 @@ import axios from "../../api/axios";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import { listarNotarios } from "../../api/notarios";
 import { useAuthStore } from "../../store/authStore";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 const inputClass = "w-full px-3 py-2.5";
 const nuevaUbicacion = () => ({ tipo: "Otros", busqueda: "", referencia_id: "", direccion: "", codigo_postal: "", poblacion: "", provincia: "", contacto: "", telefono: "", mapa: "" });
@@ -206,17 +207,12 @@ export default function MensajeriaSolicitudes() {
     finally { setGuardando(false); }
   };
 
-  return <main className="w-full min-w-0 space-y-5">
-    <header className="relative overflow-hidden p-6 sm:p-7">
-      <div className="absolute inset-x-0 top-0 h-1" />
-      <p className="uppercase">MOLSAN ERP</p>
-      <h1 className="mt-2">Mensajería</h1>
-      <p className="mt-2 max-w-3xl">Solicita envíos y recogidas, consulta el estado de tus encargos y mantén la comunicación con la responsable desde aquí.</p>
-    </header>
+  return <div className="erp-page w-full min-w-0 space-y-5">
+    <MolsanPageHeader mark="ME" title="Mensajería" description="Solicita envíos y recogidas, consulta el estado de tus encargos y mantén la comunicación con la responsable." />
     {error && <div role="alert" className="p-3">{error}</div>}
     {aviso && <div role="status" className="p-3">{aviso}</div>}
     <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-      <form onSubmit={crearSolicitud} className="space-y-4 p-5">
+      <form onSubmit={crearSolicitud} className="erp-card molsan-form space-y-4 p-5">
         <div><h2>Nuevo encargo de mensajería</h2><p className="mt-1">Selecciona el origen y el destino. Las ubicaciones de notaría y registro se completan desde sus catálogos.</p></div>
         <SelectorUbicacion titulo="Origen / recogida" valor={origen} onChange={setOrigen} notarias={notarias} registros={registros} municipios={municipios} />
         <SelectorUbicacion titulo="Destino / entrega" valor={destino} onChange={setDestino} notarias={notarias} registros={registros} municipios={municipios} />
@@ -227,21 +223,21 @@ export default function MensajeriaSolicitudes() {
         </div>
         <label className="block uppercase">Servicio<select className={inputClass + "mt-1.5"} value={form.servicio_id} onChange={(e) => setForm({ ...form, servicio_id: e.target.value })}><option value="">Sin especificar</option>{servicios.map((s) => <option key={s.id} value={s.id}>{s.nombre}</option>)}</select></label>
         <label className="block uppercase">Instrucciones<textarea className={inputClass + "mt-1.5"} rows="3" value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} placeholder="Contenido, horario, indicaciones de recogida o entrega…" /></label>
-        <button type="submit" disabled={guardando} className="w-full px-5 py-3">{guardando ? "Creando encargo…" : "Crear encargo"}</button>
+        <button type="submit" disabled={guardando} className="molsan-btn molsan-btn--primary w-full px-5 py-3">{guardando ? "Creando encargo…" : "Crear encargo"}</button>
       </form>
-      <section>
+      <section className="erp-card overflow-hidden">
         <div className="p-5"><h2>Mis encargos</h2><p className="mt-1">El sistema genera automáticamente un ID único para cada encargo.</p></div>
         {cargando ? <p className="p-5">Cargando encargos…</p> : !solicitudes.length ? <p className="p-8">Todavía no has creado encargos de mensajería.</p> : <div>{solicitudes.map((s) => {
           const origenFicha = desglosarUbicacion(s.origen);
           const destinoFicha = desglosarUbicacion(s.destino);
-          return <button type="button" key={s.id} onClick={() => abrirSeguimiento(s)} className="group block w-full p-4 sm:p-5">
+          return <button type="button" key={s.id} onClick={() => abrirSeguimiento(s)} className="molsan-request-card group block w-full p-4 sm:p-5">
             <div className="p-4 sm:p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div><p className="uppercase">Encargo de mensajería</p><h3 className="mt-1">{s.referencia || `Encargo #${s.id}`}</h3></div>
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 `}><span className="h-1.5 w-1.5" />{s.estado || "Pendiente"}</span>
               </div>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div className="p-3.5">
+                <div className="molsan-panel p-3.5">
                   <p className="uppercase">Origen · Recogida</p>
                   <p className="mt-1.5">{origenFicha.nombre || origenFicha.tipo}</p>
                   {origenFicha.nombre && <p className="mt-1">{origenFicha.tipo}</p>}
@@ -254,7 +250,7 @@ export default function MensajeriaSolicitudes() {
                   <p className="mt-2">{destinoFicha.direccion}</p>
                 </div>
               </div>
-              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 px-3.5 py-2.5">
+              <div className="molsan-panel mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 px-3.5 py-2.5">
                 <span><span>Fecha solicitada:</span> {s.fecha_solicitada ? new Date(s.fecha_solicitada).toLocaleDateString("es-ES") : "Sin fecha"}</span>
                 <span><span>Prioridad:</span> {s.prioridad || "Normal"}</span>
               </div>
@@ -266,6 +262,6 @@ export default function MensajeriaSolicitudes() {
         })}</div>}
       </section>
     </section>
-    {seleccionada && <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-4" role="presentation"><section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Seguimiento del encargo" className="my-auto max-h-[90vh] w-full max-w-2xl overflow-y-auto p-5 sm:p-7"><div className="flex items-start justify-between gap-3"><div><p className="uppercase">Seguimiento del encargo</p><h2 className="mt-1">ID encargo: {seleccionada.referencia}</h2><p className="mt-1">{seleccionada.origen} → {seleccionada.destino}</p></div><button type="button" onClick={cerrarSeguimiento} disabled={guardando} className="px-3 py-1.5">Cerrar</button></div><div className="mt-4 p-4"><b>Estado:</b> <span className={`ml-2 px-2.5 py-1 `}>{seleccionada.estado}</span><p className="mt-3"><b>Seguimiento del proveedor:</b> {seleccionada.estado_proveedor || "Todavía sin actualización"}</p>{seleccionada.incidencia && <p className="mt-2"><b>Incidencia:</b> {seleccionada.incidencia}</p>}<p className="mt-2"><b>Instrucciones:</b> {seleccionada.descripcion || "—"}</p></div><h3 className="mt-5">Comunicación con Mensajería Gestión</h3><div className="mt-3 max-h-56 space-y-2 overflow-y-auto p-3">{comunicaciones.map((m) => <div key={m.id} className={`p-3 ${m.autor_tipo === "empleado" ? "" : ""}`}><div className="flex justify-between gap-2"><b>{m.autor_nombre}</b><span>{m.creado_en ? new Date(m.creado_en).toLocaleString("es-ES") : ""}</span></div><p className="mt-1 whitespace-pre-wrap">{m.mensaje}</p></div>)}{!comunicaciones.length && <p>Todavía no hay mensajes. Puedes escribir a la responsable debajo.</p>}</div><form onSubmit={enviarMensaje} className="mt-3 space-y-2"><textarea className={inputClass} rows="3" value={mensajeChat} onChange={(e) => setMensajeChat(e.target.value)} placeholder="Escribe una consulta o aporta información adicional…" required /><button type="submit" disabled={guardando || !mensajeChat.trim()} className="px-4 py-2.5">Enviar mensaje</button></form></section></div>}
-  </main>;
+    {seleccionada && <div className="molsan-modal-overlay fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-4" role="presentation"><section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Seguimiento del encargo" className="molsan-modal__panel my-auto max-h-[90vh] w-full max-w-2xl overflow-y-auto p-5 sm:p-7"><div className="molsan-modal__header flex items-start justify-between gap-3"><div><p className="uppercase">Seguimiento del encargo</p><h2 className="mt-1">ID encargo: {seleccionada.referencia}</h2><p className="mt-1">{seleccionada.origen} → {seleccionada.destino}</p></div><button type="button" onClick={cerrarSeguimiento} disabled={guardando} className="molsan-btn molsan-btn--secondary px-3 py-1.5">Cerrar</button></div><div className="molsan-modal__body mt-4 p-4"><b>Estado:</b> <span className={`ml-2 px-2.5 py-1 `}>{seleccionada.estado}</span><p className="mt-3"><b>Seguimiento del proveedor:</b> {seleccionada.estado_proveedor || "Todavía sin actualización"}</p>{seleccionada.incidencia && <p className="mt-2"><b>Incidencia:</b> {seleccionada.incidencia}</p>}<p className="mt-2"><b>Instrucciones:</b> {seleccionada.descripcion || "—"}</p></div><h3 className="mt-5">Comunicación con Mensajería Gestión</h3><div className="mt-3 max-h-56 space-y-2 overflow-y-auto p-3">{comunicaciones.map((m) => <div key={m.id} className={`p-3 ${m.autor_tipo === "empleado" ? "" : ""}`}><div className="flex justify-between gap-2"><b>{m.autor_nombre}</b><span>{m.creado_en ? new Date(m.creado_en).toLocaleString("es-ES") : ""}</span></div><p className="mt-1 whitespace-pre-wrap">{m.mensaje}</p></div>)}{!comunicaciones.length && <p>Todavía no hay mensajes. Puedes escribir a la responsable debajo.</p>}</div><form onSubmit={enviarMensaje} className="molsan-form mt-3 space-y-2"><textarea className={inputClass} rows="3" value={mensajeChat} onChange={(e) => setMensajeChat(e.target.value)} placeholder="Escribe una consulta o aporta información adicional…" required /><button type="submit" disabled={guardando || !mensajeChat.trim()} className="molsan-btn molsan-btn--primary px-4 py-2.5">Enviar mensaje</button></form></section></div>}
+  </div>;
 }
