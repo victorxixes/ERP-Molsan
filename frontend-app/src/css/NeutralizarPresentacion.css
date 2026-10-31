@@ -679,7 +679,8 @@ textarea:focus-visible {
   background-color: rgba(13, 37, 54, .48);
   backdrop-filter: blur(3px);
 }
-.expediente-operativo-modal > div:not(.expediente-operativo-modal-panel) {
+.expediente-operativo-modal > div:not(.expediente-operativo-modal-panel),
+.expediente-operativo-modal > section[role="dialog"] {
   background: var(--molsan-white);
   border: 1px solid var(--molsan-border);
   border-radius: 16px;
@@ -725,7 +726,7 @@ textarea:focus-visible {
 
 /* Geometría única de página: el padding pertenece al contenedor del Layout,
    no a cada módulo. Evita desplazamientos y dobles márgenes respecto al Dashboard. */
-.erp-page {
+.erp-main-inner .erp-page {
   display: block;
   width: 100%;
   min-width: 0;
@@ -733,44 +734,13 @@ textarea:focus-visible {
   margin: 0 !important;
   padding: 0 !important;
 }
-.erp-page > .molsan-page-header,
-.erp-page > .erp-page-header,
-.erp-page > header:first-of-type {
+.erp-main-inner .erp-page > .molsan-page-header,
+.erp-main-inner .erp-page > .erp-page-header,
+.erp-main-inner .erp-page > header:first-of-type {
   margin: 0 0 18px !important;
 }
-.erp-page > header:first-of-type:not(.molsan-page-header) {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 12px;
-  min-width: 0;
-  min-height: 62px;
-  padding: 0 0 10px !important;
-  color: var(--molsan-blue);
-  background: transparent !important;
-  border: 0 !important;
-  border-bottom: 2px solid var(--molsan-ice-strong) !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-}
-.erp-page > header:first-of-type:not(.molsan-page-header) h1 {
-  margin: 0;
-  color: var(--molsan-blue);
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.2;
-}
-.erp-page > header:first-of-type:not(.molsan-page-header) p {
-  margin-top: 3px;
-  color: var(--molsan-muted);
-  font-size: 12px;
-  line-height: 1.35;
-}
-.erp-page > header:first-of-type:not(.molsan-page-header) > div:first-child:has(+ div) {
-  flex: 0 0 auto;
-}
-@media (max-width: 720px) {
-  .erp-page > header:first-of-type:not(.molsan-page-header) { align-items: flex-start; }
+.erp-main-inner .erp-main-inner @media (max-width: 720px) {
+  .erp-main-inner .erp-page > header:first-of-type:not(.molsan-page-header) { align-items: flex-start; }
 }
 
 /* Cabeceras de subpantallas: misma coordenada y jerarquía que la cabecera principal. */

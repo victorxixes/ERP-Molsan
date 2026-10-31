@@ -27,7 +27,7 @@ export default function Layout() {
       <NotificacionesToast />
       <main className="erp-main-content relative min-h-[calc(100vh-70px)]">
         <div className="erp-main-inner w-full px-4 py-6 lg:px-6">
-          <div className={`w-full${rutaCancelaGest ? "cg-unified-workspace" : ""}`}>
+          <div className={`erp-route-content w-full${rutaCancelaGest ? " cg-unified-workspace" : ""}`}>
             <Outlet />
           </div>
         </div>
