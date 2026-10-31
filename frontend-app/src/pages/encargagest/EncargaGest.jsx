@@ -21,14 +21,6 @@ const FILTROS_BANDEJA = [
   { valor: "GRUPO_INCIDENCIAS", texto: "Incidencias" },
 ];
 
-const ESTILO_ESTADO = {
-  EN_PROCESO: "border-amber-200 bg-amber-50 text-amber-800",
-  RECIBIDO: "border-sky-200 bg-sky-50 text-sky-700",
-  AUTORIZADO: "border-indigo-200 bg-indigo-50 text-indigo-700",
-  INCIDENCIA: "border-rose-200 bg-rose-50 text-rose-700",
-  FIRMADO: "border-emerald-200 bg-emerald-50 text-emerald-700",
-};
-
 const TEXTO_ESTADO = { EN_PROCESO: "Recibido", RECIBIDO: "Recibido", AUTORIZADO: "Autorizado", INCIDENCIA: "Incidencia", FIRMADO: "Firma pendiente de integración", EN_REVISION: "Recibido", DOCUMENTACION_PENDIENTE: "Recibido", EN_GESTION: "Recibido", RESUELTO: "Firma pendiente de integración", CERRADO: "Firma pendiente de integración" };
 
 const NUEVO_ENCARGO = {
@@ -94,7 +86,7 @@ function nombreArchivoTamano(bytes) {
 
 function EtiquetaEstado({ estado }) {
   return (
-    <span className={"inline-flex items-center px-2.5 py-1" + (ESTILO_ESTADO[estado] || ESTILO_ESTADO.CERRADO)}>
+    <span className={"inline-flex items-center px-2.5 py-1" + }>
       {TEXTO_ESTADO[estado] || estado || "Sin estado"}
     </span>
   );
