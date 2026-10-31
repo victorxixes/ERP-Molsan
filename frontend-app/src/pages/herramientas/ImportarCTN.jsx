@@ -22,8 +22,6 @@ export default function ImportarCTN() {
 
       <MolsanPageHeader mark="CT" title="Importar CTN" description="Importa información desde un fichero Excel al catálogo de notarías." />
 
-          PANEL IMPORTACIÓN
-      ===================================================== */}
 
       <div
         className="erp-card max-w-3xl
