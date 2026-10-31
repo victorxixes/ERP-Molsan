@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PortalLogin from "../../components/PortalLogin";
@@ -726,16 +727,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="w-full apoderagest notargest-workspace-premium">
             <div className="notargest ng-content">
-    <header className=" molsan-page-header ng-hero-apoderagest">
-      <div className=" molsan-page-header__identity">
-        <div className=" ng-marca-notargest" aria-label="NotarGest">NG</div>
-        <div>
-          <h1 className="molsan-page-header__title">NotarGest</h1>
-          <p className="molsan-page-header__description">Centro de gestión notarial, firmas y seguimiento registral.</p>
-        </div>
-      </div>
-
-    </header>
+    <MolsanPageHeader mark="NG" title="NotarGest" description="Centro de gestión notarial, firmas y seguimiento registral." />
     <nav className="ng-modulos-grid" aria-label="Secciones de NotarGest">
       {[
         { key: "inicio", label: "Dashboard", icon: "⌂", count: null },

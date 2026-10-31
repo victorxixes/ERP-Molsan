@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
@@ -873,17 +874,7 @@ export default function ApoderaGest() {
       <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="w-full apoderagest">
-      <header className=" molsan-page-header">
-        <div className=" molsan-page-header__identity">
-          <div>AG</div>
-          <div>
-            
-            <h1 className="molsan-page-header__title">ApoderaGest</h1>
-            <p className="molsan-page-header__description">Centro de gestión de encargos, firmas y actividad del apoderado.</p>
-          </div>
-        </div>
-
-      </header>
+      <MolsanPageHeader mark="AG" title="ApoderaGest" description="Centro de gestión de encargos, firmas y actividad del apoderado." />
 
       {error ? (
         <div role="alert">

@@ -8,6 +8,12 @@
   --molsan-blue: #064675;
   --molsan-blue-deep: #04385d;
   --molsan-blue-soft: #eaf3f9;
+  --molsan-panel: #f2f7fb;
+  --molsan-table-head: #eaf2f8;
+  --molsan-row-height: 44px;
+  --molsan-control-height: 38px;
+  --molsan-radius-card: 12px;
+  --molsan-radius-control: 9px;
   --molsan-ice: #f2f7fb;
   --molsan-ice-strong: #eaf2f8;
   --molsan-white: #ffffff;
@@ -313,4 +319,109 @@ textarea:focus-visible {
 .selector-modulos-premium button.group:hover > div:last-of-type > span:last-child {
   transform: translateX(4px);
   color: var(--molsan-blue);
+}
+
+
+/* ==========================================================
+   MOLSAN ERP PREMIUM 2027 · Primitives corporativas
+   Densidad equilibrada: lectura cómoda y uso eficiente del espacio.
+   ========================================================== */
+
+.molsan-page-header {
+  box-sizing: border-box;
+  min-height: 62px;
+  padding: 0 0 10px;
+  gap: 12px;
+}
+
+.molsan-page-header__identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.molsan-page-header__mark {
+  display: grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--molsan-blue);
+  color: var(--molsan-white);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
+.molsan-page-header__content { min-width: 0; }
+
+.molsan-page-header__title {
+  margin: 0;
+  color: var(--molsan-blue);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.molsan-page-header__description {
+  margin: 3px 0 0;
+  color: var(--molsan-muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.molsan-card {
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow);
+}
+
+.molsan-panel {
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+}
+
+.molsan-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--molsan-text);
+}
+
+.molsan-table thead th {
+  min-height: var(--molsan-row-height);
+  padding: 11px 12px;
+  background: var(--molsan-table-head);
+  color: var(--molsan-blue);
+  font-weight: 700;
+  text-align: left;
+}
+
+.molsan-table tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--molsan-border);
+  vertical-align: middle;
+}
+
+.molsan-table tbody tr:hover { background: var(--molsan-blue-soft); }
+
+.molsan-field {
+  min-height: var(--molsan-control-height);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  background: var(--molsan-white);
+  color: var(--molsan-text);
+}
+
+.molsan-field:focus-visible {
+  border-color: var(--molsan-blue);
+  outline: 2px solid rgba(6, 70, 117, .14);
+  outline-offset: 1px;
+}
+
+@media (max-width: 720px) {
+  .molsan-page-header { min-height: 56px; }
 }

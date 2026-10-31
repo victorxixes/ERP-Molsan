@@ -3,6 +3,7 @@
 // Resumen operativo
 // ============================================================
 
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useDashboard } from "../../hooks/useDashboard";
 import { useNavigate } from "react-router-dom";
 
@@ -260,17 +261,7 @@ export default function Dashboard() {
   return (
     <div className="erp-page w-full dashboard-cancelagest molsan-page" aria-busy={loading}>
       {/* CABECERA UNIFICADA CON APODERAGEST Y NOTARGEST */}
-      <header className="ag-hero molsan-page-header dashboard-header">
-        <div className="ag-hero-identidad molsan-page-header__identity">
-          <div className="ag-marca cg-marca-cancelagest" aria-label="CancelaGest">CG</div>
-          <div>
-            <div className="ag-eyebrow">MOLSAN ERP</div>
-            <h1>Dashboard</h1>
-            <p>Resumen operativo de expedientes, actividad del circuito y firmas realizadas.</p>
-          </div>
-        </div>
-
-      </header>
+      <MolsanPageHeader mark="DB" title="Dashboard" description="Resumen operativo de expedientes, actividad del circuito y firmas realizadas." />
 
       {/* ERRORES DE CARGA */}
       {error && (
