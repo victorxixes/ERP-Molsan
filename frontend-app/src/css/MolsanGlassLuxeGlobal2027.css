@@ -355,3 +355,207 @@ body {
     border-radius: 17px !important;
   }
 }
+
+
+/* ============================================================
+   CABECERA CORPORATIVA ÚNICA · MODELO DASHBOARD
+   Aplicación transversal a páginas y módulos (no a paneles,
+   tablas, fichas modales ni cabeceras de impresión).
+   ============================================================ */
+.erp-main-inner :is(
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .herramienta-operativa-premium,
+  .herramientas-subpagina-premium,
+  .fichajes-premium-page,
+  .molsan-intranet-page,
+  .dashboard-cancelagest,
+  .cg-page,
+  .expedientes-page,
+  .ctn-listado-page,
+  .seguridad-subpagina-premium,
+  .seguridad-usuarios-premium,
+  .molsan-page
+) > header,
+.erp-main-inner :is(
+  .molsan-page-header,
+  .erp-page-header
+) {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: wrap !important;
+  gap: 20px !important;
+  min-width: 0 !important;
+  margin: 0 0 22px !important;
+  padding: 0 0 18px !important;
+  color: #17243a !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 1px solid #dce4ef !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  overflow: visible !important;
+}
+
+/* Retirar las antiguas bandas decorativas azules de las cabeceras. */
+.erp-main-inner :is(
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .herramienta-operativa-premium,
+  .herramientas-subpagina-premium,
+  .fichajes-premium-page,
+  .molsan-intranet-page
+) > header > .absolute.inset-x-0.top-0,
+.erp-main-inner :is(
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .herramienta-operativa-premium,
+  .herramientas-subpagina-premium,
+  .fichajes-premium-page,
+  .molsan-intranet-page
+) > header > div.absolute.inset-x-0.top-0 {
+  display: none !important;
+}
+
+/* Identidad visual alineada con Dashboard, conservando siglas e iconos propios. */
+.erp-main-inner :is(
+  .molsan-page-header__identity,
+  .ag-hero-identidad,
+  .cg-hero-identidad,
+  .ctn-listado-header-identidad
+) {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  min-width: 0 !important;
+}
+
+.erp-main-inner :is(
+  .molsan-page-header__mark,
+  .ag-marca,
+  .cg-marca-cancelagest,
+  .ctn-listado-header-icon
+) {
+  flex: 0 0 56px !important;
+  width: 56px !important;
+  height: 56px !important;
+  min-width: 56px !important;
+  border-radius: 15px !important;
+  box-shadow: 0 5px 14px rgba(35, 57, 94, .10) !important;
+}
+
+/* Jerarquía tipográfica única: sobrelínea, título y descripción. */
+.erp-main-inner :is(
+  .molsan-page-header__eyebrow,
+  .ag-eyebrow,
+  .cg-eyebrow,
+  .ctn-listado-header .eyebrow
+) {
+  margin: 0 0 4px !important;
+  color: #748198 !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  letter-spacing: .14em !important;
+  line-height: 1.4 !important;
+  text-transform: uppercase !important;
+}
+
+.erp-main-inner :is(
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .herramienta-operativa-premium,
+  .herramientas-subpagina-premium,
+  .fichajes-premium-page,
+  .molsan-intranet-page,
+  .dashboard-cancelagest,
+  .cg-page,
+  .expedientes-page,
+  .ctn-listado-page,
+  .seguridad-subpagina-premium,
+  .seguridad-usuarios-premium,
+  .molsan-page
+) > header h1,
+.erp-main-inner :is(.molsan-page-header,.erp-page-header) h1 {
+  margin: 0 !important;
+  color: #17243a !important;
+  font-size: clamp(24px, 2vw, 30px) !important;
+  font-weight: 780 !important;
+  letter-spacing: -.04em !important;
+  line-height: 1.15 !important;
+}
+
+.erp-main-inner :is(
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .herramienta-operativa-premium,
+  .herramientas-subpagina-premium,
+  .fichajes-premium-page,
+  .molsan-intranet-page,
+  .dashboard-cancelagest,
+  .cg-page,
+  .expedientes-page,
+  .ctn-listado-page,
+  .seguridad-subpagina-premium,
+  .seguridad-usuarios-premium,
+  .molsan-page
+) > header :is(p,.subtitle,.descripcion),
+.erp-main-inner :is(.molsan-page-header,.erp-page-header) p {
+  margin: 5px 0 0 !important;
+  color: #748198 !important;
+  font-size: 13px !important;
+  font-weight: 450 !important;
+  line-height: 1.5 !important;
+}
+
+/* Acciones de cabecera: alineadas y sin convertirlas en tarjetas. */
+.erp-main-inner :is(
+  .molsan-page-header__actions,
+  .ag-hero-acciones,
+  .cg-hero-acciones,
+  .erp-page-header-status
+) {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  flex-wrap: wrap !important;
+  gap: 9px !important;
+  min-width: 0 !important;
+  margin-left: auto !important;
+}
+
+@media (max-width: 700px) {
+  .erp-main-inner :is(
+    .catalogos-premium-page,
+    .utilidades-premium-page,
+    .herramienta-operativa-premium,
+    .herramientas-subpagina-premium,
+    .fichajes-premium-page,
+    .molsan-intranet-page,
+    .dashboard-cancelagest,
+    .cg-page,
+    .expedientes-page,
+    .ctn-listado-page,
+    .seguridad-subpagina-premium,
+    .seguridad-usuarios-premium,
+    .molsan-page
+  ) > header,
+  .erp-main-inner :is(.molsan-page-header,.erp-page-header) {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+    padding-bottom: 15px !important;
+  }
+  .erp-main-inner :is(
+    .molsan-page-header__actions,
+    .ag-hero-acciones,
+    .cg-hero-acciones,
+    .erp-page-header-status
+  ) {
+    width: 100% !important;
+    justify-content: flex-start !important;
+    margin-left: 0 !important;
+  }
+}
