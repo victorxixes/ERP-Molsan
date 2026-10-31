@@ -119,7 +119,7 @@ export default function TiposExpediente() {
         <div className="p-4"><p className="">Altas disponibles</p><p className="mt-1">Crear, editar y eliminar tipos</p></div>
       </section>
 
-      {(error || mensaje) && <div role="status" className={`rounded-xl border px-4 py-3 text-sm ${error ? "" : ""}`}>{error || mensaje}</div>}
+      {(error || mensaje) && <div role="status" className={`px-4 py-3 ${error ? "" : ""}`}>{error || mensaje}</div>}
 
       {mostrarModal && <div className="panel-modal-premium fixed inset-0 z-[1000] flex items-center justify-center p-4" onMouseDown={(e) => { if (e.target === e.currentTarget) cerrarModal(); }}><div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="tipo-expediente-modal-title" className="max-h-[90vh] w-full max-w-3xl overflow-y-auto p-5 sm:p-6">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
@@ -154,9 +154,9 @@ export default function TiposExpediente() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[760px]">
             <thead className="uppercase"><tr><th className="px-5 py-3">ID</th><th className="px-5 py-3">Descripción</th><th className="px-5 py-3">Grupo</th><th className="px-5 py-3">Estado</th><th className="px-5 py-3">Acciones</th></tr></thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="">
               {cargando ? <tr><td colSpan="5" className="px-5 py-10">Cargando catálogo…</td></tr> : tiposFiltrados.length === 0 ? <tr><td colSpan="5" className="px-5 py-10">No hay tipos que coincidan con la búsqueda.</td></tr> : tiposFiltrados.map((tipo) => <tr key={tipo.id} className="">
-                <td className="px-5 py-3">{tipo.id}</td><td className="px-5 py-3">{tipo.nombre}</td><td className="px-5 py-3">{tipo.grupo}</td><td className="px-5 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${tipo.activo ? "" : ""}`}>{tipo.activo ? "Activo" : "Inactivo"}</span></td><td className="px-5 py-3"><div className="flex justify-end gap-2"><button type="button" onClick={() => abrirEditar(tipo)} className="px-3 py-1.5">Editar</button><button type="button" onClick={() => eliminar(tipo)} className="px-3 py-1.5">Eliminar</button></div></td>
+                <td className="px-5 py-3">{tipo.id}</td><td className="px-5 py-3">{tipo.nombre}</td><td className="px-5 py-3">{tipo.grupo}</td><td className="px-5 py-3"><span className={`px-2.5 py-1 ${tipo.activo ? "" : ""}`}>{tipo.activo ? "Activo" : "Inactivo"}</span></td><td className="px-5 py-3"><div className="flex justify-end gap-2"><button type="button" onClick={() => abrirEditar(tipo)} className="px-3 py-1.5">Editar</button><button type="button" onClick={() => eliminar(tipo)} className="px-3 py-1.5">Eliminar</button></div></td>
               </tr>)}
             </tbody>
           </table>
