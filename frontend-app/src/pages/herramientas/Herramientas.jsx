@@ -16,55 +16,40 @@ import "../../css/ComponentesOperativosPremium.css";
 
 export default function Herramientas() {
   return (
-    <div className="herramientas-home-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6 animate-fadeIn">
+    <div className="herramientas-home-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6">
 
       {/* =====================================================
           CABECERA
       ===================================================== */}
 
       <div
-        className="
-          relative overflow-hidden
-          rounded-[24px]
-          border border-slate-200/80
-          bg-white/80
-          backdrop-blur-xl
-          shadow-[0_18px_50px_rgba(15,23,42,0.08)]
-          p-6 sm:p-7
-        "
+        className="relative overflow-hidden
+ 
+ 
+ 
+ 
+ 
+ p-6 sm:p-7"
       >
         <div
-          className="
-            absolute inset-x-0 top-0 h-px
-            bg-gradient-to-r
-            from-transparent
-            via-blue-400/60
-            to-transparent
-          "
+          className="absolute inset-x-0 top-0 h-px"
         />
 
         <div className="relative flex items-center gap-4">
 
           <div
-            className="
-              flex h-12 w-12 shrink-0
-              items-center justify-center
-              rounded-2xl
-              bg-blue-50
-              border border-blue-100
-              text-2xl
-              shadow-sm
-            "
+            className="flex h-12 w-12 shrink-0
+ items-center justify-center"
           >
             🛠️
           </div>
 
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-800">
+            <h1 className="">
               Herramientas
             </h1>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1">
               Herramientas y procesos auxiliares del sistema.
             </p>
           </div>
@@ -151,8 +136,8 @@ function Card({
 
         ${
           destacado
-            ? "border-blue-200/80 bg-blue-50/50"
-            : "border-slate-200/80"
+            ? ""
+            : ""
         }
       `}
     >
@@ -165,8 +150,8 @@ function Card({
           transition-opacity
           ${
             destacado
-              ? "bg-gradient-to-r from-transparent via-blue-500/70 to-transparent opacity-100"
-              : "bg-gradient-to-r from-transparent via-blue-400/40 to-transparent opacity-0 group-hover:opacity-100"
+              ? ""
+              : ""
           }
         `}
       />
@@ -186,8 +171,8 @@ function Card({
             group-hover:scale-105
             ${
               destacado
-                ? "bg-blue-100 border-blue-200 text-blue-700"
-                : "bg-slate-50 border-slate-200 text-slate-600"
+                ? ""
+                : ""
             }
           `}
         >
@@ -199,11 +184,11 @@ function Card({
 
         <div className="min-w-0 flex-1">
 
-          <h2 className="text-base font-semibold text-slate-800">
+          <h2 className="">
             {titulo}
           </h2>
 
-          <p className="mt-1.5 text-sm leading-5 text-slate-500">
+          <p className="mt-1.5">
             {descripcion}
           </p>
 
@@ -213,13 +198,7 @@ function Card({
         {/* FLECHA */}
 
         <div
-          className="
-            mt-1
-            text-slate-300
-            transition-all duration-300
-            group-hover:translate-x-1
-            group-hover:text-blue-500
-          "
+          className="mt-1"
         >
           →
         </div>
