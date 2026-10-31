@@ -10,6 +10,7 @@
   --molsan-blue-soft: #eaf3f9;
   --molsan-panel: #f2f7fb;
   --molsan-table-head: #eaf2f8;
+  --molsan-row-alt: #f8fbfd;
   --molsan-row-height: 44px;
   --molsan-control-height: 38px;
   --molsan-radius-card: 12px;
@@ -139,10 +140,13 @@ textarea:focus-visible {
   outline-offset: 2px;
 }
 
-/* Campos de edición con contraste y borde uniforme. */
+/* Campos de edición: una única base para páginas y portales. */
 .molsan-page input:not([type="checkbox"]):not([type="radio"]),
 .molsan-page select,
 .molsan-page textarea,
+.erp-main-inner main input:not([type="checkbox"]):not([type="radio"]),
+.erp-main-inner main select,
+.erp-main-inner main textarea,
 .apoderagest input:not([type="checkbox"]):not([type="radio"]),
 .apoderagest select,
 .apoderagest textarea,
@@ -174,68 +178,6 @@ textarea:focus-visible {
   box-shadow: 0 0 0 3px rgba(6, 70, 117, 0.10);
 }
 
-/* Tablas: cabecera azul hielo, títulos en azul corporativo y filas limpias. */
-.molsan-page table,
-.apoderagest table,
-.notargest table,
-.encargagest table {
-  border-collapse: separate;
-  border-spacing: 0;
-  color: var(--molsan-text);
-}
-
-.molsan-page thead th,
-.apoderagest thead th,
-.notargest thead th,
-.encargagest thead th {
-  color: var(--molsan-blue);
-  background: var(--molsan-ice-strong);
-  font-weight: 700;
-}
-
-.molsan-page tbody tr:nth-child(even),
-.apoderagest tbody tr:nth-child(even),
-.notargest tbody tr:nth-child(even),
-.encargagest tbody tr:nth-child(even) {
-  background: #f8fbfd;
-}
-
-.molsan-page tbody tr:hover,
-.apoderagest tbody tr:hover,
-.notargest tbody tr:hover,
-.encargagest tbody tr:hover {
-  background: var(--molsan-blue-soft);
-}
-
-/* Base transversal del área de trabajo: afecta al contenido, nunca al sidebar. */
-.erp-main-inner,
-.erp-main-inner > div,
-.erp-main-inner main,
-.apoderagest,
-.notargest,
-.encargagest {
-  color: var(--molsan-text);
-  background-color: var(--molsan-white);
-}
-
-/* Controles de formulario coherentes en todas las páginas del ERP. */
-.erp-main-inner main input:not([type="checkbox"]):not([type="radio"]),
-.erp-main-inner main select,
-.erp-main-inner main textarea,
-.apoderagest input:not([type="checkbox"]):not([type="radio"]),
-.apoderagest select,
-.apoderagest textarea,
-.notargest input:not([type="checkbox"]):not([type="radio"]),
-.notargest select,
-.notargest textarea,
-.encargagest input:not([type="checkbox"]):not([type="radio"]),
-.encargagest select,
-.encargagest textarea {
-  color: var(--molsan-text);
-  background-color: var(--molsan-white);
-  border-color: var(--molsan-border);
-}
-
 .erp-main-inner main input:focus-visible,
 .erp-main-inner main select:focus-visible,
 .erp-main-inner main textarea:focus-visible {
@@ -244,28 +186,52 @@ textarea:focus-visible {
   outline-offset: 1px;
 }
 
-/* Tablas del ERP: mismo tono de encabezado y mismo lenguaje de filas. */
+/* Tablas: cabeceras y estados de fila centralizados en tokens corporativos. */
+.molsan-page table,
 .erp-main-inner main table,
 .apoderagest table,
 .notargest table,
 .encargagest table {
+  border-collapse: separate;
+  border-spacing: 0;
   color: var(--molsan-text);
   border-color: var(--molsan-border);
 }
 
+.molsan-page thead th,
 .erp-main-inner main thead th,
 .apoderagest thead th,
 .notargest thead th,
 .encargagest thead th {
   color: var(--molsan-blue);
-  background-color: #EAF2F8;
+  background: var(--molsan-table-head);
+  font-weight: 700;
 }
 
+.molsan-page tbody tr:nth-child(even),
+.apoderagest tbody tr:nth-child(even),
+.notargest tbody tr:nth-child(even),
+.encargagest tbody tr:nth-child(even) {
+  background: var(--molsan-row-alt);
+}
+
+.molsan-page tbody tr:hover,
 .erp-main-inner main tbody tr:hover,
 .apoderagest tbody tr:hover,
 .notargest tbody tr:hover,
 .encargagest tbody tr:hover {
-  background-color: #EAF3F9;
+  background: var(--molsan-blue-soft);
+}
+
+/* Base transversal del área de trabajo; el sidebar conserva su diseño. */
+.erp-main-inner,
+.erp-main-inner > div,
+.erp-main-inner main,
+.apoderagest,
+.notargest,
+.encargagest {
+  color: var(--molsan-text);
+  background-color: var(--molsan-white);
 }
 
 /* Paneles de contenido compartidos. */
