@@ -73,7 +73,7 @@ export default function VistaDia({
       {/* TIMELINE */}
 
       <div
-        className="relative overflow-hidden"
+        className="agenda-day-timeline relative overflow-hidden"
       >
 
         {/* BLOQUES HORARIOS */}
@@ -81,7 +81,7 @@ export default function VistaDia({
         {HORAS.map((h) => (
           <div
             key={h}
-            className="h-12"
+            className="agenda-day-hour h-12"
             onDoubleClick={crearCitaDia}
           />
         ))}
@@ -93,7 +93,7 @@ export default function VistaDia({
           return (
             <div
               key={cita.id}
-              className="absolute left-4 right-4 mt-1 p-3 overflow-hidden"
+              className="agenda-appointment absolute left-4 right-4 mt-1 p-3 overflow-hidden"
               style={{ top: cita.top, height: cita.height }}
               onClick={() =>
                 onCitaClick(cita)
