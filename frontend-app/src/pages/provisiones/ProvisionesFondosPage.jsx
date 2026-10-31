@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios from "../../api/axios";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
@@ -709,6 +711,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
     } catch (e) { setError(e.response?.data?.detail || "No se pudo generar el PDF."); }
   };
   const filtrados = items.filter((x) => [x.numero, x.cliente?.nombre, x.cliente?.nif, x.cliente?.poblacion].some((v) => String(v || "").toLowerCase().includes(busqueda.toLowerCase())));
+  const ordenHistorico = useSortableData(filtrados);
   const abrirEmail = async (item = form) => {
     const id = item?.id;
     if (!id) { setError("Guarda la provisión antes de preparar el correo."); return; }
@@ -881,7 +884,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
 
     <Seccion titulo="Histórico de provisiones guardadas" detalle="Busca, recupera y modifica una provisión anterior o vuelve a generar su documento.">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row"><input className={`${input} mt-0 flex-1`} value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar por número, cliente, DNI/CIF o población…" /><button type="button" onClick={cargar} className={`${boton}`}>Actualizar</button></div>
-      {cargando ? <p role="status" aria-live="polite" className="py-8">Cargando histórico…</p> : filtrados.length === 0 ? <p className="py-8">Todavía no hay provisiones guardadas que coincidan con la búsqueda.</p> : <div className="overflow-x-auto"><table className="w-full min-w-[760px]"><thead><tr className="uppercase"><th className="px-3 py-3">Número / fecha</th><th className="px-3 py-3">Cliente</th><th className="px-3 py-3">Población</th><th className="px-3 py-3">Importe</th><th className="px-3 py-3">Acciones</th></tr></thead><tbody>{filtrados.map((it) => <tr key={it.id}><td className="px-3 py-3"><p>{it.numero}</p><p>{it.fecha || "—"}</p></td><td className="px-3 py-3"><p>{it.cliente?.nombre || "—"}</p><p>{it.cliente?.nif || ""}</p></td><td className="px-3 py-3">{it.cliente?.poblacion || "—"}</td><td className="px-3 py-3 tabular-nums">{dinero(it.importe_total)}</td><td className="px-3 py-3"><div className="flex flex-col items-start gap-1"><button type="button" onClick={() => recuperar(it)}>Abrir / editar</button><button type="button" onClick={() => abrirEmail(it)}>Enviar por email</button></div></td></tr>)}</tbody></table></div>}
+      {cargando ? <p role="status" aria-live="polite" className="py-8">Cargando histórico…</p> : filtrados.length === 0 ? <p className="py-8">Todavía no hay provisiones guardadas que coincidan con la búsqueda.</p> : <div className="overflow-x-auto"><table className="w-full min-w-[760px]"><thead><tr className="uppercase"><MolsanSortableTh label="Número / fecha" sortKey="numero" sortConfig={ordenHistorico.sortConfig} onSort={ordenHistorico.requestSort} className="px-3 py-3" /><MolsanSortableTh label="Cliente" sortKey="cliente.nombre" sortConfig={ordenHistorico.sortConfig} onSort={ordenHistorico.requestSort} className="px-3 py-3" /><MolsanSortableTh label="Población" sortKey="cliente.poblacion" sortConfig={ordenHistorico.sortConfig} onSort={ordenHistorico.requestSort} className="px-3 py-3" /><MolsanSortableTh label="Importe" sortKey="importe_total" sortConfig={ordenHistorico.sortConfig} onSort={ordenHistorico.requestSort} className="px-3 py-3" /><th className="px-3 py-3">Acciones</th></tr></thead><tbody>{ordenHistorico.items.map((it) => <tr key={it.id}><td className="px-3 py-3"><p>{it.numero}</p><p>{it.fecha || "—"}</p></td><td className="px-3 py-3"><p>{it.cliente?.nombre || "—"}</p><p>{it.cliente?.nif || ""}</p></td><td className="px-3 py-3">{it.cliente?.poblacion || "—"}</td><td className="px-3 py-3 tabular-nums">{dinero(it.importe_total)}</td><td className="px-3 py-3"><div className="flex flex-col items-start gap-1"><button type="button" onClick={() => recuperar(it)}>Abrir / editar</button><button type="button" onClick={() => abrirEmail(it)}>Enviar por email</button></div></td></tr>)}</tbody></table></div>}
 
     </Seccion>
     {emailDraft && <div className="molsan-modal-overlay panel-modal-premium fixed inset-0 z-[120] flex items-center justify-center overflow-y-auto p-3 sm:p-6">
