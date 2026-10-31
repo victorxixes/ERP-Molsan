@@ -27,17 +27,6 @@
   transition: none !important;
   animation: none !important;
 }
-:where(button,input,select,textarea):not(.mol-sidebar-premium *):not(.sidebar-perfil-modal-premium *) {
-  color: inherit !important;
-  font: inherit !important;
-  background-color: transparent !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-}
-:where(a):not(.mol-sidebar-premium *):not(.sidebar-perfil-modal-premium *) {
-  color: inherit !important;
-  text-decoration: none !important;
-}
 :where(*):not(.mol-sidebar-premium *):not(.sidebar-perfil-modal-premium *):focus-visible {
   outline: 2px solid currentColor !important;
   outline-offset: 2px;
