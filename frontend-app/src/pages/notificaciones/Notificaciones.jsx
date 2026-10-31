@@ -3,10 +3,10 @@ import { useNotificacionesStore } from "../../store/notificacionesStore";
 
 /**
  * ============================================================
- * NOTIFICACIONES — MOLSAN ERP PREMIUM 2027
+ * NOTIFICACIONES
  * ============================================================
  *
- * Tema claro Premium
+ * 
  * WebSocket realtime
  * Contador de notificaciones
  * Estados visuales por tipo
