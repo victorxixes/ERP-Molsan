@@ -92,12 +92,12 @@ export default function AccesosNotariales() {
   };
 
   return (
-    <main className=" " aria-busy={cargando}>
-      <header className=" ">
-        <div className=" ">
-          <div className=" " aria-hidden="true">🔐</div>
+    <main aria-busy={cargando}>
+      <header>
+        <div>
+          <div aria-hidden="true">🔐</div>
           <div className="min-w-0">
-            <p className=" ">MOLSAN ERP · UTILIDADES</p>
+            <p>MOLSAN ERP · UTILIDADES</p>
             <h1>Accesos notariales</h1>
             <p>Gestión centralizada y restringida de accesos a NotarGest y EncargaGest.</p>
           </div>
@@ -120,16 +120,16 @@ export default function AccesosNotariales() {
           <input className="molsan-field__control mt-2 w-full" value={busqueda} onChange={e => setBusqueda(e.target.value)} placeholder="Escribe para buscar una notaría…" />
         </label>
       </section>
-      {error && <div className=" " role="alert">{error}</div>}
-      <section className="">
-        <div className="">
-          <table className="">
+      {error && <div role="alert">{error}</div>}
+      <section>
+        <div>
+          <table>
             <thead><tr><th>Notario</th><th>NIF</th><th>Municipio</th><th>Provincia</th><th>Gestión</th></tr></thead>
             <tbody>
               {cargando ? <tr><td colSpan="5">Cargando notarías…</td></tr> :
                 resultados.length ? resultados.map(n => <tr key={n.id}>
                   <td><strong>{nombre(n) || "Notaría " + n.id}</strong></td><td>{n.nif || "—"}</td><td>{n.municipio || "—"}</td><td>{n.provincia || "—"}</td>
-                  <td><button type="button" className="  " onClick={() => abrir(n)}>Gestionar accesos</button></td>
+                  <td><button type="button" onClick={() => abrir(n)}>Gestionar accesos</button></td>
                 </tr>) : <tr><td colSpan="5">No se han encontrado notarías.</td></tr>}
             </tbody>
           </table>
