@@ -831,7 +831,7 @@ export default function SeguridadResumen({ empleadoId }) {
                           )
                         }
                         className="h-5 w-5
- accent-blue-600
+ 
  
  shrink-0"
                       />
@@ -953,7 +953,7 @@ export default function SeguridadResumen({ empleadoId }) {
                                       )
                                     }
                                     className="h-4 w-4
- accent-purple-600
+ 
  
  shrink-0"
                                   />
