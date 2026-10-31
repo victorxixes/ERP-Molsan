@@ -729,7 +729,7 @@ export default function SeguridadUsuarios() {
                                     : rol?.id != null ? `Rol #${rol.id}` : "Rol"}
                                 </span>
                               ))
-                            : <span className="erp-text-muted">Sin roles asignados</span>;
+                            : <span className="">Sin roles asignados</span>;
                         })()}
 
                       </div>
@@ -771,7 +771,7 @@ export default function SeguridadUsuarios() {
                                   ].filter(Boolean).join(" · ") || "Permiso"}
                                 </span>
                               ))
-                            : <span className="erp-text-muted">No hay permisos individuales devueltos por la ficha.</span>;
+                            : <span className="">No hay permisos individuales devueltos por la ficha.</span>;
                         })()}
 
                       </div>
