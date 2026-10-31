@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
 
-import "../../css/LayoutPortalesPremium.css";
 export default function PortalAccessTabs({ notariaId }) {
   const empleadoSesion = useAuthStore((state) => state.empleado);
   const nombreRol = String(
