@@ -896,7 +896,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         <div className="ag-hero-identidad molsan-page-header__identity">
           <div className="ag-marca eg-marca" aria-label="EncargaGest">EG</div>
           <div>
-            <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
+            <div className="ag-eyebrow">MOLSAN ERP</div>
             <h1 className="molsan-page-header__title">EncargaGest</h1>
             <p className="molsan-page-header__description">{modo === "externo" ? "Portal profesional · " + (sesion?.notaria_nombre || "Sesión externa") : "Recepción y seguimiento de encargos notariales externos."}</p>
           </div>
@@ -1186,7 +1186,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
             <header className="eg-modal-header">
               <div className="eg-modal-brand">EG</div>
               <div className="eg-modal-heading">
-                <span className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</span>
+                <span className="ag-eyebrow">MOLSAN ERP</span>
                 <h2>Registrar nuevo encargo</h2>
                 <p>Completa los datos de la solicitud y adjunta la documentación en su categoría.</p>
               </div>
