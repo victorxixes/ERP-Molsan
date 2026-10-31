@@ -8,7 +8,6 @@ import {
 } from "../../store/notificacionesStore";
 
 
-import "../../css/ComponentesOperativosPremium.css";
 
 /**
  * ============================================================
