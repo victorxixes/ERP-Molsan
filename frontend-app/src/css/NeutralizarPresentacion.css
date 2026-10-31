@@ -1478,53 +1478,11 @@ body {
   font-size: var(--molsan-font-size-xs);
 }
 
-/* Superficies modales compartidas: los módulos pueden adoptar esta clase
-   sin tener que reproducir cabecera, cuerpo y pie en su CSS particular. */
-.molsan-modal,
-.molsan-modal__panel,
-.erp-modal-panel {
-  box-sizing: border-box;
-  color: var(--molsan-text);
-  background: linear-gradient(150deg, #fff 0%, rgba(242, 247, 251, 0.98) 100%);
-  border: 1px solid var(--molsan-glass-border);
-  border-radius: var(--molsan-radius-modal);
-  box-shadow: var(--molsan-shadow-modal);
-}
-
-.molsan-modal__header,
-.molsan-modal__footer {
-  background: rgba(234, 242, 248, 0.76);
-  border-color: var(--molsan-border);
-}
-
-.molsan-modal__header {
-  border-bottom: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-modal) var(--molsan-radius-modal) 0 0;
-}
-
-.molsan-modal__footer {
-  border-top: 1px solid var(--molsan-border);
-  border-radius: 0 0 var(--molsan-radius-modal) var(--molsan-radius-modal);
-}
-
-.molsan-modal__body {
-  min-width: 0;
-  background: #fff;
-}
-
 @media (max-width: 720px) {
   .erp-route-content .molsan-btn {
     min-height: 40px;
   }
 
-  .molsan-modal,
-  .molsan-modal__panel,
-  .erp-modal-panel {
-    width: min(100%, calc(100vw - 20px));
-    max-height: calc(100dvh - 20px);
-    overflow: auto;
-    border-radius: 12px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1770,58 +1728,71 @@ body {
   backdrop-filter: blur(3px);
 }
 
-.molsan-modal,
-.molsan-modal__panel,
-.erp-modal-panel {
+/* Estructura común única para todos los modales. :where() permite que
+   cada ventana conserve sus dimensiones y distribuciones declaradas en JSX. */
+:where(.molsan-modal, .molsan-modal__panel, .erp-modal-panel) {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   min-width: 0;
-  max-width: min(960px, calc(100vw - 48px));
+  width: min(100%, 960px);
+  max-width: min(960px, calc(100vw - 32px));
   max-height: min(88dvh, 900px);
   overflow: hidden;
+  color: var(--molsan-text);
+  background: linear-gradient(150deg, #fff 0%, rgba(242, 247, 251, .98) 100%);
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-modal);
+  box-shadow: var(--molsan-shadow-modal);
 }
 
-.molsan-modal--sm { width: min(420px, calc(100vw - 32px)); }
-.molsan-modal--md { width: min(640px, calc(100vw - 32px)); }
-.molsan-modal--lg { width: min(860px, calc(100vw - 32px)); }
-.molsan-modal--xl { width: min(1100px, calc(100vw - 32px)); }
+.molsan-modal--sm { width: min(420px, calc(100vw - 32px)); max-width: min(420px, calc(100vw - 32px)); }
+.molsan-modal--md { width: min(640px, calc(100vw - 32px)); max-width: min(640px, calc(100vw - 32px)); }
+.molsan-modal--lg { width: min(860px, calc(100vw - 32px)); max-width: min(860px, calc(100vw - 32px)); }
+.molsan-modal--xl { width: min(1100px, calc(100vw - 32px)); max-width: min(1100px, calc(100vw - 32px)); }
+.molsan-modal--wide { width: min(1280px, calc(100vw - 32px)); max-width: min(1280px, calc(100vw - 32px)); }
 
-.molsan-modal__header,
-.molsan-modal__footer {
+:where(.molsan-modal__header, .molsan-modal__footer) {
   flex: 0 0 auto;
   padding: 14px 18px;
+  background: rgba(234, 242, 248, .76);
+  border-color: var(--molsan-border);
 }
 
-.molsan-modal__header {
+:where(.molsan-modal__header) {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  border-bottom: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-modal) var(--molsan-radius-modal) 0 0;
 }
 
-.molsan-modal__header h1,
-.molsan-modal__header h2,
-.molsan-modal__header h3 {
+:where(.molsan-modal__header h1, .molsan-modal__header h2, .molsan-modal__header h3) {
   margin: 0;
   color: var(--molsan-blue);
   font-size: var(--molsan-font-size-lg);
   font-weight: var(--molsan-font-weight-semibold);
 }
 
-.molsan-modal__body {
+:where(.molsan-modal__body) {
   flex: 1 1 auto;
+  min-width: 0;
   min-height: 0;
   overflow: auto;
   overscroll-behavior: contain;
   padding: 18px;
+  background: #fff;
 }
 
-.molsan-modal__footer {
+:where(.molsan-modal__footer) {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   flex-wrap: wrap;
   gap: 8px;
+  border-top: 1px solid var(--molsan-border);
+  border-radius: 0 0 var(--molsan-radius-modal) var(--molsan-radius-modal);
 }
 
 .molsan-modal__close {
@@ -1856,25 +1827,18 @@ body {
     align-items: flex-end;
   }
 
-  .molsan-modal,
-  .molsan-modal__panel,
-  .erp-modal-panel,
-  .molsan-modal--sm,
-  .molsan-modal--md,
-  .molsan-modal--lg,
-  .molsan-modal--xl {
+  :where(.molsan-modal, .molsan-modal__panel, .erp-modal-panel, .molsan-modal--sm, .molsan-modal--md, .molsan-modal--lg, .molsan-modal--xl, .molsan-modal--wide) {
     width: 100%;
     max-width: none;
     max-height: calc(100dvh - 20px);
     border-radius: 14px;
   }
 
-  .molsan-modal__header,
-  .molsan-modal__footer {
+  :where(.molsan-modal__header, .molsan-modal__footer) {
     padding: 12px 14px;
   }
 
-  .molsan-modal__body {
+  :where(.molsan-modal__body) {
     padding: 14px;
   }
 }
@@ -6559,86 +6523,5 @@ body [role="dialog"]:not([data-molsan-style-exempt]) button:disabled {
 
   .ctn-portal-actions .ctn-portal-button {
     width: 100%;
-  }
-}
-
-
-/* MOLSAN ERP PREMIUM 2027 · PORTALES REACT Y COMPONENTES COMPARTIDOS */
-/* Los portales se montan en document.body y quedan fuera de #root.
-   Estas reglas aplican la misma base visual sin depender del árbol de rutas. */
-.molsan-modal--wide {
-  width: min(1280px, calc(100vw - 32px));
-  max-width: min(1280px, calc(100vw - 32px));
-}
-
-.molsan-modal__panel :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea),
-.expediente-operativo-modal-panel :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
-  box-sizing: border-box;
-  min-height: var(--molsan-control-height);
-  color: var(--molsan-text);
-  background: #fff;
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-control);
-  font: inherit;
-  font-size: var(--molsan-font-size-sm);
-}
-
-.molsan-modal__panel :is(input, select, textarea):focus,
-.expediente-operativo-modal-panel :is(input, select, textarea):focus {
-  border-color: var(--molsan-blue);
-  outline: none;
-  box-shadow: var(--molsan-focus-ring);
-}
-
-.molsan-modal__panel :is(button, input, select, textarea):focus-visible,
-.expediente-operativo-modal-panel :is(button, input, select, textarea):focus-visible {
-  outline: 2px solid var(--molsan-blue);
-  outline-offset: 2px;
-}
-
-.molsan-modal__panel button,
-.expediente-operativo-modal-panel button {
-  border-radius: var(--molsan-radius-control);
-  transition: background-color var(--molsan-transition-fast),
-              border-color var(--molsan-transition-fast),
-              box-shadow var(--molsan-transition-fast),
-              color var(--molsan-transition-fast);
-}
-
-.molsan-modal__panel table,
-.expediente-operativo-modal-panel table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  color: var(--molsan-text);
-  font-size: var(--molsan-font-size-sm);
-}
-
-.molsan-modal__panel table thead th,
-.expediente-operativo-modal-panel table thead th {
-  color: var(--molsan-blue);
-  background: var(--molsan-table-head);
-  border-bottom: 1px solid var(--molsan-border);
-  font-size: var(--molsan-font-size-xs);
-  font-weight: var(--molsan-font-weight-semibold);
-  text-align: left;
-}
-
-.molsan-modal__panel table tbody td,
-.expediente-operativo-modal-panel table tbody td {
-  border-bottom: 1px solid var(--molsan-border);
-}
-
-@media (max-width: 720px) {
-  .molsan-modal__panel,
-  .molsan-modal--wide {
-    width: 100%;
-    max-width: none;
-    max-height: calc(100dvh - 20px);
-    border-radius: 14px;
-  }
-
-  .molsan-modal__body {
-    padding: 14px;
   }
 }

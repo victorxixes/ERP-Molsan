@@ -61,29 +61,6 @@
   overflow-wrap: anywhere;
 }
 
-/* Ventanas modales en portal: reglas independientes de #root. */
-:where(
-  .molsan-modal__panel,
-  .expediente-operativo-modal-panel,
-  .ctn-modal-dialog,
-  .modal-nueva-cita .molsan-modal__panel
-) {
-  color: var(--molsan-text, #18364b);
-  background: #fff;
-  border: 1px solid var(--molsan-border, #d8e4ec);
-  border-radius: var(--molsan-radius-modal, 16px);
-  box-shadow: var(--molsan-shadow-modal, 0 18px 48px rgba(6, 40, 65, .18));
-}
-
-:where(
-  .molsan-modal__header,
-  .ctn-modal-header
-) {
-  color: var(--molsan-blue, #064675);
-  background: var(--molsan-panel, #f2f7fb);
-  border-bottom: 1px solid var(--molsan-border, #d8e4ec);
-}
-
 /* Adaptación móvil transversal, sin alterar la distribución funcional de cada módulo. */
 @media (max-width: 720px) {
   .erp-route-content {
@@ -95,11 +72,6 @@
     gap: 10px;
   }
 
-  :where(.molsan-modal__panel, .expediente-operativo-modal-panel, .ctn-modal-dialog) {
-    max-width: calc(100vw - 20px);
-    max-height: calc(100dvh - 20px);
-    overflow-y: auto;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
