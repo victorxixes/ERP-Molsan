@@ -110,7 +110,7 @@ export default function Verifacti() {
           <p className="px-3 pb-2 pt-1 uppercase">Panel de control</p>
           <nav className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 xl:grid-cols-1">
             {SECCIONES.map((item) => <button key={item.id} type="button" onClick={() => cambiarSeccion(item.id)}
-              className={`flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold transition ${seccion === item.id ? "" : ""}`}>
+              className={`flex items-center gap-3 px-3 py-3 ${seccion === item.id ? "" : ""}`}>
               <span className="flex h-7 w-7 items-center justify-center">{item.icon}</span><span>{item.label}</span>
             </button>)}
           </nav>
@@ -188,7 +188,7 @@ export default function Verifacti() {
               <Campo label="Serie" value={operacion.serie} onChange={(v) => setOperacion({ ...operacion, serie: v })} />
               <Campo label="Número de factura" value={operacion.numero} onChange={(v) => setOperacion({ ...operacion, numero: v })} required />
               <Campo label="Fecha expedición" value={operacion.fecha} onChange={(v) => setOperacion({ ...operacion, fecha: v })} required placeholder="DD-MM-AAAA" />
-              <label className="flex items-center gap-3 px-3 py-3"><input type="checkbox" checked={operacion.rechazo} onChange={(e) => setOperacion({ ...operacion, rechazo: e.target.checked })} className="h-4 w-4 accent-blue-600" /> El registro fue rechazado previamente</label>
+              <label className="flex items-center gap-3 px-3 py-3"><input type="checkbox" checked={operacion.rechazo} onChange={(e) => setOperacion({ ...operacion, rechazo: e.target.checked })} className="h-4 w-4" /> El registro fue rechazado previamente</label>
               <div className="flex items-center"><button type="submit" className="w-full px-4 py-2.5">Preparar datos</button></div>
             </form>
             <p className="mt-4">La selección de la operación final y la validación legal de sus campos se realizarán antes de permitir cualquier envío real.</p>
@@ -214,7 +214,7 @@ export default function Verifacti() {
 
           {seccion === "api" && <Panel title="API de Verifacti" description="Listado de endpoints identificados en la documentación oficial.">
             <div className="mb-4 flex flex-wrap items-center gap-2"><span className="px-3 py-1.5">Base URL</span><code className="break-all px-3 py-1.5">https://api.verifacti.com</code></div>
-            <div className="overflow-x-auto"><table className="w-full min-w-[520px]"><thead><tr className="uppercase"><th className="px-3 py-3">Método</th><th className="px-3 py-3">Endpoint</th><th className="px-3 py-3">Uso</th></tr></thead><tbody>{ENDPOINTS.map(([method, endpoint, desc]) => <tr key={endpoint} className=""><td className="px-3 py-3"><span className={`rounded-md px-2 py-1 text-[10px] font-bold ${method === "GET" ? "" : method === "POST" ? "" : method === "PUT" ? "" : ""}`}>{method}</span></td><td className="px-3 py-3">{endpoint}</td><td className="px-3 py-3">{desc}</td></tr>)}</tbody></table></div>
+            <div className="overflow-x-auto"><table className="w-full min-w-[520px]"><thead><tr className="uppercase"><th className="px-3 py-3">Método</th><th className="px-3 py-3">Endpoint</th><th className="px-3 py-3">Uso</th></tr></thead><tbody>{ENDPOINTS.map(([method, endpoint, desc]) => <tr key={endpoint} className=""><td className="px-3 py-3"><span className={`px-2 py-1 ${method === "GET" ? "" : method === "POST" ? "" : method === "PUT" ? "" : ""}`}>{method}</span></td><td className="px-3 py-3">{endpoint}</td><td className="px-3 py-3">{desc}</td></tr>)}</tbody></table></div>
             <div className="mt-5 flex flex-wrap gap-3"><a href="https://www.verifacti.com/docs" target="_blank" rel="noreferrer" className="px-4 py-2.5">Abrir documentación completa ↗</a><a href="https://www.verifacti.com/" target="_blank" rel="noreferrer" className="px-4 py-2.5">Web de Verifacti ↗</a></div>
           </Panel>}
 
