@@ -484,34 +484,25 @@ export default function MonitorRealtime() {
 
     conectado: {
       texto: "WebSocket conectado",
-      punto: "bg-emerald-500",
-      fondo:
+fondo:
         "bg-emerald-50",
-      borde:
-        "border-emerald-200",
-      textoClase:
+textoClase:
         "text-emerald-700",
     },
 
     conectando: {
       texto: "Conectando WebSocket...",
-      punto: "bg-amber-500 animate-pulse",
-      fondo:
+fondo:
         "bg-amber-50",
-      borde:
-        "border-amber-200",
-      textoClase:
+textoClase:
         "text-amber-700",
     },
 
     desconectado: {
       texto: "WebSocket desconectado",
-      punto: "bg-red-500",
-      fondo:
+fondo:
         "bg-red-50",
-      borde:
-        "border-red-200",
-      textoClase:
+textoClase:
         "text-red-700",
     },
 
@@ -619,16 +610,16 @@ export default function MonitorRealtime() {
  
  
  
- ${estadoActual.fondo}
- ${estadoActual.borde}
- ${estadoActual.textoClase}`}
+ 
+ 
+ `}
         >
 
           <span
             className={`w-2
  h-2
  
- ${estadoActual.punto}`}
+ `}
           />
 
           {estadoActual.texto}
