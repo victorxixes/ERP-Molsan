@@ -2173,7 +2173,7 @@ const permisosDisponibles =
  w-full
  w-[min(96vw,1600px)]
  max-w-7xl
- max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-3rem)]
+ ${preservarEstilosSidebar ? "max-h-[94vh]" : "max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-3rem)]"}
  flex-col
  overflow-hidden ${preservarEstilosSidebar ? "" : "molsan-modal__panel"}`}
         onClick={(
