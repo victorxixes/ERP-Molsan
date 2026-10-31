@@ -2517,3 +2517,62 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
   border-color: var(--molsan-blue);
   box-shadow: inset 0 0 0 1px rgba(6,70,117,.12);
 }
+
+
+/* Burbujas de Mensajes y tarjetas de solicitudes. */
+.molsan-message-bubble {
+  border: 1px solid var(--molsan-border);
+  border-radius: 14px 14px 14px 4px;
+  color: var(--molsan-text);
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(6,70,117,.035);
+  overflow-wrap: anywhere;
+}
+.molsan-message-bubble.is-own {
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border-color: rgba(6,70,117,.18);
+  border-radius: 14px 14px 4px 14px;
+}
+.molsan-message-time {
+  color: var(--molsan-muted);
+  font-size: 10px;
+  text-align: right;
+}
+.molsan-chat-header__presence.is-offline {
+  background: #9aa9b5;
+  box-shadow: none;
+}
+.molsan-chat-header__presence.is-online {
+  background: #2f8b61;
+}
+.molsan-request-card {
+  display: block;
+  text-align: left;
+  color: var(--molsan-text);
+  background: #fff;
+  border-bottom: 1px solid var(--molsan-border);
+  transition: background var(--molsan-transition-fast);
+}
+.molsan-request-card:hover {
+  background: var(--molsan-panel);
+}
+.molsan-summary-card {
+  min-width: 0;
+  padding: 15px;
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+.molsan-summary-card p:first-child {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+.molsan-summary-card p:last-child {
+  margin-top: 7px;
+  color: var(--molsan-blue);
+  font-size: 22px;
+  font-weight: var(--molsan-font-weight-bold);
+}
