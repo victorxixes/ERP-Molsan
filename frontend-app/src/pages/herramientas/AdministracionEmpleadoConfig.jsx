@@ -122,7 +122,7 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
                   const cargo = empleado.cargo_nombre || empleado.cargo || empleado.puesto || "—";
                   const activo = empleado.activo !== false;
                   return (
-                    <tr key={empleado.id} className={`border-b border-slate-200 last:border-b-0 transition-colors hover:bg-blue-50/60 ${indice % 2 === 0 ? "" : ""}`}>
+                    <tr key={empleado.id} className={`${indice % 2 === 0 ? "" : ""}`}>
                       <td className="px-4 py-3">{empleado.id}</td>
                       <td className="px-4 py-3">
                         <div className="">{nombre}</div>
@@ -132,7 +132,7 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
                       <td className="px-4 py-3">{departamento}</td>
                       <td className="px-4 py-3">{cargo}</td>
                       <td className="px-4 py-3">
-                        <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${activo ? "" : ""}`}>
+                        <span className={`inline-flex items-center px-2.5 py-1 ${activo ? "" : ""}`}>
                           {activo ? "Activo" : "Inactivo"}
                         </span>
                       </td>
