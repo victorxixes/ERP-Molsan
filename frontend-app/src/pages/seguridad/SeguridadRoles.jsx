@@ -92,17 +92,15 @@ function Chip({
 
   return (
     <span
-      className={`
-        inline-flex
-        items-center
-        rounded-full
-        border
-        px-2.5
-        py-1
-        text-[11px]
-        font-semibold
-        ${estilos[tone] || estilos.neutral}
-      `}
+      className={`inline-flex
+ items-center
+ 
+ 
+ px-2.5
+ py-1
+ 
+ 
+ ${estilos[tone] || estilos.neutral}`}
     >
       {children}
     </span>
@@ -899,13 +897,11 @@ export default function SeguridadRoles() {
                           }
                         >
                           <span
-                            className={`
-                              mr-1.5
-                              h-1.5
-                              w-1.5
-                              rounded-full
-                              ${estado.punto}
-                            `}
+                            className={`mr-1.5
+ h-1.5
+ w-1.5
+ 
+ ${estado.punto}`}
                           />
                           {estado.texto}
                         </Chip>
@@ -1096,17 +1092,15 @@ export default function SeguridadRoles() {
                                   </div>
 
                                   <span
-                                    className={`
-                                      h-2
-                                      w-2
-                                      shrink-0
-                                      rounded-full
-                                      ${
-                                        empleado.activo
-                                          ? ""
-                                          : ""
-                                      }
-                                    `}
+                                    className={`h-2
+ w-2
+ shrink-0
+ 
+ ${
+ empleado.activo
+ ? ""
+ : ""
+ }`}
                                   />
 
                                 </div>
