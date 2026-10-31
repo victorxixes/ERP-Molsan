@@ -1858,74 +1858,17 @@ body {
    heredado. Sidebar expresamente excluido.
 ========================================================== */
 
-/* Formularios: normalización de controles existentes sin alterar
-   su estructura, validaciones, nombres ni comportamiento. */
-#root main form:not([data-unstyled="true"]) label {
+/* Etiquetas de formularios: una única regla para páginas y diálogos accesibles. */
+#root main form:not([data-unstyled="true"]) label,
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) label {
   color: var(--molsan-text);
   font-size: var(--molsan-font-size-sm);
   font-weight: var(--molsan-font-weight-medium);
 }
-#root main form input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
-#root main form select,
-#root main form textarea,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form select,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form textarea {
-  box-sizing: border-box;
-  min-height: var(--molsan-control-height);
-  color: var(--molsan-text);
-  background-color: #fff;
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-control);
-  font: inherit;
-  font-size: var(--molsan-font-size-sm);
-  transition: border-color var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast);
-}
-#root main form input:focus,
-#root main form select:focus,
-#root main form textarea:focus,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form input:focus,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form select:focus,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form textarea:focus {
-  border-color: var(--molsan-blue);
-  outline: none;
-  box-shadow: var(--molsan-focus-ring);
-}
-#root main form input:disabled,
-#root main form select:disabled,
-#root main form textarea:disabled,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form input:disabled,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form select:disabled,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form textarea:disabled {
-  color: var(--molsan-muted);
-  background: var(--molsan-panel);
-  cursor: not-allowed;
-}
-
-/* Botones de trabajo: identidad única y jerarquía discreta.
-   Se preservan colores semánticos de estados y botones de Sidebar. */
-#root main button:not([data-unstyled="true"]),
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) button:not([data-unstyled="true"]) {
-  border-radius: var(--molsan-radius-control);
-  transition: background-color var(--molsan-transition-fast),
-              border-color var(--molsan-transition-fast),
-              box-shadow var(--molsan-transition-fast),
-              color var(--molsan-transition-fast);
-}
-#root main button:focus-visible,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) button:focus-visible {
-  outline: none;
-  box-shadow: var(--molsan-focus-ring);
-}
-#root main button:disabled,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) button:disabled {
-  cursor: not-allowed;
-}
 
 /* Tablas heredadas: superficie, cabecera, separadores y lectura
    homogéneos. No se añade ordenación visual ficticia. */
-#root main table,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table {
+#root main table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
@@ -1933,8 +1876,7 @@ body {
   font-size: var(--molsan-font-size-sm);
   font-variant-numeric: tabular-nums;
 }
-#root main table thead th,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table thead th {
+#root main table thead th {
   color: var(--molsan-blue);
   background: var(--molsan-table-head);
   border-bottom: 1px solid var(--molsan-border);
@@ -1944,22 +1886,18 @@ body {
   text-align: left;
   vertical-align: middle;
 }
-#root main table tbody td,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table tbody td {
+#root main table tbody td {
   border-bottom: 1px solid rgba(216,228,236,.78);
   vertical-align: middle;
 }
-#root main table tbody tr,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table tbody tr {
+#root main table tbody tr {
   background: #fff;
   transition: background-color var(--molsan-transition-fast);
 }
-#root main table tbody tr:hover,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table tbody tr:hover {
+#root main table tbody tr:hover {
   background: rgba(242,247,251,.78);
 }
-#root main table tbody tr:last-child td,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table tbody tr:last-child td {
+#root main table tbody tr:last-child td {
   border-bottom-color: transparent;
 }
 
@@ -2010,32 +1948,6 @@ body {
   overflow-wrap: anywhere;
 }
 
-@media (max-width: 720px) {
-  #root main form input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
-  #root main form select,
-  #root main form textarea,
-  #root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
-  #root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form select,
-  #root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form textarea {
-    max-width: 100%;
-  }
-  #root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) {
-    max-width: calc(100vw - 20px);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  #root main form input,
-  #root main form select,
-  #root main form textarea,
-  #root main button,
-  #root main table tbody tr,
-  #root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) button,
-  #root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table tbody tr {
-    transition: none;
-  }
-}
-
 /* ==========================================================
    FASE 2 · NORMALIZACIÓN GLOBAL FINAL DE CONTROLES
    Se aplica a todas las áreas main del ERP y a diálogos accesibles,
@@ -2047,6 +1959,7 @@ body {
 #root main :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not([type="color"]), select, textarea),
 body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not([type="color"]), select, textarea) {
   box-sizing: border-box;
+  min-height: var(--molsan-control-height);
   max-width: 100%;
   color: var(--molsan-text);
   background-color: #fff;
@@ -2079,8 +1992,8 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
 
 /* Botones operativos: misma geometría, foco y respuesta sin borrar
    variantes funcionales (primario, secundario, éxito, aviso o peligro). */
-#root main button,
-body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) button {
+#root main button:not([data-unstyled="true"]),
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) button:not([data-unstyled="true"]) {
   font-family: inherit;
   border-radius: var(--molsan-radius-control);
   transition: background-color var(--molsan-transition-fast),
