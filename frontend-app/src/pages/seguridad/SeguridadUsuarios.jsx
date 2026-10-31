@@ -429,7 +429,7 @@ export default function SeguridadUsuarios() {
 
                     <div className="flex flex-wrap items-center gap-2 mb-1">
 
-                      <h2 className="">
+                      <h2>
                         {empleadoBasicoSeguro.nombre}{" "}
                         {empleadoBasicoSeguro.apellidos}
                       </h2>
@@ -450,12 +450,12 @@ export default function SeguridadUsuarios() {
 
                     <div className="mb-3">
                       Usuario:{" "}
-                      <strong className="">
+                      <strong>
                         {empleadoBasicoSeguro.usuario}
                       </strong>
                       {" · "}
                       ID:{" "}
-                      <strong className="">
+                      <strong>
                         {empleadoBasicoSeguro.id}
                       </strong>
                     </div>
@@ -487,7 +487,7 @@ export default function SeguridadUsuarios() {
                       )}
 
                       <div className="flex flex-wrap items-center gap-2 px-3 py-2">
-                        <span className="">
+                        <span>
                           Colaborador de ApoderaGest
                         </span>
                         <span className={empleadoBasicoSeguro.es_colaborador ? "erp-badge erp-badge-success" : "erp-badge erp-badge-neutral"}>
@@ -729,7 +729,7 @@ export default function SeguridadUsuarios() {
                                     : rol?.id != null ? `Rol #${rol.id}` : "Rol"}
                                 </span>
                               ))
-                            : <span className="">Sin roles asignados</span>;
+                            : <span>Sin roles asignados</span>;
                         })()}
 
                       </div>
@@ -771,7 +771,7 @@ export default function SeguridadUsuarios() {
                                   ].filter(Boolean).join(" · ") || "Permiso"}
                                 </span>
                               ))
-                            : <span className="">No hay permisos individuales devueltos por la ficha.</span>;
+                            : <span>No hay permisos individuales devueltos por la ficha.</span>;
                         })()}
 
                       </div>
@@ -965,7 +965,7 @@ export default function SeguridadUsuarios() {
 
                           <div className="min-w-0">
 
-                            <div className="">
+                            <div>
                               {typeof item.accion === "string"
                                 ? item.accion
                                 : "Acción"}
@@ -1053,7 +1053,7 @@ export default function SeguridadUsuarios() {
 
                           <div className="min-w-0">
 
-                            <div className="">
+                            <div>
                               {typeof log.tipo === "string"
                                 ? log.tipo
                                 : "Log"}
@@ -1144,7 +1144,7 @@ export default function SeguridadUsuarios() {
                     return (
                       <div key={rol.id ?? rol.nombre} className="p-4 flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <div className="">{rol.nombre}</div>
+                          <div>{rol.nombre}</div>
                           <p className="mt-1">{typeof rol.descripcion === "string" && rol.descripcion ? rol.descripcion : "Perfil de acceso de ERP-Molsan."}</p>
                           {asignado && <span className="mt-2 inline-flex erp-badge erp-badge-success">Asignado actualmente</span>}
                         </div>
@@ -1156,7 +1156,7 @@ export default function SeguridadUsuarios() {
                   })}
                 </div>
                 {rolesSeguros.length === 0 && <div className="erp-empty-inline">No hay roles disponibles para asignar.</div>}
-                <p className="">Los permisos específicos por módulo se configuran en la pestaña Permisos. La asignación de rol no sustituye las comprobaciones de permisos del backend.</p>
+                <p>Los permisos específicos por módulo se configuran en la pestaña Permisos. La asignación de rol no sustituye las comprobaciones de permisos del backend.</p>
               </div>
             </div>
           )}
@@ -1177,11 +1177,11 @@ export default function SeguridadUsuarios() {
                       <div key={item.id ?? `${item.fecha}-${item.accion}-${index}`} className="erp-activity-item">
                         <div className="flex flex-wrap items-start justify-between gap-2">
                           <div className="min-w-0">
-                            <div className="">{item.accion || item.evento || "Evento de seguridad"}</div>
+                            <div>{item.accion || item.evento || "Evento de seguridad"}</div>
                             <p className="mt-1 break-words">{item.descripcion || item.detalle || "Sin descripción adicional"}</p>
                             {item.modulo && <span className="mt-2 inline-flex erp-badge erp-badge-neutral">{item.modulo}</span>}
                           </div>
-                          <span className="">{item.fecha || "Fecha no disponible"}</span>
+                          <span>{item.fecha || "Fecha no disponible"}</span>
                         </div>
                       </div>
                     ))}
