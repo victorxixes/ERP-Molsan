@@ -5,7 +5,7 @@ from datetime import date, datetime
 from email.message import EmailMessage
 import os
 import smtplib
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 from io import BytesIO
 from pathlib import Path
 from uuid import uuid4
@@ -59,7 +59,7 @@ def _dinero(valor: object) -> Decimal:
     if valor is None or valor == "":
         return Decimal("0.00")
     try:
-        numero = Decimal(str(valor)).quantize(Decimal("0.01"))
+        numero = Decimal(str(valor)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
     except Exception as exc:
         raise HTTPException(status_code=422, detail=f"Importe no válido: {valor!r}.") from exc
     if not numero.is_finite() or numero < 0:
