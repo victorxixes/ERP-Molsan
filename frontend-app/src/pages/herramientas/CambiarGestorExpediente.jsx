@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios from "../../api/axios";
 
 export default function CambiarGestorExpediente() {
@@ -56,21 +57,12 @@ export default function CambiarGestorExpediente() {
   }
 
   return (
-    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden p-6">
-        <div className="absolute inset-x-0 top-0 h-1" />
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center">🔁</div>
-          <div className="min-w-0 flex-1">
-            <h1>Cambiar gestor de expediente</h1>
-            <p className="mt-1">Busca el expediente y reasígnalo manualmente. El cambio quedará registrado en el historial de gestores.</p>
-          </div>
-          <Link to="/herramientas/utilidades" className="px-4 py-2">← Volver a Utilidades</Link>
-        </div>
-      </header>
+    <div className="erp-page min-w-0 space-y-6">
+      <MolsanPageHeader mark="GE" title="Cambiar gestor de expediente" description="Busca el expediente y reasígnalo manualmente. El cambio quedará registrado en el historial de gestores." />
+      <div className="flex justify-end"><Link to="/herramientas/utilidades" className="molsan-btn molsan-btn--secondary">← Volver a Utilidades</Link></div>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.85fr)]">
-        <form onSubmit={consultar} className="p-6">
+        <form onSubmit={consultar} className="erp-card molsan-form p-6">
           <h2>1. Buscar expediente</h2>
           <p className="mt-1">Introduce el número exactamente como aparece en la ficha del expediente.</p>
           <label className="mt-5 block" htmlFor="numero-expediente">Número de expediente</label>
@@ -86,7 +78,7 @@ export default function CambiarGestorExpediente() {
           </div>}
         </form>
 
-        <form onSubmit={guardar} className="p-6">
+        <form onSubmit={guardar} className="erp-card molsan-form p-6">
           <h2>2. Seleccionar nuevo gestor</h2>
           <p className="mt-1">La reasignación afecta al gestor responsable del expediente; no cambia el apoderado ni el notario.</p>
           <label className="mt-5 block" htmlFor="gestor-destino">Gestor de destino</label>
