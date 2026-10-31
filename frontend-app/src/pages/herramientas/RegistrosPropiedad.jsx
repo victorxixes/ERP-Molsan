@@ -1662,8 +1662,6 @@ export default function RegistrosPropiedad() {
         <button type="button" className="molsan-btn molsan-btn--primary" onClick={abrirNuevo}>＋ Nuevo registro</button>
       </div>
 
-          MENSAJE
-      ===================================================== */}
 
       {mensaje && (
 
