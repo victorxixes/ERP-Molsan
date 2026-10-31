@@ -64,12 +64,12 @@ export default function CambiosActividadAbsis() {
     <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <header className="relative overflow-hidden p-6">
         <div className="absolute inset-x-0 top-0 h-1" />
-        <Link to="/herramientas/utilidades" className="">← Volver a Utilidades</Link>
+        <Link to="/herramientas/utilidades">← Volver a Utilidades</Link>
         <div className="mt-3 flex flex-wrap items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center">🔀</div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="">Cambios de actividad ABSIS</h1>
+              <h1>Cambios de actividad ABSIS</h1>
               <span className="px-2.5 py-1 uppercase">Demostración · datos ficticios</span>
             </div>
             <p className="mt-2 max-w-4xl">Busca un expediente, selecciona la actividad de destino y registra la solicitud. La conexión y la confirmación de ABSIS se implementarán más adelante por informática.</p>
@@ -78,7 +78,7 @@ export default function CambiosActividadAbsis() {
       </header>
 
       <section className="p-5 sm:p-6">
-        <h2 className="">1. Buscar expediente</h2>
+        <h2>1. Buscar expediente</h2>
         <p className="mt-1">Busca por número de expediente, solicitante, NIF o contrato. Los resultados que aparecen ahora son de ejemplo.</p>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row">
           <input value={busqueda} onChange={(e) => { setBusqueda(e.target.value); setSeleccionado(null); setActividadDeseada(""); setMensaje(""); setError(""); }} placeholder="Escribe el número de expediente, solicitante, NIF o contrato…" className="min-w-0 flex-1 px-4 py-3" />
@@ -88,7 +88,7 @@ export default function CambiosActividadAbsis() {
           <div className="mt-4 overflow-x-auto">
             <table className="w-full min-w-[620px]">
               <thead className="uppercase"><tr><th className="px-4 py-3">Expediente</th><th className="px-4 py-3">Solicitante</th><th className="px-4 py-3">Contrato</th><th className="px-4 py-3">Actividad actual</th><th className="px-4 py-3">Acción</th></tr></thead>
-              <tbody>{resultados.map((item) => <tr key={item.expediente} className=""><td className="px-4 py-3">{item.expediente}</td><td className="px-4 py-3">{item.solicitante}</td><td className="px-4 py-3">{item.contrato}</td><td className="px-4 py-3">{item.actividad}</td><td className="px-4 py-3"><button type="button" onClick={() => seleccionar(item)} className="px-3 py-2">Seleccionar</button></td></tr>)}</tbody>
+              <tbody>{resultados.map((item) => <tr key={item.expediente}><td className="px-4 py-3">{item.expediente}</td><td className="px-4 py-3">{item.solicitante}</td><td className="px-4 py-3">{item.contrato}</td><td className="px-4 py-3">{item.actividad}</td><td className="px-4 py-3"><button type="button" onClick={() => seleccionar(item)} className="px-3 py-2">Seleccionar</button></td></tr>)}</tbody>
             </table>
           </div>
         )}
@@ -98,7 +98,7 @@ export default function CambiosActividadAbsis() {
       {seleccionado && (
         <section className="overflow-hidden">
           <div className="p-5">
-            <h2 className="">2. Revisar y solicitar cambio de actividad</h2>
+            <h2>2. Revisar y solicitar cambio de actividad</h2>
             <p className="mt-1">Revisa los datos del expediente y selecciona la nueva actividad antes de enviar la solicitud de demostración.</p>
           </div>
           <div className="overflow-x-auto">
