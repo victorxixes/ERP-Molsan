@@ -201,14 +201,12 @@ function Toast({
       ================================================== */}
 
       <div
-        className={`
-          absolute
-          left-0
-          top-0
-          bottom-0
-          w-[3px]
-          ${configuracion.color}
-        `}
+        className={`absolute
+ left-0
+ top-0
+ bottom-0
+ w-[3px]
+ ${configuracion.color}`}
       />
 
 
