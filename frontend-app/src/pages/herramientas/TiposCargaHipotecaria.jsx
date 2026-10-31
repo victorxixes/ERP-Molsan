@@ -579,99 +579,12 @@ export default function TiposCargaHipotecaria() {
 
   return (
     <div
-      className="herramientas-subpagina-premium
- erp-page
- space-y-5"
+      className="herramientas-subpagina-premium erp-page min-w-0 space-y-5"
     >
 
-      {/* ====================================================
-          CABECERA
-      ==================================================== */}
+      <MolsanPageHeader mark="CH" title="Tipos de carga hipotecaria" description="Catálogo de tipos de carga hipotecaria utilizados en los expedientes." />
+      <div className="molsan-filter-bar flex justify-end p-3"><button type="button" onClick={abrirNuevo} className="molsan-btn molsan-btn--primary">＋ Nuevo tipo de carga</button></div>
 
-      <section
-        className="erp-card
- max-w-[1700px]
- mx-auto
- p-5"
-      >
-
-        <div
-          className="flex
- flex-col
- lg:flex-row
- lg:items-center
- lg:justify-between
- gap-4"
-        >
-
-          <div>
-
-            <div
-              className="flex
- items-center
- gap-3"
-            >
-
-              <div
-                className="w-11
- h-11
- 
- 
- 
- 
- flex
- items-center
- justify-center"
-              >
-                🏠
-              </div>
-
-              <div>
-
-                <h1
-                 
-                >
-                  Tipos de Carga Hipotecaria
-                </h1>
-
-                <p
-                  className="mt-0.5"
-                >
-                  Catálogo de tipos de carga hipotecaria
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <button
-            type="button"
-            onClick={abrirNuevo}
-            className="inline-flex
- items-center
- justify-center
- gap-2
- 
- px-4
- py-2.5"
-          >
-            <span>
-              ＋
-            </span>
-
-            Nuevo tipo de carga
-
-          </button>
-
-        </div>
-
-      </section>
-
-
-      {/* ====================================================
           MENSAJES
       ==================================================== */}
 
