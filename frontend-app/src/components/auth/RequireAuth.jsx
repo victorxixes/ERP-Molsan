@@ -28,7 +28,7 @@ export default function RequireAuth({ children }) {
             className="w-12 h-12"
           />
 
-          <p className="">
+          <p>
             Cargando sesión…
           </p>
         </div>
