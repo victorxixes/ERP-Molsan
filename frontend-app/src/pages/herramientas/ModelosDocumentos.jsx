@@ -146,7 +146,7 @@ function FacturaLayoutDesigner({ datosMolsan = {} }) {
     setGuardando(true); setError(""); setMensaje("");
     try {
       const { data } = await axios.put("/utilidades/factura-plantilla", {
-        color: "#174A7E", titulo: "FACTURA", subtitulo: "Honorarios de gestoría",
+        color: "#064675", titulo: "FACTURA", subtitulo: "Honorarios de gestoría",
         mostrarAvisoAEAT: true, mostrarObservaciones: false, mostrarLogo: true,
         densidad: "normal", posiciones,
       });
