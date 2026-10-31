@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
-import "../../css/HerramientasPremium.css";
 
 export default function CatalogoFichajes() {
   const [tipos, setTipos] = useState([]);
@@ -26,12 +25,12 @@ export default function CatalogoFichajes() {
     } catch (e) { setError(e?.response?.data?.detail || "No se pudo guardar el tipo de ausencia."); }
     finally { setGuardando(false); }
   };
-  return <main className="catalogos-premium-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+  return <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
     <header className="relative overflow-hidden p-6 sm:p-7">
       <div className="absolute inset-x-0 top-0 h-1" />
       <p className="uppercase">MOLSAN ERP · CATÁLOGOS</p>
       <h1 className="mt-2">Fichajes · Tipos de ausencia</h1>
-      <p className="mt-2">Mantén los motivos disponibles en Fichaje Molsan y define si requieren justificante.</p>
+      <p className="mt-2">Mantén los motivos disponibles en Fichajes y define si requieren justificante.</p>
     </header>
     {error && <div role="alert" className="p-3">{error}</div>}
     {mensaje && <div role="status" className="p-3">{mensaje}</div>}
