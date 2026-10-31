@@ -6237,3 +6237,330 @@ body [role="dialog"]:not([data-molsan-style-exempt]) button:disabled {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 }
+
+
+/* Accesos a portales desde CTN: credenciales, permisos e historial. */
+.ctn-portal-alert {
+  margin: 10px 0;
+  padding: 11px 13px;
+  border: 1px solid;
+  border-radius: 9px;
+  font-size: var(--molsan-font-size-sm);
+  line-height: var(--molsan-line-height-relaxed);
+}
+
+.ctn-portal-alert--warning {
+  color: var(--molsan-warning);
+  background: var(--molsan-warning-soft);
+  border-color: rgba(148, 101, 27, .22);
+}
+
+.ctn-portal-alert--error {
+  color: var(--molsan-danger);
+  background: var(--molsan-danger-soft);
+  border-color: rgba(163, 59, 66, .22);
+}
+
+.ctn-portal-alert--info {
+  color: var(--molsan-success);
+  background: var(--molsan-success-soft);
+  border-color: rgba(35, 115, 77, .22);
+}
+
+.ctn-portal-access-panel {
+  display: grid;
+  gap: 13px;
+}
+
+.ctn-portal-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 5px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ctn-portal-tab {
+  min-height: 35px;
+  padding: 7px 12px;
+  color: var(--molsan-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ctn-portal-tab.is-active {
+  color: var(--molsan-blue);
+  background: #fff;
+  border-color: var(--molsan-border);
+  box-shadow: 0 1px 3px rgba(6, 70, 117, .06);
+}
+
+.ctn-portal-card,
+.ctn-portal-history-card {
+  min-width: 0;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 11px;
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.ctn-portal-card-header,
+.ctn-portal-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--molsan-panel);
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.ctn-portal-label {
+  color: var(--molsan-muted);
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-semibold);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.ctn-portal-state {
+  display: inline-flex;
+  margin-top: 4px;
+  padding: 4px 9px;
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-bold);
+}
+
+.ctn-portal-state.is-enabled {
+  color: var(--molsan-success);
+  background: var(--molsan-success-soft);
+  border-color: rgba(35, 115, 77, .22);
+}
+
+.ctn-portal-state.is-disabled {
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+}
+
+.ctn-portal-muted {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ctn-portal-muted--spaced {
+  margin-top: 5px;
+}
+
+.ctn-portal-credentials-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 15px;
+}
+
+.ctn-portal-field-card {
+  min-width: 0;
+  padding: 13px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.ctn-portal-user-value {
+  display: block;
+  margin-top: 7px;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-md);
+  font-weight: var(--molsan-font-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.ctn-portal-password-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 7px;
+}
+
+.ctn-portal-password-input {
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  padding: 7px 10px;
+  color: var(--molsan-text);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ctn-portal-button {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 7px 11px;
+  color: var(--molsan-blue);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ctn-portal-button:hover:not(:disabled) {
+  background: var(--molsan-panel);
+  border-color: rgba(6, 70, 117, .3);
+}
+
+.ctn-portal-button--icon {
+  flex: 0 0 36px;
+  width: 36px;
+  padding: 5px;
+}
+
+.ctn-portal-button--copy {
+  margin-top: 7px;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+}
+
+.ctn-portal-button--primary-soft {
+  color: var(--molsan-blue);
+  background: var(--molsan-blue-soft);
+  border-color: rgba(6, 70, 117, .2);
+}
+
+.ctn-portal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 15px 15px;
+}
+
+.ctn-portal-password-warning {
+  margin-top: 10px;
+  padding: 10px 12px;
+  color: var(--molsan-warning);
+  background: var(--molsan-warning-soft);
+  border: 1px solid rgba(148, 101, 27, .22);
+  border-radius: 8px;
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ctn-portal-history-title {
+  margin: 0;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-md);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ctn-portal-history-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.ctn-portal-history-table {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ctn-portal-history-th {
+  padding: 10px 11px;
+  color: var(--molsan-blue);
+  background: var(--molsan-table-head);
+  border-bottom: 1px solid var(--molsan-border);
+  text-align: left;
+}
+
+.ctn-portal-history-td {
+  padding: 10px 11px;
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.ctn-portal-history-td--nowrap {
+  white-space: nowrap;
+}
+
+.ctn-portal-button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.agenda-toast {
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+}
+
+.agenda-toast > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, .96);
+  border: 1px solid var(--molsan-glass-border);
+  border-left: 3px solid var(--molsan-blue);
+  border-radius: 11px;
+  box-shadow: 0 8px 24px rgba(6, 70, 117, .14);
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
+}
+
+.agenda-toast > div > div:first-child {
+  display: grid;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.agenda-toast > div > div:nth-child(2) > div:first-child {
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-bold);
+}
+
+.agenda-toast > div > div:nth-child(2) > div:last-child {
+  margin-top: 3px;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+  line-height: var(--molsan-line-height-relaxed);
+}
+
+@media (max-width: 600px) {
+  .ctn-portal-credentials-grid {
+    grid-template-columns: 1fr;
+    padding: 11px;
+  }
+
+  .ctn-portal-card-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .ctn-portal-actions {
+    flex-direction: column;
+  }
+
+  .ctn-portal-actions .ctn-portal-button {
+    width: 100%;
+  }
+}
