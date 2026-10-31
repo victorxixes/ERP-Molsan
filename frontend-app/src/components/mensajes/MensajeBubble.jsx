@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
-import "../../css/ComponentesCompartidosPremium.css";
 
 /** Burbuja de Mensajes con descarga autenticada de adjuntos. */
 export default function MensajeBubble({
