@@ -648,7 +648,7 @@ export default function CarpetaDigitalModal({
 
     return (
       <div
-        className="carpeta-digital-premium panel-modal-premium fixed inset-0 z-[10000] flex items-center justify-center p-2 sm:p-4"
+        className="fixed inset-0 z-[10000] flex items-center justify-center p-2 sm:p-4"
         onMouseDown={(event) => {
           if (event.target === event.currentTarget) onClose?.();
         }}
@@ -892,7 +892,7 @@ export default function CarpetaDigitalModal({
   return (
     <>
       <div
-        className={modoActividad ? "carpeta-digital-premium panel-modal-premium w-full space-y-3" : "carpeta-digital-premium panel-modal-premium fixed inset-0 z-[10000] flex items-center justify-center p-3 sm:p-6"}
+        className={modoActividad ? "w-full space-y-3" : "fixed inset-0 z-[10000] flex items-center justify-center p-3 sm:p-6"}
         onMouseDown={(event) => {
           if (!modoActividad && event.target === event.currentTarget) onClose?.();
         }}
@@ -1285,7 +1285,7 @@ export default function CarpetaDigitalModal({
       </div>
 
       {modoActividad && documentoVistaPrevia && (
-        <div className="panel-modal-premium fixed inset-0 z-[11000] flex items-center justify-center p-3 sm:p-6">
+        <div className="fixed inset-0 z-[11000] flex items-center justify-center p-3 sm:p-6">
           <div ref={viewerDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Visor de documento" className="h-[88vh] max-h-[900px] w-full max-w-6xl">
             {renderVisor()}
           </div>
