@@ -1041,11 +1041,7 @@ function Dato({
         <div
           className={`${compacto ? "" : ""}
  
- ${
- destaque
- ? "text-blue-700"
- : "text-slate-700"
- }
+ 
  ${
  multilinea
  ? "whitespace-pre-wrap"
@@ -1204,23 +1200,6 @@ function Boton({
   disabled = false,
   className = "",
 }) {
-  const clases = {
-    primary:
-      "border-[var(--molsan-primary)] bg-[var(--molsan-primary)] text-white hover:bg-[var(--molsan-primary-hover)]",
-
-    secondary:
-      "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
-
-    danger:
-      "border-red-200 bg-red-50 text-red-700 hover:bg-red-100",
-
-    success:
-      "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100",
-
-    warning:
-      "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100",
-  };
-
   return (
     <button
       type="button"
@@ -1239,7 +1218,7 @@ function Boton({
  
  
  
- ${clases[tipo] || clases.secondary}
+ 
  ${className}`}
     >
       {children}
