@@ -6,7 +6,6 @@ import {
 
 import { useSeguridad } from "../../hooks/useSeguridad";
 import MODULOS_ERP from "../../config/modulos";
-import "./SeguridadSubpaginasPremium.css";
 
 
 function arraySeguro(valor) {
