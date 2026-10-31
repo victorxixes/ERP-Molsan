@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { useUtilidades } from "../../hooks/useUtilidades";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/CatalogosMaestrosPremium.css";
 
 /**
- * IMPORTAR CTN — MOLSAN ERP PREMIUM 2027
+ * IMPORTAR CTN
  */
 
 export default function ImportarCTN() {
@@ -19,7 +17,7 @@ export default function ImportarCTN() {
   };
 
   return (
-    <div className="importar-ctn-premium herramientas-subpagina-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6">
+    <div className="min-h-full p-4 sm:p-6 lg:p-8 space-y-6">
 
       {/* =====================================================
           CABECERA
