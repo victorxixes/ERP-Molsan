@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useNavigate } from "react-router-dom";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 const API_BASE = (import.meta.env.VITE_API_URL || "https://agenda-intranet-b.onrender.com/api").replace(/\/$/, "");
 function headers() {
@@ -81,6 +83,8 @@ export default function AccesosNotariales() {
     return notarias.filter(n => [nombre(n), n?.nif, n?.codigo, n?.municipio, n?.provincia].some(v => String(v || "").toLocaleLowerCase("es").includes(q)));
   }, [notarias, busqueda]);
 
+  const ordenResultados = useSortableData(resultados);
+
   const abrir = async (n) => {
     setError("");
     try {
@@ -116,10 +120,10 @@ export default function AccesosNotariales() {
       <section>
         <div>
           <table>
-            <thead><tr><th>Notario</th><th>NIF</th><th>Municipio</th><th>Provincia</th><th>Gestión</th></tr></thead>
+            <thead><tr><MolsanSortableTh label="Notario" sortKey="nombre" sortConfig={ordenResultados.sortConfig} onSort={ordenResultados.requestSort} /><MolsanSortableTh label="NIF" sortKey="nif" sortConfig={ordenResultados.sortConfig} onSort={ordenResultados.requestSort} /><MolsanSortableTh label="Municipio" sortKey="municipio" sortConfig={ordenResultados.sortConfig} onSort={ordenResultados.requestSort} /><MolsanSortableTh label="Provincia" sortKey="provincia" sortConfig={ordenResultados.sortConfig} onSort={ordenResultados.requestSort} /><th>Gestión</th></tr></thead>
             <tbody>
               {cargando ? <tr><td colSpan="5">Cargando notarías…</td></tr> :
-                resultados.length ? resultados.map(n => <tr key={n.id}>
+                resultados.length ? ordenResultados.items.map(n => <tr key={n.id}>
                   <td><strong>{nombre(n) || "Notaría " + n.id}</strong></td><td>{n.nif || "—"}</td><td>{n.municipio || "—"}</td><td>{n.provincia || "—"}</td>
                   <td><button type="button" onClick={() => abrir(n)}>Gestionar accesos</button></td>
                 </tr>) : <tr><td colSpan="5">No se han encontrado notarías.</td></tr>}
