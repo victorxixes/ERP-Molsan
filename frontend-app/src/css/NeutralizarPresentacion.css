@@ -238,7 +238,7 @@ body {
 }
 
 /* Compatibilidad geométrica con rutas antiguas pendientes de migración. */
-.erp-route-content > .mensajes-premium-page,
+.erp-route-content .mensajes-premium-page,
 .erp-route-content > main.mx-auto {
   width: 100%;
   min-width: 0;
@@ -247,7 +247,7 @@ body {
   padding: 0;
 }
 
-.erp-route-content > .mensajes-premium-page {
+.erp-route-content .mensajes-premium-page {
   min-height: 0;
 }
 
@@ -2196,5 +2196,273 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
   #root main :is(input, select, textarea, button),
   body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) :is(input, select, textarea, button) {
     transition: none;
+  }
+}
+
+
+/* ==========================================================
+   ADOPCIÓN PUNTUAL · MENSAJES, AGENDA Y EMPLEADOS
+   Patrones semánticos compartidos; no alteran flujos ni datos.
+========================================================== */
+
+/* Indicadores compactos reutilizables (Agenda y otros resúmenes). */
+.molsan-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  min-width: 0;
+}
+.molsan-stat-card {
+  display: flex;
+  min-width: 0;
+  min-height: 86px;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 16px;
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+.molsan-stat-icon {
+  display: grid;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+  font-size: 17px;
+}
+.molsan-stat-label {
+  display: block;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-medium);
+}
+.molsan-stat-card strong {
+  display: block;
+  margin-top: 3px;
+  color: var(--molsan-blue);
+  font-size: 23px;
+  font-weight: var(--molsan-font-weight-bold);
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+.molsan-stat-card small {
+  display: block;
+  margin-top: 3px;
+  color: var(--molsan-muted);
+  font-size: 11px;
+}
+
+/* Agenda: calendario y citas con la misma superficie y jerarquía. */
+.agenda-calendar-scroll {
+  min-width: 0;
+  overflow: auto;
+  padding-top: 14px;
+}
+.agenda-weekday {
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: var(--molsan-font-weight-semibold);
+  text-align: center;
+}
+.agenda-month-day,
+.agenda-week-cell,
+.agenda-day-hour {
+  min-width: 0;
+  color: var(--molsan-text);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 8px;
+}
+.agenda-month-day {
+  cursor: pointer;
+  transition: background var(--molsan-transition-fast), border-color var(--molsan-transition-fast);
+}
+.agenda-month-day:hover {
+  background: var(--molsan-panel);
+  border-color: rgba(6,70,117,.35);
+}
+.agenda-appointment {
+  color: var(--molsan-text);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-left: 3px solid var(--molsan-blue);
+  border-radius: 7px;
+  font-size: 11px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.agenda-day-timeline {
+  background: repeating-linear-gradient(to bottom, #fff 0, #fff 47px, var(--molsan-border) 48px);
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+.agenda-list-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--molsan-border);
+}
+.agenda-list-heading h2 {
+  margin: 0;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-lg);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+.agenda-list-heading p {
+  margin: 4px 0 0;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+.agenda-list-table-wrap {
+  min-width: 0;
+  overflow-x: auto;
+}
+.agenda-list-table {
+  min-width: 760px;
+}
+.agenda-list-table td small {
+  display: block;
+  margin-top: 3px;
+  color: var(--molsan-muted);
+  font-size: 11px;
+}
+.agenda-modality-pill,
+.agenda-status-pill,
+.molsan-status-pill {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 4px 9px;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: var(--molsan-font-weight-semibold);
+  white-space: nowrap;
+}
+.agenda-status-pill.is-done,
+.molsan-status-pill.is-active {
+  color: #236548;
+  background: #eef7f1;
+  border-color: #cfe5d7;
+}
+.agenda-status-pill.is-past,
+.agenda-status-pill.is-pending,
+.molsan-status-pill.is-inactive {
+  color: #80601c;
+  background: #fbf6e9;
+  border-color: #eadcb8;
+}
+.agenda-empty-state {
+  display: flex;
+  min-height: 150px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 24px;
+  color: var(--molsan-muted);
+  text-align: center;
+}
+.agenda-empty-state strong {
+  color: var(--molsan-blue);
+}
+
+/* Mensajes: superficies para contactos, conversación y composición. */
+.molsan-chat-contact {
+  text-align: left;
+  color: var(--molsan-text);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 11px;
+  transition: background var(--molsan-transition-fast), border-color var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast);
+}
+.molsan-chat-contact:hover {
+  background: var(--molsan-panel);
+  border-color: rgba(6,70,117,.28);
+}
+.molsan-chat-contact[aria-pressed="true"] {
+  background: var(--molsan-panel);
+  border-color: var(--molsan-blue);
+  box-shadow: inset 3px 0 0 var(--molsan-blue);
+}
+.molsan-chat-header {
+  display: flex;
+  min-height: 68px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+}
+.molsan-chat-composer {
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 12px;
+}
+.molsan-chat-composer textarea {
+  background: #fff;
+}
+
+/* Empleados: las fichas de selección se comportan como tarjetas ERP. */
+.molsan-employee-card {
+  min-height: 82px;
+  text-align: left;
+  color: var(--molsan-text);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+  transition: border-color var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast), background var(--molsan-transition-fast);
+}
+.molsan-employee-card:hover {
+  background: var(--molsan-panel);
+  border-color: rgba(6,70,117,.3);
+  box-shadow: 0 4px 14px rgba(6,70,117,.07);
+}
+.molsan-employee-card img {
+  border-radius: 10px;
+}
+.molsan-employee-card > div:nth-child(2) > div:first-child {
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+.molsan-employee-card > div:nth-child(2) > div:not(:first-child) {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+@media (max-width: 900px) {
+  .molsan-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .molsan-stat-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .molsan-stat-card {
+    min-height: 76px;
+    padding: 10px;
+    gap: 8px;
+  }
+  .molsan-stat-icon {
+    flex-basis: 32px;
+    width: 32px;
+    height: 32px;
   }
 }
