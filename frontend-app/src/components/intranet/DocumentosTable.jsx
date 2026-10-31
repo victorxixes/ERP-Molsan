@@ -2,13 +2,11 @@ import { useCallback } from "react";
 import { useIntranet } from "../../hooks/useIntranet";
 
 /**
- * DOCUMENTOS TABLE — MOLSAN ERP SAAS PREMIUM 2027
+ * DOCUMENTOS TABLE
  *
  * Diseño:
- * - Glass Luxe claro
  * - Coherente con el resto del ERP
  * - Responsive
- * - Hover premium
  * - Animaciones suaves
  *
  * Lógica:
