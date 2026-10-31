@@ -1,10 +1,9 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { puedeVerModulo } from "../../utils/permisos";
 import MODULOS_ERP from "../../config/modulos";
 import axios from "../../api/axios";
-import "../../css/Cancelagest.css";
-import "../../css/CancelagestUnified.css";
 
 const TARJETAS_DASHBOARD = [
   { key: "expedientes", descripcion: "Consultar expedientes y su situación actual.", icono: "▤" },
@@ -25,15 +24,15 @@ const fmtMes = (v) => {
 
 function GraficoBarras({ items, labelKey, valueKey, formatter = fmtNumero, emptyText }) {
   const max = Math.max(1, ...items.map((x) => Number(x[valueKey] || 0)));
-  if (!items.length) return <p className="cg-empty-chart">{emptyText}</p>;
-  return <div className="cg-bars">
+  if (!items.length) return <p className="molsan-empty-state">{emptyText}</p>;
+  return <div className="molsan-chart-bars">
     {items.map((item) => {
       const valor = item[valueKey];
       const pct = valor == null ? 0 : Math.max(0, Math.min(100, (Number(valor) / max) * 100));
-      return <div className="cg-bar-row" key={item[labelKey]}>
-        <div className="cg-bar-label" title={item[labelKey]}>{item[labelKey]}</div>
-        <div className="cg-bar-track"><div className={`cg-bar-fill${valor == null ? " is-empty" : ""}`} style={{ width: `${pct}%` }} /></div>
-        <strong className="cg-bar-value">{formatter(valor)}</strong>
+      return <div key={item[labelKey]} className="molsan-chart-row">
+        <div className="molsan-chart-label" title={item[labelKey]}>{item[labelKey]}</div>
+        <div className="molsan-chart-track"><div className={`molsan-chart-bar ${valor == null ? "is-empty" : ""}`} style={{ width: `${pct}%` }} /></div>
+        <strong>{formatter(valor)}</strong>
       </div>;
     })}
   </div>;
@@ -62,10 +61,6 @@ export default function Cancelagest() {
 
   useEffect(() => { cargar(); }, [cargar]);
 
-  const fechaActual = useMemo(() => new Intl.DateTimeFormat("es-ES", {
-    weekday: "long", day: "numeric", month: "long", year: "numeric",
-  }).format(new Date()), []);
-
   const firmasMensuales = (datos?.firmas_mensuales || []).slice(-12).map((x) => ({ ...x, mesLabel: fmtMes(x.mes) }));
   const categorias = datos?.categorias_firma || [];
   const tiempos = datos?.tiempos_circuito || [];
@@ -80,54 +75,45 @@ export default function Cancelagest() {
     })
     .filter((modulo) => modulo && puedeVerModulo(modulo.key));
 
-  return <main className="cg-page">
-      <header className="cg-hero">
-        <div className="cg-hero-identidad">
-          <div className="cg-logo"><img src="/img/logo.jpg" alt="MOLSAN" /></div>
-          <div><div className="cg-eyebrow">MOLSAN ERP · PREMIUM 2027</div><h1>CancelaGest</h1><p>Centro de gestión de cancelaciones, provisiones, firmas y seguimiento registral.</p></div>
-        </div>
-        <div className="cg-hero-acciones">
-          <div className="cg-fecha">{fechaActual}</div>
-          <button type="button" className="cg-button-primary" onClick={cargar} disabled={cargando}>{cargando ? "Actualizando…" : "↻ Actualizar datos"}</button>
-        </div>
-      </header>
+  return <main className="erp-page cancelagest-premium min-w-0 space-y-6">
+      <MolsanPageHeader mark="CG" title="CancelaGest" description="Centro de gestión de cancelaciones, provisiones, firmas y seguimiento registral." />
 
-      {error && <div className="cg-error" role="alert"><strong>No se han podido cargar los indicadores.</strong><p>{error}</p><button onClick={cargar}>Reintentar</button></div>}
+      {error && <div role="alert"><strong>No se han podido cargar los indicadores.</strong><p>{error}</p><button onClick={cargar}>Reintentar</button></div>}
 
-      <section className="cg-kpis">
-        <article className="cg-kpi"><span>Cancelaciones registradas</span><strong>{cargando && !datos ? "…" : fmtNumero(datos?.total_cancelaciones)}</strong><small>Expedientes identificados como cancelación</small></article>
-        <article className="cg-kpi"><span>Firmas realizadas</span><strong>{cargando && !datos ? "…" : fmtNumero(datos?.total_firmadas)}</strong><small>Cancelaciones con fecha de firma</small></article>
-        <article className="cg-kpi"><span>Cancelaciones con provisión</span><strong>{fmtNumero(categorias.find((x) => x.key === "con_provision")?.total)}</strong><small>Con provisión identificada</small></article>
-        <article className="cg-kpi"><span>Cancelaciones sin provisión</span><strong>{fmtNumero(categorias.find((x) => x.key === "sin_provision")?.total)}</strong><small>Sin provisión identificada</small></article>
+      <section className="molsan-stat-grid">
+        <article className="molsan-stat-card"><span>Cancelaciones registradas</span><strong>{cargando && !datos ? "…" : fmtNumero(datos?.total_cancelaciones)}</strong><small>Expedientes identificados como cancelación</small></article>
+        <article className="molsan-stat-card"><span>Firmas realizadas</span><strong>{cargando && !datos ? "…" : fmtNumero(datos?.total_firmadas)}</strong><small>Cancelaciones con fecha de firma</small></article>
+        <article className="molsan-stat-card"><span>Cancelaciones con provisión</span><strong>{fmtNumero(categorias.find((x) => x.key === "con_provision")?.total)}</strong><small>Con provisión identificada</small></article>
+        <article className="molsan-stat-card"><span>Cancelaciones sin provisión</span><strong>{fmtNumero(categorias.find((x) => x.key === "sin_provision")?.total)}</strong><small>Sin provisión identificada</small></article>
       </section>
 
-      <section className="cg-section">
-        <div className="cg-section-heading"><div><span className="cg-kicker">ACCESOS DIRECTOS</span><h2>Módulos de trabajo</h2><p>Accede a las herramientas principales del ERP sin salir del entorno corporativo.</p></div></div>
-        <div className="cg-module-grid">{modulosVisibles.map((modulo) => <button type="button" className="cg-module-card" key={modulo.titulo} onClick={() => navigate(modulo.ruta)}>
-          <span className="cg-module-icon">{modulo.icono}</span><span className="cg-module-text"><strong>{modulo.titulo}</strong><small>{modulo.descripcion}</small></span><span className="cg-module-arrow">↗</span>
+      <section className="erp-card cancelagest-access-section">
+        <div><div><span>ACCESOS DIRECTOS</span><h2>Módulos de trabajo</h2><p>Accede a las herramientas principales del ERP sin salir del entorno corporativo.</p></div></div>
+        <div className="cancelagest-module-grid">{modulosVisibles.map((modulo) => <button type="button" key={modulo.titulo} className="molsan-module-card" onClick={() => navigate(modulo.ruta)}>
+          <span>{modulo.icono}</span><span><strong>{modulo.titulo}</strong><small>{modulo.descripcion}</small></span><span>↗</span>
         </button>)}</div>
       </section>
 
-      <section className="cg-charts-grid">
-        <article className="cg-panel">
-          <div className="cg-section-heading"><div><span className="cg-kicker">ACTIVIDAD</span><h2>Firmas realizadas</h2><p>Firmas registradas por mes, según la fecha de firma del expediente.</p></div></div>
-          {firmasMensuales.length ? <div className="cg-month-chart">{firmasMensuales.map((item) => {
+      <section className="cancelagest-charts-grid">
+        <article className="erp-card">
+          <div><div><span>ACTIVIDAD</span><h2>Firmas realizadas</h2><p>Firmas registradas por mes, según la fecha de firma del expediente.</p></div></div>
+          {firmasMensuales.length ? <div className="molsan-month-bars">{firmasMensuales.map((item) => {
             const max = Math.max(1, ...firmasMensuales.map((x) => Number(x.total || 0)));
-            return <div className="cg-month-column" key={item.mes}><strong>{fmtNumero(item.total)}</strong><div className="cg-month-bar-wrap"><div className="cg-month-bar" style={{ height: `${Math.max(4, Number(item.total || 0) / max * 100)}%` }} /></div><small>{item.mesLabel}</small></div>;
-          })}</div> : <p className="cg-empty-chart">{cargando ? "Cargando firmas…" : "Todavía no hay firmas registradas para mostrar."}</p>}
+            return <div key={item.mes} className="molsan-month-bar"><strong>{fmtNumero(item.total)}</strong><div className="molsan-month-track"><div className="molsan-month-fill" style={{ height: `${Math.max(4, Number(item.total || 0) / max * 100)}%` }} /></div><small>{item.mesLabel}</small></div>;
+          })}</div> : <p>{cargando ? "Cargando firmas…" : "Todavía no hay firmas registradas para mostrar."}</p>}
         </article>
-        <article className="cg-panel">
-          <div className="cg-section-heading"><div><span className="cg-kicker">MEDIA DE FIRMA</span><h2>Envío hasta firma</h2><p>Días naturales entre la fecha de envío a notaría y la fecha de firma, separados por tipo de cancelación.</p></div></div>
+        <article className="erp-card">
+          <div><div><span>MEDIA DE FIRMA</span><h2>Envío hasta firma</h2><p>Días naturales entre la fecha de envío a notaría y la fecha de firma, separados por tipo de cancelación.</p></div></div>
           <GraficoBarras items={categorias.map((x) => ({ ...x, media: x.media_dias_envio_firma }))} labelKey="nombre" valueKey="media" formatter={fmtDias} emptyText={cargando ? "Calculando medias…" : "No hay expedientes con fecha de envío y firma para calcular la media."} />
-          <div className="cg-category-counts">{categorias.map((x) => <div key={x.key}><span>{x.nombre}</span><strong>{fmtNumero(x.firmadas)} firmas</strong><small>{fmtNumero(x.casos_media)} casos con ambas fechas</small></div>)}</div>
+          <div className="cancelagest-categories">{categorias.map((x) => <div key={x.key}><span>{x.nombre}</span><strong>{fmtNumero(x.firmadas)} firmas</strong><small>{fmtNumero(x.casos_media)} casos con ambas fechas</small></div>)}</div>
         </article>
       </section>
 
-      <section className="cg-panel cg-circuito-panel">
-        <div className="cg-section-heading"><div><span className="cg-kicker">CIRCUITO COMPLETO</span><h2>Tiempo medio entre hitos</h2><p>Las medias se calculan solo con expedientes que tienen ambas fechas y cuya secuencia no produce un intervalo negativo.</p></div></div>
+      <section className="erp-card cancelagest-timing-section">
+        <div><div><span>CIRCUITO COMPLETO</span><h2>Tiempo medio entre hitos</h2><p>Las medias se calculan solo con expedientes que tienen ambas fechas y cuya secuencia no produce un intervalo negativo.</p></div></div>
         <GraficoBarras items={tiempos.map((x) => ({ ...x, media: x.media_dias }))} labelKey="nombre" valueKey="media" formatter={fmtDias} emptyText={cargando ? "Calculando tiempos…" : "Todavía no hay suficientes fechas para calcular los tiempos del circuito."} />
-        <div className="cg-circuito-nota"><strong>Hitos medidos</strong><span>Firma → presentación tributaria</span><span>Presentación tributaria → presentación en Registro</span><span>Presentación en Registro → inscripción</span><span>Inscripción → cierre</span></div>
+        <div className="cancelagest-milestones"><strong>Hitos medidos</strong><span>Firma → presentación tributaria</span><span>Presentación tributaria → presentación en Registro</span><span>Presentación en Registro → inscripción</span><span>Inscripción → cierre</span></div>
       </section>
 
-      <footer className="cg-footer">MOLSAN ERP · PREMIUM 2027 · CancelaGest{ultimaActualizacion ? ` · Actualizado a las ${ultimaActualizacion.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}` : ""}</footer></main>;
+      <footer>MOLSAN ERP · CancelaGest{ultimaActualizacion ? ` · Actualizado a las ${ultimaActualizacion.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}` : ""}</footer></main>;
 }

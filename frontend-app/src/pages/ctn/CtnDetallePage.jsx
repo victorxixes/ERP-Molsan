@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
-import "./CtnDetallePage.css";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import { useCallback, useEffect, useRef, useState } from "react";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   listarNotarias,
@@ -33,6 +34,8 @@ export default function CtnDetallePage() {
   const [historico, setHistorico] = useState([]);
   const [cargandoHistorico, setCargandoHistorico] = useState(false);
   const [totales, setTotales] = useState({ total: 0, total_vc: 0, total_presencial: 0, total_sin_clasificar: 0 });
+  const historicoDialogRef = useRef(null);
+  useAccessibleDialog({ open: modalAbierto, onClose: () => setModalAbierto(false), dialogRef: historicoDialogRef });
 
   const cargarFicha = useCallback(async () => {
     if (!notariaId) return;
@@ -149,18 +152,13 @@ export default function CtnDetallePage() {
   const firmasPresenciales = Number(totales.total_presencial || 0);
   const modalidadTexto = modalModalidad === "VC" ? "Videoconferencia" : "Presencial";
 
-  if (cargando) return <div className="ctn-detalle-page"><p>Cargando ficha CTN…</p></div>;
-  if (!notaria) return <div className="ctn-detalle-page"><p>{error || "No se ha encontrado el notario."}</p><button onClick={() => navigate(-1)}>Volver</button></div>;
+  if (cargando) return <div><p>Cargando ficha CTN…</p></div>;
+  if (!notaria) return <div><p>{error || "No se ha encontrado el notario."}</p><button type="button" onClick={() => navigate(-1)}>Volver</button></div>;
 
   return (
-    <div className="ctn-detalle-page ctn-detalle-page--content">
-      <div className="ctn-detalle-header">
-        <div>
-          <h1 className="ctn-detalle-title">{nombreNotario(notaria)}</h1>
-          <div className="ctn-detalle-meta">Ficha CTN · NIF: {valor(notaria.nif)} · Código: {valor(notaria.codigo)}</div>
-        </div>
-        <button type="button" onClick={() => navigate(-1)}>Volver al listado</button>
-      </div>
+    <div className="erp-page min-w-0 space-y-6">
+      <MolsanPageHeader mark="CTN" title={nombreNotario(notaria)} description={`Ficha CTN · NIF: ${valor(notaria.nif)} · Código: ${valor(notaria.codigo)}`} />
+      <div className="flex justify-end"><button type="button" onClick={() => navigate(-1)}>Volver al listado</button></div>
 
       {error && <div role="alert" className="ctn-detalle-alert">{error}</div>}
 
@@ -195,7 +193,7 @@ export default function CtnDetallePage() {
         </div>
       </section>
 
-      <section className="ctn-detalle-panel ctn-detalle-panel--associations">
+      <section className=" --associations">
         <h2 className="ctn-detalle-section-title ctn-detalle-section-title--flush">Notarios asociados</h2>
         <p className="ctn-detalle-muted">Las asociaciones se guardan en ambos sentidos. Eliminar una asociación desde cualquiera de las dos fichas la elimina para ambos notarios.</p>
         <label className="ctn-detalle-label">Buscar notario por nombre, apellidos o NIF</label>
@@ -237,19 +235,20 @@ export default function CtnDetallePage() {
       </section>
 
       {modalAbierto && (
-        <div className="ctn-detalle-overlay" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }}>
-          <div className="ctn-detalle-modal" role="dialog" aria-modal="true" aria-label={`Firmas realizadas: ${modalidadTexto}`}>
-            <div className="ctn-detalle-modal-header">
+        <div className="ctn-detalle-overlay molsan-modal-overlay fixed inset-0 z-[100] p-3 sm:p-5" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }}>
+          <div ref={historicoDialogRef} tabIndex={-1} className="ctn-detalle-modal molsan-modal__panel flex max-h-[90vh] w-full max-w-6xl flex-col overflow-hidden" role="dialog" aria-modal="true" aria-label={`Firmas realizadas: ${modalidadTexto}`}>
+            <div className="ctn-detalle-modal-header molsan-modal__header flex items-start justify-between gap-4">
               <div><h2 className="ctn-detalle-modal-title">Firmas realizadas · {modalidadTexto}</h2><p className="ctn-detalle-muted ctn-detalle-modal-subtitle">{nombreNotario(notaria)}</p></div>
               <button type="button" onClick={() => setModalAbierto(false)}>Cerrar</button>
             </div>
-            <form className="ctn-detalle-search-form" onSubmit={buscarHistorico}>
-              <input value={filtroHistorico} onChange={(e) => setFiltroHistorico(e.target.value)} placeholder="Buscar expediente, titular, NIF o protocolo" className="ctn-detalle-search ctn-detalle-search--grow" />
+            <div className="molsan-modal__body min-h-0 flex-1 overflow-y-auto p-4">
+            <form className="ctn-detalle-search-form flex flex-wrap gap-3" onSubmit={buscarHistorico}>
+              <input value={filtroHistorico} onChange={(e) => setFiltroHistorico(e.target.value)} placeholder="Buscar expediente, titular, NIF o protocolo" className="ctn-detalle-search ctn-detalle-search--grow min-w-0 flex-1 px-3 py-2" />
               <button type="submit">Buscar</button>
             </form>
             {cargandoHistorico ? <p>Cargando firmas…</p> : historico.length === 0 ? <p>No se han encontrado firmas registradas para esta modalidad.</p> : (
-              <div className="ctn-detalle-history-table-wrap">
-                <table className="ctn-detalle-table ctn-detalle-table--history">
+              <div className="ctn-detalle-history-table-wrap overflow-x-auto">
+                <table className="ctn-detalle-table ctn-detalle-table--history min-w-[900px] w-full">
                   <thead><tr>{["Fecha firma", "Expediente", "Titular", "NIF titular", "Solicitante", "Protocolo", "Oficina", "Importe"].map((x) => <th key={x} className="ctn-detalle-th">{x}</th>)}</tr></thead>
                   <tbody>
                     {historico.map((f, i) => (
@@ -269,6 +268,7 @@ export default function CtnDetallePage() {
               </div>
             )}
             <div className="ctn-detalle-muted ctn-detalle-results-count"> {historico.length}</div>
+            </div>
           </div>
         </div>
       )}

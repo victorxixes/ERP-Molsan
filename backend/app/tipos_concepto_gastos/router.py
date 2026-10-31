@@ -10,6 +10,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
 
 from backend.app.tipos_concepto_gastos.models import (
     TipoConceptoGastos,
@@ -21,6 +22,7 @@ from backend.app.tipos_concepto_gastos.models import (
 # ============================================================
 
 router = APIRouter(
+    dependencies=[Depends(get_current_user)],
     prefix="/tipos-concepto-gastos",
     tags=["Tipos de Concepto de Gastos"],
 )

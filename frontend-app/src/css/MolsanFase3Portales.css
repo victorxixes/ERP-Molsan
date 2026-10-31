@@ -1,0 +1,83 @@
+/* MOLSAN ERP PREMIUM 2027 · FASE 3 · PORTALES INDEPENDIENTES Y MODALES */
+:where(.apoderagest, .notargest, .encargagest) {
+  min-width: 0;
+  color: var(--molsan-text, #18364b);
+  font-family: var(--molsan-font-family, Inter, "Segoe UI", Arial, sans-serif);
+}
+
+:where(.apoderagest, .notargest, .encargagest) :where(h1, h2, h3, h4) {
+  color: var(--molsan-blue, #064675);
+  text-wrap: pretty;
+}
+
+:where(.apoderagest, .notargest, .encargagest) :where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
+  box-sizing: border-box;
+  max-width: 100%;
+  color: var(--molsan-text, #18364b);
+  background: #fff;
+  border: 1px solid var(--molsan-border, #d8e4ec);
+  border-radius: var(--molsan-radius-control, 9px);
+  font: inherit;
+  font-size: var(--molsan-font-size-sm, .8125rem);
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+:where(.apoderagest, .notargest, .encargagest) :where(input, select, textarea):focus {
+  border-color: var(--molsan-blue, #064675);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(6, 70, 117, .13);
+}
+
+:where(.apoderagest, .notargest, .encargagest) :where(table) {
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--molsan-text, #18364b);
+  font-variant-numeric: tabular-nums;
+}
+
+:where(.apoderagest, .notargest, .encargagest) :where(table thead th) {
+  color: var(--molsan-blue, #064675);
+  background: var(--molsan-table-head, #eaf2f8);
+  border-bottom: 1px solid var(--molsan-border, #d8e4ec);
+  font-size: var(--molsan-font-size-xs, .75rem);
+  font-weight: 650;
+  text-align: left;
+}
+
+:where(.apoderagest, .notargest, .encargagest) :where(table tbody td) {
+  border-bottom: 1px solid rgba(216, 228, 236, .82);
+  vertical-align: middle;
+}
+
+:where(.apoderagest, .notargest, .encargagest) :where(table tbody tr:hover td) {
+  background: rgba(6, 70, 117, .025);
+}
+
+/* Los paneles con semántica accesible comparten la misma superficie,
+   aunque se monten en un portal React fuera de #root.
+   IMPORTANTE: varios módulos usan role="dialog" en la capa fixed/inset-0
+   que oscurece la pantalla. Esa capa no es el panel y debe conservar
+   su fondo, geometría y comportamiento de scroll originales. */
+body :where(
+  [role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal):not(.molsan-modal):not(.molsan-modal__panel):not(.erp-modal-panel):not(.expediente-operativo-modal-panel):not(.ng-modal):not(.eg-modal-form):not(.eg-modal-perfil):not(.ctn-detalle-modal)
+) {
+  color: var(--molsan-text, #18364b);
+  background-color: #fff;
+  border-color: var(--molsan-border, #d8e4ec);
+  border-radius: var(--molsan-radius-modal, 16px);
+  box-shadow: var(--molsan-shadow-modal, 0 18px 48px rgba(6, 40, 65, .18));
+}
+
+@media (max-width: 720px) {
+  :where(.apoderagest, .notargest, .encargagest) {
+    overflow-wrap: anywhere;
+  }
+
+  body :where(
+    [role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal):not(.molsan-modal):not(.molsan-modal__panel):not(.erp-modal-panel):not(.expediente-operativo-modal-panel):not(.ng-modal):not(.eg-modal-form):not(.eg-modal-perfil):not(.ctn-detalle-modal)
+  ) {
+    max-width: calc(100vw - 20px);
+    max-height: calc(100dvh - 20px);
+    overflow: auto;
+  }
+}

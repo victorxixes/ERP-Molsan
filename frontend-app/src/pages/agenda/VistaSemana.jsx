@@ -1,37 +1,11 @@
 import React, { useMemo, useCallback } from "react";
 import { useAgendaStore } from "../../store/agendaStore";
-import "../../css/ComponentesCompartidosPremium.css";
 
 const DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 const HORAS = Array.from(
   { length: 12 },
   (_, i) => `${9 + i}:00`
 );
-
-const colorPorTipo = (tipo) => {
-  switch (tipo) {
-    case "Firma notarial":
-      return {
-        box: "bg-[var(--erp-primary-soft)] border-[var(--erp-primary)]/30",
-        text: "text-[var(--erp-primary)]",
-        accent: "bg-[var(--erp-primary)]",
-      };
-
-    case "Reunión":
-      return {
-        box: "bg-emerald-50 border-emerald-200",
-        text: "text-emerald-700",
-        accent: "bg-emerald-500",
-      };
-
-    default:
-      return {
-        box: "bg-[var(--erp-surface-soft)] border-[var(--erp-border)]",
-        text: "text-[var(--erp-text)]",
-        accent: "bg-slate-400",
-      };
-  }
-};
 
 export default function VistaSemana({
   fechaBase,
@@ -97,13 +71,9 @@ export default function VistaSemana({
 
   return (
     <div
-      className="agenda-vista-premium agenda-vista-semana-premium 
-        grid grid-cols-[70px,repeat(7,minmax(0,1fr))]
-        gap-1
-        text-xs
-        bg-[var(--erp-surface)]
-        animate-fade-in
-      "
+      className="  
+ grid grid-cols-[70px,repeat(7,minmax(0,1fr))]
+ gap-1"
     >
 
       {/* CABECERA */}
@@ -113,17 +83,7 @@ export default function VistaSemana({
       {DIAS.map((d) => (
         <div
           key={d}
-          className="
-            py-3
-            text-center
-            font-semibold
-            text-[var(--erp-text-soft)]
-            uppercase
-            tracking-wide
-            bg-[var(--erp-surface-soft)]
-            border border-[var(--erp-border)]
-            rounded-lg
-          "
+          className="agenda-weekday py-3 uppercase"
         >
           {d}
         </div>
@@ -141,15 +101,11 @@ export default function VistaSemana({
             {/* HORA */}
 
             <div
-              className="
-                h-20
-                flex items-start
-                justify-end
-                pr-3
-                pt-2
-                text-[var(--erp-text-soft)]
-                font-medium
-              "
+              className="h-20
+ flex items-start
+ justify-end
+ pr-3
+ pt-2"
             >
               {h}
             </div>
@@ -167,16 +123,7 @@ export default function VistaSemana({
               return (
                 <div
                   key={`${h}-${idx}`}
-                  className="
-                    h-20
-                    border border-[var(--erp-border)]
-                    rounded-lg
-                    bg-[var(--erp-surface-soft)]
-                    hover:bg-white
-                    transition-all duration-200
-                    cursor-pointer
-                    relative
-                  "
+                  className="agenda-week-cell h-20 relative"
                   onDoubleClick={() =>
                     onCrearCita(
                       obtenerFechaDia(idx)
@@ -186,64 +133,50 @@ export default function VistaSemana({
 
                   {citasEnCelda.map((c) => {
 
-                    const colores =
-                      colorPorTipo(c.tipo_cita);
-
                     const resaltada =
                       resaltadaId === c.id;
 
                     return (
                       <div
                         key={c.id}
-                        className={`
-                          absolute
-                          inset-0
-                          m-1
-                          p-2
-                          rounded-lg
-                          border
-                          shadow-sm
-                          cursor-pointer
-                          overflow-hidden
-                          ${colores.box}
-                          ${colores.text}
-                          transition-all duration-200
-                          ${
-                            resaltada
-                              ? "ring-2 ring-amber-400 bg-amber-50"
-                              : "hover:shadow-md hover:scale-[1.01]"
-                          }
-                        `}
+                        className={`agenda-appointment absolute inset-0 m-1 p-2
+ 
+ 
+ 
+ 
+ overflow-hidden
+ 
+ 
+ 
+ `}
                         onClick={() =>
                           onCitaClick(c)
                         }
                       >
 
                         <span
-                          className={`
-                            absolute
-                            left-0
-                            top-0
-                            bottom-0
-                            w-1
-                            ${colores.accent}
-                          `}
+                          className={`absolute
+ left-0
+ top-0
+ bottom-0
+ w-1
+ `}
                         />
 
-                        <div className="font-semibold truncate pl-1">
+                        <div className="truncate pl-1">
                           {c.tipo_cita} — {c.hora_inicio}
                         </div>
-                        {String(c.tipo_cita || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es").includes("firma") ? (() => { const realizada = Boolean(c.firma_realizada) || /FIRMA\s+REALIZADA|FIRMADA/.test(String(c.observaciones || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()); return <div className={`mt-1 inline-flex items-center rounded-md border px-1.5 py-0.5 text-[10px] font-bold ${realizada ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-700"}`}>{realizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</div>; })() : null}
+                        {String(c.tipo_cita || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es").includes("firma") ? (() => { const realizada = Boolean(c.firma_realizada) || /FIRMA\s+REALIZADA|FIRMADA/.test(String(c.observaciones || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()); return <div className={`mt-1 inline-flex items-center px-1.5 py-0.5 ${realizada ? "" : ""}`}>{realizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</div>; })() : null}
 
-                        <div className="truncate text-[var(--erp-text-soft)] pl-1">
+                        <div className="truncate pl-1">
                           Notario: {c.notario_nombre || "—"}
                         </div>
 
-                        <div className="truncate text-[var(--erp-text-soft)] pl-1">
+                        <div className="truncate pl-1">
                           Firma: {c.tipo_firma}
                         </div>
 
-                        <div className="truncate text-[var(--erp-text-soft)] pl-1">
+                        <div className="truncate pl-1">
                           Apoderado: {c.apoderado || "—"}
                         </div>
 

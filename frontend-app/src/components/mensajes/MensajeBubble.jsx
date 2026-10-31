@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
-import "../../css/ComponentesCompartidosPremium.css";
 
 /** Burbuja de Mensajes con descarga autenticada de adjuntos. */
 export default function MensajeBubble({
@@ -90,36 +89,32 @@ export default function MensajeBubble({
   }, [mensaje.archivo_url, nombreArchivo]);
 
   return (
-    <div className={`mensaje-bubble-premium my-2 flex items-end gap-2 ${propio ? "justify-end" : "justify-start"}`}>
+    <div className={`my-2 flex items-end gap-2 ${propio ? "justify-end" : "justify-start"}`}>
       {!propio && (
         <div className="relative h-8 w-8 shrink-0">
           <img
             src={avatarUrl || "/no-foto.png"}
             alt=""
-            className="h-8 w-8 rounded-full border border-slate-200 bg-white object-cover shadow-sm"
+            className="h-8 w-8 rounded-full object-cover"
           />
           {online && (
-            <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border border-white bg-emerald-500" />
+            <span className="absolute bottom-0 right-0 h-2.5 w-2.5" />
           )}
         </div>
       )}
 
-      <div className={`max-w-[78%] rounded-2xl px-4 py-2.5 shadow-sm ${
-        propio
-          ? "rounded-br-md border border-blue-200 bg-blue-50 text-slate-700"
-          : "rounded-bl-md border border-slate-200 bg-white text-slate-700"
-      }`}>
+      <div className={`molsan-message-bubble max-w-[78%] px-4 py-2.5 ${propio ? "is-own" : "is-other"}`}>
         {mensaje.contenido && (
-          <p className="whitespace-pre-wrap text-sm leading-6 text-slate-700">
+          <p className="whitespace-pre-wrap">
             {mensaje.contenido}
           </p>
         )}
 
         {mensaje.archivo_url && cargandoArchivo && (
-          <p className="mt-2 text-xs text-slate-500">Cargando adjunto protegido…</p>
+          <p className="mt-2">Cargando adjunto protegido…</p>
         )}
         {mensaje.archivo_url && errorArchivo && (
-          <p role="alert" className="mt-2 text-xs text-red-600">
+          <p role="alert" className="mt-2">
             Adjunto no disponible o no tienes permiso para abrirlo.
           </p>
         )}
@@ -129,7 +124,7 @@ export default function MensajeBubble({
             <img
               src={archivoBlobUrl}
               alt="Archivo adjunto"
-              className="mt-2 max-h-64 max-w-full rounded-xl border border-slate-200 object-contain shadow-sm"
+              className="mt-2 max-h-64 max-w-full object-contain"
             />
           </a>
         )}
@@ -139,9 +134,9 @@ export default function MensajeBubble({
             href={archivoBlobUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 flex items-center gap-3 rounded-xl border border-red-100 bg-red-50 px-3 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-100"
+            className="mt-2 flex items-center gap-3 px-3 py-2.5"
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-sm shadow-sm">PDF</span>
+            <span className="flex h-8 w-8 items-center justify-center">PDF</span>
             <span>Ver documento PDF</span>
           </a>
         )}
@@ -152,24 +147,24 @@ export default function MensajeBubble({
             target="_blank"
             rel="noopener noreferrer"
             download={nombreArchivo || "adjunto"}
-            className="mt-2 flex items-center gap-3 rounded-xl border border-blue-100 bg-blue-50 px-3 py-2.5 text-sm font-medium text-blue-600 transition hover:bg-blue-100"
+            className="mt-2 flex items-center gap-3 px-3 py-2.5"
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-base shadow-sm">📎</span>
+            <span className="flex h-8 w-8 items-center justify-center">📎</span>
             <span>Descargar archivo adjunto</span>
           </a>
         )}
 
-        <div className={`mt-1.5 text-[10px] ${propio ? "text-blue-400" : "text-slate-400"}`}>
+        <div className="molsan-message-time mt-1.5">
           {fecha}
         </div>
       </div>
 
       {propio && (
-        <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full border border-blue-100 bg-blue-50 shadow-sm">
+        <div className="h-8 w-8 shrink-0 overflow-hidden">
           <img
             src={avatarUrl || "/no-foto.png"}
             alt=""
-            className="h-full w-full object-cover"
+            className="h-full w-full rounded-full object-cover"
           />
         </div>
       )}

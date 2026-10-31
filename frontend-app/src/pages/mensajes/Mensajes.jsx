@@ -5,7 +5,6 @@ import {
   useRef,
   useState,
 } from "react";
-import "../../css/ModalesHerramientasPremium.css";
 
 import {
   useMensajesStore,
@@ -18,6 +17,7 @@ import {
 import MensajeBubble from "../../components/mensajes/MensajeBubble";
 
 import MensajesHeader from "../../components/mensajes/MensajesHeader";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 
 export default function Mensajes({
@@ -626,80 +626,53 @@ export default function Mensajes({
   // =======================================================
 
   return (
-    <div
-      className="
-        mensajes-premium-page
-        relative
+    <div className="erp-page w-full min-w-0 space-y-5">
+      <MolsanPageHeader mark="ME" title="Mensajería interna" description="Comunicación directa y en tiempo real entre empleados." />
+      <div
+      className="mensajes-premium-page
+ relative
 
-        min-h-0
+ min-h-0
 
-        lg:h-[calc(100dvh-96px)]
-        lg:min-h-0
+ lg:h-[calc(100dvh-176px)]
+ lg:min-h-0
 
-        overflow-hidden
-
-        px-4
-        py-4
-
-        sm:px-6
-        sm:py-6
-
-        animate-fadeIn
-      "
+ overflow-hidden"
     >
 
       {/* =================================================
-          FONDO PREMIUM
+          
       ================================================= */}
 
       <div
-        className="
-          pointer-events-none
-          absolute
-          inset-0
-          overflow-hidden
-        "
+        className="pointer-events-none
+ absolute
+ inset-0
+ overflow-hidden"
       >
 
         <div
-          className="
-            absolute
-            -left-48
-            -top-48
-            h-[520px]
-            w-[520px]
-            rounded-full
-            bg-blue-400/10
-            blur-3xl
-          "
+          className="absolute
+ -left-48
+ -top-48
+ h-[520px]
+ w-[520px]"
         />
 
         <div
-          className="
-            absolute
-            -bottom-48
-            -right-48
-            h-[520px]
-            w-[520px]
-            rounded-full
-            bg-cyan-300/10
-            blur-3xl
-          "
+          className="absolute
+ -bottom-48
+ -right-48
+ h-[520px]
+ w-[520px]"
         />
 
         <div
-          className="
-            absolute
-            left-1/2
-            top-1/2
-            h-[700px]
-            w-[700px]
-            -translate-x-1/2
-            -translate-y-1/2
-            rounded-full
-            bg-white/70
-            blur-3xl
-          "
+          className="absolute
+ left-1/2
+ top-1/2
+ h-[700px]
+ w-[700px]"
         />
 
       </div>
@@ -710,19 +683,17 @@ export default function Mensajes({
       ================================================= */}
 
       <div
-        className="
-          relative
-          z-10
+        className="relative
+ z-10
 
-          grid
-          grid-cols-1
+ grid
+ grid-cols-1
 
-          gap-5
+ gap-5
 
-          lg:grid-cols-3
-          lg:h-full
-          lg:min-h-0
-        "
+ lg:grid-cols-3
+ lg:h-full
+ lg:min-h-0"
       >
 
         {/* =================================================
@@ -730,87 +701,64 @@ export default function Mensajes({
         ================================================= */}
 
         <section
-          className="
-            relative
-            overflow-hidden
+          className="erp-card relative
+ overflow-hidden
 
-            rounded-[24px]
+ 
 
-            border
-            border-white/80
+ 
+ 
 
-            bg-white/75
+ 
 
-            backdrop-blur-2xl
+ 
 
-            shadow-[0_20px_60px_rgba(15,23,42,0.10)]
+ 
 
-            animate-slideUp
+ 
 
-            lg:flex
-            lg:h-full
-            lg:min-h-0
-            lg:flex-col
-          "
+ lg:flex
+ lg:h-full
+ lg:min-h-0
+ lg:flex-col"
         >
 
           {/* línea superior */}
 
           <div
-            className="
-              absolute
-              left-0
-              right-0
-              top-0
-              h-px
-              bg-gradient-to-r
-              from-transparent
-              via-blue-400/50
-              to-transparent
-            "
+            className="absolute
+ left-0
+ right-0
+ top-0
+ h-px"
           />
 
 
           {/* CABECERA */}
 
           <div
-            className="
-              border-b
-              border-slate-200/80
-              px-5
-              py-5
-              shrink-0
-            "
+            className="px-5
+ py-5
+ shrink-0"
           >
 
             <div
-              className="
-                flex
-                items-center
-                justify-between
-                gap-3
-              "
+              className="flex
+ items-center
+ justify-between
+ gap-3"
             >
 
               <div>
 
                 <h2
-                  className="
-                    text-lg
-                    font-bold
-                    tracking-tight
-                    text-slate-800
-                  "
+                 
                 >
                   Mensajes
                 </h2>
 
                 <p
-                  className="
-                    mt-1
-                    text-xs
-                    text-slate-400
-                  "
+                  className="mt-1"
                 >
                   Empleados conectados
                 </p>
@@ -819,43 +767,30 @@ export default function Mensajes({
 
 
               <div
-                className="
-                  flex
-                  items-center
-                  gap-2
-                "
+                className="flex
+ items-center
+ gap-2"
               >
 
                 <div
-                  className="
-                    flex
-                    items-center
-                    gap-2
-                    rounded-full
-                    border
-                    border-emerald-200
-                    bg-emerald-50
-                    px-3
-                    py-1.5
-                  "
+                  className="flex
+ items-center
+ gap-2
+ 
+ 
+ 
+ 
+ px-3
+ py-1.5"
                 >
 
                   <span
-                    className="
-                      h-2
-                      w-2
-                      rounded-full
-                      bg-emerald-500
-                      animate-pulse
-                    "
+                    className="h-2
+ w-2"
                   />
 
                   <span
-                    className="
-                      text-xs
-                      font-medium
-                      text-emerald-600
-                    "
+                   
                   >
                     {conectadosFiltrados.length}
                   </span>
@@ -865,20 +800,15 @@ export default function Mensajes({
 
                 {totalPendientes > 0 && (
                   <div
-                    className="
-                      flex
-                      items-center
-                      gap-1.5
-                      rounded-full
-                      border
-                      border-red-200
-                      bg-red-50
-                      px-2.5
-                      py-1.5
-                      text-xs
-                      font-bold
-                      text-red-600
-                    "
+                    className="flex
+ items-center
+ gap-1.5
+ 
+ 
+ 
+ 
+ px-2.5
+ py-1.5"
                   >
 
                     <span>
@@ -902,66 +832,44 @@ export default function Mensajes({
           {/* LISTA */}
 
           <div
-            className="
-              flex-1
-              min-h-0
+            className="flex-1
+ min-h-0
 
-              space-y-2
-              overflow-y-auto
+ space-y-2
+ overflow-y-auto
 
-              p-4
-            "
+ p-4"
           >
 
             {conectadosFiltrados.length ===
               0 && (
 
               <div
-                className="
-                  rounded-2xl
-                  border
-                  border-slate-200
-                  bg-slate-50/80
-                  px-4
-                  py-8
-                  text-center
-                "
+                className="px-4
+ py-8"
               >
 
                 <div
-                  className="
-                    mx-auto
-                    mb-3
-                    flex
-                    h-12
-                    w-12
-                    items-center
-                    justify-center
-                    rounded-2xl
-                    bg-slate-100
-                    text-xl
-                  "
+                  className="mx-auto
+ mb-3
+ flex
+ h-12
+ w-12
+ items-center
+ justify-center"
                 >
                   👥
                 </div>
 
                 <p
-                  className="
-                    text-sm
-                    font-medium
-                    text-slate-600
-                  "
+                 
                 >
                   No hay empleados
                   conectados
                 </p>
 
                 <p
-                  className="
-                    mt-1
-                    text-xs
-                    text-slate-400
-                  "
+                  className="mt-1"
                 >
                   Los usuarios online
                   aparecerán aquí.
@@ -997,57 +905,36 @@ export default function Mensajes({
                       empleado.id
                     }
                     type="button"
+                    aria-pressed={seleccionado}
                     onClick={() =>
                       setOtroId(
                         empleado.id
                       )
                     }
-                    className={`
-                      group
-                      flex
-                      w-full
-                      items-center
-                      gap-3
-                      rounded-2xl
-                      border
-                      p-3
-                      text-left
-                      transition-all
-                      duration-200
+                    className={`molsan-chat-contact group
+ flex
+ w-full
+ items-center
+ gap-3
+ 
+ 
+ p-3
+ 
+ 
+ 
 
-                      ${
-                        seleccionado
-                          ? `
-                            border-blue-200
-                            bg-blue-50
-                            shadow-[0_8px_25px_rgba(37,99,235,0.10)]
-                          `
-                          : `
-                            border-slate-200/80
-                            bg-white/70
-                            hover:border-blue-200
-                            hover:bg-white
-                            hover:shadow-[0_8px_25px_rgba(15,23,42,0.07)]
-                          `
-                      }
+ 
 
-                      ${
-                        pendientes > 0
-                          ? "ring-1 ring-red-100"
-                          : ""
-                      }
-                    `}
+ `}
                   >
 
                     {/* AVATAR */}
 
                     <div
-                      className="
-                        relative
-                        h-11
-                        w-11
-                        shrink-0
-                      "
+                      className="relative
+ h-11
+ w-11
+ shrink-0"
                     >
 
                       <img
@@ -1057,29 +944,20 @@ export default function Mensajes({
                           )
                         }
                         alt=""
-                        className="
-                          h-11
-                          w-11
-                          rounded-full
-                          border
-                          border-slate-200
-                          object-cover
-                          shadow-sm
-                        "
+                        className="h-11
+ w-11
+ 
+ 
+ 
+ object-cover"
                       />
 
                       <span
-                        className="
-                          absolute
-                          bottom-0
-                          right-0
-                          h-3
-                          w-3
-                          rounded-full
-                          border-2
-                          border-white
-                          bg-emerald-500
-                        "
+                        className="absolute
+ bottom-0
+ right-0
+ h-3
+ w-3"
                       />
 
                     </div>
@@ -1088,19 +966,12 @@ export default function Mensajes({
                     {/* DATOS */}
 
                     <div
-                      className="
-                        min-w-0
-                        flex-1
-                      "
+                      className="min-w-0
+ flex-1"
                     >
 
                       <div
-                        className="
-                          truncate
-                          text-sm
-                          font-semibold
-                          text-slate-700
-                        "
+                        className="truncate"
                       >
                         {
                           empleado.nombre
@@ -1114,27 +985,20 @@ export default function Mensajes({
                       {pendientes > 0 ? (
 
                         <div
-                          className="
-                            mt-1
-                            flex
-                            items-center
-                            gap-2
-                          "
+                          className="mt-1
+ flex
+ items-center
+ gap-2"
                         >
 
                           <span
-                            className="
-                              inline-flex
-                              items-center
-                              gap-1
-                              rounded-full
-                              bg-red-50
-                              px-2
-                              py-0.5
-                              text-[11px]
-                              font-bold
-                              text-red-600
-                            "
+                            className="inline-flex
+ items-center
+ gap-1
+ 
+ 
+ px-2
+ py-0.5"
                           >
 
                             <span>
@@ -1154,11 +1018,7 @@ export default function Mensajes({
                       ) : (
 
                         <div
-                          className="
-                            mt-0.5
-                            text-xs
-                            text-slate-400
-                          "
+                          className="mt-0.5"
                         >
                           Disponible ahora
                         </div>
@@ -1173,21 +1033,15 @@ export default function Mensajes({
                     {pendientes > 0 && (
 
                       <span
-                        className="
-                          flex
-                          h-7
-                          min-w-7
-                          shrink-0
-                          items-center
-                          justify-center
-                          rounded-full
-                          bg-red-500
-                          px-2
-                          text-xs
-                          font-bold
-                          text-white
-                          shadow-sm
-                        "
+                        className="flex
+ h-7
+ min-w-7
+ shrink-0
+ items-center
+ justify-center
+ 
+ 
+ px-2"
                       >
                         {
                           pendientes > 99
@@ -1202,12 +1056,7 @@ export default function Mensajes({
                     {/* FLECHA */}
 
                     <span
-                      className="
-                        text-slate-300
-                        transition-transform
-                        group-hover:translate-x-0.5
-                        group-hover:text-blue-400
-                      "
+                     
                     >
                       ›
                     </span>
@@ -1229,92 +1078,67 @@ export default function Mensajes({
         ================================================= */}
 
         <section
-          className="
-            relative
-            overflow-hidden
+          className="erp-card relative
+ overflow-hidden
 
-            rounded-[24px]
+ 
 
-            border
-            border-white/80
+ 
+ 
 
-            bg-white/75
+ 
 
-            backdrop-blur-2xl
+ 
 
-            shadow-[0_20px_60px_rgba(15,23,42,0.10)]
+ 
 
-            lg:col-span-2
+ lg:col-span-2
 
-            animate-slideUp
+ 
 
-            lg:flex
-            lg:h-full
-            lg:min-h-0
-            lg:flex-col
-          "
+ lg:flex
+ lg:h-full
+ lg:min-h-0
+ lg:flex-col"
         >
 
           {!otroId ? (
 
             <div
-              className="
-                flex
-                flex-1
-                min-h-0
-                items-center
-                justify-center
-                p-8
-              "
+              className="flex
+ flex-1
+ min-h-0
+ items-center
+ justify-center
+ p-8"
             >
 
               <div
-                className="
-                  max-w-md
-                  text-center
-                "
+                className="max-w-md"
               >
 
                 <div
-                  className="
-                    mx-auto
-                    mb-6
-                    flex
-                    h-20
-                    w-20
-                    items-center
-                    justify-center
-                    rounded-[24px]
-                    border
-                    border-blue-100
-                    bg-blue-50
-                    text-3xl
-                    shadow-sm
-                  "
+                  className="mx-auto
+ mb-6
+ flex
+ h-20
+ w-20
+ items-center
+ justify-center"
                 >
                   💬
                 </div>
 
 
                 <h2
-                  className="
-                    text-xl
-                    font-bold
-                    tracking-tight
-                    text-slate-700
-                  "
+                 
                 >
                   Mensajería interna
                 </h2>
 
 
                 <p
-                  className="
-                    mt-2
-                    text-sm
-                    leading-6
-                    text-slate-400
-                  "
+                  className="mt-2"
                 >
                   Selecciona un empleado
                   conectado en la columna
@@ -1329,15 +1153,13 @@ export default function Mensajes({
           ) : (
 
             <div
-              className="
-                flex
-                h-full
-                min-h-0
-                flex-1
-                flex-col
-                p-4
-                sm:p-5
-              "
+              className="flex
+ h-full
+ min-h-0
+ flex-1
+ flex-col
+ p-4
+ sm:p-5"
             >
 
               {/* HEADER */}
@@ -1358,24 +1180,22 @@ export default function Mensajes({
                 ref={
                   chatRef
                 }
-                className="
-                  min-h-0
-                  flex-1
+                className="min-h-0
+ flex-1
 
-                  overflow-y-auto
+ overflow-y-auto
 
-                  rounded-2xl
+ 
 
-                  border
-                  border-slate-200/70
+ 
+ 
 
-                  bg-slate-50/50
+ 
 
-                  px-3
-                  py-4
+ px-3
+ py-4
 
-                  sm:px-5
-                "
+ sm:px-5"
               >
 
                 {Object.keys(
@@ -1383,52 +1203,35 @@ export default function Mensajes({
                 ).length === 0 ? (
 
                   <div
-                    className="
-                      flex
-                      h-full
-                      min-h-0
-                      items-center
-                      justify-center
-                      text-center
-                    "
+                    className="flex
+ h-full
+ min-h-0
+ items-center
+ justify-center"
                   >
 
                     <div>
 
                       <div
-                        className="
-                          mx-auto
-                          mb-4
-                          flex
-                          h-14
-                          w-14
-                          items-center
-                          justify-center
-                          rounded-2xl
-                          bg-white
-                          text-2xl
-                          shadow-sm
-                        "
+                        className="mx-auto
+ mb-4
+ flex
+ h-14
+ w-14
+ items-center
+ justify-center"
                       >
                         💬
                       </div>
 
                       <p
-                        className="
-                          text-sm
-                          font-medium
-                          text-slate-500
-                        "
+                       
                       >
                         No hay mensajes todavía
                       </p>
 
                       <p
-                        className="
-                          mt-1
-                          text-xs
-                          text-slate-400
-                        "
+                        className="mt-1"
                       >
                         Envía el primer mensaje.
                       </p>
@@ -1456,29 +1259,18 @@ export default function Mensajes({
                         {/* FECHA */}
 
                         <div
-                          className="
-                            my-4
-                            flex
-                            items-center
-                            justify-center
-                          "
+                          className="my-4
+ flex
+ items-center
+ justify-center"
                         >
 
                           <span
-                            className="
-                              rounded-full
-                              border
-                              border-slate-200
-                              bg-white
-                              px-3
-                              py-1
-                              text-[10px]
-                              font-semibold
-                              uppercase
-                              tracking-wide
-                              text-slate-400
-                              shadow-sm
-                            "
+                            className="px-3
+ py-1
+ 
+ 
+ uppercase"
                           >
                             {fecha}
                           </span>
@@ -1546,14 +1338,9 @@ export default function Mensajes({
                   <div
                     role="status"
                     aria-live="polite"
-                    className="
-                      shrink-0
-                      px-2
-                      py-2
-                      text-xs
-                      italic
-                      text-slate-400
-                    "
+                    className="shrink-0
+ px-2
+ py-2"
                   >
                     {
                       empleadoSeleccionado?.nombre ||
@@ -1567,52 +1354,34 @@ export default function Mensajes({
               {/* COMPOSER */}
 
               <div
-                className="
-                  mt-3
-                  shrink-0
+                className="molsan-chat-composer mt-3
+ shrink-0
 
-                  rounded-2xl
+ 
 
-                  border
-                  border-slate-200/80
+ 
+ 
 
-                  bg-white/85
+ 
 
-                  p-3
-
-                  shadow-sm
-                "
+ p-3"
               >
 
                 <div
-                  className="
-                    flex
-                    items-end
-                    gap-2
-                  "
+                  className="flex
+ items-end
+ gap-2"
                 >
 
                   {/* ARCHIVO */}
 
                   <label
-                    className="
-                      flex
-                      h-11
-                      w-11
-                      shrink-0
-                      cursor-pointer
-                      items-center
-                      justify-center
-                      rounded-xl
-                      border
-                      border-slate-200
-                      bg-white
-                      text-lg
-                      text-slate-500
-                      transition
-                      hover:border-blue-200
-                      hover:bg-blue-50
-                    "
+                    className="molsan-chat-attach flex
+ h-11
+ w-11
+ shrink-0
+ items-center
+ justify-center"
                     title="Adjuntar archivo"
                   >
 
@@ -1669,38 +1438,22 @@ export default function Mensajes({
                     disabled={
                       subiendoArchivo
                     }
-                    className="
-                      max-h-32
-                      min-h-11
+                    className="max-h-32
+ min-h-11
 
-                      flex-1
+ flex-1
 
-                      resize-none
+ resize-none
 
-                      rounded-xl
+ 
 
-                      border
-                      border-slate-200
+ 
+ 
 
-                      bg-slate-50/70
+ 
 
-                      px-4
-                      py-3
-
-                      text-sm
-                      text-slate-700
-
-                      outline-none
-
-                      transition
-
-                      placeholder:text-slate-400
-
-                      focus:border-blue-300
-                      focus:bg-white
-                      focus:ring-2
-                      focus:ring-blue-100
-                    "
+ px-4
+ py-3"
                   />
 
 
@@ -1715,23 +1468,12 @@ export default function Mensajes({
                       !texto.trim() ||
                       subiendoArchivo
                     }
-                    className="
-                      flex
-                      h-11
-                      w-11
-                      shrink-0
-                      items-center
-                      justify-center
-                      rounded-xl
-                      bg-blue-600
-                      text-lg
-                      text-white
-                      shadow-sm
-                      transition
-                      hover:bg-blue-700
-                      disabled:cursor-not-allowed
-                      disabled:opacity-40
-                    "
+                    className="molsan-btn molsan-btn--primary molsan-btn--icon flex
+ h-11
+ w-11
+ shrink-0
+ items-center
+ justify-center"
                     title="Enviar mensaje"
                   >
                     ➤
@@ -1741,12 +1483,8 @@ export default function Mensajes({
 
 
                 <div
-                  className="
-                    mt-2
-                    px-1
-                    text-[10px]
-                    text-slate-400
-                  "
+                  className="mt-2
+ px-1"
                 >
                   Enter para enviar · Shift+Enter
                   para salto de línea
@@ -1762,6 +1500,7 @@ export default function Mensajes({
 
       </div>
 
+      </div>
     </div>
   );
 }

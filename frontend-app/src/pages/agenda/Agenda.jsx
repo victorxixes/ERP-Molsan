@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useAgendaWS } from "../../hooks/useAgendaWS";
 import { useAgendaStore } from "../../store/agendaStore";
 import { useAuthStore } from "../../store/authStore";
@@ -11,7 +12,6 @@ import VistaDia from "./VistaDia";
 import ModalNuevaCita from "../../components/agenda/ModalNuevaCita.jsx";
 import AgendaToast from "../../components/agenda/AgendaToast.jsx";
 import SelectSJ from "../../components/ui/SelectSJ";
-import "./Agenda.css";
 
 const MESES = [
   "Enero",
@@ -416,24 +416,16 @@ export default function Agenda({ soloApoderado = false } = {}) {
   // ============================================================
 
   return (
-    <div className="agenda-premium-page space-y-5 p-6 text-[var(--erp-text)] animate-fade-in">
+    <div className="erp-page w-full min-w-0 space-y-5">
+      <MolsanPageHeader mark="AG" title="Agenda" description="Planificación y seguimiento de citas, firmas y actividad notarial." />
       {/* CABECERA Y NAVEGACIÓN */}
 
-      <div className="erp-card p-4 shadow-sm">
+      <div className="erp-card p-4">
         <div className="flex flex-wrap items-center gap-3">
           <button
             type="button"
             onClick={mesAnterior}
-            className="
-              w-10 h-10 rounded-xl
-              border border-[var(--erp-border)]
-              bg-[var(--erp-surface-soft)]
-              text-[var(--erp-text)]
-              hover:bg-[var(--erp-primary-soft)]
-              hover:text-[var(--erp-primary)]
-              transition
-              font-semibold
-            "
+            className="molsan-btn molsan-btn--icon w-10 h-10"
             title="Mes anterior"
             aria-label="Mes anterior"
           >
@@ -467,23 +459,14 @@ export default function Agenda({ soloApoderado = false } = {}) {
           <button
             type="button"
             onClick={mesSiguiente}
-            className="
-              w-10 h-10 rounded-xl
-              border border-[var(--erp-border)]
-              bg-[var(--erp-surface-soft)]
-              text-[var(--erp-text)]
-              hover:bg-[var(--erp-primary-soft)]
-              hover:text-[var(--erp-primary)]
-              transition
-              font-semibold
-            "
+            className="w-10 h-10"
             title="Mes siguiente"
             aria-label="Mes siguiente"
           >
             →
           </button>
 
-          <button type="button" className="agenda-today-action" onClick={() => {
+          <button type="button" className="molsan-btn molsan-btn--secondary agenda-today-action" onClick={() => {
             const actual = new Date();
             setYear(actual.getFullYear());
             setMonth(actual.getMonth() + 1);
@@ -492,29 +475,20 @@ export default function Agenda({ soloApoderado = false } = {}) {
 
           {esMesActual && (
             <span
-              className="
-                hidden sm:inline-flex
-                px-3 py-1.5 rounded-full
-                text-xs font-semibold
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-              "
+              className="hidden sm:inline-flex
+ px-3 py-1.5"
             >
               Mes actual
             </span>
           )}
 
-          {soloApoderado ? <button type="button" onClick={imprimirAgenda} className="ag-print-action" title="Imprimir la vista actual de la agenda">⎙ Imprimir agenda</button> : null}
+          {soloApoderado ? <button type="button" onClick={imprimirAgenda} className="molsan-btn molsan-btn--secondary" title="Imprimir la vista actual de la agenda">⎙ Imprimir agenda</button> : null}
 
           {/* SELECTOR DE VISTA */}
 
           <div
-            className="
-              ml-auto flex items-center gap-1
-              p-1 rounded-xl
-              bg-[var(--erp-surface-soft)]
-              border border-[var(--erp-border)]
-            "
+            className="ml-auto flex items-center gap-1
+ p-1"
           >
             {["mes", "semana", "dia"].map((opcion) => {
               const activo = vista === opcion;
@@ -525,16 +499,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
                   type="button"
                   onClick={() => setVista(opcion)}
                   aria-pressed={activo}
-                  className={`
-                    px-4 py-2 rounded-lg
-                    text-sm font-medium
-                    transition-all duration-200
-                    ${
-                      activo
-                        ? "bg-[var(--erp-primary)] text-white shadow-sm"
-                        : "text-[var(--erp-text-soft)] hover:text-[var(--erp-text)] hover:bg-white"
-                    }
-                  `}
+                  className={`molsan-btn molsan-btn--compact ${activo ? "molsan-btn--primary" : "molsan-btn--secondary"}`}
                 >
                   {opcion.charAt(0).toUpperCase() + opcion.slice(1)}
                 </button>
@@ -545,19 +510,19 @@ export default function Agenda({ soloApoderado = false } = {}) {
       </div>
 
       {/* INDICADORES DEL PERÍODO */}
-      <section className="agenda-resumen-grid" aria-label="Resumen de citas del mes">
-        <article className="agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-blue">▦</span><div><span className="agenda-stat-label">Citas del mes</span><strong>{citasDelPeriodo.length}</strong><small>{MESES[month - 1]} de {year}</small></div></article>
-        <article className="agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-amber">◷</span><div><span className="agenda-stat-label">Por realizar</span><strong>{citasPorRealizar}</strong><small>Hoy y fechas futuras</small></div></article>
-        <article className="agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-green">⌖</span><div><span className="agenda-stat-label">Presenciales</span><strong>{citasPresenciales}</strong><small>Según tipo de firma</small></div></article>
-        <article className="agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-purple">▣</span><div><span className="agenda-stat-label">Videoconferencias</span><strong>{citasVideoconferencia}</strong><small>Según tipo de firma</small></div></article>
+      <section className="molsan-stat-grid" aria-label="Resumen de citas del mes">
+        <article className="molsan-stat-card"><span className="molsan-stat-icon">▦</span><div><span className="molsan-stat-label">Citas del mes</span><strong>{citasDelPeriodo.length}</strong><small>{MESES[month - 1]} de {year}</small></div></article>
+        <article className="molsan-stat-card"><span className="molsan-stat-icon">◷</span><div><span className="molsan-stat-label">Por realizar</span><strong>{citasPorRealizar}</strong><small>Hoy y fechas futuras</small></div></article>
+        <article className="molsan-stat-card"><span className="molsan-stat-icon">⌖</span><div><span className="molsan-stat-label">Presenciales</span><strong>{citasPresenciales}</strong><small>Según tipo de firma</small></div></article>
+        <article className="molsan-stat-card"><span className="molsan-stat-icon">▣</span><div><span className="molsan-stat-label">Videoconferencias</span><strong>{citasVideoconferencia}</strong><small>Según tipo de firma</small></div></article>
       </section>
 
       {/* FILTROS Y CALENDARIO */}
-      <div className="erp-card p-4 shadow-sm agenda-calendar-card">
-        <div className="agenda-filters">
+      <div className="erp-card p-4 agenda-calendar-card">
+        <div className="agenda-filters molsan-filter-bar" data-molsan-filter-bar>
           <label className="agenda-search"><span aria-hidden="true">⌕</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar cita, notario, apoderado…" aria-label="Buscar citas" /></label>
-          <div className="agenda-filter-buttons" aria-label="Filtrar por modalidad">{[["todas", "Todas"], ["presencial", "Presencial"], ["videoconferencia", "Videoconferencia"]].map(([valor, etiqueta]) => <button key={valor} type="button" aria-pressed={modalidadFiltro === valor} onClick={() => setModalidadFiltro(valor)}>{etiqueta}</button>)}</div>
-          {(busqueda || modalidadFiltro !== "todas") && <button type="button" className="agenda-clear-filters" onClick={() => { setBusqueda(""); setModalidadFiltro("todas"); }}>Limpiar filtros</button>}
+          <div className="agenda-filter-buttons" aria-label="Filtrar por modalidad">{[["todas", "Todas"], ["presencial", "Presencial"], ["videoconferencia", "Videoconferencia"]].map(([valor, etiqueta]) => <button key={valor} type="button" className={`molsan-btn molsan-btn--compact ${modalidadFiltro === valor ? "molsan-btn--primary" : "molsan-btn--secondary"}`} aria-pressed={modalidadFiltro === valor} onClick={() => setModalidadFiltro(valor)}>{etiqueta}</button>)}</div>
+          {(busqueda || modalidadFiltro !== "todas") && <button type="button" className="molsan-btn molsan-btn--compact molsan-btn--secondary agenda-clear-filters" onClick={() => { setBusqueda(""); setModalidadFiltro("todas"); }}>Limpiar filtros</button>}
         </div>
         <div className="agenda-calendar-scroll">
         {vista === "mes" && (
@@ -599,7 +564,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
           const fecha = String(cita.fecha || "").slice(0, 10);
           const anterior = fecha < hoyISO && !realizada;
           const modalidad = modalidadCita(cita);
-          return <tr key={cita.id}><td><strong>{fechaTexto(cita.fecha)}</strong><small>{horaTexto(cita.hora_inicio)} – {horaTexto(cita.hora_fin)}</small></td><td><strong>{cita.tipo_cita || "Cita"}</strong>{cita.observaciones ? <small>{cita.observaciones}</small> : null}</td><td><span className={`agenda-modality-pill ${modalidad === "videoconferencia" ? "is-video" : modalidad === "presencial" ? "is-presencial" : ""}`}>{modalidad === "videoconferencia" ? "Videoconferencia" : modalidad === "presencial" ? "Presencial" : cita.tipo_firma || "Sin especificar"}</span></td><td>{cita.notario_nombre || cita.apoderado_nombre || cita.apoderado || "—"}</td><td><span className={`agenda-status-pill ${realizada ? "is-done" : anterior ? "is-past" : "is-pending"}`}>{realizada ? "Firma realizada" : anterior ? "Fecha pasada · revisar" : "Programada"}</span></td><td><button type="button" className="agenda-open-cita" onClick={() => handleCitaClick(cita)}>Abrir</button></td></tr>;
+          return <tr key={cita.id}><td><strong>{fechaTexto(cita.fecha)}</strong><small>{horaTexto(cita.hora_inicio)} – {horaTexto(cita.hora_fin)}</small></td><td><strong>{cita.tipo_cita || "Cita"}</strong>{cita.observaciones ? <small>{cita.observaciones}</small> : null}</td><td><span className={`agenda-modality-pill ${modalidad === "videoconferencia" ? "is-video" : modalidad === "presencial" ? "is-presencial" : ""}`}>{modalidad === "videoconferencia" ? "Videoconferencia" : modalidad === "presencial" ? "Presencial" : cita.tipo_firma || "Sin especificar"}</span></td><td>{cita.notario_nombre || cita.apoderado_nombre || cita.apoderado || "—"}</td><td><span className={`agenda-status-pill ${realizada ? "is-done" : anterior ? "is-past" : "is-pending"}`}>{realizada ? "Firma realizada" : anterior ? "Fecha pasada · revisar" : "Programada"}</span></td><td><button type="button" className="molsan-btn molsan-btn--compact molsan-btn--secondary agenda-open-cita" onClick={() => handleCitaClick(cita)}>Abrir</button></td></tr>;
         })}</tbody></table></div> : <div className="agenda-empty-state"><span>▦</span><strong>No hay citas para mostrar</strong><p>Prueba con otra búsqueda o cambia el filtro de modalidad.</p></div>}
       </section>
 

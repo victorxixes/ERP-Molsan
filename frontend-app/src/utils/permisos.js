@@ -28,6 +28,30 @@ import { useAuthStore } from "../store/authStore";
 const MODULOS_EN_CONSTRUCCION = [
 ];
 
+export function esAdministrador(empleado = useAuthStore.getState().empleado) {
+  if (!empleado) return false;
+
+  const rol = String(empleado.rol?.nombre || empleado.rol_nombre || empleado.rol || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+  const usuario = String(empleado.usuario || "").trim().toLowerCase();
+  const rolId = empleado.rol_id ?? empleado.rol?.id;
+  const rolIdTecnicoAdmin =
+    (typeof rolId === "number" && Number.isInteger(rolId) && rolId === 0) ||
+    (typeof rolId === "string" && rolId.trim() === "0");
+  const rolNormalizado = rol.replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
+
+  return (
+    empleado.es_admin === true ||
+    empleado.is_admin === true ||
+    rolIdTecnicoAdmin ||
+    usuario === "admin" ||
+    /(^|\s)(admin|administrador|administradora|superadmin|super admin|superadministrador|super administradora|superusuario|super usuario|superuser|root|administrador general)(\s|$)/.test(rolNormalizado)
+  );
+}
+
 
 /**
  * ============================================================
@@ -63,25 +87,12 @@ export function puedeVerModulo(modulo) {
   const normalizar = (valor) =>
     String(valor || "")
       .normalize("NFD")
-      .replace(/[\\u0300-\\u036f]/g, "")
+      .replace(/[\u0300-\u036f]/g, "")
       .trim()
       .toLowerCase();
 
-  // La cuenta técnica admin (rol_id=0) y los roles administrativos
-  // deben poder descubrir los módulos desde «Espacios de trabajo».
-  // La visibilidad configurada sigue aplicándose al resto de usuarios.
-  const rol = String(empleado.rol?.nombre || empleado.rol_nombre || empleado.rol || "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim()
-    .toLowerCase();
-  const usuario = String(empleado.usuario || "").trim().toLowerCase();
-  const esAdministrador =
-    Number(empleado.rol_id ?? empleado.rol?.id) === 0 ||
-    usuario === "admin" ||
-    /(^|\\s)(admin|administrador|administradora|superadmin|superusuario|superuser|root)(\\s|$)/.test(rol);
-
-  if (esAdministrador) {
+  // La navegación y las rutas usan el mismo criterio central de administración.
+  if (esAdministrador(empleado)) {
     return true;
   }
 

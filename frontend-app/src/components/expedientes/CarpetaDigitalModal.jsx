@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import axios from "../../api/axios";
+import useAccessibleDialog from "../ui/useAccessibleDialog";
 import { useAuthStore } from "../../store/authStore";
-import "../../css/ModalesHerramientasPremium.css";
 
 // Se conservan las categorías del repositorio actual para no romper
 // los documentos ya almacenados.
@@ -148,6 +148,10 @@ export default function CarpetaDigitalModal({
   const [guardandoFechasSla, setGuardandoFechasSla] = useState(false);
   const [errorFechasSla, setErrorFechasSla] = useState("");
   const [mensajeFechasSla, setMensajeFechasSla] = useState("");
+  const dialogRef = useRef(null);
+  const viewerDialogRef = useRef(null);
+  useAccessibleDialog({ open: !modoActividad, onClose, dialogRef });
+  useAccessibleDialog({ open: Boolean(modoActividad && documentoVistaPrevia), onClose: cerrarVisor, dialogRef: viewerDialogRef });
 
   // Las fechas pertenecen a la ficha del expediente; este modal se abre desde
   // el listado sin recibir esos datos como props, por eso se cargan aquí.
@@ -557,38 +561,38 @@ export default function CarpetaDigitalModal({
     });
     const totalCategoria = porCategoria(categoria).length;
     return (
-      <article key={categoria} className="w-full max-w-full min-w-0 rounded-lg border border-slate-200 bg-white px-2 py-1.5">
+      <article key={categoria} className="w-full max-w-full min-w-0 px-2 py-1.5">
         <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
           <div className="flex min-w-0 flex-wrap items-baseline gap-x-1">
-            <h4 className="max-w-full text-xs font-bold text-slate-800">{etiqueta}</h4>
-            <p className="whitespace-nowrap text-[10px] text-slate-500">{totalCategoria} archivo(s)</p>
+            <h4 className="max-w-full">{etiqueta}</h4>
+            <p className="whitespace-nowrap">{totalCategoria} archivo(s)</p>
           </div>
           {notaIntegracionRepositorio(categoria) && (
-            <div role="note" className="w-full rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-[10px] font-extrabold tracking-wide text-amber-800">
+            <div role="note" className="w-full px-2.5 py-1.5">
               {notaIntegracionRepositorio(categoria)}
             </div>
           )}
-          <label className={`inline-flex shrink-0 cursor-pointer items-center rounded-md border px-2 py-1 text-[11px] font-bold ${subiendo === categoria ? "border-slate-200 bg-slate-100 text-slate-500" : "border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100"}`}>
+          <label className={`inline-flex shrink-0 items-center px-2 py-1 ${subiendo === categoria ? "" : ""}`}>
             {subiendo === categoria ? "Subiendo…" : "＋ Adjuntar"}
             <input className="hidden" type="file" accept=".pdf,application/pdf" multiple onChange={(event) => subir(event, categoria)} disabled={!!subiendo} />
           </label>
         </div>
         {lista.length > 0 ? (
-          <ul className="mt-2 divide-y divide-slate-100">
+          <ul className="mt-2">
             {lista.map((doc) => (
-              <li key={doc.id} className={`flex min-w-0 flex-wrap items-center gap-2 rounded-md px-1 py-2 ${documentoVistaPrevia?.id === doc.id ? "bg-indigo-50" : ""}`}>
-                <button type="button" onClick={() => verDocumento(doc)} className="min-w-0 flex-1 text-left" title={doc.nombre_original}>
-                  <span className="block truncate text-xs font-semibold text-slate-700">{doc.nombre_original}</span>
-                  <span className="block text-[10px] text-slate-400">{bytes(doc.tamano_bytes || 0)}{doc.fecha_subida ? ` · ${new Date(doc.fecha_subida).toLocaleString("es-ES")}` : ""}</span>
+              <li key={doc.id} className={`flex min-w-0 flex-wrap items-center gap-2 px-1 py-2 ${documentoVistaPrevia?.id === doc.id ? "" : ""}`}>
+                <button type="button" onClick={() => verDocumento(doc)} className="min-w-0 flex-1" title={doc.nombre_original}>
+                  <span className="block truncate">{doc.nombre_original}</span>
+                  <span className="block">{bytes(doc.tamano_bytes || 0)}{doc.fecha_subida ? ` · ${new Date(doc.fecha_subida).toLocaleString("es-ES")}` : ""}</span>
                 </button>
-                <button type="button" onClick={() => verDocumento(doc)} className="rounded-md px-2 py-1 text-[11px] font-bold text-indigo-700 hover:bg-indigo-100">Ver</button>
-                <button type="button" onClick={() => descargar(doc)} className="rounded-md px-2 py-1 text-[11px] font-bold text-slate-600 hover:bg-slate-100" title="Descargar">↓</button>
-                <button type="button" onClick={() => eliminar(doc)} className="rounded-md px-2 py-1 text-[11px] font-bold text-red-600 hover:bg-red-50" title="Eliminar">✕</button>
+                <button type="button" onClick={() => verDocumento(doc)} className="px-2 py-1">Ver</button>
+                <button type="button" onClick={() => descargar(doc)} className="px-2 py-1" title="Descargar">↓</button>
+                <button type="button" onClick={() => eliminar(doc)} className="px-2 py-1" title="Eliminar">✕</button>
               </li>
             ))}
           </ul>
         ) : totalCategoria === 0 ? (
-          <p className="mt-2 text-[10px] text-slate-400">{busquedaDocumento ? "Sin coincidencias con la búsqueda." : "No hay ficheros en este repositorio del expediente."}</p>
+          <p className="mt-2">{busquedaDocumento ? "Sin coincidencias con la búsqueda." : "No hay ficheros en este repositorio del expediente."}</p>
         ) : null}
       </article>
     );
@@ -598,33 +602,33 @@ export default function CarpetaDigitalModal({
     const abierto = !!bloquesAbiertos[bloque.id];
     const cantidad = contarBloque(bloque);
     return (
-      <section key={bloque.id} className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-        <button type="button" onClick={() => { if (modoActividad) setPanelDocumentosVisible(false); else setBloquesAbiertos((prev) => ({ ...prev, [bloque.id]: !prev[bloque.id] })); }} aria-expanded={modoActividad ? panelDocumentosVisible : abierto} title={modoActividad ? "Ocultar carpeta digital hacia la izquierda" : abierto ? "Contraer repositorios" : "Mostrar repositorios"} className={`flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left transition ${abierto ? "bg-slate-50" : "bg-white hover:bg-slate-50"}`}>
+      <section key={bloque.id} className="overflow-hidden">
+        <button type="button" onClick={() => { if (modoActividad) setPanelDocumentosVisible(false); else setBloquesAbiertos((prev) => ({ ...prev, [bloque.id]: !prev[bloque.id] })); }} aria-expanded={modoActividad ? panelDocumentosVisible : abierto} title={modoActividad ? "Ocultar carpeta digital hacia la izquierda" : abierto ? "Contraer repositorios" : "Mostrar repositorios"} className={`flex w-full items-center justify-between gap-3 px-3 py-2.5 ${abierto ? "" : ""}`}>
           <span className="flex min-w-0 items-center gap-3">
-            <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${cantidad ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{cantidad}</span>
-            <span className="min-w-0"><span className="block text-sm font-extrabold text-slate-900">{bloque.titulo}</span><span className="block truncate text-[11px] font-normal text-slate-500">{bloque.descripcion}</span></span>
+            <span className={`flex h-8 w-8 shrink-0 items-center justify-center ${cantidad ? "" : ""}`}>{cantidad}</span>
+            <span className="min-w-0"><span className="block">{bloque.titulo}</span><span className="block truncate">{bloque.descripcion}</span></span>
           </span>
-          <span className="shrink-0 text-xs font-bold text-slate-500">{modoActividad ? "‹" : abierto ? "⌃" : "⌄"}</span>
+          <span className="shrink-0">{modoActividad ? "‹" : abierto ? "⌃" : "⌄"}</span>
         </button>
-        {abierto && <div className={"grid grid-cols-1 gap-2 border-t border-slate-100 bg-slate-50/50 p-2 sm:p-3 " + (modoActividad ? "" : "sm:grid-cols-2 xl:grid-cols-4")}>{bloque.categorias.map(renderCategoria)}</div>}
+        {abierto && <div className={"grid grid-cols-1 gap-2 p-2 sm:p-3" + (modoActividad ? "" : "sm:grid-cols-2 xl:grid-cols-4")}>{bloque.categorias.map(renderCategoria)}</div>}
       </section>
     );
   };
 
   const renderVisor = () => (
-    <aside className={`flex min-h-[360px] min-w-0 flex-col overflow-hidden rounded-xl border border-slate-300 bg-white shadow-sm ${visorExpandido ? "fixed inset-3 z-[10500] h-[calc(100vh-1.5rem)]" : "h-full"}`}>
-      <header className="flex items-center gap-2 border-b border-slate-200 bg-white px-3 py-3">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700">▤</span>
-        <div className="min-w-0 flex-1"><h4 className="text-sm font-extrabold text-slate-800">Visor de documentos</h4><p className="truncate text-[11px] text-slate-500" title={documentoVistaPrevia?.nombre_original || "Sin documento seleccionado"}>{documentoVistaPrevia?.nombre_original || "Selecciona un archivo de la lista"}</p></div>
-        <button type="button" onClick={() => setVisorExpandido((v) => !v)} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50" title={visorExpandido ? "Reducir visor" : "Ampliar visor"}>{visorExpandido ? "Reducir" : "⛶ Ampliar"}</button>
-        <button type="button" onClick={() => { if (modoActividad) cerrarVisor(); else { setVisorVisible(false); setVisorExpandido(false); } }} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50" title={modoActividad ? "Cerrar visor" : "Ocultar visor"}>{modoActividad ? "✕ Cerrar" : "Ocultar"}</button>
+    <aside className={`flex min-h-[360px] min-w-0 flex-col overflow-hidden ${visorExpandido ? "fixed inset-3 z-[10500] h-[calc(100vh-1.5rem)]" : "h-full"}`}>
+      <header className="flex items-center gap-2 px-3 py-3">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center">▤</span>
+        <div className="min-w-0 flex-1"><h4>Visor de documentos</h4><p className="truncate" title={documentoVistaPrevia?.nombre_original || "Sin documento seleccionado"}>{documentoVistaPrevia?.nombre_original || "Selecciona un archivo de la lista"}</p></div>
+        <button type="button" onClick={() => setVisorExpandido((v) => !v)} className="px-2.5 py-1.5" title={visorExpandido ? "Reducir visor" : "Ampliar visor"}>{visorExpandido ? "Reducir" : "⛶ Ampliar"}</button>
+        <button type="button" onClick={() => { if (modoActividad) cerrarVisor(); else { setVisorVisible(false); setVisorExpandido(false); } }} className="px-2.5 py-1.5" title={modoActividad ? "Cerrar visor" : "Ocultar visor"}>{modoActividad ? "✕ Cerrar" : "Ocultar"}</button>
       </header>
-      <div className="min-h-0 flex-1 overflow-hidden bg-slate-100 p-2 sm:p-3">
-        {cargandoVistaPrevia ? <div className="flex h-full min-h-[300px] items-center justify-center text-sm text-slate-500">Cargando documento…</div> : urlVistaPrevia && documentoVistaPrevia ? (
-          <iframe title={`Vista previa: ${documentoVistaPrevia.nombre_original || "documento"}`} src={urlVistaPrevia} className="h-full min-h-[360px] w-full rounded-lg border border-slate-200 bg-white" />
-        ) : <div className="flex h-full min-h-[300px] flex-col items-center justify-center px-6 text-center"><span className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">📄</span><p className="text-sm font-bold text-slate-700">Vista previa</p><p className="mt-1 max-w-xs text-xs leading-5 text-slate-500">Selecciona un PDF en el panel izquierdo. El visor permanecerá visible mientras navegas por la lista.</p></div>}
+      <div className="min-h-0 flex-1 overflow-hidden p-2 sm:p-3">
+        {cargandoVistaPrevia ? <div className="flex h-full min-h-[300px] items-center justify-center">Cargando documento…</div> : urlVistaPrevia && documentoVistaPrevia ? (
+          <iframe title={`Vista previa: ${documentoVistaPrevia.nombre_original || "documento"}`} src={urlVistaPrevia} className="h-full min-h-[360px] w-full" />
+        ) : <div className="flex h-full min-h-[300px] flex-col items-center justify-center px-6"><span className="mb-3 flex h-14 w-14 items-center justify-center">📄</span><p>Vista previa</p><p className="mt-1 max-w-xs">Selecciona un PDF en el panel izquierdo. El visor permanecerá visible mientras navegas por la lista.</p></div>}
       </div>
-      {documentoVistaPrevia && <footer className="flex items-center justify-between gap-2 border-t border-slate-200 bg-white px-3 py-2"><span className="min-w-0 truncate text-[11px] text-slate-500">{documentoVistaPrevia.nombre_original}</span><div className="flex shrink-0 gap-2"><button type="button" onClick={() => descargar(documentoVistaPrevia)} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">Descargar</button><button type="button" onClick={cerrarVisor} className="rounded-lg bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200">Cerrar PDF</button></div></footer>}
+      {documentoVistaPrevia && <footer className="flex items-center justify-between gap-2 px-3 py-2"><span className="min-w-0 truncate">{documentoVistaPrevia.nombre_original}</span><div className="flex shrink-0 gap-2"><button type="button" onClick={() => descargar(documentoVistaPrevia)} className="px-3 py-2">Descargar</button><button type="button" onClick={cerrarVisor} className="px-3 py-2">Cerrar PDF</button></div></footer>}
     </aside>
   );
   const otrosCantidad = CATEGORIAS_OTROS.reduce((suma, item) => suma + porCategoria(item.categoria).length, 0);
@@ -644,60 +648,60 @@ export default function CarpetaDigitalModal({
 
     return (
       <div
-        className="carpeta-digital-premium panel-modal-premium fixed inset-0 z-[10000] flex items-center justify-center bg-slate-950/70 p-2 sm:p-4"
+        className="molsan-modal-overlay molsan-modal-backdrop fixed inset-0 z-[10000] flex items-center justify-center p-2 sm:p-4"
         onMouseDown={(event) => {
           if (event.target === event.currentTarget) onClose?.();
         }}
       >
-        <section role="dialog" aria-modal="true" aria-label="Carpeta digital del expediente" className="flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-2xl">
-          <header className="flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-4 py-3 sm:px-5">
+        <section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Carpeta digital del expediente" className="molsan-modal__panel molsan-modal--wide flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden">
+          <header className="molsan-modal__header flex items-center justify-between gap-4 px-4 py-3 sm:px-5">
             <div className="min-w-0">
-              <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Documentación</p>
-              <h2 className="mt-1 text-lg font-bold text-slate-900">Carpeta digital</h2>
-              <p className="text-xs text-slate-500">Expediente {expedienteId || "—"} · {totalArchivos} archivo(s)</p>
+              <p className="uppercase">MOLSAN ERP · Documentación</p>
+              <h2 className="mt-1">Carpeta digital</h2>
+              <p>Expediente {expedienteId || "—"} · {totalArchivos} archivo(s)</p>
             </div>
             <div className="flex shrink-0 items-center gap-2">
-              <span className="hidden rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600 sm:inline-flex">{BLOQUES.length} actividades + Otros</span>
-              <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100">✕ Cerrar</button>
+              <span className="hidden px-3 py-1.5 sm:inline-flex">{BLOQUES.length} actividades + Otros</span>
+              <button type="button" onClick={onClose} className="px-3 py-2">✕ Cerrar</button>
             </div>
           </header>
 
-          {error && <div role="alert" className="mx-3 mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700 sm:mx-4">{error}</div>}
+          {error && <div role="alert" className="mx-3 mt-3 px-3 py-2 sm:mx-4">{error}</div>}
 
-          <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-y-auto p-3 sm:p-4 lg:grid-cols-[190px_minmax(220px,0.72fr)_minmax(320px,1fr)] lg:overflow-hidden">
+          <div className="molsan-modal__body grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-y-auto p-3 sm:p-4 lg:grid-cols-[190px_minmax(220px,0.72fr)_minmax(320px,1fr)] lg:overflow-hidden">
             <nav aria-label="Actividades de la carpeta digital" className="min-w-0 space-y-2 lg:overflow-y-auto lg:pr-1">
-              <p className="px-1 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Actividades</p>
+              <p className="px-1 pb-1 uppercase">Actividades</p>
               {BLOQUES.map((bloque) => {
                 const cantidad = cantidadActividad(bloque);
                 const activo = actividadPrincipal === bloque.id;
                 return (
-                  <button key={bloque.id} type="button" onClick={() => seleccionarActividad(bloque.id)} aria-current={activo ? "page" : undefined} className={`flex w-full items-center gap-3 rounded-xl border px-3 py-3 text-left transition ${activo ? "border-indigo-300 bg-indigo-50 shadow-sm ring-1 ring-indigo-100" : "border-slate-200 bg-white hover:border-indigo-200 hover:bg-slate-50"}`}>
-                    <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${cantidad ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{cantidad}</span>
-                    <span className="min-w-0 flex-1"><span className={`block text-xs font-extrabold ${activo ? "text-indigo-900" : "text-slate-700"}`}>{bloque.titulo}</span><span className="mt-0.5 block text-[10px] text-slate-500">{bloque.categorias.length} categorías</span></span>
-                    <span className={`text-xs ${activo ? "text-indigo-600" : "text-slate-400"}`}>›</span>
+                  <button key={bloque.id} type="button" onClick={() => seleccionarActividad(bloque.id)} aria-current={activo ? "page" : undefined} className={`flex w-full items-center gap-3 px-3 py-3 ${activo ? "" : ""}`}>
+                    <span className={`flex h-8 w-8 shrink-0 items-center justify-center ${cantidad ? "" : ""}`}>{cantidad}</span>
+                    <span className="min-w-0 flex-1"><span className={`block ${activo ? "" : ""}`}>{bloque.titulo}</span><span className="mt-0.5 block">{bloque.categorias.length} categorías</span></span>
+                    <span className={`${activo ? "" : ""}`}>›</span>
                   </button>
                 );
               })}
 
             </nav>
 
-            <section className="flex min-h-[360px] min-w-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white">
-              <div className="border-b border-slate-200 bg-white px-3 py-3 sm:px-4">
+            <section className="flex min-h-[360px] min-w-0 flex-col overflow-hidden">
+              <div className="px-3 py-3 sm:px-4">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <h3 className="text-sm font-extrabold text-slate-900">{seleccionOtros ? "Otros" : bloquePrincipal?.titulo}</h3>
-                    <p className="mt-1 text-[11px] leading-4 text-slate-500">{seleccionOtros ? "Documentación complementaria y comunicaciones, separadas del circuito de actividades." : bloquePrincipal?.descripcion}</p>
+                    <h3>{seleccionOtros ? "Otros" : bloquePrincipal?.titulo}</h3>
+                    <p className="mt-1">{seleccionOtros ? "Documentación complementaria y comunicaciones, separadas del circuito de actividades." : bloquePrincipal?.descripcion}</p>
                   </div>
-                  <span className="shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-extrabold text-slate-600">{seleccionOtros ? otrosCantidad : cantidadActividad(bloquePrincipal || BLOQUES[0])} archivo(s)</span>
+                  <span className="shrink-0 px-2.5 py-1">{seleccionOtros ? otrosCantidad : cantidadActividad(bloquePrincipal || BLOQUES[0])} archivo(s)</span>
                 </div>
                 <div className="mt-3 flex items-center gap-2">
-                  <input type="search" value={busquedaDocumento} onChange={(event) => setBusquedaDocumento(event.target.value)} placeholder="Buscar documentos…" aria-label="Buscar documentos por nombre" className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100" />
-                  <button type="button" onClick={() => setVisorVisible((v) => !v)} className="rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[11px] font-bold text-slate-600 hover:bg-slate-50">{visorVisible ? "Ocultar visor" : "Mostrar visor"}</button>
+                  <input type="search" value={busquedaDocumento} onChange={(event) => setBusquedaDocumento(event.target.value)} placeholder="Buscar documentos…" aria-label="Buscar documentos por nombre" className="min-w-0 flex-1 px-3 py-2" />
+                  <button type="button" onClick={() => setVisorVisible((v) => !v)} className="px-2.5 py-2">{visorVisible ? "Ocultar visor" : "Mostrar visor"}</button>
                 </div>
               </div>
-              <div className="min-h-0 flex-1 space-y-2 overflow-y-auto bg-slate-50/60 p-2 sm:p-3">
+              <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-2 sm:p-3">
                 {cargando ? (
-                  <p className="rounded-xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500">Cargando documentos…</p>
+                  <p className="p-6">Cargando documentos…</p>
                 ) : seleccionOtros ? (
                   <div className="space-y-2">{CATEGORIAS_OTROS.map(renderCategoria)}</div>
                 ) : bloquePrincipal ? (
@@ -706,39 +710,39 @@ export default function CarpetaDigitalModal({
                 {!cargando && (seleccionOtros
                   ? CATEGORIAS_OTROS.every((item) => porCategoria(item.categoria).length === 0)
                   : bloquePrincipal && contarBloque(bloquePrincipal) === 0) && (
-                  <p className="rounded-lg border border-dashed border-slate-300 bg-white px-3 py-4 text-center text-[11px] text-slate-500">Esta sección todavía no tiene documentos. Puedes adjuntarlos desde cada categoría.</p>
+                  <p className="px-3 py-4">Esta sección todavía no tiene documentos. Puedes adjuntarlos desde cada categoría.</p>
                 )}
               </div>
             </section>
 
             <section className="min-h-[250px] min-w-0 w-full overflow-hidden">
               {modoActividad && (
-                <section className="mb-3 rounded-xl border border-blue-200 bg-white p-3 shadow-sm">
+                <section className="mb-3 p-3">
                   <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                    <div><h4 className="text-xs font-extrabold text-slate-800">⏱️ Control SLA · {bloqueActividad?.titulo || actividadId}</h4><p className="mt-0.5 text-[10px] text-slate-500">Fechas propias de esta actividad; no se comparten con las demás fases.</p></div>
-                    <button type="button" onClick={guardarFechasSlaActividad} disabled={guardandoFechasSla} className="rounded-lg bg-blue-600 px-3 py-2 text-[11px] font-bold text-white hover:bg-blue-700 disabled:opacity-50">{guardandoFechasSla ? "Guardando…" : "Guardar fechas"}</button>
+                    <div><h4>⏱️ Control SLA · {bloqueActividad?.titulo || actividadId}</h4><p className="mt-0.5">Fechas propias de esta actividad; no se comparten con las demás fases.</p></div>
+                    <button type="button" onClick={guardarFechasSlaActividad} disabled={guardandoFechasSla} className="px-3 py-2">{guardandoFechasSla ? "Guardando…" : "Guardar fechas"}</button>
                   </div>
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    <label className="block text-[10px] font-bold text-slate-500">Inicio actividad<input type="date" value={fechasSlaActividad.fecha_inicio} disabled={guardandoFechasSla} onChange={(e) => setFechasSlaActividad((v) => ({ ...v, fecha_inicio: e.target.value, fecha_fin: v.fecha_fin && e.target.value && v.fecha_fin < e.target.value ? "" : v.fecha_fin }))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-xs font-normal text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" /></label>
-                    <label className="block text-[10px] font-bold text-slate-500">Fin actividad<input type="date" min={fechasSlaActividad.fecha_inicio || undefined} value={fechasSlaActividad.fecha_fin} disabled={guardandoFechasSla} onChange={(e) => setFechasSlaActividad((v) => ({ ...v, fecha_fin: e.target.value }))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-xs font-normal text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" /></label>
+                    <label className="block">Inicio actividad<input type="date" value={fechasSlaActividad.fecha_inicio} disabled={guardandoFechasSla} onChange={(e) => setFechasSlaActividad((v) => ({ ...v, fecha_inicio: e.target.value, fecha_fin: v.fecha_fin && e.target.value && v.fecha_fin < e.target.value ? "" : v.fecha_fin }))} className="mt-1 w-full px-2.5 py-2" /></label>
+                    <label className="block">Fin actividad<input type="date" min={fechasSlaActividad.fecha_inicio || undefined} value={fechasSlaActividad.fecha_fin} disabled={guardandoFechasSla} onChange={(e) => setFechasSlaActividad((v) => ({ ...v, fecha_fin: e.target.value }))} className="mt-1 w-full px-2.5 py-2" /></label>
                   </div>
-                  {errorFechasSla && <p role="alert" className="mt-2 rounded-lg bg-rose-50 px-2.5 py-2 text-[11px] text-rose-700">{errorFechasSla}</p>}
-                  {mensajeFechasSla && <p role="status" className="mt-2 rounded-lg bg-emerald-50 px-2.5 py-2 text-[11px] text-emerald-700">{mensajeFechasSla}</p>}
+                  {errorFechasSla && <p role="alert" className="mt-2 px-2.5 py-2">{errorFechasSla}</p>}
+                  {mensajeFechasSla && <p role="status" className="mt-2 px-2.5 py-2">{mensajeFechasSla}</p>}
                 </section>
               )}
               {modoActividad && actividadId === "documentacion-previa" && false ? (
-                <div className="flex h-full min-h-[250px] flex-col overflow-y-auto rounded-xl border border-indigo-100 bg-white shadow-sm">
-                  <header className="flex flex-wrap items-center justify-between gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-3">
+                <div className="flex h-full min-h-[250px] flex-col overflow-y-auto">
+                  <header className="flex flex-wrap items-center justify-between gap-2 px-3 py-3">
                     <div className="min-w-0">
-                      <h4 className="text-sm font-extrabold text-indigo-950">✉️ Datos de envío a notario</h4>
-                      <p className="mt-0.5 text-[11px] text-slate-500">Información sincronizada con el expediente y el modal de envío a notario</p>
+                      <h4>✉️ Datos de envío a notario</h4>
+                      <p className="mt-0.5">Información sincronizada con el expediente y el modal de envío a notario</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => onAbrirEnvioNotario?.()}
                       title="Aviso: el formulario sigue siendo editable. La transmisión real a ABSIS está pendiente de integración; abrir o guardar el envío no confirma que ABSIS lo haya recibido."
                       aria-label="Abrir envío a notario. Aviso: la transmisión real a ABSIS está pendiente de integración."
-                      className="shrink-0 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                      className="shrink-0 px-3 py-2"
                     >
                       ✉️ Abrir envío a notario <span aria-hidden="true">ⓘ</span>
                     </button>
@@ -852,16 +856,16 @@ export default function CarpetaDigitalModal({
                     return (
                       <div className="space-y-3 p-3">
                         {secciones.map((seccion) => (
-                          <section key={seccion.titulo} className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-                            <div className="border-b border-slate-100 bg-slate-50 px-3 py-2">
-                              <h5 className="text-xs font-extrabold text-slate-800">{seccion.titulo}</h5>
-                              <p className="mt-0.5 text-[10px] text-slate-500">{seccion.descripcion}</p>
+                          <section key={seccion.titulo} className="overflow-hidden">
+                            <div className="px-3 py-2">
+                              <h5>{seccion.titulo}</h5>
+                              <p className="mt-0.5">{seccion.descripcion}</p>
                             </div>
                             <div className="grid grid-cols-1 gap-2 p-3 sm:grid-cols-2 xl:grid-cols-3">
                               {seccion.campos.map(([etiqueta, dato]) => (
-                                <div key={etiqueta} className="min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2">
-                                  <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">{etiqueta}</p>
-                                  <p className="mt-0.5 break-words text-xs font-semibold text-slate-800">{dato !== null && dato !== undefined && dato !== "" ? String(dato) : "—"}</p>
+                                <div key={etiqueta} className="min-w-0 px-3 py-2">
+                                  <p className="uppercase">{etiqueta}</p>
+                                  <p className="mt-0.5 break-words">{dato !== null && dato !== undefined && dato !== "" ? String(dato) : "—"}</p>
                                 </div>
                               ))}
                             </div>
@@ -872,10 +876,10 @@ export default function CarpetaDigitalModal({
                   })()}
                 </div>
               ) : visorVisible ? renderVisor() : (
-                <div className="flex h-full min-h-[250px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white p-5 text-center">
-                  <span className="mb-3 text-2xl">▤</span>
-                  <p className="text-xs text-slate-500">El visor está oculto.</p>
-                  <button type="button" onClick={() => setVisorVisible(true)} className="mt-3 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-100">Mostrar visor</button>
+                <div className="flex h-full min-h-[250px] flex-col items-center justify-center p-5">
+                  <span className="mb-3">▤</span>
+                  <p>El visor está oculto.</p>
+                  <button type="button" onClick={() => setVisorVisible(true)} className="mt-3 px-3 py-2">Mostrar visor</button>
                 </div>
               )}
             </section>
@@ -888,7 +892,7 @@ export default function CarpetaDigitalModal({
   return (
     <>
       <div
-        className={modoActividad ? "carpeta-digital-premium panel-modal-premium w-full space-y-3" : "carpeta-digital-premium panel-modal-premium fixed inset-0 z-[10000] flex items-center justify-center bg-slate-950/70 p-3 sm:p-6"}
+        className={modoActividad ? "w-full space-y-3" : "molsan-modal-overlay molsan-modal-backdrop fixed inset-0 z-[10000] flex items-center justify-center p-3 sm:p-6"}
         onMouseDown={(event) => {
           if (!modoActividad && event.target === event.currentTarget) onClose?.();
         }}
@@ -899,31 +903,29 @@ export default function CarpetaDigitalModal({
           aria-label="Carpeta digital del expediente"
           className={modoActividad
             ? "w-full space-y-3"
-            : "flex max-h-[94vh] w-full max-w-[1500px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"}
+            : "molsan-modal-panel molsan-modal__panel molsan-modal--wide flex max-h-[94vh] w-full max-w-[1500px] flex-col overflow-hidden"}
         >
           {!modoActividad && (
-            <header className="flex items-center justify-between gap-4 border-b border-slate-200 bg-slate-50 px-5 py-4">
+            <header className="molsan-modal__header flex items-center justify-between gap-4 px-5 py-4">
               <div>
-                <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Documentación</p>
-                <h2 className="mt-1 text-lg font-bold text-slate-900">Carpeta digital</h2>
-                <p className="text-xs text-slate-500">Expediente {expedienteId || "—"} · {totalArchivos} archivo(s)</p>
+                <p className="uppercase">MOLSAN ERP · Documentación</p>
+                <h2 className="mt-1">Carpeta digital</h2>
+                <p>Expediente {expedienteId || "—"} · {totalArchivos} archivo(s)</p>
               </div>
-              <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100">✕ Cerrar</button>
+              <button type="button" onClick={onClose} className="px-3 py-2">✕ Cerrar</button>
             </header>
           )}
 
           <div
             className={modoActividad
-              ? "grid min-h-[300px] grid-cols-1 gap-2 transition-[grid-template-columns] duration-300 lg:h-[800px] lg:min-h-[800px] lg:max-h-[800px] " + (ocultarPanelEnvioNotario || (normalizar(actividadId).includes("sede-notarial") && !normalizar(actividadId).includes("protocolo")) ? "lg:grid-cols-[minmax(0,1fr)]" : panelDocumentosVisible ? "lg:grid-cols-[minmax(190px,0.38fr)_minmax(0,1.62fr)]" : "lg:grid-cols-[0_minmax(0,1fr)]")
+              ? "grid min-h-[300px] grid-cols-1 gap-2 lg:h-[800px] lg:min-h-[800px] lg:max-h-[800px]" + (ocultarPanelEnvioNotario || (normalizar(actividadId).includes("sede-notarial") && !normalizar(actividadId).includes("protocolo")) ? "lg:grid-cols-[minmax(0,1fr)]" : panelDocumentosVisible ? "lg:grid-cols-[minmax(190px,0.38fr)_minmax(0,1.62fr)]" : "lg:grid-cols-[0_minmax(0,1fr)]")
               : "grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]"}
           >
             <div
-              className={"flex min-h-0 min-w-0 flex-col overflow-hidden transition-[opacity,transform] duration-300 " + (modoActividad && normalizar(actividadId).includes("sede-notarial") && !normalizar(actividadId).includes("protocolo") ? "hidden" : modoActividad && !panelDocumentosVisible && !ocultarPanelEnvioNotario ? "hidden lg:flex" : "")}
+              className={"flex min-h-0 min-w-0 flex-col overflow-hidden" + (modoActividad && normalizar(actividadId).includes("sede-notarial") && !normalizar(actividadId).includes("protocolo") ? "hidden" : modoActividad && !panelDocumentosVisible && !ocultarPanelEnvioNotario ? "hidden lg:flex" : "")}
               style={modoActividad ? {
                 minWidth: 0,
                 width: "100%",
-                opacity: panelDocumentosVisible || ocultarPanelEnvioNotario ? 1 : 0,
-                transform: panelDocumentosVisible || ocultarPanelEnvioNotario ? "translateX(0)" : "translateX(-28px)",
                 pointerEvents: panelDocumentosVisible || ocultarPanelEnvioNotario ? "auto" : "none",
               } : undefined}
             >
@@ -935,51 +937,51 @@ export default function CarpetaDigitalModal({
                     onChange={(event) => setBusquedaDocumento(event.target.value)}
                     placeholder="Buscar documento por nombre…"
                     aria-label="Buscar documento por nombre"
-                    className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
+                    className="min-w-0 flex-1 px-3 py-2"
                   />
-                  <span className="rounded-lg bg-slate-100 px-3 py-2 text-[11px] font-bold text-slate-600">{totalArchivos} archivo(s)</span>
+                  <span className="px-3 py-2">{totalArchivos} archivo(s)</span>
                 </div>
               )}
-              {error && <div role="alert" className="mb-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{error}</div>}
+              {error && <div role="alert" className="mb-2 px-3 py-2">{error}</div>}
               {cargando ? (
-                <p className="rounded-xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500">Cargando documentos…</p>
+                <p className="p-6">Cargando documentos…</p>
               ) : (
                 <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
                   {bloquesVisibles.map(renderBloque)}
                   {!modoActividad && CATEGORIAS_OTROS.length > 0 && (
-                    <section className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-                      <button type="button" onClick={() => setOtrosAbierto((v) => !v)} aria-expanded={otrosAbierto} className="flex w-full items-center justify-between gap-3 px-3 py-3 text-left hover:bg-slate-50">
+                    <section className="overflow-hidden">
+                      <button type="button" onClick={() => setOtrosAbierto((v) => !v)} aria-expanded={otrosAbierto} className="flex w-full items-center justify-between gap-3 px-3 py-3">
                         <span className="flex min-w-0 items-center gap-3">
-                          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${otrosCantidad ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{otrosCantidad}</span>
-                          <span><span className="block text-sm font-extrabold text-slate-900">Otros</span><span className="block text-[11px] text-slate-500">Documentación complementaria y comunicaciones.</span></span>
+                          <span className={`flex h-8 w-8 shrink-0 items-center justify-center ${otrosCantidad ? "" : ""}`}>{otrosCantidad}</span>
+                          <span><span className="block">Otros</span><span className="block">Documentación complementaria y comunicaciones.</span></span>
                         </span>
-                        <span className="text-xs font-bold text-slate-500">{otrosAbierto ? "⌃" : "⌄"}</span>
+                        <span>{otrosAbierto ? "⌃" : "⌄"}</span>
                       </button>
-                      {otrosAbierto && <div className="space-y-2 border-t border-slate-100 bg-slate-50/50 p-2">{CATEGORIAS_OTROS.map(renderCategoria)}</div>}
+                      {otrosAbierto && <div className="space-y-2 p-2">{CATEGORIAS_OTROS.map(renderCategoria)}</div>}
                     </section>
                   )}
                 </div>
               )}
             </div>
             {modoActividad && !ocultarPanelEnvioNotario && (
-              <aside className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-xl border border-indigo-100 bg-white shadow-sm">
-                <header className="flex items-center justify-between gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-2">
+              <aside className="flex min-h-0 min-w-0 flex-col overflow-hidden">
+                <header className="flex items-center justify-between gap-2 px-3 py-2">
                   <div className="min-w-0">
-                    <h4 className="text-xs font-extrabold text-indigo-950">
+                    <h4>
                       {actividadId === "documentacion-previa" || actividadId === "sede-notarial" ? "✉️ Envío al notario" : String(actividadId || "").includes("protocolo") ? "📋 Datos · Sede notarial con protocolo" : `📋 Datos · ${bloqueActividad?.titulo || "Actividad"}`}
                     </h4>
-                    <p className="text-[10px] text-slate-500">
+                    <p>
                       {actividadId === "documentacion-previa" ? "Resumen de la información del expediente" : "Información específica de esta actividad"}
                     </p>
                   </div>
                   <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
                     {modoActividad && !ocultarPanelEnvioNotario && !panelDocumentosVisible && (
-                      <button type="button" onClick={() => setPanelDocumentosVisible(true)} className="rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[10px] font-extrabold text-slate-700 hover:bg-slate-50" title="Mostrar carpeta digital desde la izquierda">
+                      <button type="button" onClick={() => setPanelDocumentosVisible(true)} className="px-2.5 py-2" title="Mostrar carpeta digital desde la izquierda">
                         › Carpeta digital
                       </button>
                     )}
                     {actividadId === "sede-notarial" && (
-                      <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onAbrirEnvioNotario?.(); }} className="shrink-0 rounded-lg bg-indigo-600 px-2.5 py-2 text-[10px] font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                      <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onAbrirEnvioNotario?.(); }} className="shrink-0 px-2.5 py-2">
                         ✉️ Envío al notario
                       </button>
                     )}
@@ -1039,13 +1041,13 @@ export default function CarpetaDigitalModal({
                           ],
                         },
                       ].map((seccion) => (
-                        <section key={seccion.titulo} className="min-w-0 overflow-hidden rounded-lg border border-slate-200 bg-white">
-                          <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">{seccion.titulo}</h5>
+                        <section key={seccion.titulo} className="min-w-0 overflow-hidden">
+                          <h5 className="px-2.5 py-2">{seccion.titulo}</h5>
                           <div className="space-y-0 px-2.5 py-1.5">
                             {seccion.campos.map(([etiqueta, valor]) => (
-                              <div key={etiqueta} className="min-w-0 border-b border-slate-100 py-1.5 last:border-b-0">
-                                <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
-                                <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                              <div key={etiqueta} className="min-w-0 py-1.5">
+                                <p>{etiqueta}</p>
+                                <p className="break-words">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
                               </div>
                             ))}
                           </div>
@@ -1055,14 +1057,14 @@ export default function CarpetaDigitalModal({
                   ) : (
                     (["liquidacion-impuestos", "tramitacion-inscripcion", "defectos-registrales", "facturacion-cierre"].includes(actividadId)) ? (
                       <div className={`grid min-w-0 grid-cols-1 items-start gap-3 ${actividadId === "facturacion-cierre" ? "xl:grid-cols-2" : "xl:grid-cols-3"}`}>
-                        <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
-                          <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">📋 Datos · {bloqueActividad?.titulo || ({ "liquidacion-impuestos": "Liquidación de impuestos", "tramitacion-inscripcion": "Tramitación inscripción", "defectos-registrales": "Defectos registrales", "facturacion-cierre": "Cierre del expediente" }[actividadId] || "Datos de actividad")}</h5>
+                        <section className="min-w-0 overflow-hidden">
+                          <h5 className="px-2.5 py-2">📋 Datos · {bloqueActividad?.titulo || ({ "liquidacion-impuestos": "Liquidación de impuestos", "tramitacion-inscripcion": "Tramitación inscripción", "defectos-registrales": "Defectos registrales", "facturacion-cierre": "Cierre del expediente" }[actividadId] || "Datos de actividad")}</h5>
                           <div className="grid min-w-0 grid-cols-1 gap-1.5 px-2.5 py-2 sm:grid-cols-2 xl:grid-cols-1">
 
                             {actividadId === "facturacion-cierre" && (
-                              <div className="min-w-0 rounded-md border border-indigo-100 bg-indigo-50/70 px-2 py-2">
-                                <p className="text-[10px] font-bold text-indigo-700">Fecha de cierre</p>
-                                <p className="break-words text-[12px] font-extrabold text-slate-900">{(() => { const fecha = datosPanelActividad?.fecha_fin_actividad || expedienteDatos?.fecha_fin_actividad || datosPanelActividad?.fecha_liquidacion || expedienteDatos?.fecha_liquidacion; if (!fecha) return "Pendiente de cierre"; const s = String(fecha).slice(0, 10); const partes = s.split("-"); return partes.length === 3 ? `${partes[2]}/${partes[1]}/${partes[0]}` : s; })()}</p>
+                              <div className="min-w-0 px-2 py-2">
+                                <p>Fecha de cierre</p>
+                                <p className="break-words">{(() => { const fecha = datosPanelActividad?.fecha_fin_actividad || expedienteDatos?.fecha_fin_actividad || datosPanelActividad?.fecha_liquidacion || expedienteDatos?.fecha_liquidacion; if (!fecha) return "Pendiente de cierre"; const s = String(fecha).slice(0, 10); const partes = s.split("-"); return partes.length === 3 ? `${partes[2]}/${partes[1]}/${partes[0]}` : s; })()}</p>
                               </div>
                             )}
                             {camposPanelActividad
@@ -1070,17 +1072,17 @@ export default function CarpetaDigitalModal({
                               .map((campo) => {
                                 const valor = datosPanelActividad?.[campo.key];
                                 return (
-                                  <div key={campo.key} className="min-w-0 rounded-md border border-slate-100 bg-slate-50/60 px-2 py-1.5">
-                                    <p className="text-[10px] font-bold text-slate-500">{campo.label}</p>
-                                    <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                                  <div key={campo.key} className="min-w-0 px-2 py-1.5">
+                                    <p>{campo.label}</p>
+                                    <p className="break-words">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
                                   </div>
                                 );
                               })}
-                            {camposPanelActividad.filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).length === 0 && <p className="text-xs text-slate-500">Los campos específicos de esta actividad aparecerán aquí.</p>}
+                            {camposPanelActividad.filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).length === 0 && <p>Los campos específicos de esta actividad aparecerán aquí.</p>}
                           </div>
                         </section>
-                        <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
-                          <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">Datos notariales y de presentación</h5>
+                        <section className="min-w-0 overflow-hidden">
+                          <h5 className="px-2.5 py-2">Datos notariales y de presentación</h5>
                           <div className="space-y-0 px-2.5 py-1.5">
                             {[
                               ["Notario", datosEnvioNotario?.nombre_notario || datosEnvioNotario?.notario?.nombre || datosPanelActividad?.nombre_notario || datosPanelActividad?.notario],
@@ -1090,16 +1092,16 @@ export default function CarpetaDigitalModal({
                               ["Fecha firma", datosEnvioNotario?.fecha_firma || datosEnvioNotario?.fecha_real_firma || datosPanelActividad?.fecha_firma || datosPanelActividad?.fecha_real_firma],
                               ["Protocolo", datosEnvioNotario?.protocolo || datosPanelActividad?.protocolo || datosPanelActividad?.numero_protocolo],
                             ].map(([etiqueta, valor]) => (
-                              <div key={etiqueta} className="min-w-0 border-b border-slate-100 py-1.5 last:border-b-0">
-                                <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
-                                <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                              <div key={etiqueta} className="min-w-0 py-1.5">
+                                <p>{etiqueta}</p>
+                                <p className="break-words">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
                               </div>
                             ))}
                           </div>
                         </section>
                         {actividadId !== "facturacion-cierre" && (
-                        <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
-                          <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">Datos de facturación</h5>
+                        <section className="min-w-0 overflow-hidden">
+                          <h5 className="px-2.5 py-2">Datos de facturación</h5>
                           <div className="space-y-0 px-2.5 py-1.5">
                             {[
                               ["Nombre", datosPanelActividad?.facturacion_nombre || datosPanelActividad?.nombre_facturacion || datosPanelActividad?.nombre_cliente_facturacion],
@@ -1113,9 +1115,9 @@ export default function CarpetaDigitalModal({
                               ["Email", datosPanelActividad?.facturacion_email || datosPanelActividad?.email_facturacion || datosPanelActividad?.correo_facturacion],
                               ["Empleado", [true, "true", "1", "si", "sí"].includes(String(datosPanelActividad?.facturacion_empleado ?? expedienteDatos?.facturacion_empleado ?? false).trim().toLowerCase()) ? "Sí" : "No"],
                             ].map(([etiqueta, valor]) => (
-                              <div key={etiqueta} className="min-w-0 border-b border-slate-100 py-1.5 last:border-b-0">
-                                <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
-                                <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                              <div key={etiqueta} className="min-w-0 py-1.5">
+                                <p>{etiqueta}</p>
+                                <p className="break-words">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
                               </div>
                             ))}
                           </div>
@@ -1124,8 +1126,8 @@ export default function CarpetaDigitalModal({
                       </div>
                     ) : String(actividadId || "").includes("protocolo") ? (
                       <div className="grid w-full min-w-0 grid-cols-2 items-start gap-3">
-                        <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
-                          <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">Datos notariales y de presentación</h5>
+                        <section className="min-w-0 overflow-hidden">
+                          <h5 className="px-2.5 py-2">Datos notariales y de presentación</h5>
                           <div className="space-y-0 px-2.5 py-1.5">
                             {[
                               // Los datos se leen del envío a notario y se muestran en el formato común de actividad.
@@ -1142,15 +1144,15 @@ export default function CarpetaDigitalModal({
                               ["Número de entrada", datosPanelActividad?.numero_entrada],
                               ["Fecha recogida notario o presentación telemática", datosPanelActividad?.fecha_recogida_notario_presentacion_telematica || datosPanelActividad?.fecha_recogida_notario_o_presentacion_telematica],
                             ].map(([etiqueta, valor]) => (
-                              <div key={etiqueta} className="min-w-0 border-b border-slate-100 py-1.5 last:border-b-0">
-                                <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
-                                <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                              <div key={etiqueta} className="min-w-0 py-1.5">
+                                <p>{etiqueta}</p>
+                                <p className="break-words">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
                               </div>
                             ))}
                           </div>
                         </section>
-                        <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
-                          <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">Datos de facturación</h5>
+                        <section className="min-w-0 overflow-hidden">
+                          <h5 className="px-2.5 py-2">Datos de facturación</h5>
                           <div className="space-y-0 px-2.5 py-1.5">
                             {[
                               ["Nombre", datosPanelActividad?.facturacion_nombre || datosPanelActividad?.nombre_facturacion || datosPanelActividad?.nombre_cliente_facturacion],
@@ -1164,14 +1166,13 @@ export default function CarpetaDigitalModal({
                               ["Email", datosPanelActividad?.facturacion_email || datosPanelActividad?.email_facturacion],
                               ["Empleado", [true, "true", "1", "si", "sí"].includes(String(datosPanelActividad?.facturacion_empleado ?? expedienteDatos?.facturacion_empleado ?? false).trim().toLowerCase()) ? "Sí" : "No"],
                             ].map(([etiqueta, valor]) => (
-                              <div key={etiqueta} className="min-w-0 border-b border-slate-100 py-1.5 last:border-b-0">
-                                <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
-                                <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                              <div key={etiqueta} className="min-w-0 py-1.5">
+                                <p>{etiqueta}</p>
+                                <p className="break-words">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
                               </div>
                             ))}
                           </div>
                         </section>
-                        )}
                       </div>
                     ) : (
                     actividadId === "gestion-economica" ? (
@@ -1209,13 +1210,13 @@ export default function CarpetaDigitalModal({
                             ],
                           },
                         ].map((seccion) => (
-                          <section key={seccion.titulo} className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
-                            <h5 className="border-b border-slate-100 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-800">{seccion.titulo}</h5>
+                          <section key={seccion.titulo} className="min-w-0 overflow-hidden">
+                            <h5 className="px-3 py-2">{seccion.titulo}</h5>
                             <div className="grid min-w-0 grid-cols-1 gap-1.5 px-3 py-2 sm:grid-cols-2 2xl:grid-cols-3">
                               {seccion.campos.map(([etiqueta, valor]) => (
-                                <div key={etiqueta} className="flex min-w-0 flex-col items-start gap-0.5 rounded-md border border-slate-100 bg-slate-50/60 px-2 py-1.5">
-                                  <span className="text-[10px] font-bold leading-tight text-slate-500">{etiqueta}</span>
-                                  <span className="min-w-0 break-words text-[11px] font-semibold leading-snug text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</span>
+                                <div key={etiqueta} className="flex min-w-0 flex-col items-start gap-0.5 px-2 py-1.5">
+                                  <span>{etiqueta}</span>
+                                  <span className="min-w-0 break-words">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</span>
                                 </div>
                               ))}
                             </div>
@@ -1234,19 +1235,19 @@ export default function CarpetaDigitalModal({
                           .map((campo) => {
                           const valor = datosPanelActividad?.[campo.key];
                           return (
-                            <div key={campo.key} className="min-w-0 border-b border-slate-100 pb-1.5">
-                              <p className="text-[10px] font-bold text-slate-500">{campo.label}</p>
-                              <p className="break-words text-[11px] font-semibold text-slate-800">
+                            <div key={campo.key} className="min-w-0 pb-1.5">
+                              <p>{campo.label}</p>
+                              <p className="break-words">
                                 {valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}
                               </p>
                             </div>
                           );
                         })}
-                        {camposPanelActividad.length === 0 && <p className="text-xs text-slate-500">Los campos específicos de esta actividad aparecerán aquí.</p>}
+                        {camposPanelActividad.length === 0 && <p>Los campos específicos de esta actividad aparecerán aquí.</p>}
                          {actividadId === "facturacion-cierre" && (
-                           <div className="mt-2 min-w-0 rounded-lg border border-indigo-100 bg-indigo-50/60 px-3 py-2">
-                             <p className="text-[10px] font-bold text-indigo-700">Fecha de cierre (fecha de liquidación)</p>
-                             <p className="break-words text-xs font-extrabold text-slate-900">
+                           <div className="mt-2 min-w-0 px-3 py-2">
+                             <p>Fecha de cierre (fecha de liquidación)</p>
+                             <p className="break-words">
                                {(() => {
                                  const fecha = datosPanelActividad?.fecha_fin_actividad || expedienteDatos?.fecha_fin_actividad || datosPanelActividad?.fecha_liquidacion || expedienteDatos?.fecha_liquidacion;
                                  if (!fecha) return "—";
@@ -1261,13 +1262,13 @@ export default function CarpetaDigitalModal({
                     )
                   )))}
                   {actividadId === "facturacion-cierre" && (
-                    <div className="mt-3 border-t border-slate-200 pt-3">
+                    <div className="mt-3 pt-3">
                       <div className="flex flex-wrap justify-end gap-2">
                         <button
                           type="button"
                           onClick={() => onLiquidar?.()}
                           disabled={!onLiquidar || !facturaEmitida}
-                          className="inline-flex items-center gap-2 rounded-lg border border-indigo-300 bg-indigo-700 px-4 py-2.5 text-xs font-extrabold text-white transition hover:bg-indigo-800 disabled:cursor-not-allowed disabled:opacity-40"
+                          className="inline-flex items-center gap-2 px-4 py-2.5"
                           title={facturaEmitida ? "Revisar provisión, movimientos y confirmar el cierre" : "Primero debes generar y guardar la factura de honorarios"}
                         >
                           ⚖️ Liquidar
@@ -1283,8 +1284,8 @@ export default function CarpetaDigitalModal({
       </div>
 
       {modoActividad && documentoVistaPrevia && (
-        <div className="fixed inset-0 z-[11000] flex items-center justify-center bg-slate-950/70 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label="Visor de documento">
-          <div className="h-[88vh] max-h-[900px] w-full max-w-6xl">
+        <div className="molsan-modal-overlay fixed inset-0 z-[11000] flex items-center justify-center p-3 sm:p-6">
+          <div ref={viewerDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Visor de documento" className="molsan-modal-panel molsan-modal__panel molsan-modal--xl h-[88vh] max-h-[900px] w-full max-w-6xl">
             {renderVisor()}
           </div>
         </div>

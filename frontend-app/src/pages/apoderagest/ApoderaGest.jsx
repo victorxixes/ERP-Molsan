@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import axios from "../../api/axios";
 import AutocompleteNotario from "../../components/agenda/AutocompleteNotario";
 import Agenda from "../agenda/Agenda";
@@ -9,7 +11,6 @@ import Mensajes from "../mensajes/Mensajes";
 import CtnListadoPage from "../ctn/CtnListadoPage";
 import { useAuthStore } from "../../store/authStore";
 import { createPortal } from "react-dom";
-import "../../css/PortalProfesionalShared.css";
 
 const PESTANAS = [
   { nombre: "Dashboard", icono: "◫" },
@@ -112,28 +113,7 @@ function euros(valor) {
 function EstadoPill({ valor }) {
   const estado = texto(valor, "Pendiente");
   const normalizado = estado.toLowerCase();
-  let clase = "ag-estado-neutro";
-
-  if (
-    normalizado.includes("firmad") ||
-    normalizado.includes("complet") ||
-    normalizado.includes("finaliz")
-  ) {
-    clase = "ag-estado-ok";
-  } else if (
-    normalizado.includes("pendient") ||
-    normalizado.includes("tramit")
-  ) {
-    clase = "ag-estado-pendiente";
-  } else if (
-    normalizado.includes("cancel") ||
-    normalizado.includes("rechaz") ||
-    normalizado.includes("error")
-  ) {
-    clase = "ag-estado-alerta";
-  }
-
-  return <span className={`ag-estado ${clase}`}>{estado}</span>;
+  return <span>{estado}</span>;
 }
 
 function TarjetaIndicador({
@@ -146,26 +126,26 @@ function TarjetaIndicador({
 }) {
   const contenido = (
     <>
-      <div className="ag-kpi-superior">
-        <span className="ag-kpi-titulo">{titulo}</span>
-        <span className="ag-kpi-icono" aria-hidden="true">{icono}</span>
+      <div>
+        <span>{titulo}</span>
+        <span aria-hidden="true">{icono}</span>
       </div>
-      <div className="ag-kpi-valor">{valor}</div>
-      {detalle ? <div className="ag-kpi-detalle">{detalle}</div> : null}
-      {onClick ? <span className="ag-kpi-ver-expedientes">Ver expedientes ↗</span> : null}
+      <div>{valor}</div>
+      {detalle ? <div>{detalle}</div> : null}
+      {onClick ? <span>Ver expedientes ↗</span> : null}
     </>
   );
   return onClick ? (
-    <button type="button" className={`ag-kpi ag-kpi-interactiva ${variante}`} onClick={onClick} aria-label={`Ver expedientes: ${titulo}`}>
+    <button type="button" className={`molsan-stat-card ${variante}`} onClick={onClick} aria-label={`Ver expedientes: ${titulo}`}>
       {contenido}
     </button>
-  ) : <article className={`ag-kpi ${variante}`}>{contenido}</article>;
+  ) : <article className={`molsan-stat-card ${variante}`}>{contenido}</article>;
 }
 
 function EstadoVacio({ icono = "◇", titulo, detalle }) {
   return (
-    <div className="ag-vacio">
-      <span className="ag-vacio-icono" aria-hidden="true">
+    <div className="erp-empty-state">
+      <span aria-hidden="true">
         {icono}
       </span>
       <h3>{titulo}</h3>
@@ -188,7 +168,7 @@ function agruparEncargosPorApoderado(encargos) {
 
 function CampoDetalle({ etiqueta, valor, clase = "" }) {
   return (
-    <div className={`ag-detalle-campo ${clase}`}>
+    <div className={`erp-data-item ${clase}`}>
       <span>{etiqueta}</span>
       <strong>{texto(valor)}</strong>
     </div>
@@ -208,19 +188,19 @@ function ImprimirEncargos({ encargos = [] }) {
     return Array.isArray(lista) ? lista : [];
   };
   return (
-    <div className="ag-print-tools">
-      <button type="button" className="ag-print-action" onClick={() => imprimir("lista")}>⎙ Imprimir listado</button>
-      <button type="button" className="ag-print-action ag-print-action-secundario" onClick={() => imprimir("fichas")}>▤ Imprimir fichas detalladas</button>
-      <section className="ag-print-root ag-encargos-print-root" aria-hidden="true">
-        <header className="ag-print-header"><strong>MOLSAN ERP · APODERAGEST</strong><h1>Listado de encargos</h1><p>{encargos.length} {encargos.length === 1 ? "encargo" : "encargos"} · Impreso el {new Date().toLocaleDateString("es-ES")}</p></header>
-        <table className="ag-print-table"><thead><tr><th>Expediente</th><th>Solicitante</th><th>Notario</th><th>Fecha prevista</th><th>Horario</th><th>Estado</th></tr></thead><tbody>{encargos.map((e, i) => <tr key={String(e.id_expediente || e.id || i)}><td>{texto(e.id_expediente || e.id)}{e.bloqueado ? <small>Bloqueado</small> : null}</td><td>{texto(e.nombre_solicitante || e.solicitante)}<small>{texto(e.nif_solicitante || e.dni_solicitante, "")}</small></td><td>{texto(e.nombre_notario || e.notario)}</td><td>{fechaLegible(e.fecha_prevista_firma)}</td><td>{horaLegible(e.hora_prevista_firma)}{e.hora_fin_prevista_firma ? " – " + horaLegible(e.hora_fin_prevista_firma) : ""}</td><td>{e.fecha_firma || e.protocolo ? "Firmado" : e.bloqueado ? "Bloqueado" : "Pendiente"}</td></tr>)}</tbody></table>
-        <div className="ag-print-fichas">
+    <div>
+      <button type="button" onClick={() => imprimir("lista")}>⎙ Imprimir listado</button>
+      <button type="button" onClick={() => imprimir("fichas")}>▤ Imprimir fichas detalladas</button>
+      <section aria-hidden="true">
+        <header><strong>MOLSAN ERP · APODERAGEST</strong><h1>Listado de encargos</h1><p>{encargos.length} {encargos.length === 1 ? "encargo" : "encargos"} · Impreso el {new Date().toLocaleDateString("es-ES")}</p></header>
+        <table><thead><tr><th>Expediente</th><th>Solicitante</th><th>Notario</th><th>Fecha prevista</th><th>Horario</th><th>Estado</th></tr></thead><tbody>{encargos.map((e, i) => <tr key={String(e.id_expediente || e.id || i)}><td>{texto(e.id_expediente || e.id)}{e.bloqueado ? <small>Bloqueado</small> : null}</td><td>{texto(e.nombre_solicitante || e.solicitante)}<small>{texto(e.nif_solicitante || e.dni_solicitante, "")}</small></td><td>{texto(e.nombre_notario || e.notario)}</td><td>{fechaLegible(e.fecha_prevista_firma)}</td><td>{horaLegible(e.hora_prevista_firma)}{e.hora_fin_prevista_firma ? " – " + horaLegible(e.hora_fin_prevista_firma) : ""}</td><td>{e.fecha_firma || e.protocolo ? "Firmado" : e.bloqueado ? "Bloqueado" : "Pendiente"}</td></tr>)}</tbody></table>
+        <div>
           {encargos.map((e, i) => {
             const fincas = Array.isArray(e.fincas) ? e.fincas : [];
             const docs = documentosDe(e);
-            return <article className="ag-print-ficha" key={String(e.id_expediente || e.id || i)}>
+            return <article key={String(e.id_expediente || e.id || i)}>
               <header><strong>MOLSAN ERP · APODERAGEST</strong><span>FICHA DE ENCARGO</span><h2>Expediente {texto(e.id_expediente || e.id)}</h2></header>
-              <div className="ag-print-grid">
+              <div>
                 <div><small>Solicitante</small><strong>{texto(e.nombre_solicitante || e.solicitante)}</strong></div>
                 <div><small>NIF / CIF</small><strong>{texto(e.nif_solicitante || e.dni_solicitante)}</strong></div>
                 <div><small>Notario</small><strong>{texto(e.nombre_notario || e.notario)}</strong></div>
@@ -233,20 +213,27 @@ function ImprimirEncargos({ encargos = [] }) {
                 <div><small>Expediente bloqueado</small><strong>{e.bloqueado ? "Sí" : "No"}</strong></div>
               </div>
               <h3>Información registral</h3>
-              {fincas.length ? <table className="ag-print-table"><thead><tr><th>Finca</th><th>Registro</th><th>Población</th><th>Provincia</th><th>CRU / IDUFIR</th><th>Cuantía</th></tr></thead><tbody>{fincas.map((f, j) => <tr key={j}><td>{texto(f.finca)}</td><td>{texto(f.registro)}</td><td>{texto(f.poblacion)}</td><td>{texto(f.provincia)}</td><td>{texto(f.cru_idufir)}</td><td>{texto(f.cuantia)}</td></tr>)}</tbody></table> : <p>No constan fincas registradas.</p>}
+              {fincas.length ? <table><thead><tr><th>Finca</th><th>Registro</th><th>Población</th><th>Provincia</th><th>CRU / IDUFIR</th><th>Cuantía</th></tr></thead><tbody>{fincas.map((f, j) => <tr key={j}><td>{texto(f.finca)}</td><td>{texto(f.registro)}</td><td>{texto(f.poblacion)}</td><td>{texto(f.provincia)}</td><td>{texto(f.cru_idufir)}</td><td>{texto(f.cuantia)}</td></tr>)}</tbody></table> : <p>No constan fincas registradas.</p>}
               <h3>Documentación de carpeta digital</h3>
               {docs.length ? <ul>{docs.map((d, j) => <li key={j}>{texto(d.nombre_original || d.nombre || d.filename || d.categoria || d.tipo, "Documento adjunto")}</li>)}</ul> : <p>La ficha impresa no incorpora los archivos PDF/adjuntos; consúltalos en la carpeta digital del expediente.</p>}
               {e.observaciones ? <><h3>Observaciones</h3><p>{e.observaciones}</p></> : null}
             </article>;
           })}
         </div>
-        <footer className="ag-print-footer">Impresión generada desde ApoderaGest. Los documentos originales no se incrustan en esta impresión.</footer>
+        <footer>Impresión generada desde ApoderaGest. Los documentos originales no se incrustan en esta impresión.</footer>
       </section>
     </div>
   );
 }
 function TablaEncargos({ encargos, onFirmado }) {
   const [abiertos, setAbiertos] = useState({});
+  const [grupoEncargosAbierto, setGrupoEncargosAbierto] = useState(null);
+  const grupoDialogRef = useRef(null);
+  useAccessibleDialog({
+    open: grupoEncargosAbierto,
+    onClose: () => setGrupoEncargosAbierto(null),
+    dialogRef: grupoDialogRef,
+  });
   const [firmas, setFirmas] = useState({});
   const [guardandoFirma, setGuardandoFirma] = useState({});
   const [erroresFirma, setErroresFirma] = useState({});
@@ -482,68 +469,68 @@ function TablaEncargos({ encargos, onFirmado }) {
   }
 
   return (
-    <div className="ag-encargos-agrupados ag-apoderados-grid">
+    <div>
       {grupos.map((grupo) => {
-        const abierto = Boolean(abiertos[grupo.clave]);
+        const abierto = grupoEncargosAbierto === grupo.clave;
         const notarioCtn = encontrarNotarioCtn(grupo, catalogoCtn);
         const expedientesBloqueados = grupo.expedientes.filter((encargo) => Boolean(encargo.bloqueado)).length;
         const direccionNotario = [notarioCtn?.direccion, notarioCtn?.cp].filter(Boolean).join(" · ");
         const ubicacionNotario = [notarioCtn?.municipio, notarioCtn?.provincia].filter(Boolean).join(" · ");
         return (
-          <section className="ag-panel ag-grupo-notario ag-grupo-apoderado" key={grupo.clave}>
-            <button type="button" className="ag-panel-cabecera ag-notario-grupo-trigger ag-apoderado-grupo-trigger" aria-expanded={abierto} onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: !actual[grupo.clave] }))}>
-              <span className="ag-notario-grupo-icono" aria-hidden="true">♙</span>
-              <span className="ag-notario-grupo-info">
-                <span className="ag-notario-linea-unica">
+          <section key={grupo.clave}>
+            <button type="button" aria-expanded={abierto} onClick={() => setGrupoEncargosAbierto(abierto ? null : grupo.clave)}>
+              <span aria-hidden="true">♙</span>
+              <span>
+                <span>
                   <strong>{grupo.nombre}</strong>
-                  <span className="ag-notario-dato-inline"><b>Encargos</b>{grupo.expedientes.length}</span>
+                  <span><b>Encargos</b>{grupo.expedientes.length}</span>
                 </span>
               </span>
-              <span className="ag-notario-contadores">
-                <span className="ag-contador ag-contador-firmas">✓ {grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas</span>
-                <span className="ag-contador">{grupo.expedientes.length} {grupo.expedientes.length === 1 ? "encargo" : "encargos"}</span>
-                <span className={`ag-contador-bloqueados${expedientesBloqueados > 0 ? " tiene-bloqueados" : ""}`}>{expedientesBloqueados} {expedientesBloqueados === 1 ? "bloqueado" : "bloqueados"}</span>
-                <span className="ag-contador">Ver encargos →</span>
+              <span>
+                <span>✓ {grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas</span>
+                <span>{grupo.expedientes.length} {grupo.expedientes.length === 1 ? "encargo" : "encargos"}</span>
+                <span className={`${expedientesBloqueados > 0 ? "tiene-bloqueados" : ""}`}>{expedientesBloqueados} {expedientesBloqueados === 1 ? "bloqueado" : "bloqueados"}</span>
+                <span>Ver encargos →</span>
               </span>
             </button>
             {abierto ? createPortal((
-              <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label={`Encargos de ${grupo.nombre}`} onMouseDown={(e) => { if (e.target === e.currentTarget) setAbiertos(actual => ({ ...actual, [grupo.clave]: false })); }}>
-                <div className="flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
-                  <header className="flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4">
-                    <div><span className="text-xs font-semibold uppercase tracking-widest text-slate-500">APODERAGEST · BLOQUE DE APODERADO</span><h3 className="mt-1 text-xl font-bold text-slate-900">{grupo.nombre}</h3><p className="text-sm text-slate-600">{grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas registradas · {grupo.expedientes.length} encargos</p></div>
-                    <button type="button" className="rounded-xl border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-slate-100" onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: false }))}>Cerrar ✕</button>
+              <div className="molsan-modal-overlay panel-modal-premium fixed inset-0 z-[1000] flex items-center justify-center p-3 sm:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget) setGrupoEncargosAbierto(null); }}>
+                <div ref={grupoDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={`Encargos de ${grupo.nombre}`} className="molsan-modal__panel molsan-modal--wide flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden">
+                  <header className="molsan-modal__header flex items-center justify-between gap-4 px-5 py-4">
+                    <div><span className="uppercase">APODERAGEST · BLOQUE DE APODERADO</span><h3 className="mt-1">{grupo.nombre}</h3><p>{grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas registradas · {grupo.expedientes.length} encargos</p></div>
+                    <button type="button" className="px-4 py-2" onClick={() => setGrupoEncargosAbierto(null)}>Cerrar ✕</button>
                   </header>
-                  <div className="ag-encargos-detalle-lista ag-ficha-premium overflow-y-auto p-4">
+                  <div className="molsan-modal__body overflow-y-auto p-4">
                 {grupo.expedientes.map((encargo, indice) => {
                   const id = String(encargo.id_expediente || encargo.id || indice);
                   const detalleAbierto = Boolean(abiertos[`exp-${id}`]);
                   const firma = firmas[id] || {};
                   const facturacion = encargo.facturacion || {};
                   return (
-                    <article className="ag-encargo-detalle ag-ficha-encargo" key={id}>
-                      <button type="button" className="ag-encargo-detalle-cabecera" aria-expanded={detalleAbierto} onClick={() => setAbiertos(actual => ({ ...actual, [`exp-${id}`]: !actual[`exp-${id}`] }))}>
+                    <article key={id}>
+                      <button type="button" aria-expanded={detalleAbierto} onClick={() => setAbiertos(actual => ({ ...actual, [`exp-${id}`]: !actual[`exp-${id}`] }))}>
                         <span><strong>Expediente {texto(encargo.id_expediente || encargo.id)}</strong><small>{texto(encargo.nombre_solicitante || encargo.solicitante)}{(encargo.nif_solicitante || encargo.dni_solicitante) ? ` · ${texto(encargo.nif_solicitante || encargo.dni_solicitante)}` : ""}</small></span>
                         <span>{detalleAbierto ? "Ocultar detalles ⌃" : "Ver todos los datos ⌄"}</span>
                       </button>
-                      {encargo.bloqueado && <div className="ag-alerta-bloqueo" role="alert"><strong>EXPEDIENTE BLOQUEADO EN CANCELAGEST</strong><span>{texto(encargo.motivo_bloqueo_efectivo || encargo.motivo_bloqueo || "Este expediente está bloqueado. Consulta con gestión antes de continuar.")}</span></div>}
-                      <div className="ag-encargo-resumen ag-ficha-resumen ag-aceptar-resumen">
+                      {encargo.bloqueado && <div role="alert"><strong>EXPEDIENTE BLOQUEADO EN CANCELAGEST</strong><span>{texto(encargo.motivo_bloqueo_efectivo || encargo.motivo_bloqueo || "Este expediente está bloqueado. Consulta con gestión antes de continuar.")}</span></div>}
+                      <div>
                         <CampoDetalle etiqueta="Expediente bloqueado" valor={encargo.bloqueado ? "Sí" : "No"} />
-                        <CampoDetalle etiqueta="Firma urgente" valor={encargo.firma_urgente ? "SÍ · URGENTE" : "No"} clase={encargo.firma_urgente ? "ag-firma-urgente-activa" : ""} />
-                        <label className="ag-aceptar-campo"><span>Fecha de envío</span><input type="date" value={(datosAceptacion[id]?.fecha_envio ?? encargo.fecha_envio_notario ?? encargo.fecha_envio ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "fecha_envio", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!(encargo.fecha_envio_notario || encargo.fecha_envio) && !!(encargo.fecha_envio_notario || encargo.fecha_envio) && !!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
-                        <label className="ag-aceptar-campo"><span>N.º solicitud PN</span><input type="text" value={(datosAceptacion[id]?.numero_solicitud_pnc ?? encargo.numero_solicitud_pnc ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "numero_solicitud_pnc", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
-                        <label className="ag-aceptar-campo"><span>Fecha solicitud PNC</span><input type="date" value={(datosAceptacion[id]?.fecha_solicitud_pnc ?? encargo.fecha_solicitud_pnc ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "fecha_solicitud_pnc", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
-                        <label className="ag-aceptar-campo"><span>Fecha prevista de firma</span><input type="date" value={(datosAceptacion[id]?.fecha_prevista_firma ?? encargo.fecha_prevista_firma ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "fecha_prevista_firma", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
-                        <label className="ag-aceptar-campo"><span>Hora de inicio</span><input type="time" value={(datosAceptacion[id]?.hora_inicio ?? (encargo.hora_prevista_firma || "09:00").slice(0,5))} onChange={(e) => cambiarDatoAceptacion(encargo, "hora_inicio", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
-                        <label className="ag-aceptar-campo"><span>Hora de fin</span><input type="time" value={(datosAceptacion[id]?.hora_fin ?? (encargo.hora_fin_prevista_firma || "10:00").slice(0,5))} onChange={(e) => cambiarDatoAceptacion(encargo, "hora_fin", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
-                        <div className="ag-aceptar-accion">{encargo.numero_solicitud_pnc && encargo.fecha_solicitud_pnc && encargo.fecha_prevista_firma && !edicionAceptacion[id] ? <><button type="button" disabled> Aceptar </button><button type="button" disabled={!!encargo.bloqueado || !!guardandoAceptacion[id]} onClick={() => setEdicionAceptacion((actual) => ({ ...actual, [id]: true }))}>Editar</button></> : <button type="button" disabled={!!encargo.bloqueado || !!guardandoAceptacion[id]} onClick={() => aceptarEncargo(encargo)}>{guardandoAceptacion[id] ? "Guardando…" : "Aceptar"}</button>}</div>
-                        {erroresAceptacion[id] && <p className="ag-firma-error">{erroresAceptacion[id]}</p>}
-                        {mensajesAceptacion[id] && <p className="ag-firma-ok">{mensajesAceptacion[id]}</p>}
+                        <CampoDetalle etiqueta="Firma urgente" valor={encargo.firma_urgente ? "SÍ · URGENTE" : "No"} clase={encargo.firma_urgente ? "" : ""} />
+                        <label><span>Fecha de envío</span><input type="date" value={(datosAceptacion[id]?.fecha_envio ?? encargo.fecha_envio_notario ?? encargo.fecha_envio ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "fecha_envio", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!(encargo.fecha_envio_notario || encargo.fecha_envio) && !!(encargo.fecha_envio_notario || encargo.fecha_envio) && !!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
+                        <label><span>N.º solicitud PN</span><input type="text" value={(datosAceptacion[id]?.numero_solicitud_pnc ?? encargo.numero_solicitud_pnc ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "numero_solicitud_pnc", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
+                        <label><span>Fecha solicitud PNC</span><input type="date" value={(datosAceptacion[id]?.fecha_solicitud_pnc ?? encargo.fecha_solicitud_pnc ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "fecha_solicitud_pnc", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
+                        <label><span>Fecha prevista de firma</span><input type="date" value={(datosAceptacion[id]?.fecha_prevista_firma ?? encargo.fecha_prevista_firma ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "fecha_prevista_firma", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
+                        <label><span>Hora de inicio</span><input type="time" value={(datosAceptacion[id]?.hora_inicio ?? (encargo.hora_prevista_firma || "09:00").slice(0,5))} onChange={(e) => cambiarDatoAceptacion(encargo, "hora_inicio", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
+                        <label><span>Hora de fin</span><input type="time" value={(datosAceptacion[id]?.hora_fin ?? (encargo.hora_fin_prevista_firma || "10:00").slice(0,5))} onChange={(e) => cambiarDatoAceptacion(encargo, "hora_fin", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
+                        <div>{encargo.numero_solicitud_pnc && encargo.fecha_solicitud_pnc && encargo.fecha_prevista_firma && !edicionAceptacion[id] ? <><button type="button" disabled> Aceptar </button><button type="button" disabled={!!encargo.bloqueado || !!guardandoAceptacion[id]} onClick={() => setEdicionAceptacion((actual) => ({ ...actual, [id]: true }))}>Editar</button></> : <button type="button" disabled={!!encargo.bloqueado || !!guardandoAceptacion[id]} onClick={() => aceptarEncargo(encargo)}>{guardandoAceptacion[id] ? "Guardando…" : "Aceptar"}</button>}</div>
+                        {erroresAceptacion[id] && <p>{erroresAceptacion[id]}</p>}
+                        {mensajesAceptacion[id] && <p>{mensajesAceptacion[id]}</p>}
                       </div>
                       {detalleAbierto && (
-                        <div className="ag-encargo-paneles ag-ficha-paneles">
-                          <details open className="ag-encargo-subpanel ag-ficha-envio">
-                            <summary className="ag-ficha-bloque-heading"><span>01 · DATOS DEL ENVÍO</span><h4>Datos del envío</h4></summary>
-                            <div className="ag-encargo-grid">
+                        <div>
+                          <details open>
+                            <summary><span>01 · DATOS DEL ENVÍO</span><h4>Datos del envío</h4></summary>
+                            <div>
                               <CampoDetalle etiqueta="Fecha de envío" valor={fechaLegible(encargo.fecha_envio_notario || encargo.fecha_envio)} />
                               <CampoDetalle etiqueta="Oficina" valor={encargo.oficina} />
                               <CampoDetalle etiqueta="Fecha alta" valor={fechaLegible(encargo.fecha_alta)} />
@@ -556,9 +543,9 @@ function TablaEncargos({ encargos, onFirmado }) {
                               <CampoDetalle etiqueta="Hora prevista de firma" valor={horaLegible(encargo.hora_prevista_firma)} />
                             </div>
                           </details>
-                          <details open className="ag-encargo-subpanel ag-ficha-facturacion">
-                            <summary className="ag-ficha-bloque-heading"><span>02 · DATOS DE FACTURACIÓN</span><h4>Datos de facturación</h4></summary>
-                            <div className="ag-encargo-grid">
+                          <details open>
+                            <summary><span>02 · DATOS DE FACTURACIÓN</span><h4>Datos de facturación</h4></summary>
+                            <div>
                               <CampoDetalle etiqueta="Nombre" valor={facturacion.nombre} />
                               <CampoDetalle etiqueta="Apellidos" valor={facturacion.apellidos} />
                               <CampoDetalle etiqueta="DNI / NIF de facturación" valor={facturacion.dni_nif} />
@@ -570,24 +557,24 @@ function TablaEncargos({ encargos, onFirmado }) {
                               <CampoDetalle etiqueta="Email" valor={facturacion.email} />
                             </div>
                           </details>
-                          <details open className="ag-encargo-subpanel ag-ficha-encargo-notarial">
-                            <summary className="ag-ficha-bloque-heading"><span>03 · ENCARGO NOTARIAL</span><h4>Encargo notarial</h4></summary>
-                            <div className="ag-encargo-grid">
+                          <details open>
+                            <summary><span>03 · ENCARGO NOTARIAL</span><h4>Encargo notarial</h4></summary>
+                            <div>
                               <CampoDetalle etiqueta="Tipo de operación" valor={encargo.tipo_operacion} />
                               <CampoDetalle etiqueta="Subtipo de operación" valor={encargo.subtipo_operacion} />
                               <CampoDetalle etiqueta="Importe" valor={encargo.importe != null ? euros(encargo.importe) : null} />
                               <CampoDetalle etiqueta="Saldo disponible" valor={encargo.saldo_disponible != null ? euros(encargo.saldo_disponible) : null} />
                               <CampoDetalle etiqueta="Tipo del documento formalizado" valor={(encargo.documentos_escritura || []).map((doc) => doc.tipo_documento).filter(Boolean).join(", ") || encargo.tipo_documento || encargo.formato_escritura || encargo.tipo_tramite} />
                               <CampoDetalle etiqueta="Cuantía del documento" valor={(encargo.documentos_escritura || []).some((doc) => doc.cuantia != null) ? euros((encargo.documentos_escritura || []).reduce((total, doc) => total + (Number(doc.cuantia) || 0), 0)) : (encargo.cuantia_documento != null ? euros(encargo.cuantia_documento) : null)} />
-                              <CampoDetalle etiqueta="Firma urgente" valor={encargo.firma_urgente ? "SÍ · URGENTE" : "No"} clase={encargo.firma_urgente ? "ag-firma-urgente-activa" : ""} />
+                              <CampoDetalle etiqueta="Firma urgente" valor={encargo.firma_urgente ? "SÍ · URGENTE" : "No"} clase={encargo.firma_urgente ? "" : ""} />
                               <CampoDetalle etiqueta="Datos del envío" valor={fechaLegible(encargo.fecha_envio_notario || encargo.fecha_envio)} />
                               <CampoDetalle etiqueta="Oficina" valor={encargo.oficina} />
                               <CampoDetalle etiqueta="Fecha alta" valor={fechaLegible(encargo.fecha_alta)} />
                             </div>
                           </details>
-                          <details open className="ag-encargo-subpanel ag-ficha-archivo">
-                            <summary className="ag-ficha-bloque-heading"><span>04 · ARCHIVO</span><h4>Carpeta digital</h4><small>Documentación disponible para consultar desde el expediente.</small></summary>
-                              <div className="ag-archivo-carpetas">
+                          <details open>
+                            <summary><span>04 · ARCHIVO</span><h4>Carpeta digital</h4><small>Documentación disponible para consultar desde el expediente.</small></summary>
+                              <div>
                             {(() => {
                               const documentos = encargo.documentos || [];
                               const normalizar = (valor) => normalizarCategoriaDocumento(valor);
@@ -600,13 +587,13 @@ function TablaEncargos({ encargos, onFirmado }) {
                               const otros = documentos.filter((doc) => !clasificados.has(doc) && esDocumentoOtros(doc));
                               const restantes = documentos.filter((doc) => !clasificados.has(doc) && !esDocumentoOtros(doc));
                               const renderCarpeta = (titulo, icono, lista, vacio) => (
-                                <details className="ag-carpeta-apoderado" key={titulo} open>
-                                  <summary className="ag-carpeta-apoderado-cabecera">
-                                    <span className="ag-carpeta-apoderado-icono" aria-hidden="true">{icono}</span>
+                                <details key={titulo} open>
+                                  <summary>
+                                    <span aria-hidden="true">{icono}</span>
                                     <div><strong>{titulo}</strong><small>{lista.length} documento{lista.length === 1 ? "" : "s"}</small></div>
                                   </summary>
                                   {lista.length ? (
-                                    <ul className="ag-documentos-apoderado">
+                                    <ul>
                                       {lista.map((doc) => (
                                         <li key={doc.id}>
                                           <span><strong>{doc.categoria}</strong><small>{doc.nombre_original} · {fechaLegible(doc.fecha_subida)}</small></span>
@@ -614,11 +601,11 @@ function TablaEncargos({ encargos, onFirmado }) {
                                         </li>
                                       ))}
                                     </ul>
-                                  ) : <p className="ag-encargo-vacio">{vacio}</p>}
+                                  ) : <p>{vacio}</p>}
                                 </details>
                               );
                               return (
-                                <div className="ag-carpetas-apoderado">
+                                <div>
                                   {renderCarpeta("Borradores de escritura", "▤", borradores, "No hay borradores de escritura disponibles.")}
                                   {renderCarpeta("Hoja de encargo firmada", "▣", hojaEncargo, "No hay hojas de encargo firmadas disponibles.")}
                                   {renderCarpeta("Justificante de cancelación", "▣", justificantes, "No hay justificantes de cancelación disponibles.")}
@@ -630,24 +617,24 @@ function TablaEncargos({ encargos, onFirmado }) {
                             })()}
                               </div>
                           </details>
-                          <details open className="ag-encargo-subpanel ag-ficha-visor">
-                            <summary className="ag-ficha-bloque-heading"><span>VISUALIZACIÓN</span><h4>Visor de documentos</h4><small>Vista previa del fichero seleccionado.</small></summary>
-                              <div className="ag-visor-inline">
+                          <details open>
+                            <summary><span>VISUALIZACIÓN</span><h4>Visor de documentos</h4><small>Vista previa del fichero seleccionado.</small></summary>
+                              <div>
                                 {documentoVisor && documentoVisor.expedienteId === String(encargo.id_expediente || encargo.id) ? (
                                   <>
-                                    <div className="ag-visor-inline-cabecera"><strong>{documentoVisor.nombre}</strong><div><button type="button" onClick={descargarDocumentoVisor}>Descargar</button><button type="button" onClick={cerrarVisor}>Cerrar</button></div></div>
-                                    <div className="ag-visor-inline-contenido">
-                                      {documentoVisor.previsualizable ? (documentoVisor.mime.startsWith("image/") || ["png","jpg","jpeg","webp","gif"].includes(documentoVisor.nombre.split(".").pop()?.toLowerCase()) ? <img src={documentoVisor.url} alt={documentoVisor.nombre} className="ag-visor-imagen" /> : <iframe title={documentoVisor.nombre} src={documentoVisor.url} className="ag-visor-pdf" />) : <div className="ag-visor-estado"><strong>Vista previa no disponible para este formato.</strong><span>Descarga el archivo para abrirlo con la aplicación correspondiente.</span><button type="button" onClick={descargarDocumentoVisor}>Descargar documento</button></div>}
+                                    <div><strong>{documentoVisor.nombre}</strong><div><button type="button" onClick={descargarDocumentoVisor}>Descargar</button><button type="button" onClick={cerrarVisor}>Cerrar</button></div></div>
+                                    <div>
+                                      {documentoVisor.previsualizable ? (documentoVisor.mime.startsWith("image/") || ["png","jpg","jpeg","webp","gif"].includes(documentoVisor.nombre.split(".").pop()?.toLowerCase()) ? <img src={documentoVisor.url} alt={documentoVisor.nombre} /> : <iframe title={documentoVisor.nombre} src={documentoVisor.url} />) : <div><strong>Vista previa no disponible para este formato.</strong><span>Descarga el archivo para abrirlo con la aplicación correspondiente.</span><button type="button" onClick={descargarDocumentoVisor}>Descargar documento</button></div>}
                                     </div>
                                   </>
-                                ) : <div className="ag-visor-inline-vacio"><span aria-hidden="true">▤</span><strong>Visor de documentos PDF</strong><p>Selecciona «Ver en visor» en una carpeta para consultar el documento aquí.</p></div>}
+                                ) : <div><span aria-hidden="true">▤</span><strong>Visor de documentos PDF</strong><p>Selecciona «Ver en visor» en una carpeta para consultar el documento aquí.</p></div>}
                               </div>
                           </details>
-                          <details open className="ag-encargo-subpanel ag-ficha-registral">
-                            <summary className="ag-ficha-bloque-heading"><span>03 · INFORMACIÓN REGISTRAL</span><h4>Fincas y registros de la propiedad</h4></summary>
+                          <details open>
+                            <summary><span>03 · INFORMACIÓN REGISTRAL</span><h4>Fincas y registros de la propiedad</h4></summary>
                             {encargo.fincas?.length ? encargo.fincas.map((finca, i) => (
-                              <div className="ag-finca-registro" key={`${id}-finca-${i}`}>
-                                <div className="ag-encargo-grid">
+                              <div key={`${id}-finca-${i}`}>
+                                <div>
                                   <CampoDetalle etiqueta="Finca" valor={finca.finca} />
                                   <CampoDetalle etiqueta="CRU / IDUFIR" valor={finca.cru_idufir} />
                                   <CampoDetalle etiqueta="Registro de la Propiedad" valor={finca.registro} />
@@ -662,16 +649,16 @@ function TablaEncargos({ encargos, onFirmado }) {
                                   <CampoDetalle etiqueta="Entidad original" valor={finca.entidad_original} />
                                 </div>
                               </div>
-                            )) : <p className="ag-encargo-vacio">No constan fincas registradas en el expediente.</p>}
+                            )) : <p>No constan fincas registradas en el expediente.</p>}
                           </details>
-                          <details open className="ag-encargo-subpanel ag-firmar-panel ag-ficha-firma">
-                            <summary className="ag-ficha-bloque-heading"><span>05 · CIERRE DE FIRMA</span><h4>Confirmar firma</h4></summary>
+                          <details open>
+                            <summary><span>05 · CIERRE DE FIRMA</span><h4>Confirmar firma</h4></summary>
                             <p>Al pulsar «Firmar», la fecha y el protocolo se guardan en los campos oficiales de FichaExpediente.</p>
-                            <div className="ag-firmar-controles">
-                              <label className="ag-firma-fecha">Fecha de firma<input type="date" value={firma.fecha_firma || encargo.fecha_firma || encargo.fecha_prevista_firma || fechaHoyLocal()} onChange={(e) => cambiarFirma(id, "fecha_firma", e.target.value)} /></label>
-                              <label className="ag-firma-protocolo">Número de protocolo<input type="text" maxLength={200} value={firma.protocolo || encargo.protocolo || ""} onChange={(e) => cambiarFirma(id, "protocolo", e.target.value)} placeholder="N.º protocolo" /></label>
-                              <label className="ag-firma-tipo">Tipo de firma<select value={firma.tipo_firma || encargo.tipo_firma || "Presencial"} onChange={(e) => cambiarFirma(id, "tipo_firma", e.target.value)}><option value="Videoconferencia">Videoconferencia</option><option value="Presencial">Presencial</option></select></label>
-                              <label className="ag-firma-notario">Notario otorgante<select value={firma.notario_otorgante || encargo.notario_otorgante || encargo.nombre_notario || encargo.notario || ""} onChange={(e) => cambiarFirma(id, "notario_otorgante", e.target.value)}>
+                            <div>
+                              <label>Fecha de firma<input type="date" value={firma.fecha_firma || encargo.fecha_firma || encargo.fecha_prevista_firma || fechaHoyLocal()} onChange={(e) => cambiarFirma(id, "fecha_firma", e.target.value)} /></label>
+                              <label>Número de protocolo<input type="text" maxLength={200} value={firma.protocolo || encargo.protocolo || ""} onChange={(e) => cambiarFirma(id, "protocolo", e.target.value)} placeholder="N.º protocolo" /></label>
+                              <label>Tipo de firma<select value={firma.tipo_firma || encargo.tipo_firma || "Presencial"} onChange={(e) => cambiarFirma(id, "tipo_firma", e.target.value)}><option value="Videoconferencia">Videoconferencia</option><option value="Presencial">Presencial</option></select></label>
+                              <label>Notario otorgante<select value={firma.notario_otorgante || encargo.notario_otorgante || encargo.nombre_notario || encargo.notario || ""} onChange={(e) => cambiarFirma(id, "notario_otorgante", e.target.value)}>
                                 <option value={encargo.nombre_notario || encargo.notario || ""}>{encargo.nombre_notario || encargo.notario || "Notario del encargo"}</option>
                                 {(() => {
                                   const normalizar = (v) => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es");
@@ -681,21 +668,21 @@ function TablaEncargos({ encargos, onFirmado }) {
                                   return asociados.map((n) => { const nombre = n.nombre_completo || [n.nombre, n.apellidos].filter(Boolean).join(" "); return <option key={n.id} value={nombre}>{nombre}</option>; });
                                 })()}
                               </select></label>
-                              <button className="ag-firma-boton" type="button" disabled={!!guardandoFirma[id]} onClick={() => firmar(encargo)}>{guardandoFirma[id] ? "Guardando…" : "Firmar"}</button>
+                              <button type="button" disabled={!!guardandoFirma[id]} onClick={() => firmar(encargo)}>{guardandoFirma[id] ? "Guardando…" : "Firmar"}</button>
                             </div>
-                            {erroresFirma[id] && <p className="ag-firma-error">{erroresFirma[id]}</p>}
-                            {mensajeFirma[id] && <p className="ag-firma-ok">{mensajeFirma[id]}</p>}
+                            {erroresFirma[id] && <p>{erroresFirma[id]}</p>}
+                            {mensajeFirma[id] && <p>{mensajeFirma[id]}</p>}
                           </details>
-                          <details open className="ag-encargo-subpanel ag-ficha-observaciones">
-                            <summary className="ag-ficha-bloque-heading"><span>06 · COMUNICACIONES</span><h4>Observaciones y mensajes al gestor</h4></summary>
-                            <h5 className="ag-comunicaciones-subtitulo">Observaciones visibles para el apoderado</h5>
+                          <details open>
+                            <summary><span>06 · COMUNICACIONES</span><h4>Observaciones y mensajes al gestor</h4></summary>
+                            <h5>Observaciones visibles para el apoderado</h5>
                             {encargo.observaciones_apoderado?.length ? (
-                              <ul className="ag-observaciones-apoderado">
+                              <ul>
                                 {encargo.observaciones_apoderado.map((obs) => <li key={obs.id}><p>{obs.comentario}</p><small>{obs.fecha ? new Date(obs.fecha).toLocaleString("es-ES") : "Fecha no disponible"}</small></li>)}
                               </ul>
-                            ) : <p className="ag-encargo-vacio">No hay observaciones marcadas como «Visible apoderado».</p>}
-                            <div className="ag-comentario-gestor">
-                              <h5 className="ag-comunicaciones-subtitulo">Enviar una observación al gestor</h5>
+                            ) : <p>No hay observaciones marcadas como «Visible apoderado».</p>}
+                            <div>
+                              <h5>Enviar una observación al gestor</h5>
                               <label>Observación
                                 <textarea rows={3} maxLength={2000} value={comentariosGestor[id] || ""} onChange={(e) => setComentariosGestor((actual) => ({ ...actual, [id]: e.target.value }))} placeholder="Escribe aquí el comentario para el gestor responsable…" />
                               </label>
@@ -706,8 +693,8 @@ function TablaEncargos({ encargos, onFirmado }) {
                                 </select>
                               </label>
                               <button type="button" disabled={!!guardandoComentarioGestor[id] || !gestoresDisponibles.length} onClick={() => enviarComentarioAlGestor(encargo)}>{guardandoComentarioGestor[id] ? "Enviando…" : "Enviar al gestor"}</button>
-                              {erroresComentarioGestor[id] && <p className="ag-firma-error">{erroresComentarioGestor[id]}</p>}
-                              {mensajesComentarioGestor[id] && <p className="ag-firma-ok">{mensajesComentarioGestor[id]}</p>}
+                              {erroresComentarioGestor[id] && <p>{erroresComentarioGestor[id]}</p>}
+                              {mensajesComentarioGestor[id] && <p>{mensajesComentarioGestor[id]}</p>}
                             </div>
                           </details>
                         </div>
@@ -766,6 +753,8 @@ export default function ApoderaGest() {
   const [busquedaEncargos, setBusquedaEncargos] = useState("");
   const [ultimaActualizacion, setUltimaActualizacion] = useState(null);
   const [modalResumen, setModalResumen] = useState(null);
+  const resumenDialogRef = useRef(null);
+  useAccessibleDialog({ open: Boolean(modalResumen), onClose: () => setModalResumen(null), dialogRef: resumenDialogRef });
 
 
   const cargarDatos = useCallback(async () => {
@@ -864,15 +853,8 @@ export default function ApoderaGest() {
   }, [encargos, busquedaEncargos]);
 
 
-  const fechaActual = new Intl.DateTimeFormat("es-ES", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date());
-
   return (
-    <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
+    <div className="min-h-screen apoderagest">
       <Sidebar
         brandName="ApoderaGest"
         navigationItems={[
@@ -891,88 +873,62 @@ export default function ApoderaGest() {
       />
       <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
-          <div className="w-full apoderagest">
-      <header className="ag-hero molsan-page-header">
-        <div className="ag-hero-identidad molsan-page-header__identity">
-          <div className="ag-marca">AG</div>
-          <div>
-            <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
-            <h1 className="molsan-page-header__title">ApoderaGest</h1>
-            <p className="molsan-page-header__description">Centro de gestión de encargos, firmas y actividad del apoderado.</p>
-          </div>
-        </div>
-        <div className="ag-hero-acciones">
-          <div className="ag-fecha-actual">
-            <span className="ag-punto-vivo" />
-            <span>{fechaActual}</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigate("/modulos")}
-            className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"
-          >
-            <span aria-hidden="true">▦</span> Ir a módulos
-          </button>
-          <button type="button" className="ag-boton-actualizar" onClick={cargarDatos} disabled={cargando}>
-            <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
-            {cargando ? "Actualizando…" : "Actualizar datos"}
-          </button>
-        </div>
-      </header>
+          <div className="erp-page w-full apoderagest">
+      <MolsanPageHeader mark="AG" title="ApoderaGest" description="Centro de gestión de encargos, firmas y actividad del apoderado." />
 
       {error ? (
-        <div className="ag-alerta-error" role="alert">
-          <span className="ag-alerta-icono">!</span>
+        <div role="alert">
+          <span>!</span>
           <div><strong>No se han podido actualizar los datos</strong><p>{error}</p></div>
           <button type="button" onClick={cargarDatos} disabled={cargando}>Reintentar</button>
         </div>
       ) : null}
 
       {cargando && !dashboard ? (
-        <div className="ag-cargando"><span className="ag-spinner" /><span>Cargando tu espacio de trabajo…</span></div>
+        <div><span /><span>Cargando tu espacio de trabajo…</span></div>
       ) : null}
 
       {pestana === "Dashboard" ? (
-        <section className="ag-contenido">
-          <div className="ag-titulo-seccion">
-            <div><span className="ag-kicker">VISTA GENERAL</span><h2>Resumen de actividad</h2><p>Una visión rápida de encargos, firmas y próximos compromisos.</p></div>
-            {ultimaActualizacion ? <span className="ag-actualizado">Actualizado a las {ultimaActualizacion.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}</span> : null}
+        <section>
+          <div>
+            <div><span>VISTA GENERAL</span><h2>Resumen de actividad</h2><p>Una visión rápida de encargos, firmas y próximos compromisos.</p></div>
+            {ultimaActualizacion ? <span>Actualizado a las {ultimaActualizacion.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}</span> : null}
           </div>
-          <div className="ag-grid-kpi">
-            <TarjetaIndicador titulo="Total de encargos" valor={numeroLegible(dashboard?.total_encargos ?? 0)} detalle="Volumen registrado" icono="▤" variante="ag-kpi-azul" onClick={() => abrirResumenEncargos("todos", "Todos los encargos")} />
-            <TarjetaIndicador titulo="Firmados" valor={numeroLegible(dashboard?.firmados ?? 0)} detalle="Encargos completados" icono="✓" variante="ag-kpi-verde" onClick={() => abrirResumenEncargos("firmados", "Encargos firmados")} />
-            <TarjetaIndicador titulo="Pendientes" valor={numeroLegible(dashboard?.pendientes ?? 0)} detalle="Requieren seguimiento" icono="◷" variante="ag-kpi-ambar" onClick={() => abrirResumenEncargos("pendientes", "Encargos pendientes")} />
-            <TarjetaIndicador titulo="Media hasta firma" valor={dashboard?.media_dias_hasta_firma == null ? "—" : `${Math.abs(dashboard.media_dias_hasta_firma)} días ${dashboard.media_dias_hasta_firma < 0 ? "antes" : dashboard.media_dias_hasta_firma > 0 ? "después" : "en fecha"}`} detalle="Desde fecha prevista hasta fecha real" icono="↗" variante="ag-kpi-violeta" onClick={() => abrirResumenEncargos("media", "Encargos incluidos en la media hasta firma")} />
+          <div className="molsan-stat-grid">
+            <TarjetaIndicador titulo="Total de encargos" valor={numeroLegible(dashboard?.total_encargos ?? 0)} detalle="Volumen registrado" icono="▤" variante="" onClick={() => abrirResumenEncargos("todos", "Todos los encargos")} />
+            <TarjetaIndicador titulo="Firmados" valor={numeroLegible(dashboard?.firmados ?? 0)} detalle="Encargos completados" icono="✓" variante="" onClick={() => abrirResumenEncargos("firmados", "Encargos firmados")} />
+            <TarjetaIndicador titulo="Pendientes" valor={numeroLegible(dashboard?.pendientes ?? 0)} detalle="Requieren seguimiento" icono="◷" variante="" onClick={() => abrirResumenEncargos("pendientes", "Encargos pendientes")} />
+            <TarjetaIndicador titulo="Media hasta firma" valor={dashboard?.media_dias_hasta_firma == null ? "—" : `${Math.abs(dashboard.media_dias_hasta_firma)} días ${dashboard.media_dias_hasta_firma < 0 ? "antes" : dashboard.media_dias_hasta_firma > 0 ? "después" : "en fecha"}`} detalle="Desde fecha prevista hasta fecha real" icono="↗" variante="" onClick={() => abrirResumenEncargos("media", "Encargos incluidos en la media hasta firma")} />
           </div>
-          <div className="ag-grid-secundario">
+          <div className="molsan-stat-grid">
             <TarjetaIndicador titulo="Firmas presenciales" valor={numeroLegible(dashboard?.firmas_presenciales)} detalle="Actividad presencial" icono="⌖" onClick={() => abrirResumenEncargos("presenciales", "Firmas presenciales")} />
             <TarjetaIndicador titulo="Firmas por videoconferencia" valor={numeroLegible(dashboard?.firmas_videoconferencia)} detalle="Actividad remota" icono="▣" onClick={() => abrirResumenEncargos("videoconferencia", "Firmas por videoconferencia")} />
             <TarjetaIndicador titulo="Kilómetros presenciales" valor={dashboard?.kilometros_presenciales == null ? "Pendiente" : `${numeroLegible(dashboard.kilometros_presenciales)} km`} detalle={`Desde CP ${dashboard?.origen_kilometros || "08016"} · ${dashboard?.firmas_presenciales_con_distancia ?? 0}/${dashboard?.firmas_presenciales ?? 0} distancias calculadas en línea recta`} icono="⌁" onClick={() => abrirResumenEncargos("kilometros", "Firmas presenciales · cálculo de kilómetros")} />
           </div>
-          <div className="ag-dashboard-inferior-grid">
-            <section className="ag-panel ag-panel-proximas">
-              <div className="ag-panel-cabecera">
-                <div><span className="ag-kicker">PLANIFICACIÓN</span><h3>Próximas citas</h3></div>
-                <button type="button" className="ag-enlace-accion" onClick={() => setPestana("Agenda")}>Ver agenda <span>→</span></button>
+          <div>
+            <section>
+              <div>
+                <div><span>PLANIFICACIÓN</span><h3>Próximas citas</h3></div>
+                <button type="button" onClick={() => setPestana("Agenda")}>Ver agenda <span>→</span></button>
               </div>
               {!agenda.length ? <EstadoVacio icono="▦" titulo="No hay citas disponibles" detalle="Cuando existan citas asignadas, podrás consultarlas desde aquí." /> : (
-                <div className="ag-proximas-lista">
+                <div>
                   {agenda.slice(0, 5).map((cita, i) => {
                     const firmaRealizada = String(cita.observaciones || "").toUpperCase().includes("FIRMA REALIZADA");
                     return (
-                      <article className="ag-cita-item ag-cita-item-compacta" key={cita.id ?? `${cita.fecha}-${i}`}>
-                        <div className="ag-cita-fecha">
+                      <article key={cita.id ?? `${cita.fecha}-${i}`} className="erp-data-item">
+                        <div>
                           <strong>{fechaLegible(cita.fecha).split("/")[0]}</strong>
                           <span>{fechaLegible(cita.fecha).split("/").slice(1).join("/")}</span>
                         </div>
-                        <div className="ag-cita-info">
-                          <div className="ag-cita-titulo-fila">
+                        <div>
+                          <div>
                             <strong>{texto(cita.tipo_cita, "Cita")}</strong>
-                            {cita.tipo_firma ? <span className="ag-cita-modalidad">{texto(cita.tipo_firma)}</span> : null}
-                            {cita.tipo_cita === "Firma notarial" ? <span className={`ag-firma-indicador ${firmaRealizada ? "realizada" : ""}`}>{firmaRealizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</span> : null}
+                            {cita.tipo_firma ? <span>{texto(cita.tipo_firma)}</span> : null}
+                            {cita.tipo_cita === "Firma notarial" ? <span className={` ${firmaRealizada ? "realizada" : ""}`}>{firmaRealizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</span> : null}
                           </div>
-                          <div className="ag-cita-datos">
-                            <span className="ag-cita-horario"><b>Horario</b>{texto(cita.hora_inicio, "—").slice(0, 5)} – {texto(cita.hora_fin, "—").slice(0, 5)}</span>
+                          <div>
+                            <span><b>Horario</b>{texto(cita.hora_inicio, "—").slice(0, 5)} – {texto(cita.hora_fin, "—").slice(0, 5)}</span>
                             <span><b>Notaría</b>{texto(cita.nombre_notario, "Sin notaría asignada")}</span>
                             <span><b>Apoderado</b>{texto(cita.apoderado, "Sin apoderado asignado")}</span>
                             {cita.id_expediente ? <span><b>Expediente</b>{texto(cita.id_expediente)}</span> : null}
@@ -984,59 +940,59 @@ export default function ApoderaGest() {
                 </div>
               )}
             </section>
-            <section className="ag-panel ag-panel-estadistica-firma">
-              <div className="ag-panel-cabecera">
-                <div><span className="ag-kicker">ACTIVIDAD ANUAL</span><h3>Estadística de firma</h3></div>
-                <span className="ag-estadistica-anio">{dashboard?.anio_estadistica_firmas || new Date().getFullYear()}</span>
+            <section>
+              <div>
+                <div><span>ACTIVIDAD ANUAL</span><h3>Estadística de firma</h3></div>
+                <span>{dashboard?.anio_estadistica_firmas || new Date().getFullYear()}</span>
               </div>
-              <div className="ag-estadistica-resumen">
+              <div>
                 <strong>{numeroLegible((dashboard?.volumen_mensual_firmas || []).reduce((suma, mes) => suma + Number(mes.total || 0), 0))}</strong>
                 <span>firmas con protocolo registrado este año</span>
               </div>
-              <div className="ag-grafico-firmas" role="img" aria-label={`Volumen mensual de firmas en ${dashboard?.anio_estadistica_firmas || new Date().getFullYear()}`}>
+              <div role="img" aria-label={`Volumen mensual de firmas en ${dashboard?.anio_estadistica_firmas || new Date().getFullYear()}`}>
                 {(() => {
                   const meses = dashboard?.volumen_mensual_firmas || [];
                   const maximo = Math.max(1, ...meses.map((mes) => Number(mes.total || 0)));
                   return meses.map((mes) => (
-                    <div className="ag-grafico-mes" key={mes.mes_numero || mes.mes}>
-                      <span className="ag-grafico-valor">{mes.total || 0}</span>
-                      <div className="ag-grafico-columna"><span style={{ height: `${Math.max(mes.total ? 8 : 2, (Number(mes.total || 0) / maximo) * 100)}%` }} /></div>
-                      <span className="ag-grafico-etiqueta">{mes.mes}</span>
+                    <div key={mes.mes_numero || mes.mes}>
+                      <span>{mes.total || 0}</span>
+                      <div><span style={{ height: `${Math.max(mes.total ? 8 : 2, (Number(mes.total || 0) / maximo) * 100)}%` }} /></div>
+                      <span>{mes.mes}</span>
                     </div>
                   ));
                 })()}
               </div>
-              <p className="ag-estadistica-nota">Cuenta las firmas reales por la fecha registrada con el protocolo, no las citas planificadas.</p>
+              <p>Cuenta las firmas reales por la fecha registrada con el protocolo, no las citas planificadas.</p>
             </section>
           </div>
           {dashboard?.es_dashboard_general ? (
-            <section className="ag-panel ag-panel-estadistica-firma ag-estadistica-apoderados">
-              <div className="ag-panel-cabecera">
-                <div><span className="ag-kicker">ACTIVIDAD ANUAL · POR APODERADO</span><h3>Estadística de firma por apoderado</h3></div>
-                <span className="ag-estadistica-anio">{dashboard?.anio_estadistica_firmas || new Date().getFullYear()}</span>
+            <section>
+              <div>
+                <div><span>ACTIVIDAD ANUAL · POR APODERADO</span><h3>Estadística de firma por apoderado</h3></div>
+                <span>{dashboard?.anio_estadistica_firmas || new Date().getFullYear()}</span>
               </div>
               {(() => {
                 const datos = dashboard?.volumen_anual_por_apoderado || [];
                 const maximo = Math.max(1, ...datos.map((item) => Number(item.total || 0)));
                 if (!datos.length) return <EstadoVacio icono="▥" titulo="Todavía no hay firmas registradas este año" detalle="Cuando los apoderados registren firmas con fecha y protocolo, aparecerán aquí." />;
-                return <div className="ag-grafico-apoderados">{datos.map((item) => (
-                  <div className="ag-apoderado-barra" key={item.apoderado}>
-                    <div className="ag-apoderado-barra-cabecera"><strong title={item.apoderado}>{item.apoderado}</strong><span>{item.total}</span></div>
-                    <div className="ag-apoderado-barra-fondo"><span style={{ width: `${Math.max(2, Number(item.total || 0) / maximo * 100)}%` }} /></div>
+                return <div>{datos.map((item) => (
+                  <div key={item.apoderado}>
+                    <div><strong title={item.apoderado}>{item.apoderado}</strong><span>{item.total}</span></div>
+                    <div><span style={{ width: `${Math.max(2, Number(item.total || 0) / maximo * 100)}%` }} /></div>
                   </div>
                 ))}</div>;
               })()}
-              <p className="ag-estadistica-nota">Total de firmas reales de todos los apoderados, agrupadas por el empleado asignado al expediente.</p>
+              <p>Total de firmas reales de todos los apoderados, agrupadas por el empleado asignado al expediente.</p>
             </section>
           ) : null}
         </section>
       ) : null}
 
            {pestana === "Agenda" ? (
-        <section className="ag-contenido">
-          <div className="ag-titulo-seccion">
+        <section>
+          <div>
             <div>
-              <span className="ag-kicker">ORGANIZACIÓN</span>
+              <span>ORGANIZACIÓN</span>
               <h2>Mi agenda de citas</h2>
               <p>
                 Consulta tus citas asignadas. Las citas de otros apoderados
@@ -1050,12 +1006,12 @@ export default function ApoderaGest() {
       ) : null}
 
       {pestana === "Encargos" ? (
-        <section className="ag-contenido">
-          <div className="ag-titulo-seccion"><div><span className="ag-kicker">{esAdministradorEncargos ? "SUPERVISIÓN GLOBAL" : "GESTIÓN OPERATIVA"}</span><h2>{esAdministradorEncargos ? "Todos los encargos de ApoderaGest" : "Mis encargos"}</h2><p>{esAdministradorEncargos ? "Vista de administrador: encargos de todos los apoderados, incluidos los asignados a tu propio usuario. Puedes buscar por apoderado, expediente, titular o notario." : "Seguimiento de tus expedientes, titulares y estado de firma."}</p></div><span className="ag-contador">{encargos.length} encargos</span></div>
-          <div className="ag-panel">
-            <div className="ag-toolbar">
-              <label className="ag-busqueda"><span aria-hidden="true">⌕</span><input type="search" value={busquedaEncargos} onChange={(e) => setBusquedaEncargos(e.target.value)} placeholder={esAdministradorEncargos ? "Buscar apoderado, expediente, titular, notario o estado…" : "Buscar expediente, titular, notario o estado…"} aria-label="Buscar encargos" /></label>
-              <span className="ag-resultados">{encargosFiltrados.length} resultados</span>
+        <section>
+          <div><div><span>{esAdministradorEncargos ? "SUPERVISIÓN GLOBAL" : "GESTIÓN OPERATIVA"}</span><h2>{esAdministradorEncargos ? "Todos los encargos de ApoderaGest" : "Mis encargos"}</h2><p>{esAdministradorEncargos ? "Vista de administrador: encargos de todos los apoderados, incluidos los asignados a tu propio usuario. Puedes buscar por apoderado, expediente, titular o notario." : "Seguimiento de tus expedientes, titulares y estado de firma."}</p></div><span>{encargos.length} encargos</span></div>
+          <div>
+            <div>
+              <label><span aria-hidden="true">⌕</span><input type="search" value={busquedaEncargos} onChange={(e) => setBusquedaEncargos(e.target.value)} placeholder={esAdministradorEncargos ? "Buscar apoderado, expediente, titular, notario o estado…" : "Buscar expediente, titular, notario o estado…"} aria-label="Buscar encargos" /></label>
+              <span>{encargosFiltrados.length} resultados</span>
             </div>
             <TablaEncargos encargos={encargosFiltrados} onFirmado={cargarDatos} />
             <ImprimirEncargos encargos={encargosFiltrados} />
@@ -1064,10 +1020,10 @@ export default function ApoderaGest() {
       ) : null}
 
       {pestana === "CTN" ? (
-        <section className="ag-contenido ag-ctn-integrado">
-          <div className="ag-titulo-seccion">
+        <section>
+          <div>
             <div>
-              <span className="ag-kicker">COORDINACIÓN NOTARIAL</span>
+              <span>COORDINACIÓN NOTARIAL</span>
               <h2>CTN · Catálogo de notarías</h2>
               <p>Listado completo con filtros, asociaciones y acceso a la ficha de cada notaría, compartiendo la misma pantalla CTN del ERP.</p>
             </div>
@@ -1077,9 +1033,9 @@ export default function ApoderaGest() {
       ) : null}
 
       {pestana === "Mensajes" ? (
-        <section className="ag-contenido">
-          <div className="ag-titulo-seccion"><div><span className="ag-kicker">COMUNICACIÓN CORPORATIVA</span><h2>Mensajes</h2><p>Mensajería del ERP-Molsan con contactos conectados, conversaciones, mensajes no leídos y archivos adjuntos.</p></div></div>
-          {usuarioId ? <Mensajes usuarioId={usuarioId} /> : <div className="ag-panel" role="alert"><h3>No se ha podido identificar al usuario</h3><p>No es posible abrir Mensajes porque la sesión actual no contiene un identificador de empleado válido. Vuelve a iniciar sesión y prueba de nuevo.</p></div>}
+        <section>
+          <div><div><span>COMUNICACIÓN CORPORATIVA</span><h2>Mensajes</h2><p>Mensajería del ERP-Molsan con contactos conectados, conversaciones, mensajes no leídos y archivos adjuntos.</p></div></div>
+          {usuarioId ? <Mensajes usuarioId={usuarioId} /> : <div role="alert"><h3>No se ha podido identificar al usuario</h3><p>No es posible abrir Mensajes porque la sesión actual no contiene un identificador de empleado válido. Vuelve a iniciar sesión y prueba de nuevo.</p></div>}
         </section>
       ) : null}
 
@@ -1087,16 +1043,16 @@ export default function ApoderaGest() {
 
       
       {modalResumen ? (
-        <div className="ag-resumen-modal-overlay" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalResumen(null); }}>
-          <section className="ag-resumen-modal" role="dialog" aria-modal="true" aria-labelledby="ag-resumen-modal-titulo">
-            <header className="ag-resumen-modal-cabecera">
-              <div><span className="ag-kicker">APODERAGEST · RESUMEN DE ACTIVIDAD</span><h2 id="ag-resumen-modal-titulo">{modalResumen.titulo}</h2><p>{encargosDelResumen.length} expediente(s) en este indicador.</p></div>
-              <button type="button" className="ag-resumen-modal-cerrar" onClick={() => setModalResumen(null)} aria-label="Cerrar modal">✕</button>
+        <div className="molsan-modal-overlay" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalResumen(null); }}>
+          <section ref={resumenDialogRef} tabIndex={-1} className="molsan-modal__panel" role="dialog" aria-modal="true" aria-labelledby="">
+            <header className="molsan-modal__header">
+              <div><span>APODERAGEST · RESUMEN DE ACTIVIDAD</span><h2 id="">{modalResumen.titulo}</h2><p>{encargosDelResumen.length} expediente(s) en este indicador.</p></div>
+              <button type="button" onClick={() => setModalResumen(null)} aria-label="Cerrar modal">✕</button>
             </header>
-            <div className="ag-resumen-modal-cuerpo">
+            <div>
               {!encargosDelResumen.length ? <EstadoVacio icono="▤" titulo="No hay expedientes en este bloque" detalle="No hay encargos que coincidan con este indicador." /> : (
-                <div className="ag-resumen-tabla-wrap">
-                  <table className="ag-resumen-tabla">
+                <div>
+                  <table>
                     <thead><tr><th>Expediente</th><th>Solicitante</th><th>Notario</th><th>Apoderado</th><th>Fecha prevista</th><th>Fecha de firma</th><th>Protocolo</th><th>Modalidad</th><th>Estado</th><th></th></tr></thead>
                     <tbody>{encargosDelResumen.map((encargo, i) => {
                       const id = encargo.id_expediente ?? encargo.id ?? i;
@@ -1111,7 +1067,7 @@ export default function ApoderaGest() {
                         <td>{texto(encargo.protocolo)}</td>
                         <td>{texto(encargo.tipo_firma)}</td>
                         <td><EstadoPill valor={firmado ? "Firmado" : encargo.bloqueado ? "Bloqueado" : "Pendiente de firma"} /></td>
-                        <td><button type="button" className="ag-resumen-ir-encargo" onClick={() => { setBusquedaEncargos(String(id)); setPestana("Encargos"); setModalResumen(null); }}>Ver en encargos →</button></td>
+                        <td><button type="button" onClick={() => { setBusquedaEncargos(String(id)); setPestana("Encargos"); setModalResumen(null); }}>Ver en encargos →</button></td>
                       </tr>;
                     })}</tbody>
                   </table>
@@ -1122,7 +1078,7 @@ export default function ApoderaGest() {
         </div>
       ) : null}
 
-      <footer className="ag-footer"><span><strong>MOLSAN ERP</strong> · ApoderaGest</span><span>Premium 2027</span></footer>
+      <footer><span><strong>MOLSAN ERP</strong> · ApoderaGest</span></footer>
           </div>
         </div>
       </main>

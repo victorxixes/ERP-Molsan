@@ -33,7 +33,7 @@ jobs:
       - name: Instalar dependencias y compilar
         working-directory: frontend-app
         run: |
-          npm install
+          npm install --include=optional
           npm run build
 
   syntax-backend:

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 const VACIO = { nombre: "", categoria: "impuesto", impuesto: "IVA", porcentaje: "", territorio: "Territorio común", descripcion: "", activo: true };
 const fmt = (n) => n === null || n === undefined || n === "" ? "—" : `${Number(n).toLocaleString("es-ES", { maximumFractionDigits: 3 })}%`;
@@ -62,72 +63,67 @@ export default function TiposImpositivos() {
   };
 
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-400" />
-        <p className="text-xs font-bold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP PREMIUM 2027</p>
-        <h1 className="mt-2 text-2xl font-extrabold text-slate-900">Tipos impositivos</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Mantén en un único catálogo los impuestos indirectos y las retenciones utilizados en las órdenes de pago, gastos y otros procesos económicos.</p>
-      </header>
+    <main className="erp-page min-w-0 space-y-6">
+      <MolsanPageHeader mark="TI" title="Tipos impositivos" description="Catálogo de impuestos y retenciones utilizados en pagos, gastos y operaciones económicas." />
 
-      <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
+      <div className="px-4 py-3">
         Los tipos son referencias configurables: la aplicación del porcentaje correcto depende de la operación, el territorio, la fecha de devengo y los requisitos legales. Comprueba la factura antes de confirmar un pago.
       </div>
 
-      <section id="formulario-tipo-impositivo" className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <section id="formulario-tipo-impositivo" className="erp-card p-5 sm:p-6">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div><h2 className="text-lg font-bold text-slate-900">{editando ? "Editar tipo impositivo" : "Crear tipo impositivo"}</h2><p className="mt-1 text-sm text-slate-500">Los tipos desactivados no aparecerán en los desplegables nuevos.</p></div>
-          {editando && <button type="button" onClick={nuevo} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancelar edición</button>}
+          <div><h2>{editando ? "Editar tipo impositivo" : "Crear tipo impositivo"}</h2><p className="mt-1">Los tipos desactivados no aparecerán en los desplegables nuevos.</p></div>
+          {editando && <button type="button" onClick={nuevo} className="px-3 py-2">Cancelar edición</button>}
         </div>
-        <form onSubmit={guardar} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          <label className="text-sm font-semibold text-slate-700">Nombre visible *
-            <input required maxLength={160} value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} placeholder="Ej. IVA general 21%" className="mt-1.5 w-full rounded-xl border border-slate-300 px-3 py-2.5 font-normal" />
+        <form onSubmit={guardar} className="molsan-form grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <label>Nombre visible *
+            <input required maxLength={160} value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} placeholder="Ej. IVA general 21%" className="mt-1.5 w-full px-3 py-2.5" />
           </label>
-          <label className="text-sm font-semibold text-slate-700">Categoría *
-            <select value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value, impuesto: e.target.value === "retencion" ? "IRPF" : "IVA", territorio: e.target.value === "retencion" ? "España" : "Territorio común" })} className="mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 font-normal"><option value="impuesto">Impuesto</option><option value="retencion">Retención</option></select>
+          <label>Categoría *
+            <select value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value, impuesto: e.target.value === "retencion" ? "IRPF" : "IVA", territorio: e.target.value === "retencion" ? "España" : "Territorio común" })} className="mt-1.5 w-full px-3 py-2.5"><option value="impuesto">Impuesto</option><option value="retencion">Retención</option></select>
           </label>
-          <label className="text-sm font-semibold text-slate-700">Tributo *
-            <select value={form.impuesto} onChange={(e) => setForm({ ...form, impuesto: e.target.value })} className="mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 font-normal">
+          <label>Tributo *
+            <select value={form.impuesto} onChange={(e) => setForm({ ...form, impuesto: e.target.value })} className="mt-1.5 w-full px-3 py-2.5">
               {(form.categoria === "impuesto" ? ["IVA", "IGIC", "IPSI", "ITP", "AJD", "IS", "Otro"] : ["IRPF", "IS", "IRNR", "Otro"]).map((x) => <option key={x}>{x}</option>)}
             </select>
           </label>
-          <label className="text-sm font-semibold text-slate-700">Porcentaje (%)
-            <input type="number" min="0" max="100" step="0.001" value={form.porcentaje} onChange={(e) => setForm({ ...form, porcentaje: e.target.value })} placeholder="Vacío si no aplica" className="mt-1.5 w-full rounded-xl border border-slate-300 px-3 py-2.5 font-normal" />
+          <label>Porcentaje (%)
+            <input type="number" min="0" max="100" step="0.001" value={form.porcentaje} onChange={(e) => setForm({ ...form, porcentaje: e.target.value })} placeholder="Vacío si no aplica" className="mt-1.5 w-full px-3 py-2.5" />
           </label>
-          <label className="text-sm font-semibold text-slate-700">Territorio *
-            <input required maxLength={80} value={form.territorio} onChange={(e) => setForm({ ...form, territorio: e.target.value })} placeholder="España, Canarias…" className="mt-1.5 w-full rounded-xl border border-slate-300 px-3 py-2.5 font-normal" />
+          <label>Territorio *
+            <input required maxLength={80} value={form.territorio} onChange={(e) => setForm({ ...form, territorio: e.target.value })} placeholder="España, Canarias…" className="mt-1.5 w-full px-3 py-2.5" />
           </label>
-          <label className="text-sm font-semibold text-slate-700 sm:col-span-2 xl:col-span-1">Descripción
-            <input maxLength={500} value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} placeholder="Notas de uso y aplicación" className="mt-1.5 w-full rounded-xl border border-slate-300 px-3 py-2.5 font-normal" />
+          <label className="sm:col-span-2 xl:col-span-1">Descripción
+            <input maxLength={500} value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} placeholder="Notas de uso y aplicación" className="mt-1.5 w-full px-3 py-2.5" />
           </label>
-          {editando && <label className="flex items-center gap-2 text-sm font-semibold text-slate-700"><input type="checkbox" checked={form.activo} onChange={(e) => setForm({ ...form, activo: e.target.checked })} />Activo y disponible en desplegables</label>}
+          {editando && <label className="flex items-center gap-2"><input type="checkbox" checked={form.activo} onChange={(e) => setForm({ ...form, activo: e.target.checked })} />Activo y disponible en desplegables</label>}
           <div className="flex flex-wrap gap-2 sm:col-span-2 xl:col-span-3">
-            <button disabled={guardando} type="submit" className="rounded-xl bg-indigo-700 px-5 py-2.5 text-sm font-bold text-white hover:bg-indigo-800 disabled:opacity-50">{guardando ? "Guardando…" : editando ? "Guardar cambios" : "Crear tipo impositivo"}</button>
-            <button type="button" onClick={nuevo} className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50">Limpiar</button>
+            <button disabled={guardando} type="submit" className="px-5 py-2.5">{guardando ? "Guardando…" : editando ? "Guardar cambios" : "Crear tipo impositivo"}</button>
+            <button type="button" onClick={nuevo} className="px-5 py-2.5">Limpiar</button>
           </div>
         </form>
       </section>
 
-      {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</div>}
-      {mensaje && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{mensaje}</div>}
+      {error && <div role="alert" className="px-4 py-3">{error}</div>}
+      {mensaje && <div role="status" className="px-4 py-3">{mensaje}</div>}
 
-      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 p-4 sm:p-5">
-          <div><h2 className="text-lg font-bold text-slate-900">Catálogo configurado</h2><p className="text-sm text-slate-500">{filtrados.length} registro(s) mostrados</p></div>
+      <section className="erp-card overflow-hidden">
+        <div className="molsan-filter-bar flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
+          <div><h2>Catálogo configurado</h2><p>{filtrados.length} registro(s) mostrados</p></div>
           <div className="flex flex-wrap items-center gap-2">
-            <select aria-label="Filtrar por categoría" value={categoriaFiltro} onChange={(e) => setCategoriaFiltro(e.target.value)} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"><option value="todos">Todos</option><option value="impuesto">Impuestos</option><option value="retencion">Retenciones</option></select>
-            <label className="flex items-center gap-2 text-sm text-slate-600"><input type="checkbox" checked={mostrarInactivos} onChange={(e) => setMostrarInactivos(e.target.checked)} />Mostrar inactivos</label>
-            <button type="button" onClick={cargar} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold hover:bg-slate-50">Actualizar</button>
+            <select aria-label="Filtrar por categoría" value={categoriaFiltro} onChange={(e) => setCategoriaFiltro(e.target.value)} className="px-3 py-2"><option value="todos">Todos</option><option value="impuesto">Impuestos</option><option value="retencion">Retenciones</option></select>
+            <label className="flex items-center gap-2"><input type="checkbox" checked={mostrarInactivos} onChange={(e) => setMostrarInactivos(e.target.checked)} />Mostrar inactivos</label>
+            <button type="button" onClick={cargar} className="px-3 py-2">Actualizar</button>
           </div>
         </div>
-        {cargando ? <p className="p-8 text-center text-sm text-slate-500">Cargando catálogo…</p> : filtrados.length === 0 ? <p className="p-8 text-center text-sm text-slate-500">No hay tipos para este filtro.</p> : (
-          <div className="overflow-x-auto"><table className="min-w-full text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-4 py-3">Nombre</th><th className="px-4 py-3">Categoría</th><th className="px-4 py-3">Tributo</th><th className="px-4 py-3">Porcentaje</th><th className="px-4 py-3">Territorio</th><th className="px-4 py-3">Estado</th><th className="px-4 py-3 text-right">Acciones</th></tr></thead>
-            <tbody className="divide-y divide-slate-100">{filtrados.map((x) => <tr key={x.id} className="hover:bg-slate-50/70">
-              <td className="px-4 py-3"><div className="font-semibold text-slate-800">{x.nombre}</div>{x.descripcion && <div className="mt-1 max-w-sm text-xs text-slate-500">{x.descripcion}</div>}</td>
+        {cargando ? <p className="p-8">Cargando catálogo…</p> : filtrados.length === 0 ? <p className="p-8">No hay tipos para este filtro.</p> : (
+          <div className="overflow-x-auto"><table className="min-w-full">
+            <thead className="uppercase"><tr><th className="px-4 py-3">Nombre</th><th className="px-4 py-3">Categoría</th><th className="px-4 py-3">Tributo</th><th className="px-4 py-3">Porcentaje</th><th className="px-4 py-3">Territorio</th><th className="px-4 py-3">Estado</th><th className="px-4 py-3">Acciones</th></tr></thead>
+            <tbody>{filtrados.map((x) => <tr key={x.id}>
+              <td className="px-4 py-3"><div>{x.nombre}</div>{x.descripcion && <div className="mt-1 max-w-sm">{x.descripcion}</div>}</td>
               <td className="px-4 py-3">{x.categoria === "retencion" ? "Retención" : "Impuesto"}</td><td className="px-4 py-3">{x.impuesto}</td><td className="px-4 py-3 tabular-nums">{fmt(x.porcentaje)}</td><td className="px-4 py-3">{x.territorio}</td>
-              <td className="px-4 py-3"><span className={x.activo ? "rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700" : "rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-500"}>{x.activo ? "Activo" : "Inactivo"}</span></td>
-              <td className="px-4 py-3 text-right whitespace-nowrap"><button type="button" onClick={() => editar(x)} className="mr-2 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100">Editar</button>{x.activo && <button type="button" onClick={() => desactivar(x)} className="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-bold text-rose-700 hover:bg-rose-50">Eliminar</button>}</td>
+              <td className="px-4 py-3"><span className={x.activo ? "px-2.5 py-1" : "px-2.5 py-1"}>{x.activo ? "Activo" : "Inactivo"}</span></td>
+              <td className="px-4 py-3 whitespace-nowrap"><button type="button" onClick={() => editar(x)} className="mr-2 px-3 py-1.5">Editar</button>{x.activo && <button type="button" onClick={() => desactivar(x)} className="px-3 py-1.5">Eliminar</button>}</td>
             </tr>)}</tbody>
           </table></div>
         )}

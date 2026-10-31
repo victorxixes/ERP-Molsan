@@ -1,9 +1,9 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { API_BASE } from "../api/config";
 import { configurarSesionEncargaGest } from "../api/encargagest";
-import "../css/ModalesHerramientasPremium.css";
+import useAccessibleDialog from "../components/ui/useAccessibleDialog";
 
 const MODULOS = {
   apoderagest: {
@@ -47,7 +47,7 @@ const MODULOS = {
     estilo: "mg",
   },
   fichajes: {
-    nombre: "Fichaje Molsan",
+    nombre: "Fichajes",
     descripcion: "Registra tu jornada, pausas, ausencias y consulta tu calendario y justificantes.",
     ruta: "/fichajes",
     siglas: "FI",
@@ -77,6 +77,8 @@ export default function ModulosSelector() {
   const [cargandoSoporte, setCargandoSoporte] = useState(false);
   const [abriendoNotaria, setAbriendoNotaria] = useState(null);
   const [errorSoporte, setErrorSoporte] = useState("");
+  const soporteDialogRef = useRef(null);
+  useAccessibleDialog({ open: Boolean(modalSoporte), onClose: () => { if (!abriendoNotaria) setModalSoporte(null); }, dialogRef: soporteDialogRef });
 
   const modulosDisponibles = useMemo(() => {
     if (!empleado) return [];
@@ -214,7 +216,7 @@ export default function ModulosSelector() {
 
   if (!authReady || loading) {
     return (
-      <div className="mx-auto max-w-6xl p-8 text-sm text-slate-500" role="status">
+      <div className="mx-auto max-w-6xl p-8" role="status">
         Cargando sesión…
       </div>
     );
@@ -225,33 +227,33 @@ export default function ModulosSelector() {
   }
 
   return (
-    <main className="selector-modulos-premium herramientas-subpagina-premium relative isolate min-h-[calc(100vh-110px)] overflow-hidden rounded-3xl border border-white/80 bg-gradient-to-br from-slate-50 via-white to-blue-50/70 px-5 py-8 text-slate-800 shadow-sm sm:px-8 sm:py-10">
+    <main className="selector-modulos-premium relative isolate min-h-[calc(100vh-110px)] overflow-hidden">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -right-24 -top-28 -z-10 h-80 w-80 rounded-full border border-blue-100/70"
+        className="pointer-events-none absolute -right-24 -top-28 -z-10 h-80 w-80"
       />
 
-      <header className="mb-9 flex flex-wrap items-center justify-between gap-5">
+      <header className="molsan-module-selector-header mb-9 flex flex-wrap items-center justify-between gap-5">
         <div className="flex items-center gap-4">
-          <div className="grid h-14 w-14 place-items-center rounded-2xl border border-white bg-gradient-to-br from-blue-600 to-indigo-800 text-sm font-black tracking-wide text-white shadow-lg shadow-blue-900/15">
+          <div className="grid h-14 w-14 place-items-center">
             M
           </div>
           <div>
-            <p className="text-[10px] font-extrabold tracking-[0.2em] text-blue-700">
-              MOLSAN ERP · PREMIUM 2027
+            <p>
+              MOLSAN ERP
             </p>
-            <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+            <h1 className="mt-1">
               Espacio de trabajo
             </h1>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2">
               Hola, {empleado.nombre || empleado.usuario}. Selecciona el módulo al que quieres acceder.
             </p>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white/80 px-3 py-2 text-[11px] font-bold text-slate-600 shadow-sm">
-            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+          <span className="inline-flex items-center gap-2 px-3 py-2">
+            <span className="h-2 w-2" />
             Sesión activa
           </span>
           <button
@@ -260,7 +262,7 @@ export default function ModulosSelector() {
               logout();
               navigate("/login", { replace: true });
             }}
-            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 text-xs font-extrabold text-rose-700 shadow-sm transition hover:-translate-y-0.5 hover:border-rose-300 hover:bg-rose-100 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-rose-100"
+            className="molsan-btn molsan-btn--secondary inline-flex min-h-10 items-center justify-center gap-2"
           >
             <span aria-hidden="true">↪</span>
             Cerrar sesión
@@ -269,81 +271,81 @@ export default function ModulosSelector() {
       </header>
 
       <div className="mb-5">
-        <p className="text-[10px] font-extrabold tracking-[0.17em] text-slate-400">
+        <p>
           TUS APLICACIONES
         </p>
-        <div className="mt-3 h-px bg-gradient-to-r from-blue-200 via-slate-200 to-transparent" />
+        <div className="mt-3 h-px" />
       </div>
 
       {modulosDisponibles.length === 0 ? (
-        <section className="rounded-2xl border border-amber-200 bg-amber-50/90 p-6">
-          <h2 className="font-bold text-amber-950">
+        <section className="erp-empty-state p-6">
+          <h2>
             No hay módulos disponibles para esta cuenta
           </h2>
-          <p className="mt-2 text-sm leading-6 text-amber-900">
+          <p className="mt-2">
             Para mostrar una aplicación, márcala en «Módulos visibles» dentro de la ficha del empleado. Los permisos para consultar, crear, editar o eliminar se configuran por separado.
           </p>
-          <p className="mt-3 break-all text-xs text-amber-800">
+          <p className="mt-3 break-all">
             Rol detectado: {empleado.rol_nombre || empleado.rol?.nombre || "No informado"}
           </p>
         </section>
       ) : (
         <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="molsan-module-selector-grid grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {modulosDisponibles.map((modulo) => (
               <button
                 key={modulo.clave}
                 type="button"
                 onClick={() => modulo.portalSoporte ? abrirSelectorSoporte(modulo.portalSoporte) : navigate(modulo.ruta)}
-                className="group relative flex min-h-[220px] flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white/90 p-6 text-left shadow-[0_8px_26px_rgba(31,48,79,0.045)] transition duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-[0_18px_38px_rgba(31,48,79,0.11)] focus:outline-none focus:ring-4 focus:ring-blue-100"
+                className="molsan-module-selector-card group relative flex min-h-[220px] flex-col overflow-hidden p-6"
               >
                 <div
                   aria-hidden="true"
                   className={`absolute inset-x-0 top-0 h-1 ${
-                    modulo.estilo === "ag"
-                      ? "bg-gradient-to-r from-blue-600 to-indigo-400"
-                      : modulo.estilo === "cg"
-                        ? "bg-gradient-to-r from-emerald-600 to-teal-400"
-                        : modulo.estilo === "eg"
-                          ? "bg-gradient-to-r from-amber-500 to-yellow-300"
-                          : "bg-gradient-to-r from-violet-600 to-fuchsia-400"
-                  }`}
+ modulo.estilo === "ag"
+ ? ""
+ : modulo.estilo === "cg"
+ ? ""
+ : modulo.estilo === "eg"
+ ? ""
+ : ""
+ }`}
                 />
 
                 <div className="flex w-full items-start justify-between gap-4">
                   <div
-                    className={`grid h-14 w-14 place-items-center rounded-2xl border text-sm font-black tracking-wide transition group-hover:scale-[1.04] ${
-                      modulo.estilo === "ag"
-                        ? "border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-100 text-blue-800"
-                        : modulo.estilo === "cg"
-                          ? "border-emerald-100 bg-gradient-to-br from-emerald-50 to-teal-100 text-emerald-800"
-                          : modulo.estilo === "eg"
-                            ? "border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-100 text-amber-800"
-                            : "border-violet-100 bg-gradient-to-br from-violet-50 to-fuchsia-100 text-violet-800"
-                    }`}
+                    className={`molsan-module-selector-icon grid h-14 w-14 place-items-center ${
+ modulo.estilo === "ag"
+ ? ""
+ : modulo.estilo === "cg"
+ ? ""
+ : modulo.estilo === "eg"
+ ? ""
+ : ""
+ }`}
                   >
                     {modulo.siglas}
                   </div>
-                  <span className="mt-1 grid h-8 w-8 place-items-center rounded-full border border-slate-100 text-lg text-slate-400 transition group-hover:border-blue-100 group-hover:bg-blue-50 group-hover:text-blue-700">
+                  <span className="mt-1 grid h-8 w-8 place-items-center">
                     ↗
                   </span>
                 </div>
 
-                <p className="mt-5 text-[9px] font-extrabold tracking-[0.15em] text-slate-400">
+                <p className="mt-5">
                   {modulo.categoria}
                 </p>
-                <h2 className="mt-1 text-xl font-extrabold tracking-tight text-slate-900">
+                <h2 className="mt-1">
                   {modulo.nombre}
                 </h2>
-                <p className="mt-2 text-xs leading-6 text-slate-500">
+                <p className="mt-2">
                   {modulo.descripcion}
                 </p>
 
-                <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-4">
-                  <span className="text-[11px] font-extrabold text-blue-700">
+                <div className="mt-auto flex items-center justify-between pt-4">
+                  <span>
                     Abrir aplicación
                   </span>
-                  <span className="text-sm text-slate-400 transition group-hover:translate-x-1 group-hover:text-blue-700">
+                  <span>
                     →
                   </span>
                 </div>
@@ -351,57 +353,57 @@ export default function ModulosSelector() {
             ))}
           </div>
 
-          <p className="mt-7 text-center text-[10px] font-medium tracking-wide text-slate-400">
+          <p className="mt-7">
             MOLSAN ERP · Entorno corporativo de gestión
           </p>
         </>
       )}
 
       {modalSoporte && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !abriendoNotaria) setModalSoporte(null); }}>
-          <section className="flex max-h-[min(86vh,760px)] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="soporte-notaria-titulo">
-            <header className="flex items-start justify-between gap-4 border-b border-slate-100 px-6 py-5">
+        <div className="panel-modal-premium fixed inset-0 z-[100] flex items-center justify-center p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !abriendoNotaria) setModalSoporte(null); }}>
+          <section ref={soporteDialogRef} tabIndex={-1} className="molsan-modal__panel flex max-h-[min(86vh,760px)] w-full max-w-2xl flex-col overflow-hidden" role="dialog" aria-modal="true" aria-labelledby="soporte-notaria-titulo">
+            <header className="molsan-modal__header flex items-start justify-between gap-4 px-6 py-5">
               <div>
-                <p className="text-[10px] font-extrabold tracking-[0.18em] text-blue-700">ACCESO DE SOPORTE</p>
-                <h2 id="soporte-notaria-titulo" className="mt-1 text-xl font-extrabold text-slate-900">{modalSoporte === "notargest" ? "NotarGest – Notarios" : "EncargaGest – Notarios"}</h2>
-                <p className="mt-1 text-sm text-slate-500">Solo aparecen notarías con el acceso a este portal habilitado.</p>
+                <p>ACCESO DE SOPORTE</p>
+                <h2 id="soporte-notaria-titulo" className="mt-1">{modalSoporte === "notargest" ? "NotarGest – Notarios" : "EncargaGest – Notarios"}</h2>
+                <p className="mt-1">Solo aparecen notarías con el acceso a este portal habilitado.</p>
               </div>
-              <button type="button" onClick={() => setModalSoporte(null)} disabled={Boolean(abriendoNotaria)} className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50" aria-label="Cerrar">✕</button>
+              <button type="button" onClick={() => setModalSoporte(null)} disabled={Boolean(abriendoNotaria)} className="grid h-9 w-9 shrink-0 place-items-center" aria-label="Cerrar">✕</button>
             </header>
-            <div className="border-b border-slate-100 p-5">
+            <div className="p-5">
               <label className="relative block">
                 <span className="sr-only">Buscar notaría</span>
-                <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400">⌕</span>
-                <input value={busquedaSoporte} onChange={(e) => setBusquedaSoporte(e.target.value)} autoFocus placeholder="Buscar por nombre, NIF, municipio o provincia…" className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm outline-none focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100" />
+                <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center">⌕</span>
+                <input value={busquedaSoporte} onChange={(e) => setBusquedaSoporte(e.target.value)} autoFocus placeholder="Buscar por nombre, NIF, municipio o provincia…" className="w-full py-3 pl-10 pr-4" />
               </label>
             </div>
             <div className="min-h-0 flex-1 overflow-y-auto p-3">
               {cargandoSoporte ? (
-                <p className="p-8 text-center text-sm text-slate-500">Cargando notarías habilitadas…</p>
+                <p className="p-8">Cargando notarías habilitadas…</p>
               ) : errorSoporte ? (
-                <div className="m-2 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">{errorSoporte}</div>
+                <div className="m-2 p-4">{errorSoporte}</div>
               ) : notariasFiltradas.length === 0 ? (
-                <p className="p-8 text-center text-sm text-slate-500">{notariasSoporte.length ? "No hay coincidencias con la búsqueda." : "No hay notarías habilitadas para este portal."}</p>
+                <p className="p-8">{notariasSoporte.length ? "No hay coincidencias con la búsqueda." : "No hay notarías habilitadas para este portal."}</p>
               ) : (
                 <ul className="space-y-2">
                   {notariasFiltradas.map((n) => (
                     <li key={n.id}>
-                      <button type="button" disabled={Boolean(abriendoNotaria)} onClick={() => entrarComoNotaria(n)} className="flex w-full items-center gap-3 rounded-2xl border border-slate-200 p-4 text-left transition hover:border-blue-300 hover:bg-blue-50/60 disabled:cursor-wait disabled:opacity-60">
-                        <span className={"grid h-11 w-11 shrink-0 place-items-center rounded-xl text-xs font-black " + (modalSoporte === "notargest" ? "bg-violet-100 text-violet-800" : "bg-amber-100 text-amber-800")}>{modalSoporte === "notargest" ? "NG" : "EG"}</span>
+                      <button type="button" disabled={Boolean(abriendoNotaria)} onClick={() => entrarComoNotaria(n)} className="flex w-full items-center gap-3 p-4">
+                        <span className={"grid h-11 w-11 shrink-0 place-items-center" + (modalSoporte === "notargest" ? "" : "")}>{modalSoporte === "notargest" ? "NG" : "EG"}</span>
                         <span className="min-w-0 flex-1">
-                          <strong className="block truncate text-sm text-slate-900">{n.nombre || n.nombre_completo || ("Notaría " + n.id)}</strong>
-                          <span className="mt-1 block text-xs text-slate-500">{[n.nif, n.municipio, n.provincia].filter(Boolean).join(" · ") || "Datos adicionales no disponibles"}</span>
+                          <strong className="block truncate">{n.nombre || n.nombre_completo || ("Notaría " + n.id)}</strong>
+                          <span className="mt-1 block">{[n.nif, n.municipio, n.provincia].filter(Boolean).join(" · ") || "Datos adicionales no disponibles"}</span>
                         </span>
-                        <span className="shrink-0 text-xs font-bold text-blue-700">{abriendoNotaria === n.id ? "Abriendo…" : "Acceder →"}</span>
+                        <span className="shrink-0">{abriendoNotaria === n.id ? "Abriendo…" : "Acceder →"}</span>
                       </button>
                     </li>
                   ))}
                 </ul>
               )}
             </div>
-            <footer className="flex justify-between gap-3 border-t border-slate-100 bg-slate-50 px-6 py-4">
-              <span className="self-center text-xs text-slate-500">{notariasSoporte.length} notarías habilitadas</span>
-              <button type="button" onClick={() => setModalSoporte(null)} disabled={Boolean(abriendoNotaria)} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100">Cancelar</button>
+            <footer className="flex justify-between gap-3 px-6 py-4">
+              <span className="self-center">{notariasSoporte.length} notarías habilitadas</span>
+              <button type="button" onClick={() => setModalSoporte(null)} disabled={Boolean(abriendoNotaria)} className="px-4 py-2">Cancelar</button>
             </footer>
           </section>
         </div>

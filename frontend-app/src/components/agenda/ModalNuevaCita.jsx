@@ -2,14 +2,15 @@ import {
   useEffect,
   useState,
   useCallback,
+  useRef,
 } from "react";
 
 import AutocompleteNotario from "./AutocompleteNotario";
-import "../../css/ModalesHerramientasPremium.css";
 
 import { obtenerNotaria } from "../../api/ctn";
 
 import SelectSJ from "../ui/SelectSJ";
+import useAccessibleDialog from "../ui/useAccessibleDialog";
 
 
 const TIPOS_CITA = [
@@ -199,6 +200,13 @@ export default function ModalNuevaCita({
     notarioSeleccionado,
     setNotarioSeleccionado,
   ] = useState(null);
+
+  const dialogRef = useRef(null);
+  useAccessibleDialog({
+    open: Boolean(fecha),
+    onClose: () => { if (!loading) onClose?.(); },
+    dialogRef,
+  });
 
 
   // ==========================================================
@@ -417,53 +425,6 @@ export default function ModalNuevaCita({
     modo,
     cita,
     fecha,
-  ]);
-
-
-  // ==========================================================
-  // ESC
-  // ==========================================================
-
-  useEffect(() => {
-
-    if (!fecha)
-      return;
-
-    const handleEscape =
-      (event) => {
-
-        if (
-          event.key ===
-            "Escape" &&
-          !loading
-        ) {
-
-          onClose();
-
-        }
-
-      };
-
-
-    window.addEventListener(
-      "keydown",
-      handleEscape
-    );
-
-
-    return () => {
-
-      window.removeEventListener(
-        "keydown",
-        handleEscape
-      );
-
-    };
-
-  }, [
-    fecha,
-    loading,
-    onClose,
   ]);
 
 
@@ -720,15 +681,13 @@ export default function ModalNuevaCita({
   return (
 
     <div
-      className="modal-nueva-cita-premium panel-modal-premium
-        fixed inset-0
-        bg-slate-950/50
-        backdrop-blur-sm
-        flex items-center justify-center
-        z-50
-        p-4
-        animate-fade-in
-      "
+      className="modal-nueva-cita molsan-modal-overlay
+ fixed inset-0
+ 
+ 
+ flex items-center justify-center
+ z-50
+ p-4"
       onMouseDown={(e) => {
 
         if (
@@ -745,17 +704,15 @@ export default function ModalNuevaCita({
     >
 
       <div
-        className="
-          bg-white
-          border border-slate-200
-          rounded-2xl
-          shadow-2xl
-          w-full
-          max-w-2xl
-          max-h-[92vh]
-          overflow-y-auto
-          text-slate-800
-        "
+        ref={dialogRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label={titulo}
+        className="molsan-modal__panel w-full
+ max-w-2xl
+ max-h-[92vh]
+ overflow-y-auto"
         onMouseDown={(e) =>
           e.stopPropagation()
         }
@@ -766,34 +723,24 @@ export default function ModalNuevaCita({
            ==================================================== */}
 
         <div
-          className="
-            sticky top-0 z-20
-            bg-white/95 backdrop-blur-xl
-            border-b border-slate-200
-            px-6 py-4
-            flex items-start justify-between
-            gap-4
-          "
+          className="molsan-modal__header sticky top-0 z-20
+ 
+ 
+ px-6 py-4
+ flex items-start justify-between
+ gap-4"
         >
 
           <div>
 
             <h2
-              className="
-                text-xl
-                font-bold
-                text-slate-800
-              "
+             
             >
               {titulo}
             </h2>
 
             <p
-              className="
-                text-sm
-                text-slate-500
-                mt-1
-              "
+              className="mt-1"
             >
               {fecha}
             </p>
@@ -805,16 +752,8 @@ export default function ModalNuevaCita({
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="
-              w-9 h-9
-              rounded-xl
-              flex items-center justify-center
-              text-slate-500
-              hover:bg-slate-100
-              hover:text-slate-800
-              transition
-              disabled:opacity-40
-            "
+            className="molsan-btn molsan-btn--ghost molsan-btn--icon w-9 h-9
+ flex items-center justify-center"
             aria-label="Cerrar"
           >
             ×
@@ -828,10 +767,8 @@ export default function ModalNuevaCita({
            ==================================================== */}
 
         <div
-          className="
-            p-6
-            space-y-5
-          "
+          className="molsan-modal__body p-6
+ space-y-5"
         >
 
           {/* ERROR */}
@@ -839,14 +776,7 @@ export default function ModalNuevaCita({
           {error && (
 
             <div
-              className="
-                rounded-xl
-                border border-red-200
-                bg-red-50
-                px-4 py-3
-                text-sm
-                text-red-700
-              "
+              className="px-4 py-3"
             >
               {error}
             </div>
@@ -855,12 +785,10 @@ export default function ModalNuevaCita({
 
 
           <div
-            className="
-              grid
-              grid-cols-1
-              sm:grid-cols-2
-              gap-4
-            "
+            className="grid
+ grid-cols-1
+ sm:grid-cols-2
+ gap-4"
           >
 
             {/* HORA INICIO */}
@@ -868,13 +796,8 @@ export default function ModalNuevaCita({
             <div>
 
               <label
-                className="
-                  block
-                  mb-1.5
-                  text-sm
-                  font-medium
-                  text-slate-700
-                "
+                className="block
+ mb-1.5"
               >
                 Hora inicio
               </label>
@@ -885,22 +808,12 @@ export default function ModalNuevaCita({
                   soloLectura ||
                   loading
                 }
-                className="
-                  w-full
-                  min-h-[42px]
-                  bg-white
-                  border border-slate-300
-                  rounded-xl
-                  px-3 py-2
-                  text-slate-700
-                  shadow-sm
-                  focus:outline-none
-                  focus:ring-2
-                  focus:ring-blue-500/20
-                  focus:border-blue-400
-                  disabled:bg-slate-100
-                  disabled:text-slate-400
-                "
+                className="w-full
+ min-h-[42px]
+ 
+ 
+ 
+ px-3 py-2"
                 value={
                   form.hora_inicio
                 }
@@ -920,13 +833,8 @@ export default function ModalNuevaCita({
             <div>
 
               <label
-                className="
-                  block
-                  mb-1.5
-                  text-sm
-                  font-medium
-                  text-slate-700
-                "
+                className="block
+ mb-1.5"
               >
                 Hora fin
               </label>
@@ -937,22 +845,12 @@ export default function ModalNuevaCita({
                   soloLectura ||
                   loading
                 }
-                className="
-                  w-full
-                  min-h-[42px]
-                  bg-white
-                  border border-slate-300
-                  rounded-xl
-                  px-3 py-2
-                  text-slate-700
-                  shadow-sm
-                  focus:outline-none
-                  focus:ring-2
-                  focus:ring-blue-500/20
-                  focus:border-blue-400
-                  disabled:bg-slate-100
-                  disabled:text-slate-400
-                "
+                className="w-full
+ min-h-[42px]
+ 
+ 
+ 
+ px-3 py-2"
                 value={
                   form.hora_fin
                 }
@@ -970,19 +868,12 @@ export default function ModalNuevaCita({
             {/* TIPO CITA */}
 
             <div
-              className="
-                sm:col-span-2
-              "
+              className="sm:col-span-2"
             >
 
               <label
-                className="
-                  block
-                  mb-1.5
-                  text-sm
-                  font-medium
-                  text-slate-700
-                "
+                className="block
+ mb-1.5"
               >
                 Tipo de cita
               </label>
@@ -1019,19 +910,12 @@ export default function ModalNuevaCita({
 
             {form.tipo_cita === "Firma notarial" && (
               <div
-                className="
-                  sm:col-span-2
-                "
+                className="sm:col-span-2"
               >
 
                 <label
-                  className="
-                    block
-                    mb-1.5
-                    text-sm
-                    font-medium
-                    text-slate-700
-                  "
+                  className="block
+ mb-1.5"
                 >
                   Notario
                 </label>
@@ -1062,31 +946,21 @@ export default function ModalNuevaCita({
           {form.tipo_cita === "Firma notarial" && notarioSeleccionado && (
 
             <div
-              className="
-                rounded-2xl
-                border border-blue-100
-                bg-blue-50/60
-                p-4
-              "
+              className="p-4"
             >
 
               <div
-                className="
-                  flex
-                  items-start
-                  justify-between
-                  gap-4
-                  mb-3
-                "
+                className="flex
+ items-start
+ justify-between
+ gap-4
+ mb-3"
               >
 
                 <div>
 
                   <h3
-                    className="
-                      font-semibold
-                      text-slate-800
-                    "
+                   
                   >
                     {
                       notarioSeleccionado.nombre
@@ -1097,11 +971,7 @@ export default function ModalNuevaCita({
                   </h3>
 
                   <p
-                    className="
-                      text-xs
-                      text-slate-500
-                      mt-0.5
-                    "
+                    className="mt-0.5"
                   >
                     Código{" "}
                     {
@@ -1114,19 +984,17 @@ export default function ModalNuevaCita({
 
 
                 <span
-                  className={`
-                    inline-flex
-                    px-2.5 py-1
-                    rounded-full
-                    text-xs
-                    font-semibold
-                    ${
-                      notarioSeleccionado.tipo_firma ===
-                      "Videoconferencia"
-                        ? "bg-purple-100 text-purple-700"
-                        : "bg-sky-100 text-sky-700"
-                    }
-                  `}
+                  className={`inline-flex
+ px-2.5 py-1
+ 
+ 
+ 
+ ${
+ notarioSeleccionado.tipo_firma ===
+ "Videoconferencia"
+ ? ""
+ : ""
+ }`}
                 >
                   {
                     notarioSeleccionado.tipo_firma
@@ -1137,23 +1005,17 @@ export default function ModalNuevaCita({
 
 
               <div
-                className="
-                  grid
-                  grid-cols-1
-                  sm:grid-cols-2
-                  gap-x-6
-                  gap-y-2
-                  text-xs
-                  text-slate-600
-                "
+                className="grid
+ grid-cols-1
+ sm:grid-cols-2
+ gap-x-6
+ gap-y-2"
               >
 
                 <p>
 
                   <strong
-                    className="
-                      text-slate-700
-                    "
+                   
                   >
                     NIF:
                   </strong>{" "}
@@ -1169,9 +1031,7 @@ export default function ModalNuevaCita({
                 <p>
 
                   <strong
-                    className="
-                      text-slate-700
-                    "
+                   
                   >
                     Teléfono:
                   </strong>{" "}
@@ -1187,9 +1047,7 @@ export default function ModalNuevaCita({
                 <p>
 
                   <strong
-                    className="
-                      text-slate-700
-                    "
+                   
                   >
                     Provincia:
                   </strong>{" "}
@@ -1205,9 +1063,7 @@ export default function ModalNuevaCita({
                 <p>
 
                   <strong
-                    className="
-                      text-slate-700
-                    "
+                   
                   >
                     Municipio:
                   </strong>{" "}
@@ -1223,9 +1079,7 @@ export default function ModalNuevaCita({
                 <p>
 
                   <strong
-                    className="
-                      text-slate-700
-                    "
+                   
                   >
                     CP:
                   </strong>{" "}
@@ -1241,9 +1095,7 @@ export default function ModalNuevaCita({
                 <p>
 
                   <strong
-                    className="
-                      text-slate-700
-                    "
+                   
                   >
                     Distancia:
                   </strong>{" "}
@@ -1265,9 +1117,7 @@ export default function ModalNuevaCita({
                 <p>
 
                   <strong
-                    className="
-                      text-slate-700
-                    "
+                   
                   >
                     Apoderado:
                   </strong>{" "}
@@ -1281,15 +1131,11 @@ export default function ModalNuevaCita({
 
 
                 <p
-                  className="
-                    sm:col-span-2
-                  "
+                  className="sm:col-span-2"
                 >
 
                   <strong
-                    className="
-                      text-slate-700
-                    "
+                   
                   >
                     Dirección:
                   </strong>{" "}
@@ -1308,13 +1154,9 @@ export default function ModalNuevaCita({
 
                 <iframe
                   title="Ubicación de la notaría"
-                  className="
-                    w-full
-                    h-44
-                    mt-4
-                    rounded-xl
-                    border border-slate-200
-                  "
+                  className="w-full
+ h-44
+ mt-4"
                   loading="lazy"
                   src={`https://www.google.com/maps?q=${encodeURIComponent(
                     `${notarioSeleccionado.direccion}, ${notarioSeleccionado.cp || ""} ${notarioSeleccionado.municipio || ""}`
@@ -1334,39 +1176,29 @@ export default function ModalNuevaCita({
 
           {form.tipo_cita === "Firma notarial" && (
             <div
-              className="
-                grid
-                grid-cols-1
-                sm:grid-cols-2
-                gap-4
-              "
+              className="grid
+ grid-cols-1
+ sm:grid-cols-2
+ gap-4"
             >
 
               <div>
 
                 <label
-                  className="
-                    block
-                    mb-1.5
-                    text-sm
-                    font-medium
-                    text-slate-700
-                  "
+                  className="block
+ mb-1.5"
                 >
                   Tipo de firma
               </label>
 
               <input
                 disabled
-                className="
-                  w-full
-                  min-h-[42px]
-                  bg-slate-100
-                  border border-slate-200
-                  rounded-xl
-                  px-3 py-2
-                  text-slate-600
-                "
+                className="w-full
+ min-h-[42px]
+ 
+ 
+ 
+ px-3 py-2"
                 value={
                   form.tipo_firma ||
                   "—"
@@ -1379,28 +1211,20 @@ export default function ModalNuevaCita({
             <div>
 
               <label
-                className="
-                  block
-                  mb-1.5
-                  text-sm
-                  font-medium
-                  text-slate-700
-                "
+                className="block
+ mb-1.5"
               >
                 Apoderado
               </label>
 
               <input
                 disabled
-                className="
-                  w-full
-                  min-h-[42px]
-                  bg-slate-100
-                  border border-slate-200
-                  rounded-xl
-                  px-3 py-2
-                  text-slate-600
-                "
+                className="w-full
+ min-h-[42px]
+ 
+ 
+ 
+ px-3 py-2"
                 value={
                   form.apoderado_visible ||
                   "—"
@@ -1420,13 +1244,8 @@ export default function ModalNuevaCita({
           <div>
 
             <label
-              className="
-                block
-                mb-1.5
-                text-sm
-                font-medium
-                text-slate-700
-              "
+              className="block
+ mb-1.5"
             >
               Observaciones
             </label>
@@ -1436,22 +1255,14 @@ export default function ModalNuevaCita({
                 soloLectura ||
                 loading
               }
-              className="
-                w-full
-                bg-white
-                border border-slate-300
-                rounded-xl
-                px-3 py-2
-                text-slate-700
-                shadow-sm
-                resize-none
-                focus:outline-none
-                focus:ring-2
-                focus:ring-blue-500/20
-                focus:border-blue-400
-                disabled:bg-slate-100
-                disabled:text-slate-400
-              "
+              className="w-full
+ 
+ 
+ 
+ px-3 py-2
+ 
+ 
+ resize-none"
               rows={4}
               value={
                 form.observaciones
@@ -1474,15 +1285,11 @@ export default function ModalNuevaCita({
            ==================================================== */}
 
         <div
-          className="
-            border-t border-slate-200
-            bg-slate-50/80
-            px-6 py-4
-            flex flex-col-reverse
-            sm:flex-row
-            justify-between
-            gap-3
-          "
+          className="molsan-modal__footer px-6 py-4
+ flex flex-col-reverse
+ sm:flex-row
+ justify-between
+ gap-3"
         >
 
           <div>
@@ -1494,16 +1301,7 @@ export default function ModalNuevaCita({
                 <button
                   type="button"
                   disabled={loading}
-                  className="
-                    px-4 py-2
-                    rounded-xl
-                    bg-red-50
-                    border border-red-200
-                    text-red-700
-                    hover:bg-red-100
-                    transition
-                    disabled:opacity-50
-                  "
+                  className="molsan-btn molsan-btn--danger px-4 py-2"
                   onClick={
                     onDelete
                   }
@@ -1517,27 +1315,16 @@ export default function ModalNuevaCita({
 
 
           <div
-            className="
-              flex
-              justify-end
-              gap-3
-            "
+            className="flex
+ justify-end
+ gap-3"
           >
 
             <button
               type="button"
               disabled={loading}
               onClick={onClose}
-              className="
-                px-4 py-2
-                rounded-xl
-                bg-white
-                border border-slate-300
-                text-slate-700
-                hover:bg-slate-50
-                transition
-                disabled:opacity-50
-              "
+              className="molsan-btn molsan-btn--secondary px-4 py-2"
             >
               {
                 soloLectura
@@ -1553,19 +1340,7 @@ export default function ModalNuevaCita({
                 type="button"
                 disabled={loading}
                 onClick={guardar}
-                className="
-                  px-5 py-2
-                  rounded-xl
-                  bg-blue-600
-                  hover:bg-blue-700
-                  text-white
-                  font-medium
-                  shadow-sm
-                  transition
-                  active:scale-[0.98]
-                  disabled:opacity-60
-                  disabled:cursor-not-allowed
-                "
+                className="molsan-btn molsan-btn--primary px-5 py-2"
               >
                 {
                   loading

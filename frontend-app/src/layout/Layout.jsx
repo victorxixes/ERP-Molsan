@@ -4,7 +4,6 @@ import { useAuthStore } from "../store/authStore";
 import EmpleadoPerfilModal from "../components/SidebarPerfilModal";
 import { useNotificacionesWS } from "../hooks/useNotificacionesWS";
 import NotificacionesToast from "../components/notificaciones/NotificacionesToast";
-import "../css/CancelagestUnified.css";
 
 /** Layout principal de ERP-Molsan. Mantiene perfil, navegación,
  * canal de notificaciones. */
@@ -22,13 +21,13 @@ export default function Layout() {
   useNotificacionesWS(empleado?.id);
 
   return (
-    <div className="erp-app-shell min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
+    <div className="erp-app-shell min-h-screen">
       {perfilModal && <EmpleadoPerfilModal id={perfilModal} onClose={() => setPerfilModal(null)} />}
       <Sidebar />
       <NotificacionesToast />
       <main className="erp-main-content relative min-h-[calc(100vh-70px)]">
         <div className="erp-main-inner w-full px-4 py-6 lg:px-6">
-          <div className={`w-full${rutaCancelaGest ? " cg-unified-workspace" : ""}`}>
+          <div className={`erp-route-content w-full${rutaCancelaGest ? " cg-unified-workspace" : ""}`}>
             <Outlet />
           </div>
         </div>

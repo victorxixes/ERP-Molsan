@@ -1,0 +1,50 @@
+/* MOLSAN ERP · sidebar conservado
+   Solo se mantienen reglas de navegación y perfil del sidebar.
+*/
+.mol-sidebar-premium {
+  isolation: isolate;
+  position: relative;
+  z-index: 50;
+  min-width: 0;
+}
+.mol-sidebar-premium > div { min-width: 0; }
+.mol-sidebar-premium nav {
+  min-width: 0;
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.mol-sidebar-premium a,
+.mol-sidebar-premium button { cursor: pointer; }
+.mol-sidebar-premium nav a,
+.mol-sidebar-premium nav button {
+  min-height: 36px;
+  flex-shrink: 0;
+}
+.mol-sidebar-premium :is(a,button):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+.sidebar-perfil-modal-premium {
+  min-width: 0;
+}
+.sidebar-perfil-modal-premium [role="dialog"] {
+  max-height: calc(100dvh - 1rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+@media (max-width: 760px) {
+  .mol-sidebar-premium nav :is(a,button) { min-height: 34px; }
+  .sidebar-perfil-modal-premium [role="dialog"] {
+    width: 100%;
+    max-height: calc(100dvh - .5rem);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mol-sidebar-premium *,
+  .sidebar-perfil-modal-premium * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

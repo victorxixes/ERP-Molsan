@@ -10,11 +10,16 @@ from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
 from backend.app.auth.dependencies import get_current_user
+from backend.app.expedientes.reparto import validar_visibilidad_expediente_request
 from backend.app.expedientes.gastos.models import ExpedienteGasto
 from backend.app.expedientes.models import Expediente
 from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
 
-router = APIRouter(prefix="/expedientes", tags=["Gastos de expedientes"])
+router = APIRouter(
+    prefix="/expedientes",
+    tags=["Gastos de expedientes"],
+    dependencies=[Depends(get_current_user), Depends(validar_visibilidad_expediente_request)],
+)
 CENTIMO = Decimal("0.01")
 CIEN = Decimal("100")
 

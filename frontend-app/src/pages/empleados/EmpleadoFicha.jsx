@@ -4,7 +4,6 @@ import {
 } from "react";
 
 import axios from "axios";
-import "./EmpleadoFicha.css";
 
 import {
   API_BASE,
@@ -12,6 +11,7 @@ import {
 
 import ModalEmpleado
   from "../../components/empleados/ModalEmpleado";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 
 export default function EmpleadoFicha({
@@ -99,11 +99,12 @@ export default function EmpleadoFicha({
   if (!empleadoId) {
 
     return (
-      <div className="erp-page">
+      <div className="erp-page min-w-0 space-y-5">
 
-        <div className="erp-card max-w-[1700px] mx-auto p-8">
+        <MolsanPageHeader mark="EF" title="Ficha de empleado" description="Consulta de datos básicos, personales, laborales y actividad del empleado." />
+        <div className="erp-card p-8">
 
-          <p className="text-[var(--erp-text-soft)]">
+          <p>
             No se ha seleccionado ningún empleado.
           </p>
 
@@ -117,16 +118,12 @@ export default function EmpleadoFicha({
   if (loading) {
 
     return (
-      <div className="erp-page">
+      <div className="erp-page min-w-0 space-y-5">
 
-        <div className="erp-card max-w-[1700px] mx-auto p-8">
+        <MolsanPageHeader mark="EF" title="Ficha de empleado" description="Consulta de datos básicos, personales, laborales y actividad del empleado." />
+        <div className="erp-card p-8">
 
-          <div className="
-            text-[var(--erp-text-soft)]
-            animate-pulse
-            text-center
-            py-16
-          ">
+          <div className="py-16">
             Cargando ficha del empleado…
           </div>
 
@@ -140,19 +137,13 @@ export default function EmpleadoFicha({
   if (error) {
 
     return (
-      <div className="erp-page">
+      <div className="erp-page min-w-0 space-y-5">
 
-        <div className="erp-card max-w-[1700px] mx-auto p-8">
+        <MolsanPageHeader mark="EF" title="Ficha de empleado" description="Consulta de datos básicos, personales, laborales y actividad del empleado." />
+        <div className="erp-card p-8">
 
-          <div className="
-            rounded-xl
-            border
-            border-red-200
-            bg-red-50
-            text-red-700
-            px-4
-            py-3
-          ">
+          <div className="px-4
+ py-3">
             {error}
           </div>
 
@@ -169,51 +160,39 @@ export default function EmpleadoFicha({
 
 
   return (
-    <div className="
-      erp-page
-      empleado-ficha-premium
-      space-y-5
-    ">
+    <div className="erp-page min-w-0 space-y-5">
+
+      <MolsanPageHeader mark="EF" title="Ficha de empleado" description="Consulta de datos básicos, personales, laborales y actividad del empleado." />
 
       {/* ===================================================
           CABECERA
       =================================================== */}
 
-      <section className="
-        erp-card
-        max-w-[1700px]
-        mx-auto
-        p-5
-      ">
+      <section className="erp-card
+ p-5">
 
-        <div className="
-          flex
-          flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-5
-        ">
+        <div className="flex
+ flex-col
+ lg:flex-row
+ lg:items-center
+ lg:justify-between
+ gap-5">
 
-          <div className="
-            flex
-            items-center
-            gap-4
-          ">
+          <div className="flex
+ items-center
+ gap-4">
 
-            <div className="
-              w-16
-              h-16
-              rounded-2xl
-              overflow-hidden
-              border
-              border-[var(--erp-border)]
-              bg-[var(--erp-surface-soft)]
-              flex
-              items-center
-              justify-center
-              shrink-0
-            ">
+            <div className="w-16
+ h-16
+ 
+ overflow-hidden
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center
+ shrink-0">
 
               <img
                 src={
@@ -222,11 +201,9 @@ export default function EmpleadoFicha({
                     : "/no-foto.png"
                 }
                 alt="Foto empleado"
-                className="
-                  w-full
-                  h-full
-                  object-cover
-                "
+                className="w-full
+ h-full
+ object-cover"
               />
 
             </div>
@@ -234,63 +211,44 @@ export default function EmpleadoFicha({
 
             <div>
 
-              <div className="
-                text-sm
-                text-[var(--erp-text-soft)]
-              ">
+              <div>
                 Ficha de empleado
               </div>
 
-              <h1 className="
-                text-2xl
-                font-semibold
-                text-[var(--erp-text)]
-              ">
+              <h2>
                 {empleado.nombre}{" "}
                 {empleado.apellidos}
-              </h1>
+              </h2>
 
-              <div className="
-                flex
-                flex-wrap
-                items-center
-                gap-2
-                mt-1
-              ">
+              <div className="flex
+ flex-wrap
+ items-center
+ gap-2
+ mt-1">
 
-                <span className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                ">
+                <span>
                   ID #{empleado.id}
                 </span>
 
-                <span className="
-                  text-[var(--erp-text-soft)]
-                ">
+                <span>
                   ·
                 </span>
 
-                <span className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                ">
+                <span>
                   {empleado.usuario || "Sin usuario"}
                 </span>
 
                 <span
-                  className={`
-                    px-2.5
-                    py-1
-                    rounded-lg
-                    text-xs
-                    font-medium
-                    ${
-                      empleado.activo
-                        ? "bg-green-50 text-green-700 border border-green-200"
-                        : "bg-red-50 text-red-700 border border-red-200"
-                    }
-                  `}
+                  className={`px-2.5
+ py-1
+ 
+ 
+ 
+ ${
+ empleado.activo
+ ? ""
+ : ""
+ }`}
                 >
                   {empleado.activo
                     ? "Activo"
@@ -309,18 +267,11 @@ export default function EmpleadoFicha({
             onClick={() =>
               setOpenModal(true)
             }
-            className="
-              inline-flex
-              items-center
-              justify-center
-              px-4
-              py-2.5
-              rounded-xl
-              bg-[var(--erp-primary)]
-              hover:bg-[var(--erp-primary-dark)]
-              text-white
-              transition
-            "
+            className="inline-flex
+ items-center
+ justify-center
+ px-4
+ py-2.5"
           >
             Editar ficha
           </button>
@@ -334,29 +285,18 @@ export default function EmpleadoFicha({
           DATOS BÁSICOS
       =================================================== */}
 
-      <section className="
-        erp-card
-        max-w-[1700px]
-        mx-auto
-        p-5
-      ">
+      <section className="erp-card
+ p-5">
 
-        <h2 className="
-          text-lg
-          font-semibold
-          text-[var(--erp-text)]
-          mb-5
-        ">
+        <h2 className="mb-5">
           Datos básicos
         </h2>
 
-        <div className="
-          grid
-          grid-cols-1
-          sm:grid-cols-2
-          lg:grid-cols-4
-          gap-4
-        ">
+        <div className="grid
+ grid-cols-1
+ sm:grid-cols-2
+ lg:grid-cols-4
+ gap-4">
 
           <Dato
             label="Nombre"
@@ -402,29 +342,18 @@ export default function EmpleadoFicha({
           DATOS PERSONALES
       =================================================== */}
 
-      <section className="
-        erp-card
-        max-w-[1700px]
-        mx-auto
-        p-5
-      ">
+      <section className="erp-card
+ p-5">
 
-        <h2 className="
-          text-lg
-          font-semibold
-          text-[var(--erp-text)]
-          mb-5
-        ">
+        <h2 className="mb-5">
           Datos personales
         </h2>
 
-        <div className="
-          grid
-          grid-cols-1
-          sm:grid-cols-2
-          lg:grid-cols-3
-          gap-4
-        ">
+        <div className="grid
+ grid-cols-1
+ sm:grid-cols-2
+ lg:grid-cols-3
+ gap-4">
 
           <Dato
             label="Dirección"
@@ -486,29 +415,18 @@ export default function EmpleadoFicha({
           DATOS LABORALES
       =================================================== */}
 
-      <section className="
-        erp-card
-        max-w-[1700px]
-        mx-auto
-        p-5
-      ">
+      <section className="erp-card
+ p-5">
 
-        <h2 className="
-          text-lg
-          font-semibold
-          text-[var(--erp-text)]
-          mb-5
-        ">
+        <h2 className="mb-5">
           Datos laborales
         </h2>
 
-        <div className="
-          grid
-          grid-cols-1
-          sm:grid-cols-2
-          lg:grid-cols-3
-          gap-4
-        ">
+        <div className="grid
+ grid-cols-1
+ sm:grid-cols-2
+ lg:grid-cols-3
+ gap-4">
 
           <Dato
             label="Departamento"
@@ -554,32 +472,19 @@ export default function EmpleadoFicha({
           AUDITORÍA
       =================================================== */}
 
-      <section className="
-        erp-card
-        max-w-[1700px]
-        mx-auto
-        p-5
-      ">
+      <section className="erp-card
+ p-5">
 
-        <div className="
-          flex
-          items-center
-          justify-between
-          mb-4
-        ">
+        <div className="flex
+ items-center
+ justify-between
+ mb-4">
 
-          <h2 className="
-            text-lg
-            font-semibold
-            text-[var(--erp-text)]
-          ">
+          <h2>
             Auditoría reciente
           </h2>
 
-          <span className="
-            text-sm
-            text-[var(--erp-text-soft)]
-          ">
+          <span>
             {auditoria.length} registros
           </span>
 
@@ -588,36 +493,19 @@ export default function EmpleadoFicha({
 
         {auditoria.length === 0 ? (
 
-          <div className="
-            py-10
-            text-center
-            text-[var(--erp-text-soft)]
-          ">
+          <div className="py-10">
             No hay registros de auditoría.
           </div>
 
         ) : (
 
-          <div className="
-            overflow-auto
-            rounded-xl
-            border
-            border-[var(--erp-border)]
-          ">
+          <div className="overflow-auto">
 
-            <table className="
-              w-full
-              text-sm
-              text-[var(--erp-text)]
-            ">
+            <table className="w-full">
 
               <thead>
 
-                <tr className="
-                  bg-[var(--erp-primary)]
-                  text-white
-                  text-left
-                ">
+                <tr>
 
                   <th className="px-4 py-3">
                     Fecha
@@ -648,19 +536,12 @@ export default function EmpleadoFicha({
 
                     <tr
                       key={registro.id}
-                      className="
-                        border-t
-                        border-[var(--erp-border)]
-                        hover:bg-[var(--erp-primary-soft)]
-                        transition-colors
-                      "
+                     
                     >
 
-                      <td className="
-                        px-4
-                        py-3
-                        whitespace-nowrap
-                      ">
+                      <td className="px-4
+ py-3
+ whitespace-nowrap">
                         {registro.fecha
                           ? new Date(
                               registro.fecha
@@ -730,34 +611,19 @@ function Dato({
 }) {
 
   return (
-    <div className="
-      rounded-xl
-      border
-      border-[var(--erp-border)]
-      bg-[var(--erp-surface-soft)]
-      px-4
-      py-3
-    ">
+    <div className="px-4
+ py-3">
 
-      <div className="
-        text-xs
-        font-medium
-        text-[var(--erp-text-soft)]
-        mb-1
-      ">
+      <div className="mb-1">
         {label}
       </div>
 
       <div
-        className={`
-          text-sm
-          text-[var(--erp-text)]
-          ${
-            multiline
-              ? "whitespace-pre-wrap"
-              : ""
-          }
-        `}
+        className={`${
+ multiline
+ ? "whitespace-pre-wrap"
+ : ""
+ }`}
       >
         {value ||
           "—"}

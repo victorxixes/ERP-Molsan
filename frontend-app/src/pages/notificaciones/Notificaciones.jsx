@@ -1,13 +1,13 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useMemo } from "react";
-import "./Notificaciones.css";
 import { useNotificacionesStore } from "../../store/notificacionesStore";
 
 /**
  * ============================================================
- * NOTIFICACIONES — MOLSAN ERP PREMIUM 2027
+ * NOTIFICACIONES
  * ============================================================
  *
- * Tema claro Premium
+ * 
  * WebSocket realtime
  * Contador de notificaciones
  * Estados visuales por tipo
@@ -54,66 +54,6 @@ export default function Notificaciones() {
   // ESTILOS POR TIPO
   // ==========================================================
 
-  const estilosTipo = {
-
-    error: {
-      borde: "border-red-200",
-      fondo: "bg-red-50",
-      icono: "bg-red-50 border-red-200 text-red-600",
-      barra: "bg-red-500",
-    },
-
-    security: {
-      borde: "border-purple-200",
-      fondo: "bg-purple-50",
-      icono: "bg-purple-50 border-purple-200 text-purple-600",
-      barra: "bg-purple-500",
-    },
-
-    warning: {
-      borde: "border-amber-200",
-      fondo: "bg-amber-50",
-      icono: "bg-amber-50 border-amber-200 text-amber-600",
-      barra: "bg-amber-500",
-    },
-
-    success: {
-      borde: "border-emerald-200",
-      fondo: "bg-emerald-50",
-      icono: "bg-emerald-50 border-emerald-200 text-emerald-600",
-      barra: "bg-emerald-500",
-    },
-
-    noticia: {
-      borde: "border-blue-200",
-      fondo: "bg-blue-50",
-      icono: "bg-blue-50 border-blue-200 text-blue-600",
-      barra: "bg-blue-500",
-    },
-
-    sistema: {
-      borde: "border-cyan-200",
-      fondo: "bg-cyan-50",
-      icono: "bg-cyan-50 border-cyan-200 text-cyan-600",
-      barra: "bg-cyan-500",
-    },
-
-    info: {
-      borde: "border-sky-200",
-      fondo: "bg-sky-50",
-      icono: "bg-sky-50 border-sky-200 text-sky-600",
-      barra: "bg-sky-500",
-    },
-
-    default: {
-      borde: "border-[var(--erp-border)]",
-      fondo: "bg-white",
-      icono: "bg-[var(--erp-primary-soft)] border-[var(--erp-border)] text-[var(--erp-primary)]",
-      barra: "bg-[var(--erp-primary)]",
-    },
-
-  };
-
   // ==========================================================
   // HELPERS
   // ==========================================================
@@ -142,16 +82,6 @@ export default function Notificaciones() {
     );
   };
 
-
-  const obtenerEstilo = (tipo) => {
-
-    const tipoNormalizado = obtenerTipo(tipo);
-
-    return (
-      estilosTipo[tipoNormalizado] ||
-      estilosTipo.default
-    );
-  };
 
 
   const formatearFecha = (fecha) => {
@@ -199,190 +129,14 @@ export default function Notificaciones() {
   return (
 
     <div
-      className="
-        notificaciones-premium-page
-        p-4
-        md:p-6
-        space-y-6
-        text-[var(--erp-text)]
-        animate-fade-in
-      "
+      className="erp-page notificaciones-premium-page min-w-0 space-y-6"
     >
 
-      {/* ======================================================
-          CABECERA
-          ====================================================== */}
-
-      <div
-        className="
-          relative
-          overflow-hidden
-          bg-white
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          p-5
-          md:p-6
-          shadow-sm
-        "
-      >
-
-        <div
-          className="
-            flex
-            flex-col
-            md:flex-row
-            md:items-center
-            md:justify-between
-            gap-4
-          "
-        >
-
-          {/* ==================================================
-              TÍTULO
-              ================================================== */}
-
-          <div
-            className="
-              flex
-              items-center
-              gap-4
-            "
-          >
-
-            <div
-              className="
-                w-12
-                h-12
-                rounded-xl
-                bg-[var(--erp-primary-soft)]
-                border
-                border-[var(--erp-border)]
-                flex
-                items-center
-                justify-center
-                text-2xl
-                shadow-sm
-              "
-            >
-              🔔
-            </div>
-
-
-            <div>
-
-              <h1
-                className="
-                  text-2xl
-                  md:text-3xl
-                  font-bold
-                  tracking-tight
-                  text-[var(--erp-text)]
-                "
-              >
-                Notificaciones
-              </h1>
-
-              <p
-                className="
-                  text-sm
-                  mt-1
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                Actividad y avisos en tiempo real del ERP.
-              </p>
-
-            </div>
-
-          </div>
-
-
-          {/* ==================================================
-              ACCIONES
-              ================================================== */}
-
-          <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
-          >
-
-            {/* CONTADOR */}
-
-            <div
-              className="
-                px-4
-                py-2
-                rounded-xl
-                bg-[var(--erp-background)]
-                border
-                border-[var(--erp-border)]
-                text-center
-                min-w-[90px]
-              "
-            >
-
-              <div
-                className="
-                  text-xl
-                  font-bold
-                  text-[var(--erp-text)]
-                "
-              >
-                {lista.length}
-              </div>
-
-              <div
-                className="
-                  text-[10px]
-                  uppercase
-                  tracking-wider
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                Avisos
-              </div>
-
-            </div>
-
-
-            {/* LIMPIAR */}
-
-            <button
-              type="button"
-              onClick={clearNotificaciones}
-              disabled={lista.length === 0}
-              className="
-                px-4
-                py-2.5
-                rounded-xl
-                bg-red-50
-                border
-                border-red-200
-                text-red-600
-                text-sm
-                font-medium
-                transition-all
-                duration-200
-                hover:bg-red-100
-                hover:border-red-300
-                active:scale-[0.97]
-                disabled:opacity-40
-                disabled:cursor-not-allowed
-              "
-            >
-              🗑️ Limpiar
-            </button>
-
-          </div>
-
-        </div>
-
+      <MolsanPageHeader mark="NO" title="Notificaciones" description="Actividad y avisos en tiempo real del ERP." />
+      <div className="molsan-filter-bar flex flex-wrap items-center justify-between gap-3 p-3">
+        <div className="molsan-stat-card"><span className="molsan-stat-label">Avisos disponibles</span><strong className="block text-xl">{lista.length}</strong></div>
+        <button type="button" className="molsan-btn molsan-btn--secondary" onClick={clearNotificaciones} disabled={lista.length === 0}>Limpiar notificaciones</button>
       </div>
-
 
       {/* ======================================================
           ESTADO VACÍO
@@ -391,60 +145,48 @@ export default function Notificaciones() {
       {lista.length === 0 ? (
 
         <div
-          className="
-            min-h-[320px]
-            flex
-            flex-col
-            items-center
-            justify-center
-            text-center
-            bg-white
-            border
-            border-[var(--erp-border)]
-            rounded-2xl
-            shadow-sm
-            px-6
-          "
+          className="erp-empty-state min-h-[320px]
+ flex
+ flex-col
+ items-center
+ justify-center
+ 
+ 
+ 
+ 
+ 
+ 
+ px-6"
         >
 
           <div
-            className="
-              w-20
-              h-20
-              rounded-2xl
-              bg-[var(--erp-primary-soft)]
-              border
-              border-[var(--erp-border)]
-              flex
-              items-center
-              justify-center
-              text-4xl
-              shadow-sm
-              mb-5
-            "
+            className="w-20
+ h-20
+ 
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center
+ 
+ 
+ mb-5"
           >
             🔕
           </div>
 
 
           <h2
-            className="
-              text-lg
-              font-semibold
-              text-[var(--erp-text)]
-            "
+           
           >
             No hay notificaciones
           </h2>
 
 
           <p
-            className="
-              text-sm
-              text-[var(--erp-text-soft)]
-              mt-2
-              max-w-md
-            "
+            className="mt-2
+ max-w-md"
           >
             Cuando se produzca una nueva actividad
             o evento del sistema, aparecerá
@@ -453,30 +195,17 @@ export default function Notificaciones() {
 
 
           <div
-            className="
-              mt-5
-              inline-flex
-              items-center
-              gap-2
-              px-3
-              py-1.5
-              rounded-full
-              bg-emerald-50
-              border
-              border-emerald-200
-              text-emerald-600
-              text-xs
-            "
+            className="mt-5
+ inline-flex
+ items-center
+ gap-2
+ px-3
+ py-1.5"
           >
 
             <span
-              className="
-                w-2
-                h-2
-                rounded-full
-                bg-emerald-500
-                animate-pulse
-              "
+              className="w-2
+ h-2"
             />
 
             Conexión en tiempo real activa
@@ -492,9 +221,7 @@ export default function Notificaciones() {
            ==================================================== */
 
         <div
-          className="
-            space-y-3
-          "
+          className="space-y-3"
         >
 
           {lista.map((n, index) => {
@@ -515,23 +242,15 @@ export default function Notificaciones() {
                   n.id ??
                   `notificacion-${index}`
                 }
-                className={`
-                  group
-                  relative
-                  overflow-hidden
-                  rounded-2xl
-                  border
-                  ${estilo.borde}
-                  ${estilo.fondo}
-                  p-4
-                  md:p-5
-                  shadow-sm
-                  transition-all
-                  duration-200
-                  hover:-translate-y-[1px]
-                  hover:shadow-md
-                  animate-fade-in
-                `}
+                className={`erp-card group
+ relative
+ overflow-hidden
+ 
+ 
+ 
+ 
+ p-4
+ md:p-5`}
               >
 
                 {/* ==================================================
@@ -539,23 +258,19 @@ export default function Notificaciones() {
                     ================================================== */}
 
                 <div
-                  className={`
-                    absolute
-                    left-0
-                    top-4
-                    bottom-4
-                    w-[3px]
-                    rounded-r-full
-                    ${estilo.barra}
-                  `}
+                  className={`absolute
+ left-0
+ top-4
+ bottom-4
+ w-[3px]
+ 
+ `}
                 />
 
 
                 <div
-                  className="
-                    flex
-                    gap-4
-                  "
+                  className="flex
+ gap-4"
                 >
 
                   {/* ==================================================
@@ -563,19 +278,15 @@ export default function Notificaciones() {
                       ================================================== */}
 
                   <div
-                    className={`
-                      flex-shrink-0
-                      w-11
-                      h-11
-                      rounded-xl
-                      ${estilo.icono}
-                      border
-                      flex
-                      items-center
-                      justify-center
-                      text-xl
-                      shadow-sm
-                    `}
+                    className={`flex-shrink-0
+ w-11
+ h-11
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center`}
                   >
                     {icono}
                   </div>
@@ -586,37 +297,25 @@ export default function Notificaciones() {
                       ================================================== */}
 
                   <div
-                    className="
-                      flex-1
-                      min-w-0
-                    "
+                    className="flex-1
+ min-w-0"
                   >
 
                     <div
-                      className="
-                        flex
-                        flex-col
-                        md:flex-row
-                        md:items-start
-                        md:justify-between
-                        gap-2
-                      "
+                      className="flex
+ flex-col
+ md:flex-row
+ md:items-start
+ md:justify-between
+ gap-2"
                     >
 
                       <div
-                        className="
-                          min-w-0
-                        "
+                        className="min-w-0"
                       >
 
                         <h2
-                          className="
-                            text-base
-                            md:text-lg
-                            font-semibold
-                            text-[var(--erp-text)]
-                            break-words
-                          "
+                          className="break-words"
                         >
                           {n.titulo || "Notificación"}
                         </h2>
@@ -625,12 +324,10 @@ export default function Notificaciones() {
 
 
                       <span
-                        className="
-                          flex-shrink-0
-                          text-xs
-                          text-[var(--erp-text-soft)]
-                          whitespace-nowrap
-                        "
+                        className="flex-shrink-0
+ 
+ 
+ whitespace-nowrap"
                       >
                         {formatearFecha(n.fecha)}
                       </span>
@@ -645,13 +342,11 @@ export default function Notificaciones() {
                     {n.descripcion && (
 
                       <p
-                        className="
-                          mt-2
-                          text-sm
-                          leading-relaxed
-                          text-[var(--erp-text-soft)]
-                          break-words
-                        "
+                        className="mt-2
+ 
+ 
+ 
+ break-words"
                       >
                         {n.descripcion}
                       </p>
@@ -664,35 +359,23 @@ export default function Notificaciones() {
                         ================================================== */}
 
                     <div
-                      className="
-                        flex
-                        flex-wrap
-                        items-center
-                        gap-2
-                        mt-4
-                      "
+                      className="flex
+ flex-wrap
+ items-center
+ gap-2
+ mt-4"
                     >
 
                       <span
-                        className="
-                          inline-flex
-                          items-center
-                          gap-1.5
-                          px-2.5
-                          py-1
-                          rounded-lg
-                          bg-white
-                          border
-                          border-[var(--erp-border)]
-                          text-[11px]
-                          text-[var(--erp-text-soft)]
-                        "
+                        className="inline-flex
+ items-center
+ gap-1.5
+ px-2.5
+ py-1"
                       >
 
                         <span
-                          className="
-                            text-[10px]
-                          "
+                         
                         >
                           🏷️
                         </span>
@@ -703,28 +386,16 @@ export default function Notificaciones() {
 
 
                       <span
-                        className="
-                          inline-flex
-                          items-center
-                          gap-1.5
-                          px-2.5
-                          py-1
-                          rounded-lg
-                          bg-emerald-50
-                          border
-                          border-emerald-200
-                          text-[11px]
-                          text-emerald-600
-                        "
+                        className="inline-flex
+ items-center
+ gap-1.5
+ px-2.5
+ py-1"
                       >
 
                         <span
-                          className="
-                            w-1.5
-                            h-1.5
-                            rounded-full
-                            bg-emerald-500
-                          "
+                          className="w-1.5
+ h-1.5"
                         />
 
                         Tiempo real

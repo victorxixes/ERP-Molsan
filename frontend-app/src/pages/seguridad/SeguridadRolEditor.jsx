@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import {
   useState,
   useCallback,
@@ -6,7 +7,6 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
-import "./SeguridadSubpaginasPremium.css";
 
 
 const API_URL =
@@ -422,51 +422,17 @@ export default function SeguridadRolEditor() {
 
   return (
 
-    <div className="erp-page seguridad-subpagina-premium seguridad-rol-editor-premium space-y-6 animate-fade-in">
+    <div className="erp-page space-y-6">
 
-      {/* ======================================================
-          CABECERA
-      ====================================================== */}
-
-      <div className="erp-page-header">
-
-        <div>
-
-          <div className="erp-eyebrow">
-            SEGURIDAD · ADMINISTRACIÓN
-          </div>
-
-          <h1 className="erp-page-title">
-            Editor de roles
-          </h1>
-
-          <p className="erp-page-subtitle">
-            Gestiona los roles disponibles en Molsan ERP.
-          </p>
-
-        </div>
-
-
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <MolsanPageHeader mark="SE" title="Editor de roles" description="Gestiona los roles disponibles en Molsan ERP." />
         {modo === "lista" && (
-
-          <button
-            type="button"
-            onClick={iniciarCrear}
-            className="erp-btn erp-btn-primary inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-
-            <span className="text-base">
-              +
-            </span>
-
+          <button type="button" onClick={iniciarCrear} className="erp-btn erp-btn-primary inline-flex items-center justify-center gap-2 px-5 py-2.5">
+            <span>+</span>
             Crear rol
-
           </button>
-
         )}
-
       </div>
-
 
       {/* ======================================================
           MENSAJES
@@ -475,17 +441,14 @@ export default function SeguridadRolEditor() {
       {mensaje && (
 
         <div
-          className="
-            flex items-center gap-3
-            rounded-xl
-            border border-emerald-200
-            bg-emerald-50
-            px-4 py-3
-            text-sm text-emerald-700
-          "
+          className="flex items-center gap-3
+ 
+ 
+ 
+ px-4 py-3"
         >
 
-          <span className="font-bold">
+          <span>
             ✓
           </span>
 
@@ -501,17 +464,14 @@ export default function SeguridadRolEditor() {
       {error && (
 
         <div
-          className="
-            flex items-center gap-3
-            rounded-xl
-            border border-red-200
-            bg-red-50
-            px-4 py-3
-            text-sm text-red-700
-          "
+          className="flex items-center gap-3
+ 
+ 
+ 
+ px-4 py-3"
         >
 
-          <span className="font-bold">
+          <span>
             !
           </span>
 
@@ -533,32 +493,21 @@ export default function SeguridadRolEditor() {
         <section className="erp-card overflow-hidden">
 
           <div
-            className="
-              flex flex-col
-              sm:flex-row
-              sm:items-center
-              sm:justify-between
-              gap-3
-              px-6 py-5
-              border-b border-[var(--erp-border)]
-            "
+            className="flex flex-col
+ sm:flex-row
+ sm:items-center
+ sm:justify-between
+ gap-3
+ px-6 py-5"
           >
 
             <div>
 
-              <h2 className="
-                text-lg
-                font-bold
-                text-[var(--erp-text)]
-              ">
+              <h2>
                 Roles existentes
               </h2>
 
-              <p className="
-                text-sm
-                text-[var(--erp-muted)]
-                mt-1
-              ">
+              <p className="mt-1">
 
                 {rolesSeguros.length}
 
@@ -574,15 +523,8 @@ export default function SeguridadRolEditor() {
 
 
             <div
-              className="
-                inline-flex items-center
-                px-3 py-1.5
-                rounded-full
-                bg-[var(--erp-accent-soft)]
-                text-[var(--erp-accent)]
-                text-xs
-                font-semibold
-              "
+              className="inline-flex items-center
+ px-3 py-1.5"
             >
               Gestión de seguridad
             </div>
@@ -592,57 +534,42 @@ export default function SeguridadRolEditor() {
 
           <div className="overflow-x-auto">
 
-            <table className="w-full min-w-[620px] text-sm">
+            <table className="w-full min-w-[620px]">
 
               <thead>
 
                 <tr
-                  className="
-                    bg-[var(--erp-surface-soft)]
-                    border-b border-[var(--erp-border)]
-                  "
+                 
                 >
 
                   <th
-                    className="
-                      px-6 py-3
-                      text-left
-                      text-xs
-                      font-bold
-                      uppercase
-                      tracking-wide
-                      text-[var(--erp-muted)]
-                    "
+                    className="px-6 py-3
+ 
+ 
+ 
+ uppercase"
                   >
                     ID
                   </th>
 
 
                   <th
-                    className="
-                      px-6 py-3
-                      text-left
-                      text-xs
-                      font-bold
-                      uppercase
-                      tracking-wide
-                      text-[var(--erp-muted)]
-                    "
+                    className="px-6 py-3
+ 
+ 
+ 
+ uppercase"
                   >
                     Nombre
                   </th>
 
 
                   <th
-                    className="
-                      px-6 py-3
-                      text-right
-                      text-xs
-                      font-bold
-                      uppercase
-                      tracking-wide
-                      text-[var(--erp-muted)]
-                    "
+                    className="px-6 py-3
+ 
+ 
+ 
+ uppercase"
                   >
                     Acciones
                   </th>
@@ -660,12 +587,7 @@ export default function SeguridadRolEditor() {
 
                     <td
                       colSpan={3}
-                      className="
-                        px-6 py-12
-                        text-center
-                        text-sm
-                        text-[var(--erp-muted)]
-                      "
+                      className="px-6 py-12"
                     >
                       No hay roles disponibles.
                     </td>
@@ -690,29 +612,16 @@ export default function SeguridadRolEditor() {
 
                         <tr
                           key={String(rol.id)}
-                          className="
-                            border-b border-[var(--erp-border)]
-                            last:border-b-0
-                            hover:bg-[var(--erp-surface-soft)]
-                            transition
-                          "
+                         
                         >
 
                           <td className="px-6 py-4">
 
                             <span
-                              className="
-                                inline-flex
-                                items-center justify-center
-                                min-w-9
-                                px-2.5 py-1
-                                rounded-lg
-                                bg-[var(--erp-surface-soft)]
-                                border border-[var(--erp-border)]
-                                text-xs
-                                font-bold
-                                text-[var(--erp-muted)]
-                              "
+                              className="inline-flex
+ items-center justify-center
+ min-w-9
+ px-2.5 py-1"
                             >
                               {String(rol.id)}
                             </span>
@@ -722,21 +631,14 @@ export default function SeguridadRolEditor() {
 
                           <td className="px-6 py-4">
 
-                            <div className="
-                              flex
-                              items-center
-                              gap-3
-                            ">
+                            <div className="flex
+ items-center
+ gap-3">
 
                               <div
-                                className="
-                                  w-9 h-9
-                                  rounded-xl
-                                  flex items-center justify-center
-                                  bg-[var(--erp-accent-soft)]
-                                  text-[var(--erp-accent)]
-                                  font-bold
-                                "
+                                className="w-9 h-9
+ 
+ flex items-center justify-center"
                               >
                                 {rol.nombre
                                   .charAt(0)
@@ -747,20 +649,13 @@ export default function SeguridadRolEditor() {
                               <div>
 
                                 <div
-                                  className="
-                                    font-semibold
-                                    text-[var(--erp-text)]
-                                  "
+                                 
                                 >
                                   {rol.nombre}
                                 </div>
 
                                 <div
-                                  className="
-                                    text-xs
-                                    text-[var(--erp-muted)]
-                                    mt-0.5
-                                  "
+                                  className="mt-0.5"
                                 >
                                   Rol de seguridad
                                 </div>
@@ -774,31 +669,19 @@ export default function SeguridadRolEditor() {
 
                           <td className="px-6 py-4">
 
-                            <div className="
-                              flex
-                              justify-end
-                              gap-2
-                            ">
+                            <div className="flex
+ justify-end
+ gap-2">
 
                               <button
                                 type="button"
                                 onClick={() =>
                                   iniciarEditar(rol)
                                 }
-                                className="
-                                  inline-flex
-                                  items-center
-                                  gap-1.5
-                                  px-3 py-2
-                                  rounded-lg
-                                  border border-[var(--erp-border)]
-                                  bg-white
-                                  text-[var(--erp-text)]
-                                  text-xs
-                                  font-semibold
-                                  hover:bg-[var(--erp-surface-soft)]
-                                  transition
-                                "
+                                className="inline-flex
+ items-center
+ gap-1.5
+ px-3 py-2"
                               >
                                 Editar
                               </button>
@@ -812,22 +695,10 @@ export default function SeguridadRolEditor() {
                                     rol.id
                                   )
                                 }
-                                className="
-                                  inline-flex
-                                  items-center
-                                  gap-1.5
-                                  px-3 py-2
-                                  rounded-lg
-                                  border border-red-200
-                                  bg-red-50
-                                  text-red-600
-                                  text-xs
-                                  font-semibold
-                                  hover:bg-red-100
-                                  disabled:opacity-50
-                                  disabled:cursor-not-allowed
-                                  transition
-                                "
+                                className="inline-flex
+ items-center
+ gap-1.5
+ px-3 py-2"
                               >
                                 {eliminando
                                   ? "Eliminando..."
@@ -868,29 +739,21 @@ export default function SeguridadRolEditor() {
         <section className="erp-card">
 
           <div
-            className="
-              px-6 py-5
-              border-b border-[var(--erp-border)]
-            "
+            className="px-6 py-5"
           >
 
-            <div className="
-              flex
-              items-center
-              gap-3
-            ">
+            <div className="flex
+ items-center
+ gap-3">
 
               <div
-                className="
-                  w-10 h-10
-                  rounded-xl
-                  bg-[var(--erp-accent-soft)]
-                  text-[var(--erp-accent)]
-                  flex
-                  items-center
-                  justify-center
-                  font-bold
-                "
+                className="w-10 h-10
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
               >
                 {modo === "crear"
                   ? "+"
@@ -900,21 +763,13 @@ export default function SeguridadRolEditor() {
 
               <div>
 
-                <h2 className="
-                  text-lg
-                  font-bold
-                  text-[var(--erp-text)]
-                ">
+                <h2>
                   {modo === "crear"
                     ? "Crear nuevo rol"
                     : "Editar rol"}
                 </h2>
 
-                <p className="
-                  text-sm
-                  text-[var(--erp-muted)]
-                  mt-0.5
-                ">
+                <p className="mt-0.5">
                   {modo === "crear"
                     ? "Añade un nuevo rol al sistema."
                     : `Modifica la información del rol #${rolEditando?.id ?? "-"}.`}
@@ -933,13 +788,11 @@ export default function SeguridadRolEditor() {
 
               <label
                 htmlFor="seguridad-nombre-rol"
-                className="
-                  block
-                  text-sm
-                  font-semibold
-                  text-[var(--erp-text)]
-                  mb-2
-                "
+                className="block
+ 
+ 
+ 
+ mb-2"
               >
                 Nombre del rol
               </label>
@@ -962,29 +815,12 @@ export default function SeguridadRolEditor() {
                 }}
                 onKeyDown={manejarKeyDown}
                 placeholder="Ej. Administrador"
-                className="
-                  w-full
-                  px-4 py-3
-                  rounded-xl
-                  border border-[var(--erp-border)]
-                  bg-[var(--erp-input-bg)]
-                  text-[var(--erp-text)]
-                  placeholder:text-[var(--erp-muted)]
-                  outline-none
-                  focus:border-[var(--erp-accent)]
-                  focus:ring-2
-                  focus:ring-[var(--erp-accent-soft)]
-                  disabled:opacity-60
-                  transition
-                "
+                className="w-full
+ px-4 py-3"
               />
 
 
-              <p className="
-                mt-2
-                text-xs
-                text-[var(--erp-muted)]
-              ">
+              <p className="mt-2">
                 Utiliza un nombre claro y descriptivo para identificar
                 fácilmente las funciones asociadas al rol.
               </p>
@@ -993,14 +829,11 @@ export default function SeguridadRolEditor() {
 
 
             <div
-              className="
-                flex
-                flex-wrap
-                gap-3
-                mt-6
-                pt-5
-                border-t border-[var(--erp-border)]
-              "
+              className="flex
+ flex-wrap
+ gap-3
+ mt-6
+ pt-5"
             >
 
               <button
@@ -1010,7 +843,7 @@ export default function SeguridadRolEditor() {
                   !nombreRol.trim()
                 }
                 onClick={guardarRol}
-                className="erp-btn erp-btn-primary inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="erp-btn erp-btn-primary inline-flex items-center justify-center gap-2 px-5 py-2.5"
               >
 
                 {guardando ? (
@@ -1018,14 +851,7 @@ export default function SeguridadRolEditor() {
                   <>
 
                     <span
-                      className="
-                        w-4 h-4
-                        rounded-full
-                        border-2
-                        border-white/40
-                        border-t-white
-                        animate-spin
-                      "
+                      className="w-4 h-4"
                     />
 
                     Guardando...
@@ -1045,7 +871,7 @@ export default function SeguridadRolEditor() {
                 type="button"
                 disabled={guardando}
                 onClick={cancelar}
-                className="erp-btn erp-btn-secondary px-5 py-2.5 text-sm font-semibold disabled:opacity-50"
+                className="erp-btn erp-btn-secondary px-5 py-2.5"
               >
                 Cancelar
               </button>

@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PortalLogin from "../../components/PortalLogin";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import Sidebar from "../../components/Sidebar";
-import "../../css/PortalProfesionalShared.css";
-import "../../css/EncargaGest.css";
 import axios, { configurarSesionEncargaGest, limpiarSesionEncargaGest } from "../../api/encargagest";
 import { useAuthStore } from "../../store/authStore";
 
@@ -21,14 +21,6 @@ const FILTROS_BANDEJA = [
   { valor: "GRUPO_AUTORIZADOS", texto: "Autorizados" },
   { valor: "GRUPO_INCIDENCIAS", texto: "Incidencias" },
 ];
-
-const ESTILO_ESTADO = {
-  EN_PROCESO: "border-amber-200 bg-amber-50 text-amber-800",
-  RECIBIDO: "border-sky-200 bg-sky-50 text-sky-700",
-  AUTORIZADO: "border-indigo-200 bg-indigo-50 text-indigo-700",
-  INCIDENCIA: "border-rose-200 bg-rose-50 text-rose-700",
-  FIRMADO: "border-emerald-200 bg-emerald-50 text-emerald-700",
-};
 
 const TEXTO_ESTADO = { EN_PROCESO: "Recibido", RECIBIDO: "Recibido", AUTORIZADO: "Autorizado", INCIDENCIA: "Incidencia", FIRMADO: "Firma pendiente de integración", EN_REVISION: "Recibido", DOCUMENTACION_PENDIENTE: "Recibido", EN_GESTION: "Recibido", RESUELTO: "Firma pendiente de integración", CERRADO: "Firma pendiente de integración" };
 
@@ -95,7 +87,7 @@ function nombreArchivoTamano(bytes) {
 
 function EtiquetaEstado({ estado }) {
   return (
-    <span className={"inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-extrabold tracking-wide " + (ESTILO_ESTADO[estado] || ESTILO_ESTADO.CERRADO)}>
+    <span className="inline-flex items-center px-2.5 py-1">
       {TEXTO_ESTADO[estado] || estado || "Sin estado"}
     </span>
   );
@@ -103,14 +95,14 @@ function EtiquetaEstado({ estado }) {
 
 function Campo({ etiqueta, children, className = "" }) {
   return (
-    <label className={"block min-w-0 " + className}>
-      <span className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">{etiqueta}</span>
+    <label className={"block min-w-0" + className}>
+      <span className="mb-1.5 block uppercase">{etiqueta}</span>
       {children}
     </label>
   );
 }
 
-const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100";
+const inputClass = "w-full px-3 py-2.5";
 
 export default function EncargaGest({ accessMode = "auto" } = {}) {
   const navigate = useNavigate();
@@ -191,6 +183,16 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
   const [guardandoPasswordPerfil, setGuardandoPasswordPerfil] = useState(false);
   const [mensajePasswordPerfil, setMensajePasswordPerfil] = useState("");
   const [errorPasswordPerfil, setErrorPasswordPerfil] = useState("");
+  const nuevoDialogRef = useRef(null);
+  const editarDialogRef = useRef(null);
+  const incidenciaDialogRef = useRef(null);
+  const perfilDialogRef = useRef(null);
+  const accesosDialogRef = useRef(null);
+  useAccessibleDialog({ open: modalNuevo, onClose: () => { if (!guardando) setModalNuevo(false); }, dialogRef: nuevoDialogRef });
+  useAccessibleDialog({ open: modalEditar, onClose: () => { if (!guardandoEdicion) setModalEditar(false); }, dialogRef: editarDialogRef });
+  useAccessibleDialog({ open: modalIncidencia, onClose: () => { if (!guardandoIncidencia) setModalIncidencia(false); }, dialogRef: incidenciaDialogRef });
+  useAccessibleDialog({ open: perfilAbierto && modo === "externo", onClose: () => setPerfilAbierto(false), dialogRef: perfilDialogRef });
+  useAccessibleDialog({ open: modalAccesos, onClose: () => setModalAccesos(false), dialogRef: accesosDialogRef });
 
   useEffect(() => {
     if (!archivoPrevisualizado) {
@@ -826,13 +828,6 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
     );
   }
 
-  const fechaActual = new Intl.DateTimeFormat("es-ES", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date());
-
   return (
     <div className="apoderagest encargagest">
       {modo === "interno" && (
@@ -856,24 +851,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         <Sidebar
           brandName="EncargaGest"
           navigationItems={[]}
-          headerActions={
-            <>
-              <div className="ag-fecha-actual" aria-label={`Fecha actual: ${fechaActual}`}>
-                <span className="ag-punto-vivo" aria-hidden="true" />
-                <span>{fechaActual}</span>
-              </div>
-              <button
-                type="button"
-                onClick={cargarTodo}
-                disabled={cargando}
-                className="ag-boton-actualizar"
-                aria-live="polite"
-              >
-                <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
-                {cargando ? "Actualizando…" : "Actualizar datos"}
-              </button>
-            </>
-          }
+
           onProfileClick={() => {
             setPerfilAbierto(true);
             setMensajePasswordPerfil("");
@@ -882,54 +860,34 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
           onLogoutClick={salirEncargaGest}
         />
       )}
-      <div className="ag-fondo-decorativo" aria-hidden="true" />
-      <header className="ag-hero eg-hero molsan-page-header">
-        <div className="ag-hero-identidad molsan-page-header__identity">
-          <div className="ag-marca eg-marca" aria-label="EncargaGest">EG</div>
-          <div>
-            <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
-            <h1 className="molsan-page-header__title">EncargaGest</h1>
-            <p className="molsan-page-header__description">{modo === "externo" ? "Portal profesional · " + (sesion?.notaria_nombre || "Sesión externa") : "Recepción y seguimiento de encargos notariales externos."}</p>
-          </div>
-        </div>
-        <div className="ag-hero-acciones">
-          {modo === "interno" && (
-            <>
-              <div className="ag-fecha-actual">
-                <span className="ag-punto-vivo" aria-hidden="true" />
-                <span>{fechaActual}</span>
-              </div>
-              <button type="button" onClick={irAModulos} className="eg-secondary"><span aria-hidden="true">▦</span> Ir a módulos</button>
-              <button type="button" onClick={salirEncargaGest} className="eg-secondary">Cerrar sesión</button>
-              <button type="button" onClick={cargarTodo} disabled={cargando} className="ag-boton-actualizar">
-                <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
-                {cargando ? "Actualizando…" : "Actualizar datos"}
-              </button>
-            </>
-          )}
-        </div>
-      </header>
+      <div aria-hidden="true" />
+      <div className="relative min-h-[calc(100vh-70px)] w-full px-4 py-6 lg:px-6">
+      <MolsanPageHeader
+        mark="EG"
+        title="EncargaGest"
+        description={modo === "externo" ? "Portal profesional · " + (sesion?.notaria_nombre || "Sesión externa") : "Recepción y seguimiento de encargos notariales externos."}
+      />
 
-      <main className="eg-main w-full max-w-none px-1 pb-4">
-        <section role="status" aria-live="polite" className="mb-5 flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 shadow-sm">
-          <span aria-hidden="true" className="mt-0.5 text-xl">⚠️</span>
+      <main className="eg-main w-full max-w-none pb-4">
+        <section role="status" aria-live="polite" className="mb-5 flex items-start gap-3 px-4 py-3">
+          <span aria-hidden="true" className="mt-0.5">⚠️</span>
           <div>
-            <p className="text-sm font-extrabold">Conexiones con bancos pendientes</p>
-            <p className="mt-1 text-sm">La conexión mediante API con las entidades bancarias está pendiente de implantación. Puedes acceder y trabajar en EncargaGest Gestoría con normalidad; las funciones que requieran conexión bancaria quedarán disponibles cuando se complete la integración.</p>
+            <p>Conexiones con bancos pendientes</p>
+            <p className="mt-1">La conexión mediante API con las entidades bancarias está pendiente de implantación. Puedes acceder y trabajar en EncargaGest Gestoría con normalidad; las funciones que requieran conexión bancaria quedarán disponibles cuando se complete la integración.</p>
           </div>
         </section>
         {modo === "interno" && !esAdminEncargaGest && (
-          <section className="mb-5 flex flex-col gap-3 rounded-2xl border border-blue-100 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-            <div><p className="text-xs font-black uppercase tracking-[0.14em] text-blue-700">Notarías asignadas</p><p className="mt-1 text-xs text-slate-500">Solo aparecen las notarías asignadas a tu usuario.</p></div>
-            <label className="w-full sm:max-w-xl"><span className="mb-1 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Notaría activa</span><select value={filtroNotariaId} onChange={(e) => { const id = e.target.value; setFiltroNotariaId(id); setPagina(1); cargarTodo(id); }} className={inputClass}><option value="">Todas mis notarías asignadas</option>{notarias.map((n) => <option key={n.id} value={String(n.id)}>{n.nombre}{n.nif ? " · " + n.nif : ""}{n.provincia ? " · " + n.provincia : ""}</option>)}</select></label>
+          <section className="mb-5 flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div><p className="uppercase">Notarías asignadas</p><p className="mt-1">Solo aparecen las notarías asignadas a tu usuario.</p></div>
+            <label className="w-full sm:max-w-xl"><span className="mb-1 block uppercase">Notaría activa</span><select value={filtroNotariaId} onChange={(e) => { const id = e.target.value; setFiltroNotariaId(id); setPagina(1); cargarTodo(id); }} className={inputClass}><option value="">Todas mis notarías asignadas</option>{notarias.map((n) => <option key={n.id} value={String(n.id)}>{n.nombre}{n.nif ? " · " + n.nif : ""}{n.provincia ? " · " + n.provincia : ""}</option>)}</select></label>
           </section>
         )}
         <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-          <div className="ag-kpi ag-kpi-azul eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Total de encargos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-slate-900">{resumen.total || 0}</strong><span className="text-xl text-blue-600">▤</span></div><p className="mt-1 text-xs text-slate-500">Todas las solicitudes</p></div>
-          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_RECIBIDOS")} className="ag-kpi ag-kpi-verde eg-kpi text-left"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Recibidos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-sky-700">{(resumen.por_estado?.EN_PROCESO || 0) + (resumen.por_estado?.RECIBIDO || 0) + (resumen.por_estado?.EN_REVISION || 0) + (resumen.por_estado?.DOCUMENTACION_PENDIENTE || 0) + (resumen.por_estado?.EN_GESTION || 0)}</strong><span className="text-xl text-sky-500">↓</span></div><p className="mt-1 text-xs text-slate-500">Pendientes de revisión y autorización</p></button>
-          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_AUTORIZADOS")} className="ag-kpi eg-kpi border border-indigo-100 bg-indigo-50/60 text-left"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-indigo-700">Autorizados</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-indigo-800">{resumen.por_estado?.AUTORIZADO || 0}</strong><span className="text-xl text-indigo-600">✓</span></div><p className="mt-1 text-xs text-indigo-800">Validados para continuar</p></button>
-          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_INCIDENCIAS")} className="ag-kpi ag-kpi-ambar eg-kpi text-left"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-rose-700">Incidencias</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-rose-800">{resumen.por_estado?.INCIDENCIA || 0}</strong><span className="text-xl text-rose-600">!</span></div><p className="mt-1 text-xs text-rose-800">Requieren actuación</p></button>
-          <div className="ag-kpi ag-kpi-verde eg-kpi border border-slate-200 bg-slate-50" aria-label="Firmados pendiente de integración con ApoderaGest"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-500">Firmados · próximamente</p><div className="mt-2 flex items-end justify-between"><strong className="text-lg font-black text-slate-600">EN ESPERA</strong><span className="text-xl text-slate-400">◷</span></div><p className="mt-1 text-xs leading-4 text-slate-500">Pendiente de integración con las firmas reales de ApoderaGest.</p></div>
+          <div className="  eg-kpi"><p className="uppercase">Total de encargos</p><div className="mt-2 flex items-end justify-between"><strong>{resumen.total || 0}</strong><span>▤</span></div><p className="mt-1">Todas las solicitudes</p></div>
+          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_RECIBIDOS")} className="  eg-kpi"><p className="uppercase">Recibidos</p><div className="mt-2 flex items-end justify-between"><strong>{(resumen.por_estado?.EN_PROCESO || 0) + (resumen.por_estado?.RECIBIDO || 0) + (resumen.por_estado?.EN_REVISION || 0) + (resumen.por_estado?.DOCUMENTACION_PENDIENTE || 0) + (resumen.por_estado?.EN_GESTION || 0)}</strong><span>↓</span></div><p className="mt-1">Pendientes de revisión y autorización</p></button>
+          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_AUTORIZADOS")} className=" eg-kpi"><p className="uppercase">Autorizados</p><div className="mt-2 flex items-end justify-between"><strong>{resumen.por_estado?.AUTORIZADO || 0}</strong><span>✓</span></div><p className="mt-1">Validados para continuar</p></button>
+          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_INCIDENCIAS")} className="  eg-kpi"><p className="uppercase">Incidencias</p><div className="mt-2 flex items-end justify-between"><strong>{resumen.por_estado?.INCIDENCIA || 0}</strong><span>!</span></div><p className="mt-1">Requieren actuación</p></button>
+          <div className="  eg-kpi" aria-label="Firmados pendiente de integración con ApoderaGest"><p className="uppercase">Firmados · próximamente</p><div className="mt-2 flex items-end justify-between"><strong>EN ESPERA</strong><span>◷</span></div><p className="mt-1">Pendiente de integración con las firmas reales de ApoderaGest.</p></div>
         </section>
 
         {modo === "interno" && esAdminEncargaGest && (
@@ -973,57 +931,57 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
           </section>
         )}
         {error && (
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800" role="alert">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3 p-4" role="alert">
             <span>{error}</span>
-            <button type="button" className="font-bold underline" onClick={cargarTodo}>Reintentar</button>
+            <button type="button" onClick={cargarTodo}>Reintentar</button>
           </div>
         )}
-        {mensaje && <div className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">{mensaje}</div>}
-        {errorAccion && <div className="mb-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert">{errorAccion}</div>}
+        {mensaje && <div className="mb-5 px-4 py-3">{mensaje}</div>}
+        {errorAccion && <div className="mb-5 px-4 py-3" role="alert">{errorAccion}</div>}
 
         {(modo !== "interno" || !esAdminEncargaGest || Boolean(filtroNotariaId)) && (
         <section className="mt-6 grid min-w-0 grid-cols-1 gap-5 2xl:grid-cols-[minmax(380px,0.92fr)_minmax(0,1.45fr)]">
           <div className="eg-panel min-w-0">
             <div className="eg-panel-head">
-              <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-extrabold text-slate-900">Bandeja de encargos</h2><p className="mt-1 text-xs text-slate-500">{total} solicitudes encontradas</p></div><div className="flex items-center gap-2"><span className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">Página {pagina} / {totalPaginas}</span>{modo === "externo" && <button type="button" onClick={() => { setModalNuevo(true); setErrorAccion(""); }} className="eg-button-primary whitespace-nowrap">＋ Nuevo encargo</button>}</div></div>
+              <div className="flex flex-wrap items-center justify-between gap-3"><div><h2>Bandeja de encargos</h2><p className="mt-1">{total} solicitudes encontradas</p></div><div className="flex items-center gap-2"><span className="px-2 py-1">Página {pagina} / {totalPaginas}</span>{modo === "externo" && <button type="button" onClick={() => { setModalNuevo(true); setErrorAccion(""); }} className="eg-button-primary whitespace-nowrap">＋ Nuevo encargo</button>}</div></div>
               <form className="mt-4 space-y-2" onSubmit={aplicarFiltros}>
                 <input className={inputClass} type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar referencia, notaría, titular o banco…" />
                 <div className="flex gap-2">
                   <select aria-label="Filtrar bandeja por grupo del panel" className={inputClass} value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)}>
                     {FILTROS_BANDEJA.map((estado) => <option key={estado.valor || "todos"} value={estado.valor}>{estado.texto}</option>)}
                   </select>
-                  <button type="submit" className="shrink-0 rounded-xl bg-blue-600 px-4 text-xs font-extrabold text-blue-950 hover:bg-blue-500">Filtrar</button>
+                  <button type="submit" className="shrink-0 px-4">Filtrar</button>
                 </div>
               </form>
             </div>
-            {cargando ? <div className="p-10 text-center text-sm text-slate-500">Cargando encargos…</div> : !filas.length ? (
-              <div className="p-10 text-center"><div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-xl text-slate-400">▤</div><h3 className="mt-3 text-sm font-bold text-slate-800">Todavía no hay encargos</h3><p className="mt-1 text-xs leading-5 text-slate-500">Cuando una notaría registre un encargo, aparecerá aquí automáticamente.</p></div>
+            {cargando ? <div className="p-10">Cargando encargos…</div> : !filas.length ? (
+              <div className="p-10"><div className="mx-auto grid h-12 w-12 place-items-center">▤</div><h3 className="mt-3">Todavía no hay encargos</h3><p className="mt-1">Cuando una notaría registre un encargo, aparecerá aquí automáticamente.</p></div>
             ) : (
-              <div className="divide-y divide-slate-100">
+              <div>
                 {filas.map((item) => (
-                  <button type="button" key={item.id} onClick={() => { setSeleccionadoId(item.id); setErrorAccion(""); }} className={"block w-full border-l-4 p-4 text-left transition hover:bg-blue-50/50 " + (seleccionadoId === item.id ? "border-blue-600 bg-blue-50/70" : "border-transparent")}>
-                    <div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-[10px] font-black tracking-wide text-blue-700">{item.referencia || ("EG-" + item.id)}</p><h3 className="mt-1 truncate text-sm font-extrabold text-slate-900">{item.titular}</h3><p className="mt-1 truncate text-xs text-slate-500">{item.notaria_nombre}</p></div><EtiquetaEstado estado={item.estado} /></div>
-                    <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-500"><span>{item.entidad_bancaria || "Entidad no indicada"}</span><span>{fechaHora(item.actualizado_en)}</span></div>
+                  <button type="button" key={item.id} onClick={() => { setSeleccionadoId(item.id); setErrorAccion(""); }} className={"block w-full p-4" + (seleccionadoId === item.id ? "" : "")}>
+                    <div className="flex items-start justify-between gap-3"><div className="min-w-0"><p>{item.referencia || ("EG-" + item.id)}</p><h3 className="mt-1 truncate">{item.titular}</h3><p className="mt-1 truncate">{item.notaria_nombre}</p></div><EtiquetaEstado estado={item.estado} /></div>
+                    <div className="mt-3 flex flex-wrap items-center justify-between gap-2"><span>{item.entidad_bancaria || "Entidad no indicada"}</span><span>{fechaHora(item.actualizado_en)}</span></div>
                   </button>
                 ))}
               </div>
             )}
-            <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3">
-              <button type="button" disabled={pagina <= 1 || cargando} onClick={() => { const p = pagina - 1; setPagina(p); cargarListado(p).catch((e) => setError(e?.response?.data?.detail || "Error al cargar la página.")); }} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold disabled:opacity-40">← Anterior</button>
-              <span className="text-[10px] text-slate-400">20 por página</span>
-              <button type="button" disabled={pagina >= totalPaginas || cargando} onClick={() => { const p = pagina + 1; setPagina(p); cargarListado(p).catch((e) => setError(e?.response?.data?.detail || "Error al cargar la página.")); }} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold disabled:opacity-40">Siguiente →</button>
+            <div className="flex items-center justify-between px-4 py-3">
+              <button type="button" disabled={pagina <= 1 || cargando} onClick={() => { const p = pagina - 1; setPagina(p); cargarListado(p).catch((e) => setError(e?.response?.data?.detail || "Error al cargar la página.")); }} className="px-3 py-2">← Anterior</button>
+              <span>20 por página</span>
+              <button type="button" disabled={pagina >= totalPaginas || cargando} onClick={() => { const p = pagina + 1; setPagina(p); cargarListado(p).catch((e) => setError(e?.response?.data?.detail || "Error al cargar la página.")); }} className="px-3 py-2">Siguiente →</button>
             </div>
           </div>
 
           <div className="eg-panel min-w-0">
             {!detalle ? (
-              <div className="grid min-h-[500px] place-items-center p-8 text-center"><div><div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 text-2xl text-blue-600">EG</div><h2 className="mt-4 font-extrabold text-slate-900">Ficha del encargo</h2><p className="mt-2 max-w-sm text-sm leading-6 text-slate-500">Selecciona un encargo de la bandeja o registra una nueva solicitud.</p></div></div>
+              <div className="grid min-h-[500px] place-items-center p-8"><div><div className="mx-auto grid h-14 w-14 place-items-center">EG</div><h2 className="mt-4">Ficha del encargo</h2><p className="mt-2 max-w-sm">Selecciona un encargo de la bandeja o registra una nueva solicitud.</p></div></div>
             ) : (
               <>
                 <div className="eg-panel-head p-5 sm:p-6">
                   <div className="flex flex-wrap items-start justify-between gap-4">
-                    <div className="min-w-0"><p className="text-[10px] font-black tracking-[0.18em] text-blue-700">{detalle.referencia || ("EG-" + detalle.id)} · FICHA DE ENCARGO</p><h2 className="mt-2 text-xl font-black tracking-tight text-slate-900">{detalle.titular}</h2><p className="mt-1 text-sm font-bold text-slate-600">{detalle.notaria_nombre}</p>{detalle.notaria_contacto && <div className="mt-2 flex max-w-3xl flex-wrap gap-x-4 gap-y-1 text-[11px] leading-5 text-slate-500"><span><strong className="font-bold text-slate-600">NIF:</strong> {detalle.notaria_contacto.nif || "—"}</span><span><strong className="font-bold text-slate-600">Dirección:</strong> {[detalle.notaria_contacto.direccion, detalle.notaria_contacto.cp].filter(Boolean).join(" · ") || "—"}</span><span><strong className="font-bold text-slate-600">Municipio · Provincia:</strong> {[detalle.notaria_contacto.municipio, detalle.notaria_contacto.provincia].filter(Boolean).join(" · ") || "—"}</span><span><strong className="font-bold text-slate-600">Teléfono:</strong> {detalle.notaria_contacto.telefono || "—"}</span>{detalle.notaria_contacto.departamento_cancelaciones && <span><strong className="font-bold text-slate-600">Departamento de cancelaciones:</strong> {detalle.notaria_contacto.departamento_cancelaciones}</span>}</div>}</div>
-                    <div className="min-w-[220px] max-w-[300px]"><span className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Estado de gestión</span>{modo === "interno" && detalle.estado !== "FIRMADO" && <button type="button" onClick={abrirEdicion} className="mb-3 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-extrabold text-slate-700 hover:border-blue-300 hover:bg-blue-50">Editar datos, contratos y fincas</button>}<div className="pt-1"><EtiquetaEstado estado={detalle.estado} /></div>{modo === "interno" && detalle.estado !== "FIRMADO" && <div className="mt-3 space-y-2">{["EN_PROCESO","RECIBIDO"].includes(detalle.estado) && <button type="button" onClick={() => cambiarEstado("AUTORIZADO").catch(() => {})} className="w-full rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-extrabold text-white shadow-sm hover:bg-indigo-700">✓ Validar documentación y autorizar</button>}{detalle.estado === "INCIDENCIA" && <button type="button" onClick={() => cambiarEstado("AUTORIZADO").catch(() => {})} className="w-full rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-extrabold text-white shadow-sm hover:bg-indigo-700">✓ Incidencia resuelta · volver a autorizados</button>}{["EN_PROCESO","RECIBIDO","AUTORIZADO"].includes(detalle.estado) && <button type="button" onClick={() => { setMotivoIncidencia(""); setModalIncidencia(true); setErrorAccion(""); }} className="w-full rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-extrabold text-rose-700 hover:bg-rose-100">! Registrar incidencia</button>}</div>}{detalle.estado === "FIRMADO" && <p className="mt-1 text-[10px] font-semibold text-slate-500">El cierre por firma se integrará desde ApoderaGest.</p>}{detalle.estado === "INCIDENCIA" && <p className="mt-2 text-[10px] leading-4 text-rose-700">La notaría puede consultar el motivo en la actividad del encargo.</p>}</div>
+                    <div className="min-w-0"><p>{detalle.referencia || ("EG-" + detalle.id)} · FICHA DE ENCARGO</p><h2 className="mt-2">{detalle.titular}</h2><p className="mt-1">{detalle.notaria_nombre}</p>{detalle.notaria_contacto && <div className="mt-2 flex max-w-3xl flex-wrap gap-x-4 gap-y-1"><span><strong>NIF:</strong> {detalle.notaria_contacto.nif || "—"}</span><span><strong>Dirección:</strong> {[detalle.notaria_contacto.direccion, detalle.notaria_contacto.cp].filter(Boolean).join(" · ") || "—"}</span><span><strong>Municipio · Provincia:</strong> {[detalle.notaria_contacto.municipio, detalle.notaria_contacto.provincia].filter(Boolean).join(" · ") || "—"}</span><span><strong>Teléfono:</strong> {detalle.notaria_contacto.telefono || "—"}</span>{detalle.notaria_contacto.departamento_cancelaciones && <span><strong>Departamento de cancelaciones:</strong> {detalle.notaria_contacto.departamento_cancelaciones}</span>}</div>}</div>
+                    <div className="min-w-[220px] max-w-[300px]"><span className="mb-1.5 block uppercase">Estado de gestión</span>{modo === "interno" && detalle.estado !== "FIRMADO" && <button type="button" onClick={abrirEdicion} className="mb-3 w-full px-3 py-2">Editar datos, contratos y fincas</button>}<div className="pt-1"><EtiquetaEstado estado={detalle.estado} /></div>{modo === "interno" && detalle.estado !== "FIRMADO" && <div className="mt-3 space-y-2">{["EN_PROCESO","RECIBIDO"].includes(detalle.estado) && <button type="button" onClick={() => cambiarEstado("AUTORIZADO").catch(() => {})} className="w-full px-4 py-2.5">✓ Validar documentación y autorizar</button>}{detalle.estado === "INCIDENCIA" && <button type="button" onClick={() => cambiarEstado("AUTORIZADO").catch(() => {})} className="w-full px-4 py-2.5">✓ Incidencia resuelta · volver a autorizados</button>}{["EN_PROCESO","RECIBIDO","AUTORIZADO"].includes(detalle.estado) && <button type="button" onClick={() => { setMotivoIncidencia(""); setModalIncidencia(true); setErrorAccion(""); }} className="w-full px-4 py-2.5">! Registrar incidencia</button>}</div>}{detalle.estado === "FIRMADO" && <p className="mt-1">El cierre por firma se integrará desde ApoderaGest.</p>}{detalle.estado === "INCIDENCIA" && <p className="mt-2">La notaría puede consultar el motivo en la actividad del encargo.</p>}</div>
                   </div>
 {modo === "externo" ? (
                   <div className="mt-5" />
@@ -1032,56 +990,56 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
 
                 <div className="grid grid-cols-1 gap-6 p-5 sm:p-6 xl:grid-cols-2">
                   <>
-                  <section className="min-w-0 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-4">
-                    <div className="mb-4 flex items-center gap-3 border-b border-indigo-100 pb-3">
-                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-indigo-100 bg-white text-xs font-black text-indigo-700">01</span>
-                      <div><p className="text-[9px] font-extrabold uppercase tracking-[0.14em] text-indigo-500">Datos principales</p><h3 className="mt-0.5 text-sm font-extrabold text-slate-900">Datos del encargo</h3></div>
+                  <section className="min-w-0 p-4">
+                    <div className="mb-4 flex items-center gap-3 pb-3">
+                      <span className="grid h-9 w-9 shrink-0 place-items-center">01</span>
+                      <div><p className="uppercase">Datos principales</p><h3 className="mt-0.5">Datos del encargo</h3></div>
                     </div>
-                    <dl className="space-y-3 text-xs">
-                      <div className="border-b border-indigo-100 pb-2"><dt className="mb-1 text-slate-500">Nombre del solicitante</dt><dd className="break-words font-semibold text-slate-800">{detalle.titular || "—"}</dd></div>
-                      <div className="flex items-start justify-between gap-3 border-b border-indigo-100 pb-2"><dt className="text-slate-500">NIF / CIF del solicitante</dt><dd className="break-all text-right font-semibold text-slate-800">{detalle.nif_titular || "—"}</dd></div>
-                      <div className="flex items-start justify-between gap-3 border-b border-indigo-100 pb-2"><dt className="text-slate-500">Tipo de encargo</dt><dd className="text-right font-semibold text-slate-800">{detalle.tipo_encargo || "—"}</dd></div>
-                      <div className="flex items-start justify-between gap-3 border-b border-indigo-100 pb-2"><dt className="text-slate-500">Prioridad</dt><dd className="text-right font-semibold text-slate-800">{detalle.prioridad || "—"}</dd></div>
-                      <div className="flex items-start justify-between gap-3"><dt className="text-slate-500">Entidad bancaria</dt><dd className="text-right font-semibold text-slate-800">{detalle.entidad_bancaria || "—"}</dd></div>
+                    <dl className="space-y-3">
+                      <div className="pb-2"><dt className="mb-1">Nombre del solicitante</dt><dd className="break-words">{detalle.titular || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 pb-2"><dt>NIF / CIF del solicitante</dt><dd className="break-all">{detalle.nif_titular || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 pb-2"><dt>Tipo de encargo</dt><dd>{detalle.tipo_encargo || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 pb-2"><dt>Prioridad</dt><dd>{detalle.prioridad || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3"><dt>Entidad bancaria</dt><dd>{detalle.entidad_bancaria || "—"}</dd></div>
                     </dl>
                   </section>
                   <section className="min-w-0">
-                    <div className="flex items-center justify-between gap-3"><h3 className="text-sm font-extrabold text-slate-900">Datos de la solicitud</h3><span className="shrink-0 text-[10px] text-slate-400">CTN · ID {detalle.notaria_id}</span></div>
-                    <dl className="mt-3 space-y-3 text-xs">
-                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Capital inscrito</dt><dd className="text-right font-semibold text-slate-800">{euros(detalle.capital_inscrito)}</dd></div>
-                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Fecha de constitución</dt><dd className="text-right font-semibold text-slate-800">{detalle.fecha_constitucion ? new Date(detalle.fecha_constitucion + "T00:00:00").toLocaleDateString("es-ES") : "—"}</dd></div>
-                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Número de préstamo</dt><dd className="text-right font-semibold text-slate-800">{detalle.numero_prestamo || "—"}</dd></div>
-                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Número de finca</dt><dd className="text-right font-semibold text-slate-800">{detalle.numero_finca || "—"}</dd></div>
-                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Inscripción</dt><dd className="text-right font-semibold text-slate-800">{detalle.contratos?.[0]?.fincas?.[0]?.numero_inscripcion || "—"}</dd></div>
-                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Sección</dt><dd className="text-right font-semibold text-slate-800">{detalle.contratos?.[0]?.fincas?.[0]?.seccion || "—"}</dd></div>
-                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Municipio del registro</dt><dd className="text-right font-semibold text-slate-800">{detalle.municipio_registro || "—"}</dd></div>
-                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Registro de la propiedad</dt><dd className="text-right font-semibold text-slate-800">{detalle.registro_propiedad || "—"}</dd></div>
-                      <div className="border-b border-slate-100 pb-3"><dt className="mb-1 text-slate-500">Observaciones de la solicitud</dt><dd className="whitespace-pre-wrap leading-5 text-slate-700">{detalle.observaciones || "Sin observaciones."}</dd></div>
-                      {modo === "interno" && detalle.observaciones_internas ? <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-3"><dt className="mb-1 font-bold text-blue-900">Nota interna MOLSAN</dt><dd className="whitespace-pre-wrap leading-5 text-blue-900">{detalle.observaciones_internas}</dd></div> : null}
+                    <div className="flex items-center justify-between gap-3"><h3>Datos de la solicitud</h3><span className="shrink-0">CTN · ID {detalle.notaria_id}</span></div>
+                    <dl className="mt-3 space-y-3">
+                      <div className="flex items-start justify-between gap-3 pb-2"><dt>Capital inscrito</dt><dd>{euros(detalle.capital_inscrito)}</dd></div>
+                      <div className="flex items-start justify-between gap-3 pb-2"><dt>Fecha de constitución</dt><dd>{detalle.fecha_constitucion ? new Date(detalle.fecha_constitucion + "T00:00:00").toLocaleDateString("es-ES") : "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 pb-2"><dt>Número de préstamo</dt><dd>{detalle.numero_prestamo || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 pb-2"><dt>Número de finca</dt><dd>{detalle.numero_finca || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 pb-2"><dt>Inscripción</dt><dd>{detalle.contratos?.[0]?.fincas?.[0]?.numero_inscripcion || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 pb-2"><dt>Sección</dt><dd>{detalle.contratos?.[0]?.fincas?.[0]?.seccion || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 pb-2"><dt>Municipio del registro</dt><dd>{detalle.municipio_registro || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 pb-2"><dt>Registro de la propiedad</dt><dd>{detalle.registro_propiedad || "—"}</dd></div>
+                      <div className="pb-3"><dt className="mb-1">Observaciones de la solicitud</dt><dd className="whitespace-pre-wrap">{detalle.observaciones || "Sin observaciones."}</dd></div>
+                      {modo === "interno" && detalle.observaciones_internas ? <div className="p-3"><dt className="mb-1">Nota interna MOLSAN</dt><dd className="whitespace-pre-wrap">{detalle.observaciones_internas}</dd></div> : null}
                     </dl>
                   </section>
                   </>
 
-                  <section className="xl:col-span-2 rounded-2xl border border-blue-200 bg-blue-50/40 p-4">
+                  <section className="xl:col-span-2 p-4">
                     <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-                      <div><h3 className="text-sm font-black text-slate-900">Todos los contratos y fincas</h3><p className="mt-1 text-xs text-slate-500">Detalle completo compartido entre EncargaGest MOLSAN y EncargaGest Notaría.</p></div>
-                      <span className="rounded-full bg-white px-3 py-1 text-[10px] font-extrabold text-blue-800">{(detalle.contratos || []).length || 1} contrato(s)</span>
+                      <div><h3>Todos los contratos y fincas</h3><p className="mt-1">Detalle completo compartido entre EncargaGest MOLSAN y EncargaGest Notaría.</p></div>
+                      <span className="px-3 py-1">{(detalle.contratos || []).length || 1} contrato(s)</span>
                     </div>
                     {(detalle.contratos?.length ? detalle.contratos : [{ entidad_bancaria: detalle.entidad_bancaria, numero_prestamo: detalle.numero_prestamo, fecha_constitucion: detalle.fecha_constitucion, fincas: [{ numero_finca: detalle.numero_finca, capital_inscrito: detalle.capital_inscrito, municipio_registro: detalle.municipio_registro, registro_propiedad: detalle.registro_propiedad }] }]).map((contrato, contratoIndex) => (
-                      <div key={"detalle-contrato-" + contratoIndex} className="mb-3 last:mb-0 rounded-xl border border-slate-200 bg-white p-4">
-                        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-3">
-                          <div><p className="text-[10px] font-black uppercase tracking-wider text-blue-700">Contrato {contratoIndex + 1}</p><h4 className="mt-1 text-sm font-extrabold text-slate-900">{contrato.entidad_bancaria || "Entidad no indicada"} · {contrato.numero_prestamo || "Sin número de préstamo"}</h4></div>
-                          <p className="text-xs text-slate-500">Constitución: {contrato.fecha_constitucion ? new Date(contrato.fecha_constitucion + "T00:00:00").toLocaleDateString("es-ES") : "—"}</p>
+                      <div key={"detalle-contrato-" + contratoIndex} className="mb-3 last:mb-0 p-4">
+                        <div className="flex flex-wrap items-start justify-between gap-3 pb-3">
+                          <div><p className="uppercase">Contrato {contratoIndex + 1}</p><h4 className="mt-1">{contrato.entidad_bancaria || "Entidad no indicada"} · {contrato.numero_prestamo || "Sin número de préstamo"}</h4></div>
+                          <p>Constitución: {contrato.fecha_constitucion ? new Date(contrato.fecha_constitucion + "T00:00:00").toLocaleDateString("es-ES") : "—"}</p>
                         </div>
                         <div className="mt-3 space-y-3">
                           {(contrato.fincas?.length ? contrato.fincas : [{}]).map((finca, fincaIndex) => (
-                            <div key={"detalle-finca-" + contratoIndex + "-" + fincaIndex} className="grid grid-cols-2 gap-3 rounded-lg bg-slate-50 p-3 md:grid-cols-3 2xl:grid-cols-6">
-                              <div><p className="text-[10px] text-slate-500">Número de finca</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.numero_finca || "—"}</p></div>
-                              <div><p className="text-[10px] text-slate-500">Inscripción</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.numero_inscripcion || "—"}</p></div>
-                              <div><p className="text-[10px] text-slate-500">Sección</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.seccion || "—"}</p></div>
-                              <div><p className="text-[10px] text-slate-500">Capital inscrito</p><p className="mt-1 text-xs font-bold text-slate-800">{euros(finca.capital_inscrito ?? contrato.capital_inscrito)}</p></div>
-                              <div><p className="text-[10px] text-slate-500">Municipio del registro</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.municipio_registro || "—"}</p></div>
-                              <div><p className="text-[10px] text-slate-500">Registro de la Propiedad</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.registro_propiedad || "—"}</p></div>
+                            <div key={"detalle-finca-" + contratoIndex + "-" + fincaIndex} className="grid grid-cols-2 gap-3 p-3 md:grid-cols-3 2xl:grid-cols-6">
+                              <div><p>Número de finca</p><p className="mt-1 break-words">{finca.numero_finca || "—"}</p></div>
+                              <div><p>Inscripción</p><p className="mt-1 break-words">{finca.numero_inscripcion || "—"}</p></div>
+                              <div><p>Sección</p><p className="mt-1 break-words">{finca.seccion || "—"}</p></div>
+                              <div><p>Capital inscrito</p><p className="mt-1">{euros(finca.capital_inscrito ?? contrato.capital_inscrito)}</p></div>
+                              <div><p>Municipio del registro</p><p className="mt-1 break-words">{finca.municipio_registro || "—"}</p></div>
+                              <div><p>Registro de la Propiedad</p><p className="mt-1 break-words">{finca.registro_propiedad || "—"}</p></div>
                             </div>
                           ))}
                         </div>
@@ -1089,9 +1047,9 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
                     ))}
                   </section>
                   <section className="xl:col-span-2">
-                    <div className="mb-4 rounded-xl border border-blue-100 bg-blue-50/50 p-3">
-                      <h4 className="text-xs font-extrabold text-slate-800">Añadir documentación al encargo</h4>
-                      <p className="mt-1 text-[11px] leading-5 text-slate-500">Los archivos se guardan en la carpeta del contrato seleccionado y quedan disponibles para ambas partes.</p>
+                    <div className="mb-4 p-3">
+                      <h4>Añadir documentación al encargo</h4>
+                      <p className="mt-1">Los archivos se guardan en la carpeta del contrato seleccionado y quedan disponibles para ambas partes.</p>
                       <form onSubmit={subirDocumento} className="mt-3 grid grid-cols-1 items-end gap-3 md:grid-cols-4">
                         <Campo etiqueta="Contrato">
                           <select value={detalleContratoIndex} onChange={(e) => setDetalleContratoIndex(Number(e.target.value))} className={inputClass}>
@@ -1106,24 +1064,24 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
                         <Campo etiqueta="Archivo">
                           <input id="encargagest-archivo" type="file" accept={EXTENSIONES_DOCUMENTO} required disabled={subiendo} onChange={(e) => setArchivo(e.target.files?.[0] || null)} className={inputClass} />
                         </Campo>
-                        <button type="submit" disabled={!archivo || subiendo || detalle.estado === "FIRMADO"} className="rounded-xl bg-blue-700 px-4 py-2.5 text-xs font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-40">{subiendo ? "Subiendo…" : "Subir documento"}</button>
+                        <button type="submit" disabled={!archivo || subiendo || detalle.estado === "FIRMADO"} className="px-4 py-2.5">{subiendo ? "Subiendo…" : "Subir documento"}</button>
                       </form>
-                      {detalle.estado === "FIRMADO" && <p className="mt-2 text-[10px] text-rose-700">El encargo está cerrado y no admite nuevos documentos.</p>}
+                      {detalle.estado === "FIRMADO" && <p className="mt-2">El encargo está cerrado y no admite nuevos documentos.</p>}
                     </div>
                     <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
                       <div className="min-w-0 space-y-4">
                         {(detalle.contratos || [{}]).map((contrato, contratoIndex) => {
                           const docsContrato = (detalle.documentos || []).filter((doc) => Number(doc.contrato_index || 0) === contratoIndex);
-                          return <div key={"contrato-carpeta-" + contratoIndex} className="rounded-xl border border-blue-100 bg-white p-3">
-                            <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h4 className="text-xs font-extrabold text-blue-800">Contrato {contratoIndex + 1} · {contrato.numero_prestamo || "sin número de préstamo"}</h4><span className="text-[10px] text-slate-400">{docsContrato.length} archivos</span></div>
+                          return <div key={"contrato-carpeta-" + contratoIndex} className="p-3">
+                            <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h4>Contrato {contratoIndex + 1} · {contrato.numero_prestamo || "sin número de préstamo"}</h4><span>{docsContrato.length} archivos</span></div>
                             <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                               {CATEGORIAS_DOCUMENTO.map((categoria) => {
                                 const docsCategoria = docsContrato.filter((doc) => (doc.categoria || "Otros") === categoria.nombre);
-                                return <div key={categoria.nombre} className="min-w-0 rounded-xl border border-slate-200 bg-slate-50/70 p-3">
-                                  <div className="mb-2 flex items-center gap-2"><span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-blue-100 text-[10px] font-black text-blue-800">{categoria.icono}</span><div className="min-w-0"><p className="text-xs font-bold text-slate-800">{categoria.nombre}</p><p className="text-[10px] text-slate-400">{docsCategoria.length} archivo(s)</p></div></div>
-                                  {docsCategoria.length === 0 ? <p className="text-[10px] text-slate-400">Sin documentos en esta categoría.</p> : <div className="space-y-2">{docsCategoria.map((doc) => <div key={doc.id} className={"rounded-lg border bg-white p-2 " + (documentoAbierto?.nombre === (doc.nombre_original || "Documento") ? "border-blue-300" : "border-slate-200")}>
-                                    <p className="break-words text-[11px] font-bold text-slate-800">{doc.nombre_original}</p><p className="mt-1 text-[10px] text-slate-400">{nombreArchivoTamano(doc.tamano_bytes)} · {fechaHora(doc.fecha_subida)}</p>
-                                    <div className="mt-2 flex flex-wrap gap-1"><button type="button" onClick={() => verDocumento(doc)} className="rounded-lg border border-blue-200 bg-blue-50 px-2 py-1.5 text-[10px] font-bold text-blue-800 hover:bg-blue-100">Ver documento</button><button type="button" onClick={() => descargarDocumento(doc)} className="rounded-lg border border-slate-200 px-2 py-1.5 text-[10px] font-bold hover:bg-slate-50">Descargar</button>{modo === "interno" && <button type="button" onClick={() => eliminarDocumento(doc)} className="rounded-lg border border-rose-200 px-2 py-1.5 text-[10px] font-bold text-rose-700 hover:bg-rose-50">Eliminar</button>}</div>
+                                return <div key={categoria.nombre} className="min-w-0 p-3">
+                                  <div className="mb-2 flex items-center gap-2"><span className="grid h-7 w-7 shrink-0 place-items-center">{categoria.icono}</span><div className="min-w-0"><p>{categoria.nombre}</p><p>{docsCategoria.length} archivo(s)</p></div></div>
+                                  {docsCategoria.length === 0 ? <p>Sin documentos en esta categoría.</p> : <div className="space-y-2">{docsCategoria.map((doc) => <div key={doc.id} className={"p-2" + (documentoAbierto?.nombre === (doc.nombre_original || "Documento") ? "" : "")}>
+                                    <p className="break-words">{doc.nombre_original}</p><p className="mt-1">{nombreArchivoTamano(doc.tamano_bytes)} · {fechaHora(doc.fecha_subida)}</p>
+                                    <div className="mt-2 flex flex-wrap gap-1"><button type="button" onClick={() => verDocumento(doc)} className="px-2 py-1.5">Ver documento</button><button type="button" onClick={() => descargarDocumento(doc)} className="px-2 py-1.5">Descargar</button>{modo === "interno" && <button type="button" onClick={() => eliminarDocumento(doc)} className="px-2 py-1.5">Eliminar</button>}</div>
                                   </div>)}</div>}
                                 </div>;
                               })}
@@ -1131,38 +1089,39 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
                           </div>;
                         })}
                       </div>
-                      <div className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-white px-4 py-3"><div className="min-w-0"><h4 className="text-xs font-extrabold text-slate-800">Carpeta digital · Visor de documentos</h4><p className="mt-1 break-all text-[10px] text-slate-500">{documentoAbierto?.nombre || "Selecciona un documento de las categorías para visualizarlo aquí."}</p></div>{documentoAbierto && <div className="flex gap-2"><a href={documentoAbierto.url} target="_blank" rel="noreferrer" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-[10px] font-bold text-slate-700 hover:bg-slate-100">Abrir aparte</a><button type="button" onClick={() => setDocumentoAbierto(null)} className="rounded-lg bg-slate-900 px-3 py-2 text-[10px] font-bold text-white">Cerrar</button></div>}</div>
-                        {documentoAbierto ? (documentoAbierto.tipo.toLowerCase().includes("pdf") || documentoAbierto.nombre.toLowerCase().endsWith(".pdf") ? <iframe title={"Vista previa de " + documentoAbierto.nombre} src={documentoAbierto.url} className="h-[620px] w-full bg-white" /> : documentoAbierto.tipo.toLowerCase().startsWith("image/") ? <div className="flex h-[620px] justify-center overflow-auto p-3"><img src={documentoAbierto.url} alt={documentoAbierto.nombre} className="max-h-full max-w-full object-contain" /></div> : <div className="flex h-[620px] flex-col items-center justify-center gap-2 p-5 text-center"><p className="text-xs font-bold text-slate-700">La vista integrada está disponible para PDF e imágenes.</p><p className="break-all text-[10px] text-slate-500">{documentoAbierto.nombre}</p><a href={documentoAbierto.url} target="_blank" rel="noreferrer" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700">Abrir documento aparte</a></div>) : <div className="flex h-[620px] flex-col items-center justify-center gap-3 p-6 text-center text-slate-400"><span className="text-4xl">▤</span><p className="text-sm font-bold text-slate-600">Visor de documentos</p><p className="max-w-xs text-xs leading-5">Selecciona «Ver documento» junto a un archivo para abrirlo aquí sin salir de la ficha.</p></div>}
+                      <div className="min-w-0 overflow-hidden">
+                        <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3"><div className="min-w-0"><h4>Carpeta digital · Visor de documentos</h4><p className="mt-1 break-all">{documentoAbierto?.nombre || "Selecciona un documento de las categorías para visualizarlo aquí."}</p></div>{documentoAbierto && <div className="flex gap-2"><a href={documentoAbierto.url} target="_blank" rel="noreferrer" className="px-3 py-2">Abrir aparte</a><button type="button" onClick={() => setDocumentoAbierto(null)} className="px-3 py-2">Cerrar</button></div>}</div>
+                        {documentoAbierto ? (documentoAbierto.tipo.toLowerCase().includes("pdf") || documentoAbierto.nombre.toLowerCase().endsWith(".pdf") ? <iframe title={"Vista previa de " + documentoAbierto.nombre} src={documentoAbierto.url} className="h-[620px] w-full" /> : documentoAbierto.tipo.toLowerCase().startsWith("image/") ? <div className="flex h-[620px] justify-center overflow-auto p-3"><img src={documentoAbierto.url} alt={documentoAbierto.nombre} className="max-h-full max-w-full object-contain" /></div> : <div className="flex h-[620px] flex-col items-center justify-center gap-2 p-5"><p>La vista integrada está disponible para PDF e imágenes.</p><p className="break-all">{documentoAbierto.nombre}</p><a href={documentoAbierto.url} target="_blank" rel="noreferrer" className="px-3 py-2">Abrir documento aparte</a></div>) : <div className="flex h-[620px] flex-col items-center justify-center gap-3 p-6"><span>▤</span><p>Visor de documentos</p><p className="max-w-xs">Selecciona «Ver documento» junto a un archivo para abrirlo aquí sin salir de la ficha.</p></div>}
                       </div>
                     </div></section>
 
                   <section className="xl:col-span-2">
-                    <div className="flex items-center justify-between"><h3 className="text-sm font-extrabold text-slate-900">Seguimiento e incidencias</h3><span className="text-[10px] text-slate-400">Historial cronológico</span></div>
-                    {modo === "interno" && <form onSubmit={guardarActividad} className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                      <textarea rows={3} maxLength={5000} value={actividad} onChange={(e) => setActividad(e.target.value)} placeholder="Añade un comentario de gestión o registra una incidencia…" className={inputClass + " resize-y"} />
-                      <div className="mt-2 flex justify-end"><button disabled={!actividad.trim() || guardandoActividad} type="submit" className="rounded-lg bg-blue-600 px-4 py-2 text-xs font-extrabold text-blue-950 disabled:opacity-40">{guardandoActividad ? "Guardando…" : "Añadir al seguimiento"}</button></div>
+                    <div className="flex items-center justify-between"><h3>Seguimiento e incidencias</h3><span>Historial cronológico</span></div>
+                    {modo === "interno" && <form onSubmit={guardarActividad} className="mt-3 p-3">
+                      <textarea rows={3} maxLength={5000} value={actividad} onChange={(e) => setActividad(e.target.value)} placeholder="Añade un comentario de gestión o registra una incidencia…" className={inputClass + "resize-y"} />
+                      <div className="mt-2 flex justify-end"><button disabled={!actividad.trim() || guardandoActividad} type="submit" className="px-4 py-2">{guardandoActividad ? "Guardando…" : "Añadir al seguimiento"}</button></div>
                     </form>}
                     <div className="mt-4 space-y-3">
-                      {!(modo === "interno" ? detalle.actividad : (detalle.actividad || []).filter((entrada) => entrada.visible_notaria)).length ? <p className="py-3 text-xs text-slate-500">El historial aparecerá aquí conforme avance la gestión.</p> : (modo === "interno" ? detalle.actividad : (detalle.actividad || []).filter((entrada) => entrada.visible_notaria)).map((entrada) => (
-                        <article key={entrada.id} className="relative border-l-2 border-blue-200 pl-4">
-                          <span className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-blue-600" />
-                          <div className="flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-extrabold text-slate-800">{entrada.autor_nombre} <span className="ml-1 font-medium text-slate-400">· {entrada.tipo}</span></p><time className="text-[10px] text-slate-400">{fechaHora(entrada.creado_en)}</time></div>
-                          <p className="mt-1 whitespace-pre-wrap text-xs leading-5 text-slate-600">{entrada.mensaje}</p>
-                          {!entrada.visible_notaria && <span className="mt-1 inline-flex rounded bg-slate-100 px-2 py-0.5 text-[9px] font-bold text-slate-500">Solo interno MOLSAN</span>}
+                      {!(modo === "interno" ? detalle.actividad : (detalle.actividad || []).filter((entrada) => entrada.visible_notaria)).length ? <p className="py-3">El historial aparecerá aquí conforme avance la gestión.</p> : (modo === "interno" ? detalle.actividad : (detalle.actividad || []).filter((entrada) => entrada.visible_notaria)).map((entrada) => (
+                        <article key={entrada.id} className="relative pl-4">
+                          <span className="absolute -left-[5px] top-1 h-2 w-2" />
+                          <div className="flex flex-wrap items-center justify-between gap-2"><p>{entrada.autor_nombre} <span className="ml-1">· {entrada.tipo}</span></p><time>{fechaHora(entrada.creado_en)}</time></div>
+                          <p className="mt-1 whitespace-pre-wrap">{entrada.mensaje}</p>
+                          {!entrada.visible_notaria && <span className="mt-1 inline-flex px-2 py-0.5">Solo interno MOLSAN</span>}
                         </article>
                       ))}
                     </div>
                   </section>
-                  {cargandoDetalle && <div className="xl:col-span-2 text-xs text-slate-400">Actualizando la ficha…</div>}
+                  {cargandoDetalle && <div className="xl:col-span-2">Actualizando la ficha…</div>}
                 </div>
               </>
             )}
           </div>
         </section>
         )}
-        <p className="mt-6 text-center text-[10px] font-medium tracking-wide text-slate-400">MOLSAN ERP · EncargaGest · Portal independiente conectado al catálogo CTN</p>
+        <p className="mt-6">MOLSAN ERP · EncargaGest · Portal independiente conectado al catálogo CTN</p>
       </main>
+      </div>
 
       {modalNuevo && (
         <div
@@ -1170,14 +1129,14 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
           role="presentation"
           onMouseDown={(e) => { if (e.target === e.currentTarget && !guardando) setModalNuevo(false); }}
         >
-          <form onSubmit={crearEncargo} className="eg-modal-form">
+          <form ref={nuevoDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Registrar nuevo encargo" onSubmit={crearEncargo} className="eg-modal-form">
             <datalist id="eg-catalogo-municipios-registro">
               {catalogoMunicipiosRegistro.map((item) => <option key={item.id} value={item.municipio}>{item.provincia}</option>)}
             </datalist>
             <header className="eg-modal-header">
               <div className="eg-modal-brand">EG</div>
               <div className="eg-modal-heading">
-                <span className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</span>
+                <span>MOLSAN ERP</span>
                 <h2>Registrar nuevo encargo</h2>
                 <p>Completa los datos de la solicitud y adjunta la documentación en su categoría.</p>
               </div>
@@ -1191,7 +1150,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
                     <option value="">Selecciona una notaría…</option>
                     {notarias.map((n) => <option key={n.id} value={n.id}>{n.nombre}{n.nif ? " · " + n.nif : ""}{n.provincia ? " · " + n.provincia : ""}</option>)}
                   </select>
-                  {!notarias.length && <span className="mt-1 block text-[10px] text-rose-600">No hay notarías CTN disponibles o no se han podido cargar.</span>}
+                  {!notarias.length && <span className="mt-1 block">No hay notarías CTN disponibles o no se han podido cargar.</span>}
                 </Campo>
               </div>
             ) : (
@@ -1227,28 +1186,28 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
                       <option>Normal</option><option>Alta</option><option>Urgente</option><option>Baja</option>
                     </select>
                   </Campo>
-                  <div className="eg-span-2 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
-                    <div><p className="text-xs font-black uppercase tracking-wider text-blue-700">Contratos y fincas</p><p className="mt-1 text-xs text-slate-500">Cada contrato conserva su carpeta digital. Una misma finca puede estar asociada a contratos diferentes.</p></div>
-                    <button type="button" onClick={anadirContrato} className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-extrabold text-white">＋ Añadir otro contrato</button>
+                  <div className="eg-span-2 flex flex-wrap items-center justify-between gap-3 pb-3">
+                    <div><p className="uppercase">Contratos y fincas</p><p className="mt-1">Cada contrato conserva su carpeta digital. Una misma finca puede estar asociada a contratos diferentes.</p></div>
+                    <button type="button" onClick={anadirContrato} className="px-4 py-2">＋ Añadir otro contrato</button>
                   </div>
                   {form.contratos.map((contrato, indiceContrato) => (
-                    <div key={indiceContrato} className="eg-span-2 eg-contrato-layout rounded-2xl border border-blue-200 bg-blue-50/40 p-4">
-                      <div className="mb-3 flex items-center justify-between gap-3"><h4 className="text-sm font-black text-slate-900">Contrato {indiceContrato + 1}</h4>{form.contratos.length > 1 && <button type="button" onClick={() => quitarContrato(indiceContrato)} className="text-xs font-bold text-rose-700">Eliminar contrato</button>}</div>
+                    <div key={indiceContrato} className="eg-span-2 eg-contrato-layout p-4">
+                      <div className="mb-3 flex items-center justify-between gap-3"><h4>Contrato {indiceContrato + 1}</h4>{form.contratos.length > 1 && <button type="button" onClick={() => quitarContrato(indiceContrato)}>Eliminar contrato</button>}</div>
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <Campo etiqueta="Entidad bancaria"><select value={contrato.entidad_bancaria} onChange={(e) => cambiarContrato(indiceContrato, "entidad_bancaria", e.target.value)} className={inputClass}><option value="">Selecciona una entidad…</option><option value="BBVA">BBVA</option><option value="CaixaBank">CaixaBank</option></select></Campo>
                         <Campo etiqueta="Número de préstamo"><input maxLength={150} value={contrato.numero_prestamo} onChange={(e) => cambiarContrato(indiceContrato, "numero_prestamo", e.target.value)} placeholder="Referencia del préstamo" className={inputClass} /></Campo>
                         <Campo etiqueta="Fecha de constitución"><input type="date" value={contrato.fecha_constitucion} onChange={(e) => cambiarContrato(indiceContrato, "fecha_constitucion", e.target.value)} className={inputClass} /></Campo>
                       </div>
-                      <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><h5 className="text-xs font-black uppercase tracking-wider text-slate-700">Fincas del contrato ({contrato.fincas.length})</h5><button type="button" onClick={() => anadirFinca(indiceContrato)} className="rounded-lg border border-blue-300 bg-white px-3 py-2 text-[11px] font-extrabold text-blue-800">＋ Añadir finca</button></div>
+                      <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><h5 className="uppercase">Fincas del contrato ({contrato.fincas.length})</h5><button type="button" onClick={() => anadirFinca(indiceContrato)} className="px-3 py-2">＋ Añadir finca</button></div>
                       <div className="mt-3 space-y-3">
                         {contrato.fincas.map((finca, indiceFinca) => (
-                          <div key={indiceFinca} className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-white p-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+                          <div key={indiceFinca} className="grid grid-cols-1 gap-3 p-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
                             <Campo etiqueta="Número de finca"><input maxLength={150} value={finca.numero_finca} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "numero_finca", e.target.value)} placeholder="N.º finca registral" className={inputClass} /></Campo>
                             <Campo etiqueta="Inscripción"><input maxLength={100} value={finca.numero_inscripcion ?? ""} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "numero_inscripcion", e.target.value)} placeholder="Inscripción registral" className={inputClass} /></Campo>
                             <Campo etiqueta="Sección"><input maxLength={100} value={finca.seccion ?? ""} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "seccion", e.target.value)} placeholder="Sección registral" className={inputClass} /></Campo>
                             <Campo etiqueta="Capital inscrito en el registro (€)"><input type="number" min="0" step="0.01" value={finca.capital_inscrito ?? ""} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "capital_inscrito", e.target.value)} placeholder="0,00" className={inputClass} /></Campo>
                             <Campo etiqueta="Municipio del registro"><input maxLength={200} list="eg-catalogo-municipios-registro" value={finca.municipio_registro} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "municipio_registro", e.target.value)} placeholder="Busca un municipio…" autoComplete="off" className={inputClass} /></Campo>
-                            <div className="flex items-end gap-2"><div className="min-w-0 flex-1"><Campo etiqueta="Registro de la Propiedad"><input maxLength={200} value={finca.registro_propiedad} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "registro_propiedad", e.target.value)} placeholder="Registro de la Propiedad" className={inputClass} /></Campo></div>{contrato.fincas.length > 1 && <button type="button" onClick={() => quitarFinca(indiceContrato, indiceFinca)} className="mb-0.5 rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700">×</button>}</div>
+                            <div className="flex items-end gap-2"><div className="min-w-0 flex-1"><Campo etiqueta="Registro de la Propiedad"><input maxLength={200} value={finca.registro_propiedad} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "registro_propiedad", e.target.value)} placeholder="Registro de la Propiedad" className={inputClass} /></Campo></div>{contrato.fincas.length > 1 && <button type="button" onClick={() => quitarFinca(indiceContrato, indiceFinca)} className="mb-0.5 px-3 py-2">×</button>}</div>
                           </div>
                         ))}
                       </div>
@@ -1256,7 +1215,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
                     </div>
                   ))}
                                     <Campo etiqueta="Observaciones de la solicitud" className="eg-span-2">
-                    <textarea rows={4} maxLength={10000} value={form.observaciones} onChange={(e) => cambiarFiltro("observaciones", e.target.value)} placeholder="Indicaciones y particularidades del encargo…" className={inputClass + " resize-y"} />
+                    <textarea rows={4} maxLength={10000} value={form.observaciones} onChange={(e) => cambiarFiltro("observaciones", e.target.value)} placeholder="Indicaciones y particularidades del encargo…" className={inputClass + "resize-y"} />
                   </Campo>
                 </div>
               </section>
@@ -1264,22 +1223,22 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
                 {form.contratos.map((contrato, indiceContrato) => (
                   <div key={indiceContrato} className="eg-modal-carpeta-contrato">
                       <div className="eg-modal-carpeta-panel">
-                        <p className="mb-2 text-[10px] font-black uppercase tracking-wider text-blue-800">Carpeta digital · Contrato {indiceContrato + 1}</p>
+                        <p className="mb-2 uppercase">Carpeta digital · Contrato {indiceContrato + 1}</p>
                         <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
                           <div className="min-w-0 grid grid-cols-1 gap-2 md:grid-cols-2">
                             {CATEGORIAS_DOCUMENTO.map((categoria) => {
                               const clave = indiceContrato + "|" + categoria.nombre;
                               const seleccionados = archivosSolicitud[clave] || [];
-                              return <div key={clave} className="rounded-xl border border-slate-200 bg-white p-3">
-                                <div className="mb-2 flex items-center gap-2"><span className="grid h-7 w-7 place-items-center rounded-lg bg-blue-100 text-[10px] font-black text-blue-800">{categoria.icono}</span><div className="min-w-0"><p className="text-xs font-bold text-slate-800">{categoria.nombre}</p><p className="text-[10px] text-slate-400">{seleccionados.length} archivo(s)</p></div></div>
-                                <input type="file" multiple accept={EXTENSIONES_DOCUMENTO} disabled={guardando} className="block w-full text-xs" onChange={(e) => { const nuevos = Array.from(e.target.files || []); if (nuevos[0]) setArchivoPrevisualizado(nuevos[0]); setArchivosSolicitud((actual) => ({ ...actual, [clave]: [...(actual[clave] || []), ...nuevos] })); e.target.value = ""; }} />
-                                {seleccionados.length > 0 && <ul className="mt-2 space-y-1">{seleccionados.map((f, idx) => <li key={f.name + idx} className="truncate text-[10px] text-slate-600">{f.name}</li>)}</ul>}
+                              return <div key={clave} className="p-3">
+                                <div className="mb-2 flex items-center gap-2"><span className="grid h-7 w-7 place-items-center">{categoria.icono}</span><div className="min-w-0"><p>{categoria.nombre}</p><p>{seleccionados.length} archivo(s)</p></div></div>
+                                <input type="file" multiple accept={EXTENSIONES_DOCUMENTO} disabled={guardando} className="block w-full" onChange={(e) => { const nuevos = Array.from(e.target.files || []); if (nuevos[0]) setArchivoPrevisualizado(nuevos[0]); setArchivosSolicitud((actual) => ({ ...actual, [clave]: [...(actual[clave] || []), ...nuevos] })); e.target.value = ""; }} />
+                                {seleccionados.length > 0 && <ul className="mt-2 space-y-1">{seleccionados.map((f, idx) => <li key={f.name + idx} className="truncate">{f.name}</li>)}</ul>}
                               </div>;
                             })}
                           </div>
-                          <div className="min-h-[280px] min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-                            <div className="border-b border-slate-200 bg-white px-3 py-2"><p className="truncate text-xs font-bold text-slate-700">{archivoPrevisualizado?.name || "Visor de documentos"}</p></div>
-                            {archivoPrevisualizado && urlPrevisualizacion ? (/^application\/pdf$/i.test(archivoPrevisualizado.type) || /\.pdf$/i.test(archivoPrevisualizado.name) ? <iframe title={"Vista previa de " + archivoPrevisualizado.name} src={urlPrevisualizacion} className="h-[340px] w-full bg-white" /> : (/^image\//i.test(archivoPrevisualizado.type) ? <div className="flex h-[340px] items-center justify-center overflow-auto p-3"><img src={urlPrevisualizacion} alt={archivoPrevisualizado.name} className="max-h-full max-w-full object-contain" /></div> : <div className="flex h-[340px] flex-col items-center justify-center gap-2 p-5 text-center"><p className="text-xs font-bold text-slate-700">Este formato se guardará, pero no tiene vista previa integrada.</p><p className="break-all text-[10px] text-slate-500">{archivoPrevisualizado.name}</p></div>)) : <div className="flex h-[340px] flex-col items-center justify-center gap-2 p-5 text-center text-slate-400"><span className="text-3xl">▤</span><p className="text-xs font-semibold">Selecciona un archivo para ver su contenido aquí.</p></div>}
+                          <div className="min-h-[280px] min-w-0 overflow-hidden">
+                            <div className="px-3 py-2"><p className="truncate">{archivoPrevisualizado?.name || "Visor de documentos"}</p></div>
+                            {archivoPrevisualizado && urlPrevisualizacion ? (/^application\/pdf$/i.test(archivoPrevisualizado.type) || /\.pdf$/i.test(archivoPrevisualizado.name) ? <iframe title={"Vista previa de " + archivoPrevisualizado.name} src={urlPrevisualizacion} className="h-[340px] w-full" /> : (/^image\//i.test(archivoPrevisualizado.type) ? <div className="flex h-[340px] items-center justify-center overflow-auto p-3"><img src={urlPrevisualizacion} alt={archivoPrevisualizado.name} className="max-h-full max-w-full object-contain" /></div> : <div className="flex h-[340px] flex-col items-center justify-center gap-2 p-5"><p>Este formato se guardará, pero no tiene vista previa integrada.</p><p className="break-all">{archivoPrevisualizado.name}</p></div>)) : <div className="flex h-[340px] flex-col items-center justify-center gap-2 p-5"><span>▤</span><p>Selecciona un archivo para ver su contenido aquí.</p></div>}
                           </div>
                         </div>
                       </div>
@@ -1304,14 +1263,14 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
       )}
 
       {modalEditar && detalle && editForm && (
-        <div className="fixed inset-0 z-[70] grid place-items-center overflow-y-auto bg-slate-950/65 p-3 backdrop-blur-sm sm:p-6">
-          <form onSubmit={guardarEdicion} className="my-auto max-h-[94vh] w-full max-w-6xl overflow-y-auto rounded-3xl border border-white/70 bg-white shadow-2xl">
+        <div className="panel-modal-premium fixed inset-0 z-[70] grid place-items-center overflow-y-auto p-3 sm:p-6">
+          <form ref={editarDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Editar encargo" onSubmit={guardarEdicion} className="my-auto max-h-[94vh] w-full max-w-6xl overflow-y-auto">
             <datalist id="eg-catalogo-municipios-registro-edicion">
               {catalogoMunicipiosRegistro.map((item) => <option key={item.id} value={item.municipio}>{item.provincia}</option>)}
             </datalist>
-            <header className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-slate-200 bg-white/95 px-5 py-4 backdrop-blur sm:px-7">
-              <div><p className="text-[9px] font-black tracking-[0.18em] text-blue-700">ENCARGAGEST · EDICIÓN COMPARTIDA</p><h2 className="mt-1 text-xl font-black text-slate-900">Editar encargo {detalle.referencia}</h2><p className="mt-1 text-xs text-slate-500">Los cambios se guardan en el registro común y se mostrarán también en el portal de la notaría.</p></div>
-              <button type="button" disabled={guardandoEdicion} onClick={() => setModalEditar(false)} className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 text-slate-500">×</button>
+            <header className="sticky top-0 z-10 flex items-start justify-between gap-4 px-5 py-4 sm:px-7">
+              <div><p>ENCARGAGEST · EDICIÓN COMPARTIDA</p><h2 className="mt-1">Editar encargo {detalle.referencia}</h2><p className="mt-1">Los cambios se guardan en el registro común y se mostrarán también en el portal de la notaría.</p></div>
+              <button type="button" disabled={guardandoEdicion} onClick={() => setModalEditar(false)} className="grid h-9 w-9 shrink-0 place-items-center">×</button>
             </header>
             <div className="space-y-5 p-5 sm:p-7">
               <section className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -1327,53 +1286,53 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
                 <Campo etiqueta="Observaciones de la solicitud" className="md:col-span-2 xl:col-span-3"><textarea rows={2} maxLength={10000} value={editForm.observaciones} onChange={(e) => cambiarDatoEdicion("observaciones", e.target.value)} className={inputClass} /></Campo>
                 <Campo etiqueta="Nota interna MOLSAN" className="md:col-span-2 xl:col-span-3"><textarea rows={2} maxLength={10000} value={editForm.observaciones_internas} onChange={(e) => cambiarDatoEdicion("observaciones_internas", e.target.value)} className={inputClass} /></Campo>
               </section>
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3"><div><h3 className="text-sm font-black text-slate-900">Contratos y fincas</h3><p className="mt-1 text-xs text-slate-500">Puedes añadir o modificar varios contratos y todas sus fincas.</p></div><button type="button" onClick={anadirContratoEdicion} className="rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-extrabold text-white">＋ Añadir contrato</button></div>
+              <div className="flex flex-wrap items-center justify-between gap-3 pb-3"><div><h3>Contratos y fincas</h3><p className="mt-1">Puedes añadir o modificar varios contratos y todas sus fincas.</p></div><button type="button" onClick={anadirContratoEdicion} className="px-4 py-2.5">＋ Añadir contrato</button></div>
               {editForm.contratos.map((contrato, contratoIndex) => (
-                <section key={"editar-contrato-" + contratoIndex} className="rounded-2xl border border-blue-200 bg-blue-50/40 p-4">
-                  <div className="mb-3 flex flex-wrap items-center justify-between gap-3"><h4 className="text-sm font-black text-slate-900">Contrato {contratoIndex + 1}</h4>{editForm.contratos.length > 1 && <button type="button" onClick={() => setEditForm((actual) => ({ ...actual, contratos: actual.contratos.filter((_, i) => i !== contratoIndex) }))} className="text-xs font-bold text-rose-700">Eliminar contrato</button>}</div>
+                <section key={"editar-contrato-" + contratoIndex} className="p-4">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-3"><h4>Contrato {contratoIndex + 1}</h4>{editForm.contratos.length > 1 && <button type="button" onClick={() => setEditForm((actual) => ({ ...actual, contratos: actual.contratos.filter((_, i) => i !== contratoIndex) }))}>Eliminar contrato</button>}</div>
                   <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                     <Campo etiqueta="Entidad bancaria"><input maxLength={200} value={contrato.entidad_bancaria} onChange={(e) => cambiarContratoEdicion(contratoIndex, "entidad_bancaria", e.target.value)} className={inputClass} /></Campo>
                     <Campo etiqueta="Número de préstamo"><input maxLength={150} value={contrato.numero_prestamo} onChange={(e) => cambiarContratoEdicion(contratoIndex, "numero_prestamo", e.target.value)} className={inputClass} /></Campo>
                     <Campo etiqueta="Fecha de constitución"><input type="date" value={(contrato.fecha_constitucion || "").slice(0,10)} onChange={(e) => cambiarContratoEdicion(contratoIndex, "fecha_constitucion", e.target.value)} className={inputClass} /></Campo>
                   </div>
-                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><h5 className="text-xs font-black uppercase tracking-wider text-slate-700">Fincas ({contrato.fincas.length})</h5><button type="button" onClick={() => anadirFincaEdicion(contratoIndex)} className="rounded-lg border border-blue-300 bg-white px-3 py-2 text-[11px] font-extrabold text-blue-800">＋ Añadir finca</button></div>
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><h5 className="uppercase">Fincas ({contrato.fincas.length})</h5><button type="button" onClick={() => anadirFincaEdicion(contratoIndex)} className="px-3 py-2">＋ Añadir finca</button></div>
                   <div className="mt-3 space-y-3">
                     {contrato.fincas.map((finca, fincaIndex) => (
-                      <div key={"editar-finca-" + contratoIndex + "-" + fincaIndex} className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-white p-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+                      <div key={"editar-finca-" + contratoIndex + "-" + fincaIndex} className="grid grid-cols-1 gap-3 p-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
                         <Campo etiqueta="Número de finca"><input maxLength={150} value={finca.numero_finca} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "numero_finca", e.target.value)} className={inputClass} /></Campo>
                         <Campo etiqueta="Inscripción"><input maxLength={100} value={finca.numero_inscripcion} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "numero_inscripcion", e.target.value)} placeholder="Inscripción registral" className={inputClass} /></Campo>
                         <Campo etiqueta="Sección"><input maxLength={100} value={finca.seccion ?? ""} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "seccion", e.target.value)} placeholder="Sección registral" className={inputClass} /></Campo>
                         <Campo etiqueta="Capital inscrito (€)"><input type="number" min="0" step="0.01" value={finca.capital_inscrito ?? ""} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "capital_inscrito", e.target.value)} className={inputClass} /></Campo>
                         <Campo etiqueta="Municipio del registro"><input maxLength={200} list="eg-catalogo-municipios-registro-edicion" value={finca.municipio_registro} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "municipio_registro", e.target.value)} placeholder="Busca un municipio…" autoComplete="off" className={inputClass} /></Campo>
-                        <div className="flex items-end gap-2"><div className="min-w-0 flex-1"><Campo etiqueta="Registro de la Propiedad"><input maxLength={200} value={finca.registro_propiedad} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "registro_propiedad", e.target.value)} className={inputClass} /></Campo></div>{contrato.fincas.length > 1 && <button type="button" onClick={() => setEditForm((actual) => ({ ...actual, contratos: actual.contratos.map((c, i) => i !== contratoIndex ? c : { ...c, fincas: c.fincas.filter((_, j) => j !== fincaIndex) }) }))} className="mb-0.5 rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700">×</button>}</div>
+                        <div className="flex items-end gap-2"><div className="min-w-0 flex-1"><Campo etiqueta="Registro de la Propiedad"><input maxLength={200} value={finca.registro_propiedad} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "registro_propiedad", e.target.value)} className={inputClass} /></Campo></div>{contrato.fincas.length > 1 && <button type="button" onClick={() => setEditForm((actual) => ({ ...actual, contratos: actual.contratos.map((c, i) => i !== contratoIndex ? c : { ...c, fincas: c.fincas.filter((_, j) => j !== fincaIndex) }) }))} className="mb-0.5 px-3 py-2">×</button>}</div>
                       </div>
                     ))}
                   </div>
                 </section>
               ))}
             </div>
-            {errorAccion && <p className="mx-5 mb-3 rounded-xl bg-rose-50 p-3 text-xs text-rose-700 sm:mx-7">{errorAccion}</p>}
-            <footer className="sticky bottom-0 flex flex-wrap justify-end gap-2 border-t border-slate-200 bg-white/95 px-5 py-4 backdrop-blur sm:px-7"><button type="button" disabled={guardandoEdicion} onClick={() => setModalEditar(false)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600">Cancelar</button><button type="submit" disabled={guardandoEdicion || !editForm.titular.trim()} className="rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-extrabold text-blue-950 disabled:opacity-50">{guardandoEdicion ? "Guardando cambios…" : "Guardar todos los cambios"}</button></footer>
+            {errorAccion && <p className="mx-5 mb-3 p-3 sm:mx-7">{errorAccion}</p>}
+            <footer className="sticky bottom-0 flex flex-wrap justify-end gap-2 px-5 py-4 sm:px-7"><button type="button" disabled={guardandoEdicion} onClick={() => setModalEditar(false)} className="px-4 py-2.5">Cancelar</button><button type="submit" disabled={guardandoEdicion || !editForm.titular.trim()} className="px-5 py-2.5">{guardandoEdicion ? "Guardando cambios…" : "Guardar todos los cambios"}</button></footer>
           </form>
         </div>
       )}
 
       {modalIncidencia && detalle && (
-        <div className="fixed inset-0 z-[60] grid place-items-center overflow-y-auto bg-slate-950/60 p-3 backdrop-blur-sm sm:p-6">
-          <form onSubmit={registrarIncidencia} className="my-auto w-full max-w-xl overflow-hidden rounded-3xl border border-rose-100 bg-white shadow-2xl">
-            <div className="border-b border-rose-100 bg-rose-50 px-5 py-4 sm:px-7">
-              <p className="text-[9px] font-extrabold tracking-[0.18em] text-rose-700">ENCARGAGEST · GESTIÓN DE INCIDENCIAS</p>
-              <h2 className="mt-1 text-xl font-black text-slate-900">Indicar motivo de la incidencia</h2>
-              <p className="mt-2 text-xs leading-5 text-slate-600">El motivo quedará registrado en el seguimiento y será visible para la notaría, para que pueda actuar y aportar lo que falte.</p>
+        <div className="panel-modal-premium fixed inset-0 z-[60] grid place-items-center overflow-y-auto p-3 sm:p-6">
+          <form ref={incidenciaDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Registrar incidencia del encargo" onSubmit={registrarIncidencia} className="my-auto w-full max-w-xl overflow-hidden">
+            <div className="px-5 py-4 sm:px-7">
+              <p>ENCARGAGEST · GESTIÓN DE INCIDENCIAS</p>
+              <h2 className="mt-1">Indicar motivo de la incidencia</h2>
+              <p className="mt-2">El motivo quedará registrado en el seguimiento y será visible para la notaría, para que pueda actuar y aportar lo que falte.</p>
             </div>
             <div className="space-y-3 p-5 sm:p-7">
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs"><span className="text-slate-500">Encargo</span><p className="mt-1 font-extrabold text-slate-900">{detalle.referencia} · {detalle.titular}</p></div>
+              <div className="p-3"><span>Encargo</span><p className="mt-1">{detalle.referencia} · {detalle.titular}</p></div>
               <Campo etiqueta="Motivo detallado de la incidencia *"><textarea required minLength={5} maxLength={2000} rows={5} value={motivoIncidencia} onChange={(e) => setMotivoIncidencia(e.target.value)} className={inputClass} placeholder="Explica qué documento falta, qué dato debe corregirse o qué actuación se necesita…" /></Campo>
-              <p className="text-[10px] text-slate-500">Este texto se comunicará a la notaría. No incluyas notas internas de Molsan.</p>
+              <p>Este texto se comunicará a la notaría. No incluyas notas internas de Molsan.</p>
             </div>
-            <div className="flex flex-wrap justify-end gap-2 border-t border-slate-100 px-5 py-4 sm:px-7">
-              <button type="button" onClick={() => setModalIncidencia(false)} disabled={guardandoIncidencia} className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600">Cancelar</button>
-              <button type="submit" disabled={guardandoIncidencia || motivoIncidencia.trim().length < 5} className="rounded-xl bg-rose-600 px-5 py-2.5 text-xs font-extrabold text-white disabled:opacity-50">{guardandoIncidencia ? "Registrando…" : "Registrar y comunicar incidencia"}</button>
+            <div className="flex flex-wrap justify-end gap-2 px-5 py-4 sm:px-7">
+              <button type="button" onClick={() => setModalIncidencia(false)} disabled={guardandoIncidencia} className="px-4 py-2.5">Cancelar</button>
+              <button type="submit" disabled={guardandoIncidencia || motivoIncidencia.trim().length < 5} className="px-5 py-2.5">{guardandoIncidencia ? "Registrando…" : "Registrar y comunicar incidencia"}</button>
             </div>
           </form>
         </div>
@@ -1381,41 +1340,41 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
 
 
       {perfilAbierto && modo === "externo" && (
-        <div className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-slate-950/60 p-3 backdrop-blur-sm sm:p-4 lg:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget) setPerfilAbierto(false); }}>
-          <section role="dialog" aria-modal="true" aria-labelledby="eg-perfil-titulo" className="eg-modal-perfil my-0 w-full max-w-[1180px] min-w-0 max-h-[calc(100vh-2rem)] overflow-y-auto rounded-3xl border border-white/70 bg-white shadow-2xl">
-            <header className="eg-perfil-cabecera flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50 px-5 py-4 sm:px-7">
-              <div><p className="text-[9px] font-extrabold tracking-[0.18em] text-blue-700">ENCARGAGEST · FICHA CTN</p><h2 id="eg-perfil-titulo" className="mt-1 text-xl font-black text-slate-900">Ficha del notario</h2><p className="mt-1 text-xs text-slate-500">Datos de la notaría registrados en el catálogo CTN.</p></div>
-              <button type="button" onClick={() => setPerfilAbierto(false)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500">×</button>
+        <div className="panel-modal-premium fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto p-3 sm:p-4 lg:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget) setPerfilAbierto(false); }}>
+          <section ref={perfilDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="eg-perfil-titulo" className="eg-modal-perfil my-0 w-full max-w-[1180px] min-w-0 max-h-[calc(100vh-2rem)] overflow-y-auto">
+            <header className="eg-perfil-cabecera flex items-start justify-between gap-4 px-5 py-4 sm:px-7">
+              <div><p>ENCARGAGEST · FICHA CTN</p><h2 id="eg-perfil-titulo" className="mt-1">Ficha del notario</h2><p className="mt-1">Datos de la notaría registrados en el catálogo CTN.</p></div>
+              <button type="button" onClick={() => setPerfilAbierto(false)} className="grid h-9 w-9 place-items-center">×</button>
             </header>
             <div className="eg-perfil-layout grid min-w-0 grid-cols-1 gap-5 p-4 sm:p-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.85fr)] lg:gap-6 lg:p-7">
               <div>
-                <div className="eg-perfil-identidad mb-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-4"><div className="eg-perfil-avatar" aria-hidden="true">EG</div><div className="min-w-0"><p className="text-xs font-bold text-blue-800">{sesion?.notaria_nombre || sesion?.nombre || "Notaría"}</p><p className="mt-1 text-[11px] text-slate-500">Usuario de acceso</p><p className="mt-1 break-all font-black tracking-wide text-slate-900">{sesion?.usuario || sesion?.nif || "—"}</p><p className="mt-2 text-[11px] leading-5 text-slate-500">La contraseña no se muestra aquí. Si no se ha cambiado, la contraseña inicial es el NIF completo.</p></div></div>
+                <div className="eg-perfil-identidad mb-3 p-4"><div className="eg-perfil-avatar" aria-hidden="true">EG</div><div className="min-w-0"><p>{sesion?.notaria_nombre || sesion?.nombre || "Notaría"}</p><p className="mt-1">Usuario de acceso</p><p className="mt-1 break-all">{sesion?.usuario || sesion?.nif || "—"}</p><p className="mt-2">La contraseña no se muestra aquí. Si no se ha cambiado, la contraseña inicial es el NIF completo.</p></div></div>
                 <div className="eg-perfil-datos grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
-                  <div className="eg-perfil-dato rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Nombre</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.notaria_nombre || sesion?.nombre || "—"}</strong></div>
-                  <div className="eg-perfil-dato rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">NIF</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.nif || "—"}</strong></div>
-                  <div className="eg-perfil-dato rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Usuario</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.usuario || sesion?.nif || "—"}</strong></div>
-                  <div className="eg-perfil-dato rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Teléfono</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.telefono || "—"}</strong></div>
-                  <div className="eg-perfil-dato rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Dirección</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.direccion || "—"}</strong></div>
-                  <div className="eg-perfil-dato rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Código postal</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.cp || "—"}</strong></div>
-                  <div className="eg-perfil-dato rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Municipio</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.municipio || "—"}</strong></div>
-                  <div className="eg-perfil-dato rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Provincia</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.provincia || "—"}</strong></div>
-                  <div className="eg-perfil-dato rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Código CTN</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.codigo || "—"}</strong></div>
-                  <div className="eg-perfil-dato rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Videoconferencia</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.vc || "—"}</strong></div>
-                  <div className="eg-perfil-dato rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Apoderado asociado</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.apoderado || "—"}</strong></div>
-                  <div className="eg-perfil-dato rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Departamento cancelaciones</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.departamento_cancelaciones || "—"}</strong></div>
-                  <div className="eg-perfil-dato rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Departamento copias</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.departamento_copias || "—"}</strong></div>
-                  <div className="eg-perfil-dato rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Otros departamentos</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.otros_departamentos || "—"}</strong></div>
+                  <div className="eg-perfil-dato p-3"><small className="block uppercase">Nombre</small><strong className="mt-1 block break-words">{sesion?.notaria_nombre || sesion?.nombre || "—"}</strong></div>
+                  <div className="eg-perfil-dato p-3"><small className="block uppercase">NIF</small><strong className="mt-1 block break-words">{sesion?.nif || "—"}</strong></div>
+                  <div className="eg-perfil-dato p-3"><small className="block uppercase">Usuario</small><strong className="mt-1 block break-words">{sesion?.usuario || sesion?.nif || "—"}</strong></div>
+                  <div className="eg-perfil-dato p-3"><small className="block uppercase">Teléfono</small><strong className="mt-1 block break-words">{sesion?.telefono || "—"}</strong></div>
+                  <div className="eg-perfil-dato p-3"><small className="block uppercase">Dirección</small><strong className="mt-1 block break-words">{sesion?.direccion || "—"}</strong></div>
+                  <div className="eg-perfil-dato p-3"><small className="block uppercase">Código postal</small><strong className="mt-1 block break-words">{sesion?.cp || "—"}</strong></div>
+                  <div className="eg-perfil-dato p-3"><small className="block uppercase">Municipio</small><strong className="mt-1 block break-words">{sesion?.municipio || "—"}</strong></div>
+                  <div className="eg-perfil-dato p-3"><small className="block uppercase">Provincia</small><strong className="mt-1 block break-words">{sesion?.provincia || "—"}</strong></div>
+                  <div className="eg-perfil-dato p-3"><small className="block uppercase">Código CTN</small><strong className="mt-1 block break-words">{sesion?.codigo || "—"}</strong></div>
+                  <div className="eg-perfil-dato p-3"><small className="block uppercase">Videoconferencia</small><strong className="mt-1 block break-words">{sesion?.vc || "—"}</strong></div>
+                  <div className="eg-perfil-dato p-3"><small className="block uppercase">Apoderado asociado</small><strong className="mt-1 block break-words">{sesion?.apoderado || "—"}</strong></div>
+                  <div className="eg-perfil-dato p-3"><small className="block uppercase">Departamento cancelaciones</small><strong className="mt-1 block break-words">{sesion?.departamento_cancelaciones || "—"}</strong></div>
+                  <div className="eg-perfil-dato p-3"><small className="block uppercase">Departamento copias</small><strong className="mt-1 block break-words">{sesion?.departamento_copias || "—"}</strong></div>
+                  <div className="eg-perfil-dato p-3"><small className="block uppercase">Otros departamentos</small><strong className="mt-1 block break-words">{sesion?.otros_departamentos || "—"}</strong></div>
                 </div>
-                {sesion?.observacion && <div className="eg-perfil-observacion mt-3 rounded-xl bg-slate-50 p-3 text-xs"><small className="font-bold text-slate-500">Observaciones CTN</small><p className="mt-1 whitespace-pre-wrap text-slate-700">{sesion.observacion}</p></div>}
+                {sesion?.observacion && <div className="eg-perfil-observacion mt-3 p-3"><small>Observaciones CTN</small><p className="mt-1 whitespace-pre-wrap">{sesion.observacion}</p></div>}
               </div>
-              <form onSubmit={cambiarPasswordPerfil} className="eg-perfil-seguridad h-fit space-y-3 rounded-2xl border border-slate-200 p-4">
-                <h3 className="text-sm font-extrabold text-slate-900">Cambiar contraseña</h3>
-                {mensajePasswordPerfil && <p role="status" className="rounded-lg bg-emerald-50 p-2 text-xs text-emerald-800">{mensajePasswordPerfil}</p>}
-                {errorPasswordPerfil && <p role="alert" className="rounded-lg bg-rose-50 p-2 text-xs text-rose-700">{errorPasswordPerfil}</p>}
-                <label className="block text-xs font-semibold text-slate-600">Contraseña actual<input required type="password" autoComplete="current-password" value={passwordActualPerfil} onChange={e=>setPasswordActualPerfil(e.target.value)} className={inputClass + " mt-1"} /></label>
-                <label className="block text-xs font-semibold text-slate-600">Nueva contraseña<input required minLength={8} type="password" autoComplete="new-password" value={passwordNuevaPerfil} onChange={e=>setPasswordNuevaPerfil(e.target.value)} className={inputClass + " mt-1"} /></label>
-                <label className="block text-xs font-semibold text-slate-600">Repetir nueva contraseña<input required minLength={8} type="password" autoComplete="new-password" value={passwordConfirmarPerfil} onChange={e=>setPasswordConfirmarPerfil(e.target.value)} className={inputClass + " mt-1"} /></label>
-                <button type="submit" disabled={guardandoPasswordPerfil} className="w-full rounded-xl bg-blue-600 px-4 py-3 text-xs font-extrabold text-white disabled:opacity-60">{guardandoPasswordPerfil ? "Guardando…" : "Guardar nueva contraseña"}</button>
+              <form onSubmit={cambiarPasswordPerfil} className="eg-perfil-seguridad h-fit space-y-3 p-4">
+                <h3>Cambiar contraseña</h3>
+                {mensajePasswordPerfil && <p role="status" className="p-2">{mensajePasswordPerfil}</p>}
+                {errorPasswordPerfil && <p role="alert" className="p-2">{errorPasswordPerfil}</p>}
+                <label className="block">Contraseña actual<input required type="password" autoComplete="current-password" value={passwordActualPerfil} onChange={e=>setPasswordActualPerfil(e.target.value)} className={inputClass + "mt-1"} /></label>
+                <label className="block">Nueva contraseña<input required minLength={8} type="password" autoComplete="new-password" value={passwordNuevaPerfil} onChange={e=>setPasswordNuevaPerfil(e.target.value)} className={inputClass + "mt-1"} /></label>
+                <label className="block">Repetir nueva contraseña<input required minLength={8} type="password" autoComplete="new-password" value={passwordConfirmarPerfil} onChange={e=>setPasswordConfirmarPerfil(e.target.value)} className={inputClass + "mt-1"} /></label>
+                <button type="submit" disabled={guardandoPasswordPerfil} className="w-full px-4 py-3">{guardandoPasswordPerfil ? "Guardando…" : "Guardar nueva contraseña"}</button>
               </form>
             </div>
           </section>
@@ -1423,20 +1382,20 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
       )}
 
       {modalAccesos && (
-        <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-slate-950/50 p-3 backdrop-blur-sm sm:p-6">
-          <form onSubmit={guardarAcceso} className="my-auto w-full max-w-2xl overflow-hidden rounded-3xl border border-white/70 bg-white shadow-2xl">
-            <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4 sm:px-7">
-              <div><p className="text-[9px] font-extrabold tracking-[0.18em] text-blue-700">ENCARGAGEST · CONTROL DE ACCESO</p><h2 className="mt-1 text-xl font-black text-slate-900">Accesos de notarías externas</h2><p className="mt-1 text-xs leading-5 text-slate-500">Las cuentas son independientes de NotarGest. El usuario de entrada se obtiene del NIF de CTN.</p></div>
-              <button type="button" onClick={() => setModalAccesos(false)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500">×</button>
+        <div className="panel-modal-premium fixed inset-0 z-50 grid place-items-center overflow-y-auto p-3 sm:p-6">
+          <form ref={accesosDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Gestionar acceso de notaría" onSubmit={guardarAcceso} className="my-auto w-full max-w-2xl overflow-hidden">
+            <div className="flex items-start justify-between gap-4 px-5 py-4 sm:px-7">
+              <div><p>ENCARGAGEST · CONTROL DE ACCESO</p><h2 className="mt-1">Accesos de notarías externas</h2><p className="mt-1">Las cuentas son independientes de NotarGest. El usuario de entrada se obtiene del NIF de CTN.</p></div>
+              <button type="button" onClick={() => setModalAccesos(false)} className="grid h-9 w-9 place-items-center">×</button>
             </div>
             <div className="space-y-4 p-5 sm:p-7">
               <Campo etiqueta="Notaría del catálogo CTN *"><select required value={accesoNotariaId} onChange={(e) => { setAccesoNotariaId(e.target.value); setAccesoPassword(""); const seleccionado = accesos.find((x) => String(x.notaria_id) === e.target.value); setAccesoHabilitado(seleccionado?.habilitado ?? true); }} className={inputClass}><option value="">Selecciona una notaría…</option>{accesos.map((x) => <option key={x.notaria_id} value={x.notaria_id}>{x.nombre}{x.nif ? " · " + x.nif : ""}{x.tiene_acceso ? (x.habilitado ? " · acceso activo" : " · acceso deshabilitado") : " · sin acceso"}</option>)}</select></Campo>
-              {accesoSeleccionado && <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs"><p className="text-slate-500">Usuario de acceso</p><p className="mt-1 font-black tracking-wide text-slate-900">{accesoSeleccionado.usuario || "Completa el NIF de CTN"}</p><p className="mt-1 leading-5 text-slate-500">La contraseña se almacena protegida. En una cuenta nueva, déjala vacía para usar el NIF completo como contraseña inicial; si ya existe la cuenta, dejarla vacía conserva la actual.</p></div>}
+              {accesoSeleccionado && <div className="p-3"><p>Usuario de acceso</p><p className="mt-1">{accesoSeleccionado.usuario || "Completa el NIF de CTN"}</p><p className="mt-1">La contraseña se almacena protegida. En una cuenta nueva, déjala vacía para usar el NIF completo como contraseña inicial; si ya existe la cuenta, dejarla vacía conserva la actual.</p></div>}
               <Campo etiqueta={accesoSeleccionado?.tiene_acceso ? "Nueva contraseña (opcional)" : "Contraseña inicial *"}><input type="password" autoComplete="new-password" minLength={8} value={accesoPassword} onChange={(e) => setAccesoPassword(e.target.value)} className={inputClass} placeholder="Déjala vacía para usar el NIF o escribe una nueva (mínimo 8 caracteres)" /></Campo>
-              <label className="flex items-center gap-3 rounded-xl border border-slate-200 p-3 text-xs text-slate-700"><input type="checkbox" checked={accesoHabilitado} onChange={(e) => setAccesoHabilitado(e.target.checked)} />Permitir acceso al portal EncargaGest</label>
-              <p className="rounded-xl border border-blue-100 bg-blue-50/70 p-3 text-xs leading-5 text-blue-900">Las notarías solo verán encargos asociados a su propio registro CTN. La información interna y los estados de gestión quedan reservados a MOLSAN.</p>
+              <label className="flex items-center gap-3 p-3"><input type="checkbox" checked={accesoHabilitado} onChange={(e) => setAccesoHabilitado(e.target.checked)} />Permitir acceso al portal EncargaGest</label>
+              <p className="p-3">Las notarías solo verán encargos asociados a su propio registro CTN. La información interna y los estados de gestión quedan reservados a MOLSAN.</p>
             </div>
-            <div className="flex flex-wrap justify-end gap-2 border-t border-slate-100 px-5 py-4 sm:px-7"><button type="button" onClick={() => setModalAccesos(false)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600">Cerrar</button><button type="submit" disabled={guardandoAcceso || !accesoNotariaId} className="rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-extrabold text-blue-950 disabled:opacity-50">{guardandoAcceso ? "Guardando acceso…" : "Guardar acceso"}</button></div>
+            <div className="flex flex-wrap justify-end gap-2 px-5 py-4 sm:px-7"><button type="button" onClick={() => setModalAccesos(false)} className="px-4 py-2.5">Cerrar</button><button type="submit" disabled={guardandoAcceso || !accesoNotariaId} className="px-5 py-2.5">{guardandoAcceso ? "Guardando acceso…" : "Guardar acceso"}</button></div>
           </form>
         </div>
       )}

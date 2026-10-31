@@ -11,6 +11,8 @@ from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
 from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
+from backend.app.expedientes.reparto import validar_acceso_candidatos_expediente
 
 from backend.app.expedientes.models import Expediente
 from backend.app.acciones_expediente.models import AccionExpediente
@@ -24,6 +26,7 @@ from backend.app.expediente_acciones.schemas import (
 
 
 router = APIRouter(
+    dependencies=[Depends(get_current_user)],
     prefix="/expediente-acciones",
     tags=["Acciones del expediente"],
 )
@@ -61,6 +64,11 @@ def obtener_expediente_por_identificador(
 
     return expediente
 
+
+
+def validar_acceso_expediente(db: Session, usuario, expediente: Expediente) -> None:
+    """Aplica el ámbito de reparto también a acciones enlazadas por ID interno."""
+    validar_acceso_candidatos_expediente(db, usuario, [expediente])
 
 def validar_estado(estado: str):
     if estado not in ESTADOS_VALIDOS:
@@ -135,11 +143,14 @@ def obtener_accion_catalogo(
 def listar_acciones_expediente(
     id_expediente: str,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
+    require_perm_modulo(usuario, "expedientes", "ver")
     expediente = obtener_expediente_por_identificador(
         db,
         id_expediente,
     )
+    validar_acceso_expediente(db, usuario, expediente)
 
     relaciones = (
         db.query(ExpedienteAccion)
@@ -187,10 +198,12 @@ def asignar_accion_expediente(
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
+    require_perm_modulo(usuario, "expedientes", "editar")
     expediente = obtener_expediente_por_identificador(
         db,
         id_expediente,
     )
+    validar_acceso_expediente(db, usuario, expediente)
 
     validar_estado(datos.estado)
 
@@ -284,7 +297,9 @@ def actualizar_accion_expediente(
     relacion_id: int,
     datos: ExpedienteAccionUpdate,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
+    require_perm_modulo(usuario, "expedientes", "editar")
     relacion = (
         db.query(ExpedienteAccion)
         .filter(
@@ -298,6 +313,10 @@ def actualizar_accion_expediente(
             status_code=404,
             detail="No existe esta acción asignada al expediente.",
         )
+    expediente = db.query(Expediente).filter(Expediente.id == relacion.expediente_id).first()
+    if expediente is None:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+    validar_acceso_expediente(db, usuario, expediente)
 
     if datos.estado is not None:
         validar_estado(datos.estado)
@@ -341,7 +360,9 @@ def actualizar_accion_expediente(
 def eliminar_accion_expediente(
     relacion_id: int,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
+    require_perm_modulo(usuario, "expedientes", "editar")
     relacion = (
         db.query(ExpedienteAccion)
         .filter(
@@ -355,6 +376,10 @@ def eliminar_accion_expediente(
             status_code=404,
             detail="No existe esta acción asignada al expediente.",
         )
+    expediente = db.query(Expediente).filter(Expediente.id == relacion.expediente_id).first()
+    if expediente is None:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+    validar_acceso_expediente(db, usuario, expediente)
 
     # Borrado lógico: no se elimina la acción del catálogo.
     relacion.activo = False

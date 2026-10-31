@@ -8,6 +8,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from backend.app.auth.dependencies import get_current_user
+from backend.app.expedientes.reparto import usuario_admin_expedientes
 from backend.app.database import get_db
 
 router = APIRouter(prefix="/tipos-impositivos", tags=["Catálogo de tipos impositivos"])
@@ -98,8 +99,7 @@ def _ensure_table(db: Session):
 
 
 def _admin(usuario):
-    rol = " ".join(str(getattr(getattr(usuario, "rol", None), "nombre", "") or "").lower().replace("_", " ").replace("-", " ").split())
-    if rol not in {"admin", "administrador", "administradora", "superadmin", "super admin", "superadministrador", "super administradora", "administrador general"}:
+    if not usuario_admin_expedientes(usuario):
         raise HTTPException(status_code=403, detail="Solo administración puede mantener el catálogo de tipos impositivos.")
 
 

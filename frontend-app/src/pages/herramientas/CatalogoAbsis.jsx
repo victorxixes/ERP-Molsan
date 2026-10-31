@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuthStore } from "../../store/authStore";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { API_BASE } from "../../api/config";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 const API_URL = `${API_BASE}/catalogos-absis`;
 
@@ -44,6 +46,10 @@ export default function CatalogoAbsis() {
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
+  const nuevaListaDialogRef = useRef(null);
+  const entradaDialogRef = useRef(null);
+  useAccessibleDialog({ open: modalNuevaLista, onClose: () => { if (!creandoLista) setModalNuevaLista(false); }, dialogRef: nuevaListaDialogRef });
+  useAccessibleDialog({ open: modal, onClose: () => { if (!guardando) setModal(false); }, dialogRef: entradaDialogRef });
   const [mensaje, setMensaje] = useState("");
 
   const headers = useMemo(() => ({
@@ -164,106 +170,93 @@ export default function CatalogoAbsis() {
   }
 
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · DATOS ABSIS</p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">Catálogo ABSIS</h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Gestiona en una única pantalla los estados y listas auxiliares que utiliza la integración ABSIS. Cada lista se mantiene por separado y sus cambios quedan guardados en el servidor.</p>
-          </div>
-          <div className="rounded-2xl border border-indigo-100 bg-indigo-50 px-5 py-4">
-            <p className="text-3xl font-bold text-slate-900">{filas.filter((f) => f.activo).length}</p>
-            <p className="text-xs font-medium text-slate-500">entradas activas</p>
-          </div>
-        </div>
-      </header>
+    <main className="erp-page min-w-0 space-y-6">
+      <MolsanPageHeader mark="AB" title="Catálogo ABSIS" description="Gestiona los estados y listas auxiliares utilizados por la integración ABSIS. Los cambios se guardan en el servidor." />
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-        <label className="mb-2 block text-sm font-semibold text-slate-700" htmlFor="absis-categoria">Lista que quieres gestionar</label>
+      <section className="erp-card molsan-filter-bar p-4 sm:p-5">
+        <label className="mb-2 block" htmlFor="absis-categoria">Lista que quieres gestionar</label>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <select id="absis-categoria" value={categoria} onChange={(e) => { setCategoria(e.target.value); setBusqueda(""); setMensaje(""); }} className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm focus:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-100">
+          <select id="absis-categoria" value={categoria} onChange={(e) => { setCategoria(e.target.value); setBusqueda(""); setMensaje(""); }} className="min-w-0 flex-1 px-3 py-3">
             {categorias.map((item) => <option key={item} value={item}>{item}</option>)}
           </select>
-          <button type="button" onClick={() => { setNombreNuevaLista(""); setError(""); setModalNuevaLista(true); }} className="inline-flex items-center justify-center gap-2 rounded-xl border border-indigo-200 bg-white px-4 py-3 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50 focus:outline-none focus:ring-4 focus:ring-indigo-100">+ Crear lista</button>
-          <button type="button" onClick={abrirNuevo} className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-200">
-            <span aria-hidden="true" className="text-lg leading-none">+</span> Añadir entrada
+          <button type="button" onClick={() => { setNombreNuevaLista(""); setError(""); setModalNuevaLista(true); }} className="inline-flex items-center justify-center gap-2 px-4 py-3">+ Crear lista</button>
+          <button type="button" onClick={abrirNuevo} className="inline-flex items-center justify-center gap-2 px-5 py-3">
+            <span aria-hidden="true">+</span> Añadir entrada
           </button>
         </div>
         <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <input type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar código, valor o descripción…" aria-label="Buscar en el catálogo seleccionado" className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100 sm:max-w-md" />
-          <p className="text-sm text-slate-500">{visibles.length} entradas en esta lista</p>
+          <input type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar código, valor o descripción…" aria-label="Buscar en el catálogo seleccionado" className="w-full px-3 py-2.5 sm:max-w-md" />
+          <p>{visibles.length} entradas en esta lista</p>
         </div>
       </section>
 
-      {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{error}</div>}
-      {mensaje && !modal && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{mensaje}</div>}
+      {error && <div role="alert" className="px-4 py-3">{error}</div>}
+      {mensaje && !modal && <div role="status" className="px-4 py-3">{mensaje}</div>}
 
-      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-          <div><h2 className="font-bold text-slate-800">{categoria}</h2><p className="mt-1 text-xs text-slate-500">Listado editable · datos persistentes</p></div>
-          <button type="button" onClick={cargar} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Actualizar</button>
+      <section className="erp-card overflow-hidden">
+        <div className="flex items-center justify-between px-5 py-4">
+          <div><h2>{categoria}</h2><p className="mt-1">Listado editable · datos persistentes</p></div>
+          <button type="button" onClick={cargar} className="px-3 py-2">Actualizar</button>
         </div>
-        {cargando ? <div className="p-10 text-center text-sm text-slate-500">Cargando listado…</div> :
-          visibles.length === 0 ? <div className="p-10 text-center"><p className="font-semibold text-slate-700">Todavía no hay entradas en esta lista</p><p className="mt-1 text-sm text-slate-500">Usa «Añadir entrada» para incorporar el primer valor.</p></div> :
-          <div className="overflow-x-auto"><table className="w-full min-w-[680px] text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr>
-              <th className="px-5 py-3 font-semibold">Código</th><th className="px-5 py-3 font-semibold">Valor</th><th className="px-5 py-3 font-semibold">Descripción</th><th className="px-5 py-3 font-semibold">Estado</th><th className="px-5 py-3 text-right font-semibold">Acciones</th>
+        {cargando ? <div className="p-10">Cargando listado…</div> :
+          visibles.length === 0 ? <div className="p-10"><p>Todavía no hay entradas en esta lista</p><p className="mt-1">Usa «Añadir entrada» para incorporar el primer valor.</p></div> :
+          <div className="overflow-x-auto"><table className="w-full min-w-[680px]">
+            <thead className="uppercase"><tr>
+              <th className="px-5 py-3">Código</th><th className="px-5 py-3">Valor</th><th className="px-5 py-3">Descripción</th><th className="px-5 py-3">Estado</th><th className="px-5 py-3">Acciones</th>
             </tr></thead>
-            <tbody className="divide-y divide-slate-100">{visibles.map((fila) => <tr key={fila.id} className="hover:bg-slate-50/70">
-              <td className="whitespace-nowrap px-5 py-3 font-mono text-xs text-slate-600">{fila.codigo || "—"}</td>
-              <td className="px-5 py-3 font-medium text-slate-800">{fila.valor || "—"}</td>
-              <td className="max-w-xl px-5 py-3 text-slate-600">{fila.descripcion || "—"}</td>
-              <td className="px-5 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${fila.activo ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{fila.activo ? "Activo" : "Inactivo"}</span></td>
-              <td className="whitespace-nowrap px-5 py-3 text-right"><button type="button" onClick={() => abrirEdicion(fila)} className="rounded-lg px-2 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-50">Editar</button><button type="button" onClick={() => eliminar(fila)} className="ml-1 rounded-lg px-2 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50">Eliminar</button></td>
+            <tbody>{visibles.map((fila) => <tr key={fila.id}>
+              <td className="whitespace-nowrap px-5 py-3">{fila.codigo || "—"}</td>
+              <td className="px-5 py-3">{fila.valor || "—"}</td>
+              <td className="max-w-xl px-5 py-3">{fila.descripcion || "—"}</td>
+              <td className="px-5 py-3"><span className={`px-2.5 py-1 ${fila.activo ? "" : ""}`}>{fila.activo ? "Activo" : "Inactivo"}</span></td>
+              <td className="whitespace-nowrap px-5 py-3"><button type="button" onClick={() => abrirEdicion(fila)} className="px-2 py-1.5">Editar</button><button type="button" onClick={() => eliminar(fila)} className="ml-1 px-2 py-1.5">Eliminar</button></td>
             </tr>)}</tbody>
           </table></div>
         }
       </section>
 
-      {modalNuevaLista && <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-950/50 p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !creandoLista) setModalNuevaLista(false); }}>
-        <section role="dialog" aria-modal="true" aria-labelledby="absis-nueva-lista-titulo" className="w-full max-w-lg rounded-2xl bg-white shadow-2xl">
+      {modalNuevaLista && <div className="molsan-modal-overlay fixed inset-0 z-[110] flex items-center justify-center p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !creandoLista) setModalNuevaLista(false); }}>
+        <section ref={nuevaListaDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="absis-nueva-lista-titulo" className="molsan-modal__panel w-full max-w-lg">
           <form onSubmit={crearLista}>
-            <div className="border-b border-slate-200 px-6 py-5">
-              <h2 id="absis-nueva-lista-titulo" className="text-lg font-bold text-slate-900">Crear nueva lista ABSIS</h2>
-              <p className="mt-1 text-sm text-slate-500">Ponle un nombre único. Después podrás añadir todos los valores que necesites.</p>
+            <div className="px-6 py-5">
+              <h2 id="absis-nueva-lista-titulo">Crear nueva lista ABSIS</h2>
+              <p className="mt-1">Ponle un nombre único. Después podrás añadir todos los valores que necesites.</p>
             </div>
             <div className="space-y-3 p-6">
-              <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-700">Nombre de la lista
-                <input autoFocus value={nombreNuevaLista} onChange={(e) => setNombreNuevaLista(e.target.value)} maxLength={100} required placeholder="Ej. TIPOFACTURA" className="rounded-xl border border-slate-200 px-3 py-2.5 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100" />
+              <label className="flex flex-col gap-1.5">Nombre de la lista
+                <input autoFocus value={nombreNuevaLista} onChange={(e) => setNombreNuevaLista(e.target.value)} maxLength={100} required placeholder="Ej. TIPOFACTURA" className="px-3 py-2.5" />
               </label>
-              {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
+              {error && <p role="alert">{error}</p>}
             </div>
-            <div className="flex justify-end gap-3 border-t border-slate-200 px-6 py-4">
-              <button type="button" disabled={creandoLista} onClick={() => setModalNuevaLista(false)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600">Cancelar</button>
-              <button type="submit" disabled={creandoLista || !nombreNuevaLista.trim()} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{creandoLista ? "Creando…" : "Crear lista"}</button>
+            <div className="flex justify-end gap-3 px-6 py-4">
+              <button type="button" disabled={creandoLista} onClick={() => setModalNuevaLista(false)} className="px-4 py-2.5">Cancelar</button>
+              <button type="submit" disabled={creandoLista || !nombreNuevaLista.trim()} className="px-5 py-2.5">{creandoLista ? "Creando…" : "Crear lista"}</button>
             </div>
           </form>
         </section>
       </div>}
 
-      {modal && <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-950/50 p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModal(false); }}>
-        <section role="dialog" aria-modal="true" aria-labelledby="absis-modal-titulo" className="my-auto w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
+      {modal && <div className="molsan-modal-overlay fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !guardando) setModal(false); }}>
+        <section ref={entradaDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="absis-modal-titulo" className="molsan-modal__panel my-auto w-full max-w-2xl">
           <form onSubmit={guardar}>
-            <div className="border-b border-slate-200 px-6 py-5"><h2 id="absis-modal-titulo" className="text-lg font-bold text-slate-900">{editando ? "Editar entrada" : "Añadir entrada"} · {categoria}</h2><p className="mt-1 text-sm text-slate-500">Elige la lista y rellena los datos. El código es opcional.</p></div>
+            <div className="px-6 py-5"><h2 id="absis-modal-titulo">{editando ? "Editar entrada" : "Añadir entrada"} · {categoria}</h2><p className="mt-1">Elige la lista y rellena los datos. El código es opcional.</p></div>
             <div className="grid gap-4 p-6 sm:grid-cols-2">
-              <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-700 sm:col-span-2">Lista
-                <select value={formulario.categoria} onChange={(e) => setFormulario((f) => ({ ...f, categoria: e.target.value }))} className="rounded-xl border border-slate-200 px-3 py-2.5" required>{categorias.map((item) => <option key={item} value={item}>{item}</option>)}</select>
+              <label className="flex flex-col gap-1.5 sm:col-span-2">Lista
+                <select value={formulario.categoria} onChange={(e) => setFormulario((f) => ({ ...f, categoria: e.target.value }))} className="px-3 py-2.5" required>{categorias.map((item) => <option key={item} value={item}>{item}</option>)}</select>
               </label>
-              <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-700">Código
-                <input value={formulario.codigo} onChange={(e) => setFormulario((f) => ({ ...f, codigo: e.target.value }))} maxLength={40} className="rounded-xl border border-slate-200 px-3 py-2.5" placeholder="Ej. 118" />
+              <label className="flex flex-col gap-1.5">Código
+                <input value={formulario.codigo} onChange={(e) => setFormulario((f) => ({ ...f, codigo: e.target.value }))} maxLength={40} className="px-3 py-2.5" placeholder="Ej. 118" />
               </label>
-              <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-700">Valor
-                <input value={formulario.valor} onChange={(e) => setFormulario((f) => ({ ...f, valor: e.target.value }))} maxLength={300} className="rounded-xl border border-slate-200 px-3 py-2.5" placeholder="Nombre del valor" required={!formulario.codigo} />
+              <label className="flex flex-col gap-1.5">Valor
+                <input value={formulario.valor} onChange={(e) => setFormulario((f) => ({ ...f, valor: e.target.value }))} maxLength={300} className="px-3 py-2.5" placeholder="Nombre del valor" required={!formulario.codigo} />
               </label>
-              <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-700 sm:col-span-2">Descripción
-                <textarea value={formulario.descripcion} onChange={(e) => setFormulario((f) => ({ ...f, descripcion: e.target.value }))} rows={3} maxLength={2000} className="rounded-xl border border-slate-200 px-3 py-2.5" placeholder="Descripción (opcional)" />
+              <label className="flex flex-col gap-1.5 sm:col-span-2">Descripción
+                <textarea value={formulario.descripcion} onChange={(e) => setFormulario((f) => ({ ...f, descripcion: e.target.value }))} rows={3} maxLength={2000} className="px-3 py-2.5" placeholder="Descripción (opcional)" />
               </label>
-              <label className="flex items-center gap-2 text-sm text-slate-700 sm:col-span-2"><input type="checkbox" checked={formulario.activo} onChange={(e) => setFormulario((f) => ({ ...f, activo: e.target.checked }))} /> Entrada activa</label>
-              {error && <p role="alert" className="text-sm text-red-700 sm:col-span-2">{error}</p>}
+              <label className="flex items-center gap-2 sm:col-span-2"><input type="checkbox" checked={formulario.activo} onChange={(e) => setFormulario((f) => ({ ...f, activo: e.target.checked }))} /> Entrada activa</label>
+              {error && <p role="alert" className="sm:col-span-2">{error}</p>}
             </div>
-            <div className="flex justify-end gap-3 border-t border-slate-200 px-6 py-4"><button type="button" onClick={() => setModal(false)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600">Cancelar</button><button type="submit" disabled={guardando} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{guardando ? "Guardando…" : "Guardar entrada"}</button></div>
+            <div className="flex justify-end gap-3 px-6 py-4"><button type="button" disabled={guardando} onClick={() => setModal(false)} className="px-4 py-2.5">Cancelar</button><button type="submit" disabled={guardando} className="px-5 py-2.5">{guardando ? "Guardando…" : "Guardar entrada"}</button></div>
           </form>
         </section>
       </div>}

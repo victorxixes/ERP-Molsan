@@ -1,11 +1,11 @@
 // ============================================================
-// ERP MOLSAN — DASHBOARD EXPEDIENTES
-// PREMIUM 2027 — MISMO ESTILO QUE EXPEDIENTES
+// ERP MOLSAN — DASHBOARD DE EXPEDIENTES
+// Resumen operativo
 // ============================================================
 
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useDashboard } from "../../hooks/useDashboard";
 import { useNavigate } from "react-router-dom";
-import "../../css/DashboardCancelagest.css";
 
 // ============================================================
 // ACTIVIDADES
@@ -98,22 +98,22 @@ function porcentaje(valor) {
 
 function KpiCard({ icono, titulo, valor, descripcion }) {
   return (
-    <div className="erp-card dashboard-kpi group relative overflow-hidden p-4 transition-all duration-150">
+    <div className="erp-card dashboard-kpi group relative overflow-hidden p-4">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <div className="mb-2 text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--erp-text-soft)" }}>
+          <div className="mb-2 uppercase" >
             {titulo}
           </div>
-          <div className="dashboard-kpi__value text-3xl font-bold tracking-tight" style={{ color: "var(--erp-text)" }}>
+          <div className="dashboard-kpi__value" >
             {valor}
           </div>
           {descripcion && (
-            <div className="mt-1 text-sm" style={{ color: "var(--erp-text-soft)" }}>
+            <div className="mt-1" >
               {descripcion}
             </div>
           )}
         </div>
-        <div className="dashboard-kpi__icon flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg" style={{ background: "var(--erp-primary-soft)", color: "var(--erp-primary)" }}>
+        <div className="dashboard-kpi__icon flex h-10 w-10 shrink-0 items-center justify-center" >
           {icono}
         </div>
       </div>
@@ -123,26 +123,26 @@ function KpiCard({ icono, titulo, valor, descripcion }) {
 
 function ActividadCard({ actividad, total, porcentajeValor }) {
   return (
-    <div className="flex items-center gap-3 border-b px-4 py-3.5 last:border-b-0 transition-colors duration-150 hover:bg-[var(--erp-surface-soft)]" style={{ borderColor: "var(--erp-border)" }}>
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg" style={{ background: "var(--erp-primary-soft)" }}>
+    <div className="flex items-center gap-3 px-4 py-3.5" >
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center" >
         {actividad.icono}
       </div>
       <div className="min-w-0 flex-1">
-        <div className="text-sm font-semibold" style={{ color: "var(--erp-text)" }}>
+        <div >
           {actividad.nombre}
         </div>
-        <div className="mt-0.5 text-xs leading-relaxed" style={{ color: "var(--erp-text-soft)" }}>
+        <div className="mt-0.5" >
           {actividad.descripcion}
         </div>
       </div>
-      <div className="min-w-12 rounded-lg px-3 py-1 text-right text-lg font-bold tabular-nums" style={{ color: "var(--erp-primary)", background: "var(--erp-primary-soft)" }}>
+      <div className="min-w-12 px-3 py-1 tabular-nums" >
         {numero(total)}
       </div>
       <div className="dashboard-activity-inline" aria-label={actividad.nombre + ': ' + porcentaje(porcentajeValor) + ' del total'}>
-        <div className="dashboard-activity-track h-1.5 overflow-hidden rounded-full" style={{ background: "var(--erp-surface-soft)" }}>
-          <div className="dashboard-activity-bar h-full rounded-full" style={{ width: Math.min(Math.max(Number(porcentajeValor || 0), 0), 100) + "%", background: "var(--erp-primary)" }} />
+        <div className="dashboard-activity-track h-1.5 overflow-hidden" >
+          <div className="dashboard-activity-bar h-full" style={{ width: Math.min(Math.max(Number(porcentajeValor || 0), 0), 100) + "%" }}/>
         </div>
-        <span className="text-xs tabular-nums" style={{ color: "var(--erp-text-soft)" }}>{porcentaje(porcentajeValor)}</span>
+        <span className="tabular-nums" >{porcentaje(porcentajeValor)}</span>
       </div>
     </div>
   );
@@ -156,28 +156,28 @@ function FirmaCard({ icono, titulo, total, porcentajeValor }) {
   return (
     <div className="erp-card p-5">
       <div className="flex items-center gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-xl" style={{ background: "var(--erp-primary-soft)" }}>
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center" >
           {icono}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="text-sm font-semibold" style={{ color: "var(--erp-text)" }}>
+          <div >
             {titulo}
           </div>
-          <div className="mt-1 text-xs" style={{ color: "var(--erp-text-soft)" }}>
+          <div className="mt-1" >
             Firmas realizadas
           </div>
         </div>
-        <div className="text-right">
-          <div className="text-2xl font-bold" style={{ color: "var(--erp-text)" }}>
+        <div>
+          <div >
             {numero(total)}
           </div>
-          <div className="text-xs font-medium" style={{ color: "var(--erp-primary)" }}>
+          <div >
             {porcentaje(porcentajeValor)}
           </div>
         </div>
       </div>
-      <div className="mt-4 h-2 overflow-hidden rounded-full" style={{ background: "var(--erp-surface-soft)" }}>
-        <div className="h-full rounded-full transition-all duration-500" style={{ width: `${Math.min(Math.max(Number(porcentajeValor || 0), 0), 100)}%`, background: "var(--erp-primary)" }} />
+      <div className="mt-4 h-2 overflow-hidden" >
+        <div className="h-full" style={{ width: `${Math.min(Math.max(Number(porcentajeValor || 0), 0), 100)}%` }}/>
       </div>
     </div>
   );
@@ -189,13 +189,6 @@ function FirmaCard({ icono, titulo, total, porcentajeValor }) {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const fechaActual = new Intl.DateTimeFormat("es-ES", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date());
-
   const {
     totalExpedientes,
     expedientesPorActividad,
@@ -268,49 +261,18 @@ export default function Dashboard() {
   return (
     <div className="erp-page w-full dashboard-cancelagest molsan-page" aria-busy={loading}>
       {/* CABECERA UNIFICADA CON APODERAGEST Y NOTARGEST */}
-      <header className="ag-hero molsan-page-header dashboard-header" style={{ "--ag-muted": "#748198", "--ag-ink": "#17243a" }}>
-        <div className="ag-hero-identidad molsan-page-header__identity">
-          <div className="ag-marca cg-marca-cancelagest" aria-label="CancelaGest">CG</div>
-          <div>
-            <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
-            <h1>Dashboard</h1>
-            <p>Resumen operativo de expedientes, actividad del circuito y firmas realizadas.</p>
-          </div>
-        </div>
-        <div className="ag-hero-acciones molsan-page-header__actions">
-          <div className="ag-fecha-actual">
-            <span className="ag-punto-vivo" aria-hidden="true" />
-            <span>{fechaActual}</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigate("/modulos")}
-            className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"
-          >
-            <span aria-hidden="true">▦</span> Ir a módulos
-          </button>
-          <button
-            type="button"
-            className="ag-boton-actualizar"
-            onClick={cargarDashboard}
-            disabled={loading}
-          >
-            <span aria-hidden="true" className={loading ? "ag-icono-girando" : ""}>↻</span>
-            {loading ? "Actualizando…" : "Actualizar datos"}
-          </button>
-        </div>
-      </header>
+      <MolsanPageHeader mark="DB" title="Dashboard" description="Resumen operativo de expedientes, actividad del circuito y firmas realizadas." />
 
       {/* ERRORES DE CARGA */}
       {error && (
-        <div role="alert" aria-live="assertive" className="mb-6 rounded-xl border px-4 py-3 text-sm" style={{ borderColor: "#fecaca", background: "#fef2f2", color: "#b91c1c" }}>
-          <strong className="font-semibold">No se ha podido cargar el Dashboard.</strong>
+        <div role="alert" aria-live="assertive" className="mb-6 px-4 py-3" >
+          <strong>No se ha podido cargar el Dashboard.</strong>
           <div className="mt-1">{error}</div>
         </div>
       )}
       {errorFirmas && (
-        <div role="alert" aria-live="assertive" className="mb-6 rounded-xl border px-4 py-3 text-sm" style={{ borderColor: "#fed7aa", background: "#fff7ed", color: "#9a3412" }}>
-          <strong className="font-semibold">No se han podido cargar las firmas reales.</strong>
+        <div role="alert" aria-live="assertive" className="mb-6 px-4 py-3" >
+          <strong>No se han podido cargar las firmas reales.</strong>
           <div className="mt-1">{errorFirmas}</div>
         </div>
       )}
@@ -328,8 +290,8 @@ export default function Dashboard() {
       {/* ACTIVIDADES */}
       <section className="min-w-0">
         <div className="mb-4">
-          <h2 className="text-lg font-bold" style={{ color: "var(--erp-text)" }}>Expedientes por actividad</h2>
-          <p className="mt-1 text-sm" style={{ color: "var(--erp-text-soft)" }}>
+          <h2 >Expedientes por actividad</h2>
+          <p className="mt-1" >
             Situación actual de los expedientes dentro del circuito de trabajo.
           </p>
         </div>
@@ -349,10 +311,10 @@ export default function Dashboard() {
         {/* MEDIA DE FIRMA POR TIPO DE OPERACIÓN */}
         <section className="min-w-0">
           <div className="mb-4">
-            <h2 className="text-lg font-bold" style={{ color: "var(--erp-text)" }}>
+            <h2 >
               Tiempo medio hasta firma
             </h2>
-            <p className="mt-1 text-sm" style={{ color: "var(--erp-text-soft)" }}>
+            <p className="mt-1" >
               Tiempo medio desde la fecha de envío hasta la firma, agrupado por tipo de operación.
             </p>
           </div>
@@ -360,16 +322,16 @@ export default function Dashboard() {
           <div className="erp-card min-w-0 overflow-hidden">
             {Array.isArray(mediaFirmaPorTipoOperacion) && mediaFirmaPorTipoOperacion.length > 0 ? (
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[600px] text-sm">
+                <table className="w-full min-w-[600px]">
                   <thead>
-                    <tr className="border-b" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)" }}>
-                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--erp-text-soft)" }}>
+                    <tr >
+                      <th className="px-4 py-3 uppercase" >
                         Tipo de operación
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--erp-text-soft)" }}>
+                      <th className="px-4 py-3 uppercase" >
                         Expedientes firmados
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--erp-text-soft)" }}>
+                      <th className="px-4 py-3 uppercase" >
                         Media
                       </th>
                     </tr>
@@ -378,16 +340,16 @@ export default function Dashboard() {
                     {mediaFirmaPorTipoOperacion.map((fila, indice) => (
                       <tr
                         key={`${fila?.tipo_operacion || "sin-tipo"}-${indice}`}
-                        className="border-b last:border-b-0"
-                        style={{ borderColor: "var(--erp-border)" }}
+                       
+                        
                       >
-                        <td className="px-4 py-4 font-medium" style={{ color: "var(--erp-text)" }}>
+                        <td className="px-4 py-4" >
                           {fila?.tipo_operacion || "Sin tipo de operación"}
                         </td>
-                        <td className="px-4 py-4 text-right font-semibold" style={{ color: "var(--erp-text)" }}>
+                        <td className="px-4 py-4" >
                           {numero(fila?.expedientes_firmados)}
                         </td>
-                        <td className="px-4 py-4 text-right" style={{ color: "var(--erp-primary)" }}>
+                        <td className="px-4 py-4" >
                           {fila?.media_dias == null ? "—" : `${decimal(fila.media_dias, 1)} días`}
                         </td>
                       </tr>
@@ -396,12 +358,12 @@ export default function Dashboard() {
                 </table>
               </div>
             ) : (
-              <div className="px-5 py-10 text-center">
-                <div className="mb-2 text-3xl">📊</div>
-                <div className="text-sm font-medium" style={{ color: "var(--erp-text)" }}>
+              <div className="px-5 py-10">
+                <div className="mb-2">📊</div>
+                <div >
                   Todavía no hay datos de firmas por tipo de operación.
                 </div>
-                <div className="mt-1 text-xs" style={{ color: "var(--erp-text-soft)" }}>
+                <div className="mt-1" >
                   Los datos aparecerán cuando existan expedientes con fecha de envío y fecha de firma.
                 </div>
               </div>
@@ -418,8 +380,8 @@ export default function Dashboard() {
       {/* FIRMAS REALIZADAS */}
       <section className="min-w-0">
         <div className="mb-4 flex flex-col gap-1">
-          <h2 className="text-lg font-bold" style={{ color: "var(--erp-text)" }}>Firmas realizadas</h2>
-          <p className="text-sm" style={{ color: "var(--erp-text-soft)" }}>
+          <h2 >Firmas realizadas</h2>
+          <p >
             Distribución de las firmas realizadas según la modalidad seleccionada en el encargo al notario.
           </p>
         </div>
@@ -434,8 +396,8 @@ export default function Dashboard() {
 
       {/* NOTA TÉCNICA */}
       {!firmasRealizadas && (
-        <div className="mt-6 rounded-xl border px-4 py-3 text-xs" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)", color: "var(--erp-text-soft)" }}>
-          <strong style={{ color: "var(--erp-text)" }}>Firmas presenciales / videoconferencia:</strong>{" "}
+        <div className="mt-6 px-4 py-3" >
+          <strong >Firmas presenciales / videoconferencia:</strong>{" "}
           esta información quedará disponible cuando implementemos la ventana de encargo al notario y guardemos en el expediente la modalidad de firma seleccionada.
         </div>
       )}

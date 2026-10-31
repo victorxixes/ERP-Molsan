@@ -3,7 +3,6 @@ import {
   useCallback,
 } from "react";
 
-import "./EmpleadosModulo2026.css";
 
 import EmpleadosListado
   from "./EmpleadosListado";
@@ -69,30 +68,13 @@ export default function EmpleadosModulo2026() {
 
   return (
 
-    <div className="
-      erp-page
-      empleados-premium-page
-      space-y-6
-      animate-fade-in
-    ">
+    <div className="erp-page min-w-0 space-y-6">
 
       {/* =====================================================
           LISTADO
       ===================================================== */}
 
-      <section className="
-        erp-card
-        w-full
-        p-5
-      ">
-
-        <EmpleadosListado
-          onSeleccionar={
-            abrirFicha
-          }
-        />
-
-      </section>
+      <EmpleadosListado onSeleccionar={abrirFicha} />
 
 
       {/* =====================================================
