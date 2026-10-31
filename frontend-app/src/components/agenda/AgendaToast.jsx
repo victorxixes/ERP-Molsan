@@ -3,10 +3,9 @@ import { useAgendaStore } from "../../store/agendaStore";
 
 
 /**
- * AgendaToast — SJ-2026
+ * AgendaToast
  *
  * Notificaciones flotantes de Agenda.
- * - Glass UI
  * - Auto-limpieza del resaltado
  * - Cierre automático
  * - Sin useMemo innecesario
@@ -55,7 +54,7 @@ export default function AgendaToast() {
 
   return (
     <div
-      className="agenda-toast-premium 
+      className="agenda-toast 
  fixed
  bottom-6
  right-6
