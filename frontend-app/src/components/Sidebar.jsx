@@ -20,7 +20,7 @@ import Notificaciones from "../pages/notificaciones/Notificaciones.jsx";
 import SidebarPerfilModal from "./SidebarPerfilModal";
 
 
-import "../css/LayoutPortalesPremium.css";
+import "../css/SidebarBase.css";
 /**
  * ============================================================
  * ICONOS DE NAVEGACIÓN
