@@ -10,8 +10,8 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from cryptography.fernet import Fernet, InvalidToken
-from sqlalchemy import Column, ForeignKey, Integer, Table, and_, func, or_, text
-from sqlalchemy.orm import Session
+from sqlalchemy import Column, ForeignKey, Integer, Table, and_, case, cast, Float, func, or_, text
+from sqlalchemy.orm import Session, aliased
 from openpyxl import Workbook
 
 from backend.app.database import Base, get_db, engine
@@ -421,12 +421,82 @@ def listar_notarias(
     asociado: str | None = Query(None, description="Filtra por nombre, apellidos o NIF del notario asociado"),
     page: int = Query(1, ge=1),
     page_size: int = Query(15, ge=1, le=200),
+    sort_by: str | None = Query(None, max_length=40),
+    sort_order: str = Query("asc", regex="^(?i:asc|desc)$"),
     db: Session = Depends(get_db),
 ):
     query = _aplicar_filtros_notarias(db, provincia, municipio, vc, apoderado, q, asociado)
     total = query.count()
+
+    # Las columnas calculadas se ordenan en SQL antes de paginar. Así el orden
+    # es global y no cambia al avanzar entre páginas.
+    notaria_asociada = aliased(Notaria)
+    asociaciones_orden = (
+        db.query(
+            func.string_agg(
+                func.concat_ws(" ", notaria_asociada.nombre, notaria_asociada.apellidos),
+                ", ",
+            )
+        )
+        .select_from(
+            notarios_asociados_table.join(
+                notaria_asociada,
+                notaria_asociada.id == notarios_asociados_table.c.asociado_id,
+            )
+        )
+        .filter(notarios_asociados_table.c.notario_id == Notaria.id)
+        .correlate(Notaria)
+        .scalar_subquery()
+    )
+    tiene_acceso_encargagest = db.query(EncargoExternoUsuario.id).filter(
+        EncargoExternoUsuario.notaria_id == Notaria.id,
+        EncargoExternoUsuario.habilitado.is_(True),
+    ).exists()
+
+    # Las coordenadas históricas son texto; solo se convierten si tienen
+    # formato numérico válido, evitando errores por valores vacíos o corruptos.
+    lat_valida = Notaria.lat.op("~")(r"^-?[0-9]+(\\.[0-9]+)?$")
+    lng_valida = Notaria.lng.op("~")(r"^-?[0-9]+(\\.[0-9]+)?$")
+    latitud = case([(lat_valida, cast(Notaria.lat, Float))], else_=None)
+    longitud = case([(lng_valida, cast(Notaria.lng, Float))], else_=None)
+    lat_rad = func.radians(latitud)
+    lng_rad = func.radians(longitud)
+    lat_origen = func.radians(MOLSAN_LAT)
+    dlat = lat_rad - lat_origen
+    dlng = lng_rad - func.radians(MOLSAN_LNG)
+    haversine = (
+        func.power(func.sin(dlat / 2.0), 2)
+        + func.cos(lat_origen) * func.cos(lat_rad)
+        * func.power(func.sin(dlng / 2.0), 2)
+    )
+    distancia_orden = 2.0 * 6371.0 * func.asin(
+        func.sqrt(func.least(1.0, func.greatest(0.0, haversine)))
+    )
+
+    columnas_ordenables = {
+        "id": Notaria.id,
+        "nombre": Notaria.nombre,
+        "apellidos": Notaria.apellidos,
+        "nombre_completo": func.concat_ws(" ", Notaria.nombre, Notaria.apellidos),
+        "nif": Notaria.nif,
+        "municipio": Notaria.municipio,
+        "provincia": Notaria.provincia,
+        "vc": Notaria.vc,
+        "apoderado": Notaria.apoderado,
+        "notario_asociado": asociaciones_orden,
+        "notargest_habilitado": Notaria.notargest_habilitado,
+        "encargagest_habilitado": case([(tiene_acceso_encargagest, 1)], else_=0),
+        "distancia_km": distancia_orden,
+    }
+    columna_orden = columnas_ordenables.get(sort_by)
+    if columna_orden is None:
+        orden_query = (Notaria.apellidos.asc().nullslast(), Notaria.nombre.asc().nullslast())
+    else:
+        criterio = columna_orden.asc() if sort_order.lower() == "asc" else columna_orden.desc()
+        orden_query = (criterio.nullslast(), Notaria.id.asc())
+
     filas = (
-        query.order_by(Notaria.apellidos.asc().nullslast(), Notaria.nombre.asc().nullslast())
+        query.order_by(*orden_query)
         .offset((page - 1) * page_size)
         .limit(page_size)
         .all()
