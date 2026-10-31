@@ -861,7 +861,7 @@ export default function AutocompleteNotario({
                     {n.codigo && (
 
                       <span
-                        className=""
+                       
                       >
                         {n.codigo}
                       </span>
