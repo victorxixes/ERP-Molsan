@@ -53,9 +53,14 @@
   background: rgba(6, 70, 117, .025);
 }
 
-/* Los modales con semántica accesible comparten la misma superficie,
-   aunque su contenido se monte en un portal React fuera de #root. */
-body :where([role="dialog"]:not([data-molsan-style-exempt])) {
+/* Los paneles con semántica accesible comparten la misma superficie,
+   aunque se monten en un portal React fuera de #root.
+   IMPORTANTE: varios módulos usan role="dialog" en la capa fixed/inset-0
+   que oscurece la pantalla. Esa capa no es el panel y debe conservar
+   su fondo, geometría y comportamiento de scroll originales. */
+body :where(
+  [role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal)
+) {
   color: var(--molsan-text, #18364b);
   background-color: #fff;
   border-color: var(--molsan-border, #d8e4ec);
@@ -63,7 +68,7 @@ body :where([role="dialog"]:not([data-molsan-style-exempt])) {
   box-shadow: var(--molsan-shadow-modal, 0 18px 48px rgba(6, 40, 65, .18));
 }
 
-body :where([role="dialog"]:not([data-molsan-style-exempt])) :where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
+body :where([role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal)) :where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
   box-sizing: border-box;
   max-width: 100%;
   color: var(--molsan-text, #18364b);
@@ -74,20 +79,20 @@ body :where([role="dialog"]:not([data-molsan-style-exempt])) :where(input:not([t
   font-size: var(--molsan-font-size-sm, .8125rem);
 }
 
-body :where([role="dialog"]:not([data-molsan-style-exempt])) :where(input, select, textarea):focus {
+body :where([role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal)) :where(input, select, textarea):focus {
   border-color: var(--molsan-blue, #064675);
   outline: 0;
   box-shadow: 0 0 0 3px rgba(6, 70, 117, .13);
 }
 
-body :where([role="dialog"]:not([data-molsan-style-exempt])) :where(table) {
+body :where([role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal)) :where(table) {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
   color: var(--molsan-text, #18364b);
 }
 
-body :where([role="dialog"]:not([data-molsan-style-exempt])) :where(table thead th) {
+body :where([role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal)) :where(table thead th) {
   color: var(--molsan-blue, #064675);
   background: var(--molsan-table-head, #eaf2f8);
   border-bottom: 1px solid var(--molsan-border, #d8e4ec);
@@ -99,7 +104,7 @@ body :where([role="dialog"]:not([data-molsan-style-exempt])) :where(table thead 
     overflow-wrap: anywhere;
   }
 
-  body :where([role="dialog"]:not([data-molsan-style-exempt])) {
+  body :where([role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal)) {
     max-width: calc(100vw - 20px);
     max-height: calc(100dvh - 20px);
     overflow: auto;
