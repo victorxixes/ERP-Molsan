@@ -755,7 +755,7 @@ export default function Mensajes({
               <div>
 
                 <h2
-                  className=""
+                 
                 >
                   Mensajes
                 </h2>
@@ -793,7 +793,7 @@ export default function Mensajes({
                   />
 
                   <span
-                    className=""
+                   
                   >
                     {conectadosFiltrados.length}
                   </span>
@@ -865,7 +865,7 @@ export default function Mensajes({
                 </div>
 
                 <p
-                  className=""
+                 
                 >
                   No hay empleados
                   conectados
@@ -1058,7 +1058,7 @@ export default function Mensajes({
                     {/* FLECHA */}
 
                     <span
-                      className=""
+                     
                     >
                       ›
                     </span>
@@ -1133,7 +1133,7 @@ export default function Mensajes({
 
 
                 <h2
-                  className=""
+                 
                 >
                   Mensajería interna
                 </h2>
@@ -1227,7 +1227,7 @@ export default function Mensajes({
                       </div>
 
                       <p
-                        className=""
+                       
                       >
                         No hay mensajes todavía
                       </p>
