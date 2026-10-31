@@ -96,7 +96,7 @@ export default function PanelTecnico() {
               <div>
 
                 <h1
-                  className=""
+                 
                 >
                   Panel Técnico
                 </h1>
@@ -148,7 +148,7 @@ export default function PanelTecnico() {
         <div className="mb-4">
 
           <h2
-            className=""
+           
           >
             Monitor del sistema
           </h2>
@@ -175,7 +175,7 @@ export default function PanelTecnico() {
         <div className="mb-4">
 
           <h2
-            className=""
+           
           >
             Auditoría
           </h2>
@@ -202,7 +202,7 @@ export default function PanelTecnico() {
         <div className="mb-4">
 
           <h2
-            className=""
+           
           >
             Logs técnicos
           </h2>
@@ -231,7 +231,7 @@ export default function PanelTecnico() {
           <div className="mb-4">
 
             <h2
-              className=""
+             
             >
               Gestión de empleados
             </h2>
@@ -277,7 +277,7 @@ export default function PanelTecnico() {
               <div>
 
                 <h3
-                  className=""
+                 
                 >
                   Empleados 2026
                 </h3>
