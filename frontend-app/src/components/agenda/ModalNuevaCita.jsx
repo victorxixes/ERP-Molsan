@@ -1040,8 +1040,8 @@ export default function ModalNuevaCita({
                     ${
                       notarioSeleccionado.tipo_firma ===
                       "Videoconferencia"
-                        ? "bg-purple-100 text-purple-700"
-                        : "bg-sky-100 text-sky-700"
+                        ? ""
+                        : ""
                     }
                   `}
                 >
