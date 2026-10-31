@@ -744,28 +744,28 @@ function CeldaRepositorioDigital({ expedienteId, repositorioKey, valor, onAbrir 
         <div className="absolute z-50 left-0 top-full mt-2 w-[min(560px,80vw)] p-3" onMouseEnter={() => setHover(true)}>
           <div className="mb-2 flex items-center justify-between gap-2">
             <strong className="">{REPOSITORIOS_CARPETA_DIGITAL.find((item) => item.key === repositorioKey)?.label || "Documentos"}</strong>
-            <span className="" {cantidad} archivo(s)</span>
+            <span>{cantidad} archivo(s)</span>
           </div>
-          {cargandoDocs ? <p className="">Cargando documentos…</p> : errorDocs ? <p className="">{errorDocs}</p> : documentos.length === 0 ? <p className="" No se han podido localizar los archivos de esta categoría.</p> : (
+          {cargandoDocs ? <p className="">Cargando documentos…</p> : errorDocs ? <p className="">{errorDocs}</p> : documentos.length === 0 ? <p>No se han podido localizar los archivos de esta categoría.</p> : (
             <div className="grid gap-3 sm:grid-cols-[minmax(140px,0.8fr)_minmax(0,1.4fr)]">
               <div className="max-h-56 space-y-1 overflow-auto">
                 {documentos.map((doc) => (
                   <button key={doc.id} type="button" onMouseEnter={() => previsualizar(doc)} onFocus={() => previsualizar(doc)} onClick={() => previsualizar(doc)} className="block w-full px-2 py-2" title={doc.nombre_original || "Ver documento"}>
                     <span className="mr-1" aria-hidden="true">📄</span>{doc.nombre_original || "Documento"}
-                    {doc.fecha_subida && <span className="mt-1 block" {new Date(doc.fecha_subida).toLocaleDateString("es-ES")}</span>}
+                    {doc.fecha_subida && <span className="mt-1 block">{new Date(doc.fecha_subida).toLocaleDateString("es-ES")}</span>}
                   </button>
                 ))}
               </div>
-              <div className="min-h-40 overflow-hidden" 
+              <div className="min-h-40 overflow-hidden">
                 {cargandoPreview ? <p className="p-3">Preparando vista previa…</p> : previewUrl ? (
                   previewNombre.toLowerCase().endsWith(".pdf") || documentos.find((doc) => doc.nombre_original === previewNombre)?.tipo_mime === "application/pdf" ? (
                     <iframe title={`Vista previa de ${previewNombre}`} src={previewUrl} className="h-56 w-full" />
                   ) : <div className="p-3">Vista previa disponible para PDF. Pulsa el icono para abrir la carpeta y descargar este archivo.</div>
-                ) : <p className="p-3" Pasa el ratón por un PDF para ver su contenido aquí.</p>}
+                ) : <p className="p-3">Pasa el ratón por un PDF para ver su contenido aquí.</p>}
               </div>
             </div>
           )}
-          <p className="mt-2" Pulsa el icono para abrir la carpeta digital completa.</p>
+          <p className="mt-2">Pulsa el icono para abrir la carpeta digital completa.</p>
         </div>
       )}
     </div>
