@@ -1042,8 +1042,7 @@ export default function EmpleadosListado({
             <span className="pointer-events-none
  absolute
  left-4
- top-1/2
- -translate-y-1/2">
+ top-1/2">
               ⌕
             </span>
 
@@ -1269,12 +1268,10 @@ export default function EmpleadosListado({
                     </div>
                   </div>
                   <span
-                    className={`
-                      shrink-0 rounded-full border px-2.5 py-1 text-xs font-semibold
-                      ${empleado.activo
-                        ? ""
-                        : ""}
-                    `}
+                    className={`shrink-0 px-2.5 py-1 
+ ${empleado.activo
+ ? ""
+ : ""}`}
                   >
                     {empleado.activo ? "Activo" : "Inactivo"}
                   </span>
