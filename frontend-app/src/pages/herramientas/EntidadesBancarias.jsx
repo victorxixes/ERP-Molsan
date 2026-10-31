@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import {
   useEffect,
   useMemo,
@@ -1525,164 +1526,20 @@ export default function EntidadesBancarias() {
       className="erp-page min-w-0 space-y-6"
     >
 
-      {/* =====================================================
-          CABECERA
-      ===================================================== */}
-
-      <div
-        className="molsan-subpage-header relative
- overflow-hidden
- 
- 
- 
- 
- p-6 sm:p-7"
-      >
-
-        <div
-          className="absolute
- inset-x-0
- top-0
- h-px"
-        />
-
-
-        <div
-          className="relative
- flex
- flex-col
- gap-5
- lg:flex-row
- lg:items-center
- lg:justify-between"
-        >
-
-          <div
-            className="flex
- items-center
- gap-4"
-          >
-
-            <div
-              className="flex
- h-14
- w-14
- shrink-0
- items-center
- justify-center"
-            >
-              🏦
-            </div>
-
-
-            <div>
-
-              <h1
-               
-              >
-                Entidades Bancarias
-              </h1>
-
-
-              <p
-                className="mt-1"
-              >
-                Maestro de entidades de crédito,
-                instituciones financieras y datos bancarios.
-              </p>
-
-            </div>
-
-          </div>
-
-
-          {/* =================================================
-              BOTONES
-          ================================================= */}
-
-          <div
-            className="flex
- flex-col
- gap-2
- sm:flex-row"
-          >
-
-            <button
-              type="button"
-              onClick={
-                abrirImportacionExcel
-              }
-              className="inline-flex
- items-center
- justify-center
- gap-2
- 
- 
- 
- 
- px-5
- py-2.5"
-            >
-
-              <span>
-                📊
-              </span>
-
-              Importar Excel
-
-            </button>
-
-
-            <button
-              type="button"
-              onClick={descargarExcel}
-              disabled={cargando || entidadesOrdenadas.length === 0}
-             
-              title="Descargar el catálogo filtrado en Excel"
-            >
-              <span className="molsan-export-excel__icon" aria-hidden="true">📗</span>
-              Exportar a Excel
-            </button>
-
-
-            <button
-              type="button"
-              onClick={
-                abrirNuevo
-              }
-              className="inline-flex
- items-center
- justify-center
- gap-2
- 
- 
- px-5
- py-2.5"
-            >
-
-              <span>
-                +
-              </span>
-
-              Nueva entidad
-
-            </button>
-
-          </div>
-
-        </div>
-
+      <MolsanPageHeader mark="EB" title="Entidades bancarias" description="Maestro de entidades de crédito, instituciones financieras y datos bancarios." />
+      <div className="molsan-filter-bar flex flex-wrap justify-end gap-2 p-3">
+        <button type="button" onClick={abrirImportacionExcel} className="molsan-btn molsan-btn--secondary">📊 Importar Excel</button>
+        <button type="button" onClick={descargarExcel} disabled={cargando || entidadesOrdenadas.length === 0} title="Descargar el catálogo filtrado en Excel" className="molsan-btn molsan-btn--secondary"><span className="molsan-export-excel__icon" aria-hidden="true">📗</span> Exportar a Excel</button>
+        <button type="button" onClick={abrirNuevo} className="molsan-btn molsan-btn--primary">＋ Nueva entidad</button>
       </div>
 
-
-      {/* =====================================================
           MENSAJE
       ===================================================== */}
 
       {mensaje && (
 
         <div
-          className={`px-4
+          className={`erp-alert px-4
  py-3
  
  
@@ -1705,7 +1562,7 @@ export default function EntidadesBancarias() {
       {error && (
 
         <div
-          className="px-5
+          className="erp-alert erp-alert-danger px-5
  py-4"
         >
           {error}
@@ -1719,7 +1576,7 @@ export default function EntidadesBancarias() {
       ===================================================== */}
 
       <div
-        className="p-5"
+        className="molsan-filter-bar p-5"
       >
 
         <div
