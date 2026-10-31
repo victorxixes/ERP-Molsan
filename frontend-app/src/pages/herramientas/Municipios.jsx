@@ -1560,15 +1560,7 @@ export default function Municipios() {
  
  
  px-5
- py-2.5
- 
- 
- 
- 
- 
- 
- 
- hover:-translate-y-0.5"
+ py-2.5"
             >
 
               <span className="">
@@ -1592,14 +1584,7 @@ export default function Municipios() {
  
  
  px-5
- py-2.5
- 
- 
- 
- 
- 
- 
- hover:-translate-y-0.5"
+ py-2.5"
             >
 
               <span className="">
@@ -1624,18 +1609,14 @@ export default function Municipios() {
       {mensaje && (
 
         <div
-          className={`
-            rounded-2xl
-            border
-            px-4 py-3
-            text-sm
-            font-medium
-            ${
-              tipoMensaje === "error"
-                ? ""
-                : ""
-            }
-          `}
+          className={`px-4 py-3
+ 
+ 
+ ${
+ tipoMensaje === "error"
+ ? ""
+ : ""
+ }`}
         >
           {mensaje}
         </div>
@@ -1696,8 +1677,7 @@ export default function Municipios() {
                 className="pointer-events-none
  absolute
  left-3
- top-1/2
- -translate-y-1/2"
+ top-1/2"
               >
                 🔎
               </span>
