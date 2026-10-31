@@ -217,19 +217,17 @@ function NivelBadge({
   return (
 
     <span
-      className={`
-        inline-flex
-        items-center
-        gap-1.5
-        px-2.5
-        py-1
-        rounded-lg
-        border
-        text-[11px]
-        font-semibold
-        whitespace-nowrap
-        ${configuracion.classes}
-      `}
+      className={`inline-flex
+ items-center
+ gap-1.5
+ px-2.5
+ py-1
+ 
+ 
+ 
+ 
+ whitespace-nowrap
+ ${configuracion.classes}`}
     >
 
       <Icono
@@ -343,14 +341,11 @@ function CabeceraOrden({
         {titulo}
 
         <span
-          className={`
-            text-[10px]
-            ${
-              activa
-                ? ""
-                : ""
-            }
-          `}
+          className={`${
+ activa
+ ? ""
+ : ""
+ }`}
         >
 
           {activa
@@ -1145,7 +1140,7 @@ export default function SeguridadLogs() {
                 className="absolute
  left-3
  top-1/2
- -translate-y-1/2
+ 
  w-4
  h-4"
               />
