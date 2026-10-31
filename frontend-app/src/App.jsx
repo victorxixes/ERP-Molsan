@@ -324,7 +324,7 @@ export default function App() {
 
   return (
 
-    <div className="">
+    <div>
       <AppErrorBoundary>
 
       {empleado && token ? <RealtimeGlobal /> : null}
