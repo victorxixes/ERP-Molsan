@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios from "../../api/axios";
 
 const VACIO = {
@@ -80,18 +81,8 @@ export default function DatosMolsan() {
   };
 
   return (
-    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden p-6 sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1" />
-        <div className="flex items-start gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center">🏢</div>
-          <div>
-            <p className="uppercase">Utilidades · Configuración corporativa</p>
-            <h1 className="mt-2">Datos Molsan</h1>
-            <p className="mt-2 max-w-3xl">Guarda los datos oficiales de la empresa en un único lugar para reutilizarlos en documentos y facturación. No introducimos valores por defecto para evitar datos fiscales incorrectos.</p>
-          </div>
-        </div>
-      </header>
+    <div className="erp-page min-h-full space-y-6">
+      <MolsanPageHeader mark="DM" title="Datos Molsan" description="Datos corporativos oficiales para reutilizar en documentos y facturación, sin valores fiscales inventados." />
 
       {cargando ? <div className="p-6">Cargando configuración…</div> : (
         <form onSubmit={guardar} className="space-y-5">

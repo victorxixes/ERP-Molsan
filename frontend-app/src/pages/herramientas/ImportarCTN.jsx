@@ -1,4 +1,5 @@
 import { useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useUtilidades } from "../../hooks/useUtilidades";
 
 /**
@@ -17,7 +18,7 @@ export default function ImportarCTN() {
   };
 
   return (
-    <div className="min-h-full p-4 sm:p-6 lg:p-8 space-y-6">
+    <div className="erp-page min-h-full space-y-6">
 
       {/* =====================================================
           CABECERA

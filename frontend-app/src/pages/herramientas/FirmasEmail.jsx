@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
 
@@ -41,17 +42,8 @@ export default function FirmasEmail() {
     }
   }
 
-  return <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-    <header className="relative overflow-hidden p-6 sm:p-7">
-      <div className="absolute inset-x-0 top-0 h-1" />
-      <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <Link to="/herramientas/catalogos">← Volver a Catálogos</Link>
-          <h1 className="mt-2">Firma corporativa de email</h1>
-          <p className="mt-1">Configura el pie común que acompaña a la firma personal del empleado remitente.</p>
-        </div>
-      </div>
-    </header>
+  return <main className="erp-page min-h-full space-y-6">
+    <MolsanPageHeader mark="FE" title="Firmas y plantillas de email" description="Configura las firmas corporativas y plantillas de comunicación del ERP." />
     {error && <div role="alert" className="px-4 py-3">{error}</div>}
     {mensaje && <div role="status" className="px-4 py-3">{mensaje}</div>}
     {cargando ? <div className="p-8">Cargando configuración…</div> : <section className="p-5 sm:p-6 space-y-5">
