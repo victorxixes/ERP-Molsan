@@ -780,7 +780,7 @@ export default function ModalNuevaCita({
           <div>
 
             <h2
-              className=""
+             
             >
               {titulo}
             </h2>
@@ -1007,7 +1007,7 @@ export default function ModalNuevaCita({
                 <div>
 
                   <h3
-                    className=""
+                   
                   >
                     {
                       notarioSeleccionado.nombre
@@ -1062,7 +1062,7 @@ export default function ModalNuevaCita({
                 <p>
 
                   <strong
-                    className=""
+                   
                   >
                     NIF:
                   </strong>{" "}
@@ -1078,7 +1078,7 @@ export default function ModalNuevaCita({
                 <p>
 
                   <strong
-                    className=""
+                   
                   >
                     Teléfono:
                   </strong>{" "}
@@ -1094,7 +1094,7 @@ export default function ModalNuevaCita({
                 <p>
 
                   <strong
-                    className=""
+                   
                   >
                     Provincia:
                   </strong>{" "}
@@ -1110,7 +1110,7 @@ export default function ModalNuevaCita({
                 <p>
 
                   <strong
-                    className=""
+                   
                   >
                     Municipio:
                   </strong>{" "}
@@ -1126,7 +1126,7 @@ export default function ModalNuevaCita({
                 <p>
 
                   <strong
-                    className=""
+                   
                   >
                     CP:
                   </strong>{" "}
@@ -1142,7 +1142,7 @@ export default function ModalNuevaCita({
                 <p>
 
                   <strong
-                    className=""
+                   
                   >
                     Distancia:
                   </strong>{" "}
@@ -1164,7 +1164,7 @@ export default function ModalNuevaCita({
                 <p>
 
                   <strong
-                    className=""
+                   
                   >
                     Apoderado:
                   </strong>{" "}
@@ -1182,7 +1182,7 @@ export default function ModalNuevaCita({
                 >
 
                   <strong
-                    className=""
+                   
                   >
                     Dirección:
                   </strong>{" "}
