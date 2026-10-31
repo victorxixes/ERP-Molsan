@@ -750,7 +750,6 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       <div className=" molsan-page-header__identity">
         <div className=" ng-marca-notargest" aria-label="NotarGest">NG</div>
         <div>
-          <div className="">MOLSAN ERP · PREMIUM 2027</div>
           <h1 className="molsan-page-header__title">NotarGest</h1>
           <p className="molsan-page-header__description">Centro de gestión notarial, firmas y seguimiento registral.</p>
         </div>
