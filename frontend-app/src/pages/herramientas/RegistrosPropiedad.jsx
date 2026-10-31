@@ -1756,13 +1756,7 @@ export default function RegistrosPropiedad() {
  
  
  px-5
- py-2.5
- 
- 
- 
- 
- 
- hover:-translate-y-0.5"
+ py-2.5"
             >
 
               <span className="">
@@ -1786,13 +1780,7 @@ export default function RegistrosPropiedad() {
  
  
  px-5
- py-2.5
- 
- 
- 
- 
- 
- hover:-translate-y-0.5"
+ py-2.5"
             >
 
               <span className="">
@@ -1817,19 +1805,15 @@ export default function RegistrosPropiedad() {
       {mensaje && (
 
         <div
-          className={`
-            rounded-2xl
-            border
-            px-4
-            py-3
-            text-sm
-            font-medium
-            ${
-              tipoMensaje === "error"
-                ? ""
-                : ""
-            }
-          `}
+          className={`px-4
+ py-3
+ 
+ 
+ ${
+ tipoMensaje === "error"
+ ? ""
+ : ""
+ }`}
         >
           {mensaje}
         </div>
@@ -1891,8 +1875,7 @@ export default function RegistrosPropiedad() {
                 className="pointer-events-none
  absolute
  left-3
- top-1/2
- -translate-y-1/2"
+ top-1/2"
               >
                 🔎
               </span>
@@ -4055,21 +4038,19 @@ function ModalRegistroPropiedad({
                           true
                         )
                       }
-                      className={`
-                        flex-1
-                        rounded-xl
-                        border
-                        px-4
-                        py-2.5
-                        text-sm
-                        font-semibold
-                        transition
-                        ${
-                          formulario.tiene_of_liq
-                            ? ""
-                            : ""
-                        }
-                      `}
+                      className={`flex-1
+ 
+ 
+ px-4
+ py-2.5
+ 
+ 
+ 
+ ${
+ formulario.tiene_of_liq
+ ? ""
+ : ""
+ }`}
                     >
                       Sí
                     </button>
@@ -4082,21 +4063,19 @@ function ModalRegistroPropiedad({
                           false
                         )
                       }
-                      className={`
-                        flex-1
-                        rounded-xl
-                        border
-                        px-4
-                        py-2.5
-                        text-sm
-                        font-semibold
-                        transition
-                        ${
-                          !formulario.tiene_of_liq
-                            ? ""
-                            : ""
-                        }
-                      `}
+                      className={`flex-1
+ 
+ 
+ px-4
+ py-2.5
+ 
+ 
+ 
+ ${
+ !formulario.tiene_of_liq
+ ? ""
+ : ""
+ }`}
                     >
                       No
                     </button>
