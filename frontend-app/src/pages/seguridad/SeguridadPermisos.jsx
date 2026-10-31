@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import {
   useCallback,
   useMemo,
@@ -700,71 +701,12 @@ export default function SeguridadPermisos() {
       className="erp-page w-full space-y-4"
     >
 
-      {/* CABECERA */}
-
-      <div
-        className="molsan-subpage-header flex
- flex-col
- gap-4
- 
- 
- 
- 
- p-5
- 
- md:flex-row
- md:items-center
- md:justify-between"
-      >
-
-        <div
-          className="flex
- items-center
- gap-3"
-        >
-
-          <div
-            className="flex
- h-11
- w-11
- shrink-0
- items-center
- justify-center"
-          >
-            🔑
-          </div>
-
-          <div>
-
-            <p
-              className="uppercase"
-            >
-              Centro de seguridad
-            </p>
-
-            <h2
-              className="mt-1"
-            >
-              Permisos por módulo
-            </h2>
-
-            <p
-              className="mt-0.5"
-            >
-              {empleado?.nombre || "Empleado"}
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <Chip tone="primary">
-          {porcentajeAsignado}% cobertura
-        </Chip>
-
-      </div>
-
+      <MolsanPageHeader
+        mark="SE"
+        title="Permisos por módulo"
+        description={empleado?.nombre || "Empleado"}
+      />
+      <div className="flex justify-end"><Chip tone="primary">{porcentajeAsignado}% cobertura</Chip></div>
 
       {/* RESUMEN */}
 
