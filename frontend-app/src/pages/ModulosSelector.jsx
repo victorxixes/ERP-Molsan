@@ -239,7 +239,7 @@ export default function ModulosSelector() {
             M
           </div>
           <div>
-            <p className="">
+            <p>
               MOLSAN ERP
             </p>
             <h1 className="mt-1">
@@ -271,7 +271,7 @@ export default function ModulosSelector() {
       </header>
 
       <div className="mb-5">
-        <p className="">
+        <p>
           TUS APLICACIONES
         </p>
         <div className="mt-3 h-px" />
@@ -279,7 +279,7 @@ export default function ModulosSelector() {
 
       {modulosDisponibles.length === 0 ? (
         <section className="p-6">
-          <h2 className="">
+          <h2>
             No hay módulos disponibles para esta cuenta
           </h2>
           <p className="mt-2">
@@ -342,10 +342,10 @@ export default function ModulosSelector() {
                 </p>
 
                 <div className="mt-auto flex items-center justify-between pt-4">
-                  <span className="">
+                  <span>
                     Abrir aplicación
                   </span>
-                  <span className="">
+                  <span>
                     →
                   </span>
                 </div>
@@ -364,7 +364,7 @@ export default function ModulosSelector() {
           <section ref={soporteDialogRef} tabIndex={-1} className="flex max-h-[min(86vh,760px)] w-full max-w-2xl flex-col overflow-hidden" role="dialog" aria-modal="true" aria-labelledby="soporte-notaria-titulo">
             <header className="flex items-start justify-between gap-4 px-6 py-5">
               <div>
-                <p className="">ACCESO DE SOPORTE</p>
+                <p>ACCESO DE SOPORTE</p>
                 <h2 id="soporte-notaria-titulo" className="mt-1">{modalSoporte === "notargest" ? "NotarGest – Notarios" : "EncargaGest – Notarios"}</h2>
                 <p className="mt-1">Solo aparecen notarías con el acceso a este portal habilitado.</p>
               </div>
