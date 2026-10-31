@@ -1021,11 +1021,7 @@ function Dato({
  
  
  ${compacto ? "px-1.5 py-1.5" : "px-2 py-2"}
- ${
- destaque
- ? "border-blue-100 
- : "border-slate-100 
- }`}
+ `}
     >
       <p
         className="mb-1
@@ -9542,11 +9538,7 @@ function CheckboxVision({
  
  p-4
  
- ${
- checked
- ? "border-blue-200 
- : "border-slate-200 
- }`}
+ `}
     >
 
       <input
