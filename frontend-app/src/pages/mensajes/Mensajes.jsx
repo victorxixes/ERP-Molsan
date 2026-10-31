@@ -1376,11 +1376,10 @@ export default function Mensajes({
                   {/* ARCHIVO */}
 
                   <label
-                    className="flex
+                    className="molsan-chat-attach flex
  h-11
  w-11
  shrink-0
- 
  items-center
  justify-center"
                     title="Adjuntar archivo"
