@@ -572,7 +572,7 @@ export default function CarpetaDigitalModal({
               {notaIntegracionRepositorio(categoria)}
             </div>
           )}
-          <label className={`inline-flex shrink-0 cursor-pointer items-center rounded-md border px-2 py-1 text-[11px] font-bold ${subiendo === categoria ? "border-slate-200 bg-slate-100 text-slate-500" : "border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100"}`}>
+          <label className={`inline-flex shrink-0 cursor-pointer items-center rounded-md border px-2 py-1 text-[11px] font-bold ${subiendo === categoria ? "" : ""}`}>
             {subiendo === categoria ? "Subiendo…" : "＋ Adjuntar"}
             <input className="hidden" type="file" accept=".pdf,application/pdf" multiple onChange={(event) => subir(event, categoria)} disabled={!!subiendo} />
           </label>
@@ -580,7 +580,7 @@ export default function CarpetaDigitalModal({
         {lista.length > 0 ? (
           <ul className="mt-2 divide-y divide-slate-100">
             {lista.map((doc) => (
-              <li key={doc.id} className={`flex min-w-0 flex-wrap items-center gap-2 rounded-md px-1 py-2 ${documentoVistaPrevia?.id === doc.id ? "bg-indigo-50" : ""}`}>
+              <li key={doc.id} className={`flex min-w-0 flex-wrap items-center gap-2 rounded-md px-1 py-2 ${documentoVistaPrevia?.id === doc.id ? "" : ""}`}>
                 <button type="button" onClick={() => verDocumento(doc)} className="min-w-0 flex-1" title={doc.nombre_original}>
                   <span className="block truncate">{doc.nombre_original}</span>
                   <span className="block">{bytes(doc.tamano_bytes || 0)}{doc.fecha_subida ? ` · ${new Date(doc.fecha_subida).toLocaleString("es-ES")}` : ""}</span>
@@ -603,14 +603,14 @@ export default function CarpetaDigitalModal({
     const cantidad = contarBloque(bloque);
     return (
       <section key={bloque.id} className="overflow-hidden">
-        <button type="button" onClick={() => { if (modoActividad) setPanelDocumentosVisible(false); else setBloquesAbiertos((prev) => ({ ...prev, [bloque.id]: !prev[bloque.id] })); }} aria-expanded={modoActividad ? panelDocumentosVisible : abierto} title={modoActividad ? "Ocultar carpeta digital hacia la izquierda" : abierto ? "Contraer repositorios" : "Mostrar repositorios"} className={`flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left transition ${abierto ? "bg-slate-50" : "bg-white hover:bg-slate-50"}`}>
+        <button type="button" onClick={() => { if (modoActividad) setPanelDocumentosVisible(false); else setBloquesAbiertos((prev) => ({ ...prev, [bloque.id]: !prev[bloque.id] })); }} aria-expanded={modoActividad ? panelDocumentosVisible : abierto} title={modoActividad ? "Ocultar carpeta digital hacia la izquierda" : abierto ? "Contraer repositorios" : "Mostrar repositorios"} className={`flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left transition ${abierto ? "" : ""}`}>
           <span className="flex min-w-0 items-center gap-3">
-            <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${cantidad ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{cantidad}</span>
+            <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${cantidad ? "" : ""}`}>{cantidad}</span>
             <span className="min-w-0"><span className="block">{bloque.titulo}</span><span className="block truncate">{bloque.descripcion}</span></span>
           </span>
           <span className="shrink-0">{modoActividad ? "‹" : abierto ? "⌃" : "⌄"}</span>
         </button>
-        {abierto && <div className={"grid grid-cols-1 gap-2 border-t border-slate-100 bg-slate-50/50 p-2 sm:p-3 " + (modoActividad ? "" : "sm:grid-cols-2 xl:grid-cols-4")}>{bloque.categorias.map(renderCategoria)}</div>}
+        {abierto && <div className={"grid grid-cols-1 gap-2 p-2 sm:p-3" + (modoActividad ? "" : "sm:grid-cols-2 xl:grid-cols-4")}>{bloque.categorias.map(renderCategoria)}</div>}
       </section>
     );
   };
@@ -675,10 +675,10 @@ export default function CarpetaDigitalModal({
                 const cantidad = cantidadActividad(bloque);
                 const activo = actividadPrincipal === bloque.id;
                 return (
-                  <button key={bloque.id} type="button" onClick={() => seleccionarActividad(bloque.id)} aria-current={activo ? "page" : undefined} className={`flex w-full items-center gap-3 rounded-xl border px-3 py-3 text-left transition ${activo ? "border-indigo-300 bg-indigo-50 shadow-sm ring-1 ring-indigo-100" : "border-slate-200 bg-white hover:border-indigo-200 hover:bg-slate-50"}`}>
-                    <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${cantidad ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{cantidad}</span>
-                    <span className="min-w-0 flex-1"><span className={`block text-xs font-extrabold ${activo ? "text-indigo-900" : "text-slate-700"}`}>{bloque.titulo}</span><span className="mt-0.5 block">{bloque.categorias.length} categorías</span></span>
-                    <span className={`text-xs ${activo ? "text-indigo-600" : "text-slate-400"}`}>›</span>
+                  <button key={bloque.id} type="button" onClick={() => seleccionarActividad(bloque.id)} aria-current={activo ? "page" : undefined} className={`flex w-full items-center gap-3 rounded-xl border px-3 py-3 text-left transition ${activo ? "" : ""}`}>
+                    <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${cantidad ? "" : ""}`}>{cantidad}</span>
+                    <span className="min-w-0 flex-1"><span className={`block text-xs font-extrabold ${activo ? "" : ""}`}>{bloque.titulo}</span><span className="mt-0.5 block">{bloque.categorias.length} categorías</span></span>
+                    <span className={`text-xs ${activo ? "" : ""}`}>›</span>
                   </button>
                 );
               })}
@@ -892,7 +892,7 @@ export default function CarpetaDigitalModal({
   return (
     <>
       <div
-        className={modoActividad ? "carpeta-digital-premium panel-modal-premium w-full space-y-3" : "carpeta-digital-premium panel-modal-premium fixed inset-0 z-[10000] flex items-center justify-center bg-slate-950/70 p-3 sm:p-6"}
+        className={modoActividad ? "carpeta-digital-premium panel-modal-premium w-full space-y-3" : "carpeta-digital-premium panel-modal-premium fixed inset-0 z-[10000] flex items-center justify-center p-3 sm:p-6"}
         onMouseDown={(event) => {
           if (!modoActividad && event.target === event.currentTarget) onClose?.();
         }}
@@ -903,7 +903,7 @@ export default function CarpetaDigitalModal({
           aria-label="Carpeta digital del expediente"
           className={modoActividad
             ? "w-full space-y-3"
-            : "flex max-h-[94vh] w-full max-w-[1500px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"}
+            : "flex max-h-[94vh] w-full max-w-[1500px] flex-col overflow-hidden"}
         >
           {!modoActividad && (
             <header className="flex items-center justify-between gap-4 px-5 py-4">
@@ -918,11 +918,11 @@ export default function CarpetaDigitalModal({
 
           <div
             className={modoActividad
-              ? "grid min-h-[300px] grid-cols-1 gap-2 transition-[grid-template-columns] duration-300 lg:h-[800px] lg:min-h-[800px] lg:max-h-[800px] " + (ocultarPanelEnvioNotario || (normalizar(actividadId).includes("sede-notarial") && !normalizar(actividadId).includes("protocolo")) ? "lg:grid-cols-[minmax(0,1fr)]" : panelDocumentosVisible ? "lg:grid-cols-[minmax(190px,0.38fr)_minmax(0,1.62fr)]" : "lg:grid-cols-[0_minmax(0,1fr)]")
+              ? "grid min-h-[300px] grid-cols-1 gap-2 lg:h-[800px] lg:min-h-[800px] lg:max-h-[800px]" + (ocultarPanelEnvioNotario || (normalizar(actividadId).includes("sede-notarial") && !normalizar(actividadId).includes("protocolo")) ? "lg:grid-cols-[minmax(0,1fr)]" : panelDocumentosVisible ? "lg:grid-cols-[minmax(190px,0.38fr)_minmax(0,1.62fr)]" : "lg:grid-cols-[0_minmax(0,1fr)]")
               : "grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]"}
           >
             <div
-              className={"flex min-h-0 min-w-0 flex-col overflow-hidden transition-[opacity,transform] duration-300 " + (modoActividad && normalizar(actividadId).includes("sede-notarial") && !normalizar(actividadId).includes("protocolo") ? "hidden" : modoActividad && !panelDocumentosVisible && !ocultarPanelEnvioNotario ? "hidden lg:flex" : "")}
+              className={"flex min-h-0 min-w-0 flex-col overflow-hidden" + (modoActividad && normalizar(actividadId).includes("sede-notarial") && !normalizar(actividadId).includes("protocolo") ? "hidden" : modoActividad && !panelDocumentosVisible && !ocultarPanelEnvioNotario ? "hidden lg:flex" : "")}
               style={modoActividad ? {
                 minWidth: 0,
                 width: "100%",
@@ -954,7 +954,7 @@ export default function CarpetaDigitalModal({
                     <section className="overflow-hidden">
                       <button type="button" onClick={() => setOtrosAbierto((v) => !v)} aria-expanded={otrosAbierto} className="flex w-full items-center justify-between gap-3 px-3 py-3">
                         <span className="flex min-w-0 items-center gap-3">
-                          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${otrosCantidad ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{otrosCantidad}</span>
+                          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${otrosCantidad ? "" : ""}`}>{otrosCantidad}</span>
                           <span><span className="block">Otros</span><span className="block">Documentación complementaria y comunicaciones.</span></span>
                         </span>
                         <span className="">{otrosAbierto ? "⌃" : "⌄"}</span>
