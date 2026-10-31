@@ -575,7 +575,7 @@ export default function EmpleadoPerfil({
 
     return (
 
-      <div className="empleado-perfil-premium erp-page">
+      <div className=" erp-page">
 
         <div className="erp-card
  p-8">
@@ -695,7 +695,7 @@ export default function EmpleadoPerfil({
   return (
 
     <div className="erp-page
- empleado-perfil-premium
+ 
  space-y-5">
 
 
