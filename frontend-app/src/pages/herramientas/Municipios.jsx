@@ -1846,6 +1846,7 @@ export default function Municipios() {
  min-w-[800px]"
             >
 
+              <thead><tr>
               <MolsanSortableTh label="Comunidad autónoma" sortKey="ccaa" sortConfig={ordenMunicipios.sortConfig} onSort={ordenMunicipios.requestSort} className="" />
 
 
