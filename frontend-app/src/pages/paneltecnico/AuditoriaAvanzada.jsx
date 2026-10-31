@@ -3,7 +3,6 @@ import {
   getAuditoria,
   getAuditoriaMetricas,
 } from "../../api/auditoria";
-import "./PanelTecnicoSubmodulos.css";
 
 /**
  * ============================================================
