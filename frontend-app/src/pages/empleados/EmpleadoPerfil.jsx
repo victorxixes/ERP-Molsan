@@ -584,7 +584,7 @@ export default function EmpleadoPerfil({
             👤
           </div>
 
-          <div className="">
+          <div>
             Selecciona un empleado válido.
           </div>
 
@@ -784,17 +784,17 @@ export default function EmpleadoPerfil({
  mt-2
  items-center">
 
-                <span className="">
+                <span>
                   ID #{empleado.id}
                 </span>
 
 
-                <span className="">
+                <span>
                   ·
                 </span>
 
 
-                <span className="">
+                <span>
                   {empleado.usuario ||
                     "Sin usuario"}
                 </span>
@@ -1158,7 +1158,7 @@ export default function EmpleadoPerfil({
 
               <div>
 
-                <div className="">
+                <div>
                   Fotografía
                 </div>
 
@@ -1571,7 +1571,7 @@ export default function EmpleadoPerfil({
 
             <div>
 
-              <div className="">
+              <div>
                 Estado
               </div>
 
@@ -1749,7 +1749,7 @@ function SectionTitle({
  h-7" />
 
 
-      <h2 className="">
+      <h2>
 
         {children}
 
@@ -1958,7 +1958,7 @@ function DatoSimple({
       </div>
 
 
-      <div className="">
+      <div>
 
         {value ||
           "—"}
