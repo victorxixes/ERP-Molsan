@@ -8,7 +8,7 @@ export default function ModuloPendiente({ nombre }) {
   const esFichajes = nombreNormalizado === "fichajes";
 
   return (
-    <section className="modulo-pendiente-premium mx-auto max-w-4xl px-4 py-10 sm:py-14">
+    <section className="mx-auto max-w-4xl px-4 py-10 sm:py-14">
       <div className="overflow-hidden">
         <div className="h-1.5" />
 
@@ -20,7 +20,7 @@ export default function ModuloPendiente({ nombre }) {
               </div>
               <div>
                 <p className="">
-                  MOLSAN ERP · PREMIUM 2027
+                  MOLSAN ERP
                 </p>
                 <h1 className="mt-2">
                   {nombre}
