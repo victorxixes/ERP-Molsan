@@ -1566,6 +1566,7 @@ export default function OficinasLiquidadoras() {
  min-w-[1250px]"
           >
 
+            <thead><tr>
             <MolsanSortableTh label="Oficina Liquidadora" sortKey="oficina_liquidadora" sortConfig={ordenOficinas.sortConfig} onSort={ordenOficinas.requestSort} className="" />
 
                 <MolsanSortableTh label="Dirección" sortKey="direccion" sortConfig={ordenOficinas.sortConfig} onSort={ordenOficinas.requestSort} className="px-4
