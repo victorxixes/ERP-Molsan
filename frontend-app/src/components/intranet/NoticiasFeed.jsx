@@ -196,7 +196,7 @@ export default function NoticiasFeed() {
             >
 
               <p
-                className=""
+               
               >
                 {n.descripcion ||
                   "Sin descripción disponible."}
