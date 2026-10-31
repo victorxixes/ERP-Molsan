@@ -175,3 +175,12 @@ Se ha inspeccionado el contenido de las 52 hojas CSS del frontend en la rama: 49
 - Punto 4: racionalización segura aplicada; se conserva el reset global temporal y las excepciones funcionales/accesibles.
 - Punto 5: no iniciado, conforme a la instrucción. La comprobación visual de módulos queda pendiente.
 - Pendiente antes de declarar cerrado este lote: ejecutar build de Preview y verificar el resultado del despliegue.
+
+
+### Validación del lote Preview
+- Build de Render: deploy `dep-dbislcff3r2c73bgv030`.
+- Commit desplegado: `a468e2ae38473a54afd92276997ea1da73607e80`.
+- Resultado: `live` (31/10/2026, 11:02:30 UTC).
+- Vite transformó 274 módulos y terminó el build correctamente.
+- Se mantienen tres avisos de análisis JSX no bloqueantes ya identificados en `ModelosDocumentos.jsx`, `FichaExpediente.jsx` y `CarpetaDigitalModal.jsx` (carácter `}` dentro de JSX). No se han corregido en este lote porque requieren revisión contextual aparte y no forman parte de la limpieza de atributos vacíos.
+- La fase visual del punto 5 permanece sin iniciar.
