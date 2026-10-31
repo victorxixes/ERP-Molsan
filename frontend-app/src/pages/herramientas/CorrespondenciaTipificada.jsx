@@ -247,27 +247,15 @@ export default function CorrespondenciaTipificada() {
   }
 
   return (
-    <div className="min-h-full space-y-5 p-4 pb-10 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden p-5 sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1" />
-        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center">✉️</div>
-            <div>
-              <Link to="/herramientas/catalogos">← Volver a Catálogos</Link>
-              <h1 className="mt-1">Correspondencia tipificada</h1>
-              <p className="mt-1">Plantillas reutilizables con campos vinculados a los expedientes.</p>
-            </div>
-          </div>
-          <button type="button" onClick={nuevaPlantilla} className="px-4 py-2.5">＋ Nueva plantilla</button>
-        </div>
-      </header>
+    <div className="erp-page min-w-0 space-y-5">
+      <MolsanPageHeader mark="CT" title="Correspondencia tipificada" description="Gestiona plantillas reutilizables con campos vinculados a los expedientes." />
+      <div className="flex flex-wrap items-center justify-between gap-3"><Link to="/herramientas/catalogos" className="molsan-btn molsan-btn--secondary">← Volver a Catálogos</Link><button type="button" onClick={nuevaPlantilla} className="molsan-btn molsan-btn--primary">＋ Nueva plantilla</button></div>
 
       {error && <div role="alert" className="px-4 py-3">{error}</div>}
       {mensaje && <div className="px-4 py-3">{mensaje}</div>}
 
       {!vistaFicha ? (
-        <section className="overflow-hidden">
+        <section className="erp-card overflow-hidden">
           <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
             <div><h2>Plantillas creadas</h2><p className="mt-1">Consulta y administra los modelos de correspondencia del ERP.</p></div>
             <span className="inline-flex w-fit items-center px-3 py-1.5">{plantillas.length} plantillas</span>
@@ -297,7 +285,7 @@ export default function CorrespondenciaTipificada() {
           <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="uppercase">Catálogo de correspondencia</p><h2 className="mt-1">{plantillaId ? "Ficha de plantilla" : "Nueva plantilla"}</h2></div><button type="button" onClick={() => { setVistaFicha(false); setMostrarVistaPrevia(false); setError(""); setMensaje(""); }} className="px-4 py-2.5">← Volver al catálogo</button></div>
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[320px_minmax(0,1fr)]">
         <aside className="space-y-4">
-          <section className="p-4">
+          <section className="erp-card p-4">
             <div className="mb-3 flex items-center justify-between gap-2">
               <h2>Catálogo de plantillas</h2>
               <span className="px-2.5 py-1">{plantillas.length}</span>
