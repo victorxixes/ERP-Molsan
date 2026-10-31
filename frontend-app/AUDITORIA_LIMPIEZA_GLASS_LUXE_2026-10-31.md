@@ -66,3 +66,51 @@ De las 52 hojas CSS:
 ## Estado
 
 Auditoría y limpieza en curso. El primer cambio selectivo está aplicado en la rama de Preview. No se declara ningún archivo JSX completamente limpio hasta completar el recorrido de sus estilos y referencias. Este documento registra únicamente hechos comprobados en la revisión del 31/10/2026; no representa una certificación de limpieza total.
+
+## Segunda fase — recorrido por módulos (31/10/2026)
+
+### Módulos revisados
+
+- Agenda y CTN: Agenda, vistas Día/Semana/Mes, modales, hooks, API y stores.
+- Expedientes y provisiones: listado, ficha, carpeta digital, envío a notario, liquidación, traspasos, visibilidad de tablas y provisiones.
+- ApoderaGest, EncargaGest, NotarGest y CancelaGest.
+- Empleados y Fichajes: fichas, listado, modal, fichajes, control, ausencias y compensaciones.
+- Herramientas e Informes: catálogos, PPAD, importadores, modelos documentales, utilidades e informes.
+- Seguridad y Mensajería: permisos, roles, usuarios, auditoría, mensajes y componentes.
+- Componentes compartidos, navegación, sidebar e intranet.
+
+### Hallazgos y decisiones
+
+1. En la muestra recorrida no aparecen importaciones CSS locales en la mayoría de los componentes; las referencias que sí permanecen se contrastan con el contenido real de cada hoja.
+2. NeutralizarPresentacion.css sigue siendo el reset global temporal: neutraliza color, tipografía, fondos, bordes, radios, sombras, transformaciones y transiciones. No se elimina todavía porque evita que reaparezcan estilos antiguos mientras no esté desplegado el sistema visual unificado. Debe revisarse como siguiente tarea de arquitectura.
+3. SidebarBase.css se conserva: contiene reglas de navegación, foco, desplazamiento y perfil.
+4. index.css se conserva: importa Tailwind.
+5. Informes.jsx contiene CSS embebido para una plantilla documental/impresión. No se elimina: puede ser necesario para generar documentos correctamente.
+6. Los estilos inline que calculan alturas/anchos de gráficos, barras y posicionamiento de citas se clasifican como funcionales/datos y se conservan.
+7. Hay múltiples atributos className="" y fragmentos de clases vacíos en componentes de varios módulos. Son residuos de la neutralización y siguen pendientes de retirada selectiva; no se han eliminado de forma masiva.
+8. Las hojas vacías no se borran hasta confirmar que no quedan importaciones en la rama.
+
+### Cambios aplicados en esta fase
+
+- src/pages/agenda/VistaDia.jsx: compactadas clases con espacios vacíos; retirada condición de clase vacía y variable de resaltado local no utilizada. Se conserva el posicionamiento dinámico de citas, los datos y los eventos. Commit: d5f6ba791702ae75bf2ae6d8a35a3d64d764148a.
+- src/pages/fusiones/Fusiones.jsx: eliminada importación de Fusiones.css, hoja vacía.
+- src/pages/herramientas/AccesosNotariales.jsx: eliminada importación de CtnListadoPage.css, hoja vacía.
+- src/pages/paneltecnico/LogsAvanzados.jsx: eliminada importación de PanelTecnicoSubmodulos.css, hoja vacía.
+- src/pages/notargest/NotarGest.jsx: eliminado rótulo restante MOLSAN ERP · PREMIUM 2027.
+- src/pages/apoderagest/ApoderaGest.jsx: eliminado texto de pie Premium 2027.
+- src/pages/empleados/EmpleadoEditar.jsx: eliminados atributos className vacíos.
+- src/pages/LoginPage.jsx: eliminado atributo className vacío.
+
+### Referencias CSS observadas
+
+- Globales que se mantienen: css/index.css y css/NeutralizarPresentacion.css.
+- Sidebar protegido: css/SidebarBase.css, importado desde los componentes del sidebar/perfil.
+- Referencias a hojas vacías retiradas: Fusiones.css, CtnListadoPage.css y PanelTecnicoSubmodulos.css.
+- Queda al menos una importación pendiente de retirar en pages/paneltecnico/AuditoriaAvanzada.jsx hacia PanelTecnicoSubmodulos.css; el cambio no se ha aplicado todavía.
+- No se eliminan todavía los archivos CSS vacíos porque falta cerrar el inventario completo de imports de toda la rama.
+
+### Estado de validación
+
+- El despliegue Preview anterior quedó live para el commit 3c9239d1260d6e741a5006b8c1e8bb5e0bd66b5e.
+- Los cambios posteriores de esta fase requieren un nuevo despliegue para comprobar compilación.
+- La auditoría sigue en curso; no se declara ningún módulo completamente limpio ni se da por terminada la limpieza global.
