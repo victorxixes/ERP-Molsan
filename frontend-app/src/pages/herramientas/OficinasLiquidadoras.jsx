@@ -1032,7 +1032,7 @@ export default function OficinasLiquidadoras() {
 
       <MolsanPageHeader mark="OL" title="Oficinas liquidadoras" description="Gestión y consulta del catálogo de oficinas liquidadoras." />
       <div className="molsan-filter-bar flex flex-wrap justify-end gap-2 p-3">
-        <button type="button" onClick={abrirImportacion} className="molsan-btn molsan-btn--secondary"><Icono name="database" className="w-4 h-4" /> Importar Excel</button>
+        <button type="button" onClick={abrirImportacion} className="molsan-btn molsan-btn--secondary"><span aria-hidden="true">🗂️</span> Importar Excel</button>
         <button type="button" onClick={abrirNueva} className="molsan-btn molsan-btn--primary">＋ Nueva oficina</button>
       </div>
 
