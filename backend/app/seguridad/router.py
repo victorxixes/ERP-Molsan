@@ -58,6 +58,12 @@ PLANTILLA_PERMISOS = {
         "editar",
         "eliminar",
     ],
+    "catalogos": [
+        "ver",
+        "crear",
+        "editar",
+        "eliminar",
+    ],
     "mensajes": [
         "ver",
         "crear",
@@ -143,6 +149,12 @@ PLANTILLA_PERMISOS = {
         "eliminar",
     ],
     "expedientes": [
+        "ver",
+        "crear",
+        "editar",
+        "eliminar",
+    ],
+    "fusiones": [
         "ver",
         "crear",
         "editar",
