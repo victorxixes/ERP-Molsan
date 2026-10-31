@@ -757,7 +757,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
   </main>;
   if (modoCatalogo) return <main className="erp-page provisiones-fondos-page min-w-0 space-y-6"><MolsanPageHeader mark="PF" title="Tabla Provisiones de fondos" description="Configura importes estimativos y criterios iniciales. Estos valores sirven de referencia para nuevas provisiones; los registros históricos no se recalculan al cambiar la tabla." /><ConfiguracionConceptosProvisiones /></main>;
 
-  return <main className="provisiones-fondos-page w-full min-w-0 space-y-6 p-3 md:p-6">
+  return <main className="erp-page provisiones-fondos-page min-w-0 space-y-6">
     <MolsanPageHeader mark="PF" title="Provisión estimativa" description="Gestión de presupuestos independientes, con histórico y documento PDF." />
     <div className="flex flex-wrap items-center justify-between gap-3">
       {form.id ? <span className="molsan-panel px-3 py-1.5">Editando {form.numero || `provisión #${form.id}`}</span> : <span />}
