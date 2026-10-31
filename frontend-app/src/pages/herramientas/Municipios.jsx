@@ -1504,7 +1504,7 @@ export default function Municipios() {
             <div>
 
               <h1
-                className=""
+               
               >
                 Municipios
               </h1>
@@ -1540,7 +1540,7 @@ export default function Municipios() {
               title="Cargar códigos postales desde datos abiertos derivados del INE"
               className="inline-flex items-center justify-center gap-2 px-4 py-2.5"
             >
-              <span className="">{importandoCodigosNacionales ? "⏳" : "📮"}</span>
+              <span>{importandoCodigosNacionales ? "⏳" : "📮"}</span>
               {importandoCodigosNacionales ? "Cargando códigos…" : "Cargar códigos postales de España"}
             </button>
 
@@ -1561,7 +1561,7 @@ export default function Municipios() {
  py-2.5"
             >
 
-              <span className="">
+              <span>
                 📊
               </span>
 
@@ -1585,7 +1585,7 @@ export default function Municipios() {
  py-2.5"
             >
 
-              <span className="">
+              <span>
                 +
               </span>
 
@@ -1848,13 +1848,13 @@ export default function Municipios() {
       >
 
         <div
-          className=""
+         
         >
 
           Mostrando{" "}
 
           <span
-            className=""
+           
           >
             {municipiosFiltrados.length.toLocaleString(
               "es-ES"
@@ -1871,7 +1871,7 @@ export default function Municipios() {
               {" "}de{" "}
 
               <span
-                className=""
+               
               >
                 {municipios.length.toLocaleString(
                   "es-ES"
@@ -1885,7 +1885,7 @@ export default function Municipios() {
 
 
         <div
-          className=""
+         
         >
           Página {pagina} de {totalPaginas}
         </div>
@@ -1910,7 +1910,7 @@ export default function Municipios() {
  justify-center"
           >
 
-            <div className="">
+            <div>
 
               <div
                 className="mx-auto
@@ -1949,7 +1949,7 @@ export default function Municipios() {
 
 
             <h3
-              className=""
+             
             >
               No se han encontrado municipios
             </h3>
@@ -1975,7 +1975,7 @@ export default function Municipios() {
               <thead>
 
                 <tr
-                  className=""
+                 
                 >
 
                   <th
@@ -2075,7 +2075,7 @@ export default function Municipios() {
                             <strong>{municipio.codigo_postal_principal || municipio.codigos_postales[0]}</strong>
                             {(municipio.codigos_postales.length > 1) && <span className="ml-2">+{municipio.codigos_postales.length - 1}</span>}
                           </span>
-                        ) : <span className="">Sin asignar</span>}
+                        ) : <span>Sin asignar</span>}
                       </td>
 
                       <td
@@ -2185,12 +2185,12 @@ export default function Municipios() {
 
 
           <span
-            className=""
+           
           >
             Página{" "}
 
             <strong
-              className=""
+             
             >
               {pagina}
             </strong>
@@ -2198,7 +2198,7 @@ export default function Municipios() {
             {" "}de{" "}
 
             <strong
-              className=""
+             
             >
               {totalPaginas}
             </strong>
@@ -2390,7 +2390,7 @@ function ModalImportarExcel({
               <div>
 
                 <h2
-                  className=""
+                 
                 >
                   Importar municipios desde Excel
                 </h2>
@@ -2447,7 +2447,7 @@ function ModalImportarExcel({
  gap-3"
             >
 
-              <div className="">
+              <div>
                 ℹ️
               </div>
 
@@ -2455,7 +2455,7 @@ function ModalImportarExcel({
               <div>
 
                 <p
-                  className=""
+                 
                 >
                   Formato esperado
                 </p>
@@ -2856,7 +2856,7 @@ function ModalMunicipio({
             <div>
 
               <h2
-                className=""
+               
               >
                 {modo ===
                 "nuevo"
