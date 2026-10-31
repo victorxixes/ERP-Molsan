@@ -46,11 +46,11 @@ export default function LecturaCopias() {
     <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <header className="relative overflow-hidden p-6">
         <div className="absolute inset-x-0 top-0 h-1" />
-        <Link to="/herramientas/utilidades" className="">← Volver a Utilidades</Link>
+        <Link to="/herramientas/utilidades">← Volver a Utilidades</Link>
         <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="">Lectura copias</h1>
+              <h1>Lectura copias</h1>
               <span className="px-2.5 py-1 uppercase">Demostración · datos ficticios</span>
             </div>
             <p className="mt-2 max-w-3xl">Selecciona la fecha de recepción y ejecuta el procesamiento de ejemplo para visualizar el progreso y el resultado esperado de la futura integración.</p>
@@ -60,7 +60,7 @@ export default function LecturaCopias() {
 
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(240px,0.8fr)]">
         <div className="p-5 sm:p-6">
-          <h2 className="">Parámetros de procesamiento</h2>
+          <h2>Parámetros de procesamiento</h2>
           <p className="mt-1">Elige el día que se utilizaría para buscar las copias recibidas.</p>
           <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
             <label className="block">
@@ -73,7 +73,7 @@ export default function LecturaCopias() {
           </div>
           <div className="mt-6 p-4">
             <div className="flex items-center justify-between gap-3">
-              <span className="">{procesando ? "Procesando ficheros y correos…" : procesado ? "Procesamiento de demostración completado" : "Estado del proceso"}</span>
+              <span>{procesando ? "Procesando ficheros y correos…" : procesado ? "Procesamiento de demostración completado" : "Estado del proceso"}</span>
               <span className="tabular-nums">{progreso}%</span>
             </div>
             <div className="mt-3 h-3 overflow-hidden">
@@ -84,14 +84,14 @@ export default function LecturaCopias() {
         </div>
 
         <div className="p-5 sm:p-6">
-          <h2 className="">Volumen de entrada</h2>
+          <h2>Volumen de entrada</h2>
           <p className="mt-1">Número de ficheros / emails que se revisarían.</p>
           <label className="mt-5 block">
             <span className="mb-1.5 block uppercase">N.º de ficheros / emails</span>
             <input type="number" min="0" value={ficherosEmails} onChange={(e) => setFicherosEmails(e.target.value)} disabled={procesando} className="w-full px-3.5 py-3 tabular-nums" />
           </label>
           <div className="mt-4 px-4 py-3">
-            <p className="">Valor ficticio para la maqueta</p>
+            <p>Valor ficticio para la maqueta</p>
             <p className="mt-1">El script real deberá informar del número detectado y procesado.</p>
           </div>
         </div>
@@ -115,7 +115,7 @@ export default function LecturaCopias() {
             </thead>
             <tbody>
               {filas.length === 0 ? (
-                <tr><td colSpan={5} className="px-5 py-14"><div className="">📄</div><p className="mt-2">{procesando ? "Preparando resultados de ejemplo…" : "Todavía no hay resultados"}</p><p className="mt-1">Selecciona una fecha y pulsa «Procesar» para ver la maqueta.</p></td></tr>
+                <tr><td colSpan={5} className="px-5 py-14"><div>📄</div><p className="mt-2">{procesando ? "Preparando resultados de ejemplo…" : "Todavía no hay resultados"}</p><p className="mt-1">Selecciona una fecha y pulsa «Procesar» para ver la maqueta.</p></td></tr>
               ) : filas.map((fila, index) => (
                 <tr key={fila.expediente} className="align-top">
                   <td className="whitespace-nowrap px-4 py-4">{fila.expediente}</td>
