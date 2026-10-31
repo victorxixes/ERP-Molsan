@@ -102,7 +102,7 @@ export default function ReglasActividadesExpediente() {
         <div className="grid gap-6 p-5 sm:p-6 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-4">
             <div>
-              <h3 className="">1. Documentos necesarios</h3>
+              <h3>1. Documentos necesarios</h3>
               <p className="mt-1">Selecciona los documentos que deben estar presentes antes del envío.</p>
             </div>
             <div className="space-y-3">
@@ -125,7 +125,7 @@ export default function ReglasActividadesExpediente() {
 
           <div className="space-y-5">
             <div>
-              <h3 className="">2. Validaciones del envío a notario</h3>
+              <h3>2. Validaciones del envío a notario</h3>
               <p className="mt-1">Condiciones que deben comprobarse al preparar el envío.</p>
             </div>
 
@@ -136,10 +136,10 @@ export default function ReglasActividadesExpediente() {
               descripcion="Si la escritura ya está firmada, la fecha de envío no puede ser posterior a la fecha del protocolo. Si todavía no está firmada, se permite introducir la fecha de envío."
             />
             <div className="p-4">
-              <p className="">Datos de facturación</p>
+              <p>Datos de facturación</p>
               <div className="mt-2 flex items-center gap-2">
                 <span className="px-2.5 py-1">No bloqueantes</span>
-                <span className="">Pendientes de cumplimentar</span>
+                <span>Pendientes de cumplimentar</span>
               </div>
               <p className="mt-2">No serán obligatorios para permitir el envío, pero el sistema debe advertir si faltan datos de facturación para que se completen.</p>
               <label className="mt-3 flex items-center gap-2">
@@ -165,7 +165,7 @@ export default function ReglasActividadesExpediente() {
         <div className="px-5 py-4 sm:px-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="">3. Integración con ICAM I / ABSIS</p>
+              <p>3. Integración con ICAM I / ABSIS</p>
               <p className="mt-1 max-w-3xl">Al entrar en Sede notarial, la integración debe enviar a ABSIS los campos y repositorios digitales de la ventana modal «Datos de actividad». Esta integración queda identificada como trabajo técnico pendiente; todavía no se realiza ningún envío externo desde esta pantalla.</p>
             </div>
             <span className="shrink-0 px-3 py-1.5">Pendiente de desarrollo API</span>
@@ -189,7 +189,7 @@ export default function ReglasActividadesExpediente() {
           <Condicion titulo="Control de integridad" texto="Si falta la fecha de firma o el protocolo, el expediente permanece en Sede notarial y se muestra qué dato falta." />
         </div>
         <div className="px-5 py-4 sm:px-6">
-          <p className="">Pendiente del técnico: conectar el evento de ApoderaGest, validar los datos recibidos y desarrollar el envío de datos a ABSIS con trazabilidad de errores.</p>
+          <p>Pendiente del técnico: conectar el evento de ApoderaGest, validar los datos recibidos y desarrollar el envío de datos a ABSIS con trazabilidad de errores.</p>
         </div>
       </section>
 
@@ -204,7 +204,7 @@ export default function ReglasActividadesExpediente() {
         </div>
         <div className="space-y-5 p-5 sm:p-6">
           <div>
-            <h3 className="">Campos que deben estar informados</h3>
+            <h3>Campos que deben estar informados</h3>
             <p className="mt-1">No se avanza de actividad hasta que todos los campos obligatorios estén detectados o validados.</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -222,7 +222,7 @@ export default function ReglasActividadesExpediente() {
           </div>
         </div>
         <div className="px-5 py-4 sm:px-6">
-          <p className="">Pendiente del técnico: conexión con NotarGest / Visión Notarios, extracción PDF/OCR, validación de campos, detección de documentos y pruebas con expedientes reales.</p>
+          <p>Pendiente del técnico: conexión con NotarGest / Visión Notarios, extracción PDF/OCR, validación de campos, detección de documentos y pruebas con expedientes reales.</p>
         </div>
       </section>
 
@@ -239,7 +239,7 @@ export default function ReglasActividadesExpediente() {
           <Condicion titulo="Control de cierre" texto="Antes de cerrar, comprobar que no quedan defectos registrales abiertos. El backend ya contiene una validación de bloqueo en una ruta de cierre documental; debe comprobarse que cubre todos los caminos de cierre." />
         </div>
         <div className="px-5 py-4 sm:px-6">
-          <p className="">Pendiente de revisión: comprobar activación por notificación real, alta/edición, subsanación, historial y bloqueo de cierre con defectos abiertos.</p>
+          <p>Pendiente de revisión: comprobar activación por notificación real, alta/edición, subsanación, historial y bloqueo de cierre con defectos abiertos.</p>
         </div>
       </section>
 
@@ -254,7 +254,7 @@ export default function ReglasActividadesExpediente() {
         </div>
         <div className="space-y-5 p-5 sm:p-6">
           <div>
-            <h3 className="">Campos obligatorios en Datos de actividad</h3>
+            <h3>Campos obligatorios en Datos de actividad</h3>
             <p className="mt-1">Todos deben estar cumplimentados y validados para cerrar Liquidación impuestos.</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -276,7 +276,7 @@ export default function ReglasActividadesExpediente() {
           </div>
         </div>
         <div className="px-5 py-4 sm:px-6">
-          <p className="">Pendiente del técnico: conexión con repositorios, lectura PDF/OCR, revisión de valores extraídos, detección de campos vacíos y pruebas de la transición a Tramitación inscripción.</p>
+          <p>Pendiente del técnico: conexión con repositorios, lectura PDF/OCR, revisión de valores extraídos, detección de campos vacíos y pruebas de la transición a Tramitación inscripción.</p>
         </div>
       </section>
 
@@ -291,7 +291,7 @@ export default function ReglasActividadesExpediente() {
         </div>
         <div className="space-y-5 p-5 sm:p-6">
           <div>
-            <h3 className="">Campos y condiciones de la actividad</h3>
+            <h3>Campos y condiciones de la actividad</h3>
             <p className="mt-1">La fecha de presentación se hereda de la actividad anterior y la fecha de vencimiento se calcula automáticamente según la regla de vencimiento configurada para la actividad.</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -309,7 +309,7 @@ export default function ReglasActividadesExpediente() {
           </div>
         </div>
         <div className="px-5 py-4 sm:px-6">
-          <p className="">Anotación para el técnico: preparar la integración/API con el Colegio de Registradores para la comunicación/consulta registral. Queda pendiente de especificación técnica, credenciales y documentación oficial; no se ejecuta ninguna llamada externa desde esta pantalla.</p>
+          <p>Anotación para el técnico: preparar la integración/API con el Colegio de Registradores para la comunicación/consulta registral. Queda pendiente de especificación técnica, credenciales y documentación oficial; no se ejecuta ninguna llamada externa desde esta pantalla.</p>
         </div>
       </section>
 
@@ -341,7 +341,7 @@ export default function ReglasActividadesExpediente() {
 function Condicion({ titulo, texto }) {
   return (
     <div className="p-4">
-      <p className="">{titulo}</p>
+      <p>{titulo}</p>
       <p className="mt-1">{texto}</p>
     </div>
   );
@@ -353,7 +353,7 @@ function Resumen({ icono, titulo, valor }) {
       <div className="flex items-center gap-3">
         <span className="flex h-10 w-10 items-center justify-center">{icono}</span>
         <div className="min-w-0">
-          <p className="">{titulo}</p>
+          <p>{titulo}</p>
           <p className="mt-1">{valor}</p>
         </div>
       </div>
