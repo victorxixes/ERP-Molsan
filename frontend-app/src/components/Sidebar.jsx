@@ -18,6 +18,7 @@ import {
 
 import Notificaciones from "../pages/notificaciones/Notificaciones.jsx";
 import SidebarPerfilModal from "./SidebarPerfilModal";
+import useAccessibleDialog from "./ui/useAccessibleDialog";
 
 
 import "../css/SidebarBase.css";
@@ -475,6 +476,13 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
   const [notificacionesAbiertas, setNotificacionesAbiertas] =
     useState(false);
+  const notificacionesDialogRef = useRef(null);
+
+  useAccessibleDialog({
+    open: notificacionesAbiertas && !onNotificationsClick,
+    onClose: () => setNotificacionesAbiertas(false),
+    dialogRef: notificacionesDialogRef,
+  });
 
   const masRef = useRef(null);
   const masMenuRef = useRef(null);
@@ -568,51 +576,6 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       document.removeEventListener("keydown", handleEscape);
     };
   }, [masAbierto]);
-
-
-  /**
-   * ==========================================================
-   * ESC — CERRAR MODAL NOTIFICACIONES
-   * ==========================================================
-   */
-
-  useEffect(() => {
-
-    if (!notificacionesAbiertas) {
-      return;
-    }
-
-    const handleKeyDown = (
-      event
-    ) => {
-
-      if (
-        event.key === "Escape"
-      ) {
-        setNotificacionesAbiertas(
-          false
-        );
-      }
-
-    };
-
-    document.addEventListener(
-      "keydown",
-      handleKeyDown
-    );
-
-    return () => {
-
-      document.removeEventListener(
-        "keydown",
-        handleKeyDown
-      );
-
-    };
-
-  }, [
-    notificacionesAbiertas,
-  ]);
 
 
   /**
@@ -1442,6 +1405,8 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
         >
 
           <div
+            ref={notificacionesDialogRef}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-label="Notificaciones"
