@@ -1864,7 +1864,7 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
 
 /* Tablas heredadas: superficie, cabecera, separadores y lectura
    homogéneos. No se añade ordenación visual ficticia. */
-#root main table {
+#root main table:not(.ag-print-table):not(.ag-calendar-table) {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
@@ -1872,7 +1872,7 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
   font-size: var(--molsan-font-size-sm);
   font-variant-numeric: tabular-nums;
 }
-#root main table thead th {
+#root main table:not(.ag-print-table):not(.ag-calendar-table) thead th {
   color: var(--molsan-blue);
   background: var(--molsan-table-head);
   border-bottom: 1px solid var(--molsan-border);
@@ -1882,18 +1882,18 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
   text-align: left;
   vertical-align: middle;
 }
-#root main table tbody td {
+#root main table:not(.ag-print-table):not(.ag-calendar-table) tbody td {
   border-bottom: 1px solid rgba(216,228,236,.78);
   vertical-align: middle;
 }
-#root main table tbody tr {
+#root main table:not(.ag-print-table):not(.ag-calendar-table) tbody tr {
   background: #fff;
   transition: background-color var(--molsan-transition-fast);
 }
-#root main table tbody tr:hover {
+#root main table:not(.ag-print-table):not(.ag-calendar-table) tbody tr:hover {
   background: rgba(242,247,251,.78);
 }
-#root main table tbody tr:last-child td {
+#root main table:not(.ag-print-table):not(.ag-calendar-table) tbody tr:last-child td {
   border-bottom-color: transparent;
 }
 
@@ -1937,8 +1937,8 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
   overflow-x: auto;
   overscroll-behavior-inline: contain;
 }
-#root main table th,
-#root main table td,
+#root main table:not(.ag-print-table):not(.ag-calendar-table) th,
+#root main table:not(.ag-print-table):not(.ag-calendar-table) td,
 #root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table th,
 #root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table td {
   overflow-wrap: anywhere;
