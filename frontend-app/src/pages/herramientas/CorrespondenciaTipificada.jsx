@@ -49,7 +49,7 @@ function Campo({ etiqueta, children }) {
   );
 }
 
-const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
+const inputClass = "w-full px-3 py-2.5";
 
 export default function CorrespondenciaTipificada() {
   const [searchParams] = useSearchParams();
@@ -283,7 +283,7 @@ export default function CorrespondenciaTipificada() {
           ) : (
             <div className="overflow-x-auto"><table className="w-full min-w-[820px]">
               <thead className="uppercase"><tr><th className="px-5 py-3">Nombre de la plantilla</th><th className="px-5 py-3">Tipología / proceso</th><th className="px-5 py-3">Asunto</th><th className="px-5 py-3">Estado</th><th className="px-5 py-3">Acciones</th></tr></thead>
-              <tbody className="divide-y divide-slate-100">{plantillasFiltradas.map((item) => <tr key={item.id} className="">
+              <tbody className="">{plantillasFiltradas.map((item) => <tr key={item.id} className="">
                 <td className="px-5 py-4"><span className="block">{item.nombre || "Sin nombre"}</span><span className="mt-1 block">Modelo de correo reutilizable</span></td>
                 <td className="px-5 py-4">{item.categoria || "General"}</td>
                 <td className="max-w-[280px] px-5 py-4"><span className="block truncate" title={item.asunto || ""}>{item.asunto || "Sin asunto"}</span></td>
