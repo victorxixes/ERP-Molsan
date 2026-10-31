@@ -267,8 +267,8 @@ export default function CtnListadoPage() {
           </div>
         </div>
         <div className="ctn-listado-header-acciones molsan-page-header__actions">
-          <button type="button" className="ctn-btn ctn-btn-excel molsan-btn" onClick={exportarExcel} disabled={exportando}>
-            {exportando ? "Preparando Excel…" : "⇩ Exportar Excel"}
+          <button type="button" className="ctn-btn ctn-btn-excel molsan-btn molsan-export-excel" onClick={exportarExcel} disabled={exportando}>
+            <><span className="molsan-export-excel__icon" aria-hidden="true">📗</span>{exportando ? "Preparando Excel…" : "Exportar a Excel"}</>
           </button>
           <button type="button" className="ctn-btn ctn-btn-secondary molsan-btn molsan-btn--secondary" onClick={() => cargarListado(pagina, filtrosAplicados)} disabled={cargando}>
             {cargando ? "Actualizando…" : "↻ Actualizar"}
