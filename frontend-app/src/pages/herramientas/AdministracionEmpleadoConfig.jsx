@@ -55,7 +55,7 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
     return (
       <div className="p-6">
         <section className="max-w-2xl p-6">
-          <h1 className="">Acceso restringido</h1>
+          <h1>Acceso restringido</h1>
           <p className="mt-2">Solo un administrador puede gestionar la visibilidad de tablas y las asignaciones de empleados.</p>
         </section>
       </div>
@@ -73,7 +73,7 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
       <section className="overflow-hidden">
         <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
           <div>
-            <h2 className="">Listado de empleados</h2>
+            <h2>Listado de empleados</h2>
             <p className="mt-1">
               {loading ? "Cargando empleados…" : `${empleadosFiltrados.length} de ${empleadosSeguros.length} empleados`}
             </p>
@@ -95,7 +95,7 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
           <div className="p-10">Cargando listado de empleados…</div>
         ) : empleadosSeguros.length === 0 ? (
           <div className="p-10">
-            <p className="">No hay empleados para mostrar.</p>
+            <p>No hay empleados para mostrar.</p>
             <p className="mt-1">Comprueba los permisos de administración y vuelve a cargar la página.</p>
           </div>
         ) : empleadosFiltrados.length === 0 ? (
@@ -124,7 +124,7 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
                     <tr key={empleado.id} className={`${indice % 2 === 0 ? "" : ""}`}>
                       <td className="px-4 py-3">{empleado.id}</td>
                       <td className="px-4 py-3">
-                        <div className="">{nombre}</div>
+                        <div>{nombre}</div>
                         {empleado.email_empresa && <div className="mt-0.5">{empleado.email_empresa}</div>}
                       </td>
                       <td className="px-4 py-3">{empleado.usuario || "—"}</td>
