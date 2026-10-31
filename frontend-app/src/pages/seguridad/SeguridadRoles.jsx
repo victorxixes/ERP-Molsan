@@ -55,40 +55,18 @@ function estadoRol(rol) {
   return activo
     ? {
         texto: "Activo",
-        clase:
-          "border-emerald-200 bg-emerald-50 text-emerald-700",
-        punto: "bg-emerald-500",
+punto: "bg-emerald-500",
       }
     : {
         texto: "Inactivo",
-        clase:
-          "border-red-200 bg-red-50 text-red-700",
-        punto: "bg-red-500",
+punto: "bg-red-500",
       };
 }
 
 
 function Chip({
   children,
-  tone = "neutral",
 }) {
-
-  const estilos = {
-    neutral:
-      "border-[var(--erp-border)] bg-[var(--erp-bg)] text-[var(--erp-text-soft)]",
-
-    primary:
-      "border-blue-200 bg-blue-50 text-blue-700",
-
-    success:
-      "border-emerald-200 bg-emerald-50 text-emerald-700",
-
-    warning:
-      "border-amber-200 bg-amber-50 text-amber-700",
-
-    purple:
-      "border-purple-200 bg-purple-50 text-purple-700",
-  };
 
   return (
     <span
@@ -100,7 +78,7 @@ function Chip({
  py-1
  
  
- ${estilos[tone] || estilos.neutral}`}
+ `}
     >
       {children}
     </span>
@@ -896,13 +874,6 @@ export default function SeguridadRoles() {
                               : "neutral"
                           }
                         >
-                          <span
-                            className={`mr-1.5
- h-1.5
- w-1.5
- 
- ${estado.punto}`}
-                          />
                           {estado.texto}
                         </Chip>
 
