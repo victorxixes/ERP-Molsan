@@ -548,13 +548,13 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         onLogoutClick={salir}
         headerActions={
           <>
-            <div className="" aria-label={`Fecha actual: ${fechaActual}`}>
-              <span className="" aria-hidden="true" />
+            <div aria-label={`Fecha actual: ${fechaActual}`}>
+              <span aria-hidden="true" />
               <span>{fechaActual}</span>
             </div>
             <button
               type="button"
-              className=""
+             
               onClick={actualizarDatosSidebar}
               disabled={cargando || cargandoSelectorNotaria}
               aria-live="polite"
@@ -590,7 +590,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
             {notario?.observacion && <div className="ng-perfil-observacion"><small>Observaciones CTN</small><p>{notario.observacion}</p></div>}
           </div>
           <form onSubmit={cambiarPasswordPerfil} className="h-fit space-y-3 p-4 sm:p-5">
-            <div><h3 className="">Seguridad de la cuenta</h3><p className="mt-1">Usuario: NIF completo registrado en CTN. Si aún no has cambiado la contraseña inicial, utiliza tu NIF como contraseña.</p></div>
+            <div><h3>Seguridad de la cuenta</h3><p className="mt-1">Usuario: NIF completo registrado en CTN. Si aún no has cambiado la contraseña inicial, utiliza tu NIF como contraseña.</p></div>
             {mensajePasswordPerfil && <p role="status" className="p-2">{mensajePasswordPerfil}</p>}
             {errorPasswordPerfil && <p role="alert" className="p-2">{errorPasswordPerfil}</p>}
             <label className="block">Contraseña actual<input required type="password" autoComplete="current-password" value={passwordActualPerfil} onChange={e=>setPasswordActualPerfil(e.target.value)} className="mt-1 w-full px-3 py-2.5" /></label>
@@ -754,7 +754,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
           <p className="molsan-page-header__description">Centro de gestión notarial, firmas y seguimiento registral.</p>
         </div>
       </div>
-      <div className="">
+      <div>
         {accesoERP && <button type="button" onClick={() => navigate("/modulos")} className="flex items-center gap-2 px-3 py-2"><span aria-hidden="true">▦</span> Ir a módulos</button>}
       </div>
     </header>
