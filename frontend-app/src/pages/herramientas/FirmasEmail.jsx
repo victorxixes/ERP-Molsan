@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
-import "../../css/HerramientasPremium.css";
-import "../../css/ComponentesOperativosPremium.css";
 
 const inputClass = "w-full px-3 py-2.5";
 
@@ -43,7 +41,7 @@ export default function FirmasEmail() {
     }
   }
 
-  return <main className="firmas-email-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+  return <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
     <header className="relative overflow-hidden p-6 sm:p-7">
       <div className="absolute inset-x-0 top-0 h-1" />
       <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
