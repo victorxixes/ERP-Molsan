@@ -17,6 +17,7 @@ import {
 import MensajeBubble from "../../components/mensajes/MensajeBubble";
 
 import MensajesHeader from "../../components/mensajes/MensajesHeader";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 
 export default function Mensajes({
@@ -625,7 +626,9 @@ export default function Mensajes({
   // =======================================================
 
   return (
-    <div
+    <div className="erp-page w-full min-w-0 space-y-5">
+      <MolsanPageHeader mark="ME" title="Mensajería interna" description="Comunicación directa y en tiempo real entre empleados." />
+      <div
       className="mensajes-premium-page
  relative
 
@@ -698,7 +701,7 @@ export default function Mensajes({
         ================================================= */}
 
         <section
-          className="relative
+          className="erp-card relative
  overflow-hidden
 
  
@@ -902,12 +905,13 @@ export default function Mensajes({
                       empleado.id
                     }
                     type="button"
+                    aria-pressed={seleccionado}
                     onClick={() =>
                       setOtroId(
                         empleado.id
                       )
                     }
-                    className={`group
+                    className={`molsan-chat-contact group
  flex
  w-full
  items-center
@@ -1074,7 +1078,7 @@ export default function Mensajes({
         ================================================= */}
 
         <section
-          className="relative
+          className="erp-card relative
  overflow-hidden
 
  
@@ -1350,7 +1354,7 @@ export default function Mensajes({
               {/* COMPOSER */}
 
               <div
-                className="mt-3
+                className="molsan-chat-composer mt-3
  shrink-0
 
  
@@ -1465,7 +1469,7 @@ export default function Mensajes({
                       !texto.trim() ||
                       subiendoArchivo
                     }
-                    className="flex
+                    className="molsan-btn molsan-btn--primary molsan-btn--icon flex
  h-11
  w-11
  shrink-0
@@ -1497,6 +1501,7 @@ export default function Mensajes({
 
       </div>
 
+      </div>
     </div>
   );
 }
