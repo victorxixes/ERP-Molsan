@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useAgendaStore } from "../../store/agendaStore";
 
-import "../../css/ComponentesOperativosPremium.css";
 
 /**
  * AgendaToast — SJ-2026
