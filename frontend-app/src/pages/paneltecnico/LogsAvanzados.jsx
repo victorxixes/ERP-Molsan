@@ -108,7 +108,7 @@ export default function LogsAvanzados() {
 
             <div>
               <h1
-                className=""
+               
               >
                 Logs Técnicos
               </h1>
@@ -143,13 +143,13 @@ export default function LogsAvanzados() {
           />
 
           <span
-            className=""
+           
           >
             {filtrados.length}
           </span>
 
           <span
-            className=""
+           
           >
             registros
           </span>
@@ -196,7 +196,7 @@ export default function LogsAvanzados() {
             <button
               type="button"
               onClick={() => setBusqueda("")}
-              className=""
+             
               title="Limpiar búsqueda"
             >
               ×
@@ -228,7 +228,7 @@ export default function LogsAvanzados() {
         >
           <div>
             <h2
-              className=""
+             
             >
               Últimos registros
             </h2>
@@ -266,7 +266,7 @@ export default function LogsAvanzados() {
 
             <thead>
               <tr
-                className=""
+               
               >
                 <th
                   className="px-5
@@ -317,7 +317,7 @@ export default function LogsAvanzados() {
 
                 <tr
                   key={l.id}
-                  className=""
+                 
                 >
 
                   {/* FECHA */}
@@ -439,7 +439,7 @@ export default function LogsAvanzados() {
             </div>
 
             <h3
-              className=""
+             
             >
               No hay registros
             </h3>
