@@ -1,4 +1,3 @@
-import "../../css/ModalesHerramientasPremium.css";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import React, {
   useCallback,
@@ -1204,7 +1203,7 @@ export default function AccionesExpediente() {
 
   return (
     <div
-      className="herramientas-subpagina-premium erp-page
+      className="erp-page
  min-h-full
  p-4
  sm:p-6
