@@ -108,7 +108,7 @@ export default function TiposExpediente() {
     <main className="catalogo-maestro-page-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
       <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white p-6 shadow-sm">
         <div className="absolute inset-x-0 top-0 h-1 bg-[var(--molsan-primary)]" />
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--molsan-primary)]">MOLSAN ERP PREMIUM 2027</p>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--molsan-primary)]">MOLSAN ERP</p>
         <h1 className="mt-2 text-2xl font-bold text-slate-800 sm:text-3xl">Tipos de expediente</h1>
         <p className="mt-2 max-w-3xl text-sm text-slate-500">Catálogo maestro de tipos de expediente. Incluye los registros históricos de provisiones fuera del circuito GTG y los tipos para nuevas altas manuales.</p>
       </header>
