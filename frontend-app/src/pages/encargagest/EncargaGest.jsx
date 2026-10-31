@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PortalLogin from "../../components/PortalLogin";
@@ -132,6 +133,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
   const [directorioBusqueda, setDirectorioBusqueda] = useState("");
   const [directorioTodos, setDirectorioTodos] = useState(false);
   const [directorioPagina, setDirectorioPagina] = useState(1);
+  const [directorioOrden, setDirectorioOrden] = useState({ campo: "provincia", direccion: "asc" });
   const [directorioItems, setDirectorioItems] = useState([]);
   const [directorioTotal, setDirectorioTotal] = useState(0);
   const [directorioCargando, setDirectorioCargando] = useState(false);
@@ -344,6 +346,8 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         alcance: directorioTodos ? "todas" : "habilitadas",
         pagina: directorioPagina,
         por_pagina: 12,
+        ordenar_por: directorioOrden.campo,
+        direccion: directorioOrden.direccion,
       },
     }).then((respuesta) => {
       if (!vigente) return;
@@ -353,7 +357,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
       if (vigente) setError(e?.response?.data?.detail || "No se ha podido cargar el directorio de notarías.");
     }).finally(() => { if (vigente) setDirectorioCargando(false); });
     return () => { vigente = false; };
-  }, [modo, esAdminEncargaGest, directorioBusqueda, directorioTodos, directorioPagina]);
+  }, [modo, esAdminEncargaGest, directorioBusqueda, directorioTodos, directorioPagina, directorioOrden]);
 
   function aplicarFiltroRapido(estado) {
     setFiltroEstado(estado);
@@ -908,7 +912,30 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
             {directorioCargando ? <div className="eg-directorio-vacio">Consultando directorio…</div> : directorioItems.length ? (
               <div className="eg-directorio-tabla-wrap">
                 <table className="eg-directorio-tabla">
-                  <thead><tr><th>Notaría</th><th>NIF</th><th>Municipio</th><th>Provincia</th><th>Estado</th><th>Acciones</th></tr></thead>
+                  <thead><tr>
+                    {[
+                      ["nombre", "Notaría"],
+                      ["nif", "NIF"],
+                      ["municipio", "Municipio"],
+                      ["provincia", "Provincia"],
+                      ["estado", "Estado"],
+                    ].map(([campo, label]) => (
+                      <MolsanSortableTh
+                        key={campo}
+                        label={label}
+                        sortKey={campo}
+                        sortConfig={{ key: directorioOrden.campo, direction: directorioOrden.direccion }}
+                        onSort={(key) => {
+                          setDirectorioOrden((actual) => ({
+                            campo: key,
+                            direccion: actual.campo === key && actual.direccion === "asc" ? "desc" : "asc",
+                          }));
+                          setDirectorioPagina(1);
+                        }}
+                      />
+                    ))}
+                    <th>Acciones</th>
+                  </tr></thead>
                   <tbody>
                     {directorioItems.map((notaria) => (
                       <tr key={notaria.id}>
