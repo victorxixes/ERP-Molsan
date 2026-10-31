@@ -852,13 +852,6 @@ export default function ApoderaGest() {
   }, [encargos, busquedaEncargos]);
 
 
-  const fechaActual = new Intl.DateTimeFormat("es-ES", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date());
-
   return (
     <div className="min-h-screen apoderagest">
       <Sidebar
@@ -889,23 +882,7 @@ export default function ApoderaGest() {
             <p className="molsan-page-header__description">Centro de gestión de encargos, firmas y actividad del apoderado.</p>
           </div>
         </div>
-        <div>
-          <div>
-            <span />
-            <span>{fechaActual}</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigate("/modulos")}
-            className="flex items-center gap-2 px-3 py-2"
-          >
-            <span aria-hidden="true">▦</span> Ir a módulos
-          </button>
-          <button type="button" onClick={cargarDatos} disabled={cargando}>
-            <span className={cargando ? "" : ""} aria-hidden="true">↻</span>
-            {cargando ? "Actualizando…" : "Actualizar datos"}
-          </button>
-        </div>
+
       </header>
 
       {error ? (
