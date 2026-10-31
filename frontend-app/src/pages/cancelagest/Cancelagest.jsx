@@ -24,14 +24,14 @@ const fmtMes = (v) => {
 
 function GraficoBarras({ items, labelKey, valueKey, formatter = fmtNumero, emptyText }) {
   const max = Math.max(1, ...items.map((x) => Number(x[valueKey] || 0)));
-  if (!items.length) return <p>{emptyText}</p>;
-  return <div>
+  if (!items.length) return <p className="molsan-empty-state">{emptyText}</p>;
+  return <div className="molsan-chart-bars">
     {items.map((item) => {
       const valor = item[valueKey];
       const pct = valor == null ? 0 : Math.max(0, Math.min(100, (Number(valor) / max) * 100));
-      return <div key={item[labelKey]}>
-        <div title={item[labelKey]}>{item[labelKey]}</div>
-        <div><div className={`${valor == null ? "is-empty" : ""}`} style={{ width: `${pct}%` }} /></div>
+      return <div key={item[labelKey]} className="molsan-chart-row">
+        <div className="molsan-chart-label" title={item[labelKey]}>{item[labelKey]}</div>
+        <div className="molsan-chart-track"><div className={`molsan-chart-bar ${valor == null ? "is-empty" : ""}`} style={{ width: `${pct}%` }} /></div>
         <strong>{formatter(valor)}</strong>
       </div>;
     })}
@@ -82,9 +82,9 @@ export default function Cancelagest() {
 
       <section>
         <article><span>Cancelaciones registradas</span><strong>{cargando && !datos ? "…" : fmtNumero(datos?.total_cancelaciones)}</strong><small>Expedientes identificados como cancelación</small></article>
-        <article><span>Firmas realizadas</span><strong>{cargando && !datos ? "…" : fmtNumero(datos?.total_firmadas)}</strong><small>Cancelaciones con fecha de firma</small></article>
-        <article><span>Cancelaciones con provisión</span><strong>{fmtNumero(categorias.find((x) => x.key === "con_provision")?.total)}</strong><small>Con provisión identificada</small></article>
-        <article><span>Cancelaciones sin provisión</span><strong>{fmtNumero(categorias.find((x) => x.key === "sin_provision")?.total)}</strong><small>Sin provisión identificada</small></article>
+        <article className="molsan-stat-card"><span>Firmas realizadas</span><strong>{cargando && !datos ? "…" : fmtNumero(datos?.total_firmadas)}</strong><small>Cancelaciones con fecha de firma</small></article>
+        <article className="molsan-stat-card"><span>Cancelaciones con provisión</span><strong>{fmtNumero(categorias.find((x) => x.key === "con_provision")?.total)}</strong><small>Con provisión identificada</small></article>
+        <article className="molsan-stat-card"><span>Cancelaciones sin provisión</span><strong>{fmtNumero(categorias.find((x) => x.key === "sin_provision")?.total)}</strong><small>Sin provisión identificada</small></article>
       </section>
 
       <section>
