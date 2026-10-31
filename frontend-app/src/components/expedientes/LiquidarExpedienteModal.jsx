@@ -148,28 +148,28 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
           <section className="p-4">
             <h3 className="mb-3">Tipo de documento</h3>
             <div className="grid gap-3 sm:grid-cols-2">
-              <label className="">Tipo de documento (enlazado con Envío a notario)
+              <label>Tipo de documento (enlazado con Envío a notario)
                 <input value={form.tipo_documento || ""} readOnly aria-readonly="true" className="mt-1 w-full px-3 py-2" />
               </label>
-              <label className="">ID del documento
+              <label>ID del documento
                 <input value={valor(expediente, "id_documento", "id_documento_notarial", "numero_documento") || "Se conserva el identificador existente"} readOnly className="mt-1 w-full px-3 py-2" />
               </label>
             </div>
           </section>
           <section className="p-4">
-            <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h3 className="">Provisión y movimientos</h3><span className="px-3 py-2">Provisión inicial: {dinero(importeInicial)}</span></div>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h3>Provisión y movimientos</h3><span className="px-3 py-2">Provisión inicial: {dinero(importeInicial)}</span></div>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[680px]">
                 <thead className="uppercase"><tr><th className="px-3 py-2">Fecha</th><th className="px-3 py-2">Tipo de documento / movimiento</th><th className="px-3 py-2">Importe</th><th className="px-3 py-2">Pago realizado</th></tr></thead>
                 <tbody>
-                  <tr className=""><td className="px-3 py-2">—</td><td className="px-3 py-2">Provisión de fondos inicial</td><td className="px-3 py-2">{dinero(importeInicial)}</td><td className="px-3 py-2">Provisión registrada</td></tr>
-                  {filas.map((fila, idx) => <tr key={fila.id || idx} className="">
+                  <tr><td className="px-3 py-2">—</td><td className="px-3 py-2">Provisión de fondos inicial</td><td className="px-3 py-2">{dinero(importeInicial)}</td><td className="px-3 py-2">Provisión registrada</td></tr>
+                  {filas.map((fila, idx) => <tr key={fila.id || idx}>
                     <td className="whitespace-nowrap px-3 py-2">{String(fila.fecha_pago || fila.fecha || fila.fecha_factura || "").slice(0,10) || "—"}</td>
                     <td className="px-3 py-2">{fila._tipo}</td>
                     <td className="whitespace-nowrap px-3 py-2">{dinero(fila.importe_total_bruto ?? fila.importe ?? fila.importe_resultante)}</td>
                     <td className="px-3 py-2"><span className={fila._pagado ? "" : ""}>{fila._pagado ? "Pagado" : "Pendiente · registrar desde Pagar"}</span></td>
                   </tr>)}
-                  <tr className=""><td className="whitespace-nowrap px-3 py-2">{form.fecha_fin_actividad || "—"}</td><td className="px-3 py-2">Liquidación final</td><td className="px-3 py-2">{dinero(saldoLiquidacion)}</td><td className="px-3 py-2">Saldo calculado</td></tr>
+                  <tr><td className="whitespace-nowrap px-3 py-2">{form.fecha_fin_actividad || "—"}</td><td className="px-3 py-2">Liquidación final</td><td className="px-3 py-2">{dinero(saldoLiquidacion)}</td><td className="px-3 py-2">Saldo calculado</td></tr>
                 </tbody>
               </table>
             </div>
@@ -180,21 +180,21 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {[
                 ["facturacion_nombre","Nombre / razón social"],["facturacion_apellidos","Apellidos"],["facturacion_dni_nif","DNI / NIF"],["facturacion_direccion","Dirección"],["facturacion_codigo_postal","Código postal"],["facturacion_poblacion","Población"],["facturacion_provincia","Provincia"],["facturacion_telefono","Teléfono"],["facturacion_email","Email"],
-              ].map(([campo, etiqueta]) => <label key={campo} className="">{etiqueta}<input value={form[campo] || ""} readOnly aria-readonly="true" className="mt-1 w-full px-3 py-2" /></label>)}
+              ].map(([campo, etiqueta]) => <label key={campo}>{etiqueta}<input value={form[campo] || ""} readOnly aria-readonly="true" className="mt-1 w-full px-3 py-2" /></label>)}
             </div>
           </section>
           <section className="p-4">
             <h3 className="mb-2">Checklist del expediente</h3>
             <p className="mb-3">Se muestra la comprobación existente de la ficha; no se crea una lista paralela.</p>
-            {checklist || <p className="">La checklist existente no está disponible en este momento.</p>}
+            {checklist || <p>La checklist existente no está disponible en este momento.</p>}
           </section>
           <section className="p-4">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
-                <h3 className="">📚 Cierre documental digital</h3>
+                <h3>📚 Cierre documental digital</h3>
                 <p className="mt-1">Genera una vista previa sin guardar. Tras revisarla, pulsa «Aceptar y guardar en Carpeta digital» para registrar el PDF en Expediente digital completo. Orden: Hoja de liquidación, Factura notario, Factura registro, Factura Honorarios gestoría, Copia simple, Justificación de cancelación, AJD / ITP y Hoja de inscripción.</p>
                 {cierreDocumental && <div className={`mt-3 px-3 py-2 ${cierreDocumental.guardado ? "" : ""}`}>
-                  <p className="">{cierreDocumental.mensaje || "PDF de cierre documental preparado."}</p>
+                  <p>{cierreDocumental.mensaje || "PDF de cierre documental preparado."}</p>
                   <p className="mt-1">{Number(cierreDocumental.paginas || 0)} páginas · {Array.isArray(cierreDocumental.documentos_incluidos) ? cierreDocumental.documentos_incluidos.length : 0} documento(s).</p>
                   {Array.isArray(cierreDocumental.documentos_faltantes) && cierreDocumental.documentos_faltantes.length > 0 && <p className="mt-1">No encontrados: {cierreDocumental.documentos_faltantes.join(", ")}.</p>}
                 </div>}
@@ -217,13 +217,13 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
     <div className="vista-previa-cierre-modal fixed inset-0 z-[10010] flex items-center justify-center p-2 sm:p-5">
       <section ref={previewDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="vista-previa-cierre-titulo" className="flex h-[96vh] w-full max-w-6xl flex-col overflow-hidden">
         <header className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
-          <div><h2 id="vista-previa-cierre-titulo" className="">Vista previa · Expediente digital completo</h2><p className="mt-1">Aún no está guardado. Revísalo antes de aceptar.</p></div>
+          <div><h2 id="vista-previa-cierre-titulo">Vista previa · Expediente digital completo</h2><p className="mt-1">Aún no está guardado. Revísalo antes de aceptar.</p></div>
           <button type="button" onClick={cerrarVistaPrevia} className="px-3 py-2">Cancelar</button>
         </header>
         {metadataVistaPrevia?.documentos_faltantes?.length > 0 && <p className="px-4 py-2">Faltan documentos: {metadataVistaPrevia.documentos_faltantes.join(", ")}. Puedes revisar el PDF, pero comprueba si quieres aceptarlo incompleto.</p>}
         <iframe title="Vista previa del PDF de cierre" src={vistaPreviaUrl} className="min-h-0 flex-1" />
         <footer className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
-          <p className="">{Number(metadataVistaPrevia?.paginas || 0)} páginas · {Array.isArray(metadataVistaPrevia?.documentos_incluidos) ? metadataVistaPrevia.documentos_incluidos.length : 0} documento(s)</p>
+          <p>{Number(metadataVistaPrevia?.paginas || 0)} páginas · {Array.isArray(metadataVistaPrevia?.documentos_incluidos) ? metadataVistaPrevia.documentos_incluidos.length : 0} documento(s)</p>
           <div className="flex gap-2"><button type="button" onClick={cerrarVistaPrevia} className="px-4 py-2">Cancelar</button><button type="button" onClick={aceptarCierreDocumental} disabled={guardandoCierreDocumental} className="px-4 py-2">{guardandoCierreDocumental ? "Guardando PDF…" : "Aceptar y guardar en Carpeta digital"}</button></div>
         </footer>
       </section>
