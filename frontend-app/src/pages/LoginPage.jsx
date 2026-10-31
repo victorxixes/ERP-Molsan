@@ -119,7 +119,7 @@ export default function LoginPage() {
           <div>
             <label htmlFor="usuario" className="mb-2 block">Usuario</label>
             <div className="relative">
-              <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2" aria-hidden="true">👤</span>
+              <span className="pointer-events-none absolute left-4 top-1/2" aria-hidden="true">👤</span>
               <input
                 id="usuario"
                 type="text"
@@ -137,7 +137,7 @@ export default function LoginPage() {
           <div>
             <label htmlFor="password" className="mb-2 block">Contraseña</label>
             <div className="relative">
-              <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2" aria-hidden="true">🔒</span>
+              <span className="pointer-events-none absolute left-4 top-1/2" aria-hidden="true">🔒</span>
               <input
                 id="password"
                 type={mostrarPass ? "text" : "password"}
@@ -153,7 +153,7 @@ export default function LoginPage() {
                 onClick={() => setMostrarPass((valor) => !valor)}
                 disabled={cargando}
                 aria-label={mostrarPass ? "Ocultar contraseña" : "Mostrar contraseña"}
-                className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center"
+                className="absolute right-3 top-1/2 flex h-9 w-9 items-center justify-center"
               >
                 {mostrarPass ? "🙈" : "👁️"}
               </button>
