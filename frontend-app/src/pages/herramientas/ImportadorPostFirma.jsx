@@ -5,7 +5,7 @@ import axios from "../../api/axios";
 const CAMPO = "block w-full px-3 py-2.5";
 
 function Metrica({ titulo, valor, detalle }) {
-  return <div className="p-4">
+  return <div className="molsan-stat-card p-4">
     <p>{titulo}</p>
     <p className="mt-1">{valor ?? "—"}</p>
     {detalle && <p className="mt-1">{detalle}</p>}
@@ -109,7 +109,7 @@ export default function ImportadorPostFirma() {
     <main className="erp-page min-h-full min-w-0 space-y-5">
       <MolsanPageHeader mark="PF" title="Importador Post Firma" description="Carga y consulta el histórico ABSIS sin aplicarlo a expedientes ni a gastos operativos." />
 
-      <section className="p-5 md:p-6">
+      <section className="erp-card p-5 md:p-6">
         <h2>1. Seleccionar Excel</h2>
         <p className="mt-1">Se conserva el contenido original de cada fila con datos y todas las columnas detectadas, incluida TIPOCONCEPTO cuando venga en el fichero.</p>
         <div className="mt-4 max-w-3xl">
@@ -122,11 +122,11 @@ export default function ImportadorPostFirma() {
           <button type="button" onClick={() => ejecutar("validar")} disabled={cargando || !archivo} className="px-4 py-2.5">{cargando ? "Procesando…" : "Previsualizar sin guardar"}</button>
           <button type="button" onClick={() => ejecutar("importar")} disabled={cargando || !archivo} className="px-4 py-2.5">{cargando ? "Procesando…" : "Guardar histórico completo"}</button>
         </div>
-        <div className="mt-4 p-3"><strong>Almacenamiento aislado:</strong> esta carga no crea ni actualiza gastos, pagos o expedientes y no relaciona los IDs del cliente con los identificadores internos del ERP.</div>
+        <div className="molsan-panel mt-4 p-3"><strong>Almacenamiento aislado:</strong> esta carga no crea ni actualiza gastos, pagos o expedientes y no relaciona los IDs del cliente con los identificadores internos del ERP.</div>
         {error && <div role="alert" className="mt-4 p-4">{error}</div>}
       </section>
 
-      {validacion && <section className="space-y-4 p-5 md:p-6">
+      {validacion && <section className="erp-card space-y-4 p-5 md:p-6">
         <div><h2>2. Previsualización</h2><p className="mt-1">No se han guardado cambios.</p></div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <Metrica titulo="Filas con datos" valor={validacion.filas_con_datos} detalle={"Filas Excel: " + (validacion.filas_excel ?? "—")} />
@@ -151,7 +151,7 @@ export default function ImportadorPostFirma() {
         <button type="button" onClick={() => document.getElementById("historico-postfirma")?.scrollIntoView({ behavior: "smooth" })} className="px-4 py-2.5">Ver histórico cargado ↓</button>
       </section>}
 
-      <section id="historico-postfirma" className="space-y-4 p-5 md:p-6">
+      <section id="historico-postfirma" className="erp-card space-y-4 p-5 md:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div><h2>Histórico Post Firma · datos originales</h2><p className="mt-1">Consulta independiente por fichero. Las filas repetidas y los meses distintos se conservan por separado.</p></div>
           <button type="button" onClick={() => { cargarCargas(); cargarRegistros(cargaSeleccionada, offset); }} className="px-3 py-2">↻ Actualizar</button>
