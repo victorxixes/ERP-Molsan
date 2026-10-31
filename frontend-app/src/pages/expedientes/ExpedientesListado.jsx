@@ -734,39 +734,38 @@ function CeldaRepositorioDigital({ expedienteId, repositorioKey, valor, onAbrir 
         type="button"
         onClick={onAbrir}
         className="inline-flex items-center gap-1.5 px-2 py-1.5"
-        style={{ borderColor: "var(--erp-border)", color: "var(--erp-primary)", background: "var(--erp-surface)" }}
-        title={`Abrir carpeta y ver ${cantidad} archivo(s)`}
+                title={`Abrir carpeta y ver ${cantidad} archivo(s)`}
         aria-label={`Abrir ${cantidad} documento(s)`}
       >
         <span aria-hidden="true">📄</span>
         <span>{cantidad > 1 ? cantidad : "PDF"}</span>
       </button>
       {hover && (
-        <div className="absolute z-50 left-0 top-full mt-2 w-[min(560px,80vw)] p-3" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface)", color: "var(--erp-text)" }} onMouseEnter={() => setHover(true)}>
+        <div className="absolute z-50 left-0 top-full mt-2 w-[min(560px,80vw)] p-3" onMouseEnter={() => setHover(true)}>
           <div className="mb-2 flex items-center justify-between gap-2">
             <strong className="">{REPOSITORIOS_CARPETA_DIGITAL.find((item) => item.key === repositorioKey)?.label || "Documentos"}</strong>
-            <span className="" style={{ color: "var(--erp-text-soft)" }}>{cantidad} archivo(s)</span>
+            <span className="" {cantidad} archivo(s)</span>
           </div>
-          {cargandoDocs ? <p className="">Cargando documentos…</p> : errorDocs ? <p className="">{errorDocs}</p> : documentos.length === 0 ? <p className="" style={{ color: "var(--erp-text-soft)" }}>No se han podido localizar los archivos de esta categoría.</p> : (
+          {cargandoDocs ? <p className="">Cargando documentos…</p> : errorDocs ? <p className="">{errorDocs}</p> : documentos.length === 0 ? <p className="" No se han podido localizar los archivos de esta categoría.</p> : (
             <div className="grid gap-3 sm:grid-cols-[minmax(140px,0.8fr)_minmax(0,1.4fr)]">
               <div className="max-h-56 space-y-1 overflow-auto">
                 {documentos.map((doc) => (
                   <button key={doc.id} type="button" onMouseEnter={() => previsualizar(doc)} onFocus={() => previsualizar(doc)} onClick={() => previsualizar(doc)} className="block w-full px-2 py-2" title={doc.nombre_original || "Ver documento"}>
                     <span className="mr-1" aria-hidden="true">📄</span>{doc.nombre_original || "Documento"}
-                    {doc.fecha_subida && <span className="mt-1 block" style={{ color: "var(--erp-text-soft)" }}>{new Date(doc.fecha_subida).toLocaleDateString("es-ES")}</span>}
+                    {doc.fecha_subida && <span className="mt-1 block" {new Date(doc.fecha_subida).toLocaleDateString("es-ES")}</span>}
                   </button>
                 ))}
               </div>
-              <div className="min-h-40 overflow-hidden" style={{ borderColor: "var(--erp-border)" }}>
+              <div className="min-h-40 overflow-hidden" 
                 {cargandoPreview ? <p className="p-3">Preparando vista previa…</p> : previewUrl ? (
                   previewNombre.toLowerCase().endsWith(".pdf") || documentos.find((doc) => doc.nombre_original === previewNombre)?.tipo_mime === "application/pdf" ? (
                     <iframe title={`Vista previa de ${previewNombre}`} src={previewUrl} className="h-56 w-full" />
                   ) : <div className="p-3">Vista previa disponible para PDF. Pulsa el icono para abrir la carpeta y descargar este archivo.</div>
-                ) : <p className="p-3" style={{ color: "var(--erp-text-soft)" }}>Pasa el ratón por un PDF para ver su contenido aquí.</p>}
+                ) : <p className="p-3" Pasa el ratón por un PDF para ver su contenido aquí.</p>}
               </div>
             </div>
           )}
-          <p className="mt-2" style={{ color: "var(--erp-text-soft)" }}>Pulsa el icono para abrir la carpeta digital completa.</p>
+          <p className="mt-2" Pulsa el icono para abrir la carpeta digital completa.</p>
         </div>
       )}
     </div>
@@ -2491,30 +2490,25 @@ export default function ExpedientesListado() {
                   setPagina(1);
                 }}
                 className="p-4 hover:-translate-y-0.5"
-                style={{
-                  borderColor: activa ? circuito.borde : "var(--erp-border)",
-                  background: activa ? circuito.fondo : "var(--erp-surface)",
-                  boxShadow: activa ? `0 0 0 1px ${circuito.borde}` : undefined,
-                }}
-              >
+                              >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-12 w-12 shrink-0 items-center justify-center" style={{ background: circuito.fondo }}>{circuito.icono}</span>
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center" {circuito.icono}</span>
                     <div className="min-w-0">
                       <div className="">{circuito.titulo}</div>
                       <div className="mt-1">{circuito.descripcion}</div>
                     </div>
                   </div>
-                  <span className="px-3 py-1 whitespace-nowrap" style={{ borderColor: circuito.borde, color: circuito.borde }}>{circuito.plazo}</span>
+                  <span className="px-3 py-1 whitespace-nowrap" {circuito.plazo}</span>
                 </div>
                 <div className="mt-4 flex items-end justify-between gap-3">
                   <div>
-                    <div className="tabular-nums" style={{ color: circuito.borde }}>
+                    <div className="tabular-nums" 
                       {loadingAlertasControl ? "—" : formatearNumero(total)}
                     </div>
                     <div className="">expedientes fuera de plazo</div>
                   </div>
-                  <div className="" style={{ color: circuito.borde }}>
+                  <div className="" 
                     {activa ? "Circuito seleccionado ✓" : "Ver expedientes →"}
                   </div>
                 </div>
@@ -2553,15 +2547,14 @@ export default function ExpedientesListado() {
                   setPagina(1);
                 }}
                 className="min-h-[116px] p-4 hover:-translate-y-0.5"
-                style={{ background: activa ? estado.fondo : "var(--erp-surface)", borderColor: activa ? estado.borde : "var(--erp-border)", boxShadow: activa ? `0 0 0 1px ${estado.borde}` : undefined }}
-              >
+                              >
                 <div className="flex items-start justify-between gap-3">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center" style={{ background: estado.fondo }}>{estado.icono}</span>
-                  <span className="tabular-nums" style={{ color: estado.borde }}>{loading ? "…" : formatearNumero(totalesEstadosDiferenciales[estado.codigo])}</span>
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center" {estado.icono}</span>
+                  <span className="tabular-nums" {loading ? "…" : formatearNumero(totalesEstadosDiferenciales[estado.codigo])}</span>
                 </div>
                 <div className="mt-3">{estado.titulo}</div>
                 <div className="mt-1">Estado ABSIS: {estado.codigo}</div>
-                <div className="mt-2" style={{ color: activa ? estado.borde : "var(--erp-text-soft)" }}>{activa ? "Estado seleccionado · pulsa para quitar" : "Ver expedientes →"}</div>
+                <div className="mt-2" {activa ? "Estado seleccionado · pulsa para quitar" : "Ver expedientes →"}</div>
               </button>
             );
           })}
@@ -2570,13 +2563,12 @@ export default function ExpedientesListado() {
       {/* Acciones principales: agrupadas justo debajo de los bloques de tarjetas */}
       <section className="w-full flex flex-wrap items-center justify-start gap-2 -mt-2" aria-label="Acciones de expedientes">
         <button type="button" onClick={exportarExcel} disabled={loading} className="molsan-export-excel"><span className="molsan-export-excel__icon" aria-hidden="true">📗</span>{loading ? "Preparando Excel…" : "Exportar a Excel"}</button>
-        <button type="button" onClick={() => setMostrarFiltros(true)} className="px-4 py-2.5" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)", background: "var(--erp-surface)" }}>🔎 Filtros avanzados</button>
+        <button type="button" onClick={() => setMostrarFiltros(true)} className="px-4 py-2.5" 🔎 Filtros avanzados</button>
         <button
           type="button"
           onClick={() => setMostrarAyudaControlPlazos(true)}
           className="inline-flex items-center justify-center gap-2 px-4 py-2.5 hover:-translate-y-0.5"
-          style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface)", color: "var(--erp-primary)" }}
-        >
+                  >
           📌 Ver Control de plazos
         </button>
       </section>
@@ -2586,7 +2578,7 @@ export default function ExpedientesListado() {
       <section className="space-y-3" aria-label="Expedientes por actividad">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div><h3 className="">{(configuracionesVisibilidad.find((item) => item.actividad_key === actividadSeleccionada)?.nombre_tabla) || "Expedientes por actividad"}</h3><p className="">Pulsa un grid para ver debajo la tabla con los expedientes de esa actividad.</p></div>
-          {actividadSeleccionada && <button type="button" onClick={() => { setActividadSeleccionada(""); setAlertaSeleccionada(""); setColumnasVisibles(COLUMNAS_POR_DEFECTO); setFiltroActividad(""); setFiltrosAplicados((actual) => ({ ...actual, actividad: "" })); setPagina(1); }} className="self-start px-3 py-2" style={{ borderColor: "var(--erp-border)", color: "var(--erp-primary)", background: "var(--erp-surface)" }}>Ver todas las actividades</button>}
+          {actividadSeleccionada && <button type="button" onClick={() => { setActividadSeleccionada(""); setAlertaSeleccionada(""); setColumnasVisibles(COLUMNAS_POR_DEFECTO); setFiltroActividad(""); setFiltrosAplicados((actual) => ({ ...actual, actividad: "" })); setPagina(1); }} className="self-start px-3 py-2" Ver todas las actividades</button>}
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {ACTIVIDADES_EXPEDIENTES.map((actividad) => {
@@ -2612,23 +2604,23 @@ export default function ExpedientesListado() {
                 setFiltrosAplicados((actual) => ({ ...actual, actividad: activa ? "" : valorBackend })); setPagina(1);
               }}
               className="min-h-[148px] p-4 hover:-translate-y-0.5"
-              style={{ background: activa ? "var(--erp-primary-soft)" : "var(--erp-surface)", borderColor: activa ? "var(--erp-primary)" : "var(--erp-border)", boxShadow: activa ? "0 0 0 1px var(--erp-primary)" : undefined }}>
-              <div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center" style={{ background: activa ? "rgba(59,130,246,.14)" : "var(--erp-surface-soft)" }}>{actividad.icono}</span><span className="tabular-nums" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text)" }}>{loadingActividades ? "…" : formatearNumero(total)}</span></div>
+              
+              <div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center" {actividad.icono}</span><span className="tabular-nums" {loadingActividades ? "…" : formatearNumero(total)}</span></div>
               <div className="mt-3">{actividad.label}</div>
               <div className="mt-3">
                 {loadingAlertasControl ? (
-                  <span className="inline-flex items-center px-2.5 py-1" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)" }}>Calculando plazos…</span>
+                  <span className="inline-flex items-center px-2.5 py-1" Calculando plazos…</span>
                 ) : reglaPlazo ? (
                   <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold ${cantidadPlazo > 0 ? "" : ""}`}>
                     {cantidadPlazo > 0 ? "⚠ " : "✓ "}{reglaPlazo.etiqueta(formatearNumero(cantidadPlazo))}
                   </span>
                 ) : (
                   actividad.key !== "documentacion-previa" ? (
-                    <span className="inline-flex items-center px-2.5 py-1" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)", background: "var(--erp-surface-soft)" }}>Sin alerta de plazo</span>
+                    <span className="inline-flex items-center px-2.5 py-1" Sin alerta de plazo</span>
                   ) : null
                 )}
               </div>
-              <div className="mt-2" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text-soft)" }}>{activa ? "Actividad seleccionada · pulsa para quitar" : "Ver expedientes →"}</div>
+              <div className="mt-2" {activa ? "Actividad seleccionada · pulsa para quitar" : "Ver expedientes →"}</div>
             </button>;
           })}
         </div>
@@ -2636,8 +2628,7 @@ export default function ExpedientesListado() {
       {/* BÚSQUEDA FÁCIL: ocupa todo el ancho disponible */}
       <section
         className="w-full p-3 sm:p-4 space-y-2"
-        style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
-        aria-label="Buscar expedientes"
+                aria-label="Buscar expedientes"
       >
         <div>
           <h3 className="">¿Qué expediente necesitas?</h3>
@@ -2662,14 +2653,13 @@ export default function ExpedientesListado() {
               placeholder="Ej.: 2026-00123, María García, notario, finca…"
               aria-label="Buscar en todos los datos de los expedientes"
               className="w-full py-3 pl-10 pr-3"
-              style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}
-            />
+                          />
           </div>
-          <button type="submit" className="px-5 py-3" style={{ background: "var(--erp-primary)" }}>
+          <button type="submit" className="px-5 py-3" 
             Buscar
           </button>
           {(busquedaRapida || busquedaAplicada) && (
-            <button type="button" onClick={() => { setBusquedaRapida(""); setBusquedaAplicada(""); setPagina(1); }} className="px-4 py-3" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
+            <button type="button" onClick={() => { setBusquedaRapida(""); setBusquedaAplicada(""); setPagina(1); }} className="px-4 py-3" 
               Limpiar búsqueda
             </button>
           )}
@@ -2874,7 +2864,7 @@ export default function ExpedientesListado() {
                               />
                             ) : columna.key === "carpeta_digital" ? (
                               Number.parseInt(String(expediente[columna.key] || "").match(/\d+/)?.[0] || "0", 10) > 0 ? (
-                                <button type="button" onClick={() => setCarpetaDigitalSeleccionada({ expedienteId: expediente.id_expediente || expediente.id, actividadId: actividadSeleccionada })} className="px-2 py-1" style={{ borderColor: "var(--erp-border)", color: "var(--erp-primary)" }}>📂 {expediente[columna.key]}</button>
+                                <button type="button" onClick={() => setCarpetaDigitalSeleccionada({ expedienteId: expediente.id_expediente || expediente.id, actividadId: actividadSeleccionada })} className="px-2 py-1" 📂 {expediente[columna.key]}</button>
                               ) : null
                             ) : columna.key === "id_expediente" ? (
                               <Link to={`/expedientes/${encodeURIComponent(expediente.id_expediente || expediente.id || "")}`} className="underline-offset-2" title={`Abrir ficha del expediente ${expediente.id_expediente || expediente.id || ""}`}>
@@ -3087,17 +3077,15 @@ export default function ExpedientesListado() {
             aria-modal="true"
             aria-labelledby="modal-filtros-titulo"
             className="relative z-10 w-full max-w-5xl max-h-[88vh] overflow-y-auto"
-            style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
-          >
+                      >
             <div
               className="sticky top-0 z-10 px-6 py-5 flex items-start justify-between gap-4"
-              style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
-            >
+                          >
               <div>
-                <h3 id="modal-filtros-titulo" className="" style={{ color: "var(--erp-text)" }}>
+                <h3 id="modal-filtros-titulo" className="" 
                   Filtros avanzados
                 </h3>
-                <p className="mt-1" style={{ color: "var(--erp-text-soft)" }}>
+                <p className="mt-1" 
                   Empieza por los datos que conozcas. Puedes combinar varios criterios; los campos están agrupados por tema.
                 </p>
               </div>
@@ -3105,35 +3093,34 @@ export default function ExpedientesListado() {
                 type="button"
                 onClick={() => setMostrarFiltros(false)}
                 className="shrink-0 w-10 h-10"
-                style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)" }}
-                aria-label="Cerrar"
+                                aria-label="Cerrar"
               >
                 ×
               </button>
             </div>
 
             <div className="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              <div className="md:col-span-2 xl:col-span-3 pb-2" style={{ borderColor: "var(--erp-border)" }}><h4 className="" style={{ color: "var(--erp-text)" }}>Identificación y fechas</h4><p className="mt-1" style={{ color: "var(--erp-text-soft)" }}>Localiza el expediente por número, oficina o fecha de alta.</p></div>
+              <div className="md:col-span-2 xl:col-span-3 pb-2" <h4 className="" Identificación y fechas</h4><p className="mt-1" Localiza el expediente por número, oficina o fecha de alta.</p></div>
               <FiltroInput label="N.º expediente" value={filtroNumeroExpediente} onChange={setFiltroNumeroExpediente} placeholder="Número completo o parte del expediente" />
               <FiltroSelect label="Oficina" value={filtroOficina} onChange={setFiltroOficina} options={catalogosListado.oficinas} emptyLabel="Todas las oficinas" />
               <FiltroInput label="Fecha de alta desde" type="date" value={filtroFechaInicio} onChange={setFiltroFechaInicio} />
               <FiltroInput label="Fecha de alta hasta" type="date" value={filtroFechaFin} onChange={setFiltroFechaFin} />
-              <div className="md:col-span-2 xl:col-span-3 pb-2 mt-2" style={{ borderColor: "var(--erp-border)" }}><h4 className="" style={{ color: "var(--erp-text)" }}>Personas y notaría</h4><p className="mt-1" style={{ color: "var(--erp-text-soft)" }}>Titular, solicitante y notario asociados al expediente.</p></div>
+              <div className="md:col-span-2 xl:col-span-3 pb-2 mt-2" <h4 className="" Personas y notaría</h4><p className="mt-1" Titular, solicitante y notario asociados al expediente.</p></div>
               <FiltroInput label="NIF titular" value={filtroNifTitular} onChange={setFiltroNifTitular} placeholder="NIF / CIF titular" />
               <FiltroInput label="Nombre titular" value={filtroNombreTitular} onChange={setFiltroNombreTitular} placeholder="Nombre o razón social" />
               <FiltroInput label="NIF solicitante" value={filtroNifSolicitante} onChange={setFiltroNifSolicitante} placeholder="NIF / CIF solicitante" />
               <FiltroInput label="Nombre solicitante" value={filtroNombreSolicitante} onChange={setFiltroNombreSolicitante} placeholder="Nombre o razón social" />
               <FiltroSelect label="Notario" value={filtroNotario} onChange={setFiltroNotario} options={catalogosListado.notarios} emptyLabel="Todos los notarios" />
               <FiltroInput label="NIF notario" value={filtroNifNotario} onChange={setFiltroNifNotario} placeholder="NIF notario" />
-              <div className="md:col-span-2 xl:col-span-3 pb-2 mt-2" style={{ borderColor: "var(--erp-border)" }}><h4 className="" style={{ color: "var(--erp-text)" }}>Registro y economía</h4><p className="mt-1" style={{ color: "var(--erp-text-soft)" }}>Finca, registro, importes, observaciones y estado de tramitación.</p></div>
+              <div className="md:col-span-2 xl:col-span-3 pb-2 mt-2" <h4 className="" Registro y economía</h4><p className="mt-1" Finca, registro, importes, observaciones y estado de tramitación.</p></div>
               <FiltroInput label="Finca" value={filtroFinca} onChange={setFiltroFinca} placeholder="Número o referencia de finca" />
               <div>
-                <label className="block mb-1" style={{ color: "var(--erp-text)" }}>Registro de la Propiedad</label>
-                <select value={filtroRegistroPropiedad} onChange={(event) => setFiltroRegistroPropiedad(event.target.value)} className="w-full px-3 py-2.5" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
+                <label className="block mb-1" Registro de la Propiedad</label>
+                <select value={filtroRegistroPropiedad} onChange={(event) => setFiltroRegistroPropiedad(event.target.value)} className="w-full px-3 py-2.5" 
                   <option value="">Todos los registros</option>
                   {(catalogosListado.registros.length ? catalogosListado.registros : [...new Set(expedientes.map((item) => item.registro_propiedad || item.nombre_registro || item.registro).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es"))).map((registro) => <option key={registro} value={registro}>{registro}</option>)}
                 </select>
-                <p className="mt-1" style={{ color: "var(--erp-text-soft)" }}>Opciones del catálogo completo de registros, independientemente de la página del listado.</p>
+                <p className="mt-1" Opciones del catálogo completo de registros, independientemente de la página del listado.</p>
               </div>
               <FiltroInput label="Saldo real" type="number" value={filtroSaldoReal} onChange={setFiltroSaldoReal} placeholder="Importe exacto" />
               <FiltroInput label="Saldo disponible" type="number" value={filtroSaldoDisponible} onChange={setFiltroSaldoDisponible} placeholder="Importe exacto" />
@@ -3141,29 +3128,29 @@ export default function ExpedientesListado() {
               <FiltroInput label="Observaciones" value={filtroObservaciones} onChange={setFiltroObservaciones} placeholder="Texto a buscar" />
               <FiltroInput label="Promoción" value={filtroPromocion} onChange={setFiltroPromocion} placeholder="Referencia interna" />
               <div>
-                <label className="block mb-1" style={{ color: "var(--erp-text)" }}>Estado actividad</label>
-                <select value={filtroEstadoActividad} onChange={(event) => setFiltroEstadoActividad(event.target.value)} className="w-full px-3 py-2.5" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
+                <label className="block mb-1" Estado actividad</label>
+                <select value={filtroEstadoActividad} onChange={(event) => setFiltroEstadoActividad(event.target.value)} className="w-full px-3 py-2.5" 
                   <option value="">Todos los estados</option>
                   {(catalogosListado.estados_actividad.length ? catalogosListado.estados_actividad : [...new Set(expedientes.map((item) => item.estado_actividad).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es"))).map((estado) => <option key={estado} value={estado}>{estado}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block mb-1" style={{ color: "var(--erp-text)" }}>Actividad actual</label>
-                <select value={filtroActividad} onChange={(event) => setFiltroActividad(event.target.value)} className="w-full px-3 py-2.5" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
+                <label className="block mb-1" Actividad actual</label>
+                <select value={filtroActividad} onChange={(event) => setFiltroActividad(event.target.value)} className="w-full px-3 py-2.5" 
                   <option value="">Todas las actividades</option>
                   {(catalogosListado.actividades.length ? catalogosListado.actividades : actividades).map((item) => <option key={item.actividad} value={item.actividad}>{item.actividad}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block mb-1" style={{ color: "var(--erp-text)" }}>Estado expediente</label>
-                <select value={filtroEstadoExpediente} onChange={(event) => setFiltroEstadoExpediente(event.target.value)} className="w-full px-3 py-2.5" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
+                <label className="block mb-1" Estado expediente</label>
+                <select value={filtroEstadoExpediente} onChange={(event) => setFiltroEstadoExpediente(event.target.value)} className="w-full px-3 py-2.5" 
                   <option value="">Todos los estados</option>
                   {(catalogosListado.estados_expediente.length ? catalogosListado.estados_expediente : [...new Set(expedientes.map((item) => item.estado_expediente).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es"))).map((estado) => <option key={estado} value={estado}>{estado}</option>)}
                 </select>
               </div>
-              <div className="md:col-span-2 xl:col-span-3 pb-2 mt-2" style={{ borderColor: "var(--erp-border)" }}>
-                <h4 className="" style={{ color: "var(--erp-text)" }}>Clasificación ABSIS</h4>
-                <p className="mt-1" style={{ color: "var(--erp-text-soft)" }}>Filtros de categorías importadas; puedes combinarlos entre sí.</p>
+              <div className="md:col-span-2 xl:col-span-3 pb-2 mt-2" 
+                <h4 className="" Clasificación ABSIS</h4>
+                <p className="mt-1" Filtros de categorías importadas; puedes combinarlos entre sí.</p>
               </div>
               <FiltroSelect label="Origen Bankia" value={filtroOrigenBankia} onChange={setFiltroOrigenBankia} options={catalogosListado.origenes_bankia} emptyLabel="Todos los orígenes" />
               <FiltroSelect label="Producto GTG" value={filtroProductoGtg} onChange={setFiltroProductoGtg} options={catalogosListado.productos_gtg} emptyLabel="Todos los productos" />
@@ -3189,21 +3176,19 @@ export default function ExpedientesListado() {
               <FiltroSelect label="Estado facturación" value={filtroEstadoFacturacion} onChange={setFiltroEstadoFacturacion} options={catalogosListado.estados_facturacion} emptyLabel="Todos los estados de facturación" />
             </div>
 
-            <div className="px-6 py-4 flex flex-wrap items-center justify-end gap-3" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)" }}>
+            <div className="px-6 py-4 flex flex-wrap items-center justify-end gap-3" 
               <button
                 type="button"
                 onClick={limpiarFiltros}
                 className="px-4 py-2.5"
-                style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}
-              >
+                              >
                 Limpiar filtros
               </button>
               <button
                 type="button"
                 onClick={aplicarFiltros}
                 className="px-5 py-2.5"
-                style={{ background: "var(--erp-primary)" }}
-              >
+                              >
                 Aplicar filtros
               </button>
             </div>
@@ -3264,13 +3249,12 @@ export default function ExpedientesListado() {
 function FiltroSelect({ label, value, onChange, options = [], emptyLabel = "Todos" }) {
   return (
     <div>
-      <label className="block mb-1" style={{ color: "var(--erp-text)" }}>{label}</label>
+      <label className="block mb-1" {label}</label>
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
         className="w-full px-3 py-2.5"
-        style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}
-      >
+              >
         <option value="">{emptyLabel}</option>
         {options.map((option) => <option key={option} value={option}>{option}</option>)}
       </select>
