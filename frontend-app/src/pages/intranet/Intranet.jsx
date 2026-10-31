@@ -2,6 +2,8 @@ import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 const MAX_BYTES = 20 * 1024 * 1024;
 const EXT = [".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".txt", ".csv", ".png", ".jpg", ".jpeg"];
@@ -26,6 +28,7 @@ export default function Intranet() {
   const [noticias, setNoticias] = useState([]);
   const [documentos, setDocumentos] = useState([]);
   const [auditoria, setAuditoria] = useState([]);
+  const ordenAuditoria = useSortableData(auditoria);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [mensaje, setMensaje] = useState("");
@@ -166,7 +169,13 @@ export default function Intranet() {
       </section>
     </div>
 
-    {puede("editar") && <section className="p-5 sm:p-6"><div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center"><div><h2>🔐 Seguridad y mantenimiento</h2><p className="mt-1">Historial de publicaciones, modificaciones y eliminaciones por empleado.</p></div><button className={secondary} onClick={() => cargar()}>Actualizar registro</button></div>{auditoria.length ? <div className="overflow-x-auto"><table className="w-full min-w-[650px]"><thead><tr className="uppercase"><th className="px-3 py-3">Fecha</th><th className="px-3 py-3">Empleado</th><th className="px-3 py-3">Acción</th><th className="px-3 py-3">Área</th><th className="px-3 py-3">Detalle</th></tr></thead><tbody>{auditoria.map((a) => <tr key={a.id}><td className="whitespace-nowrap px-3 py-3">{prettyDate(a.fecha)}</td><td className="px-3 py-3">{a.usuario_nombre}</td><td className="px-3 py-3"><span className="px-2 py-1">{a.accion}</span></td><td className="px-3 py-3">{a.recurso === "NOTICIA" ? "Noticia" : "Documento"}</td><td className="max-w-[280px] truncate px-3 py-3" title={a.detalle || ""}>{a.detalle || "—"}</td></tr>)}</tbody></table></div> : <p className="p-4">Todavía no hay acciones registradas.</p>}</section>}
+    {puede("editar") && <section className="p-5 sm:p-6"><div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center"><div><h2>🔐 Seguridad y mantenimiento</h2><p className="mt-1">Historial de publicaciones, modificaciones y eliminaciones por empleado.</p></div><button className={secondary} onClick={() => cargar()}>Actualizar registro</button></div>{auditoria.length ? <div className="overflow-x-auto"><table className="w-full min-w-[650px]"><thead><tr className="uppercase">
+      <MolsanSortableTh label="Fecha" sortKey="fecha" sortConfig={ordenAuditoria.sortConfig} onSort={ordenAuditoria.requestSort} className="px-3 py-3" />
+      <MolsanSortableTh label="Empleado" sortKey="usuario_nombre" sortConfig={ordenAuditoria.sortConfig} onSort={ordenAuditoria.requestSort} className="px-3 py-3" />
+      <MolsanSortableTh label="Acción" sortKey="accion" sortConfig={ordenAuditoria.sortConfig} onSort={ordenAuditoria.requestSort} className="px-3 py-3" />
+      <MolsanSortableTh label="Área" sortKey="recurso" sortConfig={ordenAuditoria.sortConfig} onSort={ordenAuditoria.requestSort} className="px-3 py-3" />
+      <MolsanSortableTh label="Detalle" sortKey="detalle" sortConfig={ordenAuditoria.sortConfig} onSort={ordenAuditoria.requestSort} className="px-3 py-3" />
+    </tr></thead><tbody>{ordenAuditoria.items.map((a) => <tr key={a.id}><td className="whitespace-nowrap px-3 py-3">{prettyDate(a.fecha)}</td><td className="px-3 py-3">{a.usuario_nombre}</td><td className="px-3 py-3"><span className="px-2 py-1">{a.accion}</span></td><td className="px-3 py-3">{a.recurso === "NOTICIA" ? "Noticia" : "Documento"}</td><td className="max-w-[280px] truncate px-3 py-3" title={a.detalle || ""}>{a.detalle || "—"}</td></tr>)}</tbody></table></div> : <p className="p-4">Todavía no hay acciones registradas.</p>}</section>}
     <footer className="flex flex-col justify-between gap-2 px-1 sm:flex-row"><span>Intranet Molsan · Actualización automática cada 15 segundos.</span><span>Las descargas utilizan la sesión autenticada del empleado.</span></footer>
   </div>;
 }
