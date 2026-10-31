@@ -160,6 +160,12 @@ PLANTILLA_PERMISOS = {
         "editar",
         "eliminar",
     ],
+    "informes": [
+        "ver",
+        "crear",
+        "editar",
+        "eliminar",
+    ],
     "notificaciones": [
         "ver",
         "crear",
