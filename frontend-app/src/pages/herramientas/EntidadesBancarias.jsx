@@ -1581,7 +1581,7 @@ export default function EntidadesBancarias() {
             <div>
 
               <h1
-                className=""
+               
               >
                 Entidades Bancarias
               </h1>
@@ -1627,7 +1627,7 @@ export default function EntidadesBancarias() {
  py-2.5"
             >
 
-              <span className="">
+              <span>
                 📊
               </span>
 
@@ -1640,7 +1640,7 @@ export default function EntidadesBancarias() {
               type="button"
               onClick={descargarExcel}
               disabled={cargando || entidadesOrdenadas.length === 0}
-              className=""
+             
               title="Descargar el catálogo filtrado en Excel"
             >
               <span className="molsan-export-excel__icon" aria-hidden="true">📗</span>
@@ -1663,7 +1663,7 @@ export default function EntidadesBancarias() {
  py-2.5"
             >
 
-              <span className="">
+              <span>
                 +
               </span>
 
@@ -1879,13 +1879,13 @@ export default function EntidadesBancarias() {
       >
 
         <div
-          className=""
+         
         >
 
           Mostrando{" "}
 
           <span
-            className=""
+           
           >
             {entidadesFiltradas.length.toLocaleString(
               "es-ES"
@@ -1902,7 +1902,7 @@ export default function EntidadesBancarias() {
               {" "}de{" "}
 
               <span
-                className=""
+               
               >
                 {entidades.length.toLocaleString(
                   "es-ES"
@@ -1916,7 +1916,7 @@ export default function EntidadesBancarias() {
 
 
         <div
-          className=""
+         
         >
           Página {pagina} de {totalPaginas}
         </div>
@@ -1941,7 +1941,7 @@ export default function EntidadesBancarias() {
  justify-center"
           >
 
-            <div className="">
+            <div>
 
               <div
                 className="mx-auto
@@ -1980,7 +1980,7 @@ export default function EntidadesBancarias() {
 
 
             <h3
-              className=""
+             
             >
               No se han encontrado entidades
             </h3>
@@ -2006,7 +2006,7 @@ export default function EntidadesBancarias() {
               <thead>
 
                 <tr
-                  className=""
+                 
                 >
 
                   <th
@@ -2167,7 +2167,7 @@ export default function EntidadesBancarias() {
                         {entidad.lei ? (
 
                           <span
-                            className=""
+                           
                           >
                             {entidad.lei}
                           </span>
@@ -2175,7 +2175,7 @@ export default function EntidadesBancarias() {
                         ) : (
 
                           <span
-                            className=""
+                           
                           >
                             Sin LEI
                           </span>
@@ -2194,7 +2194,7 @@ export default function EntidadesBancarias() {
                       >
 
                         <div
-                          className=""
+                         
                         >
                           {entidad.nombre}
                         </div>
@@ -2232,7 +2232,7 @@ export default function EntidadesBancarias() {
                       >
                         {entidad.entidad_actual_id
                           ? (nombreEntidadActual(entidad) || "Entidad no disponible")
-                          : <span className="">Sin cambio</span>}
+                          : <span>Sin cambio</span>}
                       </td>
 
 
@@ -2247,7 +2247,7 @@ export default function EntidadesBancarias() {
                         {entidad.direccion || (
 
                           <span
-                            className=""
+                           
                           >
                             Sin dirección
                           </span>
@@ -2367,13 +2367,13 @@ export default function EntidadesBancarias() {
 
 
           <span
-            className=""
+           
           >
 
             Página{" "}
 
             <strong
-              className=""
+             
             >
               {pagina}
             </strong>
@@ -2381,7 +2381,7 @@ export default function EntidadesBancarias() {
             {" "}de{" "}
 
             <strong
-              className=""
+             
             >
               {totalPaginas}
             </strong>
@@ -2577,7 +2577,7 @@ function ModalImportarExcel({
               <div>
 
                 <h2
-                  className=""
+                 
                 >
                   Importar entidades bancarias desde Excel
                 </h2>
@@ -2632,7 +2632,7 @@ function ModalImportarExcel({
  gap-3"
             >
 
-              <div className="">
+              <div>
                 ℹ️
               </div>
 
@@ -2640,7 +2640,7 @@ function ModalImportarExcel({
               <div>
 
                 <p
-                  className=""
+                 
                 >
                   Formato esperado
                 </p>
@@ -3038,7 +3038,7 @@ function ModalEntidadBancaria({
             <div>
 
               <h2
-                className=""
+               
               >
                 {modo ===
                 "nuevo"
