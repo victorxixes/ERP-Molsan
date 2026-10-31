@@ -101,7 +101,7 @@ export default function LoginPage() {
   return (
     <main className="login-principal relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-8">
       <section className="relative z-10 w-full max-w-[430px] p-7 sm:p-9">
-        <header className="mb-8 text-center">
+        <header className="mb-8">
           <div className="mb-6 flex justify-center">
             <img src="/img/logo.jpg" alt="Molsan" className="h-20 w-auto object-contain sm:h-24" />
           </div>
@@ -110,7 +110,7 @@ export default function LoginPage() {
         </header>
 
         {error && (
-          <div role="alert" className="mb-5 px-4 py-3 text-center">
+          <div role="alert" className="mb-5 px-4 py-3">
             <p>{error}</p>
           </div>
         )}
@@ -129,7 +129,7 @@ export default function LoginPage() {
                 autoComplete="username"
                 disabled={cargando}
                 placeholder="Introduce tu usuario"
-                className="w-full px-4 py-3.5 pl-11 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full px-4 py-3.5 pl-11"
               />
             </div>
           </div>
@@ -146,14 +146,14 @@ export default function LoginPage() {
                 autoComplete="current-password"
                 disabled={cargando}
                 placeholder="Introduce tu contraseña"
-                className="w-full px-4 py-3.5 pl-11 pr-12 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full px-4 py-3.5 pl-11 pr-12"
               />
               <button
                 type="button"
                 onClick={() => setMostrarPass((valor) => !valor)}
                 disabled={cargando}
                 aria-label={mostrarPass ? "Ocultar contraseña" : "Mostrar contraseña"}
-                className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center disabled:opacity-30"
+                className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center"
               >
                 {mostrarPass ? "🙈" : "👁️"}
               </button>
@@ -163,12 +163,12 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={cargando}
-            className="w-full py-3.5 disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full py-3.5"
           >
             <span className="flex items-center justify-center gap-2">
               {cargando ? (
                 <>
-                  <span className="h-4 w-4 animate-spin" />
+                  <span className="h-4 w-4" />
                   Accediendo...
                 </>
               ) : "Entrar en Molsan ERP"}
@@ -176,8 +176,8 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <footer className="mt-8 border-t pt-5 text-center">
-          <p className="text-xs">Molsan ERP · Plataforma empresarial</p>
+        <footer className="mt-8 pt-5">
+          <p className="">Molsan ERP · Plataforma empresarial</p>
         </footer>
       </section>
     </main>
