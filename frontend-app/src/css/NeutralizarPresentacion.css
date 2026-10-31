@@ -811,3 +811,50 @@ textarea:focus-visible {
 }
 .molsan-subpage-header > div:first-child,
 .erp-page-header > div:first-child { min-width: 0; }
+
+/* Normalización también para páginas antiguas que aún no llevan .erp-page.
+   Solo afecta al primer elemento renderizado por la ruta, nunca a tarjetas internas. */
+.erp-main-inner > div > main[class*="min-h-full"],
+.erp-main-inner > div > div[class*="min-h-full"],
+.erp-main-inner > div > section[class*="min-h-full"] {
+  width: 100%;
+  min-width: 0;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.erp-main-inner > div > main[class*="min-h-full"] > header:first-child,
+.erp-main-inner > div > div[class*="min-h-full"] > header:first-child,
+.erp-main-inner > div > section[class*="min-h-full"] > header:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-height: 62px;
+  margin: 0 0 18px !important;
+  padding: 0 0 10px !important;
+  color: var(--molsan-blue);
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 2px solid var(--molsan-ice-strong) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.erp-main-inner > div > main[class*="min-h-full"] > header:first-child h1,
+.erp-main-inner > div > div[class*="min-h-full"] > header:first-child h1,
+.erp-main-inner > div > section[class*="min-h-full"] > header:first-child h1 {
+  margin: 0;
+  color: var(--molsan-blue);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.erp-main-inner > div > main[class*="min-h-full"] > header:first-child p,
+.erp-main-inner > div > div[class*="min-h-full"] > header:first-child p,
+.erp-main-inner > div > section[class*="min-h-full"] > header:first-child p {
+  margin-top: 3px;
+  color: var(--molsan-muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
