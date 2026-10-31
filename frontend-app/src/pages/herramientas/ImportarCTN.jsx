@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useState } from "react";
 import { useUtilidades } from "../../hooks/useUtilidades";
 
@@ -17,58 +18,15 @@ export default function ImportarCTN() {
   };
 
   return (
-    <div className="erp-page min-h-full space-y-6">
+    <div className="erp-page min-w-0 space-y-6">
 
-      {/* =====================================================
-          CABECERA
-      ===================================================== */}
+      <MolsanPageHeader mark="CT" title="Importar CTN" description="Importa información desde un fichero Excel al catálogo de notarías." />
 
-      <div
-        className="molsan-subpage-header relative overflow-hidden
- 
- 
- 
- 
- 
- p-6 sm:p-7"
-      >
-
-        <div
-          className="absolute inset-x-0 top-0 h-px"
-        />
-
-        <div className="flex items-center gap-4">
-
-          <div
-            className="flex h-12 w-12
- items-center justify-center"
-          >
-            📥
-          </div>
-
-          <div>
-
-            <h1>
-              Importar CTN
-            </h1>
-
-            <p className="mt-1">
-              Importa información desde un fichero Excel.
-            </p>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      {/* =====================================================
           PANEL IMPORTACIÓN
       ===================================================== */}
 
       <div
-        className="max-w-3xl
+        className="erp-card max-w-3xl
  relative overflow-hidden
  
  
