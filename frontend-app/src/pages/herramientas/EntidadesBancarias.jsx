@@ -1522,10 +1522,7 @@ export default function EntidadesBancarias() {
   return (
 
     <div
-      className="
- min-h-full
- p-4 sm:p-6 lg:p-8
- space-y-6"
+      className="erp-page min-w-0 space-y-6"
     >
 
       {/* =====================================================
