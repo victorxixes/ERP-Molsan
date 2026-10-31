@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import "./Notificaciones.css";
 import { useNotificacionesStore } from "../../store/notificacionesStore";
 
 /**
