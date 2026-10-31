@@ -8,7 +8,7 @@ import { puedeVerModulo } from "../../utils/permisos";
 
 /**
  * ============================================================
- * PANEL TÉCNICO — MOLSAN ERP PREMIUM 2027
+ * PANEL TÉCNICO
  * ============================================================
  *
  * Contenedor principal del área técnica.
@@ -33,7 +33,7 @@ export default function PanelTecnico() {
   );
 
   return (
-    <div className="panel-tecnico-premium w-full space-y-8">
+    <div className="w-full space-y-8">
 
       {/* ======================================================
           CABECERA
