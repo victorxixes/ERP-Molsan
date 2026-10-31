@@ -3,10 +3,9 @@ import axios from "../../api/axios";
 import { API_BASE } from "../../api/config";
 import { puedeVerModulo } from "../../utils/permisos";
 
-import "../../css/ComponentesOperativosPremium.css";
 
 /**
- * MANTENIMIENTO TÉCNICO — MOLSAN ERP PREMIUM 2027
+ * MANTENIMIENTO TÉCNICO
  *
  * Usa el cliente Axios del ERP para conservar el token JWT.
  * Las rutas /debug/* están fuera del prefijo /api en el backend;
@@ -263,7 +262,7 @@ export default function MantenimientoTecnico() {
 
   if (!accesoPermitido) {
     return (
-      <div className="mantenimiento-tecnico-premium p-6">
+      <div className="p-6">
         <div className="mx-auto max-w-3xl p-6">
           <div className="">🔒 Acceso restringido</div>
           <p className="mt-2">
@@ -276,7 +275,7 @@ export default function MantenimientoTecnico() {
   }
 
   return (
-    <main className="mantenimiento-tecnico-premium utilidades-premium-page min-h-full min-w-0 space-y-6 p-4 sm:p-6 lg:p-8">
+    <main className="min-h-full min-w-0 space-y-6 p-4 sm:p-6 lg:p-8">
       <header className="relative overflow-hidden p-6 sm:p-8">
         <div className="absolute inset-x-0 top-0 h-1" />
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
