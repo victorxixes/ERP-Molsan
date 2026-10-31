@@ -415,7 +415,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
   // ============================================================
 
   return (
-    <div className="agenda-premium-page min-w-0 space-y-5 p-3 sm:p-4 lg:p-6">
+    <div className="min-w-0 space-y-5 p-3 sm:p-4 lg:p-6">
       {/* CABECERA Y NAVEGACIÓN */}
 
       <div className="erp-card p-4">
@@ -480,7 +480,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
             </span>
           )}
 
-          {soloApoderado ? <button type="button" onClick={imprimirAgenda} className="ag-print-action" title="Imprimir la vista actual de la agenda">⎙ Imprimir agenda</button> : null}
+          {soloApoderado ? <button type="button" onClick={imprimirAgenda}  title="Imprimir la vista actual de la agenda">⎙ Imprimir agenda</button> : null}
 
           {/* SELECTOR DE VISTA */}
 
