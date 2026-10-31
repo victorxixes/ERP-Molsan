@@ -113,8 +113,8 @@ export default function CatalogoOficinas() {
       <section className="p-5 space-y-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="">Importar desde Excel</h2>
-            <p className="">Se admiten .xlsx y .xls. El archivo debe contener las 13 columnas del catálogo.</p>
+            <h2>Importar desde Excel</h2>
+            <p>Se admiten .xlsx y .xls. El archivo debe contener las 13 columnas del catálogo.</p>
           </div>
           <span className="px-3 py-1">Solo datos importados por ti</span>
         </div>
@@ -134,11 +134,11 @@ export default function CatalogoOficinas() {
         {error && <div role="alert" className="px-4 py-3">{Array.isArray(error) ? error.join(" · ") : error}</div>}
         {previsualizacion && (
           <div className="space-y-3 p-4">
-            <h3 className="">Resultado de la previsualización · {previsualizacion.archivo}</h3>
+            <h3>Resultado de la previsualización · {previsualizacion.archivo}</h3>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {[["Filas válidas", previsualizacion.oficinas_validas], ["Oficinas nuevas", previsualizacion.nuevas], ["Se actualizarán", previsualizacion.actualizaciones], ["Errores", previsualizacion.errores?.length || 0]].map(([etiqueta, valor]) => (
                 <div key={etiqueta} className="p-3">
-                  <p className="">{etiqueta}</p>
+                  <p>{etiqueta}</p>
                   <p className="mt-1">{valor}</p>
                 </div>
               ))}
@@ -147,12 +147,12 @@ export default function CatalogoOficinas() {
             {previsualizacion.muestra?.length > 0 && (
               <div className="overflow-x-auto">
                 <table className="min-w-[1100px] w-full">
-                  <thead className=""><tr>{columnasVisibles.map(([campo, titulo]) => <th key={campo} className="whitespace-nowrap px-3 py-2">{titulo}</th>)}</tr></thead>
-                  <tbody>{previsualizacion.muestra.slice(0, 5).map((fila, indice) => <tr key={indice} className="">{columnasVisibles.map(([campo]) => <td key={campo} className="max-w-56 truncate px-3 py-2" title={fila[campo]}>{fila[campo] || "—"}</td>)}</tr>)}</tbody>
+                  <thead><tr>{columnasVisibles.map(([campo, titulo]) => <th key={campo} className="whitespace-nowrap px-3 py-2">{titulo}</th>)}</tr></thead>
+                  <tbody>{previsualizacion.muestra.slice(0, 5).map((fila, indice) => <tr key={indice}>{columnasVisibles.map(([campo]) => <td key={campo} className="max-w-56 truncate px-3 py-2" title={fila[campo]}>{fila[campo] || "—"}</td>)}</tr>)}</tbody>
                 </table>
               </div>
             )}
-            {!previsualizacion.errores?.length && <p className="">El archivo está validado. Puedes importarlo; los códigos existentes se actualizarán y no se duplicarán.</p>}
+            {!previsualizacion.errores?.length && <p>El archivo está validado. Puedes importarlo; los códigos existentes se actualizarán y no se duplicarán.</p>}
           </div>
         )}
       </section>
@@ -160,15 +160,15 @@ export default function CatalogoOficinas() {
       <section className="p-5 space-y-4">
         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
-            <h2 className="">Buscar oficinas</h2>
-            <p className="">{total.toLocaleString("es-ES")} oficinas en el catálogo · búsqueda en los 13 campos</p>
+            <h2>Buscar oficinas</h2>
+            <p>{total.toLocaleString("es-ES")} oficinas en el catálogo · búsqueda en los 13 campos</p>
           </div>
           <label className="block w-full md:max-w-xl">
             <span className="sr-only">Buscar por código, nombre, dirección, población o datos territoriales</span>
             <div className="flex items-center gap-2 px-3 py-2.5">
               <span aria-hidden="true">⌕</span>
               <input value={busqueda} onChange={(evento) => { setBusqueda(evento.target.value); setPagina(0); }} placeholder="Código, nombre, dirección, población, provincia, DT, DG o DAN…" className="w-full" />
-              {busqueda && <button type="button" onClick={() => { setBusqueda(""); setPagina(0); }} className="">Limpiar</button>}
+              {busqueda && <button type="button" onClick={() => { setBusqueda(""); setPagina(0); }}>Limpiar</button>}
             </div>
           </label>
         </div>
@@ -177,13 +177,13 @@ export default function CatalogoOficinas() {
             <thead className="uppercase"><tr>{columnasVisibles.map(([campo, titulo]) => <th key={campo} className="whitespace-nowrap px-3 py-3">{titulo}</th>)}</tr></thead>
             <tbody>
               {cargando ? <tr><td colSpan={COLUMNAS.length} className="px-4 py-10">Cargando catálogo…</td></tr>
-                : oficinas.length ? oficinas.map((fila) => <tr key={fila.id} className="">{columnasVisibles.map(([campo]) => <td key={campo} className="max-w-64 truncate px-3 py-3" title={fila[campo]}>{fila[campo] || "—"}</td>)}</tr>)
+                : oficinas.length ? oficinas.map((fila) => <tr key={fila.id}>{columnasVisibles.map(([campo]) => <td key={campo} className="max-w-64 truncate px-3 py-3" title={fila[campo]}>{fila[campo] || "—"}</td>)}</tr>)
                 : <tr><td colSpan={COLUMNAS.length} className="px-4 py-10">No hay oficinas que mostrar. Importa tu Excel para comenzar.</td></tr>}
             </tbody>
           </table>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="">Mostrando {total ? pagina * limite + 1 : 0}–{Math.min((pagina + 1) * limite, total)} de {total}</p>
+          <p>Mostrando {total ? pagina * limite + 1 : 0}–{Math.min((pagina + 1) * limite, total)} de {total}</p>
           <div className="flex gap-2">
             <button type="button" disabled={pagina === 0 || cargando} onClick={() => setPagina((valor) => Math.max(0, valor - 1))} className="px-3 py-2">Anterior</button>
             <span className="px-2 py-2">Página {pagina + 1} de {totalPaginas}</span>
