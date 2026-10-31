@@ -30,7 +30,7 @@ function GraficoBarras({ items, labelKey, valueKey, formatter = fmtNumero, empty
       const pct = valor == null ? 0 : Math.max(0, Math.min(100, (Number(valor) / max) * 100));
       return <div className="cg-bar-row" key={item[labelKey]}>
         <div className="cg-bar-label" title={item[labelKey]}>{item[labelKey]}</div>
-        <div className="cg-bar-track"><div className={`cg-bar-fill${valor == null ? " is-empty" : ""}`} style={{ width: `${pct}%` }} /></div>
+        <div className="cg-bar-track"><div className={`cg-bar-fill${valor == null ? "is-empty" : ""}`} style={{ width: `${pct}%` }} /></div>
         <strong className="cg-bar-value">{formatter(valor)}</strong>
       </div>;
     })}
