@@ -1,6 +1,8 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { getLogs } from "../../api/logs";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 /**
  * ============================================================
@@ -42,6 +44,7 @@ export default function LogsAvanzados() {
       return texto.includes(q);
     });
   }, [logs, busqueda]);
+  const ordenFiltrados = useSortableData(filtrados);
 
   // ============================================================
   // BUSCADOR
@@ -266,55 +269,13 @@ export default function LogsAvanzados() {
           >
 
             <thead>
-              <tr
-               
-              >
-                <th
-                  className="px-5
- py-3
- 
- 
- whitespace-nowrap"
-                >
-                  Fecha
-                </th>
-
-                <th
-                  className="px-5
- py-3
- 
- 
- whitespace-nowrap"
-                >
-                  Evento
-                </th>
-
-                <th
-                  className="px-5
- py-3
- 
- 
- min-w-[360px]"
-                >
-                  Detalle
-                </th>
-
-                <th
-                  className="px-5
- py-3
- 
- 
- whitespace-nowrap"
-                >
-                  Dirección IP
-                </th>
-              </tr>
+              <tr><MolsanSortableTh label="Fecha" sortKey="fecha" sortConfig={ordenFiltrados.sortConfig} onSort={ordenFiltrados.requestSort} className="px-5 py-3 whitespace-nowrap" /><MolsanSortableTh label="Evento" sortKey="evento" sortConfig={ordenFiltrados.sortConfig} onSort={ordenFiltrados.requestSort} className="px-5 py-3 whitespace-nowrap" /><MolsanSortableTh label="Detalle" sortKey="detalle" sortConfig={ordenFiltrados.sortConfig} onSort={ordenFiltrados.requestSort} className="px-5 py-3 min-w-[360px]" /><MolsanSortableTh label="Dirección IP" sortKey="ip" sortConfig={ordenFiltrados.sortConfig} onSort={ordenFiltrados.requestSort} className="px-5 py-3 whitespace-nowrap" /></tr>
             </thead>
 
 
             <tbody>
 
-              {filtrados.map((l) => (
+              {ordenFiltrados.items.map((l) => (
 
                 <tr
                   key={l.id}
