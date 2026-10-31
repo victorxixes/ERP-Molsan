@@ -508,21 +508,17 @@ export default function Maestros() {
                           border-[var(--erp-border)]
                           text-[var(--erp-text)]
                           hover:bg-[var(--erp-primary-soft)]
-                        `
-                    }
-                  `}
+                        `}`}
                 >
 
                   <svg
-                    className={`
-                      w-4
-                      h-4
-                      ${
-                        activo
-                          ? ""
-                          : ""
-                      }
-                    `}
+                    className={`w-4
+ h-4
+ ${
+ activo
+ ? ""
+ : ""
+ }`}
                     aria-hidden="true"
                   >
 
