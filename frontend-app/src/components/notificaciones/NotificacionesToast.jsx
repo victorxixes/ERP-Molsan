@@ -68,17 +68,16 @@ export default function NotificacionesToast() {
   return (
     <div
       className="notificaciones-toast-premium 
-        pointer-events-none
-        fixed
-        bottom-5
-        right-5
-        z-[9999]
+ pointer-events-none
+ fixed
+ bottom-5
+ right-5
+ z-[9999]
 
-        flex
-        w-[min(340px,calc(100vw-2rem))]
-        flex-col
-        gap-2
-      "
+ flex
+ w-[min(340px,calc(100vw-2rem))]
+ flex-col
+ gap-2"
     >
 
       {notificaciones
@@ -168,11 +167,8 @@ function Toast({
 
     return (
       <div
-        className="
-          h-0
-          overflow-hidden
-          opacity-0
-        "
+        className="h-0
+ overflow-hidden"
       />
     );
 
@@ -181,35 +177,23 @@ function Toast({
 
   return (
     <div
-      className="
-        pointer-events-auto
-        relative
-        overflow-hidden
+      className="pointer-events-auto
+ relative
+ overflow-hidden
 
-        w-full
+ w-full
 
-        rounded-2xl
+ 
 
-        border
-        border-white/10
+ 
+ 
 
-        bg-slate-900/50
+ 
 
-        backdrop-blur-xl
+ 
 
-        px-3
-        py-3
-
-        text-white
-
-        shadow-[0_18px_45px_rgba(15,23,42,0.18)]
-
-        transition-all
-        duration-500
-        ease-out
-
-        animate-fade-in
-      "
+ px-3
+ py-3"
     >
 
       {/* ==================================================
@@ -233,11 +217,9 @@ function Toast({
       ================================================== */}
 
       <div
-        className="
-          flex
-          items-center
-          gap-3
-        "
+        className="flex
+ items-center
+ gap-3"
       >
 
         {/* =================================================
@@ -245,25 +227,12 @@ function Toast({
         ================================================= */}
 
         <div
-          className="
-            flex
-            h-9
-            w-9
-            shrink-0
-            items-center
-            justify-center
-
-            rounded-xl
-
-            border
-            border-white/10
-
-            bg-white/10
-
-            text-base
-
-            shadow-sm
-          "
+          className="flex
+ h-9
+ w-9
+ shrink-0
+ items-center
+ justify-center"
         >
           {
             configuracion.icono
@@ -276,28 +245,19 @@ function Toast({
         ================================================= */}
 
         <div
-          className="
-            min-w-0
-            flex-1
-          "
+          className="min-w-0
+ flex-1"
         >
 
           <div
-            className="
-              flex
-              items-center
-              justify-between
-              gap-3
-            "
+            className="flex
+ items-center
+ justify-between
+ gap-3"
           >
 
             <div
-              className="
-                truncate
-                text-sm
-                font-semibold
-                text-white/95
-              "
+              className="truncate"
             >
               {
                 configuracion.titulo
@@ -306,12 +266,7 @@ function Toast({
 
 
             <div
-              className="
-                shrink-0
-                text-[10px]
-                font-medium
-                text-white/35
-              "
+              className="shrink-0"
             >
               Ahora
             </div>
@@ -325,12 +280,8 @@ function Toast({
             n.archivo_url) && (
 
             <div
-              className="
-                mt-0.5
-                truncate
-                text-xs
-                text-white/55
-              "
+              className="mt-0.5
+ truncate"
             >
               {
                 n.preview ||
@@ -351,19 +302,12 @@ function Toast({
       ================================================== */}
 
       <div
-        className="
-          pointer-events-none
-          absolute
-          left-0
-          right-0
-          top-0
-          h-px
-
-          bg-gradient-to-r
-          from-transparent
-          via-white/20
-          to-transparent
-        "
+        className="pointer-events-none
+ absolute
+ left-0
+ right-0
+ top-0
+ h-px"
       />
 
     </div>
