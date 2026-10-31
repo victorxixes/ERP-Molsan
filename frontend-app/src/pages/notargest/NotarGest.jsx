@@ -548,18 +548,18 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         onLogoutClick={salir}
         headerActions={
           <>
-            <div className="ag-fecha-actual" aria-label={`Fecha actual: ${fechaActual}`}>
-              <span className="ag-punto-vivo" aria-hidden="true" />
+            <div className="" aria-label={`Fecha actual: ${fechaActual}`}>
+              <span className="" aria-hidden="true" />
               <span>{fechaActual}</span>
             </div>
             <button
               type="button"
-              className="ag-boton-actualizar"
+              className=""
               onClick={actualizarDatosSidebar}
               disabled={cargando || cargandoSelectorNotaria}
               aria-live="polite"
             >
-              <span className={cargando || cargandoSelectorNotaria ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
+              <span className={cargando || cargandoSelectorNotaria ? "" : ""} aria-hidden="true">↻</span>
               {cargando || cargandoSelectorNotaria ? "Actualizando…" : "Actualizar datos"}
             </button>
           </>
@@ -746,16 +746,16 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="w-full apoderagest notargest-workspace-premium">
             <div className="notargest ng-content">
-    <header className="ag-hero molsan-page-header ng-hero-apoderagest">
-      <div className="ag-hero-identidad molsan-page-header__identity">
-        <div className="ag-marca ng-marca-notargest" aria-label="NotarGest">NG</div>
+    <header className=" molsan-page-header ng-hero-apoderagest">
+      <div className=" molsan-page-header__identity">
+        <div className=" ng-marca-notargest" aria-label="NotarGest">NG</div>
         <div>
-          <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
+          <div className="">MOLSAN ERP · PREMIUM 2027</div>
           <h1 className="molsan-page-header__title">NotarGest</h1>
           <p className="molsan-page-header__description">Centro de gestión notarial, firmas y seguimiento registral.</p>
         </div>
       </div>
-      <div className="ag-hero-acciones">
+      <div className="">
         {accesoERP && <button type="button" onClick={() => navigate("/modulos")} className="flex items-center gap-2 px-3 py-2"><span aria-hidden="true">▦</span> Ir a módulos</button>}
       </div>
     </header>
