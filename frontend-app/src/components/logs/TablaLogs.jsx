@@ -403,11 +403,7 @@ export default function TablaLogs({
 
   return (
     <div
-      className="
-        space-y-5
-        text-slate-800
-        animate-fadeIn
-      "
+      className="space-y-5"
     >
 
       {/* =====================================================
@@ -415,83 +411,55 @@ export default function TablaLogs({
       ===================================================== */}
 
       <section
-        className="
-          relative
-          overflow-hidden
+        className="relative
+ overflow-hidden
 
-          rounded-[24px]
+ 
 
-          border
-          border-white/80
+ 
+ 
 
-          bg-white/80
+ 
 
-          backdrop-blur-2xl
+ 
 
-          shadow-[0_15px_45px_rgba(15,23,42,0.08)]
+ 
 
-          p-5
-          sm:p-6
-        "
+ p-5
+ sm:p-6"
       >
         <div
-          className="
-            absolute
-            top-0
-            left-0
-            right-0
+          className="absolute
+ top-0
+ left-0
+ right-0
 
-            h-px
-
-            bg-gradient-to-r
-            from-transparent
-            via-blue-400/50
-            to-transparent
-          "
+ h-px"
         />
 
         <div
-          className="
-            relative
-            z-10
-          "
+          className="relative
+ z-10"
         >
           <div
-            className="
-              flex
-              flex-col
-              sm:flex-row
-              sm:items-center
-              sm:justify-between
+            className="flex
+ flex-col
+ sm:flex-row
+ sm:items-center
+ sm:justify-between
 
-              gap-3
-            "
+ gap-3"
           >
             <div>
               <h2
-                className="
-                  text-xl
-                  sm:text-2xl
-
-                  font-bold
-
-                  tracking-tight
-
-                  text-slate-800
-                "
+                className=""
               >
                 {titulo}
               </h2>
 
               {descripcion && (
                 <p
-                  className="
-                    mt-1
-
-                    text-sm
-
-                    text-slate-500
-                  "
+                  className="mt-1"
                 >
                   {descripcion}
                 </p>
@@ -499,38 +467,23 @@ export default function TablaLogs({
             </div>
 
             <div
-              className="
-                inline-flex
-                items-center
-                gap-2
+              className="inline-flex
+ items-center
+ gap-2
 
-                rounded-full
+ 
 
-                bg-blue-50
+ 
 
-                border
-                border-blue-100
+ 
+ 
 
-                px-3
-                py-1.5
-
-                text-xs
-                font-medium
-
-                text-blue-600
-              "
+ px-3
+ py-1.5"
             >
               <span
-                className="
-                  w-2
-                  h-2
-
-                  rounded-full
-
-                  bg-blue-500
-
-                  animate-pulse
-                "
+                className="w-2
+ h-2"
               />
 
               {datosOrdenados.length} registros
@@ -548,56 +501,37 @@ export default function TablaLogs({
         enableDateFilter ||
         enableExport) && (
         <section
-          className="
-            rounded-[22px]
-
-            border
-            border-white/80
-
-            bg-white/75
-
-            backdrop-blur-xl
-
-            shadow-[0_12px_35px_rgba(15,23,42,0.06)]
-
-            p-4
-          "
+          className="p-4"
         >
           <div
-            className="
-              flex
-              flex-col
-              lg:flex-row
+            className="flex
+ flex-col
+ lg:flex-row
 
-              gap-3
+ gap-3
 
-              items-stretch
-              lg:items-center
-            "
+ items-stretch
+ lg:items-center"
           >
 
             {/* BÚSQUEDA */}
 
             {enableSearch && (
               <div
-                className="
-                  relative
-                  flex-1
-                "
+                className="relative
+ flex-1"
               >
                 <span
-                  className="
-                    absolute
+                  className="absolute
 
-                    left-3.5
-                    top-1/2
+ left-3.5
+ top-1/2
 
-                    -translate-y-1/2
+ -translate-y-1/2
 
-                    text-slate-400
+ 
 
-                    pointer-events-none
-                  "
+ pointer-events-none"
                   aria-hidden="true"
                 >
                   🔎
@@ -605,40 +539,18 @@ export default function TablaLogs({
 
                 <input
                   type="text"
-                  className="
-                    w-full
+                  className="w-full
 
-                    rounded-xl
+ 
 
-                    border
-                    border-slate-200
+ 
+ 
 
-                    bg-white/90
+ 
 
-                    px-4
-                    py-2.5
-                    pl-10
-
-                    text-sm
-
-                    text-slate-800
-
-                    placeholder:text-slate-400
-
-                    outline-none
-
-                    shadow-sm
-
-                    transition-all
-                    duration-200
-
-                    focus:border-blue-400
-
-                    focus:bg-white
-
-                    focus:ring-4
-                    focus:ring-blue-500/10
-                  "
+ px-4
+ py-2.5
+ pl-10"
                   placeholder="Buscar en los logs..."
                   value={busqueda}
                   onChange={(e) => {
@@ -656,41 +568,22 @@ export default function TablaLogs({
 
             {enableDateFilter && (
               <div
-                className="
-                  relative
-                "
+                className="relative"
               >
                 <input
                   type="date"
-                  className="
-                    w-full
-                    lg:w-auto
+                  className="w-full
+ lg:w-auto
 
-                    rounded-xl
+ 
 
-                    border
-                    border-slate-200
+ 
+ 
 
-                    bg-white/90
+ 
 
-                    px-4
-                    py-2.5
-
-                    text-sm
-
-                    text-slate-700
-
-                    outline-none
-
-                    shadow-sm
-
-                    transition-all
-
-                    focus:border-blue-400
-
-                    focus:ring-4
-                    focus:ring-blue-500/10
-                  "
+ px-4
+ py-2.5"
                   value={filtroFecha}
                   onChange={(e) => {
                     setFiltroFecha(
@@ -733,42 +626,18 @@ export default function TablaLogs({
       ===================================================== */}
 
       <section
-        className="
-          overflow-hidden
-
-          rounded-[24px]
-
-          border
-          border-white/80
-
-          bg-white/80
-
-          backdrop-blur-2xl
-
-          shadow-[0_15px_45px_rgba(15,23,42,0.08)]
-        "
+        className="overflow-hidden"
       >
         <div
-          className="
-            overflow-x-auto
-          "
+          className="overflow-x-auto"
         >
           <table
-            className="
-              w-full
-              min-w-[760px]
-
-              text-sm
-            "
+            className="w-full
+ min-w-[760px]"
           >
             <thead>
               <tr
-                className="
-                  border-b
-                  border-slate-200
-
-                  bg-slate-50/80
-                "
+                className=""
               >
                 {columnas.map(
                   (col) => {
@@ -782,24 +651,15 @@ export default function TablaLogs({
                           col.campo
                         }
                         scope="col"
-                        className="
-                          p-4
+                        className="p-4
 
-                          text-left
+ 
 
-                          font-semibold
+ 
 
-                          text-slate-600
+ 
 
-                          whitespace-nowrap
-
-                          cursor-pointer
-                          select-none
-
-                          transition-colors
-
-                          hover:bg-slate-100
-                        "
+ whitespace-nowrap"
                         onClick={() =>
                           ordenar(
                             col.campo
@@ -807,11 +667,9 @@ export default function TablaLogs({
                         }
                       >
                         <div
-                          className="
-                            flex
-                            items-center
-                            gap-2
-                          "
+                          className="flex
+ items-center
+ gap-2"
                         >
                           <span>
                             {col.titulo}
@@ -823,8 +681,8 @@ export default function TablaLogs({
 
                               ${
                                 activo
-                                  ? "text-blue-500"
-                                  : "text-slate-300"
+                                  ? ""
+                                  : ""
                               }
                             `}
                           >
@@ -851,44 +709,29 @@ export default function TablaLogs({
                     colSpan={
                       columnas.length
                     }
-                    className="
-                      p-10
-
-                      text-center
-                    "
+                    className="p-10"
                   >
                     <div
-                      className="
-                        flex
-                        flex-col
-                        items-center
-                        gap-2
-
-                        text-slate-400
-                      "
+                      className="flex
+ flex-col
+ items-center
+ gap-2"
                     >
                       <span
-                        className="
-                          text-3xl
-                        "
+                        className=""
                         aria-hidden="true"
                       >
                         📋
                       </span>
 
                       <span
-                        className="
-                          text-sm
-                          font-medium
-                        "
+                        className=""
                       >
                         No hay registros
                       </span>
 
                       <span
-                        className="
-                          text-xs
-                        "
+                        className=""
                       >
                         No se encontraron
                         logs con los
@@ -907,17 +750,7 @@ export default function TablaLogs({
                             `${pagina}-${idx}`
                         )
                       }
-                      className="
-                        border-b
-                        border-slate-100
-
-                        last:border-b-0
-
-                        transition-all
-                        duration-150
-
-                        hover:bg-blue-50/40
-                      "
+                      className=""
                     >
                       {columnas.map(
                         (col) => {
@@ -959,43 +792,26 @@ export default function TablaLogs({
                                 key={
                                   col.campo
                                 }
-                                className="
-                                  p-4
-
-                                  text-slate-700
-                                "
+                                className="p-4"
                               >
                                 <span
-                                  className="
-                                    inline-flex
-                                    items-center
-                                    gap-2
-                                  "
+                                  className="inline-flex
+ items-center
+ gap-2"
                                 >
                                   <span
-                                    className="
-                                      flex
-                                      items-center
-                                      justify-center
+                                    className="flex
+ items-center
+ justify-center
 
-                                      w-7
-                                      h-7
-
-                                      rounded-lg
-
-                                      bg-slate-100
-
-                                      border
-                                      border-slate-200
-                                    "
+ w-7
+ h-7"
                                   >
                                     {icono}
                                   </span>
 
                                   <span
-                                    className="
-                                      font-medium
-                                    "
+                                    className=""
                                   >
                                     {contenido}
                                   </span>
@@ -1009,11 +825,7 @@ export default function TablaLogs({
                               key={
                                 col.campo
                               }
-                              className="
-                                p-4
-
-                                text-slate-600
-                              "
+                              className="p-4"
                             >
                               {contenido}
                             </td>
@@ -1035,28 +847,26 @@ export default function TablaLogs({
       ===================================================== */}
 
       <div
-        className="
-          flex
-          flex-col
-          sm:flex-row
+        className="flex
+ flex-col
+ sm:flex-row
 
-          items-center
+ items-center
 
-          gap-3
+ gap-3
 
-          rounded-[20px]
+ 
 
-          border
-          border-white/80
+ 
+ 
 
-          bg-white/70
+ 
 
-          backdrop-blur-xl
+ 
 
-          shadow-sm
+ 
 
-          p-3
-        "
+ p-3"
       >
 
         <button
@@ -1069,67 +879,41 @@ export default function TablaLogs({
               (p) => p - 1
             )
           }
-          className="
-            w-full
-            sm:w-auto
+          className="w-full
+ sm:w-auto
 
-            inline-flex
-            items-center
-            justify-center
-            gap-2
+ inline-flex
+ items-center
+ justify-center
+ gap-2
 
-            rounded-xl
+ 
 
-            border
-            border-slate-200
+ 
+ 
 
-            bg-white
+ 
 
-            px-4
-            py-2
-
-            text-sm
-            font-medium
-
-            text-slate-600
-
-            shadow-sm
-
-            transition-all
-
-            hover:bg-slate-50
-            hover:border-slate-300
-
-            active:scale-[0.98]
-
-            disabled:cursor-not-allowed
-            disabled:opacity-40
-          "
+ px-4
+ py-2"
         >
           ← Anterior
         </button>
 
 
         <span
-          className="
-            inline-flex
-            items-center
+          className="inline-flex
+ items-center
 
-            rounded-lg
+ 
 
-            bg-slate-100
+ 
 
-            border
-            border-slate-200
+ 
+ 
 
-            px-3
-            py-1.5
-
-            text-xs
-            font-medium
-
-            text-slate-600
-          "
+ px-3
+ py-1.5"
         >
           Página{" "}
           {Math.min(
@@ -1152,71 +936,40 @@ export default function TablaLogs({
               (p) => p + 1
             )
           }
-          className="
-            w-full
-            sm:w-auto
+          className="w-full
+ sm:w-auto
 
-            inline-flex
-            items-center
-            justify-center
-            gap-2
+ inline-flex
+ items-center
+ justify-center
+ gap-2
 
-            rounded-xl
+ 
 
-            border
-            border-slate-200
+ 
+ 
 
-            bg-white
+ 
 
-            px-4
-            py-2
-
-            text-sm
-            font-medium
-
-            text-slate-600
-
-            shadow-sm
-
-            transition-all
-
-            hover:bg-slate-50
-            hover:border-slate-300
-
-            active:scale-[0.98]
-
-            disabled:cursor-not-allowed
-            disabled:opacity-40
-          "
+ px-4
+ py-2"
         >
           Siguiente →
         </button>
 
 
         <span
-          className="
-            sm:ml-auto
-
-            text-xs
-
-            text-slate-400
-          "
+          className="sm:ml-auto"
         >
           Mostrando{" "}
           <strong
-            className="
-              font-semibold
-              text-slate-600
-            "
+            className=""
           >
             {datosPaginados.length}
           </strong>{" "}
           de{" "}
           <strong
-            className="
-              font-semibold
-              text-slate-600
-            "
+            className=""
           >
             {datosOrdenados.length}
           </strong>{" "}
