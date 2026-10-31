@@ -484,26 +484,17 @@ export default function MonitorRealtime() {
 
     conectado: {
       texto: "WebSocket conectado",
-fondo:
-        "bg-emerald-50",
-textoClase:
-        "text-emerald-700",
+
     },
 
     conectando: {
       texto: "Conectando WebSocket...",
-fondo:
-        "bg-amber-50",
-textoClase:
-        "text-amber-700",
+
     },
 
     desconectado: {
       texto: "WebSocket desconectado",
-fondo:
-        "bg-red-50",
-textoClase:
-        "text-red-700",
+
     },
 
   };
