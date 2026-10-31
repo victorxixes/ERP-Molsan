@@ -859,18 +859,18 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
           navigationItems={[]}
           headerActions={
             <>
-              <div className="ag-fecha-actual" aria-label={`Fecha actual: ${fechaActual}`}>
-                <span className="ag-punto-vivo" aria-hidden="true" />
+              <div className="" aria-label={`Fecha actual: ${fechaActual}`}>
+                <span className="" aria-hidden="true" />
                 <span>{fechaActual}</span>
               </div>
               <button
                 type="button"
                 onClick={cargarTodo}
                 disabled={cargando}
-                className="ag-boton-actualizar"
+                className=""
                 aria-live="polite"
               >
-                <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
+                <span className={cargando ? "" : ""} aria-hidden="true">↻</span>
                 {cargando ? "Actualizando…" : "Actualizar datos"}
               </button>
             </>
@@ -883,27 +883,27 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
           onLogoutClick={salirEncargaGest}
         />
       )}
-      <div className="ag-fondo-decorativo" aria-hidden="true" />
-      <header className="ag-hero eg-hero molsan-page-header">
-        <div className="ag-hero-identidad molsan-page-header__identity">
-          <div className="ag-marca eg-marca" aria-label="EncargaGest">EG</div>
+      <div className="" aria-hidden="true" />
+      <header className=" eg-hero molsan-page-header">
+        <div className=" molsan-page-header__identity">
+          <div className=" eg-marca" aria-label="EncargaGest">EG</div>
           <div>
-            <div className="ag-eyebrow">MOLSAN ERP</div>
+            <div className="">MOLSAN ERP</div>
             <h1 className="molsan-page-header__title">EncargaGest</h1>
             <p className="molsan-page-header__description">{modo === "externo" ? "Portal profesional · " + (sesion?.notaria_nombre || "Sesión externa") : "Recepción y seguimiento de encargos notariales externos."}</p>
           </div>
         </div>
-        <div className="ag-hero-acciones">
+        <div className="">
           {modo === "interno" && (
             <>
-              <div className="ag-fecha-actual">
-                <span className="ag-punto-vivo" aria-hidden="true" />
+              <div className="">
+                <span className="" aria-hidden="true" />
                 <span>{fechaActual}</span>
               </div>
               <button type="button" onClick={irAModulos} className="eg-secondary"><span aria-hidden="true">▦</span> Ir a módulos</button>
               <button type="button" onClick={salirEncargaGest} className="eg-secondary">Cerrar sesión</button>
-              <button type="button" onClick={cargarTodo} disabled={cargando} className="ag-boton-actualizar">
-                <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
+              <button type="button" onClick={cargarTodo} disabled={cargando} className="">
+                <span className={cargando ? "" : ""} aria-hidden="true">↻</span>
                 {cargando ? "Actualizando…" : "Actualizar datos"}
               </button>
             </>
@@ -926,11 +926,11 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
           </section>
         )}
         <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-          <div className="ag-kpi ag-kpi-azul eg-kpi"><p className="uppercase">Total de encargos</p><div className="mt-2 flex items-end justify-between"><strong className="">{resumen.total || 0}</strong><span className="">▤</span></div><p className="mt-1">Todas las solicitudes</p></div>
-          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_RECIBIDOS")} className="ag-kpi ag-kpi-verde eg-kpi"><p className="uppercase">Recibidos</p><div className="mt-2 flex items-end justify-between"><strong className="">{(resumen.por_estado?.EN_PROCESO || 0) + (resumen.por_estado?.RECIBIDO || 0) + (resumen.por_estado?.EN_REVISION || 0) + (resumen.por_estado?.DOCUMENTACION_PENDIENTE || 0) + (resumen.por_estado?.EN_GESTION || 0)}</strong><span className="">↓</span></div><p className="mt-1">Pendientes de revisión y autorización</p></button>
-          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_AUTORIZADOS")} className="ag-kpi eg-kpi"><p className="uppercase">Autorizados</p><div className="mt-2 flex items-end justify-between"><strong className="">{resumen.por_estado?.AUTORIZADO || 0}</strong><span className="">✓</span></div><p className="mt-1">Validados para continuar</p></button>
-          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_INCIDENCIAS")} className="ag-kpi ag-kpi-ambar eg-kpi"><p className="uppercase">Incidencias</p><div className="mt-2 flex items-end justify-between"><strong className="">{resumen.por_estado?.INCIDENCIA || 0}</strong><span className="">!</span></div><p className="mt-1">Requieren actuación</p></button>
-          <div className="ag-kpi ag-kpi-verde eg-kpi" aria-label="Firmados pendiente de integración con ApoderaGest"><p className="uppercase">Firmados · próximamente</p><div className="mt-2 flex items-end justify-between"><strong className="">EN ESPERA</strong><span className="">◷</span></div><p className="mt-1">Pendiente de integración con las firmas reales de ApoderaGest.</p></div>
+          <div className="  eg-kpi"><p className="uppercase">Total de encargos</p><div className="mt-2 flex items-end justify-between"><strong className="">{resumen.total || 0}</strong><span className="">▤</span></div><p className="mt-1">Todas las solicitudes</p></div>
+          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_RECIBIDOS")} className="  eg-kpi"><p className="uppercase">Recibidos</p><div className="mt-2 flex items-end justify-between"><strong className="">{(resumen.por_estado?.EN_PROCESO || 0) + (resumen.por_estado?.RECIBIDO || 0) + (resumen.por_estado?.EN_REVISION || 0) + (resumen.por_estado?.DOCUMENTACION_PENDIENTE || 0) + (resumen.por_estado?.EN_GESTION || 0)}</strong><span className="">↓</span></div><p className="mt-1">Pendientes de revisión y autorización</p></button>
+          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_AUTORIZADOS")} className=" eg-kpi"><p className="uppercase">Autorizados</p><div className="mt-2 flex items-end justify-between"><strong className="">{resumen.por_estado?.AUTORIZADO || 0}</strong><span className="">✓</span></div><p className="mt-1">Validados para continuar</p></button>
+          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_INCIDENCIAS")} className="  eg-kpi"><p className="uppercase">Incidencias</p><div className="mt-2 flex items-end justify-between"><strong className="">{resumen.por_estado?.INCIDENCIA || 0}</strong><span className="">!</span></div><p className="mt-1">Requieren actuación</p></button>
+          <div className="  eg-kpi" aria-label="Firmados pendiente de integración con ApoderaGest"><p className="uppercase">Firmados · próximamente</p><div className="mt-2 flex items-end justify-between"><strong className="">EN ESPERA</strong><span className="">◷</span></div><p className="mt-1">Pendiente de integración con las firmas reales de ApoderaGest.</p></div>
         </section>
 
         {modo === "interno" && esAdminEncargaGest && (
@@ -1178,7 +1178,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
             <header className="eg-modal-header">
               <div className="eg-modal-brand">EG</div>
               <div className="eg-modal-heading">
-                <span className="ag-eyebrow">MOLSAN ERP</span>
+                <span className="">MOLSAN ERP</span>
                 <h2>Registrar nuevo encargo</h2>
                 <p>Completa los datos de la solicitud y adjunta la documentación en su categoría.</p>
               </div>
