@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
  * Acceso al ERP Molsan
  *
  * Diseño:
- * - Premium / Glass Luxe
  * - Fondo claro corporativo
  * - Coherente con el resto del ERP
  * - Responsive
