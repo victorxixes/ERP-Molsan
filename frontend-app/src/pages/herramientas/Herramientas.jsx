@@ -1,14 +1,11 @@
 import { Link } from "react-router-dom";
 
-import "../../css/ComponentesOperativosPremium.css";
 
 /**
- * HERRAMIENTAS — MOLSAN ERP PREMIUM 2027
+ * HERRAMIENTAS
  *
  * Panel principal de herramientas.
  * Diseño coherente con el resto del ERP:
- * - Glass Luxe claro
- * - Cards premium
  * - Iconos
  * - Hover suave
  * - Responsive
@@ -16,7 +13,7 @@ import "../../css/ComponentesOperativosPremium.css";
 
 export default function Herramientas() {
   return (
-    <div className="herramientas-home-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6">
+    <div className="min-h-full p-4 sm:p-6 lg:p-8 space-y-6">
 
       {/* =====================================================
           CABECERA
