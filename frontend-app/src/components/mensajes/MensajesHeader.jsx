@@ -97,16 +97,14 @@ export default function MensajesHeader({
  gap-1.5"
           >
             <span
-              className={`
-                h-1.5
-                w-1.5
-                rounded-full
-                ${
-                  usuario
-                    ? ""
-                    : ""
-                }
-              `}
+              className={`h-1.5
+ w-1.5
+ 
+ ${
+ usuario
+ ? ""
+ : ""
+ }`}
             />
 
             <span
