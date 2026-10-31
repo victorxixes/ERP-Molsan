@@ -229,13 +229,13 @@ export default function Fichajes({ modo = "empleado" }) {
     : [{ id: "resumen", label: "Resumen de marcajes" }, { id: "calendario", label: "Calendario mensual" }, { id: "documentos", label: "Documentos" }, { id: "personal", label: "Información personal" }, { id: "ausencias", label: "Solicitudes de ausencia" }, { id: "compensaciones", label: "Festivos y compensaciones" }];
 
   return (
-    <main className="fichajes-premium-page mx-auto w-full max-w-[1500px] space-y-6 p-4 sm:p-6">
+    <main className="mx-auto w-full max-w-[1500px] space-y-6 p-4 sm:p-6">
       <header className="relative overflow-hidden p-6 sm:p-8">
         <div className="absolute inset-x-0 top-0 h-1" />
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="">MOLSAN ERP</p>
-            <h1 className="mt-2">{esAdminVista ? "Control de Fichajes" : "Fichaje Molsan"}</h1>
+            <h1 className="mt-2">{esAdminVista ? "Control de Fichajes" : "Fichajes"}</h1>
             <p className="mt-2">{esAdminVista ? "Supervisión de marcajes de la plantilla." : "Registro de jornada y gestión de justificantes personales."}</p>
           </div>
           {!esAdminVista && perfil && <div className="px-4 py-3"><p className="">Empleado</p><p className="">{perfil.nombre}</p><p className="">{perfil.usuario}</p></div>}
@@ -264,7 +264,7 @@ export default function Fichajes({ modo = "empleado" }) {
                   <option value="">{tiposAusencia.length ? "Selecciona una ausencia…" : "No hay tipos de ausencia disponibles"}</option>
                   {tiposAusencia.map((x) => <option key={x.id} value={x.nombre}>{x.nombre}{x.requiere_justificante ? " · requiere justificante" : ""}</option>)}
                 </select>
-                {tiposAusencia.length === 0 && <p className="mt-2">No se ha podido cargar el catálogo de ausencias. Actualiza Fichaje Molsan o contacta con administración.</p>}
+                {tiposAusencia.length === 0 && <p className="mt-2">No se ha podido cargar el catálogo de ausencias. Actualiza Fichajes o contacta con administración.</p>}
               </label><button type="button" disabled={guardando || !tipoAusencia || tiposAusencia.length === 0} onClick={() => enviarMarcaje("AUSENCIA")} className="mt-3 px-4 py-2.5">{guardando ? "Registrando…" : "Confirmar ausencia"}</button><button type="button" disabled={guardando} onClick={() => { setMostrarSelectorAusencia(false); setTipoAusencia(""); setError(""); }} className="ml-2 px-4 py-2.5">Cancelar</button></div>}
 
             </section>
@@ -339,7 +339,7 @@ export default function Fichajes({ modo = "empleado" }) {
             {esAdminVista && pestana === "solicitudes" && (
               <div className="p-4 sm:p-6">
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                  <div><h2 className="">Solicitudes de vacaciones</h2><p className="">Revisa, aprueba o rechaza las solicitudes recibidas desde Fichaje Molsan.</p></div>
+                  <div><h2 className="">Solicitudes de vacaciones</h2><p className="">Revisa, aprueba o rechaza las solicitudes recibidas desde Fichajes.</p></div>
                   <div className="px-4 py-2">Pendientes: {vacacionesAdmin.filter(v => v.estado === "SOLICITADO").length}</div>
                 </div>
                 <div className="mb-4 grid gap-3 sm:grid-cols-2"><label className="">Filtrar empleado<select value={empleadoFiltro} onChange={e => setEmpleadoFiltro(e.target.value)} className="mt-1 w-full px-3 py-2.5"><option value="">Toda la plantilla</option>{empleados.map(e => <option key={e.id} value={e.id}>{e.nombre}</option>)}</select></label><div className="flex items-end"><button type="button" onClick={() => recargarAdmin().catch(e => setError(e?.response?.data?.detail || "No se pudieron actualizar las solicitudes."))} className="px-4 py-2.5">Actualizar solicitudes</button></div></div>
