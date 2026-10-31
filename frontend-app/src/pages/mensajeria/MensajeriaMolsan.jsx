@@ -2,8 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import axios from "../../api/axios";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import { useAuthStore } from "../../store/authStore";
-import "../../css/HerramientasPremium.css";
-import "../../css/ModalesHerramientasPremium.css";
 import MensajeriaProveedores from "./MensajeriaProveedores.jsx";
 
 const TABS = [
@@ -125,7 +123,7 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
 
   const modalTitle = { solicitud: editing ? "Editar solicitud" : "Nueva solicitud de mensajería", servicio: editing ? "Editar servicio y tarifa" : "Nuevo servicio y tarifa", albaran: editing ? "Editar albarán" : "Registrar albarán", factura: editing ? "Editar factura" : "Registrar factura de mensajería" }[modal];
 
-  return <main className="catalogos-premium-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+  return <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
     <header className="relative overflow-hidden p-6 sm:p-7">
       <div className="absolute inset-x-0 top-0 h-1" />
       <p className="uppercase">MOLSAN ERP</p>
