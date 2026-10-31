@@ -4,13 +4,11 @@ import {
   useRef,
   useState,
 } from "react";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/CatalogosMaestrosPremium.css";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 /**
  * ============================================================
- * REGISTROS DE LA PROPIEDAD — MOLSAN ERP PREMIUM 2027
+ * REGISTROS DE LA PROPIEDAD
  * ============================================================
  *
  * Maestro de Registros de la Propiedad.
@@ -1654,7 +1652,7 @@ export default function RegistrosPropiedad() {
   return (
 
     <div
-      className="registros-propiedad-premium herramientas-subpagina-premium catalogo-maestro-modal-premium 
+      className="
  min-h-full
  p-4 sm:p-6 lg:p-8
  space-y-6"
