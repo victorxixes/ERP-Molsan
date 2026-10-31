@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { Link, useParams } from "react-router-dom";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import axios from "../../api/axios";
 
@@ -911,12 +912,7 @@ function Seccion({
   return (
     <section
       id={id}
-      className={`scroll-mt-24
- 
- 
- 
- 
- 
+      className={`molsan-card molsan-section scroll-mt-24
  overflow-hidden
  ${className}`}
     >
@@ -1017,11 +1013,8 @@ function Dato({
 
   return (
     <div
-      className={`min-w-0
- 
- 
- ${compacto ? "px-1.5 py-1.5" : "px-2 py-2"}
- `}
+      className={`molsan-data-point min-w-0
+ ${compacto ? "px-1.5 py-1.5" : "px-2 py-2"}`}
     >
       <p
         className="mb-1
@@ -1078,7 +1071,7 @@ function Modal({
 
   return createPortal((
     <div
-      className="expediente-operativo-modal
+      className="molsan-modal-backdrop expediente-operativo-modal
  fixed
  inset-0
  z-[9999]
@@ -1097,7 +1090,7 @@ function Modal({
       }}
     >
       <div
-        className={`expediente-operativo-modal-panel
+        className={`molsan-modal-panel expediente-operativo-modal-panel
  relative
  flex
  max-h-[92vh]
@@ -5319,14 +5312,7 @@ const cuantiaFincasParaEnvio =
 
           {/* Ficha y acciones en una sola línea, debajo de los bloques principales */}
           <div className="mt-3 flex w-full min-w-0 flex-wrap items-center gap-2 overflow-x-hidden px-3 py-2">
-            <div className="flex shrink-0 items-center gap-2 pr-2">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center">📁</div>
-              <div className="min-w-[150px]">
-                <p className="whitespace-nowrap uppercase">Ficha de expediente</p>
-                <h1 className="whitespace-nowrap">{valorVisible(expediente.id_expediente)}</h1>
-                <p className="whitespace-nowrap">Ficha completa del expediente</p>
-              </div>
-            </div>
+            <MolsanPageHeader className="w-full" mark="EX" title={`Expediente ${valorVisible(expediente.id_expediente)}`} description="Ficha completa del expediente" />
             <div className="flex min-w-0 flex-wrap items-center gap-2 px-2 py-1.5">
               <label htmlFor="ficha-promocion" className="shrink-0 uppercase">Promoción</label>
               <input id="ficha-promocion" type="text" value={expediente?.promocion || ""} readOnly placeholder="Sin asignar" className="w-36 min-w-[100px] px-2 py-1.5 sm:w-44" aria-label="Promoción asignada al expediente" title="La promoción se asigna desde Utilidades → Gestión de expedientes." />

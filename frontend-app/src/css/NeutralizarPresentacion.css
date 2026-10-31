@@ -425,3 +425,149 @@ textarea:focus-visible {
 @media (max-width: 720px) {
   .molsan-page-header { min-height: 56px; }
 }
+
+
+/* ==========================================================
+   FICHA DE EXPEDIENTE · Aplicación completa del sistema 2027
+   ========================================================== */
+.ficha-expediente-premium {
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+}
+.ficha-expediente-premium .molsan-page-header {
+  margin: 0;
+  padding: 0 0 10px;
+}
+.ficha-expediente-premium .molsan-section {
+  min-width: 0;
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow);
+}
+.ficha-expediente-premium .molsan-section > div:first-child {
+  min-height: 52px;
+  background: var(--molsan-panel);
+  border-bottom: 1px solid var(--molsan-border);
+}
+.ficha-expediente-premium .molsan-section > div:first-child h2 {
+  color: var(--molsan-blue);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.ficha-expediente-premium .molsan-section > div:first-child p {
+  color: var(--molsan-muted);
+  font-size: 12px;
+}
+.ficha-expediente-premium .molsan-data-point {
+  min-width: 0;
+  border-radius: 8px;
+}
+.ficha-expediente-premium .molsan-data-point > p {
+  color: var(--molsan-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .045em;
+}
+.ficha-expediente-premium .molsan-data-point > div {
+  color: var(--molsan-text);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.ficha-expediente-premium table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.ficha-expediente-premium thead th {
+  padding: 11px 12px;
+  color: var(--molsan-blue);
+  background: var(--molsan-table-head);
+  border-bottom: 1px solid var(--molsan-border);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: left;
+}
+.ficha-expediente-premium tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--molsan-border);
+  color: var(--molsan-text);
+  font-size: 13px;
+  vertical-align: middle;
+}
+.ficha-expediente-premium tbody tr:hover { background: var(--molsan-blue-soft); }
+.ficha-expediente-premium input:not([type="checkbox"]):not([type="radio"]),
+.ficha-expediente-premium select,
+.ficha-expediente-premium textarea {
+  min-height: var(--molsan-control-height);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  background: var(--molsan-white);
+  color: var(--molsan-text);
+}
+.ficha-expediente-premium button:not(:disabled) {
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+.ficha-expediente-premium button:focus-visible,
+.ficha-expediente-premium a:focus-visible {
+  outline: 2px solid var(--molsan-blue);
+  outline-offset: 2px;
+}
+.molsan-modal-backdrop {
+  background: rgba(13, 37, 54, .48);
+  backdrop-filter: blur(3px);
+}
+.molsan-modal-panel {
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: 16px;
+  box-shadow: 0 24px 64px rgba(6, 40, 65, .22);
+}
+.molsan-modal-panel > div:first-child {
+  background: var(--molsan-panel);
+  border-bottom: 1px solid var(--molsan-border);
+}
+.molsan-modal-panel h2 { color: var(--molsan-blue); font-size: 18px; font-weight: 700; }
+.molsan-modal-panel p { color: var(--molsan-muted); }
+.molsan-modal-panel > div:last-child {
+  border-top: 1px solid var(--molsan-border);
+}
+
+/* Base común de pantallas y formularios fuera de Expedientes. */
+.erp-main-inner main,
+.erp-main-content main {
+  color: var(--molsan-text);
+}
+.erp-main-inner main > header,
+.erp-main-content main > header {
+  color: var(--molsan-blue);
+  border-bottom: 2px solid var(--molsan-ice-strong);
+}
+.erp-main-inner main > header h1,
+.erp-main-content main > header h1 {
+  color: var(--molsan-blue);
+  font-size: 20px;
+  font-weight: 700;
+}
+.erp-main-inner main > header p,
+.erp-main-content main > header p {
+  color: var(--molsan-muted);
+  font-size: 12px;
+}
+.erp-main-inner main table,
+.erp-main-content main table {
+  border-color: var(--molsan-border);
+}
+.erp-main-inner main thead th,
+.erp-main-content main thead th {
+  padding: 11px 12px;
+  color: var(--molsan-blue);
+  background: var(--molsan-table-head);
+  border-bottom: 1px solid var(--molsan-border);
+}
+.erp-main-inner main tbody td,
+.erp-main-content main tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--molsan-border);
+}
