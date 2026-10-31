@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import {
   useMemo,
   useState,
@@ -912,99 +913,8 @@ export default function SeguridadLogs() {
     <div className="erp-page space-y-6">
 
 
-      {/* ====================================================
-          CABECERA
-      ==================================================== */}
-
-      <section
-        className="molsan-subpage-header px-6
- py-5"
-      >
-
-        <div
-          className="flex
- flex-col
- lg:flex-row
- lg:items-center
- lg:justify-between
- gap-4"
-        >
-
-          <div
-            className="flex
- items-center
- gap-3"
-          >
-
-            <div
-              className="w-11
- h-11
- 
- 
- 
- flex
- items-center
- justify-center
- flex-shrink-0"
-            >
-
-              <Icono
-                name="shield"
-                className="w-5 h-5"
-              />
-
-            </div>
-
-
-            <div>
-
-              <h1
-               
-              >
-                Logs técnicos
-              </h1>
-
-
-              <p
-                className="mt-0.5"
-              >
-                Monitorización técnica y trazabilidad de eventos del ERP
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div
-            className="inline-flex
- items-center
- gap-2
- px-3
- py-2
- 
- 
- 
- 
- 
- 
- 
- w-fit"
-          >
-
-            <span
-              className="w-2
- h-2"
-            />
-
-            Monitor técnico activo
-
-          </div>
-
-        </div>
-
-      </section>
-
+      <MolsanPageHeader mark="SE" title="Logs técnicos" description="Monitorización técnica y trazabilidad de eventos del ERP." />
+      <div className="flex justify-end"><span className="molsan-panel px-3 py-2 text-sm">Monitor técnico activo</span></div>
 
       {/* ====================================================
           RESUMEN
