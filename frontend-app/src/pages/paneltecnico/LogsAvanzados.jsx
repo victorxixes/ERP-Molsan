@@ -1,6 +1,5 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { getLogs } from "../../api/logs";
-import "./PanelTecnicoSubmodulos.css";
 
 /**
  * ============================================================
