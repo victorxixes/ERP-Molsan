@@ -2360,8 +2360,8 @@ const permisosDisponibles =
                   ${
                     pestana ===
                     item.id
-                      ? "text-blue-700"
-                      : "text-slate-500 hover:text-slate-800"
+                      ? ""
+                      : ""
                   }
                 `}
               >
@@ -2788,7 +2788,7 @@ const permisosDisponibles =
                 {pestana ===
                   "personales" && (
 
-                  <fieldset disabled={!esAdministrador && !esPropiaFicha} className={!esAdministrador && !esPropiaFicha ? "space-y-5 [&_input]:cursor-default [&_textarea]:cursor-default [&_button]:hidden" : "space-y-5"}>
+                  <fieldset disabled={!esAdministrador && !esPropiaFicha} className={!esAdministrador && !esPropiaFicha ? "space-y-5 [&_button]:hidden" : "space-y-5"}>
 
                     <section
                       className="p-5"
@@ -2974,7 +2974,7 @@ const permisosDisponibles =
                 {pestana ===
                   "laborales" && (
 
-                  <fieldset disabled={!esAdministrador} className={!esAdministrador ? "space-y-5 opacity-40 grayscale pointer-events-none select-none [&_input]:cursor-not-allowed [&_select]:cursor-not-allowed [&_button]:cursor-not-allowed [&_textarea]:cursor-not-allowed" : "space-y-5"}>
+                  <fieldset disabled={!esAdministrador} className={!esAdministrador ? "space-y-5 pointer-events-none" : "space-y-5"}>
                   <div className="space-y-5">
 
                     <section
@@ -3178,8 +3178,8 @@ const permisosDisponibles =
                               font-semibold
                               ${
                                 empleadoFormulario.activo
-                                  ? "bg-emerald-50 text-emerald-700"
-                                  : "bg-red-50 text-red-700"
+                                  ? ""
+                                  : ""
                               }
                             `}
                           >
@@ -3235,7 +3235,7 @@ const permisosDisponibles =
                 {pestana ===
                   "accesos" && (
 
-                  <fieldset disabled={!esAdministrador} className={!esAdministrador ? "space-y-5 opacity-40 grayscale pointer-events-none select-none [&_input]:cursor-not-allowed [&_select]:cursor-not-allowed [&_button]:cursor-not-allowed [&_textarea]:cursor-not-allowed" : "space-y-5"}>
+                  <fieldset disabled={!esAdministrador} className={!esAdministrador ? "space-y-5 pointer-events-none" : "space-y-5"}>
                   <div className="space-y-5">
 
                     <section className="p-5">
@@ -3248,7 +3248,7 @@ const permisosDisponibles =
                           value={empleadoFormulario.rol_id ?? empleadoFormulario.rol?.id ?? ""}
                           onChange={(event) => cambiarRolEmpleado(event.target.value)}
                           disabled={!esAdministrador || guardando || !Array.isArray(roles) || roles.length === 0}
-                          className={!esAdministrador ? "w-full rounded-xl border border-slate-200 bg-slate-100 px-3 py-2.5 text-sm text-slate-500 cursor-not-allowed" : "w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800"}
+                          className={!esAdministrador ? "w-full px-3 py-2.5" : "w-full px-3 py-2.5"}
                         >
                           <option value="">Seleccionar rol…</option>
                           {(Array.isArray(roles) ? roles : []).map((item) => (
@@ -3280,10 +3280,10 @@ const permisosDisponibles =
                             aria-checked={empleadoEdit.visible_en_listado !== false}
                             onClick={cambiarVisibilidadEmpleado}
                             disabled={guardandoVisibilidadEmpleado}
-                            className={`relative inline-flex h-8 w-16 shrink-0 items-center rounded-full transition-colors disabled:cursor-wait disabled:opacity-60 ${empleadoEdit.visible_en_listado === false ? "bg-slate-400" : "bg-emerald-600"}`}
+                            className={`relative inline-flex h-8 w-16 shrink-0 items-center rounded-full transition-colors disabled:cursor-wait disabled:opacity-60 ${empleadoEdit.visible_en_listado === false ? "" : ""}`}
                             aria-label={empleadoEdit.visible_en_listado === false ? "Mostrar empleado en el listado" : "Ocultar empleado del listado"}
                           >
-                            <span className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-transform ${empleadoEdit.visible_en_listado === false ? "translate-x-1" : "translate-x-9"}`} />
+                            <span className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-transform ${empleadoEdit.visible_en_listado === false ? "" : ""}`} />
                           </button>
                         </div>
                         <div className="mt-2">
@@ -3381,8 +3381,8 @@ const permisosDisponibles =
                                     transition
                                     ${
                                       activo
-                                        ? "border-blue-200 bg-blue-50"
-                                        : "border-slate-200 bg-white hover:bg-slate-50"
+                                        ? ""
+                                        : ""
                                     }
                                   `}
                                 >
@@ -3409,8 +3409,8 @@ const permisosDisponibles =
                                       font-medium
                                       ${
                                         activo
-                                          ? "text-blue-700"
-                                          : "text-slate-700"
+                                          ? ""
+                                          : ""
                                       }
                                     `}
                                   >
@@ -3569,8 +3569,8 @@ const permisosDisponibles =
                                                 transition
                                                 ${
                                                   activo
-                                                    ? "border-blue-200 bg-blue-50 text-blue-700"
-                                                    : "border-slate-200 bg-white text-slate-500"
+                                                    ? ""
+                                                    : ""
                                                 }
                                               `}
                                             >
