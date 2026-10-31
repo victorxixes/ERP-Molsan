@@ -86,7 +86,7 @@ function nombreArchivoTamano(bytes) {
 
 function EtiquetaEstado({ estado }) {
   return (
-    <span className={"inline-flex items-center px-2.5 py-1" + }>
+    <span className="inline-flex items-center px-2.5 py-1">
       {TEXTO_ESTADO[estado] || estado || "Sin estado"}
     </span>
   );
