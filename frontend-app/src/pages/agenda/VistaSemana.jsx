@@ -83,11 +83,7 @@ export default function VistaSemana({
       {DIAS.map((d) => (
         <div
           key={d}
-          className="py-3
- 
- 
- 
- uppercase"
+          className="agenda-weekday py-3 uppercase"
         >
           {d}
         </div>
@@ -127,14 +123,7 @@ export default function VistaSemana({
               return (
                 <div
                   key={`${h}-${idx}`}
-                  className="h-20
- 
- 
- 
- 
- 
- 
- relative"
+                  className="agenda-week-cell h-20 relative"
                   onDoubleClick={() =>
                     onCrearCita(
                       obtenerFechaDia(idx)
@@ -150,10 +139,7 @@ export default function VistaSemana({
                     return (
                       <div
                         key={c.id}
-                        className={`absolute
- inset-0
- m-1
- p-2
+                        className={`agenda-appointment absolute inset-0 m-1 p-2
  
  
  
