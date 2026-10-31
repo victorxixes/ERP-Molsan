@@ -5,7 +5,7 @@ import { listarNotarios } from "../../api/notarios";
 import { useAuthStore } from "../../store/authStore";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
-const inputClass = "w-full px-3 py-2.5";
+const inputClass = "w-full px-3 py-2.5 ";
 const nuevaUbicacion = () => ({ tipo: "Otros", busqueda: "", referencia_id: "", direccion: "", codigo_postal: "", poblacion: "", provincia: "", contacto: "", telefono: "", mapa: "" });
 const textoDireccion = (u) => [u.direccion, u.codigo_postal, u.poblacion, u.provincia].filter(Boolean).join(", ");
 const mensajeError = (error, fallback) => {
@@ -70,7 +70,7 @@ function SelectorUbicacion({ titulo, valor, onChange, notarias, registros, munic
     return municipios.filter((m) => m.municipio.toLocaleLowerCase("es").includes(q)).slice(0, 10);
   }, [municipios, valor.poblacion]);
 
-  return <section className="space-y-3 p-4">
+  return <section className="molsan-form-section space-y-3 p-4">
     <div className="flex flex-wrap items-center justify-between gap-2">
       <h3>{titulo}</h3>
       {urlMapa(valor) && <a href={urlMapa(valor)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 px-3 py-1.5">⌖ Abrir mapa ↗</a>}
