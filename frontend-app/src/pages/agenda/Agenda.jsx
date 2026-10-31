@@ -11,7 +11,6 @@ import VistaDia from "./VistaDia";
 import ModalNuevaCita from "../../components/agenda/ModalNuevaCita.jsx";
 import AgendaToast from "../../components/agenda/AgendaToast.jsx";
 import SelectSJ from "../../components/ui/SelectSJ";
-import "./Agenda.css";
 
 const MESES = [
   "Enero",
