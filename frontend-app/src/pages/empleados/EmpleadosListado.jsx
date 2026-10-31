@@ -6,6 +6,7 @@ import {
   useRef,
 } from "react";
 
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import AuthenticatedPhoto from "../../components/AuthenticatedPhoto";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
@@ -926,77 +927,12 @@ export default function EmpleadosListado({
           CABECERA
       ====================================================== */}
 
-      <div className="px-5
- py-5">
-
-        <div className="flex
- flex-col
- gap-4
- lg:flex-row
- lg:items-center
- lg:justify-between">
-
-          <div>
-
-            <div className="flex
- items-center
- gap-3">
-
-              <div className="flex
- h-11
- w-11
- items-center
- justify-center">
-                👥
-              </div>
-
-
-              <div>
-
-                <h1>
-                  Empleados
-                </h1>
-
-                <p className="mt-0.5">
-                  Gestión y administración de empleados
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <button
-            type="button"
-            onClick={
-              abrirNuevo
-            }
-            className="inline-flex
- h-11
- items-center
- justify-center
- gap-2
- 
- 
- px-5"
-          >
-
-            <span>
-              +
-            </span>
-
-            <span>
-              Nuevo empleado
-            </span>
-
-          </button>
-
-        </div>
-
+      <MolsanPageHeader mark="EM" title="Empleados" description="Gestión y administración de empleados." />
+      <div className="flex justify-end">
+        <button type="button" onClick={abrirNuevo} className="inline-flex items-center justify-center gap-2 px-5 py-2.5">
+          <span>＋</span><span>Nuevo empleado</span>
+        </button>
       </div>
-
 
       {/* ======================================================
           MENSAJE ÉXITO
