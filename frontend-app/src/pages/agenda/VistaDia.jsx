@@ -84,23 +84,20 @@ export default function VistaDia({
   }, [citasSeguras]);
 
   return (
-    <div className="agenda-vista-premium agenda-vista-dia-premium grid grid-cols-[70px,1fr] gap-4 text-xs animate-fade-in">
+    <div className="agenda-vista-premium agenda-vista-dia-premium grid grid-cols-[70px,1fr] gap-4">
 
       {/* HORAS */}
 
-      <div className="text-[var(--erp-text-soft)] flex flex-col">
+      <div className="flex flex-col">
 
         {HORAS.map((h) => (
           <div
             key={h}
-            className="
-              h-12
-              flex items-start
-              justify-end
-              pr-2
-              pt-1
-              font-medium
-            "
+            className="h-12
+ flex items-start
+ justify-end
+ pr-2
+ pt-1"
           >
             {h}
           </div>
@@ -111,14 +108,11 @@ export default function VistaDia({
       {/* TIMELINE */}
 
       <div
-        className="
-          relative
-          border border-[var(--erp-border)]
-          rounded-xl
-          bg-[var(--erp-surface)]
-          overflow-hidden
-          shadow-sm
-        "
+        className="relative
+ 
+ 
+ 
+ overflow-hidden"
       >
 
         {/* BLOQUES HORARIOS */}
@@ -126,13 +120,7 @@ export default function VistaDia({
         {HORAS.map((h) => (
           <div
             key={h}
-            className="
-              h-12
-              border-b border-[var(--erp-border)]
-              hover:bg-[var(--erp-surface-soft)]
-              cursor-pointer
-              transition
-            "
+            className="h-12"
             onDoubleClick={crearCitaDia}
           />
         ))}
@@ -192,36 +180,33 @@ export default function VistaDia({
                 `}
               />
 
-              <div className="font-semibold truncate pl-1">
+              <div className="truncate pl-1">
                 {cita.tipo_cita} —{" "}
                 {cita.hora_inicio} -{" "}
                 {cita.hora_fin}
               </div>
-              {String(cita.tipo_cita || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es").includes("firma") ? (() => { const realizada = Boolean(cita.firma_realizada) || /FIRMA\s+REALIZADA|FIRMADA/.test(String(cita.observaciones || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()); return <div className={`mt-1 inline-flex items-center rounded-md border px-2 py-1 text-[11px] font-bold ${realizada ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-700"}`}>{realizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</div>; })() : null}
+              {String(cita.tipo_cita || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es").includes("firma") ? (() => { const realizada = Boolean(cita.firma_realizada) || /FIRMA\s+REALIZADA|FIRMADA/.test(String(cita.observaciones || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()); return <div className={`mt-1 inline-flex items-center rounded-md border px-2 py-1 text-[11px] font-bold ${realizada ? "" : ""}`}>{realizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</div>; })() : null}
 
-              <div className="truncate text-[var(--erp-text-soft)] pl-1">
+              <div className="truncate pl-1">
                 Notario:{" "}
                 {cita.notario_nombre || "—"}
               </div>
 
-              <div className="truncate text-[var(--erp-text-soft)] pl-1">
+              <div className="truncate pl-1">
                 Firma: {cita.tipo_firma}
               </div>
 
-              <div className="truncate text-[var(--erp-text-soft)] pl-1">
+              <div className="truncate pl-1">
                 Apoderado:{" "}
                 {cita.apoderado_nombre || "—"}
               </div>
 
               {cita.observaciones && (
                 <div
-                  className="
-                    text-[11px]
-                    mt-1
-                    truncate
-                    text-[var(--erp-text-soft)]
-                    pl-1
-                  "
+                  className="mt-1
+ truncate
+ 
+ pl-1"
                 >
                   Obs: {cita.observaciones}
                 </div>
