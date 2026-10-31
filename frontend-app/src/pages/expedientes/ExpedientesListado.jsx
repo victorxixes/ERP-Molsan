@@ -2574,8 +2574,7 @@ export default function ExpedientesListado() {
                 setFiltroActividad(activa ? "" : valorBackend);
                 setFiltrosAplicados((actual) => ({ ...actual, actividad: activa ? "" : valorBackend })); setPagina(1);
               }}
-              className="min-h-[148px] p-4"
-              
+              className="min-h-[148px] p-4">
               <div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center">{actividad.icono}</span><span className="tabular-nums">{loadingActividades ? "…" : formatearNumero(total)}</span></div>
               <div className="mt-3">{actividad.label}</div>
               <div className="mt-3">
@@ -3100,7 +3099,7 @@ export default function ExpedientesListado() {
               <FiltroInput label="Promoción" value={filtroPromocion} onChange={setFiltroPromocion} placeholder="Referencia interna" />
               <div>
                 <label className="block mb-1">Estado actividad</label>
-                <select value={filtroEstadoActividad} onChange={(event) => setFiltroEstadoActividad(event.target.value)} className="w-full px-3 py-2.5" 
+                <select value={filtroEstadoActividad} onChange={(event) => setFiltroEstadoActividad(event.target.value)} className="w-full px-3 py-2.5">
                   <option value="">Todos los estados</option>
                   {(catalogosListado.estados_actividad.length ? catalogosListado.estados_actividad : [...new Set(expedientes.map((item) => item.estado_actividad).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es"))).map((estado) => <option key={estado} value={estado}>{estado}</option>)}
                 </select>
@@ -3119,7 +3118,7 @@ export default function ExpedientesListado() {
                   {(catalogosListado.estados_expediente.length ? catalogosListado.estados_expediente : [...new Set(expedientes.map((item) => item.estado_expediente).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es"))).map((estado) => <option key={estado} value={estado}>{estado}</option>)}
                 </select>
               </div>
-              <div className="md:col-span-2 xl:col-span-3 pb-2 mt-2" 
+              <div className="md:col-span-2 xl:col-span-3 pb-2 mt-2">
                 <h4>Clasificación ABSIS</h4>
                 <p className="mt-1">Filtros de categorías importadas; puedes combinarlos entre sí.</p>
               </div>
