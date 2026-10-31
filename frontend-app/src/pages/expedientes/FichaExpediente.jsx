@@ -799,7 +799,7 @@ function RepositorioDocumentosInline({ expedienteId, categorias = [], titulo = "
                         <button type="button" onClick={() => abrirDocumento(doc)} className="px-2 py-1">Ver</button>
                       </div>
                     ))}
-                    <p className="">{documentosCategoria.length} documento(s) encontrado(s) en la carpeta digital</p>
+                    <p>{documentosCategoria.length} documento(s) encontrado(s) en la carpeta digital</p>
                   </div>
                 ) : <span className="mt-1 block">No hay ningún documento guardado en esta categoría.</span>}
             </div>
@@ -879,7 +879,7 @@ function IconoSeccion({
 
   return (
     <span
-      className=""
+     
       aria-hidden="true"
     >
       {
@@ -972,7 +972,7 @@ function Seccion({
             aria-label={abierta ? `Ocultar ${titulo}` : `Mostrar ${titulo}`}
             title={abierta ? "Ocultar" : "Mostrar"}
           >
-            <span className="">
+            <span>
               {abierta ? "⌃" : "⌄"}
             </span>
           </button>
@@ -1129,7 +1129,7 @@ function Modal({
         >
           <div className="min-w-0">
             <h2
-              className=""
+             
             >
               {titulo}
             </h2>
@@ -4662,7 +4662,7 @@ async function descargarPDFCalificacion(defecto) {
  p-12"
         >
           <div
-            className=""
+           
           >
             Cargando ficha del expediente…
           </div>
@@ -4690,7 +4690,7 @@ async function descargarPDFCalificacion(defecto) {
  
  p-6"
         >
-          <p className="">
+          <p>
             {error}
           </p>
 
@@ -4831,7 +4831,7 @@ const cuantiaFincasParaEnvio =
                     <section className="p-4">
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div>
-                          <h3 className="">Checklist de calidad del expediente</h3>
+                          <h3>Checklist de calidad del expediente</h3>
                           <p className="mt-1">Cada visto se obtiene de los datos guardados y de los documentos encontrados en la carpeta digital. Los requisitos pendientes se muestran para poder corregirlos.</p>
                         </div>
                         <button
@@ -5068,7 +5068,7 @@ const cuantiaFincasParaEnvio =
                           <>
                             <div className="mt-4 p-3">
                               <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                                <span className="">Calidad documental y de datos</span>
+                                <span>Calidad documental y de datos</span>
                                 <span className="tabular-nums">{completadas}/7 fases completas · {checksOk}/{totalChecks} comprobaciones</span>
                               </div>
                               <div className="h-2 overflow-hidden">
@@ -5088,7 +5088,7 @@ const cuantiaFincasParaEnvio =
                                         {completa ? "✓" : actual ? "●" : indice + 1}
                                       </div>
                                       <div className="min-w-0 flex-1">
-                                        <p className="">{fase.icono} {fase.label}</p>
+                                        <p>{fase.icono} {fase.label}</p>
                                         <p className={`mt-0.5 ${completa ? "" : actual ? "" : ""}`}>
                                           {completa ? "Control superado" : actual ? "Actividad actual · requiere revisión" : "Con incidencias pendientes"}
                                         </p>
@@ -5130,14 +5130,14 @@ const cuantiaFincasParaEnvio =
                                 <div className="flex items-center gap-2">
                                   <div className="flex h-8 w-8 shrink-0 items-center justify-center">💶</div>
                                   <div className="min-w-0 flex-1">
-                                    <p className="">PPAD</p>
+                                    <p>PPAD</p>
                                     <p className="mt-0.5">{cargandoPpad ? "Cargando registros…" : `${ppadItems.length} registro(s) · ${ppadItems.filter((item) => !item.compensado).length} pendiente(s)`}</p>
                                   </div>
                                   <button type="button" aria-expanded={!fasesCalidadColapsadas.ppad} onClick={() => setFasesCalidadColapsadas((actuales) => ({ ...actuales, ppad: !actuales.ppad }))} className="shrink-0 px-2 py-1">{fasesCalidadColapsadas.ppad ? "＋ Mostrar" : "− Ocultar"}</button>
                                 </div>
                                 {!fasesCalidadColapsadas.ppad && <div className="mt-2 space-y-1.5 pt-2">
-                                  {errorPpad && <p role="alert" className="">{errorPpad}</p>}
-                                  {!cargandoPpad && !errorPpad && ppadItems.length === 0 && <p className="">No hay registros PPAD en este expediente.</p>}
+                                  {errorPpad && <p role="alert">{errorPpad}</p>}
+                                  {!cargandoPpad && !errorPpad && ppadItems.length === 0 && <p>No hay registros PPAD en este expediente.</p>}
                                   {ppadItems.map((item) => <div key={item.id} className="flex items-start justify-between gap-2">
                                     <span className="min-w-0"><strong>{item.concepto || "PPAD"}</strong><span className="block">{item.compensado ? "✓ Compensado" : "◷ Pendiente"}{item.imputable_a || item.imputableA ? ` · ${item.imputable_a || item.imputableA}` : ""}</span></span>
                                     <span className="shrink-0 tabular-nums">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</span>
@@ -5148,14 +5148,14 @@ const cuantiaFincasParaEnvio =
                                 <div className="flex items-center gap-2">
                                   <div className="flex h-8 w-8 shrink-0 items-center justify-center">💰</div>
                                   <div className="min-w-0 flex-1">
-                                    <p className="">Complementos de saldo</p>
+                                    <p>Complementos de saldo</p>
                                     <p className="mt-0.5">{cargandoComplementosExpediente ? "Cargando solicitudes…" : `${complementosSaldoExpediente.length} solicitud(es) · ${complementosSaldoExpediente.filter((item) => !["compensado", "cerrado"].includes(String(item.estado || "").toLowerCase())).length} pendiente(s)`}</p>
                                   </div>
                                   <button type="button" aria-expanded={!fasesCalidadColapsadas.complementos} onClick={() => setFasesCalidadColapsadas((actuales) => ({ ...actuales, complementos: !actuales.complementos }))} className="shrink-0 px-2 py-1">{fasesCalidadColapsadas.complementos ? "＋ Mostrar" : "− Ocultar"}</button>
                                 </div>
                                 {!fasesCalidadColapsadas.complementos && <div className="mt-2 space-y-1.5 pt-2">
-                                  {errorComplementosExpediente && <p role="alert" className="">{errorComplementosExpediente}</p>}
-                                  {!cargandoComplementosExpediente && !errorComplementosExpediente && complementosSaldoExpediente.length === 0 && <p className="">No hay solicitudes de complemento para este expediente.</p>}
+                                  {errorComplementosExpediente && <p role="alert">{errorComplementosExpediente}</p>}
+                                  {!cargandoComplementosExpediente && !errorComplementosExpediente && complementosSaldoExpediente.length === 0 && <p>No hay solicitudes de complemento para este expediente.</p>}
                                   {complementosSaldoExpediente.map((item) => <div key={item.id} className="flex items-start justify-between gap-2">
                                     <span className="min-w-0"><strong>{item.motivo || "Complemento de saldo"}</strong><span className="block">{item.fecha_solicitud ? formatearFecha(item.fecha_solicitud) : "Sin fecha"} · {item.estado || "Pendiente"}</span></span>
                                     <span className="shrink-0 tabular-nums">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</span>
@@ -5571,16 +5571,16 @@ const cuantiaFincasParaEnvio =
             >
 
               <div className="min-w-0 flex-1">
-                <h3 className="">
+                <h3>
                   {actividadSeleccionadaDef.icono} {actividadSeleccionadaDef.label}
                 </h3>
                 <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="">Estado actividad</span>
-                    <span className="">{expediente.estado_actividad || "—"}</span>
+                    <span>Estado actividad</span>
+                    <span>{expediente.estado_actividad || "—"}</span>
                   </span>
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="">Oficina</span>
+                    <span>Oficina</span>
                     <button type="button" onClick={async () => {
                       setOficinaDetalleAbierta(true);
                       setCargandoOficinaDetalle(true);
@@ -5599,8 +5599,8 @@ const cuantiaFincasParaEnvio =
                     }} className="underline-offset-2" title="Consultar datos del catálogo de oficinas">{expediente.oficina || "—"}</button>
                   </span>
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="">Fecha alta</span>
-                    <span className="">{expediente.fecha_alta ? formatearFecha(expediente.fecha_alta) : "—"}</span>
+                    <span>Fecha alta</span>
+                    <span>{expediente.fecha_alta ? formatearFecha(expediente.fecha_alta) : "—"}</span>
                   </span>
                 </div>
                 <p className="mt-1.5">Campos de esta actividad</p>
@@ -5660,7 +5660,7 @@ const cuantiaFincasParaEnvio =
                       <div className="flex min-w-0 items-center gap-3">
                         <span className="flex h-10 w-10 shrink-0 items-center justify-center"><span aria-hidden="true">▤</span></span>
                         <div>
-                          <h5 className="">Control económico · Libro de pagos</h5>
+                          <h5>Control económico · Libro de pagos</h5>
                           <p className="mt-1">Saldo inicial, gastos imputados y saldo pendiente del expediente.</p>
                         </div>
                       </div>
@@ -5693,12 +5693,12 @@ const cuantiaFincasParaEnvio =
                       </div>
                       {importeInicialDisponible && importeInicialProvision > 0 && (
                         <div className="mt-4">
-                          <div className="mb-2 flex items-center justify-between gap-3"><span className="">Consumo del saldo inicial</span><span className="tabular-nums">{Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100)).toLocaleString("es-ES", { maximumFractionDigits: 1 })}%</span></div>
+                          <div className="mb-2 flex items-center justify-between gap-3"><span>Consumo del saldo inicial</span><span className="tabular-nums">{Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100)).toLocaleString("es-ES", { maximumFractionDigits: 1 })}%</span></div>
                           <div className="h-2 overflow-hidden"><div className={`h-full ${resumenEconomico.saldoActual < 0 ? "" : ""}`} style={{ width: `${Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100))}%` }}/></div>
                         </div>
                       )}
                       <div className="mt-5">
-                        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h6 className="uppercase">Libro de movimientos contables</h6><span className="">Solo los pagos confirmados descuentan el saldo</span></div>
+                        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h6 className="uppercase">Libro de movimientos contables</h6><span>Solo los pagos confirmados descuentan el saldo</span></div>
                         {cargandoGastos ? (
                           <p className="py-4">Cargando movimientos contables…</p>
                         ) : gastosExpediente.length === 0 ? (
@@ -5707,9 +5707,9 @@ const cuantiaFincasParaEnvio =
                           <div className="overflow-x-auto">
                             <table className="w-full min-w-[1080px]">
                               <thead className="uppercase"><tr><th className="px-3 py-3">ID de pago</th><th className="px-3 py-3">Fecha</th><th className="px-3 py-3">Tipo de documento</th><th className="px-3 py-3">Cuantía documento</th><th className="px-3 py-3">Impuesto</th><th className="px-3 py-3">Total</th><th className="px-3 py-3">Estado</th><th className="px-3 py-3">Saldo tras pago</th><th className="px-3 py-3">Acciones</th></tr></thead>
-                              <tbody className="">
+                              <tbody>
                                 {resumenEconomico.movimientos.length === 0 && gastosPendientesResumen.length === 0 && <tr><td colSpan={9} className="px-4 py-6">Todavía no hay gastos ni pagos registrados.</td></tr>}
-                                {gastosPendientesResumen.map((gasto) => { const fmtPendiente = (valor) => Number(valor ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); const importe = Math.abs(Number(gasto.importe_resultante ?? gasto.importe ?? 0)); const base = Number(gasto.base_imponible ?? gasto.base_sujeta_impuestos ?? gasto.base_exenta_impuestos ?? 0); const impuesto = Number(gasto.importe_impuesto ?? gasto.impuesto ?? gasto.iva ?? 0); return <tr key={"pendiente-" + gasto.id} className=""><td className="whitespace-nowrap px-3 py-3">{gasto.numero_documento || ("GAS-" + String(gasto.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(gasto.fecha_factura || gasto.fecha || gasto.created_at)}</td><td className="px-3 py-3"><span className="">{gasto.tipo || "Gasto registrado"}</span>{gasto.descripcion ? <span className="mt-1 block">{gasto.descripcion}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 tabular-nums">{fmtPendiente(base > 0 ? base : importe)} €</td><td className="whitespace-nowrap px-3 py-3 tabular-nums">{impuesto > 0 ? `${fmtPendiente(impuesto)} €` : "—"}</td><td className="whitespace-nowrap px-3 py-3 tabular-nums">{fmtPendiente(importe)} €</td><td className="whitespace-nowrap px-3 py-3"><span className="px-2 py-1">Pendiente</span></td><td className="whitespace-nowrap px-3 py-3 tabular-nums">{importeInicialDisponible ? `${fmtPendiente(resumenEconomico.saldoActual)} €` : "—"}</td><td className="px-3 py-3">{esAdministradorSesion ? <button type="button" onClick={() => abrirOrdenPago(gasto)} disabled={importe <= 0} className="px-2.5 py-1.5">Pagar</button> : <span className="">Solo administración</span>}</td></tr>; })}
+                                {gastosPendientesResumen.map((gasto) => { const fmtPendiente = (valor) => Number(valor ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); const importe = Math.abs(Number(gasto.importe_resultante ?? gasto.importe ?? 0)); const base = Number(gasto.base_imponible ?? gasto.base_sujeta_impuestos ?? gasto.base_exenta_impuestos ?? 0); const impuesto = Number(gasto.importe_impuesto ?? gasto.impuesto ?? gasto.iva ?? 0); return <tr key={"pendiente-" + gasto.id}><td className="whitespace-nowrap px-3 py-3">{gasto.numero_documento || ("GAS-" + String(gasto.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(gasto.fecha_factura || gasto.fecha || gasto.created_at)}</td><td className="px-3 py-3"><span>{gasto.tipo || "Gasto registrado"}</span>{gasto.descripcion ? <span className="mt-1 block">{gasto.descripcion}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 tabular-nums">{fmtPendiente(base > 0 ? base : importe)} €</td><td className="whitespace-nowrap px-3 py-3 tabular-nums">{impuesto > 0 ? `${fmtPendiente(impuesto)} €` : "—"}</td><td className="whitespace-nowrap px-3 py-3 tabular-nums">{fmtPendiente(importe)} €</td><td className="whitespace-nowrap px-3 py-3"><span className="px-2 py-1">Pendiente</span></td><td className="whitespace-nowrap px-3 py-3 tabular-nums">{importeInicialDisponible ? `${fmtPendiente(resumenEconomico.saldoActual)} €` : "—"}</td><td className="px-3 py-3">{esAdministradorSesion ? <button type="button" onClick={() => abrirOrdenPago(gasto)} disabled={importe <= 0} className="px-2.5 py-1.5">Pagar</button> : <span>Solo administración</span>}</td></tr>; })}
                                 {resumenEconomico.movimientos.map((movimiento) => {
                                   const fmt = (valor) => Number(valor ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                                   const importeMovimiento = Math.abs(Number(movimiento.importeMovimiento ?? movimiento.importe_resultante ?? movimiento.importe ?? 0));
@@ -5720,7 +5720,7 @@ const cuantiaFincasParaEnvio =
                                   const total = movimiento.es_movimiento_pago ? importeMovimiento : Math.abs(Number(movimiento.importe_resultante ?? movimiento.importe ?? movimiento.importe_total_bruto ?? importeMovimiento));
                                   const estado = movimiento.es_movimiento_pago ? (movimiento.anulado_en ? "Anulado" : "Pagado") : String(movimiento.estado_pago || "Pagado").trim();
                                   const saldoTrasMovimiento = importeInicialDisponible ? Number(movimiento.saldoCalculado) : null;
-                                  return <tr key={movimiento.id} className=""><td className="whitespace-nowrap px-3 py-3">{movimiento.numero_documento || ("PAG-" + String(movimiento.pago_id || movimiento.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(movimiento.fecha || movimiento.fecha_factura)}</td><td className="px-3 py-3"><span className="">{movimiento.tipo || "Documento"}</span>{movimiento.concepto_pago ? <span className="mt-1 block">{movimiento.concepto_pago}</span> : movimiento.descripcion ? <span className="mt-1 block">{movimiento.descripcion}</span> : null}{movimiento.tipo_impuesto && !movimiento.es_movimiento_pago ? <span className="mt-1 block">{movimiento.tipo_impuesto}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 tabular-nums">{cuantiaDocumento === null || cuantiaDocumento === 0 ? "—" : `${fmt(cuantiaDocumento)} €`}</td><td className="whitespace-nowrap px-3 py-3 tabular-nums">{impuesto > 0 ? `${fmt(impuesto)} €` : "—"}</td><td className="whitespace-nowrap px-3 py-3 tabular-nums">{fmt(total)} €</td><td className="whitespace-nowrap px-3 py-3"><span className={"px-2 py-1" + (estado === "Anulado" ? "" : "")}>{estado}</span>{movimiento.motivo_anulacion ? <span className="mt-1 block max-w-[220px] whitespace-normal" title={movimiento.motivo_anulacion}>Motivo: {movimiento.motivo_anulacion}</span> : null}</td><td className={"whitespace-nowrap px-3 py-3 tabular-nums" + (saldoTrasMovimiento !== null && saldoTrasMovimiento < 0 ? "" : "")}>{saldoTrasMovimiento === null ? "—" : (fmt(saldoTrasMovimiento) + " €")}</td><td className="px-3 py-3">{movimiento.es_movimiento_pago && !movimiento.anulado_en && esAdministradorSesion ? <button type="button" onClick={() => void anularPagoGasto(movimiento)} className="px-2.5 py-1.5">Anular pago</button> : movimiento.anulado_en ? <span className="">Anulado</span> : "—"}</td></tr>;
+                                  return <tr key={movimiento.id}><td className="whitespace-nowrap px-3 py-3">{movimiento.numero_documento || ("PAG-" + String(movimiento.pago_id || movimiento.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(movimiento.fecha || movimiento.fecha_factura)}</td><td className="px-3 py-3"><span>{movimiento.tipo || "Documento"}</span>{movimiento.concepto_pago ? <span className="mt-1 block">{movimiento.concepto_pago}</span> : movimiento.descripcion ? <span className="mt-1 block">{movimiento.descripcion}</span> : null}{movimiento.tipo_impuesto && !movimiento.es_movimiento_pago ? <span className="mt-1 block">{movimiento.tipo_impuesto}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 tabular-nums">{cuantiaDocumento === null || cuantiaDocumento === 0 ? "—" : `${fmt(cuantiaDocumento)} €`}</td><td className="whitespace-nowrap px-3 py-3 tabular-nums">{impuesto > 0 ? `${fmt(impuesto)} €` : "—"}</td><td className="whitespace-nowrap px-3 py-3 tabular-nums">{fmt(total)} €</td><td className="whitespace-nowrap px-3 py-3"><span className={"px-2 py-1" + (estado === "Anulado" ? "" : "")}>{estado}</span>{movimiento.motivo_anulacion ? <span className="mt-1 block max-w-[220px] whitespace-normal" title={movimiento.motivo_anulacion}>Motivo: {movimiento.motivo_anulacion}</span> : null}</td><td className={"whitespace-nowrap px-3 py-3 tabular-nums" + (saldoTrasMovimiento !== null && saldoTrasMovimiento < 0 ? "" : "")}>{saldoTrasMovimiento === null ? "—" : (fmt(saldoTrasMovimiento) + " €")}</td><td className="px-3 py-3">{movimiento.es_movimiento_pago && !movimiento.anulado_en && esAdministradorSesion ? <button type="button" onClick={() => void anularPagoGasto(movimiento)} className="px-2.5 py-1.5">Anular pago</button> : movimiento.anulado_en ? <span>Anulado</span> : "—"}</td></tr>;
                                 })}
                               </tbody>
                             </table>
@@ -5791,7 +5791,7 @@ const cuantiaFincasParaEnvio =
                                   </div>
                                 </section>
                                 <section className="mb-4 p-4">
-                                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h3 className="">5. Datos de la factura</h3><span className="px-2.5 py-1">Extracción PDF pendiente</span></div>
+                                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h3>5. Datos de la factura</h3><span className="px-2.5 py-1">Extracción PDF pendiente</span></div>
                                   <div className="grid gap-3 md:grid-cols-2">
                                     <label className="block">N.º de factura
                                       <input value={gastoForm.numero_factura || ""} onChange={(e) => setGastoForm((a) => ({ ...a, numero_factura: e.target.value }))} placeholder="Pendiente de lectura del PDF" className="mt-1 w-full px-3 py-2.5" />
@@ -5852,7 +5852,7 @@ const cuantiaFincasParaEnvio =
                             <div className="mx-auto flex w-full flex-col overflow-hidden">
                           <form onSubmit={guardarGastoExpediente} className="flex min-h-0 flex-col overflow-hidden">
                             <div className="flex items-start justify-between gap-3 px-5 py-4">
-                              <div><h5 id="titulo-modal-gasto" className="">{gastoEdicionId ? "Completar obligación económica" : "Registrar obligación económica"}</h5><p className="mt-1">Adjuntar una factura crea una obligación pendiente. Solo el formulario de pago confirma movimientos reales.</p></div>
+                              <div><h5 id="titulo-modal-gasto">{gastoEdicionId ? "Completar obligación económica" : "Registrar obligación económica"}</h5><p className="mt-1">Adjuntar una factura crea una obligación pendiente. Solo el formulario de pago confirma movimientos reales.</p></div>
                               <button type="button" aria-label="Cerrar ventana" onClick={() => setMostrarFormularioGasto(false)} disabled={guardandoGasto} className="px-3 py-2">×</button>
                               <span className="px-3 py-1">Pago: pendiente</span>
                             </div>
@@ -5911,7 +5911,7 @@ const cuantiaFincasParaEnvio =
                                 <div className="p-3"><div className="flex justify-between"><span>Impuesto calculado</span><strong>{impuestoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div></div>
                                 <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block">Base exenta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_exenta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_exenta_retencion:e.target.value}))} className="w-full px-3 py-2" /></label><label className="block"><span className="mb-1 block">Base sujeta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_sujeta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_sujeta_retencion:e.target.value}))} className="w-full px-3 py-2" /></label></div>
                                 <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block">Retención</span><select value={gastoForm.tipo_retencion} onChange={(e)=>setGastoForm(a=>({...a,tipo_retencion:e.target.value}))} className="w-full px-3 py-2"><option>IRPF profesionales</option><option>Sin retención</option></select></label><label className="block"><span className="mb-1 block">IRPF (%)</span><input type="number" min="0" max="21" step="0.01" value={gastoForm.porcentaje_retencion} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_retencion:e.target.value}))} className="w-full px-3 py-2" /></label></div>
-                                <div className="p-4"><div className="flex justify-between"><span>Retención calculada</span><strong>{retencionCalculadaGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span className="">Resultado calculado</span><strong className="">{resultadoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><label className="mt-3 block"><span className="mb-1 block">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value}))} className="w-full px-3 py-2" /></label></div>
+                                <div className="p-4"><div className="flex justify-between"><span>Retención calculada</span><strong>{retencionCalculadaGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span>Resultado calculado</span><strong>{resultadoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><label className="mt-3 block"><span className="mb-1 block">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value}))} className="w-full px-3 py-2" /></label></div>
                                 <label className="block"><span className="mb-1 block">Descripción *</span><input required value={gastoForm.descripcion} onChange={(e)=>setGastoForm(a=>({...a,descripcion:e.target.value}))} placeholder="Concepto detallado de la factura" className="w-full px-3 py-2" /></label>
                               </div>
                               <aside className="min-w-0 p-3">
@@ -5960,8 +5960,8 @@ const cuantiaFincasParaEnvio =
                 {actividadSeleccionada === "sede-notarial" && (
                   <section className="mb-3 p-3 sm:p-4">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="">Datos de Sede notarial</h3>
-                  <span className="">Información del envío y del documento</span>
+                  <h3>Datos de Sede notarial</h3>
+                  <span>Información del envío y del documento</span>
                 </div>
 
                 <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-2">
@@ -6016,10 +6016,10 @@ const cuantiaFincasParaEnvio =
               <div className="mb-4 space-y-4">
                 <section className="p-4">
                   <div className="mb-3">
-                    <h4 className="">Preparación de datos para la futura integración ABSIS</h4>
+                    <h4>Preparación de datos para la futura integración ABSIS</h4>
                     <p className="mt-1">Los datos se guardan en el ERP. Esta pantalla no transmite información a ABSIS.</p>
                   </div>
-                  {cargandoEstadoAbsis ? <p className="">Cargando estado de ABSIS…</p> : null}
+                  {cargandoEstadoAbsis ? <p>Cargando estado de ABSIS…</p> : null}
                   <div className="grid gap-3 md:grid-cols-2">
                     <label className="p-3">
                       <span className="mb-2 block">Certificado Saldo «0» erróneo</span>
@@ -6029,12 +6029,12 @@ const cuantiaFincasParaEnvio =
                     </label>
                     <div className="p-3">
                       <span className="mb-1 block">Fecha envío a notario</span>
-                      <p className="">{expediente?.fecha_envio_notario || expediente?.fecha_envio ? new Date(expediente.fecha_envio_notario || expediente.fecha_envio).toLocaleDateString("es-ES") : "Pendiente de envío"}</p>
+                      <p>{expediente?.fecha_envio_notario || expediente?.fecha_envio ? new Date(expediente.fecha_envio_notario || expediente.fecha_envio).toLocaleDateString("es-ES") : "Pendiente de envío"}</p>
                       <p className="mt-1">Vinculada al envío guardado en Enviar a notario.</p>
                     </div>
                   </div>
                   <div className="mt-3 space-y-2">
-                    <p className="">Documentos que incluirá la futura solicitud</p>
+                    <p>Documentos que incluirá la futura solicitud</p>
                     {[
                       ["solicitud_cancelacion_notarial", "Hoja de Encargo firmada"],
                       ["certificado_cancelacion_administrativo", "Justificante de cancelación"],
@@ -6073,9 +6073,9 @@ const cuantiaFincasParaEnvio =
             {actividadSeleccionada === "defectos-registrales" && (
               <section className="mb-3 p-3 sm:p-4">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="">Defectos registrales del expediente</h3>
+                  <h3>Defectos registrales del expediente</h3>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="">Detalle compartido con el alta de defectos</span>
+                    <span>Detalle compartido con el alta de defectos</span>
                     <Boton tipo="primary" onClick={() => { setDefectoEditandoId(null); setDefectoForm({ ...DEFECTO_VACIO }); setErrorDefecto(""); setMostrarDefecto(true); }}>＋ Alta defecto</Boton>
                   </div>
                 </div>
@@ -6097,14 +6097,14 @@ const cuantiaFincasParaEnvio =
                 <div className="mt-3 p-3">
                   <h4 className="mb-2">Información de fincas y registro</h4>
                   {cargandoFincas ? (
-                    <p className="">Cargando fincas y datos registrales…</p>
+                    <p>Cargando fincas y datos registrales…</p>
                   ) : fincasExpediente.length === 0 ? (
-                    <p className="">No hay fincas ni datos registrales vinculados a este expediente.</p>
+                    <p>No hay fincas ni datos registrales vinculados a este expediente.</p>
                   ) : (
                     <div className="space-y-2">
                       {fincasExpediente.map((finca, indice) => (
                         <article key={finca.id || `${finca.finca || finca.numero_finca || "finca"}-${indice}`} className="p-3">
-                          <p className="">Finca {finca.finca || finca.numero_finca || "—"}</p>
+                          <p>Finca {finca.finca || finca.numero_finca || "—"}</p>
                           <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
                             <Dato campo="Registro" valor={finca.registro} />
                             <Dato campo="Sección" valor={finca.seccion} />
@@ -6178,8 +6178,8 @@ const cuantiaFincasParaEnvio =
             {actividadSeleccionada === "tramitacion-inscripcion" && (
               <section className="mb-3 p-3 sm:p-4">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="">Datos vinculados de Enviar a notario</h3>
-                  <span className="">Información de la ficha del expediente</span>
+                  <h3>Datos vinculados de Enviar a notario</h3>
+                  <span>Información de la ficha del expediente</span>
                 </div>
                 <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
                   <Dato campo="Notario" valor={expediente?.nombre_notario ?? expediente?.notario} />
@@ -6190,14 +6190,14 @@ const cuantiaFincasParaEnvio =
                 <div className="mt-3 p-3">
                   <h4 className="mb-2">Fincas y registros vinculados</h4>
                   {cargandoFincas ? (
-                    <p className="">Cargando fincas y registros…</p>
+                    <p>Cargando fincas y registros…</p>
                   ) : fincasExpediente.length === 0 ? (
-                    <p className="">No hay fincas ni registros vinculados a este expediente.</p>
+                    <p>No hay fincas ni registros vinculados a este expediente.</p>
                   ) : (
                     <div className="space-y-2">
                       {fincasExpediente.map((finca, indice) => (
                         <article key={finca.id || `${finca.finca || finca.numero_finca || "finca"}-${indice}`} className="p-3">
-                          <p className="">Finca {finca.finca || finca.numero_finca || "—"}</p>
+                          <p>Finca {finca.finca || finca.numero_finca || "—"}</p>
                           <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
                             <Dato campo="Registro" valor={finca.registro} />
                             <Dato campo="Sección" valor={finca.seccion} />
@@ -6307,7 +6307,7 @@ const cuantiaFincasParaEnvio =
               <section className="mt-3 p-4">
                 <div className="grid gap-3 md:grid-cols-2">
                   <div className="p-3">
-                    <p className="">Copia simple de escritura</p>
+                    <p>Copia simple de escritura</p>
                     <p className="mt-1">
                       {actividadDraft?.copia_simple_escritura || expediente?.copia_simple_escritura
                         ? "Hay una referencia guardada a la copia simple."
@@ -6376,7 +6376,7 @@ const cuantiaFincasParaEnvio =
                       <article key={categoria.key} className="p-4">
                         <div className="flex items-start justify-between gap-2">
                           <div>
-                            <h4 className="">{categoria.titulo}</h4>
+                            <h4>{categoria.titulo}</h4>
                             <p className="mt-1">{categoria.descripcion}</p>
                           </div>
                           <span className="shrink-0 px-2 py-1">
@@ -6397,11 +6397,11 @@ const cuantiaFincasParaEnvio =
                               })}
                             </ul>
                           ) : (
-                            <p className="">Todavía no hay documentos en esta categoría.</p>
+                            <p>Todavía no hay documentos en esta categoría.</p>
                           )}
                         </div>
                         <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-                          <span className="">{documentos.length} archivo(s)</span>
+                          <span>{documentos.length} archivo(s)</span>
                           <button
                             type="button"
                             onClick={() => {
@@ -6425,7 +6425,7 @@ const cuantiaFincasParaEnvio =
               <section className="mt-3 p-4">
                 <div className="grid gap-3 md:grid-cols-2">
                   <div className="p-3">
-                    <p className="">Impuesto (AJD / ITP)</p>
+                    <p>Impuesto (AJD / ITP)</p>
                     <p className="mt-1">
                       {actividadDraft?.impuesto_ajd_itp
                         ? `Documento asociado: ${actividadDraft.impuesto_ajd_itp}`
@@ -6461,7 +6461,7 @@ const cuantiaFincasParaEnvio =
               <div className="mt-4 space-y-4">
                 <section className="p-4">
                   <div className="mb-3">
-                    <h3 className="">Datos vinculados de la ficha del expediente</h3>
+                    <h3>Datos vinculados de la ficha del expediente</h3>
                     <p className="mt-1">Información enlazada con Enviar a notario, Fincas y registros e Información crediticia. Los datos se consultan desde el expediente, sin duplicarlos.</p>
                   </div>
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -6478,14 +6478,14 @@ const cuantiaFincasParaEnvio =
                     <h4 className="mb-2 uppercase">Fincas y datos registrales vinculados</h4>
                     {errorFincas && <p className="mb-2 px-3 py-2">{errorFincas}</p>}
                     {cargandoFincas ? (
-                      <p className="">Cargando fincas y registros…</p>
+                      <p>Cargando fincas y registros…</p>
                     ) : fincasExpediente.length === 0 ? (
                       <p className="p-3">No hay fincas ni registros vinculados a este expediente.</p>
                     ) : (
                       <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
                         {fincasExpediente.map((finca, indice) => (
                           <article key={finca.id || String(finca.finca || finca.numero_finca || "finca") + "-" + indice} className="p-3">
-                            <p className="">Finca {finca.finca || finca.numero_finca || "—"}</p>
+                            <p>Finca {finca.finca || finca.numero_finca || "—"}</p>
                             <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
                               <div><span className="block">Registro</span><strong>{finca.registro || "—"}</strong></div>
                               <div><span className="block">Sección</span><strong>{finca.seccion || "—"}</strong></div>
@@ -6509,7 +6509,7 @@ const cuantiaFincasParaEnvio =
                     <p className="mb-3">Datos derivados de Fincas y registros y de la fecha de inscripción de Tramitación inscripción. No se duplican ni se editan desde este apartado.</p>
                     {errorFincas && <p className="mb-2 px-3 py-2">{errorFincas}</p>}
                     {cargandoFincas ? (
-                      <p className="">Cargando garantías…</p>
+                      <p>Cargando garantías…</p>
                     ) : fincasExpediente.length === 0 ? (
                       <p className="p-3">No hay fincas ni registros vinculados para generar garantías.</p>
                     ) : (
@@ -6535,7 +6535,7 @@ const cuantiaFincasParaEnvio =
                           return (
                             <article key={finca.id || String(numeroFinca || "finca") + "-garantia-" + indice} className="p-3">
                               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                                <h5 className="">Garantía {indice + 1} · Finca {numeroFinca || "No identificada"}</h5>
+                                <h5>Garantía {indice + 1} · Finca {numeroFinca || "No identificada"}</h5>
                                 <span className={`px-2.5 py-1 ${datosPendientes ? "" : ""}`}>Datos pendientes: {datosPendientes ? "Sí" : "No"}</span>
                               </div>
                               <div className="p-3">
@@ -6568,7 +6568,7 @@ const cuantiaFincasParaEnvio =
                 <section className="p-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <h3 className="">Honorarios de gestoría</h3>
+                      <h3>Honorarios de gestoría</h3>
                       <p className="mt-1">La tarifa se obtiene del catálogo de Utilidades según la entidad y si el expediente tiene provisión.</p>
                     </div>
                     <button
@@ -6582,7 +6582,7 @@ const cuantiaFincasParaEnvio =
                   </div>
                   {honorariosGestoria && (
                     <div className="mt-3 p-3">
-                      <p className="">Tarifa aplicada: {honorariosGestoria.tarifa}</p>
+                      <p>Tarifa aplicada: {honorariosGestoria.tarifa}</p>
                       <p className="mt-1">
                         {Number(honorariosGestoria.importe).toLocaleString("es-ES", { style: "currency", currency: "EUR" })}
                       </p>
@@ -6641,7 +6641,7 @@ const cuantiaFincasParaEnvio =
                 className="p-8"
               >
                 <p
-                  className=""
+                 
                 >
                   No hay datos disponibles
                   para esta actividad.
@@ -6668,12 +6668,12 @@ const cuantiaFincasParaEnvio =
       <div className={`mt-3 grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2 ${mostrarControlCalidad ? "hidden" : ""}`}>
       <div className="flex min-w-0 flex-wrap items-center gap-3">
 
-        {cargandoAcciones ? <span className="">Cargando última acción…</span> : accionesExpediente.length > 0 && (() => {
+        {cargandoAcciones ? <span>Cargando última acción…</span> : accionesExpediente.length > 0 && (() => {
           const relacion = accionesExpediente[accionesExpediente.length - 1];
           const accion = relacion.accion || relacion.accion_expediente || relacion;
           return <div className="min-w-0 flex-1 px-3 py-2">
-            <div className="">Última acción</div>
-            <div className="">{accion.descripcion || relacion.descripcion || "Acción"}</div>
+            <div>Última acción</div>
+            <div>{accion.descripcion || relacion.descripcion || "Acción"}</div>
             <div className="mt-1 flex flex-wrap gap-2">{relacion.fecha && <span>{formatearFecha(relacion.fecha)}</span>}{relacion.usuario_creador && <span>Realizada por: {relacion.usuario_creador}</span>}</div>
           </div>;
         })()}
@@ -6687,7 +6687,7 @@ const cuantiaFincasParaEnvio =
                   <div key={item.id} className={`px-3 py-2 ${item.compensado ? "" : ""}`}>
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="min-w-0 break-words">{item.concepto || "PPAD"}</span>
-                      <span className="">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</span>
+                      <span>{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</span>
                     </div>
                     <p className="mt-1">Realizado por: <strong>{item.usuario_creador || "Usuario no registrado"}</strong>{item.fecha_creacion ? ` · ${formatearFecha(item.fecha_creacion)}` : ""}</p>
                     {item.compensado ? (
@@ -6718,14 +6718,14 @@ const cuantiaFincasParaEnvio =
               >
                 <header className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6">
                   <div>
-                    <h3 id="modal-ppad-titulo" className="">PPAD · Conceptos y compensaciones</h3>
+                    <h3 id="modal-ppad-titulo">PPAD · Conceptos y compensaciones</h3>
                     <p className="mt-1">Historial completo de PPAD de este expediente.</p>
                   </div>
                   <button type="button" onClick={() => { setMostrarModalPpad(false); cancelarPpad(); }} aria-label="Cerrar PPAD" className="px-3 py-2">✕ Cerrar</button>
                 </header>
                 <div className="space-y-3 p-4 sm:p-6">
                   {errorPpad && <p role="alert" className="px-3 py-2">{errorPpad}</p>}
-                  {cargandoPpad && <p className="">Cargando conceptos PPAD…</p>}
+                  {cargandoPpad && <p>Cargando conceptos PPAD…</p>}
                   {!cargandoPpad && ppadItems.length === 0 && !mostrarFormularioPpad && (
                     <p className="px-3 py-5">Todavía no hay conceptos PPAD añadidos.</p>
                   )}
@@ -6747,9 +6747,9 @@ const cuantiaFincasParaEnvio =
                         </div>
                       </div>
                       <div className="mt-3 grid grid-cols-1 gap-2 pt-3 sm:grid-cols-2">
-                        <div><span className="">Fecha alta: </span><span className="">{formatearFecha(item.fecha_creacion)}</span></div>
-                        <div><span className="">Fecha compensación: </span><span className={item.compensado ? "" : ""}>{formatearFecha(item.fecha_compensacion)}</span></div>
-                        <div className="sm:col-span-2"><span className="">Registrado por: </span><span className="">{item.usuario_creador || "No disponible en registros anteriores"}</span></div>
+                        <div><span>Fecha alta: </span><span>{formatearFecha(item.fecha_creacion)}</span></div>
+                        <div><span>Fecha compensación: </span><span className={item.compensado ? "" : ""}>{formatearFecha(item.fecha_compensacion)}</span></div>
+                        <div className="sm:col-span-2"><span>Registrado por: </span><span>{item.usuario_creador || "No disponible en registros anteriores"}</span></div>
                       </div>
                       <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
                         {item.compensado ? (
@@ -6759,7 +6759,7 @@ const cuantiaFincasParaEnvio =
                             <Boton tipo="primary" onClick={() => compensarPpad(item)} disabled={guardandoPpad || !String(expediente?.fecha_firma || "").slice(0, 10)}>
                               {guardandoPpad ? "Registrando…" : "✓ Compensar"}
                             </Boton>
-                            {!String(expediente?.fecha_firma || "").slice(0, 10) && <span className="">Disponible tras informar la fecha de firma.</span>}
+                            {!String(expediente?.fecha_firma || "").slice(0, 10) && <span>Disponible tras informar la fecha de firma.</span>}
                           </>
                         )}
                         {!item.compensado && <Boton tipo="secondary" onClick={() => editarPpad(item)}>Editar</Boton>}
@@ -6817,7 +6817,7 @@ const cuantiaFincasParaEnvio =
             colapsable
           >
             {errorFincas && <p className="mb-3 px-3 py-2">{errorFincas}</p>}
-            {cargandoFincas && <p className="">Cargando fincas...</p>}
+            {cargandoFincas && <p>Cargando fincas...</p>}
             {!cargandoFincas && fincasExpediente.length === 0 && (
               <p className="px-3 py-3">
                 No hay fincas registradas en la tabla de fincas de este expediente.
@@ -6828,7 +6828,7 @@ const cuantiaFincasParaEnvio =
                 <article key={finca.id} className="p-3">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
-                      <p className="">Finca {finca.finca || "—"}</p>
+                      <p>Finca {finca.finca || "—"}</p>
                       <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
                         {finca.registro ? <button type="button" onClick={() => {
                           const registroBuscado = normalizarTexto(finca.registro);
@@ -6878,7 +6878,7 @@ const cuantiaFincasParaEnvio =
             <div className="space-y-3">
               {errorObservaciones && <p className="px-3 py-2">{errorObservaciones}</p>}
               {cargandoObservaciones ? (
-                <p className="">Cargando observaciones…</p>
+                <p>Cargando observaciones…</p>
               ) : observacionesExpediente[0] ? (
                 <article className="p-3">
                   <p className="whitespace-pre-wrap break-words">{observacionesExpediente[0].comentario}</p>
@@ -6946,7 +6946,7 @@ const cuantiaFincasParaEnvio =
               <div className="hidden flex-wrap items-center justify-center gap-3 px-4 py-4 sm:px-5">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center">🏛️</div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="">Envío a notario</h3>
+                  <h3>Envío a notario</h3>
                   <p className="mt-0.5">Encargo al notario, datos de firma y facturación</p>
                 </div>
                 {(expediente.fecha_envio_notario || expediente.fecha_envio) && (
@@ -7036,7 +7036,7 @@ const cuantiaFincasParaEnvio =
                       <section className="mt-4 p-4">
                         <div className="flex flex-wrap items-center justify-between gap-3">
                           <div>
-                            <h4 className="">Resumen Económico</h4>
+                            <h4>Resumen Económico</h4>
                             <p className="mt-1">
                               Importe inicial tomado de Información crediticia. El saldo solo descuenta los gastos cuyo pago está confirmado.
                             </p>
@@ -7077,7 +7077,7 @@ const cuantiaFincasParaEnvio =
                         {mostrarModalComplementoSaldo && (
                           <div className="mt-4 p-4 sm:p-5">
                             <div className="mb-4 flex items-start justify-between gap-3">
-                              <div><h5 className="">Solicitar complemento de saldo</h5><p className="mt-1">La solicitud quedará registrada en Utilidades → Complementos de saldo con estado Pendiente.</p></div>
+                              <div><h5>Solicitar complemento de saldo</h5><p className="mt-1">La solicitud quedará registrada en Utilidades → Complementos de saldo con estado Pendiente.</p></div>
                               <button type="button" onClick={() => setMostrarModalComplementoSaldo(false)} className="px-2.5 py-1.5">Cerrar ×</button>
                             </div>
                             <form onSubmit={async (event) => {
@@ -7184,7 +7184,7 @@ const cuantiaFincasParaEnvio =
                             <div ref={gastoDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="titulo-modal-gasto" className="expediente-operativo-modal-panel flex max-h-[94vh] w-full max-w-[96vw] flex-col overflow-hidden">
                           <form onSubmit={guardarGastoExpediente} className="flex min-h-0 flex-col overflow-hidden">
                             <div className="flex items-start justify-between gap-3 px-5 py-4">
-                              <div><h5 id="titulo-modal-gasto" className="">Registrar gasto · Factura y pago</h5><p className="mt-1">El registro no ejecuta una transferencia bancaria.</p></div>
+                              <div><h5 id="titulo-modal-gasto">Registrar gasto · Factura y pago</h5><p className="mt-1">El registro no ejecuta una transferencia bancaria.</p></div>
                               <button type="button" aria-label="Cerrar ventana" onClick={() => setMostrarFormularioGasto(false)} disabled={guardandoGasto} className="px-3 py-2">×</button>
                               <span className="px-3 py-1">Pago: pendiente</span>
                             </div>
@@ -7239,7 +7239,7 @@ const cuantiaFincasParaEnvio =
                                 <div className="p-3"><div className="flex justify-between"><span>Impuesto calculado</span><strong>{impuestoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div></div>
                                 <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block">Base exenta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_exenta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_exenta_retencion:e.target.value}))} className="w-full px-3 py-2" /></label><label className="block"><span className="mb-1 block">Base sujeta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_sujeta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_sujeta_retencion:e.target.value}))} className="w-full px-3 py-2" /></label></div>
                                 <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block">Retención</span><select value={gastoForm.tipo_retencion} onChange={(e)=>setGastoForm(a=>({...a,tipo_retencion:e.target.value}))} className="w-full px-3 py-2"><option>IRPF profesionales</option><option>Sin retención</option></select></label><label className="block"><span className="mb-1 block">IRPF (%)</span><input type="number" min="0" max="21" step="0.01" value={gastoForm.porcentaje_retencion} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_retencion:e.target.value}))} className="w-full px-3 py-2" /></label></div>
-                                <div className="p-4"><div className="flex justify-between"><span>Retención calculada</span><strong>{retencionCalculadaGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span className="">Resultado calculado</span><strong className="">{resultadoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><label className="mt-3 block"><span className="mb-1 block">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value}))} className="w-full px-3 py-2" /></label></div>
+                                <div className="p-4"><div className="flex justify-between"><span>Retención calculada</span><strong>{retencionCalculadaGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span>Resultado calculado</span><strong>{resultadoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><label className="mt-3 block"><span className="mb-1 block">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value}))} className="w-full px-3 py-2" /></label></div>
                                 <label className="block"><span className="mb-1 block">Descripción *</span><input required value={gastoForm.descripcion} onChange={(e)=>setGastoForm(a=>({...a,descripcion:e.target.value}))} placeholder="Concepto detallado de la factura" className="w-full px-3 py-2" /></label>
                               </div>
                               <aside className="min-w-0 p-3">
@@ -7277,9 +7277,9 @@ const cuantiaFincasParaEnvio =
                               {gastosExpediente.map((gasto) => (
                                 <li key={gasto.id} className="flex flex-wrap items-center gap-4 px-5 py-4">
                                   <div className="min-w-0 flex-1">
-                                    <p className="">{gasto.descripcion || gasto.tipo || "Gasto"}</p>
+                                    <p>{gasto.descripcion || gasto.tipo || "Gasto"}</p>
                                     <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
-                                      <span className="">{gasto.numero_documento || `PAG-${String(gasto.id).padStart(6, "0")}`}</span>
+                                      <span>{gasto.numero_documento || `PAG-${String(gasto.id).padStart(6, "0")}`}</span>
                                       {gasto.tipo && <span>{gasto.tipo}</span>}
                                       {gasto.fecha && <span>Fecha: {formatearFecha(gasto.fecha)}</span>}
                                       {gasto.id_gasto_absis && <span className="px-2 py-1">IDGASTO: {gasto.id_gasto_absis}</span>}
@@ -7382,8 +7382,8 @@ const cuantiaFincasParaEnvio =
           <section className="overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
               <div>
-                <h3 className="">Histórico de emails</h3>
-                <p className="">Registro guardado en el sistema para este expediente.</p>
+                <h3>Histórico de emails</h3>
+                <p>Registro guardado en el sistema para este expediente.</p>
               </div>
               <Boton onClick={cargarHistoricoReclamaciones} disabled={cargandoHistoricoReclamaciones}>{cargandoHistoricoReclamaciones ? "Actualizando…" : "↻ Actualizar"}</Boton>
             </div>
@@ -7391,12 +7391,12 @@ const cuantiaFincasParaEnvio =
               <div className="max-h-64 overflow-auto">
                 <table className="w-full min-w-[700px]">
                   <thead className="sticky top-0"><tr><th className="px-3 py-2">Fecha</th><th className="px-3 py-2">Tipo / plantilla</th><th className="px-3 py-2">Para</th><th className="px-3 py-2">Asunto</th><th className="px-3 py-2">Estado</th><th className="px-3 py-2">Gestor</th></tr></thead>
-                  <tbody>{historicoReclamaciones.map((item) => <tr key={item.id} className="align-top"><td className="whitespace-nowrap px-3 py-2">{item.creado_en ? new Date(item.creado_en).toLocaleString("es-ES") : "—"}</td><td className="px-3 py-2">{item.categoria || "—"}<p className="">{item.plantilla_nombre || "Plantilla manual/anterior"}</p></td><td className="px-3 py-2">{item.destinatario}{item.cc && <p className="">CC: {item.cc}</p>}</td><td className="max-w-xs px-3 py-2">{item.asunto}</td><td className="px-3 py-2"><span className={item.estado === "enviado" ? "" : ""}>{item.estado === "enviado" ? "Enviado" : "Error"}</span>{item.detalle && <p className="mt-1 max-w-xs">{item.detalle}</p>}</td><td className="px-3 py-2">{item.enviado_por || "—"}</td></tr>)}</tbody>
+                  <tbody>{historicoReclamaciones.map((item) => <tr key={item.id} className="align-top"><td className="whitespace-nowrap px-3 py-2">{item.creado_en ? new Date(item.creado_en).toLocaleString("es-ES") : "—"}</td><td className="px-3 py-2">{item.categoria || "—"}<p>{item.plantilla_nombre || "Plantilla manual/anterior"}</p></td><td className="px-3 py-2">{item.destinatario}{item.cc && <p>CC: {item.cc}</p>}</td><td className="max-w-xs px-3 py-2">{item.asunto}</td><td className="px-3 py-2"><span className={item.estado === "enviado" ? "" : ""}>{item.estado === "enviado" ? "Enviado" : "Error"}</span>{item.detalle && <p className="mt-1 max-w-xs">{item.detalle}</p>}</td><td className="px-3 py-2">{item.enviado_por || "—"}</td></tr>)}</tbody>
                 </table>
               </div>
             )}
           </section>
-          <p className="">El envío requiere que el servidor tenga configuradas las variables SMTP. El historial registra tanto los envíos correctos como los intentos fallidos.</p>
+          <p>El envío requiere que el servidor tenga configuradas las variables SMTP. El historial registra tanto los envíos correctos como los intentos fallidos.</p>
         </div>
       </Modal>
 
@@ -7438,9 +7438,9 @@ const cuantiaFincasParaEnvio =
           {estadoLegadoBloqueante&&<p role="alert" className="p-3">El estado {expediente?.estado_expediente} mantiene el bloqueo automático. Para desbloquearlo, debe corregirse primero el estado del expediente.</p>}
           <label className="flex items-start gap-3 p-4"><input type="checkbox" className="mt-1" checked={!!controlExpediente.liquidado_sin_tramitar} onChange={e=>setControlExpediente(v=>({...v,liquidado_sin_tramitar:e.target.checked}))}/><span className="flex-1"><strong className="block">Liquidado sin tramitar</strong><span className="block">Bloquea el expediente y genera aviso central.</span>{controlExpediente.liquidado_sin_tramitar&&<input aria-label="Fecha liquidado sin tramitar" type="date" className="mt-3 w-full p-2" value={controlExpediente.fecha_liquidacion_sin_tramitar||""} onChange={e=>setControlExpediente(v=>({...v,fecha_liquidacion_sin_tramitar:e.target.value}))}/>}</span></label>
           <label className="flex items-start gap-3 p-4"><input type="checkbox" className="mt-1" checked={!!controlExpediente.cambio_gestoria} onChange={e=>setControlExpediente(v=>({...v,cambio_gestoria:e.target.checked}))}/><span className="flex-1"><strong className="block">Cambio de gestoría</strong><span className="block">Bloquea el expediente con aviso específico.</span>{controlExpediente.cambio_gestoria&&<input aria-label="Fecha cambio gestoría" type="date" className="mt-3 w-full p-2" value={controlExpediente.fecha_cambio_gestoria||""} onChange={e=>setControlExpediente(v=>({...v,fecha_cambio_gestoria:e.target.value}))}/>}</span></label>
-          <div className="p-4"><label className="flex items-start gap-3"><input type="checkbox" className="mt-1" checked={!!controlExpediente.bloqueo_manual} onChange={e=>setControlExpediente(v=>({...v,bloqueo_manual:e.target.checked}))}/><span><strong className="block">Bloqueo manual</strong><span className="block">Se puede desbloquear desmarcando esta opción.</span></span></label>{controlExpediente.bloqueo_manual&&<div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="">Motivo<input className="mt-1 w-full p-2" value={controlExpediente.motivo_bloqueo||""} onChange={e=>setControlExpediente(v=>({...v,motivo_bloqueo:e.target.value}))} placeholder="Motivo del bloqueo"/></label><label className="">Fecha<input type="date" className="mt-1 w-full p-2" value={controlExpediente.fecha_bloqueo||""} onChange={e=>setControlExpediente(v=>({...v,fecha_bloqueo:e.target.value}))}/></label></div>}</div>
+          <div className="p-4"><label className="flex items-start gap-3"><input type="checkbox" className="mt-1" checked={!!controlExpediente.bloqueo_manual} onChange={e=>setControlExpediente(v=>({...v,bloqueo_manual:e.target.checked}))}/><span><strong className="block">Bloqueo manual</strong><span className="block">Se puede desbloquear desmarcando esta opción.</span></span></label>{controlExpediente.bloqueo_manual&&<div className="mt-3 grid gap-3 sm:grid-cols-2"><label>Motivo<input className="mt-1 w-full p-2" value={controlExpediente.motivo_bloqueo||""} onChange={e=>setControlExpediente(v=>({...v,motivo_bloqueo:e.target.value}))} placeholder="Motivo del bloqueo"/></label><label>Fecha<input type="date" className="mt-1 w-full p-2" value={controlExpediente.fecha_bloqueo||""} onChange={e=>setControlExpediente(v=>({...v,fecha_bloqueo:e.target.value}))}/></label></div>}</div>
           {errorControlExpediente&&<p role="alert" className="p-3">{errorControlExpediente}</p>}
-          <p className="">LST y RST bloquean automáticamente el expediente aunque se desmarquen las opciones.</p>
+          <p>LST y RST bloquean automáticamente el expediente aunque se desmarquen las opciones.</p>
         </div>
       </Modal>
 
@@ -7490,7 +7490,7 @@ const cuantiaFincasParaEnvio =
       </h3>
 
       {defectosRegistrados.length === 0 ? (
-        <p className="">
+        <p>
           Todavía no hay defectos registrados para este expediente.
         </p>
       ) : (
@@ -7501,7 +7501,7 @@ const cuantiaFincasParaEnvio =
               className="flex flex-col justify-between gap-3 p-3 md:flex-row md:items-center"
             >
               <div className="min-w-0">
-                <p className="">
+                <p>
                   {defecto.motivo_defecto || defecto.tipo_error || "Defecto"}
                 </p>
 
@@ -7881,8 +7881,8 @@ const cuantiaFincasParaEnvio =
                     }}
                     className="flex w-full items-center justify-between gap-3 px-3 py-2"
                   >
-                    <span className="">{item.municipio}</span>
-                    <span className="">{item.provincia}</span>
+                    <span>{item.municipio}</span>
+                    <span>{item.provincia}</span>
                   </button>
                 ))}
                 {municipiosCatalogo.filter((item) =>
@@ -8083,7 +8083,7 @@ const cuantiaFincasParaEnvio =
         ancho="max-w-3xl"
         footer={<Boton onClick={() => setOficinaDetalleAbierta(false)}>Cerrar</Boton>}
       >
-        {cargandoOficinaDetalle ? <p className="">Consultando el catálogo de oficinas…</p> : oficinaCatalogoDetalle ? <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {cargandoOficinaDetalle ? <p>Consultando el catálogo de oficinas…</p> : oficinaCatalogoDetalle ? <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {[
             ["Oficina", oficinaCatalogoDetalle.oficina],
             ["Nombre", oficinaCatalogoDetalle.nombre],
@@ -8099,7 +8099,7 @@ const cuantiaFincasParaEnvio =
             ["Código DAN", oficinaCatalogoDetalle.cod_dan],
             ["DAN", oficinaCatalogoDetalle.dan],
           ].map(([label, value]) => <div key={label} className="p-3"><div className="uppercase">{label}</div><div className="mt-1 break-words">{value || "—"}</div></div>)}
-        </div> : <p className="">No se ha encontrado una coincidencia para esta oficina en el catálogo. El dato original del expediente se conserva: {expediente?.oficina || "—"}.</p>}
+        </div> : <p>No se ha encontrado una coincidencia para esta oficina en el catálogo. El dato original del expediente se conserva: {expediente?.oficina || "—"}.</p>}
       </Modal>
 
       {/* =====================================================
@@ -8159,7 +8159,7 @@ const cuantiaFincasParaEnvio =
             </div>
           </div>
           <CampoFormulario label="Comentarios / Observaciones" value={fusionForm.comentarios_observaciones} textarea onChange={v => setFusionForm(a => ({...a,comentarios_observaciones:v}))} placeholder="Comentarios para el equipo de Fusiones" />
-          <p className="">La solicitud se guardará vinculada a este expediente y a la finca/registro seleccionado. En Factura (con número y fecha), ambos datos son obligatorios.</p>
+          <p>La solicitud se guardará vinculada a este expediente y a la finca/registro seleccionado. En Factura (con número y fecha), ambos datos son obligatorios.</p>
         </div>
       </Modal>
 
@@ -8237,8 +8237,8 @@ const cuantiaFincasParaEnvio =
     <div className="pt-4">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h4 className="">Histórico de acciones</h4>
-          <p className="">Todas las acciones registradas en este expediente, ordenadas por fecha.</p>
+          <h4>Histórico de acciones</h4>
+          <p>Todas las acciones registradas en este expediente, ordenadas por fecha.</p>
         </div>
         <span className="px-2.5 py-1">{accionesExpediente.length} {accionesExpediente.length === 1 ? "acción" : "acciones"}</span>
       </div>
@@ -8315,7 +8315,7 @@ const cuantiaFincasParaEnvio =
         <div className="space-y-5">
 
           <div className="p-4">
-            <p className="">
+            <p>
               Agregar expediente manualmente
             </p>
 
@@ -8372,7 +8372,7 @@ const cuantiaFincasParaEnvio =
             <div
               className="p-8"
             >
-              <p className="">
+              <p>
                 No hay otros expedientes relacionados.
               </p>
 
@@ -8388,7 +8388,7 @@ const cuantiaFincasParaEnvio =
                 className="px-4
  py-3"
               >
-                <p className="">
+                <p>
                   {expedientesRelacionados.length} expediente(s) relacionado(s)
                 </p>
 
@@ -8435,19 +8435,19 @@ const cuantiaFincasParaEnvio =
  px-4
  py-3"
                     >
-                      <span className="">
+                      <span>
                         {valorVisible(
                           relacionado.id_expediente
                         )}
                       </span>
 
-                      <span className="">
+                      <span>
                         {formatearFecha(
                           relacionado.fecha_alta
                         )}
                       </span>
 
-                      <span className="">
+                      <span>
                         {valorVisible(
                           relacionado.actividad_actual
                         )}
@@ -8684,10 +8684,10 @@ const cuantiaFincasParaEnvio =
 
           <div className="pt-4">
             <div className="mb-3 flex items-center justify-between gap-3">
-              <h3 className="">Historial completo</h3>
+              <h3>Historial completo</h3>
               <span className="px-2.5 py-1">{observacionesExpediente.length} observaciones</span>
             </div>
-            {cargandoObservaciones ? <p className="">Actualizando historial…</p> : observacionesExpediente.length === 0 ? (
+            {cargandoObservaciones ? <p>Actualizando historial…</p> : observacionesExpediente.length === 0 ? (
               <p className="p-3">No hay observaciones guardadas todavía.</p>
             ) : (
               <div className="max-h-[42vh] space-y-2 overflow-y-auto pr-1">
@@ -8758,7 +8758,7 @@ const cuantiaFincasParaEnvio =
             </div>
             <div className={`p-3 ${empleadoEnFactura ? "" : ""}`}>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <label htmlFor="empleado-factura-honorarios" className="">Empleado</label>
+                <label htmlFor="empleado-factura-honorarios">Empleado</label>
                 <select
                   id="empleado-factura-honorarios"
                   value={empleadoEnFactura ? "si" : "no"}
@@ -8789,16 +8789,16 @@ const cuantiaFincasParaEnvio =
             <div className="p-6">
               <div className="flex flex-wrap items-start justify-between gap-4 pb-4">
                 <div><p className="uppercase">MOLSAN ERP · Facturación</p><h3 className="mt-2">FACTURA DE HONORARIOS GESTORIA</h3><p className="mt-1">Expediente {expediente?.id_expediente}</p></div>
-                <div className=""><p className="">{facturaHonorariosForm.numeroFactura || "Número pendiente de asignación"}</p><p className="">Fecha: {facturaHonorariosForm.fechaFactura || "—"}</p></div>
+                <div><p>{facturaHonorariosForm.numeroFactura || "Número pendiente de asignación"}</p><p>Fecha: {facturaHonorariosForm.fechaFactura || "—"}</p></div>
               </div>
               <div className="grid gap-4 py-5 md:grid-cols-2">
-                <div><p className="uppercase">Datos de facturación</p><p className="mt-1">{facturaHonorariosForm.cliente || "Cliente pendiente de completar"}</p><p className="">NIF: {facturaHonorariosForm.nifCliente || "—"}</p><p className="">{[facturaHonorariosForm.direccion, facturaHonorariosForm.codigoPostal, facturaHonorariosForm.poblacion, facturaHonorariosForm.provincia].filter(Boolean).join(", ") || "Dirección pendiente de completar"}</p></div>
+                <div><p className="uppercase">Datos de facturación</p><p className="mt-1">{facturaHonorariosForm.cliente || "Cliente pendiente de completar"}</p><p>NIF: {facturaHonorariosForm.nifCliente || "—"}</p><p>{[facturaHonorariosForm.direccion, facturaHonorariosForm.codigoPostal, facturaHonorariosForm.poblacion, facturaHonorariosForm.provincia].filter(Boolean).join(", ") || "Dirección pendiente de completar"}</p></div>
                 <div><p className="uppercase">Concepto</p><p className="mt-1">{facturaHonorariosForm.tarifa || facturaHonorariosForm.concepto}</p></div>
               </div>
               <div className="overflow-hidden">
                 <div className="grid grid-cols-[1fr_auto] gap-3 px-4 py-3"><span>Concepto</span><span>Importe</span></div>
                 <div className="grid grid-cols-[1fr_auto] gap-3 px-4 py-3"><span>Base imponible</span><span>{Number(facturaHonorariosForm.baseImponible || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
-                {empleadoEnFactura && <div className="grid grid-cols-[1fr_auto] gap-3 px-4 py-3"><span>Descuento empleado (50 %)</span><span className="">− {(Math.round((Math.max(0, Number(baseHonorariosOriginal) || 0) * 0.5 + Number.EPSILON) * 100) / 100).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>}
+                {empleadoEnFactura && <div className="grid grid-cols-[1fr_auto] gap-3 px-4 py-3"><span>Descuento empleado (50 %)</span><span>− {(Math.round((Math.max(0, Number(baseHonorariosOriginal) || 0) * 0.5 + Number.EPSILON) * 100) / 100).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>}
                 <div className="grid grid-cols-[1fr_auto] gap-3 px-4 py-3"><span>{facturaHonorariosForm.tipoImpuesto} ({facturaHonorariosForm.porcentajeImpuesto}%)</span><span>{Number(facturaHonorariosForm.importeImpuesto || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
                 <div className="grid grid-cols-[1fr_auto] gap-3 px-4 py-4"><span>TOTAL FACTURA</span><span>{Number(facturaHonorariosForm.totalFactura || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
               </div>
@@ -8810,19 +8810,19 @@ const cuantiaFincasParaEnvio =
               <section className="p-4">
                 <h3 className="mb-3">Datos de facturación</h3>
                 <div className="grid gap-3 md:grid-cols-2">
-                  <label className="">Cliente / titular<input value={facturaHonorariosForm.cliente} onChange={e => setFacturaHonorariosForm(f => ({...f,cliente:e.target.value}))} className="mt-1 w-full px-3 py-2" /></label>
-                  <label className="">NIF / CIF<input value={facturaHonorariosForm.nifCliente} onChange={e => setFacturaHonorariosForm(f => ({...f,nifCliente:e.target.value}))} className="mt-1 w-full px-3 py-2" /></label>
-                  <label className="">Dirección<input value={facturaHonorariosForm.direccion} onChange={e => setFacturaHonorariosForm(f => ({...f,direccion:e.target.value}))} className="mt-1 w-full px-3 py-2" /></label>
-                  <label className="">Código postal<input value={facturaHonorariosForm.codigoPostal} onChange={e => setFacturaHonorariosForm(f => ({...f,codigoPostal:e.target.value}))} className="mt-1 w-full px-3 py-2" /></label>
-                  <label className="">Población<input value={facturaHonorariosForm.poblacion} onChange={e => setFacturaHonorariosForm(f => ({...f,poblacion:e.target.value}))} className="mt-1 w-full px-3 py-2" /></label>
-                  <label className="">Provincia<input value={facturaHonorariosForm.provincia} onChange={e => setFacturaHonorariosForm(f => ({...f,provincia:e.target.value}))} className="mt-1 w-full px-3 py-2" /></label>
+                  <label>Cliente / titular<input value={facturaHonorariosForm.cliente} onChange={e => setFacturaHonorariosForm(f => ({...f,cliente:e.target.value}))} className="mt-1 w-full px-3 py-2" /></label>
+                  <label>NIF / CIF<input value={facturaHonorariosForm.nifCliente} onChange={e => setFacturaHonorariosForm(f => ({...f,nifCliente:e.target.value}))} className="mt-1 w-full px-3 py-2" /></label>
+                  <label>Dirección<input value={facturaHonorariosForm.direccion} onChange={e => setFacturaHonorariosForm(f => ({...f,direccion:e.target.value}))} className="mt-1 w-full px-3 py-2" /></label>
+                  <label>Código postal<input value={facturaHonorariosForm.codigoPostal} onChange={e => setFacturaHonorariosForm(f => ({...f,codigoPostal:e.target.value}))} className="mt-1 w-full px-3 py-2" /></label>
+                  <label>Población<input value={facturaHonorariosForm.poblacion} onChange={e => setFacturaHonorariosForm(f => ({...f,poblacion:e.target.value}))} className="mt-1 w-full px-3 py-2" /></label>
+                  <label>Provincia<input value={facturaHonorariosForm.provincia} onChange={e => setFacturaHonorariosForm(f => ({...f,provincia:e.target.value}))} className="mt-1 w-full px-3 py-2" /></label>
                 </div>
               </section>
               <section className="p-4">
                 <h3 className="mb-3">Datos de factura</h3>
                 <div className="grid gap-3 md:grid-cols-2">
-                  <label className="">Número de factura (automático)<input value={facturaHonorariosForm.numeroFactura} readOnly placeholder="Se asignará al generar la factura" className="mt-1 w-full px-3 py-2" /><span className="mt-1 block">Serie correlativa VI por año; el número definitivo lo asigna el servidor.</span></label>
-                  <label className="">Fecha de factura<input type="date" value={facturaHonorariosForm.fechaFactura} onChange={e => setFacturaHonorariosForm(f => ({...f,fechaFactura:e.target.value}))} className="mt-1 w-full px-3 py-2" /></label>
+                  <label>Número de factura (automático)<input value={facturaHonorariosForm.numeroFactura} readOnly placeholder="Se asignará al generar la factura" className="mt-1 w-full px-3 py-2" /><span className="mt-1 block">Serie correlativa VI por año; el número definitivo lo asigna el servidor.</span></label>
+                  <label>Fecha de factura<input type="date" value={facturaHonorariosForm.fechaFactura} onChange={e => setFacturaHonorariosForm(f => ({...f,fechaFactura:e.target.value}))} className="mt-1 w-full px-3 py-2" /></label>
                   <label className="md:col-span-2">Concepto
                     <select value={facturaHonorariosForm.concepto} onChange={e => setFacturaHonorariosForm(f => ({...f,concepto:e.target.value}))} className="mt-1 w-full px-3 py-2">
                       {conceptosFacturaHonorarios.length === 0 && <option value="Honorarios de gestoría">Honorarios de gestoría</option>}
@@ -8834,10 +8834,10 @@ const cuantiaFincasParaEnvio =
               </section>
               <section className="p-4">
                 <h3 className="mb-3">Tarifa de honorarios</h3>
-                <p className="mb-3">Tarifa del catálogo: <strong>{facturaHonorariosForm.tarifa}</strong> · Entidad detectada: {facturaHonorariosForm.entidad || "No identificada"} · <a href="/herramientas/honorarios-gestoria" target="_blank" rel="noreferrer" className="">Revisa aquí tarifa honorarios</a></p>
+                <p className="mb-3">Tarifa del catálogo: <strong>{facturaHonorariosForm.tarifa}</strong> · Entidad detectada: {facturaHonorariosForm.entidad || "No identificada"} · <a href="/herramientas/honorarios-gestoria" target="_blank" rel="noreferrer">Revisa aquí tarifa honorarios</a></p>
                 <div className="grid gap-3 md:grid-cols-3">
-                  <label className="">Base imponible (€)<input type="number" min="0" step="0.01" value={facturaHonorariosForm.baseImponible} onChange={e => setFacturaHonorariosForm(f => actualizarImportesFacturaHonorarios(f,{baseImponible:e.target.value}))} className="mt-1 w-full px-3 py-2" /></label>
-                  <label className="">IVA (€)<input type="number" value={facturaHonorariosForm.importeImpuesto} readOnly className="mt-1 w-full px-3 py-2" /></label>
+                  <label>Base imponible (€)<input type="number" min="0" step="0.01" value={facturaHonorariosForm.baseImponible} onChange={e => setFacturaHonorariosForm(f => actualizarImportesFacturaHonorarios(f,{baseImponible:e.target.value}))} className="mt-1 w-full px-3 py-2" /></label>
+                  <label>IVA (€)<input type="number" value={facturaHonorariosForm.importeImpuesto} readOnly className="mt-1 w-full px-3 py-2" /></label>
                   <div className="px-3 py-2"><span className="block">Total honorarios (€)</span><strong className="mt-1 block">{Number(facturaHonorariosForm.totalFactura || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</strong></div>
                 </div>
                 <label className="mt-3 block">Observaciones<textarea value={facturaHonorariosForm.observaciones} onChange={e => setFacturaHonorariosForm(f => ({...f,observaciones:e.target.value}))} rows={2} className="mt-1 w-full px-3 py-2" /></label>
@@ -8865,7 +8865,7 @@ const cuantiaFincasParaEnvio =
                       {completos ? "✓ Checklist completo según datos/documentos encontrados" : `${items.filter((item) => item.ok).length} de ${items.length} comprobaciones completas`}
                     </div>
                     <div className="grid gap-2 sm:grid-cols-2">
-                      {items.map((item) => <div key={item.nombre} className={`flex items-center gap-2 px-3 py-2 ${item.ok ? "" : ""}`}><span className="">{item.ok ? "✓" : "□"}</span><span>{item.nombre}</span></div>)}
+                      {items.map((item) => <div key={item.nombre} className={`flex items-center gap-2 px-3 py-2 ${item.ok ? "" : ""}`}><span>{item.ok ? "✓" : "□"}</span><span>{item.nombre}</span></div>)}
                     </div>
                   </>;
                 })()}
@@ -8886,8 +8886,8 @@ const cuantiaFincasParaEnvio =
         footer={
           <div className="flex w-full flex-wrap items-center justify-between gap-2">
             <div className="min-w-0 flex-1">
-              {errorActividad && <p className="">{errorActividad}</p>}
-              {mensajeActividad && <p className="">{mensajeActividad}</p>}
+              {errorActividad && <p>{errorActividad}</p>}
+              {mensajeActividad && <p>{mensajeActividad}</p>}
             </div>
             <div className="flex gap-2">
               <Boton onClick={() => { setMostrarModalDatosActividad(false); setPestanaActividad("documentos"); }}>Cerrar</Boton>
@@ -8970,7 +8970,7 @@ const cuantiaFincasParaEnvio =
         {(
           <section className="mt-5 space-y-3 p-4">
             <div>
-              <h3 className="">{actividadSeleccionada === "sede-notarial-protocolo" ? "Sede notarial con protocolo · datos para integración" : `${ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"} · datos para integración`}</h3>
+              <h3>{actividadSeleccionada === "sede-notarial-protocolo" ? "Sede notarial con protocolo · datos para integración" : `${ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"} · datos para integración`}</h3>
               <p className="mt-1">Resumen de los campos propios de esta actividad para preparar la futura comunicación con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
             </div>
             {actividadSeleccionada === "documentacion-previa" ? (
@@ -9051,7 +9051,7 @@ const cuantiaFincasParaEnvio =
                   <div className="flex items-start gap-3">
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center" aria-hidden="true">⇧</span>
                     <div>
-                      <h4 className="">Información económica para enviar a ABSIS</h4>
+                      <h4>Información económica para enviar a ABSIS</h4>
                       <p className="mt-1">
                         <strong>Los pagos realizados del expediente son los que deben comunicarse a ABSIS.</strong> Cada línea debe incluir el ID de pago, la fecha de pago, el tipo de documento, la base imponible, el impuesto y el importe total. Los gastos pendientes de pago se conservan en el libro contable, pero no deben comunicarse como pagos realizados.
                       </p>
@@ -9063,7 +9063,7 @@ const cuantiaFincasParaEnvio =
                 </section>
                 <section className="min-w-0 p-4">
                   <h4 className="mb-2">Campos de cada línea económica</h4>
-                  <p className="">
+                  <p>
                     El libro de movimientos de la ficha del expediente es la referencia para preparar la información contable. El campo <strong>Tipo de documento</strong> debe conservarse en cada movimiento junto con su identificador y desglose fiscal.
                   </p>
                 </section>
@@ -9183,11 +9183,11 @@ const cuantiaFincasParaEnvio =
               <div className="space-y-3">
                 <section className="p-4">
                   <div className="mb-3">
-                    <h3 className="">Defectos registrales · datos para integración</h3>
+                    <h3>Defectos registrales · datos para integración</h3>
                     <p className="mt-1">Resumen de los campos propios de esta actividad para preparar la futura comunicación con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
                   </div>
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2 p-3">
-                  <p className="">Los datos del defecto se mantienen en un único registro. Usa el alta para crear o editar la información; esta actividad solo resume el estado guardado y no duplica campos editables.</p>
+                  <p>Los datos del defecto se mantienen en un único registro. Usa el alta para crear o editar la información; esta actividad solo resume el estado guardado y no duplica campos editables.</p>
                   <Boton tipo="primary" disabled={expedienteBloqueado} onClick={abrirDefecto}>＋ Alta defecto</Boton>
                 </div>
                 {defectosRegistrados.length === 0 ? (
@@ -9197,7 +9197,7 @@ const cuantiaFincasParaEnvio =
                     {defectosRegistrados.map((defecto) => (
                       <article key={defecto.id ?? defecto.id_defecto} className="p-3">
                         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                          <p className="">{defecto.motivo_defecto || "Defecto registral"}</p>
+                          <p>{defecto.motivo_defecto || "Defecto registral"}</p>
                           <span className="px-2 py-1">{defecto.estado_envio_absis || "Pendiente ABSIS"}</span>
                         </div>
                         <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
@@ -9259,7 +9259,7 @@ const cuantiaFincasParaEnvio =
           </section>
         )}
         <section className="mt-5 p-4">
-          <p className="">Aviso para informática · Integración de datos</p>
+          <p>Aviso para informática · Integración de datos</p>
           {actividadSeleccionada === "sede-notarial-protocolo" ? (
             <>
               <p className="mt-1">
