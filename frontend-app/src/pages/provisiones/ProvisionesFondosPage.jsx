@@ -8,9 +8,9 @@ const totalConceptos = (g) => Math.round((["notaria", "ajd", "registro", "gestio
 const compactarEntidad = (valor) => normalizarCatalogo(valor).replace(/[^a-z0-9]/g, "");
 const vaciaGarantia = () => ({ entidad: "", capital: "", finca: "", cru_idufir: "", registro_propiedad: "", poblacion: "", provincia: "", tipo_carga: "prestamo hipotecario", condicion_resolutoria: "no", adquisicion_vivienda_habitual: "", notaria: "0", ajd: "0", registro: "0", gestion: "0", total: "0" });
 const nuevoFormulario = () => ({ id: null, fecha: hoy(), cliente: { nombre: "", nif: "", direccion: "", cp: "", poblacion: "", provincia: "", telefono: "", email: "" }, oficina: { numero: "", contacto: "", email: "" }, garantias: [vaciaGarantia()], observaciones: "" });
-const input = "mt-1 w-full rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface)] px-3 py-2.5 text-sm text-[var(--molsan-text)] outline-none transition focus:border-[var(--molsan-primary)] focus:ring-2 focus:ring-[var(--molsan-primary-soft)]";
-const label = "block text-xs font-semibold uppercase tracking-wide text-slate-500";
-const boton = "inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50";
+const input = "mt-1 w-full px-3 py-2.5";
+const label = "block uppercase";
+const boton = "inline-flex items-center justify-center px-4 py-2.5 disabled:cursor-not-allowed";
 
 const DOCUMENTO_LAYOUTS = {
   liquidacion: [
@@ -895,7 +895,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
         <header className="flex items-start justify-between gap-4 px-5 py-5 sm:px-7">
           <div className="flex min-w-0 items-start gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center">M·</div>
-            <div className="min-w-0"><p className="uppercase">MOLSAN ERP · PREMIUM 2027</p><h2 className="mt-1">Enviar provisión de fondos</h2><p className="mt-1">Correspondencia tipificada · PDF adjunto automáticamente</p><p className="mt-2 inline-flex items-center gap-2 px-3 py-1"><span className="h-2 w-2"></span>Remitente: cancelaciones@molsan.es</p></div>
+            <div className="min-w-0"><p className="uppercase">MOLSAN ERP</p><h2 className="mt-1">Enviar provisión de fondos</h2><p className="mt-1">Correspondencia tipificada · PDF adjunto automáticamente</p><p className="mt-2 inline-flex items-center gap-2 px-3 py-1"><span className="h-2 w-2"></span>Remitente: cancelaciones@molsan.es</p></div>
           </div>
           <button type="button" onClick={cerrarEmail} disabled={enviandoEmail} className="px-3 py-2" aria-label="Cerrar">×</button>
         </header>
