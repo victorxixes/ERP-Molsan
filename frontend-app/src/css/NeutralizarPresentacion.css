@@ -1758,6 +1758,7 @@ body {
 /* Estructura de diálogo: overlay separado, panel con scroll interno
    y cabecera/pie persistentes cuando el módulo adopta estas clases. */
 .erp-route-content .molsan-modal-overlay,
+.molsan-modal-backdrop,
 .erp-route-content [data-molsan-modal-overlay] {
   position: fixed;
   inset: 0;
@@ -1852,6 +1853,7 @@ body {
 
 @media (max-width: 720px) {
   .erp-route-content .molsan-modal-overlay,
+  .erp-route-content .molsan-modal-backdrop,
   .erp-route-content [data-molsan-modal-overlay] {
     align-items: flex-end;
     padding: 10px;
