@@ -130,44 +130,40 @@ export default function SelectSJ({
             }
           }
         }}
-        className={`
-          w-full
-          min-h-[42px]
-          bg-white
-          border border-[var(--molsan-border-strong,#c4d0df)]
-          rounded-xl
-          px-3 py-2
-          text-[var(--molsan-text,#17243a)]
-          text-left
-          font-medium
-          flex
-          justify-between
-          items-center
-          gap-3
-          shadow-sm
-          transition-all
-          duration-200
+        className={`w-full
+ min-h-[42px]
+ 
+ 
+ 
+ px-3 py-2
+ 
+ 
+ 
+ flex
+ justify-between
+ items-center
+ gap-3
+ 
+ 
+ 
 
-          ${
-            disabled
-              ? ""
-              : ""
-          }
-        `}
+ ${
+ disabled
+ ? ""
+ : ""
+ }`}
       >
         <span className="min-w-0 truncate">
           {opcionSeleccionada?.label ?? placeholder}
         </span>
 
         <svg
-          className={`
-            w-4 h-4
-            shrink-0
-            text-[var(--molsan-text-muted,#64748b)]
-            transition-transform
-            duration-200
-            ${open ? "" : ""}
-          `}
+          className={`w-4 h-4
+ shrink-0
+ 
+ 
+ 
+ ${open ? "" : ""}`}
           aria-hidden="true"
         >
           <use href="/icons/icons.svg#chevron-down" />
@@ -233,26 +229,24 @@ export default function SelectSJ({
                     optionRefs.current[nextIndex]?.focus();
                   }}
                   onClick={() => seleccionar(o)}
-                  className={`
-                    w-full
-                    text-left
-                    px-3
-                    py-2.5
-                    text-sm
-                    transition-colors
-                    duration-150
-                    flex
-                    items-center
-                    justify-between
-                    gap-3
-                    cursor-pointer
+                  className={`w-full
+ 
+ px-3
+ py-2.5
+ 
+ 
+ 
+ flex
+ items-center
+ justify-between
+ gap-3
+ 
 
-                    ${
-                      seleccionada
-                        ? ""
-                        : ""
-                    }
-                  `}
+ ${
+ seleccionada
+ ? ""
+ : ""
+ }`}
                 >
                   <span className="truncate">
                     {o.label}
