@@ -635,7 +635,7 @@ export default function EnviarANotarioModal({
   const notario = form.notario;
 
   const contenido = (
-    <div className={inline ? "w-full min-w-0" : "expediente-operativo-modal fixed inset-0 z-[10050] flex items-center justify-center p-2 sm:p-3"} onMouseDown={(event) => { if (!inline && event.target === event.currentTarget && !loading) onClose(); }}>
+    <div className={inline ? "w-full min-w-0" : "molsan-modal-overlay expediente-operativo-modal fixed inset-0 z-[10050] flex items-center justify-center p-2 sm:p-3"} onMouseDown={(event) => { if (!inline && event.target === event.currentTarget && !loading) onClose(); }}>
       <div ref={dialogRef} tabIndex={inline ? undefined : -1} role={inline ? undefined : "dialog"} aria-modal={inline ? undefined : true} aria-label={inline ? undefined : "Envío de expediente a notario"} className={inline ? "flex w-full min-w-0 flex-col overflow-hidden" : "expediente-operativo-modal-panel flex h-[97vh] max-h-[98vh] w-[min(98vw,1750px)] max-w-[1750px] flex-col overflow-hidden"} onMouseDown={(event) => event.stopPropagation()}>
 
         {!inline && (
