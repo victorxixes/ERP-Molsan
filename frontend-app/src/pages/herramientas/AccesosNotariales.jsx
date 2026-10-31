@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useNavigate } from "react-router-dom";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
 
@@ -92,18 +93,9 @@ export default function AccesosNotariales() {
   };
 
   return (
-    <main aria-busy={cargando}>
-      <header>
-        <div>
-          <div aria-hidden="true">🔐</div>
-          <div className="min-w-0">
-            <p>MOLSAN ERP · UTILIDADES</p>
-            <h1>Accesos notariales</h1>
-            <p>Gestión centralizada y restringida de accesos a NotarGest y EncargaGest.</p>
-          </div>
-        </div>
-        <button type="button" className="  molsan-btn molsan-btn--secondary" onClick={() => navigate("/herramientas/utilidades")}>Volver a Utilidades</button>
-      </header>
+    <main className="erp-page" aria-busy={cargando}>
+      <MolsanPageHeader mark="AN" title="Accesos notariales" description="Gestión centralizada y restringida de accesos a NotarGest y EncargaGest." />
+      <div className="flex justify-end"><button type="button" className="molsan-btn molsan-btn--secondary" onClick={() => navigate("/herramientas/utilidades")}>← Volver a Utilidades</button></div>
       <section className="accesos-notariales-resumen" aria-label="Resumen de accesos habilitados">
         <article className="accesos-notariales-resumen-card">
           <span aria-hidden="true">🔐</span>
