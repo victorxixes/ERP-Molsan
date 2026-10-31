@@ -92,7 +92,7 @@ export default function Seguridad() {
   }, [auditoriaList]);
 
   return (
-    <div className="seguridad-premium-page space-y-6">
+    <div className="space-y-6">
       <header className="px-6 py-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
