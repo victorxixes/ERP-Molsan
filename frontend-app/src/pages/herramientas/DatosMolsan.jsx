@@ -85,9 +85,9 @@ export default function DatosMolsan() {
       <MolsanPageHeader mark="DM" title="Datos Molsan" description="Datos corporativos oficiales para reutilizar en documentos y facturación, sin valores fiscales inventados." />
 
       {cargando ? <div className="p-6">Cargando configuración…</div> : (
-        <form onSubmit={guardar} className="space-y-5">
+        <form onSubmit={guardar} className="molsan-form space-y-5">
           {secciones.map((seccion) => (
-            <section key={seccion.titulo} className="p-5 sm:p-6">
+            <section key={seccion.titulo} className="erp-card p-5 sm:p-6">
               <h2>{seccion.titulo}</h2>
               <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {seccion.campos.map(([campo, titulo, tipo, requerido]) => (
@@ -100,7 +100,7 @@ export default function DatosMolsan() {
             </section>
           ))}
 
-          <section className="p-5 sm:p-6">
+          <section className="erp-card p-5 sm:p-6">
             <h2>Logotipo corporativo</h2>
             <p className="mt-1">Imagen PNG, JPG o WEBP de hasta 1 MB.</p>
             <div className="mt-4 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
