@@ -727,7 +727,7 @@ export default function ModalNuevaCita({
   return (
 
     <div
-      className="modal-nueva-cita-premium panel-modal-premium
+      className="modal-nueva-cita
  fixed inset-0
  
  
