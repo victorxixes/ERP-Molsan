@@ -284,24 +284,24 @@ class AppErrorBoundary extends Component {
       ].filter(Boolean).join("\\n");
 
       return (
-        <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
-          <section style={{ width: "100%", maxWidth: 720, padding: 24 }}>
-            <h1 style={{ margin: "0 0 10px" }}>El ERP ha detectado un error</h1>
-            <p style={{ margin: "0 0 16px" }}>La sesión no se ha cerrado. El diagnóstico siguiente ayuda a identificar qué ha fallado y qué revisar.</p>
-            <div style={{ marginBottom: 12, padding: 14 }}>
-              <strong style={{ display: "block", marginBottom: 5 }}>Posible causa</strong>
-              <p style={{ margin: 0 }}>{diagnostico.causa}</p>
+        <main className="flex min-h-screen items-center justify-center p-6">
+          <section className="w-full max-w-3xl">
+            <h1>El ERP ha detectado un error</h1>
+            <p>La sesión no se ha cerrado. El diagnóstico siguiente ayuda a identificar qué ha fallado y qué revisar.</p>
+            <div className="mb-3 p-4">
+              <strong className="block mb-1">Posible causa</strong>
+              <p>{diagnostico.causa}</p>
             </div>
             <div style={{ marginBottom: 12, padding: 14 }}>
               <strong style={{ display: "block", marginBottom: 5 }}>Qué hacer</strong>
               <p style={{ margin: 0 }}>{diagnostico.accion}</p>
             </div>
-            <strong style={{ display: "block", marginBottom: 6 }}>Error técnico</strong>
-            <pre style={{ whiteSpace: "pre-wrap", maxHeight: 180, overflow: "auto", padding: 12 }}>{String(error?.message || error || "Error de renderizado desconocido")}</pre>
-            <p style={{ margin: "10px 0 0" }}>Ruta: {window.location.pathname} · Fecha: {new Date().toLocaleString()}</p>
-            <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
-              <button type="button" onClick={() => { try { navigator.clipboard?.writeText(detalle); } catch (e) { console.warn("No se pudo copiar el diagnóstico."); } }} style={{ padding: "10px 16px" }}>Copiar diagnóstico</button>
-              <button type="button" onClick={() => window.location.reload()} style={{ padding: "10px 16px" }}>Recargar ERP</button>
+            <strong className="block mb-1">Error técnico</strong>
+            <pre className="max-h-44 overflow-auto whitespace-pre-wrap p-3">{String(error?.message || error || "Error de renderizado desconocido")}</pre>
+            <p className="mt-3">Ruta: {window.location.pathname} · Fecha: {new Date().toLocaleString()}</p>
+            <div className="mt-4 flex gap-3">
+              <button type="button" onClick={() => { try { navigator.clipboard?.writeText(detalle); } catch (e) { console.warn("No se pudo copiar el diagnóstico."); } }}>Copiar diagnóstico</button>
+              <button type="button" onClick={() => window.location.reload()}>Recargar ERP</button>
             </div>
           </section>
         </main>
