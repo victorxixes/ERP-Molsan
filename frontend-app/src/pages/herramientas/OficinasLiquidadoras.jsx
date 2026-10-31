@@ -117,7 +117,7 @@ function Campo({
  ${full ? "md:col-span-2" : ""}`}
     >
       <span
-        className=""
+       
       >
         {label}
       </span>
@@ -1080,7 +1080,7 @@ export default function OficinasLiquidadoras() {
           <div>
 
             <h1
-              className=""
+             
             >
               Oficinas Liquidadoras
             </h1>
@@ -1136,7 +1136,7 @@ export default function OficinasLiquidadoras() {
  py-2.5"
           >
             <span
-              className=""
+             
             >
               +
             </span>
@@ -1343,7 +1343,7 @@ export default function OficinasLiquidadoras() {
  justify-center"
             >
               <span
-                className=""
+               
               >
                 @
               </span>
@@ -1378,7 +1378,7 @@ export default function OficinasLiquidadoras() {
           <div>
 
             <h2
-              className=""
+             
             >
               Buscar y filtrar
             </h2>
@@ -1404,7 +1404,7 @@ export default function OficinasLiquidadoras() {
               setPagina(1);
 
             }}
-            className=""
+           
           >
             Limpiar filtros
           </button>
@@ -1429,7 +1429,7 @@ export default function OficinasLiquidadoras() {
           >
 
             <span
-              className=""
+             
             >
               Buscar
             </span>
@@ -1464,7 +1464,7 @@ export default function OficinasLiquidadoras() {
           >
 
             <span
-              className=""
+             
             >
               Provincia
             </span>
@@ -1520,7 +1520,7 @@ export default function OficinasLiquidadoras() {
           >
 
             <span
-              className=""
+             
             >
               Población
             </span>
@@ -1576,7 +1576,7 @@ export default function OficinasLiquidadoras() {
           >
 
             <span
-              className=""
+             
             >
               Estado
             </span>
@@ -1647,7 +1647,7 @@ export default function OficinasLiquidadoras() {
           <div>
 
             <h2
-              className=""
+             
             >
               Oficinas Liquidadoras
             </h2>
@@ -1699,7 +1699,7 @@ export default function OficinasLiquidadoras() {
             <thead>
 
               <tr
-                className=""
+               
               >
 
                 <th
@@ -1860,7 +1860,7 @@ export default function OficinasLiquidadoras() {
                       key={
                         oficina.id
                       }
-                      className=""
+                     
                     >
 
                       <td
@@ -2064,17 +2064,17 @@ export default function OficinasLiquidadoras() {
         >
 
           <div
-            className=""
+           
           >
             Mostrando{" "}
             <strong
-              className=""
+             
             >
               {oficinasPagina.length}
             </strong>{" "}
             de{" "}
             <strong
-              className=""
+             
             >
               {totalOficinas}
             </strong>{" "}
@@ -2116,7 +2116,7 @@ export default function OficinasLiquidadoras() {
               Página{" "}
 
               <strong
-                className=""
+               
               >
                 {pagina}
               </strong>
@@ -2124,7 +2124,7 @@ export default function OficinasLiquidadoras() {
               {" "}de{" "}
 
               <strong
-                className=""
+               
               >
                 {totalPaginas}
               </strong>
@@ -2204,7 +2204,7 @@ export default function OficinasLiquidadoras() {
               <div>
 
                 <h2
-                  className=""
+                 
                 >
                   {modoEdicion
                     ? "Editar Oficina Liquidadora"
@@ -2401,13 +2401,13 @@ export default function OficinasLiquidadoras() {
                   <div>
 
                     <div
-                      className=""
+                     
                     >
                       Oficina activa
                     </div>
 
                     <div
-                      className=""
+                     
                     >
                       Disponible en el catálogo
                     </div>
@@ -2505,7 +2505,7 @@ export default function OficinasLiquidadoras() {
               <div>
 
                 <h2
-                  className=""
+                 
                 >
                   Importar Oficinas Liquidadoras
                 </h2>
@@ -2570,7 +2570,7 @@ export default function OficinasLiquidadoras() {
                   </div>
 
                   <p
-                    className=""
+                   
                   >
                     Selecciona el fichero Excel
                   </p>
@@ -2629,7 +2629,7 @@ export default function OficinasLiquidadoras() {
                     >
 
                       <div
-                        className=""
+                       
                       >
                         {archivo.name}
                       </div>
@@ -2653,7 +2653,7 @@ export default function OficinasLiquidadoras() {
                 >
                   El Excel debe contener:
                   <strong
-                    className=""
+                   
                   >
                     {" "}
                     Oficina Liquidadora,
