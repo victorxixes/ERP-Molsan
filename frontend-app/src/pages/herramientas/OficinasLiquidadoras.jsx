@@ -112,13 +112,11 @@ function Campo({
 }) {
   return (
     <label
-      className={`
-        flex
-        flex-col
-        gap-1.5
+      className={`flex
+ flex-col
+ gap-1.5
 
-        ${full ? "md:col-span-2" : ""}
-      `}
+ ${full ? "md:col-span-2" : ""}`}
     >
       <span
         className=""
@@ -177,22 +175,18 @@ function BadgeActivo({
               border-red-200
               bg-red-50
               text-red-700
-            `
-        }
-      `}
+            `}`}
     >
       <span
-        className={`
-          h-1.5
-          w-1.5
-          rounded-full
+        className={`h-1.5
+ w-1.5
+ 
 
-          ${
-            activo
-              ? ""
-              : ""
-          }
-        `}
+ ${
+ activo
+ ? ""
+ : ""
+ }`}
       />
 
       {activo
@@ -2445,8 +2439,7 @@ export default function OficinasLiquidadoras() {
                       )
                     }
                     className="w-4
- h-4
- accent-[var(--erp-primary)]"
+ h-4"
                   />
 
                   <div>
