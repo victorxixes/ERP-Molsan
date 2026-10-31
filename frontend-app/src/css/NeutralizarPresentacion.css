@@ -1536,3 +1536,173 @@ body {
     transform: none;
   }
 }
+
+
+/* ==========================================================
+   FASE 2 · FILTROS Y FORMULARIOS COMPARTIDOS
+   Clases de adopción progresiva para todas las pantallas.
+   No altera la estructura ni el comportamiento de los campos.
+========================================================== */
+
+/* Barra de filtros: agrupa controles relacionados sin crear
+   tarjetas individuales alrededor de cada campo. */
+.erp-route-content .molsan-filter-bar,
+.erp-route-content .molsan-filters,
+.erp-route-content [data-molsan-filter-bar] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+  color: var(--molsan-text);
+  background: linear-gradient(145deg, rgba(255,255,255,.94), rgba(242,247,251,.82));
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: inset 0 1px 0 var(--molsan-glass-highlight), 0 3px 12px rgba(6,70,117,.035);
+}
+
+.erp-route-content .molsan-filter-bar > *,
+.erp-route-content .molsan-filters > *,
+.erp-route-content [data-molsan-filter-bar] > * {
+  min-width: 0;
+}
+
+.erp-route-content .molsan-filter-bar .molsan-field,
+.erp-route-content .molsan-filters .molsan-field,
+.erp-route-content [data-molsan-filter-bar] .molsan-field {
+  flex: 1 1 170px;
+}
+
+.erp-route-content .molsan-filter-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-inline-start: auto;
+}
+
+/* Campos y grupos de formulario. Las páginas conservan sus
+   columnas y agrupaciones funcionales; aquí se normaliza el control. */
+.erp-route-content .molsan-form,
+.erp-route-content .molsan-form-section {
+  min-width: 0;
+}
+
+.erp-route-content .molsan-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  min-width: 0;
+}
+
+.erp-route-content .molsan-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.erp-route-content .molsan-field__label,
+.erp-route-content .molsan-field > label {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+  line-height: 1.35;
+}
+
+.erp-route-content .molsan-field__control,
+.erp-route-content .molsan-field input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.erp-route-content .molsan-field select,
+.erp-route-content .molsan-field textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--molsan-control-height);
+  padding: 9px 11px;
+  color: var(--molsan-text);
+  background: rgba(255,255,255,.97);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font: inherit;
+  transition: border-color var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast);
+}
+
+.erp-route-content .molsan-field textarea,
+.erp-route-content .molsan-field textarea.molsan-field__control {
+  min-height: 88px;
+  resize: vertical;
+}
+
+.erp-route-content .molsan-field__control:focus,
+.erp-route-content .molsan-field input:focus,
+.erp-route-content .molsan-field select:focus,
+.erp-route-content .molsan-field textarea:focus {
+  border-color: var(--molsan-blue);
+  outline: none;
+  box-shadow: var(--molsan-focus-ring);
+}
+
+.erp-route-content .molsan-field__help {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+  line-height: 1.4;
+}
+
+.erp-route-content .molsan-field__error,
+.erp-route-content .molsan-field [aria-invalid="true"] ~ .molsan-field__help {
+  color: var(--molsan-danger);
+}
+
+.erp-route-content .molsan-field [aria-invalid="true"] {
+  border-color: var(--molsan-danger);
+  box-shadow: 0 0 0 3px rgba(163,59,66,.09);
+}
+
+.erp-route-content .molsan-field__required {
+  color: var(--molsan-danger);
+  margin-inline-start: 3px;
+}
+
+.erp-route-content .molsan-form-section {
+  padding: 16px;
+  background: rgba(242,247,251,.52);
+  border: 1px solid rgba(216,228,236,.82);
+  border-radius: var(--molsan-radius-card);
+}
+
+.erp-route-content .molsan-form-section__title {
+  margin: 0 0 14px;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-md);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+@media (max-width: 720px) {
+  .erp-route-content .molsan-filter-bar,
+  .erp-route-content .molsan-filters,
+  .erp-route-content [data-molsan-filter-bar] {
+    padding: 11px;
+    gap: 10px;
+  }
+
+  .erp-route-content .molsan-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .erp-route-content .molsan-filter-actions {
+    width: 100%;
+    margin-inline-start: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .erp-route-content .molsan-field__control,
+  .erp-route-content .molsan-field input,
+  .erp-route-content .molsan-field select,
+  .erp-route-content .molsan-field textarea {
+    transition: none;
+  }
+}
