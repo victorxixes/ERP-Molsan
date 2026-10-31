@@ -257,3 +257,13 @@ Este cierre **no afirma que cada una de las 97 pantallas y cada modal hayan sido
 - No se cambian validaciones, valores, consultas, permisos, API ni flujos de negocio.
 - Sidebar, producción, rama `main` y base de datos permanecen fuera del alcance.
 - Botones y migración de modales continúan en las siguientes entregas de Fase 2; la ordenación funcional completa de tablas se abordará después.
+
+
+### Fase 2 — botones y modales (base compartida)
+
+- Se refuerza el contrato común de botones `.molsan-btn` y sus variantes primario, secundario, contorno, ghost, destructivo, compacto e icono. Se normalizan interacción activa, foco, deshabilitado e iconografía.
+- Se amplía la estructura de diálogos reutilizable: overlay, panel, tamaños semánticos, cabecera, cuerpo con scroll interno, pie y cierre accesible.
+- En móvil los diálogos ocupan el ancho disponible y mantienen el scroll dentro del cuerpo.
+- La base está preparada para adopción progresiva; no se afirma que todas las instancias de botones y modales del ERP hayan sido migradas en esta entrega.
+- No se cambian acciones, permisos, validaciones, navegación, datos ni flujos funcionales.
+- Sidebar, producción, rama `main` y base de datos permanecen fuera del alcance.
