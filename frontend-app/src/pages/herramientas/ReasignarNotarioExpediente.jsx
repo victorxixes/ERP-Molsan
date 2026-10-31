@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import axios from "../../api/axios";
 import EnviarANotarioModal from "../../components/expedientes/EnviarANotarioModal";
 import { enviarExpedienteANotario } from "../../api/expedientes";
-import "../../css/ModalesHerramientasPremium.css";
 
 export default function ReasignarNotarioExpediente() {
   const [numero, setNumero] = useState("");
@@ -85,7 +84,7 @@ export default function ReasignarNotarioExpediente() {
   }
 
   return (
-    <main className="herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <header className="relative overflow-hidden p-6">
         <div className="absolute inset-x-0 top-0 h-1" />
         <div className="flex flex-wrap items-center gap-4">
