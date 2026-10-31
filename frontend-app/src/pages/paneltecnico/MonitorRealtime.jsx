@@ -11,7 +11,7 @@ import "./PanelTecnicoSubmodulos.css";
 
 /**
  * ============================================================
- * MONITOR REALTIME — MOLSAN ERP PREMIUM 2027
+ * MONITOR REALTIME
  * ============================================================
  *
  * Monitor técnico del WebSocket realtime.
@@ -510,7 +510,7 @@ export default function MonitorRealtime() {
   return (
 
     <section
-      className="monitor-realtime-premium panel-tecnico-submodulo-premium
+      className="panel-tecnico-submodulo-premium
  
  
  
