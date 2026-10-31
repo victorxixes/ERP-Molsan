@@ -27,7 +27,7 @@ export default function Herramientas() {
           TARJETAS
       ===================================================== */}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+      <div className="molsan-tool-grid grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
 
         <Card
           icon="📥"
@@ -86,7 +86,7 @@ function Card({
   return (
     <Link
       to={link}
-      className={`group relative overflow-hidden
+      className={`molsan-tool-card group relative overflow-hidden
  
  
  
@@ -122,7 +122,7 @@ function Card({
         {/* ICONO */}
 
         <div
-          className={`flex h-12 w-12 shrink-0
+          className={`molsan-tool-icon flex h-12 w-12 shrink-0
  items-center justify-center
  
  
