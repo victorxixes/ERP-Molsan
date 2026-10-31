@@ -5,8 +5,6 @@ import {
   useRef,
   useState,
 } from "react";
-import "../../css/ComponentesOperativosPremium.css";
-import "../../css/ModalesHerramientasPremium.css";
 
 import {
   useMensajesStore,
@@ -646,7 +644,7 @@ export default function Mensajes({
     >
 
       {/* =================================================
-          FONDO PREMIUM
+          
       ================================================= */}
 
       <div
