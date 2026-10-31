@@ -1002,8 +1002,8 @@ function Dato({ titulo, valor: contenido, ancho = false }) {
   return (
     <div
       className={`ctn-modal-dato${
-        ancho ? "ctn-modal-dato-ancho" : ""
-      }`}
+ ancho ? "ctn-modal-dato-ancho" : ""
+ }`}
     >
       <span>{titulo}</span>
       <strong>{valor(contenido)}</strong>
