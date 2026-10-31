@@ -1204,9 +1204,7 @@ export default function EmpleadosListado({
                     </div>
                   </div>
                   <span
-                    className={`molsan-status-pill shrink-0 px-2.5 py-1 ${empleado.activo
- ? ""
- : ""}`}
+                    className={`molsan-status-pill shrink-0 px-2.5 py-1 ${empleado.activo ? "is-active" : "is-inactive"}`}
                   >
                     {empleado.activo ? "Activo" : "Inactivo"}
                   </span>
@@ -1316,7 +1314,7 @@ export default function EmpleadosListado({
                   disabled={
                     guardandoNuevo
                   }
-                  className="flex
+                  className="molsan-btn molsan-btn--ghost molsan-btn--icon flex
  h-9
  w-9
  items-center
@@ -1617,7 +1615,7 @@ export default function EmpleadosListado({
                   disabled={
                     guardandoNuevo
                   }
-                  className="px-5
+                  className="molsan-btn molsan-btn--secondary px-5
  py-2.5"
                 >
                   Cancelar
