@@ -5,7 +5,6 @@ import {
 } from "react";
 
 import AutocompleteNotario from "./AutocompleteNotario";
-import "../../css/ModalesHerramientasPremium.css";
 
 import { obtenerNotaria } from "../../api/ctn";
 
