@@ -852,9 +852,7 @@ export default function SeguridadPermisos() {
           <div className="mt-2 h-1.5 overflow-hidden">
             <div
               className="h-full"
-              style={{
-                width: `${porcentajeAsignado}%`,
-              }}
+              style={{ width: `${porcentajeAsignado}%` }}
             />
           </div>
 
