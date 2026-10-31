@@ -243,12 +243,12 @@ export default function CtnDetallePage() {
             </div>
             <div className="molsan-modal__body min-h-0 flex-1 overflow-y-auto p-4">
             <form className="ctn-detalle-search-form flex flex-wrap gap-3" onSubmit={buscarHistorico}>
-              <input value={filtroHistorico} onChange={(e) => setFiltroHistorico(e.target.value)} placeholder="Buscar expediente, titular, NIF o protocolo" className="ctn-detalle-search ctn-detalle-search--grow" />
+              <input value={filtroHistorico} onChange={(e) => setFiltroHistorico(e.target.value)} placeholder="Buscar expediente, titular, NIF o protocolo" className="ctn-detalle-search ctn-detalle-search--grow min-w-0 flex-1 px-3 py-2" />
               <button type="submit">Buscar</button>
             </form>
             {cargandoHistorico ? <p>Cargando firmas…</p> : historico.length === 0 ? <p>No se han encontrado firmas registradas para esta modalidad.</p> : (
               <div className="ctn-detalle-history-table-wrap overflow-x-auto">
-                <table className="ctn-detalle-table ctn-detalle-table--history">
+                <table className="ctn-detalle-table ctn-detalle-table--history min-w-[900px] w-full">
                   <thead><tr>{["Fecha firma", "Expediente", "Titular", "NIF titular", "Solicitante", "Protocolo", "Oficina", "Importe"].map((x) => <th key={x} className="ctn-detalle-th">{x}</th>)}</tr></thead>
                   <tbody>
                     {historico.map((f, i) => (
