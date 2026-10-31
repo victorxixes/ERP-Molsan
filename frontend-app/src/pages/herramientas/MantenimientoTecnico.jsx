@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import { API_BASE } from "../../api/config";
 import { puedeVerModulo } from "../../utils/permisos";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 
 /**
@@ -276,36 +277,25 @@ export default function MantenimientoTecnico() {
 
   return (
     <main className="erp-page min-h-full min-w-0 space-y-6">
-      <header className="molsan-subpage-header">
-        <div className="absolute inset-x-0 top-0 h-1" />
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <div className="mb-2 flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-2 px-3 py-1">
-                <span>⚙️</span> HERRAMIENTAS DEL SISTEMA
-              </span>
-              <span className={`inline-flex items-center gap-2 px-3 py-1 ${validacionTecnica ? "" : ""}`}>
-                <span className={`h-2 w-2 ${validacionTecnica ? "" : ""}`} />
-                {validacionTecnica ? "Diagnóstico técnico correcto" : "Pendiente de validación técnica"}
-              </span>
-            </div>
-            <h1>
-              Mantenimiento técnico
-            </h1>
-            <p className="mt-2 max-w-3xl">
-              Centro de diagnóstico y mantenimiento integrado en el ERP. Ejecuta primero las comprobaciones y revisa el resultado antes de realizar cambios.
-            </p>
-          </div>
-          <button
-            type="button"
-            disabled={Boolean(cargando)}
-            onClick={ejecutarDiagnosticoCompleto}
-            className="shrink-0 px-4 py-3"
-          >
-            {cargando === "diagnostico-completo" ? "Ejecutando diagnóstico…" : "▶ Ejecutar diagnóstico completo"}
-          </button>
-        </div>
-      </header>
+      <MolsanPageHeader
+        mark="MT"
+        title="Mantenimiento técnico"
+        description="Centro de diagnóstico y mantenimiento integrado en el ERP. Ejecuta primero las comprobaciones y revisa el resultado antes de realizar cambios."
+      />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <span className={`inline-flex items-center gap-2 px-3 py-1 ${validacionTecnica ? "" : ""}`}>
+          <span className={`h-2 w-2 ${validacionTecnica ? "" : ""}`} />
+          {validacionTecnica ? "Diagnóstico técnico correcto" : "Pendiente de validación técnica"}
+        </span>
+        <button
+          type="button"
+          disabled={Boolean(cargando)}
+          onClick={ejecutarDiagnosticoCompleto}
+          className="shrink-0 px-4 py-3"
+        >
+          {cargando === "diagnostico-completo" ? "Ejecutando diagnóstico…" : "▶ Ejecutar diagnóstico completo"}
+        </button>
+      </div>
 
       <section className="grid grid-cols-1 gap-5 xl:grid-cols-2">
         <div className="p-5">
