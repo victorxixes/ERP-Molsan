@@ -115,6 +115,10 @@ _RUTAS_CON_AUTORIZACION_INTERNA = {
     # Estas rutas aplican autorización dinámica por portal (NotarGestWeb o
     # EncargaGestWeb); no deben exigir además el permiso genérico ctn.
     "/api/ctn/accesos-portales/resumen": "ctn",
+    # El selector de notarios se comparte con Agenda: la ruta aplica CTN:ver
+    # o Agenda:ver y oculta los IBAN a quien solo tiene acceso a Agenda.
+    "/api/ctn/notarias": "ctn",
+    "/api/ctn/notarias/{notaria_id}": "ctn",
     "/api/ctn/notarias/{notaria_id}/accesos-portales": "ctn",
     "/api/ctn/notarias/{notaria_id}/accesos-portales/{portal}/password": "ctn",
     "/api/ctn/notarias/{notaria_id}/accesos-portales/{portal}/habilitado": "ctn",
