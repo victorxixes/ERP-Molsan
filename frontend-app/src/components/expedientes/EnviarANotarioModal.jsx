@@ -4,11 +4,9 @@ import { createPortal } from "react-dom";
 import AutocompleteNotario from "../agenda/AutocompleteNotario";
 import axios from "../../api/axios";
 import useAccessibleDialog from "../ui/useAccessibleDialog";
-import "../../css/ModalesOperativosPremium.css";
 
 // ============================================================
-// ERP MOLSAN — ENVÍO A NOTARIO + DATOS DE FACTURACIÓN
-// PREMIUM 2027
+// ENVÍO A NOTARIO + DATOS DE FACTURACIÓN
 // ============================================================
 
 const FORM_INICIAL = {
