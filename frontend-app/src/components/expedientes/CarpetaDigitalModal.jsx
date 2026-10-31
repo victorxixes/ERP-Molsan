@@ -926,8 +926,6 @@ export default function CarpetaDigitalModal({
               style={modoActividad ? {
                 minWidth: 0,
                 width: "100%",
-                opacity: panelDocumentosVisible || ocultarPanelEnvioNotario ? 1 : 0,
-                transform: panelDocumentosVisible || ocultarPanelEnvioNotario ? "translateX(0)" : "translateX(-28px)",
                 pointerEvents: panelDocumentosVisible || ocultarPanelEnvioNotario ? "auto" : "none",
               } : undefined}
             >
