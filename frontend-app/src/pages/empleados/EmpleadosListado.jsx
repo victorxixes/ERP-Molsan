@@ -7,8 +7,6 @@ import {
 } from "react";
 
 import AuthenticatedPhoto from "../../components/AuthenticatedPhoto";
-import "./EmpleadosListadoPremium.css";
-import "../../css/ModalesOperativosPremium.css";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 import {
