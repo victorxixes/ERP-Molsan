@@ -271,21 +271,19 @@ function EventoBadge({
   return (
 
     <span
-      className="
-        inline-flex
-        items-center
-        gap-2
-        px-2.5
-        py-1
-        rounded-lg
-        bg-[var(--erp-primary-soft)]
-        text-[var(--erp-primary)]
-        border
-        border-[var(--erp-border)]
-        text-xs
-        font-medium
-        whitespace-nowrap
-      "
+      className="inline-flex
+ items-center
+ gap-2
+ px-2.5
+ py-1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ whitespace-nowrap"
     >
 
       <Icono
@@ -321,17 +319,15 @@ function CabeceraOrden({
 
     <th
       scope="col"
-      className="
-        px-4
-        py-3
-        text-left
-        text-xs
-        font-semibold
-        uppercase
-        tracking-wide
-        text-[var(--erp-text-soft)]
-        whitespace-nowrap
-      "
+      className="px-4
+ py-3
+ 
+ 
+ 
+ uppercase
+ 
+ 
+ whitespace-nowrap"
     >
 
       <button
@@ -339,13 +335,9 @@ function CabeceraOrden({
         onClick={() =>
           onOrdenar(campo)
         }
-        className="
-          inline-flex
-          items-center
-          gap-2
-          hover:text-[var(--erp-primary)]
-          transition
-        "
+        className="inline-flex
+ items-center
+ gap-2"
       >
 
         {titulo}
@@ -355,8 +347,8 @@ function CabeceraOrden({
             text-[10px]
             ${
               activa
-                ? "text-[var(--erp-primary)]"
-                : "text-[var(--erp-text-soft)] opacity-50"
+                ? ""
+                : ""
             }
           `}
         >
@@ -942,7 +934,7 @@ export default function SeguridadLogs() {
 
   return (
 
-    <div className="seguridad-logs-premium seguridad-subpagina-premium space-y-6 animate-fade-in">
+    <div className="seguridad-logs-premium seguridad-subpagina-premium space-y-6">
 
 
       {/* ====================================================
@@ -950,48 +942,35 @@ export default function SeguridadLogs() {
       ==================================================== */}
 
       <section
-        className="
-          bg-[var(--erp-surface)]
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          shadow-sm
-          px-6
-          py-5
-        "
+        className="px-6
+ py-5"
       >
 
         <div
-          className="
-            flex
-            flex-col
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-            gap-4
-          "
+          className="flex
+ flex-col
+ lg:flex-row
+ lg:items-center
+ lg:justify-between
+ gap-4"
         >
 
           <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
+            className="flex
+ items-center
+ gap-3"
           >
 
             <div
-              className="
-                w-11
-                h-11
-                rounded-xl
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-                flex-shrink-0
-              "
+              className="w-11
+ h-11
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center
+ flex-shrink-0"
             >
 
               <Icono
@@ -1005,22 +984,14 @@ export default function SeguridadLogs() {
             <div>
 
               <h1
-                className="
-                  text-2xl
-                  font-bold
-                  text-[var(--erp-text)]
-                "
+                className=""
               >
                 Logs técnicos
               </h1>
 
 
               <p
-                className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                  mt-0.5
-                "
+                className="mt-0.5"
               >
                 Monitorización técnica y trazabilidad de eventos del ERP
               </p>
@@ -1031,30 +1002,24 @@ export default function SeguridadLogs() {
 
 
           <div
-            className="
-              inline-flex
-              items-center
-              gap-2
-              px-3
-              py-2
-              rounded-xl
-              bg-emerald-50
-              border
-              border-emerald-100
-              text-emerald-700
-              text-xs
-              font-medium
-              w-fit
-            "
+            className="inline-flex
+ items-center
+ gap-2
+ px-3
+ py-2
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ w-fit"
           >
 
             <span
-              className="
-                w-2
-                h-2
-                rounded-full
-                bg-emerald-500
-              "
+              className="w-2
+ h-2"
             />
 
             Monitor técnico activo
@@ -1071,42 +1036,23 @@ export default function SeguridadLogs() {
       ==================================================== */}
 
       <div
-        className="
-          grid
-          grid-cols-1
-          sm:grid-cols-2
-          lg:grid-cols-4
-          gap-4
-        "
+        className="grid
+ grid-cols-1
+ sm:grid-cols-2
+ lg:grid-cols-4
+ gap-4"
       >
 
         <div
-          className="
-            bg-[var(--erp-surface)]
-            border
-            border-[var(--erp-border)]
-            rounded-2xl
-            shadow-sm
-            p-5
-          "
+          className="p-5"
         >
 
-          <p className="
-            text-xs
-            uppercase
-            tracking-wide
-            text-[var(--erp-text-soft)]
-          ">
+          <p className="uppercase">
             Eventos
           </p>
 
 
-          <p className="
-            text-2xl
-            font-bold
-            text-[var(--erp-text)]
-            mt-1
-          ">
+          <p className="mt-1">
             {logsOrdenados.length}
           </p>
 
@@ -1114,32 +1060,15 @@ export default function SeguridadLogs() {
 
 
         <div
-          className="
-            bg-[var(--erp-surface)]
-            border
-            border-[var(--erp-border)]
-            rounded-2xl
-            shadow-sm
-            p-5
-          "
+          className="p-5"
         >
 
-          <p className="
-            text-xs
-            uppercase
-            tracking-wide
-            text-[var(--erp-text-soft)]
-          ">
+          <p className="uppercase">
             Errores críticos
           </p>
 
 
-          <p className="
-            text-2xl
-            font-bold
-            text-red-600
-            mt-1
-          ">
+          <p className="mt-1">
             {totalErrores}
           </p>
 
@@ -1147,32 +1076,15 @@ export default function SeguridadLogs() {
 
 
         <div
-          className="
-            bg-[var(--erp-surface)]
-            border
-            border-[var(--erp-border)]
-            rounded-2xl
-            shadow-sm
-            p-5
-          "
+          className="p-5"
         >
 
-          <p className="
-            text-xs
-            uppercase
-            tracking-wide
-            text-[var(--erp-text-soft)]
-          ">
+          <p className="uppercase">
             Avisos
           </p>
 
 
-          <p className="
-            text-2xl
-            font-bold
-            text-amber-600
-            mt-1
-          ">
+          <p className="mt-1">
             {totalWarnings}
           </p>
 
@@ -1180,32 +1092,15 @@ export default function SeguridadLogs() {
 
 
         <div
-          className="
-            bg-[var(--erp-surface)]
-            border
-            border-[var(--erp-border)]
-            rounded-2xl
-            shadow-sm
-            p-5
-          "
+          className="p-5"
         >
 
-          <p className="
-            text-xs
-            uppercase
-            tracking-wide
-            text-[var(--erp-text-soft)]
-          ">
+          <p className="uppercase">
             Estado
           </p>
 
 
-          <p className="
-            text-base
-            font-semibold
-            text-emerald-600
-            mt-1
-          ">
+          <p className="mt-1">
             Monitor activo
           </p>
 
@@ -1219,36 +1114,25 @@ export default function SeguridadLogs() {
       ==================================================== */}
 
       <section
-        className="
-          bg-[var(--erp-surface)]
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          shadow-sm
-          p-5
-        "
+        className="p-5"
       >
 
         <div
-          className="
-            grid
-            grid-cols-1
-            lg:grid-cols-12
-            gap-4
-            items-end
-          "
+          className="grid
+ grid-cols-1
+ lg:grid-cols-12
+ gap-4
+ items-end"
         >
 
           <div className="lg:col-span-5">
 
             <label
-              className="
-                block
-                text-xs
-                font-medium
-                text-[var(--erp-text-soft)]
-                mb-1.5
-              "
+              className="block
+ 
+ 
+ 
+ mb-1.5"
             >
               Buscar
             </label>
@@ -1258,15 +1142,12 @@ export default function SeguridadLogs() {
 
               <Icono
                 name="search"
-                className="
-                  absolute
-                  left-3
-                  top-1/2
-                  -translate-y-1/2
-                  w-4
-                  h-4
-                  text-[var(--erp-text-soft)]
-                "
+                className="absolute
+ left-3
+ top-1/2
+ -translate-y-1/2
+ w-4
+ h-4"
               />
 
 
@@ -1283,23 +1164,10 @@ export default function SeguridadLogs() {
                   setPagina(0);
 
                 }}
-                className="
-                  w-full
-                  h-11
-                  pl-10
-                  pr-4
-                  rounded-xl
-                  border
-                  border-[var(--erp-border)]
-                  bg-[var(--erp-bg)]
-                  text-[var(--erp-text)]
-                  placeholder:text-[var(--erp-text-soft)]
-                  focus:outline-none
-                  focus:ring-2
-                  focus:ring-[var(--erp-primary)]
-                  focus:border-[var(--erp-primary)]
-                  transition
-                "
+                className="w-full
+ h-11
+ pl-10
+ pr-4"
               />
 
             </div>
@@ -1310,13 +1178,11 @@ export default function SeguridadLogs() {
           <div className="lg:col-span-2">
 
             <label
-              className="
-                block
-                text-xs
-                font-medium
-                text-[var(--erp-text-soft)]
-                mb-1.5
-              "
+              className="block
+ 
+ 
+ 
+ mb-1.5"
             >
               Fecha
             </label>
@@ -1334,21 +1200,9 @@ export default function SeguridadLogs() {
                 setPagina(0);
 
               }}
-              className="
-                w-full
-                h-11
-                px-3
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-bg)]
-                text-[var(--erp-text)]
-                focus:outline-none
-                focus:ring-2
-                focus:ring-[var(--erp-primary)]
-                focus:border-[var(--erp-primary)]
-                transition
-              "
+              className="w-full
+ h-11
+ px-3"
             />
 
           </div>
@@ -1357,13 +1211,11 @@ export default function SeguridadLogs() {
           <div className="lg:col-span-2">
 
             <label
-              className="
-                block
-                text-xs
-                font-medium
-                text-[var(--erp-text-soft)]
-                mb-1.5
-              "
+              className="block
+ 
+ 
+ 
+ mb-1.5"
             >
               Nivel
             </label>
@@ -1380,21 +1232,9 @@ export default function SeguridadLogs() {
                 setPagina(0);
 
               }}
-              className="
-                w-full
-                h-11
-                px-3
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-bg)]
-                text-[var(--erp-text)]
-                focus:outline-none
-                focus:ring-2
-                focus:ring-[var(--erp-primary)]
-                focus:border-[var(--erp-primary)]
-                transition
-              "
+              className="w-full
+ h-11
+ px-3"
             >
 
               <option value="">
@@ -1425,13 +1265,11 @@ export default function SeguridadLogs() {
           <div className="lg:col-span-2">
 
             <label
-              className="
-                block
-                text-xs
-                font-medium
-                text-[var(--erp-text-soft)]
-                mb-1.5
-              "
+              className="block
+ 
+ 
+ 
+ mb-1.5"
             >
               Evento
             </label>
@@ -1448,21 +1286,9 @@ export default function SeguridadLogs() {
                 setPagina(0);
 
               }}
-              className="
-                w-full
-                h-11
-                px-3
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-bg)]
-                text-[var(--erp-text)]
-                focus:outline-none
-                focus:ring-2
-                focus:ring-[var(--erp-primary)]
-                focus:border-[var(--erp-primary)]
-                transition
-              "
+              className="w-full
+ h-11
+ px-3"
             >
 
               <option value="">
@@ -1495,23 +1321,9 @@ export default function SeguridadLogs() {
               onClick={
                 limpiarFiltros
               }
-              className="
-                w-full
-                h-11
-                px-3
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-bg)]
-                text-[var(--erp-text)]
-                text-sm
-                font-medium
-                hover:bg-[var(--erp-primary-soft)]
-                hover:text-[var(--erp-primary)]
-                transition
-                disabled:opacity-40
-                disabled:cursor-not-allowed
-              "
+              className="w-full
+ h-11
+ px-3"
             >
               Limpiar
             </button>
@@ -1528,48 +1340,31 @@ export default function SeguridadLogs() {
       ==================================================== */}
 
       <section
-        className="
-          bg-[var(--erp-surface)]
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          shadow-sm
-          overflow-hidden
-        "
+        className="overflow-hidden"
       >
 
         <div
-          className="
-            px-5
-            py-4
-            border-b
-            border-[var(--erp-border)]
-            flex
-            items-center
-            justify-between
-            gap-3
-          "
+          className="px-5
+ py-4
+ 
+ 
+ flex
+ items-center
+ justify-between
+ gap-3"
         >
 
           <div>
 
             <h2
-              className="
-                text-base
-                font-semibold
-                text-[var(--erp-text)]
-              "
+              className=""
             >
               Eventos técnicos
             </h2>
 
 
             <p
-              className="
-                text-xs
-                text-[var(--erp-text-soft)]
-                mt-0.5
-              "
+              className="mt-0.5"
             >
               {logsOrdenados.length} eventos encontrados
             </p>
@@ -1600,19 +1395,12 @@ export default function SeguridadLogs() {
         <div className="overflow-x-auto">
 
           <table
-            className="
-              w-full
-              min-w-[1050px]
-              text-sm
-            "
+            className="w-full
+ min-w-[1050px]"
           >
 
             <thead
-              className="
-                bg-[var(--erp-bg)]
-                border-b
-                border-[var(--erp-border)]
-              "
+              className=""
             >
 
               <tr>
@@ -1654,16 +1442,12 @@ export default function SeguridadLogs() {
 
                 <th
                   scope="col"
-                  className="
-                    px-4
-                    py-3
-                    text-left
-                    text-xs
-                    font-semibold
-                    uppercase
-                    tracking-wide
-                    text-[var(--erp-text-soft)]
-                  "
+                  className="px-4
+ py-3
+ 
+ 
+ 
+ uppercase"
                 >
                   Detalle
                 </th>
@@ -1671,16 +1455,12 @@ export default function SeguridadLogs() {
 
                 <th
                   scope="col"
-                  className="
-                    px-4
-                    py-3
-                    text-left
-                    text-xs
-                    font-semibold
-                    uppercase
-                    tracking-wide
-                    text-[var(--erp-text-soft)]
-                  "
+                  className="px-4
+ py-3
+ 
+ 
+ 
+ uppercase"
                 >
                   IP
                 </th>
@@ -1702,32 +1482,22 @@ export default function SeguridadLogs() {
                         `${log.fecha}-${log.evento}-${indice}`
                       )
                     }
-                    className="
-                      border-b
-                      border-[var(--erp-border)]
-                      last:border-b-0
-                      hover:bg-[var(--erp-primary-soft)]
-                      transition
-                    "
+                    className=""
                   >
 
                     <td
-                      className="
-                        px-4
-                        py-3.5
-                        text-[var(--erp-text-soft)]
-                        whitespace-nowrap
-                      "
+                      className="px-4
+ py-3.5
+ 
+ whitespace-nowrap"
                     >
                       {log.fecha || "—"}
                     </td>
 
 
                     <td
-                      className="
-                        px-4
-                        py-3.5
-                      "
+                      className="px-4
+ py-3.5"
                     >
                       <NivelBadge
                         nivel={log.nivel}
@@ -1736,10 +1506,8 @@ export default function SeguridadLogs() {
 
 
                     <td
-                      className="
-                        px-4
-                        py-3.5
-                      "
+                      className="px-4
+ py-3.5"
                     >
                       <EventoBadge
                         evento={log.evento}
@@ -1748,36 +1516,29 @@ export default function SeguridadLogs() {
 
 
                     <td
-                      className="
-                        px-4
-                        py-3.5
-                        font-medium
-                        text-[var(--erp-text)]
-                        whitespace-nowrap
-                      "
+                      className="px-4
+ py-3.5
+ 
+ 
+ whitespace-nowrap"
                     >
                       {log.usuario || "—"}
                     </td>
 
 
                     <td
-                      className="
-                        px-4
-                        py-3.5
-                        text-[var(--erp-text)]
-                      "
+                      className="px-4
+ py-3.5"
                     >
                       {log.modulo || "—"}
                     </td>
 
 
                     <td
-                      className="
-                        px-4
-                        py-3.5
-                        text-[var(--erp-text-soft)]
-                        max-w-[500px]
-                      "
+                      className="px-4
+ py-3.5
+ 
+ max-w-[500px]"
                     >
 
                       <div
@@ -1791,14 +1552,12 @@ export default function SeguridadLogs() {
 
 
                     <td
-                      className="
-                        px-4
-                        py-3.5
-                        text-[var(--erp-text-soft)]
-                        font-mono
-                        text-xs
-                        whitespace-nowrap
-                      "
+                      className="px-4
+ py-3.5
+ 
+ 
+ 
+ whitespace-nowrap"
                     >
                       {log.ip || "—"}
                     </td>
@@ -1818,26 +1577,21 @@ export default function SeguridadLogs() {
         {logsPaginados.length === 0 && (
 
           <div
-            className="
-              py-14
-              px-6
-              text-center
-            "
+            className="py-14
+ px-6"
           >
 
             <div
-              className="
-                w-12
-                h-12
-                rounded-xl
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-                mx-auto
-                mb-3
-              "
+              className="w-12
+ h-12
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center
+ mx-auto
+ mb-3"
             >
 
               <Icono
@@ -1849,22 +1603,14 @@ export default function SeguridadLogs() {
 
 
             <h3
-              className="
-                text-sm
-                font-semibold
-                text-[var(--erp-text)]
-              "
+              className=""
             >
               No se encontraron eventos
             </h3>
 
 
             <p
-              className="
-                text-sm
-                text-[var(--erp-text-soft)]
-                mt-1
-              "
+              className="mt-1"
             >
               Prueba a modificar los filtros de búsqueda.
             </p>
@@ -1881,30 +1627,22 @@ export default function SeguridadLogs() {
       ==================================================== */}
 
       <div
-        className="
-          flex
-          flex-col
-          sm:flex-row
-          sm:items-center
-          sm:justify-between
-          gap-3
-        "
+        className="flex
+ flex-col
+ sm:flex-row
+ sm:items-center
+ sm:justify-between
+ gap-3"
       >
 
         <p
-          className="
-            text-sm
-            text-[var(--erp-text-soft)]
-          "
+          className=""
         >
 
           Página{" "}
 
           <span
-            className="
-              font-semibold
-              text-[var(--erp-text)]
-            "
+            className=""
           >
             {paginaSegura + 1}
           </span>
@@ -1912,10 +1650,7 @@ export default function SeguridadLogs() {
           {" "}de{" "}
 
           <span
-            className="
-              font-semibold
-              text-[var(--erp-text)]
-            "
+            className=""
           >
             {totalPaginas}
           </span>
@@ -1924,11 +1659,9 @@ export default function SeguridadLogs() {
 
 
         <div
-          className="
-            flex
-            items-center
-            gap-2
-          "
+          className="flex
+ items-center
+ gap-2"
         >
 
           <button
@@ -1943,22 +1676,8 @@ export default function SeguridadLogs() {
                   )
               )
             }
-            className="
-              px-4
-              py-2
-              rounded-xl
-              border
-              border-[var(--erp-border)]
-              bg-[var(--erp-surface)]
-              text-[var(--erp-text)]
-              text-sm
-              font-medium
-              hover:bg-[var(--erp-primary-soft)]
-              hover:text-[var(--erp-primary)]
-              transition
-              disabled:opacity-40
-              disabled:cursor-not-allowed
-            "
+            className="px-4
+ py-2"
           >
             Anterior
           </button>
@@ -1979,22 +1698,8 @@ export default function SeguridadLogs() {
                   )
               )
             }
-            className="
-              px-4
-              py-2
-              rounded-xl
-              border
-              border-[var(--erp-border)]
-              bg-[var(--erp-surface)]
-              text-[var(--erp-text)]
-              text-sm
-              font-medium
-              hover:bg-[var(--erp-primary-soft)]
-              hover:text-[var(--erp-primary)]
-              transition
-              disabled:opacity-40
-              disabled:cursor-not-allowed
-            "
+            className="px-4
+ py-2"
           >
             Siguiente
           </button>
