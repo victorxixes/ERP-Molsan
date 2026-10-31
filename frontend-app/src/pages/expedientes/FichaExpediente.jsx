@@ -838,49 +838,6 @@ function EstadoBadge({
   const normalizado =
     normalizarTexto(texto);
 
-  const positivo =
-    normalizado.includes("vig") ||
-    normalizado.includes("abiert") ||
-    normalizado.includes("activo");
-
-  const negativo =
-    normalizado.includes("error") ||
-    normalizado.includes("defecto");
-
-  const cerrado =
-    normalizado.includes("cerr") ||
-    normalizado.includes("final");
-
-  let clases =
-    "border-blue-200 bg-blue-50 text-blue-700";
-
-  let punto =
-    "bg-blue-500";
-
-  if (positivo) {
-    clases =
-      "border-emerald-200 bg-emerald-50 text-emerald-700";
-
-    punto =
-      "bg-emerald-500";
-  }
-
-  if (cerrado) {
-    clases =
-      "border-slate-200 bg-slate-100 text-slate-600";
-
-    punto =
-      "bg-slate-500";
-  }
-
-  if (negativo) {
-    clases =
-      "border-red-200 bg-red-50 text-red-700";
-
-    punto =
-      "bg-red-500";
-  }
-
   return (
     <span
       className={`inline-flex
@@ -893,19 +850,9 @@ function EstadoBadge({
  py-1
  
  
- ${clases}`}
+ `}
     >
-      <span
-        className={`h-1.5
- w-1.5
- 
- ${punto}`}
-      />
-
-      <span className="truncate">
-        {texto}
       </span>
-    </span>
   );
 }
 
