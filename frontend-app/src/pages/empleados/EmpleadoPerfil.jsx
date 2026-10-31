@@ -801,19 +801,17 @@ export default function EmpleadoPerfil({
 
 
                 <span
-                  className={`
-                    px-2.5
-                    py-1
-                    rounded-lg
-                    text-xs
-                    font-semibold
-                    border
-                    ${
-                      empleado.activo
-                        ? ""
-                        : ""
-                    }
-                  `}
+                  className={`px-2.5
+ py-1
+ 
+ 
+ 
+ 
+ ${
+ empleado.activo
+ ? ""
+ : ""
+ }`}
                 >
                   {empleado.activo
                     ? "Activo"
@@ -938,22 +936,20 @@ export default function EmpleadoPerfil({
                 onClick={() =>
                   setTab(key)
                 }
-                className={`
-                  inline-flex
-                  items-center
-                  gap-2
-                  px-4
-                  py-2.5
-                  rounded-xl
-                  text-sm
-                  font-medium
-                  transition
-                  ${
-                    tab === key
-                      ? ""
-                      : ""
-                  }
-                `}
+                className={`inline-flex
+ items-center
+ gap-2
+ px-4
+ py-2.5
+ 
+ 
+ 
+ 
+ ${
+ tab === key
+ ? ""
+ : ""
+ }`}
               >
 
                 <span>
@@ -1588,19 +1584,17 @@ export default function EmpleadoPerfil({
 
 
             <span
-              className={`
-                px-3
-                py-1.5
-                rounded-lg
-                text-xs
-                font-semibold
-                border
-                ${
-                  empleado.activo
-                    ? ""
-                    : ""
-                }
-              `}
+              className={`px-3
+ py-1.5
+ 
+ 
+ 
+ 
+ ${
+ empleado.activo
+ ? ""
+ : ""
+ }`}
             >
               {empleado.activo
                 ? "Activo"
@@ -1921,16 +1915,11 @@ function Dato({
 
 
       <div
-        className={`
-          text-sm
-          font-medium
-          text-[var(--erp-text)]
-          ${
-            multiline
-              ? "whitespace-pre-wrap"
-              : ""
-          }
-        `}
+        className={`${
+ multiline
+ ? "whitespace-pre-wrap"
+ : ""
+ }`}
       >
 
         {value ||
