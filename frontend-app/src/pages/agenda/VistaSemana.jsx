@@ -1,6 +1,5 @@
 import React, { useMemo, useCallback } from "react";
 import { useAgendaStore } from "../../store/agendaStore";
-import "../../css/ComponentesCompartidosPremium.css";
 
 const DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 const HORAS = Array.from(
@@ -72,7 +71,7 @@ export default function VistaSemana({
 
   return (
     <div
-      className="agenda-vista-premium agenda-vista-semana-premium 
+      className="  
  grid grid-cols-[70px,repeat(7,minmax(0,1fr))]
  gap-1"
     >
