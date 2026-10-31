@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useSeguridad } from "../../hooks/useSeguridad";
 import ModalEmpleado from "../../components/empleados/ModalEmpleado";
 import { useAuthStore } from "../../store/authStore";
-import "../../css/ComponentesOperativosPremium.css";
 
 /**
  * Administración centralizada de visibilidad de tablas y asignaciones.
@@ -64,7 +63,7 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
   }
 
   return (
-    <div className="administracion-empleados-config-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <header className="p-6">
         <p className="uppercase">Utilidades · Administración de empleados</p>
         <h1 className="mt-2">{titulo}</h1>
