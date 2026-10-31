@@ -412,14 +412,9 @@ export default function SeguridadResumen({ empleadoId }) {
                     : "/no-foto.png"
                 }
                 alt="Foto empleado"
-                className="
-                  w-28 h-28
-                  rounded-2xl
-                  object-cover
-                  border
-                  border-[var(--erp-border)]
-                  shadow-sm
-                "
+                className="w-28 h-28
+ 
+ object-cover"
               />
 
             </div>
@@ -808,27 +803,18 @@ export default function SeguridadResumen({ empleadoId }) {
                   return (
                     <label
                       key={modulo}
-                      className="
-                        flex items-center justify-between
-                        gap-4
-                        p-3
-                        rounded-xl
-                        border
-                        border-[var(--erp-border)]
-                        bg-[var(--erp-surface-soft)]
-                        hover:bg-[var(--erp-primary-soft)]
-                        transition
-                        cursor-pointer
-                      "
+                      className="flex items-center justify-between
+ gap-4
+ p-3"
                     >
 
                       <div className="min-w-0">
 
-                        <div className="font-semibold text-[var(--erp-text)]">
+                        <div className="">
                           {modulo}
                         </div>
 
-                        <div className="text-xs text-[var(--erp-muted)] mt-0.5">
+                        <div className="mt-0.5">
                           {activo
                             ? "Visible para el usuario"
                             : "No visible para el usuario"}
@@ -844,12 +830,10 @@ export default function SeguridadResumen({ empleadoId }) {
                             modulo
                           )
                         }
-                        className="
-                          h-5 w-5
-                          accent-blue-600
-                          cursor-pointer
-                          shrink-0
-                        "
+                        className="h-5 w-5
+ accent-blue-600
+ 
+ shrink-0"
                       />
 
                     </label>
@@ -902,26 +886,19 @@ export default function SeguridadResumen({ empleadoId }) {
                     return (
                       <div
                         key={modulo}
-                        className="
-                          border
-                          border-[var(--erp-border)]
-                          rounded-2xl
-                          overflow-hidden
-                        "
+                        className="overflow-hidden"
                       >
 
-                        <div className="
-                          px-4 py-3
-                          bg-[var(--erp-surface-soft)]
-                          border-b
-                          border-[var(--erp-border)]
-                          flex
-                          items-center
-                          justify-between
-                          gap-3
-                        ">
+                        <div className="px-4 py-3
+ 
+ 
+ 
+ flex
+ items-center
+ justify-between
+ gap-3">
 
-                          <strong className="text-[var(--erp-text)]">
+                          <strong className="">
                             {modulo}
                           </strong>
 
@@ -956,19 +933,14 @@ export default function SeguridadResumen({ empleadoId }) {
                               return (
                                 <label
                                   key={`${modulo}-${permiso}`}
-                                  className="
-                                    flex
-                                    items-center
-                                    gap-3
-                                    rounded-xl
-                                    border
-                                    border-[var(--erp-border)]
-                                    px-3
-                                    py-2.5
-                                    cursor-pointer
-                                    hover:bg-[var(--erp-primary-soft)]
-                                    transition
-                                  "
+                                  className="flex
+ items-center
+ gap-3
+ 
+ 
+ 
+ px-3
+ py-2.5"
                                 >
 
                                   <input
@@ -980,19 +952,13 @@ export default function SeguridadResumen({ empleadoId }) {
                                         permiso
                                       )
                                     }
-                                    className="
-                                      h-4 w-4
-                                      accent-purple-600
-                                      cursor-pointer
-                                      shrink-0
-                                    "
+                                    className="h-4 w-4
+ accent-purple-600
+ 
+ shrink-0"
                                   />
 
-                                  <span className="
-                                    text-sm
-                                    text-[var(--erp-text)]
-                                    break-words
-                                  ">
+                                  <span className="break-words">
                                     {permiso}
                                   </span>
 
@@ -1067,7 +1033,7 @@ export default function SeguridadResumen({ empleadoId }) {
 
                         <div>
 
-                          <div className="font-semibold text-[var(--erp-text)]">
+                          <div className="">
                             {item.accion}
                           </div>
 
@@ -1089,12 +1055,12 @@ export default function SeguridadResumen({ empleadoId }) {
                       </div>
 
                       {item.descripcion && (
-                        <div className="text-sm text-[var(--erp-muted)] mt-2">
+                        <div className="mt-2">
                           {item.descripcion}
                         </div>
                       )}
 
-                      <div className="text-xs text-[var(--erp-muted)] mt-2">
+                      <div className="mt-2">
                         {item.fecha}
                       </div>
 
@@ -1162,7 +1128,7 @@ export default function SeguridadResumen({ empleadoId }) {
 
                         <div>
 
-                          <div className="font-semibold text-[var(--erp-text)]">
+                          <div className="">
                             {log.tipo}
                           </div>
 
@@ -1177,11 +1143,11 @@ export default function SeguridadResumen({ empleadoId }) {
 
                       </div>
 
-                      <div className="text-sm text-[var(--erp-muted)] mt-2 break-words">
+                      <div className="mt-2 break-words">
                         {log.mensaje}
                       </div>
 
-                      <div className="text-xs text-[var(--erp-muted)] mt-2">
+                      <div className="mt-2">
                         {log.fecha}
                       </div>
 
