@@ -5,7 +5,7 @@ const CAMPO = "block w-full px-3 py-2.5";
 
 function Metrica({ titulo, valor, detalle }) {
   return <div className="p-4">
-    <p className="">{titulo}</p>
+    <p>{titulo}</p>
     <p className="mt-1">{valor ?? "—"}</p>
     {detalle && <p className="mt-1">{detalle}</p>}
   </div>;
@@ -110,14 +110,14 @@ export default function ImportadorPostFirma() {
         <div className="flex items-start gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center">📦</div>
           <div>
-            <h1 className="">Importador ABSIS · Post Firma</h1>
+            <h1>Importador ABSIS · Post Firma</h1>
             <p className="mt-2 max-w-3xl">Carga histórica pura y aislada. Los ficheros de distintos meses permanecen separados y no se aplican a expedientes ni a los gastos operativos del ERP.</p>
           </div>
         </div>
       </header>
 
       <section className="p-5 md:p-6">
-        <h2 className="">1. Seleccionar Excel</h2>
+        <h2>1. Seleccionar Excel</h2>
         <p className="mt-1">Se conserva el contenido original de cada fila con datos y todas las columnas detectadas, incluida TIPOCONCEPTO cuando venga en el fichero.</p>
         <div className="mt-4 max-w-3xl">
           <label htmlFor="postfirma-excel" className="mb-2 block">Fichero histórico Post Firma (.xlsx)</label>
@@ -134,7 +134,7 @@ export default function ImportadorPostFirma() {
       </section>
 
       {validacion && <section className="space-y-4 p-5 md:p-6">
-        <div><h2 className="">2. Previsualización</h2><p className="mt-1">No se han guardado cambios.</p></div>
+        <div><h2>2. Previsualización</h2><p className="mt-1">No se han guardado cambios.</p></div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <Metrica titulo="Filas con datos" valor={validacion.filas_con_datos} detalle={"Filas Excel: " + (validacion.filas_excel ?? "—")} />
           <Metrica titulo="Filas vacías" valor={validacion.filas_vacias} />
@@ -146,7 +146,7 @@ export default function ImportadorPostFirma() {
       </section>}
 
       {resultado && <section className="space-y-4 p-5 md:p-6">
-        <div><h2 className="">Carga Post Firma guardada</h2><p className="mt-1">{resultado.nota}</p></div>
+        <div><h2>Carga Post Firma guardada</h2><p className="mt-1">{resultado.nota}</p></div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <Metrica titulo="Filas Excel" valor={resultado.filas_excel} />
           <Metrica titulo="Filas guardadas" valor={resultado.filas_guardadas} />
@@ -160,18 +160,18 @@ export default function ImportadorPostFirma() {
 
       <section id="historico-postfirma" className="space-y-4 p-5 md:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div><h2 className="">Histórico Post Firma · datos originales</h2><p className="mt-1">Consulta independiente por fichero. Las filas repetidas y los meses distintos se conservan por separado.</p></div>
+          <div><h2>Histórico Post Firma · datos originales</h2><p className="mt-1">Consulta independiente por fichero. Las filas repetidas y los meses distintos se conservan por separado.</p></div>
           <button type="button" onClick={() => { cargarCargas(); cargarRegistros(cargaSeleccionada, offset); }} className="px-3 py-2">↻ Actualizar</button>
         </div>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
           <div><label htmlFor="postfirma-carga" className="mb-2 block">Fichero / carga</label><select id="postfirma-carga" value={cargaSeleccionada} onChange={(e) => { setCargaSeleccionada(e.target.value); setOffset(0); }} className={CAMPO}><option value="">Todas las cargas</option>{cargas.map((carga) => <option key={carga.id} value={String(carga.id)}>{"#" + carga.id + " · " + carga.nombre_archivo + " · " + carga.filas_guardadas + " filas"}</option>)}</select></div>
-          <p className="">Registros: <strong className="">{totalRegistros.toLocaleString("es-ES")}</strong></p>
+          <p>Registros: <strong>{totalRegistros.toLocaleString("es-ES")}</strong></p>
         </div>
         <div className="overflow-auto"><table className="min-w-max w-full">
           <thead className="sticky top-0 z-10"><tr><th className="whitespace-nowrap px-3 py-3">Carga</th><th className="whitespace-nowrap px-3 py-3">Fila Excel</th>{columnas.map((columna) => <th key={columna} className="whitespace-nowrap px-3 py-3">{columna || "(columna sin título)"}</th>)}</tr></thead>
-          <tbody className="">{registros.map((fila) => <tr key={fila.id} className=""><td className="whitespace-nowrap px-3 py-2">{fila.archivo + " · #" + fila.carga_id}</td><td className="whitespace-nowrap px-3 py-2">{fila.numero_fila}</td>{columnas.map((columna) => { const valor = fila.datos?.[columna]; return <td key={columna} className="max-w-xs whitespace-nowrap px-3 py-2">{valor == null || valor === "" ? "—" : typeof valor === "object" ? JSON.stringify(valor) : String(valor)}</td>; })}</tr>)}{!registros.length && <tr><td colSpan={Math.max(2, columnas.length + 2)} className="px-4 py-8">Todavía no hay filas importadas en el histórico Post Firma.</td></tr>}</tbody>
+          <tbody>{registros.map((fila) => <tr key={fila.id}><td className="whitespace-nowrap px-3 py-2">{fila.archivo + " · #" + fila.carga_id}</td><td className="whitespace-nowrap px-3 py-2">{fila.numero_fila}</td>{columnas.map((columna) => { const valor = fila.datos?.[columna]; return <td key={columna} className="max-w-xs whitespace-nowrap px-3 py-2">{valor == null || valor === "" ? "—" : typeof valor === "object" ? JSON.stringify(valor) : String(valor)}</td>; })}</tr>)}{!registros.length && <tr><td colSpan={Math.max(2, columnas.length + 2)} className="px-4 py-8">Todavía no hay filas importadas en el histórico Post Firma.</td></tr>}</tbody>
         </table></div>
-        <div className="flex flex-wrap items-center justify-between gap-3"><p className="">Mostrando {registros.length ? offset + 1 : 0}–{Math.min(offset + registros.length, totalRegistros)} de {totalRegistros.toLocaleString("es-ES")}</p><div className="flex gap-2"><button type="button" disabled={offset <= 0} onClick={() => setOffset((v) => Math.max(0, v - TAMANO_PAGINA))} className="px-3 py-2">← Anterior</button><button type="button" disabled={offset + TAMANO_PAGINA >= totalRegistros} onClick={() => setOffset((v) => v + TAMANO_PAGINA)} className="px-3 py-2">Siguiente →</button></div></div>
+        <div className="flex flex-wrap items-center justify-between gap-3"><p>Mostrando {registros.length ? offset + 1 : 0}–{Math.min(offset + registros.length, totalRegistros)} de {totalRegistros.toLocaleString("es-ES")}</p><div className="flex gap-2"><button type="button" disabled={offset <= 0} onClick={() => setOffset((v) => Math.max(0, v - TAMANO_PAGINA))} className="px-3 py-2">← Anterior</button><button type="button" disabled={offset + TAMANO_PAGINA >= totalRegistros} onClick={() => setOffset((v) => v + TAMANO_PAGINA)} className="px-3 py-2">Siguiente →</button></div></div>
       </section>
     </main>
   );
