@@ -55,7 +55,7 @@ export default function FichajesResumen({ recargar }) {
     }
   };
 
-  return <section className="fichajes-premium-page fichajes-resumen-premium grid grid-cols-1 gap-4 md:grid-cols-3">
+  return <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
     <article className="p-5">
       <p className="">Horas trabajadas · {horas?.anio || new Date().getFullYear()}</p>
       <p className="mt-2">{horas?.horas_trabajadas ?? "—"} h</p>
