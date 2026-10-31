@@ -668,3 +668,28 @@ header.ag-hero.ng-hero-apoderagest,
     padding-left: 14px !important;
   }
 }
+
+
+/* EncargaGest coloca su hero como hermano de .eg-main: alcance explícito. */
+.erp-main-inner header.ag-hero.eg-hero {
+  position: relative !important;
+  isolation: isolate;
+  border-bottom-color: var(--molsan-module-accent-border) !important;
+  box-shadow: inset 3px 0 0 var(--molsan-module-accent) !important;
+  background: radial-gradient(ellipse at 0% 0%, var(--molsan-module-accent-glow), transparent 54%) !important;
+  padding-left: 18px !important;
+}
+.erp-main-inner header.ag-hero.eg-hero .ag-marca {
+  color: var(--molsan-module-accent) !important;
+  background: linear-gradient(145deg,#fff 8%,var(--molsan-module-accent-soft) 100%) !important;
+  border: 1px solid var(--molsan-module-accent-border) !important;
+  box-shadow: 0 7px 18px var(--molsan-module-accent-glow) !important;
+}
+.erp-main-inner header.ag-hero.eg-hero .ag-eyebrow { color: var(--molsan-module-accent) !important; }
+.erp-main-inner header.ag-hero.eg-hero .ag-boton-actualizar {
+  border-color: var(--molsan-module-accent) !important;
+  box-shadow: 0 4px 12px var(--molsan-module-accent-glow);
+}
+@media (max-width:700px) {
+  .erp-main-inner header.ag-hero.eg-hero { padding-left:14px !important; }
+}
