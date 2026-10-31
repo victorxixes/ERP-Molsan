@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "../../api/axios";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
-import "./ProvisionesFondosPage.css";
-import "../../css/ModalesHerramientasPremium.css";
 
 const hoy = () => new Date().toISOString().slice(0, 10);
 const dinero = (v) => new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(v || 0));
