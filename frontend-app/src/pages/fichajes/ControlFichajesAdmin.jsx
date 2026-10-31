@@ -171,7 +171,7 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
   return <div className="w-full min-w-0">
     <section className="mb-5 p-4">
       <h2>Asignación anual de vacaciones</h2><p className="mt-1">Configura los días iniciales de cada empleado; las solicitudes aprobadas descuentan el saldo.</p>
-      <form className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" onSubmit={async (e) => { e.preventDefault(); setGuardando(true); setError(""); setMensaje(""); try { const d = new FormData(); d.append("empleado_id", empleadoBolsaId); d.append("anio", anioBolsa); d.append("dias_asignados", diasBolsa); await axios.post("/fichajes/admin/vacaciones-bolsa", d); setMensaje("Bolsa anual de vacaciones guardada."); } catch (err) { setError(err?.response?.data?.detail || "No se pudo guardar la bolsa de vacaciones."); } finally { setGuardando(false); } }}>
+      <form className="molsan-form molsan-form-grid mt-3" onSubmit={async (e) => { e.preventDefault(); setGuardando(true); setError(""); setMensaje(""); try { const d = new FormData(); d.append("empleado_id", empleadoBolsaId); d.append("anio", anioBolsa); d.append("dias_asignados", diasBolsa); await axios.post("/fichajes/admin/vacaciones-bolsa", d); setMensaje("Bolsa anual de vacaciones guardada."); } catch (err) { setError(err?.response?.data?.detail || "No se pudo guardar la bolsa de vacaciones."); } finally { setGuardando(false); } }}>
         <label className={label}>Empleado<select required value={empleadoBolsaId} onChange={(e) => setEmpleadoBolsaId(e.target.value)} className={input}><option value="">Selecciona empleado…</option>{empleados.map((e) => <option key={e.id} value={e.id}>{e.nombre}</option>)}</select></label>
         <label className={label}>Año<input required type="number" min="2000" max="2100" value={anioBolsa} onChange={(e) => setAnioBolsa(e.target.value)} className={input} /></label>
         <label className={label}>Días asignados<input required type="number" min="0" max="60" value={diasBolsa} onChange={(e) => setDiasBolsa(e.target.value)} className={input} /></label>
@@ -179,7 +179,7 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
       </form>
     </section>
 
-    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="molsan-filter-bar">
       <label className={label}>Desde<input type="date" value={desde} onChange={(e) => setDesde(e.target.value)} className={input} /></label>
       <label className={label}>Hasta<input type="date" min={desde} value={hasta} onChange={(e) => setHasta(e.target.value)} className={input} /></label>
       <label className={label}>Empleado<select value={empleadoId} onChange={(e) => setEmpleadoId(e.target.value)} className={input}><option value="">Toda la plantilla</option>{empleados.map((e) => <option key={e.id} value={e.id}>{e.nombre}</option>)}</select></label>
@@ -193,7 +193,7 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
     <section className="mt-5 p-4">
       <div className="flex flex-wrap items-center justify-between gap-2"><div><h3>Cierre y protección de periodos</h3><p className="mt-1">Mes seleccionado: {desde ? desde.slice(5,7) + "/" + desde.slice(0,4) : "—"} · {periodo?.cerrado ? "CERRADO" : "Abierto"}</p></div>{periodo?.cerrado && <span className="px-3 py-1.5">Periodo cerrado</span>}</div>
       <p className="mt-1">Los meses cerrados bloquean las altas y correcciones. Reabrirlos requiere un motivo que queda registrado.</p>
-      <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto_auto]"><label className={label}>Motivo obligatorio<input value={motivoPeriodo} onChange={(e) => setMotivoPeriodo(e.target.value)} placeholder="Ej. nómina procesada…" className={input} /></label><button type="button" disabled={guardando || !!periodo?.cerrado} onClick={() => cambiarPeriodo(true)} className="self-end px-4 py-3">Cerrar mes</button><button type="button" disabled={guardando || !periodo?.cerrado} onClick={() => cambiarPeriodo(false)} className="self-end px-4 py-3">Reabrir mes</button></div>
+      <div className="molsan-form-grid mt-3"><label className={label}>Motivo obligatorio<input value={motivoPeriodo} onChange={(e) => setMotivoPeriodo(e.target.value)} placeholder="Ej. nómina procesada…" className={input} /></label><button type="button" disabled={guardando || !!periodo?.cerrado} onClick={() => cambiarPeriodo(true)} className="self-end px-4 py-3">Cerrar mes</button><button type="button" disabled={guardando || !periodo?.cerrado} onClick={() => cambiarPeriodo(false)} className="self-end px-4 py-3">Reabrir mes</button></div>
       <div className="mt-3 flex flex-wrap gap-2">{periodos.filter((p) => p.cerrado).map((p) => <span key={p.anio + "-" + p.mes} className="px-3 py-1.5">{PAD(p.mes)}/{p.anio} · Cerrado</span>)}</div>
     </section>
 
