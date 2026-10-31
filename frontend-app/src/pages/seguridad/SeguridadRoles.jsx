@@ -8,7 +8,7 @@ import { useSeguridad } from "../../hooks/useSeguridad";
 
 /**
  * ============================================================
- * SEGURIDAD ROLES — MOLSAN ERP SAAS PREMIUM 2027
+ * SEGURIDAD ROLES
  * ============================================================
  *
  * - No realiza cargarTodo()
@@ -596,7 +596,7 @@ export default function SeguridadRoles() {
 
   return (
     <div
-      className="seguridad-subpagina-premium seguridad-roles-premium w-full space-y-4"
+      className="w-full space-y-4"
     >
 
       {/* CABECERA */}
