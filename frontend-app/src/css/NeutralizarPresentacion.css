@@ -1905,9 +1905,9 @@ body {
 #root main form input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
 #root main form select,
 #root main form textarea,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) form input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) form select,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) form textarea {
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form select,
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form textarea {
   box-sizing: border-box;
   min-height: var(--molsan-control-height);
   color: var(--molsan-text);
@@ -1921,9 +1921,9 @@ body {
 #root main form input:focus,
 #root main form select:focus,
 #root main form textarea:focus,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) form input:focus,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) form select:focus,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) form textarea:focus {
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form input:focus,
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form select:focus,
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form textarea:focus {
   border-color: var(--molsan-blue);
   outline: none;
   box-shadow: var(--molsan-focus-ring);
@@ -1931,9 +1931,9 @@ body {
 #root main form input:disabled,
 #root main form select:disabled,
 #root main form textarea:disabled,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) form input:disabled,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) form select:disabled,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) form textarea:disabled {
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form input:disabled,
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form select:disabled,
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form textarea:disabled {
   color: var(--molsan-muted);
   background: var(--molsan-panel);
   cursor: not-allowed;
@@ -1942,7 +1942,7 @@ body {
 /* Botones de trabajo: identidad única y jerarquía discreta.
    Se preservan colores semánticos de estados y botones de Sidebar. */
 #root main button:not([data-unstyled="true"]),
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) button:not([data-unstyled="true"]) {
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) button:not([data-unstyled="true"]) {
   border-radius: var(--molsan-radius-control);
   transition: background-color var(--molsan-transition-fast),
               border-color var(--molsan-transition-fast),
@@ -1950,19 +1950,19 @@ body {
               color var(--molsan-transition-fast);
 }
 #root main button:focus-visible,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) button:focus-visible {
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) button:focus-visible {
   outline: none;
   box-shadow: var(--molsan-focus-ring);
 }
 #root main button:disabled,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) button:disabled {
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) button:disabled {
   cursor: not-allowed;
 }
 
 /* Tablas heredadas: superficie, cabecera, separadores y lectura
    homogéneos. No se añade ordenación visual ficticia. */
 #root main table,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) table {
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
@@ -1971,7 +1971,7 @@ body {
   font-variant-numeric: tabular-nums;
 }
 #root main table thead th,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) table thead th {
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table thead th {
   color: var(--molsan-blue);
   background: var(--molsan-table-head);
   border-bottom: 1px solid var(--molsan-border);
@@ -1982,42 +1982,42 @@ body {
   vertical-align: middle;
 }
 #root main table tbody td,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) table tbody td {
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table tbody td {
   border-bottom: 1px solid rgba(216,228,236,.78);
   vertical-align: middle;
 }
 #root main table tbody tr,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) table tbody tr {
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table tbody tr {
   background: #fff;
   transition: background-color var(--molsan-transition-fast);
 }
 #root main table tbody tr:hover,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) table tbody tr:hover {
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table tbody tr:hover {
   background: rgba(242,247,251,.78);
 }
 #root main table tbody tr:last-child td,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) table tbody tr:last-child td {
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table tbody tr:last-child td {
   border-bottom-color: transparent;
 }
 
 /* Diálogos y paneles heredados de los portales operativos. */
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]),
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]),
 #root .panel-modal-premium,
 #root .ng-modal {
   color: var(--molsan-text);
 }
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) > header,
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) > header,
 #root .ng-modal > header {
   color: var(--molsan-blue);
   border-bottom: 1px solid var(--molsan-border);
 }
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) h1,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) h2,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) h3 {
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) h1,
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) h2,
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) h3 {
   color: var(--molsan-blue);
 }
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) section,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) article {
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) section,
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) article {
   border-color: var(--molsan-border);
 }
 
@@ -2042,8 +2042,8 @@ body {
 }
 #root main table th,
 #root main table td,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) table th,
-#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) table td {
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table th,
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table td {
   overflow-wrap: anywhere;
 }
 
@@ -2051,12 +2051,12 @@ body {
   #root main form input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
   #root main form select,
   #root main form textarea,
-  #root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) form input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
-  #root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) form select,
-  #root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) form textarea {
+  #root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  #root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form select,
+  #root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) form textarea {
     max-width: 100%;
   }
-  #root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) {
+  #root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) {
     max-width: calc(100vw - 20px);
   }
 }
@@ -2067,8 +2067,8 @@ body {
   #root main form textarea,
   #root main button,
   #root main table tbody tr,
-  #root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) button,
-  #root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) table tbody tr {
+  #root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) button,
+  #root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table tbody tr {
     transition: none;
   }
 }
@@ -2082,7 +2082,7 @@ body {
 
 /* Campos de edición y filtros, estén o no dentro de un <form>. */
 #root main :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not([type="color"]), select, textarea),
-body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not([type="color"]), select, textarea) {
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not([type="color"]), select, textarea) {
   box-sizing: border-box;
   max-width: 100%;
   color: var(--molsan-text);
@@ -2095,20 +2095,20 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
 }
 
 #root main :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not([type="color"]), select, textarea):focus,
-body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not([type="color"]), select, textarea):focus {
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not([type="color"]), select, textarea):focus {
   border-color: var(--molsan-blue);
   outline: none;
   box-shadow: var(--molsan-focus-ring);
 }
 
 #root main :is(input, select, textarea)::placeholder,
-body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) :is(input, textarea)::placeholder {
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) :is(input, textarea)::placeholder {
   color: #8195a5;
   opacity: 1;
 }
 
 #root main :is(input, select, textarea):disabled,
-body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) :is(input, select, textarea):disabled {
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) :is(input, select, textarea):disabled {
   color: var(--molsan-muted);
   background: var(--molsan-panel);
   cursor: not-allowed;
@@ -2117,7 +2117,7 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
 /* Botones operativos: misma geometría, foco y respuesta sin borrar
    variantes funcionales (primario, secundario, éxito, aviso o peligro). */
 #root main button,
-body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) button {
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) button {
   font-family: inherit;
   border-radius: var(--molsan-radius-control);
   transition: background-color var(--molsan-transition-fast),
@@ -2128,37 +2128,37 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
 }
 
 #root main button:focus-visible,
-body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) button:focus-visible {
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) button:focus-visible {
   outline: none;
   box-shadow: var(--molsan-focus-ring);
 }
 
 #root main button:disabled,
-body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) button:disabled {
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) button:disabled {
   cursor: not-allowed;
 }
 
 /* Jerarquía tipográfica compartida en el contenido de trabajo.
    No fuerza tamaños ni colores a indicadores semánticos de estado. */
 #root main :is(h1, h2, h3),
-body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) :is(h1, h2, h3) {
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) :is(h1, h2, h3) {
   color: var(--molsan-blue);
   text-wrap: balance;
 }
 
 #root main :is(p, small, label),
-body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) :is(p, small, label) {
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) :is(p, small, label) {
   line-height: var(--molsan-line-height);
 }
 
 /* Los diálogos renderizados con createPortal suelen quedar fuera de
    #root; se les aplica la misma tipografía, campos, tablas y foco. */
-body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) {
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) {
   color: var(--molsan-text);
   font-family: var(--molsan-font-family);
 }
 
-body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) table {
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
@@ -2167,7 +2167,7 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
   font-variant-numeric: tabular-nums;
 }
 
-body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) table thead th {
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table thead th {
   color: var(--molsan-blue);
   background: var(--molsan-table-head);
   border-bottom: 1px solid var(--molsan-border);
@@ -2176,25 +2176,25 @@ body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.pane
   text-align: left;
 }
 
-body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) table tbody td {
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table tbody td {
   border-bottom: 1px solid rgba(216,228,236,.78);
   vertical-align: middle;
 }
 
-body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) table tbody tr:hover {
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table tbody tr:hover {
   background: rgba(242,247,251,.78);
 }
 
 @media (max-width: 720px) {
   #root main :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]), select, textarea),
-  body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]), select, textarea) {
+  body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]), select, textarea) {
     max-width: 100%;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   #root main :is(input, select, textarea, button),
-  body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium [role="dialog"]) :is(input, select, textarea, button) {
+  body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) :is(input, select, textarea, button) {
     transition: none;
   }
 }
