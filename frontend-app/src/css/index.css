@@ -1,1 +1,29 @@
 @import "tailwindcss";
+
+/* Tailwind 4: utilidades corporativas respaldadas por los tokens centrales. */
+@theme inline {
+  --color-molsan-blue: var(--molsan-blue);
+  --color-molsan-blue-hover: var(--molsan-blue-hover);
+  --color-molsan-panel: var(--molsan-panel);
+  --color-molsan-table-head: var(--molsan-table-head);
+  --color-molsan-text: var(--molsan-text);
+  --color-molsan-muted: var(--molsan-muted);
+  --color-molsan-border: var(--molsan-border);
+  --color-molsan-success: var(--molsan-success);
+  --color-molsan-warning: var(--molsan-warning);
+  --color-molsan-danger: var(--molsan-danger);
+  --font-sans: var(--molsan-font-family);
+  --radius-molsan-control: var(--molsan-radius-control);
+  --radius-molsan-card: var(--molsan-radius-card);
+  --radius-molsan-modal: var(--molsan-radius-modal);
+  --shadow-molsan-card: var(--molsan-shadow-card);
+  --shadow-molsan-popover: var(--molsan-shadow-popover);
+  --shadow-molsan-modal: var(--molsan-shadow-modal);
+  --spacing-molsan-1: var(--molsan-space-1);
+  --spacing-molsan-2: var(--molsan-space-2);
+  --spacing-molsan-3: var(--molsan-space-3);
+  --spacing-molsan-4: var(--molsan-space-4);
+  --spacing-molsan-5: var(--molsan-space-5);
+  --spacing-molsan-6: var(--molsan-space-6);
+  --spacing-molsan-8: var(--molsan-space-8);
+}
