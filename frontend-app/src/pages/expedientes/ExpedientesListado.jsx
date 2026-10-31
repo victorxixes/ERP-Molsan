@@ -2489,7 +2489,7 @@ export default function ExpedientesListado() {
                   setColumnasVisibles(COLUMNAS_POR_DEFECTO);
                   setPagina(1);
                 }}
-                className="p-4 hover:-translate-y-0.5"
+                className="p-4"
                               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-3">
@@ -2546,7 +2546,7 @@ export default function ExpedientesListado() {
                   setColumnasVisibles(COLUMNAS_POR_DEFECTO);
                   setPagina(1);
                 }}
-                className="min-h-[116px] p-4 hover:-translate-y-0.5"
+                className="min-h-[116px] p-4"
                               >
                 <div className="flex items-start justify-between gap-3">
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center" {estado.icono}</span>
@@ -2567,7 +2567,7 @@ export default function ExpedientesListado() {
         <button
           type="button"
           onClick={() => setMostrarAyudaControlPlazos(true)}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 hover:-translate-y-0.5"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5"
                   >
           📌 Ver Control de plazos
         </button>
@@ -2603,7 +2603,7 @@ export default function ExpedientesListado() {
                 setFiltroActividad(activa ? "" : valorBackend);
                 setFiltrosAplicados((actual) => ({ ...actual, actividad: activa ? "" : valorBackend })); setPagina(1);
               }}
-              className="min-h-[148px] p-4 hover:-translate-y-0.5"
+              className="min-h-[148px] p-4"
               
               <div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center" {actividad.icono}</span><span className="tabular-nums" {loadingActividades ? "…" : formatearNumero(total)}</span></div>
               <div className="mt-3">{actividad.label}</div>
@@ -2611,7 +2611,7 @@ export default function ExpedientesListado() {
                 {loadingAlertasControl ? (
                   <span className="inline-flex items-center px-2.5 py-1" Calculando plazos…</span>
                 ) : reglaPlazo ? (
-                  <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold ${cantidadPlazo > 0 ? "" : ""}`}>
+                  <span className={`inline-flex items-center px-2.5 py-1 ${cantidadPlazo > 0 ? "" : ""}`}>
                     {cantidadPlazo > 0 ? "⚠ " : "✓ "}{reglaPlazo.etiqueta(formatearNumero(cantidadPlazo))}
                   </span>
                 ) : (
@@ -2645,7 +2645,7 @@ export default function ExpedientesListado() {
           }}
         >
           <div className="relative min-w-0 flex-1">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true">🔎</span>
+            <span className="absolute left-3 top-1/2" aria-hidden="true">🔎</span>
             <input
               type="search"
               value={busquedaRapida}
