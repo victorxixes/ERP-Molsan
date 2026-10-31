@@ -218,11 +218,11 @@ export default function CatalogoAbsis() {
             <thead className="uppercase"><tr>
               <th className="px-5 py-3">Código</th><th className="px-5 py-3">Valor</th><th className="px-5 py-3">Descripción</th><th className="px-5 py-3">Estado</th><th className="px-5 py-3">Acciones</th>
             </tr></thead>
-            <tbody className="divide-y divide-slate-100">{visibles.map((fila) => <tr key={fila.id} className="">
+            <tbody className="">{visibles.map((fila) => <tr key={fila.id} className="">
               <td className="whitespace-nowrap px-5 py-3">{fila.codigo || "—"}</td>
               <td className="px-5 py-3">{fila.valor || "—"}</td>
               <td className="max-w-xl px-5 py-3">{fila.descripcion || "—"}</td>
-              <td className="px-5 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${fila.activo ? "" : ""}`}>{fila.activo ? "Activo" : "Inactivo"}</span></td>
+              <td className="px-5 py-3"><span className={`px-2.5 py-1 ${fila.activo ? "" : ""}`}>{fila.activo ? "Activo" : "Inactivo"}</span></td>
               <td className="whitespace-nowrap px-5 py-3"><button type="button" onClick={() => abrirEdicion(fila)} className="px-2 py-1.5">Editar</button><button type="button" onClick={() => eliminar(fila)} className="ml-1 px-2 py-1.5">Eliminar</button></td>
             </tr>)}</tbody>
           </table></div>
