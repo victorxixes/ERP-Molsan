@@ -222,7 +222,7 @@ export default function CtnDetallePage() {
         {asociadas.length === 0 ? <p>No hay notarios asociados.</p> : (
           <div className="ctn-detalle-table-wrap">
             <table className="ctn-detalle-table">
-              <thead><tr><MolsanSortableTh label="Notario" sortKey="nombre_completo" sortConfig={ordenAsociadas.sortConfig} onSort={ordenAsociadas.requestSort} className="ctn-detalle-th" /><MolsanSortableTh label="NIF" sortKey="nif" sortConfig={ordenAsociadas.sortConfig} onSort={ordenAsociadas.requestSort} className="ctn-detalle-th" /><MolsanSortableTh label="Municipio" sortKey="municipio" sortConfig={ordenAsociadas.sortConfig} onSort={ordenAsociadas.requestSort} className="ctn-detalle-th" /><th className="ctn-detalle-th">Acción</th></tr></thead>
+              <thead><tr><MolsanSortableTh label="Notario" sortKey="nombre" sortConfig={ordenAsociadas.sortConfig} onSort={ordenAsociadas.requestSort} className="ctn-detalle-th" /><MolsanSortableTh label="NIF" sortKey="nif" sortConfig={ordenAsociadas.sortConfig} onSort={ordenAsociadas.requestSort} className="ctn-detalle-th" /><MolsanSortableTh label="Municipio" sortKey="municipio" sortConfig={ordenAsociadas.sortConfig} onSort={ordenAsociadas.requestSort} className="ctn-detalle-th" /><th className="ctn-detalle-th">Acción</th></tr></thead>
               <tbody>
                 {ordenAsociadas.items.map((n) => (
                   <tr key={n.id}>
