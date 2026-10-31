@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 const ACTIVIDADES = [
   "Documentación previa",
@@ -61,23 +62,11 @@ export default function CambiosActividadAbsis() {
   const fechaHoy = (fecha) => fecha || "—";
 
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden p-6">
-        <div className="absolute inset-x-0 top-0 h-1" />
-        <Link to="/herramientas/utilidades">← Volver a Utilidades</Link>
-        <div className="mt-3 flex flex-wrap items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center">🔀</div>
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1>Cambios de actividad ABSIS</h1>
-              <span className="px-2.5 py-1 uppercase">Demostración · datos ficticios</span>
-            </div>
-            <p className="mt-2 max-w-4xl">Busca un expediente, selecciona la actividad de destino y registra la solicitud. La conexión y la confirmación de ABSIS se implementarán más adelante por informática.</p>
-          </div>
-        </div>
-      </header>
+    <main className="erp-page min-w-0 space-y-6">
+      <MolsanPageHeader mark="AB" title="Cambios de actividad ABSIS" description="Demostración de búsqueda y solicitud de cambio de actividad. No modifica datos reales ni conecta con ABSIS." />
+      <div className="molsan-filter-bar flex flex-wrap items-center justify-between gap-3 p-3"><Link to="/herramientas/utilidades" className="molsan-btn molsan-btn--secondary">← Volver a Utilidades</Link><span className="molsan-status-pill">Demostración · datos ficticios</span></div>
 
-      <section className="p-5 sm:p-6">
+      <section className="erp-card p-5 sm:p-6">
         <h2>1. Buscar expediente</h2>
         <p className="mt-1">Busca por número de expediente, solicitante, NIF o contrato. Los resultados que aparecen ahora son de ejemplo.</p>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row">
@@ -96,7 +85,7 @@ export default function CambiosActividadAbsis() {
       </section>
 
       {seleccionado && (
-        <section className="overflow-hidden">
+        <section className="erp-card overflow-hidden">
           <div className="p-5">
             <h2>2. Revisar y solicitar cambio de actividad</h2>
             <p className="mt-1">Revisa los datos del expediente y selecciona la nueva actividad antes de enviar la solicitud de demostración.</p>
