@@ -47,7 +47,7 @@ const MODULOS = {
     estilo: "mg",
   },
   fichajes: {
-    nombre: "Fichaje Molsan",
+    nombre: "Fichajes",
     descripcion: "Registra tu jornada, pausas, ausencias y consulta tu calendario y justificantes.",
     ruta: "/fichajes",
     siglas: "FI",
@@ -227,7 +227,7 @@ export default function ModulosSelector() {
   }
 
   return (
-    <main className="selector-modulos-premium herramientas-subpagina-premium relative isolate min-h-[calc(100vh-110px)] overflow-hidden px-5 py-8 sm:px-8 sm:py-10">
+    <main className="selector-modulos-premium relative isolate min-h-[calc(100vh-110px)] overflow-hidden px-5 py-8 sm:px-8 sm:py-10">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -right-24 -top-28 -z-10 h-80 w-80"
