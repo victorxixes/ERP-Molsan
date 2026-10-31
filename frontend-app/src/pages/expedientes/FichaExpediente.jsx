@@ -4,6 +4,8 @@ import { createPortal } from "react-dom";
 import { Link, useParams } from "react-router-dom";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 import axios from "../../api/axios";
 
 import { obtenerExpediente, obtenerListadoExpedientes, enviarExpedienteANotario } from "../../api/expedientes";
@@ -1648,6 +1650,8 @@ export default function FichaExpediente() {
   const [contextoEmail, setContextoEmail] = useState({});
   const [cargandoPlantillasEmail, setCargandoPlantillasEmail] = useState(false);
   const [historicoReclamaciones, setHistoricoReclamaciones] = useState([]);
+  const ordenMovimientosConfirmados = useSortableData(resumenEconomico.movimientos);
+  const ordenHistoricoReclamaciones = useSortableData(historicoReclamaciones);
   const [cargandoHistoricoReclamaciones, setCargandoHistoricoReclamaciones] = useState(false);
   const [enviandoReclamacion, setEnviandoReclamacion] = useState(false);
   const [errorReclamacion, setErrorReclamacion] = useState("");
@@ -7119,15 +7123,15 @@ const cuantiaFincasParaEnvio =
                               <table className="w-full min-w-[980px] table-auto">
                                 <thead className="uppercase">
                                   <tr>
-                                    <th className="w-[190px] px-5 py-4">N.º documento</th>
-                                    <th className="w-[170px] px-5 py-4">Fecha de pago</th>
-                                    <th className="px-5 py-4">Concepto</th>
-                                    <th className="w-[180px] px-5 py-4">Importe</th>
-                                    <th className="w-[190px] px-5 py-4">Saldo real</th>
+                                    <MolsanSortableTh label="N.º documento" sortKey="numero_documento" sortConfig={ordenMovimientosConfirmados.sortConfig} onSort={ordenMovimientosConfirmados.requestSort} className="w-[190px] px-5 py-4" />
+                                    <MolsanSortableTh label="Fecha de pago" sortKey="fecha" sortConfig={ordenMovimientosConfirmados.sortConfig} onSort={ordenMovimientosConfirmados.requestSort} className="w-[170px] px-5 py-4" />
+                                    <MolsanSortableTh label="Concepto" sortKey="descripcion" sortConfig={ordenMovimientosConfirmados.sortConfig} onSort={ordenMovimientosConfirmados.requestSort} className="px-5 py-4" />
+                                    <MolsanSortableTh label="Importe" sortKey="importeMovimiento" sortConfig={ordenMovimientosConfirmados.sortConfig} onSort={ordenMovimientosConfirmados.requestSort} className="w-[180px] px-5 py-4" />
+                                    <MolsanSortableTh label="Saldo real" sortKey="saldoCalculado" sortConfig={ordenMovimientosConfirmados.sortConfig} onSort={ordenMovimientosConfirmados.requestSort} className="w-[190px] px-5 py-4" />
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {resumenEconomico.movimientos.map((movimiento, indice) => (
+                                  {ordenMovimientosConfirmados.items.map((movimiento, indice) => (
                                     <tr key={movimiento.id} className={`${indice % 2 === 1 ? "" : ""}`}>
                                       <td className="whitespace-nowrap px-5 py-4">{movimiento.numero_documento || `PAG-${String(movimiento.id).padStart(6, "0")}`}</td>
                                       <td className="whitespace-nowrap px-5 py-4">{movimiento.fecha ? formatearFecha(movimiento.fecha) : "—"}</td>
@@ -7365,8 +7369,8 @@ const cuantiaFincasParaEnvio =
             {cargandoHistoricoReclamaciones ? <p className="p-4">Cargando histórico…</p> : historicoReclamaciones.length === 0 ? <p className="p-4">Todavía no hay correos registrados.</p> : (
               <div className="max-h-64 overflow-auto">
                 <table className="w-full min-w-[700px]">
-                  <thead className="sticky top-0"><tr><th className="px-3 py-2">Fecha</th><th className="px-3 py-2">Tipo / plantilla</th><th className="px-3 py-2">Para</th><th className="px-3 py-2">Asunto</th><th className="px-3 py-2">Estado</th><th className="px-3 py-2">Gestor</th></tr></thead>
-                  <tbody>{historicoReclamaciones.map((item) => <tr key={item.id} className="align-top"><td className="whitespace-nowrap px-3 py-2">{item.creado_en ? new Date(item.creado_en).toLocaleString("es-ES") : "—"}</td><td className="px-3 py-2">{item.categoria || "—"}<p>{item.plantilla_nombre || "Plantilla manual/anterior"}</p></td><td className="px-3 py-2">{item.destinatario}{item.cc && <p>CC: {item.cc}</p>}</td><td className="max-w-xs px-3 py-2">{item.asunto}</td><td className="px-3 py-2"><span className={item.estado === "enviado" ? "" : ""}>{item.estado === "enviado" ? "Enviado" : "Error"}</span>{item.detalle && <p className="mt-1 max-w-xs">{item.detalle}</p>}</td><td className="px-3 py-2">{item.enviado_por || "—"}</td></tr>)}</tbody>
+                  <thead className="sticky top-0"><tr><MolsanSortableTh label="Fecha" sortKey="creado_en" sortConfig={ordenHistoricoReclamaciones.sortConfig} onSort={ordenHistoricoReclamaciones.requestSort} className="px-3 py-2" /><MolsanSortableTh label="Tipo / plantilla" sortKey="categoria" sortConfig={ordenHistoricoReclamaciones.sortConfig} onSort={ordenHistoricoReclamaciones.requestSort} className="px-3 py-2" /><MolsanSortableTh label="Para" sortKey="destinatario" sortConfig={ordenHistoricoReclamaciones.sortConfig} onSort={ordenHistoricoReclamaciones.requestSort} className="px-3 py-2" /><MolsanSortableTh label="Asunto" sortKey="asunto" sortConfig={ordenHistoricoReclamaciones.sortConfig} onSort={ordenHistoricoReclamaciones.requestSort} className="px-3 py-2" /><MolsanSortableTh label="Estado" sortKey="estado" sortConfig={ordenHistoricoReclamaciones.sortConfig} onSort={ordenHistoricoReclamaciones.requestSort} className="px-3 py-2" /><MolsanSortableTh label="Gestor" sortKey="enviado_por" sortConfig={ordenHistoricoReclamaciones.sortConfig} onSort={ordenHistoricoReclamaciones.requestSort} className="px-3 py-2" /></tr></thead>
+                  <tbody>{ordenHistoricoReclamaciones.items.map((item) => <tr key={item.id} className="align-top"><td className="whitespace-nowrap px-3 py-2">{item.creado_en ? new Date(item.creado_en).toLocaleString("es-ES") : "—"}</td><td className="px-3 py-2">{item.categoria || "—"}<p>{item.plantilla_nombre || "Plantilla manual/anterior"}</p></td><td className="px-3 py-2">{item.destinatario}{item.cc && <p>CC: {item.cc}</p>}</td><td className="max-w-xs px-3 py-2">{item.asunto}</td><td className="px-3 py-2"><span className={item.estado === "enviado" ? "" : ""}>{item.estado === "enviado" ? "Enviado" : "Error"}</span>{item.detalle && <p className="mt-1 max-w-xs">{item.detalle}</p>}</td><td className="px-3 py-2">{item.enviado_por || "—"}</td></tr>)}</tbody>
                 </table>
               </div>
             )}
