@@ -6,6 +6,8 @@ import { API_BASE } from "../../api/config";
 import Chart from "chart.js/auto";
 import SelectSJ from "../../components/ui/SelectSJ";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 const MESES = [
   { value: 1, label: "Enero" },
@@ -2479,6 +2481,8 @@ function InformeFirmas() {
   const periodo = `${fechaInformeVisible(aplicados.fecha_desde)} – ${fechaInformeVisible(aplicados.fecha_hasta)}`;
   const resumen = datos.resumen || {};
   const filas = datos.items || [];
+  const ordenTiposOperacion = useSortableData(datos.por_tipo_operacion);
+  const ordenFilasFirmas = useSortableData(filas);
   const firmasSinClasificar = Number(resumen.sin_clasificar || 0);
   const firmasSinTiempo = Math.max(
     0,
@@ -2584,12 +2588,12 @@ function InformeFirmas() {
 
       <section className="overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"><div><h3>Resumen por tipo de operación</h3><p className="mt-1">Conteo de firmas reales y días medios cuando existen fecha de envío y de firma.</p></div><span className="px-3 py-1.5">{periodo}</span></div>
-        {loading ? <PanelEstadoInforme loading /> : datos.por_tipo_operacion.length === 0 ? <PanelEstadoInforme vacio /> : <div className="overflow-x-auto"><table className="w-full min-w-[650px]"><thead className="uppercase"><tr><th className="px-5 py-3">Tipo de operación</th><th className="px-5 py-3">Firmas</th><th className="px-5 py-3">VC</th><th className="px-5 py-3">Presencial</th><th className="px-5 py-3">Media días</th></tr></thead><tbody>{datos.por_tipo_operacion.map((f, i) => <tr key={`${f.tipo_operacion}-${i}`}><td className="px-5 py-3">{f.tipo_operacion}</td><td className="px-5 py-3">{numeroInforme(f.total_firmas)}</td><td className="px-5 py-3">{numeroInforme(f.vc)}</td><td className="px-5 py-3">{numeroInforme(f.presencial)}</td><td className="px-5 py-3">{f.media_dias == null ? "—" : `${numeroInforme(f.media_dias, 1)} días`}</td></tr>)}</tbody></table></div>}
+        {loading ? <PanelEstadoInforme loading /> : datos.por_tipo_operacion.length === 0 ? <PanelEstadoInforme vacio /> : <div className="overflow-x-auto"><table className="w-full min-w-[650px]"><thead className="uppercase"><tr><MolsanSortableTh label="Tipo de operación" sortKey="tipo_operacion" sortConfig={ordenTiposOperacion.sortConfig} onSort={ordenTiposOperacion.requestSort} className="px-5 py-3" /><MolsanSortableTh label="Firmas" sortKey="total_firmas" sortConfig={ordenTiposOperacion.sortConfig} onSort={ordenTiposOperacion.requestSort} className="px-5 py-3" /><MolsanSortableTh label="VC" sortKey="vc" sortConfig={ordenTiposOperacion.sortConfig} onSort={ordenTiposOperacion.requestSort} className="px-5 py-3" /><MolsanSortableTh label="Presencial" sortKey="presencial" sortConfig={ordenTiposOperacion.sortConfig} onSort={ordenTiposOperacion.requestSort} className="px-5 py-3" /><MolsanSortableTh label="Media días" sortKey="media_dias" sortConfig={ordenTiposOperacion.sortConfig} onSort={ordenTiposOperacion.requestSort} className="px-5 py-3" /></tr></thead><tbody>{ordenTiposOperacion.items.map((f, i) => <tr key={`${f.tipo_operacion}-${i}`}><td className="px-5 py-3">{f.tipo_operacion}</td><td className="px-5 py-3">{numeroInforme(f.total_firmas)}</td><td className="px-5 py-3">{numeroInforme(f.vc)}</td><td className="px-5 py-3">{numeroInforme(f.presencial)}</td><td className="px-5 py-3">{f.media_dias == null ? "—" : `${numeroInforme(f.media_dias, 1)} días`}</td></tr>)}</tbody></table></div>}
       </section>
 
       <section className="overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"><div><h3>Detalle de firmas</h3><p className="mt-1">{numeroInforme(filas.length)} registros recibidos del backend. Puedes completar modalidad y fecha de envío desde la columna de acciones.</p></div><div className="flex flex-wrap gap-2"><button type="button" disabled={loading || exportando} onClick={exportarExcel} className="molsan-export-excel">{exportando ? "Exportando…" : "📗 Exportar Excel"}</button><button type="button" disabled={loading || filas.length === 0} onClick={() => imprimirInforme("Informe de firmas reales", periodo, columnasPDF, filas)} className="px-3 py-2">📄 Exportar PDF</button></div></div>
-        {loading ? <PanelEstadoInforme loading /> : filas.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales para el periodo y los filtros seleccionados." /> : <div className="max-h-[700px] overflow-auto"><table className="w-full min-w-[1420px]"><thead className="sticky top-0 z-10 uppercase"><tr>{columnasPDF.map((c) => <th key={c.key} className="whitespace-nowrap px-4 py-3">{c.label}</th>)}<th className="whitespace-nowrap px-4 py-3">Acciones</th></tr></thead><tbody>{filas.map((f, i) => <Fragment key={f.id ?? `${f.id_expediente}-${i}`}>
+        {loading ? <PanelEstadoInforme loading /> : filas.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales para el periodo y los filtros seleccionados." /> : <div className="max-h-[700px] overflow-auto"><table className="w-full min-w-[1420px]"><thead className="sticky top-0 z-10 uppercase"><tr>{columnasPDF.map((c) => <MolsanSortableTh key={c.key} label={c.label} sortKey={c.key} sortConfig={ordenFilasFirmas.sortConfig} onSort={ordenFilasFirmas.requestSort} className="whitespace-nowrap px-4 py-3" />)}<th className="whitespace-nowrap px-4 py-3">Acciones</th></tr></thead><tbody>{ordenFilasFirmas.items.map((f, i) => <Fragment key={f.id ?? `${f.id_expediente}-${i}`}>
           <tr>
             <td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_firma)}</td>
             <td className="px-4 py-3">{f.id_expediente || "—"}</td>
