@@ -502,7 +502,6 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
 
   const esDetalle = vista === "detalle" && detalle;
   const titulo = esDetalle ? `Expediente ${detalle.id_expediente}` : (bandejas.find(b => b.id === vista)?.titulo || ({ avisos_comentarios: "Observaciones del gestor", avisos_documentos: "Nueva documentación añadida" }[vista]) || (vista === "inicio" ? "Mis tareas pendientes" : vista === "documentacion" ? "Carpeta Digital" : "NotarGest"));
-  const tablaFactura = vista === "factura";
   const sidebarVista = vista === "inicio" ? "Dashboard" : ({
     recepcion: "Nuevos encargos",
     firma: "Pendientes de firma",
