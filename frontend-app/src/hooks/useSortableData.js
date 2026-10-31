@@ -15,7 +15,12 @@ function normalizar(valor) {
 
   const texto = String(valor).trim();
   const iso = texto.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s].*)?$/);
-  if (iso) return new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3])).getTime();
+  if (iso) {
+    const instante = Date.parse(texto);
+    return Number.isFinite(instante)
+      ? instante
+      : new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3])).getTime();
+  }
   const fechaEs = texto.match(/^(\d{1,2})[/.](\d{1,2})[/.](\d{4})$/);
   if (fechaEs) return new Date(Number(fechaEs[3]), Number(fechaEs[2]) - 1, Number(fechaEs[1])).getTime();
 
