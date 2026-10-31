@@ -4,7 +4,6 @@ import { useAuthStore } from "../store/authStore";
 import EmpleadoPerfilModal from "../components/SidebarPerfilModal";
 import { useNotificacionesWS } from "../hooks/useNotificacionesWS";
 import NotificacionesToast from "../components/notificaciones/NotificacionesToast";
-import "../css/CancelagestUnified.css";
 
 /** Layout principal de ERP-Molsan. Mantiene perfil, navegación,
  * canal de notificaciones. */
