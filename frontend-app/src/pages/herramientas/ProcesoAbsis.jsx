@@ -106,10 +106,10 @@ export default function ProcesoAbsis() {
           <table className="w-full min-w-[430px]">
             <thead className="uppercase"><tr><th className="px-4 py-3">Tipo de actividad</th><th className="px-3 py-3">Expedientes enviados</th><th className="px-4 py-3">Errores detectados</th></tr></thead>
             <tbody>
-              {actividades.length === 0 ? <tr><td colSpan={3} className="px-4 py-10">No hay actividades registradas.</td></tr> : actividades.map((act) => <tr key={act.tipo} onClick={() => setTipoSeleccionado(act.tipo)} className={`cursor-pointer border-b border-slate-100 last:border-0 transition ${tipoSeleccionado === act.tipo ? "" : ""}`}>
+              {actividades.length === 0 ? <tr><td colSpan={3} className="px-4 py-10">No hay actividades registradas.</td></tr> : actividades.map((act) => <tr key={act.tipo} onClick={() => setTipoSeleccionado(act.tipo)} className={`${tipoSeleccionado === act.tipo ? "" : ""}`}>
                 <td className="px-4 py-4"><span className="">{act.tipo || "Sin tipo"}</span><span className="mt-1 block">Ver listado →</span></td>
                 <td className="px-3 py-4 tabular-nums">{act.enviados || 0}</td>
-                <td className="px-4 py-4"><span className={`inline-flex min-w-8 justify-center rounded-full px-2 py-1 text-xs font-bold ${Number(act.errores || 0) ? "" : ""}`}>{act.errores || 0}</span></td>
+                <td className="px-4 py-4"><span className={`inline-flex min-w-8 justify-center px-2 py-1 ${Number(act.errores || 0) ? "" : ""}`}>{act.errores || 0}</span></td>
               </tr>)}
             </tbody>
           </table>
@@ -130,7 +130,7 @@ export default function ProcesoAbsis() {
             {cargando ? <tr><td colSpan={9} className="px-5 py-12">Cargando envíos…</td></tr>
             : items.length === 0 ? <tr><td colSpan={9} className="px-5 py-12"><div className="">📦</div><p className="mt-2">No hay envíos para mostrar</p><p className="mt-1">Los registros aparecerán aquí cuando se registren envíos o incidencias ABSIS.</p></td></tr>
             : items.map((item) => <tr key={item.id} className="align-top">
-              <td className="px-3 py-3">{item.expediente || "—"}</td><td className="whitespace-nowrap px-3 py-3">{euroFecha(item.fecha_envio)}</td><td className="px-3 py-3">{item.id}</td><td className="px-3 py-3">{item.id_absis || "—"}</td><td className="px-3 py-3">{item.tipo || "—"}</td><td className="whitespace-nowrap px-3 py-3">{euroFecha(item.fecha_creacion)}</td><td className="whitespace-nowrap px-3 py-3">{euroFecha(item.fecha_incidencia)}</td><td className="max-w-[220px] px-3 py-3"><span className={`inline-flex rounded-full px-2 py-1 font-semibold ${item.tipo_incidencia ? "" : ""}`}>{item.tipo_incidencia || "Sin incidencia"}</span></td>
+              <td className="px-3 py-3">{item.expediente || "—"}</td><td className="whitespace-nowrap px-3 py-3">{euroFecha(item.fecha_envio)}</td><td className="px-3 py-3">{item.id}</td><td className="px-3 py-3">{item.id_absis || "—"}</td><td className="px-3 py-3">{item.tipo || "—"}</td><td className="whitespace-nowrap px-3 py-3">{euroFecha(item.fecha_creacion)}</td><td className="whitespace-nowrap px-3 py-3">{euroFecha(item.fecha_incidencia)}</td><td className="max-w-[220px] px-3 py-3"><span className={`inline-flex px-2 py-1 ${item.tipo_incidencia ? "" : ""}`}>{item.tipo_incidencia || "Sin incidencia"}</span></td>
               <td className="px-3 py-3"><div className="flex min-w-[290px] flex-wrap gap-1.5"><button disabled={accionando !== null} onClick={() => accion(item.id,"eliminar")} className="px-2 py-1.5">{accionando === `${item.id}-eliminar` ? "…" : "Eliminar"}</button><button disabled={accionando !== null} onClick={() => accion(item.id,"reintentar")} className="px-2 py-1.5">{accionando === `${item.id}-reintentar` ? "…" : "Reintentar"}</button><button disabled={accionando !== null || item.estado === "Pasado"} onClick={() => accion(item.id,"pasado")} className="px-2 py-1.5">{item.estado === "Pasado" ? "Dado por pasado" : "Dar por pasado"}</button></div></td>
             </tr>)}
           </tbody>
@@ -142,5 +142,5 @@ export default function ProcesoAbsis() {
 }
 
 function Kpi({ titulo, valor, icono, alerta = false }) {
-  return <div className={`rounded-2xl border p-4 shadow-sm ${alerta ? "" : ""}`}><div className="flex items-start justify-between gap-2"><p className="uppercase">{titulo}</p><span className="flex h-9 w-9 items-center justify-center">{icono}</span></div><p className="mt-3">{valor}</p></div>;
+  return <div className={`p-4 ${alerta ? "" : ""}`}><div className="flex items-start justify-between gap-2"><p className="uppercase">{titulo}</p><span className="flex h-9 w-9 items-center justify-center">{icono}</span></div><p className="mt-3">{valor}</p></div>;
 }
