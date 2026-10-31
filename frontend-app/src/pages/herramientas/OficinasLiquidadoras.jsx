@@ -5,13 +5,11 @@ import React, {
   useState,
   useRef,
 } from "react";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/CatalogosMaestrosPremium.css";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 
 // ============================================================
-// OFICINAS LIQUIDADORAS — MOLSAN ERP PREMIUM 2027
+// OFICINAS LIQUIDADORAS
 // ============================================================
 //
 // - Catálogo completo
@@ -1028,7 +1026,7 @@ export default function OficinasLiquidadoras() {
 
   return (
     <div
-      className="oficinas-liquidadoras-premium herramientas-subpagina-premium
+      className="herramientas-subpagina-premium
  erp-page
  min-h-full
  p-4
