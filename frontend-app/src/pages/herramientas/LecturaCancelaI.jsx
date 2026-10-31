@@ -1,23 +1,12 @@
 import { Link } from "react-router-dom";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 export default function LecturaCancelaI() {
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden p-6">
-        <div className="absolute inset-x-0 top-0 h-1" />
-        <Link to="/herramientas/utilidades">← Volver a Utilidades</Link>
-        <div className="mt-3 flex flex-wrap items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center">📁</div>
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h1>Lectura Cancela I</h1>
-              <span className="px-2.5 py-1 uppercase">En construcción</span>
-            </div>
-            <p className="mt-2 max-w-3xl">Pantalla inicial del módulo para la lectura de información procedente de Cancela I.</p>
-          </div>
-        </div>
-      </header>
-      <section className="p-6 sm:p-8">
+    <main className="erp-page min-w-0 space-y-6">
+      <MolsanPageHeader mark="LC" title="Lectura Cancela I" description="Pantalla inicial del módulo para la lectura de información procedente de Cancela I." />
+      <div className="flex justify-end"><Link to="/herramientas/utilidades" className="molsan-btn molsan-btn--secondary">← Volver a Utilidades</Link></div>
+      <section className="erp-card p-6 sm:p-8">
         <div className="flex items-start gap-4">
           <span aria-hidden="true">🚧</span>
           <div>
