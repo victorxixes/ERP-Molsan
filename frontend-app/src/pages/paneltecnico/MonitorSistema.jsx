@@ -9,13 +9,11 @@ import {
 
 /**
  * ============================================================
- * MONITOR SISTEMA — MOLSAN ERP PREMIUM 2027
+ * MONITOR SISTEMA
  * ============================================================
  *
  * - Diagnóstico BD
  * - Monitor WebSocket realtime
- * - Glass UI
- * - Selector de tablas premium
  * - Tablas técnicas mejoradas
  * - Estados vacíos
  * - Render optimizado
@@ -183,7 +181,7 @@ export default function MonitorSistema() {
   // ============================================================
 
   return (
-    <div className="monitor-sistema-premium panel-tecnico-submodulo-premium min-w-0 p-4 sm:p-6 space-y-6">
+    <div className="min-w-0 p-4 sm:p-6 space-y-6">
 
       {/* ======================================================
           CABECERA
