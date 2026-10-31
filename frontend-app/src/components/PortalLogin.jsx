@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 
-import "../css/LayoutPortalesPremium.css";
 /**
  * Login de los portales profesionales.
- * Replica el formato visual del login principal de MOLSAN ERP,
+ * Componente de acceso de los portales externos de MOLSAN ERP,
  * manteniendo independientes las credenciales y la autenticación de cada portal.
  */
 export default function PortalLogin({
@@ -29,7 +28,7 @@ export default function PortalLogin({
 
   return (
     <div className="portal-login-premium min-h-screen relative flex items-center justify-center overflow-hidden px-4 py-8 bg-slate-50 animate-fadeIn">
-      {/* Fondo Premium: misma composición que el login de CancelaGest */}
+      {/* Fondo decorativo del diseño anterior */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         <div className="absolute -top-56 -left-56 w-[620px] h-[620px] rounded-full bg-blue-400/10 blur-3xl" />
         <div className="absolute -bottom-56 -right-56 w-[620px] h-[620px] rounded-full bg-cyan-300/10 blur-3xl" />
@@ -127,8 +126,7 @@ export default function PortalLogin({
 
           <div className="mt-8 pt-5 border-t border-slate-200/80 text-center">
             <p className="text-xs font-medium text-slate-400">{footnote}</p>
-            <p className="mt-1 text-[10px] uppercase tracking-[0.22em] text-slate-300">Premium 2027</p>
-          </div>
+                      </div>
         </div>
       </div>
     </div>
