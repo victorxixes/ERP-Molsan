@@ -123,6 +123,41 @@ def _exigir_periodo_abierto(db, fecha_hora):
         raise HTTPException(status_code=409, detail="El periodo de este marcaje está cerrado. Un administrador autorizado debe reabrir el mes indicando el motivo antes de modificarlo.")
 
 
+def _validar_secuencia_marcaje(ultimo, ultimo_jornada, tipo):
+    """Valida transiciones de jornada y pausas antes de guardar un marcaje."""
+    if tipo == "ENTRADA" and ultimo_jornada and ultimo_jornada.tipo == "ENTRADA":
+        raise HTTPException(status_code=409, detail="Ya consta una entrada sin una salida posterior.")
+    if tipo == "SALIDA" and (not ultimo_jornada or ultimo_jornada.tipo != "ENTRADA"):
+        raise HTTPException(status_code=409, detail="Para registrar la salida debe existir una entrada previa sin cerrar.")
+
+    pausas = {
+        "PAUSA_CAFE_INICIO",
+        "PAUSA_DESAYUNO_INICIO",
+        "PAUSA_COMIDA_INICIO",
+        "PAUSA_CIGARRILLO_INICIO",
+        "AUSENCIA",
+    }
+    retornos_por_pausa = {
+        "PAUSA_CAFE_INICIO": {"PAUSA_DESAYUNO_FIN", "RETORNO_AUSENCIA"},
+        "PAUSA_DESAYUNO_INICIO": {"PAUSA_DESAYUNO_FIN", "RETORNO_AUSENCIA"},
+        "PAUSA_COMIDA_INICIO": {"PAUSA_COMIDA_FIN", "RETORNO_AUSENCIA"},
+        "PAUSA_CIGARRILLO_INICIO": {"PAUSA_CIGARRILLO_FIN", "RETORNO_AUSENCIA"},
+        "AUSENCIA": {"RETORNO_AUSENCIA"},
+    }
+    tipos_retorno = {
+        "PAUSA_DESAYUNO_FIN",
+        "PAUSA_COMIDA_FIN",
+        "PAUSA_CIGARRILLO_FIN",
+        "RETORNO_AUSENCIA",
+    }
+    if ultimo and ultimo.tipo in pausas and tipo not in retornos_por_pausa.get(ultimo.tipo, set()) | {"SALIDA"}:
+        raise HTTPException(status_code=409, detail="Tienes una pausa o ausencia abierta. Registra el regreso correspondiente antes de iniciar otro movimiento.")
+    if tipo in pausas and (not ultimo_jornada or ultimo_jornada.tipo != "ENTRADA"):
+        raise HTTPException(status_code=409, detail="Para iniciar una pausa o ausencia debes tener una jornada abierta.")
+    if tipo in tipos_retorno and (not ultimo or tipo not in retornos_por_pausa.get(ultimo.tipo, set())):
+        raise HTTPException(status_code=409, detail="El regreso no coincide con la pausa abierta. Selecciona el regreso correspondiente.")
+
+
 def _registrar_auditoria_marcaje(db, marcaje, actor, accion, anterior, nuevo, motivo):
     db.add(FichajeMarcajeAuditoria(
         marcaje_id=marcaje.id if marcaje else None,
@@ -210,27 +245,9 @@ def crear_marcaje(
         FichajeMarcaje.empleado_id == usuario.id,
         FichajeMarcaje.tipo.in_({"ENTRADA", "SALIDA"}),
     ).order_by(desc(FichajeMarcaje.fecha_hora)).first()
-    if tipo == "ENTRADA" and ultimo_jornada and ultimo_jornada.tipo == "ENTRADA":
-        raise HTTPException(status_code=409, detail="Ya consta una entrada sin una salida posterior.")
-    if tipo == "SALIDA" and (not ultimo_jornada or ultimo_jornada.tipo != "ENTRADA"):
-        raise HTTPException(status_code=409, detail="Para registrar la salida debe existir una entrada previa sin cerrar.")
-    # AUSENCIA es un registro puntual de ausencia/permiso, no una pausa que bloquee
-    # el resto de los controles: el panel nuevo no tiene un botón de "regreso de ausencia".
-    pausas = {"PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO"}
-    retornos_por_pausa = {
-        "PAUSA_CAFE_INICIO": {"PAUSA_DESAYUNO_FIN", "RETORNO_AUSENCIA"},
-        "PAUSA_DESAYUNO_INICIO": {"PAUSA_DESAYUNO_FIN", "RETORNO_AUSENCIA"},
-        "PAUSA_COMIDA_INICIO": {"PAUSA_COMIDA_FIN", "RETORNO_AUSENCIA"},
-        "PAUSA_CIGARRILLO_INICIO": {"PAUSA_CIGARRILLO_FIN", "RETORNO_AUSENCIA"},
-        "AUSENCIA": {"RETORNO_AUSENCIA"},
-    }
-    tipos_retorno = {"PAUSA_DESAYUNO_FIN", "PAUSA_COMIDA_FIN", "PAUSA_CIGARRILLO_FIN", "RETORNO_AUSENCIA"}
-    if ultimo and ultimo.tipo in pausas and tipo not in retornos_por_pausa.get(ultimo.tipo, set()) | {"SALIDA"}:
-        raise HTTPException(status_code=409, detail="Tienes una pausa o ausencia abierta. Registra el regreso correspondiente antes de iniciar otro movimiento.")
-    if tipo in pausas and (not ultimo_jornada or ultimo_jornada.tipo != "ENTRADA"):
-        raise HTTPException(status_code=409, detail="Para iniciar una pausa o ausencia debes tener una jornada abierta.")
-    if tipo in tipos_retorno and (not ultimo or tipo not in retornos_por_pausa.get(ultimo.tipo, set())):
-        raise HTTPException(status_code=409, detail="El regreso no coincide con la pausa abierta. Selecciona el regreso correspondiente.")
+    # Los eventos AUSENCIA históricos sí representan una pausa abierta y
+    # deben cerrarse con RETORNO_AUSENCIA. Los nuevos AUSENCIA_PUNTUAL no.
+    _validar_secuencia_marcaje(ultimo, ultimo_jornada, tipo)
     marcaje = FichajeMarcaje(
         empleado_id=usuario.id,
         tipo=tipo,
