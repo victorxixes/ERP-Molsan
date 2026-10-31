@@ -123,54 +123,35 @@ function SeccionAcordeon({
 
   return (
     <section
-      className="
-        overflow-hidden
-        rounded-2xl
-        border
-        border-[var(--erp-border)]
-        bg-[var(--erp-surface)]
-        shadow-sm
-      "
+      className="overflow-hidden"
     >
 
       <button
         type="button"
         onClick={onToggle}
-        className="
-          flex
-          w-full
-          items-center
-          justify-between
-          gap-4
-          px-5
-          py-4
-          text-left
-          transition
-          hover:bg-[var(--erp-bg)]
-        "
+        className="flex
+ w-full
+ items-center
+ justify-between
+ gap-4
+ px-5
+ py-4"
       >
 
         <div
-          className="
-            flex
-            min-w-0
-            items-center
-            gap-3
-          "
+          className="flex
+ min-w-0
+ items-center
+ gap-3"
         >
 
           <div
-            className="
-              flex
-              h-10
-              w-10
-              shrink-0
-              items-center
-              justify-center
-              rounded-xl
-              bg-[var(--erp-primary-soft)]
-              text-lg
-            "
+            className="flex
+ h-10
+ w-10
+ shrink-0
+ items-center
+ justify-center"
           >
             {icono}
           </div>
@@ -178,23 +159,14 @@ function SeccionAcordeon({
           <div className="min-w-0">
 
             <h2
-              className="
-                truncate
-                text-base
-                font-semibold
-                text-[var(--erp-text)]
-              "
+              className="truncate"
             >
               {titulo}
             </h2>
 
             <p
-              className="
-                mt-0.5
-                truncate
-                text-xs
-                text-[var(--erp-text-soft)]
-              "
+              className="mt-0.5
+ truncate"
             >
               {descripcion}
             </p>
@@ -205,12 +177,10 @@ function SeccionAcordeon({
 
 
         <div
-          className="
-            flex
-            shrink-0
-            items-center
-            gap-2
-          "
+          className="flex
+ shrink-0
+ items-center
+ gap-2"
         >
 
           {typeof contador !== "undefined" && (
@@ -220,10 +190,7 @@ function SeccionAcordeon({
           )}
 
           <span
-            className="
-              text-xs
-              text-[var(--erp-text-soft)]
-            "
+            className=""
             aria-hidden="true"
           >
             {abierto ? "▲" : "▼"}
@@ -236,12 +203,7 @@ function SeccionAcordeon({
 
       {abierto && (
         <div
-          className="
-            border-t
-            border-[var(--erp-border)]
-            bg-[var(--erp-bg)]
-            p-4
-          "
+          className="p-4"
         >
           {children}
         </div>
@@ -1476,41 +1438,24 @@ const permisosGlobales =
 
     return (
       <div
-        className="
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-10
-          text-center
-        "
+        className="p-10"
       >
 
         <div
-          className="
-            animate-pulse
-          "
+          className=""
         >
 
           <div
-            className="
-              mx-auto
-              h-10
-              w-10
-              rounded-xl
-              bg-[var(--erp-bg)]
-            "
+            className="mx-auto
+ h-10
+ w-10"
           />
 
           <div
-            className="
-              mx-auto
-              mt-4
-              h-4
-              w-56
-              rounded
-              bg-[var(--erp-bg)]
-            "
+            className="mx-auto
+ mt-4
+ h-4
+ w-56"
           />
 
         </div>
@@ -1529,16 +1474,7 @@ const permisosGlobales =
 
     return (
       <div
-        className="
-          rounded-2xl
-          border
-          border-red-200
-          bg-red-50
-          p-8
-          text-center
-          text-sm
-          text-red-700
-        "
+        className="p-8"
       >
         No se han podido cargar los datos de seguridad del empleado.
       </div>
@@ -1581,41 +1517,28 @@ const permisosGlobales =
       ====================================================== */}
 
       <section
-        className="
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-5
-          shadow-sm
-        "
+        className="p-5"
       >
 
         <div
-          className="
-            flex
-            flex-col
-            gap-5
-            xl:flex-row
-            xl:items-center
-            xl:justify-between
-          "
+          className="flex
+ flex-col
+ gap-5
+ xl:flex-row
+ xl:items-center
+ xl:justify-between"
         >
 
           <div
-            className="
-              flex
-              min-w-0
-              items-center
-              gap-4
-            "
+            className="flex
+ min-w-0
+ items-center
+ gap-4"
           >
 
             <div
-              className="
-                relative
-                shrink-0
-              "
+              className="relative
+ shrink-0"
             >
 
               <img
@@ -1631,16 +1554,13 @@ const permisosGlobales =
                   event.currentTarget.src =
                     "/no-foto.png";
                 }}
-                className="
-                  h-20
-                  w-20
-                  rounded-2xl
-                  border
-                  border-[var(--erp-border)]
-                  bg-[var(--erp-bg)]
-                  object-cover
-                  shadow-sm
-                "
+                className="h-20
+ w-20
+ 
+ 
+ 
+ 
+ object-cover"
               />
 
               <span
@@ -1657,8 +1577,8 @@ const permisosGlobales =
                   font-bold
                   ${
                     empleado.activo
-                      ? "bg-emerald-500 text-white"
-                      : "bg-red-500 text-white"
+                      ? ""
+                      : ""
                   }
                 `}
               >
@@ -1673,26 +1593,14 @@ const permisosGlobales =
             <div className="min-w-0">
 
               <p
-                className="
-                  text-[11px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.14em]
-                  text-[var(--erp-primary)]
-                "
+                className="uppercase"
               >
                 Centro de seguridad
               </p>
 
               <h1
-                className="
-                  mt-1
-                  truncate
-                  text-2xl
-                  font-bold
-                  tracking-tight
-                  text-[var(--erp-text)]
-                "
+                className="mt-1
+ truncate"
               >
                 {textoSeguro(
                   empleado.nombre
@@ -1704,22 +1612,16 @@ const permisosGlobales =
               </h1>
 
               <p
-                className="
-                  mt-0.5
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                "
+                className="mt-0.5"
               >
                 @{empleado.usuario || "-"}
               </p>
 
               <div
-                className="
-                  mt-2
-                  flex
-                  flex-wrap
-                  gap-2
-                "
+                className="mt-2
+ flex
+ flex-wrap
+ gap-2"
               >
 
                 <Chip tone="primary">
@@ -1750,86 +1652,60 @@ const permisosGlobales =
 
 
           <div
-            className="
-              grid
-              grid-cols-2
-              gap-2
-              sm:grid-cols-4
-              xl:w-[520px]
-            "
+            className="grid
+ grid-cols-2
+ gap-2
+ sm:grid-cols-4
+ xl:w-[520px]"
           >
 
             <div
-              className="
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-bg)]
-                p-3
-              "
+              className="p-3"
             >
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--erp-text-soft)]">
+              <p className="uppercase">
                 Módulos
               </p>
 
-              <p className="mt-1 text-xl font-bold text-[var(--erp-text)]">
+              <p className="mt-1">
                 {modulosVisibles.length}
               </p>
             </div>
 
 
             <div
-              className="
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-bg)]
-                p-3
-              "
+              className="p-3"
             >
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--erp-text-soft)]">
+              <p className="uppercase">
                 Permisos
               </p>
 
-              <p className="mt-1 text-xl font-bold text-[var(--erp-text)]">
+              <p className="mt-1">
                 {totalPermisos}
               </p>
             </div>
 
 
             <div
-              className="
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-bg)]
-                p-3
-              "
+              className="p-3"
             >
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--erp-text-soft)]">
+              <p className="uppercase">
                 Auditoría
               </p>
 
-              <p className="mt-1 text-xl font-bold text-[var(--erp-text)]">
+              <p className="mt-1">
                 {auditoriaFiltrada.length}
               </p>
             </div>
 
 
             <div
-              className="
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-bg)]
-                p-3
-              "
+              className="p-3"
             >
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--erp-text-soft)]">
+              <p className="uppercase">
                 Logs
               </p>
 
-              <p className="mt-1 text-xl font-bold text-[var(--erp-text)]">
+              <p className="mt-1">
                 {logsFiltrados.length}
               </p>
             </div>
@@ -1840,22 +1716,20 @@ const permisosGlobales =
 
 
         <div
-          className="
-            mt-5
-            flex
-            flex-wrap
-            gap-2
-            border-t
-            border-[var(--erp-border)]
-            pt-4
-          "
+          className="mt-5
+ flex
+ flex-wrap
+ gap-2
+ 
+ 
+ pt-4"
         >
 
           <button
             type="button"
             onClick={cambiarVisibilidadEmpleado}
             disabled={guardandoVisibilidad}
-            className={`rounded-xl border px-4 py-2.5 text-sm font-semibold transition disabled:cursor-wait disabled:opacity-60 ${empleado.visible_en_listado === false ? "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100" : "border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100"}`}
+            className={`rounded-xl border px-4 py-2.5 text-sm font-semibold transition disabled:cursor-wait disabled:opacity-60 ${empleado.visible_en_listado === false ? "" : ""}`}
           >
             {guardandoVisibilidad
               ? "Guardando…"
@@ -1873,18 +1747,8 @@ const permisosGlobales =
                   empleadoIdSeguro
                 )
               }
-              className="
-                rounded-xl
-                border
-                border-red-200
-                bg-red-50
-                px-4
-                py-2.5
-                text-sm
-                font-semibold
-                text-red-700
-                hover:bg-red-100
-              "
+              className="px-4
+ py-2.5"
             >
               🔒 Bloquear usuario
             </button>
@@ -1898,18 +1762,8 @@ const permisosGlobales =
                   empleadoIdSeguro
                 )
               }
-              className="
-                rounded-xl
-                border
-                border-emerald-200
-                bg-emerald-50
-                px-4
-                py-2.5
-                text-sm
-                font-semibold
-                text-emerald-700
-                hover:bg-emerald-100
-              "
+              className="px-4
+ py-2.5"
             >
               🔓 Desbloquear usuario
             </button>
@@ -1917,7 +1771,7 @@ const permisosGlobales =
           )}
 
           {mensajeVisibilidad && (
-            <p className="mt-2 w-full text-sm font-medium text-[var(--erp-text-soft)]" role="status">{mensajeVisibilidad}</p>
+            <p className="mt-2 w-full" role="status">{mensajeVisibilidad}</p>
           )}
         </div>
 
@@ -1929,24 +1783,15 @@ const permisosGlobales =
       ====================================================== */}
 
       <section
-        className="
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-4
-          shadow-sm
-        "
+        className="p-4"
       >
 
         <div
-          className="
-            grid
-            grid-cols-1
-            gap-2
-            sm:grid-cols-2
-            lg:grid-cols-4
-          "
+          className="grid
+ grid-cols-1
+ gap-2
+ sm:grid-cols-2
+ lg:grid-cols-4"
         >
 
           {[
@@ -1973,36 +1818,19 @@ const permisosGlobales =
 
               <div
                 key={item[0]}
-                className="
-                  rounded-xl
-                  border
-                  border-[var(--erp-border)]
-                  bg-[var(--erp-bg)]
-                  px-3
-                  py-2.5
-                "
+                className="px-3
+ py-2.5"
               >
 
                 <p
-                  className="
-                    text-[10px]
-                    font-semibold
-                    uppercase
-                    tracking-wide
-                    text-[var(--erp-text-soft)]
-                  "
+                  className="uppercase"
                 >
                   {item[0]}
                 </p>
 
                 <p
-                  className="
-                    mt-1
-                    truncate
-                    text-sm
-                    font-semibold
-                    text-[var(--erp-text)]
-                  "
+                  className="mt-1
+ truncate"
                   title={String(
                     item[1]
                   )}
@@ -2025,34 +1853,19 @@ const permisosGlobales =
       ====================================================== */}
 
       <section
-        className="
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-4
-          shadow-sm
-        "
+        className="p-4"
       >
 
         <div className="mb-3">
 
           <h2
-            className="
-              text-base
-              font-semibold
-              text-[var(--erp-text)]
-            "
+            className=""
           >
             🔐 Credenciales y acceso
           </h2>
 
           <p
-            className="
-              mt-0.5
-              text-xs
-              text-[var(--erp-text-soft)]
-            "
+            className="mt-0.5"
           >
             Operaciones sensibles sobre la cuenta.
           </p>
@@ -2061,55 +1874,37 @@ const permisosGlobales =
 
 
         <div
-          className="
-            grid
-            grid-cols-1
-            gap-3
-            xl:grid-cols-2
-          "
+          className="grid
+ grid-cols-1
+ gap-3
+ xl:grid-cols-2"
         >
 
           {/* RESET PASSWORD */}
 
           <div
-            className="
-              rounded-xl
-              border
-              border-[var(--erp-border)]
-              bg-[var(--erp-bg)]
-              p-4
-            "
+            className="p-4"
           >
 
             <h3
-              className="
-                text-sm
-                font-semibold
-                text-[var(--erp-text)]
-              "
+              className=""
             >
               🔑 Restablecer contraseña
             </h3>
 
             <p
-              className="
-                mt-0.5
-                text-xs
-                text-[var(--erp-text-soft)]
-              "
+              className="mt-0.5"
             >
               Establece una nueva contraseña.
             </p>
 
 
             <div
-              className="
-                mt-3
-                flex
-                flex-col
-                gap-2
-                sm:flex-row
-              "
+              className="mt-3
+ flex
+ flex-col
+ gap-2
+ sm:flex-row"
             >
 
               <input
@@ -2121,21 +1916,14 @@ const permisosGlobales =
                   )
                 }
                 placeholder="Nueva contraseña"
-                className="
-                  min-w-0
-                  flex-1
-                  rounded-xl
-                  border
-                  border-[var(--erp-border)]
-                  bg-[var(--erp-surface)]
-                  px-3
-                  py-2.5
-                  text-sm
-                  text-[var(--erp-text)]
-                  outline-none
-                  placeholder:text-[var(--erp-text-soft)]
-                  focus:border-[var(--erp-primary)]
-                "
+                className="min-w-0
+ flex-1
+ 
+ 
+ 
+ 
+ px-3
+ py-2.5"
               />
 
               <button
@@ -2146,19 +1934,8 @@ const permisosGlobales =
                 disabled={
                   !nuevaPassword.trim()
                 }
-                className="
-                  rounded-xl
-                  border
-                  border-blue-200
-                  bg-blue-50
-                  px-4
-                  py-2.5
-                  text-sm
-                  font-semibold
-                  text-blue-700
-                  disabled:cursor-not-allowed
-                  disabled:opacity-40
-                "
+                className="px-4
+ py-2.5"
               >
                 Resetear
               </button>
@@ -2171,67 +1948,45 @@ const permisosGlobales =
           {/* ASIGNAR ROL */}
 
           <div
-            className="
-              rounded-xl
-              border
-              border-[var(--erp-border)]
-              bg-[var(--erp-bg)]
-              p-4
-            "
+            className="p-4"
           >
 
             <h3
-              className="
-                text-sm
-                font-semibold
-                text-[var(--erp-text)]
-              "
+              className=""
             >
               👤 Asignar rol
             </h3>
 
             <p
-              className="
-                mt-0.5
-                text-xs
-                text-[var(--erp-text-soft)]
-              "
+              className="mt-0.5"
             >
               Rol actual:{" "}
 
-              <span className="font-semibold text-purple-700">
+              <span className="">
                 {nombreRol}
               </span>
             </p>
 
 
             <div
-              className="
-                mt-3
-                flex
-                flex-col
-                gap-2
-                sm:flex-row
-              "
+              className="mt-3
+ flex
+ flex-col
+ gap-2
+ sm:flex-row"
             >
 
               <select
                 value={nuevoRol}
                 onChange={(event) => setNuevoRol(event.target.value)}
-                className="
-                  min-w-0
-                  flex-1
-                  rounded-xl
-                  border
-                  border-[var(--erp-border)]
-                  bg-[var(--erp-surface)]
-                  px-3
-                  py-2.5
-                  text-sm
-                  text-[var(--erp-text)]
-                  outline-none
-                  focus:border-[var(--erp-primary)]
-                "
+                className="min-w-0
+ flex-1
+ 
+ 
+ 
+ 
+ px-3
+ py-2.5"
                 aria-label="Seleccionar nuevo rol"
               >
                 <option value="">Selecciona un rol…</option>
@@ -2252,19 +2007,8 @@ const permisosGlobales =
                   guardandoRol ||
                   idSeguro(nuevoRol) === null
                 }
-                className="
-                  rounded-xl
-                  border
-                  border-purple-200
-                  bg-purple-50
-                  px-4
-                  py-2.5
-                  text-sm
-                  font-semibold
-                  text-purple-700
-                  disabled:cursor-not-allowed
-                  disabled:opacity-40
-                "
+                className="px-4
+ py-2.5"
               >
                 {guardandoRol ? "Guardando rol…" : "Guardar rol"}
               </button>
@@ -2274,7 +2018,7 @@ const permisosGlobales =
             {mensajeRol && (
               <p
                 role="status"
-                className={`mt-3 text-sm ${mensajeRol === "Rol guardado correctamente." ? "text-emerald-700" : "text-rose-700"}`}
+                className={`mt-3 text-sm ${mensajeRol === "Rol guardado correctamente." ? "" : ""}`}
               >
                 {mensajeRol}
               </p>
@@ -2308,13 +2052,11 @@ const permisosGlobales =
       >
 
         <div
-          className="
-            grid
-            grid-cols-1
-            gap-2
-            md:grid-cols-2
-            xl:grid-cols-3
-          "
+          className="grid
+ grid-cols-1
+ gap-2
+ md:grid-cols-2
+ xl:grid-cols-3"
         >
 
           {modulosDisponibles.map(
@@ -2341,8 +2083,8 @@ const permisosGlobales =
                     py-2.5
                     ${
                       visible
-                        ? "border-blue-200 bg-blue-50"
-                        : "border-[var(--erp-border)] bg-[var(--erp-surface)]"
+                        ? ""
+                        : ""
                     }
                   `}
                 >
@@ -2354,8 +2096,8 @@ const permisosGlobales =
                       font-medium
                       ${
                         visible
-                          ? "text-blue-800"
-                          : "text-[var(--erp-text)]"
+                          ? ""
+                          : ""
                       }
                     `}
                   >
@@ -2370,12 +2112,10 @@ const permisosGlobales =
                         modulo
                       )
                     }
-                    className="
-                      h-4
-                      w-4
-                      cursor-pointer
-                      accent-blue-500
-                    "
+                    className="h-4
+ w-4
+ 
+ accent-blue-500"
                   />
 
                 </label>
@@ -2389,16 +2129,7 @@ const permisosGlobales =
 
         {modulosDisponibles.length === 0 && (
           <div
-            className="
-              rounded-xl
-              border
-              border-dashed
-              border-[var(--erp-border)]
-              p-6
-              text-center
-              text-sm
-              text-[var(--erp-text-soft)]
-            "
+            className="p-6"
           >
             No hay módulos disponibles.
           </div>
@@ -2460,13 +2191,7 @@ const permisosGlobales =
               return (
                 <div
                   key={modulo}
-                  className="
-                    overflow-hidden
-                    rounded-xl
-                    border
-                    border-[var(--erp-border)]
-                    bg-[var(--erp-surface)]
-                  "
+                  className="overflow-hidden"
                 >
 
                   <button
@@ -2501,38 +2226,25 @@ const permisosGlobales =
                         }
                       )
                     }
-                    className="
-                      flex
-                      w-full
-                      items-center
-                      justify-between
-                      gap-3
-                      px-4
-                      py-3
-                      text-left
-                      hover:bg-[var(--erp-bg)]
-                    "
+                    className="flex
+ w-full
+ items-center
+ justify-between
+ gap-3
+ px-4
+ py-3"
                   >
 
                     <div className="min-w-0">
 
                       <p
-                        className="
-                          truncate
-                          text-sm
-                          font-semibold
-                          text-[var(--erp-text)]
-                        "
+                        className="truncate"
                       >
                         {modulo}
                       </p>
 
                       <p
-                        className="
-                          mt-0.5
-                          text-xs
-                          text-[var(--erp-text-soft)]
-                        "
+                        className="mt-0.5"
                       >
                         {activos} de{" "}
                         {disponibles.length}{" "}
@@ -2543,11 +2255,9 @@ const permisosGlobales =
 
 
                     <div
-                      className="
-                        flex
-                        items-center
-                        gap-2
-                      "
+                      className="flex
+ items-center
+ gap-2"
                     >
 
                       <Chip
@@ -2563,10 +2273,7 @@ const permisosGlobales =
                       </Chip>
 
                       <span
-                        className="
-                          text-xs
-                          text-[var(--erp-text-soft)]
-                        "
+                        className=""
                         aria-hidden="true"
                       >
                         {abierto
@@ -2581,17 +2288,15 @@ const permisosGlobales =
 
                   {abierto && (
                     <div
-                      className="
-                        grid
-                        grid-cols-1
-                        gap-2
-                        border-t
-                        border-[var(--erp-border)]
-                        bg-[var(--erp-bg)]
-                        p-3
-                        sm:grid-cols-2
-                        lg:grid-cols-4
-                      "
+                      className="grid
+ grid-cols-1
+ gap-2
+ 
+ 
+ 
+ p-3
+ sm:grid-cols-2
+ lg:grid-cols-4"
                     >
 
                       {disponibles.map(
@@ -2618,8 +2323,8 @@ const permisosGlobales =
                                 text-sm
                                 ${
                                   checked
-                                    ? "border-purple-200 bg-purple-50 text-purple-700"
-                                    : "border-[var(--erp-border)] bg-[var(--erp-surface)] text-[var(--erp-text)]"
+                                    ? ""
+                                    : ""
                                 }
                               `}
                             >
@@ -2635,12 +2340,10 @@ const permisosGlobales =
                                     permiso
                                   )
                                 }
-                                className="
-                                  h-4
-                                  w-4
-                                  cursor-pointer
-                                  accent-purple-500
-                                "
+                                className="h-4
+ w-4
+ 
+ accent-purple-500"
                               />
 
                               <span className="truncate">
@@ -2667,16 +2370,7 @@ const permisosGlobales =
             permisosGlobales
           ).length === 0 && (
             <div
-              className="
-                rounded-xl
-                border
-                border-dashed
-                border-[var(--erp-border)]
-                p-6
-                text-center
-                text-sm
-                text-[var(--erp-text-soft)]
-              "
+              className="p-6"
             >
               No hay permisos disponibles.
             </div>
@@ -2710,12 +2404,10 @@ const permisosGlobales =
         <div className="space-y-3">
 
           <div
-            className="
-              flex
-              flex-col
-              gap-2
-              lg:flex-row
-            "
+            className="flex
+ flex-col
+ gap-2
+ lg:flex-row"
           >
 
             <input
@@ -2731,21 +2423,14 @@ const permisosGlobales =
 
               }}
               placeholder="Buscar módulo, acción o descripción..."
-              className="
-                min-w-0
-                flex-1
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-surface)]
-                px-3
-                py-2.5
-                text-sm
-                text-[var(--erp-text)]
-                outline-none
-                placeholder:text-[var(--erp-text-soft)]
-                focus:border-[var(--erp-primary)]
-              "
+              className="min-w-0
+ flex-1
+ 
+ 
+ 
+ 
+ px-3
+ py-2.5"
             />
 
 
@@ -2761,17 +2446,8 @@ const permisosGlobales =
                 setPaginaAud(0);
 
               }}
-              className="
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-surface)]
-                px-3
-                py-2.5
-                text-sm
-                text-[var(--erp-text)]
-                outline-none
-              "
+              className="px-3
+ py-2.5"
             />
 
 
@@ -2780,17 +2456,8 @@ const permisosGlobales =
               onClick={
                 descargarAuditoria
               }
-              className="
-                rounded-xl
-                border
-                border-emerald-200
-                bg-emerald-50
-                px-4
-                py-2.5
-                text-sm
-                font-semibold
-                text-emerald-700
-              "
+              className="px-4
+ py-2.5"
             >
               📊 Exportar
             </button>
@@ -2801,16 +2468,7 @@ const permisosGlobales =
           {auditoriaPaginada.length === 0 ? (
 
             <div
-              className="
-                rounded-xl
-                border
-                border-dashed
-                border-[var(--erp-border)]
-                p-8
-                text-center
-                text-sm
-                text-[var(--erp-text-soft)]
-              "
+              className="p-8"
             >
               No hay registros de auditoría.
             </div>
@@ -2827,34 +2485,24 @@ const permisosGlobales =
                       item.id ??
                       `aud-${index}`
                     }
-                    className="
-                      rounded-xl
-                      border
-                      border-[var(--erp-border)]
-                      bg-[var(--erp-surface)]
-                      p-3
-                    "
+                    className="p-3"
                   >
 
                     <div
-                      className="
-                        flex
-                        flex-col
-                        gap-1
-                        sm:flex-row
-                        sm:items-center
-                        sm:justify-between
-                      "
+                      className="flex
+ flex-col
+ gap-1
+ sm:flex-row
+ sm:items-center
+ sm:justify-between"
                     >
 
                       <div
-                        className="
-                          flex
-                          min-w-0
-                          flex-wrap
-                          items-center
-                          gap-2
-                        "
+                        className="flex
+ min-w-0
+ flex-wrap
+ items-center
+ gap-2"
                       >
 
                         <Chip tone="primary">
@@ -2863,10 +2511,7 @@ const permisosGlobales =
                         </Chip>
 
                         <span
-                          className="
-                            text-xs
-                            text-[var(--erp-text-soft)]
-                          "
+                          className=""
                         >
                           {item.modulo ||
                             "Sistema"}
@@ -2876,10 +2521,7 @@ const permisosGlobales =
 
 
                       <span
-                        className="
-                          text-xs
-                          text-[var(--erp-text-soft)]
-                        "
+                        className=""
                       >
                         {item.fecha || "-"}
                       </span>
@@ -2888,11 +2530,7 @@ const permisosGlobales =
 
 
                     <p
-                      className="
-                        mt-2
-                        text-sm
-                        text-[var(--erp-text)]
-                      "
+                      className="mt-2"
                     >
                       {item.descripcion ||
                         "Sin descripción"}
@@ -2909,20 +2547,15 @@ const permisosGlobales =
 
 
           <div
-            className="
-              flex
-              items-center
-              justify-between
-              gap-3
-              pt-1
-            "
+            className="flex
+ items-center
+ justify-between
+ gap-3
+ pt-1"
           >
 
             <span
-              className="
-                text-xs
-                text-[var(--erp-text-soft)]
-              "
+              className=""
             >
               Página{" "}
               {Math.min(
@@ -2950,15 +2583,8 @@ const permisosGlobales =
                       )
                   )
                 }
-                className="
-                  rounded-lg
-                  border
-                  border-[var(--erp-border)]
-                  px-3
-                  py-1.5
-                  text-xs
-                  disabled:opacity-40
-                "
+                className="px-3
+ py-1.5"
               >
                 Anterior
               </button>
@@ -2979,15 +2605,8 @@ const permisosGlobales =
                       )
                   )
                 }
-                className="
-                  rounded-lg
-                  border
-                  border-[var(--erp-border)]
-                  px-3
-                  py-1.5
-                  text-xs
-                  disabled:opacity-40
-                "
+                className="px-3
+ py-1.5"
               >
                 Siguiente
               </button>
@@ -3024,12 +2643,10 @@ const permisosGlobales =
         <div className="space-y-3">
 
           <div
-            className="
-              flex
-              flex-col
-              gap-2
-              lg:flex-row
-            "
+            className="flex
+ flex-col
+ gap-2
+ lg:flex-row"
           >
 
             <input
@@ -3045,21 +2662,14 @@ const permisosGlobales =
 
               }}
               placeholder="Buscar evento, detalle o IP..."
-              className="
-                min-w-0
-                flex-1
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-surface)]
-                px-3
-                py-2.5
-                text-sm
-                text-[var(--erp-text)]
-                outline-none
-                placeholder:text-[var(--erp-text-soft)]
-                focus:border-[var(--erp-primary)]
-              "
+              className="min-w-0
+ flex-1
+ 
+ 
+ 
+ 
+ px-3
+ py-2.5"
             />
 
 
@@ -3075,17 +2685,8 @@ const permisosGlobales =
                 setPaginaLog(0);
 
               }}
-              className="
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-surface)]
-                px-3
-                py-2.5
-                text-sm
-                text-[var(--erp-text)]
-                outline-none
-              "
+              className="px-3
+ py-2.5"
             />
 
 
@@ -3094,17 +2695,8 @@ const permisosGlobales =
               onClick={
                 descargarLogs
               }
-              className="
-                rounded-xl
-                border
-                border-amber-200
-                bg-amber-50
-                px-4
-                py-2.5
-                text-sm
-                font-semibold
-                text-amber-700
-              "
+              className="px-4
+ py-2.5"
             >
               📝 Exportar
             </button>
@@ -3115,16 +2707,7 @@ const permisosGlobales =
           {logsPaginados.length === 0 ? (
 
             <div
-              className="
-                rounded-xl
-                border
-                border-dashed
-                border-[var(--erp-border)]
-                p-8
-                text-center
-                text-sm
-                text-[var(--erp-text-soft)]
-              "
+              className="p-8"
             >
               No hay logs técnicos.
             </div>
@@ -3157,33 +2740,23 @@ const permisosGlobales =
                         item.id ??
                         `log-${index}`
                       }
-                      className="
-                        rounded-xl
-                        border
-                        border-[var(--erp-border)]
-                        bg-[var(--erp-surface)]
-                        p-3
-                      "
+                      className="p-3"
                     >
 
                       <div
-                        className="
-                          flex
-                          flex-col
-                          gap-1
-                          sm:flex-row
-                          sm:items-center
-                          sm:justify-between
-                        "
+                        className="flex
+ flex-col
+ gap-1
+ sm:flex-row
+ sm:items-center
+ sm:justify-between"
                       >
 
                         <div
-                          className="
-                            flex
-                            flex-wrap
-                            items-center
-                            gap-2
-                          "
+                          className="flex
+ flex-wrap
+ items-center
+ gap-2"
                         >
 
                           <Chip tone={tono}>
@@ -3194,10 +2767,7 @@ const permisosGlobales =
 
                           {item.ip && (
                             <span
-                              className="
-                                text-xs
-                                text-[var(--erp-text-soft)]
-                              "
+                              className=""
                             >
                               IP {item.ip}
                             </span>
@@ -3207,10 +2777,7 @@ const permisosGlobales =
 
 
                         <span
-                          className="
-                            text-xs
-                            text-[var(--erp-text-soft)]
-                          "
+                          className=""
                         >
                           {item.fecha || "-"}
                         </span>
@@ -3219,11 +2786,7 @@ const permisosGlobales =
 
 
                       <p
-                        className="
-                          mt-2
-                          text-sm
-                          text-[var(--erp-text)]
-                        "
+                        className="mt-2"
                       >
                         {item.detalle ||
                           "Sin detalle"}
@@ -3241,20 +2804,15 @@ const permisosGlobales =
 
 
           <div
-            className="
-              flex
-              items-center
-              justify-between
-              gap-3
-              pt-1
-            "
+            className="flex
+ items-center
+ justify-between
+ gap-3
+ pt-1"
           >
 
             <span
-              className="
-                text-xs
-                text-[var(--erp-text-soft)]
-              "
+              className=""
             >
               Página{" "}
               {Math.min(
@@ -3282,15 +2840,8 @@ const permisosGlobales =
                       )
                   )
                 }
-                className="
-                  rounded-lg
-                  border
-                  border-[var(--erp-border)]
-                  px-3
-                  py-1.5
-                  text-xs
-                  disabled:opacity-40
-                "
+                className="px-3
+ py-1.5"
               >
                 Anterior
               </button>
@@ -3311,15 +2862,8 @@ const permisosGlobales =
                       )
                   )
                 }
-                className="
-                  rounded-lg
-                  border
-                  border-[var(--erp-border)]
-                  px-3
-                  py-1.5
-                  text-xs
-                  disabled:opacity-40
-                "
+                className="px-3
+ py-1.5"
               >
                 Siguiente
               </button>
