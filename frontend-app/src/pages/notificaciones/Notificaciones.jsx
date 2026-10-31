@@ -130,9 +130,6 @@ export default function Notificaciones() {
 
     <div
       className="erp-page notificaciones-premium-page min-w-0 space-y-6"
- p-4
- md:p-6
- space-y-6"
     >
 
       {/* ======================================================
