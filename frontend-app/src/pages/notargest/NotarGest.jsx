@@ -6,6 +6,8 @@ import Sidebar from "../../components/Sidebar";
 import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 const TOKEN_KEY = "notargest_token";
 const bandejas = [
@@ -76,6 +78,8 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
   const pagosDialogRef = useRef(null);
   const perfilDialogRef = useRef(null);
   const resumenDialogRef = useRef(null);
+  const ordenPagos = useSortableData(pagosNotario);
+  const ordenResumenExpedientes = useSortableData(modalExpedientesResumen?.items || []);
   const cerrarPerfilNotario = () => {
     if (guardandoPasswordPerfil) return;
     setPerfilNotarioAbierto(false);
@@ -551,8 +555,8 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         <section ref={pagosDialogRef} tabIndex={-1} className="ng-modal molsan-modal__panel ng-modal-pagos ng-modal-pagos-amplio" role="dialog" aria-modal="true" aria-labelledby="ng-pagos-titulo">
           <header className="molsan-modal__header"><div><span className="ng-kicker">NOTARGEST · GESTIÓN ECONÓMICA</span><h2 id="ng-pagos-titulo">Solicitudes de Pago efectuadas por Molsan</h2><p>Pagos registrados desde la Ficha de expediente y vinculados a la notaría.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setPagosAbiertos(false)}>Cerrar ✕</button></header>
           <div className="ng-pagos-tabla-wrap molsan-modal__body">
-            <table className="ng-tabla ng-tabla-pagos"><thead><tr><th>N.º expediente</th><th>Fecha de pago</th><th>Nombre</th><th>DNI</th><th>Importe</th><th>Protocolo</th><th>Fecha de firma</th><th>Factura notarial</th><th>Justificante</th></tr></thead>
-              <tbody>{pagosNotario.map(item => <tr key={item.id}>
+            <table className="ng-tabla ng-tabla-pagos"><thead><tr><MolsanSortableTh label="N.º expediente" sortKey="id_expediente" sortConfig={ordenPagos.sortConfig} onSort={ordenPagos.requestSort} /><MolsanSortableTh label="Fecha de pago" sortKey="fecha_pago" sortConfig={ordenPagos.sortConfig} onSort={ordenPagos.requestSort} /><MolsanSortableTh label="Nombre" sortKey="nombre" sortConfig={ordenPagos.sortConfig} onSort={ordenPagos.requestSort} /><MolsanSortableTh label="DNI" sortKey="dni" sortConfig={ordenPagos.sortConfig} onSort={ordenPagos.requestSort} /><MolsanSortableTh label="Importe" sortKey="importe" sortConfig={ordenPagos.sortConfig} onSort={ordenPagos.requestSort} /><MolsanSortableTh label="Protocolo" sortKey="protocolo" sortConfig={ordenPagos.sortConfig} onSort={ordenPagos.requestSort} /><MolsanSortableTh label="Fecha de firma" sortKey="fecha_firma" sortConfig={ordenPagos.sortConfig} onSort={ordenPagos.requestSort} /><MolsanSortableTh label="Factura notarial" sortKey="factura_notarial_id" sortConfig={ordenPagos.sortConfig} onSort={ordenPagos.requestSort} /><MolsanSortableTh label="Justificante" sortKey="justificante_documento_id" sortConfig={ordenPagos.sortConfig} onSort={ordenPagos.requestSort} /></tr></thead>
+              <tbody>{ordenPagos.items.map(item => <tr key={item.id}>
                 <td><button type="button" className="ng-abrir" onClick={() => { setPagosAbiertos(false); abrirExpediente({id_expediente:item.id_expediente}); }}>{texto(item.id_expediente)}</button></td>
                 <td>{esFecha(item.fecha_pago)}</td><td>{texto(item.nombre)}</td><td>{texto(item.dni)}</td><td>{euros(item.importe)}</td><td>{texto(item.protocolo)}</td><td>{esFecha(item.fecha_firma)}</td>
                 <td>{item.factura_notarial_id ? <button type="button" className="ng-pdf-link" title="Abrir factura notarial PDF" onClick={() => abrirPdfPago(item,"factura")}><span>PDF</span></button> : "—"}</td>
@@ -593,8 +597,8 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
               {cargandoResumenExpedientes ? <p className="ng-mensaje">Cargando expedientes…</p> : modalExpedientesResumen.items.length === 0 ? <div className="ng-modal-vacio"><strong>No hay expedientes en este bloque</strong><p>Cuando existan expedientes que cumplan esta condición aparecerán aquí.</p></div> : (
                 <div className="ng-resumen-expedientes-tabla-wrap">
                   <table className="ng-tabla ng-resumen-expedientes-tabla">
-                    <thead><tr><th>Expediente</th><th>Notaría</th><th>Titular / solicitante</th><th>Actividad actual</th><th>Estado</th><th>Fecha firma</th><th></th></tr></thead>
-                    <tbody>{modalExpedientesResumen.items.map(item => (
+                    <thead><tr><MolsanSortableTh label="Expediente" sortKey="id_expediente" sortConfig={ordenResumenExpedientes.sortConfig} onSort={ordenResumenExpedientes.requestSort} /><MolsanSortableTh label="Notaría" sortKey="notaria_nombre" sortConfig={ordenResumenExpedientes.sortConfig} onSort={ordenResumenExpedientes.requestSort} /><MolsanSortableTh label="Titular / solicitante" sortKey="titular" sortConfig={ordenResumenExpedientes.sortConfig} onSort={ordenResumenExpedientes.requestSort} /><MolsanSortableTh label="Actividad actual" sortKey="actividad_actual" sortConfig={ordenResumenExpedientes.sortConfig} onSort={ordenResumenExpedientes.requestSort} /><MolsanSortableTh label="Estado" sortKey="notargest_estado" sortConfig={ordenResumenExpedientes.sortConfig} onSort={ordenResumenExpedientes.requestSort} /><MolsanSortableTh label="Fecha firma" sortKey="fecha_firma" sortConfig={ordenResumenExpedientes.sortConfig} onSort={ordenResumenExpedientes.requestSort} /><th /></tr></thead>
+                    <tbody>{ordenResumenExpedientes.items.map(item => (
                       <tr key={`${item.notaria_id}:${item.id_expediente}`}>
                         <td><strong>{texto(item.id_expediente || item.numero_expediente)}</strong></td>
                         <td>{texto(item.notaria_nombre)}</td>
