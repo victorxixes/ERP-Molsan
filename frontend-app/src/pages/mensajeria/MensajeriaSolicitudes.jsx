@@ -206,7 +206,7 @@ export default function MensajeriaSolicitudes() {
     finally { setGuardando(false); }
   };
 
-  return <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+  return <main className="w-full min-w-0 space-y-5">
     <header className="relative overflow-hidden p-6 sm:p-7">
       <div className="absolute inset-x-0 top-0 h-1" />
       <p className="uppercase">MOLSAN ERP</p>
