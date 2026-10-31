@@ -12,7 +12,7 @@ function Campo({ label, value, onChange, type = "text", required = false, placeh
 }
 
 function Seccion({ numero, titulo, descripcion, children, className = "" }) {
-  return <section className={`overflow-hidden rounded-2xl border border-[var(--molsan-border)] bg-[var(--molsan-surface)] shadow-[0_12px_36px_rgba(15,23,42,0.07)] backdrop-blur-sm ${className}`}><div className="flex items-start gap-3 px-5 py-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center">{numero}</span><div><h2 className="">{titulo}</h2><p className="mt-0.5">{descripcion}</p></div></div><div className="space-y-5 p-5">{children}</div></section>;
+  return <section className={`overflow-hidden ${className}`}><div className="flex items-start gap-3 px-5 py-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center">{numero}</span><div><h2 className="">{titulo}</h2><p className="mt-0.5">{descripcion}</p></div></div><div className="space-y-5 p-5">{children}</div></section>;
 }
 
 export default function AltaExpediente() {
@@ -182,7 +182,7 @@ export default function AltaExpediente() {
         <label className="block space-y-1.5"><span className="">Observaciones generales</span><textarea className={campo} rows={5} value={observaciones} onChange={(e) => setObservaciones(e.target.value)} placeholder="Escribe aquí las observaciones generales del expediente…" /></label>
       </Seccion>
 
-      <div className="sticky bottom-3 z-10 flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between lg:col-span-2 2xl:col-span-3"><p className="">Revisa los datos antes de confirmar el alta. Los campos marcados con * son obligatorios.</p><div className="flex gap-3"><button type="button" className={botonSecundario} disabled={guardando} onClick={() => navigate("/herramientas/utilidades")}>Cancelar</button><button type="submit" disabled={guardando || !tipoId} className="px-5 py-2.5 hover:-translate-y-0.5">{guardando ? "Creando expediente…" : "Crear expediente"}</button></div></div>
+      <div className="sticky bottom-3 z-10 flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between lg:col-span-2 2xl:col-span-3"><p className="">Revisa los datos antes de confirmar el alta. Los campos marcados con * son obligatorios.</p><div className="flex gap-3"><button type="button" className={botonSecundario} disabled={guardando} onClick={() => navigate("/herramientas/utilidades")}>Cancelar</button><button type="submit" disabled={guardando || !tipoId} className="px-5 py-2.5">{guardando ? "Creando expediente…" : "Crear expediente"}</button></div></div>
     </form>}
   </main>;
 }
