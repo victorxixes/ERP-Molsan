@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 const VACIO = { nombre: "", categoria: "impuesto", impuesto: "IVA", porcentaje: "", territorio: "Territorio común", descripcion: "", activo: true };
 const fmt = (n) => n === null || n === undefined || n === "" ? "—" : `${Number(n).toLocaleString("es-ES", { maximumFractionDigits: 3 })}%`;
@@ -62,24 +63,19 @@ export default function TiposImpositivos() {
   };
 
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden p-6">
-        <div className="absolute inset-x-0 top-0 h-1" />
-        <p className="uppercase">MOLSAN ERP</p>
-        <h1 className="mt-2">Tipos impositivos</h1>
-        <p className="mt-2 max-w-3xl">Mantén en un único catálogo los impuestos indirectos y las retenciones utilizados en las órdenes de pago, gastos y otros procesos económicos.</p>
-      </header>
+    <main className="erp-page min-w-0 space-y-6">
+      <MolsanPageHeader mark="TI" title="Tipos impositivos" description="Catálogo de impuestos y retenciones utilizados en pagos, gastos y operaciones económicas." />
 
       <div className="px-4 py-3">
         Los tipos son referencias configurables: la aplicación del porcentaje correcto depende de la operación, el territorio, la fecha de devengo y los requisitos legales. Comprueba la factura antes de confirmar un pago.
       </div>
 
-      <section id="formulario-tipo-impositivo" className="p-5 sm:p-6">
+      <section id="formulario-tipo-impositivo" className="erp-card p-5 sm:p-6">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div><h2>{editando ? "Editar tipo impositivo" : "Crear tipo impositivo"}</h2><p className="mt-1">Los tipos desactivados no aparecerán en los desplegables nuevos.</p></div>
           {editando && <button type="button" onClick={nuevo} className="px-3 py-2">Cancelar edición</button>}
         </div>
-        <form onSubmit={guardar} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <form onSubmit={guardar} className="molsan-form grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <label>Nombre visible *
             <input required maxLength={160} value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} placeholder="Ej. IVA general 21%" className="mt-1.5 w-full px-3 py-2.5" />
           </label>
@@ -111,8 +107,8 @@ export default function TiposImpositivos() {
       {error && <div role="alert" className="px-4 py-3">{error}</div>}
       {mensaje && <div role="status" className="px-4 py-3">{mensaje}</div>}
 
-      <section className="overflow-hidden">
-        <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
+      <section className="erp-card overflow-hidden">
+        <div className="molsan-filter-bar flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
           <div><h2>Catálogo configurado</h2><p>{filtrados.length} registro(s) mostrados</p></div>
           <div className="flex flex-wrap items-center gap-2">
             <select aria-label="Filtrar por categoría" value={categoriaFiltro} onChange={(e) => setCategoriaFiltro(e.target.value)} className="px-3 py-2"><option value="todos">Todos</option><option value="impuesto">Impuestos</option><option value="retencion">Retenciones</option></select>
