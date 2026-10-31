@@ -107,7 +107,7 @@ export default function VistaMes({
   const hoyStr = new Date().toLocaleDateString("sv-SE");
 
   return (
-    <div className="agenda-vista-premium agenda-vista-mes-premium text-xs text-[var(--erp-text)] animate-fade-in">
+    <div className="agenda-vista-premium agenda-vista-mes-premium">
 
       {/* CABECERA DÍAS */}
 
@@ -117,17 +117,11 @@ export default function VistaMes({
         {DIAS_SEMANA.map((d) => (
           <div
             key={d}
-            className="
-              py-3
-              text-center
-              font-semibold
-              text-[var(--erp-text-soft)]
-              uppercase
-              tracking-wide
-              rounded-xl
-              border border-[var(--erp-border)]
-              bg-[var(--erp-surface-soft)]
-            "
+            className="py-3
+ 
+ 
+ 
+ uppercase"
           >
             {d}
           </div>
@@ -145,12 +139,7 @@ export default function VistaMes({
               return (
                 <div
                   key={`${wi}-${di}`}
-                  className="
-                    min-h-32
-                    rounded-xl
-                    bg-slate-50/70
-                    border border-[var(--erp-border)]
-                  "
+                  className="min-h-32"
                 />
               );
             }
@@ -177,8 +166,8 @@ export default function VistaMes({
                   transition-all duration-200
                   ${
                     esHoy
-                      ? "border-[var(--erp-primary)] bg-[var(--erp-primary-soft)]/40 shadow-sm"
-                      : "border-[var(--erp-border)] bg-[var(--erp-surface)] hover:bg-[var(--erp-surface-soft)] hover:shadow-sm"
+                      ? ""
+                      : ""
                   }
                 `}
                 onClick={() =>
@@ -196,8 +185,8 @@ export default function VistaMes({
                       font-semibold
                       ${
                         esHoy
-                          ? "text-[var(--erp-primary)]"
-                          : "text-[var(--erp-text-soft)]"
+                          ? ""
+                          : ""
                       }
                     `}
                   >
@@ -213,8 +202,8 @@ export default function VistaMes({
                       font-semibold
                       ${
                         esHoy
-                          ? "bg-[var(--erp-primary)] text-white"
-                          : "text-[var(--erp-text)]"
+                          ? ""
+                          : ""
                       }
                     `}
                   >
@@ -226,13 +215,11 @@ export default function VistaMes({
                 {/* CITAS */}
 
                 <div
-                  className="
-                    mt-1
-                    space-y-1
-                    overflow-y-auto
-                    max-h-24
-                    pr-1
-                  "
+                  className="mt-1
+ space-y-1
+ overflow-y-auto
+ max-h-24
+ pr-1"
                 >
                   {citasDia.map((c) => {
 
@@ -281,21 +268,21 @@ export default function VistaMes({
                           `}
                         />
 
-                        <div className="font-semibold truncate pl-1">
+                        <div className="truncate pl-1">
                           {c.tipo_cita} — {c.hora_inicio} →{" "}
                           {c.hora_fin}
                         </div>
-                        {String(c.tipo_cita || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es").includes("firma") ? (() => { const realizada = Boolean(c.firma_realizada) || /FIRMA\s+REALIZADA|FIRMADA/.test(String(c.observaciones || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()); return <div className={`mt-1 inline-flex items-center rounded-md border px-1.5 py-0.5 text-[10px] font-bold ${realizada ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-700"}`}>{realizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</div>; })() : null}
+                        {String(c.tipo_cita || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es").includes("firma") ? (() => { const realizada = Boolean(c.firma_realizada) || /FIRMA\s+REALIZADA|FIRMADA/.test(String(c.observaciones || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()); return <div className={`mt-1 inline-flex items-center rounded-md border px-1.5 py-0.5 text-[10px] font-bold ${realizada ? "" : ""}`}>{realizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</div>; })() : null}
 
-                        <div className="truncate text-[var(--erp-text-soft)] pl-1">
+                        <div className="truncate pl-1">
                           Notario: {c.notario_nombre || "—"}
                         </div>
 
-                        <div className="truncate text-[var(--erp-text-soft)] pl-1">
+                        <div className="truncate pl-1">
                           Firma: {c.tipo_firma}
                         </div>
 
-                        <div className="truncate text-[var(--erp-text-soft)] pl-1">
+                        <div className="truncate pl-1">
                           Apoderado: {c.apoderado_nombre || "—"}
                         </div>
 
