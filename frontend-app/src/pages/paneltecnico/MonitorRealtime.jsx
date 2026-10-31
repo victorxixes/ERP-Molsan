@@ -571,7 +571,7 @@ export default function MonitorRealtime() {
             <div>
 
               <h2
-                className=""
+               
               >
                 Monitor Realtime
               </h2>
@@ -643,7 +643,7 @@ export default function MonitorRealtime() {
           >
 
             <div
-              className=""
+             
             >
               Conexión de esta vista
             </div>
@@ -672,7 +672,7 @@ export default function MonitorRealtime() {
           >
 
             <div
-              className=""
+             
             >
               Mensajes recibidos
             </div>
@@ -699,7 +699,7 @@ export default function MonitorRealtime() {
           >
 
             <div
-              className=""
+             
             >
               Última actividad
             </div>
@@ -748,7 +748,7 @@ export default function MonitorRealtime() {
             <div>
 
               <div
-                className=""
+               
               >
                 Suscripción realtime
               </div>
@@ -826,13 +826,13 @@ export default function MonitorRealtime() {
         >
 
           <span
-            className=""
+           
           >
             Endpoint WebSocket
           </span>
 
           <code
-            className=""
+           
           >
             /ws/realtime/
           </code>
