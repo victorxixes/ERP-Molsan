@@ -150,8 +150,8 @@ export default function SelectSJ({
 
           ${
             disabled
-              ? "opacity-60 cursor-not-allowed bg-slate-100"
-              : "hover:border-[var(--molsan-primary,#3156b3)] hover:bg-[var(--molsan-primary-soft,#edf3ff)] cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--molsan-primary,#3156b3)] focus-visible:outline-offset-2"
+              ? ""
+              : ""
           }
         `}
       >
@@ -166,7 +166,7 @@ export default function SelectSJ({
             text-[var(--molsan-text-muted,#64748b)]
             transition-transform
             duration-200
-            ${open ? "rotate-180" : ""}
+            ${open ? "" : ""}
           `}
           aria-hidden="true"
         >
@@ -183,26 +183,23 @@ export default function SelectSJ({
           id={listboxId}
           role="listbox"
           aria-label={placeholder}
-          className="
-            absolute
-            left-0
-            right-0
-            mt-2
-            z-[100]
-            overflow-hidden
-            bg-white
-            border border-slate-200
-            rounded-xl
-            shadow-xl
-            shadow-slate-900/10
-            py-1
-            max-h-64
-            overflow-y-auto
-            animate-fade-in
-          "
+          className="absolute
+ left-0
+ right-0
+ mt-2
+ z-[100]
+ overflow-hidden
+ 
+ 
+ 
+ 
+ 
+ py-1
+ max-h-64
+ overflow-y-auto"
         >
           {options.length === 0 ? (
-            <div className="px-3 py-3 text-sm text-slate-400">
+            <div className="px-3 py-3">
               No hay opciones disponibles
             </div>
           ) : (
@@ -252,8 +249,8 @@ export default function SelectSJ({
 
                     ${
                       seleccionada
-                        ? "bg-[var(--molsan-primary-soft,#edf3ff)] text-[var(--molsan-primary,#3156b3)] font-semibold"
-                        : "text-[var(--molsan-text-secondary,#526176)] hover:bg-[var(--molsan-surface-soft,#f7f9fc)]"
+                        ? ""
+                        : ""
                     }
                   `}
                 >
@@ -263,7 +260,7 @@ export default function SelectSJ({
 
                   {seleccionada && (
                     <svg
-                      className="w-4 h-4 shrink-0 text-[var(--molsan-primary,#3156b3)]"
+                      className="w-4 h-4 shrink-0"
                       aria-hidden="true"
                     >
                       <use href="/icons/icons.svg#check" />
