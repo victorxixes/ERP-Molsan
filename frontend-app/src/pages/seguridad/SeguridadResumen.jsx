@@ -810,7 +810,7 @@ export default function SeguridadResumen({ empleadoId }) {
 
                       <div className="min-w-0">
 
-                        <div className="">
+                        <div>
                           {modulo}
                         </div>
 
@@ -898,7 +898,7 @@ export default function SeguridadResumen({ empleadoId }) {
  justify-between
  gap-3">
 
-                          <strong className="">
+                          <strong>
                             {modulo}
                           </strong>
 
@@ -1033,7 +1033,7 @@ export default function SeguridadResumen({ empleadoId }) {
 
                         <div>
 
-                          <div className="">
+                          <div>
                             {item.accion}
                           </div>
 
@@ -1128,7 +1128,7 @@ export default function SeguridadResumen({ empleadoId }) {
 
                         <div>
 
-                          <div className="">
+                          <div>
                             {log.tipo}
                           </div>
 
