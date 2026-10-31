@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useSeguridad } from "../../hooks/useSeguridad";
 import ModalEmpleado from "../../components/empleados/ModalEmpleado";
 import { useAuthStore } from "../../store/authStore";
@@ -53,8 +54,9 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
 
   if (!esAdministrador) {
     return (
-      <div className="p-6">
-        <section className="max-w-2xl p-6">
+      <div className="erp-page min-w-0 space-y-6">
+        <MolsanPageHeader mark="AD" title="Acceso restringido" description="Esta sección está reservada a perfiles administradores." />
+        <section className="erp-card max-w-2xl p-6">
           <h1>Acceso restringido</h1>
           <p className="mt-2">Solo un administrador puede gestionar la visibilidad de tablas y las asignaciones de empleados.</p>
         </section>
@@ -63,15 +65,11 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
   }
 
   return (
-    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="p-6">
-        <p className="uppercase">Utilidades · Administración de empleados</p>
-        <h1 className="mt-2">{titulo}</h1>
-        <p className="mt-2 max-w-3xl">{descripcion}</p>
-      </header>
+    <div className="erp-page min-w-0 space-y-6">
+      <MolsanPageHeader mark="AD" title={titulo} description={descripcion} />
 
-      <section className="overflow-hidden">
-        <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+      <section className="erp-card overflow-hidden">
+        <div className="molsan-filter-bar flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
           <div>
             <h2>Listado de empleados</h2>
             <p className="mt-1">
@@ -137,7 +135,7 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-2">
-                          <button type="button" onClick={() => abrirModal(empleado, "ficha")} className="whitespace-nowrap px-3 py-2">
+                          <button type="button" onClick={() => abrirModal(empleado, "ficha")} className="molsan-btn molsan-btn--secondary whitespace-nowrap">
                             Abrir ficha
                           </button>
                           <button type="button" onClick={() => abrirModal(empleado, "configuracion")} className="whitespace-nowrap px-3 py-2">
