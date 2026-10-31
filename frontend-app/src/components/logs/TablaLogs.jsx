@@ -1,7 +1,7 @@
 import { useMemo, useCallback, useState } from "react";
 
 /**
- * TABLA LOGS — MOLSAN ERP SAAS PREMIUM 2027
+ * TABLA LOGS
  *
  * - Búsqueda
  * - Filtro por fecha
@@ -9,7 +9,6 @@ import { useMemo, useCallback, useState } from "react";
  * - Paginación
  * - Exportación
  * - Iconos por tipo de evento
- * - Diseño Glass Luxe claro
  * - Responsive
  */
 
@@ -604,7 +603,7 @@ export default function TablaLogs({
                 onClick={
                   descargarExcel
                 }
-                className="molsan-export-excel"
+                className=""
               >
                 <span
                   aria-hidden="true"
