@@ -186,7 +186,7 @@ export default function Notificaciones() {
             <div>
 
               <h1
-                className=""
+               
               >
                 Notificaciones
               </h1>
@@ -226,7 +226,7 @@ export default function Notificaciones() {
             >
 
               <div
-                className=""
+               
               >
                 {lista.length}
               </div>
@@ -299,7 +299,7 @@ export default function Notificaciones() {
 
 
           <h2
-            className=""
+           
           >
             No hay notificaciones
           </h2>
@@ -496,7 +496,7 @@ export default function Notificaciones() {
                       >
 
                         <span
-                          className=""
+                         
                         >
                           🏷️
                         </span>
