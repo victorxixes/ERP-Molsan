@@ -75,7 +75,7 @@ export default function Cancelagest() {
     })
     .filter((modulo) => modulo && puedeVerModulo(modulo.key));
 
-  return <main>
+  return <main className="erp-page min-w-0 space-y-6">
       <MolsanPageHeader mark="CG" title="CancelaGest" description="Centro de gestión de cancelaciones, provisiones, firmas y seguimiento registral." />
 
       {error && <div role="alert"><strong>No se han podido cargar los indicadores.</strong><p>{error}</p><button onClick={cargar}>Reintentar</button></div>}

@@ -1,4 +1,5 @@
 import { useCallback, useEffect } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 import { useLogs } from "../../hooks/useLogs";
 
@@ -204,112 +205,14 @@ export default function Logs() {
 
   return (
 
-    <div
-      className="logs-premium-page
- relative
- min-h-full
- space-y-6
- min-w-0"
-    >
+    <div className="erp-page min-w-0 space-y-6">
 
       {/* =====================================================
           CABECERA
       ===================================================== */}
 
-      <section
-        className="relative
- overflow-hidden
- 
- 
- 
- 
- 
- 
- p-6
- sm:p-7"
-      >
-
-        {/* Línea superior */}
-
-        <div
-          className="absolute
- top-0
- left-0
- right-0
- h-px"
-        />
-
-
-        {/* Decoración */}
-
-        <div
-          className="absolute
- -top-20
- -right-20
- w-48
- h-48
- 
- 
- 
- pointer-events-none"
-        />
-
-
-        <div
-          className="relative
- z-10"
-        >
-
-          <div
-            className="flex
- items-center
- gap-3"
-          >
-
-            <div
-              className="flex
- items-center
- justify-center
- w-11
- h-11"
-            >
-
-              <span
-               
-                aria-hidden="true"
-              >
-                📋
-              </span>
-
-            </div>
-
-
-            <div>
-
-              <h1
-               
-              >
-                Logs del sistema
-              </h1>
-
-
-              <p
-                className="mt-1"
-              >
-                Monitorización avanzada de eventos,
-                seguridad y actividad del ERP.
-              </p>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      {/* =====================================================
+      <MolsanPageHeader mark="LG" title="Logs del sistema" description="Monitorización avanzada de eventos, seguridad y actividad del ERP." />
+   {/* =====================================================
           ERROR
       ===================================================== */}
 

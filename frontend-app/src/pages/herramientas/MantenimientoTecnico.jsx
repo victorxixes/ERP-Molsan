@@ -262,15 +262,15 @@ export default function MantenimientoTecnico() {
 
   if (!accesoPermitido) {
     return (
-      <div className="p-6">
-        <div className="mx-auto max-w-3xl p-6">
+      <main className="erp-page min-h-full min-w-0">
+        <section className="erp-card p-6">
           <div>🔒 Acceso restringido</div>
           <p className="mt-2">
             Tu usuario no tiene habilitado el módulo Utilidades. Si necesitas
             acceder, solicita que se active desde la ficha del empleado.
           </p>
-        </div>
-      </div>
+        </section>
+      </main>
     );
   }
 
