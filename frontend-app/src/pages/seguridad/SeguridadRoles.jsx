@@ -55,11 +55,11 @@ function estadoRol(rol) {
   return activo
     ? {
         texto: "Activo",
-punto: "bg-emerald-500",
+
       }
     : {
         texto: "Inactivo",
-punto: "bg-red-500",
+
       };
 }
 
