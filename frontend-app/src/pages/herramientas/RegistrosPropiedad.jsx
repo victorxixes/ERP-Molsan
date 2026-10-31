@@ -2106,6 +2106,7 @@ export default function RegistrosPropiedad() {
  min-w-[1500px]"
             >
 
+              <thead><tr>
               <MolsanSortableTh label="Registro" sortKey="registro_propiedad" sortConfig={ordenRegistros.sortConfig} onSort={ordenRegistros.requestSort} className="" />
 
 
