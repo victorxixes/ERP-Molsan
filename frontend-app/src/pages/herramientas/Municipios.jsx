@@ -1,11 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/CatalogosMaestrosPremium.css";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 /**
  * ============================================================
- * MUNICIPIOS — MOLSAN ERP PREMIUM 2027
+ * MUNICIPIOS
  * ============================================================
  *
  * Maestro de municipios
@@ -1202,7 +1200,7 @@ export default function Municipios() {
 
 
       /* ------------------------------------------------------
-         MENSAJE PREMIUM DE RESULTADO
+         MENSAJE DE RESULTADO
       ------------------------------------------------------ */
 
       const partes = [];
@@ -1457,7 +1455,7 @@ export default function Municipios() {
   return (
 
     <div
-      className="municipios-premium herramientas-subpagina-premium catalogo-maestro-modal-premium 
+      className="
  min-h-full
  p-4 sm:p-6 lg:p-8
  space-y-6"
