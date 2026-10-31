@@ -2361,7 +2361,7 @@ export default function ExpedientesListado() {
 
     <div
       className="erp-page
- molsan-page
+ 
  expedientes-page
  min-h-full
 
@@ -2403,19 +2403,19 @@ export default function ExpedientesListado() {
       {/* Área principal de trabajo de expedientes */}
 
       <main className="min-w-0 w-full space-y-6">
-        <header className="molsan-page-header expedientes-page__header">
-          <div className="molsan-page-header__identity">
-            <div className="expedientes-page__header-icon molsan-page-header__mark" aria-hidden="true">EXP</div>
+        <header className=" ">
+          <div className="">
+            <div className=" " aria-hidden="true">EXP</div>
             <div className="min-w-0">
-              <p className="expedientes-page__eyebrow molsan-page-header__eyebrow">MOLSAN ERP</p>
-              <h1 className="molsan-page-header__title">Expedientes</h1>
-              <p className="molsan-page-header__description">
+              <p className=" ">MOLSAN ERP</p>
+              <h1 className="">Expedientes</h1>
+              <p className="">
                 Consulta, seguimiento y control de la tramitación de expedientes.
               </p>
             </div>
           </div>
-          <div className="molsan-page-header__actions">
-            <span className="expedientes-page__header-note">Gestión y seguimiento</span>
+          <div className="">
+            <span className="">Gestión y seguimiento</span>
           </div>
         </header>
 
