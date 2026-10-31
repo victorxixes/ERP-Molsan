@@ -841,3 +841,42 @@ body {
     transform: none;
   }
 }
+
+
+/* ==========================================================
+   FASE 2 — GLASS LUXE DISCRETO · PILOTO EXPEDIENTES
+   Se limita al contenedor principal del listado y su tabla.
+   Los datos de las celdas mantienen fondo sólido y legible.
+========================================================== */
+.expedientes-page > section.erp-card {
+  background: linear-gradient(
+    145deg,
+    var(--molsan-glass-surface) 0%,
+    var(--molsan-glass-soft) 100%
+  );
+  border-color: var(--molsan-glass-border);
+  box-shadow:
+    inset 0 1px 0 var(--molsan-glass-highlight),
+    var(--molsan-glass-shadow);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.expedientes-page .molsan-table-wrap {
+  overflow: auto;
+  border-color: var(--molsan-glass-border);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: inset 0 1px 0 var(--molsan-glass-highlight);
+}
+
+.expedientes-page .molsan-table thead th {
+  background: rgba(234, 242, 248, 0.97);
+}
+
+.expedientes-page .molsan-table tbody td {
+  background: rgba(255, 255, 255, 0.97);
+}
+
+.expedientes-page .molsan-table tbody tr:hover td {
+  background: rgba(242, 247, 251, 0.98);
+}
