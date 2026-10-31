@@ -99,7 +99,7 @@ export default function PortalAccessTabs({ notariaId }) {
 
   if (!puedeVerNotarGest && !puedeVerEncargaGest) {
     return (
-      <section className="  ">
+      <section>
         <div className="ctn-modal-seccion-titulo"><h3>Accesos a portales externos</h3></div>
         <p role="alert" className="ctn-portal-alert ctn-portal-alert--warning">
           Tu usuario no tiene permiso para consultar NotarGestWeb ni EncargaGestWeb. Solicita al administrador que lo habilite en la ficha del empleado.
