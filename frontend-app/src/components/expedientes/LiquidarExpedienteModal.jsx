@@ -167,7 +167,7 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
                     <td className="whitespace-nowrap px-3 py-2">{String(fila.fecha_pago || fila.fecha || fila.fecha_factura || "").slice(0,10) || "—"}</td>
                     <td className="px-3 py-2">{fila._tipo}</td>
                     <td className="whitespace-nowrap px-3 py-2">{dinero(fila.importe_total_bruto ?? fila.importe ?? fila.importe_resultante)}</td>
-                    <td className="px-3 py-2"><span className={fila._pagado ? "font-bold text-emerald-700" : "font-semibold text-amber-700"}>{fila._pagado ? "Pagado" : "Pendiente · registrar desde Pagar"}</span></td>
+                    <td className="px-3 py-2"><span className={fila._pagado ? "" : ""}>{fila._pagado ? "Pagado" : "Pendiente · registrar desde Pagar"}</span></td>
                   </tr>)}
                   <tr className=""><td className="whitespace-nowrap px-3 py-2">{form.fecha_fin_actividad || "—"}</td><td className="px-3 py-2">Liquidación final</td><td className="px-3 py-2">{dinero(saldoLiquidacion)}</td><td className="px-3 py-2">Saldo calculado</td></tr>
                 </tbody>
@@ -193,7 +193,7 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
               <div className="min-w-0 flex-1">
                 <h3 className="">📚 Cierre documental digital</h3>
                 <p className="mt-1">Genera una vista previa sin guardar. Tras revisarla, pulsa «Aceptar y guardar en Carpeta digital» para registrar el PDF en Expediente digital completo. Orden: Hoja de liquidación, Factura notario, Factura registro, Factura Honorarios gestoría, Copia simple, Justificación de cancelación, AJD / ITP y Hoja de inscripción.</p>
-                {cierreDocumental && <div className={`mt-3 rounded-lg border px-3 py-2 text-xs ${cierreDocumental.guardado ? "border-emerald-200 bg-white text-emerald-800" : "border-amber-200 bg-white text-amber-800"}`}>
+                {cierreDocumental && <div className={`mt-3 rounded-lg border px-3 py-2 text-xs ${cierreDocumental.guardado ? "" : ""}`}>
                   <p className="">{cierreDocumental.mensaje || "PDF de cierre documental preparado."}</p>
                   <p className="mt-1">{Number(cierreDocumental.paginas || 0)} páginas · {Array.isArray(cierreDocumental.documentos_incluidos) ? cierreDocumental.documentos_incluidos.length : 0} documento(s).</p>
                   {Array.isArray(cierreDocumental.documentos_faltantes) && cierreDocumental.documentos_faltantes.length > 0 && <p className="mt-1">No encontrados: {cierreDocumental.documentos_faltantes.join(", ")}.</p>}
