@@ -828,3 +828,66 @@ textarea:focus-visible {
   font-size: 12px;
   line-height: 1.35;
 }
+
+
+/* ==========================================================
+   Auditoría geométrica adicional · rutas que no heredaban
+   el contenedor .erp-page. El Layout es el único dueño del
+   margen exterior; no se alteran superficies internas.
+   ========================================================== */
+.erp-route-content > .min-w-0.space-y-5,
+.erp-route-content > .provisiones-fondos-page,
+.erp-route-content > .mensajes-premium-page,
+.erp-route-content > .logs-premium-page,
+.erp-route-content > main.mx-auto {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Agenda y Provisiones conservan su cabecera común alineada
+   con el Dashboard, sin el padding propio de la página. */
+.erp-route-content > .min-w-0.space-y-5 > .molsan-page-header,
+.erp-route-content > .provisiones-fondos-page > .molsan-page-header {
+  margin: 0 0 18px !important;
+}
+
+/* Logs del sistema aún utilizaba una cabecera-card heredada.
+   Se convierte en una cabecera plana de la misma jerarquía. */
+.erp-route-content > .logs-premium-page > section:first-of-type {
+  display: flex;
+  align-items: center;
+  min-height: 62px;
+  margin: 0 0 18px !important;
+  padding: 0 0 10px !important;
+  color: var(--molsan-blue);
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 2px solid var(--molsan-ice-strong) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.erp-route-content > .logs-premium-page > section:first-of-type h1 {
+  margin: 0;
+  color: var(--molsan-blue);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.erp-route-content > .logs-premium-page > section:first-of-type p {
+  margin-top: 3px;
+  color: var(--molsan-muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+.erp-route-content > .logs-premium-page > section:first-of-type > div.relative {
+  position: static;
+}
+
+/* El chat mantiene su distribución interna y altura funcional,
+   pero deja de añadir un segundo margen exterior a la página. */
+.erp-route-content > .mensajes-premium-page {
+  min-height: 0;
+}
