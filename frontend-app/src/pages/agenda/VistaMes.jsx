@@ -126,6 +126,7 @@ export default function VistaMes({
             return (
               <div
                 key={`${wi}-${di}`}
+                aria-current={esHoy ? "date" : undefined}
                 className={`agenda-month-day min-h-32 p-2 flex flex-col
  
  
