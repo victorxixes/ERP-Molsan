@@ -1567,7 +1567,7 @@ export default function OficinasLiquidadoras() {
           >
 
             <thead><tr>
-            <MolsanSortableTh label="Oficina Liquidadora" sortKey="oficina_liquidadora" sortConfig={ordenOficinas.sortConfig} onSort={ordenOficinas.requestSort} className="" />
+            <MolsanSortableTh label="Oficina Liquidadora" sortKey="oficina_liquidadora" sortConfig={ordenOficinas.sortConfig} onSort={ordenOficinas.requestSort} className="px-4 py-3 whitespace-nowrap" />
 
                 <MolsanSortableTh label="Dirección" sortKey="direccion" sortConfig={ordenOficinas.sortConfig} onSort={ordenOficinas.requestSort} className="px-4
  py-3
