@@ -35,7 +35,7 @@ const REPOSITORIOS_INICIALES = {
   "facturacion-cierre": ["expediente_digital_completo_documentos"],
 };
 
-const CLASE_INPUT = "w-full rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2.5 text-sm text-[var(--erp-text)] outline-none focus:border-[var(--erp-primary)] focus:ring-2 focus:ring-[var(--erp-primary-soft)]";
+const CLASE_INPUT = "w-full  px-3 py-2.5   ";
 
 export default function VisibilidadTablas({ empleadoId, onClose, ambito = "administracion", modal = true, titulo }) {
   const [catalogo, setCatalogo] = useState({ columnas_excel: [], repositorios: [], configuraciones: [], configuraciones_administrativas: [] });
