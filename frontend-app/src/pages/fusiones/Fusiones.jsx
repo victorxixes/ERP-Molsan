@@ -36,8 +36,8 @@ function BadgeEstado({ estado }) {
   return <span className="inline-flex items-center gap-1.5 whitespace-nowrap px-2.5 py-1">{e}</span>;
 }
 function Indicador({ titulo, valor, detalle, tono, activo, onClick }) {
-  return <button type="button" onClick={onClick} className={"group min-w-0 p-4 sm:p-5" + (activo ? "" : "")}>
-    <div className="flex items-start justify-between gap-2"><div className="min-w-0"><p className="uppercase">{titulo}</p><p className="mt-2 tabular-nums">{valor}</p></div><span className={"flex h-10 w-10 shrink-0 items-center justify-center" + }><Icon name={titulo === "Total solicitudes" ? "file" : "clock"} size={19} /></span></div>
+  return <button type="button" onClick={onClick} className="group min-w-0 p-4 sm:p-5">
+    <div className="flex items-start justify-between gap-2"><div className="min-w-0"><p className="uppercase">{titulo}</p><p className="mt-2 tabular-nums">{valor}</p></div><span className="flex h-10 w-10 shrink-0 items-center justify-center"><Icon name={titulo === "Total solicitudes" ? "file" : "clock"} size={19} /></span></div>
     <p className="mt-2">{detalle}</p>
   </button>;
 }
