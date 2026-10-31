@@ -169,7 +169,7 @@ function Card({
     </>
   );
 
-  const clases = `group relative overflow-hidden rounded-[22px] border bg-white/80 p-5 shadow-[0_12px_35px_rgba(15,23,42,0.07)] backdrop-blur-xl transition-all duration-300 ${enConstruccion && !onClick && !link ? "cursor-default border-amber-200/80 bg-amber-50/30" : "cursor-pointer hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(15,23,42,0.11)] active:scale-[0.98]"} ${destacado ? "border-blue-200/80 bg-blue-50/50" : ""}`;
+  const clases = `group relative overflow-hidden p-5 ${enConstruccion && !onClick && !link ? "cursor-default" : "cursor-pointer"}`;
 
   if (enConstruccion && !onClick && !link) {
     return (
