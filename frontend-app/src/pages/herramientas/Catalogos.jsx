@@ -175,7 +175,7 @@ export default function Catalogos() {
         const items = CATALOGOS.filter((item) => item.grupo === grupo);
         return (
           <section key={grupo} className="space-y-3">
-            <h2 className="">{grupo}</h2>
+            <h2>{grupo}</h2>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {items.map((item) => (
                 <Link
@@ -188,20 +188,20 @@ export default function Catalogos() {
                       {item.icon}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="">{item.titulo}</h3>
+                      <h3>{item.titulo}</h3>
                       <p className="mt-1.5">{item.descripcion}</p>
                       {item.avisoConstruccion && (
                         <div className="mt-3 flex flex-wrap items-center gap-2">
                           <span className="inline-flex items-center px-2.5 py-1 uppercase">
                             En construcción
                           </span>
-                          <span className="">
+                          <span>
                             Acceso disponible
                           </span>
                         </div>
                       )}
                     </div>
-                    <span className="">→</span>
+                    <span>→</span>
                   </div>
                 </Link>
               ))}
