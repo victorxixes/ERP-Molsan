@@ -53,17 +53,15 @@ function Chip({
 
   return (
     <span
-      className={`
-        inline-flex
-        items-center
-        rounded-full
-        border
-        px-2.5
-        py-1
-        text-[11px]
-        font-semibold
-        ${estilos[tone] || estilos.neutral}
-      `}
+      className={`inline-flex
+ items-center
+ 
+ 
+ px-2.5
+ py-1
+ 
+ 
+ ${estilos[tone] || estilos.neutral}`}
     >
       {children}
     </span>
@@ -1060,22 +1058,20 @@ export default function SeguridadPermisos() {
                       >
 
                         <span
-                          className={`
-                            flex
-                            h-9
-                            w-9
-                            shrink-0
-                            items-center
-                            justify-center
-                            rounded-lg
-                            text-sm
-                            font-bold
-                            ${
-                              completo
-                                ? ""
-                                : ""
-                            }
-                          `}
+                          className={`flex
+ h-9
+ w-9
+ shrink-0
+ items-center
+ justify-center
+ 
+ 
+ 
+ ${
+ completo
+ ? ""
+ : ""
+ }`}
                         >
                           {completo
                             ? "✓"
@@ -1198,22 +1194,20 @@ export default function SeguridadPermisos() {
                                 return (
                                   <label
                                     key={`${modulo}-${permiso}`}
-                                    className={`
-                                      flex
-                                      cursor-pointer
-                                      items-center
-                                      gap-3
-                                      rounded-lg
-                                      border
-                                      px-3
-                                      py-2.5
-                                      transition
-                                      ${
-                                        activo
-                                          ? ""
-                                          : ""
-                                      }
-                                    `}
+                                    className={`flex
+ 
+ items-center
+ gap-3
+ 
+ 
+ px-3
+ py-2.5
+ 
+ ${
+ activo
+ ? ""
+ : ""
+ }`}
                                   >
 
                                     <input
@@ -1231,22 +1225,18 @@ export default function SeguridadPermisos() {
                                         )
                                       }
                                       className="h-4
- w-4
- 
- accent-emerald-500"
+ w-4"
                                     />
 
                                     <span
-                                      className={`
-                                        truncate
-                                        text-sm
-                                        font-medium
-                                        ${
-                                          activo
-                                            ? ""
-                                            : ""
-                                        }
-                                      `}
+                                      className={`truncate
+ 
+ 
+ ${
+ activo
+ ? ""
+ : ""
+ }`}
                                     >
                                       {permiso}
                                     </span>
