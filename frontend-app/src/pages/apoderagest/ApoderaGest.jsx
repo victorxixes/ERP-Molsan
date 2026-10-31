@@ -136,15 +136,15 @@ function TarjetaIndicador({
     </>
   );
   return onClick ? (
-    <button type="button" className={`  ${variante}`} onClick={onClick} aria-label={`Ver expedientes: ${titulo}`}>
+    <button type="button" className={`molsan-stat-card ${variante}`} onClick={onClick} aria-label={`Ver expedientes: ${titulo}`}>
       {contenido}
     </button>
-  ) : <article className={` ${variante}`}>{contenido}</article>;
+  ) : <article className={`molsan-stat-card ${variante}`}>{contenido}</article>;
 }
 
 function EstadoVacio({ icono = "◇", titulo, detalle }) {
   return (
-    <div>
+    <div className="erp-empty-state">
       <span aria-hidden="true">
         {icono}
       </span>
@@ -168,7 +168,7 @@ function agruparEncargosPorApoderado(encargos) {
 
 function CampoDetalle({ etiqueta, valor, clase = "" }) {
   return (
-    <div className={` ${clase}`}>
+    <div className={`erp-data-item ${clase}`}>
       <span>{etiqueta}</span>
       <strong>{texto(valor)}</strong>
     </div>
@@ -873,7 +873,7 @@ export default function ApoderaGest() {
       />
       <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
-          <div className="w-full apoderagest">
+          <div className="erp-page w-full apoderagest">
       <MolsanPageHeader mark="AG" title="ApoderaGest" description="Centro de gestión de encargos, firmas y actividad del apoderado." />
 
       {error ? (
@@ -894,13 +894,13 @@ export default function ApoderaGest() {
             <div><span>VISTA GENERAL</span><h2>Resumen de actividad</h2><p>Una visión rápida de encargos, firmas y próximos compromisos.</p></div>
             {ultimaActualizacion ? <span>Actualizado a las {ultimaActualizacion.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}</span> : null}
           </div>
-          <div>
+          <div className="molsan-stat-grid">
             <TarjetaIndicador titulo="Total de encargos" valor={numeroLegible(dashboard?.total_encargos ?? 0)} detalle="Volumen registrado" icono="▤" variante="" onClick={() => abrirResumenEncargos("todos", "Todos los encargos")} />
             <TarjetaIndicador titulo="Firmados" valor={numeroLegible(dashboard?.firmados ?? 0)} detalle="Encargos completados" icono="✓" variante="" onClick={() => abrirResumenEncargos("firmados", "Encargos firmados")} />
             <TarjetaIndicador titulo="Pendientes" valor={numeroLegible(dashboard?.pendientes ?? 0)} detalle="Requieren seguimiento" icono="◷" variante="" onClick={() => abrirResumenEncargos("pendientes", "Encargos pendientes")} />
             <TarjetaIndicador titulo="Media hasta firma" valor={dashboard?.media_dias_hasta_firma == null ? "—" : `${Math.abs(dashboard.media_dias_hasta_firma)} días ${dashboard.media_dias_hasta_firma < 0 ? "antes" : dashboard.media_dias_hasta_firma > 0 ? "después" : "en fecha"}`} detalle="Desde fecha prevista hasta fecha real" icono="↗" variante="" onClick={() => abrirResumenEncargos("media", "Encargos incluidos en la media hasta firma")} />
           </div>
-          <div>
+          <div className="molsan-stat-grid">
             <TarjetaIndicador titulo="Firmas presenciales" valor={numeroLegible(dashboard?.firmas_presenciales)} detalle="Actividad presencial" icono="⌖" onClick={() => abrirResumenEncargos("presenciales", "Firmas presenciales")} />
             <TarjetaIndicador titulo="Firmas por videoconferencia" valor={numeroLegible(dashboard?.firmas_videoconferencia)} detalle="Actividad remota" icono="▣" onClick={() => abrirResumenEncargos("videoconferencia", "Firmas por videoconferencia")} />
             <TarjetaIndicador titulo="Kilómetros presenciales" valor={dashboard?.kilometros_presenciales == null ? "Pendiente" : `${numeroLegible(dashboard.kilometros_presenciales)} km`} detalle={`Desde CP ${dashboard?.origen_kilometros || "08016"} · ${dashboard?.firmas_presenciales_con_distancia ?? 0}/${dashboard?.firmas_presenciales ?? 0} distancias calculadas en línea recta`} icono="⌁" onClick={() => abrirResumenEncargos("kilometros", "Firmas presenciales · cálculo de kilómetros")} />
@@ -916,7 +916,7 @@ export default function ApoderaGest() {
                   {agenda.slice(0, 5).map((cita, i) => {
                     const firmaRealizada = String(cita.observaciones || "").toUpperCase().includes("FIRMA REALIZADA");
                     return (
-                      <article key={cita.id ?? `${cita.fecha}-${i}`}>
+                      <article key={cita.id ?? `${cita.fecha}-${i}`} className="erp-data-item">
                         <div>
                           <strong>{fechaLegible(cita.fecha).split("/")[0]}</strong>
                           <span>{fechaLegible(cita.fecha).split("/").slice(1).join("/")}</span>
@@ -1043,9 +1043,9 @@ export default function ApoderaGest() {
 
       
       {modalResumen ? (
-        <div role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalResumen(null); }}>
-          <section ref={resumenDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="">
-            <header>
+        <div className="molsan-modal-overlay" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalResumen(null); }}>
+          <section ref={resumenDialogRef} tabIndex={-1} className="molsan-modal__panel" role="dialog" aria-modal="true" aria-labelledby="">
+            <header className="molsan-modal__header">
               <div><span>APODERAGEST · RESUMEN DE ACTIVIDAD</span><h2 id="">{modalResumen.titulo}</h2><p>{encargosDelResumen.length} expediente(s) en este indicador.</p></div>
               <button type="button" onClick={() => setModalResumen(null)} aria-label="Cerrar modal">✕</button>
             </header>
