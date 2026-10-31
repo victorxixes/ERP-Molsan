@@ -505,7 +505,7 @@ export default function App() {
 
           <Route
             path="expedientes-demo-glass-luxe"
-            element={protegerModulo("expedientes", <FichaExpedienteDemo />)}
+            element={<FichaExpedienteDemo />}
           />
 
           <Route
