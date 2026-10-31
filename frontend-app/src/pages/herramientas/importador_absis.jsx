@@ -145,8 +145,6 @@ export default function ImportadorAbsis() {
 
             <MolsanPageHeader mark="IA" title="Importador ABSIS" description="Importa expedientes desde el Excel matriz ABSIS seleccionando el día que deseas procesar." />
 
-                PANEL PRINCIPAL
-                ================================================== */}
 
             <section
                 className="erp-card p-5
