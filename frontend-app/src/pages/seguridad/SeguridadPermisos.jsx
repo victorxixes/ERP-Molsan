@@ -697,7 +697,7 @@ export default function SeguridadPermisos() {
 
   return (
     <div
-      className="seguridad-subpagina-premium seguridad-permisos-premium w-full space-y-4"
+      className="w-full space-y-4"
     >
 
       {/* CABECERA */}
