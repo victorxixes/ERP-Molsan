@@ -5,8 +5,8 @@ const hoy = () => {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
-const caja = "rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2.5 text-sm";
-const boton = "rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50";
+const caja = "px-3 py-2.5";
+const boton = "px-4 py-2.5";
 
 export default function FestivosCompensaciones({ modo = "empleado", onUpdated }) {
   const admin = modo === "admin";
