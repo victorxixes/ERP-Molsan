@@ -689,21 +689,17 @@ export default function TiposConceptoGastos() {
 
   return (
     <div
-      className="
-        tipos-concepto-gastos-premium herramientas-subpagina-premium
-        min-h-screen
-        bg-slate-50
-        p-4
-        md:p-6
-        lg:p-8
-      "
+      className="tipos-concepto-gastos-premium herramientas-subpagina-premium
+ min-h-screen
+ 
+ p-4
+ md:p-6
+ lg:p-8"
     >
 
       <div
-        className="
-          mx-auto
-          max-w-7xl
-        "
+        className="mx-auto
+ max-w-7xl"
       >
 
         {/* ==================================================
@@ -711,41 +707,30 @@ export default function TiposConceptoGastos() {
         ================================================== */}
 
         <div
-          className="
-            mb-6
-            flex
-            flex-col
-            gap-4
-            xl:flex-row
-            xl:items-center
-            xl:justify-between
-          "
+          className="mb-6
+ flex
+ flex-col
+ gap-4
+ xl:flex-row
+ xl:items-center
+ xl:justify-between"
         >
 
           <div>
 
             <div
-              className="
-                mb-2
-                flex
-                items-center
-                gap-3
-              "
+              className="mb-2
+ flex
+ items-center
+ gap-3"
             >
 
               <div
-                className="
-                  flex
-                  h-11
-                  w-11
-                  items-center
-                  justify-center
-                  rounded-2xl
-                  bg-[var(--molsan-primary)]
-                  text-white
-                  shadow-lg
-                  shadow-[var(--molsan-primary-border)]
-                "
+                className="flex
+ h-11
+ w-11
+ items-center
+ justify-center"
               >
 
                 <svg
@@ -754,10 +739,8 @@ export default function TiposConceptoGastos() {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="1.8"
-                  className="
-                    h-5
-                    w-5
-                  "
+                  className="h-5
+ w-5"
                 >
                   <path
                     strokeLinecap="round"
@@ -808,25 +791,13 @@ export default function TiposConceptoGastos() {
               <div>
 
                 <p
-                  className="
-                    text-xs
-                    font-semibold
-                    uppercase
-                    tracking-[0.18em]
-                    text-[var(--molsan-primary)]
-                  "
+                  className="uppercase"
                 >
                   Herramientas
                 </p>
 
                 <h1
-                  className="
-                    text-2xl
-                    font-bold
-                    tracking-tight
-                    text-slate-800
-                    md:text-3xl
-                  "
+                  className=""
                 >
                   Tipos de Concepto de Gastos
                 </h1>
@@ -836,12 +807,7 @@ export default function TiposConceptoGastos() {
             </div>
 
             <p
-              className="
-                max-w-3xl
-                text-sm
-                leading-6
-                text-slate-500
-              "
+              className="max-w-3xl"
             >
               Catálogo de conceptos utilizados
               para clasificar los gastos de los
@@ -858,26 +824,23 @@ export default function TiposConceptoGastos() {
           <button
             type="button"
             onClick={abrirNuevo}
-            className="
-              inline-flex
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              bg-[var(--molsan-primary)]
-              px-5
-              py-3
-              text-sm
-              font-semibold
-              text-white
-              shadow-lg
-              shadow-[var(--molsan-primary-border)]
-              transition-all
-              duration-200
-              hover:bg-[var(--molsan-primary-hover)]
-              hover:-translate-y-0.5
-              active:translate-y-0
-            "
+            className="inline-flex
+ items-center
+ justify-center
+ gap-2
+ 
+ 
+ px-5
+ py-3
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ hover:-translate-y-0.5"
           >
 
             <svg
@@ -886,10 +849,8 @@ export default function TiposConceptoGastos() {
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
-              className="
-                h-4
-                w-4
-              "
+              className="h-4
+ w-4"
             >
               <path
                 strokeLinecap="round"
@@ -917,27 +878,27 @@ export default function TiposConceptoGastos() {
         </div>
 
 
-        <section className="mb-6 rounded-2xl border border-[var(--molsan-border)] bg-white p-5 shadow-sm md:p-6">
+        <section className="mb-6 p-5 md:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-3xl">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--molsan-primary)]">Plantilla documental vinculada</p>
-              <h2 className="mt-1 text-lg font-extrabold text-slate-800">Factura de honorarios · Concepto ID 6</h2>
-              <p className="mt-1 text-sm text-slate-500">La plantilla Word se asocia exclusivamente al registro «honorarios gestoría» del catálogo. Se utiliza al pulsar «Guardar y facturar» en la FichaExpediente y nunca se adjunta a los emails.</p>
-              {plantillaFactura?.plantilla_cargada && <p className="mt-3 break-all text-sm font-semibold text-emerald-700">✓ Plantilla actual: {plantillaFactura.factura_nombre}</p>}
-              {plantillaFactura && <p className="mt-1 text-xs text-slate-500">Vinculación confirmada: ID {plantillaFactura.concepto_gasto_id} · {plantillaFactura.concepto_gasto}</p>}
+              <p className="uppercase">Plantilla documental vinculada</p>
+              <h2 className="mt-1">Factura de honorarios · Concepto ID 6</h2>
+              <p className="mt-1">La plantilla Word se asocia exclusivamente al registro «honorarios gestoría» del catálogo. Se utiliza al pulsar «Guardar y facturar» en la FichaExpediente y nunca se adjunta a los emails.</p>
+              {plantillaFactura?.plantilla_cargada && <p className="mt-3 break-all">✓ Plantilla actual: {plantillaFactura.factura_nombre}</p>}
+              {plantillaFactura && <p className="mt-1">Vinculación confirmada: ID {plantillaFactura.concepto_gasto_id} · {plantillaFactura.concepto_gasto}</p>}
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
-              {plantillaFactura?.plantilla_cargada && <button type="button" onClick={descargarPlantillaFactura} disabled={descargandoPlantillaFactura} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50">{descargandoPlantillaFactura ? "Descargando…" : "Descargar plantilla"}</button>}
+              {plantillaFactura?.plantilla_cargada && <button type="button" onClick={descargarPlantillaFactura} disabled={descargandoPlantillaFactura} className="px-4 py-2.5">{descargandoPlantillaFactura ? "Descargando…" : "Descargar plantilla"}</button>}
             </div>
           </div>
-          {errorPlantillaFactura && <p role="alert" className="mt-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{errorPlantillaFactura}</p>}
-          {mensajePlantillaFactura && <p role="status" className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{mensajePlantillaFactura}</p>}
+          {errorPlantillaFactura && <p role="alert" className="mt-3 p-3">{errorPlantillaFactura}</p>}
+          {mensajePlantillaFactura && <p role="status" className="mt-3 p-3">{mensajePlantillaFactura}</p>}
           <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
             <label className="block">
-              <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">{plantillaFactura?.plantilla_cargada ? "Sustituir plantilla oficial (.docx)" : "Cargar plantilla oficial (.docx)"}</span>
-              <input type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(e) => setArchivoPlantillaFactura(e.target.files?.[0] || null)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm" />
+              <span className="mb-1.5 block uppercase">{plantillaFactura?.plantilla_cargada ? "Sustituir plantilla oficial (.docx)" : "Cargar plantilla oficial (.docx)"}</span>
+              <input type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(e) => setArchivoPlantillaFactura(e.target.files?.[0] || null)} className="w-full px-3 py-2.5" />
             </label>
-            <button type="button" onClick={subirPlantillaFactura} disabled={!archivoPlantillaFactura || subiendoPlantillaFactura} className="rounded-xl bg-[var(--molsan-primary)] px-5 py-2.5 text-sm font-bold text-white hover:bg-[var(--molsan-primary-hover)] disabled:opacity-50">{subiendoPlantillaFactura ? "Guardando…" : "Vincular plantilla a honorarios gestoría"}</button>
+            <button type="button" onClick={subirPlantillaFactura} disabled={!archivoPlantillaFactura || subiendoPlantillaFactura} className="px-5 py-2.5">{subiendoPlantillaFactura ? "Guardando…" : "Vincular plantilla a honorarios gestoría"}</button>
           </div>
         </section>
 
@@ -946,61 +907,39 @@ export default function TiposConceptoGastos() {
         ================================================== */}
 
         <div
-          className="
-            mb-6
-            grid
-            grid-cols-1
-            gap-4
-            sm:grid-cols-3
-          "
+          className="mb-6
+ grid
+ grid-cols-1
+ gap-4
+ sm:grid-cols-3"
         >
 
           {/* TOTAL */}
 
           <div
-            className="
-              rounded-2xl
-              border
-              border-slate-200
-              bg-white
-              p-5
-              shadow-sm
-              transition-all
-              duration-200
-              hover:-translate-y-0.5
-              hover:shadow-md
-            "
+            className="p-5
+ 
+ 
+ 
+ hover:-translate-y-0.5"
           >
 
             <div
-              className="
-                flex
-                items-center
-                justify-between
-              "
+              className="flex
+ items-center
+ justify-between"
             >
 
               <div>
 
                 <p
-                  className="
-                    text-xs
-                    font-semibold
-                    uppercase
-                    tracking-wider
-                    text-slate-400
-                  "
+                  className="uppercase"
                 >
                   Total
                 </p>
 
                 <p
-                  className="
-                    mt-2
-                    text-3xl
-                    font-bold
-                    text-slate-800
-                  "
+                  className="mt-2"
                 >
                   {estadisticas.total}
                 </p>
@@ -1008,16 +947,11 @@ export default function TiposConceptoGastos() {
               </div>
 
               <div
-                className="
-                  flex
-                  h-11
-                  w-11
-                  items-center
-                  justify-center
-                  rounded-xl
-                  bg-slate-100
-                  text-slate-600
-                "
+                className="flex
+ h-11
+ w-11
+ items-center
+ justify-center"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -1053,49 +987,29 @@ export default function TiposConceptoGastos() {
           {/* ACTIVOS */}
 
           <div
-            className="
-              rounded-2xl
-              border
-              border-emerald-200
-              bg-white
-              p-5
-              shadow-sm
-              transition-all
-              duration-200
-              hover:-translate-y-0.5
-              hover:shadow-md
-            "
+            className="p-5
+ 
+ 
+ 
+ hover:-translate-y-0.5"
           >
 
             <div
-              className="
-                flex
-                items-center
-                justify-between
-              "
+              className="flex
+ items-center
+ justify-between"
             >
 
               <div>
 
                 <p
-                  className="
-                    text-xs
-                    font-semibold
-                    uppercase
-                    tracking-wider
-                    text-emerald-600
-                  "
+                  className="uppercase"
                 >
                   Activos
                 </p>
 
                 <p
-                  className="
-                    mt-2
-                    text-3xl
-                    font-bold
-                    text-slate-800
-                  "
+                  className="mt-2"
                 >
                   {estadisticas.activos}
                 </p>
@@ -1103,16 +1017,11 @@ export default function TiposConceptoGastos() {
               </div>
 
               <div
-                className="
-                  flex
-                  h-11
-                  w-11
-                  items-center
-                  justify-center
-                  rounded-xl
-                  bg-emerald-50
-                  text-emerald-600
-                "
+                className="flex
+ h-11
+ w-11
+ items-center
+ justify-center"
               >
 
                 <svg
@@ -1144,49 +1053,29 @@ export default function TiposConceptoGastos() {
           {/* INACTIVOS */}
 
           <div
-            className="
-              rounded-2xl
-              border
-              border-amber-200
-              bg-white
-              p-5
-              shadow-sm
-              transition-all
-              duration-200
-              hover:-translate-y-0.5
-              hover:shadow-md
-            "
+            className="p-5
+ 
+ 
+ 
+ hover:-translate-y-0.5"
           >
 
             <div
-              className="
-                flex
-                items-center
-                justify-between
-              "
+              className="flex
+ items-center
+ justify-between"
             >
 
               <div>
 
                 <p
-                  className="
-                    text-xs
-                    font-semibold
-                    uppercase
-                    tracking-wider
-                    text-amber-600
-                  "
+                  className="uppercase"
                 >
                   Inactivos
                 </p>
 
                 <p
-                  className="
-                    mt-2
-                    text-3xl
-                    font-bold
-                    text-slate-800
-                  "
+                  className="mt-2"
                 >
                   {estadisticas.inactivos}
                 </p>
@@ -1194,16 +1083,11 @@ export default function TiposConceptoGastos() {
               </div>
 
               <div
-                className="
-                  flex
-                  h-11
-                  w-11
-                  items-center
-                  justify-center
-                  rounded-xl
-                  bg-amber-50
-                  text-amber-600
-                "
+                className="flex
+ h-11
+ w-11
+ items-center
+ justify-center"
               >
 
                 <svg
@@ -1261,26 +1145,22 @@ export default function TiposConceptoGastos() {
         ================================================== */}
 
         <div
-          className="
-            mb-6
-            rounded-2xl
-            border
-            border-slate-200
-            bg-white
-            p-4
-            shadow-sm
-            md:p-5
-          "
+          className="mb-6
+ 
+ 
+ 
+ 
+ p-4
+ 
+ md:p-5"
         >
 
           <div
-            className="
-              grid
-              grid-cols-1
-              gap-4
-              lg:grid-cols-[1fr_auto]
-              lg:items-end
-            "
+            className="grid
+ grid-cols-1
+ gap-4
+ lg:grid-cols-[1fr_auto]
+ lg:items-end"
           >
 
             {/* BUSCADOR */}
@@ -1288,36 +1168,27 @@ export default function TiposConceptoGastos() {
             <div>
 
               <label
-                className="
-                  mb-2
-                  block
-                  text-xs
-                  font-semibold
-                  uppercase
-                  tracking-wider
-                  text-slate-500
-                "
+                className="mb-2
+ block
+ 
+ 
+ uppercase"
               >
                 Buscar concepto
               </label>
 
               <div
-                className="
-                  relative
-                "
+                className="relative"
               >
 
                 <div
-                  className="
-                    pointer-events-none
-                    absolute
-                    inset-y-0
-                    left-0
-                    flex
-                    items-center
-                    pl-3
-                    text-slate-400
-                  "
+                  className="pointer-events-none
+ absolute
+ inset-y-0
+ left-0
+ flex
+ items-center
+ pl-3"
                 >
 
                   <svg
@@ -1326,10 +1197,8 @@ export default function TiposConceptoGastos() {
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="1.8"
-                    className="
-                      h-4
-                      w-4
-                    "
+                    className="h-4
+ w-4"
                   >
                     <circle
                       cx="11"
@@ -1357,24 +1226,14 @@ export default function TiposConceptoGastos() {
                     )
                   }
                   placeholder="Escribe para buscar..."
-                  className="
-                    w-full
-                    rounded-xl
-                    border
-                    border-slate-200
-                    bg-slate-50
-                    py-3
-                    pl-10
-                    pr-4
-                    text-sm
-                    text-slate-700
-                    outline-none
-                    transition-all
-                    focus:border-[var(--molsan-primary)]
-                    focus:bg-white
-                    focus:ring-4
-                    focus:ring-[var(--molsan-primary-border)]
-                  "
+                  className="w-full
+ 
+ 
+ 
+ 
+ py-3
+ pl-10
+ pr-4"
                 />
 
               </div>
@@ -1387,15 +1246,11 @@ export default function TiposConceptoGastos() {
             <div>
 
               <label
-                className="
-                  mb-2
-                  block
-                  text-xs
-                  font-semibold
-                  uppercase
-                  tracking-wider
-                  text-slate-500
-                "
+                className="mb-2
+ block
+ 
+ 
+ uppercase"
               >
                 Estado
               </label>
@@ -1407,23 +1262,13 @@ export default function TiposConceptoGastos() {
                     event.target.value
                   )
                 }
-                className="
-                  min-w-[180px]
-                  rounded-xl
-                  border
-                  border-slate-200
-                  bg-slate-50
-                  px-4
-                  py-3
-                  text-sm
-                  text-slate-700
-                  outline-none
-                  transition-all
-                  focus:border-[var(--molsan-primary)]
-                  focus:bg-white
-                  focus:ring-4
-                  focus:ring-[var(--molsan-primary-border)]
-                "
+                className="min-w-[180px]
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
               >
 
                 <option value="todos">
@@ -1454,21 +1299,16 @@ export default function TiposConceptoGastos() {
         {mensaje && (
 
           <div
-            className="
-              mb-6
-              flex
-              items-center
-              gap-3
-              rounded-2xl
-              border
-              border-emerald-200
-              bg-emerald-50
-              px-4
-              py-3
-              text-sm
-              font-medium
-              text-emerald-700
-            "
+            className="mb-6
+ flex
+ items-center
+ gap-3
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
           >
 
             <svg
@@ -1477,11 +1317,9 @@ export default function TiposConceptoGastos() {
               fill="none"
               stroke="currentColor"
               strokeWidth="1.8"
-              className="
-                h-5
-                w-5
-                shrink-0
-              "
+              className="h-5
+ w-5
+ shrink-0"
             >
               <path
                 strokeLinecap="round"
@@ -1506,21 +1344,16 @@ export default function TiposConceptoGastos() {
         {error && (
 
           <div
-            className="
-              mb-6
-              flex
-              items-start
-              gap-3
-              rounded-2xl
-              border
-              border-red-200
-              bg-red-50
-              px-4
-              py-3
-              text-sm
-              font-medium
-              text-red-700
-            "
+            className="mb-6
+ flex
+ items-start
+ gap-3
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
           >
 
             <svg
@@ -1529,11 +1362,9 @@ export default function TiposConceptoGastos() {
               fill="none"
               stroke="currentColor"
               strokeWidth="1.8"
-              className="
-                h-5
-                w-5
-                shrink-0
-              "
+              className="h-5
+ w-5
+ shrink-0"
             >
               <circle
                 cx="12"
@@ -1572,46 +1403,29 @@ export default function TiposConceptoGastos() {
         ================================================== */}
 
         <div
-          className="
-            overflow-hidden
-            rounded-2xl
-            border
-            border-slate-200
-            bg-white
-            shadow-sm
-          "
+          className="overflow-hidden"
         >
 
           <div
-            className="
-              flex
-              items-center
-              justify-between
-              border-b
-              border-slate-200
-              px-5
-              py-4
-            "
+            className="flex
+ items-center
+ justify-between
+ 
+ 
+ px-5
+ py-4"
           >
 
             <div>
 
               <h2
-                className="
-                  text-base
-                  font-bold
-                  text-slate-800
-                "
+                className=""
               >
                 Catálogo
               </h2>
 
               <p
-                className="
-                  mt-1
-                  text-xs
-                  text-slate-400
-                "
+                className="mt-1"
               >
                 {tipos.length === 1
                   ? "1 concepto"
@@ -1623,26 +1437,14 @@ export default function TiposConceptoGastos() {
             {cargando && (
 
               <div
-                className="
-                  flex
-                  items-center
-                  gap-2
-                  text-xs
-                  font-medium
-                  text-slate-400
-                "
+                className="flex
+ items-center
+ gap-2"
               >
 
                 <span
-                  className="
-                    h-4
-                    w-4
-                    animate-spin
-                    rounded-full
-                    border-2
-                    border-slate-200
-                    border-t-blue-600
-                  "
+                  className="h-4
+ w-4"
                 />
 
                 Cargando...
@@ -1655,83 +1457,61 @@ export default function TiposConceptoGastos() {
 
 
           <div
-            className="
-              overflow-x-auto
-            "
+            className="overflow-x-auto"
           >
 
             <table
-              className="
-                min-w-full
-                divide-y
-                divide-slate-200
-              "
+              className="min-w-full
+ divide-y
+ divide-slate-200"
             >
 
               <thead
-                className="
-                  bg-slate-50
-                "
+                className=""
               >
 
                 <tr>
 
                   <th
-                    className="
-                      px-5
-                      py-4
-                      text-left
-                      text-xs
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
+                    className="px-5
+ py-4
+ 
+ 
+ 
+ uppercase"
                   >
                     #
                   </th>
 
                   <th
-                    className="
-                      px-5
-                      py-4
-                      text-left
-                      text-xs
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
+                    className="px-5
+ py-4
+ 
+ 
+ 
+ uppercase"
                   >
                     Tipo concepto de gastos
                   </th>
 
                   <th
-                    className="
-                      px-5
-                      py-4
-                      text-center
-                      text-xs
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
+                    className="px-5
+ py-4
+ 
+ 
+ 
+ uppercase"
                   >
                     Estado
                   </th>
 
                   <th
-                    className="
-                      px-5
-                      py-4
-                      text-right
-                      text-xs
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
+                    className="px-5
+ py-4
+ 
+ 
+ 
+ uppercase"
                   >
                     Acciones
                   </th>
@@ -1742,10 +1522,8 @@ export default function TiposConceptoGastos() {
 
 
               <tbody
-                className="
-                  divide-y
-                  divide-slate-100
-                "
+                className="divide-y
+ divide-slate-100"
               >
 
                 {!cargando &&
@@ -1755,34 +1533,24 @@ export default function TiposConceptoGastos() {
 
                     <td
                       colSpan="4"
-                      className="
-                        px-5
-                        py-16
-                        text-center
-                      "
+                      className="px-5
+ py-16"
                     >
 
                       <div
-                        className="
-                          mx-auto
-                          flex
-                          max-w-sm
-                          flex-col
-                          items-center
-                        "
+                        className="mx-auto
+ flex
+ max-w-sm
+ flex-col
+ items-center"
                       >
 
                         <div
-                          className="
-                            flex
-                            h-14
-                            w-14
-                            items-center
-                            justify-center
-                            rounded-2xl
-                            bg-slate-100
-                            text-slate-400
-                          "
+                          className="flex
+ h-14
+ w-14
+ items-center
+ justify-center"
                         >
 
                           <svg
@@ -1811,22 +1579,13 @@ export default function TiposConceptoGastos() {
                         </div>
 
                         <p
-                          className="
-                            mt-4
-                            text-sm
-                            font-semibold
-                            text-slate-700
-                          "
+                          className="mt-4"
                         >
                           No se encontraron conceptos
                         </p>
 
                         <p
-                          className="
-                            mt-1
-                            text-xs
-                            text-slate-400
-                          "
+                          className="mt-1"
                         >
                           Prueba con otro texto
                           de búsqueda o cambia
@@ -1848,24 +1607,15 @@ export default function TiposConceptoGastos() {
                         key={
                           tipo.id
                         }
-                        className="
-                          transition-all
-                          duration-150
-                          hover:bg-[var(--molsan-surface-soft)]
-                        "
+                        className=""
                       >
 
                         {/* NÚMERO */}
 
                         <td
-                          className="
-                            whitespace-nowrap
-                            px-5
-                            py-4
-                            text-sm
-                            font-semibold
-                            text-slate-400
-                          "
+                          className="whitespace-nowrap
+ px-5
+ py-4"
                         >
                           {index + 1}
                         </td>
@@ -1874,32 +1624,23 @@ export default function TiposConceptoGastos() {
                         {/* NOMBRE */}
 
                         <td
-                          className="
-                            px-5
-                            py-4
-                          "
+                          className="px-5
+ py-4"
                         >
 
                           <div
-                            className="
-                              flex
-                              items-center
-                              gap-3
-                            "
+                            className="flex
+ items-center
+ gap-3"
                           >
 
                             <div
-                              className="
-                                flex
-                                h-9
-                                w-9
-                                shrink-0
-                                items-center
-                                justify-center
-                                rounded-xl
-                                bg-[var(--molsan-primary-soft)]
-                                text-[var(--molsan-primary)]
-                              "
+                              className="flex
+ h-9
+ w-9
+ shrink-0
+ items-center
+ justify-center"
                             >
 
                               <svg
@@ -1960,21 +1701,13 @@ export default function TiposConceptoGastos() {
                             <div>
 
                               <p
-                                className="
-                                  text-sm
-                                  font-semibold
-                                  text-slate-700
-                                "
+                                className=""
                               >
                                 {tipo.nombre}
                               </p>
 
                               <p
-                                className="
-                                  mt-0.5
-                                  text-xs
-                                  text-slate-400
-                                "
+                                className="mt-0.5"
                               >
                                 ID {tipo.id}
                               </p>
@@ -1989,30 +1722,25 @@ export default function TiposConceptoGastos() {
                         {/* ESTADO */}
 
                         <td
-                          className="
-                            px-5
-                            py-4
-                            text-center
-                          "
+                          className="px-5
+ py-4"
                         >
 
                           <span
-                            className={`
-                              inline-flex
-                              items-center
-                              gap-2
-                              rounded-full
-                              px-3
-                              py-1.5
-                              text-xs
-                              font-semibold
-                              ${
-                                tipo.activo
-                                  ? `
+                            className={`inline-flex
+ items-center
+ gap-2
+ 
+ px-3
+ py-1.5
+ 
+ 
+ ${
+ tipo.activo
+ ?`
                                     bg-emerald-50
                                     text-emerald-700
-                                  `
-                                  : `
+                                  `:`
                                     bg-slate-100
                                     text-slate-500
                                   `
@@ -2027,8 +1755,8 @@ export default function TiposConceptoGastos() {
                                 rounded-full
                                 ${
                                   tipo.activo
-                                    ? "bg-emerald-500"
-                                    : "bg-slate-400"
+                                    ? ""
+                                    : ""
                                 }
                               `}
                             />
@@ -2045,18 +1773,14 @@ export default function TiposConceptoGastos() {
                         {/* ACCIONES */}
 
                         <td
-                          className="
-                            px-5
-                            py-4
-                          "
+                          className="px-5
+ py-4"
                         >
 
                           <div
-                            className="
-                              flex
-                              justify-end
-                              gap-2
-                            "
+                            className="flex
+ justify-end
+ gap-2"
                           >
 
                             {/* EDITAR */}
@@ -2069,21 +1793,14 @@ export default function TiposConceptoGastos() {
                                 )
                               }
                               title="Editar"
-                              className="
-                                inline-flex
-                                items-center
-                                justify-center
-                                rounded-lg
-                                border
-                                border-slate-200
-                                bg-white
-                                p-2
-                                text-slate-500
-                                transition-all
-                                hover:border-[var(--molsan-primary-border)]
-                                hover:bg-[var(--molsan-primary-soft)]
-                                hover:text-[var(--molsan-primary)]
-                              "
+                              className="inline-flex
+ items-center
+ justify-center
+ 
+ 
+ 
+ 
+ p-2"
                             >
 
                               <svg
@@ -2135,23 +1852,21 @@ export default function TiposConceptoGastos() {
                                   ? "Desactivar"
                                   : "Activar"
                               }
-                              className={`
-                                inline-flex
-                                items-center
-                                justify-center
-                                rounded-lg
-                                border
-                                p-2
-                                transition-all
-                                ${
-                                  tipo.activo
-                                    ? `
+                              className={`inline-flex
+ items-center
+ justify-center
+ 
+ 
+ p-2
+ 
+ ${
+ tipo.activo
+ ?`
                                       border-amber-200
                                       bg-amber-50
                                       text-amber-600
                                       hover:bg-amber-100
-                                    `
-                                    : `
+                                    `:`
                                       border-emerald-200
                                       bg-emerald-50
                                       text-emerald-600
@@ -2244,19 +1959,14 @@ export default function TiposConceptoGastos() {
                                 )
                               }
                               title="Eliminar"
-                              className="
-                                inline-flex
-                                items-center
-                                justify-center
-                                rounded-lg
-                                border
-                                border-red-200
-                                bg-red-50
-                                p-2
-                                text-red-600
-                                transition-all
-                                hover:bg-red-100
-                              "
+                              className="inline-flex
+ items-center
+ justify-center
+ 
+ 
+ 
+ 
+ p-2"
                             >
 
                               <svg
@@ -2344,12 +2054,7 @@ export default function TiposConceptoGastos() {
         ================================================== */}
 
         <div
-          className="
-            mt-4
-            text-center
-            text-xs
-            text-slate-400
-          "
+          className="mt-4"
         >
           Los conceptos se almacenan siempre
           en minúsculas.
@@ -2365,18 +2070,15 @@ export default function TiposConceptoGastos() {
       {mostrarModal && (
 
         <div
-          className="
-            panel-modal-premium
-            fixed
-            inset-0
-            z-50
-            flex
-            items-center
-            justify-center
-            bg-slate-900/40
-            p-4
-            backdrop-blur-sm
-          "
+          className="panel-modal-premium
+ fixed
+ inset-0
+ z-50
+ flex
+ items-center
+ justify-center
+ 
+ p-4"
           onMouseDown={(event) => {
 
             if (
@@ -2395,53 +2097,33 @@ export default function TiposConceptoGastos() {
             role="dialog"
             aria-modal="true"
             aria-label={modoEdicion ? "Editar tipo de concepto de gasto" : "Nuevo tipo de concepto de gasto"}
-            className="
-              w-full
-              max-w-lg
-              overflow-hidden
-              rounded-3xl
-              border
-              border-white/70
-              bg-white
-              shadow-2xl
-            "
+            className="w-full
+ max-w-lg
+ overflow-hidden"
           >
 
             {/* CABECERA MODAL */}
 
             <div
-              className="
-                flex
-                items-start
-                justify-between
-                border-b
-                border-slate-100
-                px-6
-                py-5
-              "
+              className="flex
+ items-start
+ justify-between
+ 
+ 
+ px-6
+ py-5"
             >
 
               <div>
 
                 <p
-                  className="
-                    text-xs
-                    font-semibold
-                    uppercase
-                    tracking-[0.18em]
-                    text-[var(--molsan-primary)]
-                  "
+                  className="uppercase"
                 >
                   Catálogo de gastos
                 </p>
 
                 <h2
-                  className="
-                    mt-1
-                    text-xl
-                    font-bold
-                    text-slate-800
-                  "
+                  className="mt-1"
                 >
                   {modoEdicion
                     ? "Editar concepto"
@@ -2454,16 +2136,7 @@ export default function TiposConceptoGastos() {
                 type="button"
                 onClick={cerrarModal}
                 disabled={guardando}
-                className="
-                  rounded-xl
-                  p-2
-                  text-slate-400
-                  transition-all
-                  hover:bg-slate-100
-                  hover:text-slate-700
-                  disabled:cursor-not-allowed
-                  disabled:opacity-50
-                "
+                className="p-2"
               >
 
                 <svg
@@ -2500,26 +2173,19 @@ export default function TiposConceptoGastos() {
 
             <form
               onSubmit={guardarTipo}
-              className="
-                p-6
-              "
+              className="p-6"
             >
 
               {error && (
 
                 <div
-                  className="
-                    mb-5
-                    rounded-xl
-                    border
-                    border-red-200
-                    bg-red-50
-                    px-4
-                    py-3
-                    text-sm
-                    font-medium
-                    text-red-700
-                  "
+                  className="mb-5
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
                 >
                   {error}
                 </div>
@@ -2532,13 +2198,8 @@ export default function TiposConceptoGastos() {
               <div>
 
                 <label
-                  className="
-                    mb-2
-                    block
-                    text-sm
-                    font-semibold
-                    text-slate-700
-                  "
+                  className="mb-2
+ block"
                 >
                   Tipo concepto de gastos
                 </label>
@@ -2553,31 +2214,17 @@ export default function TiposConceptoGastos() {
                     )
                   }
                   placeholder="Escribe el concepto..."
-                  className="
-                    w-full
-                    rounded-xl
-                    border
-                    border-slate-200
-                    bg-slate-50
-                    px-4
-                    py-3
-                    text-sm
-                    text-slate-700
-                    outline-none
-                    transition-all
-                    focus:border-[var(--molsan-primary)]
-                    focus:bg-white
-                    focus:ring-4
-                    focus:ring-[var(--molsan-primary-border)]
-                  "
+                  className="w-full
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
                 />
 
                 <p
-                  className="
-                    mt-2
-                    text-xs
-                    text-slate-400
-                  "
+                  className="mt-2"
                 >
                   Se guardará automáticamente
                   en minúsculas.
@@ -2589,38 +2236,28 @@ export default function TiposConceptoGastos() {
               {/* ACTIVO */}
 
               <div
-                className="
-                  mt-5
-                  flex
-                  items-center
-                  justify-between
-                  rounded-xl
-                  border
-                  border-slate-200
-                  bg-slate-50
-                  px-4
-                  py-3
-                "
+                className="mt-5
+ flex
+ items-center
+ justify-between
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
               >
 
                 <div>
 
                   <p
-                    className="
-                      text-sm
-                      font-semibold
-                      text-slate-700
-                    "
+                    className=""
                   >
                     Concepto activo
                   </p>
 
                   <p
-                    className="
-                      mt-0.5
-                      text-xs
-                      text-slate-400
-                    "
+                    className="mt-0.5"
                   >
                     Permitido para su utilización
                     en los expedientes.
@@ -2645,8 +2282,8 @@ export default function TiposConceptoGastos() {
                     transition-all
                     ${
                       activo
-                        ? "bg-[var(--molsan-primary)]"
-                        : "bg-slate-300"
+                        ? ""
+                        : ""
                     }
                   `}
                 >
@@ -2677,35 +2314,20 @@ export default function TiposConceptoGastos() {
               {/* BOTONES */}
 
               <div
-                className="
-                  mt-7
-                  flex
-                  flex-col-reverse
-                  gap-3
-                  sm:flex-row
-                  sm:justify-end
-                "
+                className="mt-7
+ flex
+ flex-col-reverse
+ gap-3
+ sm:flex-row
+ sm:justify-end"
               >
 
                 <button
                   type="button"
                   onClick={cerrarModal}
                   disabled={guardando}
-                  className="
-                    rounded-xl
-                    border
-                    border-slate-200
-                    bg-white
-                    px-5
-                    py-3
-                    text-sm
-                    font-semibold
-                    text-slate-600
-                    transition-all
-                    hover:bg-slate-50
-                    disabled:cursor-not-allowed
-                    disabled:opacity-50
-                  "
+                  className="px-5
+ py-3"
                 >
                   Cancelar
                 </button>
@@ -2719,39 +2341,21 @@ export default function TiposConceptoGastos() {
                       nombre
                     )
                   }
-                  className="
-                    inline-flex
-                    items-center
-                    justify-center
-                    gap-2
-                    rounded-xl
-                    bg-[var(--molsan-primary)]
-                    px-5
-                    py-3
-                    text-sm
-                    font-semibold
-                    text-white
-                    shadow-lg
-                    shadow-[var(--molsan-primary-border)]
-                    transition-all
-                    hover:bg-[var(--molsan-primary-hover)]
-                    disabled:cursor-not-allowed
-                    disabled:opacity-50
-                  "
+                  className="inline-flex
+ items-center
+ justify-center
+ gap-2
+ 
+ 
+ px-5
+ py-3"
                 >
 
                   {guardando && (
 
                     <span
-                      className="
-                        h-4
-                        w-4
-                        animate-spin
-                        rounded-full
-                        border-2
-                        border-white/30
-                        border-t-white
-                      "
+                      className="h-4
+ w-4"
                     />
 
                   )}
