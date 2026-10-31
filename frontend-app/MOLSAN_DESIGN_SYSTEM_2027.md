@@ -202,6 +202,6 @@ Este cierre **no afirma que cada una de las 97 pantallas y cada modal hayan sido
 - [x] Auditoría estática de 97 pantallas y 30 componentes JSX/TSX.
 - [x] Corrección del último color aislado.
 - [x] Sidebar y funcionalidad excluidos de los cambios.
-- [ ] Build final de producción de Preview: pendiente de ejecución y resultado del despliegue.
+- [x] Build de producción de Preview: correcto con Vite 6.4.5; compilación completada en 5,54 s y despliegue Render en estado LIVE (`dep-dbj043jbc2fs73bftb40`, 31/10/2026).
 - [ ] Revisión visual individual de todas las pantallas y modales: pendiente, no se considera realizada por la auditoría estática.
 
