@@ -2361,18 +2361,7 @@ export default function ExpedientesListado() {
   return (
 
     <div
-      className="erp-page
- 
- expedientes-page
- min-h-full
-
- p-4
- sm:p-6
- lg:p-8
-
- 
-
- space-y-6"
+      className="erp-page expedientes-page min-h-full space-y-6"
       aria-busy={loading}
     >
 

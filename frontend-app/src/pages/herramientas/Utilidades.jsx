@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { Link } from "react-router-dom";
 
 /**
@@ -7,17 +8,8 @@ import { Link } from "react-router-dom";
 export default function Utilidades() {
 
   return (
-    <div className="min-h-full space-y-7 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden p-6 sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1" />
-        <div className="relative flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center">⚙️</div>
-          <div>
-            <h1>Utilidades del sistema</h1>
-            <p className="mt-1">Accede a importaciones, integraciones y herramientas de trabajo directamente desde el ERP.</p>
-          </div>
-        </div>
-      </header>
+    <div className="erp-page w-full space-y-7">
+      <MolsanPageHeader mark="UT" title="Utilidades" description="Configuración corporativa, documentación, integraciones y herramientas auxiliares." />
 
       <Grupo titulo="Documentación y plantillas" descripcion="Centraliza el diseño de los documentos oficiales sin mover los catálogos ni las reglas económicas.">
         <Card icon="📑" titulo="Modelos documentos" descripcion="Consulta y prepara las plantillas de Hoja de liquidación, Provisión de fondos y Factura de honorarios de gestoría." link="/herramientas/utilidades/modelos-documentos" destacado />

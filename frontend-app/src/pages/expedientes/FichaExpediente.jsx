@@ -4643,16 +4643,10 @@ async function descargarPDFCalificacion(defecto) {
   if (loading) {
   return (
       <div
-        className="ficha-expediente-premium ficha-expediente-operativo erp-page
- p-6"
+        className="ficha-expediente-premium ficha-expediente-operativo erp-page"
       >
         <div
-          className="w-full
- 
- 
- 
- 
- p-12"
+          className="w-full"
         >
           <div
            
@@ -4672,16 +4666,10 @@ async function descargarPDFCalificacion(defecto) {
   if (error) {
     return (
       <div
-        className="ficha-expediente-premium erp-page
- p-6"
+        className="ficha-expediente-premium erp-page"
       >
         <div
-          className="w-full
- 
- 
- 
- 
- p-6"
+          className="w-full"
         >
           <p>
             {error}
