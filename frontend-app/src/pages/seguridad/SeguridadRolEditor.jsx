@@ -9,8 +9,9 @@ import {
 import { useSeguridad } from "../../hooks/useSeguridad";
 
 
-const API_URL =
-  "https://agenda-intranet-b.onrender.com";
+const API_URL = String(
+  import.meta.env.VITE_API_URL || "https://agenda-intranet-b.onrender.com/api"
+).replace(/\/api\/?$/, "");
 
 
 export default function SeguridadRolEditor() {
