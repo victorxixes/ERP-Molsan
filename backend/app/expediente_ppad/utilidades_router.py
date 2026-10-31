@@ -10,9 +10,15 @@ from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
 from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 from backend.app.expediente_ppad.models import ExpedientePPAD
 from backend.app.expedientes.models import Expediente, Cliente
 from backend.app.empleados.models import Empleado
+
+
+def _permiso_utilidades(usuario=Depends(get_current_user)):
+    require_perm_modulo(usuario, "utilidades", "ver")
+    return usuario
 
 
 router = APIRouter(
@@ -89,7 +95,11 @@ def _fila(item, expediente, gestor, cliente):
 
 
 @router.get("", summary="Listado y resumen de PPAD pendientes y compensados")
-def listar_ppad_utilidades(db: Session = Depends(get_db), q: str = Query("", max_length=200)):
+def listar_ppad_utilidades(
+    db: Session = Depends(get_db),
+    q: str = Query("", max_length=200),
+    _usuario=Depends(_permiso_utilidades),
+):
     filas = _consultar(db, "todos", q)
     items = [_fila(*fila) for fila in filas]
 
@@ -113,6 +123,7 @@ def exportar_ppad_excel(
     estado: str = Query("pendiente", regex="^(pendiente|compensado|todos)$"),
     q: str = Query("", max_length=200),
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_utilidades),
 ):
     filas = _consultar(db, estado, q)
     items = [_fila(*fila) for fila in filas]
