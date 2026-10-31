@@ -165,8 +165,8 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
 
   const empleadosConMarcajes = new Set(marcajes.map((m) => m.empleado_id)).size;
   const periodo = periodos.find((p) => p.anio === Number((desde || "").slice(0, 4)) && p.mes === Number((desde || "").slice(5, 7)));
-  const input = "mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-800";
-  const label = "block text-xs font-bold text-slate-600";
+  const input = "mt-1 w-full px-3 py-2.5";
+  const label = "block";
 
   return <div className="fichajes-premium-page control-fichajes-admin-premium p-4 sm:p-6">
     <section className="mb-5 p-4">
