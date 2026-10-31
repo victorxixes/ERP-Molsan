@@ -30,7 +30,7 @@ export default function NotificacionesBadge() {
  px-1.5 py-0.5"
           role="status"
           aria-label={`${count} notificaciones`}
-          style={{ animationFillMode: "both" }}
+          
         >
           {count}
         </span>
