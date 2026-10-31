@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 /**
  * CENTRAL DE CATÁLOGOS — MOLSAN ERP
@@ -154,18 +155,8 @@ const GRUPOS = [
 
 export default function Catalogos() {
   return (
-    <main className="min-h-full space-y-7 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden p-6 sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1" />
-        <div className="relative flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center">▦</div>
-          <div>
-            <p className="uppercase">MOLSAN ERP</p>
-            <h1 className="mt-1">Catálogos</h1>
-            <p className="mt-1">Centraliza los datos maestros que utilizan los módulos y procesos de la gestoría.</p>
-          </div>
-        </div>
-      </header>
+    <main className="erp-page min-h-full space-y-7">
+      <MolsanPageHeader mark="CA" title="Catálogos" description="Centraliza los datos maestros que utilizan los módulos y procesos de la gestoría." />
 
       <div className="px-4 py-3">
         Los catálogos conservan sus datos y pantallas actuales. Esta sección los reúne en un único acceso para facilitar su mantenimiento.

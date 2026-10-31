@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
 
@@ -125,14 +126,9 @@ export default function AltaExpediente() {
     }
   }
 
-  return <main className="min-h-full min-w-0 space-y-6 p-4 sm:p-6 lg:p-8">
-    <header className="relative overflow-hidden p-6 sm:p-8">
-      <div className="absolute inset-x-0 top-0 h-1" />
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div><p className="uppercase">MOLSAN ERP</p><h1 className="mt-2">Alta de expediente</h1><p className="mt-2 max-w-3xl">Crea un expediente manual con facturación, contrato, múltiples fincas, hipotecas y notaría CTN.</p></div>
-        <button type="button" onClick={() => navigate("/herramientas/utilidades")} className={botonSecundario}>← Volver a Utilidades</button>
-      </div>
-    </header>
+  return <main className="erp-page min-h-full min-w-0 space-y-6">
+    <MolsanPageHeader mark="AE" title="Alta de expediente" description="Crea un expediente manual con facturación, contrato, múltiples fincas, hipotecas y notaría CTN." />
+    <div className="flex justify-end"><button type="button" onClick={() => navigate("/herramientas/utilidades")} className={botonSecundario}>← Volver a Utilidades</button></div>
 
     {error && <div role="alert" className="px-4 py-3">{error}</div>}
     {resultado && <div role="status" className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"><div><p>Expediente creado correctamente</p><p className="mt-1">{resultado.id_expediente} · {resultado.tipo_expediente}</p></div><div className="flex flex-wrap gap-2"><button type="button" onClick={imprimirFicha} disabled={imprimiendo} className="px-4 py-2">{imprimiendo ? "Generando PDF…" : "Imprimir ficha PDF"}</button><button type="button" onClick={() => navigate("/expedientes")} className="px-4 py-2">Ir a expedientes</button></div></div>}
