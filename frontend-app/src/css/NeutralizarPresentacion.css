@@ -2072,3 +2072,129 @@ body {
     transition: none;
   }
 }
+
+/* ==========================================================
+   FASE 2 · NORMALIZACIÓN GLOBAL FINAL DE CONTROLES
+   Se aplica a todas las áreas main del ERP y a diálogos accesibles,
+   incluidos los que se montan mediante portal fuera de #root.
+   Sidebar excluido por estructura (hermano de main).
+========================================================== */
+
+/* Campos de edición y filtros, estén o no dentro de un <form>. */
+#root main :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not([type="color"]), select, textarea),
+body [role="dialog"] :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not([type="color"]), select, textarea) {
+  box-sizing: border-box;
+  max-width: 100%;
+  color: var(--molsan-text);
+  background-color: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font-family: inherit;
+  font-size: var(--molsan-font-size-sm);
+  transition: border-color var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast);
+}
+
+#root main :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not([type="color"]), select, textarea):focus,
+body [role="dialog"] :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not([type="color"]), select, textarea):focus {
+  border-color: var(--molsan-blue);
+  outline: none;
+  box-shadow: var(--molsan-focus-ring);
+}
+
+#root main :is(input, select, textarea)::placeholder,
+body [role="dialog"] :is(input, textarea)::placeholder {
+  color: #8195a5;
+  opacity: 1;
+}
+
+#root main :is(input, select, textarea):disabled,
+body [role="dialog"] :is(input, select, textarea):disabled {
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  cursor: not-allowed;
+}
+
+/* Botones operativos: misma geometría, foco y respuesta sin borrar
+   variantes funcionales (primario, secundario, éxito, aviso o peligro). */
+#root main button,
+body [role="dialog"] button {
+  font-family: inherit;
+  border-radius: var(--molsan-radius-control);
+  transition: background-color var(--molsan-transition-fast),
+              border-color var(--molsan-transition-fast),
+              box-shadow var(--molsan-transition-fast),
+              color var(--molsan-transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+#root main button:focus-visible,
+body [role="dialog"] button:focus-visible {
+  outline: none;
+  box-shadow: var(--molsan-focus-ring);
+}
+
+#root main button:disabled,
+body [role="dialog"] button:disabled {
+  cursor: not-allowed;
+}
+
+/* Jerarquía tipográfica compartida en el contenido de trabajo.
+   No fuerza tamaños ni colores a indicadores semánticos de estado. */
+#root main :is(h1, h2, h3),
+body [role="dialog"] :is(h1, h2, h3) {
+  color: var(--molsan-blue);
+  text-wrap: balance;
+}
+
+#root main :is(p, small, label),
+body [role="dialog"] :is(p, small, label) {
+  line-height: var(--molsan-line-height);
+}
+
+/* Los diálogos renderizados con createPortal suelen quedar fuera de
+   #root; se les aplica la misma tipografía, campos, tablas y foco. */
+body [role="dialog"] {
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+}
+
+body [role="dialog"] table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+body [role="dialog"] table thead th {
+  color: var(--molsan-blue);
+  background: var(--molsan-table-head);
+  border-bottom: 1px solid var(--molsan-border);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+  text-align: left;
+}
+
+body [role="dialog"] table tbody td {
+  border-bottom: 1px solid rgba(216,228,236,.78);
+  vertical-align: middle;
+}
+
+body [role="dialog"] table tbody tr:hover {
+  background: rgba(242,247,251,.78);
+}
+
+@media (max-width: 720px) {
+  #root main :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]), select, textarea),
+  body [role="dialog"] :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]), select, textarea) {
+    max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #root main :is(input, select, textarea, button),
+  body [role="dialog"] :is(input, select, textarea, button) {
+    transition: none;
+  }
+}
