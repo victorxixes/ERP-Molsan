@@ -28,7 +28,7 @@ const ENDPOINTS = [
 function Campo({ label, value, onChange, placeholder = "", type = "text", required = false, help }) {
   return (
     <label className="block min-w-0">
-      <span className="mb-1.5 block uppercase">{label}{required && <span className=""> *</span>}</span>
+      <span className="mb-1.5 block uppercase">{label}{required && <span> *</span>}</span>
       <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} required={required}
         className="w-full px-3.5 py-2.5" />
       {help && <span className="mt-1 block">{help}</span>}
@@ -40,7 +40,7 @@ function Panel({ title, description, children, action }) {
   return (
     <section className="overflow-hidden">
       <div className="flex flex-wrap items-start justify-between gap-3 px-5 py-4 sm:px-6">
-        <div><h2 className="">{title}</h2>{description && <p className="mt-1">{description}</p>}</div>
+        <div><h2>{title}</h2>{description && <p className="mt-1">{description}</p>}</div>
         {action}
       </div>
       <div className="p-5 sm:p-6">{children}</div>
@@ -96,7 +96,7 @@ export default function Verifacti() {
           <div className="flex items-center gap-4">
             <div className="flex h-14 w-14 shrink-0 items-center justify-center">🧾</div>
             <div><div className="mb-1 flex flex-wrap items-center gap-2"><span className="uppercase">MOLSAN ERP · Integraciones</span><EstadoPendiente /></div>
-              <h1 className="">Verifacti</h1>
+              <h1>Verifacti</h1>
               <p className="mt-1 max-w-2xl">Panel de control de facturación electrónica y registros VERI*FACTU.</p>
             </div>
           </div>
@@ -114,7 +114,7 @@ export default function Verifacti() {
             </button>)}
           </nav>
           <div className="mt-4 p-3">
-            <p className="">Modo de preparación</p>
+            <p>Modo de preparación</p>
             <p className="mt-1">Los formularios permiten preparar y revisar los datos. Para consultar o enviar datos reales hace falta conectar el backend y configurar la API key de forma segura.</p>
           </div>
         </aside>
@@ -146,7 +146,7 @@ export default function Verifacti() {
                   ["02", "Implementar conexión desde el backend", "Consultar GET /verifactu/health y tratar respuestas y errores."],
                   ["03", "Conectar las consultas y operaciones", "Listar facturas, revisar estados y consultar XML."],
                   ["04", "Validar en entorno de pruebas", "Comprobar los flujos antes de habilitar envíos reales."],
-                ].map(([n, title, desc]) => <div key={n} className="flex gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center">{n}</span><div><p className="">{title}</p><p className="mt-0.5">{desc}</p></div><span className="ml-auto mt-1">Pendiente</span></div>)}
+                ].map(([n, title, desc]) => <div key={n} className="flex gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center">{n}</span><div><p>{title}</p><p className="mt-0.5">{desc}</p></div><span className="ml-auto mt-1">Pendiente</span></div>)}
               </div>
             </Panel>
           </>}
@@ -180,8 +180,8 @@ export default function Verifacti() {
 
           {seccion === "operaciones" && <Panel title="Subsanar o anular un registro" description="Prepara los datos de identificación del registro. Estas operaciones solo se habilitarán tras conectar y validar el backend.">
             <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div className="p-4"><h3 className="">Subsanar factura</h3><p className="mt-1">PUT /verifactu/modify · Para corregir un registro cuando corresponda subsanación.</p></div>
-              <div className="p-4"><h3 className="">Anular factura</h3><p className="mt-1">POST /verifactu/cancel · Para comunicar la anulación de un registro existente.</p></div>
+              <div className="p-4"><h3>Subsanar factura</h3><p className="mt-1">PUT /verifactu/modify · Para corregir un registro cuando corresponda subsanación.</p></div>
+              <div className="p-4"><h3>Anular factura</h3><p className="mt-1">POST /verifactu/cancel · Para comunicar la anulación de un registro existente.</p></div>
             </div>
             <form onSubmit={(e) => { e.preventDefault(); preparar("Datos comunes para subsanación/anulación", { serie: operacion.serie, numero: operacion.numero, fecha_expedicion: operacion.fecha, rechazo_previo: operacion.rechazo ? "S" : "N" }); }} className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <Campo label="Serie" value={operacion.serie} onChange={(v) => setOperacion({ ...operacion, serie: v })} />
@@ -196,16 +196,16 @@ export default function Verifacti() {
           {seccion === "xml" && <Panel title="XML y exportaciones" description="La API permite exportar XML por ejercicio/periodo y recuperar los XML de una factura por serie y número.">
             <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
               <form onSubmit={(e) => { e.preventDefault(); preparar("POST /verifactu/export", { ejercicio: xml.ejercicio, periodo: xml.periodo }); }} className="space-y-4 p-4">
-                <h3 className="">Exportar XML por periodo</h3>
+                <h3>Exportar XML por periodo</h3>
                 <div className="grid grid-cols-2 gap-3"><Campo label="Ejercicio" value={xml.ejercicio} onChange={(v) => setXml({ ...xml, ejercicio: v })} required /><Campo label="Periodo" value={xml.periodo} onChange={(v) => setXml({ ...xml, periodo: v })} required /></div>
-                <p className="">Las URL de descarga que devuelve Verifacti tienen caducidad limitada; se deberá gestionar la paginación si hay muchos ficheros.</p>
+                <p>Las URL de descarga que devuelve Verifacti tienen caducidad limitada; se deberá gestionar la paginación si hay muchos ficheros.</p>
                 <button className="w-full px-4 py-2.5" type="submit">Preparar exportación</button>
               </form>
               <form onSubmit={(e) => { e.preventDefault(); preparar("POST /verifactu/downloadXML", { serie: xml.serie, numero: xml.numero }); }} className="space-y-4 p-4">
-                <h3 className="">XML de una factura</h3>
+                <h3>XML de una factura</h3>
                 <Campo label="Serie" value={xml.serie} onChange={(v) => setXml({ ...xml, serie: v })} />
                 <Campo label="Número de factura" value={xml.numero} onChange={(v) => setXml({ ...xml, numero: v })} required />
-                <p className="">La respuesta puede contener varios registros XML asociados a una misma serie y número.</p>
+                <p>La respuesta puede contener varios registros XML asociados a una misma serie y número.</p>
                 <button className="w-full px-4 py-2.5" type="submit">Preparar consulta XML</button>
               </form>
             </div>
@@ -213,19 +213,19 @@ export default function Verifacti() {
 
           {seccion === "api" && <Panel title="API de Verifacti" description="Listado de endpoints identificados en la documentación oficial.">
             <div className="mb-4 flex flex-wrap items-center gap-2"><span className="px-3 py-1.5">Base URL</span><code className="break-all px-3 py-1.5">https://api.verifacti.com</code></div>
-            <div className="overflow-x-auto"><table className="w-full min-w-[520px]"><thead><tr className="uppercase"><th className="px-3 py-3">Método</th><th className="px-3 py-3">Endpoint</th><th className="px-3 py-3">Uso</th></tr></thead><tbody>{ENDPOINTS.map(([method, endpoint, desc]) => <tr key={endpoint} className=""><td className="px-3 py-3"><span className={`px-2 py-1 ${method === "GET" ? "" : method === "POST" ? "" : method === "PUT" ? "" : ""}`}>{method}</span></td><td className="px-3 py-3">{endpoint}</td><td className="px-3 py-3">{desc}</td></tr>)}</tbody></table></div>
+            <div className="overflow-x-auto"><table className="w-full min-w-[520px]"><thead><tr className="uppercase"><th className="px-3 py-3">Método</th><th className="px-3 py-3">Endpoint</th><th className="px-3 py-3">Uso</th></tr></thead><tbody>{ENDPOINTS.map(([method, endpoint, desc]) => <tr key={endpoint}><td className="px-3 py-3"><span className={`px-2 py-1 ${method === "GET" ? "" : method === "POST" ? "" : method === "PUT" ? "" : ""}`}>{method}</span></td><td className="px-3 py-3">{endpoint}</td><td className="px-3 py-3">{desc}</td></tr>)}</tbody></table></div>
             <div className="mt-5 flex flex-wrap gap-3"><a href="https://www.verifacti.com/docs" target="_blank" rel="noreferrer" className="px-4 py-2.5">Abrir documentación completa ↗</a><a href="https://www.verifacti.com/" target="_blank" rel="noreferrer" className="px-4 py-2.5">Web de Verifacti ↗</a></div>
           </Panel>}
 
           {aviso && <div role="status" className="px-4 py-3">{aviso}</div>}
           {preview && <Panel title="Vista previa de la petición" description={preview.tipo}>
             <pre className="max-h-80 overflow-auto p-4">{JSON.stringify(preview.payload, null, 2)}</pre>
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-3"><span className="">Vista previa local · no se ha enviado ningún dato externo.</span><button type="button" onClick={() => { navigator.clipboard?.writeText(JSON.stringify(preview.payload, null, 2)); setAviso("JSON copiado si el navegador permite el acceso al portapapeles. No se ha enviado a Verifacti."); }} className="px-3 py-2">Copiar JSON</button></div>
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-3"><span>Vista previa local · no se ha enviado ningún dato externo.</span><button type="button" onClick={() => { navigator.clipboard?.writeText(JSON.stringify(preview.payload, null, 2)); setAviso("JSON copiado si el navegador permite el acceso al portapapeles. No se ha enviado a Verifacti."); }} className="px-3 py-2">Copiar JSON</button></div>
           </Panel>}
         </main>
       </div>
       <footer className="flex flex-wrap items-center justify-between gap-3 pt-4">
-        <span>Verifacti · Panel de control MOLSAN ERP</span><Link to="/herramientas/utilidades" className="">← Volver a Utilidades</Link>
+        <span>Verifacti · Panel de control MOLSAN ERP</span><Link to="/herramientas/utilidades">← Volver a Utilidades</Link>
       </footer>
     </div>
   );
