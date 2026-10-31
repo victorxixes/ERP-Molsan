@@ -254,7 +254,7 @@ export default function Fichajes({ modo = "empleado" }) {
               </div>
               <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 {TIPOS.map((t) => (
-                  <button key={t.value} type="button" disabled={guardando} onClick={() => t.value === "AUSENCIA" ? setMostrarSelectorAusencia(true) : enviarMarcaje(t.value)} className={`flex min-h-[94px] items-center gap-4 rounded-2xl border px-5 py-4 text-left font-bold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:cursor-wait disabled:opacity-50 ${t.tone === "emerald" ? "" : t.tone === "rose" ? "" : t.tone === "amber" ? "" : t.tone === "violet" ? "" : t.tone === "blue" ? "" : ""}`}>
+                  <button key={t.value} type="button" disabled={guardando} onClick={() => t.value === "AUSENCIA" ? setMostrarSelectorAusencia(true) : enviarMarcaje(t.value)} className={`flex min-h-[94px] items-center gap-4 px-5 py-4 ${t.tone === "emerald" ? "" : t.tone === "rose" ? "" : t.tone === "amber" ? "" : t.tone === "violet" ? "" : t.tone === "blue" ? "" : ""}`}>
                     <span className="grid h-11 w-11 place-items-center">{t.icon}</span><span>{t.label}<span className="mt-1 block">Registrar ahora</span></span>
                   </button>
                 ))}
@@ -274,7 +274,7 @@ export default function Fichajes({ modo = "empleado" }) {
 
           <section className="overflow-hidden">
             <div className="flex flex-wrap gap-2 p-3 sm:p-4">
-              {tabs.map((t) => <button key={t.id} type="button" onClick={() => setPestana(t.id)} className={`rounded-xl px-4 py-2.5 text-sm font-bold transition ${pestana === t.id ? "" : ""}`}>{t.label}</button>)}
+              {tabs.map((t) => <button key={t.id} type="button" onClick={() => setPestana(t.id)} className={`px-4 py-2.5 ${pestana === t.id ? "" : ""}`}>{t.label}</button>)}
             </div>
 
             {!esAdminVista && pestana === "calendario" && (
@@ -293,8 +293,8 @@ export default function Fichajes({ modo = "empleado" }) {
                     const solicitudesDia = dia ? (resumenCompensacion.solicitudes || []).filter((s) => s.fecha_disfrute === claveDia && ["SOLICITADO", "APROBADO", "DISFRUTADO"].includes(s.estado)) : [];
                     const ausenciasDia = dia ? solicitudesAusencia.filter((a) => a.fecha_inicio <= claveDia && a.fecha_fin >= claveDia && ["SOLICITADO", "APROBADO"].includes(a.estado)) : [];
                     const esHoy = dia && claveDia === fechaISO(FECHA_HOY);
-                    return <div key={dia ? fechaISO(dia) : "vacio-" + i} className={`min-h-[78px] rounded-xl border p-2 sm:min-h-[105px] ${!dia ? "" : esHoy ? "" : ""}`}>
-                      {dia && <><div className={`text-sm font-bold ${esHoy ? "" : ""}`}>{dia.getDate()}</div><div className="mt-1 space-y-1">{registros.slice(0, 3).map((m) => <div key={m.id} title={formatearTipo(m.tipo)} className="truncate px-1.5 py-1">{hora(m.fecha_hora)} {formatearTipo(m.tipo)}</div>)}{registros.length > 3 && <p className="">+{registros.length - 3} más</p>}{calendarioFestivosDia.map((f) => <div key={"calendario-festivo-" + f.id} className="truncate px-1.5 py-1" title={f.nombre}>{f.nombre}</div>)}{festivosDia.map((f) => <div key={"festivo-" + f.id} className="truncate px-1.5 py-1" title="Festivo trabajado">{f.estado === "VALIDADO" ? "Festivo validado" : f.estado === "RECHAZADO" ? "Festivo rechazado" : "Festivo pendiente"}</div>)}{solicitudesDia.map((s) => <div key={"comp-" + s.id} className="truncate px-1.5 py-1" title="Compensación">{s.estado === "SOLICITADO" ? "Compensación solicitada" : s.estado === "APROBADO" ? "Compensación aprobada" : "Compensación disfrutada"}</div>)}{ausenciasDia.map((a) => <div key={"ausencia-" + a.id} className={"truncate px-1.5 py-1" + (a.estado === "SOLICITADO" ? "" : "")} title={a.tipo_ausencia}>{a.estado === "SOLICITADO" ? "Ausencia pendiente" : "Ausencia aprobada"} · {a.tipo_ausencia}</div>)}</div></>}
+                    return <div key={dia ? fechaISO(dia) : "vacio-" + i} className={`min-h-[78px] p-2 sm:min-h-[105px] ${!dia ? "" : esHoy ? "" : ""}`}>
+                      {dia && <><div className={`${esHoy ? "" : ""}`}>{dia.getDate()}</div><div className="mt-1 space-y-1">{registros.slice(0, 3).map((m) => <div key={m.id} title={formatearTipo(m.tipo)} className="truncate px-1.5 py-1">{hora(m.fecha_hora)} {formatearTipo(m.tipo)}</div>)}{registros.length > 3 && <p className="">+{registros.length - 3} más</p>}{calendarioFestivosDia.map((f) => <div key={"calendario-festivo-" + f.id} className="truncate px-1.5 py-1" title={f.nombre}>{f.nombre}</div>)}{festivosDia.map((f) => <div key={"festivo-" + f.id} className="truncate px-1.5 py-1" title="Festivo trabajado">{f.estado === "VALIDADO" ? "Festivo validado" : f.estado === "RECHAZADO" ? "Festivo rechazado" : "Festivo pendiente"}</div>)}{solicitudesDia.map((s) => <div key={"comp-" + s.id} className="truncate px-1.5 py-1" title="Compensación">{s.estado === "SOLICITADO" ? "Compensación solicitada" : s.estado === "APROBADO" ? "Compensación aprobada" : "Compensación disfrutada"}</div>)}{ausenciasDia.map((a) => <div key={"ausencia-" + a.id} className={"truncate px-1.5 py-1" + (a.estado === "SOLICITADO" ? "" : "")} title={a.tipo_ausencia}>{a.estado === "SOLICITADO" ? "Ausencia pendiente" : "Ausencia aprobada"} · {a.tipo_ausencia}</div>)}</div></>}
                     </div>;
                   })}
                 </div>
