@@ -795,7 +795,7 @@ export default function TiposConceptoGastos() {
                 </p>
 
                 <h1
-                  className=""
+                 
                 >
                   Tipos de Concepto de Gastos
                 </h1>
@@ -1396,7 +1396,7 @@ export default function TiposConceptoGastos() {
             <div>
 
               <h2
-                className=""
+               
               >
                 Catálogo
               </h2>
@@ -1442,7 +1442,7 @@ export default function TiposConceptoGastos() {
             >
 
               <thead
-                className=""
+               
               >
 
                 <tr>
@@ -1497,7 +1497,7 @@ export default function TiposConceptoGastos() {
 
 
               <tbody
-                className=""
+               
               >
 
                 {!cargando &&
@@ -1581,7 +1581,7 @@ export default function TiposConceptoGastos() {
                         key={
                           tipo.id
                         }
-                        className=""
+                       
                       >
 
                         {/* NÚMERO */}
@@ -1675,7 +1675,7 @@ export default function TiposConceptoGastos() {
                             <div>
 
                               <p
-                                className=""
+                               
                               >
                                 {tipo.nombre}
                               </p>
@@ -2199,7 +2199,7 @@ export default function TiposConceptoGastos() {
                 <div>
 
                   <p
-                    className=""
+                   
                   >
                     Concepto activo
                   </p>
