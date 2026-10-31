@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
 
@@ -90,13 +90,15 @@ export default function CtnListadoPage() {
   const totalPaginas = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const cargarListado = useCallback(
-    async (paginaSolicitada = pagina, filtrosActuales = filtrosAplicados) => {
+    async (paginaSolicitada = pagina, filtrosActuales = filtrosAplicados, ordenActual = orden) => {
       setCargando(true);
       setError("");
       try {
         const params = new URLSearchParams({
           page: String(paginaSolicitada),
           page_size: String(PAGE_SIZE),
+          sort_by: ordenActual.campo,
+          sort_order: ordenActual.direccion,
         });
         Object.entries(filtrosActuales).forEach(([key, value]) => {
           if (value?.trim()) params.set(key, value.trim());
@@ -132,12 +134,12 @@ export default function CtnListadoPage() {
         setCargando(false);
       }
     },
-    [pagina, filtrosAplicados]
+    [pagina, filtrosAplicados, orden]
   );
 
   useEffect(() => {
-    cargarListado(pagina, filtrosAplicados);
-  }, [pagina, filtrosAplicados, cargarListado]);
+    cargarListado(pagina, filtrosAplicados, orden);
+  }, [pagina, filtrosAplicados, orden, cargarListado]);
 
   useEffect(() => {
     let activo = true;
@@ -154,24 +156,6 @@ export default function CtnListadoPage() {
       .catch((err) => { if (activo) setErrorEncargaGest(leerDetalleError(err, "No se ha podido consultar el estado de los accesos EncargaGest.")); });
     return () => { activo = false; };
   }, []);
-
-  const filasOrdenadas = useMemo(() => {
-    const copia = [...items];
-    const obtener = (item, campo) => {
-      if (campo === "nombre_completo") return nombreNotario(item);
-      if (campo === "notario_asociado") return listaAsociados(item);
-      return item?.[campo] ?? "";
-    };
-    copia.sort((a, b) => {
-      const av = obtener(a, orden.campo);
-      const bv = obtener(b, orden.campo);
-      const comparacion = typeof av === "number" && typeof bv === "number"
-        ? av - bv
-        : String(av).localeCompare(String(bv), "es", { sensitivity: "base", numeric: true });
-      return orden.direccion === "asc" ? comparacion : -comparacion;
-    });
-    return copia;
-  }, [items, orden]);
 
   const cambiarFiltro = (campo, valor) => setFiltros((actual) => ({ ...actual, [campo]: valor }));
 
@@ -317,20 +301,20 @@ export default function CtnListadoPage() {
           <table className=" molsan-table">
             <thead><tr>
               <th><button type="button" onClick={() => ordenarPor("id")}>ID {indicadorOrden("id")}</button></th>
-              <th><button type="button" onClick={() => ordenarPor("nombre_completo")}>Notario {indicadorOrden("nombre_completo")}</button></th>
+              <th><button type="button" onClick={() => ordenarPor("apellidos")}>Notario {indicadorOrden("apellidos")}</button></th>
               <th><button type="button" onClick={() => ordenarPor("nif")}>NIF {indicadorOrden("nif")}</button></th>
               <th><button type="button" onClick={() => ordenarPor("municipio")}>Municipio {indicadorOrden("municipio")}</button></th>
               <th><button type="button" onClick={() => ordenarPor("provincia")}>Provincia {indicadorOrden("provincia")}</button></th>
-              <th>VC</th><th>Apoderado</th>
+              <th><button type="button" onClick={() => ordenarPor("vc")}>VC {indicadorOrden("vc")}</button></th><th><button type="button" onClick={() => ordenarPor("apoderado")}>Apoderado {indicadorOrden("apoderado")}</button></th>
               <th><button type="button" onClick={() => ordenarPor("notario_asociado")}>Notario asociado {indicadorOrden("notario_asociado")}</button></th>
-              <th>Acceso NotarGest</th><th>Acceso EncargaGest</th><th>Distancia</th><th>Acciones</th>
+              <th><button type="button" onClick={() => ordenarPor("notargest_habilitado")}>Acceso NotarGest {indicadorOrden("notargest_habilitado")}</button></th><th><button type="button" onClick={() => ordenarPor("encargagest_habilitado")}>Acceso EncargaGest {indicadorOrden("encargagest_habilitado")}</button></th><th><button type="button" onClick={() => ordenarPor("distancia_km")}>Distancia {indicadorOrden("distancia_km")}</button></th><th>Acciones</th>
             </tr></thead>
             <tbody>
               {cargando && items.length === 0 ? (
                 <tr><td colSpan={12}>Cargando notarios…</td></tr>
-              ) : filasOrdenadas.length === 0 ? (
+              ) : items.length === 0 ? (
                 <tr><td colSpan={12}>No hay notarios que coincidan con los filtros.</td></tr>
-              ) : filasOrdenadas.map((item) => {
+              ) : items.map((item) => {
                 const vc = etiquetaVc(item.vc);
                 return (
                   <tr key={item.id}>
