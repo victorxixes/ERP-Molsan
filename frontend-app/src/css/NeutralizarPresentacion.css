@@ -510,7 +510,7 @@ body {
 
 .molsan-btn:hover:not(:disabled) {
   background: var(--molsan-blue-soft);
-  border-color: #b8ccdc;
+  border-color: var(--molsan-border);
 }
 
 .molsan-btn--primary {
