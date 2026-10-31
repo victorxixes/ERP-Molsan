@@ -1,5 +1,4 @@
 import { useMemo, useCallback } from "react";
-import { useAgendaStore } from "../../store/agendaStore";
 
 const HORAS = Array.from(
   { length: 12 },
@@ -12,10 +11,6 @@ export default function VistaDia({
   onCitaClick,
   onCrearCita,
 }) {
-  const resaltadaId = useAgendaStore(
-    (s) => s.resaltadaId
-  );
-
   const fechaNormalizada = useMemo(
     () =>
       fechaDia.toLocaleDateString("sv-SE"),
@@ -58,7 +53,7 @@ export default function VistaDia({
   }, [citasSeguras]);
 
   return (
-    <div className="  grid grid-cols-[70px,1fr] gap-4">
+    <div className="grid grid-cols-[70px,1fr] gap-4">
 
       {/* HORAS */}
 
@@ -67,11 +62,7 @@ export default function VistaDia({
         {HORAS.map((h) => (
           <div
             key={h}
-            className="h-12
- flex items-start
- justify-end
- pr-2
- pt-1"
+            className="h-12 flex items-start justify-end pr-2 pt-1"
           >
             {h}
           </div>
@@ -82,11 +73,7 @@ export default function VistaDia({
       {/* TIMELINE */}
 
       <div
-        className="relative
- 
- 
- 
- overflow-hidden"
+        className="relative overflow-hidden"
       >
 
         {/* BLOQUES HORARIOS */}
@@ -103,26 +90,10 @@ export default function VistaDia({
 
         {citasPosicionadas.map((cita) => {
 
-          const resaltada =
-            resaltadaId === cita.id;
-
           return (
             <div
               key={cita.id}
-              className={`absolute
- left-4
- right-4
- mt-1
- p-3
- 
- 
- 
- 
- overflow-hidden
- 
- 
- 
- `}
+              className="absolute left-4 right-4 mt-1 p-3 overflow-hidden"
               style={{ top: cita.top, height: cita.height }}
               onClick={() =>
                 onCitaClick(cita)
@@ -132,12 +103,7 @@ export default function VistaDia({
               {/* ACENTO */}
 
               <span
-                className={`absolute
- left-0
- top-0
- bottom-0
- w-1
- `}
+                className="absolute left-0 top-0 bottom-0 w-1"
               />
 
               <div className="truncate pl-1">
@@ -145,7 +111,7 @@ export default function VistaDia({
                 {cita.hora_inicio} -{" "}
                 {cita.hora_fin}
               </div>
-              {String(cita.tipo_cita || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es").includes("firma") ? (() => { const realizada = Boolean(cita.firma_realizada) || /FIRMA\s+REALIZADA|FIRMADA/.test(String(cita.observaciones || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()); return <div className={`mt-1 inline-flex items-center px-2 py-1 ${realizada ? "" : ""}`}>{realizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</div>; })() : null}
+              {String(cita.tipo_cita || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es").includes("firma") ? (() => { const realizada = Boolean(cita.firma_realizada) || /FIRMA\s+REALIZADA|FIRMADA/.test(String(cita.observaciones || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()); return <div className="mt-1 inline-flex items-center px-2 py-1">{realizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</div>; })() : null}
 
               <div className="truncate pl-1">
                 Notario:{" "}
@@ -163,10 +129,7 @@ export default function VistaDia({
 
               {cita.observaciones && (
                 <div
-                  className="mt-1
- truncate
- 
- pl-1"
+                  className="mt-1 truncate pl-1"
                 >
                   Obs: {cita.observaciones}
                 </div>
