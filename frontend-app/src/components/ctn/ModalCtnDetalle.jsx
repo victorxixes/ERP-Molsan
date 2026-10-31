@@ -336,7 +336,7 @@ export default function ModalCtnDetalle({
 
   return (
     <div
-      className="ctn-modal-overlay"
+      className="ctn-modal-overlay molsan-modal-overlay"
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
@@ -345,6 +345,7 @@ export default function ModalCtnDetalle({
       }}
     >
       <section
+        className="molsan-modal molsan-modal--lg ctn-modal-dialog"
         ref={dialogRef}
         tabIndex={-1}
        
@@ -355,7 +356,7 @@ export default function ModalCtnDetalle({
       {/* CABECERA DE LA FICHA */}
 
       <header
-        className="ctn-modal-header  "
+        className="ctn-modal-header molsan-modal__header"
       >
         <div className="ctn-modal-header-identity">
           <span className="ctn-modal-eyebrow">
