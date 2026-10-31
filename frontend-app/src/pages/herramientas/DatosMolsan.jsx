@@ -28,8 +28,8 @@ const secciones = [
     ["datos_bancarios", "Datos bancarios para documentos (si procede)", "text", false],
   ]},
 ];
-const input = "mt-1 w-full rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface)] px-3 py-2.5 text-sm text-[var(--molsan-text)] outline-none transition focus:border-[var(--molsan-primary)] focus:ring-2 focus:ring-[var(--molsan-primary-soft)]";
-const label = "block text-xs font-semibold uppercase tracking-wide text-slate-500";
+const input = "mt-1 w-full px-3 py-2.5";
+const label = "block uppercase";
 
 export default function DatosMolsan() {
   const [datos, setDatos] = useState(VACIO);
