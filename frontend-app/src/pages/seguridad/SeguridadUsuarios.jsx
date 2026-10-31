@@ -497,9 +497,9 @@ export default function SeguridadUsuarios() {
                           type="button"
                           onClick={cambiarColaboradorApoderaGest}
                           disabled={guardandoColaborador || loading}
-                          className={`rounded-lg border px-3 py-1.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${empleadoBasicoSeguro.es_colaborador
-                            ? ""
-                            : ""}`}
+                          className={`px-3 py-1.5 ${empleadoBasicoSeguro.es_colaborador
+ ? ""
+ : ""}`}
                         >
                           {guardandoColaborador
                             ? "Guardando…"
@@ -567,9 +567,9 @@ export default function SeguridadUsuarios() {
                       role="tab"
                       aria-selected={pestanaActiva === tab.id}
                       onClick={() => setPestanaActiva(tab.id)}
-                      className={`rounded-xl border px-4 py-2.5 text-sm font-semibold transition ${pestanaActiva === tab.id
-                        ? ""
-                        : ""}`}
+                      className={`px-4 py-2.5 ${pestanaActiva === tab.id
+ ? ""
+ : ""}`}
                     >
                       <span className="mr-2" aria-hidden="true">{tab.icon}</span>{tab.label}
                     </button>
