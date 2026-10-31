@@ -884,16 +884,16 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
       {cargando ? <p role="status" aria-live="polite" className="py-8">Cargando histórico…</p> : filtrados.length === 0 ? <p className="py-8">Todavía no hay provisiones guardadas que coincidan con la búsqueda.</p> : <div className="overflow-x-auto"><table className="w-full min-w-[760px]"><thead><tr className="uppercase"><th className="px-3 py-3">Número / fecha</th><th className="px-3 py-3">Cliente</th><th className="px-3 py-3">Población</th><th className="px-3 py-3">Importe</th><th className="px-3 py-3">Acciones</th></tr></thead><tbody>{filtrados.map((it) => <tr key={it.id}><td className="px-3 py-3"><p>{it.numero}</p><p>{it.fecha || "—"}</p></td><td className="px-3 py-3"><p>{it.cliente?.nombre || "—"}</p><p>{it.cliente?.nif || ""}</p></td><td className="px-3 py-3">{it.cliente?.poblacion || "—"}</td><td className="px-3 py-3 tabular-nums">{dinero(it.importe_total)}</td><td className="px-3 py-3"><div className="flex flex-col items-start gap-1"><button type="button" onClick={() => recuperar(it)}>Abrir / editar</button><button type="button" onClick={() => abrirEmail(it)}>Enviar por email</button></div></td></tr>)}</tbody></table></div>}
 
     </Seccion>
-    {emailDraft && <div className="panel-modal-premium fixed inset-0 z-[120] flex items-center justify-center p-3 sm:p-6">
-      <form ref={emailDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Enviar provisión por email" onSubmit={enviarEmail} className="max-h-[94vh] w-full max-w-3xl overflow-y-auto">
-        <header className="flex items-start justify-between gap-4 px-5 py-5 sm:px-7">
+    {emailDraft && <div className="molsan-modal-overlay panel-modal-premium fixed inset-0 z-[120] flex items-center justify-center overflow-y-auto p-3 sm:p-6">
+      <form ref={emailDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Enviar provisión por email" onSubmit={enviarEmail} className="molsan-modal__panel flex max-h-[94vh] w-full max-w-3xl flex-col overflow-hidden">
+        <header className="molsan-modal__header flex shrink-0 items-start justify-between gap-4 px-5 py-5 sm:px-7">
           <div className="flex min-w-0 items-start gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center">M·</div>
             <div className="min-w-0"><p className="uppercase">MOLSAN ERP</p><h2 className="mt-1">Enviar provisión de fondos</h2><p className="mt-1">Correspondencia tipificada · PDF adjunto automáticamente</p><p className="mt-2 inline-flex items-center gap-2 px-3 py-1"><span className="h-2 w-2"></span>Remitente: cancelaciones@molsan.es</p></div>
           </div>
           <button type="button" onClick={cerrarEmail} disabled={enviandoEmail} className="px-3 py-2" aria-label="Cerrar">×</button>
         </header>
-        <div className="space-y-5 p-5 sm:p-7">
+        <div className="molsan-modal__body min-h-0 flex-1 space-y-5 overflow-y-auto p-5 sm:p-7">
           <label className={label}>De<input className={input} value="cancelaciones@molsan.es" readOnly /></label>
           <label className={label}>Para · Email de la oficina de origen<input className={input} type="email" required value={emailDraft.destinatario} onChange={(e) => setEmailDraft((d) => ({ ...d, destinatario: e.target.value }))} /></label>
           <label className={label}>Asunto<input className={input} required maxLength={500} value={emailDraft.asunto} onChange={(e) => setEmailDraft((d) => ({ ...d, asunto: e.target.value }))} /></label>
@@ -901,10 +901,10 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
           {!emailDraft.smtp_configurado && <div role="status" className="flex items-start gap-3 p-3"><span>⚠️</span><div><p>Envío pendiente de configuración SMTP</p><p className="mt-1">La plantilla y el correo están preparados, pero todavía no se pueden enviar emails. Falta configurar el servicio SMTP en el backend. Cuando esté configurado, este botón permitirá realizar el envío.</p></div></div>}
           <div className="flex items-center gap-3 p-3"><span>📎</span><div><p>PDF de la provisión</p><p>Se genera desde la provisión seleccionada y se adjunta al correo automáticamente.</p></div></div>
           {emailDraft.historial?.length > 0 && <section className="p-3"><h3 className="mb-2">Últimos envíos</h3><div className="space-y-2">{emailDraft.historial.map((envio, i) => <div key={envio.creado_en || i} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2"><div><p>{envio.destinatario}</p><p>{envio.creado_en ? new Date(envio.creado_en).toLocaleString("es-ES") : "Fecha no disponible"}</p></div><span className={envio.estado === "enviado" ? "px-2 py-1" : "px-2 py-1"}>{envio.estado === "enviado" ? "Enviado" : "Error"}</span></div>)}</div></section>}
-          <div className="flex flex-wrap justify-end gap-2 pt-4">
+          <footer className="molsan-modal__footer flex shrink-0 flex-wrap justify-end gap-2 px-5 py-4 sm:px-7">
             <button type="button" onClick={cerrarEmail} disabled={enviandoEmail} className={boton + ""}>Cancelar</button>
             <button type="submit" disabled={enviandoEmail || !emailDraft.smtp_configurado || !emailDraft.destinatario.trim() || !emailDraft.asunto.trim() || !emailDraft.cuerpo.trim()} className={boton + ""}>{enviandoEmail ? "Enviando…" : emailDraft.smtp_configurado ? "Enviar correo" : "SMTP pendiente"}</button>
-          </div>
+          </footer>
         </div>
       </form>
     </div>}
