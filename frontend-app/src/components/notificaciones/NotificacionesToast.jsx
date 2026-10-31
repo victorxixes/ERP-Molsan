@@ -12,11 +12,8 @@ import {
 /**
  * ============================================================
  * NOTIFICACIONES TOAST
- * MOLSAN ERP — GLASS LUXE
  *
  * - Avisos realtime
- * - Diseño translúcido
- * - Backdrop blur
  * - Tamaño compacto
  * - Desaparición automática en 2 segundos
  * - No elimina la notificación del store
@@ -67,7 +64,7 @@ export default function NotificacionesToast() {
 
   return (
     <div
-      className="notificaciones-toast-premium 
+      className="notificaciones-toast 
  pointer-events-none
  fixed
  bottom-5
