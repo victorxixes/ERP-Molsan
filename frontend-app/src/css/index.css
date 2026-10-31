@@ -1,34 +1,7 @@
-/* ============================================================
-   ERP SJ‑2026 — Importación de estilos
-   ============================================================ */
-
+/* MOLSAN ERP · base técnica neutra
+   Tailwind conserva las utilidades de estructura y posicionamiento.
+   Se eliminan las hojas corporativas heredadas de presentación.
+*/
 @import "tailwindcss";
-@import "./variables.css";
-@import "./base.css";
 @import "./layout.css";
-@import "./cards.css";
-@import "./tables.css";
-@import "./forms.css";
-@import "./tabs.css";
-@import "./modals.css";
-@import "./animations.css";
-@import "./erp-theme.css";
 @config "../../tailwind.config.js";
-
-/* ============================================================
-   ERP SJ‑2026 — Componentes personalizados
-   ============================================================ */
-
-
-/* ============================================================
-   ERP SJ‑2026 — Animaciones corporativas
-   ============================================================ */
-
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.35s ease-out;
-}
