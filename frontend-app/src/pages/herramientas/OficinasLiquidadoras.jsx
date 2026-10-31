@@ -150,50 +150,8 @@ function Campo({
 // BADGE ACTIVO
 // ============================================================
 
-function BadgeActivo({
-  activo,
-}) {
-  return (
-    <span
-      className={`inline-flex
- items-center
- gap-1.5
- 
- 
- px-2.5
- py-1
- 
- 
-
- ${
- activo
- ?`
-              border-green-200
-              bg-green-50
-              text-green-700
-            `:`
-              border-red-200
-              bg-red-50
-              text-red-700
-            `}`}
-    >
-      <span
-        className={`h-1.5
- w-1.5
- 
-
- ${
- activo
- ? ""
- : ""
- }`}
-      />
-
-      {activo
-        ? "Activa"
-        : "Inactiva"}
-    </span>
-  );
+function BadgeActivo({ activo }) {
+  return <span>{activo ? "Activa" : "Inactiva"}</span>;
 }
 
 
