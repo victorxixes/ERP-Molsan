@@ -11,6 +11,7 @@ import {
 
 import ModalEmpleado
   from "../../components/empleados/ModalEmpleado";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 
 export default function EmpleadoFicha({
@@ -100,7 +101,7 @@ export default function EmpleadoFicha({
     return (
       <div className="erp-page  min-w-0">
 
-        <div className="erp-card max-w-[1700px] mx-auto p-8">
+        <div className="erp-card p-8">
 
           <p>
             No se ha seleccionado ningún empleado.
@@ -156,9 +157,9 @@ export default function EmpleadoFicha({
 
 
   return (
-    <div className="erp-page
- 
- space-y-5">
+    <div className="erp-page min-w-0 space-y-5">
+
+      <MolsanPageHeader mark="EF" title="Ficha de empleado" description="Consulta de datos básicos, personales, laborales y actividad del empleado." />
 
       {/* ===================================================
           CABECERA
@@ -216,7 +217,7 @@ export default function EmpleadoFicha({
               <h1>
                 {empleado.nombre}{" "}
                 {empleado.apellidos}
-              </h1>
+                </h2>
 
               <div className="flex
  flex-wrap
