@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 const ISO = (d) => d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
 const FECHA = (v) => v ? new Date(v + "T12:00:00").toLocaleDateString("es-ES") : "—";
@@ -21,6 +23,7 @@ export default function SolicitudesAusencia({ modo = "empleado", empleados = [] 
   const [error, setError] = useState("");
   const [mensaje, setMensaje] = useState("");
   const admin = modo === "admin";
+  const ordenSolicitudes = useSortableData(solicitudes);
 
   const cargar = useCallback(async () => {
     setCargando(true); setError("");
@@ -78,6 +81,14 @@ export default function SolicitudesAusencia({ modo = "empleado", empleados = [] 
     {admin && <div className="mb-4 grid gap-3 sm:grid-cols-3"><label className={label}>Empleado<select value={empleadoId} onChange={(e) => setEmpleadoId(e.target.value)} className={input}><option value="">Toda la plantilla</option>{empleados.map((e) => <option key={e.id} value={e.id}>{e.nombre}</option>)}</select></label><label className={label}>Estado<select value={estado} onChange={(e) => setEstado(e.target.value)} className={input}><option value="">Todos</option><option value="SOLICITADO">Pendientes</option><option value="APROBADO">Aprobadas</option><option value="RECHAZADO">Rechazadas</option></select></label><div className="flex items-end"><button type="button" onClick={cargar} className="w-full px-4 py-3">Actualizar solicitudes</button></div></div>}
     {error && <div role="alert" className="mb-3 p-3">{error}</div>}
     {mensaje && <div role="status" className="mb-3 p-3">{mensaje}</div>}
-    <div className="overflow-x-auto"><table className="w-full min-w-[850px]"><thead><tr className="uppercase">{admin && <th className="p-3">Empleado</th>}<th className="p-3">Tipo</th><th className="p-3">Desde</th><th className="p-3">Hasta</th><th className="p-3">Estado</th><th className="p-3">Observaciones / resolución</th>{admin && <th className="p-3">Acciones</th>}</tr></thead><tbody>{solicitudes.map((s) => <tr key={s.id} className="align-top">{admin && <td className="p-3">{s.empleado_nombre}</td>}<td className="p-3">{s.tipo_ausencia}</td><td className="p-3">{FECHA(s.fecha_inicio)}</td><td className="p-3">{FECHA(s.fecha_fin)}</td><td className="p-3"><span className={"px-2 py-1" + (s.estado === "SOLICITADO" ? "" : s.estado === "APROBADO" ? "" : "")}>{ESTADO(s.estado)}</span></td><td className="max-w-[260px] p-3">{s.observaciones || "—"}{s.motivo_resolucion && <p className="mt-1">Resolución: {s.motivo_resolucion}</p>}</td>{admin && <td className="min-w-[260px] p-3">{s.estado === "SOLICITADO" ? <div className="space-y-2"><input value={motivos[s.id] || ""} onChange={(e) => setMotivos({ ...motivos, [s.id]: e.target.value })} maxLength={500} placeholder="Motivo obligatorio…" className="w-full px-2 py-2" /><div className="flex gap-2"><button type="button" disabled={guardando} onClick={() => resolver(s, "APROBADO")} className="px-3 py-2">Aprobar</button><button type="button" disabled={guardando} onClick={() => resolver(s, "RECHAZADO")} className="px-3 py-2">Rechazar</button></div></div> : "Resuelta"}</td>}</tr>)}{!solicitudes.length && <tr><td colSpan={admin ? 7 : 5} className="p-10">{cargando ? "Cargando…" : "No hay solicitudes para mostrar."}</td></tr>}</tbody></table></div>
+    <div className="overflow-x-auto"><table className="w-full min-w-[850px]"><thead><tr className="uppercase">
+      {admin && <MolsanSortableTh label="Empleado" sortKey="empleado_nombre" sortConfig={ordenSolicitudes.sortConfig} onSort={ordenSolicitudes.requestSort} className="p-3" />}
+      <MolsanSortableTh label="Tipo" sortKey="tipo_ausencia" sortConfig={ordenSolicitudes.sortConfig} onSort={ordenSolicitudes.requestSort} className="p-3" />
+      <MolsanSortableTh label="Desde" sortKey="fecha_inicio" sortConfig={ordenSolicitudes.sortConfig} onSort={ordenSolicitudes.requestSort} className="p-3" />
+      <MolsanSortableTh label="Hasta" sortKey="fecha_fin" sortConfig={ordenSolicitudes.sortConfig} onSort={ordenSolicitudes.requestSort} className="p-3" />
+      <MolsanSortableTh label="Estado" sortKey="estado" sortConfig={ordenSolicitudes.sortConfig} onSort={ordenSolicitudes.requestSort} className="p-3" />
+      <MolsanSortableTh label="Observaciones / resolución" sortKey="observaciones" sortConfig={ordenSolicitudes.sortConfig} onSort={ordenSolicitudes.requestSort} className="p-3" />
+      {admin && <th className="p-3">Acciones</th>}
+    </tr></thead><tbody>{ordenSolicitudes.items.map((s) => <tr key={s.id} className="align-top">{admin && <td className="p-3">{s.empleado_nombre}</td>}<td className="p-3">{s.tipo_ausencia}</td><td className="p-3">{FECHA(s.fecha_inicio)}</td><td className="p-3">{FECHA(s.fecha_fin)}</td><td className="p-3"><span className={"px-2 py-1" + (s.estado === "SOLICITADO" ? "" : s.estado === "APROBADO" ? "" : "")}>{ESTADO(s.estado)}</span></td><td className="max-w-[260px] p-3">{s.observaciones || "—"}{s.motivo_resolucion && <p className="mt-1">Resolución: {s.motivo_resolucion}</p>}</td>{admin && <td className="min-w-[260px] p-3">{s.estado === "SOLICITADO" ? <div className="space-y-2"><input value={motivos[s.id] || ""} onChange={(e) => setMotivos({ ...motivos, [s.id]: e.target.value })} maxLength={500} placeholder="Motivo obligatorio…" className="w-full px-2 py-2" /><div className="flex gap-2"><button type="button" disabled={guardando} onClick={() => resolver(s, "APROBADO")} className="px-3 py-2">Aprobar</button><button type="button" disabled={guardando} onClick={() => resolver(s, "RECHAZADO")} className="px-3 py-2">Rechazar</button></div></div> : "Resuelta"}</td>}</tr>)}{!solicitudes.length && <tr><td colSpan={admin ? 7 : 5} className="p-10">{cargando ? "Cargando…" : "No hay solicitudes para mostrar."}</td></tr>}</tbody></table></div>
   </div>;
 }
