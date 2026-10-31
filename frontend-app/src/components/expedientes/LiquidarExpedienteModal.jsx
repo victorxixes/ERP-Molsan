@@ -137,7 +137,7 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
   };
   const contenido = (
     <div className="molsan-modal-overlay liquidar-expediente-modal fixed inset-0 z-[10000] flex items-center justify-center p-2 sm:p-5">
-      <section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="liquidar-expediente-titulo" className="molsan-modal__panel flex max-h-[96vh] w-full max-w-6xl flex-col overflow-hidden">
+      <section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="liquidar-expediente-titulo" className="molsan-modal__panel flex max-h-[calc(100dvh-1rem)] w-full max-w-6xl sm:max-h-[calc(100dvh-2.5rem)] flex-col overflow-hidden">
         <header className="molsan-modal__header flex items-start justify-between gap-3 px-5 py-4">
           <div><p className="uppercase">MOLSAN ERP · Cierre</p><h2 id="liquidar-expediente-titulo" className="mt-1">Liquidar expediente</h2><p className="mt-1">Expediente {expediente?.id_expediente || expediente?.id || "—"}. Revisar y guardar no cierra el expediente.</p></div>
           <button type="button" onClick={onClose} className="px-3 py-2" aria-label="Cerrar modal">×</button>
@@ -215,7 +215,7 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
   );
   const vistaPrevia = vistaPreviaUrl ? (
     <div className="molsan-modal-overlay vista-previa-cierre-modal fixed inset-0 z-[10010] flex items-center justify-center p-2 sm:p-5">
-      <section ref={previewDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="vista-previa-cierre-titulo" className="molsan-modal__panel flex h-[96vh] w-full max-w-6xl flex-col overflow-hidden">
+      <section ref={previewDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="vista-previa-cierre-titulo" className="molsan-modal__panel flex h-[calc(100dvh-1rem)] w-full max-w-6xl sm:h-[calc(100dvh-2.5rem)] flex-col overflow-hidden">
         <header className="molsan-modal__header flex flex-wrap items-center justify-between gap-3 px-5 py-3">
           <div><h2 id="vista-previa-cierre-titulo">Vista previa · Expediente digital completo</h2><p className="mt-1">Aún no está guardado. Revísalo antes de aceptar.</p></div>
           <button type="button" onClick={cerrarVistaPrevia} className="px-3 py-2">Cancelar</button>
