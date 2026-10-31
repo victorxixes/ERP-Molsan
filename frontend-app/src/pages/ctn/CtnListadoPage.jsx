@@ -172,10 +172,13 @@ export default function CtnListadoPage() {
     setPagina(1);
   };
 
-  const ordenarPor = (campo) => setOrden((actual) => ({
-    campo,
-    direccion: actual.campo === campo && actual.direccion === "asc" ? "desc" : "asc",
-  }));
+  const ordenarPor = (campo) => {
+    setPagina(1);
+    setOrden((actual) => ({
+      campo,
+      direccion: actual.campo === campo && actual.direccion === "asc" ? "desc" : "asc",
+    }));
+  };
 
   const indicadorOrden = (campo) => {
     if (orden.campo !== campo) return "↕";
