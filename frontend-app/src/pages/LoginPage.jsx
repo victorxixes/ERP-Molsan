@@ -2,7 +2,6 @@ import { useState, useCallback } from "react";
 import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
 
-import "../css/ComponentesAccesoPremium.css";
 
 /**
  * LOGIN — MOLSAN ERP SAAS PREMIUM 2027
@@ -120,9 +119,7 @@ export default function LoginPage() {
       "
     >
 
-      {/* =====================================================
-          FONDO PREMIUM
-      ===================================================== */}
+      {}
 
       <div
         className="
@@ -249,9 +246,7 @@ export default function LoginPage() {
         "
       >
 
-        {/* ===================================================
-            TARJETA GLASS
-        =================================================== */}
+        {}
 
         <div
           className="
@@ -905,23 +900,6 @@ export default function LoginPage() {
               "
             >
               Molsan ERP · Plataforma empresarial
-            </p>
-
-
-            <p
-              className="
-                mt-1
-
-                text-[10px]
-
-                uppercase
-
-                tracking-[0.22em]
-
-                text-slate-300
-              "
-            >
-              Premium 2027
             </p>
 
           </div>
