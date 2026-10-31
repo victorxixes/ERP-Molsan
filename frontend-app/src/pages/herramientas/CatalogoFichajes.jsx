@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 export default function CatalogoFichajes() {
   const [tipos, setTipos] = useState([]);
+  const ordenTipos = useSortableData(tipos);
   const [nombre, setNombre] = useState("");
   const [requiereJustificante, setRequiereJustificante] = useState(false);
   const [cargando, setCargando] = useState(true);
@@ -42,7 +45,10 @@ export default function CatalogoFichajes() {
     </section>
     <section className="erp-card overflow-hidden">
       <div className="px-5 py-4"><h2>Tipos disponibles</h2><p>{tipos.length} tipos configurados</p></div>
-      {cargando ? <p className="p-5">Cargando catálogo…</p> : <div className="overflow-x-auto"><table className="w-full"><thead className="uppercase"><tr><th className="px-5 py-3">Tipo de ausencia</th><th className="px-5 py-3">Justificante</th></tr></thead><tbody>{tipos.map((t) => <tr key={t.id}><td className="px-5 py-3">{t.nombre}</td><td className="px-5 py-3">{t.requiere_justificante ? <span className="px-2.5 py-1">Sí</span> : <span>No</span>}</td></tr>)}</tbody></table></div>}
+      {cargando ? <p className="p-5">Cargando catálogo…</p> : <div className="overflow-x-auto"><table className="w-full"><thead className="uppercase"><tr>
+        <MolsanSortableTh label="Tipo de ausencia" sortKey="nombre" sortConfig={ordenTipos.sortConfig} onSort={ordenTipos.requestSort} className="px-5 py-3" />
+        <MolsanSortableTh label="Justificante" sortKey="requiere_justificante" sortConfig={ordenTipos.sortConfig} onSort={ordenTipos.requestSort} className="px-5 py-3" />
+      </tr></thead><tbody>{ordenTipos.items.map((t) => <tr key={t.id}><td className="px-5 py-3">{t.nombre}</td><td className="px-5 py-3">{t.requiere_justificante ? <span className="px-2.5 py-1">Sí</span> : <span>No</span>}</td></tr>)}</tbody></table></div>}
     </section>
   </main>;
 }
