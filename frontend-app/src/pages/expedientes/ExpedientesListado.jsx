@@ -2499,8 +2499,8 @@ export default function ExpedientesListado() {
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {[
-            { codigo: "PVA", titulo: "Pendientes de Validar", icono: "🔎", borde: "#2563eb", fondo: "rgba(37, 99, 235, 0.08)" },
-            { codigo: "RST", titulo: "Retención", icono: "⏸️", borde: "#7e22ce", fondo: "rgba(126, 34, 206, 0.08)" },
+            { codigo: "PVA", titulo: "Pendientes de Validar", icono: "🔎" },
+            { codigo: "RST", titulo: "Retención", icono: "⏸️" },
           ].map((estado) => {
             const activa = filtrosAplicados.estadoExpediente.trim().toLocaleUpperCase("es-ES") === estado.codigo;
             return (
