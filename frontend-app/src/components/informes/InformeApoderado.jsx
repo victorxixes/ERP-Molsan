@@ -5,13 +5,12 @@ import axios from "../../api/axios";
 
 /**
  * ============================================================
- * INFORME APODERADO — MOLSAN ERP SAAS PREMIUM 2027
+ * INFORME APODERADO
  * ============================================================
  *
  * Versión:
  * - Compatible con interfaz clara
  * - Sin text-white sobre fondos claros
- * - Glass Luxe claro
  * - Contraste correcto
  * - KPIs claros
  * - Ranking mejorado
@@ -244,7 +243,7 @@ export default function InformeApoderado({
     return (
 
       <div
-        className="informe-apoderado-premium 
+        className="
  
  
  
