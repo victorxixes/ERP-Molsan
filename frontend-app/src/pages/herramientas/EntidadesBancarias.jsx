@@ -1533,8 +1533,6 @@ export default function EntidadesBancarias() {
         <button type="button" onClick={abrirNuevo} className="molsan-btn molsan-btn--primary">＋ Nueva entidad</button>
       </div>
 
-          MENSAJE
-      ===================================================== */}
 
       {mensaje && (
 
