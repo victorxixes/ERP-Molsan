@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 const VACIO = { nombre: "", categoria: "impuesto", impuesto: "IVA", porcentaje: "", territorio: "Territorio común", descripcion: "", activo: true };
 const fmt = (n) => n === null || n === undefined || n === "" ? "—" : `${Number(n).toLocaleString("es-ES", { maximumFractionDigits: 3 })}%`;
@@ -32,6 +34,7 @@ export default function TiposImpositivos() {
   useEffect(() => { cargar(); }, [cargar]);
 
   const filtrados = useMemo(() => items.filter((x) => categoriaFiltro === "todos" || x.categoria === categoriaFiltro), [items, categoriaFiltro]);
+  const ordenFiltrados = useSortableData(filtrados);
   const nuevo = () => { setEditando(null); setForm(VACIO); setError(""); setMensaje(""); };
   const editar = (x) => {
     setEditando(x.id);
@@ -118,8 +121,16 @@ export default function TiposImpositivos() {
         </div>
         {cargando ? <p className="p-8">Cargando catálogo…</p> : filtrados.length === 0 ? <p className="p-8">No hay tipos para este filtro.</p> : (
           <div className="overflow-x-auto"><table className="min-w-full">
-            <thead className="uppercase"><tr><th className="px-4 py-3">Nombre</th><th className="px-4 py-3">Categoría</th><th className="px-4 py-3">Tributo</th><th className="px-4 py-3">Porcentaje</th><th className="px-4 py-3">Territorio</th><th className="px-4 py-3">Estado</th><th className="px-4 py-3">Acciones</th></tr></thead>
-            <tbody>{filtrados.map((x) => <tr key={x.id}>
+            <thead className="uppercase"><tr>
+              <MolsanSortableTh label="Nombre" sortKey="nombre" sortConfig={ordenFiltrados.sortConfig} onSort={ordenFiltrados.requestSort} className="px-4 py-3" />
+              <MolsanSortableTh label="Categoría" sortKey="categoria" sortConfig={ordenFiltrados.sortConfig} onSort={ordenFiltrados.requestSort} className="px-4 py-3" />
+              <MolsanSortableTh label="Tributo" sortKey="impuesto" sortConfig={ordenFiltrados.sortConfig} onSort={ordenFiltrados.requestSort} className="px-4 py-3" />
+              <MolsanSortableTh label="Porcentaje" sortKey="porcentaje" sortConfig={ordenFiltrados.sortConfig} onSort={ordenFiltrados.requestSort} className="px-4 py-3" />
+              <MolsanSortableTh label="Territorio" sortKey="territorio" sortConfig={ordenFiltrados.sortConfig} onSort={ordenFiltrados.requestSort} className="px-4 py-3" />
+              <MolsanSortableTh label="Estado" sortKey="activo" sortConfig={ordenFiltrados.sortConfig} onSort={ordenFiltrados.requestSort} className="px-4 py-3" />
+              <th className="px-4 py-3">Acciones</th>
+            </tr></thead>
+            <tbody>{ordenFiltrados.items.map((x) => <tr key={x.id}>
               <td className="px-4 py-3"><div>{x.nombre}</div>{x.descripcion && <div className="mt-1 max-w-sm">{x.descripcion}</div>}</td>
               <td className="px-4 py-3">{x.categoria === "retencion" ? "Retención" : "Impuesto"}</td><td className="px-4 py-3">{x.impuesto}</td><td className="px-4 py-3 tabular-nums">{fmt(x.porcentaje)}</td><td className="px-4 py-3">{x.territorio}</td>
               <td className="px-4 py-3"><span className={x.activo ? "px-2.5 py-1" : "px-2.5 py-1"}>{x.activo ? "Activo" : "Inactivo"}</span></td>
