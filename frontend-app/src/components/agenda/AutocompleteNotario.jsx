@@ -7,7 +7,6 @@ import {
 } from "react";
 
 import { listarNotarias } from "../../api/ctn";
-import "../../css/ComponentesCompartidosPremium.css";
 
 
 // ============================================================
