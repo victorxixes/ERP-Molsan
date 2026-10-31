@@ -451,7 +451,7 @@ export default function TablaLogs({
           >
             <div>
               <h2
-                className=""
+               
               >
                 {titulo}
               </h2>
@@ -603,7 +603,7 @@ export default function TablaLogs({
                 onClick={
                   descargarExcel
                 }
-                className=""
+               
               >
                 <span
                   aria-hidden="true"
@@ -636,7 +636,7 @@ export default function TablaLogs({
           >
             <thead>
               <tr
-                className=""
+               
               >
                 {columnas.map(
                   (col) => {
@@ -713,20 +713,20 @@ export default function TablaLogs({
  gap-2"
                     >
                       <span
-                        className=""
+                       
                         aria-hidden="true"
                       >
                         📋
                       </span>
 
                       <span
-                        className=""
+                       
                       >
                         No hay registros
                       </span>
 
                       <span
-                        className=""
+                       
                       >
                         No se encontraron
                         logs con los
@@ -745,7 +745,7 @@ export default function TablaLogs({
                             `${pagina}-${idx}`
                         )
                       }
-                      className=""
+                     
                     >
                       {columnas.map(
                         (col) => {
@@ -806,7 +806,7 @@ export default function TablaLogs({
                                   </span>
 
                                   <span
-                                    className=""
+                                   
                                   >
                                     {contenido}
                                   </span>
@@ -958,13 +958,13 @@ export default function TablaLogs({
         >
           Mostrando{" "}
           <strong
-            className=""
+           
           >
             {datosPaginados.length}
           </strong>{" "}
           de{" "}
           <strong
-            className=""
+           
           >
             {datosOrdenados.length}
           </strong>{" "}
