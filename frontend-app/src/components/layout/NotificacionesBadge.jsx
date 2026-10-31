@@ -1,11 +1,9 @@
 import { useMemo } from "react";
 import { useNotificacionesStore } from "../../store/notificacionesStore";
-import "../../css/ComponentesOperativosPremium.css";
 
 /**
- * NotificacionesBadge — SJ‑2026 Premium
+ * NotificacionesBadge
  * Indicador de notificaciones internas.
- * - Glass‑UI
  * - Badge animado
  * - Sin re‑renders innecesarios
  */
@@ -17,7 +15,7 @@ export default function NotificacionesBadge() {
   const count = useMemo(() => notificaciones.length, [notificaciones]);
 
   return (
-    <div className="relative inline-flex items-center notificaciones-badge-premium" aria-label={count > 0 ? `${count} notificaciones` : "Sin notificaciones"}>
+    <div className="relative inline-flex items-center" aria-label={count > 0 ? `${count} notificaciones` : "Sin notificaciones"}>
       {/* Icono */}
       <span aria-hidden="true" className="material-icons drop-shadow">
         notifications
