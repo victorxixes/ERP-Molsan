@@ -1,28 +1,25 @@
-/* ==========================================================
-   MOLSAN ERP PREMIUM 2027 · Sistema visual corporativo
-   Base compartida para todos los módulos. El sidebar mantiene
-   su hoja y diseño propios.
-   ========================================================== */
+/* MOLSAN ERP PREMIUM 2027
+ * Base neutral y geometría compartida.
+ * El diseño de módulos se construirá sobre estos tokens; no añadir aquí
+ * estilos específicos de páginas, tarjetas, tablas, formularios o modales.
+ * Sidebar excluido: mantiene SidebarBase.css y sus estilos propios.
+ */
 
 :root {
   --molsan-blue: #064675;
   --molsan-blue-deep: #04385d;
-  --molsan-blue-soft: #eaf3f9;
+  --molsan-blue-soft: #f2f7fb;
   --molsan-panel: #f2f7fb;
   --molsan-table-head: #eaf2f8;
-  --molsan-row-alt: #f8fbfd;
-  --molsan-row-height: 44px;
-  --molsan-control-height: 38px;
-  --molsan-radius-card: 12px;
-  --molsan-radius-control: 9px;
-  --molsan-ice: #f2f7fb;
-  --molsan-ice-strong: #eaf2f8;
   --molsan-white: #ffffff;
   --molsan-text: #18364b;
   --molsan-muted: #617789;
   --molsan-border: #d8e4ec;
+  --molsan-row-height: 44px;
+  --molsan-control-height: 38px;
+  --molsan-radius-card: 12px;
+  --molsan-radius-control: 9px;
   --molsan-shadow: 0 2px 8px rgba(6, 70, 117, 0.04);
-  --molsan-radius: 10px;
 }
 
 html {
@@ -37,29 +34,25 @@ body {
   font-family: Inter, "Segoe UI", Arial, sans-serif;
 }
 
-/* El contenido de trabajo utiliza siempre una superficie blanca. */
 .erp-app-shell,
 .erp-main-content,
-.erp-main-inner,
-.molsan-page,
-.apoderagest,
-.notargest,
-.encargagest {
-  color: var(--molsan-text);
-}
-
-.erp-main-content,
 .erp-main-inner {
+  min-width: 0;
+  color: var(--molsan-text);
   background: var(--molsan-white);
 }
 
-/* Cabecera única, compacta y funcional para todos los módulos.
-   Solo cambia el icono, el título y la descripción. */
-.molsan-page-header {
+/* Cabecera corporativa única: solo cambian marca, título y descripción. */
+.molsan-page-header,
+.molsan-subpage-header,
+.erp-page-header {
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  flex-wrap: wrap;
   gap: 12px;
+  width: 100%;
   min-width: 0;
   min-height: 62px;
   margin: 0 0 18px;
@@ -67,7 +60,7 @@ body {
   color: var(--molsan-blue);
   background: transparent;
   border: 0;
-  border-bottom: 2px solid var(--molsan-ice-strong);
+  border-bottom: 2px solid var(--molsan-table-head);
   border-radius: 0;
   box-shadow: none;
 }
@@ -79,7 +72,6 @@ body {
   min-width: 0;
 }
 
-.molsan-page-header__identity > div:first-child,
 .molsan-page-header__mark {
   display: grid;
   flex: 0 0 34px;
@@ -94,640 +86,12 @@ body {
   letter-spacing: 0.02em;
 }
 
+.molsan-page-header__content {
+  min-width: 0;
+}
+
 .molsan-page-header__title,
-.molsan-page-header h1 {
-  margin: 0;
-  color: var(--molsan-blue);
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.molsan-page-header__description {
-  margin: 3px 0 0;
-  color: var(--molsan-muted);
-  font-size: 12px;
-  line-height: 1.35;
-}
-
-/* Controles comunes. Los botones de navegación del sidebar quedan fuera. */
-button,
-input,
-select,
-textarea {
-  font: inherit;
-}
-
-button:not(:disabled) {
-  cursor: pointer;
-}
-
-.molsan-page button:not(:disabled),
-.apoderagest button:not(:disabled),
-.notargest button:not(:disabled),
-.encargagest button:not(:disabled) {
-  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
-}
-
-.molsan-page button:focus-visible,
-.apoderagest button:focus-visible,
-.notargest button:focus-visible,
-.encargagest button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid var(--molsan-blue);
-  outline-offset: 2px;
-}
-
-/* Campos de edición: una única base para páginas y portales. */
-.molsan-page input:not([type="checkbox"]):not([type="radio"]),
-.molsan-page select,
-.molsan-page textarea,
-.erp-main-inner main input:not([type="checkbox"]):not([type="radio"]),
-.erp-main-inner main select,
-.erp-main-inner main textarea,
-.apoderagest input:not([type="checkbox"]):not([type="radio"]),
-.apoderagest select,
-.apoderagest textarea,
-.notargest input:not([type="checkbox"]):not([type="radio"]),
-.notargest select,
-.notargest textarea,
-.encargagest input:not([type="checkbox"]):not([type="radio"]),
-.encargagest select,
-.encargagest textarea {
-  color: var(--molsan-text);
-  background: var(--molsan-white);
-  border: 1px solid var(--molsan-border);
-  border-radius: 9px;
-}
-
-.molsan-page input:focus,
-.molsan-page select:focus,
-.molsan-page textarea:focus,
-.apoderagest input:focus,
-.apoderagest select:focus,
-.apoderagest textarea:focus,
-.notargest input:focus,
-.notargest select:focus,
-.notargest textarea:focus,
-.encargagest input:focus,
-.encargagest select:focus,
-.encargagest textarea:focus {
-  border-color: var(--molsan-blue);
-  box-shadow: 0 0 0 3px rgba(6, 70, 117, 0.10);
-}
-
-.erp-main-inner main input:focus-visible,
-.erp-main-inner main select:focus-visible,
-.erp-main-inner main textarea:focus-visible {
-  border-color: var(--molsan-blue);
-  outline: 2px solid rgba(6, 70, 117, 0.16);
-  outline-offset: 1px;
-}
-
-/* Tablas: cabeceras y estados de fila centralizados en tokens corporativos. */
-.molsan-page table,
-.erp-main-inner main table,
-.apoderagest table,
-.notargest table,
-.encargagest table {
-  border-collapse: separate;
-  border-spacing: 0;
-  color: var(--molsan-text);
-  border-color: var(--molsan-border);
-}
-
-.molsan-page thead th,
-.erp-main-inner main thead th,
-.apoderagest thead th,
-.notargest thead th,
-.encargagest thead th {
-  color: var(--molsan-blue);
-  background: var(--molsan-table-head);
-  font-weight: 700;
-}
-
-.molsan-page tbody tr:nth-child(even),
-.apoderagest tbody tr:nth-child(even),
-.notargest tbody tr:nth-child(even),
-.encargagest tbody tr:nth-child(even) {
-  background: var(--molsan-row-alt);
-}
-
-.molsan-page tbody tr:hover,
-.erp-main-inner main tbody tr:hover,
-.apoderagest tbody tr:hover,
-.notargest tbody tr:hover,
-.encargagest tbody tr:hover {
-  background: var(--molsan-blue-soft);
-}
-
-/* Base transversal del área de trabajo; el sidebar conserva su diseño. */
-.erp-main-inner,
-.erp-main-inner > div,
-.erp-main-inner main,
-.apoderagest,
-.notargest,
-.encargagest {
-  color: var(--molsan-text);
-  background-color: var(--molsan-white);
-}
-
-/* Paneles de contenido compartidos. */
-.molsan-panel,
-.molsan-card,
-.molsan-page section > article {
-  border-color: var(--molsan-border);
-  border-radius: var(--molsan-radius);
-}
-
-@media (max-width: 720px) {
-  .molsan-page-header {
-    align-items: flex-start;
-    padding: 16px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-  }
-}
-
-
-/* Selector de módulos: se conserva el hover aprobado. */
-.selector-modulos-premium button.group {
-  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
-}
-.selector-modulos-premium button.group:hover {
-  transform: translateY(-4px);
-  border-color: var(--molsan-blue);
-  box-shadow: 0 18px 38px rgba(6, 70, 117, 0.12);
-}
-.selector-modulos-premium button.group > div:nth-of-type(2) > div:first-child,
-.selector-modulos-premium button.group > div:nth-of-type(2) > span,
-.selector-modulos-premium button.group > div:last-of-type > span:last-child {
-  transition: transform 200ms ease, color 200ms ease, border-color 200ms ease;
-}
-.selector-modulos-premium button.group:hover > div:nth-of-type(2) > div:first-child {
-  transform: scale(1.04);
-}
-.selector-modulos-premium button.group:hover > div:nth-of-type(2) > span {
-  border-color: var(--molsan-ice-strong);
-  color: var(--molsan-blue);
-}
-.selector-modulos-premium button.group:hover > div:last-of-type > span:last-child {
-  transform: translateX(4px);
-  color: var(--molsan-blue);
-}
-
-
-/* ==========================================================
-   MOLSAN ERP PREMIUM 2027 · Primitives corporativas
-   Densidad equilibrada: lectura cómoda y uso eficiente del espacio.
-   ========================================================== */
-
-.molsan-page-header {
-  box-sizing: border-box;
-  min-height: 62px;
-  padding: 0 0 10px;
-  gap: 12px;
-}
-
-.molsan-page-header__identity {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.molsan-page-header__mark {
-  display: grid;
-  flex: 0 0 34px;
-  width: 34px;
-  height: 34px;
-  place-items: center;
-  border-radius: 8px;
-  background: var(--molsan-blue);
-  color: var(--molsan-white);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .02em;
-}
-
-.molsan-page-header__content { min-width: 0; }
-
-.molsan-page-header__title {
-  margin: 0;
-  color: var(--molsan-blue);
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.molsan-page-header__description {
-  margin: 3px 0 0;
-  color: var(--molsan-muted);
-  font-size: 12px;
-  line-height: 1.35;
-}
-
-.molsan-card {
-  background: var(--molsan-white);
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-card);
-  box-shadow: var(--molsan-shadow);
-}
-
-.molsan-panel {
-  background: var(--molsan-panel);
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-card);
-}
-
-.molsan-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  color: var(--molsan-text);
-}
-
-.molsan-table thead th {
-  min-height: var(--molsan-row-height);
-  padding: 11px 12px;
-  background: var(--molsan-table-head);
-  color: var(--molsan-blue);
-  font-weight: 700;
-  text-align: left;
-}
-
-.molsan-table tbody td {
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--molsan-border);
-  vertical-align: middle;
-}
-
-.molsan-table tbody tr:hover { background: var(--molsan-blue-soft); }
-
-.molsan-field {
-  min-height: var(--molsan-control-height);
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-control);
-  background: var(--molsan-white);
-  color: var(--molsan-text);
-}
-
-.molsan-field:focus-visible {
-  border-color: var(--molsan-blue);
-  outline: 2px solid rgba(6, 70, 117, .14);
-  outline-offset: 1px;
-}
-
-@media (max-width: 720px) {
-  .molsan-page-header { min-height: 56px; }
-}
-
-
-/* ==========================================================
-   FICHA DE EXPEDIENTE · Aplicación completa del sistema 2027
-   ========================================================== */
-.ficha-expediente-premium {
-  color: var(--molsan-text);
-  background: var(--molsan-white);
-}
-.ficha-expediente-premium .molsan-page-header {
-  margin: 0;
-  padding: 0 0 10px;
-}
-.ficha-expediente-premium .molsan-section {
-  min-width: 0;
-  background: var(--molsan-white);
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-card);
-  box-shadow: var(--molsan-shadow);
-}
-.ficha-expediente-premium .molsan-section > div:first-child {
-  min-height: 52px;
-  background: var(--molsan-panel);
-  border-bottom: 1px solid var(--molsan-border);
-}
-.ficha-expediente-premium .molsan-section > div:first-child h2 {
-  color: var(--molsan-blue);
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.3;
-}
-.ficha-expediente-premium .molsan-section > div:first-child p {
-  color: var(--molsan-muted);
-  font-size: 12px;
-}
-.ficha-expediente-premium .molsan-data-point {
-  min-width: 0;
-  border-radius: 8px;
-}
-.ficha-expediente-premium .molsan-data-point > p {
-  color: var(--molsan-muted);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .045em;
-}
-.ficha-expediente-premium .molsan-data-point > div {
-  color: var(--molsan-text);
-  font-size: 13px;
-  line-height: 1.45;
-}
-.ficha-expediente-premium table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-.ficha-expediente-premium thead th {
-  padding: 11px 12px;
-  color: var(--molsan-blue);
-  background: var(--molsan-table-head);
-  border-bottom: 1px solid var(--molsan-border);
-  font-size: 12px;
-  font-weight: 700;
-  text-align: left;
-}
-.ficha-expediente-premium tbody td {
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--molsan-border);
-  color: var(--molsan-text);
-  font-size: 13px;
-  vertical-align: middle;
-}
-.ficha-expediente-premium tbody tr:hover { background: var(--molsan-blue-soft); }
-.ficha-expediente-premium input:not([type="checkbox"]):not([type="radio"]),
-.ficha-expediente-premium select,
-.ficha-expediente-premium textarea {
-  min-height: var(--molsan-control-height);
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-control);
-  background: var(--molsan-white);
-  color: var(--molsan-text);
-}
-.ficha-expediente-premium button:not(:disabled) {
-  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
-}
-.ficha-expediente-premium button:focus-visible,
-.ficha-expediente-premium a:focus-visible {
-  outline: 2px solid var(--molsan-blue);
-  outline-offset: 2px;
-}
-.molsan-modal-panel {
-  background: var(--molsan-white);
-  border: 1px solid var(--molsan-border);
-  border-radius: 16px;
-  box-shadow: 0 24px 64px rgba(6, 40, 65, .22);
-}
-.molsan-modal-panel > div:first-child {
-  background: var(--molsan-panel);
-  border-bottom: 1px solid var(--molsan-border);
-}
-.molsan-modal-panel h2 { color: var(--molsan-blue); font-size: 18px; font-weight: 700; }
-.molsan-modal-panel p { color: var(--molsan-muted); }
-.molsan-modal-panel > div:last-child {
-  border-top: 1px solid var(--molsan-border);
-}
-
-/* Base común de pantallas y formularios fuera de Expedientes. */
-.erp-main-inner main,
-.erp-main-content main {
-  color: var(--molsan-text);
-}
-.erp-main-inner main > header,
-.erp-main-content main > header {
-  color: var(--molsan-blue);
-  border-bottom: 2px solid var(--molsan-ice-strong);
-}
-.erp-main-inner main > header h1,
-.erp-main-content main > header h1 {
-  color: var(--molsan-blue);
-  font-size: 20px;
-  font-weight: 700;
-}
-.erp-main-inner main > header p,
-.erp-main-content main > header p {
-  color: var(--molsan-muted);
-  font-size: 12px;
-}
-.erp-main-inner main table,
-.erp-main-content main table {
-  border-color: var(--molsan-border);
-}
-.erp-main-inner main thead th,
-.erp-main-content main thead th {
-  padding: 11px 12px;
-  color: var(--molsan-blue);
-  background: var(--molsan-table-head);
-  border-bottom: 1px solid var(--molsan-border);
-}
-.erp-main-inner main tbody td,
-.erp-main-content main tbody td {
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--molsan-border);
-}
-
-
-/* ==========================================================
-   CAPA TRANSVERSAL · TODOS LOS MÓDULOS DEL ERP OPERATIVO
-   No alcanza el sidebar: se limita al área de contenido central.
-   ========================================================== */
-.erp-main-inner {
-  color: var(--molsan-text);
-  background: var(--molsan-white);
-}
-.erp-main-inner h1 {
-  color: var(--molsan-blue);
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.25;
-}
-.erp-main-inner h2 {
-  color: var(--molsan-blue);
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.3;
-}
-.erp-main-inner h3 {
-  color: var(--molsan-blue);
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.35;
-}
-.erp-main-inner input:not([type="checkbox"]):not([type="radio"]),
-.erp-main-inner select,
-.erp-main-inner textarea {
-  min-height: var(--molsan-control-height);
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-control);
-  background-color: var(--molsan-white);
-  color: var(--molsan-text);
-}
-.erp-main-inner input:focus-visible,
-.erp-main-inner select:focus-visible,
-.erp-main-inner textarea:focus-visible {
-  border-color: var(--molsan-blue);
-  outline: 2px solid rgba(6, 70, 117, .14);
-  outline-offset: 1px;
-}
-.erp-main-inner button:not(:disabled) {
-  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
-}
-.erp-main-inner button:focus-visible,
-.erp-main-inner a:focus-visible {
-  outline: 2px solid var(--molsan-blue);
-  outline-offset: 2px;
-}
-.erp-main-inner button:disabled,
-.erp-main-inner input:disabled,
-.erp-main-inner select:disabled,
-.erp-main-inner textarea:disabled {
-  cursor: not-allowed;
-  opacity: .58;
-}
-.erp-main-inner table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  color: var(--molsan-text);
-}
-.erp-main-inner thead th {
-  min-height: var(--molsan-row-height);
-  padding: 11px 12px;
-  color: var(--molsan-blue);
-  background: var(--molsan-table-head);
-  border-bottom: 1px solid var(--molsan-border);
-  font-size: 12px;
-  font-weight: 700;
-  text-align: left;
-}
-.erp-main-inner tbody td {
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--molsan-border);
-  color: var(--molsan-text);
-  font-size: 13px;
-  vertical-align: middle;
-}
-.erp-main-inner tbody tr:hover { background: var(--molsan-blue-soft); }
-.erp-main-inner [role="dialog"] {
-  color: var(--molsan-text);
-  background: var(--molsan-white);
-  border: 1px solid var(--molsan-border);
-  border-radius: 16px;
-  box-shadow: 0 20px 56px rgba(6, 40, 65, .18);
-}
-.erp-main-inner [role="alert"] {
-  border-color: #e8c7c7;
-}
-.erp-main-inner [aria-invalid="true"] {
-  border-color: #b42318;
-}
-@media (max-width: 720px) {
-  .erp-main-inner { padding-top: 16px; }
-  .erp-main-inner thead th,
-  .erp-main-inner tbody td { padding: 9px 10px; }
-}
-
-
-/* Modales operativos de Expedientes: envío, carpeta, liquidación y traspasos. */
-.expediente-operativo-modal,
-.liquidar-expediente-modal,
-.vista-previa-cierre-modal,
-.traspaso-saldo-modal,
-.molsan-modal-backdrop {
-  background-color: rgba(13, 37, 54, .48);
-  backdrop-filter: blur(3px);
-}
-.expediente-operativo-modal > div:not(.expediente-operativo-modal-panel),
-.expediente-operativo-modal > section[role="dialog"] {
-  background: var(--molsan-white);
-  border: 1px solid var(--molsan-border);
-  border-radius: 16px;
-  box-shadow: 0 24px 64px rgba(6, 40, 65, .22);
-}
-.liquidar-expediente-modal > section,
-.vista-previa-cierre-modal > section,
-.traspaso-saldo-modal > section,
-[aria-label="Carpeta digital del expediente"][role="dialog"],
-[aria-label="Visor de documento"][role="dialog"] {
-  background: var(--molsan-white);
-  border: 1px solid var(--molsan-border);
-  border-radius: 16px;
-  box-shadow: 0 24px 64px rgba(6, 40, 65, .22);
-  color: var(--molsan-text);
-}
-.liquidar-expediente-modal > section > header,
-.vista-previa-cierre-modal > section > header,
-.traspaso-saldo-modal > section > header,
-[aria-label="Carpeta digital del expediente"][role="dialog"] > header {
-  background: var(--molsan-panel);
-  border-bottom: 1px solid var(--molsan-border);
-}
-.liquidar-expediente-modal h2,
-.vista-previa-cierre-modal h2,
-.traspaso-saldo-modal h3,
-[aria-label="Carpeta digital del expediente"] h2 {
-  color: var(--molsan-blue);
-  font-weight: 700;
-}
-.liquidar-expediente-modal input:not([type="checkbox"]):not([type="radio"]),
-.liquidar-expediente-modal select,
-.liquidar-expediente-modal textarea,
-.traspaso-saldo-modal input:not([type="checkbox"]):not([type="radio"]),
-.traspaso-saldo-modal select,
-.traspaso-saldo-modal textarea {
-  min-height: var(--molsan-control-height);
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-control);
-  background: var(--molsan-white);
-  color: var(--molsan-text);
-}
-
-/* Geometría única de página: el padding pertenece al contenedor del Layout,
-   no a cada módulo. Evita desplazamientos y dobles márgenes respecto al Dashboard. */
-.erp-route-content > .erp-page {
-  display: block;
-  width: 100%;
-  min-width: 0;
-  max-width: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-.erp-route-content > .erp-page > .molsan-page-header,
-.erp-route-content > .erp-page > .erp-page-header,
-.erp-route-content > .erp-page > header:first-of-type {
-  margin: 0 0 18px !important;
-}
-@media (max-width: 720px) {
-  .erp-route-content > .erp-page > header:first-of-type:not(.molsan-page-header) { align-items: flex-start; }
-}
-
-/* Cabeceras de subpantallas: misma coordenada y jerarquía que la cabecera principal. */
-.molsan-subpage-header,
-.erp-page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  min-width: 0;
-  min-height: 62px;
-  margin: 0 0 18px !important;
-  padding: 0 0 10px !important;
-  color: var(--molsan-blue);
-  background: transparent !important;
-  border: 0 !important;
-  border-bottom: 2px solid var(--molsan-ice-strong) !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-}
+.molsan-page-header h1,
 .molsan-subpage-header h1,
 .molsan-subpage-header h2,
 .erp-page-header h1,
@@ -738,80 +102,52 @@ textarea:focus-visible {
   font-weight: 700;
   line-height: 1.2;
 }
+
+.molsan-page-header__description,
 .molsan-subpage-header p,
 .erp-page-header p {
-  margin-top: 3px;
+  margin: 3px 0 0;
   color: var(--molsan-muted);
   font-size: 12px;
   line-height: 1.35;
 }
-.molsan-subpage-header > div:first-child,
-.erp-page-header > div:first-child { min-width: 0; }
 
-/* Normalización también para páginas antiguas que aún no llevan .erp-page.
-   Solo afecta al primer elemento renderizado por la ruta, nunca a tarjetas internas. */
-.erp-main-inner > div > main[class*="min-h-full"],
-.erp-main-inner > div > div[class*="min-h-full"],
-.erp-main-inner > div > section[class*="min-h-full"] {
+/* El Layout es el único propietario del margen exterior del área de trabajo. */
+.erp-route-content > .erp-page {
+  display: block;
   width: 100%;
   min-width: 0;
-  max-width: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-.erp-main-inner > div > main[class*="min-h-full"] > header:first-child,
-.erp-main-inner > div > div[class*="min-h-full"] > header:first-child,
-.erp-main-inner > div > section[class*="min-h-full"] > header:first-child {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  flex-wrap: wrap;
-  gap: 12px;
-  min-height: 62px;
-  margin: 0 0 18px !important;
-  padding: 0 0 10px !important;
-  color: var(--molsan-blue);
-  background: transparent !important;
-  border: 0 !important;
-  border-bottom: 2px solid var(--molsan-ice-strong) !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-}
-.erp-main-inner > div > main[class*="min-h-full"] > header:first-child h1,
-.erp-main-inner > div > div[class*="min-h-full"] > header:first-child h1,
-.erp-main-inner > div > section[class*="min-h-full"] > header:first-child h1 {
+  max-width: none;
   margin: 0;
-  color: var(--molsan-blue);
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.2;
-}
-.erp-main-inner > div > main[class*="min-h-full"] > header:first-child p,
-.erp-main-inner > div > div[class*="min-h-full"] > header:first-child p,
-.erp-main-inner > div > section[class*="min-h-full"] > header:first-child p {
-  margin-top: 3px;
-  color: var(--molsan-muted);
-  font-size: 12px;
-  line-height: 1.35;
+  padding: 0;
 }
 
+.erp-route-content > .erp-page > .molsan-page-header,
+.erp-route-content > .erp-page > .molsan-subpage-header,
+.erp-route-content > .erp-page > .erp-page-header,
+.erp-route-content > .erp-page > header:first-of-type {
+  margin-bottom: 18px;
+}
 
-/* ==========================================================
-   Auditoría geométrica adicional · rutas que no heredaban
-   el contenedor .erp-page. El Layout es el único dueño del
-   margen exterior; no se alteran superficies internas.
-   ========================================================== */
+/* Compatibilidad geométrica con rutas antiguas pendientes de migración. */
 .erp-route-content > .mensajes-premium-page,
 .erp-route-content > main.mx-auto {
-  width: 100% !important;
-  min-width: 0 !important;
-  max-width: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  margin: 0;
+  padding: 0;
 }
 
-/* El chat mantiene su distribución interna y altura funcional,
-   pero deja de añadir un segundo margen exterior a la página. */
 .erp-route-content > .mensajes-premium-page {
   min-height: 0;
+}
+
+@media (max-width: 720px) {
+  .molsan-page-header,
+  .molsan-subpage-header,
+  .erp-page-header {
+    min-height: 56px;
+    align-items: flex-start;
+  }
 }
