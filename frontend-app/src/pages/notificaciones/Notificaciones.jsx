@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useMemo } from "react";
 import { useNotificacionesStore } from "../../store/notificacionesStore";
 
@@ -128,7 +129,7 @@ export default function Notificaciones() {
   return (
 
     <div
-      className="notificaciones-premium-page
+      className="erp-page notificaciones-premium-page min-w-0 space-y-6"
  p-4
  md:p-6
  space-y-6"
@@ -138,128 +139,12 @@ export default function Notificaciones() {
           CABECERA
           ====================================================== */}
 
-      <div
-        className="relative
- overflow-hidden
- 
- 
- 
- 
- p-5
- md:p-6"
-      >
-
-        <div
-          className="flex
- flex-col
- md:flex-row
- md:items-center
- md:justify-between
- gap-4"
-        >
-
-          {/* ==================================================
-              TÍTULO
-              ================================================== */}
-
-          <div
-            className="flex
- items-center
- gap-4"
-          >
-
-            <div
-              className="w-12
- h-12
- 
- 
- 
- 
- flex
- items-center
- justify-center"
-            >
-              🔔
-            </div>
-
-
-            <div>
-
-              <h1
-               
-              >
-                Notificaciones
-              </h1>
-
-              <p
-                className="mt-1"
-              >
-                Actividad y avisos en tiempo real del ERP.
-              </p>
-
-            </div>
-
-          </div>
-
-
-          {/* ==================================================
-              ACCIONES
-              ================================================== */}
-
-          <div
-            className="flex
- items-center
- gap-3"
-          >
-
-            {/* CONTADOR */}
-
-            <div
-              className="px-4
- py-2
- 
- 
- 
- 
- 
- min-w-[90px]"
-            >
-
-              <div
-               
-              >
-                {lista.length}
-              </div>
-
-              <div
-                className="uppercase"
-              >
-                Avisos
-              </div>
-
-            </div>
-
-
-            {/* LIMPIAR */}
-
-            <button
-              type="button"
-              onClick={clearNotificaciones}
-              disabled={lista.length === 0}
-              className="px-4
- py-2.5"
-            >
-              🗑️ Limpiar
-            </button>
-
-          </div>
-
-        </div>
-
+      <MolsanPageHeader mark="NO" title="Notificaciones" description="Actividad y avisos en tiempo real del ERP." />
+      <div className="molsan-filter-bar flex flex-wrap items-center justify-between gap-3 p-3">
+        <div className="molsan-summary-card"><span className="block text-xs">Avisos disponibles</span><strong className="block text-xl">{lista.length}</strong></div>
+        <button type="button" className="molsan-btn molsan-btn--secondary" onClick={clearNotificaciones} disabled={lista.length === 0}>Limpiar notificaciones</button>
       </div>
 
-
-      {/* ======================================================
           ESTADO VACÍO
           ====================================================== */}
 
