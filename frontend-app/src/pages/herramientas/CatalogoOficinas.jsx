@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
-import "../../css/HerramientasPremium.css";
 
 const COLUMNAS = [
   ["oficina", "Oficina"], ["nombre", "Nombre"], ["direccion", "Dirección"],
@@ -98,13 +97,13 @@ export default function CatalogoOficinas() {
   const totalPaginas = Math.max(1, Math.ceil(total / limite));
 
   return (
-    <main className="catalogos-premium-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <header className="relative overflow-hidden p-6 sm:p-7">
         <div className="absolute inset-x-0 top-0 h-1" />
         <div className="relative flex items-center gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center">🏢</div>
           <div className="min-w-0">
-            <p className="uppercase">MOLSAN ERP PREMIUM 2027</p>
+            <p className="uppercase">MOLSAN ERP</p>
             <h1 className="mt-1">Catálogo de oficinas</h1>
             <p className="mt-1">Busca y administra únicamente las oficinas que importes desde tus archivos Excel.</p>
           </div>
