@@ -687,7 +687,7 @@ export default function ModalNuevaCita({
  
  flex items-center justify-center
  z-50
- p-4"
+ p-2 sm:p-4"
       onMouseDown={(e) => {
 
         if (
@@ -726,7 +726,7 @@ export default function ModalNuevaCita({
           className="molsan-modal__header sticky top-0 z-20
  
  
- px-6 py-4
+ px-4 py-4 sm:px-6
  flex items-start justify-between
  gap-4"
         >
@@ -767,7 +767,7 @@ export default function ModalNuevaCita({
            ==================================================== */}
 
         <div
-          className="molsan-modal__body p-6
+          className="molsan-modal__body p-4 sm:p-6
  space-y-5"
         >
 
@@ -1285,7 +1285,7 @@ export default function ModalNuevaCita({
            ==================================================== */}
 
         <div
-          className="molsan-modal__footer px-6 py-4
+          className="molsan-modal__footer px-4 py-4 sm:px-6
  flex flex-col-reverse
  sm:flex-row
  justify-between
