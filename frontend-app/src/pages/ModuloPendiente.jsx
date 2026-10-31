@@ -8,9 +8,9 @@ export default function ModuloPendiente({ nombre }) {
   const esFichajes = nombreNormalizado === "fichajes";
 
   return (
-    <section className="mx-auto max-w-4xl px-4 py-10 sm:py-14">
-      <div className="overflow-hidden">
-        <div className="h-1.5" />
+    <section className="erp-page modulo-pendiente min-w-0 space-y-6">
+      <div className="erp-card overflow-hidden">
+        <div className="h-1.5 bg-[var(--molsan-blue)]" />
 
         <div className="p-6 sm:p-10">
           <div className="flex flex-wrap items-start justify-between gap-5">
@@ -41,7 +41,7 @@ export default function ModuloPendiente({ nombre }) {
           </div>
 
           {esFichajes ? (
-            <div className="mt-8 p-5 sm:p-6">
+            <div className="erp-card mt-8 p-5 sm:p-6">
               <h2>Estamos preparando Fichajes</h2>
               <p className="mt-2">
                 Este módulo permitirá registrar la jornada laboral de los empleados y consultar sus entradas y salidas. La funcionalidad de fichaje todavía no está activa.
@@ -92,7 +92,7 @@ export default function ModuloPendiente({ nombre }) {
                   ].map((item) => (
                     <div
                       key={item.numero}
-                      className="flex gap-3 p-4"
+                      className="erp-data-item flex gap-3 p-4"
                     >
                       <span className="grid h-9 w-9 shrink-0 place-items-center">
                         {item.numero}
@@ -106,7 +106,7 @@ export default function ModuloPendiente({ nombre }) {
                 </div>
               </div>
 
-              <div className="mt-6 px-4 py-3">
+              <div className="erp-alert erp-alert-info mt-6 px-4 py-3">
                 <p>
                   <strong>Módulo independiente:</strong> EncargaGest tendrá su propio acceso y
                   flujo de trabajo. No dependerá de NotarGest, ApoderaGest ni CancelaGest.
@@ -121,11 +121,11 @@ export default function ModuloPendiente({ nombre }) {
             </p>
           )}
 
-          <div className="mt-8 flex flex-wrap items-center gap-3 pt-6">
+          <div className="erp-action-bar mt-8 flex flex-wrap items-center gap-3 pt-6">
             <button
               type="button"
               onClick={() => navigate("/modulos")}
-              className="px-5 py-3"
+              className="molsan-btn molsan-btn--secondary px-5 py-3"
             >
               Volver al selector
             </button>
