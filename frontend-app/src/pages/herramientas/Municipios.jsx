@@ -49,11 +49,7 @@ import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
    El frontend y el backend están en servicios Render distintos.
 ============================================================ */
 
-const API_ORIGEN =
-  "https://agenda-intranet-b.onrender.com";
-
-const API_BASE =
-  `${API_ORIGEN}/api/municipios`;
+const API_BASE = `${(import.meta.env.VITE_API_URL || "https://agenda-intranet-b.onrender.com/api").replace(/\/+$/, "")}/municipios`;
 
 const API_IMPORTAR_EXCEL =
   `${API_BASE}/importar-excel`;
