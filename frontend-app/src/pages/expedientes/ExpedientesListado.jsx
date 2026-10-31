@@ -1,24 +1,24 @@
 import {
   useEffect,
   useRef,
-  useState,
-} from "react";
+  useState
+            } from "react";
 import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 import {
-  Link,
-} from "react-router-dom";
+  Link
+            } from "react-router-dom";
 
 import {
   obtenerListadoExpedientes,
   exportarExcelExpedientes,
   obtenerResumenExpedientes,
   obtenerAlertasControlExpedientes,
-  obtenerCatalogosListadoExpedientes,
-} from "../../api/expedientes";
+  obtenerCatalogosListadoExpedientes
+            } from "../../api/expedientes";
 
 
 // ============================================================
@@ -34,26 +34,26 @@ const COLUMNAS = [
   {
     key: "id_expediente",
     label: "Nº Expediente",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "promocion",
     label: "Promoción",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "id",
     label: "ID",
-    tipo: "numero",
-  },
+    tipo: "numero"
+            },
 
   {
     key: "cliente_id",
     label: "ID Cliente",
-    tipo: "numero",
-  },
+    tipo: "numero"
+            },
 
 
   // ==========================================================
@@ -63,38 +63,38 @@ const COLUMNAS = [
   {
     key: "estado_expediente",
     label: "Estado expediente",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "estado_expediente_ancert",
     label: "Estado ANCERT",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "estado_actividad",
     label: "Estado actividad",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "facturacion_estado",
     label: "Estado facturación",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "estado_facturas",
     label: "Facturas · estado de pago",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "registral_estado",
     label: "Estado registral",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -104,86 +104,86 @@ const COLUMNAS = [
   {
     key: "fecha_alta",
     label: "Fecha alta",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fecha_firma",
     label: "Fecha firma",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fecha_inscripcion",
     label: "Fecha inscripción",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fecha_entregado_cliente",
     label: "Fecha entregado cliente",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fecha_prevista_firma",
     label: "Fecha prevista firma",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fecha_vencimiento",
     label: "Fecha vencimiento",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fecha_sol_cgn",
     label: "Fecha solicitud CGN",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fecha_firma_prev_val",
     label: "Firma prev. validación",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fecha_firma_prev_cli",
     label: "Firma prev. cliente",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fecha_inicio_actividad",
     label: "Inicio actividad",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fecha_fin_actividad",
     label: "Fin actividad",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fcierre_defecto",
     label: "Cierre defecto",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "facturacion_fecha",
     label: "Fecha facturación",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "registral_fecha",
     label: "Fecha registral",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
 
   // ==========================================================
@@ -193,8 +193,8 @@ const COLUMNAS = [
   {
     key: "actividad_actual",
     label: "Actividad actual",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -204,14 +204,14 @@ const COLUMNAS = [
   {
     key: "nombre_titular",
     label: "Nombre titular",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "nif_titular",
     label: "NIF titular",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -221,20 +221,20 @@ const COLUMNAS = [
   {
     key: "nombre_solicitante",
     label: "Nombre solicitante",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "nif_solicitante",
     label: "NIF solicitante",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "apoderado",
     label: "Apoderado",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -244,20 +244,20 @@ const COLUMNAS = [
   {
     key: "nombre_notario",
     label: "Nombre notario",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "nif_notario",
     label: "NIF notario",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "notario",
     label: "Notario",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -267,20 +267,20 @@ const COLUMNAS = [
   {
     key: "oficina",
     label: "Oficina",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "dan",
     label: "DAN",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "oficina_alta",
     label: "Oficina alta",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -290,26 +290,26 @@ const COLUMNAS = [
   {
     key: "capital",
     label: "Capital",
-    tipo: "numero",
-  },
+    tipo: "numero"
+            },
 
   {
     key: "importe",
     label: "Importe",
-    tipo: "numero",
-  },
+    tipo: "numero"
+            },
 
   {
     key: "saldo_real",
     label: "Saldo real",
-    tipo: "numero",
-  },
+    tipo: "numero"
+            },
 
   {
     key: "saldo_disponible",
     label: "Saldo disponible",
-    tipo: "numero",
-  },
+    tipo: "numero"
+            },
 
 
   // ==========================================================
@@ -319,14 +319,14 @@ const COLUMNAS = [
   {
     key: "id_provision",
     label: "ID provisión",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "tipo_provision",
     label: "Tipo provisión",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -336,38 +336,38 @@ const COLUMNAS = [
   {
     key: "contrato",
     label: "Contrato",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "num_solicitud_sia",
     label: "Nº solicitud SIA",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "tipo_operacion",
     label: "Tipo operación",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "subtipo_operacion",
     label: "Subtipo operación",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "vinccanc",
     label: "VincCanc",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "protocolo",
     label: "Protocolo",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -377,20 +377,20 @@ const COLUMNAS = [
   {
     key: "origen_bankia",
     label: "Origen Bankia",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "producto_gtg",
     label: "Producto GTG",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "dt",
     label: "DT",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -400,20 +400,20 @@ const COLUMNAS = [
   {
     key: "id_gestoria_tramite",
     label: "ID gestoría trámite",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "nombre_gestoria",
     label: "Nombre gestoría",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "gestoria",
     label: "Gestoría",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -423,8 +423,8 @@ const COLUMNAS = [
   {
     key: "finca",
     label: "Finca",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -434,26 +434,26 @@ const COLUMNAS = [
   {
     key: "tiene_defectos_abiertos",
     label: "Defectos abiertos",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "tipo_error",
     label: "Tipo error",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "descripcion_error",
     label: "Descripción error",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "falta_defecto",
     label: "Falta / defecto",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -463,8 +463,8 @@ const COLUMNAS = [
   {
     key: "id_expediente_cgn",
     label: "ID expediente CGN",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -474,8 +474,8 @@ const COLUMNAS = [
   {
     key: "tipo_acta",
     label: "Tipo acta",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -485,14 +485,14 @@ const COLUMNAS = [
   {
     key: "lucy",
     label: "Lucy",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "indicador_tt",
     label: "Indicador TT",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -502,8 +502,8 @@ const COLUMNAS = [
   {
     key: "observaciones",
     label: "Observaciones",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   // Documentación de la carpeta digital y documentos necesarios para iniciar el trámite.
   // Repositorios de la carpeta digital (las claves adicionales permiten
@@ -672,8 +672,8 @@ const CATEGORIAS_POR_REPOSITORIO = {
   honorarios_gestoria_documentos: ["Honorarios gestoría", "Honorarios gestoria"],
   otra_documentacion: ["Otra documentación", "Otra documentacion"],
   emails_oficina: ["Mails de la Oficina", "Mails de la oficina", "Emails de oficina"],
-  otros_documentos: ["Otros", "Borradores escrituras y otros"],
-};
+  otros_documentos: ["Otros", "Borradores escrituras y otros"]
+            };
 
 function CeldaRepositorioDigital({ expedienteId, repositorioKey, valor, onAbrir }) {
   const [hover, setHover] = useState(false);
@@ -943,8 +943,8 @@ const COLUMNAS_POR_ACTIVIDAD = {
   "liquidacion-impuestos": COLUMNAS_LIQUIDACION_IMPUESTOS,
   "tramitacion-inscripcion": COLUMNAS_TRAMITACION_INSCRIPCION,
   "defectos-registrales": COLUMNAS_DEFECTOS_REGISTRALES,
-  "facturacion-cierre": COLUMNAS_FACTURACION_CIERRE,
-};
+  "facturacion-cierre": COLUMNAS_FACTURACION_CIERRE
+            };
 
 function obtenerColumnasActividad(actividad) {
   return COLUMNAS_POR_ACTIVIDAD[actividad] || COLUMNAS_POR_DEFECTO;
@@ -1035,8 +1035,8 @@ function formatearValor(
     return new Intl.NumberFormat(
       "es-ES",
       {
-        maximumFractionDigits: 2,
-      }
+        maximumFractionDigits: 2
+            }
     ).format(
       numero
     );
@@ -1048,23 +1048,6 @@ function formatearValor(
 
 }
 
-
-// ============================================================
-// ESTILO DE ETIQUETAS DE ESTADO
-// ============================================================
-
-function estiloEstado(valor) {
-  const estado = String(valor || "").trim().toLocaleLowerCase("es-ES");
-
-  // Códigos oficiales de Estado expediente: distinguirlos de un vistazo.
-  if (estado === "rst") return { background: "#f3e8ff", color: "#6b21a8", borderColor: "#d8b4fe" };
-  if (estado === "pva") return { background: "#dbeafe", color: "#1d4ed8", borderColor: "#93c5fd" };
-
-  if (/vencid|bloquead|error|rechaz|defecto|urgente|atrasad/.test(estado)) return { background: "#fef2f2", color: "#991b1b", borderColor: "#fecaca" };
-  if (/pendient|espera|revis|tramit|proceso/.test(estado)) return { background: "#fffbeb", color: "#92400e", borderColor: "#fde68a" };
-  if (/finaliz|cerrad|complet|inscrit|entregad|facturad|pagad|realizad|firmad|correcto/.test(estado)) return { background: "#ecfdf5", color: "#065f46", borderColor: "#a7f3d0" };
-  return { background: "var(--erp-surface-soft)", color: "var(--erp-text)", borderColor: "var(--erp-border)" };
-}
 
 // ============================================================
 // FORMATEAR NÚMERO
@@ -1219,8 +1202,8 @@ export default function ExpedientesListado() {
     contrato: "", tipoFirma: "", tipoDocumento: "", provincia: "",
     poblacion: "", tributacion: "", estadoRegistral: "", estadoFacturacion: "",
     tieneDefectosAbiertos: "",
-    faltaDefecto: "",
-  });
+    faltaDefecto: ""
+            });
 
 
   // ==========================================================
@@ -1299,8 +1282,8 @@ export default function ExpedientesListado() {
     dts: [],
     vinccancs: [],
     lucys: [],
-    notarios: [],
-  });
+    notarios: []
+            });
 
 
   const [
@@ -1499,9 +1482,8 @@ export default function ExpedientesListado() {
                 ? JSON.stringify(
                     ordenMultiple
                   )
-                : undefined,
-
-          });
+                : undefined
+            });
 
 
         if (!activo) {
@@ -1631,8 +1613,8 @@ export default function ExpedientesListado() {
         ]);
         if (activo) setTotalesEstadosDiferenciales({
           PVA: Number(pendientes?.total || 0),
-          RST: Number(retencion?.total || 0),
-        });
+          RST: Number(retencion?.total || 0)
+            });
       } catch (err) {
         if (activo) setTotalesEstadosDiferenciales({ PVA: 0, RST: 0 });
         console.error("No se han podido cargar los recuentos de estados diferenciales.");
@@ -1684,8 +1666,8 @@ export default function ExpedientesListado() {
           dts: Array.isArray(res?.dts) ? res.dts : [],
           vinccancs: Array.isArray(res?.vinccancs) ? res.vinccancs : [],
           lucys: Array.isArray(res?.lucys) ? res.lucys : [],
-          notarios: Array.isArray(res?.notarios) ? res.notarios : [],
-        });
+          notarios: Array.isArray(res?.notarios) ? res.notarios : []
+            });
       } catch (err) {
         console.error("No se han podido cargar los catálogos del listado.");
         if (activo) {
@@ -1699,8 +1681,8 @@ export default function ExpedientesListado() {
             tipos_operacion: [], subtipos_operacion: [], gestorias: [], tipos_error: [], defectos_abiertos: [],
             falta_defecto: [], estados_ancert: [], tipos_acta: [], tipos_firma: [], tipos_documento: [],
             provincias: [], poblaciones: [], tributaciones: [], estados_registrales: [],
-            estados_facturacion: [], dts: [], vinccancs: [], lucys: [], notarios: [],
-          });
+            estados_facturacion: [], dts: [], vinccancs: [], lucys: [], notarios: []
+            });
         }
       }
     }
@@ -1773,9 +1755,8 @@ export default function ExpedientesListado() {
                       item?.cantidad ??
                       item?.count ??
                       0
-                    ),
-
-                })
+                    )
+            })
               )
 
               .filter(
@@ -1882,9 +1863,8 @@ export default function ExpedientesListado() {
                   total:
                     Number(
                       total || 0
-                    ),
-
-                })
+                    )
+            })
               );
 
 
@@ -2008,8 +1988,8 @@ export default function ExpedientesListado() {
       estadoRegistral: filtroEstadoRegistral,
       estadoFacturacion: filtroEstadoFacturacion,
       tieneDefectosAbiertos: filtroTieneDefectosAbiertos,
-      faltaDefecto: filtroFaltaDefecto,
-    });
+      faltaDefecto: filtroFaltaDefecto
+            });
     setPagina(1);
     setError("");
   };
@@ -2083,8 +2063,8 @@ export default function ExpedientesListado() {
       contrato: "", tipoFirma: "", tipoDocumento: "", provincia: "",
       poblacion: "", tributacion: "", estadoRegistral: "", estadoFacturacion: "",
       tieneDefectosAbiertos: "",
-      faltaDefecto: "",
-    });
+      faltaDefecto: ""
+            });
     setPagina(1);
     setError("");
   };
@@ -2125,9 +2105,8 @@ export default function ExpedientesListado() {
               actual.direccion ===
               "asc"
                 ? "desc"
-                : "asc",
-
-          },
+                : "asc"
+            },
 
         ]);
 
@@ -2140,9 +2119,8 @@ export default function ExpedientesListado() {
             columna,
 
             direccion:
-              "asc",
-
-          },
+              "asc"
+            },
 
         ]);
 
@@ -2198,9 +2176,8 @@ export default function ExpedientesListado() {
                   orden.direccion ===
                   "asc"
                     ? "desc"
-                    : "asc",
-
-              };
+                    : "asc"
+            };
 
             }
           )
@@ -2218,9 +2195,8 @@ export default function ExpedientesListado() {
             columna,
 
             direccion:
-              "asc",
-
-          },
+              "asc"
+            },
 
         ]
       );
@@ -2345,8 +2321,8 @@ export default function ExpedientesListado() {
           estadoRegistral: filtrosAplicados.estadoRegistral || undefined,
           estadoFacturacion: filtrosAplicados.estadoFacturacion || undefined,
           tieneDefectosAbiertos: filtrosAplicados.tieneDefectosAbiertos || undefined,
-          faltaDefecto: filtrosAplicados.faltaDefecto || undefined,
-        });
+          faltaDefecto: filtrosAplicados.faltaDefecto || undefined
+            });
 
       } catch (
         err
@@ -2431,7 +2407,7 @@ export default function ExpedientesListado() {
           <div className="molsan-page-header__identity">
             <div className="expedientes-page__header-icon molsan-page-header__mark" aria-hidden="true">EXP</div>
             <div className="min-w-0">
-              <p className="expedientes-page__eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+              <p className="expedientes-page__eyebrow molsan-page-header__eyebrow">MOLSAN ERP</p>
               <h1 className="molsan-page-header__title">Expedientes</h1>
               <p className="molsan-page-header__description">
                 Consulta, seguimiento y control de la tramitación de expedientes.
@@ -2458,18 +2434,14 @@ export default function ExpedientesListado() {
               titulo: "Circuito CaixaBank",
               descripcion: "Propia entidad · Vinculada propia entidad",
               plazo: "40 días",
-              icono: "🏦",
-              borde: "#2563eb",
-              fondo: "rgba(37, 99, 235, 0.07)",
+              icono: "🏦"
             },
             {
               key: "sla_otra_entidad",
               titulo: "Circuito otra entidad",
               descripcion: "Vinculada otra entidad · Otra entidad",
               plazo: "70 días",
-              icono: "🏢",
-              borde: "#b7791f",
-              fondo: "rgba(183, 121, 31, 0.08)",
+              icono: "🏢"
             },
           ].map((circuito) => {
             const alerta = alertasControl.find((item) => item.key === circuito.key);
@@ -2589,7 +2561,7 @@ export default function ExpedientesListado() {
               "liquidacion-impuestos": { alerta: "liquidacion_pendiente", etiqueta: (cantidad) => `Fuera de plazo (>2 días): ${cantidad}` },
               "tramitacion-inscripcion": { alerta: "inscripcion_30_dias", etiqueta: (cantidad) => `Fuera de plazo (>23 días): ${cantidad}` },
               "defectos-registrales": { alerta: "defectos_vencidos", etiqueta: (cantidad) => `Fuera de plazo (>60 días): ${cantidad}` },
-              "facturacion-cierre": { alerta: "facturacion_cierre", etiqueta: (cantidad) => `Fuera de plazo (>5 días): ${cantidad}` },
+              "facturacion-cierre": { alerta: "facturacion_cierre", etiqueta: (cantidad) => `Fuera de plazo (>5 días): ${cantidad}` }
             }[actividad.key];
             const alertaPlazo = reglaPlazo ? alertasControl.find((item) => item.key === reglaPlazo.alerta) : null;
             const cantidadPlazo = Number(alertaPlazo?.total || 0);
@@ -2859,19 +2831,19 @@ export default function ExpedientesListado() {
                                 valor={expediente[columna.key]}
                                 onAbrir={() => setCarpetaDigitalSeleccionada({
                                   expedienteId: expediente.id_expediente || expediente.id,
-                                  actividadId: actividadSeleccionada,
-                                })}
+                                  actividadId: actividadSeleccionada
+            })}
                               />
                             ) : columna.key === "carpeta_digital" ? (
                               Number.parseInt(String(expediente[columna.key] || "").match(/\d+/)?.[0] || "0", 10) > 0 ? (
-                                <button type="button" onClick={() => setCarpetaDigitalSeleccionada({ expedienteId: expediente.id_expediente || expediente.id, actividadId: actividadSeleccionada })} className="px-2 py-1" 📂 {expediente[columna.key]}</button>
+                                <button type="button" onClick={() => setCarpetaDigitalSeleccionada({ expedienteId: expediente.id_expediente || expediente.id, actividadId: actividadSeleccionada })} className="px-2 py-1">📂 {expediente[columna.key]}</button>
                               ) : null
                             ) : columna.key === "id_expediente" ? (
                               <Link to={`/expedientes/${encodeURIComponent(expediente.id_expediente || expediente.id || "")}`} className="underline-offset-2" title={`Abrir ficha del expediente ${expediente.id_expediente || expediente.id || ""}`}>
                                 {formatearValor(expediente[columna.key], columna.tipo)}
                               </Link>
                             ) : ["estado_expediente", "estado_actividad", "facturacion_estado", "registral_estado", "estado_facturas"].includes(columna.key) && expediente[columna.key] ? (
-                              <span className="inline-flex max-w-[220px] items-center px-2.5 py-1 whitespace-normal" style={estiloEstado(expediente[columna.key])} title={String(expediente[columna.key])}>
+                              <span className="inline-flex max-w-[220px] items-center px-2.5 py-1 whitespace-normal" title={String(expediente[columna.key])}>
                                 {formatearValor(expediente[columna.key], columna.tipo)}
                               </span>
                             ) : formatearValor(expediente[columna.key], columna.tipo)}
@@ -3267,8 +3239,8 @@ function FiltroInput({
   value,
   onChange,
   type = "text",
-  placeholder = "",
-}) {
+  placeholder = ""
+            }) {
 
   return (
 
