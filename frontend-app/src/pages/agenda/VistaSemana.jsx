@@ -163,11 +163,7 @@ export default function VistaSemana({
  
  
  
- ${
- resaltada
- ? "ring-2 
- : 
- }`}
+ `}
                         onClick={() =>
                           onCitaClick(c)
                         }
