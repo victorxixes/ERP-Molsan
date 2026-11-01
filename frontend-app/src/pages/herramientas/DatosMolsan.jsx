@@ -80,7 +80,7 @@ export default function DatosMolsan() {
   };
 
   return (
-    <div className="min-h-full space-y-6 animate-fadeIn">
+    <div className="molsan-page-stack min-h-full animate-fadeIn">
       <header className="molsan-page-header">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="flex items-start gap-4">
