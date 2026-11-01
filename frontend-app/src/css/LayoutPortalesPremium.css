@@ -7,7 +7,7 @@
 .portal-access-tabs-premium [role=tablist] { display:flex; flex-wrap:wrap; gap:.5rem; }
 .intranet-documentos-table-premium { min-width:0; }
 .intranet-documentos-table-premium table { width:100%; border-collapse:separate; border-spacing:0; }
-.intranet-documentos-table-premium th { background:var(--molsan-surface-soft,#f7f9fc); }
+.intranet-documentos-table-premium th { background:var(--molsan-surface-soft, #F2F7FB); }
 .intranet-documentos-table-premium td,.intranet-documentos-table-premium th { overflow-wrap:anywhere; }
 .intranet-noticias-feed-premium { min-width:0; }
 .intranet-noticias-feed-premium img { max-width:100%; }
@@ -45,16 +45,16 @@
 .mol-sidebar-premium nav button[data-active="true"] {
   color: var(--molsan-primary, #064675);
   background: var(--molsan-primary-soft, #EAF2F8);
-  box-shadow: inset 0 0 0 1px rgba(49,86,179,.10);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--molsan-primary) 10%, transparent);
 }
 .mol-sidebar-premium nav a:hover,
 .mol-sidebar-premium nav button:hover {
   color: var(--molsan-primary, #064675);
-  background: var(--molsan-surface-soft, #f7f9fc);
+  background: var(--molsan-surface-soft, #F2F7FB);
 }
 .mol-sidebar-premium button:focus-visible,
 .mol-sidebar-premium a:focus-visible {
-  outline: 3px solid rgba(49,86,179,.32);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary) 32%, transparent);
   outline-offset: 2px;
 }
 .sidebar-perfil-modal-premium [role="dialog"] {
@@ -169,7 +169,7 @@
 .ctn-portal-history-table tbody tr:hover { background:#f8faff; }
 .ctn-portal-history-table tbody tr:last-child td { border-bottom:0; }
 .ctn-portal-access-panel :is(input,select,textarea) { min-width:0; max-width:100%; border-radius:8px; }
-.ctn-portal-access-panel :is(button,input,select):focus-visible { outline:3px solid rgba(49,86,179,.24); outline-offset:2px; }
+.ctn-portal-access-panel :is(button,input,select):focus-visible { outline:3px solid color-mix(in srgb, var(--molsan-primary) 24%, transparent); outline-offset:2px; }
 @media(max-width:640px) {
   .ctn-portal-card,.ctn-portal-field-card { padding:12px; }
   .ctn-portal-tabs { gap:6px; }
