@@ -212,9 +212,7 @@
 .seguridad-usuarios-premium { width:100%; min-width:0; }
 .seguridad-rol-editor-premium > .erp-card,
 .seguridad-usuarios-premium .erp-card {
-  min-width:0; overflow:hidden; border:1px solid var(--molsan-border,#dbe3ef);
-  border-radius:16px; background:var(--molsan-surface,#fff);
-  box-shadow:0 8px 24px rgba(20,35,65,.06);
+  min-width:0; overflow:hidden;
 }
 .seguridad-rol-editor-premium .erp-card > :first-child,
 .seguridad-usuarios-premium .erp-card > :first-child { min-width:0; }
