@@ -1581,17 +1581,7 @@ const permisosGlobales =
           CABECERA
       ====================================================== */}
 
-      <section
-        className="
-          molsan-page-header
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-5
-          shadow-sm
-        "
-      >
+      <section className="molsan-page-header">
 
         <div
           className="
@@ -1604,14 +1594,7 @@ const permisosGlobales =
           "
         >
 
-          <div
-            className="
-              flex
-              min-w-0
-              items-center
-              gap-4
-            "
-          >
+          <div className="molsan-page-header__identity">
 
             <div
               className="
@@ -1674,28 +1657,9 @@ const permisosGlobales =
 
             <div className="min-w-0">
 
-              <p
-                className="
-                  text-[11px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.14em]
-                  text-[var(--erp-primary)]
-                "
-              >
-                Centro de seguridad
-              </p>
+              <p className="molsan-page-header__eyebrow">MOLSAN ERP · SEGURIDAD</p>
 
-              <h1
-                className="
-                  mt-1
-                  truncate
-                  text-2xl
-                  font-bold
-                  tracking-tight
-                  text-[var(--erp-text)]
-                "
-              >
+              <h1 className="molsan-page-header__title">
                 {textoSeguro(
                   empleado.nombre
                 )}
@@ -1705,13 +1669,7 @@ const permisosGlobales =
                   : ""}
               </h1>
 
-              <p
-                className="
-                  mt-0.5
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                "
-              >
+              <p className="molsan-page-header__description">
                 @{empleado.usuario || "-"}
               </p>
 
