@@ -595,6 +595,8 @@ def admin_exportar_marcajes(
             continue
         if hasta and fecha_snapshot.date() > hasta:
             continue
+        if tipo and str(snapshot.get("tipo", "")).strip().upper() != tipo.strip().upper():
+            continue
         empleado = db.query(Empleado).filter(Empleado.id == auditoria.empleado_id).first()
         escritor.writerow([
             auditoria.empleado_id,
