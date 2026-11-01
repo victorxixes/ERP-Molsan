@@ -112,7 +112,7 @@
   .mensajeria
 ) :is(
   .erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi, .cg-section, .cg-module-card,
-  .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso,
+  .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .ng-admin-kpi-button,
   .eg-panel, .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
   .ctn-panel, .expedientes-panel, .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
   .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi, .panel-card, .ficha-panel, .ficha-seccion,
