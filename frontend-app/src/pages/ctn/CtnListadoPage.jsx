@@ -262,8 +262,8 @@ export default function CtnListadoPage() {
           <div className="ctn-listado-header-icon molsan-page-header__mark" aria-hidden="true">CTN</div>
           <div className="min-w-0">
             <p className="ctn-listado-header-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
-            <h1>Listado CTN</h1>
-            <p>Consulta, filtra y gestiona los notarios y sus asociaciones.</p>
+            <h1 className="molsan-page-header__title">Listado CTN</h1>
+            <p className="molsan-page-header__description">Consulta, filtra y gestiona los notarios y sus asociaciones.</p>
           </div>
         </div>
         <div className="ctn-listado-header-acciones molsan-page-header__actions">
