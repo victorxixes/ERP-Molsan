@@ -127,10 +127,6 @@ function Icono({
   name,
   className = "w-5 h-5",
 }) {
-  useEffect(() => {
-    if (searchParams.get("importar") === "1") abrirImportar();
-  }, [searchParams]);
-
   return (
     <svg
       className={className}
@@ -1245,6 +1241,10 @@ export default function AccionesExpediente() {
   // ==========================================================
   // RENDER
   // ==========================================================
+  useEffect(() => {
+    if (searchParams.get("importar") === "1") abrirImportar();
+  }, [searchParams]);
+
 
   return (
     <div
