@@ -3096,7 +3096,7 @@ function InformeNotarios() {
           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-xl">🏛️</span>
           <div>
             <h2 className="text-xl font-bold text-slate-800">Informes de notarios</h2>
-            <p className="mt-1 text-sm text-slate-500">Actividad notarial medida por expedientes con fecha de firma real. Se distinguen las firmas por videoconferencia, presenciales y las pendientes de clasificar.</p>
+            <p className="molsan-page-header__description">Actividad notarial medida por expedientes con fecha de firma real. Se distinguen las firmas por videoconferencia, presenciales y las pendientes de clasificar.</p>
           </div>
         </div>
       </header>
@@ -3789,7 +3789,7 @@ export default function Informes() {
               key={apartado.key}
               type="button"
               onClick={() => navigate(`/informes/${apartado.key}`)}
-              className="group flex min-h-[150px] items-start gap-4 rounded-2xl border border-white/80 bg-white/75 p-5 text-left shadow-[0_8px_25px_rgba(55,85,120,0.07)] backdrop-blur-xl transition-all hover:-translate-y-1 hover:border-blue-300 hover:shadow-[0_14px_35px_rgba(55,85,120,0.13)] focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="group erp-card flex min-h-[150px] items-start gap-4 p-5 text-left transition-all focus:outline-none focus:ring-2 focus:ring-blue-300"
             >
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-2xl transition group-hover:bg-blue-100">{apartado.icono}</span>
               <span className="min-w-0 flex-1">
@@ -3803,7 +3803,7 @@ export default function Informes() {
       ) : apartadoSeleccionado ? (
         renderInforme()
       ) : (
-        <section className="rounded-2xl border border-white/80 bg-white/75 p-8 text-center shadow-sm">
+        <section className="erp-card p-8 text-center">
           <div className="text-3xl">📊</div>
           <h2 className="mt-3 text-lg font-bold text-slate-800">Informe no encontrado</h2>
           <p className="mt-1 text-sm text-slate-500">El apartado solicitado no existe.</p>
