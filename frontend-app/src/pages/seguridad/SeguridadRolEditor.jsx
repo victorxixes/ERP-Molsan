@@ -428,19 +428,19 @@ export default function SeguridadRolEditor() {
           CABECERA
       ====================================================== */}
 
-      <div className="erp-page-header molsan-page-header">
+      <div className="molsan-page-header">
 
-        <div>
+        <div className="molsan-page-header__identity">
 
-          <div className="erp-eyebrow">
+          <div className="molsan-page-header__eyebrow">
             SEGURIDAD · ADMINISTRACIÓN
           </div>
 
-          <h1 className="erp-page-title">
+          <h1 className="molsan-page-header__title">
             Editor de roles
           </h1>
 
-          <p className="erp-page-subtitle">
+          <p className="molsan-page-header__description">
             Gestiona los roles disponibles en Molsan ERP.
           </p>
 
