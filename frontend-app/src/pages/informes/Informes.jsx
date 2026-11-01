@@ -3769,7 +3769,7 @@ export default function Informes() {
   };
 
   return (
-    <div className="informes-premium-page herramientas-subpagina-premium min-h-screen space-y-5 bg-gradient-to-br from-[#eef5fb] via-[#f7faff] to-[#eaf2fb] p-4 text-slate-700 md:p-6">
+    <div className="informes-premium-page herramientas-subpagina-premium min-h-screen space-y-5 bg-[var(--molsan-page-bg)] p-4 text-[var(--molsan-text)] md:p-6">
       <header className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl md:p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
