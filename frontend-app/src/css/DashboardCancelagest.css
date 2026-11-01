@@ -491,3 +491,48 @@
     border-radius: 16px;
   }
 }
+
+
+/* Cabecera compacta definitiva: misma escala que el resto del ERP Premium 2027. */
+.dashboard-cancelagest .dashboard-header {
+  padding: 12px 16px !important;
+  margin-bottom: 18px !important;
+  border-radius: 16px;
+}
+.dashboard-cancelagest .ag-hero-identidad {
+  gap: 12px;
+}
+.dashboard-cancelagest .ag-marca {
+  width: 40px !important;
+  height: 40px !important;
+  flex-basis: 40px !important;
+  border-radius: 11px;
+  font-size: 15px !important;
+  box-shadow: none !important;
+}
+.dashboard-cancelagest .ag-hero h1 {
+  margin: 0 0 3px !important;
+  font-size: 20px !important;
+  line-height: 1.2;
+  letter-spacing: -.02em !important;
+}
+.dashboard-cancelagest .ag-hero p {
+  font-size: 12px !important;
+  line-height: 1.45;
+}
+.dashboard-cancelagest .ag-eyebrow {
+  font-size: 9px !important;
+  letter-spacing: .12em !important;
+}
+@media (max-width: 640px) {
+  .dashboard-cancelagest .dashboard-header {
+    padding: 12px !important;
+    margin-bottom: 14px !important;
+    border-radius: 14px;
+  }
+  .dashboard-cancelagest .ag-marca {
+    width: 36px !important;
+    height: 36px !important;
+    flex-basis: 36px !important;
+  }
+}
