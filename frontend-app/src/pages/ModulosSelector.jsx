@@ -1,60 +1,57 @@
 import { useMemo, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
+import MODULOS_ERP from "../config/modulos";
 import { API_BASE } from "../api/config";
 import { configurarSesionEncargaGest } from "../api/encargagest";
 import "../css/ModalesHerramientasPremium.css";
 
+const CATALOGO_MODULOS = Object.fromEntries(
+  MODULOS_ERP.map((modulo) => [modulo.key, modulo])
+);
+
+// El catálogo central conserva las claves, etiquetas y rutas.
+// Aquí solo se mantiene el contenido editorial propio de cada tarjeta.
 const MODULOS = {
   apoderagest: {
-    nombre: "ApoderaGest",
     descripcion: "Encargos, firmas y actividad del apoderado.",
-    ruta: "/apoderagest",
     siglas: "AG",
     categoria: "GESTIÓN DE APODERADOS",
     estilo: "ag",
   },
   cancelagest: {
-    nombre: "CancelaGest",
     descripcion: "Gestión y seguimiento de cancelaciones hipotecarias.",
-    ruta: "/cancelagest",
     siglas: "CG",
     categoria: "GESTIÓN DE CANCELACIONES",
     estilo: "cg",
   },
   notargest: {
-    nombre: "NotarGest",
     descripcion: "Herramientas y operaciones del entorno de notaría.",
-    ruta: "/notargest",
     siglas: "NG",
     categoria: "ENTORNO NOTARIAL",
     estilo: "ng",
   },
   encargagest: {
-    nombre: "EncargaGest",
     descripcion: "Portal para que notarías externas envíen y consulten encargos a MOLSAN.",
-    ruta: "/encargagest",
     siglas: "EG",
     categoria: "PORTAL DE ENCARGOS EXTERNOS",
     estilo: "eg",
   },
   "mensajeria-gestion": {
-    nombre: "Mensajería Gestión",
     descripcion: "Solicitudes, pedidos al proveedor, incidencias, albaranes y facturas de mensajería.",
-    ruta: "/mensajeria-gestion",
     siglas: "MG",
     categoria: "GESTIÓN DE MENSAJERÍA",
     estilo: "mg",
   },
   fichajes: {
-    nombre: "Fichajes",
     descripcion: "Registra tu jornada, pausas, ausencias y consulta tu calendario y justificantes.",
-    ruta: "/fichajes",
     siglas: "FI",
     categoria: "CONTROL HORARIO DE EMPLEADOS",
     estilo: "fi",
   },
 };
+
+const obtenerModuloCatalogo = (clave) => CATALOGO_MODULOS[clave] || null;
 
 function normalizar(valor) {
   return String(valor || "")
@@ -117,16 +114,26 @@ export default function ModulosSelector() {
     // de Fichajes; no necesita la tarjeta de marcaje personal en este panel.
     const disponibles = Object.keys(MODULOS)
       .filter((clave) => visibles.includes(clave) && !(esAdmin && clave === "fichajes"))
-      .map((clave) => ({ clave, ...MODULOS[clave] }));
+      .map((clave) => {
+        const catalogo = obtenerModuloCatalogo(clave);
+        if (!catalogo?.route) return null;
+        return {
+          clave,
+          nombre: catalogo.label,
+          ruta: catalogo.route,
+          ...MODULOS[clave],
+        };
+      })
+      .filter(Boolean);
     // Mensajería Gestión es el espacio administrativo de este módulo:
     // debe aparecer a los administradores aunque no figure en sus módulos
     // personales visibles de la ficha de empleado.
     if (esAdmin && !disponibles.some((modulo) => modulo.clave === "mensajeria-gestion")) {
       disponibles.push({
         clave: "mensajeria-gestion",
-        nombre: "Mensajería Gestión",
+        nombre: obtenerModuloCatalogo("mensajeria-gestion")?.label || "Mensajería Gestión",
         descripcion: "Administra solicitudes, pedidos, incidencias, albaranes y facturas de mensajería.",
-        ruta: "/mensajeria-gestion",
+        ruta: obtenerModuloCatalogo("mensajeria-gestion")?.route,
         siglas: "MG",
         categoria: "GESTIÓN DE MENSAJERÍA",
         estilo: "mg",
@@ -135,19 +142,19 @@ export default function ModulosSelector() {
     if (esAdmin && visibles.includes("control-fichajes")) {
       disponibles.push({
         clave: "control-fichajes",
-        nombre: "Control de Fichajes",
+        nombre: obtenerModuloCatalogo("control-fichajes")?.label || "Control de Fichajes",
         descripcion: "Supervisión de marcajes de la plantilla y consulta por empleado y periodo.",
-        ruta: "/control-fichajes",
+        ruta: obtenerModuloCatalogo("control-fichajes")?.route,
         siglas: "CF",
         categoria: "ADMINISTRACIÓN DE JORNADA",
         estilo: "fi",
       });
     }
     if (esAdmin && visibles.includes("notargest")) {
-      disponibles.push({ clave: "notargest_notario", nombre: "NotarGest – Notarios", descripcion: "Acceso de soporte al portal de una notaría habilitada.", siglas: "NN", categoria: "SOPORTE A NOTARÍAS", estilo: "ng", portalSoporte: "notargest" });
+      disponibles.push({ clave: "notargest_notario", nombre: obtenerModuloCatalogo("notargestweb")?.label || "NotarGest Notarios", descripcion: "Acceso de soporte al portal de una notaría habilitada.", siglas: "NN", categoria: "SOPORTE A NOTARÍAS", estilo: "ng", portalSoporte: "notargest" });
     }
     if (esAdmin && visibles.includes("encargagest")) {
-      disponibles.push({ clave: "encargagest_notario", nombre: "EncargaGest – Notarios", descripcion: "Acceso de soporte al portal de una notaría habilitada.", siglas: "EN", categoria: "SOPORTE A NOTARÍAS", estilo: "eg", portalSoporte: "encargagest" });
+      disponibles.push({ clave: "encargagest_notario", nombre: obtenerModuloCatalogo("encargagestweb")?.label || "EncargaGest Notarios", descripcion: "Acceso de soporte al portal de una notaría habilitada.", siglas: "EN", categoria: "SOPORTE A NOTARÍAS", estilo: "eg", portalSoporte: "encargagest" });
     }
     return disponibles;
   }, [empleado]);
