@@ -428,7 +428,7 @@ export default function SeguridadRolEditor() {
           CABECERA
       ====================================================== */}
 
-      <div className="erp-page-header">
+      <div className="erp-page-header molsan-page-header">
 
         <div>
 
