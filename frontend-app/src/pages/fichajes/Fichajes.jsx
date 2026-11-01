@@ -1,3 +1,4 @@
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import FichajesResumen from "./FichajesResumen.jsx";
@@ -304,7 +305,20 @@ export default function Fichajes({ modo = "empleado" }) {
             {!esAdminVista && pestana === "resumen" && (
               <div className="p-4 sm:p-6">
                 <div className="flex flex-wrap items-end justify-between gap-3"><div><h2 className="text-lg font-bold">Resumen de marcajes</h2><p className="text-sm text-[var(--erp-text-soft)]">Busca por tipo, fecha, hora u observaciones.</p></div><label className="w-full max-w-sm text-xs font-bold text-slate-500">Buscar<input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Ej. Entrada, 09:00…" className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm font-normal" /></label></div>
-                <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[560px] text-left text-sm"><thead><tr className="border-b text-xs uppercase tracking-wide text-slate-400"><th className="px-3 py-3">Fecha</th><th className="px-3 py-3">Hora</th><th className="px-3 py-3">Marcaje</th><th className="px-3 py-3">Observaciones</th></tr></thead><tbody>{marcajesFiltrados.map((m) => <tr key={m.id} className="border-b border-slate-100 last:border-0"><td className="px-3 py-3">{fechaLarga(m.fecha_hora)}</td><td className="px-3 py-3 font-bold tabular-nums">{hora(m.fecha_hora)}</td><td className="px-3 py-3"><span className="rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-bold">{formatearTipo(m.tipo)}</span></td><td className="px-3 py-3 text-slate-500">{m.observaciones || "—"}</td></tr>)}{marcajesFiltrados.length === 0 && <tr><td colSpan="4" className="px-3 py-10 text-center text-slate-400">No hay marcajes para esta búsqueda.</td></tr>}</tbody></table></div>
+                <div className="mt-4">
+                  <MolsanDataTable
+                    rows={marcajesFiltrados}
+                    rowKey="id"
+                    initialSort={{ key: "fecha", direction: "desc" }}
+                    emptyText="No hay marcajes para esta búsqueda."
+                    columns={[
+                      { key: "fecha", header: "Fecha", accessor: "fecha_hora", sortType: "date", render: (value) => fechaLarga(value) },
+                      { key: "hora", header: "Hora", accessor: "fecha_hora", sortType: "date", render: (value) => <strong className="tabular-nums">{hora(value)}</strong> },
+                      { key: "tipo", header: "Marcaje", accessor: "tipo", sortType: "text", render: (value) => <span className="rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-bold">{formatearTipo(value)}</span> },
+                      { key: "observaciones", header: "Observaciones", accessor: "observaciones", sortType: "text", render: (value) => value || "—" },
+                    ]}
+                  />
+                </div>
               </div>
             )}
 
@@ -343,14 +357,22 @@ export default function Fichajes({ modo = "empleado" }) {
                   <div className="rounded-xl bg-amber-50 px-4 py-2 text-sm font-bold text-amber-900">Pendientes: {vacacionesAdmin.filter(v => v.estado === "SOLICITADO").length}</div>
                 </div>
                 <div className="mb-4 grid gap-3 sm:grid-cols-2"><label className="text-xs font-bold text-slate-500">Filtrar empleado<select value={empleadoFiltro} onChange={e => setEmpleadoFiltro(e.target.value)} className="mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-sm font-normal"><option value="">Toda la plantilla</option>{empleados.map(e => <option key={e.id} value={e.id}>{e.nombre}</option>)}</select></label><div className="flex items-end"><button type="button" onClick={() => recargarAdmin().catch(e => setError(e?.response?.data?.detail || "No se pudieron actualizar las solicitudes."))} className="rounded-xl border px-4 py-2.5 text-sm font-bold">Actualizar solicitudes</button></div></div>
-                <div className="overflow-x-auto rounded-2xl border border-[var(--erp-border)]">
-                  <table className="w-full min-w-[850px] text-left text-sm">
-                    <thead><tr className="border-b bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><th className="p-3">Empleado</th><th className="p-3">Desde</th><th className="p-3">Hasta</th><th className="p-3">Días</th><th className="p-3">Estado</th><th className="p-3">Observaciones</th><th className="p-3">Acciones</th></tr></thead>
-                    <tbody>{vacacionesAdmin.map(v => <tr key={v.id} className="border-b last:border-0">
-                      <td className="p-3 font-semibold">{v.empleado_nombre}</td><td className="p-3">{fechaLarga(v.fecha_inicio)}</td><td className="p-3">{fechaLarga(v.fecha_fin)}</td><td className="p-3">{v.dias}</td><td className="p-3"><span className={v.estado === "SOLICITADO" ? "rounded-lg bg-amber-100 px-2 py-1 text-xs font-bold text-amber-900" : v.estado === "APROBADO" ? "rounded-lg bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-900" : "rounded-lg bg-rose-100 px-2 py-1 text-xs font-bold text-rose-900"}>{v.estado === "SOLICITADO" ? "Pendiente" : v.estado === "APROBADO" ? "Aprobada" : "Rechazada"}</span></td>
-                      <td className="max-w-[220px] p-3 text-slate-500">{v.observaciones || "—"}</td><td className="p-3">{v.estado === "SOLICITADO" ? <div className="flex gap-2"><button type="button" disabled={guardando} onClick={() => resolverVacaciones(v, "APROBADO")} className="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white disabled:opacity-50">Aprobar</button><button type="button" disabled={guardando} onClick={() => resolverVacaciones(v, "RECHAZADO")} className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700 disabled:opacity-50">Rechazar</button></div> : "Resuelta"}</td>
-                    </tr>)}{!vacacionesAdmin.length && <tr><td colSpan="7" className="p-10 text-center text-slate-400">No hay solicitudes de vacaciones registradas.</td></tr>}</tbody>
-                  </table>
+                <div className="rounded-2xl border border-[var(--erp-border)]">
+                  <MolsanDataTable
+                    rows={vacacionesAdmin}
+                    rowKey="id"
+                    initialSort={{ key: "fecha_inicio", direction: "desc" }}
+                    emptyText="No hay solicitudes de vacaciones registradas."
+                    columns={[
+                      { key: "empleado", header: "Empleado", accessor: "empleado_nombre", sortType: "text" },
+                      { key: "fecha_inicio", header: "Desde", accessor: "fecha_inicio", sortType: "date", render: (value) => fechaLarga(value) },
+                      { key: "fecha_fin", header: "Hasta", accessor: "fecha_fin", sortType: "date", render: (value) => fechaLarga(value) },
+                      { key: "dias", header: "Días", accessor: "dias", sortType: "number", align: "right" },
+                      { key: "estado", header: "Estado", accessor: "estado", sortType: "text", render: (value) => <span className={value === "SOLICITADO" ? "rounded-lg bg-amber-100 px-2 py-1 text-xs font-bold text-amber-900" : value === "APROBADO" ? "rounded-lg bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-900" : "rounded-lg bg-rose-100 px-2 py-1 text-xs font-bold text-rose-900"}>{value === "SOLICITADO" ? "Pendiente" : value === "APROBADO" ? "Aprobada" : "Rechazada"}</span> },
+                      { key: "observaciones", header: "Observaciones", accessor: "observaciones", sortType: "text", render: (value) => value || "—" },
+                      { key: "acciones", header: "Acciones", sortable: false, accessor: (item) => item.id, render: (_, item) => item.estado === "SOLICITADO" ? <div className="flex gap-2"><button type="button" disabled={guardando} onClick={() => resolverVacaciones(item, "APROBADO")} className="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white disabled:opacity-50">Aprobar</button><button type="button" disabled={guardando} onClick={() => resolverVacaciones(item, "RECHAZADO")} className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700 disabled:opacity-50">Rechazar</button></div> : "Resuelta" },
+                    ]}
+                  />
                 </div>
               </div>
             )}
