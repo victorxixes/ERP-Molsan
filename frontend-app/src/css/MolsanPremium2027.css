@@ -313,3 +313,52 @@
     padding: 20px;
   }
 }
+
+/* Cabecera compacta del Espacio de trabajo: conserva toda la información. */
+.selector-modulos-premium.workspace-premium .workspace-hero {
+  min-height: 0;
+  padding: 18px 24px;
+  gap: 20px;
+}
+.selector-modulos-premium.workspace-premium .workspace-brand-lockup {
+  gap: 9px;
+  margin-bottom: 8px;
+}
+.selector-modulos-premium.workspace-premium .workspace-brand-mark {
+  flex-basis: 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+}
+.selector-modulos-premium.workspace-premium .workspace-brand-mark svg {
+  width: 25px;
+  height: 25px;
+}
+.selector-modulos-premium.workspace-premium .workspace-brand-lockup strong {
+  font-size: 14px;
+}
+.selector-modulos-premium.workspace-premium .workspace-brand-lockup small {
+  font-size: 8px;
+}
+.selector-modulos-premium.workspace-premium .workspace-hero h1 {
+  font-size: clamp(24px, 2.2vw, 29px);
+  line-height: 1.15;
+}
+.selector-modulos-premium.workspace-premium .workspace-welcome {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.selector-modulos-premium.workspace-premium .workspace-hero-meta {
+  margin-top: 8px;
+  font-size: 10px;
+}
+.selector-modulos-premium.workspace-premium .workspace-hero-actions {
+  gap: 8px;
+}
+@media (max-width: 720px) {
+  .selector-modulos-premium.workspace-premium .workspace-hero {
+    padding: 18px;
+    gap: 14px;
+  }
+}
