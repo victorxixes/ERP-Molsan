@@ -37,19 +37,3 @@
 .empleados-listado-premium .empleados-filtros-busqueda > span {
   color:var(--molsan-text-secondary,#526176) !important; font-size:1.1rem; z-index:1;
 }
-
-
-/* Cabecera de empleados: compacta y alineada con el patrón de página común. */
-.empleados-listado-premium > div:first-child {
-  padding: 12px 16px !important;
-  border-radius: var(--molsan-radius-card, 16px);
-}
-.empleados-listado-premium > div:first-child .h-11.w-11 {
-  width: 36px !important;
-  height: 36px !important;
-}
-.empleados-listado-premium > div:first-child h1 {
-  font-size: 20px !important;
-  line-height: 1.2;
-}
-.empleados-listado-premium > div:first-child p { font-size: 12px; }
