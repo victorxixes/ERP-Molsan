@@ -1134,7 +1134,7 @@ export default function SeguridadRoles() {
                                 text-[var(--erp-text)]
                               "
                             >
-                              👥 Usuarios asignados
+                              <MolsanIcon name="users" size={18} /> Usuarios asignados
                             </h4>
 
                             <p
@@ -1435,7 +1435,7 @@ export default function SeguridadRoles() {
           >
 
             <div className="text-3xl">
-              🛡️
+              <MolsanIcon name="shield" size={18} />
             </div>
 
             <p
