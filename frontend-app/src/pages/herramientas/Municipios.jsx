@@ -1,4 +1,6 @@
 import { useSearchParams } from "react-router-dom";
+import { sortRows } from "../../utils/sortRows";
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { useEffect, useMemo, useRef, useState } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
@@ -157,6 +159,8 @@ async function leerRespuestaServidor(
 ============================================================ */
 
 export default function Municipios() {
+  const [ordenTabla, setOrdenTabla] = useState({ key: "municipio", direction: "asc" });
+
   const [searchParams] = useSearchParams();
 
 
@@ -553,14 +557,18 @@ export default function Municipios() {
   ]);
 
 
-  const municipiosPagina =
-    municipiosFiltrados.slice(
-      (pagina - 1) *
-        FILAS_POR_PAGINA,
-
-      pagina *
-        FILAS_POR_PAGINA
-    );
+  const municipiosOrdenados = useMemo(
+    () => sortRows(municipiosFiltrados, { key: ordenTabla.key, accessor: (item) => {
+      if (ordenTabla.key === "codigos_postales") return (item.codigos_postales || []).join(", ");
+      return item?.[ordenTabla.key];
+    }, sortType: "text" }, ordenTabla.direction),
+    [municipiosFiltrados, ordenTabla]
+  );
+  const municipiosPagina = municipiosOrdenados.slice(
+    (pagina - 1) * FILAS_POR_PAGINA,
+    pagina * FILAS_POR_PAGINA
+  );
+  const cambiarOrdenTabla = (next) => { setOrdenTabla(next); setPagina(1); };
 
 
   // ==========================================================
@@ -2075,243 +2083,20 @@ export default function Municipios() {
 
           <div className="overflow-x-auto">
 
-            <table
-              className="
-                w-full
-                min-w-[800px]
-                border-collapse
-              "
-            >
-
-              <thead>
-
-                <tr
-                  className="
-                    border-b
-                    border-slate-200
-                    bg-slate-50/80
-                  "
-                >
-
-                  <th
-                    className="
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    Comunidad autónoma
-                  </th>
-
-
-                  <th
-                    className="
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    Provincia
-                  </th>
-
-
-                  <th
-                    className="
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    Municipio
-                  </th>
-
-                  <th className="px-5 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                    Códigos postales
-                  </th>
-
-                  <th
-                    className="
-                      w-[150px]
-                      px-5
-                      py-3.5
-                      text-right
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    Acciones
-                  </th>
-
-                </tr>
-
-              </thead>
-
-
-              <tbody>
-
-                {municipiosPagina.map(
-                  (municipio) => (
-
-                    <tr
-                      key={
-                        municipio.id
-                      }
-                      className="
-                        group
-                        border-b
-                        border-slate-100
-                        transition-colors
-                        hover:bg-blue-50/40
-                      "
-                    >
-
-                      <td
-                        className="
-                          px-5
-                          py-3.5
-                          text-sm
-                          text-slate-600
-                        "
-                      >
-                        {municipio.ccaa}
-                      </td>
-
-
-                      <td
-                        className="
-                          px-5
-                          py-3.5
-                          text-sm
-                          text-slate-600
-                        "
-                      >
-                        {municipio.provincia}
-                      </td>
-
-
-                      <td
-                        className="
-                          px-5
-                          py-3.5
-                          text-sm
-                          font-semibold
-                          text-slate-700
-                        "
-                      >
-                        {municipio.municipio}
-                      </td>
-
-                      <td className="px-5 py-3.5 text-sm text-slate-600">
-                        {(municipio.codigos_postales || []).length ? (
-                          <span title={"Códigos: " + municipio.codigos_postales.join(", ")}>
-                            <strong>{municipio.codigo_postal_principal || municipio.codigos_postales[0]}</strong>
-                            {(municipio.codigos_postales.length > 1) && <span className="ml-2 text-xs text-slate-400">+{municipio.codigos_postales.length - 1}</span>}
-                          </span>
-                        ) : <span className="text-slate-400">Sin asignar</span>}
-                      </td>
-
-                      <td
-                        className="
-                          px-5
-                          py-3.5
-                        "
-                      >
-
-                        <div
-                          className="
-                            flex
-                            justify-end
-                            gap-2
-                          "
-                        >
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              abrirEditar(
-                                municipio
-                              )
-                            }
-                            title="Editar municipio"
-                            className="
-                              flex
-                              h-9
-                              w-9
-                              items-center
-                              justify-center
-                              rounded-lg
-                              border
-                              border-slate-200
-                              bg-white
-                              text-slate-500
-                              transition
-                              hover:border-blue-200
-                              hover:bg-blue-50
-                              hover:text-blue-600
-                            "
-                          >
-                            ✏️
-                          </button>
-
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              eliminarMunicipio(
-                                municipio
-                              )
-                            }
-                            title="Eliminar municipio"
-                            className="
-                              flex
-                              h-9
-                              w-9
-                              items-center
-                              justify-center
-                              rounded-lg
-                              border
-                              border-slate-200
-                              bg-white
-                              text-slate-500
-                              transition
-                              hover:border-red-200
-                              hover:bg-red-50
-                              hover:text-red-600
-                            "
-                          >
-                            🗑️
-                          </button>
-
-                        </div>
-
-                      </td>
-
-                    </tr>
-
-                  )
-                )}
-
-              </tbody>
-
-            </table>
+            <MolsanDataTable
+              rows={municipiosPagina}
+              rowKey="id"
+              minWidth="800px"
+              sortMode="server"
+              onSortChange={cambiarOrdenTabla}
+              columns={[
+                { key: "ccaa", header: "Comunidad autónoma", accessor: "ccaa", sortType: "text" },
+                { key: "provincia", header: "Provincia", accessor: "provincia", sortType: "text" },
+                { key: "municipio", header: "Municipio", accessor: "municipio", sortType: "text" },
+                { key: "codigos_postales", header: "Códigos postales", accessor: (item) => (item.codigos_postales || []).join(", "), sortType: "text", render: (_, item) => (item.codigos_postales || []).length ? <span title={"Códigos: " + item.codigos_postales.join(", ")}><strong>{item.codigo_postal_principal || item.codigos_postales[0]}</strong>{item.codigos_postales.length > 1 && <span className="ml-2 text-xs text-slate-400">+{item.codigos_postales.length - 1}</span>}</span> : <span className="text-slate-400">Sin asignar</span> },
+                { key: "acciones", header: "Acciones", sortable: false, align: "right", accessor: (item) => item.id, render: (_, item) => <div className="flex justify-end gap-2"><button type="button" onClick={() => abrirEditar(item)} title="Editar municipio" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 hover:bg-blue-50">Editar</button><button type="button" onClick={() => eliminarMunicipio(item)} title="Eliminar municipio" className="rounded-lg border border-red-200 bg-white px-3 py-2 text-xs text-red-600 hover:bg-red-50">Eliminar</button></div> },
+              ]}
+            />
 
           </div>
 
