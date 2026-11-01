@@ -1,3 +1,4 @@
+import { useSearchParams } from "react-router-dom";
 import {
   useEffect,
   useMemo,
@@ -161,6 +162,8 @@ async function leerRespuestaServidor(
 ============================================================ */
 
 export default function EntidadesBancarias() {
+  const [searchParams] = useSearchParams();
+
 
 
   // ==========================================================
@@ -1519,6 +1522,10 @@ export default function EntidadesBancarias() {
   // ==========================================================
   // RENDER
   // ==========================================================
+  useEffect(() => {
+    if (searchParams.get("importar") === "1") abrirImportacionExcel();
+  }, [searchParams]);
+
 
   return (
 
@@ -1612,41 +1619,7 @@ export default function EntidadesBancarias() {
 
           <div className="molsan-page-header__actions catalogos-subpage-header__actions">
 
-            <button
-              type="button"
-              onClick={
-                abrirImportacionExcel
-              }
-              className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-xl
-                border
-                border-emerald-200
-                bg-emerald-50
-                px-5
-                py-2.5
-                text-sm
-                font-semibold
-                text-emerald-700
-                shadow-sm
-                transition-all
-                hover:-translate-y-0.5
-                hover:border-emerald-300
-                hover:bg-emerald-100
-                active:scale-[0.98]
-              "
-            >
-
-              <span className="text-lg">
-                📊
-              </span>
-
-              Importar Excel
-
-            </button>
+            
 
 
             <button
