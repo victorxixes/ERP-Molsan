@@ -1677,3 +1677,19 @@
     padding: 8px;
   }
 }
+
+
+/* Dashboard de ApoderaGest: título de resumen integrado en una tarjeta común. */
+.ag-titulo-seccion.ag-panel-resumen-heading {
+  display:flex;
+  align-items:center;
+  min-height:92px;
+  margin:0 0 18px;
+  padding:17px 20px;
+  border:1px solid #D8E4EC;
+  border-radius:18px;
+  background:#FFFFFF;
+  box-shadow:0 6px 18px rgba(6,50,82,.045);
+}
+.ag-titulo-seccion.ag-panel-resumen-heading h2 { margin-top:3px; }
+.ag-titulo-seccion.ag-panel-resumen-heading p { color:#617789; }
