@@ -69,3 +69,18 @@ a:hover .molsan-icon-3d,button:hover .molsan-icon-3d,.molsan-icon-3d.is-active {
   .molsan-btn,.molsan-icon-3d { transition:none; }
   .molsan-btn__spinner { animation:none; }
 }
+
+/* Microinteracción Glass Luxe: iconos nítidos, con profundidad discreta y sin movimiento continuo. */
+.molsan-btn__icon {
+  filter: drop-shadow(0 1px 1px rgba(255,255,255,.28)) drop-shadow(0 1px 1px rgba(6,70,117,.12));
+  transition: transform 180ms ease, filter 180ms ease;
+}
+.molsan-btn:hover:not(:disabled) .molsan-btn__icon {
+  transform: translateY(-1px) scale(1.055);
+  filter: drop-shadow(0 2px 2px rgba(255,255,255,.38)) drop-shadow(0 2px 3px rgba(6,70,117,.18));
+}
+.molsan-btn:active:not(:disabled) .molsan-btn__icon { transform: scale(.96); }
+@media (prefers-reduced-motion: reduce) {
+  .molsan-btn__icon { transition: none; }
+  .molsan-btn:hover:not(:disabled) .molsan-btn__icon { transform: none; }
+}
