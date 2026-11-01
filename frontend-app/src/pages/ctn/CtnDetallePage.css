@@ -7,10 +7,10 @@
   --ctnd-muted: var(--molsan-text-muted, #718696);
   box-sizing: border-box;
   width: 100%;
-  max-width: 1400px;
+  max-width: none;
   min-width: 0;
-  margin: 0 auto;
-  padding: 20px;
+  margin: 0;
+  padding: 0;
   color: var(--ctnd-text);
   font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
   font-size: 13px;
