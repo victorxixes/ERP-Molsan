@@ -447,8 +447,8 @@ def listar_notarias(
         .scalar_subquery()
     )
 
-    lat_valida = Notaria.lat.op("~")(r"^-?[0-9]+(\\.[0-9]+)?$")
-    lng_valida = Notaria.lng.op("~")(r"^-?[0-9]+(\\.[0-9]+)?$")
+    lat_valida = Notaria.lat.op("~")(r"^-?[0-9]+(\.[0-9]+)?$")
+    lng_valida = Notaria.lng.op("~")(r"^-?[0-9]+(\.[0-9]+)?$")
     latitud = case((lat_valida, cast(Notaria.lat, Float)), else_=None)
     longitud = case((lng_valida, cast(Notaria.lng, Float)), else_=None)
     phi1 = func.radians(literal(MOLSAN_LAT))
