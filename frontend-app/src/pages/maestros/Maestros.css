@@ -7,9 +7,7 @@
 .maestros-premium-page > div {
   min-width: 0;
 }
-.maestros-premium-page section {
-  border-radius: 1.15rem;
-}
+.maestros-premium-page section { min-width:0; }
 .maestros-premium-page input,
 .maestros-premium-page select,
 .maestros-premium-page textarea {
@@ -42,7 +40,7 @@
 }
 @media (max-width: 640px) {
   .maestros-premium-page { min-width:0; }
-  .maestros-premium-page section { border-radius: .9rem; }
+  .maestros-premium-page section { min-width:0; }
   .maestros-premium-page table { min-width: 480px; }
 }
 @media (prefers-reduced-motion: reduce) {
