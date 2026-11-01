@@ -95,28 +95,28 @@ export default function Cancelagest() {
       {error && <div className="cg-error" role="alert"><strong>No se han podido cargar los indicadores.</strong><p>{error}</p><button onClick={cargar}>Reintentar</button></div>}
 
       <section className="cg-kpis">
-        <article className="cg-kpi"><span>Cancelaciones registradas</span><strong>{cargando && !datos ? "…" : fmtNumero(datos?.total_cancelaciones)}</strong><small>Expedientes identificados como cancelación</small></article>
-        <article className="cg-kpi"><span>Firmas realizadas</span><strong>{cargando && !datos ? "…" : fmtNumero(datos?.total_firmadas)}</strong><small>Cancelaciones con fecha de firma</small></article>
-        <article className="cg-kpi"><span>Cancelaciones con provisión</span><strong>{fmtNumero(categorias.find((x) => x.key === "con_provision")?.total)}</strong><small>Con provisión identificada</small></article>
-        <article className="cg-kpi"><span>Cancelaciones sin provisión</span><strong>{fmtNumero(categorias.find((x) => x.key === "sin_provision")?.total)}</strong><small>Sin provisión identificada</small></article>
+        <article className="erp-card cg-kpi"><span>Cancelaciones registradas</span><strong>{cargando && !datos ? "…" : fmtNumero(datos?.total_cancelaciones)}</strong><small>Expedientes identificados como cancelación</small></article>
+        <article className="erp-card cg-kpi"><span>Firmas realizadas</span><strong>{cargando && !datos ? "…" : fmtNumero(datos?.total_firmadas)}</strong><small>Cancelaciones con fecha de firma</small></article>
+        <article className="erp-card cg-kpi"><span>Cancelaciones con provisión</span><strong>{fmtNumero(categorias.find((x) => x.key === "con_provision")?.total)}</strong><small>Con provisión identificada</small></article>
+        <article className="erp-card cg-kpi"><span>Cancelaciones sin provisión</span><strong>{fmtNumero(categorias.find((x) => x.key === "sin_provision")?.total)}</strong><small>Sin provisión identificada</small></article>
       </section>
 
-      <section className="cg-section">
+      <section className="erp-card cg-section">
         <div className="cg-section-heading"><div><span className="cg-kicker">ACCESOS DIRECTOS</span><h2>Módulos de trabajo</h2><p>Accede a las herramientas principales del ERP sin salir del entorno corporativo.</p></div></div>
-        <div className="cg-module-grid">{modulosVisibles.map((modulo) => <button type="button" className="cg-module-card" key={modulo.titulo} onClick={() => navigate(modulo.ruta)}>
+        <div className="cg-module-grid">{modulosVisibles.map((modulo) => <button type="button" className="erp-card cg-module-card" key={modulo.titulo} onClick={() => navigate(modulo.ruta)}>
           <span className="cg-module-icon">{modulo.icono}</span><span className="cg-module-text"><strong>{modulo.titulo}</strong><small>{modulo.descripcion}</small></span><span className="cg-module-arrow">↗</span>
         </button>)}</div>
       </section>
 
       <section className="cg-charts-grid">
-        <article className="cg-panel">
+        <article className="erp-card cg-panel">
           <div className="cg-section-heading"><div><span className="cg-kicker">ACTIVIDAD</span><h2>Firmas realizadas</h2><p>Firmas registradas por mes, según la fecha de firma del expediente.</p></div></div>
           {firmasMensuales.length ? <div className="cg-month-chart">{firmasMensuales.map((item) => {
             const max = Math.max(1, ...firmasMensuales.map((x) => Number(x.total || 0)));
             return <div className="cg-month-column" key={item.mes}><strong>{fmtNumero(item.total)}</strong><div className="cg-month-bar-wrap"><div className="cg-month-bar" style={{ height: `${Math.max(4, Number(item.total || 0) / max * 100)}%` }} /></div><small>{item.mesLabel}</small></div>;
           })}</div> : <p className="cg-empty-chart">{cargando ? "Cargando firmas…" : "Todavía no hay firmas registradas para mostrar."}</p>}
         </article>
-        <article className="cg-panel">
+        <article className="erp-card cg-panel">
           <div className="cg-section-heading"><div><span className="cg-kicker">MEDIA DE FIRMA</span><h2>Envío hasta firma</h2><p>Días naturales entre la fecha de envío a notaría y la fecha de firma, separados por tipo de cancelación.</p></div></div>
           <GraficoBarras items={categorias.map((x) => ({ ...x, media: x.media_dias_envio_firma }))} labelKey="nombre" valueKey="media" formatter={fmtDias} emptyText={cargando ? "Calculando medias…" : "No hay expedientes con fecha de envío y firma para calcular la media."} />
           <div className="cg-category-counts">{categorias.map((x) => <div key={x.key}><span>{x.nombre}</span><strong>{fmtNumero(x.firmadas)} firmas</strong><small>{fmtNumero(x.casos_media)} casos con ambas fechas</small></div>)}</div>
