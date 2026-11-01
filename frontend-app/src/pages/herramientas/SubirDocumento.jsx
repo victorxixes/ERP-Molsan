@@ -76,7 +76,7 @@ export default function SubirDocumento() {
       >
 
         <div
-          className="molsan-page-header 
+          className="
             absolute inset-x-0 top-0 h-px
             bg-gradient-to-r
             from-transparent
@@ -85,7 +85,7 @@ export default function SubirDocumento() {
           "
         />
 
-        <div className="flex items-center gap-4">
+        <div className="molsan-page-header flex items-center gap-4">
 
           <div
             className="
