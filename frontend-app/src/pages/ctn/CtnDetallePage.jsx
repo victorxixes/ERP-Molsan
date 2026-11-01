@@ -155,11 +155,17 @@ export default function CtnDetallePage() {
   return (
     <div className="ctn-detalle-page ctn-detalle-page--content">
       <header className="ctn-detalle-header molsan-page-header">
-        <div>
-          <h1 className="ctn-detalle-title">{nombreNotario(notaria)}</h1>
-          <div className="ctn-detalle-meta">Ficha CTN · NIF: {valor(notaria.nif)} · Código: {valor(notaria.codigo)}</div>
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true">CTN</div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">{nombreNotario(notaria)}</h1>
+            <p className="molsan-page-header__description">Ficha CTN · NIF: {valor(notaria.nif)} · Código: {valor(notaria.codigo)}</p>
+          </div>
         </div>
-        <button type="button" onClick={() => navigate(-1)}>Volver al listado</button>
+        <div className="molsan-page-header__actions">
+          <button type="button" className="molsan-btn molsan-btn--secondary" onClick={() => navigate(-1)}>Volver al listado</button>
+        </div>
       </header>
 
       {error && <div role="alert" className="ctn-detalle-alert">{error}</div>}
