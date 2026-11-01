@@ -304,69 +304,20 @@ export default function SeguridadModulos() {
 
       {/* CABECERA */}
 
-      <div
-        className="
-          molsan-page-header
-          flex
-          flex-col
-          gap-4
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-5
-          shadow-sm
-          md:flex-row
-          md:items-center
-          md:justify-between
-        "
-      >
+      <div className="molsan-page-header">
 
-        <div
-          className="
-            flex
-            items-center
-            gap-3
-          "
-        >
+        <div className="molsan-page-header__identity">
 
-          <div
-            className="
-              flex
-              h-11
-              w-11
-              shrink-0
-              items-center
-              justify-center
-              rounded-xl
-              bg-blue-50
-              text-xl
-            "
-          >
+          <div className="molsan-page-header__mark">
             📦
           </div>
 
           <div>
 
-            <h2
-              className="
-                text-xl
-                font-bold
-                text-[var(--erp-text)]
-              "
-            >
-              Módulos visibles
-            </h2>
+            <p className="molsan-page-header__eyebrow">SEGURIDAD · CONFIGURACIÓN</p>
+            <h2 className="molsan-page-header__title">Módulos visibles</h2>
 
-            <p
-              className="
-                mt-0.5
-                text-sm
-                text-[var(--erp-text-soft)]
-              "
-            >
-              Configura los módulos que puede visualizar este empleado.
-            </p>
+            <p className="molsan-page-header__description">Configura los módulos que puede visualizar este empleado.</p>
 
           </div>
 
