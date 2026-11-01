@@ -1,7 +1,7 @@
 /* MOLSAN ERP PREMIUM 2027 · Centro de notificaciones */
 .notificaciones-premium-page {
   min-width: 0;
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
 }
 .notificaciones-premium-page > div {
   min-width: 0;
@@ -9,12 +9,12 @@
 .notificaciones-premium-page input:focus-visible,
 .notificaciones-premium-page select:focus-visible,
 .notificaciones-premium-page button:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--molsan-primary, #3156b3) 35%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary, #064675) 35%, transparent);
   outline-offset: 2px;
 }
 .notificaciones-premium-page article,
 .notificaciones-premium-page [role="article"] {
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
   box-shadow: 0 8px 26px rgba(15, 23, 42, .045);
   transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
 }
