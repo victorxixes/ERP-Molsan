@@ -28,10 +28,14 @@ export default function CatalogoFichajes() {
   };
   return <main className="molsan-page-stack catalogos-premium-page min-h-full animate-fadeIn">
     <header className="molsan-page-header">
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-      <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">MOLSAN ERP PREMIUM 2027 · CATÁLOGOS</p>
-      <h1 className="mt-2 text-2xl font-bold text-slate-800 sm:text-3xl">Fichajes · Tipos de ausencia</h1>
-      <p className="mt-2 text-sm text-slate-500">Mantén los motivos disponibles en Fichaje Molsan y define si requieren justificante.</p>
+      <div className="molsan-page-header__identity">
+        <div className="molsan-page-header__mark" aria-hidden="true">◷</div>
+        <div className="min-w-0">
+          <p className="molsan-page-header__eyebrow">MOLSAN ERP · CATÁLOGOS OPERATIVOS</p>
+          <h1 className="molsan-page-header__title">Fichajes · Tipos de ausencia</h1>
+          <p className="molsan-page-header__description">Mantén los motivos disponibles en Fichajes y define si requieren justificante.</p>
+        </div>
+      </div>
     </header>
     {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">{error}</div>}
     {mensaje && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{mensaje}</div>}
