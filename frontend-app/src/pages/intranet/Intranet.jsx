@@ -1,3 +1,4 @@
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import "./Intranet.css";
 import axios from "../../api/axios";
@@ -177,7 +178,23 @@ export default function Intranet() {
       </section>
     </div>
 
-    {puede("editar") && <section className="rounded-[26px] border border-slate-200/80 bg-white/85 p-5 shadow-sm sm:p-6"><div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center"><div><h2 className="text-lg font-bold text-slate-800">🔐 Seguridad y mantenimiento</h2><p className="mt-1 text-sm text-slate-500">Historial de publicaciones, modificaciones y eliminaciones por empleado.</p></div><button className={secondary} onClick={() => cargar()}>Actualizar registro</button></div>{auditoria.length ? <div className="overflow-x-auto"><table className="w-full min-w-[650px] text-left text-sm"><thead><tr className="border-b border-slate-200 text-xs uppercase tracking-wider text-slate-400"><th className="px-3 py-3">Fecha</th><th className="px-3 py-3">Empleado</th><th className="px-3 py-3">Acción</th><th className="px-3 py-3">Área</th><th className="px-3 py-3">Detalle</th></tr></thead><tbody>{auditoria.map((a) => <tr key={a.id} className="border-b border-slate-100 last:border-0"><td className="whitespace-nowrap px-3 py-3 text-slate-500">{prettyDate(a.fecha)}</td><td className="px-3 py-3 font-semibold text-slate-700">{a.usuario_nombre}</td><td className="px-3 py-3"><span className="rounded-full bg-blue-50 px-2 py-1 text-xs font-bold text-blue-700">{a.accion}</span></td><td className="px-3 py-3 text-slate-600">{a.recurso === "NOTICIA" ? "Noticia" : "Documento"}</td><td className="max-w-[280px] truncate px-3 py-3 text-slate-500" title={a.detalle || ""}>{a.detalle || "—"}</td></tr>)}</tbody></table></div> : <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500">Todavía no hay acciones registradas.</p>}</section>}
+    {puede("editar") && <section className="rounded-[26px] border border-slate-200/80 bg-white/85 p-5 shadow-sm sm:p-6"><div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center"><div><h2 className="text-lg font-bold text-slate-800">🔐 Seguridad y mantenimiento</h2><p className="mt-1 text-sm text-slate-500">Historial de publicaciones, modificaciones y eliminaciones por empleado.</p></div><button className={secondary} onClick={() => cargar()}>Actualizar registro</button></div>{auditoria.length ? <div className="overflow-x-auto"><MolsanDataTable
+          rows={auditoria}
+          rowKey="id"
+          minWidth="850px"
+          pagination
+          pageSize={25}
+          searchable
+          initialSort={{ key: "fecha", direction: "desc" }}
+          emptyText="Todavía no hay acciones registradas."
+          columns={[
+            { key: "fecha", header: "Fecha", accessor: "fecha", sortType: "date", render: (value) => prettyDate(value) },
+            { key: "empleado", header: "Empleado", accessor: "usuario_nombre", sortType: "text", render: (value) => <strong>{value}</strong> },
+            { key: "accion", header: "Acción", accessor: "accion", sortType: "text", render: (value) => <span className="rounded-full bg-blue-50 px-2 py-1 text-xs font-bold text-blue-700">{value}</span> },
+            { key: "area", header: "Área", accessor: (item) => item.recurso === "NOTICIA" ? "Noticia" : "Documento", sortType: "text" },
+            { key: "detalle", header: "Detalle", accessor: "detalle", sortType: "text", render: (value) => <span className="block max-w-[280px] truncate" title={value || ""}>{value || "—"}</span> },
+          ]}
+        /></div> : <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500">Todavía no hay acciones registradas.</p>}</section>}
     <footer className="flex flex-col justify-between gap-2 px-1 text-xs text-slate-400 sm:flex-row"><span>Intranet Molsan · Actualización automática cada 15 segundos.</span><span>Las descargas utilizan la sesión autenticada del empleado.</span></footer>
   </div>;
 }
