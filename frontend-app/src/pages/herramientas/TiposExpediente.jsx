@@ -162,7 +162,6 @@ export default function TiposExpediente() {
             { key: "acciones", header: "Acciones", sortable: false, align: "right", accessor: (tipo) => tipo.id, render: (_, tipo) => <div className="flex justify-end gap-2"><button type="button" onClick={() => abrirEditar(tipo)} className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100">Editar</button><button type="button" onClick={() => eliminar(tipo)} className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">Eliminar</button></div> },
           ]}
         />
-  </div>
       </section>
     </main>
   );
