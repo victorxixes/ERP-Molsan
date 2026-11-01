@@ -563,6 +563,9 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
           <div className="ng-pagos-tabla-wrap">
             <MolsanDataTable
               rows={pagosNotario}
+          pagination
+          pageSize={25}
+
               rowKey="id"
               minWidth="1300px"
               initialSort={{ key: "fecha_pago", direction: "desc" }}
@@ -613,6 +616,9 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                 <div className="ng-resumen-expedientes-tabla-wrap">
                   <MolsanDataTable
                     rows={modalExpedientesResumen.items}
+          pagination
+          pageSize={25}
+
                     rowKey="id_expediente"
                     minWidth="1200px"
                     initialSort={{ key: "id_expediente", direction: "asc" }}
@@ -858,6 +864,9 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       <div className="ng-tabla-contenedor">
         <MolsanDataTable
           rows={expedientes.filter(x => x.firma_urgente)}
+          pagination
+          pageSize={25}
+
           rowKey="id"
           minWidth="1050px"
           initialSort={{ key: "fecha_prevista", direction: "asc" }}
@@ -880,6 +889,9 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       <div className="ng-tabla-contenedor">
         <MolsanDataTable
           rows={filas}
+          pagination
+          pageSize={25}
+
           rowKey="id"
           minWidth={tablaFactura ? "1200px" : "1900px"}
           initialSort={{ key: "id_expediente", direction: "asc" }}
