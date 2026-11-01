@@ -1,3 +1,4 @@
+import { useSearchParams } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
@@ -156,6 +157,8 @@ async function leerRespuestaServidor(
 ============================================================ */
 
 export default function Municipios() {
+  const [searchParams] = useSearchParams();
+
 
 
   // ==========================================================
@@ -1452,6 +1455,10 @@ export default function Municipios() {
   // ==========================================================
   // RENDER
   // ==========================================================
+  useEffect(() => {
+    if (searchParams.get("importar") === "1") abrirImportacionExcel();
+  }, [searchParams]);
+
 
   return (
 
@@ -1537,40 +1544,7 @@ export default function Municipios() {
             </button>
 
 
-            <button
-              type="button"
-              onClick={
-                abrirImportacionExcel
-              }
-              className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-xl
-                border border-emerald-200
-                bg-emerald-50
-                px-5
-                py-2.5
-                text-sm
-                font-semibold
-                text-emerald-700
-                shadow-sm
-                transition-all
-                hover:border-emerald-300
-                hover:bg-emerald-100
-                hover:-translate-y-0.5
-                active:scale-[0.98]
-              "
-            >
-
-              <span className="text-lg">
-                📊
-              </span>
-
-              Importar Excel
-
-            </button>
+            
 
 
             <button
