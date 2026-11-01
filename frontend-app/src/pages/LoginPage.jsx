@@ -756,7 +756,7 @@ export default function LoginPage() {
                     disabled:opacity-30
                   "
                 >
-                  <MolsanIcon name={mostrarPass ? "eye" : "eye"} size={20} bare />
+                  <MolsanIcon name={mostrarPass ? "eyeOff" : "eye"} size={20} bare />
                 </button>
 
               </div>
