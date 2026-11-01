@@ -85,7 +85,7 @@ export default function Fusiones() {
   ];
 
   return <main className="erp-page min-h-full space-y-6 p-4 text-[var(--erp-text)] sm:p-6 lg:p-8">
-    <section className="relative overflow-hidden rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface,var(--erp-card,#fff))] shadow-sm">
+    <section className="molsan-page-header relative overflow-hidden rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface,var(--erp-card,#fff))] shadow-sm">
       <div className="h-1 bg-gradient-to-r from-slate-400 via-blue-600 to-indigo-300" />
       <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
         <div className="flex min-w-0 items-start gap-4"><div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[var(--erp-border)] bg-[var(--erp-bg,#f8fafc)] text-[var(--erp-primary,#3156b3)]"><Icon name="merge" size={25} /></div><div className="min-w-0"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--erp-text-soft)]">MOLSAN ERP · PREMIUM 2027</p><h1 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">Gestión de fusiones</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--erp-text-soft)]">Consulta y seguimiento de solicitudes de fusión recibidas desde la gestión de expedientes.</p></div></div>
