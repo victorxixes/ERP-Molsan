@@ -3443,6 +3443,14 @@ function valorColumnaPostFirma(fila, columna) {
   return String(valor);
 }
 
+const COLUMNAS_POSTFIRMA_CONFIG = COLUMNAS_POSTFIRMA.map((header) => ({
+  key: header,
+  header,
+  accessor: (fila) => valorColumnaPostFirma(fila, header),
+  sortType: ["IMPGASTO", "IMPBASEIMPUESTO", "IMPBASERETENCION", "IMPIMPUESTO", "IMPORTEPROVISION", "IDGASTO", "IDPROVISION", "IDGESTORIATRAMITE", "IDBENEFICIARIO"].includes(header) ? "number" :
+    ["FECHAALTA", "FECHAADJUNTARFACTURA", "FESTADO", "FPETICION", "FPAGO", "FFACTURA", "ERP · ÚLTIMA SINCRONIZACIÓN"].includes(header) ? "date" : "text",
+}));
+
 // Clasificación de estados originales ABSIS usada por las tarjetas de facturación.
 // Mantener los códigos originales; no equiparar estados internos del ERP.
 const ESTADOS_ABSIS_INFORME = [
@@ -3732,13 +3740,7 @@ function InformeFacturacion() {
                     searchPlaceholder="Buscar en las columnas originales de ABSIS…"
                     initialSort={{ key: "IDGASTO", direction: "asc" }}
                     emptyText="No hay filas Post Firma para los filtros seleccionados."
-                    columns={COLUMNAS_POSTFIRMA.map((header) => ({
-                      key: header,
-                      header,
-                      accessor: (fila) => valorColumnaPostFirma(fila, header),
-                      sortType: ["IMPGASTO", "IMPBASEIMPUESTO", "IMPBASERETENCION", "IMPIMPUESTO", "IMPORTEPROVISION", "IDGASTO", "IDPROVISION", "IDGESTORIATRAMITE", "IDBENEFICIARIO"].includes(header) ? "number" :
-                        ["FECHAALTA", "FECHAADJUNTARFACTURA", "FESTADO", "FPETICION", "FPAGO", "FFACTURA", "ERP · ÚLTIMA SINCRONIZACIÓN"].includes(header) ? "date" : "text",
-                    }))}
+                    columns={COLUMNAS_POSTFIRMA_CONFIG}
                   />
                 </div>
               )}
