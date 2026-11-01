@@ -181,23 +181,44 @@
 }
 
 
-/* Cabeceras ERP explícitas para las subpantallas de Seguridad. */
+/* Cabecera de Seguridad: misma escala, superficie y jerarquía que el Dashboard. */
 :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-header {
-  display:flex; align-items:center; justify-content:space-between; gap:1.25rem; flex-wrap:wrap;
-  margin:0 0 1.5rem; padding:1.5rem 1.75rem; border:1px solid var(--molsan-border,#d7e0ec);
-  border-radius:1.15rem; background:linear-gradient(135deg,var(--molsan-surface,#fff) 0%,var(--molsan-surface-soft,#f6f8fc) 100%);
-  box-shadow:0 8px 24px rgba(24,39,75,.055);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  min-width: 0;
+  margin: 0 0 18px;
+  padding: 12px 16px;
+  border: 1px solid var(--molsan-border, #D8E4EC);
+  border-radius: 16px;
+  background: linear-gradient(145deg, #F2F7FB 0%, #FFFFFF 64%, #F6FAFC 100%);
+  box-shadow: 0 8px 24px rgba(6,50,82,.065);
 }
 :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-eyebrow {
-  margin-bottom:.4rem; color:var(--molsan-primary, #064675); font-size:.7rem; line-height:1.4;
-  font-weight:800; letter-spacing:.12em; text-transform:uppercase;
+  margin: 0 0 3px;
+  color: var(--molsan-text-muted, #617789);
+  font-size: 9px;
+  line-height: 1.4;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
 }
 :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-title {
-  margin:0; color:var(--molsan-text-strong,#17233a); font-size:clamp(1.55rem,2.2vw,2rem);
-  line-height:1.2; font-weight:800; letter-spacing:-.035em;
+  margin: 0;
+  color: var(--molsan-primary, #064675);
+  font-size: 20px;
+  line-height: 1.2;
+  font-weight: 750;
+  letter-spacing: -.02em;
 }
-:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) :is(.erp-page-subtitle,.erp-page-description) {
-  max-width:60rem; margin:.55rem 0 0; color:var(--molsan-text-muted, #718696); font-size:.94rem; line-height:1.6;
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) :is(.erp-page-subtitle, .erp-page-description) {
+  max-width: 60rem;
+  margin: 4px 0 0;
+  color: var(--molsan-text-muted, #617789);
+  font-size: 12px;
+  line-height: 1.45;
 }
 :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-header-status { display:flex; align-items:center; gap:.5rem; }
 :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-badge {
@@ -228,7 +249,7 @@
 }
 :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) :is(input,select,textarea):focus { border-color:var(--molsan-primary, #064675); outline:3px solid color-mix(in srgb,var(--molsan-primary, #064675) 15%,transparent); }
 @media(max-width:680px) {
-  :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-header { align-items:flex-start; padding:1.1rem; gap:.8rem; }
+  :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-header { align-items:flex-start; padding:12px; gap:10px; margin-bottom:14px; }
   :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-header-status { width:100%; }
 }
 @media(prefers-reduced-motion:reduce) { :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn { transition:none; } }
@@ -237,8 +258,6 @@
 /* Segunda pasada visual: estructura, acciones y tablas de Roles y Usuarios. */
 .seguridad-rol-editor-premium,
 .seguridad-usuarios-premium { width:100%; min-width:0; }
-.seguridad-rol-editor-premium > .erp-page-header,
-.seguridad-usuarios-premium > .erp-page-header { min-height:132px; }
 .seguridad-rol-editor-premium > .erp-card,
 .seguridad-usuarios-premium .erp-card {
   min-width:0; overflow:hidden; border:1px solid var(--molsan-border,#dbe3ef);
