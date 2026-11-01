@@ -224,138 +224,110 @@ export default function ModulosSelector() {
     return <Navigate to="/login" replace />;
   }
 
-  return (
-    <main className="selector-modulos-premium herramientas-subpagina-premium relative isolate min-h-[calc(100vh-110px)] overflow-hidden rounded-3xl border border-white/80 bg-gradient-to-br from-slate-50 via-white to-blue-50/70 px-5 py-8 text-slate-800 shadow-sm sm:px-8 sm:py-10">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-24 -top-28 -z-10 h-80 w-80 rounded-full border border-blue-100/70"
-      />
+  const iconosModulo = {
+    apoderagest: <><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="8"/></>,
+    cancelagest: <><path d="M4 7h16M7 4v6m10-6v6M5 11h14v9H5z"/><path d="m9 15 2 2 4-4"/></>,
+    notargest: <><path d="M4 21h16M6 21V8l6-4 6 4v13"/><path d="M9 12h6M9 16h6"/></>,
+    encargagest: <><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5M8 17h3"/><path d="m15 16 2 2 4-4"/></>,
+    "mensajeria-gestion": <><path d="M4 5h16v12H9l-5 4z"/><path d="M8 9h8M8 13h5"/></>,
+    fichajes: <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></>,
+    "control-fichajes": <><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></>,
+    notargest_notario: <><path d="M4 21h16M6 21V8l6-4 6 4v13"/><path d="M9 12h6M9 16h6"/></>,
+    encargagest_notario: <><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></>,
+  };
+  const coloresModulo = {
+    apoderagest: "ocean", cancelagest: "emerald", notargest: "violet",
+    encargagest: "amber", "mensajeria-gestion": "cyan", fichajes: "indigo",
+    "control-fichajes": "indigo", notargest_notario: "violet", encargagest_notario: "amber",
+  };
 
-      <header className="mb-9 flex flex-wrap items-center justify-between gap-5">
-        <div className="flex items-center gap-4">
-          <div className="grid h-14 w-14 place-items-center rounded-2xl border border-white bg-gradient-to-br from-blue-600 to-indigo-800 text-sm font-black tracking-wide text-white shadow-lg shadow-blue-900/15">
-            M
+  return (
+    <main className="selector-modulos-premium workspace-premium">
+      <section className="workspace-hero">
+        <div className="workspace-hero-orb workspace-hero-orb-one" aria-hidden="true" />
+        <div className="workspace-hero-orb workspace-hero-orb-two" aria-hidden="true" />
+        <div className="workspace-hero-content">
+          <div className="workspace-brand-lockup">
+            <span className="workspace-brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 48 48"><path d="M8 36V12l16 14L40 12v24M8 12l16 14 16-14" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </span>
+            <span><strong>MOLSAN</strong><small>ERP · PREMIUM 2027</small></span>
           </div>
-          <div>
-            <p className="text-[10px] font-extrabold tracking-[0.2em] text-blue-700">
-              MOLSAN ERP · PREMIUM 2027
-            </p>
-            <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
-              Espacio de trabajo
-            </h1>
-            <p className="mt-2 text-sm text-slate-500">
-              Hola, {empleado.nombre || empleado.usuario}. Selecciona el módulo al que quieres acceder.
-            </p>
+          <p className="workspace-eyebrow">CENTRO DE OPERACIONES</p>
+          <h1>Tu espacio de trabajo</h1>
+          <p className="workspace-welcome">Hola, {empleado.nombre || empleado.usuario}. Aquí tienes tus aplicaciones y herramientas de trabajo.</p>
+          <div className="workspace-hero-meta">
+            <span className="workspace-live-dot" />
+            Sesión iniciada
+            <span className="workspace-meta-divider" />
+            {modulosDisponibles.length} {modulosDisponibles.length === 1 ? "aplicación disponible" : "aplicaciones disponibles"}
           </div>
         </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white/80 px-3 py-2 text-[11px] font-bold text-slate-600 shadow-sm">
-            <span className="h-2 w-2 rounded-full bg-emerald-500" />
-            Sesión activa
-          </span>
-          <button
-            type="button"
-            onClick={() => {
-              logout();
-              navigate("/login", { replace: true });
-            }}
-            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 text-xs font-extrabold text-rose-700 shadow-sm transition hover:-translate-y-0.5 hover:border-rose-300 hover:bg-rose-100 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-rose-100"
-          >
-            <span aria-hidden="true">↪</span>
+        <div className="workspace-hero-actions">
+          <div className="workspace-user-chip">
+            <span className="workspace-user-avatar">{String(empleado.nombre || empleado.usuario || "U").trim().charAt(0).toLocaleUpperCase("es")}</span>
+            <span><strong>{empleado.nombre || empleado.usuario}</strong><small>Área de trabajo</small></span>
+          </div>
+          <button type="button" onClick={() => { logout(); navigate("/login", { replace: true }); }} className="workspace-logout">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3m9 8h7a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-7" /></svg>
             Cerrar sesión
           </button>
         </div>
-      </header>
+      </section>
 
-      <div className="mb-5">
-        <p className="text-[10px] font-extrabold tracking-[0.17em] text-slate-400">
-          TUS APLICACIONES
-        </p>
-        <div className="mt-3 h-px bg-gradient-to-r from-blue-200 via-slate-200 to-transparent" />
-      </div>
-
-      {modulosDisponibles.length === 0 ? (
-        <section className="rounded-2xl border border-amber-200 bg-amber-50/90 p-6">
-          <h2 className="font-bold text-amber-950">
-            No hay módulos disponibles para esta cuenta
-          </h2>
-          <p className="mt-2 text-sm leading-6 text-amber-900">
-            Para mostrar una aplicación, márcala en «Módulos visibles» dentro de la ficha del empleado. Los permisos para consultar, crear, editar o eliminar se configuran por separado.
-          </p>
-          <p className="mt-3 break-all text-xs text-amber-800">
-            Rol detectado: {empleado.rol_nombre || empleado.rol?.nombre || "No informado"}
-          </p>
-        </section>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {modulosDisponibles.map((modulo) => (
-              <button
-                key={modulo.clave}
-                type="button"
-                onClick={() => modulo.portalSoporte ? abrirSelectorSoporte(modulo.portalSoporte) : navigate(modulo.ruta)}
-                className="group relative flex min-h-[220px] flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white/90 p-6 text-left shadow-[0_8px_26px_rgba(31,48,79,0.045)] transition duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-[0_18px_38px_rgba(31,48,79,0.11)] focus:outline-none focus:ring-4 focus:ring-blue-100"
-              >
-                <div
-                  aria-hidden="true"
-                  className={`absolute inset-x-0 top-0 h-1 ${
-                    modulo.estilo === "ag"
-                      ? "bg-gradient-to-r from-blue-600 to-indigo-400"
-                      : modulo.estilo === "cg"
-                        ? "bg-gradient-to-r from-emerald-600 to-teal-400"
-                        : modulo.estilo === "eg"
-                          ? "bg-gradient-to-r from-amber-500 to-yellow-300"
-                          : "bg-gradient-to-r from-violet-600 to-fuchsia-400"
-                  }`}
-                />
-
-                <div className="flex w-full items-start justify-between gap-4">
-                  <div
-                    className={`grid h-14 w-14 place-items-center rounded-2xl border text-sm font-black tracking-wide transition group-hover:scale-[1.04] ${
-                      modulo.estilo === "ag"
-                        ? "border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-100 text-blue-800"
-                        : modulo.estilo === "cg"
-                          ? "border-emerald-100 bg-gradient-to-br from-emerald-50 to-teal-100 text-emerald-800"
-                          : modulo.estilo === "eg"
-                            ? "border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-100 text-amber-800"
-                            : "border-violet-100 bg-gradient-to-br from-violet-50 to-fuchsia-100 text-violet-800"
-                    }`}
-                  >
-                    {modulo.siglas}
-                  </div>
-                  <span className="mt-1 grid h-8 w-8 place-items-center rounded-full border border-slate-100 text-lg text-slate-400 transition group-hover:border-blue-100 group-hover:bg-blue-50 group-hover:text-blue-700">
-                    ↗
-                  </span>
-                </div>
-
-                <p className="mt-5 text-[9px] font-extrabold tracking-[0.15em] text-slate-400">
-                  {modulo.categoria}
-                </p>
-                <h2 className="mt-1 text-xl font-extrabold tracking-tight text-slate-900">
-                  {modulo.nombre}
-                </h2>
-                <p className="mt-2 text-xs leading-6 text-slate-500">
-                  {modulo.descripcion}
-                </p>
-
-                <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-4">
-                  <span className="text-[11px] font-extrabold text-blue-700">
-                    Abrir aplicación
-                  </span>
-                  <span className="text-sm text-slate-400 transition group-hover:translate-x-1 group-hover:text-blue-700">
-                    →
-                  </span>
-                </div>
-              </button>
-            ))}
+      <section className="workspace-apps-section" aria-labelledby="workspace-apps-title">
+        <div className="workspace-section-heading">
+          <div>
+            <span className="workspace-section-kicker">ACCESO APLICACIONES</span>
+            <h2 id="workspace-apps-title">Tus aplicaciones</h2>
+            <p>Selecciona un espacio para continuar con tu trabajo.</p>
           </div>
+          <span className="workspace-app-count">{modulosDisponibles.length} disponibles</span>
+        </div>
 
-          <p className="mt-7 text-center text-[10px] font-medium tracking-wide text-slate-400">
-            MOLSAN ERP · Entorno corporativo de gestión
-          </p>
-        </>
-      )}
+        {modulosDisponibles.length === 0 ? (
+          <section className="workspace-empty-state">
+            <span className="workspace-empty-icon"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 9h8M8 13h5"/></svg></span>
+            <h2>No hay aplicaciones asignadas</h2>
+            <p>Para mostrar una aplicación, actívala en «Módulos visibles» dentro de la ficha del empleado. Los permisos para consultar, crear, editar o eliminar se configuran por separado.</p>
+            <small>Rol detectado: {empleado.rol_nombre || empleado.rol?.nombre || "No informado"}</small>
+          </section>
+        ) : (
+          <div className="workspace-app-grid">
+            {modulosDisponibles.map((modulo) => {
+              const color = coloresModulo[modulo.clave] || "ocean";
+              return (
+                <button key={modulo.clave} type="button"
+                  onClick={() => modulo.portalSoporte ? abrirSelectorSoporte(modulo.portalSoporte) : navigate(modulo.ruta)}
+                  className={`workspace-app-card workspace-tone-${color}`}>
+                  <span className="workspace-card-accent" aria-hidden="true" />
+                  <span className="workspace-card-topline">
+                    <span className="workspace-app-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24">{iconosModulo[modulo.clave] || iconosModulo.apoderagest}</svg>
+                    </span>
+                    <span className="workspace-card-open" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg>
+                    </span>
+                  </span>
+                  <span className="workspace-app-category">{modulo.categoria}</span>
+                  <span className="workspace-app-title">{modulo.nombre}</span>
+                  <span className="workspace-app-description">{modulo.descripcion}</span>
+                  <span className="workspace-card-footer">
+                    <span>Abrir aplicación</span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </section>
+      <footer className="workspace-footer">
+        <span className="workspace-footer-mark">M</span>
+        <span>MOLSAN ERP</span>
+        <span className="workspace-footer-separator">·</span>
+        <span>Entorno corporativo de gestión</span>
+      </footer>
 
       {modalSoporte && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !abriendoNotaria) setModalSoporte(null); }}>
