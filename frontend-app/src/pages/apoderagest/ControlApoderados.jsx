@@ -219,7 +219,19 @@ export default function ControlApoderados({ modo = "colaborador" }) {
       {firmasAbiertas && <div className="fixed inset-0 z-[12000] flex items-center justify-center bg-slate-950/50 p-4" role="dialog" aria-modal="true" aria-label="Listado de firmas">
         <section className="max-h-[85vh] w-full max-w-4xl overflow-hidden rounded-3xl bg-white shadow-2xl">
           <header className="flex items-start justify-between gap-4 border-b border-slate-200 p-5"><div><p className="text-xs font-bold uppercase tracking-widest text-indigo-600">Control Apoderados · {periodo}</p><h2 className="mt-1 text-xl font-bold text-slate-900">Firmas de {firmasAbiertas.colaborador}</h2><p className="mt-1 text-sm text-slate-500">{firmasAbiertas.protocolos_firmados ?? firmasAbiertas.expedientes?.length ?? 0} protocolos únicos · {firmasAbiertas.expedientes?.length || 0} expedientes</p></div><button type="button" onClick={() => setFirmasAbiertas(null)} className="rounded-xl border px-3 py-2 font-semibold">Cerrar ✕</button></header>
-          <div className="max-h-[65vh] overflow-auto p-5">{(firmasAbiertas.expedientes || []).length ? <table className="w-full text-left text-sm"><thead><tr className="border-b text-slate-500"><th className="p-3">Expediente</th><th className="p-3">Fecha firma</th><th className="p-3">Notario</th><th className="p-3">Protocolo</th><th className="p-3">Operación</th></tr></thead><tbody>{firmasAbiertas.expedientes.map((e) => <tr key={e.expediente_id} className="border-b last:border-0"><td className="p-3 font-semibold">{e.id_expediente}</td><td className="p-3">{fecha(e.fecha_firma)}</td><td className="p-3">{e.notario || "—"}</td><td className="p-3">{e.protocolo || "Sin protocolo"}</td><td className="p-3">{e.tipo_operacion || "—"}</td></tr>)}</tbody></table> : <p className="rounded-xl bg-slate-50 p-5 text-sm text-slate-500">No hay firmas registradas en este periodo.</p>}</div>
+          <div className="max-h-[65vh] overflow-auto p-5"><MolsanDataTable
+            rows={firmasAbiertas.expedientes || []}
+            rowKey="expediente_id"
+            initialSort={{ key: "fecha_firma", direction: "desc" }}
+            emptyText="No hay firmas registradas en este periodo."
+            columns={[
+              { key: "id_expediente", header: "Expediente", accessor: "id_expediente", sortType: "text" },
+              { key: "fecha_firma", header: "Fecha firma", accessor: "fecha_firma", sortType: "date", render: (value) => fecha(value) },
+              { key: "notario", header: "Notario", accessor: "notario", sortType: "text", render: (value) => value || "—" },
+              { key: "protocolo", header: "Protocolo", accessor: "protocolo", sortType: "text", render: (value) => value || "Sin protocolo" },
+              { key: "tipo_operacion", header: "Operación", accessor: "tipo_operacion", sortType: "text", render: (value) => value || "—" },
+            ]}
+          /></div>
         </section>
       </div>}
     </> : item ? <>
@@ -233,7 +245,18 @@ export default function ControlApoderados({ modo = "colaborador" }) {
       </section>
       <section className="erp-card rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-bold text-slate-800">Relación de expedientes firmados</h2><p className="mt-1 text-sm text-slate-500">Solo se incluyen expedientes cuya fecha de firma real pertenece al mes seleccionado y cuya ficha identifica este colaborador como apoderado.</p></div><span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold">{item.protocolos_firmados ?? item.expedientes?.length ?? 0} protocolos</span></div>
-        {item.expedientes?.length ? <div className="mt-4 overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr className="border-b text-slate-500"><th className="p-3">Expediente</th><th className="p-3">Fecha firma</th><th className="p-3">Protocolo</th><th className="p-3">Notario</th></tr></thead><tbody>{item.expedientes.map((e) => <tr key={e.expediente_id} className="border-b last:border-0"><td className="p-3 font-semibold">{e.id_expediente}</td><td className="p-3">{fecha(e.fecha_firma)}</td><td className="p-3">{e.protocolo || "—"}</td><td className="p-3">{e.notario || "—"}</td></tr>)}</tbody></table></div> : <p className="mt-4 rounded-xl bg-slate-50 p-5 text-sm text-slate-500">No constan firmas reales a tu nombre en este periodo.</p>}
+        <div className="mt-4"><MolsanDataTable
+          rows={item.expedientes || []}
+          rowKey="expediente_id"
+          initialSort={{ key: "fecha_firma", direction: "desc" }}
+          emptyText="No constan firmas reales a tu nombre en este periodo."
+          columns={[
+            { key: "id_expediente", header: "Expediente", accessor: "id_expediente", sortType: "text" },
+            { key: "fecha_firma", header: "Fecha firma", accessor: "fecha_firma", sortType: "date", render: (value) => fecha(value) },
+            { key: "protocolo", header: "Protocolo", accessor: "protocolo", sortType: "text", render: (value) => value || "—" },
+            { key: "notario", header: "Notario", accessor: "notario", sortType: "text", render: (value) => value || "—" },
+          ]}
+        /></div>
         <div className="mt-5 rounded-xl bg-slate-50 p-4"><p className="font-semibold text-slate-800">Estado: {estado(item.estado_relacion)}</p>{item.validado_en && <p className="mt-1 text-sm text-slate-500">Validada el {fecha(item.validado_en)} · versión {item.validado_version}</p>}
           {item.estado_relacion !== "validada" ? <><label className="mt-4 block text-sm font-medium text-slate-700">Observaciones o discrepancias (opcional)<textarea value={discrepancia} onChange={(e) => setDiscrepancia(e.target.value)} maxLength={2000} className="mt-1 min-h-24 w-full rounded-xl border border-slate-300 bg-white p-3" placeholder="Indica si falta una firma o hay algún dato incorrecto…" /></label><button onClick={validar} disabled={cargando} className="mt-3 rounded-xl bg-indigo-700 px-5 py-3 text-sm font-bold text-white disabled:opacity-50">Validar relación mensual</button></> : <p className="mt-2 text-sm text-emerald-700">Relación validada. Ya puedes presentar la factura del periodo.</p>}
         </div>
