@@ -2740,3 +2740,34 @@ table :is(th, td) {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
+
+
+/* Utilidades y Catálogos · evitar el parpadeo de cabeceras al montar subpáginas.
+   Se desactiva únicamente la animación de entrada del contenedor de página;
+   las animaciones funcionales de botones, indicadores y estados se conservan. */
+:where(
+  .utilidades-premium-page,
+  .catalogos-premium-page,
+  .herramientas-subpagina-premium
+).animate-fadeIn {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+:where(
+  .utilidades-premium-page,
+  .catalogos-premium-page,
+  .herramientas-subpagina-premium
+).animate-fadeIn > header,
+:where(
+  .utilidades-premium-page,
+  .catalogos-premium-page,
+  .herramientas-subpagina-premium
+) > header.molsan-page-header {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  backface-visibility: hidden;
+}
