@@ -139,7 +139,7 @@ export default function Intranet() {
   if (!authReady || loading) return <div role="status" aria-live="polite" className="flex min-h-[360px] items-center justify-center"><div className="rounded-2xl border border-slate-200 bg-white px-6 py-4 text-sm text-slate-600 shadow-sm">Cargando Intranet…</div></div>;
   if (error && !noticias.length && !documentos.length) return <div role="alert" aria-live="assertive" className="rounded-3xl border border-red-200 bg-white p-8 text-sm text-red-700 shadow-sm"><b>No se ha podido cargar la Intranet</b><p className="mt-2">{error}</p><button className={`${secondary} mt-4`} onClick={() => cargar(true)}>Reintentar</button></div>;
 
-  return <div className="molsan-intranet-page relative space-y-6 animate-fadeIn">
+  return <div className="molsan-page-stack molsan-intranet-page relative animate-fadeIn">
     <header className="molsan-page-header">
       <div className="molsan-page-header__identity">
         <div className="molsan-page-header__mark" aria-hidden="true">🏢</div>
