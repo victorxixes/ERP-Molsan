@@ -93,6 +93,8 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
   const cambiarPeriodo = async (cerrado) => {
     if (!desde) { setError("Selecciona una fecha del mes que quieras gestionar."); return; }
     if (motivoPeriodo.trim().length < 5) { setError("Indica un motivo de al menos cinco caracteres."); return; }
+    const accion = cerrado ? "cerrar" : "reabrir";
+    if (!window.confirm(`¿Confirmas ${accion} el periodo ${desde.slice(0, 7)}? El motivo quedará registrado en la auditoría.`)) return;
     const data = new FormData();
     data.append("anio", desde.slice(0, 4)); data.append("mes", String(Number(desde.slice(5, 7))));
     data.append("cerrado", cerrado ? "true" : "false"); data.append("motivo", motivoPeriodo.trim());
