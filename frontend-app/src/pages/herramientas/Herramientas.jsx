@@ -41,13 +41,6 @@ export default function Herramientas() {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
 
         <Card
-          icon="📥"
-          titulo="Importar CTN"
-          descripcion="Importar fichero Excel con información de notarías."
-          link="/herramientas/importar-ctn"
-        />
-
-        <Card
           icon="📰"
           titulo="Crear noticia"
           descripcion="Publicar una nueva noticia en la intranet."
@@ -66,14 +59,6 @@ export default function Herramientas() {
           titulo="Informes"
           descripcion="Consultar listados y estadísticas de apoderados."
           link="/herramientas/informes"
-        />
-
-        <Card
-          icon="📦"
-          titulo="Importador ABSIS"
-          descripcion="Importar expedientes desde el Excel matriz ABSIS."
-          link="/herramientas/importador-absis"
-          destacado
         />
 
       </div>
