@@ -1,3 +1,4 @@
+import MolsanButton from "../../components/ui/MolsanButton";
 import { useSearchParams } from "react-router-dom";
 import "../../css/ModalesHerramientasPremium.css";
 import React, {
@@ -2952,27 +2953,7 @@ export default function AccionesExpediente() {
                 </button>
 
 
-                <button
-                  type="submit"
-                  disabled={
-                    !archivo ||
-                    importando
-                  }
-                  className="
-                    px-4
-                    py-2.5
-                    rounded-xl
-                    bg-[var(--erp-primary)]
-                    text-white
-                    text-sm
-                    font-semibold
-                    disabled:opacity-50
-                  "
-                >
-                  {importando
-                    ? "Importando..."
-                    : "Importar Excel"}
-                </button>
+                <MolsanButton type="submit" icon="upload" variant="primary" loading={importando} disabled={!archivo || importando}>{importando ? "Importando..." : "Importar Excel"}</MolsanButton>
 
               </div>
 
