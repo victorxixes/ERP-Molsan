@@ -83,7 +83,7 @@ export default function Fusiones() {
     ["Facturadas", contar("Facturadas"), "Con factura o pre-factura indicada", "violet", "Facturadas"]
   ];
 
-  return <main className="erp-page min-h-full space-y-6 text-[var(--erp-text)]">
+  return <main className="molsan-page-stack erp-page min-h-full text-[var(--erp-text)]">
     <section className="molsan-page-header">
       <div className="molsan-page-header__identity">
         <div className="molsan-page-header__mark" aria-hidden="true"><Icon name="merge" size={20} /></div>
