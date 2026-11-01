@@ -136,7 +136,7 @@ export default function TiposExpediente() {
           <label className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 md:col-span-2">
             <input type="checkbox" checked={activo} onChange={(e) => setActivo(e.target.checked)} /> Activo
           </label>
-          <div className="flex items-end md:col-span-1"><MolsanButton type="submit" block icon={editando ? "check" : "plus"} variant="primary" disabled={guardando || !nombre.trim()} loading={guardando}>{editando ? "Guardar" : "Añadir"}</MolsanButton></div>
+          <div className="flex items-end md:col-span-1"><MolsanButton type="submit" icon={editando ? "check" : "plus"} variant="primary" className="w-full" disabled={guardando || !nombre.trim()} loading={guardando}>{editando ? "Guardar" : "Añadir"}</MolsanButton></div>
         </form>
       </div></div>}
 
