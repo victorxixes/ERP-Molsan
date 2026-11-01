@@ -855,9 +855,24 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
     </section>}
     {vista === "firmas_urgentes" && <section className="ng-panel">
       <div className="ng-panel-titulo"><div><h2>Firmas urgentes</h2><p>Expedientes marcados como urgentes desde la planificación de la firma.</p></div><button className="ng-volver" onClick={() => setVista("inicio")}>← Volver</button></div>
-      <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><th>N.º expediente</th><th>Nombre</th><th>DNI</th><th>Fecha prevista</th><th>Hora</th><th>Notario</th><th>Acción</th></tr></thead><tbody>
-      {expedientes.filter(x => x.firma_urgente).map(x => <tr key={x.id}><td>{texto(x.id_expediente)}</td><td>{texto([x.nombre,x.apellidos].filter(Boolean).join(" ") || x.titular)}</td><td>{texto(x.dni || x.nif_titular)}</td><td>{esFecha(x.fecha_prevista_firma)}</td><td>{texto(x.hora_prevista_firma)}</td><td>{texto(x.nombre_notario)}</td><td><button type="button" className="ng-login-submit" onClick={() => abrirExpediente(x)}>Abrir ficha →</button></td></tr>)}
-      </tbody></table>{expedientes.filter(x => x.firma_urgente).length === 0 && <div className="ng-modal-vacio"><strong>No hay firmas urgentes</strong><p>Marca «Sí» en Firma urgente dentro de la planificación de la firma del envío a notario.</p></div>}</div>
+      <div className="ng-tabla-contenedor">
+        <MolsanDataTable
+          rows={expedientes.filter(x => x.firma_urgente)}
+          rowKey="id"
+          minWidth="1050px"
+          initialSort={{ key: "fecha_prevista", direction: "asc" }}
+          emptyText="No hay firmas urgentes. Marca «Sí» en Firma urgente dentro de la planificación de la firma del envío a notario."
+          columns={[
+            { key: "id_expediente", header: "N.º expediente", accessor: "id_expediente", sortType: "text", render: (value) => texto(value) },
+            { key: "nombre", header: "Nombre", accessor: (item) => [item.nombre, item.apellidos].filter(Boolean).join(" ") || item.titular, sortType: "text", render: (value) => texto(value) },
+            { key: "dni", header: "DNI", accessor: (item) => item.dni || item.nif_titular, sortType: "text", render: (value) => texto(value) },
+            { key: "fecha_prevista", header: "Fecha prevista", accessor: "fecha_prevista_firma", sortType: "date", render: (value) => esFecha(value) },
+            { key: "hora", header: "Hora", accessor: "hora_prevista_firma", sortType: "text", render: (value) => texto(value) },
+            { key: "notario", header: "Notario", accessor: "nombre_notario", sortType: "text", render: (value) => texto(value) },
+            { key: "acciones", header: "Acción", sortable: false, accessor: (item) => item.id, render: (_, item) => <button type="button" className="ng-login-submit" onClick={() => abrirExpediente(item)}>Abrir ficha →</button> },
+          ]}
+        />
+      </div>
     </section>}
     {bandejas.some(b => b.id === vista) && <section className="ng-panel">
       <div className="ng-panel-titulo"><h2>{titulo}</h2><button className="ng-volver" onClick={() => setVista("inicio")}>← Volver</button></div>
