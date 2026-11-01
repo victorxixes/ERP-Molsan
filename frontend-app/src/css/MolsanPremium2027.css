@@ -313,26 +313,3 @@
     padding: 20px;
   }
 }
-
-/* Dashboard: cabecera algo más contenida y sin fecha ni acciones superiores. */
-.dashboard-cancelagest .dashboard-header {
-  padding: 18px 26px !important;
-  margin-bottom: 22px !important;
-  border-radius: 19px;
-}
-.dashboard-cancelagest .dashboard-header .ag-marca {
-  width: 58px;
-  height: 58px;
-  flex-basis: 58px;
-  border-radius: 15px;
-  font-size: 19px;
-}
-.dashboard-cancelagest .dashboard-header .ag-hero h1 {
-  margin: 4px 0 !important;
-  font-size: clamp(26px, 2.4vw, 32px) !important;
-}
-@media (max-width: 760px) {
-  .dashboard-cancelagest .dashboard-header {
-    padding: 18px !important;
-  }
-}
