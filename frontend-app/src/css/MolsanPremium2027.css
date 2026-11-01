@@ -1155,7 +1155,7 @@
   .ag-panel-cabecera h3, .ag-panel-header h2, .eg-card-header h2,
   .eg-panel-head h2, .eg-panel-head h3, .ng-panel-titulo h2,
   .ctn-tabla-cabecera h2, .ctn-tabla-cabecera h3,
-  .eg-modal-section-heading h3, .molsan-section-header__title
+  .eg-modal-section-heading h3, .molsan-section-header__title, .erp-card-title
 ) {
   margin: 0;
   color: #064675;
