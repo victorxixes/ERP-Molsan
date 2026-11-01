@@ -41,7 +41,7 @@
   width: 42px;
   height: 42px;
   place-items: center;
-  border: 1px solid rgba(49, 86, 179, 0.12);
+  border: 1px solid color-mix(in srgb, var(--molsan-primary) 12%, transparent);
   border-radius: 11px;
   background: var(--molsan-primary-soft);
   color: var(--molsan-primary);
@@ -449,7 +449,7 @@
 .molsan-intranet-page textarea:focus-visible,
 .molsan-intranet-page select:focus-visible,
 .molsan-intranet-page button:focus-visible {
-  outline: 3px solid rgba(49, 86, 179, 0.22);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary) 22%, transparent);
   outline-offset: 2px;
 }
 
@@ -628,7 +628,7 @@
 .provisiones-fondos-page select:focus-visible,
 .provisiones-fondos-page textarea:focus-visible,
 .provisiones-fondos-page button:focus-visible {
-  outline: 3px solid rgba(49, 86, 179, 0.22);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary) 22%, transparent);
   outline-offset: 2px;
 }
 .provisiones-fondos-page table {
