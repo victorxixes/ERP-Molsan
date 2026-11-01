@@ -45,54 +45,9 @@
    CONTENEDORES PRINCIPALES
    ============================================================ */
 
-.erp-card {
-
-  background:
-    var(--erp-surface);
-
-  color:
-    var(--erp-text);
-
-  border:
-    1px solid var(--erp-border);
-
-  border-radius:
-    var(--erp-radius-lg);
-
-  box-shadow:
-    var(--erp-shadow-sm);
-
-}
-
-
-.erp-card-soft {
-
-  background:
-    var(--erp-surface-soft);
-
-  color:
-    var(--erp-text);
-
-  border:
-    1px solid var(--erp-border);
-
-  border-radius:
-    var(--erp-radius-md);
-
-}
-
-
 /* ============================================================
    HOVER DE TARJETAS
    ============================================================ */
-
-.erp-card:hover {
-
-  border-color:
-    var(--erp-border-strong);
-
-}
-
 
 /* ============================================================
    TÍTULOS DENTRO DE PÁGINAS ERP
@@ -891,14 +846,7 @@
 
 @media (max-width: 768px) {
 
-  .erp-card {
-
-    border-radius:
-      12px;
-
   }
-
-}
 
 
 /* ============================================================
