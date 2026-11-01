@@ -1159,23 +1159,6 @@
   border-bottom-color: var(--molsan-border-light);
 }
 
-.ctn-listado-page .ctn-listado-header h1 {
-  color: var(--molsan-text);
-}
-
-/* Las cabeceras de página comparten jerarquía sin imponer su estructura. */
-:where(.ctn-listado-page, .expedientes-page, :is(.cg-page, .cg-unified-workspace), .apoderagest, .notargest) :is(
-  .ctn-listado-header h1,
-  .expedientes-page__header h1,
-  .cg-hero h1,
-  .ag-hero h1,
-  .ng-cabecera h1
-) {
-  color: var(--molsan-text);
-  font-family: var(--molsan-font-family);
-  letter-spacing: -0.025em;
-}
-
 /* Unifica radios y bordes de controles sin tocar sus valores ni validaciones. */
 :where(.ctn-listado-page, .expedientes-page, :is(.cg-page, .cg-unified-workspace), .apoderagest, .notargest) :where(
   input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
@@ -1388,111 +1371,6 @@
   ) {
     min-width: 0;
     max-width: 100%;
-  }
-}
-
-
-/* ============================================================
-   CABECERA CANÓNICA MOLSAN · MISMO PATRÓN QUE DASHBOARD
-   Una única escala compacta para Expedientes y CTN.
-   ============================================================ */
-:is(.expedientes-page, .ctn-listado-page) > .molsan-page-header,
-.expedientes-page main > .molsan-page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  min-width: 0;
-  margin: 0 0 18px;
-  padding: 12px 16px;
-  color: var(--molsan-text);
-  background:
-    radial-gradient(ellipse at 92% 12%, rgba(89,174,204,.12), transparent 32%),
-    linear-gradient(112deg, #F2F7FB 0%, #FFFFFF 64%, #F6FAFC 100%);
-  border: 1px solid var(--molsan-border, #D8E4EC);
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(6,50,82,.065);
-}
-
-:is(.expedientes-page, .ctn-listado-page) > .molsan-page-header :is(.molsan-page-header__identity, .ctn-listado-header-identidad) {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-
-:is(.expedientes-page, .ctn-listado-page) > .molsan-page-header :is(.molsan-page-header__mark, .expedientes-page__header-icon, .ctn-listado-header-icon) {
-  display: grid;
-  flex: 0 0 40px;
-  width: 40px;
-  height: 40px;
-  place-items: center;
-  color: #fff;
-  background: linear-gradient(145deg, #04375B, #0D638C);
-  border: 0;
-  border-radius: 11px;
-  box-shadow: none;
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: -.03em;
-}
-
-:is(.expedientes-page, .ctn-listado-page) > .molsan-page-header :is(.molsan-page-header__eyebrow, .expedientes-page__eyebrow, .ctn-listado-header-eyebrow) {
-  display: block;
-  margin: 0 0 3px;
-  color: var(--molsan-text-muted, #617789);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: .12em;
-  line-height: 1.4;
-  text-transform: uppercase;
-}
-
-:is(.expedientes-page, .ctn-listado-page) > .molsan-page-header h1 {
-  margin: 0 0 3px;
-  color: var(--molsan-primary, #064675);
-  font-size: 20px;
-  font-weight: 750;
-  letter-spacing: -.02em;
-  line-height: 1.2;
-}
-
-:is(.expedientes-page, .ctn-listado-page) > .molsan-page-header p:not(.molsan-page-header__eyebrow):not(.expedientes-page__eyebrow):not(.ctn-listado-header-eyebrow) {
-  max-width: 650px;
-  margin: 0;
-  color: var(--molsan-text-muted, #617789);
-  font-size: 12px;
-  line-height: 1.45;
-}
-
-:is(.expedientes-page, .ctn-listado-page) > .molsan-page-header .molsan-page-header__actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-@media (max-width: 760px) {
-  :is(.expedientes-page, .ctn-listado-page) > .molsan-page-header {
-    align-items: flex-start;
-    gap: 10px;
-    padding: 12px;
-    margin-bottom: 14px;
-  }
-
-  :is(.expedientes-page, .ctn-listado-page) > .molsan-page-header .molsan-page-header__actions {
-    width: 100%;
-    justify-content: flex-start;
-  }
-
-  :is(.expedientes-page, .ctn-listado-page) > .molsan-page-header :is(.molsan-page-header__mark, .expedientes-page__header-icon, .ctn-listado-header-icon) {
-    flex-basis: 36px;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    font-size: 14px;
   }
 }
 
@@ -2868,14 +2746,6 @@ body {
   border-radius: var(--molsan-radius-card, 14px);
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
 }
-:where(.expedientes-page .molsan-page-header, .ficha-expediente-premium .molsan-page-header,
-       .provisiones-fondos-page > header) {
-  background: #fff;
-  border-color: var(--molsan-border, #D8E4EC);
-  border-radius: var(--molsan-radius-card, 14px);
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
-}
-
 /* Dashboard de CancelaGest: clase real de los indicadores y paneles. */
 :where(.dashboard-cancelagest .dashboard-kpi, .dashboard-cancelagest .erp-card,
        .cg-unified-workspace .erp-card, .cg-unified-workspace .dashboard-card) {
@@ -2887,13 +2757,6 @@ body {
 }
 
 /* Herramientas: se elimina la franja decorativa distinta de cada pantalla. */
-:where(.catalogos-premium-page > header, .utilidades-premium-page > header) {
-  color: var(--molsan-text, #173247);
-  background: #fff;
-  border: 1px solid var(--molsan-border, #D8E4EC);
-  border-radius: var(--molsan-radius-card, 14px);
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
-}
 /* Formularios y tablas: controles uniformes sin tocar checkboxes ni radios. */
 :where(.notargest, .apoderagest, .encargagest, .ctn-listado-page,
        .ctn-detalle-page, .expedientes-page, .ficha-expediente-premium,
@@ -3093,12 +2956,6 @@ table :is(th, td) {
   border-color: var(--molsan-border-light, #e8edf4);
   box-shadow: none;
 }
-:where(.notargest, .apoderagest, .encargagest) :is(.ng-cabecera h1, .ag-hero h1, .eg-hero h1) {
-  color: var(--molsan-text, #173247);
-}
-:where(.notargest, .apoderagest, .encargagest) :is(.ng-cabecera p, .ag-hero p, .eg-hero p) {
-  color: var(--molsan-text-muted, #718696);
-}
 
 @media (prefers-reduced-motion: reduce) {
   :where(
@@ -3196,12 +3053,6 @@ table :is(th, td) {
   font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
 }
 
-:where(.notargest, .apoderagest.notargest, .encargagest) :is(.ng-cabecera, .ag-hero, .eg-hero) {
-  color: var(--molsan-text, #173247);
-  background: transparent;
-  border-color: var(--molsan-border, #D8E4EC);
-  box-shadow: none;
-}
 
 :where(.notargest, .apoderagest.notargest, .encargagest) :is(.ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .ag-panel, .ag-kpi, .ag-card, .eg-panel, .eg-kpi, .eg-directorio-card, .eg-modal-section) {
   color: var(--molsan-text, #173247);
