@@ -53,16 +53,18 @@
   position: relative;
   min-width: 0;
   border-color: var(--molsan-card-border, #D8E4EC);
-  border-radius: 17px;
+  border-radius: 21px;
+  border-top: 4px solid var(--molsan-card-accent, #1477A5);
   background-color: #FFFFFF;
-  background-image: linear-gradient(145deg, #FFFFFF 0%, #FFFFFF 72%, var(--molsan-card-tint) 100%);
+  background-image: linear-gradient(150deg, #FFFFFF 0%, #FFFFFF 56%, var(--molsan-card-tint) 100%);
   box-shadow: var(--molsan-card-shadow);
   background-clip: padding-box;
   transition:
-    transform .2s ease,
+    transform .2s cubic-bezier(.2,.75,.25,1),
     box-shadow .2s ease,
     border-color .2s ease,
     background-color .2s ease;
+  animation: molsan-card-enter .42s both;
 }
 
 /* Acentos cromáticos discretos y alternos para dar personalidad a las tarjetas. */
@@ -103,7 +105,12 @@
   --molsan-card-tint: #EEF2FA;
 }
 
-/* Hover solo en tarjetas que actúan como superficies independientes; sin alterar tablas. */
+@keyframes molsan-card-enter {
+  from { opacity: 0; transform: translateY(9px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Hover compartido: misma elevación y profundidad que las tarjetas de Espacios de trabajo. */
 :where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
   :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"]
 ):hover {
@@ -176,7 +183,7 @@
 @media (hover: hover) and (pointer: fine) {
   :where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
     :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"]):hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
   }
 }
 @media (prefers-reduced-motion: reduce) {
