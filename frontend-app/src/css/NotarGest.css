@@ -237,8 +237,7 @@
 
 
 /* NotarGest · navegación larga y modales de campana/perfil */
-.notargest .ng-marca-notargest{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:var(--molsan-radius-card,14px);background:linear-gradient(145deg,var(--molsan-primary, #064675),var(--molsan-primary-hover, #04375B));color:#fff;font-size:17px;font-weight:900;letter-spacing:-.04em;box-shadow:none}
-.notargest .ng-hero-apoderagest{margin:0 0 16px;padding:clamp(16px,2vw,26px);border:1px solid var(--molsan-border, #D8E4EC);border-radius:var(--molsan-radius-card,14px);background:var(--molsan-surface,#fff);box-shadow:var(--molsan-shadow-card,0 4px 14px rgba(36,50,74,.06))}
+.notargest .ng-marca-notargest:not(.molsan-page-header__mark){display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:var(--molsan-radius-card,14px);background:linear-gradient(145deg,var(--molsan-primary, #064675),var(--molsan-primary-hover, #04375B));color:#fff;font-size:17px;font-weight:900;letter-spacing:-.04em;box-shadow:none}
 .ng-modal-overlay{position:fixed;inset:0;z-index:1200;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:7vh 16px 24px;background:rgba(15,23,42,.48);backdrop-filter:none;-webkit-backdrop-filter:none}
 .ng-modal{width:min(100%,760px);max-height:86vh;overflow:hidden;display:flex;flex-direction:column;border:1px solid var(--molsan-border, #D8E4EC);border-radius:var(--molsan-radius-dialog,16px);background:var(--molsan-surface,#fff);box-shadow:var(--molsan-shadow-dialog,0 16px 44px rgba(25,42,70,.16))}
 .ng-modal>header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px 22px;border-bottom:1px solid var(--molsan-border-light,#e8edf4);background:var(--molsan-surface-soft, #F2F7FB)}
