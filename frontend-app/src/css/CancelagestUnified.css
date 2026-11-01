@@ -8,13 +8,13 @@
   --cg-primary: var(--molsan-primary, #064675);
   --cg-primary-hover: var(--molsan-primary-hover, #04375B);
   --cg-primary-soft: var(--molsan-primary-soft, #EAF2F8);
-  --cg-page-bg: #eef3f9;
+  --cg-page-bg: var(--molsan-page-bg, #FFFFFF);
   --cg-surface: #ffffff;
-  --cg-surface-soft: #f6f8fc;
-  --cg-border: #d7e0ec;
-  --cg-border-light: #e6ebf2;
-  --cg-text: #24324a;
-  --cg-text-muted: #64748b;
+  --cg-surface-soft: var(--molsan-surface-soft, #F2F7FB);
+  --cg-border: var(--molsan-border, #D8E4EC);
+  --cg-border-light: var(--molsan-border-light, #E8EFF4);
+  --cg-text: var(--molsan-text, #173247);
+  --cg-text-muted: var(--molsan-text-secondary, #617789);
   --cg-radius: 12px;
   --cg-shadow: 0 4px 12px rgba(15, 23, 42, .06);
   color: var(--cg-text);
@@ -99,12 +99,12 @@ select, textarea) {
   border-bottom-color: var(--cg-border);
 }
 
-.cg-unified-workspace :is(.erp-card, .erp-card-soft) {
+.cg-unified-workspace :is(.erp-card, .erp-card-soft, .molsan-panel) {
   border-color: var(--cg-border);
   box-shadow: var(--cg-shadow);
 }
 
-.cg-unified-workspace :is(.erp-card, .erp-card-soft, [data-cg-panel="true"]) {
+.cg-unified-workspace :is(.erp-card, .erp-card-soft, .molsan-panel, [data-cg-panel="true"]) {
   border-radius: var(--cg-radius);
 }
 
@@ -270,10 +270,7 @@ select, textarea) {
 
 /* Paneles y tarjetas heredadas: un mismo acabado, sin exigir clases molsan-*. */
 .cg-unified-workspace :is(
-  .erp-card, .erp-card-soft, .card, .panel, .section-card,
-  .filtros-card, .filtros-panel, .resumen-card, .stat-card,
-  .kpi-card, .metric-card, .dashboard-card, .modulo-card,
-  [data-cg-panel="true"]
+  .erp-card, .erp-card-soft, .molsan-panel, [data-cg-panel="true"]
 ) {
   border-color: var(--cg-border);
   border-radius: var(--cg-radius);
@@ -281,9 +278,7 @@ select, textarea) {
 }
 
 .cg-unified-workspace :is(
-  .erp-card, .erp-card-soft, .card, .panel, .section-card,
-  .filtros-card, .filtros-panel, .resumen-card, .stat-card,
-  .kpi-card, .metric-card, .dashboard-card, .modulo-card
+  .erp-card, .erp-card-soft, .molsan-panel, [data-cg-panel="true"]
 ) > :is(header, .card-header, .panel-header, .section-header) {
   border-bottom-color: var(--cg-border-light);
 }
@@ -335,8 +330,8 @@ select, textarea) {
 }
 
 .cg-unified-workspace table thead th {
-  color: #52617a;
-  background-color: #f6f8fc;
+  color: var(--molsan-text-secondary, #617789);
+  background-color: var(--molsan-table-head, #EAF2F8);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: .025em;
