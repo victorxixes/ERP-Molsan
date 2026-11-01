@@ -22,7 +22,6 @@ const ModuloPendiente = lazy(() => import("./pages/ModuloPendiente"));
 
 /* DASHBOARD */
 const Dashboard = lazy(() => import("./pages/dashboard/Dashboard.jsx"));
-const Cancelagest = lazy(() => import("./pages/cancelagest/Cancelagest.jsx"));
 
 /* AGENDA */
 const Agenda = lazy(() => import("./pages/agenda/Agenda.jsx"));
