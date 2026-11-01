@@ -183,7 +183,7 @@ export default function MonitorSistema() {
   // ============================================================
 
   return (
-    <div className="monitor-sistema-premium panel-tecnico-submodulo-premium p-6 space-y-6 animate-fade-in">
+    <div className="monitor-sistema-premium panel-tecnico-submodulo-premium space-y-6 animate-fade-in">
 
       {/* ======================================================
           CABECERA
