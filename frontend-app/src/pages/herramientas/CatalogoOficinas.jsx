@@ -98,7 +98,7 @@ export default function CatalogoOficinas() {
   const totalPaginas = Math.max(1, Math.ceil(total / limite));
 
   return (
-    <main className="catalogos-premium-page min-h-full space-y-6 animate-fadeIn">
+    <main className="molsan-page-stack catalogos-premium-page min-h-full animate-fadeIn">
       <header className="molsan-page-header">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="relative flex items-center gap-4">
