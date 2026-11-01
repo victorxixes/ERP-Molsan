@@ -8,7 +8,7 @@ import "../../css/HerramientasPremium.css";
 export default function Utilidades() {
 
   return (
-    <div className="utilidades-premium-page min-h-full space-y-7 p-4 sm:p-6 lg:p-8 animate-fadeIn">
+    <div className="utilidades-premium-page min-h-full space-y-7 animate-fadeIn">
       <header className="molsan-page-header">
         <div className="molsan-page-header__identity">
           <div className="molsan-page-header__mark" aria-hidden="true">⚙️</div>
