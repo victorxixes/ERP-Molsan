@@ -160,6 +160,9 @@ export default function ControlApoderados({ modo = "colaborador" }) {
         </div>
         <MolsanDataTable
           rows={colaboradores}
+          pagination
+          pageSize={25}
+
           rowKey="id"
           initialSort={{ key: "nombre", direction: "asc" }}
           emptyText="No hay empleados en el catálogo."
@@ -198,6 +201,9 @@ export default function ControlApoderados({ modo = "colaborador" }) {
         {items.length === 0 ? <p className="rounded-xl bg-slate-50 p-5 text-sm text-slate-500">No hay colaboradores habilitados ni relaciones para este periodo.</p> : <div className="mt-4">
           <MolsanDataTable
             rows={items}
+          pagination
+          pageSize={25}
+
             rowKey="id"
             minWidth="1500px"
             initialSort={{ key: "colaborador", direction: "asc" }}
@@ -221,6 +227,9 @@ export default function ControlApoderados({ modo = "colaborador" }) {
           <header className="flex items-start justify-between gap-4 border-b border-slate-200 p-5"><div><p className="text-xs font-bold uppercase tracking-widest text-indigo-600">Control Apoderados · {periodo}</p><h2 className="mt-1 text-xl font-bold text-slate-900">Firmas de {firmasAbiertas.colaborador}</h2><p className="mt-1 text-sm text-slate-500">{firmasAbiertas.protocolos_firmados ?? firmasAbiertas.expedientes?.length ?? 0} protocolos únicos · {firmasAbiertas.expedientes?.length || 0} expedientes</p></div><button type="button" onClick={() => setFirmasAbiertas(null)} className="rounded-xl border px-3 py-2 font-semibold">Cerrar ✕</button></header>
           <div className="max-h-[65vh] overflow-auto p-5"><MolsanDataTable
             rows={firmasAbiertas.expedientes || []}
+          pagination
+          pageSize={25}
+
             rowKey="expediente_id"
             initialSort={{ key: "fecha_firma", direction: "desc" }}
             emptyText="No hay firmas registradas en este periodo."
@@ -247,6 +256,9 @@ export default function ControlApoderados({ modo = "colaborador" }) {
         <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-bold text-slate-800">Relación de expedientes firmados</h2><p className="mt-1 text-sm text-slate-500">Solo se incluyen expedientes cuya fecha de firma real pertenece al mes seleccionado y cuya ficha identifica este colaborador como apoderado.</p></div><span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold">{item.protocolos_firmados ?? item.expedientes?.length ?? 0} protocolos</span></div>
         <div className="mt-4"><MolsanDataTable
           rows={item.expedientes || []}
+          pagination
+          pageSize={25}
+
           rowKey="expediente_id"
           initialSort={{ key: "fecha_firma", direction: "desc" }}
           emptyText="No constan firmas reales a tu nombre en este periodo."
