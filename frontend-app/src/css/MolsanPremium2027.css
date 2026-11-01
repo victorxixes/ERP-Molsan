@@ -1,18 +1,10 @@
 /* MOLSAN ERP PREMIUM 2027 · GLASS LUXE
    Capa global de armonización + Espacio de trabajo.
    Mantiene la lógica de los módulos intacta. */
-html, body, #root { min-height: 100%; }
-body {
-  margin: 0;
-  color: var(--molsan-text);
-  background: var(--molsan-page-bg);
-  font-family: var(--molsan-font-family);
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
+/* La base de documento y el layout compartido se definen en
+   MolsanRedesign2027.css. Esta capa conserva únicamente el ajuste
+   específico de armonización del shell. */
 .erp-app-shell { background: var(--molsan-page-bg) !important; color: var(--molsan-text); }
-.erp-main-content { min-width: 0; }
-.erp-main-inner { width: 100%; max-width: 1920px; margin-inline: auto; }
 :where(.selector-modulos-premium,.catalogos-premium-page,.herramientas-home-premium,
 .expedientes-listado-premium,.ficha-expediente-premium,.agenda-premium-page,
 .seguridad-premium-page,.seguridad-subpagina-premium,.panel-tecnico-premium,
