@@ -22,25 +22,25 @@
 
 :root {
   /* Compatibilidad: las variables antiguas apuntan al sistema MOLSAN canónico. */
-  --erp-bg: var(--molsan-page-bg, #f4f7fb);
+  --erp-bg: var(--molsan-page-bg, #FFFFFF);
   --erp-surface: var(--molsan-surface, #fff);
-  --erp-surface-soft: var(--molsan-surface-soft, #f7f9fc);
-  --erp-surface-hover: var(--molsan-primary-soft, #edf3ff);
+  --erp-surface-soft: var(--molsan-surface-soft, #F2F7FB);
+  --erp-surface-hover: var(--molsan-primary-soft, #EAF2F8);
 
-  --erp-border: var(--molsan-border, #dce4ef);
-  --erp-border-light: var(--molsan-border-light, #e8edf4);
-  --erp-border-strong: var(--molsan-border-strong, #c4d0df);
+  --erp-border: var(--molsan-border, #D8E4EC);
+  --erp-border-light: var(--molsan-border-light, #E8EFF4);
+  --erp-border-strong: var(--molsan-border-strong, #B8CBD9);
 
-  --erp-primary: var(--molsan-primary, #3156b3);
-  --erp-primary-dark: var(--molsan-primary-hover, #274694);
-  --erp-primary-light: var(--molsan-primary-hover, #274694);
-  --erp-primary-soft: var(--molsan-primary-soft, #edf3ff);
-  --erp-primary-hover: var(--molsan-primary-hover, #274694);
+  --erp-primary: var(--molsan-primary, #064675);
+  --erp-primary-dark: var(--molsan-primary-hover, #04375B);
+  --erp-primary-light: var(--molsan-primary-hover, #04375B);
+  --erp-primary-soft: var(--molsan-primary-soft, #EAF2F8);
+  --erp-primary-hover: var(--molsan-primary-hover, #04375B);
 
-  --erp-text: var(--molsan-text, #17243a);
-  --erp-text-soft: var(--molsan-text-muted, #64748b);
-  --erp-text-muted: var(--molsan-text-muted, #64748b);
-  --erp-text-strong: var(--molsan-text, #17243a);
+  --erp-text: var(--molsan-text, #173247);
+  --erp-text-soft: var(--molsan-text-muted, #718696);
+  --erp-text-muted: var(--molsan-text-muted, #718696);
+  --erp-text-strong: var(--molsan-text, #173247);
 
   --erp-success: var(--molsan-success, #16845b);
   --erp-success-soft: #eaf8f0;
@@ -48,8 +48,8 @@
   --erp-warning-soft: #fff7e8;
   --erp-danger: var(--molsan-danger, #c43d4b);
   --erp-danger-soft: #fff0f1;
-  --erp-info: var(--molsan-primary, #3156b3);
-  --erp-info-soft: var(--molsan-primary-soft, #edf3ff);
+  --erp-info: var(--molsan-info, #176B9A);
+  --erp-info-soft: var(--molsan-info-soft, #EAF5FB);
 
   --erp-shadow-xs: 0 1px 2px rgba(36, 50, 74, .04);
   --erp-shadow-sm: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
