@@ -1,7 +1,6 @@
 /* MOLSAN ERP Premium 2027 — submódulos del panel técnico. */
 .panel-tecnico-submodulo-premium { --pt-radius: 18px; min-width: 0; color: var(--molsan-text, #172033); }
 .panel-tecnico-submodulo-premium > div { min-width: 0; }
-.panel-tecnico-submodulo-premium section, .panel-tecnico-submodulo-premium article { border-radius: var(--pt-radius); }
 .panel-tecnico-submodulo-premium input, .panel-tecnico-submodulo-premium select, .panel-tecnico-submodulo-premium textarea { max-width: 100%; transition: border-color .18s ease, box-shadow .18s ease; }
 .panel-tecnico-submodulo-premium input:focus-visible, .panel-tecnico-submodulo-premium select:focus-visible, .panel-tecnico-submodulo-premium textarea:focus-visible, .panel-tecnico-submodulo-premium button:focus-visible { outline: 2px solid var(--molsan-primary, #064675); outline-offset: 2px; }
 .panel-tecnico-submodulo-premium table { width: 100%; border-collapse: separate; border-spacing: 0; }
