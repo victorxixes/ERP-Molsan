@@ -295,3 +295,31 @@
 .catalogos-premium-page > .molsan-page-header .molsan-page-header__description {
   max-width: 760px;
 }
+
+
+/* ============================================================
+   MOLSAN ERP PREMIUM 2027 · CATÁLOGOS Y TODAS SUS FICHAS
+   Cabeceras de ancho completo, jerarquía tipográfica y superficies
+   coherentes, también en las pantallas heredadas del catálogo.
+   ============================================================ */
+.catalogos-premium-page { width:100%; min-width:0; }
+.catalogos-premium-page .molsan-page-header {
+  box-sizing:border-box;
+  width:100%;
+  max-width:none;
+  min-width:0;
+  min-height:112px;
+  align-self:stretch;
+  margin:0 0 20px;
+  padding:18px 24px;
+  border-radius:22px;
+}
+.catalogos-premium-page .molsan-page-header__identity { min-width:0; flex:1 1 auto; }
+.catalogos-premium-page .molsan-page-header__description { max-width:780px; }
+.catalogos-premium-page .molsan-page-header__actions { flex:0 0 auto; }
+.catalogos-premium-page :is(.erp-card, a.erp-card, button.erp-card) { border-radius:20px !important; }
+.catalogos-premium-page :is(a.erp-card, button.erp-card):hover { transform:translateY(-4px); }
+@media(max-width:760px){
+  .catalogos-premium-page .molsan-page-header { min-height:0; padding:16px; border-radius:18px; }
+  .catalogos-premium-page .molsan-page-header__actions { width:100%; }
+}
