@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useUtilidades } from "../../hooks/useUtilidades";
+import MolsanButton from "../../components/ui/MolsanButton";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
 
