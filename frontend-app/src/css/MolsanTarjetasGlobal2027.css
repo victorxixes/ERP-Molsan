@@ -18,6 +18,7 @@
 /* Ámbitos: ERP principal y portales independientes. */
 :where(
   .erp-main-content,
+  .erp-page,
   .apoderagest,
   .notargest-workspace-premium,
   .encargagest-workspace-premium,
@@ -36,6 +37,7 @@
    Tailwind reconocible; así no convertimos wrappers internos en paneles. */
 :where(
   .erp-main-content,
+  .erp-page,
   .apoderagest,
   .notargest-workspace-premium,
   .encargagest-workspace-premium,
@@ -142,6 +144,7 @@
 /* Cabeceras de página: compactas, con identidad común y sin tocar su contenido. */
 :where(
   .erp-main-content,
+  .erp-page,
   .apoderagest,
   .notargest-workspace-premium,
   .encargagest-workspace-premium,
@@ -270,6 +273,7 @@
    .molsan-page-header. No se estilizan header ni h1 genéricos. */
 :where(
   .erp-main-content,
+  .erp-page,
   .agenda-premium-page,
   .empleados-listado-premium,
   .control-apoderados-page,
@@ -345,6 +349,7 @@
 }
 :where(
   .erp-main-content,
+  .erp-page,
   .agenda-premium-page,
   .empleados-listado-premium,
   .control-apoderados-page,
@@ -364,6 +369,7 @@
 }
 :where(
   .erp-main-content,
+  .erp-page,
   .agenda-premium-page,
   .empleados-listado-premium,
   .control-apoderados-page,
@@ -381,6 +387,7 @@
 }
 :where(
   .erp-main-content,
+  .erp-page,
   .agenda-premium-page,
   .empleados-listado-premium,
   .empleado-ficha-premium,
@@ -397,6 +404,7 @@
 }
 :where(
   .erp-main-content,
+  .erp-page,
   .agenda-premium-page,
   .empleados-listado-premium,
   .empleado-ficha-premium,
@@ -422,6 +430,7 @@
 }
 :where(
   .erp-main-content,
+  .erp-page,
   .agenda-premium-page,
   .empleados-listado-premium,
   .empleado-ficha-premium,
@@ -437,6 +446,7 @@
   > :is(h2, h3, [data-card-title="true"], .card-title, .panel-title),
 :where(
   .erp-main-content,
+  .erp-page,
   .agenda-premium-page,
   .empleados-listado-premium,
   .empleado-ficha-premium,
@@ -456,6 +466,7 @@
 }
 :where(
   .erp-main-content,
+  .erp-page,
   .agenda-premium-page,
   .empleados-listado-premium,
   .empleado-ficha-premium,
@@ -478,6 +489,7 @@
 }
 :where(
   .erp-main-content,
+  .erp-page,
   .agenda-premium-page,
   .empleados-listado-premium,
   .empleado-ficha-premium,
