@@ -414,7 +414,7 @@ export default function ModelosDocumentos() {
     lector.readAsDataURL(archivo);
   };
 
-  return <main className="min-h-full space-y-6 animate-fadeIn">
+  return <main className="molsan-page-stack herramientas-subpagina-premium min-h-full space-y-6 animate-fadeIn">
     <header className="molsan-page-header">
       <div className="molsan-page-header__identity">
         <div className="molsan-page-header__mark" aria-hidden="true">▤</div>
