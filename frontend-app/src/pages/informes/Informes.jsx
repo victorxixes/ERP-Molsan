@@ -2213,24 +2213,7 @@ function KpiCard({
         </div>
 
 
-        <div
-          className={`
-            w-11
-            h-11
-            rounded-xl
-            bg-white/70
-            border
-            border-white
-            flex
-            items-center
-            justify-center
-            text-xl
-            shadow-sm
-            ${colores[clase]}
-          `}
-        >
-          <MolsanIcon name={icon} size={44} tone={clase === "green" ? "emerald" : clase === "purple" ? "violet" : clase === "orange" ? "amber" : "ocean"} />
-        </div>
+        <MolsanIcon name={icon} size={44} tone={clase === "green" ? "emerald" : clase === "purple" ? "violet" : clase === "orange" ? "amber" : "ocean"} />
 
       </div>
 
@@ -2360,20 +2343,7 @@ function GraficoCard({
           "
         >
 
-          <div
-            className="
-              w-9
-              h-9
-              rounded-lg
-              bg-blue-50
-              border border-blue-100
-              flex
-              items-center
-              justify-center
-            "
-          >
-            <MolsanIcon name={icono} size={36} tone="ocean" />
-          </div>
+          <MolsanIcon name={icono} size={36} tone="ocean" />
 
 
           <div>
@@ -3678,9 +3648,7 @@ function ApartadoInformePendiente({ apartado }) {
     <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl">
       <div className="border-b border-slate-200/80 px-6 py-5">
         <div className="molsan-section-header flex items-start gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-xl">
-            <MolsanIcon name={apartado.icono} size={44} tone="ocean" />
-          </div>
+          <MolsanIcon name={apartado.icono} size={44} tone="ocean" />
           <div>
             <h2 className="text-xl font-bold text-slate-800">{detalle.encabezado}</h2>
             <p className="mt-1 text-sm leading-relaxed text-slate-500">{detalle.descripcion}</p>
