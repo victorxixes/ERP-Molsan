@@ -107,7 +107,7 @@ export default function ImportadorPostFirma() {
 
   return (
     <main className="herramientas-subpagina-premium min-h-screen space-y-5 bg-gradient-to-br from-slate-50 via-blue-50/40 to-slate-100 p-4 text-slate-700 md:p-6">
-      <header className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+      <header className="molsan-page-header rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
         <div className="flex items-start gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-blue-200 bg-blue-50 text-2xl">📦</div>
           <div>
