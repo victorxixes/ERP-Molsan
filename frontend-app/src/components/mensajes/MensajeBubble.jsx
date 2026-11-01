@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import MolsanIcon from "../ui/MolsanIcon";
 import "../../css/ComponentesCompartidosPremium.css";
 
 /** Burbuja de Mensajes con descarga autenticada de adjuntos. */
@@ -154,7 +155,7 @@ export default function MensajeBubble({
             download={nombreArchivo || "adjunto"}
             className="mt-2 flex items-center gap-3 rounded-xl border border-blue-100 bg-blue-50 px-3 py-2.5 text-sm font-medium text-blue-600 transition hover:bg-blue-100"
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-base shadow-sm">📎</span>
+            <MolsanIcon name="attachment" size={32} />
             <span>Descargar archivo adjunto</span>
           </a>
         )}
