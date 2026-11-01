@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useState, useEffect } from "react";
 import axios from "../../api/axios";
 import MolsanButton from "../../components/ui/MolsanButton";
@@ -112,7 +113,7 @@ export default function ImportadorPostFirma() {
     <main className="molsan-page-stack herramientas-subpagina-premium min-h-screen text-slate-700">
       <header className="molsan-page-header">
         <div className="molsan-page-header__identity">
-          <div className="molsan-page-header__mark">📦</div>
+          <div className="molsan-page-header__mark"><MolsanIcon name="archive" size={20} /></div>
           <div>
             <h1 className="molsan-page-header__title">Importador ABSIS · Post Firma</h1>
             <p className="molsan-page-header__description">Carga histórica pura y aislada. Los ficheros de distintos meses permanecen separados y no se aplican a expedientes ni a los gastos operativos del ERP.</p>
