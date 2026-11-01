@@ -6,6 +6,7 @@ import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
 import "../../css/PortalProfesionalShared.css";
 import "../../css/NotarGest.css";
+import IconoPremium from "../../components/IconoPremium";
 
 const TOKEN_KEY = "notargest_token";
 const bandejas = [
@@ -750,17 +751,17 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
     </header>
     <nav className="ng-modulos-grid" aria-label="Secciones de NotarGest">
       {[
-        { key: "inicio", label: "Dashboard", icon: "⌂", count: null },
-        { key: "recepcion", label: "Nuevos encargos", icon: "▤", count: cuenta("recepcion") },
-        { key: "firma", label: "Pendientes de firma", icon: "◷", count: cuenta("firma") },
-        { key: "copia", label: "Pendientes copias simples", icon: "▧", count: cuenta("copia") },
-        { key: "factura", label: "Pendientes de factura notarial", icon: "€", count: cuenta("factura") },
-        { key: "ajd", label: "Pendientes de AJD / ITP", icon: "§", count: cuenta("ajd") },
-        { key: "registro", label: "Pendientes de presentación registral", icon: "⌕", count: cuenta("registro") },
-        { key: "defectos", label: "Expedientes con defectos", icon: "!", count: cuenta("defectos") },
-        { key: "inscripcion", label: "Inscripciones registrales", icon: "▣", count: cuenta("inscripcion") },
-        { key: "cerrada", label: "Escrituras cerradas inscritas", icon: "✓", count: cuenta("cerrada") },
-        { key: "firmas_urgentes", label: "Firmas urgentes", icon: "⚡", count: expedientes.filter(x => x.firma_urgente).length, urgent: expedientes.some(x => x.firma_urgente) },
+        { key: "inicio", label: "Dashboard", icon: "home", count: null },
+        { key: "recepcion", label: "Nuevos encargos", icon: "inbox", count: cuenta("recepcion") },
+        { key: "firma", label: "Pendientes de firma", icon: "clock", count: cuenta("firma") },
+        { key: "copia", label: "Pendientes copias simples", icon: "file", count: cuenta("copia") },
+        { key: "factura", label: "Pendientes de factura notarial", icon: "euro", count: cuenta("factura") },
+        { key: "ajd", label: "Pendientes de AJD / ITP", icon: "scale", count: cuenta("ajd") },
+        { key: "registro", label: "Pendientes de presentación registral", icon: "building", count: cuenta("registro") },
+        { key: "defectos", label: "Expedientes con defectos", icon: "alert", count: cuenta("defectos") },
+        { key: "inscripcion", label: "Inscripciones registrales", icon: "layers", count: cuenta("inscripcion") },
+        { key: "cerrada", label: "Escrituras cerradas inscritas", icon: "check", count: cuenta("cerrada") },
+        { key: "firmas_urgentes", label: "Firmas urgentes", icon: "zap", count: expedientes.filter(x => x.firma_urgente).length, urgent: expedientes.some(x => x.firma_urgente) },
       ].map(item => (
         <button
           key={item.key}
@@ -769,7 +770,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
           onClick={() => { setBusqueda(""); setVista(item.key); }}
           aria-current={vista === item.key ? "page" : undefined}
         >
-          <span className="ng-modulo-icono" aria-hidden="true">{item.icon}</span>
+          <span className="ng-modulo-icono" aria-hidden="true"><IconoPremium nombre={item.icon} /></span>
           <span className="ng-modulo-label">{item.label}</span>
           {item.count !== null && <span className="ng-modulo-count">{item.count}</span>}
         </button>
