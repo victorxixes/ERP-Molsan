@@ -356,9 +356,13 @@
   .seguridad-auditoria-premium, .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
   .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .provisiones-fondos-page,
   .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria) :is(.molsan-panel__header, .ag-panel-cabecera, .ag-panel-header, .eg-card-header, .eg-panel-head, .ng-panel-titulo, .ctn-tabla-cabecera, .erp-card-header, .eg-modal-section-heading) {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
   color: #064675;
   background: #F2F7FB;
-  border-color: #D8E4EC;
+  border-bottom: 1px solid #D8E4EC;
 }
 :where(.erp-main-content, .erp-page, .apoderagest, .notargest, .encargagest, .cg-page, .cg-unified-workspace, .panel-tecnico-premium, .seguridad-subpagina-premium, .seguridad-usuarios-premium) :is(.ag-panel-cabecera h3, .ag-panel-header h2, .eg-panel-head h2, .eg-panel-head h3, .ng-panel-titulo h2, .erp-card-title) {
   margin: 0;
