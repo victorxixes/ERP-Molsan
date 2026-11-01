@@ -63,7 +63,7 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
   }
 
   return (
-    <div className="min-h-full space-y-6">
+    <div className="molsan-page-stack min-h-full">
       <header className="molsan-page-header">
         <p className="molsan-page-header__eyebrow">Utilidades · Administración de empleados</p>
         <h1 className="molsan-page-header__title">{titulo}</h1>
