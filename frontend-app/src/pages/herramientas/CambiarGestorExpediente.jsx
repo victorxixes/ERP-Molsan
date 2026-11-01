@@ -58,7 +58,7 @@ export default function CambiarGestorExpediente() {
   }
 
   return (
-    <div className="cambiar-gestor-premium herramientas-subpagina-premium min-h-full space-y-6">
+    <div className="molsan-page-stack cambiar-gestor-premium herramientas-subpagina-premium min-h-full">
       <header className="molsan-page-header">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="flex flex-wrap items-center gap-4">
