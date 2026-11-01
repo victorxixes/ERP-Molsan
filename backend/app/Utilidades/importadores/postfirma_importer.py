@@ -363,9 +363,10 @@ def validar_postfirma(db: Session, contenido_excel: bytes, fecha_desde=None, fec
             f"THEN ({valor_sql})::numeric END {direccion} NULLS LAST, "
             f"LOWER(COALESCE({valor_sql}, '')) {direccion}"
         )
+    params_count = {key: value for key, value in params.items() if key != "sort_column"}
     total = db.execute(text(
         f"SELECT COUNT(*) FROM public.absis_postfirma_registros r {where}"
-    ), params).scalar() or 0
+    ), params_count).scalar() or 0
     filas = db.execute(text(f"""
         SELECT r.id, r.carga_id, r.numero_fila, r.datos_json, c.nombre_archivo, c.fecha_carga
         FROM public.absis_postfirma_registros r
