@@ -69,6 +69,7 @@ export default function CtnListadoPage() {
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [pagina, setPagina] = useState(1);
+  const [orden, setOrden] = useState({ key: "apellidos", direction: "asc" });
   const [cargando, setCargando] = useState(false);
   const [exportando, setExportando] = useState(false);
   const [error, setError] = useState("");
@@ -88,6 +89,23 @@ export default function CtnListadoPage() {
   const [filtrosAplicados, setFiltrosAplicados] = useState({ ...filtrosIniciales });
   const totalPaginas = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
+  const cambiarOrden = (key) => {
+    setOrden((actual) => ({
+      key,
+      direction: actual.key !== key ? "asc" : actual.direction === "asc" ? "desc" : "asc",
+    }));
+    setPagina(1);
+  };
+
+  const cabeceraOrdenable = (label, key) => (
+    <button type="button" className="molsan-table-sort" onClick={() => cambiarOrden(key)} aria-label={`Ordenar por ${label}`}>
+      <span>{label}</span>
+      <span className={`molsan-table-sort__indicator ${orden.key === key ? "is-active" : ""}`} aria-hidden="true">
+        {orden.key === key ? (orden.direction === "asc" ? "↑" : "↓") : "↕"}
+      </span>
+    </button>
+  );
+
   const cargarListado = useCallback(
     async (paginaSolicitada = pagina, filtrosActuales = filtrosAplicados) => {
       setCargando(true);
@@ -96,6 +114,8 @@ export default function CtnListadoPage() {
         const params = new URLSearchParams({
           page: String(paginaSolicitada),
           page_size: String(PAGE_SIZE),
+          sort_by: orden.key,
+          sort_dir: orden.direction,
         });
         Object.entries(filtrosActuales).forEach(([key, value]) => {
           if (value?.trim()) params.set(key, value.trim());
