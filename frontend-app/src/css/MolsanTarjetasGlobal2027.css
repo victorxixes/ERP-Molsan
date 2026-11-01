@@ -330,7 +330,7 @@
   letter-spacing: -.02em;
   line-height: 1.2;
 }
-.molsan-page-header :is(p, .molsan-page-header__description) {
+.molsan-page-header__description {
   color: var(--molsan-premium-muted, #617789);
   font-size: 12px;
   line-height: 1.45;
