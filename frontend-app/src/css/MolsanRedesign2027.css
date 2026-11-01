@@ -2082,7 +2082,7 @@ body {
   .notificaciones-premium-page, .panel-tecnico-premium,
   .panel-tecnico-submodulo-premium, .informes-premium-page,
   .mensajes-premium-page, .molsan-intranet-page
-) :is([role="dialog"], [aria-modal="true"]) {
+) :is([role="dialog"], [aria-modal="true"]):not(.fixed) {
   min-width: 0;
   color: var(--molsan-text);
   background-color: var(--molsan-surface);
@@ -2161,7 +2161,7 @@ body {
     .notificaciones-premium-page, .panel-tecnico-premium,
     .panel-tecnico-submodulo-premium, .informes-premium-page,
     .mensajes-premium-page, .molsan-intranet-page
-  ) :is([role="dialog"], [aria-modal="true"]) {
+  ) :is([role="dialog"], [aria-modal="true"]):not(.fixed) {
     max-width: calc(100vw - 16px);
     max-height: calc(100dvh - 16px);
     overflow: auto;
