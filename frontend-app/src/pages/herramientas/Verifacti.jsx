@@ -90,7 +90,7 @@ export default function Verifacti() {
   }
 
   return (
-    <div className="molsan-page-stack min-h-full animate-fadeIn">
+    <div className="molsan-page-stack herramientas-subpagina-premium min-h-full animate-fadeIn">
       <header className="molsan-page-header">
         <div className="molsan-page-header__identity">
           <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="receipt" size={20} /></div>

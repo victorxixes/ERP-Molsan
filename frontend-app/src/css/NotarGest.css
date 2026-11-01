@@ -1222,3 +1222,14 @@
 .ng-admin-notarias .ng-admin-kpi-button > strong { color:#064675; font-size:25px; font-weight:850; line-height:1.1; }
 .ng-admin-notarias .ng-admin-kpi-button > small { color:#617789; }
 @media(max-width:700px){.ng-admin-notarias{padding:14px!important;border-radius:16px;}}
+
+
+/* NotarGest · cabeceras premium estables, sin parpadeo al cambiar de vista. */
+.notargest .ng-hero-apoderagest,
+.ng-admin-notarias .ng-control-hero {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  backface-visibility: hidden;
+}
