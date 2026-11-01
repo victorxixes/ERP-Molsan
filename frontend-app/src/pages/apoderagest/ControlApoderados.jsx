@@ -158,16 +158,17 @@ export default function ControlApoderados({ modo = "colaborador" }) {
           <h2 className="text-lg font-bold text-slate-800">Colaboradores habilitados</h2>
           <p className="mt-1 text-sm text-slate-500">Activa aquí el acceso a «Mi liquidación» para cada empleado. El cambio se guarda en su ficha y determina quién puede validar firmas y presentar facturas.</p>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[560px] text-left text-sm">
-            <thead><tr className="border-b bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><th className="p-3">Empleado</th><th className="p-3">Estado laboral</th><th className="p-3">Acceso a liquidaciones</th></tr></thead>
-            <tbody>{colaboradores.map((e) => <tr key={e.id} className="border-b last:border-0">
-              <td className="p-3 font-semibold text-slate-800">{e.nombre}</td>
-              <td className="p-3">{e.activo ? "Activo" : "Inactivo"}</td>
-              <td className="p-3"><label className="inline-flex items-center gap-2 font-medium"><input type="checkbox" checked={Boolean(e.es_colaborador)} disabled={cargando || !e.activo} onChange={(ev) => cambiarColaborador(e, ev.target.checked)} className="h-4 w-4 rounded border-slate-300" />{e.es_colaborador ? "Habilitado" : "No habilitado"}</label></td>
-            </tr>)}</tbody>
-          </table>
-        </div>
+        <MolsanDataTable
+          rows={colaboradores}
+          rowKey="id"
+          initialSort={{ key: "nombre", direction: "asc" }}
+          emptyText="No hay empleados en el catálogo."
+          columns={[
+            { key: "nombre", header: "Empleado", accessor: "nombre", sortType: "text", render: (value) => <strong className="text-slate-800">{value}</strong> },
+            { key: "activo", header: "Estado laboral", accessor: "activo", sortType: "boolean", render: (value) => value ? "Activo" : "Inactivo" },
+            { key: "es_colaborador", header: "Acceso a liquidaciones", accessor: (item) => Boolean(item.es_colaborador), sortType: "boolean", render: (value, item) => <label className="inline-flex items-center gap-2 font-medium"><input type="checkbox" checked={value} disabled={cargando || !item.activo} onChange={(ev) => cambiarColaborador(item, ev.target.checked)} className="h-4 w-4 rounded border-slate-300" />{value ? "Habilitado" : "No habilitado"}</label> },
+          ]}
+        />
       </section>
       <section className="erp-card rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
