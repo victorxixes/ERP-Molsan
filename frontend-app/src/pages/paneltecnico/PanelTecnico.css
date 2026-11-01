@@ -63,3 +63,16 @@
 .panel-tecnico-seccion { min-width:0; padding:0; }
 .monitor-realtime-premium .monitor-realtime-title { color:#064675 !important; }
 .monitor-realtime-premium .monitor-realtime-subtitle { color:#617789 !important; }
+
+
+.panel-tecnico-header { position: relative; z-index: 2; }
+.panel-tecnico-header__identity { display:flex; align-items:center; gap:14px; min-width:0; flex-wrap:wrap; }
+.panel-tecnico-operativo {
+  display:inline-flex; align-items:center; gap:8px; min-height:34px; padding:7px 11px;
+  border:1px solid #b9e3ce; border-radius:999px; background:#eef9f3; color:#176b49;
+  font-size:12px; font-weight:750; white-space:nowrap;
+}
+.panel-tecnico-operativo > span { width:8px; height:8px; border-radius:50%; background:#20a36a; box-shadow:0 0 0 4px rgba(32,163,106,.12); }
+.panel-tecnico-seccion { min-width:0; padding:0; }
+.monitor-realtime-premium .monitor-realtime-title { color:#064675 !important; }
+.monitor-realtime-premium .monitor-realtime-subtitle { color:#617789 !important; }
