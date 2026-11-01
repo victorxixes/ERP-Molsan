@@ -314,3 +314,148 @@
   .dashboard-cancelagest .dashboard-signatures-wrap .dashboard-kpi { min-height: 0; }
   .dashboard-cancelagest .dashboard-signatures-wrap .erp-card { padding: 14px; }
 }
+
+
+/* =========================================================
+   DASHBOARD · HÍBRIDO MOLSAN 2027
+   Jerarquía de lectura, paneles y profundidad visual.
+   No modifica métricas, consultas ni acciones.
+   ========================================================= */
+.dashboard-cancelagest {
+  --dashboard-cg-primary:#064675;
+  --dashboard-cg-primary-dark:#04375B;
+  display:block;
+}
+.dashboard-cancelagest .dashboard-header {
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  padding:clamp(22px,2.6vw,34px) clamp(20px,2.8vw,36px) !important;
+  margin-bottom:26px !important;
+  border:1px solid #D8E4EC;
+  border-radius:22px;
+  background:
+    radial-gradient(ellipse at 92% 12%,rgba(89,174,204,.17),transparent 32%),
+    linear-gradient(112deg,#F2F7FB 0%,#FFFFFF 64%,#F6FAFC 100%);
+  box-shadow:0 12px 30px rgba(6,50,82,.065);
+}
+.dashboard-cancelagest .dashboard-header::after {
+  position:absolute;z-index:-1;right:-80px;bottom:-190px;
+  width:380px;height:380px;border:1px solid rgba(6,70,117,.09);
+  border-radius:50%;box-shadow:0 0 0 28px rgba(6,70,117,.018),0 0 0 62px rgba(6,70,117,.014);
+  content:"";
+}
+.dashboard-cancelagest .ag-marca {
+  width:68px;height:68px;flex-basis:68px;
+  border-radius:18px;
+  background:linear-gradient(145deg,#04375B,#0D638C) !important;
+  box-shadow:0 10px 22px rgba(6,70,117,.18);
+  font-size:21px;
+}
+.dashboard-cancelagest .ag-eyebrow {
+  color:#52778F !important;
+  font-size:10px;font-weight:850;letter-spacing:.18em;
+}
+.dashboard-cancelagest .ag-hero h1 {
+  margin:7px 0 6px !important;
+  color:#064675 !important;
+  font-size:clamp(29px,3vw,39px) !important;
+  font-weight:850 !important;
+  letter-spacing:-.045em !important;
+}
+.dashboard-cancelagest .ag-hero p {
+  max-width:680px;
+  color:#617789 !important;
+  font-size:13px;line-height:1.7;
+}
+.dashboard-cancelagest .ag-fecha-actual {
+  border-color:#D8E4EC;
+  border-radius:12px;
+  background:rgba(255,255,255,.82);
+}
+.dashboard-cancelagest .ag-punto-vivo {
+  background:#16845B;
+  box-shadow:0 0 0 4px rgba(22,132,91,.12);
+}
+.dashboard-cancelagest .ag-boton-actualizar {
+  min-height:42px;border-radius:12px;
+  background:linear-gradient(112deg,#04375B,#064675 65%,#1477A5);
+  border-color:#064675;
+  box-shadow:0 7px 17px rgba(6,70,117,.16);
+}
+.dashboard-cancelagest .ag-boton-actualizar:hover:not(:disabled) {
+  box-shadow:0 10px 22px rgba(6,70,117,.22);
+  transform:translateY(-1px);
+}
+.dashboard-cancelagest .dashboard-kpis { gap:16px; }
+.dashboard-cancelagest .dashboard-kpi,
+.dashboard-cancelagest .erp-card {
+  border:1px solid #D8E4EC;
+  border-radius:17px;
+  background:linear-gradient(155deg,#FFFFFF 0%,#FFFFFF 70%,#F7FAFC 100%);
+  box-shadow:0 8px 22px rgba(6,50,82,.055);
+}
+.dashboard-cancelagest .dashboard-kpi {
+  min-height:132px;
+  padding:19px !important;
+}
+.dashboard-cancelagest .dashboard-kpi:hover {
+  border-color:#B8CBD9;
+  box-shadow:0 13px 28px rgba(6,50,82,.095);
+  transform:translateY(-2px);
+}
+.dashboard-cancelagest .dashboard-kpi__value {
+  color:#123F5E !important;
+  font-size:clamp(27px,2.2vw,34px);
+  font-weight:850;
+}
+.dashboard-cancelagest .dashboard-kpi__icon {
+  width:46px;height:46px;
+  border:1px solid #D8E7F0;
+  border-radius:14px;
+  background:#EAF2F8 !important;
+  color:#064675 !important;
+}
+.dashboard-cancelagest section > .mb-4 h2,
+.dashboard-cancelagest section > .mb-4.flex h2 {
+  position:relative;
+  margin:0;
+  padding-left:15px;
+  color:#123F5E !important;
+  font-size:18px;
+  font-weight:850;
+  letter-spacing:-.025em;
+  line-height:1.3;
+}
+.dashboard-cancelagest section > .mb-4 h2::before,
+.dashboard-cancelagest section > .mb-4.flex h2::before {
+  position:absolute;top:3px;bottom:3px;left:0;width:4px;
+  border-radius:8px;
+  background:linear-gradient(180deg,#1477A5,#064675);
+  content:"";
+}
+.dashboard-cancelagest section > .mb-4 p {
+  padding-left:15px;
+  color:#617789 !important;
+  font-size:12px;line-height:1.65;
+}
+.dashboard-cancelagest .dashboard-main-grid { gap:22px; }
+.dashboard-cancelagest .dashboard-main-grid .erp-card {
+  overflow:hidden;
+  border-radius:17px;
+}
+.dashboard-cancelagest .dashboard-activity-inline { min-width:92px; }
+.dashboard-cancelagest .dashboard-signatures-wrap .dashboard-firmas-grid { gap:14px; }
+.dashboard-cancelagest table thead tr { background:#EAF2F8 !important; }
+.dashboard-cancelagest table thead th {
+  color:#31566F !important;
+  font-size:10px;font-weight:850;letter-spacing:.08em;
+}
+.dashboard-cancelagest table tbody td { padding-top:15px;padding-bottom:15px; }
+.dashboard-cancelagest table tbody tr:hover { background:#F2F7FB !important; }
+@media(max-width:760px) {
+  .dashboard-cancelagest .dashboard-header { padding:20px !important;border-radius:17px; }
+  .dashboard-cancelagest .ag-marca { width:52px;height:52px;flex-basis:52px; }
+  .dashboard-cancelagest .dashboard-kpi { min-height:112px; }
+  .dashboard-cancelagest section > .mb-4 h2 { font-size:17px; }
+}
