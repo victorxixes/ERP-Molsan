@@ -1080,3 +1080,35 @@
   min-width: 0;
 }
 .molsan-page-stack > * { min-width: 0; }
+
+
+/* Cabecera compacta de modal: no debe heredar la cabecera hero de página. */
+.molsan-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px 20px;
+  color: var(--molsan-primary, #064675);
+  border: 0;
+  border-bottom: 1px solid var(--molsan-border, #D8E4EC);
+  border-radius: 20px 20px 0 0;
+  background: var(--molsan-surface-soft, #F2F7FB);
+  box-shadow: none;
+}
+.molsan-modal-header::after { display: none; }
+.molsan-modal-header :is(h1, h2, h3, p) { color: inherit; }
+.molsan-page-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px 12px;
+  color: var(--molsan-text, #18384D);
+  border: 1px solid var(--molsan-border, #D8E4EC);
+  border-radius: 14px;
+  background: var(--molsan-surface-soft, #F2F7FB);
+}
