@@ -4,6 +4,7 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "./SeguridadSubpaginasPremium.css";
 
 
@@ -191,7 +192,7 @@ function TarjetaMetrica({
             text-lg
           "
         >
-          {icono}
+          <MolsanIcon name={icono} size={34} />
         </div>
 
       </div>
@@ -661,7 +662,7 @@ export default function SeguridadRoles() {
         <div className="molsan-page-header__identity">
 
           <div className="molsan-page-header__mark">
-            🛡️
+            <MolsanIcon name="shield" size={42} bare />
           </div>
 
           <div>
@@ -928,7 +929,7 @@ export default function SeguridadRoles() {
                         text-lg
                       "
                     >
-                      🛡️
+                      <MolsanIcon name="shield" size={42} />
                     </div>
 
 
@@ -1283,7 +1284,7 @@ export default function SeguridadRoles() {
                             text-[var(--erp-text)]
                           "
                         >
-                          🔐 Configuración del rol
+                          <MolsanIcon name="lock" size={20} /> Configuración del rol
                         </h4>
 
                         <p
