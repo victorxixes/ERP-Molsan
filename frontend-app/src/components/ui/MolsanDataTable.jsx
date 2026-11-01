@@ -30,8 +30,11 @@ export default function MolsanDataTable({
   const ordenar = (column) => {
     if (column.sortable === false) return;
     const sortKey = sortKeyOf(column);
-    const direction = sort.key === sortKey && sort.direction === "asc" ? "desc" : "asc";
-    const next = { key: sortKey, direction };
+    const next = sort.key !== sortKey
+      ? { key: sortKey, direction: "asc" }
+      : sort.direction === "asc"
+        ? { key: sortKey, direction: "desc" }
+        : { key: null, direction: null };
     setSort(next);
     if (sortMode === "server") onSortChange?.(next, column);
   };
