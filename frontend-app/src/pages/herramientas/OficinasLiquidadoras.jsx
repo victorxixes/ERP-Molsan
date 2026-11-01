@@ -84,10 +84,6 @@ function Icono({
   name,
   className = "w-5 h-5",
 }) {
-  useEffect(() => {
-    if (searchParams.get("importar") === "1") abrirImportacion();
-  }, [searchParams]);
-
   return (
     <svg
       className={className}
@@ -1088,6 +1084,10 @@ export default function OficinasLiquidadoras() {
   // ==========================================================
   // RENDER
   // ==========================================================
+  useEffect(() => {
+    if (searchParams.get("importar") === "1") abrirImportacion();
+  }, [searchParams]);
+
 
   return (
     <div
