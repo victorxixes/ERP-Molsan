@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { formatPercent as fmt } from "../../utils/formatters";
 
 const VACIO = { nombre: "", categoria: "impuesto", impuesto: "IVA", porcentaje: "", territorio: "Territorio común", descripcion: "", activo: true };
@@ -125,15 +126,19 @@ export default function TiposImpositivos() {
           </div>
         </div>
         {cargando ? <p className="p-8 text-center text-sm text-slate-500">Cargando catálogo…</p> : filtrados.length === 0 ? <p className="p-8 text-center text-sm text-slate-500">No hay tipos para este filtro.</p> : (
-          <div className="overflow-x-auto"><table className="min-w-full text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-4 py-3">Nombre</th><th className="px-4 py-3">Categoría</th><th className="px-4 py-3">Tributo</th><th className="px-4 py-3">Porcentaje</th><th className="px-4 py-3">Territorio</th><th className="px-4 py-3">Estado</th><th className="px-4 py-3 text-right">Acciones</th></tr></thead>
-            <tbody className="divide-y divide-slate-100">{filtrados.map((x) => <tr key={x.id} className="hover:bg-slate-50/70">
-              <td className="px-4 py-3"><div className="font-semibold text-slate-800">{x.nombre}</div>{x.descripcion && <div className="mt-1 max-w-sm text-xs text-slate-500">{x.descripcion}</div>}</td>
-              <td className="px-4 py-3">{x.categoria === "retencion" ? "Retención" : "Impuesto"}</td><td className="px-4 py-3">{x.impuesto}</td><td className="px-4 py-3 tabular-nums">{fmt(x.porcentaje)}</td><td className="px-4 py-3">{x.territorio}</td>
-              <td className="px-4 py-3"><span className={x.activo ? "rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700" : "rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-500"}>{x.activo ? "Activo" : "Inactivo"}</span></td>
-              <td className="px-4 py-3 text-right whitespace-nowrap"><button type="button" onClick={() => editar(x)} className="mr-2 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100">Editar</button>{x.activo && <button type="button" onClick={() => desactivar(x)} className="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-bold text-rose-700 hover:bg-rose-50">Eliminar</button>}</td>
-            </tr>)}</tbody>
-          </table></div>
+          <MolsanDataTable
+            rows={filtrados}
+            rowKey="id"
+            columns={[
+              { key: "nombre", header: "Nombre", accessor: "nombre", sortType: "text", render: (value, item) => <><strong>{value}</strong>{item.descripcion && <small className="mt-1 block max-w-sm text-slate-500">{item.descripcion}</small></> },
+              { key: "categoria", header: "Categoría", accessor: (item) => item.categoria === "retencion" ? "Retención" : "Impuesto", sortType: "text" },
+              { key: "impuesto", header: "Tributo", accessor: "impuesto", sortType: "text" },
+              { key: "porcentaje", header: "Porcentaje", accessor: (item) => item.porcentaje == null ? null : Number(item.porcentaje), sortType: "percent", render: (value) => fmt(value) },
+              { key: "territorio", header: "Territorio", accessor: "territorio", sortType: "text" },
+              { key: "activo", header: "Estado", accessor: "activo", sortType: "boolean", render: (value) => <span className={value ? "rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700" : "rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-500"}>{value ? "Activo" : "Inactivo"}</span> },
+              { key: "acciones", header: "Acciones", sortable: false, align: "right", accessor: (item) => item.id, render: (_, item) => <div className="flex justify-end gap-2"><button type="button" onClick={() => editar(item)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100">Editar</button>{item.activo && <button type="button" onClick={() => desactivar(item)} className="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-bold text-rose-700 hover:bg-rose-50">Eliminar</button>}</div> },
+            ]}
+          />ble></div>
         )}
       </section>
     </main>
