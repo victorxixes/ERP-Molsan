@@ -62,3 +62,13 @@
     transition-duration: .01ms !important;
   }
 }
+
+
+/* Ficha de expediente: compatibilidad de utilidades azules/índigo con Glass Luxe. */
+.ficha-expediente-premium :is([class~="bg-blue-50"], [class~="bg-indigo-50"], [class~="bg-sky-50"], [class~="bg-blue-100"], [class~="hover:bg-blue-100"]:hover, [class~="hover:bg-indigo-50"]:hover, [class~="hover:bg-indigo-100"]:hover) { background-color: var(--molsan-primary-soft); }
+.ficha-expediente-premium :is([class~="bg-blue-600"], [class~="bg-indigo-600"]) { background-color: var(--molsan-primary); }
+.ficha-expediente-premium :is([class~="hover:bg-indigo-700"], [class~="hover:bg-blue-700"]):hover { background-color: var(--molsan-primary-hover); }
+.ficha-expediente-premium :is([class~="text-blue-600"], [class~="text-blue-700"], [class~="text-indigo-600"], [class~="text-indigo-700"], [class~="text-indigo-800"], [class~="text-indigo-900"], [class~="text-indigo-950"], [class~="text-sky-800"], [class~="text-sky-900"]) { color: var(--molsan-primary); }
+.ficha-expediente-premium :is([class~="border-blue-100"], [class~="border-blue-200"], [class~="border-indigo-100"], [class~="border-indigo-200"], [class~="border-sky-200"]) { border-color: var(--molsan-border); }
+.ficha-expediente-premium :is([class~="border-blue-300"], [class~="border-indigo-300"]) { border-color: var(--molsan-border-strong); }
+.ficha-expediente-premium :is([class~="focus:border-blue-400"]:focus) { border-color: var(--molsan-primary); }
