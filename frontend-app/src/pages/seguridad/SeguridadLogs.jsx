@@ -952,6 +952,7 @@ export default function SeguridadLogs() {
 
       <section
         className="
+          molsan-page-header
           bg-[var(--erp-surface)]
           border
           border-[var(--erp-border)]
