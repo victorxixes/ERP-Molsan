@@ -4,7 +4,6 @@
 
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Component, lazy, Suspense } from "react";
-import NotificacionesPage from "./pages/notificaciones/Notificaciones.jsx";
 import { useAuthStore } from "./store/authStore";
 
 /* AUTH */
@@ -91,7 +90,7 @@ const Verifacti = lazy(() => import("./pages/herramientas/Verifacti.jsx"));
 const Logs = lazy(() => import("./pages/logs/Logs.jsx"));
 
 /* NOTIFICACIONES */
-const Notificaciones = NotificacionesPage;
+const Notificaciones = lazy(() => import("./pages/notificaciones/Notificaciones.jsx"));
 
 /* MUNICIPIOS */
 const Municipios = lazy(() => import("./pages/herramientas/Municipios.jsx"));
