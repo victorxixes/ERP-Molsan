@@ -47,7 +47,7 @@ const MODULOS = {
     estilo: "mg",
   },
   fichajes: {
-    nombre: "Fichaje Molsan",
+    nombre: "Fichajes",
     descripcion: "Registra tu jornada, pausas, ausencias y consulta tu calendario y justificantes.",
     ruta: "/fichajes",
     siglas: "FI",
