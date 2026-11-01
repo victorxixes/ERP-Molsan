@@ -967,3 +967,252 @@
   background: #F2F7FB !important;
   border: 1px solid #D8E4EC !important;
 }
+
+
+
+/* ============================================================
+   NOTARGEST · MOLSAN ERP PREMIUM 2027 · SISTEMA GLOBAL
+   Capa final de alineación: cabeceras, superficies, tarjetas,
+   formularios, tablas y acciones. Conserva toda la operativa.
+   ============================================================ */
+.notargest-workspace-premium {
+  width:100%!important;
+  max-width:none!important;
+  min-width:0;
+  margin:0!important;
+  padding:0!important;
+  overflow:visible!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.notargest-workspace-premium > .ng-content {
+  width:100%;
+  max-width:none;
+  min-width:0;
+  margin:0;
+  padding:0;
+}
+.notargest .ng-hero-apoderagest,
+.ng-admin-notarias .ng-control-hero {
+  display:flex;
+  width:100%;
+  min-height:112px;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  margin:0 0 20px!important;
+  padding:20px 24px!important;
+  border:1px solid #D8E4EC!important;
+  border-radius:18px!important;
+  background:#FFFFFF!important;
+  box-shadow:0 8px 24px rgba(6,50,82,.055)!important;
+}
+.notargest .ng-hero-apoderagest .molsan-page-header__identity,
+.ng-admin-notarias .ng-control-hero .molsan-page-header__identity {
+  display:flex;
+  min-width:0;
+  align-items:center;
+  gap:16px;
+}
+.notargest .ng-hero-apoderagest .molsan-page-header__mark,
+.ng-admin-notarias .ng-control-hero .molsan-page-header__mark {
+  display:grid;
+  width:58px;
+  height:58px;
+  flex:0 0 58px;
+  place-items:center;
+  border:1px solid #D8E4EC;
+  border-radius:17px;
+  background:#F2F7FB;
+  color:#064675;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 5px 14px rgba(6,50,82,.08);
+}
+.notargest .ng-hero-apoderagest .molsan-page-header__eyebrow,
+.ng-admin-notarias .ng-control-hero .ng-control-eyebrow {
+  margin:0 0 5px;
+  color:#617789!important;
+  font-size:10px;
+  font-weight:850;
+  letter-spacing:.13em;
+}
+.notargest .ng-hero-apoderagest .molsan-page-header__title,
+.ng-admin-notarias .ng-control-hero .ng-control-titulos h2 {
+  margin:0;
+  color:#064675!important;
+  font-size:clamp(21px,2vw,27px);
+  font-weight:850;
+  line-height:1.15;
+  letter-spacing:-.035em;
+}
+.notargest .ng-hero-apoderagest .molsan-page-header__description,
+.ng-admin-notarias .ng-control-hero .ng-control-titulos p {
+  margin:6px 0 0;
+  color:#617789!important;
+  font-size:12px;
+  line-height:1.55;
+}
+.notargest .ng-hero-apoderagest .molsan-page-header__actions,
+.ng-admin-notarias .ng-control-hero .ng-control-acciones {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:flex-end;
+  gap:9px;
+}
+.notargest .ng-panel,
+.notargest .ng-dashboard-grafico,
+.notargest .ng-detalle-bloque,
+.ng-admin-notarias .ng-admin-global-resumen,
+.ng-admin-notarias .ng-admin-notaria-card {
+  min-width:0;
+  overflow:hidden;
+  border:1px solid #D8E4EC!important;
+  border-radius:17px!important;
+  background:#FFFFFF!important;
+  box-shadow:0 7px 20px rgba(6,50,82,.045)!important;
+}
+.notargest .ng-panel { margin:0 0 16px; }
+.notargest .ng-panel-titulo,
+.notargest .ng-bloque-heading,
+.notargest .ng-dashboard-grafico .ng-bloque-heading {
+  display:flex;
+  min-height:58px;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:15px 18px;
+  border-bottom:1px solid #D8E4EC;
+  background:#F2F7FB;
+}
+.notargest .ng-panel-titulo h2,
+.notargest .ng-bloque-heading h3 {
+  margin:0;
+  color:#064675;
+  font-size:14px;
+  font-weight:850;
+  letter-spacing:-.015em;
+}
+.notargest .ng-panel-titulo p,
+.notargest .ng-bloque-heading p {
+  margin:4px 0 0;
+  color:#617789;
+  font-size:11px;
+  line-height:1.5;
+}
+.notargest .ng-dashboard-analitica { display:grid; gap:16px; }
+.notargest .ng-dashboard-graficos { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.notargest .ng-dashboard-grafico { margin:0; }
+.notargest .ng-dashboard-grafico .ng-bloque-heading { margin:0 0 14px; }
+.notargest .ng-dashboard-grafico > :not(.ng-bloque-heading) { margin-left:17px; margin-right:17px; }
+.notargest .ng-dashboard-grafico > :last-child { margin-bottom:17px; }
+.notargest .ng-filtros { background:#F2F7FB; border-bottom:1px solid #D8E4EC; }
+.notargest .ng-filtros input,
+.notargest .ng-workflow-form input,
+.notargest .ng-comentario-form textarea,
+.notargest .ng-comentario-form select,
+.notargest input:not([type="file"]),
+.notargest select,
+.notargest textarea {
+  border:1px solid #D8E4EC;
+  border-radius:10px;
+  background:#FFFFFF;
+  color:#173247;
+}
+.notargest .ng-tabla th { background:#EAF2F8; color:#617789; }
+.notargest .ng-tabla td { color:#173247; border-color:#E5EDF3; }
+.notargest .ng-tabla tbody tr:hover { background:#F2F7FB; }
+.notargest .ng-abrir,
+.notargest .ng-adjuntar,
+.notargest .ng-boton-secundario {
+  border:1px solid #D8E4EC;
+  border-radius:10px;
+  background:#F2F7FB;
+  color:#064675;
+  font-weight:750;
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease;
+}
+.notargest .ng-abrir:hover,
+.notargest .ng-adjuntar:hover,
+.notargest .ng-boton-secundario:hover {
+  transform:translateY(-1px);
+  border-color:#B8CBD9;
+  background:#EAF2F8;
+  box-shadow:0 5px 12px rgba(6,50,82,.07);
+}
+.notargest .ng-login-submit {
+  border:1px solid rgba(255,255,255,.55);
+  border-radius:11px;
+  background:linear-gradient(135deg,#064675,#04375B);
+  box-shadow:0 6px 16px rgba(6,70,117,.16);
+}
+.notargest .ng-dato,
+.notargest .ng-documento,
+.notargest .ng-archivo-row,
+.notargest .ng-categoria-documental {
+  border-color:#D8E4EC;
+  border-radius:12px;
+  background:#FFFFFF;
+}
+.notargest .ng-dato small,
+.notargest .ng-documento small,
+.notargest .ng-archivo-info small { color:#617789; }
+.notargest .ng-dato strong,
+.notargest .ng-documento strong,
+.notargest .ng-archivo-info strong { color:#173247; }
+.ng-admin-notarias { width:100%; min-width:0; padding:0 0 20px; }
+.ng-admin-notarias .ng-admin-global-resumen { padding:18px; }
+.ng-admin-notarias .ng-admin-kpis { gap:12px; }
+.ng-admin-notarias .ng-admin-kpi-button {
+  min-height:108px;
+  border:1px solid #D8E4EC!important;
+  border-radius:15px!important;
+  background:linear-gradient(150deg,#FFFFFF 0%,#FFFFFF 58%,#F2F7FB 100%)!important;
+  color:#173247;
+  box-shadow:0 6px 18px rgba(6,50,82,.045)!important;
+}
+.ng-admin-notarias .ng-admin-kpi-button:hover {
+  border-color:#B8CBD9!important;
+  box-shadow:0 12px 24px rgba(6,50,82,.09)!important;
+}
+.ng-admin-notarias .ng-admin-individual-titulo { margin:22px 0 12px; }
+.ng-admin-notarias .ng-admin-notaria-card { padding:0; }
+.ng-admin-notarias .ng-admin-card-header { padding:17px; background:#F2F7FB; border-bottom:1px solid #D8E4EC; }
+.ng-admin-notarias .ng-admin-notaria-icono {
+  display:grid;
+  width:48px;
+  height:48px;
+  place-items:center;
+  border:1px solid #D8E4EC;
+  border-radius:14px;
+  background:#FFFFFF;
+  color:#064675;
+}
+.ng-admin-notarias .ng-admin-resumen { padding:15px 17px; }
+.ng-admin-notarias .ng-admin-circuitos { padding:0 17px 15px; }
+.ng-admin-notarias .ng-admin-circuito { border:1px solid #D8E4EC; border-radius:13px; background:#F2F7FB; }
+.ng-admin-notarias .ng-admin-ver-expedientes,
+.ng-admin-notarias .ng-admin-entrar { margin:0 17px 10px; width:calc(100% - 34px); border-radius:10px; }
+.ng-admin-notarias .ng-admin-entrar { margin-bottom:17px; background:#064675; }
+.notargest .ng-perfil-avatar {
+  display:grid;
+  place-items:center;
+  border:1px solid #D8E4EC;
+  border-radius:15px;
+  background:#F2F7FB;
+  color:#064675;
+}
+@media(max-width:900px) {
+  .notargest .ng-dashboard-graficos { grid-template-columns:1fr; }
+}
+@media(max-width:700px) {
+  .notargest .ng-hero-apoderagest,
+  .ng-admin-notarias .ng-control-hero { align-items:flex-start; flex-direction:column; padding:16px!important; }
+  .notargest .ng-hero-apoderagest .molsan-page-header__actions,
+  .ng-admin-notarias .ng-control-hero .ng-control-acciones { width:100%; justify-content:flex-start; }
+  .notargest .ng-panel-titulo { align-items:flex-start; flex-wrap:wrap; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .notargest button,.ng-admin-notarias button { transition:none!important; }
+}
