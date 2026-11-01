@@ -129,7 +129,6 @@
 
 .ctn-filtros {
   padding: 18px;
-  margin-bottom: 18px;
   
   
   
@@ -202,7 +201,7 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 10px;
-  margin: 0 0 13px;
+  margin: 0;
   color: #627087;
   font-size: 12px;
 }
@@ -214,7 +213,7 @@
 
 .ctn-alerta-error {
   padding: 12px 14px;
-  margin-bottom: 16px;
+  margin-bottom: 0;
   color: #9c2430;
   background: #fff0f1;
   border: 1px solid #f0c3c8;
