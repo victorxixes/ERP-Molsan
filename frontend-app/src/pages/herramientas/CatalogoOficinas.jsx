@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import axios from "../../api/axios";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanButton from "../../components/ui/MolsanButton";
 import "../../css/HerramientasPremium.css";
 
 const COLUMNAS = [
@@ -122,20 +123,13 @@ export default function CatalogoOficinas() {
           <div><h2 className="text-lg font-bold text-slate-800">Importar desde Excel</h2><p className="text-sm text-slate-500">Se admiten .xlsx y .xls. El archivo debe contener las 13 columnas del catálogo.</p></div>
           <Link to="/catalogos/oficinas" className="molsan-btn molsan-btn--secondary">Volver al catálogo</Link>
         </div>
-        <div className="hidden">
-          <span>Solo datos importados por ti</span>
-        </div>
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-end">
           <label className="block text-sm font-medium text-slate-700">
             Archivo Excel
             <input id="catalogo-oficinas-excel" type="file" accept=".xlsx,.xls" onChange={seleccionarArchivo} className="mt-2 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:font-semibold file:text-blue-700" />
           </label>
-          <button type="button" onClick={previsualizar} disabled={!archivo || cargando || importando} className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-800 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50">
-            {cargando ? "Validando…" : "Validar y previsualizar"}
-          </button>
-          <button type="button" onClick={importar} disabled={!archivo || !previsualizacion || !!previsualizacion.errores?.length || importando} className="rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">
-            {importando ? "Importando…" : "Importar oficinas"}
-          </button>
+          <MolsanButton icon="check" variant="secondary" onClick={previsualizar} disabled={!archivo || cargando || importando} loading={cargando}>Validar y previsualizar</MolsanButton>
+          <MolsanButton icon="upload" variant="primary" onClick={importar} disabled={!archivo || !previsualizacion || !!previsualizacion.errores?.length || importando} loading={importando}>Importar oficinas</MolsanButton>
         </div>
         {mensaje && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{mensaje}</div>}
         {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{Array.isArray(error) ? error.join(" · ") : error}</div>}
