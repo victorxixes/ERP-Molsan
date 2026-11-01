@@ -98,7 +98,7 @@ export default function AccesosNotariales() {
     <main className="ctn-listado-page molsan-page" aria-busy={cargando}>
       <header className="ctn-listado-header molsan-page-header">
         <div className="ctn-listado-header-identidad molsan-page-header__identity">
-          <div className="ctn-listado-header-icon molsan-page-header__mark" aria-hidden="true">🔐</div>
+          <div className="ctn-listado-header-icon molsan-page-header__mark"><MolsanIcon name="lock" size={42} bare /></div>
           <div className="min-w-0">
             <p className="ctn-listado-header-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · UTILIDADES</p>
             <h1 className="molsan-page-header__title">Accesos notariales</h1>
@@ -109,11 +109,11 @@ export default function AccesosNotariales() {
       </header>
       <section className="accesos-notariales-resumen" aria-label="Resumen de accesos habilitados">
         <article className="accesos-notariales-resumen-card">
-          <span aria-hidden="true">🔐</span>
+          <MolsanIcon name="lock" size={20} />
           <div><p>Notarios habilitados en NotarGest</p><strong>{resumen.notargest === null ? "—" : resumen.notargest}</strong><small>Acceso activo al portal</small></div>
         </article>
         <article className="accesos-notariales-resumen-card">
-          <span aria-hidden="true">📋</span>
+          <MolsanIcon name="clipboard" size={20} />
           <div><p>Notarios habilitados en EncargaGest</p><strong>{resumen.encargagest === null ? "—" : resumen.encargagest}</strong><small>Acceso activo al portal</small></div>
         </article>
       </section>
