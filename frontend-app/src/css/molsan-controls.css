@@ -18,3 +18,54 @@
 .molsan-status--warning { color:var(--molsan-warning); background:#fff7e8; border-color:#f4e1b6; }
 .molsan-status--danger { color:var(--molsan-danger); background:#fff0f1; border-color:#f4d0d4; }
 .molsan-status--info { color:var(--molsan-primary); background:var(--molsan-primary-soft); border-color:var(--molsan-border); }
+
+
+/* MOLSAN BUTTON SYSTEM · acciones operativas */
+.molsan-btn {
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 11px;
+  font-family: var(--molsan-font-family);
+  font-weight: 700;
+  letter-spacing: -.01em;
+  box-shadow: 0 2px 5px rgba(6, 50, 82, .045);
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease, border-color 180ms ease;
+}
+.molsan-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(6, 50, 82, .10);
+}
+.molsan-btn:active:not(:disabled) { transform: translateY(0) scale(.985); }
+.molsan-btn--primary { color:#fff; background:linear-gradient(135deg,#075487,#064675); border-color:#064675; }
+.molsan-btn--secondary { color:#064675; background:linear-gradient(145deg,#fff,#F2F7FB); border-color:#D8E4EC; }
+.molsan-btn--success { color:#fff; background:#16845B; border-color:#16845B; }
+.molsan-btn--danger { color:#fff; background:#B42318; border-color:#B42318; }
+.molsan-btn--danger:hover:not(:disabled) { background:#941B13; }
+.molsan-btn--ghost { color:#617789; background:transparent; border-color:transparent; box-shadow:none; }
+.molsan-btn--ghost:hover:not(:disabled) { color:#064675; background:#EAF2F8; box-shadow:none; }
+.molsan-btn__icon { width:16px; height:16px; flex:0 0 auto; }
+.molsan-btn__spinner {
+  width:15px; height:15px; flex:0 0 auto; border:2px solid currentColor;
+  border-right-color:transparent; border-radius:50%; animation:molsan-spin .7s linear infinite;
+}
+@keyframes molsan-spin { to { transform:rotate(360deg); } }
+
+/* Iconos con profundidad Glass Luxe. Aplicación progresiva mediante clase. */
+.molsan-icon-3d {
+  display:inline-grid; place-items:center; flex:0 0 auto;
+  border:1px solid #D8E4EC; border-radius:16px;
+  color:#064675;
+  background:radial-gradient(circle at 30% 22%,#fff 0%,#fff 18%,#EAF2F8 62%,#DCEAF3 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 5px 12px rgba(6,50,82,.10);
+  transform:translateZ(0);
+  transition:transform 220ms ease,box-shadow 220ms ease;
+}
+a:hover .molsan-icon-3d,button:hover .molsan-icon-3d,.molsan-icon-3d.is-active {
+  transform:translateY(-2px) scale(1.045);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 9px 18px rgba(6,50,82,.15);
+}
+.molsan-icon-3d svg { filter:drop-shadow(0 1px 1px rgba(6,70,117,.18)); }
+@media(prefers-reduced-motion:reduce) {
+  .molsan-btn,.molsan-icon-3d { transition:none; }
+  .molsan-btn__spinner { animation:none; }
+}
