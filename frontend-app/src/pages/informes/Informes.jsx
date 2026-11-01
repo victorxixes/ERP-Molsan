@@ -3315,7 +3315,21 @@ function InformeSLA() {
       </section>
       <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
         <div className="border-b border-slate-200/80 px-5 py-4"><h3 className="font-bold text-slate-800">Expedientes por actividad</h3><p className="mt-1 text-xs text-slate-500">Medias, objetivos y número de incumplimientos por actividad para los expedientes filtrados.</p></div>
-        {loading ? <PanelEstadoInforme loading /> : <div className="overflow-x-auto"><table className="w-full min-w-[800px] text-sm"><thead className="bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr>{["Actividad","Objetivo","Con fechas","Duración media","Dentro de plazo","Fuera de plazo"].map((x) => <th key={x} className="whitespace-nowrap px-4 py-3">{x}</th>)}</tr></thead><tbody>{resumenActividades.map((a) => <tr key={a.key} className="border-t border-slate-100"><td className="px-4 py-3 font-semibold">{a.label}</td><td className="px-4 py-3">{a.objetivo === "global" ? "40 / 70 días según grupo" : a.objetivo == null ? "Sin objetivo SLA" : `${a.objetivo} días`}</td><td className="px-4 py-3 text-right">{numeroInforme(a.medidas)}</td><td className="px-4 py-3 text-right">{a.media == null ? "—" : `${numeroInforme(a.media, 1)} días`}</td><td className="px-4 py-3 text-right text-emerald-700">{numeroInforme(a.cumplen)}</td><td className="px-4 py-3 text-right text-rose-700">{numeroInforme(a.incumplen)}</td></tr>)}</tbody></table></div>}
+        {loading ? <PanelEstadoInforme loading /> : <MolsanDataTable
+          rows={resumenActividades}
+          rowKey="key"
+          minWidth="950px"
+          initialSort={{ key: "label", direction: "asc" }}
+          emptyText="No hay resumen de actividades para los filtros seleccionados."
+          columns={[
+            { key: "label", header: "Actividad", accessor: "label", sortType: "text", render: (value) => <strong>{value}</strong> },
+            { key: "objetivo", header: "Objetivo", accessor: (item) => item.objetivo === "global" ? "40 / 70 días según grupo" : item.objetivo == null ? "Sin objetivo SLA" : `${item.objetivo} días`, sortType: "text" },
+            { key: "medidas", header: "Con fechas", accessor: "medidas", sortType: "number", align: "right", render: (value) => numeroInforme(value) },
+            { key: "media", header: "Duración media", accessor: "media", sortType: "number", align: "right", render: (value) => value == null ? "—" : `${numeroInforme(value, 1)} días` },
+            { key: "cumplen", header: "Dentro de plazo", accessor: "cumplen", sortType: "number", align: "right", render: (value) => <span className="text-emerald-700">{numeroInforme(value)}</span> },
+            { key: "incumplen", header: "Fuera de plazo", accessor: "incumplen", sortType: "number", align: "right", render: (value) => <span className="text-rose-700">{numeroInforme(value)}</span> },
+          ]}
+        />}
       </section>
     </section>
   );
