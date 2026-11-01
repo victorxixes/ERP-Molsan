@@ -277,28 +277,6 @@ export default function Dashboard() {
             <p>Resumen operativo de expedientes, actividad del circuito y firmas realizadas.</p>
           </div>
         </div>
-        <div className="ag-hero-acciones molsan-page-header__actions">
-          <div className="ag-fecha-actual">
-            <span className="ag-punto-vivo" aria-hidden="true" />
-            <span>{fechaActual}</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigate("/modulos")}
-            className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"
-          >
-            <span aria-hidden="true">▦</span> Ir a módulos
-          </button>
-          <button
-            type="button"
-            className="ag-boton-actualizar"
-            onClick={cargarDashboard}
-            disabled={loading}
-          >
-            <span aria-hidden="true" className={loading ? "ag-icono-girando" : ""}>↻</span>
-            {loading ? "Actualizando…" : "Actualizar datos"}
-          </button>
-        </div>
       </header>
 
       {/* ERRORES DE CARGA */}
