@@ -210,7 +210,7 @@ const MODULOS_ERP = [
   {
     key: "cancelagest",
     label: "CancelaGest",
-    route: "/cancelagest",
+    route: "/dashboard",
     icon: "file-check",
   },
   {
