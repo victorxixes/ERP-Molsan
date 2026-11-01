@@ -111,7 +111,7 @@ export default function PPAD() {
 
   return (
     <div className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
+      <header className="molsan-page-header overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
         <div className="h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
           <div>
