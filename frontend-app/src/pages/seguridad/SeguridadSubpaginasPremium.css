@@ -252,12 +252,6 @@
 .seguridad-usuarios-premium button[class*="bg-red"],
 .seguridad-rol-editor-premium button[class*="bg-rose"],
 .seguridad-usuarios-premium button[class*="bg-rose"] { border:1px solid #fecaca; }
-.seguridad-rol-editor-premium .erp-card-header,
-
-.seguridad-rol-editor-premium .erp-card-title,
-.seguridad-usuarios-premium .erp-card-title {
-  margin:0; color:var(--molsan-text-strong,#17233a); font-size:1rem; font-weight:800; line-height:1.35;
-}
 .seguridad-rol-editor-premium .erp-card-description,
 .seguridad-usuarios-premium .erp-card-description {
   margin:.35rem 0 0; color:var(--molsan-text-muted, #718696); font-size:.84rem; line-height:1.5;
