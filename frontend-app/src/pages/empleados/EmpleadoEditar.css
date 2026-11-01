@@ -24,7 +24,7 @@
   outline-offset: 3px;
 }
 @media (max-width: 640px) {
-  .empleado-editar-premium { padding: 1rem; border-radius: .9rem; }
+  .empleado-editar-premium { min-width:0; }
   .empleado-editar-premium h2 { font-size: 1.4rem; }
 }
 @media (prefers-reduced-motion: reduce) {
