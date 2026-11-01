@@ -950,18 +950,7 @@ export default function SeguridadLogs() {
           CABECERA
       ==================================================== */}
 
-      <section
-        className="
-          molsan-page-header
-          bg-[var(--erp-surface)]
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          shadow-sm
-          px-6
-          py-5
-        "
-      >
+      <section className="molsan-page-header">
 
         <div
           className="
@@ -974,26 +963,10 @@ export default function SeguridadLogs() {
           "
         >
 
-          <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
-          >
+          <div className="molsan-page-header__identity">
 
             <div
-              className="
-                w-11
-                h-11
-                rounded-xl
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-                flex-shrink-0
-              "
+              className="molsan-page-header__mark"
             >
 
               <Icono
@@ -1006,15 +979,8 @@ export default function SeguridadLogs() {
 
             <div>
 
-              <h1
-                className="
-                  text-2xl
-                  font-bold
-                  text-[var(--erp-text)]
-                "
-              >
-                Logs técnicos
-              </h1>
+              <p className="molsan-page-header__eyebrow">MOLSAN ERP · SEGURIDAD</p>
+              <h1 className="molsan-page-header__title">Logs técnicos</h1>
 
 
               <p
