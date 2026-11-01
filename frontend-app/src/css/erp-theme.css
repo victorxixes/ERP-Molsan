@@ -98,12 +98,7 @@
    TÍTULOS DENTRO DE PÁGINAS ERP
    ============================================================ */
 
-.erp-page h1,
-.erp-page h2,
-.erp-page h3,
-.erp-page h4,
-.erp-page h5,
-.erp-page h6 {
+:where(.erp-page) :where(h1:not([class]), h2:not([class]), h3:not([class]), h4:not([class]), h5:not([class]), h6:not([class])) {
 
   color:
     var(--erp-text-strong);
@@ -147,7 +142,7 @@
    ENLACES
    ============================================================ */
 
-.erp-page a {
+.erp-page a:not([class]) {
 
   color:
     var(--erp-primary);
@@ -161,7 +156,7 @@
 }
 
 
-.erp-page a:hover {
+.erp-page a:not([class]):hover {
 
   color:
     var(--erp-primary-dark);
@@ -173,7 +168,7 @@
    BOTONES ERP
    ============================================================ */
 
-.erp-page button {
+.erp-page button:not([class]) {
 
   font-family:
     inherit;
@@ -297,9 +292,7 @@
    INPUTS
    ============================================================ */
 
-.erp-page input,
-.erp-page textarea,
-.erp-page select {
+.erp-page :where(input:not([class]), textarea:not([class]), select:not([class])) {
 
   background:
     var(--erp-surface);
@@ -317,8 +310,7 @@
    PLACEHOLDER
    ============================================================ */
 
-.erp-page input::placeholder,
-.erp-page textarea::placeholder {
+.erp-page :where(input:not([class]), textarea:not([class]))::placeholder {
 
   color:
     var(--erp-text-muted);
@@ -333,9 +325,7 @@
    FOCUS INPUTS
    ============================================================ */
 
-.erp-page input:focus,
-.erp-page textarea:focus,
-.erp-page select:focus {
+.erp-page :where(input:not([class]), textarea:not([class]), select:not([class])):focus {
 
   border-color:
     var(--erp-primary);
@@ -363,9 +353,7 @@
    Lo anulamos aquí.
    ============================================================ */
 
-.erp-page input:hover,
-.erp-page textarea:hover,
-.erp-page select:hover {
+.erp-page :where(input:not([class]), textarea:not([class]), select:not([class])):hover {
 
   transform:
     none;
