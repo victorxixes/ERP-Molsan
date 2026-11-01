@@ -339,3 +339,19 @@
 }
 .catalogos-premium-page > div:has(.molsan-page-header) > .absolute,
 .catalogos-premium-page > section:has(.molsan-page-header) > .absolute { display:none!important; }
+
+
+/* Módulos técnicos: todas las cabeceras heredan la misma anchura y ritmo. */
+:where(.panel-tecnico-premium,.panel-tecnico-submodulo-premium,.seguridad-premium-page,.seguridad-subpagina-premium,.logs-premium-page,.maestros-premium-page,.informes-premium-page,.ctn-listado-page,.fichajes-premium-page,.agenda-premium-page,.molsan-intranet-page) .molsan-page-header {
+  box-sizing:border-box;width:100%;max-width:none;min-width:0;align-self:stretch;
+}
+.panel-tecnico-submodulo-premium.monitor-realtime-premium {
+  border:0!important;border-radius:0!important;background:transparent!important;
+  box-shadow:none!important;overflow:visible!important;padding:0!important;
+}
+.panel-tecnico-submodulo-premium.monitor-realtime-premium > .molsan-page-header {
+  border-radius:22px;margin:0 0 20px;padding:18px 24px;
+}
+@media(max-width:760px){
+  .panel-tecnico-submodulo-premium.monitor-realtime-premium > .molsan-page-header {border-radius:18px;padding:16px;}
+}
