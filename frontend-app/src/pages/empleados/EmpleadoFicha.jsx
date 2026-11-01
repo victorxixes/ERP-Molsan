@@ -179,7 +179,9 @@ export default function EmpleadoFicha({
           CABECERA
       =================================================== */}
 
-      <section className="
+      <header className="
+        molsan-page-header
+        empleado-ficha-page-header
         erp-card
         max-w-[1700px]
         mx-auto
@@ -327,7 +329,7 @@ export default function EmpleadoFicha({
 
         </div>
 
-      </section>
+      </header>
 
 
       {/* ===================================================
