@@ -1,5 +1,6 @@
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useEffect, useMemo } from "react";
+import { sortRows } from "../../utils/sortRows";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "../../api/axios";
 import { API_BASE } from "../../api/config";
@@ -3243,6 +3244,7 @@ function InformeSLA() {
   const [busqueda, setBusqueda] = useState("");
   const [expandido, setExpandido] = useState("");
   const [recarga, setRecarga] = useState(0);
+  const [ordenSLA, setOrdenSLA] = useState({ key: "id_expediente", direction: "asc" });
 
   useEffect(() => {
     let activo = true;
@@ -3286,6 +3288,23 @@ function InformeSLA() {
     descargarBlobInforme(new Blob(["\ufeff", csv], { type: "text/csv;charset=utf-8;" }), "informe_sla.csv");
   };
 
+  const itemsOrdenados = useMemo(() => {
+    if (!ordenSLA.key) return items;
+    return sortRows(items, {
+      key: ordenSLA.key,
+      accessor: (item) => item?.[ordenSLA.key],
+      sortType: ordenSLA.key === "dias_global" ? "number" : "text",
+    }, ordenSLA.direction);
+  }, [items, ordenSLA]);
+
+  const ordenarSLA = (key) => {
+    setOrdenSLA((actual) => actual.key !== key
+      ? { key, direction: "asc" }
+      : actual.direction === "asc"
+        ? { key, direction: "desc" }
+        : { key: null, direction: null });
+  };
+
   return (
     <section className="informes-report-content space-y-5">
       <header className="informes-report-heading rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl md:p-6">
@@ -3311,7 +3330,7 @@ function InformeSLA() {
       <AvisoInforme error={error} />
       <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
         <div className="border-b border-slate-200/80 px-5 py-4"><h3 className="font-bold text-slate-800">SLA global por circuito</h3><p className="mt-1 text-xs text-slate-500">Desde el inicio registrado de la primera actividad hasta el fin de Cierre del expediente. Gestión económica utiliza el objetivo global como referencia propia.</p></div>
-        {loading ? <PanelEstadoInforme loading /> : items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay expedientes que coincidan con los filtros." /> : <div className="max-h-[520px] overflow-auto"><table className="w-full min-w-[1050px] text-sm"><thead className="sticky top-0 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr>{["Expediente","Titular","Grupo","Entidad","Días globales","Objetivo","Estado"].map((x) => <th key={x} className="whitespace-nowrap px-4 py-3">{x}</th>)}</tr></thead><tbody>{items.map((item) => <Fragment key={item.id}><tr className="border-t border-slate-100 hover:bg-blue-50/40"><td className="px-4 py-3 font-semibold text-blue-700">{item.id_expediente || "—"}</td><td className="px-4 py-3">{item.titular || "—"}</td><td className="px-4 py-3">{item.grupo}</td><td className="px-4 py-3">{item.entidad}</td><td className="px-4 py-3 text-right">{item.dias_global == null ? "—" : numeroInforme(item.dias_global)}</td><td className="px-4 py-3 text-right">{item.excluido_global ? "Excluido" : `${item.objetivo_global} días`}</td><td className="px-4 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-bold ${item.estado_global === "Dentro de plazo" ? "bg-emerald-50 text-emerald-700" : item.estado_global === "Fuera de plazo" ? "bg-rose-50 text-rose-700" : item.estado_global === "Excluido" ? "bg-slate-100 text-slate-500" : "bg-amber-50 text-amber-700"}`}>{item.estado_global}</span><button type="button" onClick={() => setExpandido((v) => v === String(item.id) ? "" : String(item.id))} className="ml-3 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-xs font-semibold text-blue-700">{expandido === String(item.id) ? "Ocultar actividades" : "Ver actividades"}</button></td></tr>{expandido === String(item.id) && <tr><td colSpan={7} className="bg-slate-50/70 px-4 py-4"><div className="overflow-x-auto rounded-xl border border-slate-200 bg-white"><table className="w-full min-w-[950px] text-xs"><thead className="bg-slate-50 text-left text-slate-600"><tr>{["Actividad","Inicio","Fin","Duración","Objetivo","Estado"].map((x) => <th key={x} className="whitespace-nowrap px-3 py-2.5">{x}</th>)}</tr></thead><tbody>{item.actividades.map((a) => <tr key={a.actividad_key} className="border-t border-slate-100"><td className="px-3 py-2.5 font-semibold">{a.actividad}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_inicio)}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_fin)}</td><td className="px-3 py-2.5">{a.dias == null ? "—" : `${a.dias} días`}</td><td className="px-3 py-2.5">{a.objetivo_dias == null ? "Sin objetivo" : `${a.objetivo_dias} días`}</td><td className="px-3 py-2.5">{a.estado}</td></tr>)}</tbody></table></div></td></tr>}</Fragment>)}</tbody></table></div>}
+        {loading ? <PanelEstadoInforme loading /> : items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay expedientes que coincidan con los filtros." /> : <div className="max-h-[520px] overflow-auto"><table className="w-full min-w-[1050px] text-sm"><thead className="sticky top-0 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr>{[{ key: "id_expediente", label: "Expediente" }, { key: "titular", label: "Titular" }, { key: "grupo", label: "Grupo" }, { key: "entidad", label: "Entidad" }, { key: "dias_global", label: "Días globales" }, { key: "objetivo_global", label: "Objetivo" }, { key: "estado_global", label: "Estado" }].map((columna) => <th key={columna.key} className="whitespace-nowrap px-4 py-3"><button type="button" className="molsan-table-sort" onClick={() => ordenarSLA(columna.key)}>{columna.label} <span>{ordenSLA.key === columna.key ? (ordenSLA.direction === "asc" ? "↑" : "↓") : "↕"}</span></button></th>)}</tr></thead><tbody>{itemsOrdenados.map((item) => <Fragment key={item.id}><tr className="border-t border-slate-100 hover:bg-blue-50/40"><td className="px-4 py-3 font-semibold text-blue-700">{item.id_expediente || "—"}</td><td className="px-4 py-3">{item.titular || "—"}</td><td className="px-4 py-3">{item.grupo}</td><td className="px-4 py-3">{item.entidad}</td><td className="px-4 py-3 text-right">{item.dias_global == null ? "—" : numeroInforme(item.dias_global)}</td><td className="px-4 py-3 text-right">{item.excluido_global ? "Excluido" : `${item.objetivo_global} días`}</td><td className="px-4 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-bold ${item.estado_global === "Dentro de plazo" ? "bg-emerald-50 text-emerald-700" : item.estado_global === "Fuera de plazo" ? "bg-rose-50 text-rose-700" : item.estado_global === "Excluido" ? "bg-slate-100 text-slate-500" : "bg-amber-50 text-amber-700"}`}>{item.estado_global}</span><button type="button" onClick={() => setExpandido((v) => v === String(item.id) ? "" : String(item.id))} className="ml-3 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-xs font-semibold text-blue-700">{expandido === String(item.id) ? "Ocultar actividades" : "Ver actividades"}</button></td></tr>{expandido === String(item.id) && <tr><td colSpan={7} className="bg-slate-50/70 px-4 py-4"><div className="overflow-x-auto rounded-xl border border-slate-200 bg-white"><table className="w-full min-w-[950px] text-xs"><thead className="bg-slate-50 text-left text-slate-600"><tr>{["Actividad","Inicio","Fin","Duración","Objetivo","Estado"].map((x) => <th key={x} className="whitespace-nowrap px-3 py-2.5">{x}</th>)}</tr></thead><tbody>{item.actividades.map((a) => <tr key={a.actividad_key} className="border-t border-slate-100"><td className="px-3 py-2.5 font-semibold">{a.actividad}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_inicio)}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_fin)}</td><td className="px-3 py-2.5">{a.dias == null ? "—" : `${a.dias} días`}</td><td className="px-3 py-2.5">{a.objetivo_dias == null ? "Sin objetivo" : `${a.objetivo_dias} días`}</td><td className="px-3 py-2.5">{a.estado}</td></tr>)}</tbody></table></div></td></tr>}</Fragment>)}</tbody></table></div>}
       </section>
       <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
         <div className="border-b border-slate-200/80 px-5 py-4"><h3 className="font-bold text-slate-800">Expedientes por actividad</h3><p className="mt-1 text-xs text-slate-500">Medias, objetivos y número de incumplimientos por actividad para los expedientes filtrados.</p></div>
