@@ -209,7 +209,7 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
         columns={[
           { key: "empleado", header: "Empleado", accessor: "empleado_nombre", sortType: "text" },
           { key: "fecha", header: "Fecha", accessor: "fecha_hora", sortType: "date", render: (value) => HUMAN_DATE(value) },
-          { key: "hora", header: "Hora", accessor: "fecha_hora", sortType: "date", render: (value) => HUMAN_TIME(value) },
+          { key: "hora", header: "Hora", accessor: (item) => { const date = new Date(item.fecha_hora); return date.getHours() * 60 + date.getMinutes(); }, sortType: "number", render: (_, item) => <strong className="tabular-nums">{HUMAN_TIME(item.fecha_hora)}</strong> },
           { key: "tipo", header: "Tipo", accessor: "tipo", sortType: "text", render: (value) => LABEL(value) },
           { key: "observaciones", header: "Observaciones", accessor: "observaciones", sortType: "text", render: (value) => value || "—" },
           { key: "estado", header: "Estado", accessor: (item) => item.modificado ? (item.ultima_accion === "ALTA_ADMIN" ? "Añadido por administración" : "Corregido por administración") : "Original", sortType: "text", render: (_, item) => <div className="flex flex-wrap gap-1">{item.modificado ? <span className="rounded-lg bg-amber-100 px-2 py-1 text-xs font-bold text-amber-900">{item.ultima_accion === "ALTA_ADMIN" ? "Añadido por administración" : "Corregido por administración"}</span> : <span className="text-xs text-slate-500">Original</span>}{item.periodo_cerrado && <span className="rounded-lg bg-slate-100 px-2 py-1 text-xs font-bold">Mes cerrado</span>}</div> },
