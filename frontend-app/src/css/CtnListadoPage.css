@@ -130,10 +130,10 @@
 .ctn-filtros {
   padding: 18px;
   margin-bottom: 18px;
-  background: var(--ctn-panel);
-  border: 1px solid var(--ctn-border);
-  border-radius: 13px;
-  box-shadow: 0 3px 12px rgba(24, 42, 68, 0.035);
+  
+  
+  
+  
 }
 
 .ctn-filtros h2,
@@ -229,10 +229,10 @@
 
 .ctn-tabla-contenedor {
   overflow: hidden;
-  background: #fff;
-  border: 1px solid var(--ctn-border);
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(24, 42, 68, 0.035);
+  
+  
+  
+  
 }
 
 .ctn-tabla-cabecera {
@@ -1257,10 +1257,10 @@
 /* Listado CTN: filtros, tabla y paginación */
 .ctn-filtros,
 .ctn-tabla-contenedor {
-  background: var(--molsan-surface, #fff);
-  border: 1px solid var(--molsan-border, #D8E4EC);
-  border-radius: 11px;
-  box-shadow: 0 1px 3px rgba(30, 55, 90, 0.035);
+  
+  
+  
+  
 }
 
 .ctn-tabla-cabecera {
@@ -1385,8 +1385,8 @@
 .ctn-filtros,
 .ctn-tabla-contenedor {
   border-color: var(--molsan-border, #D8E4EC);
-  border-radius: var(--molsan-radius-panel, 12px);
-  box-shadow: 0 2px 8px rgba(23, 36, 58, 0.035);
+  
+  
 }
 
 .ctn-tabla-cabecera {
