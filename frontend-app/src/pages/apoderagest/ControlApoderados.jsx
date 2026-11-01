@@ -135,7 +135,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
     } catch (e) { setError(e?.response?.data?.detail || "No se ha podido descargar la factura."); }
   };
 
-  return <div className="control-apoderados-page min-h-full space-y-6">
+  return <div className="molsan-page-stack control-apoderados-page min-h-full">
     <header className="molsan-page-header">
       <div className="molsan-page-header__identity">
         <div className="molsan-page-header__mark" aria-hidden="true">AG</div>
