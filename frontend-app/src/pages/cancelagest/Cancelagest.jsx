@@ -5,6 +5,7 @@ import MODULOS_ERP from "../../config/modulos";
 import axios from "../../api/axios";
 import "../../css/Cancelagest.css";
 import "../../css/CancelagestUnified.css";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 const TARJETAS_DASHBOARD = [
   { key: "expedientes", descripcion: "Consultar expedientes y su situación actual.", icono: "▤" },
@@ -104,7 +105,7 @@ export default function Cancelagest() {
       <section className="erp-card cg-section">
         <div className="cg-section-heading molsan-section-header"><div><span className="cg-kicker">ACCESOS DIRECTOS</span><h2>Módulos de trabajo</h2><p>Accede a las herramientas principales del ERP sin salir del entorno corporativo.</p></div></div>
         <div className="cg-module-grid">{modulosVisibles.map((modulo) => <button type="button" className="erp-card cg-module-card" key={modulo.titulo} onClick={() => navigate(modulo.ruta)}>
-          <span className="cg-module-icon">{modulo.icono}</span><span className="cg-module-text"><strong>{modulo.titulo}</strong><small>{modulo.descripcion}</small></span><span className="cg-module-arrow">↗</span>
+          <span className="cg-module-icon"><MolsanIcon name={modulo.icono} size={46} tone="ocean" /></span><span className="cg-module-text"><strong>{modulo.titulo}</strong><small>{modulo.descripcion}</small></span><span className="cg-module-arrow">↗</span>
         </button>)}</div>
       </section>
 
