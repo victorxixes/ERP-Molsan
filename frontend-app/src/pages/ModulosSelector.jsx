@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import MODULOS_ERP from "../config/modulos";
+import MolsanIcon from "../components/ui/MolsanIcon";
 import { API_BASE } from "../api/config";
 import { configurarSesionEncargaGest } from "../api/encargagest";
 import "../css/ModalesHerramientasPremium.css";
@@ -233,15 +234,15 @@ export default function ModulosSelector() {
   }
 
   const iconosModulo = {
-    apoderagest: <><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="8"/></>,
-    cancelagest: <><path d="M4 7h16M7 4v6m10-6v6M5 11h14v9H5z"/><path d="m9 15 2 2 4-4"/></>,
-    notargest: <><path d="M4 21h16M6 21V8l6-4 6 4v13"/><path d="M9 12h6M9 16h6"/></>,
-    encargagest: <><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5M8 17h3"/><path d="m15 16 2 2 4-4"/></>,
-    "mensajeria-gestion": <><path d="M4 5h16v12H9l-5 4z"/><path d="M8 9h8M8 13h5"/></>,
-    fichajes: <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></>,
-    "control-fichajes": <><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></>,
-    notargest_notario: <><path d="M4 21h16M6 21V8l6-4 6 4v13"/><path d="M9 12h6M9 16h6"/></>,
-    encargagest_notario: <><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></>,
+    apoderagest: "users",
+    cancelagest: "landmark",
+    notargest: "courthouse",
+    encargagest: "clipboardList",
+    "mensajeria-gestion": "message",
+    fichajes: "clock",
+    "control-fichajes": "timer",
+    notargest_notario: "courthouse",
+    encargagest_notario: "clipboardList",
   };
   const coloresModulo = {
     apoderagest: "ocean", cancelagest: "emerald", notargest: "violet",
@@ -277,7 +278,7 @@ export default function ModulosSelector() {
             <span><strong>{empleado.nombre || empleado.usuario}</strong><small>Área de trabajo</small></span>
           </div>
           <button type="button" onClick={() => { logout(); navigate("/login", { replace: true }); }} className="workspace-logout">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3m9 8h7a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-7" /></svg>
+            <MolsanIcon name="logout" size={18} bare />
             Cerrar sesión
           </button>
         </div>
@@ -295,7 +296,7 @@ export default function ModulosSelector() {
 
         {modulosDisponibles.length === 0 ? (
           <section className="workspace-empty-state">
-            <span className="workspace-empty-icon"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 9h8M8 13h5"/></svg></span>
+            <MolsanIcon className="workspace-empty-icon" name="folderOpen" size={48} tone="ocean" />
             <h2>No hay aplicaciones asignadas</h2>
             <p>Para mostrar una aplicación, actívala en «Módulos visibles» dentro de la ficha del empleado. Los permisos para consultar, crear, editar o eliminar se configuran por separado.</p>
             <small>Rol detectado: {empleado.rol_nombre || empleado.rol?.nombre || "No informado"}</small>
@@ -314,7 +315,7 @@ export default function ModulosSelector() {
                       <svg viewBox="0 0 24 24">{iconosModulo[modulo.clave] || iconosModulo.apoderagest}</svg>
                     </span>
                     <span className="workspace-card-open" aria-hidden="true">
-                      <svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg>
+                      <MolsanIcon name="arrowRight" size={16} bare />
                     </span>
                   </span>
                   <span className="workspace-app-category">{modulo.categoria}</span>
@@ -322,7 +323,7 @@ export default function ModulosSelector() {
                   <span className="workspace-app-description">{modulo.descripcion}</span>
                   <span className="workspace-card-footer">
                     <span>Abrir aplicación</span>
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+                    <MolsanIcon name="arrowRight" size={18} bare />
                   </span>
                 </button>
               );
