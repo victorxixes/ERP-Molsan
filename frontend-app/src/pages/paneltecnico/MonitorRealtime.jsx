@@ -598,25 +598,9 @@ export default function MonitorRealtime() {
 
             <div>
 
-              <h2
-                className="
-                  text-lg
-                  font-semibold
-                  text-[var(--erp-text)]
-                "
-              >
-                Monitor Realtime
-              </h2>
+              <h2 className="monitor-realtime-title text-lg font-semibold">Monitor Realtime</h2>
 
-              <p
-                className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                  mt-0.5
-                "
-              >
-                Conexión WebSocket del sistema
-              </p>
+              <p className="monitor-realtime-subtitle mt-0.5 text-sm">Conexión WebSocket del sistema</p>
 
             </div>
 
