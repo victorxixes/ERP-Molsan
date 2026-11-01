@@ -7,16 +7,6 @@
 .molsan-intranet-page > div:not(.pointer-events-none) {
   border-color: var(--molsan-border, rgba(148, 163, 184, .28));
 }
-.molsan-intranet-page article {
-  border-color: var(--molsan-border, rgba(148, 163, 184, .28));
-  border-radius: var(--molsan-radius-card, 14px);
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
-  transition: border-color .16s ease, box-shadow .16s ease;
-}
-.molsan-intranet-page article:hover {
-  border-color: var(--molsan-border, #D8E4EC);
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
-}
 .molsan-intranet-page input:not([type="checkbox"]):not([type="radio"]),
 .molsan-intranet-page select,
 .molsan-intranet-page textarea {
@@ -42,9 +32,6 @@
   max-width: 100%;
 }
 @media (max-width: 640px) {
-  .molsan-intranet-page article {
-    border-radius: .9rem;
-  }
   .molsan-intranet-page section {
     min-width: 0;
   }
