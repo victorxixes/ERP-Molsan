@@ -149,10 +149,6 @@
   --seguridad-radius: 16px;
   --seguridad-shadow: 0 8px 24px rgba(24, 39, 75, .055);
 }
-:is(.seguridad-subpagina-premium, .seguridad-ficha-premium, .seguridad-roles-premium, .seguridad-permisos-premium, .seguridad-modulos-premium, .seguridad-logs-premium, .seguridad-resumen-premium) > :is(section, article, .erp-card) {
-  border-radius: var(--seguridad-radius);
-  box-shadow: var(--seguridad-shadow);
-}
 :is(.seguridad-subpagina-premium, .seguridad-ficha-premium, .seguridad-roles-premium, .seguridad-permisos-premium, .seguridad-modulos-premium, .seguridad-logs-premium, .seguridad-resumen-premium) :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
   border-color: var(--molsan-border, #d8e0ec);
   border-radius: 10px;
