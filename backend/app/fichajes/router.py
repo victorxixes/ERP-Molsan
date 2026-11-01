@@ -541,8 +541,8 @@ def admin_exportar_marcajes(
             resumen["fin"] = instante
 
     salida = StringIO()
-    salida.write("\\ufeff")
-    escritor = csv.writer(salida, delimiter=";", lineterminator="\\r\\n")
+    salida.write("\ufeff")
+    escritor = csv.writer(salida, delimiter=";", lineterminator="\r\n")
     escritor.writerow([
         "ID empleado", "Empleado", "Fecha jornada", "Inicio jornada", "Fin jornada",
         "ID marcaje", "Fecha y hora del evento", "Tipo de evento", "Observaciones",
