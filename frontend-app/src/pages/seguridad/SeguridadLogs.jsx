@@ -943,7 +943,7 @@ export default function SeguridadLogs() {
 
   return (
 
-    <div className="seguridad-logs-premium seguridad-subpagina-premium space-y-6 animate-fade-in">
+    <div className="molsan-page-stack seguridad-logs-premium seguridad-subpagina-premium animate-fade-in">
 
 
       {/* ====================================================
