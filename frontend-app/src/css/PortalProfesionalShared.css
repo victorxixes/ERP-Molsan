@@ -61,30 +61,6 @@
   box-shadow: 0 0 0 4px rgba(33, 185, 130, 0.10);
 }
 
-.ag-boton-actualizar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  min-height: 42px;
-  padding: 0 16px;
-  color: #fff;
-  background: linear-gradient(135deg, var(--molsan-primary, #064675), var(--molsan-primary-hover, #04375B));
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 12px;
-  box-shadow: 0 6px 16px color-mix(in srgb, var(--molsan-primary) 18%, transparent);
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 750;
-  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
-}
-
-.ag-boton-actualizar:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 9px 20px color-mix(in srgb, var(--molsan-primary) 25%, transparent);
-  filter: brightness(1.04);
-}
-
 .ag-boton-actualizar:disabled {
   cursor: wait;
   opacity: .7;
@@ -1430,9 +1406,6 @@
 
 
 /* Impresión de agenda y encargos · MOLSAN ERP */
-.ag-print-action{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:10px 15px;border:1px solid #d7e1f1;border-radius:11px;background:linear-gradient(135deg,var(--molsan-primary, #064675),var(--molsan-primary-hover, #04375B));color:#fff;font:700 12px/1.2 Inter,system-ui,sans-serif;cursor:pointer;box-shadow:0 5px 14px color-mix(in srgb, var(--molsan-primary) 16%, transparent);}
-.ag-print-action:hover{filter:brightness(1.04);transform:translateY(-1px)}
-.ag-print-action-secundario{background:#fff;color:#2948bb;border-color:#cfdaf0;box-shadow:none}
 .ag-print-tools{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:12px 0 16px}
 .ag-print-root{display:none}
 .ag-print-header{padding:0 0 14px;margin-bottom:16px;border-bottom:2px solid #263e70}
