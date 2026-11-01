@@ -6,11 +6,10 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import MolsanIcon from "../../components/ui/MolsanIcon";
+import { crearRol, actualizarRol, eliminarRol as borrarRolApi } from "../../api/seguridad";
 import "./SeguridadSubpaginasPremium.css";
 
-
-const API_URL =
-  "https://agenda-intranet-b.onrender.com";
 
 
 export default function SeguridadRolEditor() {
@@ -151,90 +150,12 @@ export default function SeguridadRolEditor() {
 
       try {
 
-        let respuesta;
-
-        // ------------------------------------------------------
-        // CREAR
-        // ------------------------------------------------------
-
         if (modo === "crear") {
-
-          respuesta =
-            await fetch(
-              `${API_URL}/api/seguridad/roles`,
-              {
-                method: "POST",
-
-                headers: {
-                  "Content-Type":
-                    "application/json",
-                },
-
-                body: JSON.stringify({
-                  nombre,
-                }),
-              }
-            );
-        }
-
-        // ------------------------------------------------------
-        // EDITAR
-        // ------------------------------------------------------
-
-        else if (
-          modo === "editar" &&
-          rolEditando?.id !== undefined
-        ) {
-
-          respuesta =
-            await fetch(
-              `${API_URL}/api/seguridad/roles/${rolEditando.id}`,
-              {
-                method: "PUT",
-
-                headers: {
-                  "Content-Type":
-                    "application/json",
-                },
-
-                body: JSON.stringify({
-                  nombre,
-                }),
-              }
-            );
-        }
-
-        else {
-
-          throw new Error(
-            "Operación de rol no válida."
-          );
-        }
-
-
-        if (!respuesta.ok) {
-
-          let detalle =
-            "";
-
-          try {
-
-            const data =
-              await respuesta.json();
-
-            detalle =
-              data?.detail ||
-              data?.message ||
-              "";
-
-          } catch {
-            // El backend puede no devolver JSON.
-          }
-
-          throw new Error(
-            detalle ||
-            "No se pudo guardar el rol."
-          );
+          await crearRol({ nombre });
+        } else if (modo === "editar" && rolEditando?.id !== undefined) {
+          await actualizarRol(rolEditando.id, { nombre });
+        } else {
+          throw new Error("Operación de rol no válida.");
         }
 
 
@@ -314,39 +235,7 @@ export default function SeguridadRolEditor() {
 
         try {
 
-          const respuesta =
-            await fetch(
-              `${API_URL}/api/seguridad/roles/${id}`,
-              {
-                method: "DELETE",
-              }
-            );
-
-
-          if (!respuesta.ok) {
-
-            let detalle =
-              "";
-
-            try {
-
-              const data =
-                await respuesta.json();
-
-              detalle =
-                data?.detail ||
-                data?.message ||
-                "";
-
-            } catch {
-              // Sin cuerpo JSON.
-            }
-
-            throw new Error(
-              detalle ||
-              "No se pudo eliminar el rol."
-            );
-          }
+          await borrarRolApi(id);
 
 
           await cargarTodo();
@@ -428,44 +317,33 @@ export default function SeguridadRolEditor() {
           CABECERA
       ====================================================== */}
 
-      <div className="molsan-page-header">
-
+      <header className="molsan-page-header">
         <div className="molsan-page-header__identity">
-
-          <div className="molsan-page-header__eyebrow">
-            SEGURIDAD · ADMINISTRACIÓN
+          <div className="molsan-page-header__mark" aria-hidden="true">
+            <MolsanIcon name="shield" size={42} bare />
           </div>
-
-          <h1 className="molsan-page-header__title">
-            Editor de roles
-          </h1>
-
-          <p className="molsan-page-header__description">
-            Gestiona los roles disponibles en Molsan ERP.
-          </p>
-
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">SEGURIDAD · ADMINISTRACIÓN</p>
+            <h1 className="molsan-page-header__title">
+              {modo === "crear" ? "Crear rol" : modo === "editar" ? "Editar rol" : "Roles de seguridad"}
+            </h1>
+            <p className="molsan-page-header__description">
+              {modo === "crear" ? "Define un nuevo perfil de acceso para MOLSAN ERP." : modo === "editar" ? "Actualiza el nombre del perfil de acceso." : "Gestiona los perfiles disponibles en MOLSAN ERP."}
+            </p>
+          </div>
         </div>
-
-
-        {modo === "lista" && (
-
-          <button
-            type="button"
-            onClick={iniciarCrear}
-            className="erp-btn erp-btn-primary inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-
-            <span className="text-base">
-              +
-            </span>
-
-            Crear rol
-
-          </button>
-
-        )}
-
-      </div>
+        <div className="molsan-page-header__actions">
+          {modo === "lista" ? (
+            <button type="button" onClick={iniciarCrear} className="molsan-btn molsan-btn--primary inline-flex items-center gap-2">
+              <MolsanIcon name="plus" size={18} bare /> Crear rol
+            </button>
+          ) : (
+            <button type="button" onClick={cancelar} disabled={guardando} className="molsan-btn molsan-btn--secondary inline-flex items-center gap-2">
+              <MolsanIcon name="arrowLeft" size={18} bare /> Volver a roles
+            </button>
+          )}
+        </div>
+      </header>
 
 
       {/* ======================================================
@@ -485,9 +363,7 @@ export default function SeguridadRolEditor() {
           "
         >
 
-          <span className="font-bold">
-            ✓
-          </span>
+          <MolsanIcon name="check" size={22} bare />
 
           <span>
             {mensaje}
@@ -511,9 +387,7 @@ export default function SeguridadRolEditor() {
           "
         >
 
-          <span className="font-bold">
-            !
-          </span>
+          <MolsanIcon name="alert" size={22} bare />
 
           <span>
             {error}
@@ -865,7 +739,7 @@ export default function SeguridadRolEditor() {
       {(modo === "crear" ||
         modo === "editar") && (
 
-        <section className="erp-card">
+        <section className="erp-card overflow-hidden rounded-2xl border border-[var(--erp-border)] bg-white shadow-sm">
 
           <div
             className="
@@ -892,9 +766,7 @@ export default function SeguridadRolEditor() {
                   font-bold
                 "
               >
-                {modo === "crear"
-                  ? "+"
-                  : "✎"}
+                <MolsanIcon name={modo === "crear" ? "plus" : "pen"} size={28} bare />
               </div>
 
 
@@ -1010,7 +882,7 @@ export default function SeguridadRolEditor() {
                   !nombreRol.trim()
                 }
                 onClick={guardarRol}
-                className="erp-btn erp-btn-primary inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="molsan-btn molsan-btn--primary inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
 
                 {guardando ? (
@@ -1045,7 +917,7 @@ export default function SeguridadRolEditor() {
                 type="button"
                 disabled={guardando}
                 onClick={cancelar}
-                className="erp-btn erp-btn-secondary px-5 py-2.5 text-sm font-semibold disabled:opacity-50"
+                className="molsan-btn molsan-btn--secondary disabled:opacity-50"
               >
                 Cancelar
               </button>
