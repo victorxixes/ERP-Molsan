@@ -2493,7 +2493,7 @@ export default function ExpedientesListado() {
                   setColumnasVisibles(COLUMNAS_POR_DEFECTO);
                   setPagina(1);
                 }}
-                className="rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
+                className="erp-card rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
                 style={{
                   borderColor: activa ? circuito.borde : "var(--erp-border)",
                   background: activa ? circuito.fondo : "var(--erp-surface)",
@@ -2555,7 +2555,7 @@ export default function ExpedientesListado() {
                   setColumnasVisibles(COLUMNAS_POR_DEFECTO);
                   setPagina(1);
                 }}
-                className="min-h-[116px] rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
+                className="erp-card min-h-[116px] rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
                 style={{ background: activa ? estado.fondo : "var(--erp-surface)", borderColor: activa ? estado.borde : "var(--erp-border)", boxShadow: activa ? `0 0 0 1px ${estado.borde}` : undefined }}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -2614,7 +2614,7 @@ export default function ExpedientesListado() {
                 setFiltroActividad(activa ? "" : valorBackend);
                 setFiltrosAplicados((actual) => ({ ...actual, actividad: activa ? "" : valorBackend })); setPagina(1);
               }}
-              className="min-h-[148px] rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
+              className="erp-card min-h-[148px] rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
               style={{ background: activa ? "var(--erp-primary-soft)" : "var(--erp-surface)", borderColor: activa ? "var(--erp-primary)" : "var(--erp-border)", boxShadow: activa ? "0 0 0 1px var(--erp-primary)" : undefined }}>
               <div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: activa ? "rgba(59,130,246,.14)" : "var(--erp-surface-soft)" }}>{actividad.icono}</span><span className="text-3xl font-extrabold tabular-nums" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text)" }}>{loadingActividades ? "…" : formatearNumero(total)}</span></div>
               <div className="mt-3 text-sm font-bold leading-snug text-[var(--erp-text)]">{actividad.label}</div>
@@ -2638,7 +2638,7 @@ export default function ExpedientesListado() {
       </section>
       {/* BÚSQUEDA FÁCIL: ocupa todo el ancho disponible */}
       <section
-        className="w-full rounded-2xl border p-3 sm:p-4 shadow-sm space-y-2"
+        className="erp-card w-full p-3 sm:p-4 space-y-2"
         style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
         aria-label="Buscar expedientes"
       >
