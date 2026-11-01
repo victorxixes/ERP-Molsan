@@ -1,5 +1,4 @@
 import MolsanIcon from "../../components/ui/MolsanIcon";
-import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
