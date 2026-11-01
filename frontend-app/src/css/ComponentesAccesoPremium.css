@@ -1,6 +1,6 @@
 /* MOLSAN ERP Premium 2027 · acceso, perfiles y CTN */
 .login-principal-premium,.modulo-pendiente-premium,.empleado-perfil-premium,.ctn-workspace-premium { min-width:0; }
-.login-principal-premium input:focus-visible,.login-principal-premium button:focus-visible,.modulo-pendiente-premium button:focus-visible,.empleado-perfil-premium button:focus-visible,.empleado-perfil-premium input:focus-visible,.empleado-perfil-premium select:focus-visible,.ctn-workspace-premium button:focus-visible,.ctn-workspace-premium input:focus-visible { outline:2px solid var(--molsan-primary,#3156b3); outline-offset:2px; }
+.login-principal-premium input:focus-visible,.login-principal-premium button:focus-visible,.modulo-pendiente-premium button:focus-visible,.empleado-perfil-premium button:focus-visible,.empleado-perfil-premium input:focus-visible,.empleado-perfil-premium select:focus-visible,.ctn-workspace-premium button:focus-visible,.ctn-workspace-premium input:focus-visible { outline:2px solid var(--molsan-primary, #064675); outline-offset:2px; }
 .login-principal-premium input,.login-principal-premium button { max-width:100%; }
 .modulo-pendiente-premium { min-height:calc(100dvh - 6rem); }
 .empleado-perfil-premium img { max-width:100%; }
