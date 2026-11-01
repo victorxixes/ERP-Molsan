@@ -1,3 +1,4 @@
+import MolsanIcon from "../ui/MolsanIcon";
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
@@ -165,7 +166,7 @@ export default function PortalAccessTabs({ notariaId }) {
                   title={mostrarPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                   aria-label={mostrarPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                   onClick={() => ejecutar("revelar")}
-                >{mostrarPassword ? "🙈" : "👁"}</button>}
+                ><MolsanIcon name={mostrarPassword ? "eyeOff" : "eye"} size={18} bare /></button>}
               </div>
               {mostrarPassword && (passwordNueva || passwordRevelada) && <button type="button" className="ctn-portal-button ctn-portal-button--copy" onClick={() => navigator.clipboard?.writeText(passwordNueva || passwordRevelada)}>Copiar contraseña</button>}
               {!esAdministrador && <div className="ctn-portal-muted ctn-portal-muted--spaced">Solo un administrador puede mostrar la contraseña.</div>}
