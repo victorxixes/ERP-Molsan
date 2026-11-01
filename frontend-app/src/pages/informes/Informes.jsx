@@ -1184,15 +1184,7 @@ function InformeCitasApoderados() {
   return (
 
     <div
-      className="
-        informes-premium-page
-        min-h-screen
-        bg-[var(--molsan-page-bg)]
-        text-[var(--molsan-text)]
-        p-4
-        md:p-6
-        space-y-6
-      "
+      className="informes-report-content informes-report-content--apoderados space-y-5"
     >
 
       {/* ======================================================
@@ -1202,7 +1194,7 @@ function InformeCitasApoderados() {
       <div
         className="
           molsan-page-header
-          informes-page-header
+          informes-page-header informes-report-heading
           relative
           overflow-hidden
           bg-white/70
@@ -2881,8 +2873,8 @@ function InformeFirmas() {
   };
 
   return (
-    <section className="space-y-5">
-      <header className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl md:p-6">
+    <section className="informes-report-content space-y-5">
+      <header className="informes-report-heading rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl md:p-6">
         <div className="molsan-section-header flex items-start gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-xl">✍️</span><div><h2 className="text-xl font-bold text-slate-800">Informe de firmas</h2><p className="molsan-page-header__description">Histórico de firmas reales a partir de expedientes con fecha de firma registrada. Las citas de Agenda no se consideran firmas realizadas.</p></div></div>
       </header>
 
@@ -3090,8 +3082,8 @@ function InformeNotarios() {
   const maxFirmasNotario = topNotarios.reduce((maximo, fila) => Math.max(maximo, Number(fila.total_firmas || 0)), 1);
 
   return (
-    <section className="space-y-5">
-      <header className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl md:p-6">
+    <section className="informes-report-content space-y-5">
+      <header className="informes-report-heading rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl md:p-6">
         <div className="molsan-section-header flex items-start gap-3">
           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-xl">🏛️</span>
           <div>
@@ -3244,8 +3236,8 @@ function InformeSLA() {
   };
 
   return (
-    <section className="space-y-5">
-      <header className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl md:p-6">
+    <section className="informes-report-content space-y-5">
+      <header className="informes-report-heading rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl md:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="molsan-section-header flex items-start gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-xl">⏱️</span><div><h2 className="text-xl font-bold text-slate-800">Informe SLA’s</h2><p className="mt-1 text-sm text-slate-500">Control de duración y cumplimiento por actividad, grupo de cancelación y entidad.</p></div></div>
           <button type="button" onClick={() => setRecarga((v) => v + 1)} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">↻ Actualizar datos</button>
@@ -3495,12 +3487,12 @@ function InformeFacturacion() {
 
   return (
     <>
-    <section className="space-y-5">
+    <section className="informes-report-content space-y-5">
       <div role="note" className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-900">
         <span aria-hidden="true" className="text-lg">ℹ️</span>
         <p><strong>Importante:</strong> para que cada gasto quede correctamente asociado a su expediente en el ERP, debe relacionarse el <strong>IDGASTO</strong> del Excel ABSIS con el expediente correspondiente. Los gastos sin esa relación deben revisarse; este informe no crea el vínculo automáticamente.</p>
       </div>
-      <div className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl">
+      <div className="informes-report-heading rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div><h2 className="text-xl font-bold text-slate-800">Informes de facturación</h2><p className="mt-1 text-sm text-slate-500">Indicadores de Post Firma por tipo de operación y por estado original de ABSIS. El periodo se filtra por FPAGO.</p></div>
           <button type="button" onClick={() => setRecarga((v) => v + 1)} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">↻ Actualizar</button>
@@ -3768,7 +3760,7 @@ export default function Informes() {
   };
 
   return (
-    <div className="molsan-page-stack informes-premium-page herramientas-subpagina-premium min-h-screen bg-[var(--molsan-page-bg)] text-[var(--molsan-text)]">
+    <div className="erp-page w-full molsan-page molsan-page-stack informes-premium-page herramientas-subpagina-premium">
       <header className="molsan-page-header">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
