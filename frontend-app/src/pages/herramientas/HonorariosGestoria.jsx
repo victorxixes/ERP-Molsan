@@ -143,7 +143,7 @@ export default function HonorariosGestoria({ soloPlantilla = false } = {}) {
   }
 
   return (
-    <div className={`honorarios-gestoria-premium herramientas-subpagina-premium w-full max-w-none space-y-6 ${soloPlantilla ? "p-0" : ""}`}>
+    <div className={`molsan-page-stack honorarios-gestoria-premium herramientas-subpagina-premium w-full max-w-none ${soloPlantilla ? "p-0" : ""}`}>
       {!soloPlantilla && <>
       <header className="molsan-page-header">
         <p className="text-xs font-black uppercase tracking-[.18em] text-indigo-600">Utilidades · Catálogo económico</p>
