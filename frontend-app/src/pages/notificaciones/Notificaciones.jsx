@@ -218,14 +218,7 @@ export default function Notificaciones() {
       >
 
         <div
-          className="
-            flex
-            flex-col
-            md:flex-row
-            md:items-center
-            md:justify-between
-            gap-4
-          "
+          className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
         >
 
           {/* ==================================================
@@ -233,11 +226,7 @@ export default function Notificaciones() {
               ================================================== */}
 
           <div
-            className="
-              flex
-              items-center
-              gap-4
-            "
+            className="molsan-page-header__identity"
           >
 
             <div
@@ -249,27 +238,10 @@ export default function Notificaciones() {
 
             <div>
 
-              <h1
-                className="
-                  text-2xl
-                  md:text-3xl
-                  font-bold
-                  tracking-tight
-                  text-[var(--erp-text)]
-                "
-              >
-                Notificaciones
-              </h1>
+              <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+              <h1 className="molsan-page-header__title">Notificaciones</h1>
 
-              <p
-                className="
-                  text-sm
-                  mt-1
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                Actividad y avisos en tiempo real del ERP.
-              </p>
+              <p className="molsan-page-header__description">Actividad y avisos en tiempo real del ERP.</p>
 
             </div>
 
@@ -281,11 +253,7 @@ export default function Notificaciones() {
               ================================================== */}
 
           <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
+            className="molsan-page-header__actions"
           >
 
             {/* CONTADOR */}
