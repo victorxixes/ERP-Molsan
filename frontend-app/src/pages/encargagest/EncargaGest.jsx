@@ -6,6 +6,7 @@ import "../../css/PortalProfesionalShared.css";
 import "../../css/EncargaGest.css";
 import axios, { configurarSesionEncargaGest, limpiarSesionEncargaGest } from "../../api/encargagest";
 import { useAuthStore } from "../../store/authStore";
+import { formatEuro as euros } from "../../utils/formatters";
 
 const ESTADOS = [
   { valor: "", texto: "Todos los estados" },
@@ -81,10 +82,7 @@ function fechaHora(valor) {
   return fecha.toLocaleString("es-ES", { dateStyle: "medium", timeStyle: "short" });
 }
 
-function euros(valor) {
-  if (valor === null || valor === undefined || valor === "") return "—";
-  return Number(valor).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
-}
+
 
 function nombreArchivoTamano(bytes) {
   const n = Number(bytes || 0);
