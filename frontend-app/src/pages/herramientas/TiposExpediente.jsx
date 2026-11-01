@@ -101,7 +101,7 @@ export default function TiposExpediente() {
   const activos = tipos.filter((t) => t.activo !== false).length;
 
   return (
-    <main className="min-h-full space-y-6 animate-fadeIn">
+    <main className="molsan-page-stack min-h-full animate-fadeIn">
       <header className="molsan-page-header">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">MOLSAN ERP PREMIUM 2027</p>
