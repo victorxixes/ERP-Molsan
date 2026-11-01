@@ -1187,11 +1187,8 @@ function InformeCitasApoderados() {
       className="
         informes-premium-page
         min-h-screen
-        bg-gradient-to-br
-        from-[#eef5fb]
-        via-[#f7faff]
-        to-[#eaf2fb]
-        text-slate-700
+        bg-[var(--molsan-page-bg)]
+        text-[var(--molsan-text)]
         p-4
         md:p-6
         space-y-6
