@@ -32,6 +32,7 @@ origins = [
     "https://agenda-intranet-f.onrender.com",
     "https://agenda-intranet-b.onrender.com",
     "https://molsan-glass-luxe-preview.onrender.com",
+    "https://molsan-premium-2027-preview.onrender.com",
     "http://localhost:5173",
     "http://localhost:3000",
 ]
