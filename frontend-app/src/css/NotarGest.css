@@ -41,7 +41,7 @@
 .notargest .ng-filtros{padding:15px 17px;gap:12px;border-bottom:1px solid #e9edf4;color:#8995a8;font-size:10px;font-weight:750}
 .notargest .ng-filtros label{color:#75829a;font-size:11px}
 .notargest .ng-filtros input{min-height:40px;padding:9px 13px;color:#293852;background:#f8faff;border:1px solid #e3e9f3;border-radius:11px;font:inherit;font-size:11px}
-.notargest .ng-filtros input:focus{outline:none;border-color:#9bb3ff;box-shadow:0 0 0 3px rgba(61,103,231,.09)}
+.notargest .ng-filtros input:focus{outline:none;border-color:var(--molsan-border-strong, #B8CBD9);box-shadow:0 0 0 3px color-mix(in srgb, var(--molsan-primary) 9%, transparent)}
 .notargest .ng-tabla-contenedor{width:100%;max-width:100%;overflow:auto;scrollbar-color:#ccd5e5 transparent;scrollbar-width:thin}
 .notargest .ng-tabla{min-width:760px;border-collapse:separate;border-spacing:0;text-align:left;font-size:inherit}
 .notargest .ng-tabla th{padding:13px 15px;color:#77849a;background:#f8faff;border-bottom:1px solid #e6ebf3;font-size:9px;font-weight:850;letter-spacing:.75px;white-space:nowrap}
@@ -49,9 +49,9 @@
 .notargest .ng-tabla tbody tr{transition:background .14s ease}
 .notargest .ng-tabla tbody tr:hover{background:#f6f8ff}
 .notargest .ng-tabla tbody tr:last-child td{border-bottom:0}
-.notargest .ng-abrir{display:inline-flex;align-items:center;padding:5px 8px;color:#3558c4;background:#edf2ff;border:1px solid #e0e8ff;border-radius:7px;font-size:10px;font-weight:800;white-space:nowrap}
+.notargest .ng-abrir{display:inline-flex;align-items:center;padding:5px 8px;color:#3558c4;background:var(--molsan-primary-soft, #EAF2F8);border:1px solid #e0e8ff;border-radius:7px;font-size:10px;font-weight:800;white-space:nowrap}
 .notargest .ng-abrir:hover{background:#e4ebff}
-.notargest .ng-adjuntar{display:inline-flex;align-items:center;min-height:34px;padding:8px 11px;color:#3154c5;background:#edf2ff;border:1px solid #dce5ff;border-radius:10px;font-size:11px;font-weight:800;transition:background .15s,border-color .15s}
+.notargest .ng-adjuntar{display:inline-flex;align-items:center;min-height:34px;padding:8px 11px;color:#3154c5;background:var(--molsan-primary-soft, #EAF2F8);border:1px solid #dce5ff;border-radius:10px;font-size:11px;font-weight:800;transition:background .15s,border-color .15s}
 .notargest .ng-adjuntar:hover{background:#e5ecff;border-color:#bfcfff}
 .notargest .ng-ficha-cuerpo{padding:18px;gap:15px}
 .notargest .ng-detalle-bloque{padding:17px;background:rgba(255,255,255,.78);border:1px solid rgba(224,231,241,.95);border-radius:16px;box-shadow:0 5px 16px rgba(31,48,79,.025)}
@@ -65,14 +65,14 @@
 .notargest .ng-observacion p{color:#344256;font-size:12px}
 .notargest .ng-workflow{gap:14px}
 .notargest .ng-workflow-form input{min-height:40px;border:1px solid #e0e7f1;border-radius:10px;background:#f8faff}
-.notargest .ng-login-submit{min-height:42px;padding:0 17px;color:#fff;background:linear-gradient(135deg,#416df0,#2e51ca);border:1px solid rgba(255,255,255,.4);border-radius:12px;box-shadow:0 6px 16px rgba(49,94,232,.18);font-size:12px;font-weight:800;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
+.notargest .ng-login-submit{min-height:42px;padding:0 17px;color:#fff;background:linear-gradient(135deg,var(--molsan-primary, #064675),var(--molsan-primary-hover, #04375B));border:1px solid rgba(255,255,255,.4);border-radius:12px;box-shadow:0 6px 16px rgba(49,94,232,.18);font-size:12px;font-weight:800;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
 .notargest .ng-login-submit:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 9px 20px rgba(49,94,232,.25);filter:brightness(1.04)}
 .notargest .ng-login-submit:disabled{cursor:wait;opacity:.7}
 .notargest .ng-error{color:#9e3944;background:rgba(255,243,244,.95);border:1px solid #f3d5d8;border-radius:13px}
 .notargest .ng-success{color:#14815f;background:#e8f8f1;border:1px solid #d4f1e4;border-radius:13px}
 .notargest .ng-mensaje{color:#8995a8;font-size:11px}
 .notargest .ng-pie{color:#9aa4b5;font-size:9px;letter-spacing:.3px}
-.notargest button:focus-visible,.notargest input:focus-visible{outline:3px solid rgba(61,103,231,.35);outline-offset:2px}
+.notargest button:focus-visible,.notargest input:focus-visible{outline:3px solid color-mix(in srgb, var(--molsan-primary) 35%, transparent);outline-offset:2px}
 
 
 
@@ -104,7 +104,7 @@
 .notargest .ng-comentario-form label{display:flex;flex-direction:column;gap:7px;color:#65738b;font-size:11px;font-weight:750}
 .notargest .ng-comentario-form textarea,.notargest .ng-comentario-form select{width:100%;min-width:0;padding:11px 12px;color:#293852;background:#fff;border:1px solid #dfe6f1;border-radius:10px;font:inherit;font-size:12px;line-height:1.5}
 .notargest .ng-comentario-form textarea{resize:vertical;min-height:82px}
-.notargest .ng-comentario-form textarea:focus,.notargest .ng-comentario-form select:focus{outline:none;border-color:#9bb3ff;box-shadow:0 0 0 3px rgba(61,103,231,.09)}
+.notargest .ng-comentario-form textarea:focus,.notargest .ng-comentario-form select:focus{outline:none;border-color:var(--molsan-border-strong, #B8CBD9);box-shadow:0 0 0 3px color-mix(in srgb, var(--molsan-primary) 9%, transparent)}
 .notargest .ng-comentario-form button{grid-column:2;justify-self:start;white-space:normal}
 .notargest .ng-comentarios-historico{display:flex;flex-direction:column;gap:10px}
 .notargest .ng-comentarios-historico h4{color:#34445e;font-size:12px;font-weight:800;margin:0 0 2px}
@@ -131,7 +131,7 @@
 .notargest .ng-dato{min-width:0;padding:12px 13px;background:#f8faff;border:1px solid #edf1f8;border-radius:10px}
 .notargest .ng-dato small{display:block;margin-bottom:6px;font-size:10px;color:#7c8aa2;font-weight:700}
 .notargest .ng-dato strong{display:block;overflow-wrap:anywhere;font-size:12px;line-height:1.45;color:#273853}
-.notargest .ng-estado-pill{display:inline-flex;align-items:center;padding:7px 11px;border-radius:999px;background:#edf2ff;color:#3455a4;font-size:11px;font-weight:800;white-space:nowrap}
+.notargest .ng-estado-pill{display:inline-flex;align-items:center;padding:7px 11px;border-radius:999px;background:var(--molsan-primary-soft, #EAF2F8);color:#3455a4;font-size:11px;font-weight:800;white-space:nowrap}
 .notargest .ng-firma-form{grid-template-columns:minmax(180px,.7fr) minmax(200px,1fr) auto;align-items:end}
 .notargest .ng-firma-form .ng-ayuda-campo{grid-column:1/-1;margin:0;color:#77849a;font-size:11px}
 
@@ -426,7 +426,7 @@
 .notargest .ng-modulo-card{display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:10px;min-width:0;min-height:66px;padding:11px 12px;border:1px solid var(--erp-border,#dce4f0);border-radius:14px;background:rgba(255,255,255,.92);color:var(--erp-text,#172b4d);text-align:left;box-shadow:0 4px 12px rgba(25,45,80,.035);cursor:pointer;transition:background .16s,border-color .16s,transform .16s,box-shadow .16s}
 .notargest .ng-modulo-card:hover{transform:translateY(-1px);border-color:#b8c9ff;background:#fbfcff;box-shadow:0 7px 17px rgba(25,45,80,.07)}
 .notargest .ng-modulo-card.activa{border-color:#365fe5;background:#eef2ff;box-shadow:inset 0 0 0 1px rgba(54,95,229,.12)}
-.notargest .ng-modulo-icono{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;border:1px solid #dce5ff;background:#edf2ff;color:#365fe5;font-size:18px;font-weight:850}
+.notargest .ng-modulo-icono{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;border:1px solid #dce5ff;background:var(--molsan-primary-soft, #EAF2F8);color:#365fe5;font-size:18px;font-weight:850}
 .notargest .ng-modulo-card.activa .ng-modulo-icono{background:#365fe5;border-color:#365fe5;color:#fff}
 .notargest .ng-modulo-label{min-width:0;font-size:11px;font-weight:780;line-height:1.35}
 .notargest .ng-modulo-count{display:grid;place-items:center;min-width:23px;height:23px;padding:0 6px;border:1px solid #e0e7f1;border-radius:8px;background:#f0f3f9;color:#52617a;font-size:11px;font-weight:850;font-variant-numeric:tabular-nums}
