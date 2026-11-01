@@ -37,10 +37,9 @@
   border-color: var(--molsan-border);
   box-shadow: var(--molsan-shadow-card);
 }
-:where(button,a,[role=button],input,select,textarea):focus-visible {
-  outline: 3px solid rgba(6,70,117,.22);
-  outline-offset: 2px;
-}
+/* El foco visible se define en MolsanRedesign2027.css dentro de cada
+   módulo/portal. Evitamos imponer un outline global a controles ajenos
+   al ERP (p. ej. widgets embebidos o componentes aislados). */
 @media (max-width: 760px) {
   .erp-main-inner { padding-inline: 12px; }
 }
