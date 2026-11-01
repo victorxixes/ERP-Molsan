@@ -560,3 +560,59 @@
   .catalogos-premium-page .catalogos-subpage-header__actions > *,
   .catalogos-premium-page .catalogos-subpage-header__action { width: 100%; justify-content: center; }
 }
+
+
+/* INFORMES · contenedor y cabeceras de las cinco subpáginas.
+   El shell usa el mismo .erp-page / .molsan-page que Dashboard; cada informe
+   aporta únicamente su contenido, sin márgenes exteriores duplicados. */
+.informes-report-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+.informes-report-content > * {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+.informes-report-heading {
+  position: relative;
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: 18px 22px !important;
+  border: 1px solid #D8E4EC !important;
+  border-radius: 20px !important;
+  background: linear-gradient(145deg, #FFFFFF 0%, #FFFFFF 62%, #F2F7FB 100%) !important;
+  box-shadow: 0 8px 24px rgba(6, 50, 82, .065) !important;
+  color: #18384D;
+}
+.informes-report-heading :is(h1, h2) {
+  color: #064675;
+  font-weight: 800;
+  letter-spacing: -.02em;
+}
+.informes-report-heading p {
+  color: #617789;
+}
+.informes-report-content :is(form, section, article) {
+  min-width: 0;
+}
+.informes-report-content :is(table, canvas) {
+  max-width: 100%;
+}
+@media (max-width: 760px) {
+  .informes-report-heading {
+    padding: 16px !important;
+    border-radius: 17px !important;
+  }
+  .informes-report-content {
+    gap: 16px;
+  }
+}
