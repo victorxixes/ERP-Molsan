@@ -1,6 +1,6 @@
 /* MOLSAN ERP PREMIUM 2027 · Catálogo de maestros */
 .maestros-premium-page {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   isolation: isolate;
 }
 .maestros-premium-page > section,
@@ -20,7 +20,7 @@
 .maestros-premium-page select:focus-visible,
 .maestros-premium-page textarea:focus-visible,
 .maestros-premium-page button:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--molsan-primary, #3156b3) 32%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary, #064675) 32%, transparent);
   outline-offset: 2px;
 }
 .maestros-premium-page table thead {
@@ -35,7 +35,7 @@
   background: color-mix(in srgb, var(--molsan-surface-soft, #f8fafc) 42%, transparent);
 }
 .maestros-premium-page tbody tr:hover {
-  background: color-mix(in srgb, var(--molsan-primary, #3156b3) 7%, transparent);
+  background: color-mix(in srgb, var(--molsan-primary, #064675) 7%, transparent);
 }
 .maestros-premium-page button {
   touch-action: manipulation;
