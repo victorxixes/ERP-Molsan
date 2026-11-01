@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import axios from "../../api/axios";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
+import { formatEuro as euros } from "../../utils/formatters";
 
-const euros = (value) => Number(value || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
+
 
 const VACIO = { nombre: "", descripcion: "", base_imponible: "", tipo_impuesto: "IVA", porcentaje_impuesto: "21", activo: true };
 const redondear = (n) => Math.round((Number(n || 0) + Number.EPSILON) * 100) / 100;
