@@ -2430,7 +2430,7 @@ export default function ExpedientesListado() {
 
       {/* Área principal de trabajo de expedientes */}
 
-      <main className="min-w-0 w-full space-y-6">
+      <main className="molsan-page-stack min-w-0 w-full">
         <header className="molsan-page-header expedientes-page__header">
           <div className="molsan-page-header__identity">
             <div className="expedientes-page__header-icon molsan-page-header__mark" aria-hidden="true">EXP</div>
