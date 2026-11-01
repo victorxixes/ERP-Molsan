@@ -69,12 +69,6 @@
   }
 }
 
-.ag-panel-cabecera,
-.ng-panel-titulo,
-.encargagest .eg-panel-head {
-  border-bottom-color: var(--molsan-border-light);
-}
-
 .ag-tabla-marco,
 .ng-tabla-contenedor,
 .encargagest .eg-directorio-tabla-wrap {
@@ -206,13 +200,6 @@
   min-width: 0;
 }
 
-.apoderagest .ag-panel,
-.notargest .ng-panel,
-.encargagest .eg-panel,
-.cg-page .cg-panel {
-  overflow-wrap: anywhere;
-}
-
 .apoderagest .ag-panel-cabecera h2,
 .apoderagest .ag-ficha-bloque-heading h4,
 .notargest .ng-panel-titulo h2,
@@ -247,13 +234,6 @@
 }
 
 /* Intranet: misma jerarquía de cabecera, superficies y tablas que el ERP. */
-.molsan-intranet-page > section {
-  border-color: var(--molsan-border);
-  border-radius: var(--molsan-radius-panel);
-  background: var(--molsan-surface);
-  box-shadow: var(--molsan-shadow-panel);
-}
-
 .molsan-intranet-page h1,
 .molsan-intranet-page h2,
 .molsan-intranet-page h3 {
@@ -293,11 +273,7 @@
     gap: 16px;
   }
 
-  .molsan-intranet-page > header,
-  .molsan-intranet-page > section {
-    border-radius: var(--molsan-radius-card, 14px);
   }
-}
 
 
 /* Tokens compartidos para los módulos operativos.
@@ -385,14 +361,6 @@
   }
 }
 @media (max-width: 640px) {
-  .ctn-listado-page {
-    padding: 14px;
-  }
-  .ctn-listado-header {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 12px;
-  }
   .ctn-listado-header-acciones {
     width: 100%;
     justify-content: flex-start;
@@ -407,32 +375,13 @@
     align-items: stretch;
     padding: 8px;
   }
-  .ctn-modal-panel {
-    width: 100%;
-    max-height: calc(100dvh - 16px);
-    border-radius: var(--molsan-radius-card, 14px);
+  .ctn-modal-panel { width:100%; max-height:calc(100dvh - 16px); }
   }
-  .ctn-modal-header {
-    padding: 16px;
-  }
-}
 
 /* Provisiones de fondos: misma superficie, campos y tablas que el ERP. */
 .provisiones-fondos-page {
   color: var(--molsan-text);
   background: var(--molsan-page-bg);
-}
-.provisiones-fondos-page > header {
-  border-color: var(--molsan-border);
-  border-radius: var(--molsan-radius-panel);
-  box-shadow: var(--molsan-shadow-panel);
-}
-.provisiones-fondos-page > form > section,
-.provisiones-fondos-page > section {
-  min-width: 0;
-  border-color: var(--molsan-border);
-  border-radius: var(--molsan-radius-panel);
-  box-shadow: var(--molsan-shadow-panel);
 }
 .provisiones-fondos-page label {
   min-width: 0;
@@ -473,10 +422,6 @@
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
 @media (max-width: 640px) {
-  .provisiones-fondos-page > form > section,
-  .provisiones-fondos-page > section {
-    padding: 14px;
-  }
   .provisiones-fondos-page .sticky {
     position: static;
   }
