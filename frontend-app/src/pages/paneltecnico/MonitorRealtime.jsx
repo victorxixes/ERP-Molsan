@@ -544,6 +544,7 @@ export default function MonitorRealtime() {
 
       <div
         className="
+          molsan-page-header
           px-6
           py-5
           border-b
