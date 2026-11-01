@@ -24,3 +24,34 @@
     max-height: calc(100dvh - 1rem);
   }
 }
+
+
+/* Cabecera de Informes: proporciones compactas y superficie corporativa común. */
+.informes-premium-page > :is(div, header):first-child {
+  padding: 12px 16px !important;
+  border-color: var(--molsan-border, #D8E4EC) !important;
+  border-radius: var(--molsan-radius-card, 16px) !important;
+  background: var(--molsan-surface, #FFFFFF) !important;
+  box-shadow: var(--molsan-shadow-card) !important;
+  backdrop-filter: none !important;
+}
+.informes-premium-page > :is(div, header):first-child h1 {
+  color: var(--molsan-text, #173247) !important;
+  font-size: 20px !important;
+  line-height: 1.2;
+  letter-spacing: -.02em;
+}
+.informes-premium-page > :is(div, header):first-child p {
+  color: var(--molsan-text-muted, #718696) !important;
+  font-size: 12px !important;
+  line-height: 1.45;
+}
+.informes-premium-page > div:first-child > .pointer-events-none {
+  display: none !important;
+}
+.informes-premium-page > :is(div, header):first-child .w-12.h-12 {
+  width: 36px !important;
+  height: 36px !important;
+  flex-basis: 36px !important;
+  border-radius: 10px !important;
+}
