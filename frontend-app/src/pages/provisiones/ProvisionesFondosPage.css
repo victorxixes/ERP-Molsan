@@ -8,7 +8,8 @@
 .provisiones-fondos-page > header {
   border-color: var(--molsan-border, #D8E4EC);
   border-radius: 18px;
-  box-shadow: 0 6px 22px rgb(23 43 77 / 5%);
+  box-shadow: var(--molsan-shadow-card, 0 8px 24px rgba(6, 50, 82, .075));
+  background-image: linear-gradient(145deg, #FFFFFF 0%, #FFFFFF 72%, #F2F7FB 100%);
 }
 .provisiones-fondos-page :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea) {
   min-width: 0;
