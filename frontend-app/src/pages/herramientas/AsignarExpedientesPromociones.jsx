@@ -76,7 +76,7 @@ export default function AsignarExpedientesPromociones() {
   }
 
   return (
-    <div className="herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="herramientas-subpagina-premium min-h-full space-y-6">
       <header className="molsan-page-header relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="flex flex-wrap items-center gap-4">
