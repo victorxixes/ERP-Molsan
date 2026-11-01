@@ -1,3 +1,4 @@
+import { formatEuro } from "../../utils/formatters";
 import {
   useEffect,
   useState,
@@ -289,25 +290,25 @@ const COLUMNAS = [
   {
     key: "capital",
     label: "Capital",
-    tipo: "numero",
+    tipo: "moneda",
   },
 
   {
     key: "importe",
     label: "Importe",
-    tipo: "numero",
+    tipo: "moneda",
   },
 
   {
     key: "saldo_real",
     label: "Saldo real",
-    tipo: "numero",
+    tipo: "moneda",
   },
 
   {
     key: "saldo_disponible",
     label: "Saldo disponible",
-    tipo: "numero",
+    tipo: "moneda",
   },
 
 
@@ -549,7 +550,7 @@ const COLUMNAS = [
   { key: "fecha_presentacion_tributaria", label: "Fecha presentación tributaria", tipo: "fecha" },
   { key: "fecha_liquidacion_tributaria", label: "Fecha liquidación tributaria", tipo: "fecha" },
   { key: "oficina_liquidadora", label: "Oficina liquidadora", tipo: "texto" },
-  { key: "base_imponible", label: "Base imponible", tipo: "numero" },
+  { key: "base_imponible", label: "Base imponible", tipo: "moneda" },
   { key: "tributacion", label: "Tributación", tipo: "texto" },
   { key: "impuesto_ajd_itp", label: "Impuesto (AJD/ITP)", tipo: "texto" },
   { key: "fecha_vencimiento_asiento", label: "Fecha vencimiento asiento", tipo: "fecha" },
@@ -1012,6 +1013,10 @@ function formatearValor(
   // ==========================================================
   // NÚMERO
   // ==========================================================
+
+  if (tipo === "moneda") {
+    return formatEuro(valor);
+  }
 
   if (
     tipo === "numero"
