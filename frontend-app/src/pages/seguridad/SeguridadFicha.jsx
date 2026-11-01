@@ -1847,7 +1847,7 @@ const permisosGlobales =
                 hover:bg-red-100
               "
             >
-              🔒 Bloquear usuario
+              <MolsanIcon name="lock" size={18} /> Bloquear usuario
             </button>
 
           ) : (
@@ -1872,7 +1872,7 @@ const permisosGlobales =
                 hover:bg-emerald-100
               "
             >
-              🔓 Desbloquear usuario
+              <MolsanIcon name="lock" size={18} /> Desbloquear usuario
             </button>
 
           )}
@@ -2049,7 +2049,7 @@ const permisosGlobales =
                 text-[var(--erp-text)]
               "
             >
-              🔑 Restablecer contraseña
+              <MolsanIcon name="key" size={18} /> Restablecer contraseña
             </h3>
 
             <p
@@ -2148,7 +2148,7 @@ const permisosGlobales =
                 text-[var(--erp-text)]
               "
             >
-              👤 Asignar rol
+              <MolsanIcon name="person" size={18} /> Asignar rol
             </h3>
 
             <p
@@ -2753,7 +2753,7 @@ const permisosGlobales =
                 text-emerald-700
               "
             >
-              📊 Exportar
+              <MolsanIcon name="chart" size={18} /> Exportar
             </button>
 
           </div>
@@ -3067,7 +3067,7 @@ const permisosGlobales =
                 text-amber-700
               "
             >
-              📝 Exportar
+              <MolsanIcon name="pen" size={18} /> Exportar
             </button>
 
           </div>
