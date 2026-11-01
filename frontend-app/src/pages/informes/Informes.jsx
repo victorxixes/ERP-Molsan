@@ -3408,9 +3408,10 @@ function datosAbsisNormalizados(fila) {
   if (!fila || typeof fila !== "object") return new Map();
   const existente = CACHE_POSTFIRMA_ABSIS.get(fila);
   if (existente) return existente;
-  const normalizados = new Map(
-    Object.entries(fila.datos_absis || {}).map(([clave, valor]) => [clave.trim().toUpperCase(), valor])
-  );
+  const normalizados = Object.create(null);
+  Object.entries(fila.datos_absis || {}).forEach(([clave, valor]) => {
+    normalizados[clave.trim().toUpperCase()] = valor;
+  });
   CACHE_POSTFIRMA_ABSIS.set(fila, normalizados);
   return normalizados;
 }
@@ -3427,7 +3428,7 @@ function valorColumnaPostFirma(fila, columna) {
     return valorInterno === undefined || valorInterno === null || valorInterno === "" ? "—" : String(valorInterno);
   }
 
-  let valor = datosAbsisNormalizados(fila).get(etiqueta);
+  let valor = datosAbsisNormalizados(fila)[etiqueta];
   if (valor === undefined || valor === null || valor === "") {
     const alternativas = {
       IDEXPEDIENTE: fila.id_expediente,
