@@ -226,3 +226,53 @@
     transition: none !important;
   }
 }
+
+
+/* Cobertura de los demás espacios que ya forman parte del shell premium. */
+:where(
+  .cg-page,
+  .cg-unified-workspace,
+  .utilidades-premium-page,
+  .honorarios-gestoria-premium,
+  .logs-premium-page,
+  .notificaciones-premium-page,
+  .panel-tecnico-submodulo-premium,
+  .portal-login-premium,
+  .herramientas-home-premium
+) :where(div, section, article)[class~="border"][class*="rounded-"][class*="bg-white"] {
+  min-width: 0;
+  border-color: #D8E4EC;
+  border-radius: 17px;
+  background-image: linear-gradient(150deg, rgba(255,255,255,.98) 0%, #FFFFFF 64%, #F7FAFC 100%);
+  box-shadow: 0 7px 21px rgba(6, 50, 82, .045);
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+:where(
+  .cg-page,
+  .cg-unified-workspace,
+  .utilidades-premium-page,
+  .honorarios-gestoria-premium,
+  .logs-premium-page,
+  .notificaciones-premium-page,
+  .panel-tecnico-submodulo-premium,
+  .portal-login-premium,
+  .herramientas-home-premium
+) :where(div, section, article)[class~="border"][class*="rounded-"][class*="bg-white"]:hover {
+  border-color: #C7DCE8;
+  box-shadow: 0 11px 27px rgba(6, 50, 82, .075);
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(
+    .cg-page,
+    .cg-unified-workspace,
+    .utilidades-premium-page,
+    .honorarios-gestoria-premium,
+    .logs-premium-page,
+    .notificaciones-premium-page,
+    .panel-tecnico-submodulo-premium,
+    .portal-login-premium,
+    .herramientas-home-premium
+  ) :where(div, section, article)[class~="border"][class*="rounded-"][class*="bg-white"] {
+    transition: none !important;
+  }
+}
