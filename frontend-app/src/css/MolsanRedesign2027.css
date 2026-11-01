@@ -1595,7 +1595,6 @@
    ============================================================ */
 
 :root {
-  color-scheme: light;
   font-family: var(--molsan-font-family);
   font-size: var(--molsan-font-size-md);
   font-synthesis: none;
