@@ -10,6 +10,7 @@ import CtnListadoPage from "../ctn/CtnListadoPage";
 import { useAuthStore } from "../../store/authStore";
 import { createPortal } from "react-dom";
 import "../../css/PortalProfesionalShared.css";
+import IconoPremium from "../../components/IconoPremium";
 
 const PESTANAS = [
   { nombre: "Dashboard", icono: "◫" },
@@ -148,7 +149,7 @@ function TarjetaIndicador({
     <>
       <div className="ag-kpi-superior">
         <span className="ag-kpi-titulo">{titulo}</span>
-        <span className="ag-kpi-icono" aria-hidden="true">{icono}</span>
+        <span className="ag-kpi-icono" aria-hidden="true"><IconoPremium nombre={icono} /></span>
       </div>
       <div className="ag-kpi-valor">{valor}</div>
       {detalle ? <div className="ag-kpi-detalle">{detalle}</div> : null}
@@ -166,7 +167,7 @@ function EstadoVacio({ icono = "◇", titulo, detalle }) {
   return (
     <div className="ag-vacio">
       <span className="ag-vacio-icono" aria-hidden="true">
-        {icono}
+        <IconoPremium nombre={icono} />
       </span>
       <h3>{titulo}</h3>
       <p>{detalle}</p>
