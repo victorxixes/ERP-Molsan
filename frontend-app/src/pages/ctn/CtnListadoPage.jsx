@@ -151,7 +151,7 @@ export default function CtnListadoPage() {
         setCargando(false);
       }
     },
-    [pagina, filtrosAplicados]
+    [pagina, filtrosAplicados, orden]
   );
 
   useEffect(() => {
@@ -317,14 +317,14 @@ export default function CtnListadoPage() {
         <div className="ctn-tabla-scroll">
           <table className="ctn-tabla molsan-table">
             <thead><tr>
-              <th>ID</th>
-              <th>Notario</th>
-              <th>NIF</th>
-              <th>Municipio</th>
-              <th>Provincia</th>
-              <th>VC</th><th>Apoderado</th>
-              <th>Notario asociado</th>
-              <th>Acceso NotarGest</th><th>Acceso EncargaGest</th><th>Distancia</th><th>Acciones</th>
+              <th>{cabeceraOrdenable("ID", "id")}</th>
+              <th>{cabeceraOrdenable("Notario", "nombre_completo")}</th>
+              <th>{cabeceraOrdenable("NIF", "nif")}</th>
+              <th>{cabeceraOrdenable("Municipio", "municipio")}</th>
+              <th>{cabeceraOrdenable("Provincia", "provincia")}</th>
+              <th>{cabeceraOrdenable("VC", "vc")}</th><th>{cabeceraOrdenable("Apoderado", "apoderado")}</th>
+              <th>{cabeceraOrdenable("Notario asociado", "notario_asociado")}</th>
+              <th>{cabeceraOrdenable("Acceso NotarGest", "notargest_habilitado")}</th><th>{cabeceraOrdenable("Acceso EncargaGest", "encargagest_habilitado")}</th><th>{cabeceraOrdenable("Distancia", "distancia_km")}</th><th>Acciones</th>
             </tr></thead>
             <tbody>
               {cargando && items.length === 0 ? (
