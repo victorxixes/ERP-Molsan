@@ -3,7 +3,7 @@
 .panel-tecnico-submodulo-premium > div { min-width: 0; }
 .panel-tecnico-submodulo-premium section, .panel-tecnico-submodulo-premium article { border-radius: var(--pt-radius); }
 .panel-tecnico-submodulo-premium input, .panel-tecnico-submodulo-premium select, .panel-tecnico-submodulo-premium textarea { max-width: 100%; transition: border-color .18s ease, box-shadow .18s ease; }
-.panel-tecnico-submodulo-premium input:focus-visible, .panel-tecnico-submodulo-premium select:focus-visible, .panel-tecnico-submodulo-premium textarea:focus-visible, .panel-tecnico-submodulo-premium button:focus-visible { outline: 2px solid var(--molsan-primary, #4169e1); outline-offset: 2px; }
+.panel-tecnico-submodulo-premium input:focus-visible, .panel-tecnico-submodulo-premium select:focus-visible, .panel-tecnico-submodulo-premium textarea:focus-visible, .panel-tecnico-submodulo-premium button:focus-visible { outline: 2px solid var(--molsan-primary, #064675); outline-offset: 2px; }
 .panel-tecnico-submodulo-premium table { width: 100%; border-collapse: separate; border-spacing: 0; }
 .panel-tecnico-submodulo-premium th { position: sticky; top: 0; z-index: 1; background: var(--molsan-surface-soft, #f5f7fb); }
 .panel-tecnico-submodulo-premium td, .panel-tecnico-submodulo-premium th { overflow-wrap: anywhere; }
@@ -12,7 +12,7 @@
 
 /* Accesibilidad y contención en monitores y auditoría técnica. */
 .panel-tecnico-submodulo-premium :is(button, a, input, select, textarea):focus-visible {
-  outline: 2px solid var(--molsan-primary, #4169e1);
+  outline: 2px solid var(--molsan-primary, #064675);
   outline-offset: 2px;
 }
 .panel-tecnico-submodulo-premium pre,
