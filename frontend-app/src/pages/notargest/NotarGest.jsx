@@ -737,14 +737,14 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
             <div className="notargest ng-content">
     <header className="ag-hero molsan-page-header ng-hero-apoderagest">
       <div className="ag-hero-identidad molsan-page-header__identity">
-        <div className="ag-marca ng-marca-notargest" aria-label="NotarGest">NG</div>
+        <div className="ag-marca ng-marca-notargest molsan-page-header__mark" aria-label="NotarGest">NG</div>
         <div>
-          <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
+          <div className="ag-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
           <h1 className="molsan-page-header__title">NotarGest</h1>
           <p className="molsan-page-header__description">Centro de gestión notarial, firmas y seguimiento registral.</p>
         </div>
       </div>
-      <div className="ag-hero-acciones">
+      <div className="ag-hero-acciones molsan-page-header__actions">
         {accesoERP && <button type="button" onClick={() => navigate("/modulos")} className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"><span aria-hidden="true">▦</span> Ir a módulos</button>}
       </div>
     </header>
