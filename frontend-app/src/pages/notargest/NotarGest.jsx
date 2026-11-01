@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -566,16 +567,16 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
               disabled={cargando || cargandoSelectorNotaria}
               aria-live="polite"
             >
-              <span className={cargando || cargandoSelectorNotaria ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
+              <MolsanIcon name="refresh" size={18} bare className={cargando || cargandoSelectorNotaria ? "ag-icono-girando" : ""} />
               {cargando || cargandoSelectorNotaria ? "Actualizando…" : "Actualizar datos"}
             </button>
           </>
         }
       />
-      {notificacionesAbiertas && <div className="ng-modal-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setNotificacionesAbiertas(false); }}><section className="ng-modal ng-modal-avisos" role="dialog" aria-modal="true" aria-labelledby="ng-avisos-titulo"><header><div><span className="ng-kicker">NOTARGEST · AVISOS</span><h2 id="ng-avisos-titulo">Notificaciones pendientes</h2><p>Documentos nuevos y observaciones del gestor vinculados a tus expedientes.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setNotificacionesAbiertas(false)}>Cerrar ✕</button></header><div className="ng-modal-lista">{totalAvisosPendientes === 0 ? <div className="ng-modal-vacio"><strong>Todo al día</strong><p>No tienes notificaciones pendientes de leer.</p></div> : <>{avisosPendientes.documentos.map(item => <article className="ng-aviso-item" key={`documento:${item.id}`}><span className="ng-aviso-icono">PDF</span><div className="ng-aviso-contenido"><strong>Nuevo documento en expediente {item.id_expediente}</strong><p>{texto(item.nombre)} · {texto(item.categoria)}</p><small>{texto(item.oficina)} · {texto(item.fecha_subida)}</small><div className="ng-aviso-acciones"><button type="button" className="ng-login-submit" onClick={() => abrirAvisoExpediente(item)}>Ver expediente</button><button type="button" className="ng-boton-secundario" onClick={() => marcarAvisoLeido("documento", item.id)}>Marcar como leída</button></div></div></article>)}{avisosPendientes.comentarios.map(item => <article className="ng-aviso-item" key={`comentario:${item.id}`}><span className="ng-aviso-icono ng-aviso-icono-observacion">!</span><div className="ng-aviso-contenido"><strong>Nueva observación · expediente {item.id_expediente}</strong><p>{texto(item.comentario)}</p><small>{texto(item.oficina)} · {texto(item.fecha)}</small><div className="ng-aviso-acciones"><button type="button" className="ng-login-submit" onClick={() => abrirAvisoExpediente(item)}>Ver expediente</button><button type="button" className="ng-boton-secundario" onClick={() => marcarAvisoLeido("comentario", item.id)}>Marcar como leída</button></div></div></article>)}</>}</div></section></div>}
+      {notificacionesAbiertas && <div className="ng-modal-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setNotificacionesAbiertas(false); }}><section className="ng-modal ng-modal-avisos" role="dialog" aria-modal="true" aria-labelledby="ng-avisos-titulo"><header><div><span className="ng-kicker">NOTARGEST · AVISOS</span><h2 id="ng-avisos-titulo">Notificaciones pendientes</h2><p>Documentos nuevos y observaciones del gestor vinculados a tus expedientes.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setNotificacionesAbiertas(false)}><MolsanIcon name="plus" size={16} bare /> Cerrar</button></header><div className="ng-modal-lista">{totalAvisosPendientes === 0 ? <div className="ng-modal-vacio"><strong>Todo al día</strong><p>No tienes notificaciones pendientes de leer.</p></div> : <>{avisosPendientes.documentos.map(item => <article className="ng-aviso-item" key={`documento:${item.id}`}><span className="ng-aviso-icono">PDF</span><div className="ng-aviso-contenido"><strong>Nuevo documento en expediente {item.id_expediente}</strong><p>{texto(item.nombre)} · {texto(item.categoria)}</p><small>{texto(item.oficina)} · {texto(item.fecha_subida)}</small><div className="ng-aviso-acciones"><button type="button" className="ng-login-submit" onClick={() => abrirAvisoExpediente(item)}>Ver expediente</button><button type="button" className="ng-boton-secundario" onClick={() => marcarAvisoLeido("documento", item.id)}>Marcar como leída</button></div></div></article>)}{avisosPendientes.comentarios.map(item => <article className="ng-aviso-item" key={`comentario:${item.id}`}><span className="ng-aviso-icono ng-aviso-icono-observacion">!</span><div className="ng-aviso-contenido"><strong>Nueva observación · expediente {item.id_expediente}</strong><p>{texto(item.comentario)}</p><small>{texto(item.oficina)} · {texto(item.fecha)}</small><div className="ng-aviso-acciones"><button type="button" className="ng-login-submit" onClick={() => abrirAvisoExpediente(item)}>Ver expediente</button><button type="button" className="ng-boton-secundario" onClick={() => marcarAvisoLeido("comentario", item.id)}>Marcar como leída</button></div></div></article>)}</>}</div></section></div>}
       {pagosAbiertos && <div className="ng-modal-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setPagosAbiertos(false); }}>
         <section className="ng-modal ng-modal-pagos ng-modal-pagos-amplio" role="dialog" aria-modal="true" aria-labelledby="ng-pagos-titulo">
-          <header><div><span className="ng-kicker">NOTARGEST · GESTIÓN ECONÓMICA</span><h2 id="ng-pagos-titulo">Solicitudes de Pago efectuadas por Molsan</h2><p>Pagos registrados desde la Ficha de expediente y vinculados a la notaría.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setPagosAbiertos(false)}>Cerrar ✕</button></header>
+          <header><div><span className="ng-kicker">NOTARGEST · GESTIÓN ECONÓMICA</span><h2 id="ng-pagos-titulo">Solicitudes de Pago efectuadas por Molsan</h2><p>Pagos registrados desde la Ficha de expediente y vinculados a la notaría.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setPagosAbiertos(false)}>Cerrar</button></header>
           <div className="ng-pagos-tabla-wrap">
             <MolsanDataTable
               rows={pagosNotario}
@@ -594,8 +595,8 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                 { key: "importe", header: "Importe", accessor: "importe", sortType: "currency", align: "right", render: (value) => euros(value) },
                 { key: "protocolo", header: "Protocolo", accessor: "protocolo", sortType: "text", render: (value) => texto(value) },
                 { key: "fecha_firma", header: "Fecha de firma", accessor: "fecha_firma", sortType: "date", render: (value) => esFecha(value) },
-                { key: "factura", header: "Factura notarial", sortable: false, accessor: (item) => item.factura_notarial_id, render: (_, item) => item.factura_notarial_id ? <button type="button" className="ng-pdf-link" title="Abrir factura notarial PDF" onClick={() => abrirPdfPago(item,"factura")}><span>PDF</span></button> : "—" },
-                { key: "justificante", header: "Justificante", sortable: false, accessor: (item) => item.justificante_documento_id || item.justificante_url, render: (_, item) => item.justificante_documento_id || item.justificante_url ? <button type="button" className="ng-pdf-link" title="Abrir justificante PDF" onClick={() => abrirPdfPago(item,"justificante")}><span>PDF</span></button> : "—" },
+                { key: "factura", header: "Factura notarial", sortable: false, accessor: (item) => item.factura_notarial_id, render: (_, item) => item.factura_notarial_id ? <button type="button" className="ng-pdf-link" title="Abrir factura notarial PDF" onClick={() => abrirPdfPago(item,"factura")}><MolsanIcon name="file" size={18} bare /> PDF</button> : "—" },
+                { key: "justificante", header: "Justificante", sortable: false, accessor: (item) => item.justificante_documento_id || item.justificante_url, render: (_, item) => item.justificante_documento_id || item.justificante_url ? <button type="button" className="ng-pdf-link" title="Abrir justificante PDF" onClick={() => abrirPdfPago(item,"justificante")}><MolsanIcon name="file" size={18} bare /> PDF</button> : "—" },
               ]}
             />
             {cargandoPagos && <p className="ng-mensaje">Cargando pagos…</p>}
@@ -604,7 +605,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       </div>}
       {perfilNotarioAbierto && <div className="ng-modal-overlay ng-modal-overlay-scroll" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setPerfilNotarioAbierto(false); }}><section className="ng-modal ng-modal-perfil ng-modal-perfil-scroll" role="dialog" aria-modal="true" aria-labelledby="ng-perfil-titulo"><header><div><span className="ng-kicker">FICHA CTN</span><h2 id="ng-perfil-titulo">Ficha del notario</h2><p>Datos de la notaría registrados en el catálogo CTN.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setPerfilNotarioAbierto(false)}>Cerrar ✕</button></header><div className="grid grid-cols-1 gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)]">
           <div className="min-w-0">
-            <div className="ng-perfil-identidad"><div className="ng-perfil-avatar">NG</div><div><strong>{texto(notario?.nombre)}</strong><span>{texto(notario?.nif)}</span></div></div>
+            <div className="ng-perfil-identidad"><div className="ng-perfil-avatar"><MolsanIcon name="courthouse" size={36} /></div><div><strong>{texto(notario?.nombre)}</strong><span>{texto(notario?.nif)}</span></div></div>
             <div className="ng-perfil-datos">{[["Nombre",notario?.nombre],["NIF",notario?.nif],["Usuario",notario?.nif],["Teléfono",notario?.telefono],["Dirección",notario?.direccion],["Código postal",notario?.cp],["Municipio",notario?.municipio],["Provincia",notario?.provincia],["Código CTN",notario?.codigo],["Videoconferencia",notario?.vc],["Apoderado asociado",notario?.apoderado],["Departamento cancelaciones",notario?.departamento_cancelaciones],["Departamento copias",notario?.departamento_copias],["Otros departamentos",notario?.otros_departamentos]].map(([label,value]) => <div className="ng-dato" key={label}><small>{label}</small><strong>{texto(value)}</strong></div>)}</div>
             {notario?.observacion && <div className="ng-perfil-observacion"><small>Observaciones CTN</small><p>{notario.observacion}</p></div>}
           </div>
@@ -625,7 +626,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
           <section className="ng-modal ng-resumen-expedientes-modal" role="dialog" aria-modal="true" aria-labelledby="ng-resumen-expedientes-titulo">
             <header>
               <div><span className="ng-kicker">NOTARGEST · VISIÓN MOLSAN</span><h2 id="ng-resumen-expedientes-titulo">{modalExpedientesResumen.titulo}</h2><p>{modalExpedientesResumen.items.length} expediente(s) coinciden con este bloque.</p></div>
-              <button type="button" className="ng-boton-secundario" onClick={() => setModalExpedientesResumen(null)}>Cerrar ✕</button>
+              <button type="button" className="ng-boton-secundario" onClick={() => setModalExpedientesResumen(null)}>Cerrar</button>
             </header>
             <div className="ng-resumen-expedientes-contenido">
               {cargandoResumenExpedientes ? <p className="ng-mensaje">Cargando expedientes…</p> : modalExpedientesResumen.items.length === 0 ? <div className="ng-modal-vacio"><strong>No hay expedientes en este bloque</strong><p>Cuando existan expedientes que cumplan esta condición aparecerán aquí.</p></div> : (
@@ -659,9 +660,9 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         <section className="ng-admin-notarias">
           {!tokenAdminNotaria ? <>
             <header className="ng-control-hero">
-              <div className="ng-control-identidad">
-                <div className="ng-control-logo"><img src="/img/logo.jpg" alt="MOLSAN" /></div>
-                <div className="ng-control-titulos">
+              <div className="ng-control-identidad molsan-page-header__identity">
+                <div className="ng-control-logo molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="courthouse" size={42} bare /></div>
+                <div className="ng-control-titulos min-w-0">
                   <span className="ng-control-eyebrow">MOLSAN ERP · PREMIUM 2027</span>
                   <h2>NotarGest</h2>
                   <p>Visión global del trabajo notarial y detalle operativo de cada notaría habilitada.</p>
@@ -669,7 +670,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
               </div>
               <div className="ng-control-acciones">
                 <div className="ng-control-botones">
-                  <button type="button" className="ng-control-secundario" onClick={() => navigate("/modulos")}>▦ Ir a módulos</button>
+                  <button type="button" className="molsan-btn molsan-btn--secondary" onClick={() => navigate("/modulos")}><MolsanIcon name="dashboard" size={18} bare /> Ir a módulos</button>
                 </div>
               </div>
             </header>
@@ -709,10 +710,10 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                 return <article className={`ng-admin-notaria-card ${urgentes > 0 ? "tiene-urgentes" : ""}`} key={item.id}>
                   <header className="ng-admin-card-header">
                     <div className="ng-admin-notaria-identidad">
-                      <span className="ng-admin-notaria-icono" aria-hidden="true">NG</span>
+                      <span className="ng-admin-notaria-icono" aria-hidden="true"><MolsanIcon name="courthouse" size={34} /></span>
                       <div className="ng-admin-notaria-titulo">
                         <h3>{item.nombre || "Notaría sin nombre"}</h3>
-                        <p><span aria-hidden="true">⌖</span> {[item.municipio, item.provincia].filter(Boolean).join(" · ") || "Ubicación no indicada"}</p>
+                        <p><MolsanIcon name="pin" size={15} bare /> {[item.municipio, item.provincia].filter(Boolean).join(" · ") || "Ubicación no indicada"}</p>
                         <small>{item.nif || "NIF no indicado"} <span>·</span> {Number(item.total_expedientes || 0)} expedientes en circuito</small>
                       </div>
                     </div>
@@ -755,15 +756,15 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                     </section>
                   </div>
                   <button type="button" className="ng-admin-ver-expedientes" disabled={cargandoResumenExpedientes} onClick={() => abrirModalResumen(null, `Expedientes · ${item.nombre || "Notaría"}`, item.id)}>
-                    <span>Ver expedientes</span><span aria-hidden="true">↗</span>
+                    <span>Ver expedientes</span><MolsanIcon name="arrowRight" size={17} bare />
                   </button>
                   <button type="button" className="ng-admin-entrar" disabled={cargando} onClick={() => seleccionarNotariaAdmin(String(item.id))}>
-                    <span>Acceder al espacio de trabajo</span><span aria-hidden="true">→</span>
+                    <span>Acceder al espacio de trabajo</span><MolsanIcon name="arrowRight" size={17} bare />
                   </button>
                 </article>;
               })}
             </div>
-          </> : <div className="ng-admin-notaria-activa"><div><span className="ng-kicker">NOTARÍA SELECCIONADA</span><h2>{notariasSeleccionables.find(x=>String(x.id)===String(notariaAdminSeleccionada))?.nombre || notario?.nombre || "Notaría"}</h2><p>Estás gestionando esta notaría como administrador.</p></div><button type="button" className="ng-boton-secundario" onClick={()=>seleccionarNotariaAdmin("")}>← Volver al control de notarías</button></div>}
+          </> : <div className="ng-admin-notaria-activa molsan-page-header"><div><span className="ng-kicker">NOTARÍA SELECCIONADA</span><h2>{notariasSeleccionables.find(x=>String(x.id)===String(notariaAdminSeleccionada))?.nombre || notario?.nombre || "Notaría"}</h2><p>Estás gestionando esta notaría como administrador.</p></div><button type="button" className="ng-boton-secundario" onClick={()=>seleccionarNotariaAdmin("")}>← Volver al control de notarías</button></div>}
         </section>
       )}
       {(!accesoERP || !esAdminNotarGest || Boolean(tokenAdminNotaria)) && <main className="relative min-h-[calc(100vh-70px)]">
@@ -781,7 +782,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       </div>
       <div className="ag-hero-acciones molsan-page-header__actions">
         {vista !== "inicio" && <button type="button" onClick={volverVistaAnterior} className="ng-boton-secundario">← Volver</button>}
-        {accesoERP && <button type="button" onClick={() => navigate("/modulos")} className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"><span aria-hidden="true">▦</span> Ir a módulos</button>}
+        {accesoERP && <button type="button" onClick={() => navigate("/modulos")} className="molsan-btn molsan-btn--secondary inline-flex items-center gap-2"><MolsanIcon name="dashboard" size={18} bare /> Ir a módulos</button>}
       </div>
     </header>
 
@@ -998,12 +999,12 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                   });
                   return <div className="ng-categoria-documental" key={categoria}>
                     <div className="ng-categoria-heading"><div><strong>{categoria}</strong><small>{docs.length} archivo(s)</small></div><label className="ng-adjuntar-pdf">＋ Adjuntar PDF<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { subirDocumentoCarpeta(categoria, e.target.files?.[0]); e.target.value = ""; }} /></label></div>
-                    {docs.length ? docs.map(d => <div className="ng-archivo-row" key={d.id}><span className="ng-pdf-icon">PDF</span><div className="ng-archivo-info"><strong>{d.nombre}</strong><small>{esFecha(d.fecha_subida)}</small></div><button type="button" className="ng-boton-secundario" onClick={() => abrirDocumento(d)}>Ver a la derecha</button></div>) : <p className="ng-vacio-categoria">Todavía no hay archivos. Usa «Adjuntar PDF» para incorporarlo aquí.</p>}
+                    {docs.length ? docs.map(d => <div className="ng-archivo-row" key={d.id}><span className="ng-pdf-icon"><MolsanIcon name="file" size={18} bare /> PDF</span><div className="ng-archivo-info"><strong>{d.nombre}</strong><small>{esFecha(d.fecha_subida)}</small></div><button type="button" className="ng-boton-secundario" onClick={() => abrirDocumento(d)}>Ver a la derecha</button></div>) : <p className="ng-vacio-categoria">Todavía no hay archivos. Usa «Adjuntar PDF» para incorporarlo aquí.</p>}
                   </div>;
                 })}
               </div>
               <aside className="ng-visor-documentos"><div className="ng-visor-cabecera"><div><span className="ng-kicker">VISOR INTEGRADO</span><strong>Visor de documentos</strong><small>{documentoSeleccionado ? documentoSeleccionado.nombre : "Selecciona «Ver a la derecha» en un archivo"}</small></div><button className="ng-boton-secundario" type="button" onClick={() => setVisorAmpliado(v => !v)}>{visorAmpliado ? "⤢ Reducir" : "⛶ Ampliar"}</button></div>
-                {documentoSeleccionadoUrl ? <iframe className={`ng-pdf-frame ${visorAmpliado ? "ng-pdf-ampliado" : ""}`} title="Vista previa del documento" src={documentoSeleccionadoUrl} /> : <div className="ng-visor-vacio"><span>▤</span><strong>Vista previa</strong><p>Adjunta un PDF o pulsa «Ver a la derecha» en uno de los documentos para consultarlo aquí sin salir de la actividad.</p></div>}
+                {documentoSeleccionadoUrl ? <iframe className={`ng-pdf-frame ${visorAmpliado ? "ng-pdf-ampliado" : ""}`} title="Vista previa del documento" src={documentoSeleccionadoUrl} /> : <div className="ng-visor-vacio"><MolsanIcon name="file" size={42} /><strong>Vista previa</strong><p>Adjunta un PDF o pulsa «Ver a la derecha» en uno de los documentos para consultarlo aquí sin salir de la actividad.</p></div>}
               </aside>
             </div>
           </details>
