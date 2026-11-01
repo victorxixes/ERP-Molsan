@@ -1193,7 +1193,6 @@ function InformeCitasApoderados() {
 
       <div
         className="
-          molsan-page-header
           informes-page-header informes-report-heading
           relative
           overflow-hidden
