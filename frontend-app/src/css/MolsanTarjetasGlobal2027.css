@@ -315,6 +315,10 @@
   .maestros-premium-page
 ) > .molsan-page-header,
 :where(
+  .erp-page,
+  .panel-tecnico-submodulo-premium,
+  .seguridad-auditoria-premium,
+  .seguridad-usuarios-premium,
   .empleado-ficha-premium,
   .empleado-editar-premium,
   .empleado-perfil-premium,
