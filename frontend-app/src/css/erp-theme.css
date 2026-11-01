@@ -20,49 +20,7 @@
    VARIABLES CORPORATIVAS
    ============================================================ */
 
-:root {
-  /* Compatibilidad: las variables antiguas apuntan al sistema MOLSAN canónico. */
-  --erp-bg: var(--molsan-page-bg, #FFFFFF);
-  --erp-surface: var(--molsan-surface, #fff);
-  --erp-surface-soft: var(--molsan-surface-soft, #F2F7FB);
-  --erp-surface-hover: var(--molsan-primary-soft, #EAF2F8);
-
-  --erp-border: var(--molsan-border, #D8E4EC);
-  --erp-border-light: var(--molsan-border-light, #E8EFF4);
-  --erp-border-strong: var(--molsan-border-strong, #B8CBD9);
-
-  --erp-primary: var(--molsan-primary, #064675);
-  --erp-primary-dark: var(--molsan-primary-hover, #04375B);
-  --erp-primary-light: var(--molsan-primary-hover, #04375B);
-  --erp-primary-soft: var(--molsan-primary-soft, #EAF2F8);
-  --erp-primary-hover: var(--molsan-primary-hover, #04375B);
-
-  --erp-text: var(--molsan-text, #173247);
-  --erp-text-soft: var(--molsan-text-muted, #718696);
-  --erp-text-muted: var(--molsan-text-muted, #718696);
-  --erp-text-strong: var(--molsan-text, #173247);
-
-  --erp-success: var(--molsan-success, #16845b);
-  --erp-success-soft: #eaf8f0;
-  --erp-warning: var(--molsan-warning, #b7791f);
-  --erp-warning-soft: #fff7e8;
-  --erp-danger: var(--molsan-danger, #c43d4b);
-  --erp-danger-soft: #fff0f1;
-  --erp-info: var(--molsan-info, #176B9A);
-  --erp-info-soft: var(--molsan-info-soft, #EAF5FB);
-
-  --erp-shadow-xs: 0 1px 2px rgba(36, 50, 74, .04);
-  --erp-shadow-sm: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
-  --erp-shadow-md: 0 10px 25px rgba(36, 50, 74, .08);
-  --erp-shadow-lg: 0 18px 45px rgba(36, 50, 74, .12);
-
-  --erp-radius-sm: var(--molsan-radius-control, 9px);
-  --erp-radius-md: var(--molsan-radius-card, 14px);
-  --erp-radius-lg: var(--molsan-radius-card, 14px);
-  --erp-radius-xl: var(--molsan-radius-dialog, 16px);
-
-  --erp-transition: var(--molsan-transition-normal, 180ms ease);
-}
+/* Los alias --erp-* se definen en molsan-tokens.css. */
 
 
 /* ============================================================
