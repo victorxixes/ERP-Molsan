@@ -263,7 +263,7 @@ export default function MantenimientoTecnico() {
 
   if (!accesoPermitido) {
     return (
-      <div className="mantenimiento-tecnico-premium p-6">
+      <div className="mantenimiento-tecnico-premium">
         <div className="mx-auto max-w-3xl rounded-2xl border border-rose-200 bg-white p-6 shadow-sm">
           <div className="text-2xl">🔒 Acceso restringido</div>
           <p className="mt-2 text-sm text-slate-600">
@@ -276,8 +276,8 @@ export default function MantenimientoTecnico() {
   }
 
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="molsan-page-header relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+    <main className="min-h-full space-y-6">
+      <header className="molsan-page-header">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
