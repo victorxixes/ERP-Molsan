@@ -272,8 +272,15 @@ def listar_cargas_postfirma(db: Session):
     } for f in filas]
 
 
-def listar_registros_postfirma(db: Session, limit: int = 200, offset: int = 0, carga_id: int | None = None):
-    _crear_almacen(db)
+def listar_registros_postfirma(
+    db: Session,
+    limit: int = 200,
+    offset: int = 0,
+    carga_id: int | None = None,
+    sort_by: str = "carga_id",
+    sort_dir: str = "desc",
+):
+    _crear_almacen()
     if carga_id is not None:
         esquema = db.execute(text(
             "SELECT columnas_json FROM public.absis_postfirma_cargas WHERE id = :id"
@@ -288,19 +295,83 @@ def listar_registros_postfirma(db: Session, limit: int = 200, offset: int = 0, c
             for esquema in esquemas
             for columna in json.loads(esquema[0] or "[]")
         ))
-    where = "WHERE carga_id = :carga_id" if carga_id is not None else ""
+
+    # El campo dinámico se pasa como parámetro JSONB, nunca como identificador
+    # SQL. Solo se permite ordenar por columnas originales del Excel o metadatos.
+    campos_sistema = {"carga_id", "archivo", "numero_fila", "fecha_carga"}
+    campo = sort_by if sort_by in campos_sistema or sort_by in columnas_informe else "carga_id"
+    direccion = "DESC" if str(sort_dir).lower() == "desc" else "ASC"
+    where = "WHERE r.carga_id = :carga_id" if carga_id is not None else ""
     params = {"limit": max(1, min(int(limit), 500)), "offset": max(0, int(offset))}
     if carga_id is not None:
         params["carga_id"] = int(carga_id)
+    if campo == "carga_id":
+        order_sql = f"r.carga_id {direccion}"
+    elif campo == "archivo":
+        order_sql = f"LOWER(c.nombre_archivo) {direccion}"
+    elif campo == "numero_fila":
+        order_sql = f"r.numero_fila {direccion}"
+    elif campo == "fecha_carga":
+        order_sql = f"c.fecha_carga {direccion} NULLS LAST"
+    else:
+        params["sort_column"] = campo
+        valor_sql = "(r.datos_json::jsonb ->> :sort_column)"
+        # Orden numérico para valores Excel numéricos; texto natural para el resto.
+        order_sql = (
+            f"CASE WHEN {valor_sql} ~ '^[+-]?[0-9]+([.][0-9]+)?
+
+
+def validar_postfirma(db: Session, contenido_excel: bytes, fecha_desde=None, fecha_hasta=None):
+    """Previsualización sin escritura; no impone fechas ni encabezados obligatorios."""
+    try:
+        df = pd.read_excel(BytesIO(contenido_excel), sheet_name=0, header=0, engine="openpyxl", dtype=object)
+    except Exception as exc:
+        raise ValueError(f"No se pudo leer el Excel Post Firma: {exc}")
+    columnas = [str(c) if c is not None else "" for c in df.columns]
+    if "TIPOCONCEPTO" not in [str(c).strip().upper() for c in columnas]:
+        columnas.append("TIPOCONCEPTO")
+    filas_con_datos = 0
+    filas_vacias = 0
+    importes = Decimal("0")
+    filas_con_importe = 0
+    estados = {}
+    for _, row in df.iterrows():
+        valores = [_limpiar(v) for v in row.tolist()]
+        if not any(v is not None and v != "" for v in valores):
+            filas_vacias += 1
+            continue
+        filas_con_datos += 1
+        datos = {_normalizar_columna(k): v for k, v in zip(columnas, valores)}
+        importe = _decimal(datos.get("IMPGASTO"))
+        if importe is not None:
+            importes += importe
+            filas_con_importe += 1
+        estado = _texto(datos.get("ESTADO")) or "(vacío)"
+        estados[estado] = estados.get(estado, 0) + 1
+    return {
+        "validacion_sin_escritura": True,
+        "columnas_detectadas": columnas,
+        "filas_excel": int(len(df)),
+        "filas_con_datos": filas_con_datos,
+        "filas_vacias": filas_vacias,
+        "filas_con_importe_valido": filas_con_importe,
+        "suma_imp_gasto": str(importes.quantize(Decimal("0.01"))),
+        "por_estado_absis": estados,
+        "nota": "Validación informativa; no filtra por fecha, estado, concepto ni IDGASTO.",
+    }
+ "
+            f"THEN ({valor_sql})::numeric END {direccion} NULLS LAST, "
+            f"LOWER(COALESCE({valor_sql}, '')) {direccion}"
+        )
     total = db.execute(text(
-        f"SELECT COUNT(*) FROM public.absis_postfirma_registros {where}"
+        f"SELECT COUNT(*) FROM public.absis_postfirma_registros r {where}"
     ), params).scalar() or 0
     filas = db.execute(text(f"""
         SELECT r.id, r.carga_id, r.numero_fila, r.datos_json, c.nombre_archivo, c.fecha_carga
         FROM public.absis_postfirma_registros r
         JOIN public.absis_postfirma_cargas c ON c.id = r.carga_id
         {where}
-        ORDER BY r.carga_id DESC, r.numero_fila ASC
+        ORDER BY {order_sql}, r.carga_id DESC, r.numero_fila ASC
         LIMIT :limit OFFSET :offset
     """), params).mappings().all()
     return {
@@ -308,6 +379,8 @@ def listar_registros_postfirma(db: Session, limit: int = 200, offset: int = 0, c
         "limit": params["limit"],
         "offset": params["offset"],
         "columnas": columnas_informe,
+        "sort_by": campo,
+        "sort_dir": direccion.lower(),
         "items": [{
             "id": int(f["id"]),
             "carga_id": int(f["carga_id"]),
