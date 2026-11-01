@@ -1693,3 +1693,66 @@
 }
 .ag-titulo-seccion.ag-panel-resumen-heading h2 { margin-top:3px; }
 .ag-titulo-seccion.ag-panel-resumen-heading p { color:#617789; }
+
+
+/* ApoderaGest · la cabecera utiliza la misma superficie que el resto del ERP. */
+.apoderagest > .ag-hero.molsan-page-header {
+  min-height: 112px;
+  margin: 0 0 20px;
+  padding: 20px 24px;
+  border: 1px solid var(--molsan-border, #D8E4EC);
+  border-radius: var(--molsan-radius-card, 18px);
+  background: var(--molsan-surface, #FFFFFF);
+  box-shadow: var(--molsan-shadow-card, 0 8px 22px rgba(6,50,82,.055));
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+.apoderagest > .ag-hero.molsan-page-header .ag-marca {
+  width: 58px;
+  height: 58px;
+  flex-basis: 58px;
+  color: var(--molsan-primary, #064675);
+  background: var(--molsan-surface-soft, #F2F7FB);
+  border: 1px solid var(--molsan-border, #D8E4EC);
+  border-radius: 17px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 5px 14px rgba(6,50,82,.08);
+}
+.apoderagest > .ag-hero.molsan-page-header .molsan-page-header__title {
+  margin: 0;
+  color: var(--molsan-primary, #064675);
+  font-size: clamp(21px, 2vw, 27px);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -.035em;
+}
+.apoderagest > .ag-hero.molsan-page-header .molsan-page-header__description {
+  margin: 6px 0 0;
+  color: var(--molsan-text-secondary, #617789);
+  font-size: 12px;
+  line-height: 1.55;
+}
+.apoderagest > .ag-hero.molsan-page-header .molsan-page-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+}
+.apoderagest .ag-kpi-icono .molsan-icon-3d,
+.apoderagest .ag-vacio-icono .molsan-icon-3d {
+  display: inline-grid;
+  vertical-align: middle;
+}
+@media (max-width: 700px) {
+  .apoderagest > .ag-hero.molsan-page-header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 16px;
+  }
+  .apoderagest > .ag-hero.molsan-page-header .molsan-page-header__actions {
+    justify-content: flex-start;
+    width: 100%;
+  }
+}
