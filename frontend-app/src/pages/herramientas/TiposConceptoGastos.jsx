@@ -706,28 +706,9 @@ export default function TiposConceptoGastos() {
             CABECERA
         ================================================== */}
 
-        <div
-          className="
-            mb-6
-            flex
-            flex-col
-            gap-4
-            xl:flex-row
-            xl:items-center
-            xl:justify-between
-          "
-        >
+        <header className="molsan-page-header catalogos-subpage-header mb-6">
 
-          <div>
-
-            <div
-              className="molsan-page-header 
-                mb-2
-                flex
-                items-center
-                gap-3
-              "
-            >
+          <div className="molsan-page-header__identity catalogos-subpage-header__identity">
 
               <div
                 className="
@@ -854,7 +835,7 @@ export default function TiposConceptoGastos() {
           <button
             type="button"
             onClick={abrirNuevo}
-            className="
+            className="catalogos-subpage-header__action
               inline-flex
               items-center
               justify-center
@@ -910,7 +891,7 @@ export default function TiposConceptoGastos() {
 
           </button>
 
-        </div>
+        </header>
 
 
         <section className="mb-6 rounded-2xl border border-indigo-100 bg-white p-5 shadow-sm md:p-6">
