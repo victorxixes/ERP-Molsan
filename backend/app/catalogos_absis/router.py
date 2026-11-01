@@ -4,8 +4,10 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
 
-router = APIRouter(prefix="/catalogos-absis", tags=["Catálogo ABSIS"])
+router = APIRouter(
+    dependencies=[Depends(get_current_user)],prefix="/catalogos-absis", tags=["Catálogo ABSIS"])
 
 
 class EntradaCatalogo(BaseModel):

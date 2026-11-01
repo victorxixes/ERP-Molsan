@@ -147,9 +147,10 @@ class RouteGuardPolicyTests(unittest.TestCase):
         self.assertEqual(_resolver_accion("/api/mensajeria/servicios", {"POST"}), "crear")
         self.assertEqual(_resolver_accion("/api/mensajeria/servicios/4", {"PATCH"}), "editar")
 
-    def test_sla_report_routes_are_mapped_to_utilities_permissions(self):
-        self.assertEqual(_resolver_modulo("/api/informes-sla", {"GET"}), "utilidades")
-        self.assertEqual(_resolver_modulo("/api/informes-sla/fechas/EXP-1/gestion-economica", {"POST"}), "utilidades")
+    def test_report_routes_use_their_own_module_permissions(self):
+        self.assertEqual(_resolver_modulo("/api/informes", {"GET"}), "informes")
+        self.assertEqual(_resolver_modulo("/api/informes-sla", {"GET"}), "informes")
+        self.assertEqual(_resolver_modulo("/api/informes-sla/fechas/EXP-1/gestion-economica", {"POST"}), "informes")
         self.assertEqual(_resolver_accion("/api/informes-sla/fechas/EXP-1/gestion-economica", {"POST"}), "editar")
 
     def test_link_audit_uses_security_edit_permission(self):
@@ -179,6 +180,28 @@ class RouteGuardPolicyTests(unittest.TestCase):
 
     def test_unknown_api_path_is_not_silently_mapped(self):
         self.assertIsNone(_resolver_modulo("/api/new-unclassified-module"))
+
+    def test_shared_ctn_notary_catalog_routes_use_their_own_permission_check(self):
+        self.assertIn("/api/ctn/notarias", _RUTAS_CON_AUTORIZACION_INTERNA)
+        self.assertIn("/api/ctn/notarias/{notaria_id}", _RUTAS_CON_AUTORIZACION_INTERNA)
+        self.assertEqual(_resolver_modulo("/api/ctn/notarias", {"GET"}), "ctn")
+
+    def test_shared_bank_catalog_routes_use_their_own_permission_check(self):
+        for path in (
+            "/api/entidades-bancarias",
+            "/api/entidades-bancarias/auditoria-sucesiones",
+            "/api/entidades-bancarias/importar-excel",
+            "/api/entidades-bancarias/{entidad_id}",
+        ):
+            self.assertIn(path, _RUTAS_CON_AUTORIZACION_INTERNA)
+
+    def test_catalogs_and_mergers_are_in_the_permission_template(self):
+        self.assertIn("catalogos", PLANTILLA_PERMISOS)
+        self.assertIn("fusiones", PLANTILLA_PERMISOS)
+        self.assertTrue(set(PLANTILLA_PERMISOS).issubset(set(MODULOS_BASE)))
+
+    def test_absis_catalog_uses_the_catalogos_module(self):
+        self.assertEqual(_resolver_modulo("/api/catalogos-absis", {"GET"}), "catalogos")
 
     def test_new_password_hash_uses_pbkdf2_and_round_trips(self):
         hashed = hash_password("Prueba-segura-123!")

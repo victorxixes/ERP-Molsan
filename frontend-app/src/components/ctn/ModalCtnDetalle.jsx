@@ -1,5 +1,5 @@
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   obtenerNotaria,
   actualizarDatosBancariosNotaria,
@@ -8,7 +8,9 @@ import {
   asociarNotarios,
   desasociarNotarios,
 } from "../../api/ctn";
-import "../../css/CtnListadoPage.css";
+import useAccessibleDialog from "../ui/useAccessibleDialog";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../ui/MolsanSortableTh";
 import AutocompleteNotario from "../agenda/AutocompleteNotario";
 import PortalAccessTabs from "./PortalAccessTabs";
 
@@ -75,7 +77,7 @@ export default function ModalCtnDetalle({
   // Se conservan las propiedades anteriores para no romper
   // las llamadas existentes desde ApoderaGest.
   const id = notaria?.id;
-
+  const dialogRef = useRef(null);
   const [ficha, setFicha] = useState(notaria || null);
   const [pestanaActiva, setPestanaActiva] = useState(mostrarAccesosPortales ? "portales" : "ficha");
   const [asociadas, setAsociadas] = useState([]);
@@ -83,6 +85,15 @@ export default function ModalCtnDetalle({
   const [guardandoAsociacion, setGuardandoAsociacion] =
     useState(false);
   const [guardandoDatosBancarios, setGuardandoDatosBancarios] = useState(false);
+
+  useAccessibleDialog({
+    open,
+    onClose: () => {
+      if (guardandoAsociacion || guardandoDatosBancarios) return;
+      (onClose || onCerrar)?.();
+    },
+    dialogRef,
+  });
   const [editandoCuenta1, setEditandoCuenta1] = useState(!notaria?.iban_1);
   const [editandoCuenta2, setEditandoCuenta2] = useState(false);
   const [mostrarCuenta2, setMostrarCuenta2] = useState(Boolean(notaria?.iban_2));
@@ -295,9 +306,21 @@ export default function ModalCtnDetalle({
   };
 
   const listadoFirmas = useMemo(
-    () => firmas,
+    () => firmas.map((f) => ({
+      ...f,
+      _expedienteOrden: f.expediente ?? f.numero_expediente ?? f.id_expediente ?? "",
+      _fechaAltaOrden: f.fecha_alta ?? f.fecha_creacion ?? f.fecha_apertura ?? "",
+      _solicitanteOrden: f.nombre_solicitante || f.solicitante || [f.solicitante_nombre, f.solicitante_apellidos].filter(Boolean).join(" "),
+      _nifSolicitanteOrden: f.nif_solicitante ?? f.cif_solicitante ?? "",
+      _operacionOrden: f.tipo_operacion ?? f.tipo_operación ?? f.operacion ?? "",
+      _contratoOrden: f.contrato ?? f.numero_contrato ?? f.referencia_contrato ?? "",
+      _protocoloOrden: f.protocolo ?? f.numero_protocolo ?? "",
+    })),
     [firmas]
   );
+  const ordenFirmas = useSortableData(listadoFirmas);
+  const asociadasOrdenables = useMemo(() => asociadas.map((n) => ({ ...n, _nombreOrden: nombreNotario(n) })), [asociadas]);
+  const ordenAsociadas = useSortableData(asociadasOrdenables);
 
   if (!open || !notaria || !id) return null;
 
@@ -327,7 +350,7 @@ export default function ModalCtnDetalle({
 
   return (
     <div
-      className="ctn-modal-overlay"
+      className="ctn-modal-overlay molsan-modal-overlay"
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
@@ -336,7 +359,10 @@ export default function ModalCtnDetalle({
       }}
     >
       <section
-        className="ctn-modal-panel molsan-panel"
+        className="molsan-modal molsan-modal--lg ctn-modal-dialog"
+        ref={dialogRef}
+        tabIndex={-1}
+       
         role="dialog"
         aria-modal="true"
         aria-labelledby="ctn-ficha-titulo"
@@ -344,11 +370,11 @@ export default function ModalCtnDetalle({
       {/* CABECERA DE LA FICHA */}
 
       <header
-        className="ctn-modal-header molsan-page-header ctn-modal-header-unified"
+        className="ctn-modal-header molsan-modal__header"
       >
         <div className="ctn-modal-header-identity">
           <span className="ctn-modal-eyebrow">
-            MOLSAN ERP · CTN
+            CTN
           </span>
 
           <h2
@@ -373,7 +399,7 @@ export default function ModalCtnDetalle({
 
         <button
           type="button"
-          className="ctn-modal-cerrar molsan-btn molsan-btn--secondary"
+          className="ctn-modal-cerrar  --secondary"
           aria-label="Cerrar ficha"
           onClick={() => (onClose || onCerrar)?.()}
         >
@@ -381,7 +407,7 @@ export default function ModalCtnDetalle({
         </button>
       </header>
 
-      <div className="ctn-modal-contenido">
+      <div className="ctn-modal-contenido molsan-modal__body min-h-0 flex-1 overflow-y-auto">
       <nav className="ctn-ficha-pestanas" role="tablist" aria-label="Secciones de la ficha del notario">
         {[
           ["ficha", "Ficha del notario"],
@@ -517,7 +543,7 @@ export default function ModalCtnDetalle({
             <div className="ctn-modal-mapa-pie">
               <p>{[datos.direccion, datos.cp || datos.codigo_postal, datos.municipio, datos.provincia].filter(Boolean).join(", ") || "Ubicación según las coordenadas registradas"}</p>
               <a
-                className="ctn-btn ctn-btn-secondary molsan-btn molsan-btn--secondary"
+                className="ctn-btn ctn-btn-secondary  --secondary"
                 href={urlAbrirMapa}
                 target="_blank"
                 rel="noreferrer"
@@ -822,19 +848,19 @@ export default function ModalCtnDetalle({
             <table className="ctn-modal-tabla">
               <thead>
                 <tr>
-                  <th>Expediente</th>
-                  <th>Fecha alta</th>
-                  <th>Nombre solicitante</th>
-                  <th>NIF solicitante</th>
-                  <th>Tipo operación</th>
-                  <th>Contrato</th>
-                  <th>Fecha firma</th>
-                  <th>Protocolo</th>
+                  <MolsanSortableTh label="Expediente" sortKey="_expedienteOrden" sortConfig={ordenFirmas.sortConfig} onSort={ordenFirmas.requestSort} />
+                  <MolsanSortableTh label="Fecha alta" sortKey="_fechaAltaOrden" sortConfig={ordenFirmas.sortConfig} onSort={ordenFirmas.requestSort} />
+                  <MolsanSortableTh label="Nombre solicitante" sortKey="_solicitanteOrden" sortConfig={ordenFirmas.sortConfig} onSort={ordenFirmas.requestSort} />
+                  <MolsanSortableTh label="NIF solicitante" sortKey="_nifSolicitanteOrden" sortConfig={ordenFirmas.sortConfig} onSort={ordenFirmas.requestSort} />
+                  <MolsanSortableTh label="Tipo operación" sortKey="_operacionOrden" sortConfig={ordenFirmas.sortConfig} onSort={ordenFirmas.requestSort} />
+                  <MolsanSortableTh label="Contrato" sortKey="_contratoOrden" sortConfig={ordenFirmas.sortConfig} onSort={ordenFirmas.requestSort} />
+                  <MolsanSortableTh label="Fecha firma" sortKey="fecha_firma" sortConfig={ordenFirmas.sortConfig} onSort={ordenFirmas.requestSort} />
+                  <MolsanSortableTh label="Protocolo" sortKey="_protocoloOrden" sortConfig={ordenFirmas.sortConfig} onSort={ordenFirmas.requestSort} />
                 </tr>
               </thead>
 
               <tbody>
-                {listadoFirmas.map((f, i) => (
+                {ordenFirmas.items.map((f, i) => (
                   <tr
                     key={
                       f.id ??
@@ -927,16 +953,16 @@ export default function ModalCtnDetalle({
             <table className="ctn-modal-tabla">
               <thead>
                 <tr>
-                  <th>Notario asociado</th>
-                  <th>NIF</th>
-                  <th>Municipio</th>
-                  <th>Provincia</th>
+                  <MolsanSortableTh label="Notario asociado" sortKey="_nombreOrden" sortConfig={ordenAsociadas.sortConfig} onSort={ordenAsociadas.requestSort} />
+                  <MolsanSortableTh label="NIF" sortKey="nif" sortConfig={ordenAsociadas.sortConfig} onSort={ordenAsociadas.requestSort} />
+                  <MolsanSortableTh label="Municipio" sortKey="municipio" sortConfig={ordenAsociadas.sortConfig} onSort={ordenAsociadas.requestSort} />
+                  <MolsanSortableTh label="Provincia" sortKey="provincia" sortConfig={ordenAsociadas.sortConfig} onSort={ordenAsociadas.requestSort} />
                   <th>Acciones</th>
                 </tr>
               </thead>
 
               <tbody>
-                {asociadas.map((n) => (
+                {ordenAsociadas.items.map((n) => (
                   <tr key={n.id ?? n.asociada_id}>
                     <td>
                       <strong>{nombreNotario(n)}</strong>
@@ -991,8 +1017,8 @@ function Dato({ titulo, valor: contenido, ancho = false }) {
   return (
     <div
       className={`ctn-modal-dato${
-        ancho ? " ctn-modal-dato-ancho" : ""
-      }`}
+ ancho ? "ctn-modal-dato-ancho" : ""
+ }`}
     >
       <span>{titulo}</span>
       <strong>{valor(contenido)}</strong>

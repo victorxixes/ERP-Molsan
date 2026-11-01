@@ -13,6 +13,8 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 from backend.app.uploads import MAX_EXCEL_UPLOAD_BYTES, read_upload_limited
 
 from backend.app.acciones_expediente.models import (
@@ -29,6 +31,7 @@ from backend.app.Utilidades.importadores.acciones_expediente_importer import (
 # ============================================================
 
 router = APIRouter(
+    dependencies=[Depends(get_current_user)],
     prefix="/acciones-expediente",
     tags=[
         "Acciones del expediente"
@@ -94,8 +97,9 @@ def listar_acciones(
     actividad: Optional[str] = Query(None),
     activo: Optional[bool] = Query(None),
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
-
+    require_perm_modulo(usuario, "expedientes", "ver")
     consulta = (
         db.query(
             AccionExpediente
@@ -227,8 +231,9 @@ def listar_acciones(
 def crear_accion(
     datos: AccionExpedienteCrear,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
-
+    require_perm_modulo(usuario, "expedientes", "editar")
     descripcion = (
         datos.descripcion.strip()
     )
@@ -311,8 +316,9 @@ def crear_accion(
 async def importar_excel(
     fichero: UploadFile = File(...),
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
-
+    require_perm_modulo(usuario, "expedientes", "editar")
     nombre_archivo = (
         fichero.filename
         or ""
@@ -473,8 +479,9 @@ def actualizar_accion(
     accion_id: int,
     datos: AccionExpedienteActualizar,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
-
+    require_perm_modulo(usuario, "expedientes", "editar")
     accion = (
         db.query(
             AccionExpediente
@@ -575,8 +582,9 @@ def actualizar_accion(
 def eliminar_accion(
     accion_id: int,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
-
+    require_perm_modulo(usuario, "expedientes", "editar")
     accion = (
         db.query(
             AccionExpediente

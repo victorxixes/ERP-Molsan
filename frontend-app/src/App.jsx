@@ -8,6 +8,7 @@ import { useAuthStore } from "./store/authStore";
 
 /* AUTH */
 import RequireAuth from "./components/auth/RequireAuth";
+import RequireModule from "./components/auth/RequireModule";
 
 /* LAYOUT */
 import Layout from "./layout/Layout";
@@ -33,6 +34,7 @@ const VistaMes = lazy(() => import("./pages/agenda/VistaMes.jsx"));
 /* EXPEDIENTES */
 const ExpedientesListado = lazy(() => import("./pages/expedientes/ExpedientesListado.jsx"));
 const FichaExpediente = lazy(() => import("./pages/expedientes/FichaExpediente.jsx"));
+const FichaExpedienteDemo = lazy(() => import("./pages/expedientes/FichaExpedienteDemo.jsx"));
 const ProvisionesFondosPage = lazy(() => import("./pages/provisiones/ProvisionesFondosPage.jsx"));
 
 /* CTN */
@@ -161,6 +163,11 @@ const ControlApoderados = lazy(() => import("./pages/apoderagest/ControlApoderad
  * ============================================================
  */
 
+const protegerModulo = (modulo, elemento) => (
+  <RequireModule module={modulo}>{elemento}</RequireModule>
+);
+
+
 function MensajesWrapper() {
 
   const empleado = useAuthStore(
@@ -170,7 +177,7 @@ function MensajesWrapper() {
   if (!empleado || !empleado.id) {
 
     return (
-      <div className="p-6 text-white/70">
+      <div className="p-6">
         Cargando módulo de mensajes…
       </div>
     );
@@ -278,24 +285,24 @@ class AppErrorBoundary extends Component {
       ].filter(Boolean).join("\\n");
 
       return (
-        <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, background: "#f8fafc", color: "#0f172a" }}>
-          <section style={{ width: "100%", maxWidth: 720, padding: 24, border: "1px solid #fecaca", borderRadius: 16, background: "#fff", boxShadow: "0 12px 36px rgba(15,23,42,.08)" }}>
-            <h1 style={{ margin: "0 0 10px", fontSize: 22, fontWeight: 800 }}>El ERP ha detectado un error</h1>
-            <p style={{ margin: "0 0 16px", fontSize: 14, lineHeight: 1.6 }}>La sesión no se ha cerrado. El diagnóstico siguiente ayuda a identificar qué ha fallado y qué revisar.</p>
-            <div style={{ marginBottom: 12, padding: 14, borderRadius: 10, background: "#fff7ed", border: "1px solid #fed7aa" }}>
-              <strong style={{ display: "block", marginBottom: 5 }}>Posible causa</strong>
-              <p style={{ margin: 0, fontSize: 14, lineHeight: 1.55 }}>{diagnostico.causa}</p>
+        <main className="flex min-h-screen items-center justify-center p-6">
+          <section className="w-full max-w-3xl">
+            <h1>El ERP ha detectado un error</h1>
+            <p>La sesión no se ha cerrado. El diagnóstico siguiente ayuda a identificar qué ha fallado y qué revisar.</p>
+            <div className="mb-3 p-4">
+              <strong className="block mb-1">Posible causa</strong>
+              <p>{diagnostico.causa}</p>
             </div>
-            <div style={{ marginBottom: 12, padding: 14, borderRadius: 10, background: "#eff6ff", border: "1px solid #bfdbfe" }}>
+            <div style={{ marginBottom: 12, padding: 14 }}>
               <strong style={{ display: "block", marginBottom: 5 }}>Qué hacer</strong>
-              <p style={{ margin: 0, fontSize: 14, lineHeight: 1.55 }}>{diagnostico.accion}</p>
+              <p style={{ margin: 0 }}>{diagnostico.accion}</p>
             </div>
-            <strong style={{ display: "block", marginBottom: 6 }}>Error técnico</strong>
-            <pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere", maxHeight: 180, overflow: "auto", padding: 12, borderRadius: 10, background: "#fff7f7", color: "#991b1b", fontSize: 12 }}>{String(error?.message || error || "Error de renderizado desconocido")}</pre>
-            <p style={{ margin: "10px 0 0", color: "#64748b", fontSize: 12 }}>Ruta: {window.location.pathname} · Fecha: {new Date().toLocaleString()}</p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 16 }}>
-              <button type="button" onClick={() => { try { navigator.clipboard?.writeText(detalle); } catch (e) { console.warn("No se pudo copiar el diagnóstico."); } }} style={{ padding: "10px 16px", borderRadius: 10, border: "1px solid #cbd5e1", background: "#fff", color: "#0f172a", fontWeight: 700 }}>Copiar diagnóstico</button>
-              <button type="button" onClick={() => window.location.reload()} style={{ padding: "10px 16px", borderRadius: 10, background: "#1d4ed8", color: "#fff", fontWeight: 700 }}>Recargar ERP</button>
+            <strong className="block mb-1">Error técnico</strong>
+            <pre className="max-h-44 overflow-auto whitespace-pre-wrap p-3">{String(error?.message || error || "Error de renderizado desconocido")}</pre>
+            <p className="mt-3">Ruta: {window.location.pathname} · Fecha: {new Date().toLocaleString()}</p>
+            <div className="mt-4 flex gap-3">
+              <button type="button" onClick={() => { try { navigator.clipboard?.writeText(detalle); } catch (e) { console.warn("No se pudo copiar el diagnóstico."); } }}>Copiar diagnóstico</button>
+              <button type="button" onClick={() => window.location.reload()}>Recargar ERP</button>
             </div>
           </section>
         </main>
@@ -318,12 +325,12 @@ export default function App() {
 
   return (
 
-    <div className="animate-fade-in">
+    <div>
       <AppErrorBoundary>
 
       {empleado && token ? <RealtimeGlobal /> : null}
 
-      <Suspense fallback={<div className="flex min-h-[40vh] items-center justify-center p-8 text-sm font-semibold text-slate-500">Cargando módulo…</div>}>
+      <Suspense fallback={<div className="flex min-h-[40vh] items-center justify-center p-8">Cargando módulo…</div>}>
       <Routes>
 
         {/* ====================================================
@@ -352,34 +359,31 @@ export default function App() {
           
           <Route
             path="apoderagest"
-            element={<ApoderaGest />}
+            element={
+              <RequireAuth>
+                <RequireModule module="apoderagest">
+                  <ApoderaGest />
+                </RequireModule>
+              </RequireAuth>
+            }
           />
 
         
         
         <Route
-
-        
           path="encargagest"
-
-        
-          element={<EncargaGest />}
-
-        
+          element={<RequireAuth>{protegerModulo("encargagest", <EncargaGest />)}</RequireAuth>}
         />
 
         <Route path="encargagest/notario" element={<EncargaGest accessMode="external" />} />
         
         {/* Espacio interno EncargaGest: módulos compartidos sin entrar en CancelaGest. */}
-        <Route path="encargagest/ctn" element={<EncargaGestWorkspace page="ctn" />} />
-        <Route path="encargagest/agenda" element={<EncargaGestWorkspace page="agenda" />} />
-        <Route path="encargagest/mensajes" element={<EncargaGestWorkspace page="mensajes" />} />
-        <Route path="encargagest/intranet" element={<EncargaGestWorkspace page="intranet" />} />
+        <Route path="encargagest/ctn" element={<RequireAuth>{protegerModulo("encargagest", <EncargaGestWorkspace page="ctn" />)}</RequireAuth>} />
+        <Route path="encargagest/agenda" element={<RequireAuth>{protegerModulo("encargagest", <EncargaGestWorkspace page="agenda" />)}</RequireAuth>} />
+        <Route path="encargagest/mensajes" element={<RequireAuth>{protegerModulo("encargagest", <EncargaGestWorkspace page="mensajes" />)}</RequireAuth>} />
+        <Route path="encargagest/intranet" element={<RequireAuth>{protegerModulo("encargagest", <EncargaGestWorkspace page="intranet" />)}</RequireAuth>} />
 
-        <Route
-          path="notargest"
-          element={<NotarGest />}
-        />
+        <Route path="notargest" element={<RequireAuth>{protegerModulo("notargest", <NotarGest />)}</RequireAuth>} />
 
         {/* Portales externos para notarías: rutas explícitas y separadas. */}
         <Route
@@ -400,14 +404,8 @@ export default function App() {
         />
 
         {/* Compatibilidad con enlaces antiguos: cada ruta conserva su portal correcto. */}
-        <Route
-          path="notargestweb"
-          element={<NotarGest />}
-        />
-        <Route
-          path="encargagestweb"
-          element={<EncargaGest />}
-        />
+        <Route path="notargestweb" element={<RequireAuth>{protegerModulo("notargest", <NotarGest />)}</RequireAuth>} />
+        <Route path="encargagestweb" element={<RequireAuth>{protegerModulo("encargagest", <EncargaGest />)}</RequireAuth>} />
         
         {/* ====================================================
             RUTAS PRIVADAS
@@ -432,23 +430,23 @@ export default function App() {
 
           <Route
             index
-            element={<Dashboard />}
+            element={protegerModulo("dashboard", <Dashboard />)}
           />
 
           <Route
             path="dashboard"
-            element={<Dashboard />}
+            element={protegerModulo("dashboard", <Dashboard />)}
           />
 
-          <Route path="cancelagest" element={<Cancelagest />} />
+          <Route path="cancelagest" element={protegerModulo("cancelagest", <Cancelagest />)} />
 
           {/* Fichaje Molsan: módulo de empleado y control administrativo. */}
-          <Route path="fichajes" element={<Fichajes modo="empleado" />} />
-          <Route path="control-fichajes" element={<Fichajes modo="admin" />} />
-          <Route path="mensajeria" element={<MensajeriaSolicitudes />} />
-          <Route path="mensajeria-gestion" element={<MensajeriaMolsan vistaGestion />} />
-          <Route path="apoderagest/liquidaciones" element={<ControlApoderados modo="colaborador" />} />
-          <Route path="herramientas/utilidades/control-apoderados" element={<ControlApoderados modo="admin" />} />
+          <Route path="fichajes" element={protegerModulo("fichajes", <Fichajes modo="empleado" />)} />
+          <Route path="control-fichajes" element={protegerModulo("control-fichajes", <Fichajes modo="admin" />)} />
+          <Route path="mensajeria" element={protegerModulo("mensajeria", <MensajeriaSolicitudes />)} />
+          <Route path="mensajeria-gestion" element={protegerModulo("mensajeria-gestion", <MensajeriaMolsan vistaGestion />)} />
+          <Route path="apoderagest/liquidaciones" element={<RequireModule module="apoderagest"><ControlApoderados modo="colaborador" /></RequireModule>} />
+          <Route path="herramientas/utilidades/control-apoderados" element={protegerModulo("apoderagest", <ControlApoderados modo="admin" />)} />
 
 
           {/* ==================================================
@@ -457,22 +455,22 @@ export default function App() {
 
           <Route
             path="agenda"
-            element={<Agenda />}
+            element={protegerModulo("agenda", <Agenda />)}
           />
 
           <Route
             path="agenda/dia"
-            element={<VistaDia />}
+            element={protegerModulo("agenda", <VistaDia />)}
           />
 
           <Route
             path="agenda/semana"
-            element={<VistaSemana />}
+            element={protegerModulo("agenda", <VistaSemana />)}
           />
 
           <Route
             path="agenda/mes"
-            element={<VistaMes />}
+            element={protegerModulo("agenda", <VistaMes />)}
           />
 
 
@@ -482,30 +480,35 @@ export default function App() {
 
           <Route
             path="expedientes"
-            element={<ExpedientesListado />}
+            element={protegerModulo("expedientes", <ExpedientesListado />)}
           />
 
           <Route
             path="expedientes/:id"
-            element={<FichaExpediente />}
+            element={protegerModulo("expedientes", <FichaExpediente />)}
+          />
+
+          <Route
+            path="expedientes-demo-glass-luxe"
+            element={<FichaExpedienteDemo />}
           />
 
           <Route
             path="provisiones-fondos"
-            element={<ProvisionesFondosPage />}
+            element={protegerModulo("provisiones-fondos", <ProvisionesFondosPage />)}
           />
 
           <Route
             path="catalogos/provisiones-fondos"
-            element={<ProvisionesFondosPage modoCatalogo />}
+            element={protegerModulo("catalogos", <ProvisionesFondosPage modoCatalogo />)}
           />
 
-          <Route path="herramientas/utilidades/visibilidad-tablas" element={<AdministracionEmpleadoConfig seccion="visibilidad-tablas" />} />
-          <Route path="herramientas/utilidades/asignaciones" element={<AdministracionEmpleadoConfig seccion="asignaciones" />} />
-          <Route path="herramientas/utilidades/complementos-saldo" element={<ComplementosSaldo />} />
-          <Route path="herramientas/utilidades/proceso-absis" element={<ProcesoAbsis />} />
-          <Route path="herramientas/utilidades/ppad" element={<PPAD />} />
-          <Route path="herramientas/utilidades/verifacti" element={<Verifacti />} />
+          <Route path="herramientas/utilidades/visibilidad-tablas" element={protegerModulo("seguridad", <AdministracionEmpleadoConfig seccion="visibilidad-tablas" />)} />
+          <Route path="herramientas/utilidades/asignaciones" element={protegerModulo("seguridad", <AdministracionEmpleadoConfig seccion="asignaciones" />)} />
+          <Route path="herramientas/utilidades/complementos-saldo" element={protegerModulo("utilidades", <ComplementosSaldo />)} />
+          <Route path="herramientas/utilidades/proceso-absis" element={protegerModulo("utilidades", <ProcesoAbsis />)} />
+          <Route path="herramientas/utilidades/ppad" element={protegerModulo("utilidades", <PPAD />)} />
+          <Route path="herramientas/utilidades/verifacti" element={protegerModulo("utilidades", <Verifacti />)} />
 
 
           {/* ==================================================
@@ -514,17 +517,17 @@ export default function App() {
 
           <Route
             path="ctn"
-            element={<Ctn />}
+            element={protegerModulo("ctn", <Ctn />)}
           />
 
           <Route
             path="ctn/listado"
-            element={<CtnListadoPage />}
+            element={protegerModulo("ctn", <CtnListadoPage />)}
           />
 
           <Route
             path="ctn/:id"
-            element={<CtnDetallePage />}
+            element={protegerModulo("ctn", <CtnDetallePage />)}
           />
 
 
@@ -534,22 +537,22 @@ export default function App() {
 
           <Route
             path="empleados"
-            element={<EmpleadosModulo2026 />}
+            element={protegerModulo("empleados", <EmpleadosModulo2026 />)}
           />
 
           <Route
             path="empleados/listado"
-            element={<EmpleadosListado />}
+            element={protegerModulo("empleados", <EmpleadosListado />)}
           />
 
           <Route
             path="empleados/:id"
-            element={<EmpleadoFicha />}
+            element={protegerModulo("empleados", <EmpleadoFicha />)}
           />
 
           <Route
             path="empleados/:id/editar"
-            element={<EmpleadoEditar />}
+            element={protegerModulo("empleados", <EmpleadoEditar />)}
           />
 
 
@@ -559,7 +562,7 @@ export default function App() {
 
           <Route
             path="intranet"
-            element={<Intranet />}
+            element={protegerModulo("intranet", <Intranet />)}
           />
 
 
@@ -569,11 +572,11 @@ export default function App() {
 
           <Route
             path="informes"
-            element={<Informes />}
+            element={protegerModulo("informes", <Informes />)}
           />
           <Route
             path="informes/:apartado"
-            element={<Informes />}
+            element={protegerModulo("informes", <Informes />)}
           />
 
 
@@ -583,7 +586,7 @@ export default function App() {
 
           <Route
             path="mensajes"
-            element={<MensajesWrapper />}
+            element={protegerModulo("mensajes", <MensajesWrapper />)}
           />
 
 
@@ -593,160 +596,160 @@ export default function App() {
 
           <Route
             path="herramientas"
-            element={<Herramientas />}
+            element={protegerModulo("utilidades", <Herramientas />)}
           />
 
           <Route
             path="herramientas/importar-ctn"
-            element={<ImportarCTN />}
+            element={protegerModulo("utilidades", <ImportarCTN />)}
           />
 
           <Route
             path="herramientas/municipios"
-            element={<Municipios />}
+            element={protegerModulo("utilidades", <Municipios />)}
           />
 
           <Route
             path="herramientas/importador-absis"
-            element={<ImportadorAbsis />}
+            element={protegerModulo("utilidades", <ImportadorAbsis />)}
           />
           <Route
             path="herramientas/importador-absis/postfirma"
-            element={<ImportadorPostFirma />}
+            element={protegerModulo("utilidades", <ImportadorPostFirma />)}
           />
 
           <Route
             path="herramientas/utilidades"
-            element={<Utilidades />}
+            element={protegerModulo("utilidades", <Utilidades />)}
           />
-          <Route path="herramientas/utilidades/modelos-documentos" element={<ModelosDocumentos />} />
-          <Route path="herramientas/utilidades/reglas-actividades-expediente" element={<ReglasActividadesExpediente />} />
-          <Route path="herramientas/utilidades/datos-molsan" element={<DatosMolsan />} />
-          <Route path="herramientas/utilidades/alta-expediente" element={<AltaExpediente />} />
+          <Route path="herramientas/utilidades/modelos-documentos" element={protegerModulo("utilidades", <ModelosDocumentos />)} />
+          <Route path="herramientas/utilidades/reglas-actividades-expediente" element={protegerModulo("utilidades", <ReglasActividadesExpediente />)} />
+          <Route path="herramientas/utilidades/datos-molsan" element={protegerModulo("utilidades", <DatosMolsan />)} />
+          <Route path="herramientas/utilidades/alta-expediente" element={protegerModulo("utilidades", <AltaExpediente />)} />
 
           <Route
             path="herramientas/utilidades/lectura-copias"
-            element={<LecturaCopias />}
+            element={protegerModulo("utilidades", <LecturaCopias />)}
           />
 
           <Route
             path="herramientas/utilidades/cambios-actividad-absis"
-            element={<CambiosActividadAbsis />}
+            element={protegerModulo("utilidades", <CambiosActividadAbsis />)}
           />
 
           <Route
             path="herramientas/utilidades/lectura-cancela-i"
-            element={<LecturaCancelaI />}
+            element={protegerModulo("utilidades", <LecturaCancelaI />)}
           />
 
           <Route
             path="herramientas/utilidades/accesos-notariales"
-            element={<AccesosNotariales />}
+            element={protegerModulo("utilidades", <AccesosNotariales />)}
           />
 
           <Route
             path="catalogos"
-            element={<Catalogos />}
+            element={protegerModulo("catalogos", <Catalogos />)}
           />
 
           <Route
             path="catalogos/absis"
-            element={<CatalogoAbsis />}
+            element={protegerModulo("catalogos", <CatalogoAbsis />)}
           />
 
           <Route
             path="catalogos/oficinas"
-            element={<CatalogoOficinas />}
+            element={protegerModulo("catalogos", <CatalogoOficinas />)}
           />
-          <Route path="catalogos/tipos-impositivos" element={<TiposImpositivos />} />
+          <Route path="catalogos/tipos-impositivos" element={protegerModulo("catalogos", <TiposImpositivos />)} />
           <Route
             path="catalogos/fichajes"
-            element={<CatalogoFichajes />}
+            element={protegerModulo("catalogos", <CatalogoFichajes />)}
           />
-          <Route path="catalogos/mensajeria-servicios" element={<MensajeriaMolsan vistaCatalogo />} />
+          <Route path="catalogos/mensajeria-servicios" element={protegerModulo("mensajeria", <MensajeriaMolsan vistaCatalogo />)} />
 
           <Route
             path="catalogos/firmas-email"
-            element={<FirmasEmail />}
+            element={protegerModulo("catalogos", <FirmasEmail />)}
           />
 
           <Route
             path="catalogos/correspondencia-tipificada"
-            element={<CorrespondenciaTipificada />}
+            element={protegerModulo("catalogos", <CorrespondenciaTipificada />)}
           />
 
           {/* Alias para conservar los enlaces antiguos a Correspondencia tipificada. */}
           <Route
             path="herramientas/utilidades/correspondencia-tipificada"
-            element={<CorrespondenciaTipificada />}
+            element={protegerModulo("catalogos", <CorrespondenciaTipificada />)}
           />
 
           <Route
             path="herramientas/honorarios-gestoria"
-            element={<HonorariosGestoria />}
+            element={protegerModulo("utilidades", <HonorariosGestoria />)}
           />
 
           <Route
             path="herramientas/entidades-bancarias"
-            element={<EntidadesBancarias />}
+            element={protegerModulo("utilidades", <EntidadesBancarias />)}
           />
 
           <Route
             path="herramientas/registros-propiedad"
-            element={<RegistrosPropiedad />}
+            element={protegerModulo("utilidades", <RegistrosPropiedad />)}
           />
 
           <Route
             path="herramientas/oficinas-liquidadoras"
-            element={<OficinasLiquidadoras />}
+            element={protegerModulo("utilidades", <OficinasLiquidadoras />)}
           />
 
           <Route
             path="herramientas/acciones-expediente"
-            element={<AccionesExpediente />}
+            element={protegerModulo("utilidades", <AccionesExpediente />)}
           />
 
           <Route
             path="herramientas/tipos-carga-hipotecaria"
-            element={<TiposCargaHipotecaria />}
+            element={protegerModulo("utilidades", <TiposCargaHipotecaria />)}
           />
 
           <Route
             path="herramientas/tipos-concepto-gastos"
-            element={<TiposConceptoGastos />}
+            element={protegerModulo("utilidades", <TiposConceptoGastos />)}
           />
 
           <Route
             path="herramientas/tipos-expediente"
-            element={<TiposExpediente />}
+            element={protegerModulo("utilidades", <TiposExpediente />)}
           />
 
           <Route
             path="herramientas/utilidades/crear-noticia"
-            element={<CrearNoticia />}
+            element={protegerModulo("intranet", <CrearNoticia />)}
           />
 
           <Route
             path="herramientas/utilidades/subir-documento"
-            element={<SubirDocumento />}
+            element={protegerModulo("intranet", <SubirDocumento />)}
           />
 
           <Route
             path="herramientas/mantenimiento-tecnico"
-            element={<MantenimientoTecnico />}
+            element={protegerModulo("utilidades", <MantenimientoTecnico />)}
           />
 
           <Route
             path="herramientas/utilidades/cambiar-gestor"
-            element={<CambiarGestorExpediente />}
+            element={protegerModulo("utilidades", <CambiarGestorExpediente />)}
           />
           <Route
             path="herramientas/utilidades/reasignar-notario"
-            element={<ReasignarNotarioExpediente />}
+            element={protegerModulo("utilidades", <ReasignarNotarioExpediente />)}
           />
           <Route
             path="herramientas/utilidades/asignar-promociones"
-            element={<AsignarExpedientesPromociones />}
+            element={protegerModulo("utilidades", <AsignarExpedientesPromociones />)}
           />
           {/* ==================================================
               LOGS
@@ -754,7 +757,7 @@ export default function App() {
 
           <Route
             path="logs"
-            element={<Logs />}
+            element={protegerModulo("logs", <Logs />)}
           />
 
 
@@ -764,7 +767,7 @@ export default function App() {
 
           <Route
             path="notificaciones"
-            element={<Notificaciones />}
+            element={protegerModulo("notificaciones", <Notificaciones />)}
           />
 
 
@@ -774,7 +777,7 @@ export default function App() {
 
           <Route
             path="/fusiones"
-            element={<Fusiones />}
+            element={protegerModulo("fusiones", <Fusiones />)}
           />
 
 
@@ -784,32 +787,32 @@ export default function App() {
 
           <Route
             path="paneltecnico"
-            element={<PanelTecnico />}
+            element={protegerModulo("panel-tecnico", <PanelTecnico />)}
           />
 
           <Route
             path="paneltecnico/monitor-sistema"
-            element={<MonitorSistema />}
+            element={protegerModulo("panel-tecnico", <MonitorSistema />)}
           />
 
           <Route
             path="paneltecnico/monitor-realtime"
-            element={<MonitorRealtime />}
+            element={protegerModulo("panel-tecnico", <MonitorRealtime />)}
           />
 
           <Route
             path="maestros"
-            element={<Maestros />}
+            element={protegerModulo("maestros", <Maestros />)}
           />
 
           <Route
             path="paneltecnico/auditoria-avanzada"
-            element={<AuditoriaAvanzada />}
+            element={protegerModulo("panel-tecnico", <AuditoriaAvanzada />)}
           />
 
           <Route
             path="paneltecnico/logs-avanzados"
-            element={<LogsAvanzados />}
+            element={protegerModulo("panel-tecnico", <LogsAvanzados />)}
           />
 
 
@@ -822,42 +825,42 @@ export default function App() {
 
           <Route
             path="seguridad"
-            element={<Seguridad />}
+            element={protegerModulo("seguridad", <Seguridad />)}
           />
 
           <Route
             path="seguridad/usuarios"
-            element={<SeguridadUsuarios />}
+            element={protegerModulo("seguridad", <SeguridadUsuarios />)}
           />
 
           <Route
             path="seguridad/roles"
-            element={<SeguridadRoles />}
+            element={protegerModulo("seguridad", <SeguridadRoles />)}
           />
 
           <Route
             path="seguridad/modulos"
-            element={<SeguridadModulos />}
+            element={protegerModulo("seguridad", <SeguridadModulos />)}
           />
 
           <Route
             path="seguridad/permisos"
-            element={<SeguridadPermisos />}
+            element={protegerModulo("seguridad", <SeguridadPermisos />)}
           />
 
           <Route
             path="seguridad/ficha/:id"
-            element={<SeguridadFicha />}
+            element={protegerModulo("seguridad", <SeguridadFicha />)}
           />
 
           <Route
             path="seguridad/logs"
-            element={<SeguridadLogs />}
+            element={protegerModulo("seguridad", <SeguridadLogs />)}
           />
 
           <Route
             path="seguridad/roles/editor"
-            element={<SeguridadRolEditor />}
+            element={protegerModulo("seguridad", <SeguridadRolEditor />)}
           />
 
 
@@ -869,13 +872,13 @@ export default function App() {
 
           <Route
             path="auditoria"
-            element={<SeguridadAuditoria />}
+            element={protegerModulo("auditoria", <SeguridadAuditoria />)}
           />
 
           {/* Alias compatible con el enlace histórico desde Utilidades. */}
           <Route
             path="seguridad/auditoria"
-            element={<SeguridadAuditoria />}
+            element={protegerModulo("auditoria", <SeguridadAuditoria />)}
           />
 
         </Route>

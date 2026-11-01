@@ -3,10 +3,12 @@ import {
   useState,
   useCallback,
   useMemo,
+  useRef,
 } from "react";
 
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import AuthenticatedPhoto from "../../components/AuthenticatedPhoto";
-import "./EmpleadosListadoPremium.css";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 import {
   buscarEmpleados,
@@ -635,6 +637,9 @@ export default function EmpleadosListado({
       ]
     );
 
+  const nuevoEmpleadoDialogRef = useRef(null);
+  useAccessibleDialog({ open: mostrarNuevo, onClose: cerrarNuevo, dialogRef: nuevoEmpleadoDialogRef });
+
 
   /* ==========================================================
      CAMBIAR CAMPO
@@ -916,125 +921,18 @@ export default function EmpleadosListado({
 
   return (
 
-    <div className="empleados-listado-premium space-y-5 animate-fade-in" aria-busy={cargando}>
+    <div className="erp-page space-y-5" aria-busy={cargando}>
 
       {/* ======================================================
           CABECERA
       ====================================================== */}
 
-      <div className="
-        rounded-2xl
-        border
-        border-[var(--erp-border)]
-        bg-[var(--erp-surface)]
-        px-5
-        py-5
-        shadow-sm
-      ">
-
-        <div className="
-          flex
-          flex-col
-          gap-4
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-        ">
-
-          <div>
-
-            <div className="
-              flex
-              items-center
-              gap-3
-            ">
-
-              <div className="
-                flex
-                h-11
-                w-11
-                items-center
-                justify-center
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                shadow-sm
-              ">
-                👥
-              </div>
-
-
-              <div>
-
-                <h1 className="
-                  text-xl
-                  font-bold
-                  tracking-tight
-                  text-[var(--erp-text)]
-                ">
-                  Empleados
-                </h1>
-
-                <p className="
-                  mt-0.5
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                ">
-                  Gestión y administración de empleados
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <button
-            type="button"
-            onClick={
-              abrirNuevo
-            }
-            className="
-              inline-flex
-              h-11
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              bg-[var(--erp-primary)]
-              px-5
-              text-sm
-              font-semibold
-              text-white
-              shadow-sm
-              transition-all
-              duration-200
-              hover:brightness-95
-              hover:shadow-md
-              active:scale-[0.98]
-            "
-          >
-
-            <span className="
-              text-lg
-              leading-none
-            ">
-              +
-            </span>
-
-            <span>
-              Nuevo empleado
-            </span>
-
-          </button>
-
-        </div>
-
+      <MolsanPageHeader mark="EM" title="Empleados" description="Gestión y administración de empleados." />
+      <div className="flex justify-end">
+        <button type="button" onClick={abrirNuevo} className="molsan-btn molsan-btn--primary inline-flex items-center justify-center gap-2 px-5 py-2.5">
+          <span>＋</span><span>Nuevo empleado</span>
+        </button>
       </div>
-
 
       {/* ======================================================
           MENSAJE ÉXITO
@@ -1042,17 +940,8 @@ export default function EmpleadosListado({
 
       {mensaje && (
 
-        <div className="
-          rounded-xl
-          border
-          border-emerald-200
-          bg-emerald-50
-          px-4
-          py-3
-          text-sm
-          font-medium
-          text-emerald-700
-        ">
+        <div className="px-4
+ py-3">
           {mensaje}
         </div>
 
@@ -1060,12 +949,12 @@ export default function EmpleadosListado({
 
 
       {incluirOcultos && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--erp-border)] bg-[var(--erp-surface)] px-4 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
           <div>
-            <div className="text-sm font-semibold text-[var(--erp-text)]">Visibilidad de usuarios</div>
-            <p className="text-xs text-[var(--erp-text-soft)]">Los usuarios ocultos no aparecen en los listados habituales, pero se pueden recuperar desde Seguridad.</p>
+            <div>Visibilidad de usuarios</div>
+            <p>Los usuarios ocultos no aparecen en los listados habituales, pero se pueden recuperar desde Seguridad.</p>
           </div>
-          <label className="inline-flex items-center gap-2 text-sm font-medium text-[var(--erp-text)]">
+          <label className="inline-flex items-center gap-2">
             <input type="checkbox" checked={mostrarOcultos} onChange={(event) => setMostrarOcultos(event.target.checked)} />
             Mostrar usuarios ocultos
           </label>
@@ -1076,54 +965,32 @@ export default function EmpleadosListado({
           FILTROS
       ====================================================== */}
 
-      <div className="
-        rounded-2xl
-        border
-        border-[var(--erp-border)]
-        bg-[var(--erp-surface-soft)]
-        p-4
-      ">
+      <div className="erp-card p-4">
 
-        <div className="
-          flex
-          flex-col
-          gap-3
-        ">
+        <div className="molsan-filter-bar flex
+ flex-col
+ gap-3">
 
-          <div className="
-            empleados-filtros-busqueda
-            relative
-            flex-1
-          ">
+          <div className="empleados-filtros-busqueda
+ relative
+ flex-1">
 
-            <span className="
-              pointer-events-none
-              absolute
-              left-4
-              top-1/2
-              -translate-y-1/2
-              text-[var(--erp-text-soft)]
-            ">
+            <span className="pointer-events-none
+ absolute
+ left-4
+ top-1/2">
               ⌕
             </span>
 
             <input
-              className="
-                h-11
-                w-full
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-surface)]
-                pl-11
-                pr-4
-                text-[var(--erp-text)]
-                outline-none
-                transition
-                focus:border-[var(--erp-primary)]
-                focus:ring-2
-                focus:ring-[var(--erp-primary-soft)]
-              "
+              className="h-11
+ w-full
+ 
+ 
+ 
+ 
+ pl-11
+ pr-4"
               placeholder="
                 Buscar por nombre, apellidos o DNI...
               "
@@ -1141,19 +1008,17 @@ export default function EmpleadosListado({
 
 
           <select
-            className="
-              h-11
-              rounded-xl
-              border
-              border-[var(--erp-border)]
-              bg-[var(--erp-surface)]
-              px-4
-              text-[var(--erp-text)]
-              outline-none
-              transition
-              focus:border-[var(--erp-primary)]
-              lg:w-48
-            "
+            className="h-11
+ 
+ 
+ 
+ 
+ px-4
+ 
+ 
+ 
+ 
+ lg:w-48"
             value={
               activo === null
                 ? ""
@@ -1190,28 +1055,19 @@ export default function EmpleadosListado({
         </div>
 
 
-        <div className="
-          mt-3
-          flex
-          items-center
-          justify-between
-          px-1
-        ">
+        <div className="mt-3
+ flex
+ items-center
+ justify-between
+ px-1">
 
-          <span className="
-            text-xs
-            text-[var(--erp-text-soft)]
-          ">
+          <span>
             {empleadosMemo.length} empleados
           </span>
 
           {cargando && (
 
-            <span className="
-              animate-pulse
-              text-xs
-              text-[var(--erp-primary)]
-            ">
+            <span>
               Actualizando…
             </span>
 
@@ -1228,16 +1084,8 @@ export default function EmpleadosListado({
 
       {error && (
 
-        <div className="
-          rounded-xl
-          border
-          border-red-200
-          bg-red-50
-          px-4
-          py-3
-          text-sm
-          text-red-700
-        ">
+        <div className="px-4
+ py-3">
           {error}
         </div>
 
@@ -1251,13 +1099,11 @@ export default function EmpleadosListado({
       {cargando &&
         empleadosMemo.length === 0 && (
 
-        <div className="
-          grid
-          grid-cols-1
-          gap-5
-          md:grid-cols-2
-          xl:grid-cols-3
-        ">
+        <div className="grid
+ grid-cols-1
+ gap-5
+ md:grid-cols-2
+ xl:grid-cols-3">
 
           {[
             1,
@@ -1271,14 +1117,7 @@ export default function EmpleadosListado({
 
               <div
                 key={item}
-                className="
-                  h-56
-                  rounded-2xl
-                  border
-                  border-[var(--erp-border)]
-                  bg-[var(--erp-surface-soft)]
-                  animate-pulse
-                "
+                className="h-56"
               />
 
             )
@@ -1297,35 +1136,17 @@ export default function EmpleadosListado({
         empleadosMemo.length === 0 &&
         !error && (
 
-        <div className="
-          rounded-2xl
-          border
-          border-dashed
-          border-[var(--erp-border)]
-          py-16
-          text-center
-        ">
+        <div className="py-16">
 
-          <div className="
-            mb-3
-            text-4xl
-          ">
+          <div className="mb-3">
             👤
           </div>
 
-          <div className="
-            text-base
-            font-semibold
-            text-[var(--erp-text)]
-          ">
+          <div>
             No se han encontrado empleados
           </div>
 
-          <div className="
-            mt-1
-            text-sm
-            text-[var(--erp-text-soft)]
-          ">
+          <div className="mt-1">
             Prueba a cambiar los filtros de búsqueda.
           </div>
 
@@ -1340,13 +1161,11 @@ export default function EmpleadosListado({
 
       {empleadosMemo.length > 0 && (
 
-        <div className="
-          grid
-          grid-cols-1
-          gap-5
-          md:grid-cols-2
-          xl:grid-cols-3
-        ">
+        <div className="grid
+ grid-cols-1
+ gap-5
+ md:grid-cols-2
+ xl:grid-cols-3">
 
           {empleadosMemo.map(
             (empleado) => {
@@ -1362,16 +1181,11 @@ export default function EmpleadosListado({
                   type="button"
                   key={empleado.id}
                   onClick={() => onSeleccionar(empleado.id)}
-                  className={`
-                    group flex w-full min-w-0 items-center gap-3
-                    rounded-xl border border-[var(--erp-border)]
-                    bg-[var(--erp-surface)] px-3 py-3 text-left
-                    shadow-sm transition hover:border-[var(--erp-primary)]
-                    hover:shadow-md focus:outline-none focus:ring-2
-                    focus:ring-[var(--erp-primary)]
-                  `}
+                  className={`molsan-employee-card group flex w-full min-w-0 items-center gap-3
+ 
+ px-3 py-3`}
                 >
-                  <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full border border-[var(--erp-border)] bg-[var(--erp-surface-soft)]">
+                  <div className="h-11 w-11 shrink-0 overflow-hidden">
                     <AuthenticatedPhoto
                       src={foto}
                       alt={`Foto de ${empleado.nombre || "empleado"}`}
@@ -1379,23 +1193,18 @@ export default function EmpleadosListado({
                     />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-semibold text-[var(--erp-text)]">
+                    <div className="truncate">
                       {empleado.nombre} {empleado.apellidos}
                     </div>
-                    <div className="mt-0.5 text-xs text-[var(--erp-text-soft)]">
+                    <div className="mt-0.5">
                       ID #{empleado.id}
                     </div>
-                    <div className="mt-1 truncate text-xs text-[var(--erp-text-soft)]" title={`Cargo: ${empleado.cargo_nombre || "Sin cargo asignado"}`}>
+                    <div className="mt-1 truncate" title={`Cargo: ${empleado.cargo_nombre || "Sin cargo asignado"}`}>
                       Cargo: {empleado.cargo_nombre || "Sin cargo asignado"}
                     </div>
                   </div>
                   <span
-                    className={`
-                      shrink-0 rounded-full border px-2.5 py-1 text-xs font-semibold
-                      ${empleado.activo
-                        ? "border-green-200 bg-green-50 text-green-700"
-                        : "border-red-200 bg-red-50 text-red-700"}
-                    `}
+                    className={`molsan-status-pill shrink-0 px-2.5 py-1 ${empleado.activo ? "is-active" : "is-inactive"}`}
                   >
                     {empleado.activo ? "Activo" : "Inactivo"}
                   </span>
@@ -1418,17 +1227,15 @@ export default function EmpleadosListado({
       {mostrarNuevo && (
 
         <div
-          className="
-            fixed
-            inset-0
-            z-[100]
-            flex
-            items-center
-            justify-center
-            bg-slate-950/35
-            p-4
-            backdrop-blur-sm
-          "
+          className="empleado-operativo-modal molsan-modal-overlay
+ fixed
+ inset-0
+ z-[100]
+ flex
+ items-center
+ justify-center
+ 
+ p-4"
           onMouseDown={(
             event
           ) => {
@@ -1446,73 +1253,49 @@ export default function EmpleadosListado({
         >
 
           <div
-            className="
-              w-full
-              max-w-4xl
-              overflow-hidden
-              rounded-[24px]
-              border
-              border-white/80
-              bg-white/95
-              shadow-[0_25px_80px_rgba(15,23,42,0.22)]
-            "
+            ref={nuevoEmpleadoDialogRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Nuevo empleado"
+            className="molsan-modal__panel w-full
+ max-w-4xl
+ overflow-hidden"
           >
 
             {/* ================================================
                 CABECERA MODAL
             ================================================= */}
 
-            <div className="
-              border-b
-              border-slate-200
-              px-6
-              py-5
-            ">
+            <div className="molsan-modal__header px-6
+ py-5">
 
-              <div className="
-                flex
-                items-center
-                justify-between
-                gap-4
-              ">
+              <div className="flex
+ items-center
+ justify-between
+ gap-4">
 
                 <div>
 
-                  <div className="
-                    flex
-                    items-center
-                    gap-3
-                  ">
+                  <div className="flex
+ items-center
+ gap-3">
 
-                    <div className="
-                      flex
-                      h-10
-                      w-10
-                      items-center
-                      justify-center
-                      rounded-xl
-                      bg-blue-50
-                      text-blue-600
-                    ">
+                    <div className="flex
+ h-10
+ w-10
+ items-center
+ justify-center">
                       👤
                     </div>
 
                     <div>
 
-                      <h2 className="
-                        text-lg
-                        font-bold
-                        tracking-tight
-                        text-slate-800
-                      ">
+                      <h2>
                         Nuevo empleado
                       </h2>
 
-                      <p className="
-                        mt-0.5
-                        text-xs
-                        text-slate-400
-                      ">
+                      <p className="mt-0.5">
                         Alta de un nuevo empleado en el ERP
                       </p>
 
@@ -1531,25 +1314,11 @@ export default function EmpleadosListado({
                   disabled={
                     guardandoNuevo
                   }
-                  className="
-                    flex
-                    h-9
-                    w-9
-                    items-center
-                    justify-center
-                    rounded-xl
-                    border
-                    border-slate-200
-                    bg-white
-                    text-lg
-                    text-slate-400
-                    transition
-                    hover:border-slate-300
-                    hover:bg-slate-50
-                    hover:text-slate-600
-                    disabled:cursor-not-allowed
-                    disabled:opacity-50
-                  "
+                  className="molsan-btn molsan-btn--ghost molsan-btn--icon flex
+ h-9
+ w-9
+ items-center
+ justify-center"
                   title="Cerrar"
                 >
                   ×
@@ -1570,50 +1339,34 @@ export default function EmpleadosListado({
               }
             >
 
-              <div className="
-                max-h-[70vh]
-                overflow-y-auto
-                px-6
-                py-6
-              ">
+              <div className="molsan-modal__body max-h-[70vh]
+ overflow-y-auto
+ px-6
+ py-6">
 
                 {/* ==========================================
                     DATOS PERSONALES
                 ========================================== */}
 
-                <div className="
-                  mb-6
-                ">
+                <div className="mb-6">
 
-                  <div className="
-                    mb-4
-                  ">
+                  <div className="mb-4">
 
-                    <h3 className="
-                      text-sm
-                      font-bold
-                      text-slate-800
-                    ">
+                    <h3>
                       Datos personales
                     </h3>
 
-                    <p className="
-                      mt-1
-                      text-xs
-                      text-slate-400
-                    ">
+                    <p className="mt-1">
                       Información básica del empleado.
                     </p>
 
                   </div>
 
 
-                  <div className="
-                    grid
-                    grid-cols-1
-                    gap-4
-                    md:grid-cols-2
-                  ">
+                  <div className="grid
+ grid-cols-1
+ gap-4
+ md:grid-cols-2">
 
                     <CampoNuevoEmpleado
                       label="Nombre"
@@ -1686,39 +1439,25 @@ export default function EmpleadosListado({
                     ACCESO
                 ========================================== */}
 
-                <div className="
-                  mb-6
-                ">
+                <div className="mb-6">
 
-                  <div className="
-                    mb-4
-                  ">
+                  <div className="mb-4">
 
-                    <h3 className="
-                      text-sm
-                      font-bold
-                      text-slate-800
-                    ">
+                    <h3>
                       Acceso al ERP
                     </h3>
 
-                    <p className="
-                      mt-1
-                      text-xs
-                      text-slate-400
-                    ">
+                    <p className="mt-1">
                       Credenciales para iniciar sesión.
                     </p>
 
                   </div>
 
 
-                  <div className="
-                    grid
-                    grid-cols-1
-                    gap-4
-                    md:grid-cols-2
-                  ">
+                  <div className="grid
+ grid-cols-1
+ gap-4
+ md:grid-cols-2">
 
                     <CampoNuevoEmpleado
                       label="Usuario"
@@ -1763,35 +1502,23 @@ export default function EmpleadosListado({
 
                 <div>
 
-                  <div className="
-                    mb-4
-                  ">
+                  <div className="mb-4">
 
-                    <h3 className="
-                      text-sm
-                      font-bold
-                      text-slate-800
-                    ">
+                    <h3>
                       Datos corporativos
                     </h3>
 
-                    <p className="
-                      mt-1
-                      text-xs
-                      text-slate-400
-                    ">
+                    <p className="mt-1">
                       Información de contacto y empresa.
                     </p>
 
                   </div>
 
 
-                  <div className="
-                    grid
-                    grid-cols-1
-                    gap-4
-                    md:grid-cols-2
-                  ">
+                  <div className="grid
+ grid-cols-1
+ gap-4
+ md:grid-cols-2">
 
                     <CampoNuevoEmpleado
                       label="Email personal"
@@ -1850,17 +1577,13 @@ export default function EmpleadosListado({
 
                 {errorNuevo && (
 
-                  <div className="
-                    mt-6
-                    rounded-xl
-                    border
-                    border-red-200
-                    bg-red-50
-                    px-4
-                    py-3
-                    text-sm
-                    text-red-700
-                  ">
+                  <div className="mt-6
+ 
+ 
+ 
+ 
+ px-4
+ py-3">
                     {errorNuevo}
                   </div>
 
@@ -1873,18 +1596,16 @@ export default function EmpleadosListado({
                   FOOTER MODAL
               ============================================== */}
 
-              <div className="
-                flex
-                flex-col-reverse
-                gap-3
-                border-t
-                border-slate-200
-                bg-slate-50/80
-                px-6
-                py-4
-                sm:flex-row
-                sm:justify-end
-              ">
+              <div className="molsan-modal__footer flex
+ flex-col-reverse
+ gap-3
+ 
+ 
+ 
+ px-6
+ py-4
+ sm:flex-row
+ sm:justify-end">
 
                 <button
                   type="button"
@@ -1894,22 +1615,8 @@ export default function EmpleadosListado({
                   disabled={
                     guardandoNuevo
                   }
-                  className="
-                    rounded-xl
-                    border
-                    border-slate-200
-                    bg-white
-                    px-5
-                    py-2.5
-                    text-sm
-                    font-semibold
-                    text-slate-600
-                    shadow-sm
-                    transition
-                    hover:bg-slate-50
-                    disabled:cursor-not-allowed
-                    disabled:opacity-50
-                  "
+                  className="molsan-btn molsan-btn--secondary px-5
+ py-2.5"
                 >
                   Cancelar
                 </button>
@@ -1920,21 +1627,8 @@ export default function EmpleadosListado({
                   disabled={
                     guardandoNuevo
                   }
-                  className="
-                    rounded-xl
-                    bg-[var(--erp-primary)]
-                    px-5
-                    py-2.5
-                    text-sm
-                    font-semibold
-                    text-white
-                    shadow-sm
-                    transition-all
-                    hover:brightness-95
-                    hover:shadow-md
-                    disabled:cursor-not-allowed
-                    disabled:opacity-50
-                  "
+                  className="molsan-btn molsan-btn--primary px-5
+ py-2.5"
                 >
                   {guardandoNuevo
                     ? "Creando empleado…"
@@ -1975,21 +1669,13 @@ function CampoNuevoEmpleado({
 
     <div>
 
-      <label className="
-        mb-1.5
-        block
-        text-xs
-        font-semibold
-        text-slate-600
-      ">
+      <label className="mb-1.5
+ block">
 
         {label}
 
         {required && (
-          <span className="
-            ml-1
-            text-red-500
-          ">
+          <span className="ml-1">
             *
           </span>
         )}
@@ -2010,26 +1696,13 @@ function CampoNuevoEmpleado({
             event.target.value
           )
         }
-        className="
-          h-11
-          w-full
-          rounded-xl
-          border
-          border-slate-200
-          bg-white
-          px-4
-          text-sm
-          text-slate-700
-          outline-none
-          transition
-          placeholder:text-slate-300
-          focus:border-blue-400
-          focus:ring-4
-          focus:ring-blue-500/10
-          disabled:cursor-not-allowed
-          disabled:bg-slate-50
-          disabled:opacity-70
-        "
+        className="h-11
+ w-full
+ 
+ 
+ 
+ 
+ px-4"
       />
 
     </div>
@@ -2048,28 +1721,17 @@ function Info({
 
   return (
 
-    <div className="
-      flex
-      items-start
-      justify-between
-      gap-4
-      text-sm
-    ">
+    <div className="flex
+ items-start
+ justify-between
+ gap-4">
 
-      <span className="
-        shrink-0
-        text-[var(--erp-text-soft)]
-      ">
+      <span className="shrink-0">
         {label}
       </span>
 
 
-      <span className="
-        truncate
-        text-right
-        font-medium
-        text-[var(--erp-text)]
-      ">
+      <span className="truncate">
         {value}
       </span>
 

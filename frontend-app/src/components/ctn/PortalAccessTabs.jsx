@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
 
-import "../../css/LayoutPortalesPremium.css";
 export default function PortalAccessTabs({ notariaId }) {
   const empleadoSesion = useAuthStore((state) => state.empleado);
   const nombreRol = String(
@@ -100,7 +99,7 @@ export default function PortalAccessTabs({ notariaId }) {
 
   if (!puedeVerNotarGest && !puedeVerEncargaGest) {
     return (
-      <section className="portal-access-tabs-premium ctn-modal-seccion ctn-portal-access-panel">
+      <section>
         <div className="ctn-modal-seccion-titulo"><h3>Accesos a portales externos</h3></div>
         <p role="alert" className="ctn-portal-alert ctn-portal-alert--warning">
           Tu usuario no tiene permiso para consultar NotarGestWeb ni EncargaGestWeb. Solicita al administrador que lo habilite en la ficha del empleado.

@@ -1,15 +1,19 @@
-import "../../css/ModalesHerramientasPremium.css";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 import React, {
   useCallback,
   useEffect,
   useMemo,
   useState,
+  useRef,
 } from "react";
 
 
 // ============================================================
 // ACCIONES DEL EXPEDIENTE
-// MOLSAN ERP PREMIUM 2027
+
 // ============================================================
 
 
@@ -17,8 +21,9 @@ import React, {
 // API
 // ============================================================
 
-const API_ORIGEN =
-  "https://agenda-intranet-b.onrender.com";
+const API_ORIGEN = String(
+  import.meta.env.VITE_API_URL || "https://agenda-intranet-b.onrender.com/api"
+).replace(/\/api\/?$/, "");
 
 const API_BASE =
   `${API_ORIGEN}/api/acciones-expediente`;
@@ -149,46 +154,18 @@ function BadgeActivo({
 
   return (
     <span
-      className={`
-        inline-flex
-        items-center
-        gap-1.5
-        rounded-lg
-        border
-        px-2.5
-        py-1
-        text-xs
-        font-semibold
+      className={`inline-flex
+ items-center
+ gap-1.5
+ 
+ 
+ px-2.5
+ py-1
+ 
+ 
 
-        ${
-          activo
-            ? `
-              border-green-200
-              bg-green-50
-              text-green-700
-            `
-            : `
-              border-red-200
-              bg-red-50
-              text-red-700
-            `
-        }
-      `}
+ `}
     >
-
-      <span
-        className={`
-          w-1.5
-          h-1.5
-          rounded-full
-
-          ${
-            activo
-              ? "bg-green-500"
-              : "bg-red-500"
-          }
-        `}
-      />
 
       {activo
         ? "Activa"
@@ -212,19 +189,13 @@ function CampoSelect({
 
   return (
     <label
-      className="
-        flex
-        flex-col
-        gap-1.5
-      "
+      className="flex
+ flex-col
+ gap-1.5"
     >
 
       <span
-        className="
-          text-xs
-          font-semibold
-          text-[var(--erp-text)]
-        "
+       
       >
         {label}
       </span>
@@ -239,23 +210,13 @@ function CampoSelect({
             event.target.value
           )
         }
-        className="
-          w-full
-          rounded-xl
-          border
-          border-[var(--erp-border)]
-          bg-white
-          px-3
-          py-2.5
-          text-sm
-          text-[var(--erp-text)]
-          outline-none
-          transition
-
-          focus:border-[var(--erp-primary)]
-          focus:ring-2
-          focus:ring-[var(--erp-primary-soft)]
-        "
+        className="w-full
+ 
+ 
+ 
+ 
+ px-3
+ py-2.5"
       >
 
         <option value="">
@@ -689,8 +650,9 @@ export default function AccionesExpediente() {
     );
 
 
+  const ordenAcciones = useSortableData(acciones);
   const accionesPagina =
-    acciones.slice(
+    ordenAcciones.items.slice(
       (pagina - 1) *
         POR_PAGINA,
       pagina *
@@ -1110,6 +1072,11 @@ export default function AccionesExpediente() {
 
   }
 
+  const accionDialogRef = useRef(null);
+  const importarDialogRef = useRef(null);
+  useAccessibleDialog({ open: mostrarModal, onClose: cerrarModal, dialogRef: accionDialogRef });
+  useAccessibleDialog({ open: mostrarImportar, onClose: cerrarImportar, dialogRef: importarDialogRef });
+
 
   async function importarExcel(
     event
@@ -1241,207 +1208,21 @@ export default function AccionesExpediente() {
 
   return (
     <div
-      className="
-        herramientas-subpagina-premium erp-page
-        min-h-full
-        p-4
-        sm:p-6
-        lg:p-8
-        text-[var(--erp-text)]
-        space-y-6
-        animate-fade-in
-      "
+      className="erp-page min-w-0 space-y-6"
     >
 
-      {/* =====================================================
-          CABECERA
-      ===================================================== */}
-
-      <div
-        className="
-          max-w-[1700px]
-          mx-auto
-          flex
-          flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-5
-        "
-      >
-
-        <div
-          className="
-            flex
-            items-center
-            gap-4
-          "
-        >
-
-          <div
-            className="
-              w-12
-              h-12
-              rounded-2xl
-              bg-[var(--erp-primary-soft)]
-              text-[var(--erp-primary)]
-              border
-              border-[var(--erp-border)]
-              flex
-              items-center
-              justify-center
-              shrink-0
-            "
-          >
-
-            <Icono
-              name="clipboard"
-              className="
-                w-6
-                h-6
-              "
-            />
-
-          </div>
-
-
-          <div>
-
-            <h1
-              className="
-                text-2xl
-                sm:text-3xl
-                font-bold
-                text-[var(--erp-text)]
-              "
-            >
-              Acciones del expediente
-            </h1>
-
-            <p
-              className="
-                text-sm
-                text-[var(--erp-text-soft)]
-                mt-0.5
-              "
-            >
-              Catálogo de acciones y actividades
-              disponibles para los expedientes
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div
-          className="
-            flex
-            flex-wrap
-            items-center
-            gap-2
-          "
-        >
-
-          <button
-            type="button"
-            onClick={
-              abrirImportar
-            }
-            className="
-              inline-flex
-              items-center
-              gap-2
-              px-4
-              py-2.5
-              rounded-xl
-              bg-white
-              border
-              border-[var(--erp-border)]
-              text-[var(--erp-text)]
-              text-sm
-              font-semibold
-              shadow-sm
-              hover:bg-[var(--erp-primary-soft)]
-              hover:text-[var(--erp-primary)]
-              hover:border-[var(--erp-primary)]
-              transition-all
-              duration-200
-            "
-          >
-
-            <Icono
-              name="database"
-              className="
-                w-4
-                h-4
-              "
-            />
-
-            Importar Excel
-
-          </button>
-
-
-          <button
-            type="button"
-            onClick={
-              abrirNueva
-            }
-            className="
-              inline-flex
-              items-center
-              gap-2
-              px-4
-              py-2.5
-              rounded-xl
-              bg-[var(--erp-primary)]
-              hover:brightness-95
-              text-white
-              text-sm
-              font-semibold
-              shadow-sm
-              transition
-            "
-          >
-
-            <span
-              className="
-                text-lg
-                leading-none
-              "
-            >
-              +
-            </span>
-
-            Nueva acción
-
-          </button>
-
-        </div>
-
+      <MolsanPageHeader mark="AE" title="Acciones del expediente" description="Catálogo de acciones y actividades disponibles para los expedientes." />
+      <div className="molsan-filter-bar flex flex-wrap justify-end gap-2 p-3">
+        <button type="button" onClick={abrirImportar} className="molsan-btn molsan-btn--secondary"><span aria-hidden="true">🗂️</span> Importar Excel</button>
+        <button type="button" onClick={abrirNueva} className="molsan-btn molsan-btn--primary">＋ Nueva acción</button>
       </div>
 
-
-      {/* =====================================================
-          MENSAJES
-      ===================================================== */}
 
       {mensaje && (
 
         <div
-          className="
-            max-w-[1700px]
-            mx-auto
-            rounded-xl
-            border
-            border-green-200
-            bg-green-50
-            px-4
-            py-3
-            text-sm
-            text-green-700
-          "
+          className="px-4
+ py-3"
         >
           {mensaje}
         </div>
@@ -1452,18 +1233,8 @@ export default function AccionesExpediente() {
       {error && (
 
         <div
-          className="
-            max-w-[1700px]
-            mx-auto
-            rounded-xl
-            border
-            border-red-200
-            bg-red-50
-            px-4
-            py-3
-            text-sm
-            text-red-700
-          "
+          className="px-4
+ py-3"
         >
           {error}
         </div>
@@ -1476,42 +1247,25 @@ export default function AccionesExpediente() {
       ===================================================== */}
 
       <section
-        className="
-          max-w-[1700px]
-          mx-auto
-          grid
-          grid-cols-1
-          sm:grid-cols-3
-          gap-4
-        "
+        className="grid
+ grid-cols-1
+ sm:grid-cols-3
+ gap-4"
       >
 
         <div
-          className="
-            erp-card
-            p-5
-          "
+          className="erp-card
+ p-5"
         >
 
           <p
-            className="
-              text-xs
-              font-medium
-              uppercase
-              tracking-wide
-              text-[var(--erp-text-soft)]
-            "
+            className="uppercase"
           >
             Total acciones
           </p>
 
           <p
-            className="
-              text-3xl
-              font-bold
-              text-[var(--erp-text)]
-              mt-1
-            "
+            className="mt-1"
           >
             {totalAcciones}
           </p>
@@ -1520,31 +1274,18 @@ export default function AccionesExpediente() {
 
 
         <div
-          className="
-            erp-card
-            p-5
-          "
+          className="erp-card
+ p-5"
         >
 
           <p
-            className="
-              text-xs
-              font-medium
-              uppercase
-              tracking-wide
-              text-[var(--erp-text-soft)]
-            "
+            className="uppercase"
           >
             Acciones activas
           </p>
 
           <p
-            className="
-              text-3xl
-              font-bold
-              text-[var(--erp-text)]
-              mt-1
-            "
+            className="mt-1"
           >
             {accionesActivas}
           </p>
@@ -1553,31 +1294,18 @@ export default function AccionesExpediente() {
 
 
         <div
-          className="
-            erp-card
-            p-5
-          "
+          className="erp-card
+ p-5"
         >
 
           <p
-            className="
-              text-xs
-              font-medium
-              uppercase
-              tracking-wide
-              text-[var(--erp-text-soft)]
-            "
+            className="uppercase"
           >
             Con actividad asignada
           </p>
 
           <p
-            className="
-              text-3xl
-              font-bold
-              text-[var(--erp-text)]
-              mt-1
-            "
+            className="mt-1"
           >
             {accionesConActividad}
           </p>
@@ -1592,42 +1320,28 @@ export default function AccionesExpediente() {
       ===================================================== */}
 
       <section
-        className="
-          erp-card
-          max-w-[1700px]
-          mx-auto
-          p-4
-        "
+        className="erp-card
+ p-4"
       >
 
         <div
-          className="
-            flex
-            items-center
-            justify-between
-            gap-3
-            mb-4
-          "
+          className="flex
+ items-center
+ justify-between
+ gap-3
+ mb-4"
         >
 
           <div>
 
             <h2
-              className="
-                text-base
-                font-semibold
-                text-[var(--erp-text)]
-              "
+             
             >
               Buscar y filtrar
             </h2>
 
             <p
-              className="
-                text-xs
-                text-[var(--erp-text-soft)]
-                mt-1
-              "
+              className="mt-1"
             >
               Filtra el catálogo de acciones
             </p>
@@ -1647,12 +1361,7 @@ export default function AccionesExpediente() {
               setPagina(1);
 
             }}
-            className="
-              text-xs
-              font-semibold
-              text-[var(--erp-primary)]
-              hover:underline
-            "
+           
           >
             Limpiar filtros
           </button>
@@ -1661,13 +1370,11 @@ export default function AccionesExpediente() {
 
 
         <div
-          className="
-            grid
-            grid-cols-1
-            md:grid-cols-2
-            xl:grid-cols-5
-            gap-3
-          "
+          className="grid
+ grid-cols-1
+ md:grid-cols-2
+ xl:grid-cols-5
+ gap-3"
         >
 
           <input
@@ -1682,21 +1389,13 @@ export default function AccionesExpediente() {
             placeholder="
               Buscar descripción...
             "
-            className="
-              w-full
-              rounded-xl
-              border
-              border-[var(--erp-border)]
-              bg-white
-              px-3
-              py-2.5
-              text-sm
-              outline-none
-
-              focus:border-[var(--erp-primary)]
-              focus:ring-2
-              focus:ring-[var(--erp-primary-soft)]
-            "
+            className="w-full
+ 
+ 
+ 
+ 
+ px-3
+ py-2.5"
           />
 
 
@@ -1709,16 +1408,8 @@ export default function AccionesExpediente() {
                 event.target.value
               )
             }
-            className="
-              rounded-xl
-              border
-              border-[var(--erp-border)]
-              bg-white
-              px-3
-              py-2.5
-              text-sm
-              outline-none
-            "
+            className="px-3
+ py-2.5"
           >
 
             <option value="">
@@ -1748,16 +1439,8 @@ export default function AccionesExpediente() {
                 event.target.value
               )
             }
-            className="
-              rounded-xl
-              border
-              border-[var(--erp-border)]
-              bg-white
-              px-3
-              py-2.5
-              text-sm
-              outline-none
-            "
+            className="px-3
+ py-2.5"
           >
 
             <option value="">
@@ -1787,16 +1470,8 @@ export default function AccionesExpediente() {
                 event.target.value
               )
             }
-            className="
-              rounded-xl
-              border
-              border-[var(--erp-border)]
-              bg-white
-              px-3
-              py-2.5
-              text-sm
-              outline-none
-            "
+            className="px-3
+ py-2.5"
           >
 
             <option value="">
@@ -1826,16 +1501,8 @@ export default function AccionesExpediente() {
                 event.target.value
               )
             }
-            className="
-              rounded-xl
-              border
-              border-[var(--erp-border)]
-              bg-white
-              px-3
-              py-2.5
-              text-sm
-              outline-none
-            "
+            className="px-3
+ py-2.5"
           >
 
             <option value="true">
@@ -1862,45 +1529,31 @@ export default function AccionesExpediente() {
       ===================================================== */}
 
       <section
-        className="
-          erp-card
-          max-w-[1700px]
-          mx-auto
-          overflow-hidden
-        "
+        className="erp-card
+ overflow-hidden"
       >
 
         <div
-          className="
-            px-5
-            py-4
-            border-b
-            border-[var(--erp-border)]
-            flex
-            items-center
-            justify-between
-            gap-4
-          "
+          className="px-5
+ py-4
+ 
+ 
+ flex
+ items-center
+ justify-between
+ gap-4"
         >
 
           <div>
 
             <h2
-              className="
-                text-base
-                font-semibold
-                text-[var(--erp-text)]
-              "
+             
             >
               Acciones disponibles
             </h2>
 
             <p
-              className="
-                text-xs
-                text-[var(--erp-text-soft)]
-                mt-1
-              "
+              className="mt-1"
             >
               {totalAcciones}
               {" "}
@@ -1915,58 +1568,29 @@ export default function AccionesExpediente() {
         <div className="overflow-x-auto">
 
           <table
-            className="
-              w-full
-              min-w-[1100px]
-              text-sm
-              text-[var(--erp-text)]
-            "
+            className="w-full
+ min-w-[1100px]"
           >
 
             <thead>
 
               <tr
-                className="
-                  bg-[var(--erp-primary)]
-                  text-white
-                  text-left
-                "
+               
               >
 
-                <th className="px-4 py-3 font-semibold">
-                  Departamento
-                </th>
+                <MolsanSortableTh label="Departamento" sortKey="departamento" sortConfig={ordenAcciones.sortConfig} onSort={ordenAcciones.requestSort} className="px-4 py-3" />
 
-                <th className="px-4 py-3 font-semibold">
-                  Sección
-                </th>
+                <MolsanSortableTh label="Sección" sortKey="seccion" sortConfig={ordenAcciones.sortConfig} onSort={ordenAcciones.requestSort} className="px-4 py-3" />
 
-                <th className="px-4 py-3 font-semibold">
-                  Actividad
-                </th>
+                <MolsanSortableTh label="Actividad" sortKey="actividad" sortConfig={ordenAcciones.sortConfig} onSort={ordenAcciones.requestSort} className="px-4 py-3" />
 
-                <th className="px-4 py-3 font-semibold">
-                  Descripción
-                </th>
+                <MolsanSortableTh label="Descripción" sortKey="descripcion" sortConfig={ordenAcciones.sortConfig} onSort={ordenAcciones.requestSort} className="px-4 py-3" />
+
+                <MolsanSortableTh label="Estado" sortKey="activo" sortConfig={ordenAcciones.sortConfig} onSort={ordenAcciones.requestSort} className="px-4 py-3" />
 
                 <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    text-center
-                  "
-                >
-                  Estado
-                </th>
-
-                <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    text-center
-                  "
+                  className="px-4
+ py-3"
                 >
                   Acciones
                 </th>
@@ -1986,12 +1610,8 @@ export default function AccionesExpediente() {
 
                   <td
                     colSpan="6"
-                    className="
-                      px-4
-                      py-14
-                      text-center
-                      text-[var(--erp-text-soft)]
-                    "
+                    className="px-4
+ py-14"
                   >
                     Cargando acciones…
                   </td>
@@ -2005,12 +1625,8 @@ export default function AccionesExpediente() {
 
                   <td
                     colSpan="6"
-                    className="
-                      px-4
-                      py-14
-                      text-center
-                      text-[var(--erp-text-soft)]
-                    "
+                    className="px-4
+ py-14"
                   >
                     No hay acciones del expediente.
                   </td>
@@ -2026,19 +1642,12 @@ export default function AccionesExpediente() {
                       key={
                         accion.id
                       }
-                      className="
-                        border-b
-                        border-[var(--erp-border)]
-                        hover:bg-[var(--erp-primary-soft)]
-                        transition-colors
-                      "
+                     
                     >
 
                       <td
-                        className="
-                          px-4
-                          py-3.5
-                        "
+                        className="px-4
+ py-3.5"
                       >
                         {
                           accion.departamento ||
@@ -2048,10 +1657,8 @@ export default function AccionesExpediente() {
 
 
                       <td
-                        className="
-                          px-4
-                          py-3.5
-                        "
+                        className="px-4
+ py-3.5"
                       >
                         {
                           accion.seccion ||
@@ -2061,11 +1668,8 @@ export default function AccionesExpediente() {
 
 
                       <td
-                        className="
-                          px-4
-                          py-3.5
-                          font-medium
-                        "
+                        className="px-4
+ py-3.5"
                       >
                         {
                           accion.actividad ||
@@ -2075,11 +1679,9 @@ export default function AccionesExpediente() {
 
 
                       <td
-                        className="
-                          px-4
-                          py-3.5
-                          max-w-[520px]
-                        "
+                        className="px-4
+ py-3.5
+ max-w-[520px]"
                       >
                         {
                           accion.descripcion
@@ -2088,11 +1690,8 @@ export default function AccionesExpediente() {
 
 
                       <td
-                        className="
-                          px-4
-                          py-3.5
-                          text-center
-                        "
+                        className="px-4
+ py-3.5"
                       >
                         <BadgeActivo
                           activo={
@@ -2104,19 +1703,15 @@ export default function AccionesExpediente() {
 
 
                       <td
-                        className="
-                          px-4
-                          py-3.5
-                        "
+                        className="px-4
+ py-3.5"
                       >
 
                         <div
-                          className="
-                            flex
-                            items-center
-                            justify-center
-                            gap-2
-                          "
+                          className="flex
+ items-center
+ justify-center
+ gap-2"
                         >
 
                           <button
@@ -2126,18 +1721,8 @@ export default function AccionesExpediente() {
                                 accion
                               )
                             }
-                            className="
-                              w-9
-                              h-9
-                              rounded-xl
-                              bg-white
-                              border
-                              border-[var(--erp-border)]
-                              text-[var(--erp-primary)]
-                              hover:bg-[var(--erp-primary-soft)]
-                              hover:border-[var(--erp-primary)]
-                              transition
-                            "
+                            className="w-9
+ h-9"
                             title="Editar"
                           >
                             ✎
@@ -2151,17 +1736,8 @@ export default function AccionesExpediente() {
                                 accion
                               )
                             }
-                            className="
-                              w-9
-                              h-9
-                              rounded-xl
-                              bg-white
-                              border
-                              border-red-200
-                              text-red-600
-                              hover:bg-red-50
-                              transition
-                            "
+                            className="w-9
+ h-9"
                             title="Eliminar"
                           >
                             ×
@@ -2190,32 +1766,25 @@ export default function AccionesExpediente() {
         =================================================== */}
 
         <div
-          className="
-            px-5
-            py-4
-            border-t
-            border-[var(--erp-border)]
-            flex
-            flex-col
-            sm:flex-row
-            items-center
-            justify-between
-            gap-4
-          "
+          className="px-5
+ py-4
+ 
+ 
+ flex
+ flex-col
+ sm:flex-row
+ items-center
+ justify-between
+ gap-4"
         >
 
           <div
-            className="
-              text-sm
-              text-[var(--erp-text-soft)]
-            "
+           
           >
             Mostrando{" "}
 
             <strong
-              className="
-                text-[var(--erp-text)]
-              "
+             
             >
               {
                 accionesPagina.length
@@ -2225,9 +1794,7 @@ export default function AccionesExpediente() {
             {" "}de{" "}
 
             <strong
-              className="
-                text-[var(--erp-text)]
-              "
+             
             >
               {totalAcciones}
             </strong>
@@ -2237,11 +1804,9 @@ export default function AccionesExpediente() {
 
 
           <div
-            className="
-              flex
-              items-center
-              gap-2
-            "
+            className="flex
+ items-center
+ gap-2"
           >
 
             <button
@@ -2260,36 +1825,20 @@ export default function AccionesExpediente() {
                     )
                 )
               }
-              className="
-                px-4
-                py-2
-                rounded-xl
-                bg-white
-                border
-                border-[var(--erp-border)]
-                text-sm
-                hover:bg-[var(--erp-surface-soft)]
-                transition
-                disabled:opacity-40
-              "
+              className="px-4
+ py-2"
             >
               Anterior
             </button>
 
 
             <span
-              className="
-                px-2
-                text-sm
-                text-[var(--erp-text-soft)]
-              "
+              className="px-2"
             >
               Página{" "}
 
               <strong
-                className="
-                  text-[var(--erp-text)]
-                "
+               
               >
                 {pagina}
               </strong>
@@ -2297,9 +1846,7 @@ export default function AccionesExpediente() {
               {" "}de{" "}
 
               <strong
-                className="
-                  text-[var(--erp-text)]
-                "
+               
               >
                 {totalPaginas}
               </strong>
@@ -2323,18 +1870,8 @@ export default function AccionesExpediente() {
                     )
                 )
               }
-              className="
-                px-4
-                py-2
-                rounded-xl
-                bg-white
-                border
-                border-[var(--erp-border)]
-                text-sm
-                hover:bg-[var(--erp-surface-soft)]
-                transition
-                disabled:opacity-40
-              "
+              className="px-4
+ py-2"
             >
               Siguiente
             </button>
@@ -2353,51 +1890,41 @@ export default function AccionesExpediente() {
       {mostrarModal && (
 
         <div
-          className="
-            fixed
-            inset-0
-            z-[200]
-            flex
-            items-center
-            justify-center
-            bg-slate-950/45
-            p-4
-            backdrop-blur-sm
-          "
+          className="panel-modal-premium
+ fixed
+ inset-0
+ z-[200]
+ flex
+ items-center
+ justify-center
+ 
+ p-4"
         >
 
           <div
-            className="
-              w-full
-              max-w-3xl
-              rounded-2xl
-              bg-[var(--erp-surface)]
-              border
-              border-[var(--erp-border)]
-              shadow-2xl
-            "
+            ref={accionDialogRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-label={modoEdicion ? "Editar acción del expediente" : "Nueva acción del expediente"}
+            className="w-full
+ max-w-3xl"
           >
 
             <div
-              className="
-                px-5
-                py-4
-                border-b
-                border-[var(--erp-border)]
-                flex
-                items-center
-                justify-between
-              "
+              className="px-5
+ py-4
+ 
+ 
+ flex
+ items-center
+ justify-between"
             >
 
               <div>
 
                 <h2
-                  className="
-                    text-lg
-                    font-semibold
-                    text-[var(--erp-text)]
-                  "
+                 
                 >
                   {modoEdicion
                     ? "Editar acción del expediente"
@@ -2405,11 +1932,7 @@ export default function AccionesExpediente() {
                 </h2>
 
                 <p
-                  className="
-                    text-xs
-                    text-[var(--erp-text-soft)]
-                    mt-1
-                  "
+                  className="mt-1"
                 >
                   Selecciona los valores del catálogo
                 </p>
@@ -2422,15 +1945,8 @@ export default function AccionesExpediente() {
                 onClick={
                   cerrarModal
                 }
-                className="
-                  w-9
-                  h-9
-                  rounded-xl
-                  bg-[var(--erp-surface-soft)]
-                  border
-                  border-[var(--erp-border)]
-                  text-[var(--erp-text-soft)]
-                "
+                className="w-9
+ h-9"
               >
                 ×
               </button>
@@ -2445,13 +1961,11 @@ export default function AccionesExpediente() {
             >
 
               <div
-                className="
-                  p-5
-                  grid
-                  grid-cols-1
-                  md:grid-cols-2
-                  gap-4
-                "
+                className="p-5
+ grid
+ grid-cols-1
+ md:grid-cols-2
+ gap-4"
               >
 
                 <CampoSelect
@@ -2506,18 +2020,15 @@ export default function AccionesExpediente() {
 
 
                 <label
-                  className="
-                    flex
-                    items-center
-                    gap-3
-                    rounded-xl
-                    border
-                    border-[var(--erp-border)]
-                    bg-[var(--erp-surface-soft)]
-                    px-4
-                    py-3
-                    cursor-pointer
-                  "
+                  className="flex
+ items-center
+ gap-3
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
                 >
 
                   <input
@@ -2536,19 +2047,13 @@ export default function AccionesExpediente() {
                   <div>
 
                     <div
-                      className="
-                        text-sm
-                        font-semibold
-                      "
+                     
                     >
                       Acción activa
                     </div>
 
                     <div
-                      className="
-                        text-xs
-                        text-[var(--erp-text-soft)]
-                      "
+                     
                     >
                       Disponible en el catálogo
                     </div>
@@ -2559,19 +2064,14 @@ export default function AccionesExpediente() {
 
 
                 <label
-                  className="
-                    md:col-span-2
-                    flex
-                    flex-col
-                    gap-1.5
-                  "
+                  className="md:col-span-2
+ flex
+ flex-col
+ gap-1.5"
                 >
 
                   <span
-                    className="
-                      text-xs
-                      font-semibold
-                    "
+                   
                   >
                     Descripción *
                   </span>
@@ -2590,22 +2090,16 @@ export default function AccionesExpediente() {
                     placeholder="
                       Ej. ABSIS GTG - ACTUALIZADO
                     "
-                    className="
-                      w-full
-                      rounded-xl
-                      border
-                      border-[var(--erp-border)]
-                      bg-white
-                      px-3
-                      py-2.5
-                      text-sm
-                      outline-none
-                      resize-y
-
-                      focus:border-[var(--erp-primary)]
-                      focus:ring-2
-                      focus:ring-[var(--erp-primary-soft)]
-                    "
+                    className="w-full
+ 
+ 
+ 
+ 
+ px-3
+ py-2.5
+ 
+ 
+ resize-y"
                   />
 
                 </label>
@@ -2614,15 +2108,13 @@ export default function AccionesExpediente() {
 
 
               <div
-                className="
-                  px-5
-                  py-4
-                  border-t
-                  border-[var(--erp-border)]
-                  flex
-                  justify-end
-                  gap-2
-                "
+                className="px-5
+ py-4
+ 
+ 
+ flex
+ justify-end
+ gap-2"
               >
 
                 <button
@@ -2630,16 +2122,8 @@ export default function AccionesExpediente() {
                   onClick={
                     cerrarModal
                   }
-                  className="
-                    px-4
-                    py-2.5
-                    rounded-xl
-                    bg-white
-                    border
-                    border-[var(--erp-border)]
-                    text-sm
-                    font-semibold
-                  "
+                  className="px-4
+ py-2.5"
                 >
                   Cancelar
                 </button>
@@ -2650,16 +2134,8 @@ export default function AccionesExpediente() {
                   disabled={
                     loading
                   }
-                  className="
-                    px-4
-                    py-2.5
-                    rounded-xl
-                    bg-[var(--erp-primary)]
-                    text-white
-                    text-sm
-                    font-semibold
-                    disabled:opacity-50
-                  "
+                  className="px-4
+ py-2.5"
                 >
                   {loading
                     ? "Guardando..."
@@ -2684,60 +2160,47 @@ export default function AccionesExpediente() {
       {mostrarImportar && (
 
         <div
-          className="
-            fixed
-            inset-0
-            z-[210]
-            flex
-            items-center
-            justify-center
-            bg-slate-950/45
-            p-4
-            backdrop-blur-sm
-          "
+          className="panel-modal-premium
+ fixed
+ inset-0
+ z-[210]
+ flex
+ items-center
+ justify-center
+ 
+ p-4"
         >
 
           <div
-            className="
-              w-full
-              max-w-xl
-              rounded-2xl
-              bg-[var(--erp-surface)]
-              border
-              border-[var(--erp-border)]
-              shadow-2xl
-            "
+            ref={importarDialogRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Importar acciones del expediente"
+            className="w-full
+ max-w-xl"
           >
 
             <div
-              className="
-                px-5
-                py-4
-                border-b
-                border-[var(--erp-border)]
-                flex
-                items-center
-                justify-between
-              "
+              className="px-5
+ py-4
+ 
+ 
+ flex
+ items-center
+ justify-between"
             >
 
               <div>
 
                 <h2
-                  className="
-                    text-lg
-                    font-semibold
-                  "
+                 
                 >
                   Importar Acciones del expediente
                 </h2>
 
                 <p
-                  className="
-                    text-xs
-                    text-[var(--erp-text-soft)]
-                    mt-1
-                  "
+                  className="mt-1"
                 >
                   Carga el catálogo desde Excel
                 </p>
@@ -2753,13 +2216,8 @@ export default function AccionesExpediente() {
                 disabled={
                   importando
                 }
-                className="
-                  w-9
-                  h-9
-                  rounded-xl
-                  border
-                  border-[var(--erp-border)]
-                "
+                className="w-9
+ h-9"
               >
                 ×
               </button>
@@ -2774,37 +2232,25 @@ export default function AccionesExpediente() {
             >
 
               <div
-                className="
-                  p-5
-                  space-y-4
-                "
+                className="p-5
+ space-y-4"
               >
 
                 <div
-                  className="
-                    rounded-2xl
-                    border-2
-                    border-dashed
-                    border-[var(--erp-border)]
-                    bg-[var(--erp-surface-soft)]
-                    p-7
-                    text-center
-                  "
+                  className="p-7"
                 >
 
                   <div
-                    className="
-                      mx-auto
-                      w-12
-                      h-12
-                      rounded-2xl
-                      bg-[var(--erp-primary)]
-                      text-white
-                      flex
-                      items-center
-                      justify-center
-                      mb-4
-                    "
+                    className="mx-auto
+ w-12
+ h-12
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center
+ mb-4"
                   >
                     <Icono
                       name="database"
@@ -2814,43 +2260,27 @@ export default function AccionesExpediente() {
 
 
                   <p
-                    className="
-                      text-sm
-                      font-semibold
-                    "
+                   
                   >
                     Selecciona el fichero Excel
                   </p>
 
 
                   <p
-                    className="
-                      text-xs
-                      text-[var(--erp-text-soft)]
-                      mt-1
-                    "
+                    className="mt-1"
                   >
                     .xlsx, .xls o .xlsm
                   </p>
 
 
                   <label
-                    className="
-                      mt-4
-                      inline-flex
-                      cursor-pointer
-                      items-center
-                      justify-center
-                      px-4
-                      py-2.5
-                      rounded-xl
-                      bg-white
-                      border
-                      border-[var(--erp-border)]
-                      text-sm
-                      font-semibold
-                      hover:bg-[var(--erp-primary-soft)]
-                    "
+                    className="mt-4
+ inline-flex
+ 
+ items-center
+ justify-center
+ px-4
+ py-2.5"
                   >
                     Elegir archivo
 
@@ -2882,33 +2312,23 @@ export default function AccionesExpediente() {
                   {archivo && (
 
                     <div
-                      className="
-                        mt-4
-                        rounded-xl
-                        border
-                        border-[var(--erp-border)]
-                        bg-white
-                        px-4
-                        py-3
-                        text-left
-                      "
+                      className="mt-4
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
                     >
 
                       <div
-                        className="
-                          text-sm
-                          font-semibold
-                        "
+                       
                       >
                         {archivo.name}
                       </div>
 
                       <div
-                        className="
-                          text-xs
-                          text-[var(--erp-text-soft)]
-                          mt-0.5
-                        "
+                        className="mt-0.5"
                       >
                         Archivo seleccionado
                       </div>
@@ -2921,22 +2341,12 @@ export default function AccionesExpediente() {
 
 
                 <div
-                  className="
-                    rounded-xl
-                    border
-                    border-[var(--erp-border)]
-                    bg-[var(--erp-surface-soft)]
-                    px-4
-                    py-3
-                    text-xs
-                    text-[var(--erp-text-soft)]
-                  "
+                  className="px-4
+ py-3"
                 >
                   Columnas esperadas:
                   <strong
-                    className="
-                      text-[var(--erp-text)]
-                    "
+                   
                   >
                     {" "}
                     Departamento, Sección,
@@ -2948,15 +2358,13 @@ export default function AccionesExpediente() {
 
 
               <div
-                className="
-                  px-5
-                  py-4
-                  border-t
-                  border-[var(--erp-border)]
-                  flex
-                  justify-end
-                  gap-2
-                "
+                className="px-5
+ py-4
+ 
+ 
+ flex
+ justify-end
+ gap-2"
               >
 
                 <button
@@ -2967,16 +2375,8 @@ export default function AccionesExpediente() {
                   disabled={
                     importando
                   }
-                  className="
-                    px-4
-                    py-2.5
-                    rounded-xl
-                    bg-white
-                    border
-                    border-[var(--erp-border)]
-                    text-sm
-                    font-semibold
-                  "
+                  className="px-4
+ py-2.5"
                 >
                   Cancelar
                 </button>
@@ -2988,16 +2388,8 @@ export default function AccionesExpediente() {
                     !archivo ||
                     importando
                   }
-                  className="
-                    px-4
-                    py-2.5
-                    rounded-xl
-                    bg-[var(--erp-primary)]
-                    text-white
-                    text-sm
-                    font-semibold
-                    disabled:opacity-50
-                  "
+                  className="px-4
+ py-2.5"
                 >
                   {importando
                     ? "Importando..."

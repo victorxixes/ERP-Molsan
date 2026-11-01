@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useNavigate } from "react-router-dom";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
-import "../../css/CtnListadoPage.css";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 const API_BASE = (import.meta.env.VITE_API_URL || "https://agenda-intranet-b.onrender.com/api").replace(/\/$/, "");
 function headers() {
@@ -81,6 +83,8 @@ export default function AccesosNotariales() {
     return notarias.filter(n => [nombre(n), n?.nif, n?.codigo, n?.municipio, n?.provincia].some(v => String(v || "").toLocaleLowerCase("es").includes(q)));
   }, [notarias, busqueda]);
 
+  const ordenResultados = useSortableData(resultados);
+
   const abrir = async (n) => {
     setError("");
     try {
@@ -93,18 +97,9 @@ export default function AccesosNotariales() {
   };
 
   return (
-    <main className="ctn-listado-page molsan-page" aria-busy={cargando}>
-      <header className="ctn-listado-header molsan-page-header">
-        <div className="ctn-listado-header-identidad molsan-page-header__identity">
-          <div className="ctn-listado-header-icon molsan-page-header__mark" aria-hidden="true">🔐</div>
-          <div className="min-w-0">
-            <p className="ctn-listado-header-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · UTILIDADES</p>
-            <h1>Accesos notariales</h1>
-            <p>Gestión centralizada y restringida de accesos a NotarGest y EncargaGest.</p>
-          </div>
-        </div>
-        <button type="button" className="ctn-btn ctn-btn-secondary molsan-btn molsan-btn--secondary" onClick={() => navigate("/herramientas/utilidades")}>Volver a Utilidades</button>
-      </header>
+    <main className="erp-page" aria-busy={cargando}>
+      <MolsanPageHeader mark="AN" title="Accesos notariales" description="Gestión centralizada y restringida de accesos a NotarGest y EncargaGest." />
+      <div className="flex justify-end"><button type="button" className="molsan-btn molsan-btn--secondary" onClick={() => navigate("/herramientas/utilidades")}>← Volver a Utilidades</button></div>
       <section className="accesos-notariales-resumen" aria-label="Resumen de accesos habilitados">
         <article className="accesos-notariales-resumen-card">
           <span aria-hidden="true">🔐</span>
@@ -115,22 +110,22 @@ export default function AccesosNotariales() {
           <div><p>Notarios habilitados en EncargaGest</p><strong>{resumen.encargagest === null ? "—" : resumen.encargagest}</strong><small>Acceso activo al portal</small></div>
         </article>
       </section>
-      <section className="ctn-filtros molsan-panel" aria-label="Buscar notaría">
+      <section className=" molsan-panel" aria-label="Buscar notaría">
         <h2>Buscar notaría</h2>
         <label className="block">Nombre, apellidos, NIF, código, municipio o provincia
           <input className="molsan-field__control mt-2 w-full" value={busqueda} onChange={e => setBusqueda(e.target.value)} placeholder="Escribe para buscar una notaría…" />
         </label>
       </section>
-      {error && <div className="ctn-modal-alerta ctn-modal-alerta--spaced" role="alert">{error}</div>}
-      <section className="ctn-modal-seccion">
-        <div className="ctn-modal-tabla-scroll">
-          <table className="ctn-modal-tabla">
-            <thead><tr><th>Notario</th><th>NIF</th><th>Municipio</th><th>Provincia</th><th>Gestión</th></tr></thead>
+      {error && <div role="alert">{error}</div>}
+      <section>
+        <div>
+          <table>
+            <thead><tr><MolsanSortableTh label="Notario" sortKey="nombre" sortConfig={ordenResultados.sortConfig} onSort={ordenResultados.requestSort} /><MolsanSortableTh label="NIF" sortKey="nif" sortConfig={ordenResultados.sortConfig} onSort={ordenResultados.requestSort} /><MolsanSortableTh label="Municipio" sortKey="municipio" sortConfig={ordenResultados.sortConfig} onSort={ordenResultados.requestSort} /><MolsanSortableTh label="Provincia" sortKey="provincia" sortConfig={ordenResultados.sortConfig} onSort={ordenResultados.requestSort} /><th>Gestión</th></tr></thead>
             <tbody>
               {cargando ? <tr><td colSpan="5">Cargando notarías…</td></tr> :
-                resultados.length ? resultados.map(n => <tr key={n.id}>
+                resultados.length ? ordenResultados.items.map(n => <tr key={n.id}>
                   <td><strong>{nombre(n) || "Notaría " + n.id}</strong></td><td>{n.nif || "—"}</td><td>{n.municipio || "—"}</td><td>{n.provincia || "—"}</td>
-                  <td><button type="button" className="ctn-btn ctn-btn-secondary ctn-btn-small" onClick={() => abrir(n)}>Gestionar accesos</button></td>
+                  <td><button type="button" onClick={() => abrir(n)}>Gestionar accesos</button></td>
                 </tr>) : <tr><td colSpan="5">No se han encontrado notarías.</td></tr>}
             </tbody>
           </table>

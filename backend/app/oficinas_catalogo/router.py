@@ -11,9 +11,11 @@ from sqlalchemy import bindparam, text
 from sqlalchemy.orm import Session
 
 from backend.app.database import engine, get_db
+from backend.app.auth.dependencies import get_current_user
 from backend.app.uploads import MAX_EXCEL_UPLOAD_BYTES, read_upload_limited
 
-router = APIRouter(prefix="/oficinas-catalogo", tags=["Catálogo de oficinas"])
+router = APIRouter(
+    dependencies=[Depends(get_current_user)],prefix="/oficinas-catalogo", tags=["Catálogo de oficinas"])
 
 COLUMNAS = [
     "Oficina", "Nombre", "Dirección", "Población", "Cod. Postal",
@@ -139,6 +141,8 @@ def listar_oficinas(
     q: str = Query(default="", max_length=200),
     limit: int = Query(default=50, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
+    sort_by: str = Query(default="oficina", regex="^(oficina|nombre|direccion|poblacion|cod_postal|cod_provincia|provincia|cod_dt|dt|cod_dg|dg|cod_dan|dan)$"),
+    sort_dir: str = Query(default="asc", regex="^(asc|desc)$"),
     db: Session = Depends(get_db),
 ):
     termino = f"%{q.strip()}%"
@@ -155,7 +159,7 @@ def listar_oficinas(
             SELECT id, {", ".join(CAMPOS)}
             FROM public.catalogo_oficinas
             {filtro}
-            ORDER BY oficina
+            ORDER BY {sort_by} {sort_dir.upper()}, oficina ASC
             LIMIT :limite OFFSET :desplazamiento
         """),
         {**parametros, "limite": limit, "desplazamiento": offset},

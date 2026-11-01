@@ -17,6 +17,9 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
+from backend.app.expedientes.reparto import validar_visibilidad_expediente_request
 from backend.app.expedientes.models import Expediente
 from backend.app.expedientes.defectos.models import (
     DefectoSubtipo,
@@ -33,6 +36,7 @@ from backend.app.tipos_carga_hipotecaria.models import TipoCargaHipotecaria
 router = APIRouter(
     prefix="/expedientes",
     tags=["Defectos de expedientes"],
+    dependencies=[Depends(get_current_user), Depends(validar_visibilidad_expediente_request)],
 )
 
 MAX_PDF_BYTES = 15 * 1024 * 1024
@@ -536,7 +540,9 @@ def datos_defecto(
 def listar_subtipos_defecto(
     incluir_inactivos: bool = False,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
+    require_perm_modulo(usuario, "expedientes", "ver")
     consulta = db.query(DefectoSubtipo)
 
     if not incluir_inactivos:
@@ -557,7 +563,9 @@ def listar_subtipos_defecto(
 def crear_subtipo_defecto(
     datos: SubtipoCrear,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
+    require_perm_modulo(usuario, "expedientes", "editar")
     nombre = datos.nombre.strip()
 
     if not nombre:
@@ -611,7 +619,9 @@ def actualizar_subtipo_defecto(
     subtipo_id: int,
     datos: SubtipoActualizar,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
+    require_perm_modulo(usuario, "expedientes", "editar")
     subtipo = (
         db.query(DefectoSubtipo)
         .filter(DefectoSubtipo.id == subtipo_id)
@@ -671,7 +681,9 @@ def actualizar_subtipo_defecto(
 def desactivar_subtipo_defecto(
     subtipo_id: int,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
+    require_perm_modulo(usuario, "expedientes", "editar")
     subtipo = (
         db.query(DefectoSubtipo)
         .filter(DefectoSubtipo.id == subtipo_id)

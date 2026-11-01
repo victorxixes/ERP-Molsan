@@ -12,6 +12,14 @@ from sqlalchemy.orm import Session
 
 from backend.app.database import Base, get_db
 from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
+
+def _permiso_utilidades(accion: str):
+    def comprobar(usuario=Depends(get_current_user)):
+        require_perm_modulo(usuario, "utilidades", accion)
+        return usuario
+    return comprobar
+
 
 router = APIRouter(prefix="/proceso-absis", tags=["Proceso ABSIS"])
 
@@ -76,6 +84,7 @@ def _consulta(db: Session, tipo: Optional[str], q: Optional[str]):
 @router.get("/actividades")
 def listar_actividades_absis(
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_utilidades("ver")),
     usuario=Depends(get_current_user),
 ):
     filas = db.query(
@@ -94,6 +103,7 @@ def listar_envios_absis(
     tipo: Optional[str] = Query(None),
     q: Optional[str] = Query(None),
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_utilidades("ver")),
     usuario=Depends(get_current_user),
 ):
     rows = _consulta(db, tipo, q).order_by(EnvioAbsis.fecha_creacion.desc(), EnvioAbsis.id.desc()).all()
@@ -104,6 +114,7 @@ def listar_envios_absis(
 def crear_envio_absis(
     datos: EnvioAbsisCrear,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_utilidades("editar")),
     usuario=Depends(get_current_user),
 ):
     row = EnvioAbsis(
@@ -126,6 +137,7 @@ def crear_envio_absis(
 def eliminar_envio_absis(
     envio_id: int,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_utilidades("editar")),
     usuario=Depends(get_current_user),
 ):
     row = db.query(EnvioAbsis).filter(EnvioAbsis.id == envio_id).first()
@@ -140,6 +152,7 @@ def eliminar_envio_absis(
 def reintentar_envio_absis(
     envio_id: int,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_utilidades("editar")),
     usuario=Depends(get_current_user),
 ):
     row = db.query(EnvioAbsis).filter(EnvioAbsis.id == envio_id).first()
@@ -159,6 +172,7 @@ def reintentar_envio_absis(
 def marcar_envio_pasado_absis(
     envio_id: int,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_utilidades("editar")),
     usuario=Depends(get_current_user),
 ):
     row = db.query(EnvioAbsis).filter(EnvioAbsis.id == envio_id).first()
@@ -175,6 +189,7 @@ def exportar_envios_absis(
     tipo: Optional[str] = Query(None),
     q: Optional[str] = Query(None),
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_utilidades("ver")),
     usuario=Depends(get_current_user),
 ):
     rows = _consulta(db, tipo, q).order_by(EnvioAbsis.fecha_creacion.desc(), EnvioAbsis.id.desc()).all()

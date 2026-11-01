@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import {
   useCallback,
   useMemo,
@@ -6,7 +7,6 @@ import {
 
 import { useSeguridad } from "../../hooks/useSeguridad";
 import MODULOS_ERP from "../../config/modulos";
-import "./SeguridadSubpaginasPremium.css";
 
 
 function arraySeguro(valor) {
@@ -35,36 +35,19 @@ const ETIQUETAS_MODULOS = {
 
 function Chip({
   children,
-  tone = "neutral",
 }) {
-
-  const estilos = {
-    neutral:
-      "border-[var(--erp-border)] bg-[var(--erp-bg)] text-[var(--erp-text-soft)]",
-
-    primary:
-      "border-blue-200 bg-blue-50 text-blue-700",
-
-    success:
-      "border-emerald-200 bg-emerald-50 text-emerald-700",
-
-    purple:
-      "border-purple-200 bg-purple-50 text-purple-700",
-  };
 
   return (
     <span
-      className={`
-        inline-flex
-        items-center
-        rounded-full
-        border
-        px-2.5
-        py-1
-        text-[11px]
-        font-semibold
-        ${estilos[tone] || estilos.neutral}
-      `}
+      className={`inline-flex
+ items-center
+ 
+ 
+ px-2.5
+ py-1
+ 
+ 
+ `}
     >
       {children}
     </span>
@@ -690,35 +673,20 @@ export default function SeguridadPermisos() {
   ) {
     return (
       <div
-        className="
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-10
-          text-center
-        "
+        className="p-10"
       >
-        <div className="text-3xl">
+        <div>
           🔑
         </div>
 
         <p
-          className="
-            mt-3
-            font-semibold
-            text-[var(--erp-text)]
-          "
+          className="mt-3"
         >
           Selecciona un empleado
         </p>
 
         <p
-          className="
-            mt-1
-            text-sm
-            text-[var(--erp-text-soft)]
-          "
+          className="mt-1"
         >
           La configuración de permisos aparecerá aquí.
         </p>
@@ -730,200 +698,88 @@ export default function SeguridadPermisos() {
 
   return (
     <div
-      className="seguridad-subpagina-premium seguridad-permisos-premium w-full space-y-4"
+      className="erp-page w-full space-y-4"
     >
 
-      {/* CABECERA */}
-
-      <div
-        className="
-          flex
-          flex-col
-          gap-4
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-5
-          shadow-sm
-          md:flex-row
-          md:items-center
-          md:justify-between
-        "
-      >
-
-        <div
-          className="
-            flex
-            items-center
-            gap-3
-          "
-        >
-
-          <div
-            className="
-              flex
-              h-11
-              w-11
-              shrink-0
-              items-center
-              justify-center
-              rounded-xl
-              bg-[var(--erp-primary-soft)]
-              text-xl
-            "
-          >
-            🔑
-          </div>
-
-          <div>
-
-            <p
-              className="
-                text-[11px]
-                font-semibold
-                uppercase
-                tracking-[0.14em]
-                text-[var(--erp-primary)]
-              "
-            >
-              Centro de seguridad
-            </p>
-
-            <h2
-              className="
-                mt-1
-                text-xl
-                font-bold
-                text-[var(--erp-text)]
-              "
-            >
-              Permisos por módulo
-            </h2>
-
-            <p
-              className="
-                mt-0.5
-                text-sm
-                text-[var(--erp-text-soft)]
-              "
-            >
-              {empleado?.nombre || "Empleado"}
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <Chip tone="primary">
-          {porcentajeAsignado}% cobertura
-        </Chip>
-
-      </div>
-
+      <MolsanPageHeader
+        mark="SE"
+        title="Permisos por módulo"
+        description={empleado?.nombre || "Empleado"}
+      />
+      <div className="flex justify-end"><Chip tone="primary">{porcentajeAsignado}% cobertura</Chip></div>
 
       {/* RESUMEN */}
 
       <div
-        className="
-          grid
-          grid-cols-1
-          gap-3
-          sm:grid-cols-2
-          xl:grid-cols-4
-        "
+        className="grid
+ grid-cols-1
+ gap-3
+ sm:grid-cols-2
+ xl:grid-cols-4"
       >
 
         <div
-          className="
-            rounded-2xl
-            border
-            border-[var(--erp-border)]
-            bg-[var(--erp-surface)]
-            p-4
-            shadow-sm
-          "
+          className="p-4"
         >
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--erp-text-soft)]">
+          <p className="uppercase">
             Módulos
           </p>
-          <p className="mt-1 text-2xl font-bold text-[var(--erp-text)]">
+          <p className="mt-1">
             {modulos.length}
           </p>
-          <p className="text-xs text-[var(--erp-text-soft)]">
+          <p>
             catálogo completo
           </p>
         </div>
 
 
         <div
-          className="
-            rounded-2xl
-            border
-            border-blue-200
-            bg-blue-50
-            p-4
-          "
+          className="p-4"
         >
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-blue-600">
+          <p className="uppercase">
             Disponibles
           </p>
-          <p className="mt-1 text-2xl font-bold text-blue-700">
+          <p className="mt-1">
             {totalPermisos}
           </p>
-          <p className="text-xs text-blue-600">
+          <p>
             permisos del catálogo
           </p>
         </div>
 
 
         <div
-          className="
-            rounded-2xl
-            border
-            border-emerald-200
-            bg-emerald-50
-            p-4
-          "
+          className="p-4"
         >
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-emerald-600">
+          <p className="uppercase">
             Asignados
           </p>
-          <p className="mt-1 text-2xl font-bold text-emerald-700">
+          <p className="mt-1">
             {permisosAsignados}
           </p>
-          <p className="text-xs text-emerald-600">
+          <p>
             permisos válidos
           </p>
         </div>
 
 
         <div
-          className="
-            rounded-2xl
-            border
-            border-purple-200
-            bg-purple-50
-            p-4
-          "
+          className="p-4"
         >
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-purple-600">
+          <p className="uppercase">
             Cobertura
           </p>
 
           <div className="mt-1 flex items-center justify-between">
-            <p className="text-2xl font-bold text-purple-700">
+            <p>
               {porcentajeAsignado}%
             </p>
           </div>
 
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-purple-100">
+          <div className="mt-2 h-1.5 overflow-hidden">
             <div
-              className="h-full rounded-full bg-purple-500 transition-all"
-              style={{
-                width: `${porcentajeAsignado}%`,
-              }}
+              className="h-full"
+              style={{ width: `${porcentajeAsignado}%` }}
             />
           </div>
 
@@ -935,22 +791,13 @@ export default function SeguridadPermisos() {
       {/* FILTROS */}
 
       <div
-        className="
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-4
-          shadow-sm
-        "
+        className="p-4"
       >
 
         <div
-          className="
-            flex
-            flex-col
-            gap-3
-          "
+          className="flex
+ flex-col
+ gap-3"
         >
 
           <input
@@ -962,26 +809,16 @@ export default function SeguridadPermisos() {
               )
             }
             placeholder="Buscar módulo o permiso..."
-            className="
-              block
-              h-11
-              w-full
-              min-w-0
-              rounded-xl
-              border
-              border-slate-300
-              bg-white
-              px-4
-              py-2.5
-              text-sm
-              text-slate-800
-              shadow-sm
-              outline-none
-              placeholder:text-slate-500
-              focus:border-[var(--erp-primary)]
-              focus:ring-2
-              focus:ring-[var(--erp-primary-soft)]
-            "
+            className="block
+ h-11
+ w-full
+ min-w-0
+ 
+ 
+ 
+ 
+ px-4
+ py-2.5"
           />
 
 
@@ -992,19 +829,17 @@ export default function SeguridadPermisos() {
                 event.target.value
               )
             }
-            className="
-              w-full
-              rounded-xl
-              border
-              border-[var(--erp-border)]
-              bg-[var(--erp-bg)]
-              px-4
-              py-2.5
-              text-sm
-              text-[var(--erp-text)]
-              outline-none
-              lg:w-64
-            "
+            className="w-full
+ 
+ 
+ 
+ 
+ px-4
+ py-2.5
+ 
+ 
+ 
+ lg:w-64"
           >
 
             <option value="todos">
@@ -1036,18 +871,8 @@ export default function SeguridadPermisos() {
                   "todos"
                 );
               }}
-              className="
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-bg)]
-                px-4
-                py-2.5
-                text-sm
-                font-semibold
-                text-[var(--erp-text-soft)]
-                hover:text-[var(--erp-primary)]
-              "
+              className="px-4
+ py-2.5"
             >
               Limpiar
             </button>
@@ -1061,34 +886,19 @@ export default function SeguridadPermisos() {
       {/* CONFIGURACIÓN */}
 
       <div
-        className="
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-4
-          shadow-sm
-        "
+        className="p-4"
       >
 
         <div className="mb-3">
 
           <h3
-            className="
-              text-base
-              font-semibold
-              text-[var(--erp-text)]
-            "
+           
           >
             Configuración de permisos
           </h3>
 
           <p
-            className="
-              mt-0.5
-              text-xs
-              text-[var(--erp-text-soft)]
-            "
+            className="mt-0.5"
           >
             Abre únicamente el módulo que quieras editar.
           </p>
@@ -1099,16 +909,7 @@ export default function SeguridadPermisos() {
         {modulosFiltrados.length ===
           0 ? (
           <div
-            className="
-              rounded-xl
-              border
-              border-dashed
-              border-[var(--erp-border)]
-              p-8
-              text-center
-              text-sm
-              text-[var(--erp-text-soft)]
-            "
+            className="p-8"
           >
             No se han encontrado módulos o permisos.
           </div>
@@ -1155,24 +956,16 @@ export default function SeguridadPermisos() {
                 return (
                   <div
                     key={modulo}
-                    className="
-                      overflow-hidden
-                      rounded-xl
-                      border
-                      border-[var(--erp-border)]
-                      bg-[var(--erp-bg)]
-                    "
+                    className="overflow-hidden"
                   >
 
                     <div
-                      className="
-                        flex
-                        items-center
-                        justify-between
-                        gap-3
-                        px-4
-                        py-3
-                      "
+                      className="flex
+ items-center
+ justify-between
+ gap-3
+ px-4
+ py-3"
                     >
 
                       <button
@@ -1182,33 +975,28 @@ export default function SeguridadPermisos() {
                             modulo
                           )
                         }
-                        className="
-                          flex
-                          min-w-0
-                          flex-1
-                          items-center
-                          gap-3
-                          text-left
-                        "
+                        className="flex
+ min-w-0
+ flex-1
+ items-center
+ gap-3"
                       >
 
                         <span
-                          className={`
-                            flex
-                            h-9
-                            w-9
-                            shrink-0
-                            items-center
-                            justify-center
-                            rounded-lg
-                            text-sm
-                            font-bold
-                            ${
-                              completo
-                                ? "bg-emerald-100 text-emerald-700"
-                                : "bg-[var(--erp-primary-soft)] text-[var(--erp-primary)]"
-                            }
-                          `}
+                          className={`flex
+ h-9
+ w-9
+ shrink-0
+ items-center
+ justify-center
+ 
+ 
+ 
+ ${
+ completo
+ ? ""
+ : ""
+ }`}
                         >
                           {completo
                             ? "✓"
@@ -1219,23 +1007,14 @@ export default function SeguridadPermisos() {
                         <span className="min-w-0">
 
                           <span
-                            className="
-                              block
-                              truncate
-                              text-sm
-                              font-semibold
-                              text-[var(--erp-text)]
-                            "
+                            className="block
+ truncate"
                           >
                             {ETIQUETAS_MODULOS[modulo] || modulo}
                           </span>
 
                           <span
-                            className="
-                              block
-                              text-xs
-                              text-[var(--erp-text-soft)]
-                            "
+                            className="block"
                           >
                             {activos} de{" "}
                             {disponibles.length}{" "}
@@ -1248,12 +1027,10 @@ export default function SeguridadPermisos() {
 
 
                       <div
-                        className="
-                          flex
-                          shrink-0
-                          items-center
-                          gap-2
-                        "
+                        className="flex
+ shrink-0
+ items-center
+ gap-2"
                       >
 
                         {completo && (
@@ -1275,21 +1052,19 @@ export default function SeguridadPermisos() {
                                 modulo
                               )
                             }
-                            className="
-                              hidden
-                              rounded-lg
-                              border
-                              border-[var(--erp-border)]
-                              bg-[var(--erp-surface)]
-                              px-2.5
-                              py-1.5
-                              text-[11px]
-                              font-semibold
-                              text-[var(--erp-text-soft)]
-                              hover:text-[var(--erp-primary)]
-                              disabled:opacity-40
-                              sm:inline-flex
-                            "
+                            className="hidden
+ 
+ 
+ 
+ 
+ px-2.5
+ py-1.5
+ 
+ 
+ 
+ 
+ 
+ sm:inline-flex"
                           >
                             {completo
                               ? "Desactivar todos"
@@ -1299,10 +1074,7 @@ export default function SeguridadPermisos() {
 
 
                         <span
-                          className="
-                            text-xs
-                            text-[var(--erp-text-soft)]
-                          "
+                         
                         >
                           {abierto
                             ? "▲"
@@ -1316,38 +1088,23 @@ export default function SeguridadPermisos() {
 
                     {abierto && (
                       <div
-                        className="
-                          border-t
-                          border-[var(--erp-border)]
-                          p-3
-                        "
+                        className="p-3"
                       >
 
                         {disponibles.length ===
                         0 ? (
                           <div
-                            className="
-                              rounded-lg
-                              border
-                              border-dashed
-                              border-[var(--erp-border)]
-                              p-4
-                              text-center
-                              text-xs
-                              text-[var(--erp-text-soft)]
-                            "
+                            className="p-4"
                           >
                             Este módulo no tiene permisos definidos en el catálogo global.
                           </div>
                         ) : (
                           <div
-                            className="
-                              grid
-                              grid-cols-1
-                              gap-2
-                              sm:grid-cols-2
-                              lg:grid-cols-4
-                            "
+                            className="grid
+ grid-cols-1
+ gap-2
+ sm:grid-cols-2
+ lg:grid-cols-4"
                           >
 
                             {disponibles.map(
@@ -1362,22 +1119,20 @@ export default function SeguridadPermisos() {
                                 return (
                                   <label
                                     key={`${modulo}-${permiso}`}
-                                    className={`
-                                      flex
-                                      cursor-pointer
-                                      items-center
-                                      gap-3
-                                      rounded-lg
-                                      border
-                                      px-3
-                                      py-2.5
-                                      transition
-                                      ${
-                                        activo
-                                          ? "border-emerald-200 bg-emerald-50"
-                                          : "border-[var(--erp-border)] bg-[var(--erp-surface)] hover:bg-[var(--erp-bg)]"
-                                      }
-                                    `}
+                                    className={`flex
+ 
+ items-center
+ gap-3
+ 
+ 
+ px-3
+ py-2.5
+ 
+ ${
+ activo
+ ? ""
+ : ""
+ }`}
                                   >
 
                                     <input
@@ -1394,25 +1149,19 @@ export default function SeguridadPermisos() {
                                           permiso
                                         )
                                       }
-                                      className="
-                                        h-4
-                                        w-4
-                                        cursor-pointer
-                                        accent-emerald-500
-                                      "
+                                      className="h-4
+ w-4"
                                     />
 
                                     <span
-                                      className={`
-                                        truncate
-                                        text-sm
-                                        font-medium
-                                        ${
-                                          activo
-                                            ? "text-emerald-700"
-                                            : "text-[var(--erp-text)]"
-                                        }
-                                      `}
+                                      className={`truncate
+ 
+ 
+ ${
+ activo
+ ? ""
+ : ""
+ }`}
                                     >
                                       {permiso}
                                     </span>

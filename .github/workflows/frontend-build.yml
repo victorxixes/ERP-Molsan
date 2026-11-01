@@ -1,0 +1,36 @@
+name: Molsan frontend build
+
+on:
+  push:
+    branches:
+      - molsan-premium-2027-glass-luxe
+    paths:
+      - "frontend-app/**"
+      - ".github/workflows/frontend-build.yml"
+
+jobs:
+  build:
+    name: Build completo del frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend-app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Instalar dependencias
+        run: npm install --include=optional --no-audit --no-fund
+      - name: Compilar aplicación completa
+        run: npm run build
+
+      - name: Publicar artefacto de previsualización
+        uses: actions/upload-artifact@v4
+        with:
+          name: molsan-premium-frontend-dist
+          path: frontend-app/dist/
+          if-no-files-found: error
+          retention-days: 2

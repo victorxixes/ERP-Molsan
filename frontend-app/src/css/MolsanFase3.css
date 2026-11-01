@@ -1,0 +1,87 @@
+/* ============================================================
+   MOLSAN ERP PREMIUM 2027 · FASE 3
+   Normalización transversal de páginas, controles, tablas y modales.
+   Se excluye expresamente el Sidebar y no altera la lógica funcional.
+   ============================================================ */
+
+/* Base tipográfica y geometría de cualquier ruta operativa del ERP. */
+.erp-route-content,
+.erp-route-content :where(button, input, select, textarea, table) {
+  font-family: var(--molsan-font-family, Inter, "Segoe UI", Arial, sans-serif);
+}
+
+.erp-route-content {
+  min-width: 0;
+  color: var(--molsan-text, #18364b);
+}
+
+.erp-route-content :where(h1, h2, h3, h4) {
+  color: var(--molsan-blue, #064675);
+  text-wrap: pretty;
+}
+
+.erp-route-content :where(p, small, .text-muted) {
+  overflow-wrap: anywhere;
+}
+
+/* Estructura mínima de formularios. Los estilos de campos, foco y etiquetas
+   pertenecen a NeutralizarPresentacion.css, que es la fuente común. */
+.erp-route-content :where(label) {
+  min-width: 0;
+}
+
+.erp-route-content :where(form) {
+  min-width: 0;
+}
+
+.erp-route-content :where(form > div, .form-grid, .grid) {
+  min-width: 0;
+}
+
+/* Contenedores de tabla largos: desplazamiento horizontal sin romper la página. */
+.erp-route-content :where(.overflow-x-auto, .table-responsive, .tabla-responsive) {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+
+/* La geometría y los estados comunes de botones se definen en
+   NeutralizarPresentacion.css; aquí no se replica esa capa. */
+
+/* Paneles y secciones: evitar desbordamientos en todas las páginas. */
+.erp-route-content :where(section, article, aside, header, footer) {
+  min-width: 0;
+}
+
+.erp-route-content :where(img, video, iframe, canvas, svg) {
+  max-width: 100%;
+}
+
+.erp-route-content :where(pre, code) {
+  overflow-wrap: anywhere;
+}
+
+/* Adaptación móvil transversal, sin alterar la distribución funcional de cada módulo. */
+@media (max-width: 720px) {
+  .erp-route-content {
+    overflow-wrap: anywhere;
+  }
+
+  .erp-route-content :where(.molsan-page-header, .molsan-subpage-header, .erp-page-header) {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .erp-route-content *,
+  .molsan-modal__panel *,
+  .expediente-operativo-modal-panel *,
+  .ctn-modal-dialog * {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

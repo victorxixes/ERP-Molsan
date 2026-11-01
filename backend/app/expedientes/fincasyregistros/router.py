@@ -7,6 +7,8 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db, engine
+from backend.app.auth.dependencies import get_current_user
+from backend.app.expedientes.reparto import validar_visibilidad_expediente_request
 from backend.app.expedientes.models import Expediente
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 from backend.app.registros_propiedad.models import RegistroPropiedad
@@ -15,6 +17,7 @@ from backend.app.registros_propiedad.models import RegistroPropiedad
 router = APIRouter(
     prefix="/expedientes/{id_expediente}/fincas",
     tags=["Expedientes - Fincas y registros"],
+    dependencies=[Depends(get_current_user), Depends(validar_visibilidad_expediente_request)],
 )
 
 

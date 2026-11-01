@@ -1,0 +1,6420 @@
+/* MOLSAN ERP PREMIUM 2027
+ * Fuente única de tokens y geometría compartida.
+ * Los módulos no deben crear paletas ni estilos de presentación independientes.
+ * Sidebar excluido: mantiene SidebarBase.css y sus estilos propios.
+ */
+
+:root {
+  /* Identidad corporativa */
+  --molsan-blue: #064675;
+  --molsan-blue-hover: #04385d;
+  --molsan-blue-active: #032f4f;
+  --molsan-blue-soft: #f2f7fb;
+  --molsan-panel: #f2f7fb;
+  --molsan-table-head: #eaf2f8;
+  --molsan-white: #ffffff;
+  --molsan-text: #18364b;
+  --molsan-muted: #617789;
+  --molsan-border: #d8e4ec;
+
+  /* Estados funcionales: nunca como identidad cromática de módulos */
+  --molsan-success: #23734d;
+  --molsan-success-soft: #edf7f1;
+  --molsan-warning: #94651b;
+  --molsan-warning-soft: #fbf5e9;
+  --molsan-danger: #a33b42;
+  --molsan-danger-hover: #8f3038;
+  --molsan-danger-soft: #fbefef;
+
+  /* Glass Luxe discreto: transparencia y profundidad sin competir con el contenido. */
+  --molsan-glass-surface: rgba(255, 255, 255, 0.88);
+  --molsan-glass-soft: rgba(242, 247, 251, 0.72);
+  --molsan-glass-border: rgba(216, 228, 236, 0.92);
+  --molsan-glass-highlight: rgba(255, 255, 255, 0.78);
+  --molsan-glass-shadow: 0 8px 24px rgba(6, 70, 117, 0.055);
+  --molsan-glass-shadow-hover: 0 11px 28px rgba(6, 70, 117, 0.085);
+  --molsan-info: var(--molsan-blue);
+  --molsan-info-soft: var(--molsan-blue-soft);
+
+  /* Tipografía */
+  --molsan-font-family: Inter, "Segoe UI", Arial, sans-serif;
+  --molsan-font-size-xs: 0.75rem;
+  --molsan-font-size-sm: 0.8125rem;
+  --molsan-font-size-md: 0.875rem;
+  --molsan-font-size-base: 1rem;
+  --molsan-font-size-lg: 1.125rem;
+  --molsan-font-size-xl: 1.25rem;
+  --molsan-font-size-2xl: 1.5rem;
+  --molsan-line-height-tight: 1.2;
+  --molsan-line-height: 1.45;
+  --molsan-line-height-relaxed: 1.6;
+  --molsan-font-weight-normal: 400;
+  --molsan-font-weight-medium: 500;
+  --molsan-font-weight-semibold: 600;
+  --molsan-font-weight-bold: 700;
+  --molsan-letter-spacing-tight: -0.025em;
+  --molsan-letter-spacing-normal: 0;
+  --molsan-letter-spacing-wide: 0.02em;
+
+  /* Espaciado: escala base de 4 px */
+  --molsan-space-1: 0.25rem;
+  --molsan-space-2: 0.5rem;
+  --molsan-space-3: 0.75rem;
+  --molsan-space-4: 1rem;
+  --molsan-space-5: 1.25rem;
+  --molsan-space-6: 1.5rem;
+  --molsan-space-8: 2rem;
+  --molsan-space-10: 2.5rem;
+  --molsan-space-12: 3rem;
+  --molsan-space-16: 4rem;
+  --molsan-space-20: 5rem;
+
+  /* Ritmo de composición: el Layout controla el gutter exterior */
+  --molsan-content-gutter: clamp(16px, 2vw, 28px);
+  --molsan-section-gap: 24px;
+  --molsan-card-padding: 20px;
+  --molsan-card-padding-compact: 16px;
+  --molsan-form-field-gap: 16px;
+  --molsan-table-cell-padding-x: 14px;
+  --molsan-table-cell-padding-y: 10px;
+
+  /* Dimensiones y densidad */
+  --molsan-row-height: 44px;
+  --molsan-row-height-compact: 38px;
+  --molsan-row-height-comfortable: 48px;
+  --molsan-control-height-sm: 32px;
+  --molsan-control-height: 38px;
+  --molsan-control-height-lg: 42px;
+  --molsan-page-header-height: 62px;
+  --molsan-page-header-gap: 18px;
+  --molsan-page-header-mark-size: 34px;
+
+  /* Formas y elevación */
+  --molsan-radius-xs: 4px;
+  --molsan-radius-sm: 6px;
+  --molsan-radius-control: 9px;
+  --molsan-radius-card: 12px;
+  --molsan-radius-modal: 16px;
+  --molsan-shadow-card: 0 2px 8px rgba(6, 70, 117, 0.04);
+  --molsan-shadow-popover: 0 8px 24px rgba(6, 70, 117, 0.12);
+  --molsan-shadow-modal: 0 18px 48px rgba(6, 40, 65, 0.18);
+  --molsan-shadow-none: none;
+
+  /* Interacción y estados de superficie */
+  --molsan-hover-overlay: rgba(6, 70, 117, 0.035);
+  --molsan-pressed-overlay: rgba(6, 70, 117, 0.07);
+  --molsan-selected-overlay: rgba(6, 70, 117, 0.06);
+  --molsan-focus-ring: 0 0 0 3px rgba(6, 70, 117, 0.14);
+  --molsan-transition-fast: 120ms ease;
+  --molsan-transition-normal: 180ms ease;
+  --molsan-transition-slow: 240ms ease;
+  --molsan-z-sticky: 20;
+  --molsan-z-dropdown: 40;
+  --molsan-z-overlay: 80;
+  --molsan-z-modal: 100;
+}
+
+html {
+  min-height: 100%;
+  color-scheme: light;
+  background: var(--molsan-white);
+  scroll-behavior: smooth;
+}
+
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--molsan-white);
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+  font-size: var(--molsan-font-size-md);
+  font-weight: var(--molsan-font-weight-normal);
+  line-height: var(--molsan-line-height);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  color: var(--molsan-blue);
+  background: rgba(6, 70, 117, 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+.erp-app-shell,
+.erp-main-content,
+.erp-main-inner {
+  min-width: 0;
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+}
+
+/* Cabecera corporativa única: solo cambian marca, título y descripción. */
+.molsan-page-header,
+.molsan-subpage-header,
+.erp-page-header {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--molsan-page-header-height);
+  margin: 0 0 18px;
+  padding: 0 0 10px;
+  color: var(--molsan-blue);
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid var(--molsan-table-head);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.molsan-page-header__identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.molsan-page-header__mark {
+  display: grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  color: var(--molsan-white);
+  background: var(--molsan-blue);
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.molsan-page-header__content {
+  min-width: 0;
+}
+
+.molsan-page-header__title,
+.molsan-page-header h1,
+.molsan-subpage-header h1,
+.molsan-subpage-header h2,
+.erp-page-header h1,
+.erp-page-header h2 {
+  margin: 0;
+  color: var(--molsan-blue);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.molsan-page-header__description,
+.molsan-subpage-header p,
+.erp-page-header p {
+  margin: 3px 0 0;
+  color: var(--molsan-muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+/* El Layout es el único propietario del margen exterior del área de trabajo. */
+.erp-route-content > .erp-page {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.erp-route-content > .erp-page > .molsan-page-header,
+.erp-route-content > .erp-page > .molsan-subpage-header,
+.erp-route-content > .erp-page > .erp-page-header,
+.erp-route-content > .erp-page > header:first-of-type {
+  margin-bottom: 18px;
+}
+
+/* Compatibilidad geométrica con rutas antiguas pendientes de migración. */
+.erp-route-content .mensajes-premium-page,
+.erp-route-content > main.mx-auto {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.erp-route-content .mensajes-premium-page {
+  min-height: 0;
+}
+
+@media (max-width: 720px) {
+  .molsan-page-header,
+  .molsan-subpage-header,
+  .erp-page-header {
+    min-height: 56px;
+    align-items: flex-start;
+  }
+}
+
+/* ==========================================================
+   FASE 2 — LENGUAJE VISUAL COMPARTIDO
+   Patrones comunes para tarjetas, paneles, formularios y tablas.
+   No modifica el Sidebar ni la lógica de los módulos.
+========================================================== */
+
+.erp-card,
+.molsan-panel,
+.molsan-table-wrap {
+  box-sizing: border-box;
+  min-width: 0;
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.erp-card {
+  transition: border-color var(--molsan-transition-normal),
+              box-shadow var(--molsan-transition-normal);
+}
+
+.erp-card:hover {
+  border-color: rgba(6, 70, 117, 0.18);
+  box-shadow: 0 3px 12px rgba(6, 70, 117, 0.06);
+}
+
+.molsan-panel {
+  padding: var(--molsan-card-padding);
+  background: var(--molsan-panel);
+  box-shadow: none;
+}
+
+.molsan-panel > h2,
+.molsan-table-wrap h2,
+.erp-page section > div > h2,
+.erp-page section > h2 {
+  margin: 0;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-lg);
+  font-weight: var(--molsan-font-weight-semibold);
+  line-height: var(--molsan-line-height-tight);
+}
+
+.molsan-panel > h2 {
+  margin-bottom: var(--molsan-space-4);
+}
+
+.erp-page section > div > h2 + p,
+.erp-page section > h2 + p,
+.molsan-table-wrap h2 + p {
+  margin-top: 5px;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-sm);
+}
+
+/* Tarjetas KPI del Dashboard */
+.dashboard-kpi {
+  min-height: 126px;
+  padding: 18px;
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.dashboard-kpi > div > div:first-child > div:first-child {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+  letter-spacing: var(--molsan-letter-spacing-wide);
+}
+
+.dashboard-kpi__value {
+  margin-top: 7px;
+  color: var(--molsan-blue);
+  font-size: 28px;
+  font-weight: var(--molsan-font-weight-bold);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.dashboard-kpi > div > div:first-child > div:last-child {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.dashboard-kpi__icon {
+  color: var(--molsan-blue);
+  background: var(--molsan-blue-soft);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+  font-size: 19px;
+}
+
+.dashboard-main-grid > section > .erp-card {
+  padding: 0;
+}
+
+.dashboard-main-grid > section > .erp-card > div + div {
+  border-top: 1px solid var(--molsan-border);
+}
+
+.dashboard-main-grid > section > .erp-card > div {
+  min-height: 66px;
+}
+
+.dashboard-main-grid > section > .erp-card > div > div:first-child {
+  color: var(--molsan-blue);
+  background: var(--molsan-blue-soft);
+  border-radius: 9px;
+}
+
+.dashboard-main-grid > section > .erp-card > div > div:nth-child(2) > div:first-child {
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.dashboard-main-grid > section > .erp-card > div > div:nth-child(2) > div:last-child {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.dashboard-activity-inline {
+  display: flex;
+  min-width: 112px;
+  align-items: center;
+  gap: 8px;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.dashboard-activity-track,
+.dashboard-signatures-wrap .erp-card > div.mt-4 {
+  background: var(--molsan-panel);
+  border-radius: 999px;
+}
+
+.dashboard-activity-bar,
+.dashboard-signatures-wrap .erp-card > div.mt-4 > div {
+  background: var(--molsan-blue);
+  border-radius: 999px;
+}
+
+.dashboard-signatures-wrap .erp-card {
+  padding: 18px;
+}
+
+.dashboard-signatures-wrap .erp-card > div > div:first-child {
+  color: var(--molsan-blue);
+  background: var(--molsan-blue-soft);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.dashboard-signatures-wrap .erp-card > div > div:nth-child(2) > div:first-child {
+  color: var(--molsan-text);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.dashboard-signatures-wrap .erp-card > div > div:nth-child(2) > div:last-child,
+.dashboard-signatures-wrap .erp-card > div > div:last-child > div:last-child {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+/* Filtros y campos: superficies agrupadas y controles blancos */
+.molsan-panel form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--molsan-form-field-gap);
+}
+
+.molsan-panel form > div:first-child {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--molsan-form-field-gap);
+}
+
+.molsan-panel form label {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-medium);
+}
+
+.molsan-field__control,
+.molsan-panel input,
+.molsan-panel select,
+.molsan-panel textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--molsan-control-height);
+  padding: 8px 11px;
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font: inherit;
+  font-size: var(--molsan-font-size-sm);
+  transition: border-color var(--molsan-transition-fast),
+              box-shadow var(--molsan-transition-fast);
+}
+
+.molsan-field__control:focus,
+.molsan-panel input:focus,
+.molsan-panel select:focus,
+.molsan-panel textarea:focus {
+  outline: none;
+  border-color: var(--molsan-blue);
+  box-shadow: var(--molsan-focus-ring);
+}
+
+.molsan-panel form > div:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Botones corporativos compartidos */
+.molsan-btn {
+  display: inline-flex;
+  min-height: var(--molsan-control-height);
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 7px 13px;
+  color: var(--molsan-blue);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font: inherit;
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-semibold);
+  cursor: pointer;
+  transition: background var(--molsan-transition-fast),
+              border-color var(--molsan-transition-fast),
+              color var(--molsan-transition-fast),
+              box-shadow var(--molsan-transition-fast);
+}
+
+.molsan-btn:hover:not(:disabled) {
+  background: var(--molsan-blue-soft);
+  border-color: var(--molsan-border);
+}
+
+.molsan-btn--primary {
+  color: var(--molsan-white);
+  background: var(--molsan-blue);
+  border-color: var(--molsan-blue);
+}
+
+.molsan-btn--primary:hover:not(:disabled) {
+  color: var(--molsan-white);
+  background: var(--molsan-blue-hover);
+  border-color: var(--molsan-blue-hover);
+}
+
+.molsan-btn--secondary {
+  color: var(--molsan-blue);
+  background: var(--molsan-white);
+}
+
+.molsan-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--molsan-focus-ring);
+}
+
+.molsan-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.molsan-btn--compact {
+  min-height: 30px;
+  padding: 5px 10px;
+  font-size: var(--molsan-font-size-xs);
+}
+
+/* Resumen y tabla CTN */
+.erp-page > section[aria-label="Resumen del listado"] {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.erp-page > section[aria-label="Resumen del listado"] > div {
+  display: flex;
+  min-width: 0;
+  min-height: 76px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 14px 16px;
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.erp-page > section[aria-label="Resumen del listado"] > div > span {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.erp-page > section[aria-label="Resumen del listado"] > div > strong {
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-xl);
+  font-weight: var(--molsan-font-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.molsan-table-wrap {
+  overflow: hidden;
+}
+
+.molsan-table-wrap > div:first-child {
+  display: flex;
+  min-height: 66px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.molsan-table-wrap > div:nth-child(2) {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.molsan-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+}
+
+.molsan-table thead th {
+  padding: 11px 12px;
+  color: var(--molsan-blue);
+  background: var(--molsan-table-head);
+  border-bottom: 1px solid var(--molsan-border);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.molsan-table thead th button {
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.molsan-table tbody td {
+  height: var(--molsan-row-height);
+  padding: 8px 12px;
+  background: var(--molsan-white);
+  border-bottom: 1px solid rgba(6, 70, 117, 0.08);
+  vertical-align: middle;
+}
+
+.molsan-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.molsan-table tbody tr:hover td {
+  background: rgba(6, 70, 117, 0.025);
+}
+
+.molsan-table-wrap > footer {
+  display: flex;
+  min-height: 56px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 16px;
+  color: var(--molsan-muted);
+  background: var(--molsan-white);
+  border-top: 1px solid var(--molsan-border);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.molsan-table-wrap > footer > div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.molsan-table-wrap > footer button,
+.molsan-panel form button:not(.molsan-btn) {
+  min-height: 30px;
+  padding: 5px 9px;
+  color: var(--molsan-blue);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font: inherit;
+  font-size: var(--molsan-font-size-xs);
+  cursor: pointer;
+}
+
+.molsan-table-wrap > footer button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  .molsan-panel form > div:first-child {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .erp-page > section[aria-label="Resumen del listado"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .molsan-panel {
+    padding: var(--molsan-card-padding-compact);
+  }
+
+  .molsan-panel form > div:first-child,
+  .erp-page > section[aria-label="Resumen del listado"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .molsan-table-wrap > footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* ==========================================================
+   FASE 2 — GLASS LUXE DISCRETO
+   Los tokens Glass Luxe viven en el :root único, junto a la paleta.
+   Aplicación visual limitada a las superficies autorizadas.
+========================================================== */
+
+/* Dashboard: KPI, tarjetas de actividad y bloques de firmas */
+.dashboard-cancelagest .dashboard-kpi,
+.dashboard-cancelagest .dashboard-main-grid > section > .erp-card,
+.dashboard-cancelagest .dashboard-main-grid .erp-card,
+.dashboard-cancelagest .dashboard-signatures-wrap .erp-card {
+  background: linear-gradient(
+    145deg,
+    var(--molsan-glass-surface) 0%,
+    var(--molsan-glass-soft) 100%
+  );
+  border-color: var(--molsan-glass-border);
+  box-shadow:
+    inset 0 1px 0 var(--molsan-glass-highlight),
+    var(--molsan-glass-shadow);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.dashboard-cancelagest .dashboard-kpi {
+  transition:
+    transform var(--molsan-transition-normal),
+    border-color var(--molsan-transition-normal),
+    box-shadow var(--molsan-transition-normal);
+}
+
+.dashboard-cancelagest .dashboard-kpi:hover,
+.dashboard-cancelagest .dashboard-main-grid .erp-card:hover,
+.dashboard-cancelagest .dashboard-signatures-wrap .erp-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(6, 70, 117, 0.20);
+  box-shadow:
+    inset 0 1px 0 var(--molsan-glass-highlight),
+    var(--molsan-glass-shadow-hover);
+}
+
+.dashboard-cancelagest .dashboard-kpi__icon,
+.dashboard-cancelagest .dashboard-signatures-wrap .erp-card > div > div:first-child {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.94),
+    rgba(234, 242, 248, 0.88)
+  );
+  box-shadow: inset 0 1px 0 var(--molsan-glass-highlight);
+}
+
+.dashboard-cancelagest .dashboard-activity-track,
+.dashboard-cancelagest .dashboard-signatures-wrap .erp-card > div.mt-4 {
+  background: rgba(216, 228, 236, 0.62);
+}
+
+/* CTN: panel de filtros, resumen y contenedor de tabla.
+   La tabla conserva fondo sólido para priorizar lectura y contraste. */
+.ctn-listado-page > .molsan-panel,
+.ctn-listado-page > section[aria-label="Resumen del listado"] > div,
+.ctn-listado-page > .molsan-table-wrap {
+  background: linear-gradient(
+    145deg,
+    var(--molsan-glass-surface) 0%,
+    var(--molsan-glass-soft) 100%
+  );
+  border-color: var(--molsan-glass-border);
+  box-shadow:
+    inset 0 1px 0 var(--molsan-glass-highlight),
+    var(--molsan-glass-shadow);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.ctn-listado-page > .molsan-panel {
+  background-color: var(--molsan-panel);
+}
+
+.ctn-listado-page > section[aria-label="Resumen del listado"] > div {
+  transition:
+    transform var(--molsan-transition-normal),
+    border-color var(--molsan-transition-normal),
+    box-shadow var(--molsan-transition-normal);
+}
+
+.ctn-listado-page > section[aria-label="Resumen del listado"] > div:hover {
+  transform: translateY(-1px);
+  border-color: rgba(6, 70, 117, 0.20);
+  box-shadow:
+    inset 0 1px 0 var(--molsan-glass-highlight),
+    var(--molsan-glass-shadow-hover);
+}
+
+.ctn-listado-page > .molsan-table-wrap {
+  overflow: hidden;
+}
+
+.ctn-listado-page .molsan-table thead th {
+  background: rgba(234, 242, 248, 0.96);
+}
+
+.ctn-listado-page .molsan-table tbody td {
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.ctn-listado-page .molsan-table tbody tr:hover td {
+  background: rgba(242, 247, 251, 0.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-cancelagest .dashboard-kpi,
+  .dashboard-cancelagest .dashboard-main-grid .erp-card,
+  .dashboard-cancelagest .dashboard-signatures-wrap .erp-card,
+  .ctn-listado-page > section[aria-label="Resumen del listado"] > div {
+    transition: none;
+  }
+
+  .dashboard-cancelagest .dashboard-kpi:hover,
+  .dashboard-cancelagest .dashboard-main-grid .erp-card:hover,
+  .dashboard-cancelagest .dashboard-signatures-wrap .erp-card:hover,
+  .ctn-listado-page > section[aria-label="Resumen del listado"] > div:hover {
+    transform: none;
+  }
+}
+
+
+/* ==========================================================
+   FASE 2 — GLASS LUXE DISCRETO · PILOTO EXPEDIENTES
+   Se limita al contenedor principal del listado y su tabla.
+   Los datos de las celdas mantienen fondo sólido y legible.
+========================================================== */
+.expedientes-page main > section.erp-card {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.98) 0%,
+      rgba(242, 247, 251, 0.88) 100%
+    );
+  border: 1px solid var(--molsan-glass-border);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    0 8px 24px rgba(6, 70, 117, 0.075);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transition:
+    border-color var(--molsan-transition-normal),
+    box-shadow var(--molsan-transition-normal);
+}
+
+.expedientes-page main > section.erp-card:hover {
+  border-color: rgba(6, 70, 117, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.98),
+    0 10px 28px rgba(6, 70, 117, 0.09);
+}
+
+.expedientes-page .molsan-table-wrap {
+  overflow: auto;
+  border-color: var(--molsan-glass-border);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: inset 0 1px 0 var(--molsan-glass-highlight);
+}
+
+.expedientes-page .molsan-table thead th {
+  background: rgba(234, 242, 248, 0.97);
+}
+
+.expedientes-page .molsan-table tbody td {
+  background: rgba(255, 255, 255, 0.97);
+}
+
+.expedientes-page .molsan-table tbody tr:hover td {
+  background: rgba(242, 247, 251, 0.98);
+}
+
+
+/* ==========================================================
+   FASE 2 — GLASS LUXE DISCRETO · TARJETAS INDIVIDUALES EXPEDIENTES
+   Los botones de circuito, estado y actividad son tarjetas
+   interactivas: se les da superficie, jerarquía y estados visibles.
+========================================================== */
+.expedientes-page section[aria-label="SLA global por circuito"] button,
+.expedientes-page section[aria-label="Estados diferenciales del expediente"] button,
+.expedientes-page section[aria-label="Expedientes por actividad"] button {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  color: var(--molsan-text);
+  text-align: left;
+  font: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(242, 247, 251, 0.88) 100%
+  );
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow:
+    inset 0 1px 0 var(--molsan-glass-highlight),
+    var(--molsan-glass-shadow);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition:
+    transform var(--molsan-transition-normal),
+    border-color var(--molsan-transition-normal),
+    box-shadow var(--molsan-transition-normal),
+    background var(--molsan-transition-normal);
+}
+
+.expedientes-page section[aria-label="SLA global por circuito"] button:hover,
+.expedientes-page section[aria-label="Estados diferenciales del expediente"] button:hover,
+.expedientes-page section[aria-label="Expedientes por actividad"] button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(6, 70, 117, 0.24);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    var(--molsan-glass-shadow-hover);
+}
+
+.expedientes-page section[aria-label="SLA global por circuito"] button[aria-pressed="true"],
+.expedientes-page section[aria-label="Estados diferenciales del expediente"] button[aria-pressed="true"],
+.expedientes-page section[aria-label="Expedientes por actividad"] button[aria-pressed="true"] {
+  background: linear-gradient(
+    145deg,
+    rgba(234, 242, 248, 0.98) 0%,
+    rgba(242, 247, 251, 0.94) 100%
+  );
+  border-color: rgba(6, 70, 117, 0.42);
+  box-shadow:
+    inset 0 0 0 1px rgba(6, 70, 117, 0.08),
+    0 0 0 3px rgba(6, 70, 117, 0.07),
+    var(--molsan-glass-shadow);
+}
+
+.expedientes-page section[aria-label="SLA global por circuito"] button:focus-visible,
+.expedientes-page section[aria-label="Estados diferenciales del expediente"] button:focus-visible,
+.expedientes-page section[aria-label="Expedientes por actividad"] button:focus-visible {
+  outline: none;
+  box-shadow: var(--molsan-focus-ring), var(--molsan-glass-shadow);
+}
+
+.expedientes-page section[aria-label="SLA global por circuito"] button > div:first-child > div:first-child > span,
+.expedientes-page section[aria-label="Estados diferenciales del expediente"] button > div:first-child > span:first-child,
+.expedientes-page section[aria-label="Expedientes por actividad"] button > div:first-child > span:first-child {
+  color: var(--molsan-blue);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(234, 242, 248, 0.92)
+  );
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: 11px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.96);
+}
+
+.expedientes-page section[aria-label="SLA global por circuito"] button > div:first-child > div > div:first-child,
+.expedientes-page section[aria-label="Estados diferenciales del expediente"] button > div:nth-child(2),
+.expedientes-page section[aria-label="Expedientes por actividad"] button > div:nth-child(2) {
+  color: var(--molsan-blue);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.expedientes-page section[aria-label="SLA global por circuito"] button > div:first-child > div > div:last-child,
+.expedientes-page section[aria-label="Estados diferenciales del expediente"] button > div:nth-child(3) {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.expedientes-page section[aria-label="SLA global por circuito"] button > div:first-child > span:last-child {
+  color: var(--molsan-blue);
+  background: rgba(234, 242, 248, 0.9);
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: 999px;
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.expedientes-page section[aria-label="SLA global por circuito"] button > div:last-child > div:first-child > div:first-child,
+.expedientes-page section[aria-label="Estados diferenciales del expediente"] button > div:first-child > span:last-child,
+.expedientes-page section[aria-label="Expedientes por actividad"] button > div:first-child > span:last-child {
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-xl);
+  font-weight: var(--molsan-font-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.expedientes-page section[aria-label="SLA global por circuito"] button > div:last-child > div:first-child > div:last-child,
+.expedientes-page section[aria-label="SLA global por circuito"] button > div:last-child > div:last-child,
+.expedientes-page section[aria-label="Estados diferenciales del expediente"] button > div:last-child,
+.expedientes-page section[aria-label="Expedientes por actividad"] button > div:last-child {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-medium);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .expedientes-page section[aria-label="SLA global por circuito"] button,
+  .expedientes-page section[aria-label="Estados diferenciales del expediente"] button,
+  .expedientes-page section[aria-label="Expedientes por actividad"] button {
+    transition: none;
+  }
+
+  .expedientes-page section[aria-label="SLA global por circuito"] button:hover,
+  .expedientes-page section[aria-label="Estados diferenciales del expediente"] button:hover,
+  .expedientes-page section[aria-label="Expedientes por actividad"] button:hover {
+    transform: none;
+  }
+}
+
+
+/* ==========================================================
+   FASE 1 + FASE 2 · FICHAEXPEDIENTE
+   Extensión del sistema corporativo y Glass Luxe discreto.
+   Alcance visual únicamente: no modifica lógica ni datos.
+========================================================== */
+
+.ficha-expediente-premium {
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+  font-size: var(--molsan-font-size-sm);
+  line-height: var(--molsan-line-height);
+}
+
+.ficha-expediente-premium > section,
+.ficha-expediente-premium .molsan-card,
+.ficha-expediente-premium #ficha-actividades {
+  min-width: 0;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.97) 0%,
+    rgba(242, 247, 251, 0.82) 100%
+  );
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow:
+    inset 0 1px 0 var(--molsan-glass-highlight),
+    var(--molsan-glass-shadow);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.ficha-expediente-premium > section:first-child {
+  overflow: hidden;
+}
+
+.ficha-expediente-premium .molsan-card {
+  overflow: hidden;
+  transition:
+    border-color var(--molsan-transition-normal),
+    box-shadow var(--molsan-transition-normal);
+}
+
+.ficha-expediente-premium .molsan-card:hover {
+  border-color: rgba(6, 70, 117, 0.20);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    var(--molsan-glass-shadow-hover);
+}
+
+.ficha-expediente-premium .molsan-card > div:first-child {
+  min-height: 54px;
+  background: linear-gradient(
+    90deg,
+    rgba(234, 242, 248, 0.88),
+    rgba(255, 255, 255, 0.72)
+  );
+  border-bottom: 1px solid var(--molsan-glass-border);
+}
+
+.ficha-expediente-premium .molsan-card > div:first-child > div:first-child {
+  color: var(--molsan-blue);
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: 10px;
+}
+
+.ficha-expediente-premium .molsan-card h2,
+.ficha-expediente-premium h2,
+.ficha-expediente-premium h3 {
+  color: var(--molsan-blue);
+  font-weight: var(--molsan-font-weight-semibold);
+  letter-spacing: var(--molsan-letter-spacing-tight);
+}
+
+.ficha-expediente-premium .molsan-card > div:first-child p,
+.ficha-expediente-premium > section p {
+  color: var(--molsan-muted);
+}
+
+.ficha-expediente-premium .molsan-data-point {
+  min-height: 64px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(216, 228, 236, 0.82);
+  border-radius: var(--molsan-radius-control);
+}
+
+.ficha-expediente-premium .molsan-data-point > p {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+  letter-spacing: var(--molsan-letter-spacing-wide);
+}
+
+.ficha-expediente-premium .molsan-data-point > div,
+.ficha-expediente-premium .molsan-data-point > span {
+  color: var(--molsan-text);
+  font-weight: var(--molsan-font-weight-medium);
+}
+
+.ficha-expediente-premium #ficha-actividades {
+  padding: 16px;
+}
+
+.ficha-expediente-premium #ficha-actividades > div > div:first-child > button,
+.ficha-expediente-premium button[aria-pressed] {
+  color: var(--molsan-blue);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(242, 247, 251, 0.88)
+  );
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-control);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    0 3px 12px rgba(6, 70, 117, 0.045);
+  font: inherit;
+  font-weight: var(--molsan-font-weight-semibold);
+  transition:
+    transform var(--molsan-transition-fast),
+    border-color var(--molsan-transition-fast),
+    box-shadow var(--molsan-transition-fast),
+    background var(--molsan-transition-fast);
+}
+
+.ficha-expediente-premium #ficha-actividades > div > div:first-child > button:hover,
+.ficha-expediente-premium button[aria-pressed]:hover {
+  transform: translateY(-1px);
+  border-color: rgba(6, 70, 117, 0.28);
+  box-shadow: var(--molsan-glass-shadow-hover);
+}
+
+.ficha-expediente-premium #ficha-actividades > div > div:first-child > button[aria-pressed="true"],
+.ficha-expediente-premium button[aria-pressed="true"] {
+  background: linear-gradient(
+    145deg,
+    rgba(234, 242, 248, 0.98),
+    rgba(242, 247, 251, 0.94)
+  );
+  border-color: rgba(6, 70, 117, 0.42);
+  box-shadow:
+    inset 0 0 0 1px rgba(6, 70, 117, 0.07),
+    0 0 0 3px rgba(6, 70, 117, 0.06);
+}
+
+.ficha-expediente-premium button:focus-visible,
+.ficha-expediente-premium a:focus-visible,
+.expediente-operativo-modal-panel button:focus-visible,
+.expediente-operativo-modal-panel input:focus-visible,
+.expediente-operativo-modal-panel select:focus-visible,
+.expediente-operativo-modal-panel textarea:focus-visible {
+  outline: none;
+  box-shadow: var(--molsan-focus-ring);
+}
+
+.ficha-expediente-premium input:not([type="checkbox"]):not([type="radio"]),
+.ficha-expediente-premium select,
+.ficha-expediente-premium textarea,
+.expediente-operativo-modal-panel input:not([type="checkbox"]):not([type="radio"]),
+.expediente-operativo-modal-panel select,
+.expediente-operativo-modal-panel textarea {
+  box-sizing: border-box;
+  min-height: var(--molsan-control-height);
+  color: var(--molsan-text);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font: inherit;
+  transition: border-color var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast);
+}
+
+.ficha-expediente-premium input:focus,
+.ficha-expediente-premium select:focus,
+.ficha-expediente-premium textarea:focus,
+.expediente-operativo-modal-panel input:focus,
+.expediente-operativo-modal-panel select:focus,
+.expediente-operativo-modal-panel textarea:focus {
+  outline: none;
+  border-color: var(--molsan-blue);
+  box-shadow: var(--molsan-focus-ring);
+}
+
+.ficha-expediente-premium label,
+.expediente-operativo-modal-panel label {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ficha-expediente-premium table,
+.expediente-operativo-modal-panel table {
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--molsan-text);
+}
+
+.ficha-expediente-premium thead,
+.expediente-operativo-modal-panel thead {
+  background: var(--molsan-table-head);
+}
+
+.ficha-expediente-premium th,
+.expediente-operativo-modal-panel th {
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ficha-expediente-premium th,
+.ficha-expediente-premium td,
+.expediente-operativo-modal-panel th,
+.expediente-operativo-modal-panel td {
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.expediente-operativo-modal-panel {
+  color: var(--molsan-text);
+  background: linear-gradient(
+    150deg,
+    rgba(255, 255, 255, 0.99),
+    rgba(242, 247, 251, 0.97)
+  );
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-modal);
+  box-shadow: var(--molsan-shadow-modal);
+}
+
+.expediente-operativo-modal-panel > div:first-child,
+.expediente-operativo-modal-panel > div:last-child {
+  background: rgba(234, 242, 248, 0.72);
+  border-color: var(--molsan-border);
+}
+
+@media (max-width: 720px) {
+  .ficha-expediente-premium #ficha-actividades {
+    padding: 12px;
+  }
+
+  .ficha-expediente-premium .molsan-card > div:first-child {
+    min-height: 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ficha-expediente-premium *,
+  .ficha-expediente-premium *::before,
+  .ficha-expediente-premium *::after,
+  .expediente-operativo-modal-panel *,
+  .expediente-operativo-modal-panel *::before,
+  .expediente-operativo-modal-panel *::after {
+    transition: none !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* ==========================================================
+   FASE 2 · BASE COMÚN GLOBAL
+   Tablas, controles, botones y superficies de diálogo.
+   Se excluye expresamente el Sidebar y las vistas de impresión.
+========================================================== */
+
+/* Tablas de trabajo: misma lectura, contraste y ritmo en todos los módulos. */
+.erp-route-content table:not(.ag-print-table):not(.ag-calendar-table) {
+  color: var(--molsan-text);
+  border-color: var(--molsan-border);
+  border-collapse: separate;
+  border-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.erp-route-content table:not(.ag-print-table):not(.ag-calendar-table) thead th {
+  color: var(--molsan-blue);
+  background: var(--molsan-table-head);
+  border-bottom: 1px solid var(--molsan-border);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.erp-route-content table:not(.ag-print-table):not(.ag-calendar-table) tbody td {
+  border-bottom: 1px solid rgba(216, 228, 236, 0.78);
+}
+
+.erp-route-content table:not(.ag-print-table):not(.ag-calendar-table) tbody tr:last-child td {
+  border-bottom-color: transparent;
+}
+
+.erp-route-content table:not(.ag-print-table):not(.ag-calendar-table) tbody tr:hover td {
+  background-color: rgba(242, 247, 251, 0.72);
+}
+
+/* Cabeceras ordenables: foco visible y affordance consistente.
+   La funcionalidad de orden se implementa en cada tabla según su fuente de datos. */
+.erp-route-content table thead th[aria-sort] button,
+.erp-route-content table thead th button[data-sortable="true"] {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  gap: 7px;
+  padding: 2px 0;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  font: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+
+.erp-route-content table thead th[aria-sort] button:hover,
+.erp-route-content table thead th button[data-sortable="true"]:hover {
+  color: var(--molsan-blue-hover);
+  text-decoration: underline;
+  text-decoration-color: rgba(6, 70, 117, 0.35);
+  text-underline-offset: 3px;
+}
+
+.erp-route-content table thead th[aria-sort] button:focus-visible,
+.erp-route-content table thead th button[data-sortable="true"]:focus-visible {
+  outline: none;
+  box-shadow: var(--molsan-focus-ring);
+}
+
+/* Campos: una altura, borde, radio y foco coherentes. */
+.erp-route-content input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.erp-route-content select,
+.erp-route-content textarea {
+  accent-color: var(--molsan-blue);
+}
+
+.erp-route-content input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+.erp-route-content select,
+.erp-route-content textarea {
+  color: var(--molsan-text);
+  border-color: var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+}
+
+.erp-route-content input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):focus,
+.erp-route-content select:focus,
+.erp-route-content textarea:focus {
+  border-color: var(--molsan-blue);
+  outline: none;
+  box-shadow: var(--molsan-focus-ring);
+}
+
+.erp-route-content input::placeholder,
+.erp-route-content textarea::placeholder {
+  color: var(--molsan-muted);
+  opacity: 1;
+}
+
+.erp-route-content input:disabled,
+.erp-route-content select:disabled,
+.erp-route-content textarea:disabled {
+  color: var(--molsan-muted);
+  background-color: var(--molsan-panel);
+  cursor: not-allowed;
+}
+
+.erp-route-content label {
+  color: var(--molsan-muted);
+}
+
+/* Variantes normalizadas de botones Molsan. */
+.erp-route-content .molsan-btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  min-width: 0;
+  min-height: var(--molsan-control-height);
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  color: var(--molsan-blue);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font-family: var(--molsan-font-family);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-semibold);
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--molsan-transition-fast),
+              background-color var(--molsan-transition-fast),
+              border-color var(--molsan-transition-fast),
+              box-shadow var(--molsan-transition-fast),
+              transform var(--molsan-transition-fast);
+}
+
+.erp-route-content .molsan-btn:hover:not(:disabled) {
+  border-color: rgba(6, 70, 117, 0.32);
+  box-shadow: 0 2px 8px rgba(6, 70, 117, 0.07);
+}
+
+.erp-route-content .molsan-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--molsan-focus-ring);
+}
+
+.erp-route-content .molsan-btn:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.erp-route-content .molsan-btn--primary {
+  color: #fff;
+  background: var(--molsan-blue);
+  border-color: var(--molsan-blue);
+}
+
+.erp-route-content .molsan-btn--primary:hover:not(:disabled) {
+  color: #fff;
+  background: var(--molsan-blue-hover);
+  border-color: var(--molsan-blue-hover);
+}
+
+.erp-route-content .molsan-btn--secondary {
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border-color: var(--molsan-border);
+}
+
+.erp-route-content .molsan-btn--outline {
+  color: var(--molsan-blue);
+  background: transparent;
+  border-color: var(--molsan-blue);
+}
+
+.erp-route-content .molsan-btn--ghost {
+  color: var(--molsan-blue);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.erp-route-content .molsan-btn--danger {
+  color: #fff;
+  background: var(--molsan-danger);
+  border-color: var(--molsan-danger);
+}
+
+.erp-route-content .molsan-btn--compact {
+  min-height: var(--molsan-control-height-sm);
+  padding: 6px 10px;
+  font-size: var(--molsan-font-size-xs);
+}
+
+@media (max-width: 720px) {
+  .erp-route-content .molsan-btn {
+    min-height: 40px;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .erp-route-content .molsan-btn {
+    transition: none;
+  }
+
+  .erp-route-content .molsan-btn:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+
+/* ==========================================================
+   FASE 2 · FILTROS Y FORMULARIOS COMPARTIDOS
+   Clases de adopción progresiva para todas las pantallas.
+   No altera la estructura ni el comportamiento de los campos.
+========================================================== */
+
+/* Barra de filtros: agrupa controles relacionados sin crear
+   tarjetas individuales alrededor de cada campo. */
+.molsan-filter-bar,
+.molsan-filters,
+[data-molsan-filter-bar] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+  color: var(--molsan-text);
+  background: linear-gradient(145deg, rgba(255,255,255,.94), rgba(242,247,251,.82));
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: inset 0 1px 0 var(--molsan-glass-highlight), 0 3px 12px rgba(6,70,117,.035);
+}
+
+.molsan-filter-bar > *,
+.molsan-filters > *,
+[data-molsan-filter-bar] > * {
+  min-width: 0;
+}
+
+.molsan-filter-bar .molsan-field,
+.molsan-filters .molsan-field,
+[data-molsan-filter-bar] .molsan-field {
+  flex: 1 1 170px;
+}
+
+.molsan-filter-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-inline-start: auto;
+}
+
+/* Campos y grupos de formulario. Las páginas conservan sus
+   columnas y agrupaciones funcionales; aquí se normaliza el control. */
+.molsan-form,
+.molsan-form-section {
+  min-width: 0;
+}
+
+.molsan-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  min-width: 0;
+}
+
+.molsan-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.molsan-field__label,
+.molsan-field > label {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+  line-height: 1.35;
+}
+
+.molsan-field__control,
+.molsan-field input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.molsan-field select,
+.molsan-field textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--molsan-control-height);
+  padding: 9px 11px;
+  color: var(--molsan-text);
+  background: rgba(255,255,255,.97);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font: inherit;
+  transition: border-color var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast);
+}
+
+.molsan-field textarea,
+.molsan-field textarea.molsan-field__control {
+  min-height: 88px;
+  resize: vertical;
+}
+
+.molsan-field__control:focus,
+.molsan-field input:focus,
+.molsan-field select:focus,
+.molsan-field textarea:focus {
+  border-color: var(--molsan-blue);
+  outline: none;
+  box-shadow: var(--molsan-focus-ring);
+}
+
+.molsan-field__help {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+  line-height: 1.4;
+}
+
+.molsan-field__error,
+.molsan-field [aria-invalid="true"] ~ .molsan-field__help {
+  color: var(--molsan-danger);
+}
+
+.molsan-field [aria-invalid="true"] {
+  border-color: var(--molsan-danger);
+  box-shadow: 0 0 0 3px rgba(163,59,66,.09);
+}
+
+.molsan-field__required {
+  color: var(--molsan-danger);
+  margin-inline-start: 3px;
+}
+
+.molsan-form-section {
+  padding: 16px;
+  background: rgba(242,247,251,.52);
+  border: 1px solid rgba(216,228,236,.82);
+  border-radius: var(--molsan-radius-card);
+}
+
+.molsan-form-section__title {
+  margin: 0 0 14px;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-md);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+@media (max-width: 720px) {
+  .molsan-filter-bar,
+  .molsan-filters,
+  [data-molsan-filter-bar] {
+    padding: 11px;
+    gap: 10px;
+  }
+
+  .molsan-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .molsan-filter-actions {
+    width: 100%;
+    margin-inline-start: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .molsan-field__control,
+  .molsan-field input,
+  .molsan-field select,
+  .molsan-field textarea {
+    transition: none;
+  }
+}
+
+
+/* ==========================================================
+   FASE 2 · BOTONES Y MODALES COMPARTIDOS
+   Variantes semánticas y estructura común reutilizable.
+========================================================== */
+
+/* Botones Molsan: geometría y estados comunes para todas las variantes. */
+.erp-route-content .molsan-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: inset 0 1px 2px rgba(6,70,117,.12);
+}
+
+.erp-route-content .molsan-btn--danger:hover:not(:disabled) {
+  background: var(--molsan-danger-hover);
+  border-color: var(--molsan-danger-hover);
+  box-shadow: 0 2px 8px rgba(143,48,56,.14);
+}
+
+.erp-route-content .molsan-btn--ghost:hover:not(:disabled) {
+  background: rgba(242,247,251,.86);
+  border-color: rgba(216,228,236,.9);
+  box-shadow: none;
+}
+
+.erp-route-content .molsan-btn svg,
+.erp-route-content .molsan-btn [data-icon] {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+}
+
+.erp-route-content .molsan-btn--icon {
+  width: var(--molsan-control-height);
+  min-width: var(--molsan-control-height);
+  padding: 0;
+}
+
+.erp-route-content .molsan-btn--icon.molsan-btn--compact {
+  width: var(--molsan-control-height-sm);
+  min-width: var(--molsan-control-height-sm);
+}
+
+/* Estructura de diálogo: overlay separado, panel con scroll interno
+   y cabecera/pie persistentes cuando el módulo adopta estas clases. */
+.molsan-modal-overlay,
+.molsan-modal-backdrop,
+[data-molsan-modal-overlay] {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(18, 39, 54, .38);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+/* Estructura común única para todos los modales. :where() permite que
+   cada ventana conserve sus dimensiones y distribuciones declaradas en JSX. */
+:where(.molsan-modal, .molsan-modal__panel, .erp-modal-panel) {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  width: min(100%, 960px);
+  max-width: min(960px, calc(100vw - 32px));
+  max-height: min(88dvh, 900px);
+  overflow: hidden;
+  color: var(--molsan-text);
+  background: linear-gradient(150deg, #fff 0%, rgba(242, 247, 251, .98) 100%);
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-modal);
+  box-shadow: var(--molsan-shadow-modal);
+}
+
+.molsan-modal--sm { width: min(420px, calc(100vw - 32px)); max-width: min(420px, calc(100vw - 32px)); }
+.molsan-modal--md { width: min(640px, calc(100vw - 32px)); max-width: min(640px, calc(100vw - 32px)); }
+.molsan-modal--lg { width: min(860px, calc(100vw - 32px)); max-width: min(860px, calc(100vw - 32px)); }
+.molsan-modal--xl { width: min(1100px, calc(100vw - 32px)); max-width: min(1100px, calc(100vw - 32px)); }
+.molsan-modal--wide { width: min(1280px, calc(100vw - 32px)); max-width: min(1280px, calc(100vw - 32px)); }
+
+:where(.molsan-modal__header, .molsan-modal__footer) {
+  flex: 0 0 auto;
+  padding: 14px 18px;
+  background: rgba(234, 242, 248, .76);
+  border-color: var(--molsan-border);
+}
+
+:where(.molsan-modal__header) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-modal) var(--molsan-radius-modal) 0 0;
+}
+
+:where(.molsan-modal__header h1, .molsan-modal__header h2, .molsan-modal__header h3) {
+  margin: 0;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-lg);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+:where(.molsan-modal__body) {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 18px;
+  background: #fff;
+}
+
+:where(.molsan-modal__footer) {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-top: 1px solid var(--molsan-border);
+  border-radius: 0 0 var(--molsan-radius-modal) var(--molsan-radius-modal);
+}
+
+.molsan-modal__close {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  color: var(--molsan-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--molsan-radius-control);
+  cursor: pointer;
+}
+
+.molsan-modal__close:hover {
+  color: var(--molsan-blue);
+  background: rgba(255,255,255,.82);
+  border-color: var(--molsan-border);
+}
+
+.molsan-modal__close:focus-visible {
+  outline: none;
+  box-shadow: var(--molsan-focus-ring);
+}
+
+@media (max-width: 720px) {
+  .molsan-modal-overlay,
+  .molsan-modal-backdrop,
+  [data-molsan-modal-overlay] {
+    align-items: flex-end;
+  }
+
+  :where(.molsan-modal, .molsan-modal__panel, .erp-modal-panel, .molsan-modal--sm, .molsan-modal--md, .molsan-modal--lg, .molsan-modal--xl, .molsan-modal--wide) {
+    width: 100%;
+    max-width: none;
+    max-height: calc(100dvh - 20px);
+    border-radius: 14px;
+  }
+
+  :where(.molsan-modal__header, .molsan-modal__footer) {
+    padding: 12px 14px;
+  }
+
+  :where(.molsan-modal__body) {
+    padding: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .molsan-modal-overlay,
+  [data-molsan-modal-overlay] {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+
+/* ==========================================================
+   MOLSAN ERP PREMIUM 2027 · ADOPCIÓN TRANSVERSAL
+   Compatibilidad visual para módulos que aún conservan markup
+   heredado. Sidebar expresamente excluido.
+========================================================== */
+
+/* Etiquetas de formularios: una única regla para páginas y diálogos accesibles. */
+#root main form:not([data-unstyled="true"]) label,
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) label {
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-medium);
+}
+
+/* Tablas heredadas: superficie, cabecera, separadores y lectura
+   homogéneos. No se añade ordenación visual ficticia. */
+#root main table:not(.ag-print-table):not(.ag-calendar-table) {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+  font-variant-numeric: tabular-nums;
+}
+#root main table:not(.ag-print-table):not(.ag-calendar-table) thead th {
+  color: var(--molsan-blue);
+  background: var(--molsan-table-head);
+  border-bottom: 1px solid var(--molsan-border);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+  letter-spacing: .01em;
+  text-align: left;
+  vertical-align: middle;
+}
+#root main table:not(.ag-print-table):not(.ag-calendar-table) tbody td {
+  border-bottom: 1px solid rgba(216,228,236,.78);
+  vertical-align: middle;
+}
+#root main table:not(.ag-print-table):not(.ag-calendar-table) tbody tr {
+  background: #fff;
+  transition: background-color var(--molsan-transition-fast);
+}
+#root main table:not(.ag-print-table):not(.ag-calendar-table) tbody tr:hover {
+  background: rgba(242,247,251,.78);
+}
+#root main table:not(.ag-print-table):not(.ag-calendar-table) tbody tr:last-child td {
+  border-bottom-color: transparent;
+}
+
+/* Diálogos y paneles heredados de los portales operativos. */
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]),
+#root .panel-modal-premium,
+#root .ng-modal {
+  color: var(--molsan-text);
+}
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) > header,
+#root .ng-modal > header {
+  color: var(--molsan-blue);
+  border-bottom: 1px solid var(--molsan-border);
+}
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) h1,
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) h2,
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) h3 {
+  color: var(--molsan-blue);
+}
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) section,
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) article {
+  border-color: var(--molsan-border);
+}
+
+/* Barras de filtros reconocibles por su contenido semántico.
+   No se convierten en tarjetas independientes los campos. */
+#root main form[role="search"],
+#root main [data-molsan-filter-bar],
+#root main .molsan-filter-bar,
+#root main .molsan-filters {
+  background: linear-gradient(145deg, rgba(255,255,255,.96), rgba(242,247,251,.78));
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: 0 3px 12px rgba(6,70,117,.035);
+}
+
+/* Responsive: los contenedores de tablas conservan scroll propio;
+   no se fuerza el ancho de la página. */
+#root main :is(.overflow-x-auto, .table-responsive, .ng-tabla-contenedor) {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+#root main table:not(.ag-print-table):not(.ag-calendar-table) th,
+#root main table:not(.ag-print-table):not(.ag-calendar-table) td,
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table th,
+#root [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table td {
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================================
+   FASE 2 · NORMALIZACIÓN GLOBAL FINAL DE CONTROLES
+   Se aplica a todas las áreas main del ERP y a diálogos accesibles,
+   incluidos los que se montan mediante portal fuera de #root.
+   Sidebar excluido por estructura (hermano de main).
+========================================================== */
+
+/* Campos de edición y filtros, estén o no dentro de un <form>. */
+#root main :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not([type="color"]), select, textarea),
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not([type="color"]), select, textarea) {
+  box-sizing: border-box;
+  min-height: var(--molsan-control-height);
+  max-width: 100%;
+  color: var(--molsan-text);
+  background-color: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font-family: inherit;
+  font-size: var(--molsan-font-size-sm);
+  transition: border-color var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast);
+}
+
+#root main :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not([type="color"]), select, textarea):focus,
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not([type="color"]), select, textarea):focus {
+  border-color: var(--molsan-blue);
+  outline: none;
+  box-shadow: var(--molsan-focus-ring);
+}
+
+#root main :is(input, select, textarea)::placeholder,
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) :is(input, textarea)::placeholder {
+  color: var(--molsan-muted);
+  opacity: 1;
+}
+
+#root main :is(input, select, textarea):disabled,
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) :is(input, select, textarea):disabled {
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  cursor: not-allowed;
+}
+
+/* Botones operativos: misma geometría, foco y respuesta sin borrar
+   variantes funcionales (primario, secundario, éxito, aviso o peligro). */
+#root main button:not([data-unstyled="true"]),
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) button:not([data-unstyled="true"]) {
+  font-family: inherit;
+  border-radius: var(--molsan-radius-control);
+  transition: background-color var(--molsan-transition-fast),
+              border-color var(--molsan-transition-fast),
+              box-shadow var(--molsan-transition-fast),
+              color var(--molsan-transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+#root main button:focus-visible,
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) button:focus-visible {
+  outline: none;
+  box-shadow: var(--molsan-focus-ring);
+}
+
+#root main button:disabled,
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) button:disabled {
+  cursor: not-allowed;
+}
+
+/* Jerarquía tipográfica compartida en el contenido de trabajo.
+   No fuerza tamaños ni colores a indicadores semánticos de estado. */
+#root main :is(h1, h2, h3),
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) :is(h1, h2, h3) {
+  color: var(--molsan-blue);
+  text-wrap: balance;
+}
+
+#root main :is(p, small, label),
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) :is(p, small, label) {
+  line-height: var(--molsan-line-height);
+}
+
+/* Los diálogos renderizados con createPortal suelen quedar fuera de
+   #root; se les aplica la misma tipografía, campos, tablas y foco. */
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) {
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+}
+
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table thead th {
+  color: var(--molsan-blue);
+  background: var(--molsan-table-head);
+  border-bottom: 1px solid var(--molsan-border);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+  text-align: left;
+}
+
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table tbody td {
+  border-bottom: 1px solid rgba(216,228,236,.78);
+  vertical-align: middle;
+}
+
+body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) table tbody tr:hover {
+  background: rgba(242,247,251,.78);
+}
+
+@media (max-width: 720px) {
+  #root main :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]), select, textarea),
+  body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]), select, textarea) {
+    max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #root main :is(input, select, textarea, button),
+  body [role="dialog"]:not([data-molsan-style-exempt="sidebar-profile"]):not(.panel-modal-premium.pt-20 > [role="dialog"]) :is(input, select, textarea, button) {
+    transition: none;
+  }
+}
+
+
+/* ==========================================================
+   ADOPCIÓN PUNTUAL · MENSAJES, AGENDA Y EMPLEADOS
+   Patrones semánticos compartidos; no alteran flujos ni datos.
+========================================================== */
+
+/* Iconografía y texto auxiliar de métricas. La rejilla, tarjeta y
+   tipografía principal se definen una sola vez en MÉTRICAS COMPARTIDAS. */
+.molsan-stat-icon {
+  display: grid;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+  font-size: 17px;
+}
+.molsan-stat-card small {
+  display: block;
+  margin-top: 3px;
+  color: var(--molsan-muted);
+  font-size: 11px;
+}
+
+/* Agenda: calendario y citas con la misma superficie y jerarquía. */
+.agenda-calendar-scroll {
+  min-width: 0;
+  overflow: auto;
+  padding-top: 14px;
+}
+.agenda-weekday {
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: var(--molsan-font-weight-semibold);
+  text-align: center;
+}
+.agenda-month-day,
+.agenda-week-cell,
+.agenda-day-hour {
+  min-width: 0;
+  color: var(--molsan-text);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 8px;
+}
+.agenda-month-day {
+  cursor: pointer;
+  transition: background var(--molsan-transition-fast), border-color var(--molsan-transition-fast);
+}
+.agenda-month-day:hover {
+  background: var(--molsan-panel);
+  border-color: rgba(6,70,117,.35);
+}
+.agenda-appointment {
+  color: var(--molsan-text);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-left: 3px solid var(--molsan-blue);
+  border-radius: 7px;
+  font-size: 11px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.agenda-day-timeline {
+  background: repeating-linear-gradient(to bottom, #fff 0, #fff 47px, var(--molsan-border) 48px);
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+.agenda-list-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--molsan-border);
+}
+.agenda-list-heading h2 {
+  margin: 0;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-lg);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+.agenda-list-heading p {
+  margin: 4px 0 0;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+.agenda-list-table-wrap {
+  min-width: 0;
+  overflow-x: auto;
+}
+.agenda-list-table {
+  min-width: 760px;
+}
+.agenda-list-table td small {
+  display: block;
+  margin-top: 3px;
+  color: var(--molsan-muted);
+  font-size: 11px;
+}
+.agenda-modality-pill,
+.agenda-status-pill,
+.molsan-status-pill {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 4px 9px;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: var(--molsan-font-weight-semibold);
+  white-space: nowrap;
+}
+.agenda-status-pill.is-done,
+.molsan-status-pill.is-active {
+  color: #236548;
+  background: #eef7f1;
+  border-color: #cfe5d7;
+}
+.agenda-status-pill.is-past,
+.agenda-status-pill.is-pending,
+.molsan-status-pill.is-inactive {
+  color: #80601c;
+  background: #fbf6e9;
+  border-color: #eadcb8;
+}
+.agenda-empty-state {
+  display: flex;
+  min-height: 150px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 24px;
+  color: var(--molsan-muted);
+  text-align: center;
+}
+.agenda-empty-state strong {
+  color: var(--molsan-blue);
+}
+
+/* Mensajes: superficies para contactos, conversación y composición. */
+.molsan-chat-contact {
+  text-align: left;
+  color: var(--molsan-text);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 11px;
+  transition: background var(--molsan-transition-fast), border-color var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast);
+}
+.molsan-chat-contact:hover {
+  background: var(--molsan-panel);
+  border-color: rgba(6,70,117,.28);
+}
+.molsan-chat-contact[aria-pressed="true"] {
+  background: var(--molsan-panel);
+  border-color: var(--molsan-blue);
+  box-shadow: inset 3px 0 0 var(--molsan-blue);
+}
+.molsan-chat-header {
+  display: flex;
+  min-height: 68px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+}
+.molsan-chat-composer {
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 12px;
+}
+.molsan-chat-composer textarea {
+  background: #fff;
+}
+
+/* Empleados: las fichas de selección se comportan como tarjetas ERP. */
+.molsan-employee-card {
+  min-height: 82px;
+  text-align: left;
+  color: var(--molsan-text);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+  transition: border-color var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast), background var(--molsan-transition-fast);
+}
+.molsan-employee-card:hover {
+  background: var(--molsan-panel);
+  border-color: rgba(6,70,117,.3);
+  box-shadow: 0 4px 14px rgba(6,70,117,.07);
+}
+.molsan-employee-card img {
+  border-radius: 10px;
+}
+.molsan-employee-card > div:nth-child(2) > div:first-child {
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+.molsan-employee-card > div:nth-child(2) > div:not(:first-child) {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.molsan-chat-header__name {
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-md);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+.molsan-chat-header__presence {
+  background: #2f8b61;
+  border-radius: 999px;
+  box-shadow: 0 0 0 3px rgba(47,139,97,.12);
+}
+.molsan-chat-header__tag {
+  padding: 6px 10px;
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-medium);
+}
+.agenda-filters {
+  justify-content: flex-start;
+}
+.agenda-search {
+  display: flex;
+  flex: 1 1 260px;
+  min-width: min(100%, 220px);
+  align-items: center;
+  gap: 8px;
+  padding: 0 11px;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+}
+.agenda-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.agenda-filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.agenda-month-day[aria-current="date"] {
+  background: var(--molsan-panel);
+  border-color: var(--molsan-blue);
+  box-shadow: inset 0 0 0 1px rgba(6,70,117,.12);
+}
+
+
+/* Burbujas de Mensajes y tarjetas de solicitudes. */
+.molsan-message-bubble {
+  border: 1px solid var(--molsan-border);
+  border-radius: 14px 14px 14px 4px;
+  color: var(--molsan-text);
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(6,70,117,.035);
+  overflow-wrap: anywhere;
+}
+.molsan-message-bubble.is-own {
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border-color: rgba(6,70,117,.18);
+  border-radius: 14px 14px 4px 14px;
+}
+.molsan-message-time {
+  color: var(--molsan-muted);
+  font-size: 10px;
+  text-align: right;
+}
+.molsan-chat-header__presence.is-offline {
+  background: #9aa9b5;
+  box-shadow: none;
+}
+.molsan-chat-header__presence.is-online {
+  background: #2f8b61;
+}
+.molsan-request-card {
+  display: block;
+  text-align: left;
+  color: var(--molsan-text);
+  background: #fff;
+  border-bottom: 1px solid var(--molsan-border);
+  transition: background var(--molsan-transition-fast);
+}
+.molsan-request-card:hover {
+  background: var(--molsan-panel);
+}
+.molsan-summary-card {
+  min-width: 0;
+  padding: 15px;
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+.molsan-summary-card p:first-child {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+.molsan-summary-card p:last-child {
+  margin-top: 7px;
+  color: var(--molsan-blue);
+  font-size: 22px;
+  font-weight: var(--molsan-font-weight-bold);
+}
+
+
+.molsan-chat-attach {
+  color: var(--molsan-blue);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  cursor: pointer;
+  transition: background var(--molsan-transition-fast), border-color var(--molsan-transition-fast);
+}
+.molsan-chat-attach:hover {
+  background: var(--molsan-blue-soft);
+  border-color: rgba(6,70,117,.3);
+}
+
+
+/* Navegación de pestañas dentro de la ficha modal de empleado. */
+.erp-route-content .molsan-modal__tabs {
+  background: rgba(242,247,251,.82);
+  border-bottom: 1px solid var(--molsan-border);
+}
+.erp-route-content .molsan-modal__tabs button {
+  min-height: 42px;
+  color: var(--molsan-muted);
+  border-bottom: 2px solid transparent;
+  border-radius: 8px 8px 0 0;
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-medium);
+}
+.erp-route-content .molsan-modal__tabs button[aria-pressed="true"] {
+  color: var(--molsan-blue);
+  background: #fff;
+  border-bottom-color: var(--molsan-blue);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+
+/* ==========================================================
+   ADOPCIÓN TRANSVERSAL · NOTARGEST Y APODERAGEST
+   Las vistas notariales conservaban clases de presentación sin
+   reglas activas. Se centraliza aquí su lenguaje visual.
+========================================================== */
+
+.notargest-workspace-premium,
+.notargest.ng-content,
+.apoderagest > main > div > .apoderagest {
+  min-width: 0;
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+}
+
+.notargest.ng-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--molsan-section-gap);
+}
+
+.ng-kicker {
+  display: inline-block;
+  color: var(--molsan-muted);
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-bold);
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.ng-modulos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  min-width: 0;
+}
+
+.ng-modulo-card {
+  display: flex;
+  min-width: 0;
+  min-height: 76px;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  color: var(--molsan-text);
+  text-align: left;
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+  transition: background var(--molsan-transition-fast), border-color var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast);
+}
+
+.ng-modulo-card:hover,
+.ng-modulo-card.activa {
+  background: var(--molsan-panel);
+  border-color: rgba(6, 70, 117, .32);
+  box-shadow: 0 3px 12px rgba(6, 70, 117, .06);
+}
+
+.ng-modulo-card.activa {
+  box-shadow: inset 3px 0 0 var(--molsan-blue), var(--molsan-shadow-card);
+}
+
+.ng-modulo-card.urgente {
+  border-color: rgba(163, 59, 66, .38);
+}
+
+.ng-modulo-icono,
+.ng-admin-notaria-icono,
+.ng-admin-circuito-icono,
+.ng-perfil-avatar {
+  display: grid;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+  font-weight: var(--molsan-font-weight-bold);
+}
+
+.ng-modulo-label {
+  flex: 1;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-semibold);
+  line-height: 1.35;
+}
+
+.ng-modulo-count {
+  display: inline-flex;
+  min-width: 25px;
+  min-height: 25px;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 7px;
+  color: var(--molsan-blue);
+  background: var(--molsan-table-head);
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: var(--molsan-font-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.ng-dashboard-analitica,
+.ng-dashboard-graficos {
+  min-width: 0;
+}
+
+.ng-dashboard-graficos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ng-dashboard-graficos-tres-columnas {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ng-dashboard-grafico,
+.ng-panel,
+.ng-detalle-bloque,
+.ng-admin-notarias-grid > article,
+.ng-modal,
+.ng-modal-pagos,
+.ng-modal-perfil,
+.ng-resumen-expedientes-modal {
+  min-width: 0;
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.ng-dashboard-grafico {
+  padding: 18px;
+}
+
+.ng-bloque-heading,
+.ng-panel-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.ng-bloque-heading h3,
+.ng-panel-titulo h2,
+.ng-admin-global-titulo,
+.ng-admin-individual-titulo,
+.ng-admin-notaria-titulo,
+.ng-pagos-grafico-titulo strong {
+  margin: 0;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-lg);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ng-descripcion,
+.ng-panel-titulo p,
+.ng-admin-global-eyebrow,
+.ng-admin-metricas span,
+.ng-admin-resumen-secundario span,
+.ng-dato,
+.ng-ayuda-campo {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ng-barras-meses {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: end;
+  gap: 10px;
+  min-height: 170px;
+  padding-top: 12px;
+}
+
+.ng-barra-mes {
+  display: flex;
+  min-width: 0;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  color: var(--molsan-muted);
+  font-size: 10px;
+  text-align: center;
+}
+
+.ng-barra-mes strong {
+  color: var(--molsan-blue);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ng-barra-pista {
+  display: flex;
+  width: min(100%, 30px);
+  height: 112px;
+  align-items: flex-end;
+  overflow: hidden;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 7px;
+}
+
+.ng-barra-pista span {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  background: linear-gradient(180deg, rgba(6, 70, 117, .72), var(--molsan-blue));
+  border-radius: 5px 5px 0 0;
+}
+
+.ng-pagos-resumen,
+.ng-pagos-grafico {
+  padding: 13px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ng-pagos-grafico {
+  margin-top: 12px;
+}
+
+.ng-pagos-grafico-titulo {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.ng-pagos-grafico-titulo span {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ng-barras-pagos {
+  min-height: 150px;
+}
+
+.ng-barras-medias {
+  display: grid;
+  gap: 14px;
+}
+
+.ng-media-row {
+  display: grid;
+  grid-template-columns: minmax(150px, .9fr) minmax(100px, 1.1fr);
+  align-items: center;
+  gap: 14px;
+}
+
+.ng-media-row > div:first-child {
+  display: grid;
+  gap: 3px;
+}
+
+.ng-media-row strong {
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+}
+
+.ng-media-row small {
+  color: var(--molsan-muted);
+  font-size: 11px;
+}
+
+.ng-media-pista {
+  height: 10px;
+  overflow: hidden;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+}
+
+.ng-media-pista span {
+  display: block;
+  height: 100%;
+  background: var(--molsan-blue);
+  border-radius: inherit;
+}
+
+.ng-panel {
+  padding: 18px;
+}
+
+.ng-panel-titulo {
+  padding-bottom: 13px;
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.ng-filtros {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 14px 0;
+  padding: 12px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ng-filtros label {
+  display: grid;
+  flex: 1 1 280px;
+  gap: 5px;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-medium);
+}
+
+.ng-tabla-contenedor,
+.ng-pagos-tabla-wrap,
+.ng-resumen-expedientes-tabla-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+.ng-tabla {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+}
+
+.ng-tabla thead th {
+  padding: 11px 12px;
+  color: var(--molsan-blue);
+  background: var(--molsan-table-head);
+  border-bottom: 1px solid var(--molsan-border);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.ng-tabla tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--molsan-border);
+  vertical-align: middle;
+}
+
+.ng-tabla tbody tr:hover td {
+  background: var(--molsan-panel);
+}
+
+.ng-documentos {
+  display: grid;
+  gap: 10px;
+}
+
+.ng-documento,
+.ng-aviso-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 14px;
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ng-documento p,
+.ng-aviso-contenido p {
+  margin: 5px 0;
+  color: var(--molsan-text);
+}
+
+.ng-documento small,
+.ng-aviso-contenido small {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ng-mensaje,
+.ng-modal-vacio,
+.ng-admin-vacio {
+  padding: 24px;
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border: 1px dashed var(--molsan-border);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.ng-error,
+.ng-success {
+  padding: 12px 15px;
+  border: 1px solid;
+  border-radius: 9px;
+  font-size: var(--molsan-font-size-sm);
+}
+
+.ng-error {
+  color: var(--molsan-danger);
+  background: var(--molsan-danger-soft);
+  border-color: rgba(163, 59, 66, .24);
+}
+
+.ng-success {
+  color: var(--molsan-success);
+  background: var(--molsan-success-soft);
+  border-color: rgba(35, 115, 77, .22);
+}
+
+.ng-login-submit,
+.ng-admin-entrar {
+  display: inline-flex;
+  min-height: var(--molsan-control-height);
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  color: #fff;
+  background: var(--molsan-blue);
+  border: 1px solid var(--molsan-blue);
+  border-radius: var(--molsan-radius-control);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ng-login-submit:hover:not(:disabled),
+.ng-admin-entrar:hover:not(:disabled) {
+  background: var(--molsan-blue-hover);
+}
+
+.ng-boton-secundario,
+.ng-abrir,
+.ng-volver,
+.ng-admin-ver-expedientes {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 6px 11px;
+  color: var(--molsan-blue);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ng-boton-secundario:hover,
+.ng-abrir:hover,
+.ng-volver:hover,
+.ng-admin-ver-expedientes:hover {
+  background: var(--molsan-panel);
+  border-color: rgba(6, 70, 117, .28);
+}
+
+.ng-adjuntar {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  cursor: pointer;
+}
+
+.ng-adjuntar input {
+  max-width: 190px;
+  font-size: 11px;
+}
+
+.ng-modal-overlay {
+  position: fixed;
+  z-index: var(--molsan-z-overlay);
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 18px;
+  background: rgba(18, 39, 54, .42);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+.ng-modal {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  width: min(100%, 900px);
+  max-height: calc(100dvh - 36px);
+  overflow: hidden;
+  padding: 0;
+  border-radius: var(--molsan-radius-modal);
+  box-shadow: var(--molsan-shadow-modal);
+}
+
+.ng-modal-avisos,
+.ng-modal-pagos,
+.ng-modal-perfil,
+.ng-resumen-expedientes-modal {
+  width: min(100%, 1080px);
+}
+
+.ng-modal-lista {
+  display: grid;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  gap: 10px;
+}
+
+.ng-aviso-icono {
+  display: grid;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ng-aviso-icono-observacion {
+  color: var(--molsan-warning);
+  background: var(--molsan-warning-soft);
+  border-color: rgba(148, 101, 27, .22);
+}
+
+.ng-aviso-contenido {
+  flex: 1;
+  min-width: 0;
+}
+
+.ng-aviso-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ng-perfil-identidad {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ng-perfil-avatar {
+  flex-basis: 52px;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  font-size: 18px;
+}
+
+.ng-perfil-datos,
+.ng-admin-metricas,
+.ng-admin-resumen,
+.ng-admin-circuitos {
+  display: grid;
+  gap: 10px;
+}
+
+.ng-perfil-datos {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ng-dato,
+.ng-admin-metricas > div,
+.ng-admin-resumen-principal,
+.ng-admin-resumen-secundario {
+  min-width: 0;
+  padding: 11px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.ng-admin-global-resumen {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 18px;
+  background: linear-gradient(145deg, var(--molsan-glass-surface), var(--molsan-glass-soft));
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-glass-shadow);
+}
+
+.ng-admin-global-eyebrow {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: var(--molsan-font-weight-bold);
+  letter-spacing: .08em;
+}
+
+.ng-admin-global-total {
+  display: block;
+  color: var(--molsan-blue);
+  font-size: 30px;
+  font-weight: var(--molsan-font-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.ng-admin-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ng-admin-kpi-button {
+  min-height: 76px;
+  padding: 13px;
+  color: var(--molsan-blue);
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ng-admin-kpi-button:hover {
+  background: var(--molsan-panel);
+  border-color: rgba(6, 70, 117, .3);
+}
+
+.ng-admin-notarias-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 14px;
+}
+
+.ng-admin-notarias-grid > article {
+  overflow: hidden;
+}
+
+.ng-admin-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px;
+  background: var(--molsan-panel);
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.ng-admin-notaria-identidad {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+}
+
+.ng-admin-notaria-titulo {
+  font-size: var(--molsan-font-size-md);
+}
+
+.ng-admin-resumen {
+  grid-template-columns: 1fr 1fr;
+  padding: 14px;
+}
+
+.ng-admin-resumen-principal strong,
+.ng-admin-resumen-secundario strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--molsan-blue);
+  font-size: 22px;
+  font-weight: var(--molsan-font-weight-bold);
+}
+
+.ng-admin-resumen-secundario.es-defecto {
+  color: var(--molsan-danger);
+  background: var(--molsan-danger-soft);
+  border-color: rgba(163, 59, 66, .24);
+}
+
+.ng-admin-circuitos {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 0 14px 14px;
+}
+
+.ng-admin-circuito {
+  padding: 12px;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.ng-admin-circuito-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.ng-admin-circuito-icono {
+  flex-basis: 28px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 10px;
+}
+
+.ng-admin-metricas {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ng-admin-metricas strong {
+  display: block;
+  margin-top: 3px;
+  color: var(--molsan-blue);
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ng-cifra-urgente {
+  color: var(--molsan-danger) !important;
+}
+
+.ng-admin-ver-expedientes,
+.ng-admin-entrar {
+  width: calc(100% - 28px);
+  margin: 0 14px 10px;
+}
+
+.ng-admin-entrar {
+  width: calc(100% - 28px);
+  margin-bottom: 14px;
+  color: #fff;
+  background: var(--molsan-blue);
+}
+
+.ng-admin-notaria-activa {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 15px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+}
+
+.ng-ficha-cuerpo,
+.ng-documentacion-layout,
+.ng-carpeta-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, .85fr);
+  gap: 14px;
+}
+
+.ng-detalle-bloque {
+  padding: 15px;
+}
+
+.ng-detalle-bloque > summary,
+.ng-panel-titulo h2 {
+  color: var(--molsan-blue);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ng-datos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ng-datos-superiores {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ng-fincas-lista,
+.ng-carpeta-categorias {
+  display: grid;
+  gap: 10px;
+}
+
+.ng-finca-card,
+.ng-categoria-documental {
+  padding: 12px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.ng-workflow-form,
+.ng-comentario-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ng-ayuda-campo {
+  display: block;
+  margin-top: 4px;
+}
+
+.ng-comentarios-historico {
+  display: grid;
+  gap: 9px;
+}
+
+.ng-observacion,
+.ng-perfil-observacion {
+  padding: 12px;
+  background: var(--molsan-panel);
+  border-left: 3px solid var(--molsan-blue);
+  border-radius: 8px;
+}
+
+.ng-categoria-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 9px;
+  color: var(--molsan-blue);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ng-adjuntar-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ng-pdf-link {
+  color: var(--molsan-blue);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ng-volver {
+  flex: 0 0 auto;
+}
+
+.ng-login-submit:disabled,
+.ng-boton-secundario:disabled,
+.ng-abrir:disabled,
+.ng-admin-ver-expedientes:disabled,
+.ng-admin-entrar:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.apoderagest > main > div > .apoderagest > section {
+  min-width: 0;
+  margin-bottom: var(--molsan-section-gap);
+  padding: var(--molsan-card-padding);
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.apoderagest > main > div > .apoderagest > section > div:first-child {
+  color: var(--molsan-text);
+}
+
+.apoderagest > main > div > .apoderagest > section h2,
+.apoderagest > main > div > .apoderagest > section h3 {
+  color: var(--molsan-blue);
+}
+
+@media (max-width: 900px) {
+  .ng-dashboard-graficos-tres-columnas,
+  .ng-admin-circuitos,
+  .ng-ficha-cuerpo,
+  .ng-documentacion-layout,
+  .ng-carpeta-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .ng-admin-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .ng-dashboard-graficos,
+  .ng-perfil-datos,
+  .ng-datos-grid,
+  .ng-datos-superiores,
+  .ng-workflow-form,
+  .ng-comentario-form,
+  .ng-admin-resumen {
+    grid-template-columns: 1fr;
+  }
+
+  .ng-panel,
+  .ng-dashboard-grafico,
+  .ng-modal {
+    padding: 13px;
+  }
+
+  .ng-modulos-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ng-barra-mes strong {
+    font-size: 9px;
+  }
+
+  .ng-filtros {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+/* Superficies de informes y avisos con el mismo patrón de tarjeta. */
+.informes-premium-page > nav button {
+  min-height: 145px;
+  padding: 18px;
+  color: var(--molsan-text);
+  text-align: left;
+  background: var(--molsan-glass-surface);
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-glass-shadow);
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+  transition: border-color var(--molsan-transition-normal), box-shadow var(--molsan-transition-normal), transform var(--molsan-transition-normal);
+}
+
+.informes-premium-page > nav button:hover {
+  border-color: rgba(6, 70, 117, .28);
+  box-shadow: var(--molsan-glass-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.informes-premium-page > nav button > span:first-child {
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.notificaciones-premium-page > div[role="article"],
+.notificaciones-premium-page article {
+  padding: 16px;
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ng-modulo-card,
+  .ng-dashboard-grafico,
+  .informes-premium-page > nav button {
+    transition: none;
+  }
+}
+
+
+/* ==========================================================
+   ADOPCIÓN TRANSVERSAL · ENCARGAGEST
+   EncargaGest empleaba clases eg-* sin hoja de estilos activa.
+   Se incorporan al sistema corporativo sin tocar su lógica.
+========================================================== */
+
+.encargagest .eg-main {
+  min-width: 0;
+  padding-top: 18px;
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+}
+
+.encargagest .eg-kpi,
+.encargagest .eg-panel,
+.encargagest .eg-directorio {
+  min-width: 0;
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.encargagest .eg-kpi {
+  padding: 16px;
+}
+
+.encargagest .eg-directorio {
+  overflow: hidden;
+  padding: 18px;
+}
+
+.eg-directorio-cabecera,
+.eg-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.eg-directorio-cabecera {
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.eg-directorio-cabecera h2,
+.eg-panel-head h2,
+.eg-modal-heading h2 {
+  margin: 0;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-lg);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.eg-directorio-cabecera p:not(.eg-directorio-eyebrow),
+.eg-panel-head p,
+.eg-modal-contexto,
+.eg-modal-section-heading > div > span:first-child {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.eg-directorio-eyebrow {
+  margin-bottom: 5px;
+  color: var(--molsan-muted);
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-bold);
+  letter-spacing: .09em;
+}
+
+.eg-directorio-contador {
+  display: grid;
+  min-width: 120px;
+  gap: 3px;
+  padding: 10px 13px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+  text-align: right;
+}
+
+.eg-directorio-contador strong {
+  color: var(--molsan-blue);
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+}
+
+.eg-directorio-contador span {
+  color: var(--molsan-muted);
+  font-size: 10px;
+}
+
+.eg-directorio-busqueda {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 14px 0;
+  padding: 12px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.eg-directorio-input-wrap {
+  display: flex;
+  flex: 1 1 280px;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.eg-directorio-input-wrap > span {
+  color: var(--molsan-blue);
+  font-size: 20px;
+}
+
+.eg-directorio-input-wrap input {
+  width: 100%;
+  min-width: 0;
+}
+
+.eg-directorio-alcance {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+  white-space: nowrap;
+}
+
+.eg-directorio-global,
+.eg-directorio-paginacion button,
+.eg-directorio-gestionar,
+.eg-directorio-habilitar,
+.eg-secondary {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 7px 11px;
+  color: var(--molsan-blue);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.eg-directorio-global:hover,
+.eg-directorio-paginacion button:hover:not(:disabled),
+.eg-directorio-gestionar:hover:not(:disabled),
+.eg-directorio-habilitar:hover:not(:disabled),
+.eg-secondary:hover:not(:disabled) {
+  background: var(--molsan-panel);
+  border-color: rgba(6, 70, 117, .3);
+}
+
+.eg-directorio-tabla-wrap {
+  width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+.eg-directorio-tabla {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+}
+
+.eg-directorio-tabla th {
+  padding: 11px 12px;
+  color: var(--molsan-blue);
+  background: var(--molsan-table-head);
+  border-bottom: 1px solid var(--molsan-border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.eg-directorio-tabla td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--molsan-border);
+  vertical-align: middle;
+}
+
+.eg-directorio-tabla tbody tr:hover td {
+  background: var(--molsan-panel);
+}
+
+.eg-directorio-tabla-nombre {
+  min-width: 190px;
+  color: var(--molsan-blue);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.eg-directorio-tabla-acciones,
+.eg-directorio-paginacion > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.eg-directorio-estado {
+  display: inline-flex;
+  padding: 4px 8px;
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.eg-directorio-estado.is-enabled {
+  color: var(--molsan-success);
+  background: var(--molsan-success-soft);
+  border-color: rgba(35, 115, 77, .22);
+}
+
+.eg-directorio-vacio {
+  padding: 25px;
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border: 1px dashed var(--molsan-border);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.eg-directorio-paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 13px;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.eg-panel {
+  overflow: hidden;
+}
+
+.eg-panel-head {
+  padding: 16px;
+  background: var(--molsan-panel);
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.eg-button-primary {
+  display: inline-flex;
+  min-height: var(--molsan-control-height);
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  color: #fff;
+  background: var(--molsan-blue);
+  border: 1px solid var(--molsan-blue);
+  border-radius: var(--molsan-radius-control);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.eg-button-primary:hover:not(:disabled) {
+  background: var(--molsan-blue-hover);
+}
+
+.eg-button-primary:disabled,
+.eg-directorio-global:disabled,
+.eg-directorio-paginacion button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.eg-modal-overlay {
+  position: fixed;
+  z-index: var(--molsan-z-overlay);
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 16px;
+  background: rgba(18, 39, 54, .42);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+.eg-modal-form,
+.eg-modal-perfil {
+  width: min(100%, 1120px);
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-modal);
+  box-shadow: var(--molsan-shadow-modal);
+}
+
+.eg-modal-form {
+  padding: 20px;
+}
+
+.eg-modal-header,
+.eg-perfil-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--molsan-panel);
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.eg-modal-brand {
+  display: grid;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 11px;
+  font-weight: var(--molsan-font-weight-bold);
+}
+
+.eg-modal-heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.eg-modal-close {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.eg-modal-contexto,
+.eg-modal-notaria,
+.eg-modal-contexto-punto {
+  padding: 12px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.eg-modal-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr);
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.eg-modal-section {
+  min-width: 0;
+  padding: 15px;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 11px;
+}
+
+.eg-modal-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 13px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.eg-modal-section-heading h3 {
+  margin: 0;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-md);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.eg-modal-section-icono {
+  display: grid;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: var(--molsan-font-weight-bold);
+}
+
+.eg-modal-field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.eg-modal-field-grid label,
+.eg-modal-section label {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-medium);
+}
+
+.eg-modal-field-grid input,
+.eg-modal-field-grid select,
+.eg-modal-field-grid textarea,
+.eg-modal-section input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.eg-modal-section select,
+.eg-modal-section textarea {
+  width: 100%;
+  min-width: 0;
+}
+
+.eg-span-2 {
+  grid-column: 1 / -1;
+}
+
+.eg-contrato-layout,
+.eg-modal-carpeta-panel {
+  padding: 14px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.eg-modal-carpeta-lateral {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.eg-modal-carpeta-contrato {
+  padding: 12px;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.eg-modal-error {
+  padding: 11px 13px;
+  color: var(--molsan-danger);
+  background: var(--molsan-danger-soft);
+  border: 1px solid rgba(163, 59, 66, .24);
+  border-radius: 9px;
+  font-size: var(--molsan-font-size-sm);
+}
+
+.eg-modal-header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+.eg-modal-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  background: var(--molsan-white);
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--molsan-border);
+}
+
+.eg-perfil-cabecera {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+}
+
+.eg-perfil-cabecera h2 {
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-lg);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.eg-perfil-layout {
+  min-width: 0;
+}
+
+.eg-perfil-identidad,
+.eg-perfil-seguridad {
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 11px;
+}
+
+.eg-perfil-avatar {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 12px;
+  font-weight: var(--molsan-font-weight-bold);
+}
+
+.eg-perfil-datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.eg-perfil-dato {
+  min-width: 0;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.eg-perfil-observacion {
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border-left: 3px solid var(--molsan-blue);
+  border-radius: 8px;
+}
+
+@media (max-width: 820px) {
+  .eg-modal-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .eg-modal-carpeta-lateral {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .eg-modal-form {
+    padding: 13px;
+  }
+
+  .eg-modal-field-grid,
+  .eg-perfil-datos {
+    grid-template-columns: 1fr;
+  }
+
+  .eg-directorio {
+    padding: 12px;
+  }
+
+  .eg-directorio-paginacion {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+
+/* ==========================================================
+   COMPONENTES ERP HEREDADOS · SEGURIDAD Y ADMINISTRACIÓN
+   Compatibilidad visual para la familia erp-* que seguía
+   utilizándose fuera de los componentes Molsan compartidos.
+========================================================== */
+
+.erp-card,
+.molsan-card {
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.erp-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 15px 18px;
+  background: var(--molsan-panel);
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.erp-card-title,
+.erp-page-title {
+  margin: 0;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-lg);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.erp-card-description,
+.erp-page-subtitle,
+.erp-section-description {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-sm);
+}
+
+.erp-card-body {
+  min-width: 0;
+  padding: 18px;
+}
+
+.erp-section-title {
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-md);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.erp-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: 13px;
+  border-bottom: 2px solid var(--molsan-panel);
+}
+
+.erp-eyebrow {
+  color: var(--molsan-muted);
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-bold);
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.erp-btn {
+  display: inline-flex;
+  min-height: var(--molsan-control-height);
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 13px;
+  color: var(--molsan-blue);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-semibold);
+  transition: background var(--molsan-transition-fast), border-color var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast);
+}
+
+.erp-btn:hover:not(:disabled) {
+  background: var(--molsan-panel);
+  border-color: rgba(6, 70, 117, .3);
+}
+
+.erp-btn-primary {
+  color: #fff;
+  background: var(--molsan-blue);
+  border-color: var(--molsan-blue);
+}
+
+.erp-btn-primary:hover:not(:disabled) {
+  color: #fff;
+  background: var(--molsan-blue-hover);
+}
+
+.erp-btn-secondary {
+  color: var(--molsan-blue);
+  background: #fff;
+}
+
+.erp-btn-danger {
+  color: var(--molsan-danger);
+  background: var(--molsan-danger-soft);
+  border-color: rgba(163, 59, 66, .24);
+}
+
+.erp-btn-success {
+  color: var(--molsan-success);
+  background: var(--molsan-success-soft);
+  border-color: rgba(35, 115, 77, .22);
+}
+
+.erp-btn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.erp-badge {
+  display: inline-flex;
+  min-height: 22px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 3px 8px;
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-semibold);
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.erp-badge-neutral,
+.erp-badge-purple {
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border-color: var(--molsan-border);
+}
+
+.erp-badge-primary {
+  color: var(--molsan-blue);
+  background: var(--molsan-blue-soft);
+  border-color: rgba(6, 70, 117, .2);
+}
+
+.erp-badge-success {
+  color: var(--molsan-success);
+  background: var(--molsan-success-soft);
+  border-color: rgba(35, 115, 77, .22);
+}
+
+.erp-badge-danger {
+  color: var(--molsan-danger);
+  background: var(--molsan-danger-soft);
+  border-color: rgba(163, 59, 66, .22);
+}
+
+.erp-alert {
+  padding: 12px 14px;
+  border: 1px solid;
+  border-radius: 9px;
+  font-size: var(--molsan-font-size-sm);
+}
+
+.erp-alert-info {
+  color: var(--molsan-blue);
+  background: var(--molsan-blue-soft);
+  border-color: rgba(6, 70, 117, .2);
+}
+
+.erp-alert-success {
+  color: var(--molsan-success);
+  background: var(--molsan-success-soft);
+  border-color: rgba(35, 115, 77, .22);
+}
+
+.erp-alert-warning {
+  color: var(--molsan-warning);
+  background: var(--molsan-warning-soft);
+  border-color: rgba(148, 101, 27, .22);
+}
+
+.erp-alert-danger {
+  color: var(--molsan-danger);
+  background: var(--molsan-danger-soft);
+  border-color: rgba(163, 59, 66, .22);
+}
+
+.erp-empty-state,
+.erp-empty-inline {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 26px 18px;
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border: 1px dashed var(--molsan-border);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.erp-empty-state-icon {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 12px;
+}
+
+.erp-empty-state-title {
+  color: var(--molsan-blue);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.erp-empty-state-description {
+  max-width: 560px;
+  font-size: var(--molsan-font-size-sm);
+}
+
+.erp-data-item,
+.erp-stat-card,
+.erp-activity-item {
+  min-width: 0;
+  padding: 13px;
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.erp-data-label,
+.erp-stat-label {
+  display: block;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.erp-data-value,
+.erp-stat-value {
+  display: block;
+  margin-top: 4px;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-lg);
+  font-weight: var(--molsan-font-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.erp-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 9px;
+  padding-top: 13px;
+  border-top: 1px solid var(--molsan-border);
+}
+
+.seguridad-accesos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.seguridad-acceso {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  color: var(--molsan-text);
+  background: var(--molsan-glass-surface);
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-glass-shadow);
+  text-decoration: none;
+  transition: border-color var(--molsan-transition-normal), box-shadow var(--molsan-transition-normal), transform var(--molsan-transition-normal);
+}
+
+.seguridad-acceso:hover {
+  border-color: rgba(6, 70, 117, .3);
+  box-shadow: var(--molsan-glass-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.seguridad-acceso-icon {
+  display: grid;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 11px;
+}
+
+.seguridad-acceso-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.seguridad-acceso-title {
+  display: block;
+  color: var(--molsan-blue);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.seguridad-acceso-description {
+  display: block;
+  margin-top: 4px;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+  line-height: var(--molsan-line-height-relaxed);
+}
+
+.seguridad-acceso-arrow {
+  color: var(--molsan-blue);
+  font-weight: var(--molsan-font-weight-bold);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .erp-btn,
+  .seguridad-acceso {
+    transition: none;
+  }
+}
+
+
+/* ==========================================================
+   MÉTRICAS, ESTADOS Y GRÁFICOS COMPARTIDOS
+========================================================== */
+
+.molsan-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 205px), 1fr));
+  gap: 12px;
+  min-width: 0;
+}
+
+.molsan-stat-card {
+  display: block;
+  min-width: 0;
+  min-height: 86px;
+  padding: 15px;
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+button.molsan-stat-card {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast), background var(--molsan-transition-fast), transform var(--molsan-transition-fast);
+}
+
+button.molsan-stat-card:hover {
+  background: var(--molsan-panel);
+  border-color: rgba(6, 70, 117, .3);
+  box-shadow: var(--molsan-glass-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.molsan-dashboard-card.is-active,
+button.molsan-stat-card[aria-pressed="true"] {
+  background: var(--molsan-panel);
+  border-color: rgba(6, 70, 117, .48);
+  box-shadow: inset 0 0 0 1px rgba(6, 70, 117, .16), var(--molsan-shadow-card);
+}
+
+.molsan-stat-label {
+  display: block;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-medium);
+}
+
+.molsan-stat-card strong {
+  display: block;
+  margin-top: 5px;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-xl);
+  font-weight: var(--molsan-font-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.molsan-status-pill {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 10px;
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.molsan-empty-state {
+  padding: 24px;
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border: 1px dashed var(--molsan-border);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.molsan-module-card {
+  display: flex;
+  min-width: 0;
+  min-height: 94px;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 15px;
+  color: var(--molsan-text);
+  text-align: left;
+  background: var(--molsan-glass-surface);
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-glass-shadow);
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+  transition: border-color var(--molsan-transition-normal), box-shadow var(--molsan-transition-normal), transform var(--molsan-transition-normal);
+}
+
+.molsan-module-card:hover {
+  border-color: rgba(6, 70, 117, .3);
+  box-shadow: var(--molsan-glass-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.molsan-module-card > span:first-child {
+  display: grid;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+  font-weight: var(--molsan-font-weight-bold);
+}
+
+.molsan-module-card strong {
+  display: block;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.molsan-module-card small {
+  display: block;
+  margin-top: 4px;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+  line-height: var(--molsan-line-height-relaxed);
+}
+
+.cancelagest-premium > section:first-of-type {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.cancelagest-premium .molsan-stat-card > span {
+  display: block;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.cancelagest-premium .molsan-stat-card small {
+  display: block;
+  margin-top: 5px;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.cancelagest-access-section {
+  padding: 18px;
+}
+
+.cancelagest-access-section h2,
+.cancelagest-charts-grid h2,
+.cancelagest-timing-section h2 {
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-lg);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.cancelagest-access-section > div:first-child p,
+.cancelagest-charts-grid article > div:first-child p,
+.cancelagest-timing-section > div:first-child p {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-sm);
+}
+
+.cancelagest-module-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.cancelagest-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.cancelagest-charts-grid article,
+.cancelagest-timing-section {
+  min-width: 0;
+  padding: 18px;
+}
+
+.molsan-month-bars {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: end;
+  gap: 7px;
+  min-height: 170px;
+  margin-top: 16px;
+}
+
+.molsan-month-bar {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  color: var(--molsan-muted);
+  font-size: 10px;
+}
+
+.molsan-month-bar strong {
+  color: var(--molsan-blue);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.molsan-month-track {
+  display: flex;
+  width: min(100%, 24px);
+  height: 112px;
+  align-items: flex-end;
+  overflow: hidden;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 6px;
+}
+
+.molsan-month-fill {
+  width: 100%;
+  min-height: 4px;
+  background: linear-gradient(180deg, rgba(6, 70, 117, .72), var(--molsan-blue));
+  border-radius: 5px 5px 0 0;
+}
+
+.molsan-chart-bars {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.molsan-chart-row {
+  display: grid;
+  grid-template-columns: minmax(120px, .85fr) minmax(100px, 1.5fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.molsan-chart-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+}
+
+.molsan-chart-track {
+  height: 11px;
+  overflow: hidden;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+}
+
+.molsan-chart-bar {
+  height: 100%;
+  min-width: 0;
+  background: var(--molsan-blue);
+  border-radius: inherit;
+}
+
+.molsan-chart-bar.is-empty {
+  background: var(--molsan-border);
+}
+
+.molsan-chart-row > strong {
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-sm);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.cancelagest-categories,
+.cancelagest-milestones {
+  display: grid;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.cancelagest-categories > div,
+.cancelagest-milestones > span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 8px;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.cancelagest-categories strong {
+  color: var(--molsan-blue);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 1000px) {
+  .cancelagest-premium > section:first-of-type {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cancelagest-module-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .cancelagest-charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .molsan-month-bars {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .molsan-chart-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .molsan-chart-track {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+@media (max-width: 480px) {
+  .cancelagest-premium > section:first-of-type,
+  .cancelagest-module-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button.molsan-stat-card,
+  .molsan-module-card {
+    transition: none;
+  }
+}
+
+
+/* ==========================================================
+   NAVEGACIÓN DE HERRAMIENTAS Y SUPERFICIES DE PÁGINA
+========================================================== */
+
+.molsan-tool-group {
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.molsan-tool-group__header {
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.molsan-tool-group__header h2 {
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-md);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.molsan-tool-group__header p {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.molsan-tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
+  gap: 13px;
+  min-width: 0;
+}
+
+.molsan-tool-card {
+  display: block;
+  min-width: 0;
+  min-height: 110px;
+  padding: 17px;
+  color: var(--molsan-text);
+  text-decoration: none;
+  text-align: left;
+  background: var(--molsan-glass-surface);
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-glass-shadow);
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+  transition: background var(--molsan-transition-normal), border-color var(--molsan-transition-normal), box-shadow var(--molsan-transition-normal), transform var(--molsan-transition-normal);
+}
+
+.molsan-tool-card:hover {
+  background: #fff;
+  border-color: rgba(6, 70, 117, .32);
+  box-shadow: var(--molsan-glass-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.molsan-tool-card h2 {
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-md);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.molsan-tool-card p {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-sm);
+  line-height: var(--molsan-line-height-relaxed);
+}
+
+.molsan-tool-icon {
+  display: grid;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 11px;
+  font-size: 19px;
+}
+
+.molsan-tool-badge,
+.molsan-tool-stage {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.molsan-tool-stage {
+  color: var(--molsan-blue);
+  border-color: rgba(6, 70, 117, .2);
+}
+
+.molsan-tool-warning {
+  color: var(--molsan-warning);
+  background: var(--molsan-warning-soft);
+  border: 1px solid rgba(148, 101, 27, .22);
+  border-radius: 9px;
+  font-size: var(--molsan-font-size-xs);
+}
+
+.erp-page > section:not(.grid):not(.molsan-stat-grid):not(.cancelagest-charts-grid):not([data-molsan-plain]) {
+  min-width: 0;
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.erp-page > section:not(.grid):not(.molsan-stat-grid):not(.cancelagest-charts-grid):not([data-molsan-plain]) > article:not(.erp-card):not(.molsan-stat-card) {
+  min-width: 0;
+  padding: 14px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.erp-page button:not([class*="molsan-"]):not([class*="ng-"]):not([class*="eg-"]):not([class*="agenda-"]):not([class*="bg-"]):not([role="switch"]) {
+  min-height: 34px;
+  padding: 7px 11px;
+  color: var(--molsan-blue);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-semibold);
+  transition: background var(--molsan-transition-fast), border-color var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast);
+}
+
+.erp-page button:not([class*="molsan-"]):not([class*="ng-"]):not([class*="eg-"]):not([class*="agenda-"]):not([class*="bg-"]):not([role="switch"]):hover:not(:disabled) {
+  background: var(--molsan-panel);
+  border-color: rgba(6, 70, 117, .3);
+}
+
+.erp-page button[aria-pressed="true"]:not([class*="molsan-"]) {
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border-color: rgba(6, 70, 117, .35);
+  box-shadow: inset 0 0 0 1px rgba(6, 70, 117, .12);
+}
+
+.erp-page button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .molsan-tool-card {
+    transition: none;
+  }
+}
+
+
+/* ==========================================================
+   PORTALES PROFESIONALES · LOGIN Y MODAL CTN
+========================================================== */
+
+.portal-login {
+  color: var(--molsan-text);
+  background:
+    radial-gradient(ellipse at 12% 10%, rgba(6, 70, 117, .08), transparent 42%),
+    radial-gradient(ellipse at 88% 88%, rgba(6, 70, 117, .06), transparent 38%),
+    var(--molsan-panel);
+  font-family: var(--molsan-font-family);
+}
+
+.portal-login > div > div {
+  overflow: hidden;
+  background: rgba(255, 255, 255, .94);
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: 20px;
+  box-shadow: 0 20px 56px rgba(6, 70, 117, .13);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.portal-login h1 {
+  color: var(--molsan-blue);
+  font-size: clamp(22px, 4vw, 27px);
+  font-weight: var(--molsan-font-weight-bold);
+  letter-spacing: -.025em;
+  text-align: center;
+}
+
+.portal-login h1 + p {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-sm);
+  line-height: var(--molsan-line-height-relaxed);
+  text-align: center;
+}
+
+.portal-login label {
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.portal-login input {
+  min-height: 46px;
+  color: var(--molsan-text);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  outline: none;
+}
+
+.portal-login input:focus {
+  border-color: var(--molsan-blue);
+  box-shadow: 0 0 0 3px rgba(6, 70, 117, .1);
+}
+
+.portal-login button[type="button"] {
+  color: var(--molsan-muted);
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+}
+
+.portal-login button[type="submit"] {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  color: #fff;
+  background: var(--molsan-blue);
+  border: 1px solid var(--molsan-blue);
+  border-radius: var(--molsan-radius-control);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-semibold);
+  box-shadow: 0 4px 12px rgba(6, 70, 117, .14);
+  transition: background var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast);
+}
+
+.portal-login button[type="submit"]:hover:not(:disabled) {
+  background: var(--molsan-blue-hover);
+  box-shadow: 0 6px 16px rgba(6, 70, 117, .18);
+}
+
+.portal-login button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.portal-login [role="alert"] {
+  color: var(--molsan-danger);
+  background: var(--molsan-danger-soft);
+  border: 1px solid rgba(163, 59, 66, .22);
+  border-radius: 9px;
+}
+
+.portal-login form + div {
+  border-top: 1px solid var(--molsan-border);
+}
+
+.portal-login form + div p {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+  line-height: var(--molsan-line-height-relaxed);
+  text-align: center;
+}
+
+.molsan-modal-panel {
+  min-width: 0;
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-modal);
+  box-shadow: var(--molsan-shadow-modal);
+}
+
+.molsan-modal.ctn-modal-dialog {
+  width: min(100%, 1080px);
+  max-height: calc(100dvh - 36px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.ctn-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 15px 18px;
+  background: var(--molsan-panel);
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.ctn-modal-header-identity {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+
+.ctn-modal-eyebrow {
+  display: block;
+  color: var(--molsan-muted);
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-bold);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.ctn-modal-title {
+  margin: 2px 0 0;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-lg);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ctn-modal-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ctn-modal-header-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 9px;
+  color: var(--molsan-blue);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ctn-modal-cerrar {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.ctn-modal-contenido {
+  min-width: 0;
+  overflow: auto;
+  padding: 16px;
+}
+
+.ctn-ficha-pestanas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 15px;
+  padding: 5px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ctn-ficha-pestanas button {
+  min-height: 34px;
+  padding: 7px 11px;
+  color: var(--molsan-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ctn-ficha-pestanas button[aria-selected="true"],
+.ctn-ficha-pestanas button[aria-pressed="true"] {
+  color: var(--molsan-blue);
+  background: #fff;
+  border-color: var(--molsan-border);
+  box-shadow: 0 1px 3px rgba(6, 70, 117, .06);
+}
+
+.ctn-modal-seccion {
+  min-width: 0;
+  margin-top: 13px;
+  padding: 15px;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 11px;
+}
+
+.ctn-modal-seccion:first-child {
+  margin-top: 0;
+}
+
+.ctn-modal-seccion--compact {
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--molsan-panel);
+}
+
+.ctn-modal-seccion-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.ctn-modal-seccion-titulo h3 {
+  margin: 0;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-md);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ctn-modal-seccion-titulo > span {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ctn-modal-datos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.ctn-modal-dato {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+  padding: 11px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+  overflow-wrap: anywhere;
+}
+
+.ctn-modal-info-label {
+  color: var(--molsan-muted);
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-semibold);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.ctn-modal-dato strong {
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-medium);
+}
+
+.ctn-modal-ayuda {
+  margin: 9px 0;
+  padding: 10px 12px;
+  color: var(--molsan-blue);
+  background: var(--molsan-blue-soft);
+  border: 1px solid rgba(6, 70, 117, .16);
+  border-radius: 8px;
+  font-size: var(--molsan-font-size-xs);
+  line-height: var(--molsan-line-height-relaxed);
+}
+
+.ctn-modal-alerta {
+  margin: 10px 0;
+  padding: 11px 13px;
+  color: var(--molsan-warning);
+  background: var(--molsan-warning-soft);
+  border: 1px solid rgba(148, 101, 27, .22);
+  border-radius: 9px;
+  font-size: var(--molsan-font-size-sm);
+}
+
+.ctn-modal-vacio {
+  padding: 20px;
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border: 1px dashed var(--molsan-border);
+  border-radius: 9px;
+  text-align: center;
+  font-size: var(--molsan-font-size-sm);
+}
+
+.ctn-modal-mapa-marco {
+  overflow: hidden;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ctn-modal-mapa-marco iframe {
+  display: block;
+  width: 100%;
+  min-height: 260px;
+  border: 0;
+}
+
+.ctn-modal-mapa-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.ctn-modal-tabla-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.ctn-modal-tabla {
+  width: 100%;
+  min-width: 650px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ctn-modal-tabla th {
+  padding: 10px;
+  color: var(--molsan-blue);
+  background: var(--molsan-table-head);
+  border-bottom: 1px solid var(--molsan-border);
+  text-align: left;
+}
+
+.ctn-modal-tabla td {
+  padding: 10px;
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.ctn-modal-tabla tbody tr:hover td {
+  background: var(--molsan-panel);
+}
+
+.ctn-modal-pie-tabla,
+.ctn-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 13px;
+  padding-top: 12px;
+  border-top: 1px solid var(--molsan-border);
+}
+
+.ctn-modal-resumen-firmas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 9px;
+}
+
+.ctn-modal-busqueda-firmas,
+.ctn-modal-busqueda-expandida {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 12px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.ctn-btn {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 7px 11px;
+  color: var(--molsan-blue);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ctn-btn-primary {
+  color: #fff;
+  background: var(--molsan-blue);
+  border-color: var(--molsan-blue);
+}
+
+.ctn-btn-primary:hover:not(:disabled) {
+  background: var(--molsan-blue-hover);
+}
+
+.ctn-btn-secondary:hover:not(:disabled) {
+  background: var(--molsan-panel);
+}
+
+.ctn-btn-danger {
+  color: var(--molsan-danger);
+  background: var(--molsan-danger-soft);
+  border-color: rgba(163, 59, 66, .22);
+}
+
+.ctn-btn-small {
+  min-height: 28px;
+  padding: 4px 8px;
+  font-size: 10px;
+}
+
+.ctn-btn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 620px) {
+  .ctn-modal-contenido {
+    padding: 10px;
+  }
+
+  .ctn-modal-datos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ctn-modal-seccion {
+    padding: 11px;
+  }
+
+  .ctn-modal-header {
+    padding: 12px;
+  }
+
+  .ctn-modal-mapa-pie {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+
+/* Modales operativos que se montan directamente en document.body. */
+.liquidar-expediente-modal,
+.vista-previa-cierre-modal,
+.expediente-operativo-modal,
+.traspaso-saldo-modal {
+  background: rgba(18, 39, 54, .44);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+.liquidar-expediente-modal > section,
+.vista-previa-cierre-modal > section,
+.expediente-operativo-modal > section,
+.traspaso-saldo-modal > section {
+  min-width: 0;
+  color: var(--molsan-text);
+  background: var(--molsan-white);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-modal);
+  box-shadow: var(--molsan-shadow-modal);
+}
+
+.liquidar-expediente-modal > section > div:first-child,
+.vista-previa-cierre-modal > section > div:first-child,
+.expediente-operativo-modal > section > div:first-child,
+.traspaso-saldo-modal > section > div:first-child {
+  background: var(--molsan-panel);
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.liquidar-expediente-modal h2,
+.vista-previa-cierre-modal h2,
+.expediente-operativo-modal h2,
+.traspaso-saldo-modal h2 {
+  color: var(--molsan-blue);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.liquidar-expediente-modal [role="alert"],
+.expediente-operativo-modal [role="alert"],
+.traspaso-saldo-modal [role="alert"] {
+  color: var(--molsan-danger);
+  background: var(--molsan-danger-soft);
+  border: 1px solid rgba(163, 59, 66, .22);
+  border-radius: 9px;
+}
+
+.liquidar-expediente-modal [role="status"],
+.expediente-operativo-modal [role="status"],
+.traspaso-saldo-modal [role="status"] {
+  color: var(--molsan-success);
+  background: var(--molsan-success-soft);
+  border: 1px solid rgba(35, 115, 77, .22);
+  border-radius: 9px;
+}
+
+body [role="dialog"]:not([data-molsan-style-exempt]) button:not([class*="molsan-"]):not([class*="ctn-"]):not([class*="ng-"]):not([class*="eg-"]):not([class*="bg-"]) {
+  min-height: 34px;
+  padding: 7px 11px;
+  color: var(--molsan-blue);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+body [role="dialog"] button[type="submit"]:not([class*="bg-"]) {
+  color: #fff;
+  background: var(--molsan-blue);
+  border-color: var(--molsan-blue);
+}
+
+body [role="dialog"]:not([data-molsan-style-exempt]) button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+
+/* Acceso y selector de espacios: misma identidad para todas las áreas. */
+.login-principal {
+  color: var(--molsan-text);
+  background:
+    radial-gradient(ellipse at 10% 8%, rgba(6, 70, 117, .09), transparent 40%),
+    radial-gradient(ellipse at 90% 92%, rgba(6, 70, 117, .06), transparent 36%),
+    var(--molsan-panel);
+  font-family: var(--molsan-font-family);
+}
+
+.login-principal > .login-card {
+  background: rgba(255, 255, 255, .95);
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: 20px;
+  box-shadow: 0 20px 56px rgba(6, 70, 117, .13);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.login-principal h1 {
+  color: var(--molsan-blue);
+  font-size: 26px;
+  font-weight: var(--molsan-font-weight-bold);
+  letter-spacing: -.025em;
+  text-align: center;
+}
+
+.login-principal header p {
+  color: var(--molsan-muted);
+  text-align: center;
+}
+
+.login-principal label {
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.login-principal input {
+  min-height: 46px;
+  color: var(--molsan-text);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+}
+
+.login-principal input:focus {
+  border-color: var(--molsan-blue);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(6, 70, 117, .1);
+}
+
+.login-principal [role="alert"] {
+  padding: 10px 12px;
+  color: var(--molsan-danger);
+  background: var(--molsan-danger-soft);
+  border: 1px solid rgba(163, 59, 66, .22);
+  border-radius: 9px;
+  font-size: var(--molsan-font-size-sm);
+}
+
+.login-principal button[type="button"] {
+  color: var(--molsan-muted);
+  background: transparent;
+  border: 0;
+}
+
+.selector-modulos-premium {
+  width: 100%;
+  min-width: 0;
+  padding: 4px 0 24px;
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+}
+
+.molsan-module-selector-header {
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--molsan-panel);
+}
+
+.molsan-module-selector-header h1 {
+  color: var(--molsan-blue);
+  font-size: 23px;
+  font-weight: var(--molsan-font-weight-bold);
+}
+
+.molsan-module-selector-header p {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-sm);
+}
+
+.molsan-module-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+  gap: 14px;
+}
+
+.molsan-module-selector-card {
+  min-width: 0;
+  padding: 18px;
+  color: var(--molsan-text);
+  text-align: left;
+  background: var(--molsan-glass-surface);
+  border: 1px solid var(--molsan-glass-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-glass-shadow);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  transition: background var(--molsan-transition-normal), border-color var(--molsan-transition-normal), box-shadow var(--molsan-transition-normal), transform var(--molsan-transition-normal);
+}
+
+.molsan-module-selector-card:hover {
+  background: #fff;
+  border-color: rgba(6, 70, 117, .34);
+  box-shadow: var(--molsan-glass-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.molsan-module-selector-card:focus-visible {
+  outline: 3px solid rgba(6, 70, 117, .25);
+  outline-offset: 2px;
+}
+
+.molsan-module-selector-icon {
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 13px;
+  font-size: 17px;
+  font-weight: var(--molsan-font-weight-bold);
+}
+
+.molsan-module-selector-card > div:first-child > span {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.molsan-module-selector-card > p:first-of-type {
+  color: var(--molsan-muted);
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-bold);
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.molsan-module-selector-card h2 {
+  margin-top: 5px;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-lg);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.molsan-module-selector-card p:not(:first-of-type) {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-sm);
+  line-height: var(--molsan-line-height-relaxed);
+}
+
+.molsan-module-selector-card > div:last-child {
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.selector-modulos-premium > p:last-child {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+  text-align: center;
+}
+
+.modulo-pendiente > .erp-card {
+  overflow: hidden;
+}
+
+.modulo-pendiente > .erp-card > div:first-child {
+  height: 6px;
+  background: var(--molsan-blue);
+}
+
+.modulo-pendiente > .erp-card h1,
+.modulo-pendiente > .erp-card h2,
+.modulo-pendiente > .erp-card h3 {
+  color: var(--molsan-blue);
+}
+
+.modulo-pendiente > .erp-card > div:nth-child(2) {
+  padding: 24px;
+}
+
+@media (max-width: 600px) {
+  .molsan-module-selector-header {
+    align-items: flex-start;
+  }
+
+  .molsan-module-selector-card {
+    min-height: 185px;
+    padding: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .molsan-module-selector-card {
+    transition: none;
+  }
+}
+
+
+.ctn-modal-overlay {
+  position: fixed;
+  z-index: var(--molsan-z-overlay);
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 16px;
+  background: rgba(18, 39, 54, .42);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+.ctn-modal-alerta--spaced {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.ctn-modal-label-busqueda {
+  display: grid;
+  min-width: 0;
+  flex: 1 1 240px;
+  gap: 5px;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+
+/* Detalle de fichas, pagos, documentos y paneles secundarios NotarGest. */
+.ng-modal-pagos-amplio {
+  width: min(100%, 1180px);
+}
+
+.ng-modal-overlay-scroll,
+.ng-modal-perfil-scroll,
+.ng-resumen-expedientes-overlay {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.ng-resumen-expedientes-overlay {
+  position: fixed;
+  z-index: var(--molsan-z-overlay);
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(18, 39, 54, .42);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+.ng-resumen-expedientes-contenido {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  padding: 18px;
+}
+
+.ng-tabla-pagos,
+.ng-resumen-expedientes-tabla {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ng-tabla-pagos th,
+.ng-resumen-expedientes-tabla th {
+  padding: 10px 11px;
+  color: var(--molsan-blue);
+  background: var(--molsan-table-head);
+  border-bottom: 1px solid var(--molsan-border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.ng-tabla-pagos td,
+.ng-resumen-expedientes-tabla td {
+  padding: 10px 11px;
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.ng-admin-kpis-global {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ng-admin-circuito-icono-fiscal {
+  color: var(--molsan-warning);
+  background: var(--molsan-warning-soft);
+  border-color: rgba(148, 101, 27, .22);
+}
+
+.ng-dashboard-actividad,
+.ng-dashboard-pagos,
+.ng-dashboard-economica,
+.ng-dashboard-etapas,
+.ng-dashboard-hitos {
+  min-width: 0;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.ng-ficha-premium,
+.ng-carpeta-premium,
+.ng-visor-documentos {
+  min-width: 0;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.ng-ficha-cabecera,
+.ng-visor-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 15px 17px;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.ng-alerta {
+  padding: 12px 14px;
+  color: var(--molsan-warning);
+  background: var(--molsan-warning-soft);
+  border: 1px solid rgba(148, 101, 27, .22);
+  border-radius: 9px;
+  font-size: var(--molsan-font-size-sm);
+}
+
+.ng-bloqueo-expediente {
+  padding: 13px;
+  color: var(--molsan-danger);
+  background: var(--molsan-danger-soft);
+  border: 1px solid rgba(163, 59, 66, .24);
+  border-radius: 9px;
+}
+
+.ng-alerta-icono {
+  display: grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  color: var(--molsan-warning);
+  background: var(--molsan-warning-soft);
+  border: 1px solid rgba(148, 101, 27, .22);
+  border-radius: 9px;
+}
+
+.ng-bloque-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ng-acordeon-ficha {
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ng-acordeon-ficha > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px 15px;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  cursor: pointer;
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ng-acordeon-flecha {
+  color: var(--molsan-blue);
+  transition: transform var(--molsan-transition-fast);
+}
+
+.ng-acordeon-ficha[open] .ng-acordeon-flecha {
+  transform: rotate(180deg);
+}
+
+.ng-firma-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 14px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ng-tipo-documento-bloque,
+.ng-datos-facturacion {
+  min-width: 0;
+  padding: 13px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.ng-subtitulo-detalle {
+  margin: 0 0 10px;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-md);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ng-datos-envio,
+.ng-datos-operacion,
+.ng-datos-facturacion-bloque {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ng-datos-envio > div,
+.ng-datos-operacion > div,
+.ng-datos-facturacion-bloque > div {
+  min-width: 0;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+
+.ng-comentarios-gestor {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ng-archivo-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 11px 12px;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.ng-pdf-icon {
+  display: grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-bold);
+}
+
+.ng-archivo-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ng-archivo-info strong {
+  display: block;
+  overflow-wrap: anywhere;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+}
+
+.ng-archivo-info small {
+  display: block;
+  margin-top: 3px;
+  color: var(--molsan-muted);
+  font-size: 10px;
+}
+
+.ng-vacio-categoria,
+.ng-visor-vacio {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  padding: 20px;
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+  border: 1px dashed var(--molsan-border);
+  border-radius: 9px;
+  text-align: center;
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ng-visor-documentos {
+  display: flex;
+  max-height: min(78vh, 820px);
+  flex-direction: column;
+}
+
+.ng-visor-documentos iframe,
+.ng-visor-documentos embed {
+  flex: 1;
+  width: 100%;
+  min-height: 420px;
+  border: 0;
+}
+
+.ng-pie {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 9px;
+  padding: 13px 16px;
+  border-top: 1px solid var(--molsan-border);
+}
+
+.eg-modal-datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 760px) {
+  .ng-admin-kpis-global {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ng-datos-envio,
+  .ng-datos-operacion,
+  .ng-datos-facturacion-bloque,
+  .ng-firma-form,
+  .eg-modal-datos {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ApoderaGest: paneles internos, citas y gráfica mensual. */
+.apoderagest .erp-page > section > div > section {
+  min-width: 0;
+  margin-top: 13px;
+  padding: 16px;
+  color: var(--molsan-text);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.apoderagest .erp-page > section > div > section > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 13px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.apoderagest .erp-page > section > div > section h3 {
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-md);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.apoderagest .erp-page > section > div > section article.erp-data-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  background: var(--molsan-panel);
+}
+
+.apoderagest .erp-page > section > div > section [role="img"] {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: end;
+  gap: 7px;
+  min-height: 150px;
+  padding-top: 10px;
+}
+
+.apoderagest .erp-page > section > div > section [role="img"] > div {
+  display: flex;
+  min-width: 0;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  color: var(--molsan-muted);
+  font-size: 10px;
+  text-align: center;
+}
+
+.apoderagest .erp-page > section > div > section [role="img"] > div > div {
+  display: flex;
+  width: min(100%, 24px);
+  height: 100px;
+  align-items: flex-end;
+  overflow: hidden;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 6px;
+}
+
+.apoderagest .erp-page > section > div > section [role="img"] > div > div > span {
+  display: block;
+  width: 100%;
+  background: var(--molsan-blue);
+  border-radius: 5px 5px 0 0;
+}
+
+.apoderagest .erp-page > section > div > section > p {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+@media (max-width: 720px) {
+  .apoderagest .erp-page > section > div > section [role="img"] {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+
+/* Accesos a portales desde CTN: credenciales, permisos e historial. */
+.ctn-portal-alert {
+  margin: 10px 0;
+  padding: 11px 13px;
+  border: 1px solid;
+  border-radius: 9px;
+  font-size: var(--molsan-font-size-sm);
+  line-height: var(--molsan-line-height-relaxed);
+}
+
+.ctn-portal-alert--warning {
+  color: var(--molsan-warning);
+  background: var(--molsan-warning-soft);
+  border-color: rgba(148, 101, 27, .22);
+}
+
+.ctn-portal-alert--error {
+  color: var(--molsan-danger);
+  background: var(--molsan-danger-soft);
+  border-color: rgba(163, 59, 66, .22);
+}
+
+.ctn-portal-alert--info {
+  color: var(--molsan-success);
+  background: var(--molsan-success-soft);
+  border-color: rgba(35, 115, 77, .22);
+}
+
+.ctn-portal-access-panel {
+  display: grid;
+  gap: 13px;
+}
+
+.ctn-portal-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 5px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 10px;
+}
+
+.ctn-portal-tab {
+  min-height: 35px;
+  padding: 7px 12px;
+  color: var(--molsan-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ctn-portal-tab.is-active {
+  color: var(--molsan-blue);
+  background: #fff;
+  border-color: var(--molsan-border);
+  box-shadow: 0 1px 3px rgba(6, 70, 117, .06);
+}
+
+.ctn-portal-card,
+.ctn-portal-history-card {
+  min-width: 0;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 11px;
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.ctn-portal-card-header,
+.ctn-portal-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--molsan-panel);
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.ctn-portal-label {
+  color: var(--molsan-muted);
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-semibold);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.ctn-portal-state {
+  display: inline-flex;
+  margin-top: 4px;
+  padding: 4px 9px;
+  border: 1px solid var(--molsan-border);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: var(--molsan-font-weight-bold);
+}
+
+.ctn-portal-state.is-enabled {
+  color: var(--molsan-success);
+  background: var(--molsan-success-soft);
+  border-color: rgba(35, 115, 77, .22);
+}
+
+.ctn-portal-state.is-disabled {
+  color: var(--molsan-muted);
+  background: var(--molsan-panel);
+}
+
+.ctn-portal-muted {
+  color: var(--molsan-muted);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ctn-portal-muted--spaced {
+  margin-top: 5px;
+}
+
+.ctn-portal-credentials-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 15px;
+}
+
+.ctn-portal-field-card {
+  min-width: 0;
+  padding: 13px;
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.ctn-portal-user-value {
+  display: block;
+  margin-top: 7px;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-md);
+  font-weight: var(--molsan-font-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.ctn-portal-password-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 7px;
+}
+
+.ctn-portal-password-input {
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  padding: 7px 10px;
+  color: var(--molsan-text);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ctn-portal-button {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 7px 11px;
+  color: var(--molsan-blue);
+  background: #fff;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-control);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ctn-portal-button:hover:not(:disabled) {
+  background: var(--molsan-panel);
+  border-color: rgba(6, 70, 117, .3);
+}
+
+.ctn-portal-button--icon {
+  flex: 0 0 36px;
+  width: 36px;
+  padding: 5px;
+}
+
+.ctn-portal-button--copy {
+  margin-top: 7px;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+}
+
+.ctn-portal-button--primary-soft {
+  color: var(--molsan-blue);
+  background: var(--molsan-blue-soft);
+  border-color: rgba(6, 70, 117, .2);
+}
+
+.ctn-portal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 15px 15px;
+}
+
+.ctn-portal-password-warning {
+  margin-top: 10px;
+  padding: 10px 12px;
+  color: var(--molsan-warning);
+  background: var(--molsan-warning-soft);
+  border: 1px solid rgba(148, 101, 27, .22);
+  border-radius: 8px;
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ctn-portal-history-title {
+  margin: 0;
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-md);
+  font-weight: var(--molsan-font-weight-semibold);
+}
+
+.ctn-portal-history-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.ctn-portal-history-table {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-xs);
+}
+
+.ctn-portal-history-th {
+  padding: 10px 11px;
+  color: var(--molsan-blue);
+  background: var(--molsan-table-head);
+  border-bottom: 1px solid var(--molsan-border);
+  text-align: left;
+}
+
+.ctn-portal-history-td {
+  padding: 10px 11px;
+  border-bottom: 1px solid var(--molsan-border);
+}
+
+.ctn-portal-history-td--nowrap {
+  white-space: nowrap;
+}
+
+.ctn-portal-button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.agenda-toast {
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+}
+
+.agenda-toast > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, .96);
+  border: 1px solid var(--molsan-glass-border);
+  border-left: 3px solid var(--molsan-blue);
+  border-radius: 11px;
+  box-shadow: 0 8px 24px rgba(6, 70, 117, .14);
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
+}
+
+.agenda-toast > div > div:first-child {
+  display: grid;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  color: var(--molsan-blue);
+  background: var(--molsan-panel);
+  border: 1px solid var(--molsan-border);
+  border-radius: 9px;
+}
+
+.agenda-toast > div > div:nth-child(2) > div:first-child {
+  color: var(--molsan-blue);
+  font-size: var(--molsan-font-size-xs);
+  font-weight: var(--molsan-font-weight-bold);
+}
+
+.agenda-toast > div > div:nth-child(2) > div:last-child {
+  margin-top: 3px;
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-sm);
+  line-height: var(--molsan-line-height-relaxed);
+}
+
+@media (max-width: 600px) {
+  .ctn-portal-credentials-grid {
+    grid-template-columns: 1fr;
+    padding: 11px;
+  }
+
+  .ctn-portal-card-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .ctn-portal-actions {
+    flex-direction: column;
+  }
+
+  .ctn-portal-actions .ctn-portal-button {
+    width: 100%;
+  }
+}
+
+/* Métricas: responsive al final de la hoja para que ninguna regla base
+   posterior vuelva a sobrescribir el número de columnas en móvil. */
+@media (max-width: 900px) {
+  .molsan-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .molsan-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .molsan-stat-card {
+    min-height: 76px;
+    padding: 10px;
+  }
+
+  .molsan-stat-icon {
+    flex-basis: 32px;
+    width: 32px;
+    height: 32px;
+  }
+}
