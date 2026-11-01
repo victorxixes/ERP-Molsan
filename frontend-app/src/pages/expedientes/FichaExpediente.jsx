@@ -7522,8 +7522,8 @@ const cuantiaFincasParaEnvio =
                     )}
                 </>
                 </div>
-              </div>
-            </section>
+              </section>
+            </div>
           </div>
         </div>
  
