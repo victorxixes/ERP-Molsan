@@ -3639,6 +3639,7 @@ function InformeHistoricoPostFirma() {
 }
 
 function ApartadoInformePendiente({ apartado }) {
+  if (apartado.key === "notarios") return null;
   const detalle = {
     firmas: {
       encabezado: "Informe de firmas",
