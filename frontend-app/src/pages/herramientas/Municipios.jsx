@@ -2088,6 +2088,7 @@ export default function Municipios() {
               rowKey="id"
               minWidth="800px"
               sortMode="server"
+              initialSort={{ key: "municipio", direction: "asc" }}
               onSortChange={cambiarOrdenTabla}
               columns={[
                 { key: "ccaa", header: "Comunidad autónoma", accessor: "ccaa", sortType: "text" },
