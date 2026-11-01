@@ -240,7 +240,7 @@ export default function SubirDocumento() {
             >
 
               <span className="text-3xl">
-                {file ? "📎" : "☁️"}
+                <MolsanIcon name={file ? "attachment" : "upload"} size={22} />
               </span>
 
               <span className="text-sm font-medium text-slate-600">
