@@ -59,13 +59,6 @@
   outline-offset: 2px;
 }
 
-@media (max-width: 640px) {
-  .dashboard-cancelagest .ag-hero-acciones {
-    justify-content: flex-start;
-    width: 100%;
-  }
-}
-
 
 /* Refinamiento Dashboard · jerarquía compacta, tokens compartidos y accesibilidad */
 .dashboard-cancelagest {
@@ -197,48 +190,6 @@
   --dashboard-cg-primary-dark:#04375B;
   display:block;
 }
-.dashboard-cancelagest .dashboard-header {
-  position:relative;
-  isolation:isolate;
-  overflow:hidden;
-  padding:clamp(22px,2.6vw,34px) clamp(20px,2.8vw,36px) !important;
-  margin-bottom:26px !important;
-  border:1px solid #D8E4EC;
-  border-radius:22px;
-  background:
-    radial-gradient(ellipse at 92% 12%,rgba(89,174,204,.17),transparent 32%),
-    linear-gradient(112deg,#F2F7FB 0%,#FFFFFF 64%,#F6FAFC 100%);
-  box-shadow:0 12px 30px rgba(6,50,82,.065);
-}
-.dashboard-cancelagest .dashboard-header::after {
-  position:absolute;z-index:-1;right:-80px;bottom:-190px;
-  width:380px;height:380px;border:1px solid rgba(6,70,117,.09);
-  border-radius:50%;box-shadow:0 0 0 28px rgba(6,70,117,.018),0 0 0 62px rgba(6,70,117,.014);
-  content:"";
-}
-.dashboard-cancelagest .ag-marca {
-  width:68px;height:68px;flex-basis:68px;
-  border-radius:18px;
-  background:linear-gradient(145deg,#04375B,#0D638C) !important;
-  box-shadow:0 10px 22px rgba(6,70,117,.18);
-  font-size:21px;
-}
-.dashboard-cancelagest .ag-eyebrow {
-  color:#52778F !important;
-  font-size:10px;font-weight:850;letter-spacing:.18em;
-}
-.dashboard-cancelagest .ag-hero h1 {
-  margin:7px 0 6px !important;
-  color:#064675 !important;
-  font-size:clamp(29px,3vw,39px) !important;
-  font-weight:850 !important;
-  letter-spacing:-.045em !important;
-}
-.dashboard-cancelagest .ag-hero p {
-  max-width:680px;
-  color:#617789 !important;
-  font-size:13px;line-height:1.7;
-}
 .dashboard-cancelagest .ag-fecha-actual {
   border-color:#D8E4EC;
   border-radius:12px;
@@ -325,8 +276,6 @@
 .dashboard-cancelagest table tbody td { padding-top:15px;padding-bottom:15px; }
 .dashboard-cancelagest table tbody tr:hover { background:#F2F7FB !important; }
 @media(max-width:760px) {
-  .dashboard-cancelagest .dashboard-header { padding:20px !important;border-radius:17px; }
-  .dashboard-cancelagest .ag-marca { width:52px;height:52px;flex-basis:52px; }
   .dashboard-cancelagest .dashboard-kpi { min-height:112px; }
   .dashboard-cancelagest section > .mb-4 h2 { font-size:17px; }
 }
@@ -364,46 +313,3 @@
 }
 
 
-/* Cabecera compacta definitiva: misma escala que el resto del ERP Premium 2027. */
-.dashboard-cancelagest .dashboard-header {
-  padding: 12px 16px !important;
-  margin-bottom: 18px !important;
-  border-radius: 16px;
-}
-.dashboard-cancelagest .ag-hero-identidad {
-  gap: 12px;
-}
-.dashboard-cancelagest .ag-marca {
-  width: 40px !important;
-  height: 40px !important;
-  flex-basis: 40px !important;
-  border-radius: 11px;
-  font-size: 15px !important;
-  box-shadow: none !important;
-}
-.dashboard-cancelagest .ag-hero h1 {
-  margin: 0 0 3px !important;
-  font-size: 20px !important;
-  line-height: 1.2;
-  letter-spacing: -.02em !important;
-}
-.dashboard-cancelagest .ag-hero p {
-  font-size: 12px !important;
-  line-height: 1.45;
-}
-.dashboard-cancelagest .ag-eyebrow {
-  font-size: 9px !important;
-  letter-spacing: .12em !important;
-}
-@media (max-width: 640px) {
-  .dashboard-cancelagest .dashboard-header {
-    padding: 12px !important;
-    margin-bottom: 14px !important;
-    border-radius: 14px;
-  }
-  .dashboard-cancelagest .ag-marca {
-    width: 36px !important;
-    height: 36px !important;
-    flex-basis: 36px !important;
-  }
-}
