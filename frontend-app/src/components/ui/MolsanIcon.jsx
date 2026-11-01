@@ -58,6 +58,19 @@ const PATHS = {
   arrowLeft: <><path d="M20 12H5M11 6l-6 6 6 6"/></>,
   link: <><path d="m10 13 4-4M8 16H6a4 4 0 0 1 0-8h4M16 8h2a4 4 0 0 1 0 8h-4"/></>,
   plus: <><path d="M12 5v14M5 12h14"/></>,
+  pause: <><circle cx="12" cy="12" r="9"/><path d="M10 8v8M14 8v8"/></>,
+  truck: <><path d="M3 6h11v12H3zM14 10h4l3 4v4h-7z"/><circle cx="7" cy="19" r="1.5"/><circle cx="18" cy="19" r="1.5"/></>,
+  scale: <><path d="M12 3v18M5 6h14M7 6l-4 7h8zM17 6l-4 7h8zM8 21h8"/></>,
+  key: <><circle cx="8" cy="10" r="4"/><path d="m11 13 9 8M16 18l2-2M18 20l2-2"/></>,
+  globe: <><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></>,
+  download: <><path d="M12 4v12M7 11l5 5 5-5M4 20h16"/></>,
+  inbox: <><path d="M4 4h16l2 12h-6l-2 3h-4l-2-3H2z"/><path d="M2 16h6M16 16h6"/></>,
+  trophy: <><path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H4v2a4 4 0 0 0 4 4M16 6h4v2a4 4 0 0 1-4 4M12 13v5M8 21h8M9 18h6"/></>,
+  bell: <><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></>,
+  tag: <><path d="M3 12V4h8l10 10-7 7z"/><circle cx="8" cy="8" r="1"/></>,
+  plug: <><path d="M9 3v6M15 3v6M6 9h12v3a6 6 0 0 1-6 6v3M12 18v3"/></>,
+  door: <><path d="M5 21V3h14v18M9 21V9h6v12M12 15h.01"/></>,
+
 
 
 };
