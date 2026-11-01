@@ -90,7 +90,7 @@ export default function Verifacti() {
 
   return (
     <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-      <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/95 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.07)] sm:p-7">
+      <header className="molsan-page-header relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/95 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.07)] sm:p-7">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="absolute -right-10 -top-16 h-48 w-48 rounded-full bg-blue-100/60 blur-3xl" />
         <div className="relative flex flex-wrap items-center justify-between gap-4">
