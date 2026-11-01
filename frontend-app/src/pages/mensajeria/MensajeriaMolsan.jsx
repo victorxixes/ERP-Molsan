@@ -3,6 +3,7 @@ import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
 import "../../css/HerramientasPremium.css";
 import MensajeriaProveedores from "./MensajeriaProveedores.jsx";
+import { formatEuro as money } from "../../utils/formatters";
 
 const TABS = [
   ["solicitudes", "Solicitudes"],
@@ -17,7 +18,7 @@ const initialServicio = { codigo: "", nombre: "", descripcion: "", modalidad: ""
 const initialAlbaran = { numero_interno: "", numero_proveedor: "", proveedor: "", fecha: "", solicitud_id: "", servicio_id: "", importe: "", entregado: false, fecha_entrega: "", observaciones: "", documento_url: "" };
 const initialFactura = { proveedor: "", numero: "", fecha_emision: "", fecha_vencimiento: "", base_imponible: "", tipo_impuesto: "", importe_impuesto: "", total: "", estado_revision: "Pendiente de revisión", estado_pago: "Pendiente de pago", fecha_pago: "", observaciones: "", documento_url: "", albaran_ids: [] };
 const clean = (obj) => Object.fromEntries(Object.entries(obj).map(([k,v]) => [k, v === "" ? null : v]));
-const money = (v) => v == null || v === "" ? "—" : new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(v));
+
 
 export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion = false }) {
   const empleado = useAuthStore((s) => s.empleado);
