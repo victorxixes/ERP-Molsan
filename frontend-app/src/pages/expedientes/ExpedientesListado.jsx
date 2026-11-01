@@ -2111,21 +2111,11 @@ export default function ExpedientesListado() {
           columna
       ) {
 
-        setOrdenMultiple([
-
-          {
-
-            columna,
-
-            direccion:
-              actual.direccion ===
-              "asc"
-                ? "desc"
-                : "asc",
-
-          },
-
-        ]);
+        if (actual.direccion === "asc") {
+          setOrdenMultiple([{ columna, direccion: "desc" }]);
+        } else {
+          setOrdenMultiple([]);
+        }
 
       } else {
 
@@ -2168,39 +2158,13 @@ export default function ExpedientesListado() {
       indice !== -1
     ) {
 
-      setOrdenMultiple(
-        (actual) =>
-          actual.map(
-            (
-              orden,
-              index
-            ) => {
-
-              if (
-                index !==
-                indice
-              ) {
-
-                return orden;
-
-              }
-
-
-              return {
-
-                ...orden,
-
-                direccion:
-                  orden.direccion ===
-                  "asc"
-                    ? "desc"
-                    : "asc",
-
-              };
-
-            }
-          )
-      );
+      setOrdenMultiple((actual) => {
+        const seleccionado = actual[indice];
+        if (seleccionado?.direccion === "desc") {
+          return actual.filter((_, index) => index !== indice);
+        }
+        return actual.map((orden, index) => index === indice ? { ...orden, direccion: "desc" } : orden);
+      });
 
     } else {
 
