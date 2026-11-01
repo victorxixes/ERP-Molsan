@@ -264,3 +264,206 @@
   font-weight: 800;
   letter-spacing: -.02em;
 }
+
+
+/* Cabecera canónica para páginas y subpáginas que adoptan explícitamente
+   .molsan-page-header. No se estilizan header ni h1 genéricos. */
+:where(
+  .agenda-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .informes-premium-page,
+  .seguridad-premium-page,
+  .provisiones-fondos-page,
+  .ctn-detalle-page,
+  .herramientas-subpagina-premium,
+  .herramienta-operativa-premium,
+  .catalogos-maestros-premium,
+  .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium,
+  .molsan-intranet-page,
+  .notificaciones-premium-page,
+  .logs-premium-page,
+  .maestros-premium-page
+) > .molsan-page-header,
+:where(
+  .empleado-ficha-premium,
+  .empleado-editar-premium
+) .molsan-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-width: 0;
+  padding: 18px 22px;
+  border: 1px solid var(--molsan-premium-border, #D8E4EC);
+  border-radius: 18px;
+  background: linear-gradient(145deg, #FFFFFF 0%, #FFFFFF 72%, #F2F7FB 100%);
+  box-shadow: var(--molsan-premium-shadow, 0 8px 24px rgba(6,50,82,.065));
+}
+:where(
+  .agenda-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .informes-premium-page,
+  .seguridad-premium-page,
+  .provisiones-fondos-page,
+  .ctn-detalle-page
+) .molsan-page-header :is(h1, .molsan-page-header__title) {
+  margin: 0;
+  color: var(--molsan-premium-blue, #064675);
+  font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 800;
+  letter-spacing: -.035em;
+  line-height: 1.2;
+}
+:where(
+  .agenda-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .informes-premium-page,
+  .seguridad-premium-page,
+  .provisiones-fondos-page,
+  .ctn-detalle-page
+) .molsan-page-header :is(p, .molsan-page-header__description) {
+  margin: 4px 0 0;
+  color: var(--molsan-premium-muted, #617789);
+  font-size: 13px;
+  line-height: 1.55;
+}
+:where(
+  .agenda-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .informes-premium-page,
+  .seguridad-premium-page,
+  .provisiones-fondos-page,
+  .ctn-detalle-page
+) .molsan-page-header__identity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+:where(
+  .agenda-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .informes-premium-page,
+  .seguridad-premium-page,
+  .provisiones-fondos-page,
+  .ctn-detalle-page
+) .molsan-page-header__mark {
+  display: grid;
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  color: #FFFFFF;
+  border: 1px solid rgba(255,255,255,.55);
+  border-radius: 14px;
+  background: linear-gradient(145deg, #064675, #1477A5);
+  box-shadow: 0 6px 16px rgba(6,70,117,.16);
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: -.03em;
+}
+:where(
+  .erp-main-content,
+  .agenda-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .informes-premium-page,
+  .seguridad-premium-page,
+  .provisiones-fondos-page,
+  .ctn-detalle-page,
+  .apoderagest,
+  .notargest-workspace-premium,
+  .encargagest-workspace-premium
+) :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"])
+  > :is(h2, h3, [data-card-title="true"], .card-title, .panel-title),
+:where(
+  .erp-main-content,
+  .agenda-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .informes-premium-page,
+  .seguridad-premium-page,
+  .provisiones-fondos-page,
+  .ctn-detalle-page,
+  .apoderagest,
+  .notargest-workspace-premium,
+  .encargagest-workspace-premium
+) :is(.erp-card-header, .panel-header, .card-header, [data-card-header="true"])
+  :is(h2, h3, strong, [data-card-title="true"]) {
+  color: var(--molsan-premium-blue, #064675);
+  font-weight: 800;
+  letter-spacing: -.025em;
+}
+:where(
+  .erp-main-content,
+  .agenda-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .informes-premium-page,
+  .seguridad-premium-page,
+  .provisiones-fondos-page,
+  .ctn-detalle-page,
+  .apoderagest,
+  .notargest-workspace-premium,
+  .encargagest-workspace-premium
+) :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"])
+  > :is(h2, h3, [data-card-title="true"], .card-title, .panel-title) {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 14px;
+  padding-bottom: 11px;
+  border-bottom: 1px solid var(--molsan-premium-border, #D8E4EC);
+}
+:where(
+  .erp-main-content,
+  .agenda-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .informes-premium-page,
+  .seguridad-premium-page,
+  .provisiones-fondos-page,
+  .ctn-detalle-page,
+  .apoderagest,
+  .notargest-workspace-premium,
+  .encargagest-workspace-premium
+) :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"])
+  > :is(h2, h3, [data-card-title="true"], .card-title, .panel-title)::before {
+  content: "";
+  width: 4px;
+  min-width: 4px;
+  height: 20px;
+  border-radius: 99px;
+  background: var(--molsan-premium-blue, #064675);
+}
+@media (max-width: 760px) {
+  :where(
+    .agenda-premium-page,
+    .empleados-listado-premium,
+    .empleado-ficha-premium,
+    .empleado-editar-premium,
+    .informes-premium-page,
+    .seguridad-premium-page,
+    .provisiones-fondos-page,
+    .ctn-detalle-page
+  ) .molsan-page-header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 15px;
+  }
+}
