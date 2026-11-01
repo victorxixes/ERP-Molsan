@@ -3768,7 +3768,7 @@ export default function Informes() {
   };
 
   return (
-    <div className="informes-premium-page herramientas-subpagina-premium min-h-screen space-y-5 bg-[var(--molsan-page-bg)] text-[var(--molsan-text)]">
+    <div className="molsan-page-stack informes-premium-page herramientas-subpagina-premium min-h-screen bg-[var(--molsan-page-bg)] text-[var(--molsan-text)]">
       <header className="molsan-page-header">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
