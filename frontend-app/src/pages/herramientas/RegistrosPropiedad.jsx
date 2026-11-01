@@ -1,4 +1,5 @@
 import MolsanButton from "../../components/ui/MolsanButton";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useSearchParams } from "react-router-dom";
 import { sortRows } from "../../utils/sortRows";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
@@ -1698,7 +1699,7 @@ export default function RegistrosPropiedad() {
                 shadow-sm
               "
             >
-              🏛️
+              <MolsanIcon name="courthouse" size={42} />
             </div>
 
 
@@ -1891,7 +1892,7 @@ export default function RegistrosPropiedad() {
                   text-slate-400
                 "
               >
-                🔎
+                <MolsanIcon name="search" size={20} />
               </span>
 
 
@@ -2319,7 +2320,7 @@ export default function RegistrosPropiedad() {
                 text-2xl
               "
             >
-              🏛️
+              <MolsanIcon name="courthouse" size={42} />
             </div>
 
 
@@ -2666,7 +2667,7 @@ function ModalImportarExcel({
                   text-xl
                 "
               >
-                📊
+                <MolsanIcon name="chart" size={20} />
               </div>
 
 
@@ -2882,7 +2883,7 @@ function ModalImportarExcel({
                   shadow-sm
                 "
               >
-                📁
+                <MolsanIcon name="folder" size={20} />
               </div>
 
 
@@ -2956,7 +2957,7 @@ function ModalImportarExcel({
                     shadow-sm
                   "
                 >
-                  📄
+                  <MolsanIcon name="file" size={20} />
                 </div>
 
 
