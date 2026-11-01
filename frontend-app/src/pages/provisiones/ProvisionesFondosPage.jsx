@@ -1,4 +1,5 @@
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 import "./ProvisionesFondosPage.css";
