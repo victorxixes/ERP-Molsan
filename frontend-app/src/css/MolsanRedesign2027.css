@@ -2382,22 +2382,21 @@ body {
 }
 
 
-/* Cabecera compartida: aplica el mismo marco a CancelaGest y los portales
-   profesionales que ya adoptan molsan-page-header. */
+/* Cabecera compartida: el mismo patrón compacto en Dashboard y portales. */
 .molsan-page-header.ag-hero {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
   min-width: 0;
-  margin: 0 0 20px;
-  padding: 16px 20px;
+  margin: 0 0 18px;
+  padding: 12px 16px;
   color: var(--molsan-text);
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-card);
-  box-shadow: var(--molsan-shadow-card);
+  background: linear-gradient(145deg, #F2F7FB 0%, #FFFFFF 64%, #F6FAFC 100%);
+  border: 1px solid var(--molsan-border, #D8E4EC);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(6,50,82,.065);
 }
 
 .molsan-page-header.ag-hero .molsan-page-header__identity {
@@ -2408,26 +2407,28 @@ body {
 }
 
 .molsan-page-header.ag-hero .molsan-page-header__title {
-  margin: 0;
-  color: var(--molsan-text);
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  line-height: 1.25;
+  margin: 0 0 3px;
+  color: var(--molsan-primary, #064675);
+  font-size: 20px;
+  font-weight: 750;
+  letter-spacing: -.02em;
+  line-height: 1.2;
 }
 
 .molsan-page-header.ag-hero .molsan-page-header__description {
-  margin: 4px 0 0;
-  color: var(--molsan-text-muted);
-  font-size: 13px;
-  line-height: 1.5;
+  margin: 0;
+  color: var(--molsan-text-muted, #617789);
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 @media (max-width: 640px) {
   .molsan-page-header.ag-hero {
     align-items: flex-start;
     flex-direction: column;
-    padding: 14px;
+    gap: 10px;
+    padding: 12px;
+    margin-bottom: 14px;
   }
 
   .molsan-page-header.ag-hero .ag-hero-acciones {
