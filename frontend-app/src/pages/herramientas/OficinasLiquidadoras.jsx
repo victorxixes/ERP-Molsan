@@ -1,3 +1,4 @@
+import { useSearchParams } from "react-router-dom";
 import React, {
   useCallback,
   useEffect,
@@ -83,6 +84,10 @@ function Icono({
   name,
   className = "w-5 h-5",
 }) {
+  useEffect(() => {
+    if (searchParams.get("importar") === "1") abrirImportacion();
+  }, [searchParams]);
+
   return (
     <svg
       className={className}
@@ -222,6 +227,8 @@ function BadgeActivo({
 // ============================================================
 
 export default function OficinasLiquidadoras() {
+  const [searchParams] = useSearchParams();
+
 
   // ==========================================================
   // ESTADO
@@ -1160,39 +1167,7 @@ export default function OficinasLiquidadoras() {
 
         <div className="molsan-page-header__actions catalogos-subpage-header__actions">
 
-          <button
-            type="button"
-            onClick={
-              abrirImportacion
-            }
-            className="
-              inline-flex
-              items-center
-              gap-2
-              px-4
-              py-2.5
-              rounded-xl
-              bg-white
-              border
-              border-[var(--erp-border)]
-              text-[var(--erp-text)]
-              text-sm
-              font-semibold
-              shadow-sm
-              hover:bg-[var(--erp-primary-soft)]
-              hover:text-[var(--erp-primary)]
-              hover:border-[var(--erp-primary)]
-              transition-all
-              duration-200
-            "
-          >
-            <Icono
-              name="database"
-              className="w-4 h-4"
-            />
-
-            Importar Excel
-          </button>
+          
 
 
           <button
