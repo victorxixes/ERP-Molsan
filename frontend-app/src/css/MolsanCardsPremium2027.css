@@ -616,3 +616,41 @@
     gap: 16px;
   }
 }
+
+
+/* MOLSAN TABLE STANDARD · armonización transversal de tablas heredadas.
+   La tabla MolsanDataTable conserva su ordenación y estilos propios. */
+.erp-main-content table:not(.molsan-table) {
+  border-collapse: separate;
+  border-spacing: 0;
+  color: #173247;
+  font-variant-numeric: tabular-nums;
+}
+.erp-main-content table:not(.molsan-table) thead th {
+  color: #064675;
+  background: #EAF2F8;
+  border-bottom: 1px solid #D8E4EC;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: normal;
+  text-transform: none;
+  vertical-align: middle;
+}
+.erp-main-content table:not(.molsan-table) tbody td {
+  border-bottom: 1px solid #E8EFF4;
+  vertical-align: middle;
+}
+.erp-main-content table:not(.molsan-table) tbody tr:last-child td {
+  border-bottom-color: transparent;
+}
+.erp-main-content table:not(.molsan-table) tbody tr:hover {
+  background-color: #F2F7FB;
+}
+.erp-main-content table:not(.molsan-table) :is(th, td) {
+  line-height: 1.45;
+}
+@media (max-width: 640px) {
+  .erp-main-content table:not(.molsan-table) :is(th, td) {
+    padding-inline: 9px;
+  }
+}
