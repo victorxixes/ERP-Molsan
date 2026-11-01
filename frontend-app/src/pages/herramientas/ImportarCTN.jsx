@@ -19,23 +19,14 @@ export default function ImportarCTN() {
   };
 
   return (
-    <div className="importar-ctn-premium herramientas-subpagina-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6 animate-fadeIn">
+    <div className="importar-ctn-premium herramientas-subpagina-premium min-h-full space-y-6 animate-fadeIn">
 
       {/* =====================================================
           CABECERA
       ===================================================== */}
 
       <header
-        className="
-          molsan-page-header
-          relative overflow-hidden
-          rounded-[24px]
-          border border-slate-200/80
-          bg-white/80
-          backdrop-blur-xl
-          shadow-[0_18px_50px_rgba(15,23,42,0.08)]
-          p-6 sm:p-7
-        "
+        className=" molsan-page-header "
       >
 
         <div
