@@ -487,6 +487,10 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
     avisos_comentarios: "",
     avisos_documentos: "",
   }[vista] || "");
+  const volverVistaAnterior = () => {
+    setBusqueda("");
+    setVista(vista === "detalle" ? (vistaOrigenFicha.current || "inicio") : "inicio");
+  };
   const navegarSidebar = (label) => {
     const destinos = {
       "Dashboard": "inicio",
@@ -776,6 +780,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         </div>
       </div>
       <div className="ag-hero-acciones molsan-page-header__actions">
+        {vista !== "inicio" && <button type="button" onClick={volverVistaAnterior} className="ng-boton-secundario">← Volver</button>}
         {accesoERP && <button type="button" onClick={() => navigate("/modulos")} className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"><span aria-hidden="true">▦</span> Ir a módulos</button>}
       </div>
     </header>
