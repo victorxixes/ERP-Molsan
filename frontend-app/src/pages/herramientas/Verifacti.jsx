@@ -1,4 +1,5 @@
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -123,8 +124,8 @@ export default function Verifacti() {
         <main className="min-w-0 space-y-5">
           {seccion === "resumen" && <>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 2xl:grid-cols-4">
-              <Metric icon="🔌" label="Conexión API" value="Sin conectar" hint="La clave API aún no está configurada" />
-              <Metric icon="📄" label="Facturas consultadas" value="—" hint="Disponible al activar la conexión" />
+              <Metric icon="plug" label="Conexión API" value="Sin conectar" hint="La clave API aún no está configurada" />
+              <Metric icon="file" label="Facturas consultadas" value="—" hint="Disponible al activar la conexión" />
               <Metric icon="☑️" label="Registros aceptados" value="—" hint="Pendiente de consulta a Verifacti" />
               <Metric icon="⚠️" label="Incidencias" value="—" hint="Sin datos reales todavía" />
             </div>
