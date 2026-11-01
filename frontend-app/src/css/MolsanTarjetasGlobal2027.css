@@ -33,8 +33,8 @@
 }
 
 /* Tarjetas y paneles funcionales: misma superficie que Espacios de trabajo.
-   Los div genéricos solo se tratan como tarjetas si declaran una superficie
-   Tailwind reconocible; así no convertimos wrappers internos en paneles. */
+   Solo se aplican a componentes con clase o atributo de panel explícito;
+   los wrappers Tailwind genéricos quedan fuera de esta capa. */
 :where(
   .erp-main-content,
   .erp-page,
