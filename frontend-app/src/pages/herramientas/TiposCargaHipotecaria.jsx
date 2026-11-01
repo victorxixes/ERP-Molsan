@@ -610,7 +610,7 @@ export default function TiposCargaHipotecaria() {
           <div>
 
             <div
-              className="
+              className="molsan-page-header 
                 flex
                 items-center
                 gap-3
