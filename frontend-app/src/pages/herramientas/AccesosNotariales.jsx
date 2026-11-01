@@ -99,11 +99,11 @@ export default function AccesosNotariales() {
           <div className="ctn-listado-header-icon molsan-page-header__mark" aria-hidden="true">🔐</div>
           <div className="min-w-0">
             <p className="ctn-listado-header-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · UTILIDADES</p>
-            <h1>Accesos notariales</h1>
-            <p>Gestión centralizada y restringida de accesos a NotarGest y EncargaGest.</p>
+            <h1 className="molsan-page-header__title">Accesos notariales</h1>
+            <p className="molsan-page-header__description">Gestión centralizada y restringida de accesos a NotarGest y EncargaGest.</p>
           </div>
         </div>
-        <button type="button" className="ctn-btn ctn-btn-secondary molsan-btn molsan-btn--secondary" onClick={() => navigate("/herramientas/utilidades")}>Volver a Utilidades</button>
+        <div className="molsan-page-header__actions"><button type="button" className="molsan-btn molsan-btn--secondary" onClick={() => navigate("/herramientas/utilidades")}>Volver a Utilidades</button></div>
       </header>
       <section className="accesos-notariales-resumen" aria-label="Resumen de accesos habilitados">
         <article className="accesos-notariales-resumen-card">
