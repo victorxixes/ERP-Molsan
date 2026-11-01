@@ -75,3 +75,30 @@
     transition-duration: .01ms !important;
   }
 }
+
+
+/* Cabeceras estables: sin animaciones de entrada que provoquen parpadeo
+   al montar de nuevo las páginas de Utilidades y Catálogos. */
+:is(.catalogos-premium-page, .utilidades-premium-page) {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+:is(.catalogos-premium-page, .utilidades-premium-page) > header {
+  position: relative;
+  isolation: isolate;
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  background: var(--molsan-surface, #fff) !important;
+  border-color: var(--molsan-border, #d8e4ec) !important;
+  border-radius: var(--molsan-radius-card, 14px) !important;
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06)) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+:is(.catalogos-premium-page, .utilidades-premium-page) > header > div:first-child {
+  background-image: none !important;
+}
