@@ -1,3 +1,4 @@
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 import "./ProvisionesFondosPage.css";
@@ -905,7 +906,21 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
 
     <Seccion titulo="Histórico de provisiones guardadas" detalle="Busca, recupera y modifica una provisión anterior o vuelve a generar su documento.">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row"><input className={`${input} mt-0 flex-1`} value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar por número, cliente, DNI/CIF o población…" /><button type="button" onClick={cargar} className={`${boton} border border-slate-300 text-slate-700 hover:bg-slate-50`}>Actualizar</button></div>
-      {cargando ? <p role="status" aria-live="polite" className="py-8 text-center text-sm text-slate-500">Cargando histórico…</p> : filtrados.length === 0 ? <p className="py-8 text-center text-sm text-slate-500">Todavía no hay provisiones guardadas que coincidan con la búsqueda.</p> : <div className="overflow-x-auto"><table className="w-full min-w-[760px] border-collapse text-left text-sm"><thead><tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500"><th className="px-3 py-3">Número / fecha</th><th className="px-3 py-3">Cliente</th><th className="px-3 py-3">Población</th><th className="px-3 py-3 text-right">Importe</th><th className="px-3 py-3">Acciones</th></tr></thead><tbody>{filtrados.map((it) => <tr key={it.id} className="border-b border-slate-100 hover:bg-slate-50"><td className="px-3 py-3"><p className="font-bold text-slate-900">{it.numero}</p><p className="text-xs text-slate-500">{it.fecha || "—"}</p></td><td className="px-3 py-3"><p className="font-semibold">{it.cliente?.nombre || "—"}</p><p className="text-xs text-slate-500">{it.cliente?.nif || ""}</p></td><td className="px-3 py-3">{it.cliente?.poblacion || "—"}</td><td className="px-3 py-3 text-right font-bold tabular-nums">{dinero(it.importe_total)}</td><td className="px-3 py-3"><div className="flex flex-col items-start gap-1"><button type="button" onClick={() => recuperar(it)} className="font-semibold text-blue-700 hover:underline">Abrir / editar</button><button type="button" onClick={() => abrirEmail(it)} className="font-semibold text-emerald-700 hover:underline">Enviar por email</button></div></td></tr>)}</tbody></table></div>}
+      {cargando ? <p role="status" aria-live="polite" className="py-8 text-center text-sm text-slate-500">Cargando histórico…</p> : filtrados.length === 0 ? <p className="py-8 text-center text-sm text-slate-500">Todavía no hay provisiones guardadas que coincidan con la búsqueda.</p> : <MolsanDataTable
+        rows={filtrados}
+        rowKey="id"
+        minWidth="950px"
+        initialSort={{ key: "fecha", direction: "desc" }}
+        emptyText="Todavía no hay provisiones guardadas que coincidan con la búsqueda."
+        columns={[
+          { key: "numero", header: "Número", accessor: "numero", sortType: "text", render: (value, item) => <><p className="font-bold text-slate-900">{value}</p><p className="text-xs text-slate-500">{item.fecha || "—"}</p></> },
+          { key: "fecha", header: "Fecha", accessor: "fecha", sortType: "date" },
+          { key: "cliente", header: "Cliente", accessor: (item) => item.cliente?.nombre, sortType: "text", render: (_, item) => <><p className="font-semibold">{item.cliente?.nombre || "—"}</p><p className="text-xs text-slate-500">{item.cliente?.nif || ""}</p></> },
+          { key: "poblacion", header: "Población", accessor: (item) => item.cliente?.poblacion, sortType: "text", render: (value) => value || "—" },
+          { key: "importe", header: "Importe", accessor: "importe_total", sortType: "currency", align: "right", render: (value) => <strong className="tabular-nums">{dinero(value)}</strong> },
+          { key: "acciones", header: "Acciones", sortable: false, accessor: (item) => item.id, render: (_, item) => <div className="flex flex-col items-start gap-1"><button type="button" onClick={() => recuperar(item)} className="font-semibold text-blue-700 hover:underline">Abrir / editar</button><button type="button" onClick={() => abrirEmail(item)} className="font-semibold text-emerald-700 hover:underline">Enviar por email</button></div> },
+        ]}
+      />}
 
     </Seccion>
     {emailDraft && <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/55 p-3 backdrop-blur-sm sm:p-6" role="dialog" aria-modal="true" aria-label="Enviar provisión por email">
