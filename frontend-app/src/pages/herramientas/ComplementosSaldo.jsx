@@ -94,6 +94,9 @@ export default function ComplementosSaldo() {
       {error && <div role="alert" className="m-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{error}</div>}
       <MolsanDataTable
         rows={items}
+          pagination
+          pageSize={25}
+
         rowKey="id"
         minWidth="1350px"
         initialSort={{ key: "fecha_solicitud", direction: "desc" }}
