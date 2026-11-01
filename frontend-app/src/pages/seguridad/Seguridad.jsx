@@ -93,7 +93,7 @@ export default function Seguridad() {
   }, [auditoriaList]);
 
   return (
-    <div className="seguridad-premium-page animate-fade-in space-y-6">
+    <div className="molsan-page-stack seguridad-premium-page animate-fade-in">
       <header className="molsan-page-header">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="molsan-page-header__identity">
