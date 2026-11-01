@@ -316,17 +316,18 @@ export default function SeguridadResumen({ empleadoId }) {
           CABECERA
       ====================================================== */}
 
-      <div className="erp-page-header">
+      <div className="molsan-page-header">
 
-        <div>
-
-          <div className="erp-eyebrow">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true">SG</div>
+          <div>
+          <p className="molsan-page-header__eyebrow">
             SEGURIDAD · USUARIO
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
 
-            <h1 className="erp-page-title">
+            <h1 className="molsan-page-header__title">
               Resumen de seguridad
             </h1>
 
@@ -344,7 +345,7 @@ export default function SeguridadResumen({ empleadoId }) {
 
           </div>
 
-          <p className="erp-page-description">
+          <p className="molsan-page-header__description">
             {empleado.nombre || "-"}{" "}
             {empleado.apellidos || ""}
             {" · "}
@@ -356,7 +357,7 @@ export default function SeguridadResumen({ empleadoId }) {
 
         </div>
 
-        <div className="erp-page-header-status">
+        <div className="molsan-page-header__actions">
 
           {empleado.rol_nombre && (
             <span className="erp-badge erp-badge-primary">
