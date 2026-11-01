@@ -1468,45 +1468,11 @@ export default function Municipios() {
           CABECERA
       ===================================================== */}
 
-      <div
-        className="
-          relative overflow-hidden
-          rounded-[24px]
-          border border-slate-200/80
-          bg-white/80
-          backdrop-blur-xl
-          shadow-[0_18px_50px_rgba(15,23,42,0.08)]
-          p-6 sm:p-7
-        "
-      >
+      <header className="molsan-page-header catalogos-subpage-header">
 
-        <div
-          className="
-            absolute inset-x-0 top-0 h-px
-            bg-gradient-to-r
-            from-transparent
-            via-blue-400/60
-            to-transparent
-          "
-        />
+        <div className="catalogos-subpage-header__layout">
 
-
-        <div
-          className="
-            relative
-            flex flex-col
-            gap-5
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-          "
-        >
-
-          <div
-            className="molsan-page-header 
-              flex items-center gap-4
-            "
-          >
+          <div className="molsan-page-header__identity catalogos-subpage-header__identity">
 
             <div
               className="
@@ -1557,14 +1523,7 @@ export default function Municipios() {
               BOTONES CABECERA
           ================================================= */}
 
-          <div
-            className="
-              flex
-              flex-col
-              sm:flex-row
-              gap-2
-            "
-          >
+          <div className="molsan-page-header__actions catalogos-subpage-header__actions">
 
             <button
               type="button"
@@ -1651,7 +1610,7 @@ export default function Municipios() {
 
         </div>
 
-      </div>
+      </header>
 
 
       {/* =====================================================
