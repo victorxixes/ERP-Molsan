@@ -269,6 +269,7 @@
 /* Cabecera canónica para páginas y subpáginas que adoptan explícitamente
    .molsan-page-header. No se estilizan header ni h1 genéricos. */
 :where(
+  .erp-main-content,
   .agenda-premium-page,
   .empleados-listado-premium,
   .control-apoderados-page,
@@ -343,6 +344,7 @@
   box-shadow: var(--molsan-premium-shadow, 0 8px 24px rgba(6,50,82,.065));
 }
 :where(
+  .erp-main-content,
   .agenda-premium-page,
   .empleados-listado-premium,
   .control-apoderados-page,
@@ -361,6 +363,7 @@
   line-height: 1.2;
 }
 :where(
+  .erp-main-content,
   .agenda-premium-page,
   .empleados-listado-premium,
   .control-apoderados-page,
@@ -377,6 +380,7 @@
   line-height: 1.55;
 }
 :where(
+  .erp-main-content,
   .agenda-premium-page,
   .empleados-listado-premium,
   .empleado-ficha-premium,
@@ -392,6 +396,7 @@
   min-width: 0;
 }
 :where(
+  .erp-main-content,
   .agenda-premium-page,
   .empleados-listado-premium,
   .empleado-ficha-premium,
