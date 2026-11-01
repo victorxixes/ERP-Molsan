@@ -1492,3 +1492,10 @@ a[aria-current="page"] .molsan-nav-icon-3d {
 .molsan-icon-3d--indigo { color:#3e5f9f; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#eef2fa 48%,#d5dff1 100%); border-color:#d4ddf0; }
 .molsan-icon-3d--slate { color:#536b7b; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#f2f7fb 48%,#dce7ee 100%); border-color:#d8e4ec; }
 @media (prefers-reduced-motion: reduce) { .molsan-icon-3d { transition:none; } }
+
+.molsan-icon-3d--bare {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.molsan-icon-3d--bare svg { filter: none; }
