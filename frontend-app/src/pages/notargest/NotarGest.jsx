@@ -864,9 +864,41 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
     {bandejas.some(b => b.id === vista) && <section className="ng-panel">
       <div className="ng-panel-titulo"><h2>{titulo}</h2><button className="ng-volver" onClick={() => setVista("inicio")}>← Volver</button></div>
       <div className="ng-filtros"><label>Buscar<input value={busqueda} onChange={e => setBusqueda(e.target.value)} placeholder="Expediente, oficina, solicitante, protocolo…" /></label><span>{filas.length} registros</span></div>
-      <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr>{tablaFactura ? <><th>Provisión</th><th>Oficina</th><th>Fecha de envío</th><th>Fecha de firma</th><th>Protocolo</th><th>Solicitante</th><th>Factura notarial</th><th>Adjuntar</th></> : <><th>Expediente</th><th>Oficina</th><th>Fecha de envío</th><th>Nombre</th><th>Apellidos</th><th>DNI</th><th>Contrato</th><th>Capital</th><th>Finca</th><th>Tipo operación</th><th>Subtipo operación</th><th>Importe</th><th>Tipo del documento</th><th>Cuantía del documento</th><th>Acción</th></>}</tr></thead><tbody>
-      {filas.map(x => <tr key={x.id}><td>{tablaFactura ? <button className="ng-abrir" onClick={() => abrirExpediente(x)}>{texto(x.id_provision || x.id_expediente)}</button> : texto(x.id_expediente)}</td>{tablaFactura ? <><td>{texto(x.oficina)}</td><td>{esFecha(x.fecha_envio_notario || x.fecha_envio)}</td><td>{esFecha(x.fecha_firma)}</td><td>{texto(x.protocolo)}</td><td>{texto(x.solicitante)}</td><td>{x.factura_notarial ? <button className="ng-abrir" onClick={() => abrirExpediente(x)}>{x.factura_notarial.nombre}</button> : "Pendiente"}</td><td><label className="ng-adjuntar">Adjuntar PDF<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => {adjuntarFactura(x, e.target.files?.[0]);e.target.value="";}} /></label></td></> : <><td>{texto(x.oficina)}</td><td>{esFecha(x.fecha_envio_notario || x.fecha_envio)}</td><td>{texto(x.nombre || x.nombre_titular || x.titular)}</td><td>{texto(x.apellidos)}</td><td>{texto(x.dni || x.nif_titular)}</td><td>{texto(x.contrato)}</td><td>{euros(x.capital)}</td><td>{texto(x.finca || x.fincas?.map(f => f.finca).filter(Boolean).join(", "))}</td><td>{texto(x.tipo_operacion)}</td><td>{texto(x.subtipo_operacion)}</td><td>{euros(x.importe)}</td><td>{texto(x.tipo_documento || x.documentos_escritura?.map(d => d.tipo_documento).filter(Boolean).join(", "))}</td><td>{euros(x.cuantia_documento ?? x.cuantia ?? x.documentos_escritura?.[0]?.cuantia)}</td><td><button className="ng-abrir" onClick={() => abrirExpediente(x)}>Ver ficha →</button></td></>}</tr>)}
-      </tbody></table>{filas.length === 0 && <p className="ng-mensaje">{cargando ? "Cargando expedientes…" : "No hay expedientes pendientes en este estado."}</p>}</div>
+      <div className="ng-tabla-contenedor">
+        <MolsanDataTable
+          rows={filas}
+          rowKey="id"
+          minWidth={tablaFactura ? "1200px" : "1900px"}
+          initialSort={{ key: "id_expediente", direction: "asc" }}
+          emptyText={cargando ? "Cargando expedientes…" : "No hay expedientes pendientes en este estado."}
+          columns={tablaFactura ? [
+            { key: "id_expediente", header: "Provisión", accessor: (item) => item.id_provision || item.id_expediente, sortType: "text", render: (value, item) => <button type="button" className="ng-abrir" onClick={() => abrirExpediente(item)}>{texto(value)}</button> },
+            { key: "oficina", header: "Oficina", accessor: "oficina", sortType: "text", render: (value) => texto(value) },
+            { key: "fecha_envio", header: "Fecha de envío", accessor: (item) => item.fecha_envio_notario || item.fecha_envio, sortType: "date", render: (value) => esFecha(value) },
+            { key: "fecha_firma", header: "Fecha de firma", accessor: "fecha_firma", sortType: "date", render: (value) => esFecha(value) },
+            { key: "protocolo", header: "Protocolo", accessor: "protocolo", sortType: "text", render: (value) => texto(value) },
+            { key: "solicitante", header: "Solicitante", accessor: "solicitante", sortType: "text", render: (value) => texto(value) },
+            { key: "factura", header: "Factura notarial", accessor: (item) => item.factura_notarial?.nombre, sortType: "text", render: (_, item) => item.factura_notarial ? <button type="button" className="ng-abrir" onClick={() => abrirExpediente(item)}>{item.factura_notarial.nombre}</button> : "Pendiente" },
+            { key: "adjuntar", header: "Adjuntar", sortable: false, accessor: (item) => item.id, render: (_, item) => <label className="ng-adjuntar">Adjuntar PDF<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { adjuntarFactura(item, e.target.files?.[0]); e.target.value = ""; }} /></label> },
+          ] : [
+            { key: "id_expediente", header: "Expediente", accessor: "id_expediente", sortType: "text", render: (value) => texto(value) },
+            { key: "oficina", header: "Oficina", accessor: "oficina", sortType: "text", render: (value) => texto(value) },
+            { key: "fecha_envio", header: "Fecha de envío", accessor: (item) => item.fecha_envio_notario || item.fecha_envio, sortType: "date", render: (value) => esFecha(value) },
+            { key: "nombre", header: "Nombre", accessor: (item) => item.nombre || item.nombre_titular || item.titular, sortType: "text", render: (value) => texto(value) },
+            { key: "apellidos", header: "Apellidos", accessor: "apellidos", sortType: "text", render: (value) => texto(value) },
+            { key: "dni", header: "DNI", accessor: (item) => item.dni || item.nif_titular, sortType: "text", render: (value) => texto(value) },
+            { key: "contrato", header: "Contrato", accessor: "contrato", sortType: "text", render: (value) => texto(value) },
+            { key: "capital", header: "Capital", accessor: "capital", sortType: "currency", align: "right", render: (value) => euros(value) },
+            { key: "finca", header: "Finca", accessor: (item) => item.finca || item.fincas?.map(f => f.finca).filter(Boolean).join(", "), sortType: "text", render: (value) => texto(value) },
+            { key: "tipo_operacion", header: "Tipo operación", accessor: "tipo_operacion", sortType: "text", render: (value) => texto(value) },
+            { key: "subtipo_operacion", header: "Subtipo operación", accessor: "subtipo_operacion", sortType: "text", render: (value) => texto(value) },
+            { key: "importe", header: "Importe", accessor: "importe", sortType: "currency", align: "right", render: (value) => euros(value) },
+            { key: "tipo_documento", header: "Tipo del documento", accessor: (item) => item.tipo_documento || item.documentos_escritura?.map(d => d.tipo_documento).filter(Boolean).join(", "), sortType: "text", render: (value) => texto(value) },
+            { key: "cuantia_documento", header: "Cuantía del documento", accessor: (item) => item.cuantia_documento ?? item.cuantia ?? item.documentos_escritura?.[0]?.cuantia, sortType: "currency", align: "right", render: (value) => euros(value) },
+            { key: "acciones", header: "Acción", sortable: false, accessor: (item) => item.id, render: (_, item) => <button type="button" className="ng-abrir" onClick={() => abrirExpediente(item)}>Ver ficha →</button> },
+          ]}
+        />
+      </div>
     </section>}
     {esDetalle && <section className="ng-panel ng-ficha">
       <div className="ng-panel-titulo ng-ficha-cabecera"><div><h2>{titulo}</h2><small>Ficha operativa del expediente · NotarGest</small></div><button className="ng-volver" onClick={() => setVista(vistaOrigenFicha.current || "inicio")}>← Volver al listado</button></div>
