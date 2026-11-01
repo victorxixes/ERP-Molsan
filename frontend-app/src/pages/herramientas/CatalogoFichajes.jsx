@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import "../../css/HerramientasPremium.css";
 
 export default function CatalogoFichajes() {
@@ -51,7 +52,10 @@ export default function CatalogoFichajes() {
     </section>
     <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="border-b border-slate-100 px-5 py-4"><h2 className="font-bold text-slate-800">Tipos disponibles</h2><p className="text-sm text-slate-500">{tipos.length} tipos configurados</p></div>
-      {cargando ? <p className="p-5 text-sm text-slate-500">Cargando catálogo…</p> : <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead className="bg-slate-50 text-xs uppercase text-slate-500"><tr><th className="px-5 py-3">Tipo de ausencia</th><th className="px-5 py-3">Justificante</th></tr></thead><tbody>{tipos.map((t) => <tr key={t.id} className="border-t border-slate-100"><td className="px-5 py-3 font-semibold text-slate-800">{t.nombre}</td><td className="px-5 py-3">{t.requiere_justificante ? <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">Sí</span> : <span className="text-slate-500">No</span>}</td></tr>)}</tbody></table></div>}
+      {cargando ? <p className="p-5 text-sm text-slate-500">Cargando catálogo…</p> : <MolsanDataTable rows={tipos} rowKey="id" columns={[
+        { key: "nombre", header: "Tipo de ausencia", accessor: "nombre", sortType: "text" },
+        { key: "requiere_justificante", header: "Justificante", accessor: "requiere_justificante", sortType: "boolean", render: (value) => value ? <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">Sí</span> : <span className="text-slate-500">No</span> },
+      ]} emptyText="No hay tipos de ausencia configurados." />}
     </section>
   </main>;
 }
