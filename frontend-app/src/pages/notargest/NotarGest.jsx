@@ -530,7 +530,19 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
     <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
       <Sidebar
         brandName="NotarGest"
-        navigationItems={[]}
+        navigationItems={[
+          { key: "inicio", label: "Dashboard", icon: "home" },
+          { key: "recepcion", label: "Nuevos encargos", icon: "clipboard-list", badge: cuenta("recepcion") },
+          { key: "firma", label: "Pendientes de firma", icon: "clock", badge: cuenta("firma") },
+          { key: "copia", label: "Pendientes copias simples", icon: "files", badge: cuenta("copia") },
+          { key: "factura", label: "Pendientes de factura notarial", icon: "receipt", badge: cuenta("factura") },
+          { key: "ajd", label: "Pendientes de AJD / ITP", icon: "file-text", badge: cuenta("ajd") },
+          { key: "registro", label: "Pendientes de presentación registral", icon: "folder-check", badge: cuenta("registro") },
+          { key: "defectos", label: "Expedientes con defectos", icon: "alert-triangle", badge: cuenta("defectos") },
+          { key: "inscripcion", label: "Inscripciones registrales", icon: "book-check", badge: cuenta("inscripcion") },
+          { key: "cerrada", label: "Escrituras cerradas inscritas", icon: "check-circle", badge: cuenta("cerrada") },
+          { key: "firmas_urgentes", label: "Firmas urgentes", icon: "zap", badge: expedientes.filter(x => x.firma_urgente).length, attention: expedientes.some(x => x.firma_urgente) },
+        ]}
         activeNavigationItem={sidebarVista}
         onNavigationItemClick={navegarSidebar}
         onNotificationsClick={() => setNotificacionesAbiertas(true)}
@@ -767,33 +779,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         {accesoERP && <button type="button" onClick={() => navigate("/modulos")} className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"><span aria-hidden="true">▦</span> Ir a módulos</button>}
       </div>
     </header>
-    <nav className="ng-modulos-grid" aria-label="Secciones de NotarGest">
-      {[
-        { key: "inicio", label: "Dashboard", icon: "⌂", count: null },
-        { key: "recepcion", label: "Nuevos encargos", icon: "▤", count: cuenta("recepcion") },
-        { key: "firma", label: "Pendientes de firma", icon: "◷", count: cuenta("firma") },
-        { key: "copia", label: "Pendientes copias simples", icon: "▧", count: cuenta("copia") },
-        { key: "factura", label: "Pendientes de factura notarial", icon: "€", count: cuenta("factura") },
-        { key: "ajd", label: "Pendientes de AJD / ITP", icon: "§", count: cuenta("ajd") },
-        { key: "registro", label: "Pendientes de presentación registral", icon: "⌕", count: cuenta("registro") },
-        { key: "defectos", label: "Expedientes con defectos", icon: "!", count: cuenta("defectos") },
-        { key: "inscripcion", label: "Inscripciones registrales", icon: "▣", count: cuenta("inscripcion") },
-        { key: "cerrada", label: "Escrituras cerradas inscritas", icon: "✓", count: cuenta("cerrada") },
-        { key: "firmas_urgentes", label: "Firmas urgentes", icon: "⚡", count: expedientes.filter(x => x.firma_urgente).length, urgent: expedientes.some(x => x.firma_urgente) },
-      ].map(item => (
-        <button
-          key={item.key}
-          type="button"
-          className={`ng-modulo-card ${vista === item.key ? "activa" : ""} ${item.urgent ? "urgente" : ""}`}
-          onClick={() => { setBusqueda(""); setVista(item.key); }}
-          aria-current={vista === item.key ? "page" : undefined}
-        >
-          <span className="ng-modulo-icono" aria-hidden="true">{item.icon}</span>
-          <span className="ng-modulo-label">{item.label}</span>
-          {item.count !== null && <span className="ng-modulo-count">{item.count}</span>}
-        </button>
-      ))}
-    </nav>
+
     {error && <div className="ng-error" role="alert">{error}</div>}{mensaje && <div className="ng-success">{mensaje}</div>}
     {vista === "inicio" && <section className="ng-dashboard-analitica">
       <div className="ng-dashboard-graficos ng-dashboard-graficos-tres-columnas">
