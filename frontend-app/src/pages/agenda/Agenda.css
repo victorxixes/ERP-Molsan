@@ -14,6 +14,7 @@
 }
 .agenda-premium-page > .erp-card:first-of-type {
   position: relative;
+  z-index: 40;
   overflow: visible;
   padding: 16px;
 }
@@ -50,7 +51,9 @@
   background: var(--agenda-primary);
   border-color: var(--agenda-primary);
 }
-.agenda-premium-page > .erp-card:nth-of-type(2) {
+ .agenda-premium-page > .erp-card:nth-of-type(2) {
+  position: relative;
+  z-index: 1;
   overflow: hidden;
   padding: 0;
 }
