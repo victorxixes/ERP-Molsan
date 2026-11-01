@@ -90,19 +90,12 @@
 .dashboard-cancelagest .ag-boton-actualizar:disabled {
   cursor: wait;
   opacity: .72;
-}
-
-.dashboard-cancelagest .dashboard-kpi {
+}.dashboard-cancelagest .dashboard-kpi {
   position: relative;
-  border: 1px solid var(--molsan-border, var(--molsan-border, #D8E4EC));
-  border-radius: var(--molsan-radius-card, 12px);
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
-  transition: border-color var(--molsan-transition-fast, 150ms ease), box-shadow var(--molsan-transition-fast, 150ms ease);
-}
-
-.dashboard-cancelagest .dashboard-kpi:hover {
-  border-color: var(--molsan-border-strong, #c4d0df);
-  box-shadow: 0 6px 18px rgba(36, 50, 74, .08);
+  
+  
+  
+  
 }
 
 .dashboard-cancelagest .dashboard-kpi__value {
@@ -112,12 +105,6 @@
 
 .dashboard-cancelagest .dashboard-kpi__icon {
   border-radius: var(--molsan-radius-control, 9px);
-}
-
-.dashboard-cancelagest .erp-card {
-  border-radius: var(--molsan-radius-card, 12px);
-  border-color: var(--molsan-border, var(--molsan-border, #D8E4EC));
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
 }
 
 .dashboard-cancelagest table thead th {
@@ -133,17 +120,11 @@
   background: var(--molsan-surface-soft, #f6f8fc);
 }
 
-.dashboard-cancelagest .dashboard-firmas-grid .dashboard-kpi {
-  box-shadow: none;
-}
-
 @media (max-width: 640px) {
   .dashboard-cancelagest .ag-fecha-actual {
     max-width: 100%;
     white-space: normal;
-  }
-
-  .dashboard-cancelagest .dashboard-kpi {
+  }.dashboard-cancelagest .dashboard-kpi {
     padding: 14px;
   }
 }
@@ -166,7 +147,6 @@
 .dashboard-cancelagest .dashboard-signatures-wrap .dashboard-kpi { min-height: 142px; }
 .dashboard-cancelagest .dashboard-signatures-wrap .dashboard-kpi__value { font-size: clamp(24px, 2vw, 30px); }
 .dashboard-cancelagest .dashboard-signatures-wrap .dashboard-kpi__icon { width: 36px; height: 36px; }
-.dashboard-cancelagest .dashboard-signatures-wrap .dashboard-kpi:hover { transform: none; }
 .dashboard-cancelagest .dashboard-main-grid > section { min-width: 0; }
 .dashboard-cancelagest .dashboard-time-panel th { white-space: nowrap; }
 .dashboard-cancelagest .dashboard-time-panel tbody tr:last-child { border-bottom: 0; }
@@ -209,22 +189,9 @@
   box-shadow:0 10px 22px rgba(6,70,117,.22);
   transform:translateY(-1px);
 }
-.dashboard-cancelagest .dashboard-kpis { gap:16px; }
-.dashboard-cancelagest .dashboard-kpi,
-.dashboard-cancelagest .erp-card {
-  border:1px solid #D8E4EC;
-  border-radius:17px;
-  background:linear-gradient(155deg,#FFFFFF 0%,#FFFFFF 70%,#F7FAFC 100%);
-  box-shadow:0 8px 22px rgba(6,50,82,.055);
-}
-.dashboard-cancelagest .dashboard-kpi {
+.dashboard-cancelagest .dashboard-kpis { gap:16px; }.dashboard-cancelagest .dashboard-kpi {
   min-height:132px;
   padding:19px !important;
-}
-.dashboard-cancelagest .dashboard-kpi:hover {
-  border-color:#B8CBD9;
-  box-shadow:0 13px 28px rgba(6,50,82,.095);
-  transform:translateY(-2px);
 }
 .dashboard-cancelagest .dashboard-kpi__value {
   color:#123F5E !important;
@@ -261,10 +228,9 @@
   color:#617789 !important;
   font-size:12px;line-height:1.65;
 }
-.dashboard-cancelagest .dashboard-main-grid { gap:22px; }
-.dashboard-cancelagest .dashboard-main-grid .erp-card {
+.dashboard-cancelagest .dashboard-main-grid { gap:22px; }.dashboard-cancelagest .dashboard-main-grid .erp-card {
   overflow:hidden;
-  border-radius:17px;
+  
 }
 .dashboard-cancelagest .dashboard-activity-inline { min-width:92px; }
 .dashboard-cancelagest .dashboard-signatures-wrap .dashboard-firmas-grid { gap:14px; }
@@ -275,8 +241,7 @@
 }
 .dashboard-cancelagest table tbody td { padding-top:15px;padding-bottom:15px; }
 .dashboard-cancelagest table tbody tr:hover { background:#F2F7FB !important; }
-@media(max-width:760px) {
-  .dashboard-cancelagest .dashboard-kpi { min-height:112px; }
+@media(max-width:760px) {.dashboard-cancelagest .dashboard-kpi { min-height:112px; }
   .dashboard-cancelagest section > .mb-4 h2 { font-size:17px; }
 }
 
@@ -294,16 +259,6 @@
 }
 .dashboard-cancelagest .dashboard-section-panel > .mb-4 {
   margin-bottom: 17px;
-}
-.dashboard-cancelagest .dashboard-section-panel > .erp-card {
-  border-color: #E1EAF0;
-  border-radius: 14px;
-  box-shadow: none;
-  background: rgba(255,255,255,.82);
-}
-.dashboard-cancelagest .dashboard-section-panel .dashboard-firmas-grid .erp-card {
-  border-color: #E1EAF0;
-  background: #FFFFFF;
 }
 @media (max-width: 760px) {
   .dashboard-cancelagest .dashboard-section-panel {
