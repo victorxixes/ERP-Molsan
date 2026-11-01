@@ -176,14 +176,17 @@ export default function ImportadorPostFirma() {
           rowKey="id"
           minWidth="1200px"
           sortMode="server"
+          initialSort={{ key: "carga_id", direction: "desc" }}
           onSortChange={cambiarOrdenTabla}
           emptyText="Todavía no hay filas importadas en el histórico Post Firma."
           columns={[
             { key: "archivo", header: "Carga", accessor: (fila) => fila.archivo + " · #" + fila.carga_id, sortType: "text" },
             { key: "numero_fila", header: "Fila Excel", accessor: "numero_fila", sortType: "number" },
-            ...columnas.map((columna) => ({
-              key: columna,
+            ...columnas.map((columna, index) => ({
+              key: `${columna || "columna_sin_titulo"}_${index}`,
+              sortKey: columna,
               header: columna || "(columna sin título)",
+              sortable: Boolean(columna),
               accessor: (fila) => fila.datos?.[columna],
               sortType: "text",
               render: (valor) => valor == null || valor === "" ? "—" : typeof valor === "object" ? JSON.stringify(valor) : String(valor),
