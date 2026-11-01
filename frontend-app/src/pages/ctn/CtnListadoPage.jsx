@@ -69,7 +69,7 @@ export default function CtnListadoPage() {
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [pagina, setPagina] = useState(1);
-  const [orden, setOrden] = useState({ key: "apellidos", direction: "asc" });
+  const [orden, setOrden] = useState({ key: "nombre_completo", direction: "asc" });
   const [cargando, setCargando] = useState(false);
   const [exportando, setExportando] = useState(false);
   const [error, setError] = useState("");
@@ -90,10 +90,11 @@ export default function CtnListadoPage() {
   const totalPaginas = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const cambiarOrden = (key) => {
-    setOrden((actual) => ({
-      key,
-      direction: actual.key !== key ? "asc" : actual.direction === "asc" ? "desc" : "asc",
-    }));
+    setOrden((actual) => {
+      if (actual.key !== key) return { key, direction: "asc" };
+      if (actual.direction === "asc") return { key, direction: "desc" };
+      return { key: null, direction: null };
+    });
     setPagina(1);
   };
 
@@ -114,9 +115,11 @@ export default function CtnListadoPage() {
         const params = new URLSearchParams({
           page: String(paginaSolicitada),
           page_size: String(PAGE_SIZE),
-          sort_by: orden.key,
-          sort_dir: orden.direction,
         });
+        if (orden.key && orden.direction) {
+          params.set("sort_by", orden.key);
+          params.set("sort_dir", orden.direction);
+        }
         Object.entries(filtrosActuales).forEach(([key, value]) => {
           if (value?.trim()) params.set(key, value.trim());
         });
