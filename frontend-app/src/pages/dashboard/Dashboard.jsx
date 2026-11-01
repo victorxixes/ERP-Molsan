@@ -304,7 +304,7 @@ export default function Dashboard() {
       {/* ACTIVIDADES + TIEMPO MEDIO HASTA FIRMA */}
       <div className="dashboard-main-grid mb-6 grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
       {/* ACTIVIDADES */}
-      <section className="min-w-0">
+      <section className="dashboard-section-panel min-w-0">
         <div className="mb-4">
           <h2 className="text-lg font-bold" style={{ color: "var(--erp-text)" }}>Expedientes por actividad</h2>
           <p className="mt-1 text-sm" style={{ color: "var(--erp-text-soft)" }}>
@@ -325,7 +325,7 @@ export default function Dashboard() {
       ====================================================== */}
       <div className="min-w-0">
         {/* MEDIA DE FIRMA POR TIPO DE OPERACIÓN */}
-        <section className="min-w-0">
+        <section className="dashboard-section-panel min-w-0">
           <div className="mb-4">
             <h2 className="text-lg font-bold" style={{ color: "var(--erp-text)" }}>
               Tiempo medio hasta firma
@@ -394,9 +394,9 @@ export default function Dashboard() {
       {/* FIRMAS REALIZADAS + DISTRIBUCIÓN DEL CIRCUITO */}
       <div className="dashboard-signatures-wrap mb-6">
       {/* FIRMAS REALIZADAS */}
-      <section className="min-w-0">
+      <section className="dashboard-section-panel min-w-0">
         <div className="mb-4 flex flex-col gap-1">
-          <h2 className="text-lg font-bold" style={{ color: "var(--erp-text)" }}>Firmas realizadas</h2>
+          <h2 className="text-lg font-bold" style={{ color: "var(--erp-text)" }}>Firmas realizadas</h2
           <p className="text-sm" style={{ color: "var(--erp-text-soft)" }}>
             Distribución de las firmas realizadas según la modalidad seleccionada en el encargo al notario.
           </p>
