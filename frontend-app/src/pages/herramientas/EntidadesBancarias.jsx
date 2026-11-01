@@ -1535,19 +1535,7 @@ export default function EntidadesBancarias() {
           CABECERA
       ===================================================== */}
 
-      <div
-        className="
-          relative
-          overflow-hidden
-          rounded-[24px]
-          border
-          border-slate-200/80
-          bg-white/80
-          p-6 sm:p-7
-          shadow-[0_18px_50px_rgba(15,23,42,0.08)]
-          backdrop-blur-xl
-        "
-      >
+      <header className="molsan-page-header catalogos-subpage-header">
 
         <div
           className="
@@ -1563,25 +1551,9 @@ export default function EntidadesBancarias() {
         />
 
 
-        <div
-          className="
-            relative
-            flex
-            flex-col
-            gap-5
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-          "
-        >
+        <div className="catalogos-subpage-header__layout">
 
-          <div
-            className="molsan-page-header 
-              flex
-              items-center
-              gap-4
-            "
-          >
+          <div className="molsan-page-header__identity catalogos-subpage-header__identity">
 
             <div
               className="
@@ -1638,14 +1610,7 @@ export default function EntidadesBancarias() {
               BOTONES
           ================================================= */}
 
-          <div
-            className="
-              flex
-              flex-col
-              gap-2
-              sm:flex-row
-            "
-          >
+          <div className="molsan-page-header__actions catalogos-subpage-header__actions">
 
             <button
               type="button"
@@ -1738,7 +1703,7 @@ export default function EntidadesBancarias() {
 
         </div>
 
-      </div>
+      </header>
 
 
       {/* =====================================================
