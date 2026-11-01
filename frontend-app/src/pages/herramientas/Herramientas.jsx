@@ -16,7 +16,7 @@ import "../../css/ComponentesOperativosPremium.css";
 
 export default function Herramientas() {
   return (
-    <div className="herramientas-home-premium min-h-full space-y-6 animate-fadeIn">
+    <div className="molsan-page-stack herramientas-home-premium min-h-full animate-fadeIn">
 
       {/* =====================================================
           CABECERA
