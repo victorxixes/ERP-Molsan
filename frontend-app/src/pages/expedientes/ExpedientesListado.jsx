@@ -2385,10 +2385,8 @@ export default function ExpedientesListado() {
         molsan-page
         expedientes-page
         min-h-full
-
-        p-4
-        sm:p-6
-        lg:p-8
+        w-full
+        p-0
 
         text-[var(--erp-text)]
 
