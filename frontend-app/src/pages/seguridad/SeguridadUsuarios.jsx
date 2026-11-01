@@ -311,24 +311,24 @@ export default function SeguridadUsuarios() {
           CABECERA
       ====================================================== */}
 
-      <div className="erp-page-header molsan-page-header">
+      <div className="molsan-page-header">
 
-        <div>
-          <div className="erp-eyebrow">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__eyebrow">
             SEGURIDAD
           </div>
 
-          <h1 className="erp-page-title">
+          <h1 className="molsan-page-header__title">
             Usuarios y seguridad
           </h1>
 
-          <p className="erp-page-description">
+          <p className="molsan-page-header__description">
             Gestión de usuarios, permisos, estado de acceso,
             auditoría y actividad de seguridad.
           </p>
         </div>
 
-        <div className="erp-page-header-status">
+        <div className="molsan-page-header__actions">
           <span className="erp-badge erp-badge-primary">
             Centro de Seguridad
           </span>
