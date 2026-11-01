@@ -30,3 +30,40 @@
 .molsan-data-table__empty { padding:30px 16px !important; color:#718696; text-align:center; }
 .molsan-data-table td.text-right,.molsan-data-table th.text-right { text-align:right; }
 .molsan-data-table td.text-center,.molsan-data-table th.text-center { text-align:center; }
+
+/* MOLSAN DataTable: búsqueda, ajuste de columnas y paginación */
+.molsan-data-table { display:flex; flex-direction:column; gap:10px; min-width:0; width:100%; }
+.molsan-data-table__toolbar { display:flex; align-items:center; justify-content:flex-end; gap:10px; }
+.molsan-data-table__search { display:block; width:min(100%, 340px); }
+.molsan-data-table__search input {
+  width:100%; min-height:38px; padding:8px 12px; border:1px solid #D8E4EC; border-radius:11px;
+  color:#173247; background:#fff; font:inherit; outline:none;
+}
+.molsan-data-table__search input:focus { border-color:#7BA7C7; box-shadow:0 0 0 3px rgba(6,70,117,.10); }
+.molsan-data-table__scroll { width:100%; min-width:0; }
+.molsan-data-table th { position:relative; }
+.molsan-data-table__heading { position:relative; display:flex; align-items:center; min-width:0; }
+.molsan-data-table__heading .molsan-table-sort { min-width:0; }
+.molsan-data-table__resizer {
+  position:absolute; z-index:2; top:20%; right:0; width:6px; height:60%; border-radius:6px;
+  cursor:col-resize; touch-action:none; background:transparent; transition:background-color .15s ease;
+}
+.molsan-data-table__resizer:hover,
+.molsan-data-table__resizer:active { background:rgba(6,70,117,.28); }
+.molsan-data-table__empty { padding:30px 16px !important; color:#718696; text-align:center; }
+.molsan-data-table__pagination {
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:9px;
+  padding:10px 12px; border:1px solid #D8E4EC; border-radius:13px; background:#F7FAFC;
+}
+.molsan-data-table__count { margin-right:auto; color:#617789; font-size:12px; font-weight:650; }
+.molsan-data-table__page-size { display:inline-flex; align-items:center; gap:6px; color:#617789; font-size:12px; }
+.molsan-data-table__page-size select {
+  min-height:32px; padding:4px 8px; border:1px solid #D8E4EC; border-radius:8px; background:#fff; color:#173247;
+}
+.molsan-data-table__page-label { color:#617789; font-size:12px; font-weight:700; white-space:nowrap; }
+@media(max-width:640px) {
+  .molsan-data-table__toolbar { justify-content:stretch; }
+  .molsan-data-table__search { width:100%; }
+  .molsan-data-table__pagination { justify-content:center; }
+  .molsan-data-table__count { width:100%; margin:0; text-align:center; }
+}
