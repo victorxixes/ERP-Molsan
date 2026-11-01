@@ -1227,3 +1227,9 @@
   font-size: 15px;
   font-weight: 800;
 }
+
+
+/* El stack común ya controla la separación bajo la cabecera hero. */
+.molsan-page-stack > .molsan-page-header {
+  margin-bottom: 0;
+}
