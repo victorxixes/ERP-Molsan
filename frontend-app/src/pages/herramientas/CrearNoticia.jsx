@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useUtilidades } from "../../hooks/useUtilidades";
 
 import "../../css/ComponentesOperativosPremium.css";
