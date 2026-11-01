@@ -9,7 +9,7 @@ const IMPORTADORES = [
   { titulo: "Municipios", detalle: "Importación de municipios y sus códigos territoriales.", icono: "🏘️", ruta: "/herramientas/municipios", grupo: "Datos territoriales y entidades" },
   { titulo: "Registros de la propiedad", detalle: "Importación y actualización de registros.", icono: "🏛️", ruta: "/herramientas/registros-propiedad", grupo: "Datos territoriales y entidades" },
   { titulo: "Oficinas liquidadoras", detalle: "Importación de oficinas y datos asociados.", icono: "🏢", ruta: "/herramientas/oficinas-liquidadoras", grupo: "Datos territoriales y entidades" },
-  { titulo: "Catálogo de oficinas", detalle: "Importación validada de las 13 columnas del catálogo.", icono: "📑", ruta: "/catalogos/oficinas", grupo: "Datos territoriales y entidades" },
+  { titulo: "Catálogo de oficinas", detalle: "Importación validada de las 13 columnas del catálogo.", icono: "📑", ruta: "/catalogos/oficinas?importar=1", grupo: "Datos territoriales y entidades" },
   { titulo: "Acciones de expediente", detalle: "Importación del catálogo de acciones de expediente.", icono: "⚙️", ruta: "/herramientas/acciones-expediente", grupo: "Catálogos operativos" },
 ];
 
