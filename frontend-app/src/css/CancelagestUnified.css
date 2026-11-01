@@ -44,12 +44,12 @@ select, textarea) {
 .cg-unified-workspace :is(input, select, textarea):focus {
   outline: none;
   border-color: var(--cg-primary);
-  box-shadow: 0 0 0 3px rgba(49, 86, 179, .13);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--molsan-primary) 13%, transparent);
 }
 
 .cg-unified-workspace :is(input, select, textarea):disabled {
   color: #94a3b8;
-  background: var(--molsan-surface-soft, #f7f9fc);
+  background: var(--molsan-surface-soft, #F2F7FB);
   cursor: not-allowed;
 }
 
@@ -72,7 +72,7 @@ select, textarea) {
 
 .cg-unified-workspace table th {
   color: var(--molsan-text-secondary, #526176);
-  background: var(--molsan-surface-soft, #f7f9fc);
+  background: var(--molsan-surface-soft, #F2F7FB);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: .025em;
@@ -92,7 +92,7 @@ select, textarea) {
 }
 
 .cg-unified-workspace table tbody tr:hover {
-  background-color: var(--molsan-surface-soft, #f7f9fc);
+  background-color: var(--molsan-surface-soft, #F2F7FB);
 }
 
 .cg-unified-workspace table tbody tr:last-child td {
@@ -113,7 +113,7 @@ select, textarea) {
 }
 
 .cg-unified-workspace :is(button, [role="button"]):focus-visible {
-  outline: 3px solid rgba(49, 86, 179, .22);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary) 22%, transparent);
   outline-offset: 2px;
 }
 
@@ -154,7 +154,7 @@ select, textarea) {
 .cg-unified-workspace .ctn-listado-page :is(input, select, textarea):focus-visible {
   outline: none;
   border-color: var(--cg-primary);
-  box-shadow: 0 0 0 3px rgba(49, 86, 179, .13);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--molsan-primary) 13%, transparent);
 }
 
 @media (max-width: 768px) {
@@ -189,7 +189,7 @@ select, textarea) {
 
 .cg-page .cg-module-card:hover {
   border-color: #b8c9f3;
-  box-shadow: 0 10px 22px rgba(49, 86, 179, .08);
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--molsan-primary) 8%, transparent);
 }
 
 .cg-page .cg-month-bar,
@@ -330,7 +330,7 @@ select, textarea) {
 }
 
 .cg-unified-workspace :is(button, [role="button"], a):focus-visible {
-  outline: 2px solid rgba(49, 86, 179, .55);
+  outline: 2px solid color-mix(in srgb, var(--molsan-primary) 55.00000000000001%, transparent);
   outline-offset: 2px;
 }
 
@@ -343,7 +343,7 @@ select, textarea) {
 }
 
 .cg-unified-workspace table tbody tr:hover > td {
-  background-color: var(--molsan-surface-soft, #f7f9fc);
+  background-color: var(--molsan-surface-soft, #F2F7FB);
 }
 
 /* Enlaces operativos mantienen la paleta corporativa sin cambiar destinos. */
