@@ -988,7 +988,7 @@
 ) {
   --molsan-card-accent: var(--molsan-primary, #064675);
   min-width: 0;
-  border-color: var(--molsan-border, #D8E4EC);
+  border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: 21px;
   background-color: #FFFFFF;
   background-image:
