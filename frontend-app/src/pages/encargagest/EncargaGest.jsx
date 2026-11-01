@@ -1,3 +1,4 @@
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PortalLogin from "../../components/PortalLogin";
@@ -138,6 +139,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
   const [directorioBusqueda, setDirectorioBusqueda] = useState("");
   const [directorioTodos, setDirectorioTodos] = useState(false);
   const [directorioPagina, setDirectorioPagina] = useState(1);
+  const [directorioOrden, setDirectorioOrden] = useState({ key: "provincia", direction: "asc" });
   const [directorioItems, setDirectorioItems] = useState([]);
   const [directorioTotal, setDirectorioTotal] = useState(0);
   const [directorioCargando, setDirectorioCargando] = useState(false);
@@ -340,6 +342,8 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         alcance: directorioTodos ? "todas" : "habilitadas",
         pagina: directorioPagina,
         por_pagina: 12,
+        sort_by: directorioOrden.key,
+        sort_dir: directorioOrden.direction,
       },
     }).then((respuesta) => {
       if (!vigente) return;
@@ -349,7 +353,12 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
       if (vigente) setError(e?.response?.data?.detail || "No se ha podido cargar el directorio de notarías.");
     }).finally(() => { if (vigente) setDirectorioCargando(false); });
     return () => { vigente = false; };
-  }, [modo, esAdminEncargaGest, directorioBusqueda, directorioTodos, directorioPagina]);
+  }, [modo, esAdminEncargaGest, directorioBusqueda, directorioTodos, directorioPagina, directorioOrden]);
+
+  const cambiarOrdenDirectorio = (next) => {
+    setDirectorioOrden(next.key ? next : { key: "provincia", direction: "asc" });
+    setDirectorioPagina(1);
+  };
 
   function aplicarFiltroRapido(estado) {
     setFiltroEstado(estado);
@@ -947,24 +956,23 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
             </form>
             {directorioCargando ? <div className="eg-directorio-vacio">Consultando directorio…</div> : directorioItems.length ? (
               <div className="eg-directorio-tabla-wrap">
-                <table className="eg-directorio-tabla">
-                  <thead><tr><th>Notaría</th><th>NIF</th><th>Municipio</th><th>Provincia</th><th>Estado</th><th>Acciones</th></tr></thead>
-                  <tbody>
-                    {directorioItems.map((notaria) => (
-                      <tr key={notaria.id}>
-                        <td className="eg-directorio-tabla-nombre">{notaria.nombre || "Sin nombre"}</td>
-                        <td>{notaria.nif || "—"}</td>
-                        <td>{notaria.municipio || "—"}</td>
-                        <td>{notaria.provincia || "—"}</td>
-                        <td><span className={notaria.habilitada ? "eg-directorio-estado is-enabled" : "eg-directorio-estado"}>{notaria.habilitada ? "Habilitada" : notaria.tiene_acceso ? "Deshabilitada" : "Sin acceso"}</span></td>
-                        <td><div className="eg-directorio-tabla-acciones">
-                          <button type="button" disabled={!notaria.habilitada} onClick={() => { setFiltroNotariaId(String(notaria.id)); setPagina(1); cargarTodo(String(notaria.id)); }} className="eg-directorio-gestionar">{notaria.habilitada ? "Ver encargos →" : "No habilitada"}</button>
-                          {!notaria.habilitada && <button type="button" onClick={() => { abrirAccesos().then(() => setAccesoNotariaId(String(notaria.id))); }} className="eg-directorio-habilitar">Gestionar acceso</button>}
-                        </div></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <MolsanDataTable
+                  rows={directorioItems}
+                  rowKey="id"
+                  minWidth="1000px"
+                  sortMode="server"
+                  initialSort={{ key: "provincia", direction: "asc" }}
+                  onSortChange={cambiarOrdenDirectorio}
+                  emptyText="No hay notarías que coincidan con la búsqueda."
+                  columns={[
+                    { key: "nombre", header: "Notaría", accessor: "nombre", sortType: "text" },
+                    { key: "nif", header: "NIF", accessor: "nif", sortType: "text" },
+                    { key: "municipio", header: "Municipio", accessor: "municipio", sortType: "text" },
+                    { key: "provincia", header: "Provincia", accessor: "provincia", sortType: "text" },
+                    { key: "habilitada", header: "Estado", accessor: (item) => item.habilitada ? "Habilitada" : item.tiene_acceso ? "Deshabilitada" : "Sin acceso", sortType: "text", render: (_, item) => <span className={item.habilitada ? "eg-directorio-estado is-enabled" : "eg-directorio-estado"}>{item.habilitada ? "Habilitada" : item.tiene_acceso ? "Deshabilitada" : "Sin acceso"}</span> },
+                    { key: "acciones", header: "Acciones", sortable: false, accessor: (item) => item.id, render: (_, notaria) => <div className="eg-directorio-tabla-acciones"><button type="button" disabled={!notaria.habilitada} onClick={() => { setFiltroNotariaId(String(notaria.id)); setPagina(1); cargarTodo(String(notaria.id)); }} className="eg-directorio-gestionar">{notaria.habilitada ? "Ver encargos →" : "No habilitada"}</button>{!notaria.habilitada && <button type="button" onClick={() => { abrirAccesos().then(() => setAccesoNotariaId(String(notaria.id))); }} className="eg-directorio-habilitar">Gestionar acceso</button>}</div> },
+                  ]}
+                />
               </div>
             ) : <div className="eg-directorio-vacio">No hay notarías que coincidan con la búsqueda.</div>}
             <div className="eg-directorio-paginacion"><span>Página {directorioPagina} de {totalPaginasDirectorio}</span><div><button type="button" disabled={directorioPagina <= 1 || directorioCargando} onClick={() => setDirectorioPagina((p) => Math.max(1, p - 1))}>← Anterior</button><button type="button" disabled={directorioPagina >= totalPaginasDirectorio || directorioCargando} onClick={() => setDirectorioPagina((p) => Math.min(totalPaginasDirectorio, p + 1))}>Siguiente →</button></div></div>
