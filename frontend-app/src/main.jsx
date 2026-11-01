@@ -26,6 +26,7 @@ import "./css/molsan-module-styles.css";
 // Capa de armonización general.
 import "./css/MolsanRedesign2027.css";
 import "./css/MolsanPremium2027.css";
+import "./css/MolsanCardsPremium2027.css";
 
 // Última capa: neutraliza diferencias visuales propias de los módulos.
 
