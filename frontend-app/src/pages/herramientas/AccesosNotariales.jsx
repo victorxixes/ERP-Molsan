@@ -1,3 +1,5 @@
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanButton from "../../components/ui/MolsanButton";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
@@ -123,18 +125,22 @@ export default function AccesosNotariales() {
       </section>
       {error && <div className="ctn-modal-alerta ctn-modal-alerta--spaced" role="alert">{error}</div>}
       <section className="ctn-modal-seccion">
-        <div className="ctn-modal-tabla-scroll">
-          <table className="ctn-modal-tabla">
-            <thead><tr><th>Notario</th><th>NIF</th><th>Municipio</th><th>Provincia</th><th>Gestión</th></tr></thead>
-            <tbody>
-              {cargando ? <tr><td colSpan="5">Cargando notarías…</td></tr> :
-                resultados.length ? resultados.map(n => <tr key={n.id}>
-                  <td><strong>{nombre(n) || "Notaría " + n.id}</strong></td><td>{n.nif || "—"}</td><td>{n.municipio || "—"}</td><td>{n.provincia || "—"}</td>
-                  <td><button type="button" className="ctn-btn ctn-btn-secondary ctn-btn-small" onClick={() => abrir(n)}>Gestionar accesos</button></td>
-                </tr>) : <tr><td colSpan="5">No se han encontrado notarías.</td></tr>}
-            </tbody>
-          </table>
-        </div>
+        <MolsanDataTable
+          rows={resultados}
+          rowKey="id"
+          minWidth="900px"
+          pagination
+          pageSize={25}
+          initialSort={{ key: "nombre", direction: "asc" }}
+          emptyText={cargando ? "Cargando notarías…" : "No se han encontrado notarías."}
+          columns={[
+            { key: "nombre", header: "Notario", accessor: (item) => nombre(item) || "Notaría " + item.id, sortType: "text", render: (_, item) => <strong>{nombre(item) || "Notaría " + item.id}</strong> },
+            { key: "nif", header: "NIF", accessor: "nif", sortType: "text", render: (value) => value || "—" },
+            { key: "municipio", header: "Municipio", accessor: "municipio", sortType: "text", render: (value) => value || "—" },
+            { key: "provincia", header: "Provincia", accessor: "provincia", sortType: "text", render: (value) => value || "—" },
+            { key: "acciones", header: "Gestión", sortable: false, accessor: (item) => item.id, render: (_, notaria) => <MolsanButton type="button" variant="secondary" className="molsan-btn--compact" onClick={() => abrir(notaria)}>Gestionar accesos</MolsanButton> },
+          ]}
+        />
       </section>
       {seleccionada && <ModalCtnDetalle open={true} notaria={seleccionada} mostrarAccesosPortales={true} onClose={() => setSeleccionada(null)} />}
     </main>
