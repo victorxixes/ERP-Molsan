@@ -1,0 +1,103 @@
+/* MOLSAN ERP PREMIUM 2027 · SISTEMA COMPARTIDO DE TARJETAS
+   Acabado inspirado en las tarjetas de Espacio de trabajo.
+   Se aplica a las tarjetas semánticas existentes sin alterar datos,
+   acciones, permisos ni estructura funcional. */
+
+:where(.erp-card, .card-sj) {
+  position: relative;
+  min-width: 0;
+  border: 1px solid #D8E4EC !important;
+  border-radius: 18px !important;
+  background: linear-gradient(150deg, #FFFFFF 0%, #FFFFFF 62%, #F7FAFC 100%) !important;
+  box-shadow: 0 8px 24px rgba(6, 50, 82, .055) !important;
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease,
+    background .2s ease,
+    transform .2s ease;
+}
+
+/* Línea superior de identidad, como en Espacio de trabajo. */
+:where(.erp-card, .card-sj)::before {
+  position: absolute;
+  top: 0;
+  left: 18px;
+  right: 18px;
+  height: 3px;
+  border-radius: 0 0 6px 6px;
+  background: linear-gradient(90deg, #1477A5 0%, #6CC5D9 58%, rgba(108,197,217,0) 100%);
+  content: "";
+  pointer-events: none;
+  opacity: .9;
+}
+
+/* Los paneles de contenido ganan profundidad sin desplazarse. */
+:where(.erp-card, .card-sj):not(button):not(a):hover {
+  border-color: #C7DCE8 !important;
+  box-shadow: 0 13px 30px rgba(6, 50, 82, .085) !important;
+}
+
+/* Tarjetas que también son accesos o controles interactivos. */
+:where(button.erp-card, a.erp-card, [role="button"].erp-card) {
+  cursor: pointer;
+  text-align: left;
+}
+
+:where(button.erp-card, a.erp-card, [role="button"].erp-card):hover {
+  z-index: 1;
+  transform: translateY(-3px);
+  border-color: #B9D7E6 !important;
+  background: linear-gradient(150deg, #FFFFFF 0%, #FFFFFF 55%, #EFF7FB 100%) !important;
+  box-shadow: 0 17px 34px rgba(6, 50, 82, .12) !important;
+}
+
+:where(button.erp-card, a.erp-card, [role="button"].erp-card):active {
+  transform: translateY(-1px);
+}
+
+:where(.erp-card, .card-sj):focus-within {
+  border-color: #A9CCDF !important;
+}
+
+/* KPI: iconos y métricas conservan su tono, con acabado premium común. */
+.dashboard-kpi {
+  overflow: hidden;
+  border-radius: 18px !important;
+  background: linear-gradient(145deg, #FFFFFF 0%, #FFFFFF 68%, #F1F7FA 100%) !important;
+  box-shadow: 0 9px 25px rgba(6, 50, 82, .065) !important;
+}
+
+.dashboard-kpi::before {
+  right: 0;
+  left: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #064675, #2696A5 70%, #8BC8D8);
+}
+
+.dashboard-kpi:hover {
+  transform: translateY(-3px);
+  border-color: #C4DCE9 !important;
+  box-shadow: 0 16px 32px rgba(6, 50, 82, .11) !important;
+}
+
+/* Compactación segura para tarjetas en ventanas modales y pantallas estrechas. */
+@media (max-width: 760px) {
+  :where(.erp-card, .card-sj) {
+    border-radius: 15px !important;
+  }
+  :where(.erp-card, .card-sj)::before {
+    left: 14px;
+    right: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(.erp-card, .card-sj, .dashboard-kpi),
+  :where(.erp-card, .card-sj, .dashboard-kpi)::before {
+    transition: none !important;
+    animation: none !important;
+  }
+  :where(button.erp-card, a.erp-card, [role="button"].erp-card, .dashboard-kpi):hover {
+    transform: none !important;
+  }
+}
