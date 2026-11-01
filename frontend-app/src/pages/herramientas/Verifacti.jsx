@@ -90,18 +90,17 @@ export default function Verifacti() {
 
   return (
     <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-      <header className="molsan-page-header relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/95 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.07)] sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="absolute -right-10 -top-16 h-48 w-48 rounded-full bg-blue-100/60 blur-3xl" />
-        <div className="relative flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-3xl shadow-sm">🧾</div>
-            <div><div className="mb-1 flex flex-wrap items-center gap-2"><span className="text-xs font-bold uppercase tracking-[0.18em] text-blue-600">MOLSAN ERP · Integraciones</span><EstadoPendiente /></div>
-              <h1 className="text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Verifacti</h1>
-              <p className="mt-1 max-w-2xl text-sm text-slate-500">Panel de control de facturación electrónica y registros VERI*FACTU.</p>
-            </div>
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true">🧾</div>
+          <div className="min-w-0">
+            <div className="molsan-page-header__eyebrow flex flex-wrap items-center gap-2">MOLSAN ERP · INTEGRACIONES <EstadoPendiente /></div>
+            <h1 className="molsan-page-header__title">Verifacti</h1>
+            <p className="molsan-page-header__description">Panel de control de facturación electrónica y registros VERI*FACTU.</p>
           </div>
-          <a href="https://www.verifacti.com/docs" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">Documentación oficial <span>↗</span></a>
+        </div>
+        <div className="molsan-page-header__actions">
+          <a href="https://www.verifacti.com/docs" target="_blank" rel="noreferrer" className="molsan-btn molsan-btn--primary">Documentación oficial <span>↗</span></a>
         </div>
       </header>
 
