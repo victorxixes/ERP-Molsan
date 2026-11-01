@@ -569,7 +569,7 @@ export default function Municipios() {
     (pagina - 1) * FILAS_POR_PAGINA,
     pagina * FILAS_POR_PAGINA
   );
-  const cambiarOrdenTabla = (next) => { setOrdenTabla(next); setPagina(1); };
+  const cambiarOrdenTabla = (next) => { setOrdenTabla(next.key ? next : { key: "municipio", direction: "asc" }); setPagina(1); };
 
 
   // ==========================================================
