@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "../../api/axios";
 import "../../css/ModalesHerramientasPremium.css";
+import { formatEuro as euros } from "../../utils/formatters";
 
 const CAMPO = "block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:font-semibold file:text-blue-700";
 
@@ -100,10 +101,7 @@ export default function ImportadorPostFirma() {
   };
 
   const columnas = columnasInforme;
-  const euros = (valor) => {
-    const numero = Number(valor ?? 0);
-    return Number.isFinite(numero) ? numero.toLocaleString("es-ES", { style: "currency", currency: "EUR" }) : "—";
-  };
+
 
   return (
     <main className="molsan-page-stack herramientas-subpagina-premium min-h-screen text-slate-700">
