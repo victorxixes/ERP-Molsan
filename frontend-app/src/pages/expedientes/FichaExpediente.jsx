@@ -9597,7 +9597,6 @@ const cuantiaFincasParaEnvio =
           </div>
         </div>
       </div>
-    </div>
   );
 }
 
