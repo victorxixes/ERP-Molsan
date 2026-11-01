@@ -63,11 +63,11 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
   }
 
   return (
-    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="molsan-page-header rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-xs font-bold uppercase tracking-[0.12em] text-blue-600">Utilidades · Administración de empleados</p>
-        <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">{titulo}</h1>
-        <p className="mt-2 max-w-3xl text-sm text-slate-500">{descripcion}</p>
+    <div className="min-h-full space-y-6">
+      <header className="molsan-page-header">
+        <p className="molsan-page-header__eyebrow">Utilidades · Administración de empleados</p>
+        <h1 className="molsan-page-header__title">{titulo}</h1>
+        <p className="molsan-page-header__description">{descripcion}</p>
       </header>
 
       <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
