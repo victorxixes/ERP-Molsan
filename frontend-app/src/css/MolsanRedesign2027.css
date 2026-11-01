@@ -2065,30 +2065,6 @@ body {
 }
 
 
-/* Selectores de compatibilidad con sidecars de portales: misma jerarquía visual. */
-:is(.notargest) .ng-cabecera,
-:is(.apoderagest) .ag-hero,
-:is(.encargagest) .eg-hero,
-:is(.cg-page) .cg-hero,
-:is(.expedientes-listado-premium) .expedientes-header {
-  color: var(--molsan-text);
-  background: var(--molsan-surface);
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-card);
-  box-shadow: var(--molsan-shadow-card);
-}
-
-:is(.notargest) .ng-cabecera h1,
-:is(.apoderagest) .ag-hero h1,
-:is(.encargagest) .eg-hero h1,
-:is(.cg-page) .cg-hero h1,
-:is(.expedientes-listado-premium) .expedientes-header h1 {
-  color: var(--molsan-text);
-  font-size: var(--molsan-font-size-title);
-  font-weight: 750;
-  letter-spacing: -.025em;
-}
-
 :is(.notargest) .ng-panel,
 :is(.apoderagest) .ag-panel,
 :is(.encargagest) .eg-panel,
@@ -2144,15 +2120,6 @@ body {
 }
 
 @media (max-width: 760px) {
-  :is(.notargest) .ng-cabecera,
-  :is(.apoderagest) .ag-hero,
-  :is(.encargagest) .eg-hero,
-  :is(.cg-page) .cg-hero,
-    :is(.expedientes-listado-premium) .expedientes-header {
-    padding: 14px;
-    gap: 10px;
-  }
-
   :is(.notargest, .apoderagest, .encargagest, .ctn-listado-page, .expedientes-listado-premium) table {
     font-size: 12px;
   }
@@ -2719,13 +2686,6 @@ body {
   border-color: var(--molsan-border-light, #e8edf4);
 }
 /* CTN: listado y ficha comparten cabeceras, paneles y campos. */
-:where(.ctn-listado-page .ctn-listado-header, .ctn-detalle-page .ctn-detalle-header) {
-  color: var(--molsan-text, #173247);
-  background: #fff;
-  border: 1px solid var(--molsan-border, #D8E4EC);
-  border-radius: var(--molsan-radius-card, 14px);
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
-}
 :where(.ctn-detalle-page .ctn-detalle-stat, .ctn-detalle-page .ctn-detalle-panel,
        .ctn-detalle-page .ctn-detalle-info-card, .ctn-listado-page .ctn-panel,
        .ctn-listado-page .dashboard-card) {
