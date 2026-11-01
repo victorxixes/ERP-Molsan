@@ -1085,7 +1085,7 @@ export default function OficinasLiquidadoras() {
   return (
     <div
       className="
-        oficinas-liquidadoras-premium herramientas-subpagina-premium
+        catalogos-premium-page oficinas-liquidadoras-premium herramientas-subpagina-premium
         erp-page
         min-h-full
         p-4
