@@ -271,6 +271,7 @@
 :where(
   .agenda-premium-page,
   .empleados-listado-premium,
+  .control-apoderados-page,
   .empleado-perfil-premium,
   .fichajes-premium-page,
   .cg-page,
@@ -344,6 +345,7 @@
 :where(
   .agenda-premium-page,
   .empleados-listado-premium,
+  .control-apoderados-page,
   .empleado-ficha-premium,
   .empleado-editar-premium,
   .informes-premium-page,
@@ -361,6 +363,7 @@
 :where(
   .agenda-premium-page,
   .empleados-listado-premium,
+  .control-apoderados-page,
   .empleado-ficha-premium,
   .empleado-editar-premium,
   .informes-premium-page,
