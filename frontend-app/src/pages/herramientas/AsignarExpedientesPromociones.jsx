@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
@@ -80,7 +81,7 @@ export default function AsignarExpedientesPromociones() {
       <header className="molsan-page-header relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="flex flex-wrap items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-3xl">🏷️</div>
+          <MolsanIcon name="tag" size={52} tone="indigo" />
           <div className="min-w-0 flex-1">
             <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl">Asignar expedientes a promociones</h1>
             <p className="mt-1 text-sm text-slate-500">Asocia cada expediente a un tipo activo del catálogo oficial. La ficha mostrará la promoción asignada automáticamente.</p>
