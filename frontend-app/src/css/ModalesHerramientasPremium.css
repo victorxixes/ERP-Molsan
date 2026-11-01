@@ -2,7 +2,7 @@
 .herramientas-subpagina-premium,.panel-modal-premium { min-width:0; color:var(--molsan-text,#172033); }
 .herramientas-subpagina-premium header,.herramientas-subpagina-premium section,.panel-modal-premium section { min-width:0; }
 .herramientas-subpagina-premium input,.herramientas-subpagina-premium select,.herramientas-subpagina-premium textarea,.panel-modal-premium input,.panel-modal-premium select,.panel-modal-premium textarea { max-width:100%; transition:border-color .18s ease,box-shadow .18s ease; }
-.herramientas-subpagina-premium input:focus-visible,.herramientas-subpagina-premium select:focus-visible,.herramientas-subpagina-premium textarea:focus-visible,.herramientas-subpagina-premium button:focus-visible,.panel-modal-premium input:focus-visible,.panel-modal-premium select:focus-visible,.panel-modal-premium textarea:focus-visible,.panel-modal-premium button:focus-visible { outline:2px solid var(--molsan-primary,#4169e1); outline-offset:2px; }
+.herramientas-subpagina-premium input:focus-visible,.herramientas-subpagina-premium select:focus-visible,.herramientas-subpagina-premium textarea:focus-visible,.herramientas-subpagina-premium button:focus-visible,.panel-modal-premium input:focus-visible,.panel-modal-premium select:focus-visible,.panel-modal-premium textarea:focus-visible,.panel-modal-premium button:focus-visible { outline:2px solid var(--molsan-primary,#064675); outline-offset:2px; }
 .herramientas-subpagina-premium table { width:100%; border-collapse:separate; border-spacing:0; }
 .herramientas-subpagina-premium th { background:var(--molsan-surface-soft,#f5f7fb); }
 .herramientas-subpagina-premium td,.herramientas-subpagina-premium th { overflow-wrap:anywhere; }
