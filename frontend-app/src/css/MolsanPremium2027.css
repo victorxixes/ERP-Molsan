@@ -85,3 +85,50 @@ body {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
+
+/* Espacio de trabajo: panel de bienvenida y mosaico de aplicaciones. */
+.selector-modulos-premium {
+  border-color: var(--molsan-border) !important;
+  background:
+    radial-gradient(ellipse at 92% 4%, rgba(6,70,117,.10), transparent 34%),
+    linear-gradient(145deg, #F2F7FB 0%, #FFFFFF 48%, #F5F9FC 100%) !important;
+  box-shadow: 0 18px 48px rgba(6,50,82,.08) !important;
+}
+.selector-modulos-premium > header {
+  padding: 22px 24px;
+  border: 1px solid rgba(216,228,236,.9);
+  border-radius: 20px;
+  background: linear-gradient(110deg, #FFFFFF 0%, #F2F7FB 100%);
+  box-shadow: var(--molsan-shadow-card);
+}
+.selector-modulos-premium > header > div:first-child > div:first-child {
+  background: linear-gradient(145deg, #064675, #1477A5) !important;
+  border-color: rgba(255,255,255,.8) !important;
+  box-shadow: 0 12px 24px rgba(6,70,117,.22) !important;
+}
+.selector-modulos-premium > div.grid > button {
+  min-height: 238px;
+  border-color: var(--molsan-border);
+  border-radius: 20px;
+  background: linear-gradient(155deg, #FFFFFF 0%, #F8FBFD 100%);
+  box-shadow: 0 10px 28px rgba(6,50,82,.075);
+}
+.selector-modulos-premium > div.grid > button:hover {
+  border-color: #9DBBD0;
+  box-shadow: 0 18px 38px rgba(6,50,82,.14);
+}
+.selector-modulos-premium > div.grid > button h2 { color: var(--molsan-primary); }
+.selector-modulos-premium > div.grid > button > div:last-child {
+  border-color: var(--molsan-border-light);
+}
+.selector-modulos-premium > div.grid > button > div:last-child span:first-child {
+  color: var(--molsan-primary);
+}
+.selector-modulos-premium > div.grid > button:focus-visible {
+  outline: 3px solid rgba(6,70,117,.24);
+  outline-offset: 3px;
+}
+@media(max-width:640px) {
+  .selector-modulos-premium > header { padding: 16px; }
+  .selector-modulos-premium > div.grid > button { min-height: 205px; }
+}
