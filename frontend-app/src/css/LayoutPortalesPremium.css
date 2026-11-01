@@ -226,8 +226,8 @@
    Se mantiene el fondo transparente y se destaca únicamente con borde azul. */
 [role="menu"] a[aria-current="page"] {
   background: transparent !important;
-  color: var(--erp-primary, #3156b3) !important;
-  border: 1px solid var(--erp-primary, #3156b3) !important;
+  color: var(--erp-primary, #064675) !important;
+  border: 1px solid var(--erp-primary, #064675) !important;
   box-shadow: none !important;
 }
 [role="menu"] a[role="menuitem"] {
@@ -235,5 +235,5 @@
 }
 [role="menu"] a[role="menuitem"]:hover {
   background: var(--erp-primary-soft, #edf3ff);
-  color: var(--erp-primary, #3156b3);
+  color: var(--erp-primary, #064675);
 }
