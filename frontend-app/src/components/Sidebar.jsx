@@ -206,6 +206,44 @@ const iconos = {
     </>
   ),
 
+  briefcase: (
+    <>
+      <rect x="3" y="7" width="18" height="13" rx="2" />
+      <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+      <path d="M3 12h18M10 12v2h4v-2" />
+    </>
+  ),
+
+  "file-check": (
+    <>
+      <path d="M6 3h8l4 4v14H6z" />
+      <path d="M14 3v5h5" />
+      <path d="m8 15 2 2 5-5" />
+    </>
+  ),
+
+  landmark: (
+    <>
+      <path d="m3 8 9-5 9 5H3Z" />
+      <path d="M4 10v9M9 10v9M15 10v9M20 10v9M2 21h20M3 8h18" />
+    </>
+  ),
+
+  "clipboard-list": (
+    <>
+      <rect x="5" y="4" width="14" height="17" rx="2" />
+      <path d="M9 4V3h6v1M9 9h6M9 13h6M9 17h4" />
+    </>
+  ),
+
+  newspaper: (
+    <>
+      <path d="M4 5h14v15H4z" />
+      <path d="M18 8h2v12H6" />
+      <path d="M7 9h8M7 13h8M7 17h4" />
+    </>
+  ),
+
 };
 
 
