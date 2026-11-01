@@ -1,10 +1,10 @@
 /* MOLSAN ERP PREMIUM 2027 · Ficha de notaría CTN
    Estilos exclusivos de presentación; tokens compartidos con el resto del ERP. */
 .ctn-detalle-page {
-  --ctnd-primary: var(--molsan-primary, #3156b3);
-  --ctnd-border: var(--molsan-border, #dce4ef);
-  --ctnd-text: var(--molsan-text, #17243a);
-  --ctnd-muted: var(--molsan-text-muted, #64748b);
+  --ctnd-primary: var(--molsan-primary, #064675);
+  --ctnd-border: var(--molsan-border, #D8E4EC);
+  --ctnd-text: var(--molsan-text, #173247);
+  --ctnd-muted: var(--molsan-text-muted, #718696);
   box-sizing: border-box;
   width: 100%;
   max-width: 1400px;
@@ -47,10 +47,10 @@
 .ctn-detalle-search--grow { flex:1 1 260px; max-width:none; }
 .ctn-detalle-page :is(input,select,textarea):focus-visible,.ctn-detalle-page button:focus-visible { outline:3px solid rgba(49,86,179,.22); outline-offset:2px; border-color:var(--ctnd-primary); }
 .ctn-detalle-page button { display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:36px; padding:8px 12px; color:var(--ctnd-text); background:#fff; border:1px solid var(--ctnd-border); border-radius:8px; font:inherit; font-size:12px; font-weight:650; cursor:pointer; transition:background-color .16s ease,border-color .16s ease,color .16s ease; }
-.ctn-detalle-page button:hover:not(:disabled) { color:var(--ctnd-primary); background:var(--molsan-primary-soft, #edf3ff); border-color:#b9c9ed; }
+.ctn-detalle-page button:hover:not(:disabled) { color:var(--ctnd-primary); background:var(--molsan-primary-soft, #EAF2F8); border-color:#b9c9ed; }
 .ctn-detalle-page button:disabled { opacity:.55; cursor:not-allowed; }
 .ctn-detalle-results { max-width:720px; margin-top:8px; overflow:hidden; background:#fff; border:1px solid var(--ctnd-border); border-radius:10px; }
-.ctn-detalle-result-row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 12px; border-bottom:1px solid var(--molsan-border-light,#e8edf4); }
+.ctn-detalle-result-row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 12px; border-bottom:1px solid var(--molsan-border-light, #E8EFF4); }
 .ctn-detalle-result-row:last-child { border-bottom:0; }
 .ctn-detalle-result-row > span { min-width:0; overflow-wrap:anywhere; }
 .ctn-detalle-subtitle { margin:22px 0 10px; }
@@ -59,7 +59,7 @@
 .ctn-detalle-table { width:100%; min-width:0; border-collapse:separate; border-spacing:0; font-size:12px; }
 .ctn-detalle-table--history { min-width:850px; }
 .ctn-detalle-th { padding:10px 12px; color:#52617a; background:#f6f8fc; border-bottom:1px solid var(--ctnd-border); text-align:left; font-size:10px; font-weight:800; white-space:nowrap; }
-.ctn-detalle-td { padding:10px 12px; color:var(--ctnd-text); border-bottom:1px solid var(--molsan-border-light, #e8edf4); vertical-align:middle; }
+.ctn-detalle-td { padding:10px 12px; color:var(--ctnd-text); border-bottom:1px solid var(--molsan-border-light, #E8EFF4); vertical-align:middle; }
 .ctn-detalle-table tbody tr:hover { background:#f8faff; }
 .ctn-detalle-table tbody tr:last-child .ctn-detalle-td { border-bottom:0; }
 .ctn-detalle-search-form { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
