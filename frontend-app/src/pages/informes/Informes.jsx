@@ -3762,11 +3762,12 @@ export default function Informes() {
     <div className="erp-page w-full molsan-page molsan-page-stack informes-premium-page herramientas-subpagina-premium">
       <header className="molsan-page-header">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+          <div className="molsan-page-header__identity flex items-center gap-3">
             <div className="molsan-page-header__mark" aria-hidden="true">📊</div>
             <div>
+              <div className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
               <h1 className="molsan-page-header__title">{apartadoSeleccionado ? apartadoSeleccionado.titulo : "Informes"}</h1>
-              <p className="mt-1 text-sm text-slate-500">{apartadoSeleccionado ? apartadoSeleccionado.descripcion : "Selecciona el tipo de informe que quieres consultar."}</p>
+              <p className="molsan-page-header__description">{apartadoSeleccionado ? apartadoSeleccionado.descripcion : "Selecciona el tipo de informe que quieres consultar."}</p>
             </div>
           </div>
           {claveApartado && <button type="button" onClick={() => navigate("/informes")} className="molsan-page-header__actions">← Volver a Informes</button>}
