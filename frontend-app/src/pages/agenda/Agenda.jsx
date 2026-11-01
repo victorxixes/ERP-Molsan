@@ -417,16 +417,6 @@ export default function Agenda({ soloApoderado = false } = {}) {
 
   return (
     <div className="molsan-page-stack agenda-premium-page text-[var(--erp-text)] animate-fade-in">
-      <header className="molsan-page-header agenda-page-header">
-        <div className="molsan-page-header__identity">
-          <span className="molsan-page-header__mark" aria-hidden="true">AG</span>
-          <div className="min-w-0">
-            <p className="molsan-page-header__eyebrow">MOLSAN ERP · APODERAGEST</p>
-            <h1 className="molsan-page-header__title">Agenda</h1>
-            <p className="molsan-page-header__description">Consulta y organiza las citas, firmas y actividad del calendario.</p>
-          </div>
-        </div>
-      </header>
       {/* NAVEGACIÓN Y FILTROS */}
 
       <div className="erp-card p-4 shadow-sm">
