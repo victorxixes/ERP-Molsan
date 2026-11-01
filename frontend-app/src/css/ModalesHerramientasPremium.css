@@ -55,3 +55,13 @@
   flex-basis: 36px !important;
   border-radius: 10px !important;
 }
+
+
+/* Informes: un único azul corporativo en tarjetas, acciones y controles. */
+.informes-premium-page :is([class~="bg-blue-50"], [class~="bg-blue-100"], [class~="hover:bg-blue-50"], [class~="hover:bg-blue-100"]:hover) { background-color: var(--molsan-primary-soft); }
+.informes-premium-page :is([class~="bg-blue-600"], [class~="bg-blue-500"]) { background-color: var(--molsan-primary); }
+.informes-premium-page [class~="hover:bg-blue-700"]:hover { background-color: var(--molsan-primary-hover); }
+.informes-premium-page :is([class~="text-blue-500"], [class~="text-blue-600"], [class~="text-blue-700"], [class~="text-blue-800"], [class~="text-blue-900"], [class~="hover:text-blue-900"]:hover) { color: var(--molsan-primary); }
+.informes-premium-page :is([class~="border-blue-100"], [class~="border-blue-200"], [class~="border-blue-300"]) { border-color: var(--molsan-border); }
+.informes-premium-page :is([class~="border-blue-400"], [class~="border-blue-500"]) { border-color: var(--molsan-primary); }
+.informes-premium-page [class~="focus:border-blue-400"]:focus { border-color: var(--molsan-primary); }
