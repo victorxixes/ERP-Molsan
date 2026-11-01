@@ -10,6 +10,7 @@ import CtnListadoPage from "../ctn/CtnListadoPage";
 import { useAuthStore } from "../../store/authStore";
 import { createPortal } from "react-dom";
 import "../../css/PortalProfesionalShared.css";
+import { formatEuro } from "../../utils/formatters";
 
 const PESTANAS = [
   { nombre: "Dashboard", icono: "◫" },
@@ -105,7 +106,7 @@ function euros(valor) {
   if (valor === null || valor === undefined || valor === "") return "—";
   const numero = Number(valor);
   return Number.isFinite(numero)
-    ? new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(numero)
+    ? formatEuro(numero)
     : String(valor);
 }
 
