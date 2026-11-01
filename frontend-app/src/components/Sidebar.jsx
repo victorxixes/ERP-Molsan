@@ -1014,10 +1014,11 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       return true;
     }).map((modulo) => ({
       key: modulo.key, to: modulo.route, label: modulo.label,
+      // Los iconos del catálogo central se renderizan directamente.
+      // Solo traducimos los dos nombres heredados que aún no tienen dibujo propio.
       icon: ({
-        "user-group": "user-group", "file-check": "folder", briefcase: "activity",
-        landmark: "globe", "clipboard-list": "clipboard", clock: "clock",
-        settings: "settings", package: "truck", wrench: "settings",
+        package: "truck",
+        wrench: "settings",
       })[modulo.icon] || modulo.icon,
     })).filter((modulo, index, lista) => lista.findIndex((otro) => otro.key === modulo.key) === index);
   };
