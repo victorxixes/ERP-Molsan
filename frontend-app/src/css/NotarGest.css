@@ -865,3 +865,84 @@
     max-height: calc(100dvh - 16px);
   }
 }
+
+
+/* ============================================================
+   NOTARGEST · ALINEACIÓN CON ESPACIOS DE TRABAJO · GLASS LUXE
+   Conserva las vistas y acciones propias; unifica sus superficies.
+   ============================================================ */
+.notargest .ng-modulo-card {
+  position:relative;
+  min-height:78px;
+  padding:14px 15px;
+  overflow:hidden;
+  border:1px solid #D8E4EC;
+  border-radius:19px;
+  background:linear-gradient(150deg,#fff 0%,#fff 62%,#F2F7FB 100%);
+  box-shadow:0 8px 22px rgba(6,50,82,.055);
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease;
+}
+.notargest .ng-modulo-card::before {
+  content:"";position:absolute;top:0;left:16px;right:16px;height:3px;border-radius:0 0 6px 6px;
+  background:linear-gradient(90deg,#064675 0%,#2696A5 68%,rgba(38,150,165,0) 100%);opacity:.9;
+}
+.notargest .ng-modulo-card:hover {
+  transform:translateY(-4px);border-color:#B9D7E6;
+  background:linear-gradient(150deg,#fff 0%,#fff 55%,#EFF7FB 100%);
+  box-shadow:0 15px 30px rgba(6,50,82,.11);
+}
+.notargest .ng-modulo-card.activa {
+  border-color:#064675;background:linear-gradient(150deg,#fff 0%,#fff 48%,#EAF2F8 100%);
+  box-shadow:inset 0 0 0 1px rgba(6,70,117,.12),0 9px 24px rgba(6,50,82,.07);
+}
+.notargest .ng-modulo-card.urgente { border-color:#e8b9bf;background:linear-gradient(150deg,#fff 0%,#fff 55%,#fff4f5 100%); }
+.notargest .ng-modulo-card.urgente.activa { border-color:#c94c58;background:#fff4f5; }
+.notargest .ng-modulo-icono { border-radius:13px;width:38px;height:38px;background:#F2F7FB;border-color:#D8E4EC;color:#064675; }
+.notargest .ng-modulo-count { border-radius:10px;background:#F2F7FB;border-color:#D8E4EC;color:#064675; }
+.notargest .ng-admin-notaria-card {
+  border-radius:20px!important;
+  box-shadow:0 8px 24px rgba(6,50,82,.055)!important;
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease!important;
+}
+.notargest .ng-admin-notaria-card:hover {
+  transform:translateY(-4px)!important;border-color:#B9D7E6!important;
+  box-shadow:0 16px 32px rgba(6,50,82,.11)!important;
+}
+.ng-admin-notarias .ng-admin-kpi-button {
+  border-radius:18px!important;border-color:#D8E4EC!important;
+  background:linear-gradient(150deg,#fff 0%,#fff 62%,#F2F7FB 100%)!important;
+  box-shadow:0 8px 22px rgba(6,50,82,.055)!important;
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease!important;
+}
+.ng-admin-notarias .ng-admin-kpi-button:hover {
+  transform:translateY(-3px);border-color:#B9D7E6!important;
+  box-shadow:0 14px 28px rgba(6,50,82,.10)!important;
+}
+.ng-admin-notarias .ng-control-hero {
+  min-height:112px;padding:20px 24px!important;margin:0 0 20px!important;
+  border:1px solid rgba(255,255,255,.18)!important;border-radius:22px;
+  background:linear-gradient(115deg,#04375B 0%,#064675 58%,#0A6382 100%)!important;
+  box-shadow:0 12px 30px rgba(6,50,82,.16);
+}
+.ng-admin-notarias .ng-control-logo { background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25); }
+.ng-admin-notarias .ng-control-eyebrow { color:#C9EAF4; }
+.ng-admin-notarias .ng-control-titulos h2 { color:#fff; }
+.ng-admin-notarias .ng-control-titulos p { color:rgba(255,255,255,.78); }
+.ng-admin-notarias .ng-control-secundario { color:#064675;background:#fff;border-color:rgba(255,255,255,.65); }
+.ng-modal > header {
+  background:linear-gradient(115deg,#04375B 0%,#064675 58%,#0A6382 100%)!important;
+  border-bottom:0!important;
+  color:#fff;
+}
+.ng-modal > header :is(h2,p,.ng-kicker) { color:#fff!important; }
+.ng-modal > header p { opacity:.8; }
+.ng-modal > header .ng-boton-secundario { color:#064675;background:#fff;border-color:rgba(255,255,255,.7); }
+@media(max-width:760px){
+  .notargest .ng-modulo-card { min-height:66px;padding:11px 10px;border-radius:16px; }
+  .notargest .ng-modulo-card::before { left:12px;right:12px; }
+  .ng-admin-notarias .ng-control-hero { min-height:0;padding:16px!important;border-radius:18px; }
+}
+@media(prefers-reduced-motion:reduce){
+  .notargest .ng-modulo-card,.notargest .ng-admin-notaria-card,.ng-admin-notarias .ng-admin-kpi-button { transition:none!important; }
+  .notargest .ng-modulo-card:hover,.notargest .ng-admin-notaria-card:hover,.ng-admin-notarias .ng-admin-kpi-button:hover { transform:none!important; }
+}
