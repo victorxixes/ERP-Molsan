@@ -250,12 +250,10 @@
 .dashboard-cancelagest .dashboard-section-panel {
   min-width: 0;
   padding: 22px;
-  border: 1px solid #D8E4EC;
-  border-radius: 19px;
-  background:
-    radial-gradient(ellipse at 100% 0%, rgba(89,174,204,.075), transparent 34%),
-    linear-gradient(155deg, #FFFFFF 0%, #FFFFFF 72%, #F7FAFC 100%);
-  box-shadow: 0 9px 24px rgba(6,50,82,.055);
+  
+  
+  
+  
 }
 .dashboard-cancelagest .dashboard-section-panel > .mb-4 {
   margin-bottom: 17px;
@@ -263,7 +261,7 @@
 @media (max-width: 760px) {
   .dashboard-cancelagest .dashboard-section-panel {
     padding: 16px;
-    border-radius: 16px;
+    
   }
 }
 
