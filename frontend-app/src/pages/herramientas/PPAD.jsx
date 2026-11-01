@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "../../api/axios";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
+import { formatEuro as euros } from "../../utils/formatters";
 
 function fecha(valor) {
   if (!valor) return "—";
@@ -15,9 +16,7 @@ function fecha(valor) {
   return Number.isNaN(parsed.getTime()) ? texto : parsed.toLocaleDateString("es-ES");
 }
 
-function euros(valor) {
-  return new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(valor) || 0);
-}
+
 
 function coincide(item, texto) {
   if (!texto.trim()) return true;
