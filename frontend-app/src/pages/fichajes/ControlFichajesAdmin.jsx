@@ -90,6 +90,28 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
     catch (e) { setError(e?.response?.data?.detail || "No se pudo consultar el historial."); }
   };
 
+  const exportarRegistroHorario = async () => {
+    setGuardando(true); setError(""); setMensaje("");
+    try {
+      const respuesta = await axios.get("/fichajes/admin/marcajes/exportar", {
+        params: { desde: desde || undefined, hasta: hasta || undefined, empleado_id: empleadoId || undefined, tipo: tipo || undefined },
+        responseType: "blob",
+      });
+      const blob = new Blob([respuesta.data], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const enlace = document.createElement("a");
+      enlace.href = url;
+      enlace.download = `registro_jornada_${desde || "inicio"}_${hasta || "actualidad"}.csv`;
+      document.body.appendChild(enlace);
+      enlace.click();
+      enlace.remove();
+      URL.revokeObjectURL(url);
+      setMensaje("Registro horario exportado con resumen diario e historial de auditoría.");
+    } catch (e) {
+      setError(e?.response?.data?.detail || "No se pudo exportar el registro horario.");
+    } finally { setGuardando(false); }
+  };
+
   const cambiarPeriodo = async (cerrado) => {
     if (!desde) { setError("Selecciona una fecha del mes que quieras gestionar."); return; }
     if (motivoPeriodo.trim().length < 5) { setError("Indica un motivo de al menos cinco caracteres."); return; }
@@ -187,6 +209,7 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
       <label className={label}>Tipo de movimiento<select value={tipo} onChange={(e) => setTipo(e.target.value)} className={input}><option value="">Todos los tipos</option>{TIPOS.map((t) => <option key={t[0]} value={t[0]}>{t[1]}</option>)}</select></label>
       <label className={label}>Estado del registro<select value={estado} onChange={(e) => setEstado(e.target.value)} className={input}><option value="">Todos</option><option value="ORIGINAL">Sin correcciones</option><option value="MODIFICADO">Con historial administrativo</option></select></label>
       <div className="flex items-end"><MolsanButton type="button" variant="secondary" icon="refresh" className="w-full" onClick={cargar}>Actualizar datos</MolsanButton></div>
+      <div className="flex items-end"><MolsanButton type="button" variant="secondary" icon="download" className="w-full" disabled={guardando || !desde || !hasta} onClick={exportarRegistroHorario}>Exportar registro horario</MolsanButton></div>
       <div className="flex items-end"><MolsanButton type="button" variant="primary" icon="plus" className="w-full" onClick={() => abrirEditor(null)}>Añadir marcaje olvidado</MolsanButton></div>
     </div>
 
