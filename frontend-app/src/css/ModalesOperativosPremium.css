@@ -4,8 +4,8 @@
 .expediente-operativo-modal input:focus-visible,.expediente-operativo-modal select:focus-visible,.expediente-operativo-modal textarea:focus-visible,.expediente-operativo-modal button:focus-visible,.empleado-operativo-modal input:focus-visible,.empleado-operativo-modal select:focus-visible,.empleado-operativo-modal textarea:focus-visible,.empleado-operativo-modal button:focus-visible { outline:2px solid var(--molsan-primary, #064675); outline-offset:2px; }
 .expediente-operativo-modal [role=dialog],.empleado-operativo-modal [role=dialog] { max-height:calc(100dvh - 1rem); overscroll-behavior:contain; }
 .expediente-operativo-modal table,.empleado-operativo-modal table { max-width:100%; }
-@media(max-width:640px){.expediente-operativo-modal [role=dialog],.empleado-operativo-modal [role=dialog]{width:100%;max-height:calc(100dvh - .5rem);border-radius:.85rem}.expediente-operativo-modal input,.expediente-operativo-modal select,.expediente-operativo-modal textarea,.empleado-operativo-modal input,.empleado-operativo-modal select,.empleado-operativo-modal textarea{font-size:16px}}
-@media(prefers-reduced-motion:reduce){.expediente-operativo-modal *,.empleado-operativo-modal *{animation:none!important;transition:none!important}}
+@media(max-width:640px){.expediente-operativo-modal [role=dialog],.empleado-operativo-modal [role=dialog]{width:100%;max-height:calc(100dvh - .5rem);border-radius:18px}.expediente-operativo-modal input,.expediente-operativo-modal select,.expediente-operativo-modal textarea,.empleado-operativo-modal input,.empleado-operativo-modal select,.empleado-operativo-modal textarea{font-size:16px}}
+@media(prefers-reduced-motion:reduce){@media (prefers-reduced-motion: reduce){.expediente-operativo-modal *,.empleado-operativo-modal *{animation:none!important;transition:none!important}}}
 
 /* Algunos modales operativos aplican role="dialog" al propio contenedor raíz. */
 .expediente-operativo-modal[role="dialog"]:not(.fixed),
