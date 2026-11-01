@@ -41,7 +41,17 @@ function compareValues(a, b, type) {
     if (da === null || db === null) return da === db ? 0 : da === null ? 1 : -1;
     return da - db;
   }
-  if (type === "boolean") return Number(Boolean(a)) - Number(Boolean(b));
+  if (type === "boolean") {
+    const toBoolean = (value) => {
+      if (typeof value === "boolean") return value;
+      if (typeof value === "number") return value !== 0;
+      const normalized = String(value).trim().toLocaleLowerCase("es-ES");
+      if (["false", "0", "no", "n", "inactivo", "inactiva", "off"].includes(normalized)) return false;
+      if (["true", "1", "si", "sí", "s", "activo", "activa", "on"].includes(normalized)) return true;
+      return Boolean(value);
+    };
+    return Number(toBoolean(a)) - Number(toBoolean(b));
+  }
   return collator.compare(String(a), String(b));
 }
 
