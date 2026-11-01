@@ -1239,7 +1239,9 @@
 :is(.erp-main-content, .apoderagest, .notargest, .encargagest, .cg-page) :is(
   .molsan-btn, .ctn-btn, .agenda-open-cita, .agenda-today-action,
   .eg-secondary, .eg-button-primary, .ag-boton-actualizar,
-  .ng-login-submit, .cg-button-primary, .erp-btn
+  .ng-login-submit, .cg-button-primary, .erp-btn,
+  .seguridad-subpagina-premium button:not(.erp-btn), .seguridad-premium-page button:not(.erp-btn),
+  .empleados-premium-page button:not([class*="rounded-full"]), .expedientes-page button:not([class*="rounded-full"])
 ) {
   font-family: var(--molsan-font-family, Inter, "Segoe UI", sans-serif);
   font-weight: 700;
@@ -1254,7 +1256,9 @@
 :is(.erp-main-content, .apoderagest, .notargest, .encargagest, .cg-page) :is(
   .molsan-btn, .ctn-btn, .agenda-open-cita, .agenda-today-action,
   .eg-secondary, .eg-button-primary, .ag-boton-actualizar,
-  .ng-login-submit, .cg-button-primary, .erp-btn
+  .ng-login-submit, .cg-button-primary, .erp-btn,
+  .seguridad-subpagina-premium button:not(.erp-btn), .seguridad-premium-page button:not(.erp-btn),
+  .empleados-premium-page button:not([class*="rounded-full"]), .expedientes-page button:not([class*="rounded-full"])
 ):focus-visible {
   outline: 3px solid rgba(6, 70, 117, .22);
   outline-offset: 2px;
