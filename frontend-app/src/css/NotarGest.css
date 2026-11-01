@@ -271,9 +271,27 @@
 @media(max-width:760px){.ng-modal-overlay{padding:3vh 10px 16px}.ng-modal>header{padding:15px;flex-direction:column}.ng-modal-lista{padding:10px}.ng-aviso-item{padding:11px}.ng-perfil-datos{grid-template-columns:1fr;padding:14px}}
 
 
-/* NotarGest: distintivo NG equivalente al bloque AG de ApoderaGest */
-.notargest .ag-hero .ag-marca.ng-marca-notargest{
-  display:flex!important;align-items:center;justify-content:center;flex:0 0 46px;width:46px;height:46px;min-width:46px;min-height:46px;padding:0;border:0;border-radius:14px;background:linear-gradient(145deg,#4778f4,#2449c8);color:#fff;font-size:16px;line-height:1;font-weight:900;letter-spacing:-.04em;box-shadow:0 5px 14px rgba(49,94,232,.22);overflow:hidden
+/* Distintivo NG: mismas proporciones y paleta que las demás cabeceras Molsan. */
+.notargest .ag-hero .ag-marca.ng-marca-notargest {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 11px;
+  background: linear-gradient(145deg, #04375B, #0D638C);
+  color: #fff;
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -.03em;
+  box-shadow: none;
+  overflow: hidden;
 }
 .notargest .ag-hero .ag-marca.ng-marca-notargest::before,.notargest .ag-hero .ag-marca.ng-marca-notargest::after{content:none!important;display:none!important}
 @media(min-width:1200px){.notargest .ng-hero-apoderagest{width:100%;max-width:none}}
