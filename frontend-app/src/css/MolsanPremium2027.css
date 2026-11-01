@@ -1035,7 +1035,13 @@
   background-position: top left, top left;
   background-repeat: no-repeat;
 }
-nsajes-premium-page, .mensajeria, .provisiones-fondos-page,
+:is(
+  .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
+  .apoderagest, .notargest, .encargagest, .ctn-listado-page,
+  .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
+  .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
+  .utilidades-premium-page, .maestros-premium-page, .informes-premium-page,
+  .mensajes-premium-page, .mensajeria, .provisiones-fondos-page,
   .panel-tecnico-premium, .seguridad-premium-page,
   .herramientas-subpagina-premium, .catalogos-maestros-premium
 ) :is(
