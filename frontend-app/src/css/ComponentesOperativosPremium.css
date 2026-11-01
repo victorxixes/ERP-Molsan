@@ -8,3 +8,22 @@
 .crear-noticia-premium input,.crear-noticia-premium textarea,.mantenimiento-tecnico-premium input,.mantenimiento-tecnico-premium select,.verifacti-premium input,.verifacti-premium select { max-width:100%; min-width:0; }
 @media(max-width:640px){.informe-apoderado-premium,.visibilidad-tablas-premium,.mantenimiento-tecnico-premium,.verifacti-premium{overflow-x:auto;-webkit-overflow-scrolling:touch}.select-sj-premium [role=listbox]{max-height:40dvh}}
 @media(prefers-reduced-motion:reduce){.agenda-toast-premium *,.notificaciones-toast-premium *,.informe-apoderado-premium *,.visibilidad-tablas-premium *,.provisiones-launcher-premium *,.select-sj-premium *,.herramientas-home-premium *,.mantenimiento-tecnico-premium *,.verifacti-premium *,.crear-noticia-premium *{animation:none!important;transition:none!important}}
+
+
+/* Cabecera de Herramientas: proporciones compactas del sistema común. */
+.herramientas-home-premium > div:first-child {
+  padding: 12px 16px !important;
+  border-color: var(--molsan-border) !important;
+  border-radius: var(--molsan-radius-card, 16px) !important;
+  background: var(--molsan-surface) !important;
+  box-shadow: var(--molsan-shadow-card) !important;
+  backdrop-filter: none !important;
+}
+.herramientas-home-premium > div:first-child .w-12.h-12 {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 10px !important;
+  font-size: 18px !important;
+}
+.herramientas-home-premium > div:first-child h1 { font-size: 20px !important; line-height: 1.2; }
+.herramientas-home-premium > div:first-child p { font-size: 12px !important; line-height: 1.45; }
