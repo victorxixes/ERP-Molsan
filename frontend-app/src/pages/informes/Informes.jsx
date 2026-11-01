@@ -3626,24 +3626,19 @@ function InformeFacturacion() {
             <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm text-slate-500">No hay registros para el periodo seleccionado.</div>
           ) : (
             <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200">
-              <table className="w-full min-w-[640px] text-left text-sm">
-                <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-4 py-3">ESTADO (Excel ABSIS)</th><th className="px-4 py-3 text-right">Registros</th><th className="px-4 py-3 text-right">Importe IMPGASTO</th><th className="px-4 py-3 text-right">Consulta</th></tr></thead>
-                <tbody className="divide-y divide-slate-100">
-                  {listaEstados.map(([estado, dato]) => (
-                    <tr key={estado} className="hover:bg-blue-50/50">
-                      <td className="px-4 py-3 font-semibold text-slate-700">{estado}</td>
-                      <td className="px-4 py-3 text-right tabular-nums">{numeroInforme(dato.filas)}</td>
-                      <td className="px-4 py-3 text-right tabular-nums">{euros(dato.importe)}</td>
-                      <td className="px-4 py-3 text-right">{estado === "(vacío)" ? <span className="text-xs text-slate-400">Sin código</span> : <button type="button" onClick={() => {
-                        const siguiente = { ...filtros, modalidad: "todas", estado };
-                        setFiltros(siguiente);
-                        setAplicados(siguiente);
-                        setModalAbierto(true);
-                      }} className="rounded-lg border border-blue-200 bg-white px-3 py-1.5 text-xs font-bold text-blue-700 hover:bg-blue-50">Ver registros</button>}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <MolsanDataTable
+                rows={listaEstados.map(([estado, dato]) => ({ estado, filas: dato.filas, importe: dato.importe }))}
+                rowKey="estado"
+                minWidth="700px"
+                initialSort={{ key: "filas", direction: "desc" }}
+                emptyText="No hay registros para el periodo seleccionado."
+                columns={[
+                  { key: "estado", header: "Estado (Excel ABSIS)", accessor: "estado", sortType: "text" },
+                  { key: "filas", header: "Registros", accessor: "filas", sortType: "number", align: "right", render: (value) => numeroInforme(value) },
+                  { key: "importe", header: "Importe IMPGASTO", accessor: "importe", sortType: "currency", align: "right", render: (value) => euros(value) },
+                  { key: "consulta", header: "Consulta", sortable: false, accessor: "estado", render: (estado) => estado === "(vacío)" ? <span className="text-xs text-slate-400">Sin código</span> : <button type="button" onClick={() => { const siguiente = { ...filtros, modalidad: "todas", estado }; setFiltros(siguiente); setAplicados(siguiente); setModalAbierto(true); }} className="rounded-lg border border-blue-200 bg-white px-3 py-1.5 text-xs font-bold text-blue-700 hover:bg-blue-50">Ver registros</button> },
+                ]}
+              />
             </div>
           );
         })()}
