@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
 import "../../css/ModalesHerramientasPremium.css";
+import { formatEuro } from "../../utils/formatters";
 
 // Se conservan las categorías del repositorio actual para no romper
 // los documentos ya almacenados.
@@ -754,7 +755,7 @@ export default function CarpetaDigitalModal({
                     };
                     const moneda = (v) => v === "" || v === null || v === undefined
                       ? ""
-                      : (Number.isFinite(Number(v)) ? new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(v)) : v);
+                      : (Number.isFinite(Number(v)) ? formatEuro(v) : v);
                     const fecha = (v) => {
                       if (!v) return "";
                       const s = String(v);
