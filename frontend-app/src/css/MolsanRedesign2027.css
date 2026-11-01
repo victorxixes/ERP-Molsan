@@ -396,7 +396,7 @@
 :is(.cg-page, .cg-unified-workspace) .erp-card,
 :is(.cg-page, .cg-unified-workspace) .erp-card-soft,
 :is(.cg-page, .cg-unified-workspace) [data-cg-panel="true"] {
-  border: 1px solid var(--molsan-border, #dce4ef);
+  border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: 14px;
   box-shadow: 0 4px 16px rgba(27, 43, 70, .055);
 }
@@ -417,12 +417,12 @@
 }
 
 :is(.cg-page, .cg-unified-workspace) :is(input, select, textarea):focus {
-  border-color: var(--molsan-primary, #3156b3);
+  border-color: var(--molsan-primary, #064675);
   box-shadow: 0 0 0 3px rgba(49, 86, 179, .13);
 }
 
 :is(.cg-page, .cg-unified-workspace) :is(input, select, textarea):focus-visible {
-  outline: 2px solid var(--molsan-primary, #3156b3);
+  outline: 2px solid var(--molsan-primary, #064675);
   outline-offset: 2px;
 }
 
@@ -442,7 +442,7 @@
 
 :is(.cg-page, .cg-unified-workspace) :is(button, [role="button"]):focus-visible,
 .mol-sidebar-premium :is(a, button):focus-visible {
-  outline: 2px solid var(--molsan-primary, #3156b3);
+  outline: 2px solid var(--molsan-primary, #064675);
   outline-offset: 2px;
 }
 
@@ -450,7 +450,7 @@
 .mol-sidebar-premium {
   position: relative;
   z-index: 50;
-  border-bottom: 1px solid var(--molsan-border, #dce4ef);
+  border-bottom: 1px solid var(--molsan-border, #D8E4EC);
   box-shadow: 0 3px 14px rgba(27, 43, 70, .045);
   font-family: var(--molsan-font-family, Inter, "Segoe UI", sans-serif);
 }
@@ -458,8 +458,8 @@
 .mol-sidebar-premium a[aria-current="page"],
 .mol-sidebar-premium a.active,
 .mol-sidebar-premium button[aria-current="page"] {
-  color: var(--molsan-primary, #3156b3);
-  background: var(--molsan-primary-soft, #edf3ff);
+  color: var(--molsan-primary, #064675);
+  background: var(--molsan-primary-soft, #EAF2F8);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -551,7 +551,7 @@
   .provisiones-fondos-page,
   .herramientas-subpagina-premium
 ) {
-  background-color: var(--molsan-page-bg, #f3f6fb);
+  background-color: var(--molsan-page-bg, #FFFFFF);
 }
 
 /* Superficies principales: las tarjetas dejan de parecer bloques planos. */
@@ -1240,7 +1240,7 @@
 .ctn-modal-overlay .ctn-modal-panel {
   color: var(--molsan-text, #18263c);
   background-color: var(--molsan-surface, #fff);
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
   box-shadow: var(--molsan-shadow-popover, 0 20px 50px rgba(20, 32, 54, .18));
 }
 
@@ -1310,7 +1310,7 @@
   :is(.cg-page, .cg-unified-workspace) .erp-card-soft,
   :is(.cg-page, .cg-unified-workspace) [data-cg-panel="true"]
 ) {
-  border-color: var(--molsan-card-border, var(--molsan-border, #dce4ef));
+  border-color: var(--molsan-card-border, var(--molsan-border, #D8E4EC));
   border-radius: var(--molsan-radius-card, 14px);
   box-shadow: var(--molsan-card-shadow, var(--molsan-shadow-card, 0 4px 16px rgba(27, 43, 70, .055)));
 }
@@ -1362,7 +1362,7 @@
   .ctn-listado-page .ctn-tabla,
   .expedientes-page table
 ) {
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
   font-variant-numeric: tabular-nums;
 }
 
@@ -1372,7 +1372,7 @@
   .ctn-listado-page .ctn-tabla th,
   .expedientes-page table thead th
 ) {
-  border-bottom-color: var(--molsan-border, #dce4ef);
+  border-bottom-color: var(--molsan-border, #D8E4EC);
 }
 
 /* En móvil, los paneles conservan su ancho dentro de la zona de trabajo. */
@@ -1458,7 +1458,7 @@
 :is(.expedientes-page, .ctn-listado-page) > .molsan-page-header p:not(.molsan-page-header__eyebrow):not(.expedientes-page__eyebrow):not(.ctn-listado-header-eyebrow) {
   max-width: 650px;
   margin: 0;
-  color: var(--molsan-text-muted, #64748b);
+  color: var(--molsan-text-muted, #718696);
   font-size: 13px;
   line-height: 1.65;
 }
@@ -1553,7 +1553,7 @@
 :is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero p {
   max-width: 650px;
   margin: 0;
-  color: var(--molsan-text-muted, #64748b);
+  color: var(--molsan-text-muted, #718696);
   font-size: 13px;
   line-height: 1.65;
 }
@@ -2860,7 +2860,7 @@ body {
   .fichajes-premium-page, .fichaje-molsan-page
 ) {
   font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
 }
 /* Una sola regla de lienzo: los módulos comparten el mismo fondo exterior. */
 :where(
@@ -2876,7 +2876,7 @@ body {
   .provisiones-fondos-premium, .dashboard-cancelagest, .logs-premium-page,
   .maestros-premium-page, .notificaciones-premium-page
 ) {
-  background: var(--molsan-page-bg, #f4f7fb) !important;
+  background: var(--molsan-page-bg, #FFFFFF) !important;
   border: 0 !important;
   border-radius: 0 !important;
   box-shadow: none !important;
@@ -2894,9 +2894,9 @@ body {
   .seguridad-usuarios-premium .erp-page-header,
   .molsan-intranet-page article
 ) {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   background: var(--molsan-surface, #fff);
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-card, 14px);
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
   backdrop-filter: none;
@@ -2911,7 +2911,7 @@ body {
   .seguridad-usuarios-premium .erp-page-header
 ) {
   background: var(--molsan-surface, #fff);
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
   box-shadow: none;
 }
 :where(
@@ -2979,31 +2979,31 @@ body {
 
 /* Las superficies de los portales se normalizan en el bloque canónico inferior. */
 :where(.notargest .ng-cabecera, .apoderagest .ag-hero, .encargagest .eg-hero) {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   background: transparent;
   border: 0;
   box-shadow: none;
 }
 :where(.apoderagest .ag-panel-cabecera, .encargagest .eg-panel-head,
        .notargest .ng-panel-titulo) {
-  color: var(--molsan-text, #17243a);
-  background: var(--molsan-surface-soft, #f7f9fc);
+  color: var(--molsan-text, #173247);
+  background: var(--molsan-surface-soft, #F2F7FB);
   border-color: var(--molsan-border-light, #e8edf4);
 }
 /* CTN: listado y ficha comparten cabeceras, paneles y campos. */
 :where(.ctn-listado-page .ctn-listado-header, .ctn-detalle-page .ctn-detalle-header) {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   background: #fff;
-  border: 1px solid var(--molsan-border, #dce4ef);
+  border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-card, 14px);
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
 }
 :where(.ctn-detalle-page .ctn-detalle-stat, .ctn-detalle-page .ctn-detalle-panel,
        .ctn-detalle-page .ctn-detalle-info-card, .ctn-listado-page .ctn-panel,
        .ctn-listado-page .dashboard-card) {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   background: #fff;
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-card, 14px);
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
 }
@@ -3012,16 +3012,16 @@ body {
 :where(.expedientes-page .erp-card, .expedientes-page .expediente-card,
        .ficha-expediente-premium .erp-card, .provisiones-fondos-page .pf-card,
        .provisiones-fondos-page .erp-card) {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   background: #fff;
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-card, 14px);
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
 }
 :where(.expedientes-page .molsan-page-header, .ficha-expediente-premium .molsan-page-header,
        .provisiones-fondos-page > header) {
   background: #fff;
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-card, 14px);
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
 }
@@ -3029,18 +3029,18 @@ body {
 /* Dashboard de CancelaGest: clase real de los indicadores y paneles. */
 :where(.dashboard-cancelagest .dashboard-kpi, .dashboard-cancelagest .erp-card,
        .cg-unified-workspace .erp-card, .cg-unified-workspace .dashboard-card) {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   background-color: #fff;
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-card, 14px);
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
 }
 
 /* Herramientas: se elimina la franja decorativa distinta de cada pantalla. */
 :where(.catalogos-premium-page > header, .utilidades-premium-page > header) {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   background: #fff;
-  border: 1px solid var(--molsan-border, #dce4ef);
+  border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-card, 14px);
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
 }
@@ -3052,7 +3052,7 @@ body {
 :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
     select, textarea) {
   font-family: inherit;
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-control, 9px);
   box-shadow: none;
 }
@@ -3061,7 +3061,7 @@ body {
        .provisiones-fondos-page, .dashboard-cancelagest,
        .catalogos-premium-page, .utilidades-premium-page)
 :is(input, select, textarea, button, a):focus-visible {
-  outline-color: var(--molsan-primary, #3156b3);
+  outline-color: var(--molsan-primary, #064675);
   outline-offset: 2px;
 }
 :where(.notargest, .apoderagest, .encargagest, .ctn-listado-page,
@@ -3091,11 +3091,11 @@ table :is(th, td) {
        .seguridad-resumen-premium, .seguridad-rol-editor-premium,
        .empleados-listado-premium, .empleado-ficha-premium,
        .empleado-editar-premium, .panel-tecnico-premium) {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
 }
 :where(.informes-premium-page, .molsan-intranet-page, .seguridad-premium-page) {
-  background: var(--molsan-page-bg, #f3f6fb) !important;
+  background: var(--molsan-page-bg, #FFFFFF) !important;
 }
 :where(.informes-premium-page, .molsan-intranet-page, .seguridad-premium-page,
        .seguridad-subpagina-premium, .seguridad-usuarios-premium,
@@ -3106,9 +3106,9 @@ table :is(th, td) {
        .empleados-listado-premium, .empleado-ficha-premium,
        .empleado-editar-premium, .panel-tecnico-premium)
 :is(.erp-card, .erp-panel, .erp-surface, [data-molsan-surface="card"]) {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   background: var(--molsan-surface, #fff);
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-card, 14px);
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
 }
@@ -3119,7 +3119,7 @@ table :is(th, td) {
 :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
     select, textarea) {
   font-family: inherit;
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-control, 9px);
 }
 
@@ -3147,7 +3147,7 @@ table :is(th, td) {
   .fusiones-page
 ) {
   font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
 }
 
 :where(
@@ -3166,8 +3166,8 @@ table :is(th, td) {
   .informes-premium-page,
   .fusiones-page
 ) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
-  color: var(--molsan-text, #17243a);
-  border-color: var(--molsan-border, #dce4ef);
+  color: var(--molsan-text, #173247);
+  border-color: var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-control, 9px);
   box-shadow: none;
 }
@@ -3196,9 +3196,9 @@ table :is(th, td) {
   .catalogos-premium-page,
   .utilidades-premium-page
 ) > header {
-  color: var(--molsan-text, #17243a) !important;
+  color: var(--molsan-text, #173247) !important;
   background: var(--molsan-surface, #fff) !important;
-  border: 1px solid var(--molsan-border, #dce4ef) !important;
+  border: 1px solid var(--molsan-border, #D8E4EC) !important;
   border-radius: var(--molsan-radius-card, 14px) !important;
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06)) !important;
   backdrop-filter: none !important;
@@ -3209,9 +3209,9 @@ table :is(th, td) {
 :where(.empleados-listado-premium, .seguridad-usuarios-premium) .erp-page-header,
 :where(.fusiones-page) .erp-card,
 :where(.informes-premium-page) .erp-card {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   background-color: var(--molsan-surface, #fff);
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-card, 14px);
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
 }
@@ -3219,18 +3219,18 @@ table :is(th, td) {
 :where(.empleados-listado-premium, .seguridad-usuarios-premium, .ctn-listado-page, .ctn-detalle-page)
   :is(th, thead) {
   color: var(--molsan-text-secondary, #526176);
-  background-color: var(--molsan-surface-soft, #f7f9fc);
+  background-color: var(--molsan-surface-soft, #F2F7FB);
   border-color: var(--molsan-border-light, #e8edf4);
 }
 
 :where(.empleados-listado-premium, .seguridad-usuarios-premium, .ctn-listado-page, .ctn-detalle-page)
   tbody tr:hover {
-  background-color: var(--molsan-primary-soft, #edf3ff);
+  background-color: var(--molsan-primary-soft, #EAF2F8);
 }
 
 :where(.notargest, .apoderagest, .encargagest) :is(.ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .ag-panel, .ag-kpi, .ag-card, .eg-panel, .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section) {
   background-color: var(--molsan-surface, #fff) !important;
-  border-color: var(--molsan-border, #dce4ef) !important;
+  border-color: var(--molsan-border, #D8E4EC) !important;
   border-radius: var(--molsan-radius-card, 14px) !important;
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06)) !important;
   backdrop-filter: none !important;
@@ -3238,16 +3238,16 @@ table :is(th, td) {
 }
 
 :where(.notargest, .apoderagest, .encargagest) :is(.ng-panel-titulo, .ag-panel-header, .ag-panel-cabecera, .eg-card-header, .eg-panel-head) {
-  color: var(--molsan-text, #17243a) !important;
-  background-color: var(--molsan-surface-soft, #f7f9fc) !important;
+  color: var(--molsan-text, #173247) !important;
+  background-color: var(--molsan-surface-soft, #F2F7FB) !important;
   border-color: var(--molsan-border-light, #e8edf4) !important;
   box-shadow: none !important;
 }
 :where(.notargest, .apoderagest, .encargagest) :is(.ng-cabecera h1, .ag-hero h1, .eg-hero h1) {
-  color: var(--molsan-text, #17243a) !important;
+  color: var(--molsan-text, #173247) !important;
 }
 :where(.notargest, .apoderagest, .encargagest) :is(.ng-cabecera p, .ag-hero p, .eg-hero p) {
-  color: var(--molsan-text-muted, #64748b) !important;
+  color: var(--molsan-text-muted, #718696) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3287,7 +3287,7 @@ table :is(th, td) {
   .notificaciones-premium-page,
   .panel-tecnico-premium
 ) {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
 }
 
@@ -3298,9 +3298,9 @@ table :is(th, td) {
   .notificaciones-premium-page,
   .panel-tecnico-premium
 ) :is(.erp-card, .agenda-upcoming-card, .agenda-list-table-wrap, .logs-panel, .maestros-panel) {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   background-color: var(--molsan-surface, #fff);
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-card, 14px);
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
   backdrop-filter: none;
@@ -3309,9 +3309,9 @@ table :is(th, td) {
 
 :where(.agenda-premium-page, .logs-premium-page, .maestros-premium-page, .notificaciones-premium-page, .panel-tecnico-premium)
   :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   background-color: var(--molsan-surface, #fff);
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-control, 9px);
 }
 
@@ -3342,21 +3342,21 @@ table :is(th, td) {
   .maestros-premium-page,
   .notificaciones-premium-page
 ) {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
 }
 
 :where(.notargest, .apoderagest.notargest, .encargagest) :is(.ng-cabecera, .ag-hero, .eg-hero) {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   background: transparent !important;
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
   box-shadow: none !important;
 }
 
 :where(.notargest, .apoderagest.notargest, .encargagest) :is(.ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .ag-panel, .ag-kpi, .ag-card, .eg-panel, .eg-kpi, .eg-directorio-card, .eg-modal-section) {
-  color: var(--molsan-text, #17243a) !important;
+  color: var(--molsan-text, #173247) !important;
   background: var(--molsan-surface, #fff) !important;
-  border-color: var(--molsan-border, #dce4ef) !important;
+  border-color: var(--molsan-border, #D8E4EC) !important;
   border-radius: var(--molsan-radius-card, 14px) !important;
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06)) !important;
   backdrop-filter: none !important;
@@ -3364,22 +3364,22 @@ table :is(th, td) {
 }
 
 :where(.notargest, .apoderagest.notargest, .encargagest) :is(.ng-contador, .ng-acceso, .eg-kpi, .ag-kpi) :is(strong, span, small) {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
 }
 
 :where(.expedientes-page, .agenda-premium-page, .ctn-detalle-page, .cg-page, .notargest, .apoderagest.notargest, .encargagest)
   :is(.erp-card, .erp-card-soft, .molsan-panel, .molsan-page-header) {
   background: var(--molsan-surface, #fff);
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-card, 14px);
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
 }
 
 :where(.expedientes-page, .agenda-premium-page, .ctn-detalle-page, .cg-page, .notargest, .apoderagest.notargest, .encargagest)
   :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   background-color: var(--molsan-surface, #fff);
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-control, 9px);
   box-shadow: none;
 }
@@ -3387,18 +3387,18 @@ table :is(th, td) {
 :where(.expedientes-page, .agenda-premium-page, .ctn-detalle-page, .cg-page, .notargest, .apoderagest.notargest, .encargagest)
   :is(th, thead) {
   color: var(--molsan-text-secondary, #526176);
-  background-color: var(--molsan-surface-soft, #f7f9fc);
+  background-color: var(--molsan-surface-soft, #F2F7FB);
   border-color: var(--molsan-border-light, #e8edf4);
 }
 
 :where(.expedientes-page, .agenda-premium-page, .ctn-detalle-page, .cg-page, .notargest, .apoderagest.notargest, .encargagest)
   tbody tr:hover {
-  background-color: var(--molsan-primary-soft, #edf3ff);
+  background-color: var(--molsan-primary-soft, #EAF2F8);
 }
 
 :where(.cg-page, .notargest, .apoderagest.notargest, .encargagest) :is(.cg-button-primary, .ng-login-submit, .eg-button-primary, .ag-button-primary) {
-  background: var(--molsan-primary, #3156b3) !important;
-  border-color: var(--molsan-primary, #3156b3) !important;
+  background: var(--molsan-primary, #064675) !important;
+  border-color: var(--molsan-primary, #064675) !important;
   color: #fff !important;
   box-shadow: none !important;
 }
@@ -3406,28 +3406,28 @@ table :is(th, td) {
 :where(.empleados-listado-premium, .empleados-premium-page, .empleado-ficha-premium, .empleado-editar-premium)
   :is(.erp-card, section.erp-card, .rounded-2xl.border) {
   background-color: var(--molsan-surface, #fff);
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-card, 14px);
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
 }
 
 :where(.empleados-listado-premium, .empleados-premium-page, .empleado-ficha-premium, .empleado-editar-premium)
   :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
-  color: var(--molsan-text, #17243a) !important;
+  color: var(--molsan-text, #173247) !important;
   background: var(--molsan-surface, #fff) !important;
-  border-color: var(--molsan-border, #dce4ef) !important;
+  border-color: var(--molsan-border, #D8E4EC) !important;
   border-radius: var(--molsan-radius-control, 9px);
   box-shadow: none;
 }
 
 :where(.empleados-listado-premium, .empleados-premium-page, .empleado-ficha-premium) :is(th, thead th) {
   color: var(--molsan-text-secondary, #526176) !important;
-  background: var(--molsan-surface-soft, #f7f9fc) !important;
+  background: var(--molsan-surface-soft, #F2F7FB) !important;
   border-color: var(--molsan-border-light, #e8edf4) !important;
 }
 
 :where(.empleados-listado-premium, .empleados-premium-page, .empleado-ficha-premium) tbody tr:hover {
-  background: var(--molsan-primary-soft, #edf3ff) !important;
+  background: var(--molsan-primary-soft, #EAF2F8) !important;
 }
 
 
@@ -3435,17 +3435,17 @@ table :is(th, td) {
    las reglas visuales repetidas de su hoja local. */
 .notargest .ng-tabla th {
   color: var(--molsan-text-secondary, #526176) !important;
-  background: var(--molsan-surface-soft, #f7f9fc) !important;
-  border-bottom-color: var(--molsan-border, #dce4ef) !important;
+  background: var(--molsan-surface-soft, #F2F7FB) !important;
+  border-bottom-color: var(--molsan-border, #D8E4EC) !important;
 }
 .notargest .ng-tabla td {
   border-color: var(--molsan-border-light, #e8edf4) !important;
 }
 .notargest .ng-tabla tbody tr:hover td {
-  background: var(--molsan-primary-soft, #edf3ff) !important;
+  background: var(--molsan-primary-soft, #EAF2F8) !important;
 }
 .notargest :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea) {
-  color: var(--molsan-text, #17243a) !important;
+  color: var(--molsan-text, #173247) !important;
   background-color: var(--molsan-surface, #fff) !important;
   border-color: var(--molsan-border-strong, #c4d0df) !important;
   border-radius: var(--molsan-radius-control, 9px) !important;
@@ -3466,10 +3466,10 @@ table :is(th, td) {
   border-radius: var(--molsan-radius-control, 9px) !important;
 }
 .encargagest .eg-panel-head :is(h2, h3) {
-  color: var(--molsan-text, #17243a) !important;
+  color: var(--molsan-text, #173247) !important;
 }
 .encargagest .eg-panel-head p {
-  color: var(--molsan-text-muted, #64748b) !important;
+  color: var(--molsan-text-muted, #718696) !important;
 }
 
 /* Diálogos de los portales: superficie y radio comunes; cada módulo conserva
@@ -3479,9 +3479,9 @@ table :is(th, td) {
 :where(.encargagest) .eg-modal-perfil,
 :where(.apoderagest) .ag-visor-modal,
 :where(.apoderagest) .ag-resumen-modal {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   background: var(--molsan-surface, #fff) !important;
-  border: 1px solid var(--molsan-border, #dce4ef) !important;
+  border: 1px solid var(--molsan-border, #D8E4EC) !important;
   border-radius: var(--molsan-radius-dialog, 16px) !important;
   box-shadow: 0 16px 44px rgba(25, 42, 70, .16) !important;
   backdrop-filter: none !important;
