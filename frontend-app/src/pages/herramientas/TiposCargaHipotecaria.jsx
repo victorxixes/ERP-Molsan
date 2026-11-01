@@ -587,35 +587,12 @@ export default function TiposCargaHipotecaria() {
           CABECERA
       ==================================================== */}
 
-      <section
-        className="
-          erp-card
-          max-w-[1700px]
-          mx-auto
-          p-5
-        "
-      >
+      <header className="molsan-page-header catalogos-subpage-header">
 
-        <div
-          className="
-            flex
-            flex-col
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-            gap-4
-          "
-        >
+        <div className="catalogos-subpage-header__layout">
 
-          <div>
-
-            <div
-              className="molsan-page-header 
-                flex
-                items-center
-                gap-3
-              "
-            >
+          <div className="catalogos-subpage-header__identity-wrap">
+            <div className="molsan-page-header__identity catalogos-subpage-header__identity">
 
               <div
                 className="
@@ -666,7 +643,7 @@ export default function TiposCargaHipotecaria() {
           <button
             type="button"
             onClick={abrirNuevo}
-            className="
+            className="catalogos-subpage-header__action
               inline-flex
               items-center
               justify-center
@@ -693,7 +670,7 @@ export default function TiposCargaHipotecaria() {
 
         </div>
 
-      </section>
+      </header>
 
 
       {/* ====================================================
