@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useAuthStore } from "../store/authStore";
 
-const AUTH_CLOSE_CODES = new Set([4401, 4403]);
+const AUTH_CLOSE_CODES = new Set([4001, 4002, 4003, 4004, 4005, 4006, 4401, 4403]);
 const MAX_RECONNECT_DELAY = 30000;
 
 function reconnectDelay(attempt) {
