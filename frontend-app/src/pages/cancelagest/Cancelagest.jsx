@@ -81,7 +81,7 @@ export default function Cancelagest() {
     .filter((modulo) => modulo && puedeVerModulo(modulo.key));
 
   return <main className="cg-page">
-      <header className="cg-hero">
+      <header className="cg-hero molsan-page-header">
         <div className="cg-hero-identidad">
           <div className="cg-logo"><img src="/img/logo.jpg" alt="MOLSAN" /></div>
           <div><div className="cg-eyebrow">MOLSAN ERP · PREMIUM 2027</div><h1>CancelaGest</h1><p>Centro de gestión de cancelaciones, provisiones, firmas y seguimiento registral.</p></div>
