@@ -181,7 +181,7 @@ export default function SeguridadRolEditor() {
         console.error("Error guardando rol:", "Error interno");
 
         setError(
-          err?.message ||
+          err?.response?.data?.detail || err?.response?.data?.message || err?.message ||
           "No se ha podido guardar el rol."
         );
 
@@ -250,7 +250,7 @@ export default function SeguridadRolEditor() {
           console.error("Error eliminando rol:", "Error interno");
 
           setError(
-            err?.message ||
+            err?.response?.data?.detail || err?.response?.data?.message || err?.message ||
             "No se ha podido eliminar el rol."
           );
 
