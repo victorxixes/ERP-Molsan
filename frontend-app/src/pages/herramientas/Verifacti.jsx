@@ -52,7 +52,7 @@ function Panel({ title, description, children, action }) {
 
 function Metric({ icon, label, value, hint }) {
   return <div className="rounded-2xl border border-slate-200 bg-white p-4">
-    <div className="flex items-center justify-between"><span className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</span><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-lg">{icon}</span></div>
+    <div className="flex items-center justify-between"><span className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</span><MolsanIcon name={icon} size={36} /></div>
     <div className="mt-3 text-xl font-bold text-slate-800">{value}</div><p className="mt-1 text-xs text-slate-400">{hint}</p>
   </div>;
 }
@@ -134,9 +134,9 @@ export default function Verifacti() {
                   ["⌕", "Consultar facturas", "Buscar por ejercicio, periodo, serie o número.", "facturas"],
                   ["＋", "Registrar factura", "Preparar los campos de una nueva factura.", "crear"],
                   ["↻", "Subsanaciones y anulaciones", "Preparar una operación sobre un registro existente.", "operaciones"],
-                  ["⇩", "XML y exportaciones", "Consultar XML de una factura o preparar una exportación.", "xml"],
+                  ["download", "XML y exportaciones", "Consultar XML de una factura o preparar una exportación.", "xml"],
                 ].map(([icon, title, desc, id]) => <button key={id} onClick={() => cambiarSeccion(id)} className="flex items-start gap-3 rounded-2xl border border-slate-200 p-4 text-left transition hover:border-blue-200 hover:bg-blue-50/40">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-xl text-blue-700">{icon}</span><span><strong className="block text-sm text-slate-800">{title}</strong><span className="mt-1 block text-sm leading-5 text-slate-500">{desc}</span></span><span className="ml-auto text-slate-300">→</span>
+                  <MolsanIcon name={icon} size={40} /><span><strong className="block text-sm text-slate-800">{title}</strong><span className="mt-1 block text-sm leading-5 text-slate-500">{desc}</span></span><span className="ml-auto text-slate-300">→</span>
                 </button>)}
               </div>
             </Panel>
