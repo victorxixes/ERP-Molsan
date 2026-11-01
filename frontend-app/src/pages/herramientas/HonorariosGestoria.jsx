@@ -145,7 +145,7 @@ export default function HonorariosGestoria({ soloPlantilla = false } = {}) {
   return (
     <div className={`honorarios-gestoria-premium herramientas-subpagina-premium w-full max-w-none space-y-6 ${soloPlantilla ? "p-0" : "p-4 sm:p-6 lg:p-8"}`}>
       {!soloPlantilla && <>
-      <header className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <header className="molsan-page-header rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <p className="text-xs font-black uppercase tracking-[.18em] text-indigo-600">Utilidades · Catálogo económico</p>
         <h1 className="mt-2 text-2xl font-black text-slate-900 sm:text-3xl">Honorarios de gestoría</h1>
         <p className="mt-2 max-w-3xl text-sm text-slate-500">Administra las tarifas vigentes. Los cambios se aplican al seleccionar el honorario en «Añadir pagos»; los importes ya registrados no se modifican.</p>
