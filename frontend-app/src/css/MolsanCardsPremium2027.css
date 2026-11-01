@@ -276,3 +276,22 @@
     transition: none !important;
   }
 }
+
+
+/* Catálogos · cabecera única y a todo el ancho en el módulo y sus subapartados. */
+.catalogos-premium-page > .molsan-page-header {
+  display: flex;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  align-self: stretch;
+  flex: 0 0 100%;
+  box-sizing: border-box;
+  margin: 0 0 20px;
+}
+.catalogos-premium-page > .molsan-page-header .molsan-page-header__identity {
+  flex: 1 1 auto;
+}
+.catalogos-premium-page > .molsan-page-header .molsan-page-header__description {
+  max-width: 760px;
+}
