@@ -923,79 +923,24 @@ export default function EmpleadosListado({
       ====================================================== */}
 
       <header className="molsan-page-header">
-
-        <div className="
-          flex
-          flex-col
-          gap-4
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-        ">
-
-          <div>
-
-            <div className="molsan-page-header__identity">
-
-              <div className="molsan-page-header__mark">
-                👥
-              </div>
-
-
-              <div>
-
-                <p className="molsan-page-header__description">Gestión y administración de empleados</p>
-
-              </div>
-
-            </div>
-
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true">👥</div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">Empleados</h1>
+            <p className="molsan-page-header__description">Gestión y administración de empleados.</p>
           </div>
-
-
-          <div className="molsan-page-header__actions">
+        </div>
+        <div className="molsan-page-header__actions">
           <button
             type="button"
-            onClick={
-              abrirNuevo
-            }
-            className="
-              inline-flex
-              h-11
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              bg-[var(--erp-primary)]
-              px-5
-              text-sm
-              font-semibold
-              text-white
-              shadow-sm
-              transition-all
-              duration-200
-              hover:brightness-95
-              hover:shadow-md
-              active:scale-[0.98]
-            "
+            onClick={abrirNuevo}
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 text-sm font-semibold text-white shadow-none transition-all duration-200 hover:bg-white/20 hover:shadow-md active:scale-[0.98]"
           >
-
-            <span className="
-              text-lg
-              leading-none
-            ">
-              +
-            </span>
-
-            <span>
-              Nuevo empleado
-            </span>
-
+            <span className="text-lg leading-none">+</span>
+            <span>Nuevo empleado</span>
           </button>
         </div>
-
-        </div>
-
       </header>
 
 
