@@ -1,7 +1,7 @@
 /* MOLSAN ERP Premium 2027 — listado de empleados */
 .empleados-listado-premium { min-width: 0; }
 .empleados-listado-premium :is(input, select, textarea, button):focus-visible {
-  outline: 2px solid var(--molsan-primary, #3156b3);
+  outline: 2px solid var(--molsan-primary, #064675);
   outline-offset: 2px;
 }
 .empleados-listado-premium table { width: 100%; border-collapse: separate; border-spacing: 0; }
@@ -25,14 +25,14 @@
 .empleados-listado-premium .empleados-filtros-busqueda input[type="text"] {
   display:block; width:100%; min-width:0; height:44px; padding:.7rem .9rem .7rem 2.75rem;
   border:1px solid var(--molsan-border-strong,#c4d0df) !important; border-radius:var(--molsan-radius-control,9px); background:var(--molsan-surface,#fff) !important;
-  color:var(--molsan-text,#17243a) !important; font-size:.9rem; line-height:1.4;
+  color:var(--molsan-text, #173247) !important; font-size:.9rem; line-height:1.4;
   box-shadow:none; opacity:1;
 }
 .empleados-listado-premium .empleados-filtros-busqueda input::placeholder {
-  color:var(--molsan-text-muted,#64748b) !important; opacity:1;
+  color:var(--molsan-text-muted, #718696) !important; opacity:1;
 }
 .empleados-listado-premium .empleados-filtros-busqueda input:focus {
-  border-color:var(--molsan-primary,#3156b3) !important; outline:2px solid rgba(49,86,179,.42); outline-offset:1px;
+  border-color:var(--molsan-primary, #064675) !important; outline:2px solid rgba(49,86,179,.42); outline-offset:1px;
 }
 .empleados-listado-premium .empleados-filtros-busqueda > span {
   color:var(--molsan-text-secondary,#526176) !important; font-size:1.1rem; z-index:1;
