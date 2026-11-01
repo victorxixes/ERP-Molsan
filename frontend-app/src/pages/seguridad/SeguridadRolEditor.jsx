@@ -422,7 +422,7 @@ export default function SeguridadRolEditor() {
 
   return (
 
-    <div className="erp-page seguridad-subpagina-premium seguridad-rol-editor-premium space-y-6 animate-fade-in">
+    <div className="molsan-page-stack erp-page seguridad-subpagina-premium seguridad-rol-editor-premium animate-fade-in">
 
       {/* ======================================================
           CABECERA
