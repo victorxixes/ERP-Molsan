@@ -106,7 +106,7 @@ export default function ImportadorPostFirma() {
   };
 
   return (
-    <main className="herramientas-subpagina-premium min-h-screen space-y-5 text-slate-700">
+    <main className="molsan-page-stack herramientas-subpagina-premium min-h-screen text-slate-700">
       <header className="molsan-page-header">
         <div className="molsan-page-header__identity">
           <div className="molsan-page-header__mark">📦</div>
