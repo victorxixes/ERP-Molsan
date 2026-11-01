@@ -2,7 +2,7 @@
   --ng-border: var(--molsan-border, #dce4ef);
   --ng-text: var(--molsan-text, #17243a);
   --ng-muted: var(--molsan-text-muted, #64748b);
-  --ng-primary: var(--molsan-primary, #3156b3);
+  --ng-primary: var(--molsan-primary, #064675);
   width: 100% !important;
   max-width: none !important;
   margin: 0 auto;
@@ -18,7 +18,7 @@
 .ng-workflow{display:flex;flex-direction:column;align-items:flex-start;gap:14px}.ng-workflow-form{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px;width:100%}.ng-workflow-form label{display:flex;flex-direction:column;gap:6px;min-width:190px;flex:1}.ng-workflow-form input{min-height:40px;padding:9px 12px;border:1px solid rgba(148,163,184,.35);border-radius:10px;background:rgba(255,255,255,.72);color:#172033}.ng-workflow .ng-login-submit{width:auto;max-width:100%;padding:11px 18px}.ng-workflow p{margin:0}@media(max-width:700px){.ng-workflow-form{align-items:stretch;flex-direction:column}.ng-workflow .ng-login-submit{width:100%}}
 
 /* NotarGest · identidad visual unificada con ApoderaGest Glass Luxe */
-.apoderagest.notargest{--ag-ink:var(--molsan-text,#17243a);--ag-muted:var(--molsan-text-muted,#64748b);--ag-line:var(--molsan-border,#dce4ef);--ag-panel:var(--molsan-surface,#fff);--ag-blue:var(--molsan-primary,#3156b3);--ag-blue-dark:var(--molsan-primary-hover,#274694);position:relative;isolation:isolate;width:100%;max-width:none;min-width:0;margin:0;padding:clamp(16px,2.2vw,30px);overflow:hidden;color:var(--ag-ink);background:var(--molsan-page-bg,#f4f7fb);border:1px solid var(--molsan-border,#dce4ef);border-radius:var(--molsan-radius-card,14px);font-family:var(--molsan-font-family,Inter,ui-sans-serif,system-ui,sans-serif)}
+.apoderagest.notargest{--ag-ink:var(--molsan-text,#17243a);--ag-muted:var(--molsan-text-muted,#64748b);--ag-line:var(--molsan-border,#dce4ef);--ag-panel:var(--molsan-surface,#fff);--ag-blue:var(--molsan-primary,#064675);--ag-blue-dark:var(--molsan-primary-hover,#274694);position:relative;isolation:isolate;width:100%;max-width:none;min-width:0;margin:0;padding:clamp(16px,2.2vw,30px);overflow:hidden;color:var(--ag-ink);background:var(--molsan-page-bg,#f4f7fb);border:1px solid var(--molsan-border,#dce4ef);border-radius:var(--molsan-radius-card,14px);font-family:var(--molsan-font-family,Inter,ui-sans-serif,system-ui,sans-serif)}
 .apoderagest.notargest *,.apoderagest.notargest *:before,.apoderagest.notargest *:after{box-sizing:border-box}
 
 
@@ -816,7 +816,7 @@
   min-width: 0;
 }
 .notargest-workspace-premium :is(button, a, input, select, textarea):focus-visible {
-  outline: 2px solid var(--ng-primary, var(--molsan-primary, #3156b3));
+  outline: 2px solid var(--ng-primary, var(--molsan-primary, #064675));
   outline-offset: 2px;
 }
 .notargest-workspace-premium :is(td, th, p, strong, small, code) {
