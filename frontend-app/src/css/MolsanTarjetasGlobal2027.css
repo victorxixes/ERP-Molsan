@@ -47,10 +47,7 @@
   .erp-card-soft,
   .molsan-panel,
   [data-panel="true"],
-  [data-cg-panel="true"],
-  :is(a, section, article).rounded-xl.border, div.bg-white.rounded-xl.border, div.bg-slate-50.rounded-xl.border, div.bg-gray-50.rounded-xl.border,
-  :is(a, section, article).rounded-2xl.border, div.bg-white.rounded-2xl.border, div.bg-slate-50.rounded-2xl.border, div.bg-gray-50.rounded-2xl.border,
-  :is(a, section, article).rounded-lg.border, div.bg-white.rounded-lg.border, div.bg-slate-50.rounded-lg.border, div.bg-gray-50.rounded-lg.border
+  [data-cg-panel="true"]
 ) {
   --molsan-card-tint: #F2F7FB;
   position: relative;
@@ -70,39 +67,46 @@
 
 /* Acentos cromáticos discretos y alternos para dar personalidad a las tarjetas. */
 :where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"], :is(a, section, article).rounded-xl.border, div.bg-white.rounded-xl.border, div.bg-slate-50.rounded-xl.border, div.bg-gray-50.rounded-xl.border, :is(a, section, article).rounded-2xl.border, div.bg-white.rounded-2xl.border, div.bg-slate-50.rounded-2xl.border, div.bg-gray-50.rounded-2xl.border, :is(a, section, article).rounded-lg.border, div.bg-white.rounded-lg.border, div.bg-slate-50.rounded-lg.border, div.bg-gray-50.rounded-lg.border):nth-child(6n + 1) {
+  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"]
+):nth-child(6n + 1) {
   --molsan-card-accent: #1477A5;
   --molsan-card-tint: #EAF5FA;
 }
 :where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"], :is(a, section, article).rounded-xl.border, div.bg-white.rounded-xl.border, div.bg-slate-50.rounded-xl.border, div.bg-gray-50.rounded-xl.border, :is(a, section, article).rounded-2xl.border, div.bg-white.rounded-2xl.border, div.bg-slate-50.rounded-2xl.border, div.bg-gray-50.rounded-2xl.border, :is(a, section, article).rounded-lg.border, div.bg-white.rounded-lg.border, div.bg-slate-50.rounded-lg.border, div.bg-gray-50.rounded-lg.border):nth-child(6n + 2) {
+  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"]
+):nth-child(6n + 2) {
   --molsan-card-accent: #249477;
   --molsan-card-tint: #EAF7F2;
 }
 :where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"], :is(a, section, article).rounded-xl.border, div.bg-white.rounded-xl.border, div.bg-slate-50.rounded-xl.border, div.bg-gray-50.rounded-xl.border, :is(a, section, article).rounded-2xl.border, div.bg-white.rounded-2xl.border, div.bg-slate-50.rounded-2xl.border, div.bg-gray-50.rounded-2xl.border, :is(a, section, article).rounded-lg.border, div.bg-white.rounded-lg.border, div.bg-slate-50.rounded-lg.border, div.bg-gray-50.rounded-lg.border):nth-child(6n + 3) {
+  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"]
+):nth-child(6n + 3) {
   --molsan-card-accent: #7865B5;
   --molsan-card-tint: #F1EEFA;
 }
 :where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"], :is(a, section, article).rounded-xl.border, div.bg-white.rounded-xl.border, div.bg-slate-50.rounded-xl.border, div.bg-gray-50.rounded-xl.border, :is(a, section, article).rounded-2xl.border, div.bg-white.rounded-2xl.border, div.bg-slate-50.rounded-2xl.border, div.bg-gray-50.rounded-2xl.border, :is(a, section, article).rounded-lg.border, div.bg-white.rounded-lg.border, div.bg-slate-50.rounded-lg.border, div.bg-gray-50.rounded-lg.border):nth-child(6n + 4) {
+  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"]
+):nth-child(6n + 4) {
   --molsan-card-accent: #C18A35;
   --molsan-card-tint: #FBF4E8;
 }
 :where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"], :is(a, section, article).rounded-xl.border, div.bg-white.rounded-xl.border, div.bg-slate-50.rounded-xl.border, div.bg-gray-50.rounded-xl.border, :is(a, section, article).rounded-2xl.border, div.bg-white.rounded-2xl.border, div.bg-slate-50.rounded-2xl.border, div.bg-gray-50.rounded-2xl.border, :is(a, section, article).rounded-lg.border, div.bg-white.rounded-lg.border, div.bg-slate-50.rounded-lg.border, div.bg-gray-50.rounded-lg.border):nth-child(6n + 5) {
+  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"]
+):nth-child(6n + 5) {
   --molsan-card-accent: #2696A5;
   --molsan-card-tint: #EAF7F8;
 }
 :where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"], :is(a, section, article).rounded-xl.border, div.bg-white.rounded-xl.border, div.bg-slate-50.rounded-xl.border, div.bg-gray-50.rounded-xl.border, :is(a, section, article).rounded-2xl.border, div.bg-white.rounded-2xl.border, div.bg-slate-50.rounded-2xl.border, div.bg-gray-50.rounded-2xl.border, :is(a, section, article).rounded-lg.border, div.bg-white.rounded-lg.border, div.bg-slate-50.rounded-lg.border, div.bg-gray-50.rounded-lg.border):nth-child(6n) {
+  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"]
+):nth-child(6n) {
   --molsan-card-accent: #5574B8;
   --molsan-card-tint: #EEF2FA;
 }
 
 /* Hover solo en tarjetas que actúan como superficies independientes; sin alterar tablas. */
 :where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], :is(a, section, article).rounded-xl.border, div.bg-white.rounded-xl.border, div.bg-slate-50.rounded-xl.border, div.bg-gray-50.rounded-xl.border, :is(a, section, article).rounded-2xl.border, div.bg-white.rounded-2xl.border, div.bg-slate-50.rounded-2xl.border, div.bg-gray-50.rounded-2xl.border, :is(a, section, article).rounded-lg.border, div.bg-white.rounded-lg.border, div.bg-slate-50.rounded-lg.border, div.bg-gray-50.rounded-lg.border):hover {
+  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"]
+):hover {
   border-color: var(--molsan-card-accent, #B8D2E1);
   box-shadow: var(--molsan-card-hover-shadow);
 }
