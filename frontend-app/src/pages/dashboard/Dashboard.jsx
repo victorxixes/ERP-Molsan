@@ -270,9 +270,9 @@ export default function Dashboard() {
       {/* CABECERA UNIFICADA CON APODERAGEST Y NOTARGEST */}
       <header className="ag-hero molsan-page-header dashboard-header" style={{ "--ag-muted": "var(--molsan-text-muted)", "--ag-ink": "var(--molsan-text)" }}>
         <div className="ag-hero-identidad molsan-page-header__identity">
-          <div className="ag-marca cg-marca-cancelagest" aria-label="CancelaGest">CG</div>
+          <div className="ag-marca cg-marca-cancelagest molsan-page-header__mark" aria-label="CancelaGest">CG</div>
           <div>
-            <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
+            <div className="ag-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
             <h1>Dashboard</h1>
             <p>Resumen operativo de expedientes, actividad del circuito y firmas realizadas.</p>
           </div>
