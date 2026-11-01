@@ -580,8 +580,6 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
               ]}
             />
             {cargandoPagos && <p className="ng-mensaje">Cargando pagos…</p>}
-          </div>}
-            {cargandoPagos && <p className="ng-mensaje">Cargando pagos…</p>}
           </div>
         </section>
       </div>}
