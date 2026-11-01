@@ -140,7 +140,7 @@ export default function Intranet() {
   if (error && !noticias.length && !documentos.length) return <div role="alert" aria-live="assertive" className="rounded-3xl border border-red-200 bg-white p-8 text-sm text-red-700 shadow-sm"><b>No se ha podido cargar la Intranet</b><p className="mt-2">{error}</p><button className={`${secondary} mt-4`} onClick={() => cargar(true)}>Reintentar</button></div>;
 
   return <div className="molsan-intranet-page relative space-y-6 animate-fadeIn">
-    <header className="rounded-[28px] border border-white/80 bg-gradient-to-r from-white via-blue-50/80 to-cyan-50/80 p-6 shadow-[0_18px_55px_rgba(15,23,42,0.08)] sm:p-8">
+    <header className="molsan-page-header rounded-[28px] border border-white/80 bg-gradient-to-r from-white via-blue-50/80 to-cyan-50/80 p-6 shadow-[0_18px_55px_rgba(15,23,42,0.08)] sm:p-8">
       <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
         <div className="flex items-center gap-4"><div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-100 bg-white text-2xl shadow-sm">🏢</div><div><h1 className="text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Intranet</h1><p className="mt-1 text-sm text-slate-500">Noticias, documentación y actividad interna de Molsan</p></div></div>
         <span className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-100 bg-white/80 px-4 py-2 text-xs font-semibold text-emerald-700"><span className="h-2 w-2 rounded-full bg-emerald-500" />Actualización automática activa</span>
