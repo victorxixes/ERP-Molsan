@@ -49,6 +49,8 @@ const PATHS = {
   wallet: <><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 8h18M15 13h6M17 15h.01"/></>,
   folderOpen: <><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2l-2 9H4L2 9a2 2 0 0 1 1-2z"/><path d="M3 11h18"/></>,
   eye: <><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></>,
+  eyeOff: <><path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a15 15 0 0 1-3.2 4.1M6.2 6.2C3.5 8 2 12 2 12s3.5 7 10 7c1 0 2-.2 2.8-.5"/></>,
+
   upload: <><path d="M12 16V4M7 9l5-5 5 5M4 16v4h16v-4"/></>,
   trash: <><path d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3"/></>,
   message: <><path d="M4 5h16v12H9l-5 4z"/><path d="M8 9h8M8 13h5"/></>,
