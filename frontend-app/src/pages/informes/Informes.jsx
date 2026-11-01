@@ -1201,6 +1201,8 @@ function InformeCitasApoderados() {
 
       <div
         className="
+          molsan-page-header
+          informes-page-header
           relative
           overflow-hidden
           bg-white/70
