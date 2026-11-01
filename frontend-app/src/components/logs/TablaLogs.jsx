@@ -984,7 +984,7 @@ export default function TablaLogs({
                                 valor
                               ] ||
                               iconosEvento.default ||
-                              "📄";
+                              "file";
 
                             return (
                               <td
