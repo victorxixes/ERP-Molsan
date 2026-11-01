@@ -1,3 +1,4 @@
+import MolsanButton from "../../components/ui/MolsanButton";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
@@ -183,14 +184,14 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
       <label className={label}>Buscar empleado / observación<input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Nombre, usuario, nota…" className={input} /></label>
       <label className={label}>Tipo de movimiento<select value={tipo} onChange={(e) => setTipo(e.target.value)} className={input}><option value="">Todos los tipos</option>{TIPOS.map((t) => <option key={t[0]} value={t[0]}>{t[1]}</option>)}</select></label>
       <label className={label}>Estado del registro<select value={estado} onChange={(e) => setEstado(e.target.value)} className={input}><option value="">Todos</option><option value="ORIGINAL">Sin correcciones</option><option value="MODIFICADO">Con historial administrativo</option></select></label>
-      <div className="flex items-end"><button type="button" onClick={cargar} className="w-full rounded-xl border bg-white px-4 py-3 text-sm font-bold">Actualizar datos</button></div>
-      <div className="flex items-end"><button type="button" onClick={() => abrirEditor(null)} className="w-full rounded-xl bg-emerald-700 px-4 py-3 text-sm font-bold text-white">+ Añadir marcaje olvidado</button></div>
+      <div className="flex items-end"><MolsanButton type="button" variant="secondary" icon="refresh" className="w-full" onClick={cargar}>Actualizar datos</MolsanButton></div>
+      <div className="flex items-end"><MolsanButton type="button" variant="primary" icon="plus" className="w-full" onClick={() => abrirEditor(null)}>Añadir marcaje olvidado</MolsanButton></div>
     </div>
 
     <section className="mt-5 rounded-2xl border border-amber-200 bg-amber-50/60 p-4">
       <div className="flex flex-wrap items-center justify-between gap-2"><div><h3 className="font-bold text-amber-950">Cierre y protección de periodos</h3><p className="mt-1 text-xs text-amber-900">Mes seleccionado: {desde ? desde.slice(5,7) + "/" + desde.slice(0,4) : "—"} · {periodo?.cerrado ? "CERRADO" : "Abierto"}</p></div>{periodo?.cerrado && <span className="rounded-lg bg-amber-200 px-3 py-1.5 text-xs font-extrabold text-amber-950">Periodo cerrado</span>}</div>
       <p className="mt-1 text-xs text-amber-900">Los meses cerrados bloquean las altas y correcciones. Reabrirlos requiere un motivo que queda registrado.</p>
-      <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto_auto]"><label className={label}>Motivo obligatorio<input value={motivoPeriodo} onChange={(e) => setMotivoPeriodo(e.target.value)} placeholder="Ej. nómina procesada…" className={input} /></label><button type="button" disabled={guardando || !!periodo?.cerrado} onClick={() => cambiarPeriodo(true)} className="self-end rounded-xl bg-amber-800 px-4 py-3 text-sm font-bold text-white disabled:opacity-40">Cerrar mes</button><button type="button" disabled={guardando || !periodo?.cerrado} onClick={() => cambiarPeriodo(false)} className="self-end rounded-xl border border-amber-300 bg-white px-4 py-3 text-sm font-bold text-amber-950 disabled:opacity-40">Reabrir mes</button></div>
+      <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto_auto]"><label className={label}>Motivo obligatorio<input value={motivoPeriodo} onChange={(e) => setMotivoPeriodo(e.target.value)} placeholder="Ej. nómina procesada…" className={input} /></label><MolsanButton type="button" variant="secondary" disabled={guardando || !!periodo?.cerrado} className="self-end" onClick={() => cambiarPeriodo(true)}>Cerrar mes</MolsanButton><MolsanButton type="button" variant="secondary" disabled={guardando || !periodo?.cerrado} className="self-end" onClick={() => cambiarPeriodo(false)}>Reabrir mes</MolsanButton></div>
       <div className="mt-3 flex flex-wrap gap-2">{periodos.filter((p) => p.cerrado).map((p) => <span key={p.anio + "-" + p.mes} className="rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-bold">{PAD(p.mes)}/{p.anio} · Cerrado</span>)}</div>
     </section>
 
