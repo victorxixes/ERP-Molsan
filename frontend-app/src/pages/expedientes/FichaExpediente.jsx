@@ -7337,9 +7337,6 @@ const cuantiaFincasParaEnvio =
                           </div>
                         </div>
 
-                  
-                )}
-
                         <div className="mt-4">
                           <h5 className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-600">Movimientos de la provisión</h5>
                           {cargandoGastos ? (
