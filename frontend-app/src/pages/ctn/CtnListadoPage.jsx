@@ -320,7 +320,7 @@ export default function CtnListadoPage() {
       {error && <div className="ctn-alerta-error" role="alert"><strong>No se ha podido completar la operación.</strong><span>{error}</span></div>}
       {errorEncargaGest && <div className="ctn-alerta-error" role="alert"><strong>No se ha podido consultar el estado de EncargaGest.</strong><span>{errorEncargaGest}</span></div>}
 
-      <section className="ctn-tabla-contenedor molsan-table-wrap">
+      <section className="ctn-tabla-contenedor molsan-panel molsan-table-wrap">
         <div className="ctn-tabla-cabecera"><div><h2>Notarios</h2><p>{total.toLocaleString("es-ES")} resultados encontrados</p></div></div>
         <div className="ctn-tabla-scroll">
           <table className="ctn-tabla molsan-table">
