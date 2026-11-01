@@ -77,19 +77,27 @@
 }
 
 
-/* Cabecera de Utilidades: escala compacta y superficie común. */
-.utilidades-premium-page > header {
-  padding: 12px 16px !important;
-  border-color: var(--molsan-border) !important;
-  border-radius: var(--molsan-radius-card, 16px) !important;
-  background: var(--molsan-surface) !important;
-  box-shadow: var(--molsan-shadow-card) !important;
+/* Cabecera canónica compartida por Catálogos y Utilidades.
+   Ambas páginas conservan su contenido; solo se unifican escala y superficie. */
+:is(.catalogos-premium-page, .utilidades-premium-page) > header {
+  min-height: 60px;
+  padding: 12px 16px;
+  border-color: var(--molsan-border);
+  border-radius: var(--molsan-radius-card, 16px);
+  background: var(--molsan-surface);
+  box-shadow: var(--molsan-shadow-card);
 }
-.utilidades-premium-page > header .w-12.h-12 {
-  width: 36px !important;
-  height: 36px !important;
-  border-radius: 10px !important;
-  font-size: 18px !important;
+:is(.catalogos-premium-page, .utilidades-premium-page) > header .w-12.h-12 {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  font-size: 18px;
 }
-.utilidades-premium-page > header h1 { font-size: 20px !important; line-height: 1.2; }
-.utilidades-premium-page > header p { font-size: 12px !important; line-height: 1.45; }
+:is(.catalogos-premium-page, .utilidades-premium-page) > header h1 {
+  font-size: 20px;
+  line-height: 1.2;
+}
+:is(.catalogos-premium-page, .utilidades-premium-page) > header p {
+  font-size: 12px;
+  line-height: 1.45;
+}
