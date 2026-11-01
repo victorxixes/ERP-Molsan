@@ -2127,25 +2127,6 @@ function KpiCard({
   };
 
 
-  const colores = {
-
-    blue:
-      "text-blue-700",
-
-    green:
-      "text-emerald-700",
-
-    red:
-      "text-rose-700",
-
-    purple:
-      "text-purple-700",
-
-    orange:
-      "text-orange-700",
-
-  };
-
 
   return (
 
