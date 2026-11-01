@@ -260,22 +260,18 @@ const NavIcon = ({ name }) => {
     iconos.activity;
 
   return (
-    <svg
-      className="
-        w-4
-        h-4
-        flex-shrink-0
-      "
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {contenido}
-    </svg>
+    <span className="molsan-nav-icon-3d" aria-hidden="true">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {contenido}
+      </svg>
+    </span>
   );
 };
 
