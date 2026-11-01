@@ -42,10 +42,7 @@
   max-width: 100%;
 }
 @media (max-width: 720px) {
-  .ficha-expediente-premium {
-    padding-left: .75rem;
-    padding-right: .75rem;
-  }
+  .ficha-expediente-premium { min-width:0; }
   /* Mantener el ancho natural de las tablas dentro de su contenedor
      desplazable: evita comprimir columnas y cortar acciones en móvil. */
   .ficha-expediente-premium .overflow-x-auto table {
