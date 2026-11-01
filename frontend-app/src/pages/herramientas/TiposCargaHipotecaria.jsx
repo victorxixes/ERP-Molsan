@@ -577,7 +577,7 @@ export default function TiposCargaHipotecaria() {
   return (
     <div
       className="
-        catalogo-maestro-page-premium herramientas-subpagina-premium
+        catalogos-premium-page catalogo-maestro-page-premium herramientas-subpagina-premium
         erp-page
         space-y-5
       "
