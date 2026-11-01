@@ -205,6 +205,9 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
     <div className="mt-5">
       <MolsanDataTable
         rows={marcajes}
+          pagination
+          pageSize={25}
+
         rowKey="id"
         minWidth="1250px"
         initialSort={{ key: "fecha", direction: "desc" }}
