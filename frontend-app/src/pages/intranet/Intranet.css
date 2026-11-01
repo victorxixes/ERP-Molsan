@@ -60,24 +60,6 @@
 }
 
 
-/* Cabecera de Intranet: fondo blanco, icono y tipografía compactos. */
-.molsan-intranet-page > div:first-child {
-  padding: 12px 16px !important;
-  border-color: var(--molsan-border) !important;
-  border-radius: var(--molsan-radius-card) !important;
-  background: var(--molsan-surface) !important;
-  box-shadow: var(--molsan-shadow-card) !important;
-}
-.molsan-intranet-page > div:first-child .w-14.h-14 {
-  width: 36px !important;
-  height: 36px !important;
-  border-radius: 10px !important;
-  font-size: 18px !important;
-}
-.molsan-intranet-page > div:first-child h1 { font-size: 20px !important; line-height: 1.2; }
-.molsan-intranet-page > div:first-child p { font-size: 12px !important; }
-
-
 /* Paleta Molsan para las utilidades Tailwind heredadas de Intranet. */
 .molsan-intranet-page [class~="bg-blue-600"] { background-color: var(--molsan-primary) !important; }
 .molsan-intranet-page [class~="hover:bg-blue-700"]:hover { background-color: var(--molsan-primary-hover) !important; }
