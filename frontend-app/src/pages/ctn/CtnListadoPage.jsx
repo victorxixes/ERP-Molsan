@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
 import "../../css/CtnListadoPage.css";
 
