@@ -20,6 +20,10 @@ const instance = axios.create({
 
   baseURL: API_BASE,
 
+  // El backend Preview puede despertar desde reposo (Render Free).
+  // Evita esperas indefinidas y permite mostrar un error recuperable.
+  timeout: 60000,
+
   withCredentials: false,
 
 });
