@@ -4,37 +4,6 @@
   color: var(--molsan-text);
 }
 
-.expedientes-page__header {
-  margin-bottom: 18px;
-  padding: 12px 16px;
-  background: var(--molsan-surface);
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-card);
-  box-shadow: var(--molsan-shadow-card);
-}
-
-.expedientes-page__header-icon {
-  display: grid;
-  width: 40px;
-  height: 40px;
-  flex: 0 0 40px;
-  place-items: center;
-  border-radius: 12px;
-  background: var(--molsan-primary-soft);
-  color: var(--molsan-primary);
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.expedientes-page__eyebrow {
-  margin: 0 0 3px;
-  color: var(--molsan-text-muted);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
-
 .expedientes-page__header-note {
   display: inline-flex;
   align-items: center;
@@ -84,20 +53,6 @@
 }
 
 @media (max-width: 700px) {
-  .expedientes-page__header {
-    padding: 12px;
-    margin-bottom: 14px;
-  }
-  .expedientes-page__header-icon {
-    width: 36px;
-    height: 36px;
-    flex-basis: 36px;
-    font-size: 14px;
-  }
-
-  .expedientes-page__header-note {
-    display: none;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -115,43 +70,6 @@
 .expedientes-page {
   min-width: 0;
   color: var(--molsan-text, #24324a);
-}
-
-.expedientes-page .molsan-page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  background: var(--molsan-surface, #fff);
-}
-
-.expedientes-page .molsan-page-header__identity {
-  min-width: 0;
-}
-
-.expedientes-page .molsan-page-header__title {
-  margin: 0;
-  color: var(--molsan-primary, #064675);
-  font-size: 20px;
-  font-weight: 750;
-  line-height: 1.2;
-  letter-spacing: -.035em;
-}
-
-.expedientes-page .molsan-page-header__description {
-  margin-top: 5px;
-  color: var(--molsan-text-secondary, #617789);
-  font-size: 12px;
-  line-height: 1.45;
-}
-
-.expedientes-page .molsan-page-header__actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  flex-wrap: wrap;
 }
 
 .expedientes-page :is(.erp-card, [class~="bg-white"]) {
@@ -239,22 +157,6 @@
 
 .expedientes-page :is(.text-red-600, .text-red-700, .text-rose-600, .text-rose-700) {
   font-weight: 600;
-}
-
-@media (max-width: 700px) {
-  .expedientes-page .molsan-page-header {
-    align-items: flex-start;
-    padding: 14px;
-  }
-
-  .expedientes-page .molsan-page-header__actions {
-    width: 100%;
-    justify-content: flex-start;
-  }
-
-  .expedientes-page .molsan-page-header__actions > * {
-    max-width: 100%;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
