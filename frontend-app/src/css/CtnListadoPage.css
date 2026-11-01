@@ -413,11 +413,11 @@
   width: min(1450px, 100%);
   max-height: calc(100vh - 44px);
   overflow: hidden;
-  color: var(--molsan-text, #173247);
-  background: var(--molsan-surface, #fff);
-  border: 1px solid var(--molsan-border, #D8E4EC);
-  border-radius: var(--molsan-radius-dialog, 16px);
-  box-shadow: var(--molsan-shadow-popover, 0 18px 45px rgba(15, 23, 42, .14));
+  
+  
+  
+  
+  
   animation: ctn-modal-entrada 0.18s ease-out;
 }
 
@@ -434,31 +434,6 @@
 }
 
 /* ENCABEZADO BLANCO: nombre y datos con contraste */
-
-.ctn-modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 18px;
-  padding: 22px 25px;
-  color: var(--molsan-text, #173247);
-  background: var(--molsan-surface-soft, #F2F7FB);
-  border-bottom: 1px solid var(--molsan-border-light, #E8EFF4);
-}
-
-.ctn-modal-header h2 {
-  margin: 5px 0 7px;
-  color: var(--molsan-text, #173247);
-  font-size: 23px;
-  font-weight: 800;
-  letter-spacing: -0.35px;
-}
-
-.ctn-modal-header p {
-  margin: 0;
-  color: #64748b;
-  font-size: 12px;
-}
 
 .ctn-modal-eyebrow {
   color: #64748b;
@@ -884,15 +859,7 @@
 
   .ctn-modal-panel {
     max-height: calc(100vh - 16px);
-    border-radius: 12px;
-  }
-
-  .ctn-modal-header {
-    padding: 17px;
-  }
-
-  .ctn-modal-header h2 {
-    font-size: 19px;
+    
   }
 
   .ctn-modal-contenido {
@@ -991,32 +958,14 @@
 
 /* Contenedor general de la ficha */
 .ctn-modal-panel {
-  background: var(--molsan-page-bg, #FFFFFF);
-  color: var(--molsan-text, #173247);
-  border: 1px solid var(--molsan-border, #D8E4EC);
-  border-radius: var(--molsan-radius-dialog, 16px);
-  box-shadow: var(--molsan-shadow-popover, 0 18px 45px rgba(15, 23, 42, .14));
+  
+  
+  
+  
+  
 }
 
 /* ENCABEZADO BLANCO, como el resto del ERP */
-.ctn-modal-header {
-  color: var(--molsan-text, #173247);
-  background: var(--molsan-surface, #fff);
-  border-bottom: 1px solid var(--molsan-border, #D8E4EC);
-  padding: 20px 24px;
-}
-
-.ctn-modal-header h2 {
-  color: var(--molsan-text, #173247);
-  font-size: 22px;
-  font-weight: 750;
-  letter-spacing: -0.35px;
-}
-
-.ctn-modal-header p {
-  color: #71839e;
-}
-
 .ctn-modal-eyebrow {
   color: var(--molsan-primary, #064675);
   font-size: 10px;
@@ -1292,14 +1241,6 @@
 
 /* Adaptación a móvil */
 @media (max-width: 760px) {
-  .ctn-modal-header {
-    padding: 15px;
-  }
-
-  .ctn-modal-header h2 {
-    font-size: 18px;
-  }
-
   .ctn-modal-contenido {
     padding: 10px;
   }
