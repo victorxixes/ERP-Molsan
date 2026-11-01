@@ -146,9 +146,14 @@ export default function HonorariosGestoria({ soloPlantilla = false } = {}) {
     <div className={`molsan-page-stack catalogos-premium-page honorarios-gestoria-premium herramientas-subpagina-premium w-full max-w-none ${soloPlantilla ? "p-0" : ""}`}>
       {!soloPlantilla && <>
       <header className="molsan-page-header">
-        <p className="text-xs font-black uppercase tracking-[.18em] text-indigo-600">Utilidades · Catálogo económico</p>
-        <h1 className="mt-2 text-2xl font-black text-slate-900 sm:text-3xl">Honorarios de gestoría</h1>
-        <p className="mt-2 max-w-3xl text-sm text-slate-500">Administra las tarifas vigentes. Los cambios se aplican al seleccionar el honorario en «Añadir pagos»; los importes ya registrados no se modifican.</p>
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true">€</div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">UTILIDADES · CATÁLOGO ECONÓMICO</p>
+            <h1 className="molsan-page-header__title">Honorarios de gestoría</h1>
+            <p className="molsan-page-header__description">Administra las tarifas vigentes. Los cambios se aplican al seleccionar el honorario en «Añadir pagos»; los importes ya registrados no se modifican.</p>
+          </div>
+        </div>
       </header>
 
       {(error || mensaje) && <div role="status" className={`rounded-xl border px-4 py-3 text-sm ${error ? "border-red-200 bg-red-50 text-red-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"}`}>{error || mensaje}</div>}
