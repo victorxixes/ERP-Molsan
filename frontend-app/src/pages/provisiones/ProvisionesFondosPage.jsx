@@ -729,7 +729,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
   };
 
 
-  if (soloEditorPlantilla) return <main className="provisiones-fondos-page w-full min-w-0 space-y-4">
+  if (soloEditorPlantilla) return <main className="molsan-page-stack provisiones-fondos-page w-full min-w-0">
     <header className="molsan-page-header">
       <div className="molsan-page-header__identity">
         <div className="molsan-page-header__mark" aria-hidden="true">PF</div>
@@ -757,7 +757,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
     </section>
     <div className="provision-editor-layout provision-editor-layout-solo"><div className="provision-editor-designer min-w-0"><DocumentoLayoutDesigner tipo="provision" datosMolsan={datosCorporativos} /></div></div>
   </main>;
-  if (modoCatalogo) return <main className="provisiones-fondos-page w-full min-w-0 space-y-6">
+  if (modoCatalogo) return <main className="molsan-page-stack provisiones-fondos-page w-full min-w-0">
     <header className="molsan-page-header">
       <div className="molsan-page-header__identity">
         <div className="molsan-page-header__mark" aria-hidden="true">PF</div>
@@ -771,7 +771,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
     <ConfiguracionConceptosProvisiones />
   </main>;
 
-  return <main className="provisiones-fondos-page w-full min-w-0 space-y-6">
+  return <main className="molsan-page-stack provisiones-fondos-page w-full min-w-0">
     <header className="molsan-page-header">
       <div className="molsan-page-header__identity">
         <div className="molsan-page-header__mark" aria-hidden="true">PF</div>
