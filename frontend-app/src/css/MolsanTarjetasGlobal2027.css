@@ -1,0 +1,186 @@
+/* ============================================================
+   MOLSAN ERP PREMIUM 2027 · TARJETAS Y BLOQUES GLOBALES
+   Capa transversal para módulos, páginas, subpáginas y portales.
+   Solo presentación: no altera lógica, permisos, rutas ni datos.
+   ============================================================ */
+
+:root {
+  --molsan-premium-blue: #064675;
+  --molsan-premium-ice: #F2F7FB;
+  --molsan-premium-table: #EAF2F8;
+  --molsan-premium-border: #D8E4EC;
+  --molsan-premium-muted: #617789;
+  --molsan-premium-shadow: 0 8px 24px rgba(6, 50, 82, .065);
+  --molsan-premium-shadow-hover: 0 17px 36px rgba(6, 50, 82, .12);
+}
+
+/* Ámbitos: ERP principal y portales independientes. */
+:where(
+  .erp-main-content,
+  .apoderagest,
+  .notargest-workspace-premium,
+  .encargagest-workspace-premium,
+  .ctn-workspace-premium,
+  .portal-login-premium,
+  .login-principal-premium
+) {
+  --molsan-card-border: var(--molsan-premium-border);
+  --molsan-card-shadow: var(--molsan-premium-shadow);
+  --molsan-card-hover-shadow: var(--molsan-premium-shadow-hover);
+  color: var(--molsan-text, #18384D);
+}
+
+/* Tarjetas y paneles funcionales: misma superficie que Espacios de trabajo. */
+:where(
+  .erp-main-content,
+  .apoderagest,
+  .notargest-workspace-premium,
+  .encargagest-workspace-premium,
+  .ctn-workspace-premium
+) :is(
+  .erp-card,
+  .erp-card-soft,
+  .molsan-panel,
+  [data-panel="true"],
+  [data-cg-panel="true"],
+  .card,
+  .panel,
+  .rounded-xl.border,
+  .rounded-2xl.border,
+  .rounded-lg.border
+) {
+  --molsan-card-tint: #F2F7FB;
+  position: relative;
+  min-width: 0;
+  border-color: var(--molsan-card-border, #D8E4EC);
+  border-radius: 17px;
+  background-color: #FFFFFF;
+  background-image: linear-gradient(145deg, #FFFFFF 0%, #FFFFFF 72%, var(--molsan-card-tint) 100%);
+  box-shadow: var(--molsan-card-shadow);
+  background-clip: padding-box;
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease,
+    border-color .2s ease,
+    background-color .2s ease;
+}
+
+/* Acentos cromáticos discretos y alternos para dar personalidad a las tarjetas. */
+:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"], .card, .panel, .rounded-xl.border, .rounded-2xl.border, .rounded-lg.border):nth-child(6n + 1) {
+  --molsan-card-accent: #1477A5;
+  --molsan-card-tint: #EAF5FA;
+}
+:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"], .card, .panel, .rounded-xl.border, .rounded-2xl.border, .rounded-lg.border):nth-child(6n + 2) {
+  --molsan-card-accent: #249477;
+  --molsan-card-tint: #EAF7F2;
+}
+:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"], .card, .panel, .rounded-xl.border, .rounded-2xl.border, .rounded-lg.border):nth-child(6n + 3) {
+  --molsan-card-accent: #7865B5;
+  --molsan-card-tint: #F1EEFA;
+}
+:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"], .card, .panel, .rounded-xl.border, .rounded-2xl.border, .rounded-lg.border):nth-child(6n + 4) {
+  --molsan-card-accent: #C18A35;
+  --molsan-card-tint: #FBF4E8;
+}
+:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"], .card, .panel, .rounded-xl.border, .rounded-2xl.border, .rounded-lg.border):nth-child(6n + 5) {
+  --molsan-card-accent: #2696A5;
+  --molsan-card-tint: #EAF7F8;
+}
+:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"], .card, .panel, .rounded-xl.border, .rounded-2xl.border, .rounded-lg.border):nth-child(6n) {
+  --molsan-card-accent: #5574B8;
+  --molsan-card-tint: #EEF2FA;
+}
+
+/* Hover solo en tarjetas que actúan como superficies independientes; sin alterar tablas. */
+:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], .card, .panel, .rounded-xl.border, .rounded-2xl.border, .rounded-lg.border):hover {
+  border-color: var(--molsan-card-accent, #B8D2E1);
+  box-shadow: var(--molsan-card-hover-shadow);
+}
+
+/* Títulos dentro de tarjetas: encabezado integrado, no titular flotante. */
+:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"], .card, .panel)
+  > :is(h2, h3, [data-card-title="true"]) {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 0 0 12px;
+  color: var(--molsan-premium-blue);
+  border-bottom: 1px solid var(--molsan-premium-border);
+  font-weight: 800;
+  letter-spacing: -.025em;
+}
+:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"], .card, .panel)
+  > :is(h2, h3, [data-card-title="true"])::before {
+  width: 4px;
+  min-width: 4px;
+  height: 22px;
+  border-radius: 99px;
+  background: var(--molsan-card-accent, #1477A5);
+  content: "";
+}
+
+/* Cabeceras de sección que ya forman parte de un panel. */
+:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"], .card, .panel)
+  :is(header, [data-card-header="true"]) {
+  min-width: 0;
+  color: var(--molsan-premium-blue);
+  border-color: var(--molsan-premium-border);
+}
+
+/* Cabeceras de página: compactas, con identidad común y sin tocar su contenido. */
+:where(
+  .erp-main-content,
+  .apoderagest,
+  .notargest-workspace-premium,
+  .encargagest-workspace-premium,
+  .ctn-workspace-premium
+) :is(.molsan-page-header, [data-page-header="true"], .ag-hero, .ng-hero-apoderagest) {
+  border-color: var(--molsan-premium-border);
+  border-radius: 20px;
+}
+
+/* Tablas integradas en paneles con cabecera azul hielo. */
+:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"], .card, .panel)
+  table thead th {
+  background: var(--molsan-premium-table);
+  color: #31566F;
+  border-color: var(--molsan-premium-border);
+}
+:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"], .card, .panel)
+  table tbody tr:hover > td {
+  background: #F4F8FB;
+}
+
+/* Evita efectos de elevación sobre pantallas táctiles y respeta accesibilidad. */
+@media (hover: hover) and (pointer: fine) {
+  :where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
+    :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], .card, .panel):hover {
+    transform: translateY(-2px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium) * {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+@media (max-width: 760px) {
+  :where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
+    :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], .card, .panel) {
+    border-radius: 14px;
+  }
+}
