@@ -182,7 +182,7 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
           <section className="rounded-xl border border-indigo-200 bg-indigo-50/60 p-4">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
-                <h3 className="text-sm font-extrabold text-slate-900">📚 Cierre documental digital</h3>
+                <h3 className="text-sm font-extrabold text-slate-900"><MolsanIcon name="book" size={20} /> Cierre documental digital</h3>
                 <p className="mt-1 text-xs leading-5 text-slate-600">Genera una vista previa sin guardar. Tras revisarla, pulsa «Aceptar y guardar en Carpeta digital» para registrar el PDF en Expediente digital completo. Orden: Hoja de liquidación, Factura notario, Factura registro, Factura Honorarios gestoría, Copia simple, Justificación de cancelación, AJD / ITP y Hoja de inscripción.</p>
                 {cierreDocumental && <div className={`mt-3 rounded-lg border px-3 py-2 text-xs ${cierreDocumental.guardado ? "border-emerald-200 bg-white text-emerald-800" : "border-amber-200 bg-white text-amber-800"}`}>
                   <p className="font-extrabold">{cierreDocumental.mensaje || "PDF de cierre documental preparado."}</p>
