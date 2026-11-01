@@ -743,3 +743,120 @@
     transition: none !important;
   }
 }
+
+/* CABECERA CORPORATIVA CANÓNICA · PATRÓN ESPACIOS DE TRABAJO
+   La identidad, proporciones, jerarquía y acabado se comparten con workspace-hero. */
+.selector-modulos-premium.workspace-premium .workspace-hero,
+.molsan-page-header {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  min-width: 0;
+  margin: 0 0 20px;
+  padding: 18px 24px;
+  overflow: hidden;
+  color: #FFFFFF;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 86% 18%, rgba(116,199,219,.18), transparent 27%),
+    linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
+  box-shadow: 0 22px 46px rgba(4,55,91,.22);
+}
+.selector-modulos-premium.workspace-premium .workspace-hero::after,
+.molsan-page-header::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  content: "";
+  background: linear-gradient(90deg, #6CC5D9 0%, #8CB8D8 38%, rgba(255,255,255,.08) 100%);
+  pointer-events: none;
+}
+.molsan-page-header__identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.molsan-page-header__mark {
+  display: grid;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  color: #FFFFFF;
+  border: 1px solid rgba(255,255,255,.32);
+  border-radius: 11px;
+  background: rgba(255,255,255,.12);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
+  font-size: 15px;
+  font-weight: 850;
+}
+.molsan-page-header__eyebrow {
+  margin: 0 0 5px;
+  color: #C6DFEC;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .17em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+.molsan-page-header :is(h1, .molsan-page-header__title) {
+  margin: 0;
+  color: #FFFFFF;
+  font-size: clamp(22px, 2.2vw, 29px);
+  font-weight: 780;
+  letter-spacing: -.04em;
+  line-height: 1.15;
+}
+.molsan-page-header__description {
+  margin: 7px 0 0;
+  color: #C6DFEC;
+  font-size: 12px;
+  line-height: 1.55;
+}
+.molsan-page-header__actions {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-left: auto;
+}
+.molsan-page-header__actions > :is(button, a, span) {
+  border-color: rgba(255,255,255,.28);
+}
+@media (max-width: 760px) {
+  .molsan-page-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .molsan-page-header__mark {
+    flex-basis: 36px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    font-size: 14px;
+  }
+  .molsan-page-header__actions {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-start;
+    align-items: center;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .molsan-page-header,
+  .molsan-page-header::after {
+    transition: none;
+    animation: none;
+  }
+}
