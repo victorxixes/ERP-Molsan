@@ -901,3 +901,28 @@
     max-height: calc(100dvh - 16px);
   }
 }
+
+
+/* Cabecera NotarGest: mismas proporciones compactas que ApoderaGest y EncargaGest. */
+.notargest .ng-hero-apoderagest {
+  min-height: 0;
+  gap: 12px;
+  padding: 10px 4px 16px;
+  margin-bottom: 16px;
+}
+.notargest .ng-hero-apoderagest .ag-hero-identidad { gap: 12px; }
+.notargest .ng-hero-apoderagest .ag-marca {
+  flex-basis: 40px;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 11px;
+}
+.notargest .ng-hero-apoderagest h1 {
+  margin: 0 0 3px;
+  font-size: 20px !important;
+  line-height: 1.2;
+  letter-spacing: -.02em;
+}
+.notargest .ng-hero-apoderagest p { font-size: 12px; line-height: 1.45; }
