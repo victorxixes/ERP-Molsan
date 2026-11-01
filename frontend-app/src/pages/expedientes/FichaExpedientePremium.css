@@ -1,7 +1,7 @@
 /* Revisión integral: ficha de expediente */
 .ficha-expediente-premium {
   min-width: 0;
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
 }
 .ficha-expediente-premium > section,
 .ficha-expediente-premium article,
@@ -35,7 +35,7 @@
 .ficha-expediente-premium textarea:focus-visible,
 .ficha-expediente-premium button:focus-visible,
 .ficha-expediente-premium a:focus-visible {
-  outline: 2px solid var(--molsan-primary, #3156b3);
+  outline: 2px solid var(--molsan-primary, #064675);
   outline-offset: 2px;
 }
 .ficha-expediente-premium img {
