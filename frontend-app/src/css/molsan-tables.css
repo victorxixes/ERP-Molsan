@@ -8,3 +8,25 @@
 .molsan-table tbody tr:hover { background:#f7f9fd; }
 .molsan-table-wrap :where(table) { margin:0; }
 @media(max-width:640px) { .molsan-table th,.molsan-table td { padding:8px 10px; } }
+
+
+/* Tabla MOLSAN PREMIUM · cabecera, ordenación accesible y datos tabulares */
+.molsan-data-table-wrap { box-shadow:0 5px 18px rgba(6,50,82,.045); }
+.molsan-data-table { font-variant-numeric:tabular-nums; }
+.molsan-data-table th { padding:0; color:#064675; background:#EAF2F8; }
+.molsan-data-table-sort,
+.molsan-table-sort {
+  display:inline-flex; width:100%; min-height:42px; align-items:center; justify-content:flex-start;
+  gap:9px; padding:10px 12px; border:0; color:inherit; background:transparent;
+  font:inherit; font-weight:750; text-align:inherit; white-space:nowrap; cursor:pointer;
+}
+.molsan-table-sort:hover { color:#04375B; background:rgba(255,255,255,.55); }
+.molsan-table-sort:focus-visible { outline:2px solid #064675; outline-offset:-3px; border-radius:5px; }
+.molsan-table-sort__indicator { color:#9AAEBC; font-size:14px; line-height:1; }
+.molsan-table-sort__indicator.is-active { color:#064675; font-weight:900; }
+.molsan-data-table td { padding:10px 12px; }
+.molsan-data-table tbody tr:nth-child(even) { background:#FBFDFF; }
+.molsan-data-table tbody tr:hover { background:#F0F6FA; }
+.molsan-data-table__empty { padding:30px 16px !important; color:#718696; text-align:center; }
+.molsan-data-table td.text-right,.molsan-data-table th.text-right { text-align:right; }
+.molsan-data-table td.text-center,.molsan-data-table th.text-center { text-align:center; }
