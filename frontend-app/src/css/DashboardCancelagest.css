@@ -459,3 +459,35 @@
   .dashboard-cancelagest .dashboard-kpi { min-height:112px; }
   .dashboard-cancelagest section > .mb-4 h2 { font-size:17px; }
 }
+
+
+/* Dashboard Premium 2027 · título y tarjetas integrados en un mismo panel */
+.dashboard-cancelagest .dashboard-section-panel {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid #D8E4EC;
+  border-radius: 19px;
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(89,174,204,.075), transparent 34%),
+    linear-gradient(155deg, #FFFFFF 0%, #FFFFFF 72%, #F7FAFC 100%);
+  box-shadow: 0 9px 24px rgba(6,50,82,.055);
+}
+.dashboard-cancelagest .dashboard-section-panel > .mb-4 {
+  margin-bottom: 17px;
+}
+.dashboard-cancelagest .dashboard-section-panel > .erp-card {
+  border-color: #E1EAF0;
+  border-radius: 14px;
+  box-shadow: none;
+  background: rgba(255,255,255,.82);
+}
+.dashboard-cancelagest .dashboard-section-panel .dashboard-firmas-grid .erp-card {
+  border-color: #E1EAF0;
+  background: #FFFFFF;
+}
+@media (max-width: 760px) {
+  .dashboard-cancelagest .dashboard-section-panel {
+    padding: 16px;
+    border-radius: 16px;
+  }
+}
