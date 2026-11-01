@@ -69,19 +69,6 @@
   }
 }
 
-
-/* Puente de compatibilidad para paneles, tablas y botones heredados. */
-.cg-page .cg-panel,
-.ag-panel,
-.ng-panel,
-.encargagest .eg-panel {
-  color: var(--molsan-text);
-  background: var(--molsan-surface);
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-card);
-  box-shadow: var(--molsan-shadow-card);
-}
-
 .ag-panel-cabecera,
 .ng-panel-titulo,
 .encargagest .eg-panel-head {
@@ -249,12 +236,6 @@
 }
 
 @media (max-width: 640px) {
-  .apoderagest .ag-panel,
-  .notargest .ng-panel,
-  .encargagest .eg-panel,
-  .cg-page .cg-panel {
-    border-radius: var(--molsan-radius-card, 14px);
-  }
 
   .apoderagest .ag-panel-cabecera,
   .notargest .ng-panel-titulo,
