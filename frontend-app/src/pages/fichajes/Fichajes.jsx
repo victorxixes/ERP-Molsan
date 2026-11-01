@@ -1,5 +1,6 @@
 import MolsanButton from "../../components/ui/MolsanButton";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import FichajesResumen from "./FichajesResumen.jsx";
@@ -9,15 +10,15 @@ import SolicitudesAusencia from "./SolicitudesAusencia.jsx";
 import DocumentosAdmin from "./DocumentosAdmin.jsx";
 
 const TIPOS = [
-  { value: "ENTRADA", label: "Entrada a trabajar", icon: "↗", tone: "emerald" },
-  { value: "PAUSA_DESAYUNO_INICIO", label: "Pausa desayuno", icon: "☕", tone: "amber" },
-  { value: "PAUSA_DESAYUNO_FIN", label: "Regreso desayuno", icon: "↩", tone: "blue" },
-  { value: "PAUSA_COMIDA_INICIO", label: "Pausa comida", icon: "🍽️", tone: "sky" },
+  { value: "ENTRADA", label: "Entrada a trabajar", icon: "arrowRight", tone: "emerald" },
+  { value: "PAUSA_DESAYUNO_INICIO", label: "Pausa desayuno", icon: "coffee", tone: "amber" },
+  { value: "PAUSA_DESAYUNO_FIN", label: "Regreso desayuno", icon: "refresh", tone: "blue" },
+  { value: "PAUSA_COMIDA_INICIO", label: "Pausa comida", icon: "meal", tone: "sky" },
   { value: "PAUSA_COMIDA_FIN", label: "Regreso comida", icon: "↩", tone: "blue" },
-  { value: "PAUSA_CIGARRILLO_INICIO", label: "Pausa cigarrillo", icon: "🚬", tone: "amber" },
+  { value: "PAUSA_CIGARRILLO_INICIO", label: "Pausa cigarrillo", icon: "pause", tone: "amber" },
   { value: "PAUSA_CIGARRILLO_FIN", label: "Regreso cigarrillo", icon: "🚬", tone: "blue" },
-  { value: "AUSENCIA", label: "Registrar ausencia", icon: "📅", tone: "violet" },
-  { value: "SALIDA", label: "Salida del trabajo", icon: "↙", tone: "rose" },
+  { value: "AUSENCIA", label: "Registrar ausencia", icon: "calendar", tone: "violet" },
+  { value: "SALIDA", label: "Salida del trabajo", icon: "arrowLeft", tone: "rose" },
 ];
 const TIPOS_DOCUMENTO = ["Justificante médico", "Vacaciones", "Ausencia", "Permiso", "Otro"];
 const FECHA_HOY = new Date();
@@ -257,7 +258,7 @@ export default function Fichajes({ modo = "empleado" }) {
               <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 {TIPOS.map((t) => (
                   <button key={t.value} type="button" disabled={guardando} onClick={() => t.value === "AUSENCIA" ? setMostrarSelectorAusencia(true) : enviarMarcaje(t.value)} className={`flex min-h-[94px] items-center gap-4 rounded-2xl border px-5 py-4 text-left font-bold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:cursor-wait disabled:opacity-50 ${t.tone === "emerald" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : t.tone === "rose" ? "border-rose-200 bg-rose-50 text-rose-800" : t.tone === "amber" ? "border-amber-200 bg-amber-50 text-amber-900" : t.tone === "violet" ? "border-violet-200 bg-violet-50 text-violet-900" : t.tone === "blue" ? "border-blue-200 bg-blue-50 text-blue-900" : "border-sky-200 bg-sky-50 text-sky-900"}`}>
-                    <span className="grid h-11 w-11 place-items-center rounded-xl bg-white/80 text-2xl">{t.icon}</span><span>{t.label}<span className="mt-1 block text-xs font-medium opacity-70">Registrar ahora</span></span>
+                    <MolsanIcon name={t.icon} size={44} tone="ocean" /><span>{t.label}<span className="mt-1 block text-xs font-medium opacity-70">Registrar ahora</span></span>
                   </button>
                 ))}
               </div>
