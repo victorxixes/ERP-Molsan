@@ -2630,7 +2630,7 @@ body {
 :where(
   .notargest .ng-panel, .notargest .ng-contador, .notargest .ng-acceso,
   .encargagest .eg-kpi, .encargagest .eg-directorio-card,
-  .ctn-listado-page .ctn-panel, .expedientes-page__header,
+  .ctn-listado-page .ctn-panel,
   .provisiones-fondos-page .pf-card, .molsan-intranet-page article
 ):hover {
   transform: none;
