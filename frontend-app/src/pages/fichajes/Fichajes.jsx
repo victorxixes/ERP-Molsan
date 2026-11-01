@@ -309,6 +309,9 @@ export default function Fichajes({ modo = "empleado" }) {
                 <div className="mt-4">
                   <MolsanDataTable
                     rows={marcajesFiltrados}
+          pagination
+          pageSize={25}
+
                     rowKey="id"
                     initialSort={{ key: "fecha", direction: "desc" }}
                     emptyText="No hay marcajes para esta búsqueda."
@@ -361,6 +364,9 @@ export default function Fichajes({ modo = "empleado" }) {
                 <div className="rounded-2xl border border-[var(--erp-border)]">
                   <MolsanDataTable
                     rows={vacacionesAdmin}
+          pagination
+          pageSize={25}
+
                     rowKey="id"
                     initialSort={{ key: "fecha_inicio", direction: "desc" }}
                     emptyText="No hay solicitudes de vacaciones registradas."
