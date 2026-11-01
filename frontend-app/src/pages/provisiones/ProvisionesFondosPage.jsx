@@ -731,10 +731,13 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
 
   if (soloEditorPlantilla) return <main className="provisiones-fondos-page w-full min-w-0 p-3 md:p-6 space-y-4">
     <header className="molsan-page-header">
-      <div>
-        <p className="molsan-page-header__eyebrow">MOLSAN ERP · UTILIDADES</p>
-        <h1 className="molsan-page-header__title">Diseño de plantilla · Provisión de fondos</h1>
-        <p className="molsan-page-header__description">Configura la distribución visual del documento corporativo.</p>
+      <div className="molsan-page-header__identity">
+        <div className="molsan-page-header__mark" aria-hidden="true">PF</div>
+        <div className="min-w-0">
+          <p className="molsan-page-header__eyebrow">MOLSAN ERP · UTILIDADES</p>
+          <h1 className="molsan-page-header__title">Diseño de plantilla · Provisión de fondos</h1>
+          <p className="molsan-page-header__description">Configura la distribución visual del documento corporativo.</p>
+        </div>
       </div>
     </header>
     <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -754,20 +757,34 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
     </section>
     <div className="provision-editor-layout provision-editor-layout-solo"><div className="provision-editor-designer min-w-0"><DocumentoLayoutDesigner tipo="provision" datosMolsan={datosCorporativos} /></div></div>
   </main>;
-  if (modoCatalogo) return <main className="provisiones-fondos-page w-full min-w-0 space-y-6 p-3 md:p-6"><header className="molsan-page-header relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/85 px-5 py-5 shadow-sm"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700">MOLSAN ERP PREMIUM 2027 · CATÁLOGOS ECONÓMICOS</p><h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800">Tabla Provisiones de fondos</h1><p className="mt-1 max-w-3xl text-sm text-slate-500">Configura importes estimativos y criterios iniciales. Estos valores sirven de referencia para nuevas provisiones; los registros históricos no se recalculan al cambiar la tabla.</p></header><ConfiguracionConceptosProvisiones /></main>;
+  if (modoCatalogo) return <main className="provisiones-fondos-page w-full min-w-0 space-y-6 p-3 md:p-6">
+    <header className="molsan-page-header">
+      <div className="molsan-page-header__identity">
+        <div className="molsan-page-header__mark" aria-hidden="true">PF</div>
+        <div className="min-w-0">
+          <p className="molsan-page-header__eyebrow">MOLSAN ERP · CATÁLOGOS ECONÓMICOS</p>
+          <h1 className="molsan-page-header__title">Tabla Provisiones de fondos</h1>
+          <p className="molsan-page-header__description">Configura importes estimativos y criterios iniciales. Estos valores sirven de referencia para nuevas provisiones; los registros históricos no se recalculan al cambiar la tabla.</p>
+        </div>
+      </div>
+    </header>
+    <ConfiguracionConceptosProvisiones />
+  </main>;
 
   return <main className="provisiones-fondos-page w-full min-w-0 space-y-6 p-3 md:p-6">
-    <header className="molsan-page-header relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/85 px-4 py-4 shadow-sm backdrop-blur-xl sm:px-5">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-400/60 to-transparent" />
-      <div className="relative z-10 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+    <header className="molsan-page-header">
+      <div className="molsan-page-header__identity">
+        <div className="molsan-page-header__mark" aria-hidden="true">PF</div>
         <div className="min-w-0">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700">MOLSAN ERP PREMIUM 2027 · GLASS LUXE</p>
-          <h1 className="mt-1 text-xl font-bold tracking-tight text-slate-800">Provisión estimativa</h1>
-          <p className="mt-1 text-sm text-slate-500">Gestión de presupuestos independientes, con histórico y documento PDF.</p>
+          <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+          <h1 className="molsan-page-header__title">Provisión estimativa</h1>
+          <p className="molsan-page-header__description">Gestión de presupuestos independientes, con histórico y documento PDF.</p>
+          {form.id && <span className="mt-2 inline-flex rounded-full border border-blue-100 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-800">Editando {form.numero || `provisión #${form.id}`}</span>}
         </div>
+      </div>
+      <div className="molsan-page-header__actions">
         <button type="button" onClick={nueva} className={`${boton} shrink-0 bg-blue-600 text-white shadow-sm hover:bg-blue-700`}>＋ Nueva provisión</button>
       </div>
-      {form.id && <div className="relative z-10 mt-3 inline-flex rounded-full border border-blue-100 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-800">Editando {form.numero || `provisión #${form.id}`}</div>}
     </header>
 
     {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{String(error)}</div>}
