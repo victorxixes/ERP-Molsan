@@ -729,12 +729,7 @@ export default function EmpleadoPerfil({
           CABECERA
       ====================================================== */}
 
-      <header className="
-        molsan-page-header
-        empleado-perfil-page-header
-        erp-card
-        p-6
-      ">
+      <header className="molsan-page-header empleado-perfil-page-header">
 
         <div className="
           flex
@@ -750,11 +745,7 @@ export default function EmpleadoPerfil({
               IDENTIDAD
           -------------------------------------------------- */}
 
-          <div className="
-            flex
-            items-center
-            gap-5
-          ">
+          <div className="molsan-page-header__identity">
 
             <div className="
               w-20
@@ -805,23 +796,10 @@ export default function EmpleadoPerfil({
 
             <div>
 
-              <div className="
-                text-xs
-                uppercase
-                tracking-[0.16em]
-                font-semibold
-                text-[var(--erp-primary)]
-              ">
-                Perfil de empleado
-              </div>
+              <p className="molsan-page-header__eyebrow">PERFIL DE EMPLEADO</p>
 
 
-              <h1 className="
-                text-2xl
-                font-semibold
-                text-[var(--erp-text)]
-                mt-1
-              ">
+              <h1 className="molsan-page-header__title">
 
                 {empleado.nombre || ""}{" "}
 
