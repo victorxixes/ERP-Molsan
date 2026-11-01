@@ -388,7 +388,7 @@
    ============================================================ */
 
 :is(.cg-page, .cg-unified-workspace) {
-  --molsan-page-bg: #f1f5fb;
+  --molsan-page-bg: #FFFFFF;
   color: var(--molsan-text, #18263c);
   font-family: var(--molsan-font-family, Inter, "Segoe UI", sans-serif);
 }
