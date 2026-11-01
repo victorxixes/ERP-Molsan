@@ -267,50 +267,18 @@ export default function EmpleadoEditar({
 
       {/* CABECERA */}
 
-      <div className="
-        molsan-page-header
-        empleado-editar-page-header
-        flex
-        items-center
-        justify-between
-        gap-4
-      ">
-
-        <div>
-
-          <div className="
-            text-xs
-            uppercase
-            tracking-[0.15em]
-            text-[var(--erp-primary)]
-            font-semibold
-          ">
-            Configuración
+      <div className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true">EMP</div>
+          <div>
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · EMPLEADOS</p>
+            <h2 className="molsan-page-header__title">Editar empleado</h2>
+            <p className="molsan-page-header__description">Actualiza los datos corporativos del empleado.</p>
           </div>
-
-          <h2 className="
-            text-2xl
-            font-semibold
-            text-[var(--erp-text)]
-            mt-1
-          ">
-            Editar empleado
-          </h2>
-
-          <p className="
-            text-sm
-            text-[var(--erp-text-soft)]
-            mt-1
-          ">
-            Actualiza los datos corporativos del empleado.
-          </p>
-
         </div>
-
       </div>
 
-
-      {/* ERROR */}
+            {/* ERROR */}
 
       {error && (
 
