@@ -1115,7 +1115,7 @@ export default function OficinasLiquidadoras() {
       >
 
         <div
-          className="
+          className="molsan-page-header 
             flex
             items-center
             gap-4
