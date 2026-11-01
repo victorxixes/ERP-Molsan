@@ -403,7 +403,7 @@
   .eg-contrato-layout > .mt-4.flex.flex-wrap.items-center.justify-between.gap-3,
   .eg-contrato-layout > .mt-3.space-y-3,
   .eg-contrato-layout > .mt-4.border-t.border-blue-200.pt-3 { grid-column:1; grid-row:auto; }
-  .eg-contrato-layout > .mt-4.border-t.border-blue-200.pt-3 { border-top:1px solid #bfdbfe; padding-top:12px; }
+  .eg-contrato-layout > .mt-4.border-t.border-blue-200.pt-3 { border-top:1px solid var(--molsan-border, #D8E4EC); padding-top:12px; }
 }
 
 
@@ -417,7 +417,7 @@
 @media (max-width:900px) {
   
   .eg-contrato-layout > :nth-child(n) { grid-column:1; grid-row:auto; }
-  .eg-contrato-layout > :nth-child(5) { border-top:1px solid #bfdbfe; padding-top:12px; }
+  .eg-contrato-layout > :nth-child(5) { border-top:1px solid var(--molsan-border, #D8E4EC); padding-top:12px; }
 }
 
 
@@ -642,7 +642,7 @@
 .encargagest .eg-directorio-input-wrap > span { font-size:22px; line-height:1; }
 .encargagest .eg-directorio-input-wrap input { width:100%; min-width:0; padding:12px 0; border:0; outline:0; color:#263b5d; background:transparent; font-size:12px; box-shadow:none!important; }
 .encargagest .eg-directorio-alcance { display:flex; align-items:center; gap:8px; color:#435675; font-size:11px; font-weight:800; white-space:nowrap; }
-.encargagest .eg-directorio-alcance input { width:15px; height:15px; accent-color:#315dd5; }
+.encargagest .eg-directorio-alcance input { width:15px; height:15px; accent-color:var(--molsan-primary, #064675); }
 .encargagest .eg-directorio-global { padding:10px 12px; border:1px solid #dbe5f5; border-radius:10px; color:#3158bb; background:#f5f8ff; font-size:11px; font-weight:800; }
 
 
@@ -656,7 +656,7 @@
 
 
 .encargagest .eg-directorio-gestionar, .encargagest .eg-directorio-habilitar { padding:8px 10px; border-radius:9px; font-size:10px; font-weight:850; }
-.encargagest .eg-directorio-gestionar { color:#fff; background:#315dd5; }
+.encargagest .eg-directorio-gestionar { color:#fff; background:var(--molsan-primary, #064675); }
 .encargagest .eg-directorio-gestionar:disabled { color:#9aa5b6; background:#edf0f5; cursor:not-allowed; }
 .encargagest .eg-directorio-habilitar { border:1px solid #dce5f5; color:#3558a9; background:#f7f9ff; }
 .encargagest .eg-directorio-vacio { padding:32px 16px; text-align:center; color:#8995a9; font-size:12px; }
