@@ -777,7 +777,6 @@
   background: linear-gradient(90deg, #6CC5D9 0%, #8CB8D8 38%, rgba(255,255,255,.08) 100%);
   pointer-events: none;
 }
-.molsan-page-header > :is(div, section) { padding: 0; }
 .molsan-page-header__identity {
   display: flex;
   align-items: center;
