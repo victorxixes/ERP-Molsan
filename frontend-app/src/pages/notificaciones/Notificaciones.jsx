@@ -41,14 +41,14 @@ export default function Notificaciones() {
   // ==========================================================
 
   const iconosTipo = {
-    error: "⛔",
-    security: "🔐",
-    warning: "⚠️",
-    success: "✅",
-    info: "ℹ️",
-    noticia: "📰",
-    sistema: "⚙️",
-    default: "🔔",
+    error: "alert",
+    security: "lock",
+    warning: "alert",
+    success: "check",
+    info: "help",
+    noticia: "newspaper",
+    sistema: "settings",
+    default: "bell",
   };
 
   // ==========================================================
