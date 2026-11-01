@@ -721,7 +721,7 @@ export default function TiposConceptoGastos() {
           <div>
 
             <div
-              className="
+              className="molsan-page-header 
                 mb-2
                 flex
                 items-center
