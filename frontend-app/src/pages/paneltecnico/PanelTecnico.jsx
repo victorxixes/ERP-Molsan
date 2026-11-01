@@ -41,15 +41,7 @@ export default function PanelTecnico() {
           ====================================================== */}
 
       <section
-        className="molsan-page-header 
-          relative
-          overflow-hidden
-          rounded-3xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          shadow-sm
-        "
+        className="molsan-page-header"
       >
 
         {/* Decoración superior */}
@@ -68,19 +60,7 @@ export default function PanelTecnico() {
         />
 
         <div
-          className="
-            relative
-            px-6
-            py-6
-            lg:px-8
-            lg:py-7
-            flex
-            flex-col
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-            gap-5
-          "
+          className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5"
         >
 
           {/* TÍTULO */}
@@ -97,16 +77,7 @@ export default function PanelTecnico() {
             >
 
               <div
-                className="
-                  w-11
-                  h-11
-                  rounded-2xl
-                  bg-[var(--erp-primary-soft)]
-                  text-[var(--erp-primary)]
-                  flex
-                  items-center
-                  justify-center
-                "
+                className="molsan-page-header__mark"
               >
                 <svg className="w-5 h-5" aria-hidden="true">
                   <use href="/icons/icons.svg#shield" />
@@ -116,23 +87,13 @@ export default function PanelTecnico() {
               <div>
 
                 <h1
-                  className="
-                    text-2xl
-                    lg:text-3xl
-                    font-bold
-                    text-[var(--erp-text)]
-                    tracking-tight
-                  "
+                  className="molsan-page-header__title"
                 >
                   Panel Técnico
                 </h1>
 
                 <p
-                  className="
-                    text-sm
-                    text-[var(--erp-text-soft)]
-                    mt-0.5
-                  "
+                  className="molsan-page-header__description"
                 >
                   Administración, diagnóstico y supervisión del sistema
                 </p>
