@@ -3194,14 +3194,14 @@ table :is(th, td) {
 :where(
   .catalogos-premium-page,
   .utilidades-premium-page
-) > header {
-  color: var(--molsan-text, #173247) !important;
-  background: var(--molsan-surface, #fff) !important;
-  border: 1px solid var(--molsan-border, #D8E4EC) !important;
-  border-radius: var(--molsan-radius-card, 14px) !important;
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06)) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+) > .molsan-page-header {
+  color: var(--molsan-text, #173247);
+  background: var(--molsan-surface, #fff);
+  border: 1px solid var(--molsan-border, #D8E4EC);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 :where(.empleados-listado-premium, .seguridad-usuarios-premium) .erp-card,
@@ -3228,25 +3228,25 @@ table :is(th, td) {
 }
 
 :where(.notargest, .apoderagest, .encargagest) :is(.ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .ag-panel, .ag-kpi, .ag-card, .eg-panel, .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section) {
-  background-color: var(--molsan-surface, #fff) !important;
-  border-color: var(--molsan-border, #D8E4EC) !important;
-  border-radius: var(--molsan-radius-card, 14px) !important;
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06)) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+  background-color: var(--molsan-surface, #fff);
+  border-color: var(--molsan-border, #D8E4EC);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 :where(.notargest, .apoderagest, .encargagest) :is(.ng-panel-titulo, .ag-panel-header, .ag-panel-cabecera, .eg-card-header, .eg-panel-head) {
-  color: var(--molsan-text, #173247) !important;
-  background-color: var(--molsan-surface-soft, #F2F7FB) !important;
-  border-color: var(--molsan-border-light, #e8edf4) !important;
-  box-shadow: none !important;
+  color: var(--molsan-text, #173247);
+  background-color: var(--molsan-surface-soft, #F2F7FB);
+  border-color: var(--molsan-border-light, #e8edf4);
+  box-shadow: none;
 }
 :where(.notargest, .apoderagest, .encargagest) :is(.ng-cabecera h1, .ag-hero h1, .eg-hero h1) {
-  color: var(--molsan-text, #173247) !important;
+  color: var(--molsan-text, #173247);
 }
 :where(.notargest, .apoderagest, .encargagest) :is(.ng-cabecera p, .ag-hero p, .eg-hero p) {
-  color: var(--molsan-text-muted, #718696) !important;
+  color: var(--molsan-text-muted, #718696);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3347,19 +3347,19 @@ table :is(th, td) {
 
 :where(.notargest, .apoderagest.notargest, .encargagest) :is(.ng-cabecera, .ag-hero, .eg-hero) {
   color: var(--molsan-text, #173247);
-  background: transparent !important;
+  background: transparent;
   border-color: var(--molsan-border, #D8E4EC);
-  box-shadow: none !important;
+  box-shadow: none;
 }
 
 :where(.notargest, .apoderagest.notargest, .encargagest) :is(.ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .ag-panel, .ag-kpi, .ag-card, .eg-panel, .eg-kpi, .eg-directorio-card, .eg-modal-section) {
-  color: var(--molsan-text, #173247) !important;
-  background: var(--molsan-surface, #fff) !important;
-  border-color: var(--molsan-border, #D8E4EC) !important;
-  border-radius: var(--molsan-radius-card, 14px) !important;
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06)) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+  color: var(--molsan-text, #173247);
+  background: var(--molsan-surface, #fff);
+  border-color: var(--molsan-border, #D8E4EC);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 :where(.notargest, .apoderagest.notargest, .encargagest) :is(.ng-contador, .ng-acceso, .eg-kpi, .ag-kpi) :is(strong, span, small) {
