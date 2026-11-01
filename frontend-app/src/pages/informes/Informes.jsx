@@ -3721,10 +3721,26 @@ function InformeFacturacion() {
             <div className="flex-1 overflow-auto">
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-3"><div className="text-sm font-semibold text-slate-700">{loading ? "Consultando registros…" : numeroInforme(datos.items.length) + " registros encontrados"}</div><div className="text-xs text-slate-500">Filtro del informe: CONCEPTOGASTO = HONORARIOS GESTORÍA y BENEFICIARIO = *MOLSAN. IDPAGO sigue desconectado.</div></div>
               {loading ? <PanelEstadoInforme loading /> : datos.items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay filas Post Firma para los filtros seleccionados." /> : (
-                <div className="max-h-[58vh] overflow-auto"><table className="min-w-[2600px] w-full text-left text-xs">
-                  <thead className="sticky top-0 z-10 bg-slate-100 text-slate-600"><tr>{COLUMNAS_POSTFIRMA.map((h, i) => <th key={h + "-" + i} className="whitespace-nowrap px-3 py-3 font-bold">{h}</th>)}</tr></thead>
-                  <tbody className="divide-y divide-slate-100">{datos.items.map((fila, i) => <tr key={(fila.id_gasto_absis || fila.id_expediente || "registro") + "-" + i} className="hover:bg-blue-50/50">{COLUMNAS_POSTFIRMA.map((h, j) => <td key={h + "-" + j} className="whitespace-nowrap px-3 py-3">{valorColumnaPostFirma(fila, h)}</td>)}</tr>)}</tbody>
-                </table></div>
+                <div className="max-h-[58vh] overflow-auto">
+                  <MolsanDataTable
+                    rows={datos.items}
+                    rowKey={(fila, index) => `${fila.id_gasto_absis || "sin-id"}-${fila.id_expediente || ""}-${index}`}
+                    minWidth="2600px"
+                    pagination
+                    pageSize={25}
+                    searchable
+                    searchPlaceholder="Buscar en las columnas originales de ABSIS…"
+                    initialSort={{ key: "IDGASTO", direction: "asc" }}
+                    emptyText="No hay filas Post Firma para los filtros seleccionados."
+                    columns={COLUMNAS_POSTFIRMA.map((header) => ({
+                      key: header,
+                      header,
+                      accessor: (fila) => valorColumnaPostFirma(fila, header),
+                      sortType: ["IMPGASTO", "IMPBASEIMPUESTO", "IMPBASERETENCION", "IMPIMPUESTO", "IMPORTEPROVISION", "IDGASTO", "IDPROVISION", "IDGESTORIATRAMITE", "IDBENEFICIARIO"].includes(header) ? "number" :
+                        ["FECHAALTA", "FECHAADJUNTARFACTURA", "FESTADO", "FPETICION", "FPAGO", "FFACTURA", "ERP · ÚLTIMA SINCRONIZACIÓN"].includes(header) ? "date" : "text",
+                    }))}
+                  />
+                </div>
               )}
             </div>
           </section>
