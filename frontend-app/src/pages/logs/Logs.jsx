@@ -99,50 +99,50 @@ export default function Logs() {
        AUTENTICACIÓN
     -------------------------------------------------------- */
 
-    login: "🔑",
-    LOGIN: "🔑",
+    login: "key",
+    LOGIN: "key",
 
-    login_success: "🔓",
-    LOGIN_SUCCESS: "🔓",
+    login_success: "lock",
+    LOGIN_SUCCESS: "lock",
 
-    login_error: "⛔",
-    LOGIN_ERROR: "⛔",
+    login_error: "alert",
+    LOGIN_ERROR: "alert",
 
-    logout: "🚪",
-    LOGOUT: "🚪",
+    logout: "door",
+    LOGOUT: "door",
 
 
     /* --------------------------------------------------------
        SEGURIDAD
     -------------------------------------------------------- */
 
-    security: "🔐",
-    SECURITY: "🔐",
+    security: "lock",
+    SECURITY: "lock",
 
-    security_error: "🛡️",
-    SECURITY_ERROR: "🛡️",
+    security_error: "shield",
+    SECURITY_ERROR: "shield",
 
-    permission_denied: "🚫",
-    PERMISSION_DENIED: "🚫",
+    permission_denied: "alert",
+    PERMISSION_DENIED: "alert",
 
 
     /* --------------------------------------------------------
        ERRORES
     -------------------------------------------------------- */
 
-    error: "⛔",
-    ERROR: "⛔",
+    error: "alert",
+    ERROR: "alert",
 
-    exception: "💥",
-    EXCEPTION: "💥",
+    exception: "alert",
+    EXCEPTION: "alert",
 
 
     /* --------------------------------------------------------
        AVISOS
     -------------------------------------------------------- */
 
-    warning: "⚠️",
-    WARNING: "⚠️",
+    warning: "alert",
+    WARNING: "alert",
 
 
     /* --------------------------------------------------------
@@ -163,38 +163,38 @@ export default function Logs() {
     update: "✏️",
     UPDATE: "✏️",
 
-    delete: "🗑️",
-    DELETE: "🗑️",
+    delete: "trash",
+    DELETE: "trash",
 
 
     /* --------------------------------------------------------
        IMPORTACIONES / EXPORTACIONES
     -------------------------------------------------------- */
 
-    import: "📥",
-    IMPORT: "📥",
+    import: "download",
+    IMPORT: "download",
 
-    import_success: "📥",
-    IMPORT_SUCCESS: "📥",
+    import_success: "download",
+    IMPORT_SUCCESS: "download",
 
-    import_error: "⛔",
-    IMPORT_ERROR: "⛔",
+    import_error: "alert",
+    IMPORT_ERROR: "alert",
 
-    export: "📤",
-    EXPORT: "📤",
+    export: "upload",
+    EXPORT: "upload",
 
-    export_success: "📤",
-    EXPORT_SUCCESS: "📤",
+    export_success: "upload",
+    EXPORT_SUCCESS: "upload",
 
-    export_error: "⛔",
-    EXPORT_ERROR: "⛔",
+    export_error: "alert",
+    EXPORT_ERROR: "alert",
 
 
     /* --------------------------------------------------------
        DEFAULT
     -------------------------------------------------------- */
 
-    default: "📋",
+    default: "clipboard",
 
   };
 
