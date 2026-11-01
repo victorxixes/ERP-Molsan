@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import "../../css/CatalogosMaestrosPremium.css";
 
 const API = "/tipos-expediente";
@@ -147,16 +148,20 @@ export default function TiposExpediente() {
             <button type="button" onClick={cargar} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">Actualizar</button>
           </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[760px] text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-5 py-3">ID</th><th className="px-5 py-3">Descripción</th><th className="px-5 py-3">Grupo</th><th className="px-5 py-3">Estado</th><th className="px-5 py-3 text-right">Acciones</th></tr></thead>
-            <tbody className="divide-y divide-slate-100">
-              {cargando ? <tr><td colSpan="5" className="px-5 py-10 text-center text-slate-500">Cargando catálogo…</td></tr> : tiposFiltrados.length === 0 ? <tr><td colSpan="5" className="px-5 py-10 text-center text-slate-500">No hay tipos que coincidan con la búsqueda.</td></tr> : tiposFiltrados.map((tipo) => <tr key={tipo.id} className="hover:bg-blue-50/40">
-                <td className="px-5 py-3 font-mono font-semibold text-slate-500">{tipo.id}</td><td className="px-5 py-3 font-semibold text-slate-800">{tipo.nombre}</td><td className="px-5 py-3 text-slate-600">{tipo.grupo}</td><td className="px-5 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${tipo.activo ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{tipo.activo ? "Activo" : "Inactivo"}</span></td><td className="px-5 py-3"><div className="flex justify-end gap-2"><button type="button" onClick={() => abrirEditar(tipo)} className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100">Editar</button><button type="button" onClick={() => eliminar(tipo)} className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">Eliminar</button></div></td>
-              </tr>)}
-            </tbody>
-          </table>
-        </div>
+        <MolsanDataTable
+          rows={tiposFiltrados}
+          rowKey="id"
+          minWidth="760px"
+          emptyText="No hay tipos que coincidan con la búsqueda."
+          columns={[
+            { key: "id", header: "ID", accessor: "id", sortType: "number" },
+            { key: "nombre", header: "Descripción", accessor: "nombre", sortType: "text" },
+            { key: "grupo", header: "Grupo", accessor: "grupo", sortType: "text" },
+            { key: "activo", header: "Estado", accessor: "activo", sortType: "boolean", render: (value) => <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${value ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{value ? "Activo" : "Inactivo"}</span> },
+            { key: "acciones", header: "Acciones", sortable: false, align: "right", accessor: (tipo) => tipo.id, render: (_, tipo) => <div className="flex justify-end gap-2"><button type="button" onClick={() => abrirEditar(tipo)} className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100">Editar</button><button type="button" onClick={() => eliminar(tipo)} className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">Eliminar</button></div> },
+          ]}
+        />
+  </div>
       </section>
     </main>
   );
