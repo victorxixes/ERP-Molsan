@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "../../api/axios";
+import MolsanButton from "../../components/ui/MolsanButton";
 import "../../css/ModalesHerramientasPremium.css";
 import { formatEuro as euros } from "../../utils/formatters";
 
@@ -125,8 +126,8 @@ export default function ImportadorPostFirma() {
         </div>
         <p className="mt-3 max-w-3xl text-xs leading-5 text-slate-500">No hay filtros por fecha, estado, concepto o IDGASTO. No se deduplican filas. Cada nueva carga, incluso si el nombre o el contenido coincide con otra, queda registrada como una carga independiente.</p>
         <div className="mt-5 flex flex-wrap gap-3">
-          <button type="button" onClick={() => ejecutar("validar")} disabled={cargando || !archivo} className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50">{cargando ? "Procesando…" : "Previsualizar sin guardar"}</button>
-          <button type="button" onClick={() => ejecutar("importar")} disabled={cargando || !archivo} className="rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50">{cargando ? "Procesando…" : "Guardar histórico completo"}</button>
+          <MolsanButton icon="check" variant="secondary" onClick={() => ejecutar("validar")} disabled={cargando || !archivo} loading={cargando}>Previsualizar sin guardar</MolsanButton>
+          <MolsanButton icon="upload" variant="primary" onClick={() => ejecutar("importar")} disabled={cargando || !archivo} loading={cargando}>Guardar histórico completo</MolsanButton>
         </div>
         <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900"><strong>Almacenamiento aislado:</strong> esta carga no crea ni actualiza gastos, pagos o expedientes y no relaciona los IDs del cliente con los identificadores internos del ERP.</div>
         {error && <div role="alert" className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">{error}</div>}
