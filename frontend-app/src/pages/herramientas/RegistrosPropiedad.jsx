@@ -2354,6 +2354,7 @@ export default function RegistrosPropiedad() {
               rowKey="id"
               minWidth="1500px"
               sortMode="server"
+              initialSort={{ key: "registro_propiedad", direction: "asc" }}
               onSortChange={cambiarOrdenTabla}
               columns={[
                 { key: "registro_propiedad", header: "Registro", accessor: "registro_propiedad", sortType: "text" },
