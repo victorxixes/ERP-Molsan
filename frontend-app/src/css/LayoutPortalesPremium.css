@@ -1,7 +1,7 @@
 /* MOLSAN ERP Premium 2027 · layout, portales e intranet */
 .mol-sidebar-premium a,.mol-sidebar-premium button { transition:background-color .16s ease,color .16s ease,border-color .16s ease; }
-.mol-sidebar-premium nav { min-width:0; max-width:100%; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; scrollbar-width:thin; scrollbar-color:var(--molsan-border,#dce4ef) transparent; }
-.portal-login-premium input:focus-visible,.portal-login-premium button:focus-visible,.portal-access-tabs-premium button:focus-visible,.sidebar-perfil-modal-premium button:focus-visible,.sidebar-perfil-modal-premium input:focus-visible,.sidebar-perfil-modal-premium select:focus-visible { outline:2px solid var(--molsan-primary,#3156b3); outline-offset:2px; }
+.mol-sidebar-premium nav { min-width:0; max-width:100%; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; scrollbar-width:thin; scrollbar-color:var(--molsan-border, #D8E4EC) transparent; }
+.portal-login-premium input:focus-visible,.portal-login-premium button:focus-visible,.portal-access-tabs-premium button:focus-visible,.sidebar-perfil-modal-premium button:focus-visible,.sidebar-perfil-modal-premium input:focus-visible,.sidebar-perfil-modal-premium select:focus-visible { outline:2px solid var(--molsan-primary, #064675); outline-offset:2px; }
 .portal-login-premium input,.portal-login-premium button { max-width:100%; }
 .portal-access-tabs-premium { min-width:0; }
 .portal-access-tabs-premium [role=tablist] { display:flex; flex-wrap:wrap; gap:.5rem; }
@@ -24,7 +24,7 @@
   z-index: 50;
   color: var(--molsan-text, #17243a);
   background: var(--molsan-surface, #fff);
-  border-bottom: 1px solid var(--molsan-border, #dce4ef);
+  border-bottom: 1px solid var(--molsan-border, #D8E4EC);
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -43,13 +43,13 @@
 .mol-sidebar-premium nav button[aria-current="page"],
 .mol-sidebar-premium nav a[data-active="true"],
 .mol-sidebar-premium nav button[data-active="true"] {
-  color: var(--molsan-primary, #3156b3);
-  background: var(--molsan-primary-soft, #edf3ff);
+  color: var(--molsan-primary, #064675);
+  background: var(--molsan-primary-soft, #EAF2F8);
   box-shadow: inset 0 0 0 1px rgba(49,86,179,.10);
 }
 .mol-sidebar-premium nav a:hover,
 .mol-sidebar-premium nav button:hover {
-  color: var(--molsan-primary, #3156b3);
+  color: var(--molsan-primary, #064675);
   background: var(--molsan-surface-soft, #f7f9fc);
 }
 .mol-sidebar-premium button:focus-visible,
@@ -58,18 +58,18 @@
   outline-offset: 2px;
 }
 .sidebar-perfil-modal-premium [role="dialog"] {
-  border: 1px solid var(--molsan-border, #dce4ef);
+  border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: 16px;
   box-shadow: 0 24px 72px rgba(15,23,42,.22);
 }
 .portal-login-premium {
   min-height: 100dvh;
   color: var(--molsan-text, #17243a);
-  background: var(--molsan-page-bg, #f4f7fb);
+  background: var(--molsan-page-bg, #FFFFFF);
 }
 .portal-login-premium [role="form"],
 .portal-login-premium form {
-  border: 1px solid var(--molsan-border, #dce4ef);
+  border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-dialog, 16px);
   background: var(--molsan-surface, #fff);
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
@@ -95,7 +95,7 @@
   padding:8px 13px;
   color:var(--molsan-text,#17243a);
   background:#fff;
-  border:1px solid var(--molsan-border,#dce4ef);
+  border:1px solid var(--molsan-border, #D8E4EC);
   border-radius:9px;
   font-size:12px;
   font-weight:700;
@@ -104,21 +104,21 @@
   transition:background-color .16s ease,color .16s ease,border-color .16s ease;
 }
 .ctn-portal-tab:hover,.ctn-portal-button:hover:not(:disabled) {
-  color:var(--molsan-primary,#3156b3);
-  background:var(--molsan-primary-soft,#edf3ff);
+  color:var(--molsan-primary, #064675);
+  background:var(--molsan-primary-soft, #EAF2F8);
   border-color:#b9c9ed;
 }
 .ctn-portal-tab.is-active {
   color:#fff;
-  background:var(--molsan-primary,#3156b3);
-  border-color:var(--molsan-primary,#3156b3);
+  background:var(--molsan-primary, #064675);
+  border-color:var(--molsan-primary, #064675);
 }
 .ctn-portal-button:disabled { opacity:.55; cursor:not-allowed; }
 .ctn-portal-card,.ctn-portal-field-card {
   min-width:0;
   padding:15px;
   background:#fff;
-  border:1px solid var(--molsan-border,#dce4ef);
+  border:1px solid var(--molsan-border, #D8E4EC);
   border-radius:12px;
   box-shadow:var(--molsan-shadow-card,0 4px 14px rgba(36,50,74,.06));
 }
@@ -152,7 +152,7 @@
 .ctn-portal-user-value { overflow-wrap:anywhere; }
 .ctn-portal-button--icon { min-width:44px; padding:8px 10px; }
 .ctn-portal-button--copy { margin-top:8px; }
-.ctn-portal-button--primary-soft { color:var(--molsan-primary,#3156b3); background:var(--molsan-primary-soft,#edf3ff); border-color:#c7d6f4; }
+.ctn-portal-button--primary-soft { color:var(--molsan-primary, #064675); background:var(--molsan-primary-soft, #EAF2F8); border-color:#c7d6f4; }
 .ctn-portal-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
 .ctn-portal-alert { padding:12px 14px; margin:0 0 12px; border:1px solid transparent; border-radius:10px; font-size:12px; line-height:1.5; }
 .ctn-portal-alert--warning { color:#92400e; background:#fff7ed; border-color:#fed7aa; }
@@ -163,7 +163,7 @@
 .ctn-portal-history-title { margin:0; color:var(--molsan-text,#17243a); font-size:15px; font-weight:750; }
 .ctn-portal-history-table-wrap { max-width:100%; overflow-x:auto; overscroll-behavior-x:contain; }
 .ctn-portal-history-table { width:100%; border-collapse:separate; border-spacing:0; font-size:12px; }
-.ctn-portal-history-th { padding:10px; color:var(--molsan-text-muted,#64748b); background:#f6f8fc; border-bottom:1px solid var(--molsan-border,#dce4ef); text-align:left; font-weight:700; white-space:nowrap; }
+.ctn-portal-history-th { padding:10px; color:var(--molsan-text-muted,#64748b); background:#f6f8fc; border-bottom:1px solid var(--molsan-border, #D8E4EC); text-align:left; font-weight:700; white-space:nowrap; }
 .ctn-portal-history-td { padding:10px; border-bottom:1px solid var(--molsan-border-light,#e6ebf2); vertical-align:top; }
 .ctn-portal-history-td--nowrap { white-space:nowrap; }
 .ctn-portal-history-table tbody tr:hover { background:#f8faff; }
