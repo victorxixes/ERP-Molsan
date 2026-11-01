@@ -628,22 +628,17 @@ export default function Mensajes({
   return (
     <div
       className="
+        erp-page
         mensajes-premium-page
         relative
-
+        flex
         min-h-0
-
-        lg:h-[calc(100dvh-96px)]
-        lg:min-h-0
-
+        w-full
+        flex-col
+        gap-4
         overflow-hidden
-
-        px-4
-        py-4
-
-        sm:px-6
-        sm:py-6
-
+        p-0
+        lg:h-[calc(100dvh-112px)]
         animate-fadeIn
       "
     >
@@ -704,6 +699,16 @@ export default function Mensajes({
 
       </div>
 
+      <header className="molsan-page-header mensajes-page-header relative z-10">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true">MSG</div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · COMUNICACIÓN INTERNA</p>
+            <h1 className="molsan-page-header__title">Mensajes</h1>
+            <p className="molsan-page-header__description">Mensajería interna y comunicación directa entre empleados.</p>
+          </div>
+        </div>
+      </header>
 
       {/* =================================================
           CONTENIDO
@@ -720,7 +725,7 @@ export default function Mensajes({
           gap-5
 
           lg:grid-cols-3
-          lg:h-full
+          lg:flex-1
           lg:min-h-0
         "
       >
@@ -802,7 +807,7 @@ export default function Mensajes({
                     text-slate-800
                   "
                 >
-                  Mensajes
+                  Empleados conectados
                 </h2>
 
                 <p
