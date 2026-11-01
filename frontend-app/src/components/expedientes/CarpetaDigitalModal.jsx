@@ -3,6 +3,7 @@ import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
 import "../../css/ModalesHerramientasPremium.css";
 import { formatEuro } from "../../utils/formatters";
+import MolsanIcon from "../ui/MolsanIcon";
 
 // Se conservan las categorías del repositorio actual para no romper
 // los documentos ya almacenados.
@@ -623,7 +624,7 @@ export default function CarpetaDigitalModal({
       <div className="min-h-0 flex-1 overflow-hidden bg-slate-100 p-2 sm:p-3">
         {cargandoVistaPrevia ? <div className="flex h-full min-h-[300px] items-center justify-center text-sm text-slate-500">Cargando documento…</div> : urlVistaPrevia && documentoVistaPrevia ? (
           <iframe title={`Vista previa: ${documentoVistaPrevia.nombre_original || "documento"}`} src={urlVistaPrevia} className="h-full min-h-[360px] w-full rounded-lg border border-slate-200 bg-white" />
-        ) : <div className="flex h-full min-h-[300px] flex-col items-center justify-center px-6 text-center"><span className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">📄</span><p className="text-sm font-bold text-slate-700">Vista previa</p><p className="mt-1 max-w-xs text-xs leading-5 text-slate-500">Selecciona un PDF en el panel izquierdo. El visor permanecerá visible mientras navegas por la lista.</p></div>}
+        ) : <div className="flex h-full min-h-[300px] flex-col items-center justify-center px-6 text-center"><MolsanIcon name="file" size={52} /><p className="text-sm font-bold text-slate-700">Vista previa</p><p className="mt-1 max-w-xs text-xs leading-5 text-slate-500">Selecciona un PDF en el panel izquierdo. El visor permanecerá visible mientras navegas por la lista.</p></div>}
       </div>
       {documentoVistaPrevia && <footer className="flex items-center justify-between gap-2 border-t border-slate-200 bg-white px-3 py-2"><span className="min-w-0 truncate text-[11px] text-slate-500">{documentoVistaPrevia.nombre_original}</span><div className="flex shrink-0 gap-2"><button type="button" onClick={() => descargar(documentoVistaPrevia)} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">Descargar</button><button type="button" onClick={cerrarVisor} className="rounded-lg bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200">Cerrar PDF</button></div></footer>}
     </aside>
@@ -731,7 +732,7 @@ export default function CarpetaDigitalModal({
                 <div className="flex h-full min-h-[250px] flex-col overflow-y-auto rounded-xl border border-indigo-100 bg-white shadow-sm">
                   <header className="flex flex-wrap items-center justify-between gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-3">
                     <div className="min-w-0">
-                      <h4 className="text-sm font-extrabold text-indigo-950">✉️ Datos de envío a notario</h4>
+                      <h4 className="text-sm font-extrabold text-indigo-950">Datos de envío a notario</h4>
                       <p className="mt-0.5 text-[11px] text-slate-500">Información sincronizada con el expediente y el modal de envío a notario</p>
                     </div>
                     <button
@@ -741,7 +742,7 @@ export default function CarpetaDigitalModal({
                       aria-label="Abrir envío a notario. Aviso: la transmisión real a ABSIS está pendiente de integración."
                       className="shrink-0 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                     >
-                      ✉️ Abrir envío a notario <span aria-hidden="true">ⓘ</span>
+                      Abrir envío a notario <span aria-hidden="true">ⓘ</span>
                     </button>
                   </header>
                   {(() => {
@@ -769,7 +770,7 @@ export default function CarpetaDigitalModal({
                     const urgente = valor("firma_urgente");
                     const secciones = [
                       {
-                        titulo: "📨 Envío y estado de la firma",
+                        titulo: "Envío y estado de la firma",
                         descripcion: "Estado actual y fechas registradas",
                         campos: [
                           ["Fecha de envío", fecha(valor("fecha_envio_notario", "fecha_envio", "fecha_envio_notaria"))],
@@ -779,7 +780,7 @@ export default function CarpetaDigitalModal({
                         ],
                       },
                       {
-                        titulo: "🏛️ Notario y apoderado",
+                        titulo: "Notario y apoderado",
                         descripcion: "Datos de la notaría y responsable de la firma",
                         campos: [
                           ["Notario", valor("nombre_notario", "notario")],
@@ -790,7 +791,7 @@ export default function CarpetaDigitalModal({
                         ],
                       },
                       {
-                        titulo: "🗓️ Planificación de la firma",
+                        titulo: "Planificación de la firma",
                         descripcion: "Tipo de firma y planificación horaria",
                         campos: [
                           ["Tipo de firma", valor("tipo_firma")],
@@ -801,7 +802,7 @@ export default function CarpetaDigitalModal({
                         ],
                       },
                       {
-                        titulo: "📄 Operación y documentación",
+                        titulo: "Operación y documentación",
                         descripcion: "Características del documento y del trámite",
                         campos: [
                           ["Tipo de documento", valor("tipo_documento")],
@@ -815,7 +816,7 @@ export default function CarpetaDigitalModal({
                         ],
                       },
                       {
-                        titulo: "💶 Datos económicos y registrales",
+                        titulo: "Datos económicos y registrales",
                         descripcion: "Referencias del préstamo, importe y finca",
                         campos: [
                           ["Contrato", valor("contrato")],
@@ -825,7 +826,7 @@ export default function CarpetaDigitalModal({
                         ],
                       },
                       {
-                        titulo: "🧾 Datos de facturación",
+                        titulo: "Datos de facturación",
                         descripcion: "Datos identificativos y de contacto de facturación",
                         campos: [
                           ["Nombre", valor("facturacion_nombre", "nombre_facturacion")],
@@ -842,7 +843,7 @@ export default function CarpetaDigitalModal({
                         ],
                       },
                       {
-                        titulo: "📝 Información adicional",
+                        titulo: "Información adicional",
                         descripcion: "Referencias de solicitud y notas",
                         campos: [
                           ["Nº solicitud SIA", valor("numero_solicitud_sia", "n_solicitud_sia", "numero_solicitud_pnc")],
@@ -967,7 +968,7 @@ export default function CarpetaDigitalModal({
                 <header className="flex items-center justify-between gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-2">
                   <div className="min-w-0">
                     <h4 className="text-xs font-extrabold text-indigo-950">
-                      {actividadId === "documentacion-previa" || actividadId === "sede-notarial" ? "✉️ Envío al notario" : String(actividadId || "").includes("protocolo") ? "📋 Datos · Sede notarial con protocolo" : `📋 Datos · ${bloqueActividad?.titulo || "Actividad"}`}
+                      {actividadId === "documentacion-previa" || actividadId === "sede-notarial" ? "Envío al notario" : String(actividadId || "").includes("protocolo") ? "Datos · Sede notarial con protocolo" : `Datos · ${bloqueActividad?.titulo || "Actividad"}`}
                     </h4>
                     <p className="text-[10px] text-slate-500">
                       {actividadId === "documentacion-previa" ? "Resumen de la información del expediente" : "Información específica de esta actividad"}
@@ -981,7 +982,7 @@ export default function CarpetaDigitalModal({
                     )}
                     {actividadId === "sede-notarial" && (
                       <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onAbrirEnvioNotario?.(); }} className="shrink-0 rounded-lg bg-indigo-600 px-2.5 py-2 text-[10px] font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                        ✉️ Envío al notario
+                        Envío al notario
                       </button>
                     )}
                   </div>
@@ -1057,7 +1058,7 @@ export default function CarpetaDigitalModal({
                     (["liquidacion-impuestos", "tramitacion-inscripcion", "defectos-registrales", "facturacion-cierre"].includes(actividadId)) ? (
                       <div className={`grid min-w-0 grid-cols-1 items-start gap-3 ${actividadId === "facturacion-cierre" ? "xl:grid-cols-2" : "xl:grid-cols-3"}`}>
                         <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
-                          <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">📋 Datos · {bloqueActividad?.titulo || ({ "liquidacion-impuestos": "Liquidación de impuestos", "tramitacion-inscripcion": "Tramitación inscripción", "defectos-registrales": "Defectos registrales", "facturacion-cierre": "Cierre del expediente" }[actividadId] || "Datos de actividad")}</h5>
+                          <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">Datos · {bloqueActividad?.titulo || ({ "liquidacion-impuestos": "Liquidación de impuestos", "tramitacion-inscripcion": "Tramitación inscripción", "defectos-registrales": "Defectos registrales", "facturacion-cierre": "Cierre del expediente" }[actividadId] || "Datos de actividad")}</h5>
                           <div className="grid min-w-0 grid-cols-1 gap-1.5 px-2.5 py-2 sm:grid-cols-2 xl:grid-cols-1">
 
                             {actividadId === "facturacion-cierre" && (
