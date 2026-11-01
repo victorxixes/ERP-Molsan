@@ -103,13 +103,13 @@ const ALIASES = {
 };
 const TONES = new Set(["ocean", "emerald", "violet", "amber", "cyan", "indigo", "slate"]);
 
-export default function MolsanIcon({ name = "activity", size = 42, tone = "ocean", className = "", title }) {
+export default function MolsanIcon({ name = "activity", size = 42, tone = "ocean", className = "", title, bare = false }) {
   const key = ALIASES[name] || name;
   const glyph = PATHS[key] || PATHS.activity;
   const colorTone = TONES.has(tone) ? tone : "ocean";
   return (
     <span
-      className={`molsan-icon-3d molsan-icon-3d--${colorTone} ${className}`.trim()}
+      className={`molsan-icon-3d molsan-icon-3d--${colorTone} ${bare ? "molsan-icon-3d--bare" : ""} ${className}`.trim()}
       style={{ width: size, height: size }}
       role={title ? "img" : undefined}
       aria-label={title || undefined}
