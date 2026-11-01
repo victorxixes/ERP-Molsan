@@ -84,7 +84,7 @@ export default function DatosMolsan() {
       <header className="molsan-page-header">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="flex items-start gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl">🏢</div>
+          <MolsanIcon name="building" size={48} tone="indigo" />
           <div>
             <p className="text-xs font-black uppercase tracking-[.18em] text-indigo-600">Utilidades · Configuración corporativa</p>
             <h1 className="mt-2 text-2xl font-black text-slate-900 sm:text-3xl">Datos Molsan</h1>
