@@ -310,7 +310,7 @@
 }
 .seguridad-usuarios-premium .erp-empty-state-title { margin:0; color:#1e293b; font-weight:800; }
 .seguridad-usuarios-premium .erp-empty-state-description { margin:.35rem 0 0; color:#64748b; line-height:1.55; }
-.seguridad-usuarios-premium .erp-alert { padding:.85rem 1rem; border-radius:10px; border:1px solid #bfdbfe; background:#eff6ff; color:#1d4ed8; }
+.seguridad-usuarios-premium .erp-alert { padding:.85rem 1rem; border-radius:10px; border:1px solid var(--molsan-border); background:var(--molsan-info-soft); color:var(--molsan-info); }
 .seguridad-usuarios-premium .erp-alert-success { border-color:#bbf7d0; background:#f0fdf4; color:#166534; }
 .seguridad-usuarios-premium .erp-alert-danger { border-color:#fecaca; background:#fef2f2; color:#b91c1c; }
 @media(max-width:900px) {
