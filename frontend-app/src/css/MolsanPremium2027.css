@@ -1341,3 +1341,86 @@ button:not(.molsan-table-sort):focus-visible {
   :is(.erp-main-content, .molsan-page, .apoderagest, .notargest, .encargagest, .cg-page)
   button:not(.molsan-table-sort) { transition: none; }
 }
+
+
+/* MOLSAN ERP PREMIUM 2027 · Iconografía Glass Luxe
+   Tratamiento volumétrico común para los pictogramas de Espacios de trabajo. */
+.workspace-app-icon {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--workspace-accent) 30%, #ffffff);
+  border-radius: 19px;
+  background:
+    radial-gradient(circle at 24% 16%, rgba(255,255,255,.98) 0 8%, rgba(255,255,255,.34) 27%, transparent 48%),
+    linear-gradient(145deg, color-mix(in srgb, var(--workspace-tint) 62%, #ffffff), var(--workspace-tint) 58%, color-mix(in srgb, var(--workspace-accent) 15%, #ffffff));
+  box-shadow:
+    0 9px 18px color-mix(in srgb, var(--workspace-accent) 13%, transparent),
+    0 2px 4px rgba(15, 45, 65, .08),
+    inset 0 2px 2px rgba(255,255,255,.96),
+    inset 0 -3px 6px color-mix(in srgb, var(--workspace-accent) 12%, transparent);
+  transition: transform .28s cubic-bezier(.2,.8,.2,1), box-shadow .28s ease, border-color .28s ease;
+}
+
+.workspace-app-icon::before {
+  content: "";
+  position: absolute;
+  inset: 1px 1px auto;
+  height: 48%;
+  border-radius: 17px 17px 50% 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,.76), rgba(255,255,255,0));
+  pointer-events: none;
+  z-index: -1;
+}
+
+.workspace-app-icon::after {
+  content: "";
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  right: -13px;
+  bottom: -16px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--workspace-accent) 18%, transparent);
+  filter: blur(3px);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.workspace-app-icon svg {
+  position: relative;
+  z-index: 1;
+  width: 29px;
+  height: 29px;
+  color: var(--workspace-ink);
+  stroke: currentColor;
+  stroke-width: 1.85;
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,.9)) drop-shadow(0 2px 2px color-mix(in srgb, var(--workspace-accent) 25%, transparent));
+  transition: transform .28s cubic-bezier(.2,.8,.2,1), filter .28s ease;
+}
+
+.workspace-app-card:hover .workspace-app-icon {
+  transform: translateY(-3px) rotate(-2deg) scale(1.035);
+  border-color: color-mix(in srgb, var(--workspace-accent) 54%, #ffffff);
+  box-shadow:
+    0 14px 24px color-mix(in srgb, var(--workspace-accent) 20%, transparent),
+    0 4px 8px rgba(15, 45, 65, .1),
+    inset 0 2px 2px rgba(255,255,255,.98),
+    inset 0 -3px 7px color-mix(in srgb, var(--workspace-accent) 15%, transparent);
+}
+
+.workspace-app-card:hover .workspace-app-icon svg {
+  transform: translateY(-1px) scale(1.06);
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,.95)) drop-shadow(0 4px 3px color-mix(in srgb, var(--workspace-accent) 32%, transparent));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace-app-icon,
+  .workspace-app-icon svg {
+    transition: none !important;
+  }
+  .workspace-app-card:hover .workspace-app-icon,
+  .workspace-app-card:hover .workspace-app-icon svg {
+    transform: none !important;
+  }
+}
