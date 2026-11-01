@@ -58,59 +58,16 @@ export default function CrearNoticia() {
           CABECERA
       ===================================================== */}
 
-      <div
-        className="
-          relative overflow-hidden
-          rounded-[24px]
-          border border-slate-200/80
-          bg-white/80
-          backdrop-blur-xl
-          shadow-[0_18px_50px_rgba(15,23,42,0.08)]
-          p-6 sm:p-7
-        "
-      >
-
-        <div
-          className="
-            absolute inset-x-0 top-0 h-px
-            bg-gradient-to-r
-            from-transparent
-            via-purple-400/60
-            to-transparent
-          "
-        />
-
-        <div className="molsan-page-header flex items-center gap-4">
-
-          <div
-            className="
-              flex h-12 w-12
-              items-center justify-center
-              rounded-2xl
-              bg-purple-50
-              border border-purple-100
-              text-2xl
-            "
-          >
-            📰
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true">📰</div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · INTRANET</p>
+            <h1 className="molsan-page-header__title">Crear noticia</h1>
+            <p className="molsan-page-header__description">Publica información para todos los usuarios de la intranet.</p>
           </div>
-
-          <div>
-
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">
-              Crear noticia
-            </h1>
-
-            <p className="mt-1 text-sm text-slate-500">
-              Publica información para todos los usuarios de la intranet.
-            </p>
-
-          </div>
-
         </div>
-
-      </div>
-
+      </header>
 
       {/* =====================================================
           FORMULARIO
