@@ -56,6 +56,9 @@ const PATHS = {
   clock: <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></>,
   arrowRight: <><path d="M4 12h15M13 6l6 6-6 6"/></>,
   arrowLeft: <><path d="M20 12H5M11 6l-6 6 6 6"/></>,
+  link: <><path d="m10 13 4-4M8 16H6a4 4 0 0 1 0-8h4M16 8h2a4 4 0 0 1 0 8h-4"/></>,
+  plus: <><path d="M12 5v14M5 12h14"/></>,
+
 
 };
 const ALIASES = {
