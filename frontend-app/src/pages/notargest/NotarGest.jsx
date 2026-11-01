@@ -6,6 +6,7 @@ import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
 import "../../css/PortalProfesionalShared.css";
 import "../../css/NotarGest.css";
+import { formatEuro as euros } from "../../utils/formatters";
 
 const TOKEN_KEY = "notargest_token";
 const bandejas = [
@@ -21,7 +22,7 @@ const bandejas = [
 ];
 const esFecha = (v) => v ? String(v).slice(0, 10).split("-").reverse().join("-") : "—";
 const texto = (v) => v === null || v === undefined || v === "" ? "—" : String(v);
-const euros = (v) => v === null || v === undefined || v === "" ? "—" : new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(v));
+
 
 export default function NotarGest({ accessMode = "auto" } = {}) {
   const navigate = useNavigate();
