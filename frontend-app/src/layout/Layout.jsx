@@ -17,6 +17,7 @@ export default function Layout() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [cabeceraSubpagina, setCabeceraSubpagina] = useState(null);
+  const [tieneVolverPropio, setTieneVolverPropio] = useState(false);
 
   const rutasPrincipales = new Set([
     "/", "/dashboard", "/expedientes", "/provisiones-fondos", "/agenda",
@@ -35,12 +36,30 @@ export default function Layout() {
 
   useEffect(() => {
     setCabeceraSubpagina(null);
+    setTieneVolverPropio(false);
     if (!esSubpagina) return undefined;
     const contenedor = document.querySelector(".erp-main-inner");
     if (!contenedor) return undefined;
     const localizarCabecera = () => {
       const encontrada = contenedor.querySelector(".molsan-page-header:not(.molsan-page-back-fallback)");
-      setCabeceraSubpagina(encontrada || null);
+      if (!encontrada) {
+        setCabeceraSubpagina(null);
+        setTieneVolverPropio(false);
+        return;
+      }
+      const botonVolverExistente = Array.from(encontrada.querySelectorAll("button, a")).find((elemento) => {
+        const texto = (elemento.textContent || "").trim();
+        const aria = elemento.getAttribute("aria-label") || "";
+        return /\bvolver\b|regresar/i.test(texto) || /\bvolver\b|regresar/i.test(aria);
+      });
+      if (botonVolverExistente) {
+        botonVolverExistente.classList.add("molsan-page-back-button");
+        setTieneVolverPropio(true);
+        setCabeceraSubpagina(null);
+        return;
+      }
+      setTieneVolverPropio(false);
+      setCabeceraSubpagina(encontrada);
     };
     localizarCabecera();
     const observador = new MutationObserver(localizarCabecera);
@@ -67,7 +86,7 @@ export default function Layout() {
       <main className="erp-main-content relative min-h-[calc(100vh-70px)]">
         <div className="erp-main-inner w-full px-4 py-6 lg:px-6">
           <div className={`w-full${rutaCancelaGest ? " cg-unified-workspace" : ""}`}>
-            {esSubpagina && !cabeceraSubpagina ? (
+            {esSubpagina && !cabeceraSubpagina && !tieneVolverPropio ? (
         <header className="molsan-page-header molsan-page-back-fallback">
           <button type="button" className="molsan-page-back-button" onClick={volverSubpagina} aria-label="Volver a la página anterior"><span aria-hidden="true">←</span> Volver</button>
         </header>
