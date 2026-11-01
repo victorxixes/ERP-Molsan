@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 import "../../css/ModalesOperativosPremium.css";
+import { formatEuro as importe } from "../../utils/formatters";
 
 const hoy = () => new Date().toISOString().slice(0, 10);
-const importe = (valor) => {
-  const numero = Number(valor ?? 0);
-  return new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number.isFinite(numero) ? numero : 0);
-};
+
 const numero = (valor) => (valor === "" || valor === null || valor === undefined ? 0 : Number(valor));
 const nuevaFinca = () => ({ finca: "", cru_idufir: "", registro_propiedad_id: "", registro_propiedad: "", provincia: "", poblacion: "", seccion: "" });
 const nuevaOperacion = () => ({ entidad: "", numero_prestamo: "", capital: "0", aplicar_tarifa: true, tarifa_id: null, honorarios_base: "0", honorarios: "0", suplidos: "0", gastos_registro: "0", otros_gastos: "0", notaria: "0", impuestos: "0", ajustes_motivo: "", condonar_honorarios: false, importe_manual: "", observaciones: "", fincas: [nuevaFinca()] });
