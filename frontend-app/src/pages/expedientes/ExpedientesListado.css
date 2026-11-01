@@ -56,10 +56,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .expedientes-page button {
-    transition: none;
   }
-}
 
 
 /* ============================================================
