@@ -1,10 +1,10 @@
 /* MOLSAN ERP PREMIUM 2027 · Catálogos y Utilidades
    Identidad visual coherente para las dos centrales de herramientas. */
 :is(.catalogos-premium-page, .utilidades-premium-page) {
-  --tools-primary: var(--molsan-primary, #3156b3);
-  --tools-primary-dark: var(--molsan-primary-hover, #274694);
-  --tools-soft: var(--molsan-primary-soft, #edf3ff);
-  --tools-border: var(--molsan-border, #dce4ef);
+  --tools-primary: var(--molsan-primary, #064675);
+  --tools-primary-dark: var(--molsan-primary-hover, #04375B);
+  --tools-soft: var(--molsan-primary-soft, #EAF2F8);
+  --tools-border: var(--molsan-border, #D8E4EC);
   --tools-text: var(--molsan-text, #17243a);
   --tools-muted: var(--molsan-text-muted, #64748b);
   min-width: 0;
@@ -17,7 +17,7 @@
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
 }
 :is(.catalogos-premium-page, .utilidades-premium-page) > header > div:first-child {
-  background-image: linear-gradient(90deg, var(--molsan-primary, #3156b3), var(--molsan-primary-hover, #274694));
+  background-image: linear-gradient(90deg, var(--molsan-primary, #064675), var(--molsan-primary-hover, #04375B));
 }
 :is(.catalogos-premium-page, .utilidades-premium-page) h1 {
   color: var(--tools-text);
@@ -37,7 +37,7 @@
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
 :is(.catalogos-premium-page, .utilidades-premium-page) a.group:hover {
-  border-color: var(--molsan-primary, #3156b3);
+  border-color: var(--molsan-primary, #064675);
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
 }
 :is(.catalogos-premium-page, .utilidades-premium-page) a.group:active {
@@ -47,13 +47,13 @@
   color: var(--tools-primary);
 }
 :is(.catalogos-premium-page, .utilidades-premium-page) a.group .border-indigo-100 {
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
 }
 :is(.catalogos-premium-page, .utilidades-premium-page) a.group .bg-indigo-50 {
   background-color: var(--tools-soft);
 }
 :is(.catalogos-premium-page, .utilidades-premium-page) a.group .bg-indigo-100 {
-  background-color: var(--molsan-primary-soft, #edf3ff);
+  background-color: var(--molsan-primary-soft, #EAF2F8);
 }
 :is(.catalogos-premium-page, .utilidades-premium-page) :is(p.text-slate-500, p.text-slate-600) {
   color: var(--tools-muted);
