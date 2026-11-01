@@ -17,9 +17,8 @@
   --ctn-danger: var(--molsan-danger, #c43d4b);
 
   min-height: 100%;
-  padding: 24px;
+  min-width: 0;
   color: var(--ctn-text);
-  background: var(--ctn-bg);
   font-family: var(--molsan-font-family, Inter, "Segoe UI", Arial, sans-serif);
   box-sizing: border-box;
 }
@@ -869,10 +868,6 @@
 }
 
 @media (max-width: 760px) {
-  .ctn-listado-page {
-    padding: 14px;
-  }
-
   .ctn-filtros {
     padding: 13px;
   }
