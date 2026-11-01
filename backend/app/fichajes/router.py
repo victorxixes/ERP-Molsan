@@ -571,6 +571,52 @@ def admin_exportar_marcajes(
             json.dumps(historial, ensure_ascii=False, default=str),
         ])
 
+    # Incluir también el rastro de marcajes eliminados: la FK deja marcaje_id
+    # a NULL, pero los snapshots de auditoría deben seguir siendo exportables.
+    auditorias_huerfanas = db.query(FichajeMarcajeAuditoria).filter(
+        FichajeMarcajeAuditoria.marcaje_id.is_(None)
+    )
+    if empleado_id:
+        auditorias_huerfanas = auditorias_huerfanas.filter(
+            FichajeMarcajeAuditoria.empleado_id == empleado_id
+        )
+    for auditoria in auditorias_huerfanas.order_by(
+        FichajeMarcajeAuditoria.creado_en, FichajeMarcajeAuditoria.id
+    ).all():
+        try:
+            snapshot = json.loads(auditoria.datos_anteriores or auditoria.datos_nuevos or "{}")
+            fecha_snapshot = datetime.fromisoformat(str(snapshot.get("fecha_hora", "")).replace("Z", "+00:00"))
+            if fecha_snapshot.tzinfo is None:
+                fecha_snapshot = fecha_snapshot.replace(tzinfo=ZoneInfo("Europe/Madrid"))
+            fecha_snapshot = fecha_snapshot.astimezone(ZoneInfo("Europe/Madrid"))
+        except (TypeError, ValueError, json.JSONDecodeError):
+            continue
+        if desde and fecha_snapshot.date() < desde:
+            continue
+        if hasta and fecha_snapshot.date() > hasta:
+            continue
+        empleado = db.query(Empleado).filter(Empleado.id == auditoria.empleado_id).first()
+        escritor.writerow([
+            auditoria.empleado_id,
+            (_nombre_completo(empleado) or empleado.usuario) if empleado else f"Empleado {auditoria.empleado_id}",
+            fecha_snapshot.date().isoformat(),
+            "",
+            "",
+            "SIN MARCA ACTUAL",
+            fecha_snapshot.isoformat(),
+            auditoria.accion,
+            auditoria.motivo,
+            "SI",
+            json.dumps([{
+                "accion": auditoria.accion,
+                "actor_id": auditoria.actor_id,
+                "motivo": auditoria.motivo,
+                "datos_anteriores": snapshot,
+                "datos_nuevos": json.loads(auditoria.datos_nuevos) if auditoria.datos_nuevos else None,
+                "registrado_en": auditoria.creado_en.isoformat() if auditoria.creado_en else None,
+            }], ensure_ascii=False, default=str),
+        ])
+
     contenido = salida.getvalue().encode("utf-8")
     nombre = f"registro_jornada_{desde.isoformat() if desde else 'inicio'}_{hasta.isoformat() if hasta else 'actualidad'}.csv"
     return StreamingResponse(
