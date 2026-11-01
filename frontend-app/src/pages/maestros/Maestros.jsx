@@ -1,3 +1,5 @@
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanButton from "../../components/ui/MolsanButton";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import "./Maestros.css";
 
@@ -960,223 +962,20 @@ export default function Maestros() {
                 "
               >
 
-                <div className="overflow-x-auto">
-
-                  <table
-                    className="
-                      w-full
-                      text-sm
-                    "
-                  >
-
-                    <thead>
-
-                      <tr
-                        className="
-                          bg-[var(--erp-surface)]
-                          border-b
-                          border-[var(--erp-border)]
-                        "
-                      >
-
-                        <th
-                          className="
-                            py-3
-                            px-4
-                            text-center
-                            text-xs
-                            font-semibold
-                            uppercase
-                            tracking-wide
-                            text-[var(--erp-text-soft)]
-                            w-24
-                          "
-                        >
-                          ID
-                        </th>
-
-                        <th
-                          className="
-                            py-3
-                            px-4
-                            text-left
-                            text-xs
-                            font-semibold
-                            uppercase
-                            tracking-wide
-                            text-[var(--erp-text-soft)]
-                          "
-                        >
-                          Nombre
-                        </th>
-
-                        <th
-                          className="
-                            py-3
-                            px-4
-                            text-right
-                            text-xs
-                            font-semibold
-                            uppercase
-                            tracking-wide
-                            text-[var(--erp-text-soft)]
-                            w-48
-                          "
-                        >
-                          Acciones
-                        </th>
-
-                      </tr>
-
-                    </thead>
-
-
-                    <tbody>
-
-                      {datos.map((registro) => (
-
-                        <tr
-                          key={registro.id}
-                          className="
-                            border-b
-                            border-[var(--erp-border)]
-                            last:border-b-0
-                            hover:bg-[var(--erp-surface)]
-                            transition
-                          "
-                        >
-
-                          <td
-                            className="
-                              py-3
-                              px-4
-                              text-center
-                              font-semibold
-                              text-[var(--erp-primary)]
-                            "
-                          >
-                            {registro.id}
-                          </td>
-
-
-                          <td
-                            className="
-                              py-3
-                              px-4
-                              font-medium
-                              text-[var(--erp-text)]
-                            "
-                          >
-                            {registro.nombre || "—"}
-                          </td>
-
-
-                          <td
-                            className="
-                              py-3
-                              px-4
-                            "
-                          >
-
-                            <div
-                              className="
-                                flex
-                                items-center
-                                justify-end
-                                gap-2
-                              "
-                            >
-
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  abrirEditar(registro)
-                                }
-                                disabled={guardando}
-                                className="
-                                  inline-flex
-                                  items-center
-                                  gap-1.5
-                                  px-3
-                                  py-2
-                                  rounded-lg
-                                  border
-                                  border-[var(--erp-border)]
-                                  bg-[var(--erp-surface)]
-                                  text-[var(--erp-text)]
-                                  text-xs
-                                  font-semibold
-                                  hover:bg-[var(--erp-primary-soft)]
-                                  transition
-                                  disabled:opacity-50
-                                "
-                              >
-
-                                <svg
-                                  className="w-3.5 h-3.5"
-                                  aria-hidden="true"
-                                >
-                                  <use
-                                    href="/icons/icons.svg#edit"
-                                  />
-                                </svg>
-
-                                Editar
-
-                              </button>
-
-
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  eliminar(registro)
-                                }
-                                disabled={guardando}
-                                className="
-                                  inline-flex
-                                  items-center
-                                  gap-1.5
-                                  px-3
-                                  py-2
-                                  rounded-lg
-                                  border
-                                  border-red-200
-                                  bg-red-50
-                                  text-red-700
-                                  text-xs
-                                  font-semibold
-                                  hover:bg-red-100
-                                  transition
-                                  disabled:opacity-50
-                                "
-                              >
-
-                                <svg
-                                  className="w-3.5 h-3.5"
-                                  aria-hidden="true"
-                                >
-                                  <use
-                                    href="/icons/icons.svg#trash"
-                                  />
-                                </svg>
-
-                                Eliminar
-
-                              </button>
-
-                            </div>
-
-                          </td>
-
-                        </tr>
-
-                      ))}
-
-                    </tbody>
-
-                  </table>
-
-                </div>
+                <MolsanDataTable
+                  rows={datos}
+                  rowKey="id"
+                  pagination
+                  pageSize={25}
+                  searchable
+                  initialSort={{ key: "nombre", direction: "asc" }}
+                  emptyText="No hay registros en este catálogo."
+                  columns={[
+                    { key: "id", header: "ID", accessor: "id", sortType: "number", align: "center" },
+                    { key: "nombre", header: "Nombre", accessor: "nombre", sortType: "text", render: (value) => <strong>{value || "—"}</strong> },
+                    { key: "acciones", header: "Acciones", sortable: false, accessor: (item) => item.id, align: "right", render: (_, registro) => <div className="flex items-center justify-end gap-2"><MolsanButton type="button" variant="secondary" icon="pencil" className="molsan-btn--compact" disabled={guardando} onClick={() => abrirEditar(registro)}>Editar</MolsanButton><MolsanButton type="button" variant="danger" icon="trash-2" className="molsan-btn--compact" disabled={guardando} onClick={() => eliminar(registro)}>Eliminar</MolsanButton></div> },
+                  ]}
+                />
 
               </div>
 
