@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import { formatEuro as euros } from "../../utils/formatters";
 
-const euros = (value) => value === null || value === undefined || value === "" || !Number.isFinite(Number(value))
-  ? "—"
-  : new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(value));
 
 const fecha = (value) => value ? new Date(value.length === 10 ? `${value}T12:00:00` : value).toLocaleDateString("es-ES") : "—";
 
