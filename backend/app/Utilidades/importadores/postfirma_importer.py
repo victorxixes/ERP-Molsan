@@ -318,48 +318,7 @@ def listar_registros_postfirma(
         valor_sql = "(r.datos_json::jsonb ->> :sort_column)"
         # Orden numérico para valores Excel numéricos; texto natural para el resto.
         order_sql = (
-            f"CASE WHEN {valor_sql} ~ '^[+-]?[0-9]+([.][0-9]+)?
-
-
-def validar_postfirma(db: Session, contenido_excel: bytes, fecha_desde=None, fecha_hasta=None):
-    """Previsualización sin escritura; no impone fechas ni encabezados obligatorios."""
-    try:
-        df = pd.read_excel(BytesIO(contenido_excel), sheet_name=0, header=0, engine="openpyxl", dtype=object)
-    except Exception as exc:
-        raise ValueError(f"No se pudo leer el Excel Post Firma: {exc}")
-    columnas = [str(c) if c is not None else "" for c in df.columns]
-    if "TIPOCONCEPTO" not in [str(c).strip().upper() for c in columnas]:
-        columnas.append("TIPOCONCEPTO")
-    filas_con_datos = 0
-    filas_vacias = 0
-    importes = Decimal("0")
-    filas_con_importe = 0
-    estados = {}
-    for _, row in df.iterrows():
-        valores = [_limpiar(v) for v in row.tolist()]
-        if not any(v is not None and v != "" for v in valores):
-            filas_vacias += 1
-            continue
-        filas_con_datos += 1
-        datos = {_normalizar_columna(k): v for k, v in zip(columnas, valores)}
-        importe = _decimal(datos.get("IMPGASTO"))
-        if importe is not None:
-            importes += importe
-            filas_con_importe += 1
-        estado = _texto(datos.get("ESTADO")) or "(vacío)"
-        estados[estado] = estados.get(estado, 0) + 1
-    return {
-        "validacion_sin_escritura": True,
-        "columnas_detectadas": columnas,
-        "filas_excel": int(len(df)),
-        "filas_con_datos": filas_con_datos,
-        "filas_vacias": filas_vacias,
-        "filas_con_importe_valido": filas_con_importe,
-        "suma_imp_gasto": str(importes.quantize(Decimal("0.01"))),
-        "por_estado_absis": estados,
-        "nota": "Validación informativa; no filtra por fecha, estado, concepto ni IDGASTO.",
-    }
- "
+            f"CASE WHEN {valor_sql} ~ '^[+-]?[0-9]+([.][0-9]+)?$' "
             f"THEN ({valor_sql})::numeric END {direccion} NULLS LAST, "
             f"LOWER(COALESCE({valor_sql}, '')) {direccion}"
         )
