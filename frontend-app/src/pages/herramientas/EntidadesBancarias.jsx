@@ -1,4 +1,5 @@
 import MolsanButton from "../../components/ui/MolsanButton";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useSearchParams } from "react-router-dom";
 import {
   useEffect,
@@ -1583,7 +1584,7 @@ export default function EntidadesBancarias() {
                 shadow-sm
               "
             >
-              🏦
+              <MolsanIcon name="bank" size={42} />
             </div>
 
 
@@ -1793,7 +1794,7 @@ export default function EntidadesBancarias() {
                   text-slate-400
                 "
               >
-                🔎
+                <MolsanIcon name="search" size={20} />
               </span>
 
 
@@ -2085,7 +2086,7 @@ export default function EntidadesBancarias() {
                 text-2xl
               "
             >
-              🏦
+              <MolsanIcon name="bank" size={42} />
             </div>
 
 
@@ -2527,7 +2528,7 @@ export default function EntidadesBancarias() {
                               hover:text-red-600
                             "
                           >
-                            🗑️
+                            <MolsanIcon name="trash" size={18} />
                           </button>
 
                         </div>
@@ -2839,7 +2840,7 @@ function ModalImportarExcel({
                   text-xl
                 "
               >
-                📊
+                <MolsanIcon name="chart" size={20} />
               </div>
 
 
@@ -3045,7 +3046,7 @@ function ModalImportarExcel({
                   shadow-sm
                 "
               >
-                📁
+                <MolsanIcon name="folder" size={20} />
               </div>
 
 
@@ -3119,7 +3120,7 @@ function ModalImportarExcel({
                     shadow-sm
                   "
                 >
-                  📄
+                  <MolsanIcon name="file" size={20} />
                 </div>
 
 
