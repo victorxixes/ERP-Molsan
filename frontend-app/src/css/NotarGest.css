@@ -1161,7 +1161,7 @@
 .notargest .ng-dato strong,
 .notargest .ng-documento strong,
 .notargest .ng-archivo-info strong { color:#173247; }
-.ng-admin-notarias { width:100%; min-width:0; padding:0 0 20px; }
+.ng-admin-notarias { width:100%; min-width:0; margin:0 0 20px!important; padding:clamp(18px,2.2vw,32px)!important; border:1px solid #D8E4EC; border-radius:18px; background:#FFFFFF!important; }
 .ng-admin-notarias .ng-admin-global-resumen { padding:18px; }
 .ng-admin-notarias .ng-admin-kpis { gap:12px; }
 .ng-admin-notarias .ng-admin-kpi-button {
@@ -1216,3 +1216,9 @@
 @media(prefers-reduced-motion:reduce) {
   .notargest button,.ng-admin-notarias button { transition:none!important; }
 }
+
+.ng-admin-notarias .ng-admin-kpi-button > .molsan-icon-3d { margin:0 0 2px; }
+.ng-admin-notarias .ng-admin-kpi-button > span { color:#617789!important; }
+.ng-admin-notarias .ng-admin-kpi-button > strong { color:#064675; font-size:25px; font-weight:850; line-height:1.1; }
+.ng-admin-notarias .ng-admin-kpi-button > small { color:#617789; }
+@media(max-width:700px){.ng-admin-notarias{padding:14px!important;border-radius:16px;}}
