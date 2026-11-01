@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useState } from "react";
 import axios from "../../api/axios";
 import MolsanButton from "../../components/ui/MolsanButton";
@@ -199,7 +200,7 @@ export default function ImportadorAbsis() {
                                 text-xl
                             "
                         >
-                            📥
+                            <MolsanIcon name="download" size={20} />
                         </span>
 
                     </div>
@@ -283,7 +284,7 @@ export default function ImportadorAbsis() {
                             justify-center
                         "
                     >
-                        📥
+                        <MolsanIcon name="download" size={20} />
                     </div>
 
                     <div>
@@ -332,7 +333,7 @@ export default function ImportadorAbsis() {
                         "
                     >
 
-                        <span>📅</span>
+                        <span><MolsanIcon name="calendar" size={20} /></span>
 
                         <span>
                             Fecha de importación
@@ -412,7 +413,7 @@ export default function ImportadorAbsis() {
                         "
                     >
 
-                        <span>📊</span>
+                        <span><MolsanIcon name="chart" size={20} /></span>
 
                         <span>
                             Archivo Excel
