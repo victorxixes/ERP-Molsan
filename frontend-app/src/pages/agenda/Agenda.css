@@ -90,7 +90,7 @@
 }
 @media (max-width: 768px) {
   .agenda-premium-page {
-    padding: 12px;
+    
     gap: 12px;
   }
   .agenda-premium-page > .erp-card:first-of-type {
