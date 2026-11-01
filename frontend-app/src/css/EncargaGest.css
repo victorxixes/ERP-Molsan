@@ -233,7 +233,7 @@
   width: 38px;
   height: 38px;
   place-items: center;
-  color: #355bd3;
+  color: var(--molsan-primary);
   background: #edf2ff;
   border: 1px solid #e0e8ff;
   border-radius: 12px;
