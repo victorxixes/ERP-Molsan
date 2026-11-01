@@ -40,10 +40,8 @@ export default function Utilidades() {
         <Card icon="🔐" titulo="Accesos notariales" descripcion="Busca una notaría y administra por separado sus accesos a NotarGest y EncargaGest, con historial de cambios." link="/herramientas/utilidades/accesos-notariales" />
       </Grupo>
 
-      <Grupo titulo="Importaciones y datos" descripcion="Carga información desde los ficheros de trabajo autorizados.">
-        <Card icon="📥" titulo="Importar CTN" descripcion="Importar un Excel con información de notarías." link="/herramientas/importar-ctn" />
-        <Card icon="📦" titulo="Importador ABSIS" descripcion="Importar expedientes desde el Excel matriz ABSIS." etapa="Carga Pre firma" link="/herramientas/importador-absis" destacado />
-        <Card icon="📦" titulo="Importador ABSIS" descripcion="Importar el histórico Excel de gastos y facturación Post Firma, validar los datos y abrir su informe." etapa="Post Firma" link="/herramientas/importador-absis/postfirma" destacado />
+      <Grupo titulo="Importaciones y datos" descripcion="Accede desde un único centro a las cargas, validaciones y actualizaciones de información del ERP.">
+        <Card icon="⇧" titulo="Centro de importaciones" descripcion="Accede a los importadores de CTN, ABSIS, catálogos territoriales y datos operativos, con sus procesos de validación." link="/herramientas/importaciones-datos" destacado />
       </Grupo>
 
       <Grupo titulo="Integraciones y comunicaciones" descripcion="Seguimiento de los procesos de intercambio de información con los sistemas de nuestros clientes.">
@@ -140,7 +138,7 @@ function Card({
       />
       <div className="flex items-start gap-4">
         <div
-          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl transition-all duration-300 group-hover:scale-105 ${destacado ? "bg-blue-100 border-blue-200" : "bg-slate-50 border-slate-200"}`}
+          className={`molsan-icon-3d flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl transition-all duration-300 group-hover:scale-105 ${destacado ? "bg-blue-100 border-blue-200" : "bg-slate-50 border-slate-200"}`}
         >
           {icon}
         </div>
