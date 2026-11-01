@@ -48,7 +48,7 @@
 }
 .agenda-premium-page button:focus-visible,
 .agenda-premium-page a:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--molsan-primary) 6%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--molsan-primary) 42%, transparent);
   outline-offset: 2px;
 }
 .agenda-premium-page > .erp-card:first-of-type button[aria-pressed="true"],
