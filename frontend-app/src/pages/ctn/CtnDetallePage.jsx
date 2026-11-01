@@ -153,7 +153,7 @@ export default function CtnDetallePage() {
   if (!notaria) return <div className="ctn-detalle-page"><p>{error || "No se ha encontrado el notario."}</p><button onClick={() => navigate(-1)}>Volver</button></div>;
 
   return (
-    <div className="ctn-detalle-page ctn-detalle-page--content">
+    <div className="molsan-page-stack ctn-detalle-page ctn-detalle-page--content">
       <header className="ctn-detalle-header molsan-page-header">
         <div className="molsan-page-header__identity">
           <div className="molsan-page-header__mark" aria-hidden="true">CTN</div>
