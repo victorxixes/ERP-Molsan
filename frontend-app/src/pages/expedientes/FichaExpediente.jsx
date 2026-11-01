@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 
 import { Link, useParams } from "react-router-dom";
 import axios from "../../api/axios";
-import { formatEuro, formatPercent } from "../../utils/formatters";
+import { formatDecimal, formatEuro, formatPercent } from "../../utils/formatters";
 
 import { obtenerExpediente, obtenerListadoExpedientes, enviarExpedienteANotario } from "../../api/expedientes";
 
@@ -129,13 +129,7 @@ function formatearNumero(valor) {
     return String(valor);
   }
 
-  return new Intl.NumberFormat(
-    "es-ES",
-    {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }
-  ).format(numero);
+  return formatDecimal(numero);
 }
 
 
@@ -6071,7 +6065,7 @@ const cuantiaFincasParaEnvio =
                                       porcentaje_retencion: "0",
                                       tipo_retencion: "Sin retención",
                                     }));
-                                  } }} className="w-full rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · base {formatEuro(Number(x.base_imponible ?? x.importe ?? 0))} € + {String(x.tipo_impuesto || "IVA").toUpperCase()} {formatPercent(Number(x.porcentaje_impuesto ?? 21))} · total {formatEuro(Number(x.importe || 0))} €</option>)}</select><span className="mt-1 block text-[11px] text-slate-500">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
+                                  } }} className="w-full rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · base {formatEuro(Number(x.base_imponible ?? x.importe ?? 0)) + {String(x.tipo_impuesto || "IVA").toUpperCase()} {formatPercent(Number(x.porcentaje_impuesto ?? 21))} · total {formatEuro(Number(x.importe || 0))</option>)}</select><span className="mt-1 block text-[11px] text-slate-500">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Concepto del gasto *</span><select required value={gastoForm.tipo} onChange={(e) => setGastoForm((a) => ({...a, tipo:e.target.value, descripcion:a.descripcion || e.target.options[e.target.selectedIndex]?.text || e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">{cargandoConceptosGasto ? "Cargando catálogo…" : "Selecciona un concepto"}</option>{conceptosGasto.map((c) => <option key={String(c.value)} value={String(c.value)}>{c.label}</option>)}{!conceptosGasto.some((c) => String(c.value) === "Honorarios de gestoría") && <option value="Honorarios de gestoría">Honorarios de gestoría</option>}</select></label>
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tipo de concepto ABSIS (TIPOCONCEPTO)</span><select value={gastoForm.tipo_concepto_absis} onChange={(e) => setGastoForm((a) => ({ ...a, tipo_concepto_absis: e.target.value }))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">{cargandoTiposConceptoAbsis ? "Cargando catálogo ABSIS…" : tiposConceptoAbsis.length ? "Selecciona el tipo ABSIS" : "Sin valores activos en Catálogo ABSIS"}</option>{tiposConceptoAbsis.map((item) => <option key={item.id} value={String(item.codigo || item.valor || "")}>{item.codigo ? `${item.codigo} — ${item.valor}` : item.valor}</option>)}</select><span className="mt-1 block text-[11px] text-slate-500">Opcional hasta validar con Informática los códigos oficiales y su correspondencia con el concepto interno.</span></label>
                                 <div className="grid gap-3 sm:grid-cols-2">
@@ -6097,10 +6091,10 @@ const cuantiaFincasParaEnvio =
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tramo de impuesto</span><select value={gastoForm.tramo_impuesto} onChange={(e)=>setGastoForm(a=>({...a,tramo_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{["Exento","General","Reducido","Super reducido","Único"].map(x=><option key={x}>{x}</option>)}</select></label>
                                 <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tipo impositivo</span><select value={gastoForm.tipo_impuesto} onChange={(e)=>{const v=e.target.value;setGastoForm(a=>({...a,tipo_impuesto:v,porcentaje_impuesto:v==="IVA 21%"?"21":v==="IGIC 5%"?"5":v==="IGIC 6,50%"?"6.5":v==="IGIC 7%"?"7":"0"}))}} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{!["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].includes(gastoForm.tipo_impuesto) && <option value={gastoForm.tipo_impuesto}>{gastoForm.tipo_impuesto}</option>}{["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].map(x=><option key={x}>{x}</option>)}</select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Porcentaje (%)</span><input type="number" min="0" max="100" step="0.01" value={gastoForm.porcentaje_impuesto} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
                                 <div className="grid gap-3 sm:grid-cols-2">{[["Base exenta (€)","base_exenta_impuestos"],["Base sujeta (€)","base_sujeta_impuestos"]].map(([label,key])=><label key={key} className="block"><span className="mb-1 block text-xs font-bold text-slate-700">{label}</span><input type="number" min="0" step="0.01" value={gastoForm[key]} onChange={(e)=>setGastoForm(a=>({...a,[key]:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>)}</div>
-                                <div className="rounded-lg border border-slate-200 bg-white p-3 text-xs"><div className="flex justify-between"><span>Impuesto calculado</span><strong>{formatEuro(impuestoCalculadoGasto)} €</strong></div></div>
+                                <div className="rounded-lg border border-slate-200 bg-white p-3 text-xs"><div className="flex justify-between"><span>Impuesto calculado</span><strong>{formatEuro(impuestoCalculadoGasto)}</strong></div></div>
                                 <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Base exenta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_exenta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_exenta_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Base sujeta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_sujeta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_sujeta_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
                                 <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Retención</span><select value={gastoForm.tipo_retencion} onChange={(e)=>setGastoForm(a=>({...a,tipo_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>IRPF profesionales</option><option>Sin retención</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">IRPF (%)</span><input type="number" min="0" max="21" step="0.01" value={gastoForm.porcentaje_retencion} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
-                                <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4"><div className="flex justify-between text-xs text-slate-600"><span>Retención calculada</span><strong>{formatEuro(retencionCalculadaGasto)} €</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span className="text-xs font-bold text-indigo-900">Resultado calculado</span><strong className="text-2xl text-indigo-950">{formatEuro(resultadoCalculadoGasto)} €</strong></div><label className="mt-3 block"><span className="mb-1 block text-xs font-bold text-slate-700">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
+                                <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4"><div className="flex justify-between text-xs text-slate-600"><span>Retención calculada</span><strong>{formatEuro(retencionCalculadaGasto)}</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span className="text-xs font-bold text-indigo-900">Resultado calculado</span><strong className="text-2xl text-indigo-950">{formatEuro(resultadoCalculadoGasto)}</strong></div><label className="mt-3 block"><span className="mb-1 block text-xs font-bold text-slate-700">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Descripción *</span><input required value={gastoForm.descripcion} onChange={(e)=>setGastoForm(a=>({...a,descripcion:e.target.value}))} placeholder="Concepto detallado de la factura" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
                               </div>
                               <aside className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-3">
@@ -6775,7 +6769,7 @@ const cuantiaFincasParaEnvio =
                     <div className="mt-3 rounded-xl border border-emerald-200 bg-white p-3">
                       <p className="text-xs text-slate-500">Tarifa aplicada: {honorariosGestoria.tarifa}</p>
                       <p className="mt-1 text-2xl font-extrabold text-emerald-800">
-                        {Number(honorariosGestoria.importe).toLocaleString("es-ES", { style: "currency", currency: "EUR" })}
+                        {formatEuro(Number(honorariosGestoria.importe))}
                       </p>
                       <p className="mt-1 text-[11px] text-slate-500">Entidad detectada: {honorariosGestoria.entidad || "No identificada"}</p>
                       {honorariosGestoria.guardado && <p className="mt-1 text-xs font-semibold text-emerald-700">Registrado en el backend.</p>}
@@ -7221,17 +7215,11 @@ const cuantiaFincasParaEnvio =
                                 if (documento.cuantia == null || documento.cuantia === "") {
                                   return "Sin cuantía";
                                 }
-                                return `${Number(documento.cuantia).toLocaleString("es-ES", {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })} €`;
+                                return formatEuro(Number(documento.cuantia));
                               })
                               .join(" | ")
                           : expediente.cuantia != null
-                            ? `${Number(expediente.cuantia).toLocaleString("es-ES", {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              })} €`
+                            ? formatEuro(Number(expediente.cuantia))
                             : null
                       }
                     />
@@ -7362,8 +7350,8 @@ const cuantiaFincasParaEnvio =
                                       <td className="whitespace-nowrap px-5 py-4 font-extrabold text-indigo-700">{movimiento.numero_documento || `PAG-${String(movimiento.id).padStart(6, "0")}`}</td>
                                       <td className="whitespace-nowrap px-5 py-4 text-slate-600">{movimiento.fecha ? formatearFecha(movimiento.fecha) : "—"}</td>
                                       <td className="px-5 py-4 font-semibold text-slate-800">{movimiento.descripcion || movimiento.tipo || "Gasto"}</td>
-                                      <td className="whitespace-nowrap px-5 py-4 text-right font-bold text-red-700">{movimiento.importeMovimiento === 0 ? "0,00 €" : `−${Math.abs(movimiento.importeMovimiento).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}</td>
-                                      <td className={`whitespace-nowrap px-5 py-4 text-right text-base font-extrabold ${movimiento.saldoCalculado < 0 ? "text-red-700" : "text-slate-900"}`}>{movimiento.saldoCalculado.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</td>
+                                      <td className="whitespace-nowrap px-5 py-4 text-right font-bold text-red-700">{formatEuro(movimiento.importeMovimiento)}</td>
+                                      <td className={`whitespace-nowrap px-5 py-4 text-right text-base font-extrabold ${movimiento.saldoCalculado < 0 ? "text-red-700" : "text-slate-900"}`}>{formatEuro(movimiento.saldoCalculado)}</td>
                                     </tr>
                                   ))}
                                 </tbody>
@@ -7419,7 +7407,7 @@ const cuantiaFincasParaEnvio =
                                       porcentaje_retencion: "0",
                                       tipo_retencion: "Sin retención",
                                     }));
-                                  } }} className="w-full rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · base {formatEuro(Number(x.base_imponible ?? x.importe ?? 0))} € + {String(x.tipo_impuesto || "IVA").toUpperCase()} {formatPercent(Number(x.porcentaje_impuesto ?? 21))} · total {formatEuro(Number(x.importe || 0))} €</option>)}</select><span className="mt-1 block text-[11px] text-slate-500">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
+                                  } }} className="w-full rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · base {formatEuro(Number(x.base_imponible ?? x.importe ?? 0)) + {String(x.tipo_impuesto || "IVA").toUpperCase()} {formatPercent(Number(x.porcentaje_impuesto ?? 21))} · total {formatEuro(Number(x.importe || 0))</option>)}</select><span className="mt-1 block text-[11px] text-slate-500">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Concepto del gasto *</span><select required value={gastoForm.tipo} onChange={(e) => setGastoForm((a) => ({...a, tipo:e.target.value, descripcion:a.descripcion || e.target.options[e.target.selectedIndex]?.text || e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">{cargandoConceptosGasto ? "Cargando catálogo…" : "Selecciona un concepto"}</option>{conceptosGasto.map((c) => <option key={String(c.value)} value={String(c.value)}>{c.label}</option>)}{!conceptosGasto.some((c) => String(c.value) === "Honorarios de gestoría") && <option value="Honorarios de gestoría">Honorarios de gestoría</option>}</select></label>
                                 <div className="grid gap-3 sm:grid-cols-2">
                                   <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">NIF/CIF/NIE notario</span><input value={gastoForm.nif_notario} onChange={(e)=>setGastoForm(a=>({...a,nif_notario:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
@@ -7441,10 +7429,10 @@ const cuantiaFincasParaEnvio =
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tramo de impuesto</span><select value={gastoForm.tramo_impuesto} onChange={(e)=>setGastoForm(a=>({...a,tramo_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{["Exento","General","Reducido","Super reducido","Único"].map(x=><option key={x}>{x}</option>)}</select></label>
                                 <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tipo impositivo</span><select value={gastoForm.tipo_impuesto} onChange={(e)=>{const v=e.target.value;setGastoForm(a=>({...a,tipo_impuesto:v,porcentaje_impuesto:v==="IVA 21%"?"21":v==="IGIC 5%"?"5":v==="IGIC 6,50%"?"6.5":v==="IGIC 7%"?"7":"0"}))}} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{!["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].includes(gastoForm.tipo_impuesto) && <option value={gastoForm.tipo_impuesto}>{gastoForm.tipo_impuesto}</option>}{["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].map(x=><option key={x}>{x}</option>)}</select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Porcentaje (%)</span><input type="number" min="0" max="100" step="0.01" value={gastoForm.porcentaje_impuesto} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
                                 <div className="grid gap-3 sm:grid-cols-2">{[["Base exenta (€)","base_exenta_impuestos"],["Base sujeta (€)","base_sujeta_impuestos"]].map(([label,key])=><label key={key} className="block"><span className="mb-1 block text-xs font-bold text-slate-700">{label}</span><input type="number" min="0" step="0.01" value={gastoForm[key]} onChange={(e)=>setGastoForm(a=>({...a,[key]:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>)}</div>
-                                <div className="rounded-lg border border-slate-200 bg-white p-3 text-xs"><div className="flex justify-between"><span>Impuesto calculado</span><strong>{formatEuro(impuestoCalculadoGasto)} €</strong></div></div>
+                                <div className="rounded-lg border border-slate-200 bg-white p-3 text-xs"><div className="flex justify-between"><span>Impuesto calculado</span><strong>{formatEuro(impuestoCalculadoGasto)}</strong></div></div>
                                 <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Base exenta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_exenta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_exenta_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Base sujeta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_sujeta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_sujeta_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
                                 <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Retención</span><select value={gastoForm.tipo_retencion} onChange={(e)=>setGastoForm(a=>({...a,tipo_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>IRPF profesionales</option><option>Sin retención</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">IRPF (%)</span><input type="number" min="0" max="21" step="0.01" value={gastoForm.porcentaje_retencion} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
-                                <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4"><div className="flex justify-between text-xs text-slate-600"><span>Retención calculada</span><strong>{formatEuro(retencionCalculadaGasto)} €</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span className="text-xs font-bold text-indigo-900">Resultado calculado</span><strong className="text-2xl text-indigo-950">{formatEuro(resultadoCalculadoGasto)} €</strong></div><label className="mt-3 block"><span className="mb-1 block text-xs font-bold text-slate-700">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
+                                <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4"><div className="flex justify-between text-xs text-slate-600"><span>Retención calculada</span><strong>{formatEuro(retencionCalculadaGasto)}</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span className="text-xs font-bold text-indigo-900">Resultado calculado</span><strong className="text-2xl text-indigo-950">{formatEuro(resultadoCalculadoGasto)}</strong></div><label className="mt-3 block"><span className="mb-1 block text-xs font-bold text-slate-700">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Descripción *</span><input required value={gastoForm.descripcion} onChange={(e)=>setGastoForm(a=>({...a,descripcion:e.target.value}))} placeholder="Concepto detallado de la factura" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
                               </div>
                               <aside className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-3">
@@ -7495,7 +7483,7 @@ const cuantiaFincasParaEnvio =
                                     </div>
                                   </div>
                                   <span className="whitespace-nowrap text-base font-extrabold text-slate-900">
-                                    {gasto.importe_resultante == null && gasto.importe == null ? "—" : `${Number(gasto.importe_resultante ?? gasto.importe).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}
+                                    {gasto.importe_resultante == null && gasto.importe == null ? "—" : formatEuro(Number(gasto.importe_resultante ?? gasto.importe))}
                                   </span>
                                   {(() => {
                                     const estadoPago = String(gasto.estado_pago || "Pendiente").trim().toLowerCase();
@@ -9016,11 +9004,11 @@ const cuantiaFincasParaEnvio =
           <div className="grid gap-3 md:grid-cols-3">
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Provisión de fondos</p>
-              <p className="mt-1 text-lg font-extrabold text-slate-800">{Number(String(facturaHonorariosForm.provisionFondos || "0").replace(",", "." ) || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</p>
+              <p className="mt-1 text-lg font-extrabold text-slate-800">{formatEuro(Number(String(facturaHonorariosForm.provisionFondos || "0").replace(",", "." ) || 0))}</p>
             </div>
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Saldo disponible (dato del expediente)</p>
-              <p className="mt-1 text-lg font-extrabold text-slate-800">{Number(String(facturaHonorariosForm.saldoDisponible || "0").replace(",", "." ) || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</p>
+              <p className="mt-1 text-lg font-extrabold text-slate-800">{formatEuro(Number(String(facturaHonorariosForm.saldoDisponible || "0").replace(",", "." ) || 0))}</p>
             </div>
             <div className={`rounded-xl border p-3 ${empleadoEnFactura ? "border-amber-300 bg-amber-50" : "border-slate-200 bg-slate-50"}`}>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -9038,7 +9026,7 @@ const cuantiaFincasParaEnvio =
                     setFacturaHonorariosForm((actual) => actualizarImportesFacturaHonorarios({
                       ...actual,
                       baseImponible: base.toFixed(2),
-                      observaciones: esEmpleado ? `Cliente empleado: descuento del 50 % (${descuento.toFixed(2)} €) sobre honorarios.` : "",
+                      observaciones: esEmpleado ? `Cliente empleado: descuento del 50 % (${formatEuro(descuento)}) sobre honorarios.` : "",
                     }));
                   }}
                   className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none focus:border-amber-500"
@@ -9063,10 +9051,10 @@ const cuantiaFincasParaEnvio =
               </div>
               <div className="overflow-hidden rounded-xl border border-slate-200">
                 <div className="grid grid-cols-[1fr_auto] gap-3 bg-slate-50 px-4 py-3 text-xs font-bold text-slate-600"><span>Concepto</span><span>Importe</span></div>
-                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-100 px-4 py-3 text-sm"><span>Base imponible</span><span>{Number(facturaHonorariosForm.baseImponible || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
-                {empleadoEnFactura && <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-100 bg-amber-50/60 px-4 py-3 text-sm text-amber-900"><span>Descuento empleado (50 %)</span><span className="font-semibold">− {(Math.round((Math.max(0, Number(baseHonorariosOriginal) || 0) * 0.5 + Number.EPSILON) * 100) / 100).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>}
-                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-100 px-4 py-3 text-sm"><span>{facturaHonorariosForm.tipoImpuesto} ({facturaHonorariosForm.porcentajeImpuesto}%)</span><span>{Number(facturaHonorariosForm.importeImpuesto || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
-                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-200 bg-emerald-50 px-4 py-4 font-extrabold text-emerald-900"><span>TOTAL FACTURA</span><span>{Number(facturaHonorariosForm.totalFactura || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
+                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-100 px-4 py-3 text-sm"><span>Base imponible</span><span>{formatEuro(Number(facturaHonorariosForm.baseImponible || 0))}</span></div>
+                {empleadoEnFactura && <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-100 bg-amber-50/60 px-4 py-3 text-sm text-amber-900"><span>Descuento empleado (50 %)</span><span className="font-semibold">− {formatEuro(Math.round((Math.max(0, Number(baseHonorariosOriginal) || 0) * 0.5 + Number.EPSILON) * 100) / 100)}</span></div>}
+                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-100 px-4 py-3 text-sm"><span>{facturaHonorariosForm.tipoImpuesto} ({formatPercent(Number(facturaHonorariosForm.porcentajeImpuesto || 0))})</span><span>{formatEuro(Number(facturaHonorariosForm.importeImpuesto || 0))}</span></div>
+                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-200 bg-emerald-50 px-4 py-4 font-extrabold text-emerald-900"><span>TOTAL FACTURA</span><span>{formatEuro(Number(facturaHonorariosForm.totalFactura || 0))}</span></div>
               </div>
               {facturaHonorariosForm.observaciones && <p className="mt-4 whitespace-pre-wrap text-sm text-slate-600">{facturaHonorariosForm.observaciones}</p>}
               <p className="mt-4 text-xs text-amber-700">Vista previa de revisión. Al pulsar «Guardar y facturar», el ERP generará y descargará la factura en PDF con número {expediente?.id_expediente || "—"} - {facturaHonorariosForm.numeroFactura || "pendiente de asignación"}, usando la plantilla oficial asociada al concepto de honorarios de gestoría.</p>
@@ -9104,7 +9092,7 @@ const cuantiaFincasParaEnvio =
                 <div className="grid gap-3 md:grid-cols-3">
                   <label className="text-xs font-semibold text-slate-600">Base imponible (€)<input type="number" min="0" step="0.01" value={facturaHonorariosForm.baseImponible} onChange={e => setFacturaHonorariosForm(f => actualizarImportesFacturaHonorarios(f,{baseImponible:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
                   <label className="text-xs font-semibold text-slate-600">IVA (€)<input type="number" value={facturaHonorariosForm.importeImpuesto} readOnly className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm" /></label>
-                  <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2"><span className="block text-xs font-semibold text-emerald-700">Total honorarios (€)</span><strong className="mt-1 block text-sm text-emerald-800">{Number(facturaHonorariosForm.totalFactura || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</strong></div>
+                  <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2"><span className="block text-xs font-semibold text-emerald-700">Total honorarios (€)</span><strong className="mt-1 block text-sm text-emerald-800">{formatEuro(Number(facturaHonorariosForm.totalFactura || 0))}</strong></div>
                 </div>
                 <label className="mt-3 block text-xs font-semibold text-slate-600">Observaciones<textarea value={facturaHonorariosForm.observaciones} onChange={e => setFacturaHonorariosForm(f => ({...f,observaciones:e.target.value}))} rows={2} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
               </section>
