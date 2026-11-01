@@ -272,7 +272,9 @@
 
 /* Diálogos de cualquier módulo: superficie común también cuando React los
    monta fuera del árbol principal mediante un portal. No altera dimensiones. */
-[role="dialog"] {
+/* No aplicar la piel de ventana a overlays a pantalla completa:
+   algunos módulos asignan role="dialog" a la propia capa fija. */
+[role="dialog"]:not(.fixed) {
   color: var(--molsan-text, #18384D);
   border: 1px solid var(--molsan-premium-border, #D8E4EC);
   border-radius: 18px;
@@ -281,12 +283,12 @@
   box-shadow: 0 18px 48px rgba(6, 50, 82, .16);
 }
 
-[role="dialog"] :is(header, [data-modal-header="true"]) {
+[role="dialog"]:not(.fixed) :is(header, [data-modal-header="true"]) {
   color: var(--molsan-premium-blue, #064675);
   border-color: var(--molsan-premium-border, #D8E4EC);
 }
 
-[role="dialog"] :is(h2, h3, [data-modal-title="true"]) {
+[role="dialog"]:not(.fixed) :is(h2, h3, [data-modal-title="true"]) {
   color: var(--molsan-premium-blue, #064675);
   font-weight: 800;
   letter-spacing: -.02em;
