@@ -99,15 +99,6 @@ select, textarea) {
   border-bottom-color: var(--cg-border);
 }
 
-.cg-unified-workspace :is(.erp-card, .erp-card-soft, .molsan-panel) {
-  border-color: var(--cg-border);
-  box-shadow: var(--cg-shadow);
-}
-
-.cg-unified-workspace :is(.erp-card, .erp-card-soft, .molsan-panel, [data-cg-panel="true"]) {
-  border-radius: var(--cg-radius);
-}
-
 .cg-unified-workspace :is(button, [role="button"]) {
   transition: border-color .16s ease, background-color .16s ease, box-shadow .16s ease;
 }
@@ -187,11 +178,6 @@ select, textarea) {
   border-color: #d7e3ff;
 }
 
-.cg-page .cg-module-card:hover {
-  border-color: #b8c9f3;
-  box-shadow: 0 10px 22px color-mix(in srgb, var(--molsan-primary) 8%, transparent);
-}
-
 .cg-page .cg-month-bar,
 .cg-page .cg-bar-fill {
   background: linear-gradient(180deg, #6c8de0, var(--molsan-primary, #064675));
@@ -266,15 +252,6 @@ select, textarea) {
 
 .cg-unified-workspace h3 {
   font-weight: 650;
-}
-
-/* Paneles y tarjetas heredadas: un mismo acabado, sin exigir clases molsan-*. */
-.cg-unified-workspace :is(
-  .erp-card, .erp-card-soft, .molsan-panel, [data-cg-panel="true"]
-) {
-  border-color: var(--cg-border);
-  border-radius: var(--cg-radius);
-  box-shadow: var(--cg-shadow);
 }
 
 .cg-unified-workspace :is(
