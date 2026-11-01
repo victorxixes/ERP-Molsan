@@ -102,7 +102,7 @@ export default function TiposExpediente() {
 
   return (
     <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-      <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white p-6 shadow-sm">
+      <header className="molsan-page-header relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white p-6 shadow-sm">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">MOLSAN ERP PREMIUM 2027</p>
         <h1 className="mt-2 text-2xl font-bold text-slate-800 sm:text-3xl">Tipos de expediente</h1>
