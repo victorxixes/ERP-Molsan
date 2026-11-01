@@ -613,20 +613,22 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
             <div className="ng-resumen-expedientes-contenido">
               {cargandoResumenExpedientes ? <p className="ng-mensaje">Cargando expedientes…</p> : modalExpedientesResumen.items.length === 0 ? <div className="ng-modal-vacio"><strong>No hay expedientes en este bloque</strong><p>Cuando existan expedientes que cumplan esta condición aparecerán aquí.</p></div> : (
                 <div className="ng-resumen-expedientes-tabla-wrap">
-                  <table className="ng-tabla ng-resumen-expedientes-tabla">
-                    <thead><tr><th>Expediente</th><th>Notaría</th><th>Titular / solicitante</th><th>Actividad actual</th><th>Estado</th><th>Fecha firma</th><th></th></tr></thead>
-                    <tbody>{modalExpedientesResumen.items.map(item => (
-                      <tr key={`${item.notaria_id}:${item.id_expediente}`}>
-                        <td><strong>{texto(item.id_expediente || item.numero_expediente)}</strong></td>
-                        <td>{texto(item.notaria_nombre)}</td>
-                        <td>{texto(item.titular || item.nombre_solicitante || item.solicitante)}</td>
-                        <td>{texto(item.actividad_actual)}</td>
-                        <td>{texto(item.notargest_estado || item.estado_actividad || item.estado_expediente)}</td>
-                        <td>{esFecha(item.fecha_firma)}</td>
-                        <td><button type="button" className="ng-abrir" disabled={cargando} onClick={() => abrirFichaDesdeResumen(item)}>Abrir ficha →</button></td>
-                      </tr>
-                    ))}</tbody>
-                  </table>
+                  <MolsanDataTable
+                    rows={modalExpedientesResumen.items}
+                    rowKey="id_expediente"
+                    minWidth="1200px"
+                    initialSort={{ key: "id_expediente", direction: "asc" }}
+                    emptyText="No hay expedientes en este bloque."
+                    columns={[
+                      { key: "id_expediente", header: "Expediente", accessor: (item) => item.id_expediente || item.numero_expediente, sortType: "text", render: (value) => <strong>{texto(value)}</strong> },
+                      { key: "notaria", header: "Notaría", accessor: "notaria_nombre", sortType: "text", render: (value) => texto(value) },
+                      { key: "titular", header: "Titular / solicitante", accessor: (item) => item.titular || item.nombre_solicitante || item.solicitante, sortType: "text", render: (value) => texto(value) },
+                      { key: "actividad", header: "Actividad actual", accessor: "actividad_actual", sortType: "text", render: (value) => texto(value) },
+                      { key: "estado", header: "Estado", accessor: (item) => item.notargest_estado || item.estado_actividad || item.estado_expediente, sortType: "text", render: (value) => texto(value) },
+                      { key: "fecha_firma", header: "Fecha firma", accessor: "fecha_firma", sortType: "date", render: (value) => esFecha(value) },
+                      { key: "acciones", header: "", sortable: false, accessor: (item) => item.id_expediente, render: (_, item) => <button type="button" className="ng-abrir" disabled={cargando} onClick={() => abrirFichaDesdeResumen(item)}>Abrir ficha →</button> },
+                    ]}
+                  />
                 </div>
               )}
             </div>
