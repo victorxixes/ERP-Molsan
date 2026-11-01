@@ -50,24 +50,6 @@
   background: var(--agenda-primary);
   border-color: var(--agenda-primary);
 }
-.agenda-premium-page .ag-print-action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 38px;
-  padding: 0 13px;
-  border: 1px solid var(--agenda-border);
-  border-radius: 9px;
-  color: var(--agenda-text);
-  background: var(--agenda-surface);
-  font-size: 12px;
-  font-weight: 700;
-}
-.agenda-premium-page .ag-print-action:hover {
-  color: var(--agenda-primary);
-  border-color: var(--agenda-primary);
-  background: var(--agenda-primary-soft);
-}
 .agenda-premium-page > .erp-card:nth-of-type(2) {
   overflow: hidden;
   padding: 0;
