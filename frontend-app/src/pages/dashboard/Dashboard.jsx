@@ -273,8 +273,8 @@ export default function Dashboard() {
           <div className="ag-marca cg-marca-cancelagest molsan-page-header__mark" aria-label="CancelaGest">CG</div>
           <div>
             <div className="ag-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
-            <h1>Dashboard</h1>
-            <p>Resumen operativo de expedientes, actividad del circuito y firmas realizadas.</p>
+            <h1 className="molsan-page-header__title">Dashboard</h1>
+            <p className="molsan-page-header__description">Resumen operativo de expedientes, actividad del circuito y firmas realizadas.</p>
           </div>
         </div>
       </header>
