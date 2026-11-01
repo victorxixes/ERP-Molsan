@@ -211,3 +211,61 @@
     box-shadow: var(--molsan-premium-shadow-hover);
   }
 }
+
+/* ============================================================
+   COMPATIBILIDAD CON COMPONENTES HEREDADOS DE LOS PORTALES
+   Estas clases no usan los nombres genéricos .card/.panel.
+   Se armonizan aquí sin tocar su estructura ni su comportamiento.
+   ============================================================ */
+:where(.apoderagest, .notargest, .encargagest) :is(
+  .ag-panel, .ag-kpi, .ag-encargo-subpanel, .ag-ficha-encargo,
+  .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .ng-finca-card,
+  .ng-modulo-card, .ng-admin-notaria-card,
+  .eg-panel, .eg-kpi, .eg-directorio-card, .eg-modal-section,
+  .eg-modal-carpeta-panel
+) {
+  border-color: var(--molsan-premium-border, #D8E4EC) !important;
+  border-radius: 17px !important;
+  background-color: #FFFFFF !important;
+  background-image: linear-gradient(145deg, #FFFFFF 0%, #FFFFFF 72%, #F2F7FB 100%) !important;
+  box-shadow: var(--molsan-premium-shadow) !important;
+}
+
+:where(.apoderagest, .notargest, .encargagest) :is(
+  .ag-panel-cabecera, .ng-panel-titulo, .eg-panel-head,
+  .ng-admin-card-header, .ng-admin-circuito-titulo
+) {
+  color: var(--molsan-premium-blue, #064675);
+  border-color: var(--molsan-premium-border, #D8E4EC);
+}
+
+:where(.apoderagest, .notargest, .encargagest) :is(
+  .ag-panel-cabecera, .ng-panel-titulo, .eg-panel-head
+) :is(h2, h3, strong) {
+  color: var(--molsan-premium-blue, #064675);
+  font-weight: 800;
+  letter-spacing: -.02em;
+}
+
+:where(.notargest, .encargagest, .apoderagest) :is(
+  .ng-modal, .ng-modal-perfil, .ng-modal-pagos,
+  .eg-modal-form, .eg-modal-perfil,
+  .ag-visor-modal, .ag-resumen-modal
+) {
+  border-color: var(--molsan-premium-border, #D8E4EC) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 18px 48px rgba(6, 50, 82, .16) !important;
+}
+
+:where(.encargagest) :is(.eg-modal-header, .eg-modal-section-heading) {
+  color: var(--molsan-premium-blue, #064675);
+  border-color: var(--molsan-premium-border, #D8E4EC);
+}
+
+:where(.erp-main-content, .ctn-workspace-premium) :is(
+  .ctn-tabla-contenedor, .ctn-modal-seccion, .ctn-portal-card, .ctn-portal-field-card
+) {
+  border-color: var(--molsan-premium-border, #D8E4EC);
+  border-radius: 17px;
+  box-shadow: var(--molsan-premium-shadow);
+}
