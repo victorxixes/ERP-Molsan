@@ -693,57 +693,37 @@ def migrar_esquema_expedientes_inicio():
                 flush=True,
             )
 
-    def liberar_transacciones_inactivas_expedientes() -> None:
-        """Libera solo sesiones antiguas idle-in-transaction que retienen AccessShareLock en las tablas que requieren DDL.
-
-        Una transacción de lectura abandonada puede impedir ALTER TABLE durante el despliegue.
-        Se limita a sesiones inactivas más de 5 minutos; nunca termina sesiones activas.
-        """
+    def registrar_transacciones_inactivas_expedientes() -> None:
+        """Diagnostica transacciones inactivas que bloquean DDL sin terminarlas."""
         try:
             with conexion.begin():
-                pids = [
-                    fila[0]
-                    for fila in conexion.execute(
-                        text(
-                            """
-                            SELECT DISTINCT a.pid
-                            FROM pg_stat_activity a
-                            JOIN pg_locks l ON l.pid = a.pid
-                            WHERE l.relation IN ('public.expedientes'::regclass, 'public.empleados'::regclass)
-                              AND l.mode = 'AccessShareLock'
-                              AND l.granted = TRUE
-                              AND a.pid <> pg_backend_pid()
-                              AND a.state = 'idle in transaction'
-                              AND a.xact_start < now() - CASE
-                                  WHEN l.relation = 'public.empleados'::regclass THEN interval '2 minutes'
-                                  ELSE interval '5 minutes'
-                              END
-                            """
-                        )
-                    ).fetchall()
-                ]
-            for pid in pids:
-                try:
-                    with conexion.begin():
-                        terminado = bool(
-                            conexion.execute(
-                                text("SELECT pg_terminate_backend(:pid)"),
-                                {"pid": pid},
-                            ).scalar()
-                        )
-                    print(
-                        f"[MIGRACION STARTUP] Sesión inactiva pid={pid} "
-                        f"terminada={terminado} para liberar bloqueos de esquema.",
-                        flush=True,
-                    )
-                except Exception as error_sesion:
-                    print(
-                        f"[MIGRACION STARTUP] No se pudo liberar la sesión pid={pid}: {error_sesion!r}",
-                        flush=True,
-                    )
-        except Exception as error_limpieza:
+                sesiones = conexion.execute(
+                    text("""
+                        SELECT DISTINCT a.pid, a.application_name, a.xact_start, a.query
+                        FROM pg_stat_activity a
+                        JOIN pg_locks l ON l.pid = a.pid
+                        WHERE l.relation IN ('public.expedientes'::regclass, 'public.empleados'::regclass)
+                          AND l.mode = 'AccessShareLock'
+                          AND l.granted = TRUE
+                          AND a.pid <> pg_backend_pid()
+                          AND a.state = 'idle in transaction'
+                          AND a.xact_start < now() - CASE
+                              WHEN l.relation = 'public.empleados'::regclass THEN interval '2 minutes'
+                              ELSE interval '5 minutes'
+                          END
+                        ORDER BY a.xact_start
+                    """)
+                ).mappings().all()
+            if sesiones:
+                print(
+                    "[MIGRACION STARTUP] Hay transacciones inactivas que pueden bloquear el esquema; "
+                    "no se terminarán automáticamente por seguridad. Detalle: "
+                    f"{[dict(s) for s in sesiones]!r}",
+                    flush=True,
+                )
+        except Exception as error_diagnostico:
             print(
-                f"[MIGRACION STARTUP] No se pudo revisar sesiones inactivas de expedientes: {error_limpieza!r}",
+                f"[MIGRACION STARTUP] No se pudo diagnosticar transacciones inactivas: {error_diagnostico!r}",
                 flush=True,
             )
 
@@ -755,9 +735,9 @@ def migrar_esquema_expedientes_inicio():
         # PostgreSQL libere el bloqueo de tabla.
         max_intentos = 20
         for intento in range(1, max_intentos + 1):
-            # Repetir la limpieza en cada intento: la transacción que bloquea
-            # empleados puede superar los 5 minutos mientras se reintenta el DDL.
-            liberar_transacciones_inactivas_expedientes()
+            # Repetir el diagnóstico en cada intento: una transacción bloqueante puede
+            # permanecer abierta mientras se reintenta el DDL.
+            registrar_transacciones_inactivas_expedientes()
             try:
                 with conexion.begin():
                     conexion.execute(text("SET LOCAL lock_timeout = '3s'"))
