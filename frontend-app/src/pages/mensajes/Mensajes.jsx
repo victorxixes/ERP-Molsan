@@ -946,7 +946,7 @@ export default function Mensajes({
                     text-xl
                   "
                 >
-                  👥
+                  <MolsanIcon name="users" size={44} />
                 </div>
 
                 <p
@@ -1296,7 +1296,7 @@ export default function Mensajes({
                     shadow-sm
                   "
                 >
-                  💬
+                  <MolsanIcon name="message" size={44} />
                 </div>
 
 
@@ -1414,7 +1414,7 @@ export default function Mensajes({
                           shadow-sm
                         "
                       >
-                        💬
+                        <MolsanIcon name="message" size={36} />
                       </div>
 
                       <p
@@ -1620,7 +1620,7 @@ export default function Mensajes({
                     title="Adjuntar archivo"
                   >
 
-                    📎
+                    <MolsanIcon name="attachment" size={22} />
 
                     <input
                       type="file"
