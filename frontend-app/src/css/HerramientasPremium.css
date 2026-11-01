@@ -21,16 +21,6 @@
   outline: 2px solid var(--tools-primary);
   outline-offset: 3px;
 }
-:is(.catalogos-premium-page, .utilidades-premium-page) a.group {
-  border-color: var(--tools-border);
-  border-radius: var(--molsan-radius-card, 14px);
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
-  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-}
-:is(.catalogos-premium-page, .utilidades-premium-page) a.group:hover {
-  border-color: var(--molsan-primary, #064675);
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
-}
 :is(.catalogos-premium-page, .utilidades-premium-page) a.group:active {
   transform: translateY(0);
 }
