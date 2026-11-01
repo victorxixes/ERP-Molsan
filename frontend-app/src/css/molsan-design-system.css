@@ -266,13 +266,6 @@
 }
 
 /* Intranet: misma jerarquía de cabecera, superficies y tablas que el ERP. */
-.molsan-intranet-page > header {
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-panel);
-  background: var(--molsan-surface);
-  box-shadow: var(--molsan-shadow-panel);
-}
-
 .molsan-intranet-page > section {
   border-color: var(--molsan-border);
   border-radius: var(--molsan-radius-panel);
