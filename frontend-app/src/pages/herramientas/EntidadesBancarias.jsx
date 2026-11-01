@@ -208,7 +208,7 @@ export default function EntidadesBancarias() {
   const [
     ordenColumna,
     setOrdenColumna
-  ] = useState("nombre");
+  ] = useState(null);
 
 
   const [
@@ -529,6 +529,7 @@ export default function EntidadesBancarias() {
 
 
   const entidadesOrdenadas = useMemo(() => {
+    if (!ordenColumna) return entidadesFiltradas;
     const copia = [...entidadesFiltradas];
     copia.sort((a, b) => {
       const valorA = ordenColumna === "entidad_actual"
@@ -548,10 +549,13 @@ export default function EntidadesBancarias() {
 
 
   function ordenarPor(columna) {
-    if (ordenColumna === columna) {
-      setOrdenAscendente((actual) => !actual);
-    } else {
+    if (ordenColumna !== columna) {
       setOrdenColumna(columna);
+      setOrdenAscendente(true);
+    } else if (ordenAscendente) {
+      setOrdenAscendente(false);
+    } else {
+      setOrdenColumna(null);
       setOrdenAscendente(true);
     }
     setPagina(1);
