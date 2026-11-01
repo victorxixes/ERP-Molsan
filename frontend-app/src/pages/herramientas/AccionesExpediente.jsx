@@ -1242,7 +1242,7 @@ export default function AccionesExpediente() {
   return (
     <div
       className="
-        herramientas-subpagina-premium erp-page
+        catalogos-premium-page herramientas-subpagina-premium erp-page
         min-h-full
         p-4
         sm:p-6
