@@ -306,6 +306,7 @@ export default function SeguridadModulos() {
 
       <div
         className="
+          molsan-page-header
           flex
           flex-col
           gap-4
