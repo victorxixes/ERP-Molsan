@@ -19,10 +19,7 @@
   margin-right: 0;
   padding-top: 4px;
 }.encargagest .eg-kpi{min-width: 0; padding: 18px 19px 17px; overflow: hidden}.encargagest .eg-panel{min-width: 0; overflow: hidden}
-.encargagest .eg-panel-head {
-  padding: 17px 19px;
-  border-bottom: 1px solid #e9edf4;
-}
+.encargagest .eg-panel-head {}
 .encargagest .eg-panel-head h2,
 .encargagest .eg-panel-head h3 { font-weight: 800; }
 .encargagest .eg-secondary {
@@ -191,14 +188,7 @@
   scrollbar-color: #cbd5e1 transparent;
   scrollbar-width: thin;
 }.eg-modal-section{min-width: 0; padding: 18px}
-.eg-modal-section-heading {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  padding-bottom: 15px;
-  margin-bottom: 16px;
-  border-bottom: 1px solid #edf1f7;
-}
+.eg-modal-section-heading {margin-bottom: 16px}
 .eg-modal-section-icono {
   display: grid;
   flex: 0 0 38px;
@@ -222,13 +212,7 @@
   letter-spacing: 1.2px;
   line-height: 1.5;
 }
-.eg-modal-section-heading h3 {
-  margin: 3px 0 0;
-  color: #20314e;
-  font-size: 16px;
-  font-weight: 850;
-  letter-spacing: -.25px;
-}
+.eg-modal-section-heading h3 {margin: 3px 0 0}
 .eg-modal-field-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -395,7 +379,7 @@
 /* Distribución definitiva del alta: carpeta digital a la izquierda; datos completos a la derecha */
 .eg-modal-layout { grid-template-columns:minmax(300px,.82fr) minmax(0,1.18fr); align-items:start; }
 .eg-modal-datos { display:flex; flex-direction:column; min-width:0; }
-.eg-modal-datos > .eg-modal-section-heading { order:0; }
+.eg-modal-datos > .eg-modal-section-heading {order:0}
 .eg-modal-datos > .eg-modal-field-grid { order:1; display:flex; flex-direction:column; min-width:0; }
 .eg-modal-datos > .eg-modal-field-grid > .eg-span-2:first-of-type { width:100%; }
 .eg-modal-datos .eg-contrato-layout { display:flex; flex-direction:column; width:100%; }
@@ -448,9 +432,7 @@
   transition: border-color .16s ease, background-color .16s ease, box-shadow .16s ease, transform .16s ease;
 }
 .encargagest .eg-modal-header,
-.encargagest .eg-modal-section-heading {
-  border-color: var(--molsan-border, #D8E4EC);
-}
+.encargagest .eg-modal-section-heading {border-color: var(--molsan-border, #D8E4EC)}
 
 
 /* Perfil externo CTN: misma estructura y jerarquía visual que el perfil de NotarGest */
