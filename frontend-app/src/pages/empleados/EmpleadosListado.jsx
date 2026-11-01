@@ -922,14 +922,7 @@ export default function EmpleadosListado({
           CABECERA
       ====================================================== */}
 
-      <header className="molsan-page-header empleados-page-header rounded-2xl
-        border
-        border-[var(--erp-border)]
-        bg-[var(--erp-surface)]
-        px-5
-        py-5
-        shadow-sm
-      ">
+      <header className="molsan-page-header">
 
         <div className="
           flex
@@ -942,47 +935,16 @@ export default function EmpleadosListado({
 
           <div>
 
-            <div className="
-              flex
-              items-center
-              gap-3
-            ">
+            <div className="molsan-page-header__identity">
 
-              <div className="
-                flex
-                h-11
-                w-11
-                items-center
-                justify-center
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                shadow-sm
-              ">
+              <div className="molsan-page-header__mark">
                 👥
               </div>
 
 
               <div>
 
-                <h1 className="
-                  text-xl
-                  font-bold
-                  tracking-tight
-                  text-[var(--erp-text)]
-                ">
-                  Empleados
-                </h1>
-
-                <p className="
-                  mt-0.5
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                ">
-                  Gestión y administración de empleados
-                </p>
+                <p className="molsan-page-header__description">Gestión y administración de empleados</p>
 
               </div>
 
@@ -991,6 +953,7 @@ export default function EmpleadosListado({
           </div>
 
 
+          <div className="molsan-page-header__actions">
           <button
             type="button"
             onClick={
@@ -1029,6 +992,7 @@ export default function EmpleadosListado({
             </span>
 
           </button>
+        </div>
 
         </div>
 
