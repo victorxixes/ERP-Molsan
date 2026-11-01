@@ -1,54 +1,30 @@
-/* MOLSAN ERP PREMIUM 2027 · Base neutral
- *
- * Esta hoja contiene únicamente normalización no visual y accesibilidad.
- * La identidad corporativa se centraliza en molsan-tokens.css y en los
- * componentes del design system. Evitamos selectores globales que alteren
- * enlaces, tablas, código o controles de módulos de forma involuntaria.
+/* MOLSAN ERP PREMIUM 2027 · Base neutral y aislada
+ * Los resets se limitan al shell del ERP para no alterar contenido externo,
+ * widgets embebidos ni diálogos montados fuera de la aplicación.
  */
-
-html {
-  scroll-behavior: smooth;
-}
-
-::selection {
+.erp-app-shell { scroll-behavior: smooth; }
+.erp-app-shell ::selection {
   background: var(--molsan-primary, #064675);
   color: #ffffff;
 }
-
-::-webkit-scrollbar {
+.erp-app-shell::-webkit-scrollbar,
+.erp-app-shell *::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
-
-::-webkit-scrollbar-thumb {
+.erp-app-shell::-webkit-scrollbar-thumb,
+.erp-app-shell *::-webkit-scrollbar-thumb {
   background: var(--molsan-border-strong, #b9cad8);
   border-radius: 999px;
 }
-
-::-webkit-scrollbar-track {
+.erp-app-shell::-webkit-scrollbar-track,
+.erp-app-shell *::-webkit-scrollbar-track {
   background: var(--molsan-surface-soft, #f2f7fb);
 }
-
-/* Normalización tipográfica mínima: no impone colores ni geometría. */
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
-
-button {
-  cursor: pointer;
-}
-
-button:active,
-input:hover,
-textarea:hover,
-select:hover {
-  transform: none;
-}
-
-hr {
+.erp-app-shell :is(button, input, textarea, select) { font: inherit; }
+.erp-app-shell button { cursor: pointer; }
+.erp-app-shell :is(button:active, input:hover, textarea:hover, select:hover) { transform: none; }
+.erp-app-shell hr {
   border: 0;
   border-top: 1px solid var(--molsan-border, #d8e4ec);
 }
