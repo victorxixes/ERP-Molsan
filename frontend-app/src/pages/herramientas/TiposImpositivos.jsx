@@ -130,7 +130,7 @@ export default function TiposImpositivos() {
             rows={filtrados}
             rowKey="id"
             columns={[
-              { key: "nombre", header: "Nombre", accessor: "nombre", sortType: "text", render: (value, item) => <><strong>{value}</strong>{item.descripcion && <small className="mt-1 block max-w-sm text-slate-500">{item.descripcion}</small></> },
+              { key: "nombre", header: "Nombre", accessor: "nombre", sortType: "text", render: (value, item) => <><strong>{value}</strong>{item.descripcion && <small className="mt-1 block max-w-sm text-slate-500">{item.descripcion}</small>}</> },
               { key: "categoria", header: "Categoría", accessor: (item) => item.categoria === "retencion" ? "Retención" : "Impuesto", sortType: "text" },
               { key: "impuesto", header: "Tributo", accessor: "impuesto", sortType: "text" },
               { key: "porcentaje", header: "Porcentaje", accessor: (item) => item.porcentaje == null ? null : Number(item.porcentaje), sortType: "percent", render: (value) => fmt(value) },
