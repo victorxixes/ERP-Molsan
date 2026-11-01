@@ -184,7 +184,7 @@ export default function ImportarCTN() {
 
             <MolsanButton icon="upload" variant="primary" onClick={enviar} disabled={!file || loading} loading={loading}>
               Importar fichero
-            </MolsanButton>   </button>
+            </MolsanButton>
 
           </div>
 
