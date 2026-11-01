@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import {
   useCallback,
   useMemo,
@@ -269,7 +270,7 @@ export default function SeguridadModulos() {
       >
 
         <div className="text-3xl">
-          📦
+          <MolsanIcon name="archive" size={18} />
         </div>
 
         <p
@@ -309,7 +310,7 @@ export default function SeguridadModulos() {
         <div className="molsan-page-header__identity">
 
           <div className="molsan-page-header__mark">
-            📦
+            <MolsanIcon name="archive" size={18} />
           </div>
 
           <div>
