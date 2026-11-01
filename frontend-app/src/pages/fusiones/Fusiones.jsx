@@ -1,3 +1,4 @@
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import { formatEuro as euros } from "../../utils/formatters";
@@ -107,15 +108,23 @@ export default function Fusiones() {
         <label><span className="sr-only">Filtrar por estado</span><select value={estado} onChange={(e) => setEstado(e.target.value)} className="min-h-10 w-full rounded-xl border border-[var(--erp-border)] bg-[var(--erp-bg,#fff)] px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-100/70 sm:w-44"><option value="Todos">Todos los estados</option>{ESTADOS.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>
         {(busqueda || estado !== "Todos") && <button type="button" onClick={limpiar} className="min-h-10 rounded-xl px-3 py-2 text-sm font-semibold text-[var(--erp-text-soft)] hover:bg-[var(--erp-bg,#f8fafc)]">Limpiar</button>}</div>
       </div></div>
-      <div className="overflow-x-auto"><table className="w-full min-w-[1000px] border-collapse text-left text-sm"><thead className="bg-[var(--erp-bg,#f8fafc)] text-xs uppercase tracking-wide text-[var(--erp-text-soft)]"><tr>
-        {["ID", "Expediente", "Registro", "N.º entrada", "Factura", "Fecha factura", "Importe", "Estado"].map((label, index) => <th key={label} className={"px-4 py-3 font-semibold " + (index === 6 ? "text-right" : "")}>{label}</th>)}
-      </tr></thead><tbody>
-        {cargando && solicitudes.length === 0 ? <tr><td colSpan={8} className="px-4 py-12 text-center text-[var(--erp-text-soft)]"><span className="inline-flex items-center gap-2"><span className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />Cargando solicitudes reales…</span></td></tr>
-        : filtradas.length === 0 ? <tr><td colSpan={8} className="px-4 py-12 text-center"><div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--erp-bg,#f8fafc)] text-[var(--erp-text-soft)]"><Icon name="file" size={21} /></div><p className="mt-3 font-semibold">{error ? "No hay datos disponibles" : solicitudes.length ? "No hay resultados para estos filtros" : "Todavía no hay solicitudes de fusión"}</p><p className="mt-1 text-sm text-[var(--erp-text-soft)]">{error ? "Revisa la conexión con el servidor y vuelve a intentarlo." : solicitudes.length ? "Prueba otra búsqueda o limpia los filtros." : "Las solicitudes enviadas desde CancelaGest aparecerán aquí."}</p>{(busqueda || estado !== "Todos") && <button type="button" onClick={limpiar} className="mt-3 rounded-lg px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50">Limpiar filtros</button>}</td></tr>
-        : filtradas.map((item) => <tr key={item.id} className="border-t border-[var(--erp-border)] transition-colors hover:bg-blue-50/40">
-          <td className="whitespace-nowrap px-4 py-3 font-semibold text-[var(--erp-text-soft)]">#{item.id}</td><td className="whitespace-nowrap px-4 py-3 font-semibold">{item.numero_expediente || "—"}</td><td className="max-w-[250px] px-4 py-3"><span className="block truncate" title={item.registro || ""}>{item.registro || "—"}</span></td><td className="whitespace-nowrap px-4 py-3">{item.numero_entrada || "—"}</td><td className="max-w-[230px] px-4 py-3"><span className="block truncate" title={item.serie_numero_factura || item.tipo_factura || ""}>{item.serie_numero_factura || item.tipo_factura || "—"}</span></td><td className="whitespace-nowrap px-4 py-3">{fechaCorta(item.fecha_factura || item.creado_en)}</td><td className="whitespace-nowrap px-4 py-3 text-right font-medium tabular-nums">{euros(item.importe)}</td><td className="whitespace-nowrap px-4 py-3"><BadgeEstado estado={item.estado} /></td>
-        </tr>)}
-      </tbody></table></div>
+      <MolsanDataTable
+        rows={filtradas}
+        rowKey="id"
+        minWidth="1100px"
+        initialSort={{ key: "id", direction: "desc" }}
+        emptyText={cargando && solicitudes.length === 0 ? "Cargando solicitudes reales…" : error ? "No hay datos disponibles. Revisa la conexión con el servidor y vuelve a intentarlo." : solicitudes.length ? "No hay resultados para estos filtros. Prueba otra búsqueda o limpia los filtros." : "Todavía no hay solicitudes de fusión. Las solicitudes enviadas desde CancelaGest aparecerán aquí."}
+        columns={[
+          { key: "id", header: "ID", accessor: "id", sortType: "number", render: (value) => <span className="font-semibold text-[var(--erp-text-soft)]">#{value}</span> },
+          { key: "numero_expediente", header: "Expediente", accessor: "numero_expediente", sortType: "text", render: (value) => <strong>{value || "—"}</strong> },
+          { key: "registro", header: "Registro", accessor: "registro", sortType: "text", render: (value) => <span className="block max-w-[250px] truncate" title={value || ""}>{value || "—"}</span> },
+          { key: "numero_entrada", header: "N.º entrada", accessor: "numero_entrada", sortType: "text", render: (value) => value || "—" },
+          { key: "factura", header: "Factura", accessor: (item) => item.serie_numero_factura || item.tipo_factura, sortType: "text", render: (value) => <span className="block max-w-[230px] truncate" title={value || ""}>{value || "—"}</span> },
+          { key: "fecha_factura", header: "Fecha factura", accessor: (item) => item.fecha_factura || item.creado_en, sortType: "date", render: (value) => fechaCorta(value) },
+          { key: "importe", header: "Importe", accessor: "importe", sortType: "currency", align: "right", render: (value) => <strong className="tabular-nums">{euros(value)}</strong> },
+          { key: "estado", header: "Estado", accessor: "estado", sortType: "text", render: (value) => <BadgeEstado estado={value} /> },
+        ]}
+      />
       <footer className="flex flex-col gap-1 border-t border-[var(--erp-border)] bg-[var(--erp-bg,#f8fafc)] px-4 py-3 text-xs text-[var(--erp-text-soft)] sm:flex-row sm:items-center sm:justify-between"><span>Mostrando <strong className="text-[var(--erp-text)]">{filtradas.length}</strong> de <strong className="text-[var(--erp-text)]">{solicitudes.length}</strong> solicitudes</span><span>Datos conectados a la API de Fusiones</span></footer>
     </section>
   </main>;
