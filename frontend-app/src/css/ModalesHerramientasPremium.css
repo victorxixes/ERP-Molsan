@@ -10,7 +10,7 @@
 .panel-modal-premium [role=dialog] { max-height:calc(100dvh - 2rem); overflow-y:auto; overscroll-behavior:contain; }
 .panel-modal-premium button { touch-action:manipulation; }
 @media(max-width:640px){.herramientas-subpagina-premium{padding-left:.75rem;padding-right:.75rem}.herramientas-subpagina-premium table{min-width:620px}.panel-modal-premium{align-items:flex-start}.panel-modal-premium [role=dialog]{width:100%;max-height:calc(100dvh - 1rem)}}
-@media(prefers-reduced-motion:reduce){.herramientas-subpagina-premium *,.panel-modal-premium *{transition:none!important;animation:none!important}}
+@media(prefers-reduced-motion:reduce){@media (prefers-reduced-motion: reduce){.herramientas-subpagina-premium *,.panel-modal-premium *{transition:none!important;animation:none!important}}}
 
 /* Cubrir también los diálogos que llevan role="dialog" en el contenedor raíz. */
 .panel-modal-premium[role="dialog"] {
