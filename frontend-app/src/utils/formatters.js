@@ -26,7 +26,7 @@ function finiteNumber(value) {
   if (value === null || value === undefined || value === "") return null;
   const number = typeof value === "number"
     ? value
-    : Number(String(value).trim().replace(/\s/g, "").replace(/\.(?=\d{3}(?:\D|$))/g, "").replace(",", "."));
+    : Number(String(value).trim().replace(/[€%]/g, "").replace(/\s/g, "").replace(/\.(?=\d{3}(?:\D|$))/g, "").replace(",", "."));
   return Number.isFinite(number) ? number : null;
 }
 
