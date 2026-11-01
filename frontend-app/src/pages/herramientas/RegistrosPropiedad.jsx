@@ -1,3 +1,4 @@
+import MolsanButton from "../../components/ui/MolsanButton";
 import { useSearchParams } from "react-router-dom";
 import { sortRows } from "../../utils/sortRows";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
@@ -3067,58 +3068,7 @@ function ModalImportarExcel({
           </button>
 
 
-          <button
-            type="button"
-            disabled={
-              !archivo ||
-              importando
-            }
-            onClick={
-              onImportar
-            }
-            className="
-              inline-flex
-              min-w-[210px]
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              bg-emerald-600
-              px-5
-              py-2.5
-              text-sm
-              font-semibold
-              text-white
-              shadow-[0_8px_20px_rgba(5,150,105,0.18)]
-              transition
-              hover:bg-emerald-700
-              disabled:cursor-not-allowed
-              disabled:opacity-50
-            "
-          >
-
-            {importando && (
-
-              <span
-                className="
-                  h-4
-                  w-4
-                  animate-spin
-                  rounded-full
-                  border-2
-                  border-white/40
-                  border-t-white
-                "
-              />
-
-            )}
-
-
-            {importando
-              ? "Importando..."
-              : "Importar registros"}
-
-          </button>
+          <MolsanButton type="button" icon="upload" variant="secondary" loading={importando} disabled={!archivo || importando} onClick={onImportar} className="min-w-[210px]">{importando ? "Importando..." : "Importar registros"}</MolsanButton>
 
         </div>
 
