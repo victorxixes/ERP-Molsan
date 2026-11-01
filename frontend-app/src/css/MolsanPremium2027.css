@@ -1326,7 +1326,7 @@
    pero comparte altura mínima, tipografía, radio, foco y respuesta táctil. */
 :is(.erp-main-content, .molsan-page, .apoderagest, .notargest, .encargagest, .cg-page)
 button:not(.molsan-table-sort):not([class*="rounded-full"]):not([class*="rounded-2xl"]) {
-  min-height: 36px;
+  min-height: 38px;
   border-radius: 11px;
   font-family: var(--molsan-font-family, Inter, "Segoe UI", sans-serif);
   font-weight: 650;
