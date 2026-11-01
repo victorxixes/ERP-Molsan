@@ -51,7 +51,7 @@
 }
 @media (max-width: 640px) {
   :is(.catalogos-premium-page, .utilidades-premium-page) {
-    padding: 12px;
+    
     gap: 16px;
   }
 }
