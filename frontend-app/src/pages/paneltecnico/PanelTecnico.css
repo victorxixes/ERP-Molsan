@@ -1,11 +1,11 @@
 /* MOLSAN ERP PREMIUM 2027 · Panel técnico */
 .panel-tecnico-premium {
   min-width: 0;
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
 }
 .panel-tecnico-premium > section:not(:first-child) {
   min-width: 0;
-  border: 1px solid var(--molsan-border, #dce4ef);
+  border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-card, 14px);
   padding: clamp(1rem, 2vw, 1.5rem);
   background: var(--molsan-surface, #fff);
@@ -25,7 +25,7 @@
 .panel-tecnico-premium input:focus-visible,
 .panel-tecnico-premium select:focus-visible,
 .panel-tecnico-premium textarea:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--molsan-primary, #3156b3) 35%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary, #064675) 35%, transparent);
   outline-offset: 2px;
 }
 .panel-tecnico-premium table thead {
@@ -34,7 +34,7 @@
   z-index: 1;
 }
 .panel-tecnico-premium table tbody tr:hover {
-  background: color-mix(in srgb, var(--molsan-primary, #3156b3) 6%, transparent);
+  background: color-mix(in srgb, var(--molsan-primary, #064675) 6%, transparent);
 }
 .panel-tecnico-premium pre,
 .panel-tecnico-premium code {
