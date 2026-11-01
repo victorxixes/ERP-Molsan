@@ -1583,6 +1583,7 @@ const permisosGlobales =
 
       <section
         className="
+          molsan-page-header
           rounded-2xl
           border
           border-[var(--erp-border)]
