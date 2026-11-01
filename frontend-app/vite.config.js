@@ -9,6 +9,8 @@ export default defineConfig({
   },
   build: {
     outDir: "dist",
+    // Una única hoja evita que los CSS de rutas lazy entren después del tema global. 
+    cssCodeSplit: false,
     rollupOptions: {
       output: {
         manualChunks(id) {
