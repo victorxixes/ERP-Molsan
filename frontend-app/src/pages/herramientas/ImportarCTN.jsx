@@ -119,7 +119,7 @@ export default function ImportarCTN() {
             >
 
               <span className="text-4xl">
-                {file ? "📊" : "📁"}
+                <MolsanIcon name={file ? "chart" : "folder"} size={22} />
               </span>
 
               <span className="text-sm font-medium text-slate-700">
