@@ -6,13 +6,13 @@
    ========================================================= */
 
 .ctn-listado-page {
-  --ctn-bg: var(--molsan-page-bg, #f3f6fb);
+  --ctn-bg: var(--molsan-page-bg, #FFFFFF);
   --ctn-panel: var(--molsan-surface, #ffffff);
-  --ctn-border: var(--molsan-border, #dce4ef);
-  --ctn-text: var(--molsan-text, #17243a);
-  --ctn-muted: var(--molsan-text-muted, #64748b);
-  --ctn-primary: var(--molsan-primary, #3156b3);
-  --ctn-primary-dark: var(--molsan-primary-hover, #274694);
+  --ctn-border: var(--molsan-border, #D8E4EC);
+  --ctn-text: var(--molsan-text, #173247);
+  --ctn-muted: var(--molsan-text-muted, #718696);
+  --ctn-primary: var(--molsan-primary, #064675);
+  --ctn-primary-dark: var(--molsan-primary-hover, #04375B);
   --ctn-accent: var(--molsan-accent, #d9b978);
   --ctn-danger: var(--molsan-danger, #c43d4b);
 
@@ -444,9 +444,9 @@
   width: min(1450px, 100%);
   max-height: calc(100vh - 44px);
   overflow: hidden;
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   background: var(--molsan-surface, #fff);
-  border: 1px solid var(--molsan-border, #dce4ef);
+  border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-dialog, 16px);
   box-shadow: var(--molsan-shadow-popover, 0 18px 45px rgba(15, 23, 42, .14));
   animation: ctn-modal-entrada 0.18s ease-out;
@@ -472,14 +472,14 @@
   align-items: flex-start;
   gap: 18px;
   padding: 22px 25px;
-  color: var(--molsan-text, #17243a);
-  background: var(--molsan-surface-soft, #f7f9fc);
-  border-bottom: 1px solid var(--molsan-border-light, #e8edf4);
+  color: var(--molsan-text, #173247);
+  background: var(--molsan-surface-soft, #F2F7FB);
+  border-bottom: 1px solid var(--molsan-border-light, #E8EFF4);
 }
 
 .ctn-modal-header h2 {
   margin: 5px 0 7px;
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   font-size: 23px;
   font-weight: 800;
   letter-spacing: -0.35px;
@@ -688,8 +688,8 @@
   gap: 8px 12px;
   min-width: 0;
   padding: 15px;
-  background: var(--molsan-surface-soft, #f7f9fc);
-  border: 1px solid var(--molsan-border, #dce4ef);
+  background: var(--molsan-surface-soft, #F2F7FB);
+  border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-control, 9px);
 }
 
@@ -1027,36 +1027,36 @@
 .ctn-listado-page {
   --ctn-bg: var(--molsan-page-bg, #f4f7fb);
   --ctn-panel: var(--molsan-surface, #fff);
-  --ctn-border: var(--molsan-border, #dce4ef);
-  --ctn-text: var(--molsan-text, #17243a);
-  --ctn-muted: var(--molsan-text-muted, #64748b);
-  --ctn-primary: var(--molsan-primary, #3156b3);
-  --ctn-primary-dark: var(--molsan-primary-hover, #274694);
-  --ctn-accent: var(--molsan-primary-soft, #edf3ff);
+  --ctn-border: var(--molsan-border, #D8E4EC);
+  --ctn-text: var(--molsan-text, #173247);
+  --ctn-muted: var(--molsan-text-muted, #718696);
+  --ctn-primary: var(--molsan-primary, #064675);
+  --ctn-primary-dark: var(--molsan-primary-hover, #04375B);
+  --ctn-accent: var(--molsan-primary-soft, #EAF2F8);
 
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   background: var(--molsan-page-bg, #f4f7fb);
 }
 
 /* Contenedor general de la ficha */
 .ctn-modal-panel {
   background: var(--molsan-page-bg, #f4f7fb);
-  color: var(--molsan-text, #17243a);
-  border: 1px solid var(--molsan-border, #dce4ef);
+  color: var(--molsan-text, #173247);
+  border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-dialog, 16px);
   box-shadow: var(--molsan-shadow-popover, 0 18px 45px rgba(15, 23, 42, .14));
 }
 
 /* ENCABEZADO BLANCO, como el resto del ERP */
 .ctn-modal-header {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   background: var(--molsan-surface, #fff);
-  border-bottom: 1px solid var(--molsan-border, #dce4ef);
+  border-bottom: 1px solid var(--molsan-border, #D8E4EC);
   padding: 20px 24px;
 }
 
 .ctn-modal-header h2 {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   font-size: 22px;
   font-weight: 750;
   letter-spacing: -0.35px;
@@ -1067,7 +1067,7 @@
 }
 
 .ctn-modal-eyebrow {
-  color: var(--molsan-primary, #3156b3);
+  color: var(--molsan-primary, #064675);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 1px;
@@ -1075,16 +1075,16 @@
 
 /* Botón de cerrar sobre el encabezado blanco */
 .ctn-modal-cerrar {
-  color: var(--molsan-primary, #3156b3);
-  background: var(--molsan-primary-soft, #edf3ff);
-  border: 1px solid var(--molsan-border, #dce4ef);
+  color: var(--molsan-primary, #064675);
+  background: var(--molsan-primary-soft, #EAF2F8);
+  border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: 7px;
 }
 
 .ctn-modal-cerrar:hover {
   color: #ffffff;
-  background: var(--molsan-primary, #3156b3);
-  border-color: var(--molsan-primary, #3156b3);
+  background: var(--molsan-primary, #064675);
+  border-color: var(--molsan-primary, #064675);
 }
 
 /* Interior de la ficha */
@@ -1095,18 +1095,18 @@
 
 .ctn-modal-seccion {
   background: var(--molsan-surface, #fff);
-  border: 1px solid var(--molsan-border, #dce4ef);
+  border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-card, 14px);
   box-shadow: 0 1px 3px rgba(30, 55, 90, 0.035);
   padding: 16px;
 }
 
 .ctn-modal-seccion-titulo {
-  border-bottom: 1px solid var(--molsan-border-light, #e8edf4);
+  border-bottom: 1px solid var(--molsan-border-light, #E8EFF4);
 }
 
 .ctn-modal-seccion-titulo h3 {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   font-size: 13px;
   font-weight: 750;
 }
@@ -1120,7 +1120,7 @@
 
 /* Datos generales del notario */
 .ctn-modal-dato {
-  background: var(--molsan-surface-soft, #f7f9fc);
+  background: var(--molsan-surface-soft, #F2F7FB);
   border: 1px solid #e5ebf4;
   border-radius: 7px;
   min-height: 60px;
@@ -1153,12 +1153,12 @@
 }
 
 .ctn-modal-resumen-firmas > div > strong {
-  color: var(--molsan-primary, #3156b3);
+  color: var(--molsan-primary, #064675);
   font-size: 24px;
 }
 
 .ctn-modal-resumen-firmas > div > button {
-  color: var(--molsan-primary, #3156b3);
+  color: var(--molsan-primary, #064675);
 }
 
 .ctn-modal-resumen-firmas > div > small {
@@ -1196,7 +1196,7 @@
 
 .ctn-modal-tabla th {
   color: #ffffff;
-  background: var(--molsan-primary, #3156b3);
+  background: var(--molsan-primary, #064675);
   border-bottom: 1px solid #294c9c;
   font-size: 10px;
   font-weight: 750;
@@ -1241,7 +1241,7 @@
 
 .ctn-modal-resultados > div {
   background: var(--molsan-surface, #fff);
-  border: 1px solid var(--molsan-border-light, #e8edf4);
+  border: 1px solid var(--molsan-border-light, #E8EFF4);
   border-radius: 6px;
 }
 
@@ -1256,18 +1256,18 @@
 /* Botones con el azul usado en Expedientes */
 .ctn-btn-primary {
   color: #ffffff;
-  background: var(--molsan-primary, #3156b3);
-  border-color: var(--molsan-primary, #3156b3);
+  background: var(--molsan-primary, #064675);
+  border-color: var(--molsan-primary, #064675);
   border-radius: 7px;
 }
 
 .ctn-btn-primary:hover:not(:disabled) {
-  background: var(--molsan-primary-hover, #274694);
-  border-color: var(--molsan-primary-hover, #274694);
+  background: var(--molsan-primary-hover, #04375B);
+  border-color: var(--molsan-primary-hover, #04375B);
 }
 
 .ctn-btn-secondary {
-  color: var(--molsan-primary, #3156b3);
+  color: var(--molsan-primary, #064675);
   background: var(--molsan-surface, #fff);
   border-color: #d2deef;
   border-radius: 7px;
@@ -1307,7 +1307,7 @@
 .ctn-filtros,
 .ctn-tabla-contenedor {
   background: var(--molsan-surface, #fff);
-  border: 1px solid var(--molsan-border, #dce4ef);
+  border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: 11px;
   box-shadow: 0 1px 3px rgba(30, 55, 90, 0.035);
 }
@@ -1319,7 +1319,7 @@
 
 .ctn-tabla th {
   color: #ffffff;
-  background: var(--molsan-primary, #3156b3);
+  background: var(--molsan-primary, #064675);
   border-bottom: 1px solid #294c9c;
   text-transform: none;
   letter-spacing: 0;
@@ -1368,7 +1368,7 @@
   flex-wrap: wrap;
   padding: 0 0 14px;
   margin: 0 0 16px;
-  border-bottom: 1px solid var(--molsan-border, #dce4ef);
+  border-bottom: 1px solid var(--molsan-border, #D8E4EC);
 }
 
 .ctn-ficha-pestana {
@@ -1379,7 +1379,7 @@
   padding: 10px 16px;
   color: #536781;
   background: var(--molsan-surface, #fff);
-  border: 1px solid var(--molsan-border, #dce4ef);
+  border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: 8px 8px 0 0;
   font: inherit;
   font-size: 12px;
@@ -1389,7 +1389,7 @@
 }
 
 .ctn-ficha-pestana:hover {
-  color: var(--molsan-primary-hover, #274694);
+  color: var(--molsan-primary-hover, #04375B);
   background: #f3f7ff;
   border-color: #b8c9e8;
 }
@@ -1397,8 +1397,8 @@
 .ctn-ficha-pestana.activa,
 .ctn-ficha-pestana[aria-selected="true"] {
   color: #ffffff;
-  background: var(--molsan-primary, #3156b3);
-  border-color: var(--molsan-primary, #3156b3);
+  background: var(--molsan-primary, #064675);
+  border-color: var(--molsan-primary, #064675);
   box-shadow: 0 3px 8px rgba(49, 88, 181, 0.16);
 }
 
@@ -1428,17 +1428,17 @@
 /* Integración CTN con el sistema visual compartido MOLSAN Premium 2027.
    Solo modifica presentación: conserva filtros, eventos, navegación y datos. */
 .ctn-listado-page {
-  background: var(--molsan-page-bg, #f3f6fb);
+  background: var(--molsan-page-bg, #FFFFFF);
 }
 
 .ctn-listado-header h1 {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   letter-spacing: -0.6px;
 }
 
 .ctn-filtros,
 .ctn-tabla-contenedor {
-  border-color: var(--molsan-border, #dce4ef);
+  border-color: var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-panel, 12px);
   box-shadow: 0 2px 8px rgba(23, 36, 58, 0.035);
 }
@@ -1450,7 +1450,7 @@
 .ctn-tabla th {
   color: var(--molsan-text-secondary, #526176);
   background: var(--molsan-surface-soft, #f5f7fb);
-  border-bottom-color: var(--molsan-border, #dce4ef);
+  border-bottom-color: var(--molsan-border, #D8E4EC);
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
@@ -1465,27 +1465,27 @@
 
 .ctn-btn-primary {
   color: #fff;
-  background: var(--molsan-primary, #3156b3);
-  border-color: var(--molsan-primary, #3156b3);
+  background: var(--molsan-primary, #064675);
+  border-color: var(--molsan-primary, #064675);
   border-radius: var(--molsan-radius-control, 8px);
 }
 
 .ctn-btn-primary:hover:not(:disabled) {
-  background: var(--molsan-primary-hover, #274694);
-  border-color: var(--molsan-primary-hover, #274694);
+  background: var(--molsan-primary-hover, #04375B);
+  border-color: var(--molsan-primary-hover, #04375B);
 }
 
 .ctn-btn-secondary {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   background: var(--molsan-surface, #fff);
   border-color: var(--molsan-border-strong, #cbd5e1);
   border-radius: var(--molsan-radius-control, 8px);
 }
 
 .ctn-btn-secondary:hover:not(:disabled) {
-  color: var(--molsan-primary, #3156b3);
+  color: var(--molsan-primary, #064675);
   background: var(--molsan-surface-soft, #f5f7fb);
-  border-color: var(--molsan-primary, #3156b3);
+  border-color: var(--molsan-primary, #064675);
 }
 
 .ctn-btn:focus-visible,
@@ -1566,24 +1566,24 @@
   gap:16px;
   padding:0 0 18px;
   margin-bottom:20px;
-  border-bottom:1px solid var(--molsan-border,#dce4ef);
+  border-bottom:1px solid var(--molsan-border, #D8E4EC);
 }
 .ctn-modal-header-identity { min-width:0; }
 .ctn-modal-title {
   margin:6px 0;
-  color:var(--molsan-text,#17243a);
+  color:var(--molsan-text, #173247);
   font-size:clamp(20px,2vw,28px);
   font-weight:750;
   letter-spacing:-.025em;
   overflow-wrap:anywhere;
 }
-.ctn-modal-meta { margin:0; color:var(--molsan-text-muted,#64748b); font-size:12px; }
+.ctn-modal-meta { margin:0; color:var(--molsan-text-muted, #718696); font-size:12px; }
 .ctn-modal-header-badge {
   display:inline-flex;
   align-items:center;
   padding:7px 12px;
-  color:var(--molsan-primary,#3156b3);
-  background:var(--molsan-primary-soft,#edf3ff);
+  color:var(--molsan-primary, #064675);
+  background:var(--molsan-primary-soft, #EAF2F8);
   border:1px solid rgba(49,86,179,.10);
   border-radius:999px;
   font-size:12px;
@@ -1640,7 +1640,7 @@
 .accesos-notariales-resumen-card small {
   display: block;
   margin-top: .2rem;
-  color: var(--molsan-text-muted, #64748b);
+  color: var(--molsan-text-muted, #718696);
   font-size: .78rem;
 }
 @media (max-width: 640px) {
