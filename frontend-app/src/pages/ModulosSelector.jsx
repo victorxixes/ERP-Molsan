@@ -107,6 +107,7 @@ export default function ModulosSelector() {
     const esAdmin =
       empleado.es_admin === true ||
       empleado.is_admin === true ||
+      Number(empleado.rol_id ?? empleado.rol?.id) === 0 ||
       usuario === "admin" ||
       rolesAdministradores.has(rol);
 
