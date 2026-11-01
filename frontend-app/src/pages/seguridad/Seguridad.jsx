@@ -94,7 +94,7 @@ export default function Seguridad() {
 
   return (
     <div className="seguridad-premium-page animate-fade-in space-y-6">
-      <header className="rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] px-6 py-5 shadow-sm">
+      <header className="molsan-page-header seguridad-page-header rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] px-6 py-5 shadow-sm">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--erp-primary-soft)] text-[var(--erp-primary)]">
