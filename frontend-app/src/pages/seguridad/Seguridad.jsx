@@ -21,7 +21,7 @@ function texto(value, fallback = "") {
 
 function Indicador({ icon, label, value, detail }) {
   return (
-    <div className="rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+    <div className="erp-card rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wider text-[var(--erp-text-soft)]">{label}</p>
