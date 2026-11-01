@@ -1321,3 +1321,23 @@
   .molsan-page-header__mark { transition:none; }
   .molsan-page-header:hover .molsan-page-header__mark { transform:none; }
 }
+
+/* Normalización transversal de botones heredados: conserva los colores de cada acción,
+   pero comparte altura mínima, tipografía, radio, foco y respuesta táctil. */
+:is(.erp-main-content, .molsan-page, .apoderagest, .notargest, .encargagest, .cg-page)
+button:not(.molsan-table-sort):not([class*="rounded-full"]):not([class*="rounded-2xl"]) {
+  min-height: 36px;
+  border-radius: 11px;
+  font-family: var(--molsan-font-family, Inter, "Segoe UI", sans-serif);
+  font-weight: 650;
+  transition: color .18s ease, background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+:is(.erp-main-content, .molsan-page, .apoderagest, .notargest, .encargagest, .cg-page)
+button:not(.molsan-table-sort):focus-visible {
+  outline: 3px solid rgba(6,70,117,.22);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.erp-main-content, .molsan-page, .apoderagest, .notargest, .encargagest, .cg-page)
+  button:not(.molsan-table-sort) { transition: none; }
+}
