@@ -88,3 +88,13 @@
   font-size: 12px;
   line-height: 1.45;
 }
+
+
+/* Armonización de utilidades de color heredadas con el tema corporativo. */
+.provisiones-fondos-page :is([class~="bg-blue-50"], [class~="bg-blue-100"], [class~="bg-sky-50"], [class~="hover:bg-blue-50"], [class~="hover:bg-indigo-50"]:hover) { background-color: var(--molsan-primary-soft); }
+.provisiones-fondos-page :is([class~="bg-blue-600"], [class~="bg-blue-700"], [class~="bg-sky-700"], [class~="bg-indigo-600"]) { background-color: var(--molsan-primary); }
+.provisiones-fondos-page :is([class~="hover:bg-blue-700"], [class~="hover:bg-indigo-700"]):hover { background-color: var(--molsan-primary-hover); }
+.provisiones-fondos-page :is([class~="text-blue-700"], [class~="text-blue-800"], [class~="text-blue-900"], [class~="text-sky-700"], [class~="text-sky-950"]) { color: var(--molsan-primary); }
+.provisiones-fondos-page :is([class~="border-blue-100"], [class~="border-blue-200"], [class~="border-sky-100"], [class~="border-sky-200"]) { border-color: var(--molsan-border); }
+.provisiones-fondos-page :is([class~="border-blue-500"], [class~="border-blue-700"], [class~="border-sky-500"]) { border-color: var(--molsan-primary); }
+.provisiones-fondos-page [class~="focus:border-blue-500"]:focus { border-color: var(--molsan-primary); }
