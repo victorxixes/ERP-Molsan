@@ -946,3 +946,24 @@
   .notargest .ng-modulo-card,.notargest .ng-admin-notaria-card,.ng-admin-notarias .ng-admin-kpi-button { transition:none!important; }
   .notargest .ng-modulo-card:hover,.notargest .ng-admin-notaria-card:hover,.ng-admin-notarias .ng-admin-kpi-button:hover { transform:none!important; }
 }
+
+
+/* MOLSAN ERP PREMIUM 2027 · NotarGest alineado con la cabecera de ApoderaGest. */
+.ng-admin-notarias .ng-control-hero {
+  min-height: 112px;
+  padding: 20px 24px !important;
+  margin: 0 0 20px !important;
+  border: 1px solid #D8E4EC !important;
+  border-radius: 22px;
+  background: #FFFFFF !important;
+  box-shadow: 0 8px 22px rgba(6,50,82,.055) !important;
+}
+.ng-admin-notarias .ng-control-eyebrow { color: #617789 !important; }
+.ng-admin-notarias .ng-control-titulos h2 { color: #064675 !important; }
+.ng-admin-notarias .ng-control-titulos p { color: #617789 !important; }
+.ng-admin-notarias .ng-control-logo { background: #F2F7FB !important; border-color: #D8E4EC !important; }
+.ng-admin-notarias .ng-control-secundario {
+  color: #064675 !important;
+  background: #F2F7FB !important;
+  border: 1px solid #D8E4EC !important;
+}
