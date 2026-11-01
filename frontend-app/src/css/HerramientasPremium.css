@@ -75,3 +75,21 @@
     transition-duration: .01ms !important;
   }
 }
+
+
+/* Cabecera de Utilidades: escala compacta y superficie común. */
+.utilidades-premium-page > header {
+  padding: 12px 16px !important;
+  border-color: var(--molsan-border) !important;
+  border-radius: var(--molsan-radius-card, 16px) !important;
+  background: var(--molsan-surface) !important;
+  box-shadow: var(--molsan-shadow-card) !important;
+}
+.utilidades-premium-page > header .w-12.h-12 {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 10px !important;
+  font-size: 18px !important;
+}
+.utilidades-premium-page > header h1 { font-size: 20px !important; line-height: 1.2; }
+.utilidades-premium-page > header p { font-size: 12px !important; line-height: 1.45; }
