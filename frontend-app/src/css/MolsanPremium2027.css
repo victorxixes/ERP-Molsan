@@ -1,0 +1,87 @@
+/* MOLSAN ERP PREMIUM 2027 · GLASS LUXE
+   Capa transversal de presentación. No modifica lógica, rutas, permisos ni datos. */
+:root { color-scheme: light; }
+html, body, #root { min-height: 100%; }
+body {
+  margin: 0;
+  color: var(--molsan-text);
+  background: var(--molsan-page-bg);
+  font-family: var(--molsan-font-family);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+::selection { color: #fff; background: var(--molsan-primary); }
+.erp-app-shell { background: var(--molsan-page-bg) !important; color: var(--molsan-text); }
+.erp-main-content { min-width: 0; }
+.erp-main-inner { max-width: 1920px; margin-inline: auto; }
+:where(.selector-modulos-premium,.catalogos-premium-page,.herramientas-home-premium,
+.expedientes-listado-premium,.ficha-expediente-premium,.agenda-premium-page,
+.seguridad-premium-page,.seguridad-subpagina-premium,.panel-tecnico-premium,
+.informes-premium-page,.empleados-premium-page,.maestros-premium-page,
+.provisiones-fondos-premium,.provisiones-fondos-page,.ctn-workspace-premium,
+.encargagest-workspace-premium,.cg-page,.cg-unified-workspace) {
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+}
+:where(.selector-modulos-premium,.catalogos-premium-page,.herramientas-home-premium,
+.expedientes-listado-premium,.ficha-expediente-premium,.agenda-premium-page,
+.seguridad-premium-page,.seguridad-subpagina-premium,.panel-tecnico-premium,
+.informes-premium-page,.empleados-premium-page,.maestros-premium-page,
+.provisiones-fondos-premium,.provisiones-fondos-page,.ctn-workspace-premium,
+.encargagest-workspace-premium,.cg-page,.cg-unified-workspace) :where(h1) {
+  color: var(--molsan-primary);
+  letter-spacing: -.025em;
+  font-weight: 750;
+}
+:where(.selector-modulos-premium,.catalogos-premium-page,.herramientas-home-premium,
+.expedientes-listado-premium,.ficha-expediente-premium,.agenda-premium-page,
+.seguridad-premium-page,.seguridad-subpagina-premium,.panel-tecnico-premium,
+.informes-premium-page,.empleados-premium-page,.maestros-premium-page,
+.provisiones-fondos-premium,.provisiones-fondos-page,.ctn-workspace-premium,
+.encargagest-workspace-premium,.cg-page,.cg-unified-workspace) :where(h2,h3) {
+  color: #174D70;
+  letter-spacing: -.015em;
+}
+:where(.selector-modulos-premium,.catalogos-premium-page,.herramientas-home-premium,
+.expedientes-listado-premium,.ficha-expediente-premium,.agenda-premium-page,
+.seguridad-premium-page,.seguridad-subpagina-premium,.panel-tecnico-premium,
+.informes-premium-page,.empleados-premium-page,.maestros-premium-page,
+.provisiones-fondos-premium,.provisiones-fondos-page,.ctn-workspace-premium,
+.encargagest-workspace-premium,.cg-page,.cg-unified-workspace) :where(p,.text-slate-500,.text-gray-500) {
+  color: var(--molsan-text-secondary);
+}
+:where(.molsan-panel,.selector-modulos-premium article,.catalogos-premium-page a,
+.herramientas-home-premium a) {
+  border-color: var(--molsan-border);
+  box-shadow: var(--molsan-shadow-card);
+  transition: transform var(--molsan-transition-normal), box-shadow var(--molsan-transition-normal), border-color var(--molsan-transition-normal);
+}
+:where(.catalogos-premium-page a,.herramientas-home-premium a):hover {
+  border-color: #9DBBD0;
+  box-shadow: var(--molsan-shadow-hover);
+  transform: translateY(-2px);
+}
+:where(.molsan-table-wrap,.ag-tabla-marco,.ng-tabla-contenedor) {
+  border-color: var(--molsan-border);
+  box-shadow: var(--molsan-shadow-card);
+}
+:where(.molsan-table,.ag-tabla,.ng-tabla) :where(th) {
+  color: #31566F;
+  background: var(--molsan-table-head);
+}
+:where(.molsan-table,.ag-tabla,.ng-tabla) :where(td) { color: var(--molsan-text); }
+:where(input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea) {
+  accent-color: var(--molsan-primary);
+}
+:where(button,a,[role=button],input,select,textarea):focus-visible {
+  outline: 3px solid rgba(6,70,117,.22);
+  outline-offset: 2px;
+}
+:where(button:not(:disabled)) { transition: filter var(--molsan-transition-fast), box-shadow var(--molsan-transition-fast), transform var(--molsan-transition-fast); }
+@media (max-width: 760px) {
+  .erp-main-inner { padding-inline: 12px; }
+  :where(.selector-modulos-premium,.catalogos-premium-page) { padding-inline: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+}
