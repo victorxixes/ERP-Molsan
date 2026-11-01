@@ -83,7 +83,7 @@
   letter-spacing: -.015em;
 }
 
-:where(.molsan-panel, .molsan-table-wrap) {
+:where(.molsan-table-wrap) {
   border-color: var(--molsan-border);
   box-shadow: var(--molsan-shadow-card);
 }
