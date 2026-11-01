@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanButton from "../../components/ui/MolsanButton";
 import "../../css/HerramientasPremium.css";
 
 export default function CatalogoFichajes() {
@@ -47,7 +48,7 @@ export default function CatalogoFichajes() {
           <input required maxLength={120} value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Ej. Acompañamiento médico" className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 font-normal text-slate-800" />
         </label>
         <label className="flex items-center gap-2 pb-3 text-sm text-slate-700"><input type="checkbox" checked={requiereJustificante} onChange={(e) => setRequiereJustificante(e.target.checked)} /> Requiere justificante</label>
-        <button disabled={guardando} className="rounded-xl bg-blue-700 px-5 py-3 text-sm font-bold text-white disabled:opacity-50">{guardando ? "Guardando…" : "Añadir al catálogo"}</button>
+        <MolsanButton type="submit" icon="plus" variant="primary" disabled={guardando} loading={guardando}>Añadir al catálogo</MolsanButton>
       </form>
     </section>
     <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
