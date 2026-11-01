@@ -267,14 +267,7 @@
   padding: 20px 21px 8px;
 }
 
-.ag-panel-cabecera {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 12px;
-}
+.ag-panel-cabecera {margin-bottom: 12px}
 
 .ag-panel-cabecera h3 {margin: 4px 0 0}
 
@@ -1094,7 +1087,7 @@
 .ag-dashboard-inferior-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);align-items:stretch;gap:16px;margin-top:16px}
 .ag-dashboard-inferior-grid>.ag-panel{min-width:0;margin:0}
 .ag-panel-proximas,.ag-panel-estadistica-firma{padding:15px 16px}
-.ag-panel-proximas .ag-panel-cabecera,.ag-panel-estadistica-firma .ag-panel-cabecera{margin-bottom:10px}
+.ag-panel-proximas .ag-panel-cabecera,.ag-panel-estadistica-firma .ag-panel-cabecera {margin-bottom:10px}
 .ag-cita-item-compacta{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--molsan-border)}
 .ag-cita-item-compacta:last-child{border-bottom:0}
 .ag-cita-item-compacta .ag-cita-fecha{flex:0 0 42px;width:42px;min-width:42px}
