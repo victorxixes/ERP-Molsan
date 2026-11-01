@@ -97,8 +97,6 @@ export default function CtnListadoPage() {
         const params = new URLSearchParams({
           page: String(paginaSolicitada),
           page_size: String(PAGE_SIZE),
-          sort_by: orden.campo,
-          sort_dir: orden.direccion,
         });
         Object.entries(filtrosActuales).forEach(([key, value]) => {
           if (value?.trim()) params.set(key, value.trim());
@@ -134,7 +132,7 @@ export default function CtnListadoPage() {
         setCargando(false);
       }
     },
-    [pagina, filtrosAplicados, orden]
+    [pagina, filtrosAplicados]
   );
 
   useEffect(() => {
@@ -162,7 +160,6 @@ export default function CtnListadoPage() {
     const obtener = (item, campo) => {
       if (campo === "nombre_completo") return nombreNotario(item);
       if (campo === "notario_asociado") return listaAsociados(item);
-      if (campo === "encargagest_habilitado") return Boolean(item?.encargagest_habilitado);
       return item?.[campo] ?? "";
     };
     copia.sort((a, b) => {
@@ -191,14 +188,10 @@ export default function CtnListadoPage() {
     setPagina(1);
   };
 
-  const ordenarPor = (campo) => {
-    setOrden((actual) => {
-      if (actual.campo !== campo) return { campo, direccion: "asc" };
-      if (actual.direccion === "asc") return { campo, direccion: "desc" };
-      return { campo: "apellidos", direccion: "asc" };
-    });
-    setPagina(1);
-  };
+  const ordenarPor = (campo) => setOrden((actual) => ({
+    campo,
+    direccion: actual.campo === campo && actual.direccion === "asc" ? "desc" : "asc",
+  }));
 
   const indicadorOrden = (campo) => {
     if (orden.campo !== campo) return "↕";
@@ -337,9 +330,9 @@ export default function CtnListadoPage() {
               <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("nif")}>NIF {indicadorOrden("nif")}</button></th>
               <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("municipio")}>Municipio {indicadorOrden("municipio")}</button></th>
               <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("provincia")}>Provincia {indicadorOrden("provincia")}</button></th>
-              <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("vc")}>VC {indicadorOrden("vc")}</button></th><th><button type="button" className="ctn-orden" onClick={() => ordenarPor("apoderado")}>Apoderado {indicadorOrden("apoderado")}</button></th>
+              <th>VC</th><th>Apoderado</th>
               <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("notario_asociado")}>Notario asociado {indicadorOrden("notario_asociado")}</button></th>
-              <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("notargest_habilitado")}>Acceso NotarGest {indicadorOrden("notargest_habilitado")}</button></th><th><button type="button" className="ctn-orden" onClick={() => ordenarPor("encargagest_habilitado")}>Acceso EncargaGest {indicadorOrden("encargagest_habilitado")}</button></th><th><button type="button" className="ctn-orden" onClick={() => ordenarPor("distancia_km")}>Distancia {indicadorOrden("distancia_km")}</button></th><th>Acciones</th>
+              <th>Acceso NotarGest</th><th>Acceso EncargaGest</th><th>Distancia</th><th>Acciones</th>
             </tr></thead>
             <tbody>
               {cargando && items.length === 0 ? (
