@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "../../api/axios";
+import MolsanIcon from "../ui/MolsanIcon";
 
 
 import "../../css/ComponentesOperativosPremium.css";
@@ -464,7 +465,7 @@ export default function InformeApoderado({
               shadow-sm
             "
           >
-            📊
+            <MolsanIcon name="chart" size={48} />
           </div>
 
 
@@ -683,7 +684,7 @@ export default function InformeApoderado({
                 text-lg
               "
             >
-              🏆
+              <MolsanIcon name="trophy" size={22} />
             </div>
 
 
@@ -755,7 +756,7 @@ export default function InformeApoderado({
                   text-2xl
                 "
               >
-                🏆
+                <MolsanIcon name="trophy" size={22} />
               </div>
 
               <p
@@ -966,7 +967,7 @@ function Kpi({
             shadow-sm
           `}
         >
-          {icon}
+          <MolsanIcon name={icon} size={38} />
         </div>
 
 
