@@ -384,7 +384,7 @@ export default function CorrespondenciaTipificada() {
             </div>
 
             <div className="mt-5 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
-              <button type="button" onClick={guardarPlantilla} disabled={guardando} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-50">{guardando ? "Guardando…" : "💾 Guardar plantilla"}</button>
+              <button type="button" onClick={guardarPlantilla} disabled={guardando} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-50">{guardando ? "Guardando…" : "Guardar plantilla"}</button>
               <button type="button" onClick={() => setMostrarVistaPrevia((v) => !v)} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50"><MolsanIcon name="eye" size={20} /> Vista previa</button>
               {plantillaId && <button type="button" onClick={duplicarPlantilla} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">⧉ Duplicar</button>}
               {plantillaId && <button type="button" onClick={eliminarPlantilla} className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-bold text-rose-700 hover:bg-rose-100">Eliminar</button>}
