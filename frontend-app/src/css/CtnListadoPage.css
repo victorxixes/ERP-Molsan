@@ -480,10 +480,6 @@
 .ctn-modal-seccion {
   padding: 18px;
   margin-bottom: 16px;
-  background: #fff;
-  border: 1px solid #e2e7ef;
-  border-radius: 11px;
-  box-shadow: 0 2px 7px rgba(24, 42, 68, 0.025);
 }
 
 .ctn-modal-seccion:last-child {
