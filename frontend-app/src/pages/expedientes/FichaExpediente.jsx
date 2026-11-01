@@ -7238,7 +7238,6 @@ const cuantiaFincasParaEnvio =
 
                     </div>
                   </div>
-                </>
 
                     {actividadSeleccionada === "gestion-economica" && (
                       <section className="mt-4 rounded-xl border border-indigo-100 bg-white p-4">
