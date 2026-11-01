@@ -10,6 +10,7 @@ import { obtenerExpediente, obtenerListadoExpedientes, enviarExpedienteANotario 
 import EnviarANotarioModal from "../../components/expedientes/EnviarANotarioModal";
 import LiquidarExpedienteModal from "../../components/expedientes/LiquidarExpedienteModal";
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import TraspasoSaldoPanel from "../../components/expedientes/TraspasoSaldoPanel";
 import { useAuthStore } from "../../store/authStore";
 import "./FichaExpedientePremium.css";
@@ -224,37 +225,37 @@ const ACTIVIDADES_EXPEDIENTES = [
   {
     key: "documentacion-previa",
     label: "Documentación previa",
-    icono: "📄",
+    icono: "file",
   },
 
   {
     key: "sede-notarial",
     label: "Sede notarial",
-    icono: "🏛️",
+    icono: "courthouse",
   },
 
   {
     key: "sede-notarial-protocolo",
     label: "Sede notarial con protocolo",
-    icono: "📜",
+    icono: "scroll",
   },
 
   {
     key: "gestion-economica",
     label: "Gestión económica",
-    icono: "💼",
+    icono: "briefcase",
   },
 
   {
     key: "liquidacion-impuestos",
     label: "Liquidación de impuestos",
-    icono: "💶",
+    icono: "euro",
   },
 
   {
     key: "tramitacion-inscripcion",
     label: "Tramitación inscripción",
-    icono: "🏢",
+    icono: "building",
   },
 
   {
@@ -266,7 +267,7 @@ const ACTIVIDADES_EXPEDIENTES = [
   {
     key: "facturacion-cierre",
     label: "Cierre del expediente",
-    icono: "🧾",
+    icono: "receipt",
   },
 ];
 
@@ -922,16 +923,16 @@ function IconoSeccion({
   tipo = "default",
 }) {
   const iconos = {
-    estado: "◉",
-    titular: "👤",
-    solicitante: "👥",
-    economico: "📊",
-    notario: "✒️",
-    observaciones: "▣",
-    actividad: "⚙️",
-    finca: "🏠",
-    registro: "📚",
-    accion: "⚡",
+    estado: "eye",
+    titular: "person",
+    solicitante: "users",
+    economico: "chart",
+    notario: "pen",
+    observaciones: "video",
+    actividad: "settings",
+    finca: "home",
+    registro: "book",
+    accion: "activity",
   };
 
   return (
@@ -942,10 +943,7 @@ function IconoSeccion({
       "
       aria-hidden="true"
     >
-      {
-        iconos[tipo] ||
-        "▣"
-      }
+      <MolsanIcon name={iconos[tipo] || "file"} size={30} />
     </span>
   );
 }
@@ -5192,9 +5190,9 @@ const cuantiaFincasParaEnvio =
                                     aria-label={"Ir a " + fase.label + ". " + (completa ? "Control superado" : pendientes.length + " tareas pendientes")}
                                   >
                                     <span className="flex items-center gap-3">
-                                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-lg ${completa ? "bg-emerald-100" : actual ? "bg-blue-100" : "bg-slate-100"}`}>{completa ? "✓" : fase.icono}</span>
+                                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-lg ${completa ? "bg-emerald-100" : actual ? "bg-blue-100" : "bg-slate-100"}`}>{completa ? <MolsanIcon name="check" size={22} tone="emerald" /> : <MolsanIcon name={fase.icono} size={30} />}</span>
                                       <span className="min-w-0 flex-1">
-                                        <span className="block text-sm font-extrabold text-slate-800">{fase.icono} {fase.label}</span>
+                                        <span className="block text-sm font-extrabold text-slate-800"><MolsanIcon name={fase.icono} size={20} /> {fase.label}</span>
                                         <span className={`mt-1 block text-xs font-semibold ${completa ? "text-emerald-700" : actual ? "text-blue-700" : "text-amber-700"}`}>
                                           {completa ? "Control superado" : actual ? "Actividad actual · requiere revisión" : "Con incidencias pendientes"}
                                         </span>
@@ -5278,7 +5276,7 @@ const cuantiaFincasParaEnvio =
                               })}
                               <article className="min-w-0 rounded-xl border border-violet-200 bg-violet-50/40 p-3">
                                 <div className="flex items-center gap-2">
-                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-violet-300 bg-white text-sm">💶</div>
+                                  <MolsanIcon name="euro" size={34} tone="violet" />
                                   <div className="min-w-0 flex-1">
                                     <p className="text-xs font-bold text-slate-800">PPAD</p>
                                     <p className="mt-0.5 text-[10px] font-semibold text-violet-700">{cargandoPpad ? "Cargando registros…" : `${ppadItems.length} registro(s) · ${ppadItems.filter((item) => !item.compensado).length} pendiente(s)`}</p>
@@ -5296,7 +5294,7 @@ const cuantiaFincasParaEnvio =
                               </article>
                               <article className="min-w-0 rounded-xl border border-amber-200 bg-amber-50/40 p-3">
                                 <div className="flex items-center gap-2">
-                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-amber-300 bg-white text-sm">💰</div>
+                                  <MolsanIcon name="wallet" size={34} tone="amber" />
                                   <div className="min-w-0 flex-1">
                                     <p className="text-xs font-bold text-slate-800">Complementos de saldo</p>
                                     <p className="mt-0.5 text-[10px] font-semibold text-amber-800">{cargandoComplementosExpediente ? "Cargando solicitudes…" : `${complementosSaldoExpediente.length} solicitud(es) · ${complementosSaldoExpediente.filter((item) => !["compensado", "cerrado"].includes(String(item.estado || "").toLowerCase())).length} pendiente(s)`}</p>
@@ -5485,7 +5483,7 @@ const cuantiaFincasParaEnvio =
           {/* Ficha y acciones en una sola línea, debajo de los bloques principales */}
           <div className="molsan-page-toolbar mt-3 w-full overflow-x-hidden">
             <div className="flex shrink-0 items-center gap-2 pr-2">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-lg text-blue-600">📁</div>
+              <MolsanIcon name="folder" size={34} />
               <div className="min-w-[150px]">
                 <p className="whitespace-nowrap text-[9px] font-bold uppercase tracking-[0.12em] text-slate-400">Ficha de expediente</p>
                 <h1 className="whitespace-nowrap text-base font-extrabold leading-tight text-slate-800">{valorVisible(expediente.id_expediente)}</h1>
@@ -5514,7 +5512,7 @@ const cuantiaFincasParaEnvio =
                   <span className="mr-1 shrink-0 text-[9px] font-bold uppercase tracking-wide text-slate-400">Relacionados</span>
                   {primerosRelacionados.map((relacionado) => (
                     <Link key={String(relacionado.id_expediente)} to={`/expedientes/${encodeURIComponent(relacionado.id_expediente)}`} className="inline-flex max-w-[180px] min-w-0 shrink items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[10px] font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50" title={relacionado.actividad_actual || "Abrir expediente relacionado"}>
-                      <span className="shrink-0 text-blue-700">📁</span>
+                      <MolsanIcon name="folder" size={20} />
                       <span className="truncate">{valorVisible(relacionado.id_expediente)}</span>
                     </Link>
                   ))}
@@ -5526,10 +5524,10 @@ const cuantiaFincasParaEnvio =
                 </div>
               ) : null;
             })()}
-            {expedienteBloqueado && <span className="inline-flex shrink-0 items-center rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[10px] font-extrabold text-red-800">🔒 BLOQUEADO · {motivoBloqueoExpediente}</span>}
+            {expedienteBloqueado && <span className="inline-flex shrink-0 items-center rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[10px] font-extrabold text-red-800"><MolsanIcon name="lock" size={16} /> BLOQUEADO · {motivoBloqueoExpediente}</span>}
             <div className="flex shrink-0 items-center gap-1.5">
               <button type="button" onClick={abrirDefecto} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-blue-700 shadow-sm transition hover:bg-blue-100" title="Registrar un defecto registral">➕ Alta defecto</button>
-              <Boton onClick={abrirControlExpediente} className="!shrink-0 !rounded-lg !px-2.5 !py-2 !text-[11px] !leading-tight">{expedienteBloqueado ? "🔒 Control / desbloqueo" : "🔐 Control y bloqueo"}</Boton>
+              <Boton onClick={abrirControlExpediente} className="!shrink-0 !rounded-lg !px-2.5 !py-2 !text-[11px] !leading-tight">{expedienteBloqueado ? "Control / desbloqueo" : "Control y bloqueo"}</Boton>
               <button type="button" onClick={abrirReclamacionOficina} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-amber-800 shadow-sm transition hover:bg-amber-100">✉️ Emails</button>
               <button type="button" onClick={() => window.alert("Pendiente: enlazar este botón con la dirección real del área de clientes.")} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[11px] font-bold leading-tight text-slate-600 shadow-sm transition hover:bg-slate-100" title="Pendiente de enlazar con el área de clientes">🔗 Área de clientes</button>
               {tieneDefecto && <button type="button" onClick={abrirDefecto} className="animate-pulse inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-red-700 shadow-sm">⚠️ DEFECTO REGISTRAL</button>}
@@ -5596,7 +5594,7 @@ const cuantiaFincasParaEnvio =
                       onClick={() => { setMostrarControlCalidad(true); cargarDocumentosCierre(); }}
                       className={`flex h-[84px] w-[190px] min-w-[190px] shrink-0 flex-col justify-start rounded-xl border px-3 py-2 text-left transition ${mostrarControlCalidad ? "border-violet-300 bg-violet-50 shadow-sm" : "border-violet-200 bg-white hover:bg-violet-50"}`}
                     >
-                      <span className={`text-xs font-bold ${mostrarControlCalidad ? "text-violet-700" : "text-violet-800"}`}>🛡️ Control de calidad</span>
+                      <span className={`text-xs font-bold ${mostrarControlCalidad ? "text-violet-700" : "text-violet-800"}`}><MolsanIcon name="shield" size={18} /> Control de calidad</span>
                       <span className="mt-2 text-[9px] font-semibold text-slate-500">Revisión independiente</span>
                     </button>
                   )}
@@ -5755,7 +5753,7 @@ const cuantiaFincasParaEnvio =
 
               <div className="min-w-0 flex-1">
                 <h3 className="text-base font-bold text-slate-800">
-                  {actividadSeleccionadaDef.icono} {actividadSeleccionadaDef.label}
+                  <MolsanIcon name={actividadSeleccionadaDef.icono} size={28} /> {actividadSeleccionadaDef.label}
                 </h3>
                 <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
                   <span className="inline-flex items-center gap-1.5">
@@ -5914,7 +5912,7 @@ const cuantiaFincasParaEnvio =
                       {gastosPendientesResumen.length > 0 && <p className="mt-3 rounded-lg border border-amber-100 bg-amber-50 px-3 py-2 text-xs text-amber-800">{gastosPendientesResumen.length} gasto(s) registrado(s) todavía pendiente(s); no se descuentan del saldo hasta confirmar el pago.</p>}
                       <div className="mt-3 flex justify-end border-t border-slate-100 pt-3">
                         <button type="button" onClick={() => generarHonorariosGestoria?.()} disabled={generandoHonorariosGestoria || !generarHonorariosGestoria} className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-emerald-700 px-5 py-2.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-emerald-800 disabled:opacity-50" title="Generar y guardar la factura en Honorarios gestoría, sin crear pagos ni avisos de deuda">
-                          {generandoHonorariosGestoria ? "Generando factura…" : "🧾 Facturar"}
+                          {generandoHonorariosGestoria ? "Generando factura…" : "Facturar"}
                         </button>
                       </div>
                     </div>
@@ -6238,8 +6236,8 @@ const cuantiaFincasParaEnvio =
                     <p className="mt-2 text-[11px] text-slate-500">Registrar la solicitud no envía nada ni avanza el expediente. El avance se valida por separado.</p>
                   </div>
                   <div className="mt-4 flex flex-wrap justify-end gap-2">
-                    <Boton onClick={() => guardarEstadoAbsis(false)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Guardando…" : "💾 Guardar datos para integración"}</Boton>
-                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Registrando…" : estadoDocumentacionAbsis.solicitud_registrada_localmente ? "✓ Solicitud pendiente registrada" : "📨 Registrar solicitud pendiente"}</Boton>
+                    <Boton onClick={() => guardarEstadoAbsis(false)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Guardando…" : "Guardar datos para integración"}</Boton>
+                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Registrando…" : estadoDocumentacionAbsis.solicitud_registrada_localmente ? "✓ Solicitud pendiente registrada" : "Registrar solicitud pendiente"}</Boton>
                   </div>
                   {estadoDocumentacionAbsis.solicitud_registrada_localmente && <p className="mt-2 text-right text-xs font-semibold text-amber-700">Pendiente de API externa; todavía no transmitida a ABSIS.</p>}
                 </section>
@@ -6500,7 +6498,7 @@ const cuantiaFincasParaEnvio =
                     </p>
                     <p className="mt-1 text-[11px] text-slate-500">La vinculación automática con Notargest se completará cuando esté disponible la integración de documentos.</p>
                     <button type="button" onClick={() => setMostrarCarpetaDigital(true)} className="mt-3 rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">
-                      📁 Abrir carpeta digital
+                      Abrir carpeta digital
                     </button>
                   </div>
                   <div className="rounded-xl border border-slate-200 bg-white p-3">
@@ -6518,7 +6516,7 @@ const cuantiaFincasParaEnvio =
                 </div>
                 <div className="mt-3 flex justify-end">
                   <Boton tipo="primary" onClick={() => registrarSolicitudIntegracionPendiente("sede-notarial-protocolo")} disabled={guardandoActividad || registrandoSolicitudIntegracion}>
-                    {registrandoSolicitudIntegracion ? "Registrando…" : "📨 Registrar solicitud pendiente"}
+                    {registrandoSolicitudIntegracion ? "Registrando…" : "Registrar solicitud pendiente"}
                   </Boton>
                 </div>
               </section>
@@ -6618,7 +6616,7 @@ const cuantiaFincasParaEnvio =
                     </p>
                     <p className="mt-1 text-[11px] text-slate-500">La asociación automática del PDF desde Notargest requiere conectar la integración documental.</p>
                     <button type="button" onClick={() => setMostrarCarpetaDigital(true)} className="mt-3 rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">
-                      📁 Abrir carpeta digital
+                      Abrir carpeta digital
                     </button>
                   </div>
                   <div className="rounded-xl border border-slate-200 bg-white p-3">
@@ -6635,7 +6633,7 @@ const cuantiaFincasParaEnvio =
                 </div>
                 <div className="mt-3 flex justify-end">
                   <Boton tipo="primary" onClick={() => registrarSolicitudIntegracionPendiente("liquidacion-impuestos")} disabled={guardandoActividad || registrandoSolicitudIntegracion}>
-                    {registrandoSolicitudIntegracion ? "Registrando…" : "📨 Registrar solicitud pendiente"}
+                    {registrandoSolicitudIntegracion ? "Registrando…" : "Registrar solicitud pendiente"}
                   </Boton>
                 </div>
               </section>
@@ -6762,7 +6760,7 @@ const cuantiaFincasParaEnvio =
                       disabled={generandoHonorariosGestoria}
                       className="rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-extrabold text-white hover:bg-emerald-800 disabled:opacity-50"
                     >
-                      {generandoHonorariosGestoria ? "Generando…" : "💶 Generar honorarios de gestoría"}
+                      {generandoHonorariosGestoria ? "Generando…" : "Generar honorarios de gestoría"}
                     </button>
                   </div>
                   {honorariosGestoria && (
@@ -6796,7 +6794,7 @@ const cuantiaFincasParaEnvio =
                 Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)
               ) && (
                 <Boton tipo="primary" onClick={guardarCamposActividad} disabled={guardandoActividad || expedienteBloqueado}>
-                  {guardandoActividad ? "Guardando…" : "💾 Guardar datos de actividad"}
+                  {guardandoActividad ? "Guardando…" : "Guardar datos de actividad"}
                 </Boton>
               )}
               {actividadSeleccionada === "documentacion-previa" && actividadActual === "documentacion-previa" && (
@@ -6968,7 +6966,7 @@ const cuantiaFincasParaEnvio =
                               ? "Este PPAD ya está compensado. ¿Confirmas que quieres eliminarlo como administrador?"
                               : "¿Confirmas que quieres eliminar este concepto PPAD?";
                             if (window.confirm(mensaje)) eliminarPpad(item.id);
-                          }}>🗑️ Eliminar</Boton>
+                          }}>Eliminar</Boton>
                         )}
                       </div>
                     </article>
@@ -7095,7 +7093,7 @@ const cuantiaFincasParaEnvio =
                 <p className="rounded-xl border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-500">Todavía no hay observaciones añadidas.</p>
               )}
               <button type="button" onClick={() => { setComentario(""); setErrorObservaciones(""); setMostrarObservaciones(true); }} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100">
-                💬 Ver historial y gestionar observaciones <span className="rounded-full bg-white px-2 py-0.5 text-[10px]">{observacionesExpediente.length}</span>
+                Ver historial y gestionar observaciones <span className="rounded-full bg-white px-2 py-0.5 text-[10px]">{observacionesExpediente.length}</span>
               </button>
             </div>
           </Seccion>
@@ -7145,7 +7143,7 @@ const cuantiaFincasParaEnvio =
           ====================================================== */}
             <section className="w-full max-w-none min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_10px_28px_rgba(30,41,59,0.08)]">
               <div className="hidden flex-wrap items-center justify-center gap-3 border-b border-slate-100 bg-white px-4 py-4 text-center sm:px-5">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-100 bg-white text-xl shadow-sm">🏛️</div>
+                <MolsanIcon name="courthouse" size={42} tone="indigo" />
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-extrabold text-slate-800">Envío a notario</h3>
                   <p className="mt-0.5 text-[11px] text-slate-500">Encargo al notario, datos de firma y facturación</p>
@@ -7604,7 +7602,7 @@ const cuantiaFincasParaEnvio =
         footer={
           <div className="flex flex-wrap justify-center gap-3">
             <Boton onClick={() => setMostrarAvisoBloqueoExpediente(false)}>Entendido</Boton>
-            <Boton tipo="primary" onClick={() => { setMostrarAvisoBloqueoExpediente(false); abrirControlExpediente(); }}>🔐 Gestionar bloqueo</Boton>
+            <Boton tipo="primary" onClick={() => { setMostrarAvisoBloqueoExpediente(false); abrirControlExpediente(); }}>Gestionar bloqueo</Boton>
           </div>
         }
       >
@@ -7626,7 +7624,7 @@ const cuantiaFincasParaEnvio =
       </Modal>
 
       {/* CONTROL DE BLOQUEO */}
-      <Modal open={mostrarControlExpediente} onClose={()=>!guardandoControlExpediente&&setMostrarControlExpediente(false)} titulo="🔐 Control del expediente" subtitulo={`Expediente ${valorVisible(expediente?.id_expediente)}`} ancho="max-w-[760px]" footer={<div className="flex justify-end gap-2"><Boton onClick={()=>setMostrarControlExpediente(false)} disabled={guardandoControlExpediente}>Cancelar</Boton><Boton tipo="primary" onClick={guardarControlExpediente} disabled={guardandoControlExpediente}>{guardandoControlExpediente?"Guardando…":"💾 Guardar control"}</Boton></div>}>
+      <Modal open={mostrarControlExpediente} onClose={()=>!guardandoControlExpediente&&setMostrarControlExpediente(false)} titulo="Control del expediente" subtitulo={`Expediente ${valorVisible(expediente?.id_expediente)}`} ancho="max-w-[760px]" footer={<div className="flex justify-end gap-2"><Boton onClick={()=>setMostrarControlExpediente(false)} disabled={guardandoControlExpediente}>Cancelar</Boton><Boton tipo="primary" onClick={guardarControlExpediente} disabled={guardandoControlExpediente}>{guardandoControlExpediente?"Guardando…":"Guardar control"}</Boton></div>}>
         <div className="space-y-4">
           {estadoLegadoBloqueante&&<p role="alert" className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm font-bold text-amber-900">El estado {expediente?.estado_expediente} mantiene el bloqueo automático. Para desbloquearlo, debe corregirse primero el estado del expediente.</p>}
           <label className="flex items-start gap-3 rounded-xl border p-4"><input type="checkbox" className="mt-1" checked={!!controlExpediente.liquidado_sin_tramitar} onChange={e=>setControlExpediente(v=>({...v,liquidado_sin_tramitar:e.target.checked}))}/><span className="flex-1"><strong className="block text-sm">Liquidado sin tramitar</strong><span className="block text-xs text-slate-500">Bloquea el expediente y genera aviso central.</span>{controlExpediente.liquidado_sin_tramitar&&<input aria-label="Fecha liquidado sin tramitar" type="date" className="mt-3 w-full rounded-lg border p-2" value={controlExpediente.fecha_liquidacion_sin_tramitar||""} onChange={e=>setControlExpediente(v=>({...v,fecha_liquidacion_sin_tramitar:e.target.value}))}/>}</span></label>
@@ -7665,7 +7663,7 @@ const cuantiaFincasParaEnvio =
         disabled={guardandoDefecto}
         onClick={guardarDefectoRegistral}
       >
-        {guardandoDefecto ? "Guardando…" : "💾 Guardar defecto"}
+        {guardandoDefecto ? "Guardando…" : "Guardar defecto"}
       </Boton>
     </>
   }
@@ -7717,7 +7715,7 @@ const cuantiaFincasParaEnvio =
               <div className="flex flex-wrap gap-2">
                 {defecto.calificacion_nombre && (
                   <Boton onClick={() => descargarPDFCalificacion(defecto)}>
-                    📄 Descargar PDF
+                    Descargar PDF
                   </Boton>
                 )}
                 <Boton onClick={() => editarDefectoRegistrado(defecto)}>
@@ -7987,7 +7985,7 @@ const cuantiaFincasParaEnvio =
           setMostrarFincas(false);
           setFincaEditandoId(null);
         }}
-        titulo={fincaEditandoId !== null ? "🏠 Editar finca" : "🏠 Nueva finca"}
+        titulo={fincaEditandoId !== null ? "Editar finca" : "Nueva finca"}
         subtitulo="Datos registrales del expediente"
         ancho="max-w-5xl"
         footer={
@@ -8005,7 +8003,7 @@ const cuantiaFincasParaEnvio =
               onClick={guardarFinca}
               disabled={guardandoFinca}
             >
-              {guardandoFinca ? "Guardando..." : "💾 Guardar finca"}
+              {guardandoFinca ? "Guardando..." : "Guardar finca"}
             </Boton>
           </>
         }
@@ -8214,7 +8212,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={modalSelectorRegistro}
         onClose={() => setModalSelectorRegistro(false)}
-        titulo="📚 Catálogo de Registros de la Propiedad"
+        titulo="Catálogo de Registros de la Propiedad"
         subtitulo="Busca y vincula un registro al expediente"
         ancho="max-w-4xl"
         footer={<Boton onClick={() => setModalSelectorRegistro(false)}>Cerrar</Boton>}
@@ -8242,7 +8240,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={Boolean(registroDetalleAbierto)}
         onClose={() => setRegistroDetalleAbierto(null)}
-        titulo="🏛️ Datos del Registro de la Propiedad"
+        titulo="Datos del Registro de la Propiedad"
         subtitulo={registroDetalleAbierto?.registro_propiedad || "Datos del catálogo"}
         ancho="max-w-3xl"
         footer={<Boton onClick={() => setRegistroDetalleAbierto(null)}>Cerrar</Boton>}
@@ -8271,7 +8269,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={oficinaDetalleAbierta}
         onClose={() => setOficinaDetalleAbierta(false)}
-        titulo="🏢 Datos de la oficina"
+        titulo="Datos de la oficina"
         subtitulo={expediente?.oficina || "Catálogo de oficinas"}
         ancho="max-w-3xl"
         footer={<Boton onClick={() => setOficinaDetalleAbierta(false)}>Cerrar</Boton>}
@@ -8378,7 +8376,7 @@ const cuantiaFincasParaEnvio =
         tipo="primary"
         onClick={guardarAccion}
       >
-        💾 Asignar acción
+        Asignar acción
       </Boton>
     </>
   }
@@ -8457,7 +8455,7 @@ const cuantiaFincasParaEnvio =
                       }}
                       className="shrink-0 rounded-md border border-red-200 px-2 py-1 text-[10px] font-bold text-red-700 hover:bg-red-50 disabled:opacity-50"
                     >
-                      🗑️ Eliminar
+                      Eliminar
                     </button>
                   )}
                 </div>
@@ -8783,7 +8781,7 @@ const cuantiaFincasParaEnvio =
         onClose={() =>
           setMostrarObservaciones(false)
         }
-        titulo="💬 Observaciones"
+        titulo="Observaciones"
         subtitulo="Comentario y destino dentro del expediente"
         ancho="max-w-3xl"
         footer={
@@ -8804,7 +8802,7 @@ const cuantiaFincasParaEnvio =
                 (visionesComentario.actividad && !destinatarioObservacion)
               }
             >
-              {guardandoObservacion ? "Guardando…" : "💾 Guardar comentario"}
+              {guardandoObservacion ? "Guardando…" : "Guardar comentario"}
             </Boton>
           </>
         }
@@ -8980,7 +8978,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={mostrarModalFacturaHonorarios}
         onClose={() => !guardandoFacturaHonorarios && setMostrarModalFacturaHonorarios(false)}
-        titulo="🧾 Factura de honorarios gestoría"
+        titulo="Factura de honorarios gestoría"
         subtitulo={`Expediente ${expediente?.id_expediente || ""} · Revisa los datos antes de registrar`}
         ancho="max-w-5xl"
         footer={
@@ -8989,10 +8987,10 @@ const cuantiaFincasParaEnvio =
             <div className="flex flex-wrap gap-2">
               {previsualizandoFacturaHonorarios && <Boton onClick={() => setPrevisualizandoFacturaHonorarios(false)} disabled={guardandoFacturaHonorarios}>← Editar datos</Boton>}
               {!previsualizandoFacturaHonorarios ? (
-                <Boton tipo="primary" onClick={() => setPrevisualizandoFacturaHonorarios(true)}>👁 Previsualizar factura</Boton>
+                <Boton tipo="primary" onClick={() => setPrevisualizandoFacturaHonorarios(true)}><MolsanIcon name="eye" size={18} /> Previsualizar factura</Boton>
               ) : (
                 <Boton tipo="primary" onClick={confirmarFacturaHonorarios} disabled={guardandoFacturaHonorarios}>
-                  {guardandoFacturaHonorarios ? "Guardando…" : "💾 Guardar y facturar"}
+                  {guardandoFacturaHonorarios ? "Guardando…" : "Guardar y facturar"}
                 </Boton>
               )}
             </div>
@@ -9146,7 +9144,7 @@ const cuantiaFincasParaEnvio =
             <div className="flex gap-2">
               <Boton onClick={() => { setMostrarModalDatosActividad(false); setPestanaActividad("documentos"); }}>Cerrar</Boton>
               <Boton tipo="primary" onClick={guardarCamposActividad} disabled={guardandoActividad}>
-                {guardandoActividad ? "Guardando…" : "💾 Guardar datos"}
+                {guardandoActividad ? "Guardando…" : "Guardar datos"}
               </Boton>
             </div>
           </div>
@@ -9239,7 +9237,7 @@ const cuantiaFincasParaEnvio =
                 </label>
               </div>
               <section className="mt-3 rounded-xl border border-slate-200 bg-white p-4">
-                <h4 className="mb-3 text-sm font-extrabold text-slate-800">📁 Repositorios digitales</h4>
+                <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800"><MolsanIcon name="folder" size={22} /> Repositorios digitales</h4>
                 <RepositorioDocumentosInline
                   expedienteId={expediente?.id_expediente || expediente?.id || id}
                   categorias={["Hoja de Encargo firmada", "Justificante de cancelación", "Nota simple registral"]}
@@ -9333,7 +9331,7 @@ const cuantiaFincasParaEnvio =
             ) : actividadSeleccionada === "facturacion-cierre" ? (
               <div className="grid min-w-0 grid-cols-1 items-start gap-3">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Cierre del expediente</h4>
+                <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800"><MolsanIcon name="clipboard" size={22} /> Datos · Cierre del expediente</h4>
                 <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {[
                     { key: "fecha_fin_actividad", label: "Fecha de cierre" },
@@ -9368,7 +9366,7 @@ const cuantiaFincasParaEnvio =
             ) : actividadSeleccionada === "liquidacion-impuestos" ? (
               <div className="grid min-w-0 grid-cols-1 items-start gap-3">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Liquidación de impuestos</h4>
+                  <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800"><MolsanIcon name="clipboard" size={22} /> Datos · Liquidación de impuestos</h4>
                   <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
                       const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
@@ -9402,7 +9400,7 @@ const cuantiaFincasParaEnvio =
             ) : actividadSeleccionada === "tramitacion-inscripcion" ? (
               <div className="grid min-w-0 grid-cols-1 items-start gap-3">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Tramitación inscripción</h4>
+                  <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800"><MolsanIcon name="clipboard" size={22} /> Datos · Tramitación inscripción</h4>
                   <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
                       const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
@@ -9504,7 +9502,7 @@ const cuantiaFincasParaEnvio =
                 disabled={registrandoSolicitudIntegracion || expedienteBloqueado}
                 className="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-lg bg-sky-700 px-4 py-2.5 text-xs font-extrabold text-white transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {registrandoSolicitudIntegracion ? "Registrando solicitud…" : "📤 Enviar a ABSIS"}
+                {registrandoSolicitudIntegracion ? "Registrando solicitud…" : "Enviar a ABSIS"}
               </button>
             </div>
             <p className="mt-2 text-[11px] leading-relaxed text-sky-900">
