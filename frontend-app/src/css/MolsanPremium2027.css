@@ -974,7 +974,7 @@
   .panel-tecnico-premium, .seguridad-premium-page,
   .herramientas-subpagina-premium, .catalogos-maestros-premium
 ) :is(
-  .erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi,
+  .erp-card, .erp-card-soft, .card-sj, .molsan-panel, .cg-panel, .cg-kpi,
   .cg-section, .cg-module-card, .ag-panel, .ag-kpi, .ag-card,
   .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel,
   .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
@@ -984,7 +984,7 @@
   .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
   .panel-card, .ficha-panel, .ficha-seccion, .form-section,
   .section-card, .stat-card, .kpi-card, .agenda-upcoming-card,
-  .logs-panel, .maestros-panel, .molsan-intranet-page > section, .molsan-intranet-page article, .notificaciones-premium-page article, .notificaciones-premium-page [role="article"], .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .panel-tecnico-submodulo-premium article, .empleado-ficha-premium > section, .seguridad-premium-page > section, .seguridad-acceso, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, .ctn-portal-card, .ctn-portal-field-card, [data-panel="true"], [data-cg-panel="true"]
+  .logs-panel, .maestros-panel, .dashboard-section-panel, .molsan-intranet-page > section, .molsan-intranet-page article, .notificaciones-premium-page article, .notificaciones-premium-page [role="article"], .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .panel-tecnico-submodulo-premium article, .empleado-ficha-premium > section, .seguridad-premium-page > section, .seguridad-acceso, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, .ctn-portal-card, .ctn-portal-field-card, [data-panel="true"], [data-cg-panel="true"]
 ) {
   --molsan-card-accent: var(--molsan-primary, #064675);
   min-width: 0;
@@ -1015,7 +1015,7 @@
   .panel-tecnico-premium, .seguridad-premium-page,
   .herramientas-subpagina-premium, .catalogos-maestros-premium
 ) :is(
-  .erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi,
+  .erp-card, .erp-card-soft, .card-sj, .molsan-panel, .cg-panel, .cg-kpi,
   .cg-section, .cg-module-card, .ag-panel, .ag-kpi, .ag-card,
   .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel,
   .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
@@ -1025,7 +1025,7 @@
   .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
   .panel-card, .ficha-panel, .ficha-seccion, .form-section,
   .section-card, .stat-card, .kpi-card, .agenda-upcoming-card,
-  .logs-panel, .maestros-panel, .molsan-intranet-page > section, .molsan-intranet-page article, .notificaciones-premium-page article, .notificaciones-premium-page [role="article"], .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .panel-tecnico-submodulo-premium article, .empleado-ficha-premium > section, .seguridad-premium-page > section, .seguridad-acceso, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, .ctn-portal-card, .ctn-portal-field-card, [data-panel="true"], [data-cg-panel="true"]
+  .logs-panel, .maestros-panel, .dashboard-section-panel, .molsan-intranet-page > section, .molsan-intranet-page article, .notificaciones-premium-page article, .notificaciones-premium-page [role="article"], .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .panel-tecnico-submodulo-premium article, .empleado-ficha-premium > section, .seguridad-premium-page > section, .seguridad-acceso, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, .ctn-portal-card, .ctn-portal-field-card, [data-panel="true"], [data-cg-panel="true"]
 ):hover {
   border-color: #B8D2E1;
   box-shadow: 0 19px 38px rgba(6, 50, 82, .13);
@@ -1055,7 +1055,7 @@
     .utilidades-premium-page, .maestros-premium-page, .informes-premium-page,
     .mensajes-premium-page, .mensajeria, .provisiones-fondos-page,
     .panel-tecnico-premium, .seguridad-premium-page) :is(
-      .erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi,
+      .erp-card, .erp-card-soft, .card-sj, .molsan-panel, .cg-panel, .cg-kpi,
       .cg-section, .cg-module-card, .ag-panel, .ag-kpi, .ag-card,
       .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel,
       .eg-kpi, .eg-card, .eg-directorio-card, .ctn-panel,
@@ -1111,4 +1111,56 @@
   border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: 14px;
   background: var(--molsan-surface-soft, #F2F7FB);
+}
+
+
+/* Cabeceras internas de tarjetas: misma jerarquía y banda azul hielo en todos los módulos. */
+:is(
+  .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
+  .apoderagest, .notargest, .encargagest, .ctn-listado-page,
+  .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
+  .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
+  .utilidades-premium-page, .maestros-premium-page, .informes-premium-page,
+  .mensajes-premium-page, .mensajeria, .provisiones-fondos-page,
+  .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .seguridad-premium-page, .seguridad-subpagina-premium,
+  .herramientas-subpagina-premium, .catalogos-maestros-premium
+) :is(
+  .erp-card-header, .molsan-panel__header, .ag-panel-cabecera,
+  .ag-panel-header, .eg-card-header, .eg-panel-head, .ng-panel-titulo,
+  .ctn-tabla-cabecera, .eg-modal-section-heading, .molsan-section-header
+) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px 16px;
+  color: #064675;
+  background: #F2F7FB;
+  border-bottom: 1px solid #D8E4EC;
+}
+:is(
+  .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
+  .apoderagest, .notargest, .encargagest, .ctn-listado-page,
+  .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
+  .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
+  .utilidades-premium-page, .maestros-premium-page, .informes-premium-page,
+  .mensajes-premium-page, .mensajeria, .provisiones-fondos-page,
+  .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .seguridad-premium-page, .seguridad-subpagina-premium,
+  .herramientas-subpagina-premium, .catalogos-maestros-premium
+) :is(
+  .erp-card-header, .molsan-panel__header, .ag-panel-cabecera h2,
+  .ag-panel-cabecera h3, .ag-panel-header h2, .eg-card-header h2,
+  .eg-panel-head h2, .eg-panel-head h3, .ng-panel-titulo h2,
+  .ctn-tabla-cabecera h2, .ctn-tabla-cabecera h3,
+  .eg-modal-section-heading h3, .molsan-section-header__title
+) {
+  margin: 0;
+  color: #064675;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.3;
 }
