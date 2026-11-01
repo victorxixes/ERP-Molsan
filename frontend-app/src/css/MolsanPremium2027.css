@@ -1,7 +1,6 @@
 /* MOLSAN ERP PREMIUM 2027 · GLASS LUXE
    Capa global de armonización + Espacio de trabajo.
    Mantiene la lógica de los módulos intacta. */
-:root { color-scheme: light; }
 html, body, #root { min-height: 100%; }
 body {
   margin: 0;
@@ -11,7 +10,6 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
-::selection { color: #fff; background: var(--molsan-primary); }
 .erp-app-shell { background: var(--molsan-page-bg) !important; color: var(--molsan-text); }
 .erp-main-content { min-width: 0; }
 .erp-main-inner { width: 100%; max-width: 1920px; margin-inline: auto; }
