@@ -1497,69 +1497,71 @@
 }
 
 
-/* Cabecera corporativa para los portales que comparten el shell AG. */
+/* Cabecera corporativa de portales: misma escala que el Dashboard. */
 :is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  flex-wrap: wrap !important;
-  gap: 24px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
   min-width: 0;
-  padding: 10px 4px 26px !important;
-  margin: 0 0 20px !important;
-  background: transparent !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
+  padding: 12px 16px;
+  margin: 0 0 18px;
+  color: var(--molsan-text);
+  background: linear-gradient(145deg, #F2F7FB 0%, #FFFFFF 64%, #F6FAFC 100%);
+  border: 1px solid var(--molsan-border, #D8E4EC);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(6,50,82,.065);
 }
 
 :is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero-identidad {
   display: flex;
   align-items: center;
-  gap: 17px;
+  gap: 12px;
   min-width: 0;
 }
 
 :is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero .ag-marca {
   display: grid;
-  flex: 0 0 62px;
-  width: 62px;
-  height: 62px;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
   place-items: center;
   color: #fff;
-  background: linear-gradient(145deg, var(--molsan-primary), var(--molsan-primary-hover));
-  border: 1px solid rgba(255, 255, 255, .7);
-  border-radius: 16px;
-  box-shadow: 0 8px 22px color-mix(in srgb, var(--molsan-primary) 2%, transparent);
-  font-size: 20px;
-  font-weight: 850;
-  letter-spacing: -1px;
+  background: linear-gradient(145deg, #04375B, #0D638C);
+  border: 0;
+  border-radius: 11px;
+  box-shadow: none;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -.03em;
 }
 
 :is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero .ag-eyebrow {
   display: block;
-  color: #63769b;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 1.65px;
-  line-height: 1.5;
+  margin: 0 0 3px;
+  color: var(--molsan-text-muted, #617789);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  line-height: 1.4;
 }
 
 :is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero h1 {
-  margin: 5px 0 4px;
-  color: var(--molsan-text, #17233a);
-  font-size: clamp(26px, 3vw, 36px);
-  font-weight: 820;
-  letter-spacing: -1.3px;
-  line-height: 1.12;
+  margin: 0 0 3px;
+  color: var(--molsan-primary, #064675);
+  font-size: 20px;
+  font-weight: 750;
+  letter-spacing: -.02em;
+  line-height: 1.2;
 }
 
 :is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero p {
   max-width: 650px;
   margin: 0;
-  color: var(--molsan-text-muted, #718696);
-  font-size: 13px;
-  line-height: 1.65;
+  color: var(--molsan-text-muted, #617789);
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 :is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero-acciones {
@@ -1567,14 +1569,15 @@
   align-items: center;
   justify-content: flex-end;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 8px;
 }
 
 @media (max-width: 760px) {
   :is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero {
-    align-items: flex-start !important;
-    gap: 16px !important;
-    padding: 8px 0 20px !important;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+    margin-bottom: 14px;
   }
 
   :is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero-acciones {
@@ -1583,11 +1586,11 @@
   }
 
   :is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero .ag-marca {
-    flex-basis: 48px;
-    width: 48px;
-    height: 48px;
-    border-radius: 13px;
-    font-size: 17px;
+    flex-basis: 36px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    font-size: 14px;
   }
 }
 
