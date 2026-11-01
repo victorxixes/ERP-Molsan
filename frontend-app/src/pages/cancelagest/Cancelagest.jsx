@@ -80,7 +80,7 @@ export default function Cancelagest() {
     })
     .filter((modulo) => modulo && puedeVerModulo(modulo.key));
 
-  return <main className="cg-page">
+  return <main className="molsan-page-stack cg-page">
       <header className="cg-hero molsan-page-header">
         <div className="cg-hero-identidad">
           <div className="cg-logo molsan-page-header__mark"><img src="/img/logo.jpg" alt="MOLSAN" /></div>
@@ -102,7 +102,7 @@ export default function Cancelagest() {
       </section>
 
       <section className="erp-card cg-section">
-        <div className="cg-section-heading"><div><span className="cg-kicker">ACCESOS DIRECTOS</span><h2>Módulos de trabajo</h2><p>Accede a las herramientas principales del ERP sin salir del entorno corporativo.</p></div></div>
+        <div className="cg-section-heading molsan-section-header"><div><span className="cg-kicker">ACCESOS DIRECTOS</span><h2>Módulos de trabajo</h2><p>Accede a las herramientas principales del ERP sin salir del entorno corporativo.</p></div></div>
         <div className="cg-module-grid">{modulosVisibles.map((modulo) => <button type="button" className="erp-card cg-module-card" key={modulo.titulo} onClick={() => navigate(modulo.ruta)}>
           <span className="cg-module-icon">{modulo.icono}</span><span className="cg-module-text"><strong>{modulo.titulo}</strong><small>{modulo.descripcion}</small></span><span className="cg-module-arrow">↗</span>
         </button>)}</div>
@@ -110,21 +110,21 @@ export default function Cancelagest() {
 
       <section className="cg-charts-grid">
         <article className="erp-card cg-panel">
-          <div className="cg-section-heading"><div><span className="cg-kicker">ACTIVIDAD</span><h2>Firmas realizadas</h2><p>Firmas registradas por mes, según la fecha de firma del expediente.</p></div></div>
+          <div className="cg-section-heading molsan-section-header"><div><span className="cg-kicker">ACTIVIDAD</span><h2>Firmas realizadas</h2><p>Firmas registradas por mes, según la fecha de firma del expediente.</p></div></div>
           {firmasMensuales.length ? <div className="cg-month-chart">{firmasMensuales.map((item) => {
             const max = Math.max(1, ...firmasMensuales.map((x) => Number(x.total || 0)));
             return <div className="cg-month-column" key={item.mes}><strong>{fmtNumero(item.total)}</strong><div className="cg-month-bar-wrap"><div className="cg-month-bar" style={{ height: `${Math.max(4, Number(item.total || 0) / max * 100)}%` }} /></div><small>{item.mesLabel}</small></div>;
           })}</div> : <p className="cg-empty-chart">{cargando ? "Cargando firmas…" : "Todavía no hay firmas registradas para mostrar."}</p>}
         </article>
         <article className="erp-card cg-panel">
-          <div className="cg-section-heading"><div><span className="cg-kicker">MEDIA DE FIRMA</span><h2>Envío hasta firma</h2><p>Días naturales entre la fecha de envío a notaría y la fecha de firma, separados por tipo de cancelación.</p></div></div>
+          <div className="cg-section-heading molsan-section-header"><div><span className="cg-kicker">MEDIA DE FIRMA</span><h2>Envío hasta firma</h2><p>Días naturales entre la fecha de envío a notaría y la fecha de firma, separados por tipo de cancelación.</p></div></div>
           <GraficoBarras items={categorias.map((x) => ({ ...x, media: x.media_dias_envio_firma }))} labelKey="nombre" valueKey="media" formatter={fmtDias} emptyText={cargando ? "Calculando medias…" : "No hay expedientes con fecha de envío y firma para calcular la media."} />
           <div className="cg-category-counts">{categorias.map((x) => <div key={x.key}><span>{x.nombre}</span><strong>{fmtNumero(x.firmadas)} firmas</strong><small>{fmtNumero(x.casos_media)} casos con ambas fechas</small></div>)}</div>
         </article>
       </section>
 
       <section className="cg-panel cg-circuito-panel">
-        <div className="cg-section-heading"><div><span className="cg-kicker">CIRCUITO COMPLETO</span><h2>Tiempo medio entre hitos</h2><p>Las medias se calculan solo con expedientes que tienen ambas fechas y cuya secuencia no produce un intervalo negativo.</p></div></div>
+        <div className="cg-section-heading molsan-section-header"><div><span className="cg-kicker">CIRCUITO COMPLETO</span><h2>Tiempo medio entre hitos</h2><p>Las medias se calculan solo con expedientes que tienen ambas fechas y cuya secuencia no produce un intervalo negativo.</p></div></div>
         <GraficoBarras items={tiempos.map((x) => ({ ...x, media: x.media_dias }))} labelKey="nombre" valueKey="media" formatter={fmtDias} emptyText={cargando ? "Calculando tiempos…" : "Todavía no hay suficientes fechas para calcular los tiempos del circuito."} />
         <div className="cg-circuito-nota"><strong>Hitos medidos</strong><span>Firma → presentación tributaria</span><span>Presentación tributaria → presentación en Registro</span><span>Presentación en Registro → inscripción</span><span>Inscripción → cierre</span></div>
       </section>
