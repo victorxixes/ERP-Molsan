@@ -221,18 +221,7 @@ export default function Logs() {
       ===================================================== */}
 
       <section
-        className="
-          relative
-          overflow-hidden
-          rounded-[24px]
-          border
-          border-white/80
-          bg-white/80
-          backdrop-blur-2xl
-          shadow-[0_15px_45px_rgba(15,23,42,0.08)]
-          p-6
-          sm:p-7
-        "
+        className="molsan-page-header relative overflow-hidden"
       >
 
         {/* Línea superior */}
@@ -285,18 +274,7 @@ export default function Logs() {
           >
 
             <div
-              className="
-                flex
-                items-center
-                justify-center
-                w-11
-                h-11
-                rounded-xl
-                bg-blue-50
-                border
-                border-blue-100
-                shadow-sm
-              "
+              className="molsan-page-header__mark"
             >
 
               <span
