@@ -7,6 +7,13 @@ import React from "react";
  */
 const PATHS = {
   activity: <><path d="M3 12h4l2.2-7 4.1 14 2.2-7H21"/></>,
+  merge: <><path d="M7 3v5c0 2.2 1.8 4 4 4h2c2.2 0 4-1.8 4-4V3"/><path d="M7 21v-5c0-2.2 1.8-4 4-4h2c2.2 0 4 1.8 4 4v5"/><path d="M4 3h6M14 21h6"/></>,
+  archive: <><path d="M3 4h18v4H3zM5 8v12h14V8M9 12h6"/></>,
+  fileCheck: <><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5M8.5 15l2 2 4-4"/></>,
+  files: <><path d="M7 4h11v15H7z"/><path d="M4 7v13h11M10 8h5M10 12h5"/></>,
+  clipboardList: <><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 9h6M9 13h6M9 17h4"/></>,
+  zap: <><path d="m13 2-9 12h7l-1 8 10-13h-7z"/></>,
+
   calendar: <><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17M8 14h3M8 17h6"/></>,
   home: <><path d="m3 10 9-7 9 7M5 9v11h14V9M9 20v-6h6v6"/></>,
   dashboard: <><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="5" rx="1.5"/><rect x="13" y="10" width="8" height="11" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/></>,
@@ -97,7 +104,7 @@ const ALIASES = {
   "🟢": "check", "🔔": "bell", "🔕": "bell", "🏷️": "tag", "🙈": "eye",
   "🔌": "plug", "🧱": "building", "🚫": "alert", "💥": "alert", "🚪": "door",
   "🔓": "lock", "🗓": "calendar", "🗓️": "calendar", "🗂": "folder", "🗃": "archive",
-  "📗": "fileCheck", "🏷": "tag", "🚧": "alert", "🔧": "tools", "🖋": "pen",
+  "📗": "fileCheck", "clipboard-list": "clipboardList", "file-check": "fileCheck", "folder-check": "fileCheck", "book-check": "book", "alert-triangle": "alert", "check-circle": "check", "files": "files", "zap": "zap", "🏷": "tag", "🚧": "alert", "🔧": "tools", "🖋": "pen",
   "🖥": "monitor", "🛡": "shield", "🏛": "courthouse", "📡": "monitor",
 
 
