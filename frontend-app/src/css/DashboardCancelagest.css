@@ -125,7 +125,7 @@
     max-width: 100%;
     white-space: normal;
   }.dashboard-cancelagest .dashboard-kpi {
-    padding: 14px;
+    
   }
 }
 
@@ -191,7 +191,7 @@
 }
 .dashboard-cancelagest .dashboard-kpis { gap:16px; }.dashboard-cancelagest .dashboard-kpi {
   min-height:132px;
-  padding:19px !important;
+  
 }
 .dashboard-cancelagest .dashboard-kpi__value {
   color:#123F5E !important;
