@@ -44,7 +44,7 @@
   .erp-main-inner { padding-inline: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+  .erp-app-shell, .erp-app-shell *, .erp-app-shell *::before, .erp-app-shell *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
 
 /* ---------------------------------------------------------
