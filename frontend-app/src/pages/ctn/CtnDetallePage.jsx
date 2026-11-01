@@ -154,13 +154,13 @@ export default function CtnDetallePage() {
 
   return (
     <div className="ctn-detalle-page ctn-detalle-page--content">
-      <div className="ctn-detalle-header">
+      <header className="ctn-detalle-header molsan-page-header">
         <div>
           <h1 className="ctn-detalle-title">{nombreNotario(notaria)}</h1>
           <div className="ctn-detalle-meta">Ficha CTN · NIF: {valor(notaria.nif)} · Código: {valor(notaria.codigo)}</div>
         </div>
         <button type="button" onClick={() => navigate(-1)}>Volver al listado</button>
-      </div>
+      </header>
 
       {error && <div role="alert" className="ctn-detalle-alert">{error}</div>}
 
