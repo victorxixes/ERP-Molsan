@@ -9,18 +9,18 @@
   box-shadow: inset 0 1px 2px rgba(15, 23, 42, .025);
 }
 .empleado-editar-premium input:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--molsan-primary, #3156b3) 25%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary, #064675) 25%, transparent);
   outline-offset: 1px;
 }
 .empleado-editar-premium button:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--molsan-primary, #3156b3) 40%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary, #064675) 40%, transparent);
   outline-offset: 3px;
 }
 .empleado-editar-premium [role="switch"] {
   box-shadow: inset 0 1px 3px rgba(15, 23, 42, .12);
 }
 .empleado-editar-premium [role="switch"]:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--molsan-primary, #3156b3) 40%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary, #064675) 40%, transparent);
   outline-offset: 3px;
 }
 @media (max-width: 640px) {
