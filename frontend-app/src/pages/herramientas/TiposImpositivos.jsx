@@ -138,7 +138,7 @@ export default function TiposImpositivos() {
               { key: "activo", header: "Estado", accessor: "activo", sortType: "boolean", render: (value) => <span className={value ? "rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700" : "rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-500"}>{value ? "Activo" : "Inactivo"}</span> },
               { key: "acciones", header: "Acciones", sortable: false, align: "right", accessor: (item) => item.id, render: (_, item) => <div className="flex justify-end gap-2"><button type="button" onClick={() => editar(item)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100">Editar</button>{item.activo && <button type="button" onClick={() => desactivar(item)} className="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-bold text-rose-700 hover:bg-rose-50">Eliminar</button>}</div> },
             ]}
-          />ble></div>
+          />
         )}
       </section>
     </main>
