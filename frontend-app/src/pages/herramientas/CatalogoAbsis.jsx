@@ -209,18 +209,18 @@ export default function CatalogoAbsis() {
         </div>
         {cargando ? <div className="p-10 text-center text-sm text-slate-500">Cargando listado…</div> :
           visibles.length === 0 ? <div className="p-10 text-center"><p className="font-semibold text-slate-700">Todavía no hay entradas en esta lista</p><p className="mt-1 text-sm text-slate-500">Usa «Añadir entrada» para incorporar el primer valor.</p></div> :
-          <div className="overflow-x-auto"><table className="w-full min-w-[680px] text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr>
-              <th className="px-5 py-3 font-semibold">Código</th><th className="px-5 py-3 font-semibold">Valor</th><th className="px-5 py-3 font-semibold">Descripción</th><th className="px-5 py-3 font-semibold">Estado</th><th className="px-5 py-3 text-right font-semibold">Acciones</th>
-            </tr></thead>
-            <tbody className="divide-y divide-slate-100">{visibles.map((fila) => <tr key={fila.id} className="hover:bg-slate-50/70">
-              <td className="whitespace-nowrap px-5 py-3 font-mono text-xs text-slate-600">{fila.codigo || "—"}</td>
-              <td className="px-5 py-3 font-medium text-slate-800">{fila.valor || "—"}</td>
-              <td className="max-w-xl px-5 py-3 text-slate-600">{fila.descripcion || "—"}</td>
-              <td className="px-5 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${fila.activo ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{fila.activo ? "Activo" : "Inactivo"}</span></td>
-              <td className="whitespace-nowrap px-5 py-3 text-right"><button type="button" onClick={() => abrirEdicion(fila)} className="rounded-lg px-2 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-50">Editar</button><button type="button" onClick={() => eliminar(fila)} className="ml-1 rounded-lg px-2 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50">Eliminar</button></td>
-            </tr>)}</tbody>
-          </table></div>
+          <MolsanDataTable
+            rows={visibles}
+            rowKey="id"
+            minWidth="680px"
+            columns={[
+              { key: "codigo", header: "Código", accessor: "codigo", sortType: "text" },
+              { key: "valor", header: "Valor", accessor: "valor", sortType: "text" },
+              { key: "descripcion", header: "Descripción", accessor: "descripcion", sortType: "text" },
+              { key: "activo", header: "Estado", accessor: "activo", sortType: "boolean", render: (value) => <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${value ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{value ? "Activo" : "Inactivo"}</span> },
+              { key: "acciones", header: "Acciones", sortable: false, align: "right", accessor: (fila) => fila.id, render: (_, fila) => <div className="flex justify-end gap-1"><button type="button" onClick={() => abrirEdicion(fila)} className="rounded-lg px-2 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-50">Editar</button><button type="button" onClick={() => eliminar(fila)} className="rounded-lg px-2 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50">Eliminar</button></div> },
+            ]}
+          />ble></div>
         }
       </section>
 
