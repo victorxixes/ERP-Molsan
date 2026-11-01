@@ -635,7 +635,6 @@ export default function Mensajes({
         min-h-0
         w-full
         flex-col
-        gap-4
         overflow-hidden
         p-0
         lg:h-[calc(100dvh-112px)]
@@ -807,7 +806,7 @@ export default function Mensajes({
                     text-slate-800
                   "
                 >
-                  Empleados conectados
+                  Contactos
                 </h2>
 
                 <p
