@@ -909,7 +909,10 @@
 .ctn-modal-panel,
 .eg-modal-form,
 .ng-modal,
-.ag-resumen-modal {
+.ag-resumen-modal,
+.modal-sj,
+.expediente-operativo-modal [role="dialog"],
+.empleado-operativo-modal [role="dialog"] {
   border: 1px solid #D8E4EC;
   border-radius: 18px;
   background: #FFFFFF;
@@ -951,3 +954,5 @@
   .ag-resumen-modal-cabecera,
   .ng-modal > header { padding: 14px; gap: 10px; }
 }
+
+.modal-sj { border:1px solid #D8E4EC; border-radius:18px; }
