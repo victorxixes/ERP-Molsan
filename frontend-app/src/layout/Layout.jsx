@@ -67,12 +67,12 @@ export default function Layout() {
       <main className="erp-main-content relative min-h-[calc(100vh-70px)]">
         <div className="erp-main-inner w-full px-4 py-6 lg:px-6">
           <div className={`w-full${rutaCancelaGest ? " cg-unified-workspace" : ""}`}>
-            <Outlet />
-      {esSubpagina && !cabeceraSubpagina ? (
+            {esSubpagina && !cabeceraSubpagina ? (
         <header className="molsan-page-header molsan-page-back-fallback">
           <button type="button" className="molsan-page-back-button" onClick={volverSubpagina} aria-label="Volver a la página anterior"><span aria-hidden="true">←</span> Volver</button>
         </header>
       ) : null}
+            <Outlet />
       {cabeceraSubpagina ? createPortal(
         <button type="button" className="molsan-page-back-button" onClick={volverSubpagina} aria-label="Volver a la página anterior">
           <span aria-hidden="true">←</span> Volver
