@@ -37,9 +37,9 @@
 
 .molsan-page-header__mark {
   display: grid;
-  flex: 0 0 42px;
-  width: 42px;
-  height: 42px;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
   place-items: center;
   border: 1px solid color-mix(in srgb, var(--molsan-primary) 12%, transparent);
   border-radius: 11px;
@@ -60,7 +60,7 @@
 .molsan-page-header__title {
   margin: 0;
   color: var(--molsan-text);
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.25;
@@ -142,9 +142,9 @@
 .ng-cabecera,
 .encargagest .eg-hero {
   align-items: center;
-  gap: 16px;
-  padding: 16px 20px;
-  margin-bottom: 20px;
+  gap: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
   color: var(--molsan-text);
   background: var(--molsan-surface);
   border: 1px solid var(--molsan-border);
