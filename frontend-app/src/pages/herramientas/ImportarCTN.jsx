@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useState } from "react";
 import { useUtilidades } from "../../hooks/useUtilidades";
 import MolsanButton from "../../components/ui/MolsanButton";
@@ -52,7 +53,7 @@ export default function ImportarCTN() {
               text-2xl
             "
           >
-            📥
+            <MolsanIcon name="download" size={20} />
           </div>
 
           <div>
