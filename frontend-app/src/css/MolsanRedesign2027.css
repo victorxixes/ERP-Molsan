@@ -2748,7 +2748,8 @@ table :is(th, td) {
 :where(
   .utilidades-premium-page,
   .catalogos-premium-page,
-  .herramientas-subpagina-premium
+  .herramientas-subpagina-premium,
+  .crear-noticia-premium
 ).animate-fadeIn {
   animation: none !important;
   opacity: 1 !important;
@@ -2758,12 +2759,14 @@ table :is(th, td) {
 :where(
   .utilidades-premium-page,
   .catalogos-premium-page,
-  .herramientas-subpagina-premium
+  .herramientas-subpagina-premium,
+  .crear-noticia-premium
 ).animate-fadeIn > header,
 :where(
   .utilidades-premium-page,
   .catalogos-premium-page,
-  .herramientas-subpagina-premium
+  .herramientas-subpagina-premium,
+  .crear-noticia-premium
 ) > header.molsan-page-header {
   animation: none !important;
   opacity: 1 !important;
