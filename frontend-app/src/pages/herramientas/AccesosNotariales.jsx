@@ -1,4 +1,5 @@
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanButton from "../../components/ui/MolsanButton";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
