@@ -57,7 +57,7 @@ export default function SubirDocumento() {
   ]);
 
   return (
-    <div className="subir-documento-premium herramientas-subpagina-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6 animate-fadeIn">
+    <div className="subir-documento-premium herramientas-subpagina-premium min-h-full space-y-6 animate-fadeIn">
 
       {/* =====================================================
           CABECERA
@@ -85,7 +85,7 @@ export default function SubirDocumento() {
           "
         />
 
-        <div className="molsan-page-header flex items-center gap-4">
+        <div className="molsan-page-header">
 
           <div
             className="
