@@ -65,7 +65,7 @@ export default function ComplementosSaldo() {
     finally { setExportando(false); }
   }
 
-  return <div className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6">
+  return <div className="molsan-page-stack herramienta-operativa-premium herramientas-subpagina-premium min-h-full">
     <header className="molsan-page-header">
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
