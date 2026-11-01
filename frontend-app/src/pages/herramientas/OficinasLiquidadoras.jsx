@@ -1,4 +1,6 @@
 import { useSearchParams } from "react-router-dom";
+import { sortRows } from "../../utils/sortRows";
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import React, {
   useCallback,
   useEffect,
@@ -223,6 +225,8 @@ function BadgeActivo({
 // ============================================================
 
 export default function OficinasLiquidadoras() {
+  const [ordenTabla, setOrdenTabla] = useState({ key: "oficina_liquidadora", direction: "asc" });
+
   const [searchParams] = useSearchParams();
 
 
@@ -570,13 +574,15 @@ export default function OficinasLiquidadoras() {
     );
 
 
-  const oficinasPagina =
-    oficinas.slice(
-      (pagina - 1) *
-        POR_PAGINA,
-      pagina *
-        POR_PAGINA
-    );
+  const oficinasOrdenadas = useMemo(
+    () => sortRows(oficinas, { key: ordenTabla.key, accessor: (item) => ordenTabla.key === "activo" ? item.activo !== false : item?.[ordenTabla.key], sortType: ordenTabla.key === "activo" ? "boolean" : "text" }, ordenTabla.direction),
+    [oficinas, ordenTabla]
+  );
+  const oficinasPagina = oficinasOrdenadas.slice(
+    (pagina - 1) * POR_PAGINA,
+    pagina * POR_PAGINA
+  );
+  const cambiarOrdenTabla = (next) => { setOrdenTabla(next); setPagina(1); };
 
 
   useEffect(() => {
@@ -1920,442 +1926,25 @@ export default function OficinasLiquidadoras() {
 
         <div className="overflow-x-auto">
 
-          <table
-            className="
-              w-full
-              min-w-[1250px]
-              text-sm
-              text-[var(--erp-text)]
-            "
-          >
-
-            <thead>
-
-              <tr
-                className="
-                  bg-[var(--erp-primary)]
-                  text-white
-                  text-left
-                "
-              >
-
-                <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    whitespace-nowrap
-                  "
-                >
-                  Oficina Liquidadora
-                </th>
-
-                <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    whitespace-nowrap
-                  "
-                >
-                  Dirección
-                </th>
-
-                <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    text-center
-                    whitespace-nowrap
-                  "
-                >
-                  Código Postal
-                </th>
-
-                <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    whitespace-nowrap
-                  "
-                >
-                  Población
-                </th>
-
-                <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    whitespace-nowrap
-                  "
-                >
-                  Provincia
-                </th>
-
-                <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    whitespace-nowrap
-                  "
-                >
-                  Teléfono
-                </th>
-
-                <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    whitespace-nowrap
-                  "
-                >
-                  Email
-                </th>
-
-                <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    whitespace-nowrap
-                  "
-                >
-                  Horario
-                </th>
-
-                <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    text-center
-                    whitespace-nowrap
-                  "
-                >
-                  Estado
-                </th>
-
-                <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    text-center
-                    whitespace-nowrap
-                  "
-                >
-                  Acciones
-                </th>
-
-              </tr>
-
-            </thead>
-
-
-            <tbody>
-
-              {loading &&
-              oficinasPagina.length ===
-                0 ? (
-
-                <tr>
-
-                  <td
-                    colSpan="10"
-                    className="
-                      px-4
-                      py-14
-                      text-center
-                      text-[var(--erp-text-soft)]
-                    "
-                  >
-
-                    <div
-                      className="
-                        inline-flex
-                        items-center
-                        gap-2
-                      "
-                    >
-
-                      <span
-                        className="
-                          w-2
-                          h-2
-                          rounded-full
-                          bg-[var(--erp-primary)]
-                          animate-pulse
-                        "
-                      />
-
-                      Cargando oficinas…
-
-                    </div>
-
-                  </td>
-
-                </tr>
-
-              ) : oficinasPagina.length ===
-                0 ? (
-
-                <tr>
-
-                  <td
-                    colSpan="10"
-                    className="
-                      px-4
-                      py-14
-                      text-center
-                      text-[var(--erp-text-soft)]
-                    "
-                  >
-
-                    No hay Oficinas Liquidadoras
-                    que coincidan con los filtros.
-
-                  </td>
-
-                </tr>
-
-              ) : (
-
-                oficinasPagina.map(
-                  (oficina) => (
-
-                    <tr
-                      key={
-                        oficina.id
-                      }
-                      className="
-                        border-b
-                        border-[var(--erp-border)]
-                        hover:bg-[var(--erp-primary-soft)]
-                        transition-colors
-                      "
-                    >
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                          font-semibold
-                        "
-                      >
-                        {
-                          oficina.oficina_liquidadora
-                        }
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                          text-[var(--erp-text-soft)]
-                        "
-                      >
-                        {
-                          oficina.direccion ||
-                          "—"
-                        }
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                          text-center
-                          tabular-nums
-                        "
-                      >
-                        {
-                          oficina.codigo_postal ||
-                          "—"
-                        }
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                        "
-                      >
-                        {
-                          oficina.poblacion ||
-                          "—"
-                        }
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                        "
-                      >
-                        {
-                          oficina.provincia ||
-                          "—"
-                        }
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                          whitespace-nowrap
-                        "
-                      >
-                        {
-                          oficina.telefono ||
-                          "—"
-                        }
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                          text-[var(--erp-text-soft)]
-                        "
-                      >
-                        {
-                          oficina.email ||
-                          "—"
-                        }
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                          max-w-[220px]
-                        "
-                      >
-                        <span
-                          className="
-                            line-clamp-2
-                          "
-                        >
-                          {
-                            oficina.horario ||
-                            "—"
-                          }
-                        </span>
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                          text-center
-                        "
-                      >
-                        <BadgeActivo
-                          activo={
-                            oficina.activo !==
-                            false
-                          }
-                        />
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                        "
-                      >
-
-                        <div
-                          className="
-                            flex
-                            items-center
-                            justify-center
-                            gap-2
-                          "
-                        >
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              abrirEditar(
-                                oficina
-                              )
-                            }
-                            title="Editar"
-                            className="
-                              w-9
-                              h-9
-                              rounded-xl
-                              bg-white
-                              border
-                              border-[var(--erp-border)]
-                              text-[var(--erp-primary)]
-                              flex
-                              items-center
-                              justify-center
-                              hover:bg-[var(--erp-primary-soft)]
-                              hover:border-[var(--erp-primary)]
-                              transition
-                            "
-                          >
-                            ✎
-                          </button>
-
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              eliminarOficina(
-                                oficina
-                              )
-                            }
-                            title="Eliminar"
-                            className="
-                              w-9
-                              h-9
-                              rounded-xl
-                              bg-white
-                              border
-                              border-red-200
-                              text-red-600
-                              flex
-                              items-center
-                              justify-center
-                              hover:bg-red-50
-                              transition
-                            "
-                          >
-                            ×
-                          </button>
-
-                        </div>
-
-                      </td>
-
-                    </tr>
-
-                  )
-                )
-
-              )}
-
-            </tbody>
-
-          </table>
+          <MolsanDataTable
+            rows={oficinasPagina}
+            rowKey="id"
+            minWidth="1250px"
+            sortMode="server"
+            onSortChange={cambiarOrdenTabla}
+            columns={[
+              { key: "oficina_liquidadora", header: "Oficina Liquidadora", accessor: "oficina_liquidadora", sortType: "text" },
+              { key: "direccion", header: "Dirección", accessor: "direccion", sortType: "text" },
+              { key: "codigo_postal", header: "Código Postal", accessor: "codigo_postal", sortType: "text" },
+              { key: "poblacion", header: "Población", accessor: "poblacion", sortType: "text" },
+              { key: "provincia", header: "Provincia", accessor: "provincia", sortType: "text" },
+              { key: "telefono", header: "Teléfono", accessor: "telefono", sortType: "text" },
+              { key: "email", header: "Email", accessor: "email", sortType: "text" },
+              { key: "horario", header: "Horario", accessor: "horario", sortType: "text" },
+              { key: "activo", header: "Estado", accessor: (item) => item.activo !== false, sortType: "boolean", render: (value) => <BadgeActivo activo={value} /> },
+              { key: "acciones", header: "Acciones", sortable: false, align: "right", accessor: (item) => item.id, render: (_, item) => <div className="flex justify-center gap-2"><button type="button" onClick={() => abrirEditar(item)} title="Editar" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-blue-700 hover:bg-blue-50">Editar</button><button type="button" onClick={() => eliminarOficina(item)} title="Eliminar" className="rounded-lg border border-red-200 bg-white px-3 py-2 text-xs text-red-600 hover:bg-red-50">Eliminar</button></div> },
+            ]}
+          />
 
         </div>
 
