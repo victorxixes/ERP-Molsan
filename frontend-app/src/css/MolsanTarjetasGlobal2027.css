@@ -546,3 +546,169 @@
     border-radius: 15px;
   }
 }
+
+
+/* ============================================================
+   AJUSTE DE CONSISTENCIA GLOBAL · PATRÓN ESPACIOS DE TRABAJO
+   Un solo ancho útil, márgenes y cabecera para las páginas ERP.
+   No modifica estructura, contenido, permisos ni comportamiento.
+   ============================================================ */
+
+/* El selector de espacios utiliza todo el ancho disponible con un
+   colchón constante. Replicamos ese ritmo en el contenido operativo. */
+.erp-main-inner {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  margin-inline: auto;
+  padding: 26px clamp(16px, 2.15vw, 32px) 34px !important;
+}
+.erp-main-inner > div,
+.erp-main-inner > div > * {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  max-width: none;
+}
+.erp-main-inner > div > :is(main, .agenda-premium-page, .intranet-premium-page, .intranet-page, .informes-premium-page, .catalogos-premium-page, .maestros-premium-page, .provisiones-fondos-page, .provisiones-fondos-premium, .expedientes-page, .expedientes-listado-premium, .ctn-listado-page, .molsan-page, .cg-page, .cg-unified-workspace, .fusiones-premium-page) {
+  margin-inline: auto;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+}
+.erp-main-inner :is(.expedientes-page, .expedientes-listado-premium, .agenda-premium-page, .ctn-listado-page, .molsan-page, .provisiones-fondos-page, .provisiones-fondos-premium, .maestros-premium-page, .informes-premium-page, .catalogos-premium-page, .cg-page, .cg-unified-workspace) {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+/* Cabecera de página con el mismo lenguaje visual de la cabecera
+   Espacios de trabajo: banda azul hielo, acento Molsan y marca compacta. */
+.erp-main-inner :is(.molsan-page-header, .erp-page-header, [data-page-header="true"], .ctn-listado-header, .agenda-page-header, .cg-page-header) {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  width: 100%;
+  min-width: 0;
+  margin: 0 0 22px;
+  padding: 16px 20px;
+  overflow: hidden;
+  color: #173247;
+  border: 1px solid #D8E4EC;
+  border-radius: 20px;
+  background:
+    radial-gradient(ellipse at 94% 8%, rgba(38,150,165,.14), transparent 30%),
+    linear-gradient(112deg, #EAF2F8 0%, #F5F9FC 48%, #FFFFFF 100%);
+  box-shadow: 0 10px 26px rgba(6,50,82,.075);
+}
+.erp-main-inner :is(.molsan-page-header, .erp-page-header, [data-page-header="true"], .ctn-listado-header, .agenda-page-header, .cg-page-header)::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, #064675 0%, #2696A5 100%);
+  pointer-events: none;
+}
+.erp-main-inner :is(.molsan-page-header__identity, .erp-page-header__identity) {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+.erp-main-inner :is(.molsan-page-header__mark, .erp-page-header__mark) {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 13px;
+  color: #fff;
+  background: linear-gradient(145deg, #04375B, #0D638C);
+  box-shadow: 0 6px 14px rgba(6,70,117,.18);
+}
+.erp-main-inner :is(.molsan-page-header h1, .erp-page-header h1, .molsan-page-header__title) {
+  margin: 0;
+  color: #064675;
+  font-size: clamp(20px, 1.7vw, 25px);
+  font-weight: 850;
+  line-height: 1.2;
+  letter-spacing: -.035em;
+}
+.erp-main-inner :is(.molsan-page-header__eyebrow, .erp-page-header__eyebrow) {
+  margin: 0 0 4px;
+  color: #52778F;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .16em;
+}
+.erp-main-inner :is(.molsan-page-header__description, .erp-page-header__description) {
+  margin: 5px 0 0;
+  color: #617789;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.erp-main-inner :is(.molsan-page-header__actions, .erp-page-header__actions) {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Tarjetas operativas: mismas superficies, profundidad y acento que
+   las tarjetas de aplicaciones de Espacios de trabajo, sin recolorear
+   indicadores semánticos ni tocar tarjetas de tablas/formularios. */
+.erp-main-inner :is(.erp-card, .erp-card-soft, .molsan-panel, .erp-panel, .erp-surface,
+  .ctn-filtros, .ctn-tabla-contenedor, .agenda-stat-card, .agenda-calendar-card,
+  .agenda-upcoming-card, .provision-card, .maestros-panel, .logs-panel,
+  .ficha-section, .ficha-bloque, .expediente-card, .cg-panel, .cg-card, .cg-stat) {
+  position: relative;
+  min-width: 0;
+  border: 1px solid #D8E4EC;
+  border-radius: 19px;
+  background: linear-gradient(145deg, #FFFFFF 0%, #FFFFFF 70%, #F2F7FB 100%);
+  box-shadow: 0 9px 24px rgba(6,50,82,.065);
+  transition: transform .22s cubic-bezier(.2,.75,.25,1), box-shadow .22s ease, border-color .22s ease;
+}
+.erp-main-inner :is(.erp-card, .erp-card-soft, .molsan-panel, .erp-panel, .erp-surface,
+  .ctn-filtros, .ctn-tabla-contenedor, .agenda-stat-card, .agenda-calendar-card,
+  .agenda-upcoming-card, .provision-card, .maestros-panel, .logs-panel,
+  .ficha-section, .ficha-bloque, .expediente-card, .cg-panel, .cg-card, .cg-stat)
+  > :is(header, .card-header, .panel-header, .section-header, .agenda-list-heading, .ctn-portal-card-header) {
+  color: #064675;
+  border-bottom: 1px solid #D8E4EC;
+  background: linear-gradient(105deg, #EAF2F8 0%, #F5F9FC 72%, #FFFFFF 100%);
+}
+@media (hover: hover) and (pointer: fine) {
+  .erp-main-inner :is(.erp-card, .erp-card-soft, .molsan-panel, .erp-panel, .erp-surface,
+    .ctn-filtros, .ctn-tabla-contenedor, .agenda-stat-card, .agenda-calendar-card,
+    .agenda-upcoming-card, .provision-card, .maestros-panel, .logs-panel,
+    .ficha-section, .ficha-bloque, .expediente-card, .cg-panel, .cg-card, .cg-stat):hover {
+    transform: translateY(-3px);
+    border-color: #B8D2E1;
+    box-shadow: 0 17px 34px rgba(6,50,82,.12);
+  }
+}
+@media (max-width: 760px) {
+  .erp-main-inner { padding: 16px 12px 24px !important; }
+  .erp-main-inner :is(.molsan-page-header, .erp-page-header, [data-page-header="true"], .ctn-listado-header, .agenda-page-header, .cg-page-header) {
+    align-items: flex-start;
+    padding: 13px 14px;
+    margin-bottom: 16px;
+  }
+  .erp-main-inner :is(.molsan-page-header__actions, .erp-page-header__actions) {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .erp-main-inner :is(.erp-card, .erp-card-soft, .molsan-panel, .erp-panel, .erp-surface,
+    .ctn-filtros, .ctn-tabla-contenedor, .agenda-stat-card, .agenda-calendar-card,
+    .agenda-upcoming-card, .provision-card, .maestros-panel, .logs-panel,
+    .ficha-section, .ficha-bloque, .expediente-card, .cg-panel, .cg-card, .cg-stat) {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}
