@@ -60,11 +60,38 @@
   --molsan-shadow-focus: 0 0 0 3px rgba(6, 70, 117, .16);
   --molsan-transition-fast: 160ms ease;
   --molsan-transition-normal: 220ms ease;
-  /* Compatibilidad: las pantallas heredadas consumen también variables ERP. */
-  --erp-primary: var(--molsan-primary);
-  --erp-primary-soft: var(--molsan-primary-soft);
+  /* Compatibilidad heredada: una única definición de todos los alias ERP. */
   --erp-bg: var(--molsan-page-bg);
   --erp-surface: var(--molsan-surface);
+  --erp-surface-soft: var(--molsan-surface-soft);
+  --erp-surface-hover: var(--molsan-primary-soft);
   --erp-border: var(--molsan-border);
+  --erp-border-light: var(--molsan-border-light);
+  --erp-border-strong: var(--molsan-border-strong);
+  --erp-primary: var(--molsan-primary);
+  --erp-primary-dark: var(--molsan-primary-hover);
+  --erp-primary-light: var(--molsan-primary-hover);
+  --erp-primary-soft: var(--molsan-primary-soft);
+  --erp-primary-hover: var(--molsan-primary-hover);
   --erp-text: var(--molsan-text);
+  --erp-text-soft: var(--molsan-text-muted);
+  --erp-text-muted: var(--molsan-text-muted);
+  --erp-text-strong: var(--molsan-text);
+  --erp-success: var(--molsan-success);
+  --erp-success-soft: #EAF7F0;
+  --erp-warning: var(--molsan-warning);
+  --erp-warning-soft: #FFF5E5;
+  --erp-danger: var(--molsan-danger);
+  --erp-danger-soft: #FFF0F1;
+  --erp-info: var(--molsan-info);
+  --erp-info-soft: var(--molsan-info-soft);
+  --erp-shadow-xs: 0 1px 2px rgba(6, 50, 82, .04);
+  --erp-shadow-sm: var(--molsan-shadow-card);
+  --erp-shadow-md: 0 10px 25px rgba(6, 50, 82, .08);
+  --erp-shadow-lg: 0 18px 45px rgba(6, 50, 82, .12);
+  --erp-radius-sm: var(--molsan-radius-control);
+  --erp-radius-md: var(--molsan-radius-card);
+  --erp-radius-lg: var(--molsan-radius-card);
+  --erp-radius-xl: var(--molsan-radius-dialog);
+  --erp-transition: var(--molsan-transition-normal);
 }
