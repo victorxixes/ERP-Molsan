@@ -62,7 +62,7 @@ export default function CambiosActividadAbsis() {
   const fechaHoy = (fecha) => fecha || "—";
 
   return (
-    <main className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6">
+    <main className="molsan-page-stack herramienta-operativa-premium herramientas-subpagina-premium min-h-full">
       <header className="molsan-page-header">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link>
