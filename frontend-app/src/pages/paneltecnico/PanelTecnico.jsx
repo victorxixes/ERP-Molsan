@@ -44,20 +44,7 @@ export default function PanelTecnico() {
         className="molsan-page-header"
       >
 
-        {/* Decoración superior */}
-
-        <div
-          className="
-            absolute
-            inset-x-0
-            top-0
-            h-1
-            bg-gradient-to-r
-            from-[var(--erp-primary)]
-            via-blue-400
-            to-cyan-400
-          "
-        />
+        
 
         <div
           className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5"
