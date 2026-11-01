@@ -23,6 +23,36 @@
   .notargest-workspace-premium,
   .encargagest-workspace-premium,
   .ctn-workspace-premium,
+  .cg-page,
+  .cg-unified-workspace,
+  .expedientes-page,
+  .expedientes-listado-premium,
+  .ficha-expediente-premium,
+  .agenda-premium-page,
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .honorarios-gestoria-premium,
+  .empleados-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .maestros-premium-page,
+  .logs-premium-page,
+  .seguridad-subpagina-premium,
+  .seguridad-usuarios-premium,
+  .seguridad-auditoria-premium,
+  .notificaciones-premium-page,
+  .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium,
+  .informes-premium-page,
+  .mensajes-premium-page,
+  .molsan-intranet-page,
+  .provisiones-fondos-page,
+  .herramientas-subpagina-premium,
+  .herramienta-operativa-premium,
+  .catalogos-maestros-premium,
+  .catalogos-maestros-page,
+  .mensajeria,
   .portal-login-premium,
   .login-principal-premium
 ) {
@@ -41,13 +71,45 @@
   .apoderagest,
   .notargest-workspace-premium,
   .encargagest-workspace-premium,
-  .ctn-workspace-premium
+  .ctn-workspace-premium,
+  .cg-page,
+  .cg-unified-workspace,
+  .expedientes-page,
+  .expedientes-listado-premium,
+  .ficha-expediente-premium,
+  .agenda-premium-page,
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .honorarios-gestoria-premium,
+  .empleados-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .maestros-premium-page,
+  .logs-premium-page,
+  .seguridad-subpagina-premium,
+  .seguridad-usuarios-premium,
+  .seguridad-auditoria-premium,
+  .notificaciones-premium-page,
+  .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium,
+  .informes-premium-page,
+  .mensajes-premium-page,
+  .molsan-intranet-page,
+  .provisiones-fondos-page,
+  .herramientas-subpagina-premium,
+  .herramienta-operativa-premium,
+  .catalogos-maestros-premium,
+  .catalogos-maestros-page,
+  .mensajeria
 ) :is(
-  .erp-card,
-  .erp-card-soft,
-  .molsan-panel,
-  [data-panel="true"],
-  [data-cg-panel="true"]
+  .erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi, .cg-section, .cg-module-card,
+  .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso,
+  .eg-panel, .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
+  .ctn-panel, .expedientes-panel, .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi, .panel-card, .ficha-panel, .ficha-seccion,
+  .form-section, .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, [data-panel="true"], [data-cg-panel="true"]
 ) {
   --molsan-card-tint: #F2F7FB;
   position: relative;
@@ -68,38 +130,116 @@
 }
 
 /* Acentos cromáticos discretos y alternos para dar personalidad a las tarjetas. */
-:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"]
+:where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
+  .maestros-premium-page, .logs-premium-page, .seguridad-subpagina-premium, .seguridad-usuarios-premium,
+  .seguridad-auditoria-premium, .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .provisiones-fondos-page,
+  .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi, .cg-section, .cg-module-card,
+  .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso,
+  .eg-panel, .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
+  .ctn-panel, .expedientes-panel, .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi, .panel-card, .ficha-panel, .ficha-seccion,
+  .form-section, .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, [data-panel="true"], [data-cg-panel="true"]
 ):nth-child(6n + 1) {
   --molsan-card-accent: #1477A5;
   --molsan-card-tint: #EAF5FA;
 }
-:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"]
+:where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
+  .maestros-premium-page, .logs-premium-page, .seguridad-subpagina-premium, .seguridad-usuarios-premium,
+  .seguridad-auditoria-premium, .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .provisiones-fondos-page,
+  .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi, .cg-section, .cg-module-card,
+  .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso,
+  .eg-panel, .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
+  .ctn-panel, .expedientes-panel, .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi, .panel-card, .ficha-panel, .ficha-seccion,
+  .form-section, .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, [data-panel="true"], [data-cg-panel="true"]
 ):nth-child(6n + 2) {
   --molsan-card-accent: #249477;
   --molsan-card-tint: #EAF7F2;
 }
-:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"]
+:where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
+  .maestros-premium-page, .logs-premium-page, .seguridad-subpagina-premium, .seguridad-usuarios-premium,
+  .seguridad-auditoria-premium, .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .provisiones-fondos-page,
+  .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi, .cg-section, .cg-module-card,
+  .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso,
+  .eg-panel, .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
+  .ctn-panel, .expedientes-panel, .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi, .panel-card, .ficha-panel, .ficha-seccion,
+  .form-section, .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, [data-panel="true"], [data-cg-panel="true"]
 ):nth-child(6n + 3) {
   --molsan-card-accent: #7865B5;
   --molsan-card-tint: #F1EEFA;
 }
-:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"]
+:where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
+  .maestros-premium-page, .logs-premium-page, .seguridad-subpagina-premium, .seguridad-usuarios-premium,
+  .seguridad-auditoria-premium, .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .provisiones-fondos-page,
+  .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi, .cg-section, .cg-module-card,
+  .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso,
+  .eg-panel, .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
+  .ctn-panel, .expedientes-panel, .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi, .panel-card, .ficha-panel, .ficha-seccion,
+  .form-section, .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, [data-panel="true"], [data-cg-panel="true"]
 ):nth-child(6n + 4) {
   --molsan-card-accent: #C18A35;
   --molsan-card-tint: #FBF4E8;
 }
-:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"]
+:where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
+  .maestros-premium-page, .logs-premium-page, .seguridad-subpagina-premium, .seguridad-usuarios-premium,
+  .seguridad-auditoria-premium, .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .provisiones-fondos-page,
+  .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi, .cg-section, .cg-module-card,
+  .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso,
+  .eg-panel, .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
+  .ctn-panel, .expedientes-panel, .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi, .panel-card, .ficha-panel, .ficha-seccion,
+  .form-section, .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, [data-panel="true"], [data-cg-panel="true"]
 ):nth-child(6n + 5) {
   --molsan-card-accent: #2696A5;
   --molsan-card-tint: #EAF7F8;
 }
-:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"]
+:where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
+  .maestros-premium-page, .logs-premium-page, .seguridad-subpagina-premium, .seguridad-usuarios-premium,
+  .seguridad-auditoria-premium, .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .provisiones-fondos-page,
+  .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi, .cg-section, .cg-module-card,
+  .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso,
+  .eg-panel, .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
+  .ctn-panel, .expedientes-panel, .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi, .panel-card, .ficha-panel, .ficha-seccion,
+  .form-section, .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, [data-panel="true"], [data-cg-panel="true"]
 ):nth-child(6n) {
   --molsan-card-accent: #5574B8;
   --molsan-card-tint: #EEF2FA;
@@ -111,16 +251,42 @@
 }
 
 /* Hover compartido: misma elevación y profundidad que las tarjetas de Espacios de trabajo. */
-:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"]
+:where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
+  .maestros-premium-page, .logs-premium-page, .seguridad-subpagina-premium, .seguridad-usuarios-premium,
+  .seguridad-auditoria-premium, .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .provisiones-fondos-page,
+  .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi, .cg-section, .cg-module-card,
+  .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso,
+  .eg-panel, .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
+  .ctn-panel, .expedientes-panel, .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi, .panel-card, .ficha-panel, .ficha-seccion,
+  .form-section, .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, [data-panel="true"], [data-cg-panel="true"]
 ):hover {
   border-color: var(--molsan-card-accent, #B8D2E1);
   box-shadow: var(--molsan-card-hover-shadow);
 }
 
 /* Títulos dentro de tarjetas: encabezado integrado, no titular flotante. */
-:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"])
+:where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
+  .maestros-premium-page, .logs-premium-page, .seguridad-subpagina-premium, .seguridad-usuarios-premium,
+  .seguridad-auditoria-premium, .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .provisiones-fondos-page,
+  .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi, .cg-section, .cg-module-card,
+  .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso,
+  .eg-panel, .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
+  .ctn-panel, .expedientes-panel, .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi, .panel-card, .ficha-panel, .ficha-seccion,
+  .form-section, .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, [data-panel="true"], [data-cg-panel="true"])
   > :is(h2, h3, [data-card-title="true"]) {
   display: flex;
   align-items: center;
@@ -132,8 +298,21 @@
   font-weight: 800;
   letter-spacing: -.025em;
 }
-:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"])
+:where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
+  .maestros-premium-page, .logs-premium-page, .seguridad-subpagina-premium, .seguridad-usuarios-premium,
+  .seguridad-auditoria-premium, .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .provisiones-fondos-page,
+  .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi, .cg-section, .cg-module-card,
+  .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso,
+  .eg-panel, .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
+  .ctn-panel, .expedientes-panel, .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi, .panel-card, .ficha-panel, .ficha-seccion,
+  .form-section, .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, [data-panel="true"], [data-cg-panel="true"])
   > :is(h2, h3, [data-card-title="true"])::before {
   width: 4px;
   min-width: 4px;
@@ -144,58 +323,132 @@
 }
 
 /* Cabeceras de sección que ya forman parte de un panel. */
-:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"])
+:where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
+  .maestros-premium-page, .logs-premium-page, .seguridad-subpagina-premium, .seguridad-usuarios-premium,
+  .seguridad-auditoria-premium, .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .provisiones-fondos-page,
+  .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi, .cg-section, .cg-module-card,
+  .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso,
+  .eg-panel, .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
+  .ctn-panel, .expedientes-panel, .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi, .panel-card, .ficha-panel, .ficha-seccion,
+  .form-section, .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, [data-panel="true"], [data-cg-panel="true"])
   :is(header, [data-card-header="true"]) {
   min-width: 0;
   color: var(--molsan-premium-blue);
   border-color: var(--molsan-premium-border);
 }
 
-/* Cabeceras de página: compactas, con identidad común y sin tocar su contenido. */
-:where(
-  .erp-main-content,
-  .erp-page,
-  .apoderagest,
-  .notargest-workspace-premium,
-  .encargagest-workspace-premium,
-  .ctn-workspace-premium
-) :is(.molsan-page-header, [data-page-header="true"], .ag-hero, .ng-hero-apoderagest) {
-  border-color: var(--molsan-premium-border);
-  border-radius: 20px;
+
+/* Cabeceras internas de panel: un mismo azul hielo y borde corporativo. */
+:where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
+  .maestros-premium-page, .logs-premium-page, .seguridad-subpagina-premium, .seguridad-usuarios-premium,
+  .seguridad-auditoria-premium, .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .provisiones-fondos-page,
+  .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria) :is(.molsan-panel__header, .ag-panel-cabecera, .ag-panel-header, .eg-card-header, .eg-panel-head, .ng-panel-titulo, .ctn-tabla-cabecera) {
+  color: #064675;
+  background: #F2F7FB;
+  border-color: #D8E4EC;
 }
 
 /* Tablas integradas en paneles con cabecera azul hielo. */
-:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"])
+:where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
+  .maestros-premium-page, .logs-premium-page, .seguridad-subpagina-premium, .seguridad-usuarios-premium,
+  .seguridad-auditoria-premium, .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .provisiones-fondos-page,
+  .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi, .cg-section, .cg-module-card,
+  .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso,
+  .eg-panel, .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
+  .ctn-panel, .expedientes-panel, .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi, .panel-card, .ficha-panel, .ficha-seccion,
+  .form-section, .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, [data-panel="true"], [data-cg-panel="true"])
   table thead th {
   background: var(--molsan-premium-table);
   color: #31566F;
   border-color: var(--molsan-premium-border);
 }
-:where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-  :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"], [data-cg-panel="true"])
+:where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
+  .maestros-premium-page, .logs-premium-page, .seguridad-subpagina-premium, .seguridad-usuarios-premium,
+  .seguridad-auditoria-premium, .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .provisiones-fondos-page,
+  .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi, .cg-section, .cg-module-card,
+  .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso,
+  .eg-panel, .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
+  .ctn-panel, .expedientes-panel, .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi, .panel-card, .ficha-panel, .ficha-seccion,
+  .form-section, .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, [data-panel="true"], [data-cg-panel="true"])
   table tbody tr:hover > td {
   background: #F4F8FB;
 }
 
 /* Evita efectos de elevación sobre pantallas táctiles y respeta accesibilidad. */
 @media (hover: hover) and (pointer: fine) {
-  :where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-    :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"]):hover {
+  :where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
+  .maestros-premium-page, .logs-premium-page, .seguridad-subpagina-premium, .seguridad-usuarios-premium,
+  .seguridad-auditoria-premium, .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .provisiones-fondos-page,
+  .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria)
+    :is(.erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi, .cg-section, .cg-module-card,
+  .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso,
+  .eg-panel, .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
+  .ctn-panel, .expedientes-panel, .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi, .panel-card, .ficha-panel, .ficha-seccion,
+  .form-section, .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, [data-panel="true"], [data-cg-panel="true"]):hover {
     transform: translateY(-4px);
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  :where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium) * {
+  :where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
+  .maestros-premium-page, .logs-premium-page, .seguridad-subpagina-premium, .seguridad-usuarios-premium,
+  .seguridad-auditoria-premium, .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .provisiones-fondos-page,
+  .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria) * {
     scroll-behavior: auto !important;
     animation-duration: .01ms !important;
     transition-duration: .01ms !important;
   }
 }
 @media (max-width: 760px) {
-  :where(.erp-main-content, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium)
-    :is(.erp-card, .erp-card-soft, .molsan-panel, [data-panel="true"]) {
+  :where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
+  .maestros-premium-page, .logs-premium-page, .seguridad-subpagina-premium, .seguridad-usuarios-premium,
+  .seguridad-auditoria-premium, .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .provisiones-fondos-page,
+  .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria)
+    :is(.erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi, .cg-section, .cg-module-card,
+  .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso,
+  .eg-panel, .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
+  .ctn-panel, .expedientes-panel, .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi, .panel-card, .ficha-panel, .ficha-seccion,
+  .form-section, .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, [data-panel="true"], [data-cg-panel="true"]) {
     border-radius: 14px;
   }
 }
