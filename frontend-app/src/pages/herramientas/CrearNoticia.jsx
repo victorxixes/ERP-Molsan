@@ -52,7 +52,7 @@ export default function CrearNoticia() {
   ]);
 
   return (
-    <div className="crear-noticia-premium min-h-full space-y-6 animate-fadeIn">
+    <div className="molsan-page-stack crear-noticia-premium min-h-full animate-fadeIn">
 
       {/* =====================================================
           CABECERA
