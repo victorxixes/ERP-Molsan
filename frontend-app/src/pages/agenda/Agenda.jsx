@@ -416,7 +416,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
   // ============================================================
 
   return (
-    <div className="agenda-premium-page space-y-5 p-6 text-[var(--erp-text)] animate-fade-in">
+    <div className="agenda-premium-page space-y-5 text-[var(--erp-text)] animate-fade-in">
       <header className="molsan-page-header agenda-page-header">
         <div className="molsan-page-header__identity">
           <span className="molsan-page-header__mark" aria-hidden="true">AG</span>
