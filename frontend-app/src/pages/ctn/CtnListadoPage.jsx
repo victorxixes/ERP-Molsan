@@ -256,7 +256,7 @@ export default function CtnListadoPage() {
   };
 
   return (
-    <main className="ctn-listado-page molsan-page" aria-busy={cargando}>
+    <main className="molsan-page-stack ctn-listado-page molsan-page" aria-busy={cargando}>
       <header className="ctn-listado-header molsan-page-header">
         <div className="ctn-listado-header-identidad molsan-page-header__identity">
           <div className="ctn-listado-header-icon molsan-page-header__mark" aria-hidden="true">CTN</div>
