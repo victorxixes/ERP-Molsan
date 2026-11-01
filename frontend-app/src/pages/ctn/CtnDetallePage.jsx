@@ -240,7 +240,7 @@ export default function CtnDetallePage() {
                 { key: "nombre", header: "Notario", accessor: (item) => nombreNotario(item), sortType: "text" },
                 { key: "nif", header: "NIF", accessor: "nif", sortType: "text", render: (value) => valor(value) },
                 { key: "municipio", header: "Municipio", accessor: "municipio", sortType: "text", render: (value) => valor(value) },
-                { key: "acciones", header: "Acción", sortable: false, accessor: (item) => item.id, render: (_, item) => <MolsanButton type="button" variant="danger" icon="unlink" className="molsan-btn--compact" disabled={guardandoAsociacion} onClick={() => quitarAsociacion(item.id)}>Eliminar asociación</MolsanButton> },
+                { key: "acciones", header: "Acción", sortable: false, accessor: (item) => item.id, render: (_, item) => <MolsanButton type="button" variant="danger" icon="delete" className="molsan-btn--compact" disabled={guardandoAsociacion} onClick={() => quitarAsociacion(item.id)}>Eliminar asociación</MolsanButton> },
               ]}
             />
           </div>
