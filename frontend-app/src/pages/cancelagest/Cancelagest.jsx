@@ -83,7 +83,7 @@ export default function Cancelagest() {
   return <main className="cg-page">
       <header className="cg-hero molsan-page-header">
         <div className="cg-hero-identidad">
-          <div className="cg-logo"><img src="/img/logo.jpg" alt="MOLSAN" /></div>
+          <div className="cg-logo molsan-page-header__mark"><img src="/img/logo.jpg" alt="MOLSAN" /></div>
           <div><div className="cg-eyebrow">MOLSAN ERP · PREMIUM 2027</div><h1>CancelaGest</h1><p>Centro de gestión de cancelaciones, provisiones, firmas y seguimiento registral.</p></div>
         </div>
         <div className="cg-hero-acciones">
