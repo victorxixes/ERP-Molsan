@@ -2450,7 +2450,7 @@ export default function ExpedientesListado() {
       <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-12">
         <div className="space-y-3 xl:col-span-4">
       {/* SLA GLOBAL: CIRCUITOS DIFERENCIADOS */}
-      <section className="space-y-3" aria-label="SLA global por circuito">
+      <section className="erp-card space-y-3 p-4 sm:p-5" aria-label="SLA global por circuito">
         <div>
           <h3 className="text-base font-bold text-[var(--erp-text)]">SLA global por circuito</h3>
           <p className="text-sm text-[var(--erp-text-soft)]">Controles independientes de los plazos de cada actividad. Pulsa un circuito para ver sus expedientes fuera de plazo.</p>
@@ -2493,7 +2493,7 @@ export default function ExpedientesListado() {
                   setColumnasVisibles(COLUMNAS_POR_DEFECTO);
                   setPagina(1);
                 }}
-                className="erp-card rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
+                className="erp-card border p-4 text-left focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
                 style={{
                   borderColor: activa ? circuito.borde : "var(--erp-border)",
                   background: activa ? circuito.fondo : "var(--erp-surface)",
@@ -2529,7 +2529,7 @@ export default function ExpedientesListado() {
         </section>
 
       {/* ESTADOS DIFERENCIALES: son estados del expediente, no actividades ni SLA */}
-      <section className="space-y-1" aria-label="Estados diferenciales del expediente">
+      <section className="erp-card space-y-3 p-4 sm:p-5" aria-label="Estados diferenciales del expediente">
         <div>
           <h3 className="text-base font-bold text-[var(--erp-text)]">Estados diferenciales</h3>
           <p className="text-sm text-[var(--erp-text-soft)]">Estos filtros se basan en el estado del expediente. No son actividades y no calculan SLA.</p>
@@ -2555,7 +2555,7 @@ export default function ExpedientesListado() {
                   setColumnasVisibles(COLUMNAS_POR_DEFECTO);
                   setPagina(1);
                 }}
-                className="erp-card min-h-[116px] rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
+                className="erp-card min-h-[116px] border p-4 text-left focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
                 style={{ background: activa ? estado.fondo : "var(--erp-surface)", borderColor: activa ? estado.borde : "var(--erp-border)", boxShadow: activa ? `0 0 0 1px ${estado.borde}` : undefined }}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -2586,7 +2586,7 @@ export default function ExpedientesListado() {
         </div>
         <div className="min-w-0 xl:col-span-8">
       {/* GRIDS DE ACTIVIDAD */}
-      <section className="space-y-3" aria-label="Expedientes por actividad">
+      <section className="erp-card space-y-3 p-4 sm:p-5" aria-label="Expedientes por actividad">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div><h3 className="text-base font-bold text-[var(--erp-text)]">{(configuracionesVisibilidad.find((item) => item.actividad_key === actividadSeleccionada)?.nombre_tabla) || "Expedientes por actividad"}</h3><p className="text-sm text-[var(--erp-text-soft)]">Pulsa un grid para ver debajo la tabla con los expedientes de esa actividad.</p></div>
           {actividadSeleccionada && <button type="button" onClick={() => { setActividadSeleccionada(""); setAlertaSeleccionada(""); setColumnasVisibles(COLUMNAS_POR_DEFECTO); setFiltroActividad(""); setFiltrosAplicados((actual) => ({ ...actual, actividad: "" })); setPagina(1); }} className="self-start rounded-lg border px-3 py-2 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-primary)", background: "var(--erp-surface)" }}>Ver todas las actividades</button>}
@@ -2614,7 +2614,7 @@ export default function ExpedientesListado() {
                 setFiltroActividad(activa ? "" : valorBackend);
                 setFiltrosAplicados((actual) => ({ ...actual, actividad: activa ? "" : valorBackend })); setPagina(1);
               }}
-              className="erp-card min-h-[148px] rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
+              className="erp-card min-h-[148px] border p-4 text-left focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
               style={{ background: activa ? "var(--erp-primary-soft)" : "var(--erp-surface)", borderColor: activa ? "var(--erp-primary)" : "var(--erp-border)", boxShadow: activa ? "0 0 0 1px var(--erp-primary)" : undefined }}>
               <div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: activa ? "rgba(59,130,246,.14)" : "var(--erp-surface-soft)" }}>{actividad.icono}</span><span className="text-3xl font-extrabold tabular-nums" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text)" }}>{loadingActividades ? "…" : formatearNumero(total)}</span></div>
               <div className="mt-3 text-sm font-bold leading-snug text-[var(--erp-text)]">{actividad.label}</div>
