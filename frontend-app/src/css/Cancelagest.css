@@ -59,3 +59,16 @@
     transition-duration: .01ms !important;
   }
 }
+
+
+/* El pictograma compartido aporta su propio relieve y superficie; el módulo
+   solo conserva su tamaño y alineación dentro de la tarjeta. */
+.cg-module-icon.molsan-icon-3d {
+  display: inline-grid;
+  flex: 0 0 46px;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
