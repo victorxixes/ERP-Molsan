@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 import "../../css/ComponentesOperativosPremium.css";
 
@@ -24,7 +25,7 @@ export default function Herramientas() {
 
       <header className="molsan-page-header">
         <div className="molsan-page-header__identity">
-          <div className="molsan-page-header__mark" aria-hidden="true">🛠️</div>
+          <div className="molsan-page-header__mark"><MolsanIcon name="tools" size={42} /></div>
           <div className="min-w-0">
             <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
             <h1 className="molsan-page-header__title">Herramientas</h1>
@@ -137,7 +138,7 @@ function Card({
             }
           `}
         >
-          {icon}
+          <MolsanIcon name={icon} size={46} />
         </div>
 
 
