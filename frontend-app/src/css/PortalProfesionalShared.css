@@ -171,35 +171,7 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 15px;
   margin-bottom: 15px;
-}
-
-.ag-kpi {
-  position: relative;
-  min-width: 0;
-  padding: 18px 19px 17px;
-  overflow: hidden;
-  background: var(--ag-panel);
-  border: 1px solid rgba(224, 231, 241, 0.95);
-  border-radius: 17px;
-  box-shadow: 0 7px 20px rgba(31, 48, 79, 0.035), inset 0 1px 0 rgba(255,255,255,.95);
-  transition: transform .18s ease, box-shadow .18s ease;
-}
-
-.ag-kpi::after {
-  position: absolute;
-  right: -23px;
-  bottom: -34px;
-  width: 92px;
-  height: 92px;
-  content: "";
-  background: var(--ag-kpi-halo, rgba(72, 111, 235, .06));
-  border-radius: 50%;
-}
-
-.ag-kpi:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(31, 48, 79, 0.065), inset 0 1px 0 #fff;
-}
+}.ag-kpi{position: relative; min-width: 0; padding: 18px 19px 17px; overflow: hidden}
 
 .ag-kpi-superior {
   display: flex;
@@ -287,21 +259,9 @@
 
 .ag-grid-secundario .ag-kpi-valor {
   font-size: clamp(20px, 2vw, 25px);
-}
+}/* Paneles glass */
 
-/* Paneles glass */
-
-.ag-panel {
-  min-width: 0;
-  padding: 0;
-  overflow: hidden;
-  background: var(--molsan-surface, #fff);
-  border: 1px solid var(--molsan-border, #D8E4EC);
-  border-radius: var(--molsan-radius-card, 14px);
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
+.ag-panel{min-width: 0; padding: 0; overflow: hidden; backdrop-filter: none; -webkit-backdrop-filter: none}
 
 .ag-panel-proximas {
   padding: 20px 21px 8px;
@@ -316,13 +276,7 @@
   margin-bottom: 12px;
 }
 
-.ag-panel-cabecera h3 {
-  margin: 4px 0 0;
-  color: #24334d;
-  font-size: 17px;
-  font-weight: 800;
-  letter-spacing: -.3px;
-}
+.ag-panel-cabecera h3 {margin: 4px 0 0}
 
 .ag-enlace-accion {
   display: inline-flex;
@@ -698,12 +652,7 @@
 
   .ag-grid-kpi {
     gap: 10px;
-  }
-
-  .ag-kpi {
-    padding: 14px;
-    border-radius: 14px;
-  }
+  }.ag-kpi{padding: 14px}
 
   .ag-kpi-icono {
     flex-basis: 29px;
@@ -1119,11 +1068,6 @@
   font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
 }
 .apoderagest .ag-fondo-decorativo { display: none; }
-.apoderagest .ag-panel,
-.apoderagest .ag-kpi,
-.apoderagest .ag-tarjeta-indicador {
-  border-color: var(--molsan-border);
-}
 .ag-firma-indicador {
   display: inline-flex;
   align-items: center;
