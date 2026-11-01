@@ -2541,7 +2541,7 @@ function AvisoInforme({ error }) {
 
 function PanelEstadoInforme({ loading, vacio, textoVacio = "No hay registros para los filtros seleccionados." }) {
   if (loading) return <div className="px-5 py-12 text-center text-sm text-slate-500">Consultando datos reales del ERP…</div>;
-  if (vacio) return <div className="px-5 py-12 text-center text-sm text-slate-500"><div className="mb-2 text-3xl"><MolsanIcon name="inbox" size={36} />/div>{textoVacio}</div>;
+  if (vacio) return <div className="px-5 py-12 text-center text-sm text-slate-500"><div className="mb-2 flex justify-center"><MolsanIcon name="inbox" size={36} /></div>{textoVacio}</div>;
   return null;
 }
 
