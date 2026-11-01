@@ -2,13 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import axios from "../../api/axios";
 import "../../css/ModalesOperativosPremium.css";
+import { formatEuro as dinero } from "../../utils/formatters";
 
-const dinero = (valor) => {
-  const numero = Number(valor);
-  return Number.isFinite(numero)
-    ? numero.toLocaleString("es-ES", { style: "currency", currency: "EUR" })
-    : "—";
-};
 const valor = (obj, ...keys) => {
   for (const key of keys) if (obj?.[key] !== undefined && obj?.[key] !== null && String(obj[key]).trim() !== "") return obj[key];
   return "";
