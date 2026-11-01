@@ -76,7 +76,7 @@ export default function SubirDocumento() {
       >
 
         <div
-          className="
+          className="molsan-page-header 
             absolute inset-x-0 top-0 h-px
             bg-gradient-to-r
             from-transparent
