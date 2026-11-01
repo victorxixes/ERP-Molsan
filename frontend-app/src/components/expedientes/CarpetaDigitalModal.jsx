@@ -1120,6 +1120,7 @@ export default function CarpetaDigitalModal({
                             ))}
                           </div>
                         </section>
+                        )}
                       </div>
                     ) : String(actividadId || "").includes("protocolo") ? (
                       <div className="grid w-full min-w-0 grid-cols-2 items-start gap-3">
@@ -1170,7 +1171,6 @@ export default function CarpetaDigitalModal({
                             ))}
                           </div>
                         </section>
-                        )}
                       </div>
                     ) : (
                     actividadId === "gestion-economica" ? (
