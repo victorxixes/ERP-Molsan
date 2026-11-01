@@ -860,3 +860,46 @@
     animation: none;
   }
 }
+
+/* Compatibilidad de cabeceras heredadas: cualquier página que use la clase
+   común recibe la misma escala de icono, descripción y acciones. */
+.molsan-page-header p:not(.molsan-page-header__eyebrow) {
+  margin: 7px 0 0;
+  color: #C6DFEC;
+  font-size: 12px;
+  line-height: 1.55;
+}
+.molsan-page-header :is(.w-12.h-12, .w-11.h-11, .w-14.h-14) {
+  display: grid;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  color: #FFFFFF;
+  border: 1px solid rgba(255,255,255,.32);
+  border-radius: 11px;
+  background: rgba(255,255,255,.12);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
+}
+.molsan-page-header :is(button, a) {
+  border-color: rgba(255,255,255,.32);
+  border-radius: 11px;
+  color: #FFFFFF;
+  background: rgba(255,255,255,.12);
+  box-shadow: none;
+}
+.molsan-page-header :is(button, a):hover:not(:disabled) {
+  border-color: rgba(255,255,255,.58);
+  color: #FFFFFF;
+  background: rgba(255,255,255,.2);
+  box-shadow: 0 5px 14px rgba(0,0,0,.12);
+  transform: translateY(-1px);
+}
+@media (max-width: 760px) {
+  .molsan-page-header :is(.w-12.h-12, .w-11.h-11, .w-14.h-14) {
+    flex-basis: 36px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+}
