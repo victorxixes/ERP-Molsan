@@ -15,8 +15,8 @@
 .agenda-premium-page > .erp-card {
   border: 1px solid var(--agenda-border);
   border-radius: var(--molsan-radius-card, 14px);
-  background: var(--agenda-surface);
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
+  background-color: var(--agenda-surface);\n  background-image: linear-gradient(145deg, #FFFFFF 0%, #FFFFFF 72%, #F2F7FB 100%);
+  box-shadow: var(--molsan-shadow-card, 0 8px 24px rgba(6, 50, 82, .075));
 }
 .agenda-premium-page > .erp-card:first-of-type {
   position: relative;
