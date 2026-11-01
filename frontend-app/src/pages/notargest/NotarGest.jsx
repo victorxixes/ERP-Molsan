@@ -696,7 +696,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                 ].map(([label, filtro, cuenta]) => (
                   <button type="button" className="ng-admin-kpi-button" key={filtro} onClick={() => abrirModalResumen(filtro, label)} title={`Ver expedientes: ${label}`}>
                     <MolsanIcon name={({ pendiente_recepcion: "clipboardList", pendiente_firma: "pen", pendiente_copia_simple: "files", pendiente_factura_notarial: "receipt", pendiente_ajd_itp: "calculator", pendiente_presentacion_registro: "folderOpen", con_defectos: "alert", pendiente_inscripcion: "book", escrituras_cerradas_inscritas: "check", firmas_urgentes: "zap" })[filtro] || "file"} size={34} tone={["con_defectos", "firmas_urgentes"].includes(filtro) ? "amber" : "ocean"} /><span>{label}</span><strong className={["con_defectos", "firmas_urgentes"].includes(filtro) && notariasSeleccionables.some(n => Number(cuenta(n)) > 0) ? "ng-cifra-urgente" : ""}>{notariasSeleccionables.reduce((s, n) => s + Number(cuenta(n) || 0), 0)}</strong>
-                    <small>Ver expedientes <span aria-hidden="true">↗</span></small>
+                    <small>Ver expedientes <MolsanIcon name="arrowRight" size={14} bare /></small>
                   </button>
                 ))}
               </div>
@@ -736,7 +736,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                   </div>
                   <div className="ng-admin-circuitos">
                     <section className="ng-admin-circuito">
-                      <div className="ng-admin-circuito-titulo"><span className="ng-admin-circuito-icono">01</span><h4>Gestión notarial</h4></div>
+                      <div className="ng-admin-circuito-titulo"><span className="ng-admin-circuito-icono"><MolsanIcon name="courthouse" size={22} bare /></span><h4>Gestión notarial</h4></div>
                       <div className="ng-admin-metricas">
                         <div><span>Nuevos encargos</span><strong>{Number(item.pendientes_recepcion || 0)}</strong></div>
                         <div><span>Firma</span><strong>{Number(item.pendientes_firma || 0)}</strong></div>
@@ -745,7 +745,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                       </div>
                     </section>
                     <section className="ng-admin-circuito">
-                      <div className="ng-admin-circuito-titulo"><span className="ng-admin-circuito-icono ng-admin-circuito-icono-fiscal">02</span><h4>Registro y fiscalidad</h4></div>
+                      <div className="ng-admin-circuito-titulo"><span className="ng-admin-circuito-icono ng-admin-circuito-icono-fiscal"><MolsanIcon name="landmark" size={22} bare /></span><h4>Registro y fiscalidad</h4></div>
                       <div className="ng-admin-metricas">
                         <div><span>Registro</span><strong>{Number(item.pendientes_registro || 0)}</strong></div>
                         <div><span>AJD / ITP</span><strong>{Number(item.pendientes_ajd_itp || 0)}</strong></div>
