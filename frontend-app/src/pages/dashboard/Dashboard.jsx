@@ -402,6 +402,9 @@ export default function Dashboard() {
         </div>
       </section>
 
+      </div>
+      </div>
+
       {/* NOTA TÉCNICA */}
       {!firmasRealizadas && (
         <div className="mt-6 rounded-xl border px-4 py-3 text-xs" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)", color: "var(--erp-text-soft)" }}>
