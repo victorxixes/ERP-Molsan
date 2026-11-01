@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import axios from "../../api/axios";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import "../../css/HerramientasPremium.css";
@@ -14,6 +15,8 @@ const COLUMNAS = [
 const API = "/oficinas-catalogo";
 
 export default function CatalogoOficinas() {
+  const [searchParams] = useSearchParams();
+  const modoImportacion = searchParams.get("importar") === "1";
   const [busqueda, setBusqueda] = useState("");
   const [oficinas, setOficinas] = useState([]);
   const [total, setTotal] = useState(0);
@@ -108,19 +111,19 @@ export default function CatalogoOficinas() {
           <div className="molsan-page-header__mark" aria-hidden="true">▦</div>
           <div className="min-w-0">
             <p className="molsan-page-header__eyebrow">MOLSAN ERP · DATOS TERRITORIALES</p>
-            <h1 className="molsan-page-header__title">Catálogo de oficinas</h1>
-            <p className="molsan-page-header__description">Busca y administra únicamente las oficinas que importes desde tus archivos Excel.</p>
+            <h1 className="molsan-page-header__title">{modoImportacion ? "Importar catálogo de oficinas" : "Catálogo de oficinas"}</h1>
+            <p className="molsan-page-header__description">{modoImportacion ? "Carga validada de las 13 columnas del catálogo de oficinas." : "Busca y administra las oficinas del catálogo."}</p>
           </div>
         </div>
       </header>
 
-      <section className="rounded-2xl border border-slate-200/80 bg-white/90 p-5 shadow-sm space-y-4">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-lg font-bold text-slate-800">Importar desde Excel</h2>
-            <p className="text-sm text-slate-500">Se admiten .xlsx y .xls. El archivo debe contener las 13 columnas del catálogo.</p>
-          </div>
-          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">Solo datos importados por ti</span>
+      {modoImportacion && <section className="rounded-2xl border border-slate-200/80 bg-white/90 p-5 shadow-sm space-y-4">
+        <div className="flex items-center justify-between gap-3">
+          <div><h2 className="text-lg font-bold text-slate-800">Importar desde Excel</h2><p className="text-sm text-slate-500">Se admiten .xlsx y .xls. El archivo debe contener las 13 columnas del catálogo.</p></div>
+          <Link to="/catalogos/oficinas" className="molsan-btn molsan-btn--secondary">Volver al catálogo</Link>
+        </div>
+        <div className="hidden">
+          <span>Solo datos importados por ti</span>
         </div>
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-end">
           <label className="block text-sm font-medium text-slate-700">
@@ -159,9 +162,9 @@ export default function CatalogoOficinas() {
             {!previsualizacion.errores?.length && <p className="text-sm font-medium text-emerald-700">El archivo está validado. Puedes importarlo; los códigos existentes se actualizarán y no se duplicarán.</p>}
           </div>
         )}
-      </section>
+      </section>}
 
-      <section className="rounded-2xl border border-slate-200/80 bg-white/90 p-5 shadow-sm space-y-4">
+      {!modoImportacion && <section className="rounded-2xl border border-slate-200/80 bg-white/90 p-5 shadow-sm space-y-4">
         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
             <h2 className="text-lg font-bold text-slate-800">Buscar oficinas</h2>
@@ -197,7 +200,7 @@ export default function CatalogoOficinas() {
             <button type="button" disabled={(pagina + 1) * limite >= total || cargando} onClick={() => setPagina((valor) => valor + 1)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium disabled:opacity-40">Siguiente</button>
           </div>
         </div>
-      </section>
+      </section>}
     </main>
   );
 }
