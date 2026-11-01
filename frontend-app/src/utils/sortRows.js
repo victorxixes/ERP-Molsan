@@ -18,10 +18,15 @@ function numericValue(value) {
 function dateValue(value) {
   if (value === null || value === undefined || value === "") return null;
   if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value.getTime();
+  if (typeof value === "number" && Number.isFinite(value)) {
+    if (value > 100000000000) return value;
+    if (value > 1000000000) return value * 1000;
+    if (value > 0 && value < 100000) return Date.UTC(1899, 11, 30) + value * 86400000;
+  }
   const text = String(value).trim();
-  const spanish = text.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+  const spanish = text.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
   const parsed = spanish
-    ? new Date(Number(spanish[3]), Number(spanish[2]) - 1, Number(spanish[1])).getTime()
+    ? new Date(Number(spanish[3]), Number(spanish[2]) - 1, Number(spanish[1]), Number(spanish[4] || 0), Number(spanish[5] || 0), Number(spanish[6] || 0)).getTime()
     : Date.parse(text);
   return Number.isFinite(parsed) ? parsed : null;
 }
