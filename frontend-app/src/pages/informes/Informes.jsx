@@ -1,3 +1,4 @@
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { Fragment, useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "../../api/axios";
@@ -2914,7 +2915,19 @@ function InformeFirmas() {
 
       <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
         <div className="erp-card-header flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4"><div><h3 className="font-bold text-slate-800">Resumen por tipo de operación</h3><p className="mt-1 text-xs text-slate-500">Conteo de firmas reales y días medios cuando existen fecha de envío y de firma.</p></div><span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">{periodo}</span></div>
-        {loading ? <PanelEstadoInforme loading /> : datos.por_tipo_operacion.length === 0 ? <PanelEstadoInforme vacio /> : <div className="overflow-x-auto"><table className="w-full min-w-[650px] text-sm"><thead className="bg-blue-50/70 text-xs uppercase tracking-wide text-blue-800/80"><tr><th className="px-5 py-3 text-left">Tipo de operación</th><th className="px-5 py-3 text-right">Firmas</th><th className="px-5 py-3 text-right">VC</th><th className="px-5 py-3 text-right">Presencial</th><th className="px-5 py-3 text-right">Media días</th></tr></thead><tbody>{datos.por_tipo_operacion.map((f, i) => <tr key={`${f.tipo_operacion}-${i}`} className="border-t border-slate-100 hover:bg-blue-50/40"><td className="px-5 py-3 font-medium text-slate-700">{f.tipo_operacion}</td><td className="px-5 py-3 text-right font-semibold">{numeroInforme(f.total_firmas)}</td><td className="px-5 py-3 text-right">{numeroInforme(f.vc)}</td><td className="px-5 py-3 text-right">{numeroInforme(f.presencial)}</td><td className="px-5 py-3 text-right text-blue-700">{f.media_dias == null ? "—" : `${numeroInforme(f.media_dias, 1)} días`}</td></tr>)}</tbody></table></div>}
+        {loading ? <PanelEstadoInforme loading /> : datos.por_tipo_operacion.length === 0 ? <PanelEstadoInforme vacio /> : <MolsanDataTable
+          rows={datos.por_tipo_operacion}
+          rowKey="tipo_operacion"
+          initialSort={{ key: "tipo_operacion", direction: "asc" }}
+          emptyText="No hay datos para este periodo."
+          columns={[
+            { key: "tipo_operacion", header: "Tipo de operación", accessor: "tipo_operacion", sortType: "text" },
+            { key: "total_firmas", header: "Firmas", accessor: "total_firmas", sortType: "number", align: "right", render: (value) => numeroInforme(value) },
+            { key: "vc", header: "VC", accessor: "vc", sortType: "number", align: "right", render: (value) => numeroInforme(value) },
+            { key: "presencial", header: "Presencial", accessor: "presencial", sortType: "number", align: "right", render: (value) => numeroInforme(value) },
+            { key: "media_dias", header: "Media días", accessor: "media_dias", sortType: "number", align: "right", render: (value) => value == null ? "—" : `${numeroInforme(value, 1)} días` },
+          ]}
+        />}
       </section>
 
       <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
@@ -3162,7 +3175,26 @@ function InformeNotarios() {
           </div>
         </div>
         {loading ? <PanelEstadoInforme loading /> : porNotario.length === 0 ? <PanelEstadoInforme vacio /> : (
-          <div className="max-h-[620px] overflow-auto"><table className="w-full min-w-[1400px] text-sm"><thead className="sticky top-0 z-10 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr><th className="whitespace-nowrap px-4 py-3">Notario</th><th className="whitespace-nowrap px-4 py-3">NIF</th><th className="whitespace-nowrap px-4 py-3 text-right">Firmados</th><th className="whitespace-nowrap px-4 py-3 text-right">VC</th><th className="whitespace-nowrap px-4 py-3 text-right">Presencial</th><th className="whitespace-nowrap px-4 py-3 text-right">Sin clasificar</th><th className="whitespace-nowrap px-4 py-3 text-right">Con protocolo</th><th className="whitespace-nowrap px-4 py-3 text-right">Media días</th><th className="whitespace-nowrap px-4 py-3">Última firma</th><th className="whitespace-nowrap px-4 py-3">Operaciones</th><th className="whitespace-nowrap px-4 py-3">Detalle</th></tr></thead><tbody>{porNotario.map((f) => <tr key={f.clave_notario} className={`border-t border-slate-100 hover:bg-blue-50/40 ${claveNotarioSeleccionado === f.clave_notario ? "bg-blue-50/70" : ""}`}><td className="px-4 py-3 font-semibold text-slate-800">{f.nombre_notario}</td><td className="whitespace-nowrap px-4 py-3 text-slate-500">{f.nif_notario || "—"}</td><td className="px-4 py-3 text-right font-bold">{numeroInforme(f.total_firmas)}</td><td className="px-4 py-3 text-right text-blue-700">{numeroInforme(f.vc)}</td><td className="px-4 py-3 text-right text-emerald-700">{numeroInforme(f.presencial)}</td><td className="px-4 py-3 text-right text-amber-700">{numeroInforme(f.sin_clasificar)}</td><td className="px-4 py-3 text-right">{numeroInforme(f.con_protocolo)}</td><td className="px-4 py-3 text-right">{f.media_dias_envio_firma == null ? "—" : numeroInforme(f.media_dias_envio_firma, 1)}</td><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.ultima_firma)}</td><td className="px-4 py-3" title={(f.tipos_operacion || []).join(", ")}>{numeroInforme(f.numero_tipos_operacion)}</td><td className="px-4 py-3"><button type="button" onClick={() => setClaveNotarioSeleccionado((actual) => actual === f.clave_notario ? "" : f.clave_notario)} className="whitespace-nowrap rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100">{claveNotarioSeleccionado === f.clave_notario ? "Ocultar" : "Ver firmas"}</button></td></tr>)}</tbody></table></div>
+          <div className="max-h-[620px] overflow-auto"><MolsanDataTable
+            rows={porNotario}
+            rowKey="clave_notario"
+            minWidth="1400px"
+            initialSort={{ key: "total_firmas", direction: "desc" }}
+            emptyText="No hay datos de notarios para el periodo seleccionado."
+            columns={[
+              { key: "nombre_notario", header: "Notario", accessor: "nombre_notario", sortType: "text" },
+              { key: "nif_notario", header: "NIF", accessor: "nif_notario", sortType: "text" },
+              { key: "total_firmas", header: "Firmados", accessor: "total_firmas", sortType: "number", align: "right", render: (value) => numeroInforme(value) },
+              { key: "vc", header: "VC", accessor: "vc", sortType: "number", align: "right", render: (value) => numeroInforme(value) },
+              { key: "presencial", header: "Presencial", accessor: "presencial", sortType: "number", align: "right", render: (value) => numeroInforme(value) },
+              { key: "sin_clasificar", header: "Sin clasificar", accessor: "sin_clasificar", sortType: "number", align: "right", render: (value) => numeroInforme(value) },
+              { key: "con_protocolo", header: "Con protocolo", accessor: "con_protocolo", sortType: "number", align: "right", render: (value) => numeroInforme(value) },
+              { key: "media_dias_envio_firma", header: "Media días", accessor: "media_dias_envio_firma", sortType: "number", align: "right", render: (value) => value == null ? "—" : numeroInforme(value, 1) },
+              { key: "ultima_firma", header: "Última firma", accessor: "ultima_firma", sortType: "date", render: (value) => fechaInformeVisible(value) },
+              { key: "numero_tipos_operacion", header: "Operaciones", accessor: "numero_tipos_operacion", sortType: "number", render: (value) => numeroInforme(value) },
+              { key: "detalle", header: "Detalle", sortable: false, accessor: (item) => item.clave_notario, render: (_, item) => <button type="button" onClick={() => setClaveNotarioSeleccionado((actual) => actual === item.clave_notario ? "" : item.clave_notario)} className="whitespace-nowrap rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100">{claveNotarioSeleccionado === item.clave_notario ? "Ocultar" : "Ver firmas"}</button> },
+            ]}
+          /></div>
         )}
       </section>
 
@@ -3176,7 +3208,26 @@ function InformeNotarios() {
           </div>
         </div>
         {loading ? <PanelEstadoInforme loading /> : detalle.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales con los filtros seleccionados." /> : (
-          <div className="max-h-[650px] overflow-auto"><table className="w-full min-w-[1250px] text-sm"><thead className="sticky top-0 z-10 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr><th className="whitespace-nowrap px-4 py-3">Fecha firma</th><th className="whitespace-nowrap px-4 py-3">N.º expediente</th><th className="whitespace-nowrap px-4 py-3">Titular</th><th className="whitespace-nowrap px-4 py-3">Tipo operación</th><th className="whitespace-nowrap px-4 py-3">Modalidad</th><th className="whitespace-nowrap px-4 py-3">Notario</th><th className="whitespace-nowrap px-4 py-3">Apoderado</th><th className="whitespace-nowrap px-4 py-3">Fecha envío</th><th className="whitespace-nowrap px-4 py-3 text-right">Días envío-firma</th><th className="whitespace-nowrap px-4 py-3">Protocolo</th><th className="whitespace-nowrap px-4 py-3">Oficina</th></tr></thead><tbody>{detalle.map((f, i) => <tr key={f.id ?? `${f.id_expediente}-${i}`} className="border-t border-slate-100 hover:bg-blue-50/40"><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_firma)}</td><td className="px-4 py-3 font-semibold text-blue-700">{f.id_expediente || "—"}</td><td className="px-4 py-3">{f.nombre_titular || "—"}</td><td className="px-4 py-3">{f.tipo_operacion || "—"}</td><td className="px-4 py-3">{f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : <span className="font-semibold text-amber-700">Sin clasificar</span>}</td><td className="px-4 py-3">{f.nombre_notario || "—"}</td><td className="px-4 py-3">{f.apoderado || "—"}</td><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_envio)}</td><td className="px-4 py-3 text-right">{f.dias_envio_firma == null ? "—" : numeroInforme(f.dias_envio_firma)}</td><td className="px-4 py-3">{f.protocolo || "—"}</td><td className="px-4 py-3">{f.oficina || "—"}</td></tr>)}</tbody></table></div>
+          <div className="max-h-[650px] overflow-auto"><MolsanDataTable
+            rows={detalle}
+            rowKey="id"
+            minWidth="1250px"
+            initialSort={{ key: "fecha_firma", direction: "desc" }}
+            emptyText="No hay firmas reales con los filtros seleccionados."
+            columns={[
+              { key: "fecha_firma", header: "Fecha firma", accessor: "fecha_firma", sortType: "date", render: (value) => fechaInformeVisible(value) },
+              { key: "id_expediente", header: "N.º expediente", accessor: "id_expediente", sortType: "text", render: (value) => <strong className="text-blue-700">{value || "—"}</strong> },
+              { key: "nombre_titular", header: "Titular", accessor: "nombre_titular", sortType: "text", render: (value) => value || "—" },
+              { key: "tipo_operacion", header: "Tipo operación", accessor: "tipo_operacion", sortType: "text", render: (value) => value || "—" },
+              { key: "modalidad", header: "Modalidad", accessor: (item) => item.modalidad === "VC" ? "Videoconferencia" : item.modalidad === "PRESENCIAL" ? "Presencial" : "Sin clasificar", sortType: "text", render: (value) => value === "Sin clasificar" ? <span className="font-semibold text-amber-700">{value}</span> : value },
+              { key: "nombre_notario", header: "Notario", accessor: "nombre_notario", sortType: "text", render: (value) => value || "—" },
+              { key: "apoderado", header: "Apoderado", accessor: "apoderado", sortType: "text", render: (value) => value || "—" },
+              { key: "fecha_envio", header: "Fecha envío", accessor: "fecha_envio", sortType: "date", render: (value) => fechaInformeVisible(value) },
+              { key: "dias_envio_firma", header: "Días envío-firma", accessor: "dias_envio_firma", sortType: "number", align: "right", render: (value) => value == null ? "—" : numeroInforme(value) },
+              { key: "protocolo", header: "Protocolo", accessor: "protocolo", sortType: "text", render: (value) => value || "—" },
+              { key: "oficina", header: "Oficina", accessor: "oficina", sortType: "text", render: (value) => value || "—" },
+            ]}
+          /></div>
         )}
       </section>
     </section>
