@@ -6,6 +6,7 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "./SeguridadSubpaginasPremium.css";
 
 export default function SeguridadResumen({ empleadoId }) {
@@ -279,7 +280,7 @@ export default function SeguridadResumen({ empleadoId }) {
             <div className="erp-empty-state">
 
               <div className="erp-empty-state-icon">
-                🔐
+                <MolsanIcon name="lock" size={24} />
               </div>
 
               <div>
