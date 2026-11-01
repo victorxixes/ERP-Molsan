@@ -171,7 +171,7 @@ export default function MolsanDataTable({
           <tbody>
             {visibleRows.length === 0 ? (
               <tr>
-                <td colSpan={columns.length || 1} className="molsan-table-empty">{emptyText}</td>
+                <td colSpan={columns.length || 1} className="molsan-data-table__empty">{emptyText}</td>
               </tr>
             ) : visibleRows.map((row, index) => (
               <tr key={typeof rowKey === "function" ? rowKey(row, index) : row?.[rowKey] ?? index}>
