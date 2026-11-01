@@ -110,6 +110,9 @@ export default function Fusiones() {
       </div></div>
       <MolsanDataTable
         rows={filtradas}
+          pagination
+          pageSize={25}
+
         rowKey="id"
         minWidth="1100px"
         initialSort={{ key: "id", direction: "desc" }}
