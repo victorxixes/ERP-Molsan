@@ -48,3 +48,20 @@
 @media (prefers-reduced-motion: reduce) {
   .panel-tecnico-premium * { scroll-behavior: auto !important; }
 }
+
+
+/* Cabecera del Panel Técnico: escala compacta y jerarquía compartida. */
+.panel-tecnico-premium > section:first-child { border-radius: 16px !important; }
+.panel-tecnico-premium > section:first-child > div.relative {
+  padding: 12px 16px !important;
+  gap: 12px !important;
+}
+.panel-tecnico-premium > section:first-child .w-11.h-11 {
+  width: 36px !important;
+  height: 36px !important;
+}
+.panel-tecnico-premium > section:first-child h1 {
+  font-size: 20px !important;
+  line-height: 1.2;
+}
+.panel-tecnico-premium > section:first-child p { font-size: 12px !important; }
