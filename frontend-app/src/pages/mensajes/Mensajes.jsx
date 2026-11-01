@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import "../../css/ModalesHerramientasPremium.css";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 import {
   useMensajesStore,
