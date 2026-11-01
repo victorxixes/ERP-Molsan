@@ -214,17 +214,7 @@ export default function Notificaciones() {
           ====================================================== */}
 
       <div
-        className="
-          relative
-          overflow-hidden
-          bg-white
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          p-5
-          md:p-6
-          shadow-sm
-        "
+        className="molsan-page-header"
       >
 
         <div
@@ -251,19 +241,7 @@ export default function Notificaciones() {
           >
 
             <div
-              className="
-                w-12
-                h-12
-                rounded-xl
-                bg-[var(--erp-primary-soft)]
-                border
-                border-[var(--erp-border)]
-                flex
-                items-center
-                justify-center
-                text-2xl
-                shadow-sm
-              "
+              className="molsan-page-header__mark"
             >
               🔔
             </div>
