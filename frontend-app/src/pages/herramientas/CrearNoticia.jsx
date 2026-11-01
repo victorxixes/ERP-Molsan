@@ -60,7 +60,7 @@ export default function CrearNoticia() {
 
       <header className="molsan-page-header">
         <div className="molsan-page-header__identity">
-          <div className="molsan-page-header__mark" aria-hidden="true">📰</div>
+          <div className="molsan-page-header__mark"><MolsanIcon name="newspaper" size={42} bare /></div>
           <div className="min-w-0">
             <p className="molsan-page-header__eyebrow">MOLSAN ERP · INTRANET</p>
             <h1 className="molsan-page-header__title">Crear noticia</h1>
