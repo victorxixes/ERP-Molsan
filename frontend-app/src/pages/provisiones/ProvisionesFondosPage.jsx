@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 import "./ProvisionesFondosPage.css";
+import { formatEuro as dinero } from "../../utils/formatters";
 
 const hoy = () => new Date().toISOString().slice(0, 10);
-const dinero = (v) => new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(v || 0));
+
 const totalConceptos = (g) => Math.round((["notaria", "ajd", "registro", "gestion"].reduce((s, k) => s + Number(g?.[k] || 0), 0) + Number.EPSILON) * 100) / 100;
 const compactarEntidad = (valor) => normalizarCatalogo(valor).replace(/[^a-z0-9]/g, "");
 const vaciaGarantia = () => ({ entidad: "", capital: "", finca: "", cru_idufir: "", registro_propiedad: "", poblacion: "", provincia: "", tipo_carga: "prestamo hipotecario", condicion_resolutoria: "no", adquisicion_vivienda_habitual: "", notaria: "0", ajd: "0", registro: "0", gestion: "0", total: "0" });
