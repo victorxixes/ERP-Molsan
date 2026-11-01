@@ -394,7 +394,7 @@
   .maestros-premium-page, .logs-premium-page, .seguridad-subpagina-premium, .seguridad-usuarios-premium,
   .seguridad-auditoria-premium, .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
   .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .provisiones-fondos-page,
-  .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria) :is(.molsan-panel__header, .ag-panel-cabecera, .ag-panel-header, .eg-card-header, .eg-panel-head, .ng-panel-titulo, .ctn-tabla-cabecera, .erp-card-header, .eg-modal-section-heading) {
+  .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria) :is(.molsan-panel__header, .ag-panel-cabecera, .ag-panel-header, .eg-card-header, .eg-panel-head, .ng-panel-titulo, .ctn-tabla-cabecera, .erp-card-header, .eg-modal-section-heading, .panel-tecnico-premium > section:not(:first-child) > div:first-child) {
   display: flex;
   align-items: center;
   justify-content: space-between;
