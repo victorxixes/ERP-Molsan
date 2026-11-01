@@ -418,7 +418,7 @@
 
 :is(.cg-page, .cg-unified-workspace) :is(input, select, textarea):focus {
   border-color: var(--molsan-primary, #064675);
-  box-shadow: 0 0 0 3px rgba(49, 86, 179, .13);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--molsan-primary) 13%, transparent);
 }
 
 :is(.cg-page, .cg-unified-workspace) :is(input, select, textarea):focus-visible {
@@ -748,7 +748,7 @@
   .provisiones-fondos-page,
   .herramientas-subpagina-premium
 ) :is(button, a[role="button"], [role="button"]):focus-visible {
-  outline: 3px solid rgba(49, 86, 179, .28);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary) 28%, transparent);
   outline-offset: 2px;
 }
 
@@ -1192,7 +1192,7 @@
   textarea
 ):focus-visible {
   border-color: var(--molsan-primary);
-  outline: 2px solid rgba(49, 86, 179, .18);
+  outline: 2px solid color-mix(in srgb, var(--molsan-primary) 18%, transparent);
   outline-offset: 1px;
 }
 
@@ -1279,7 +1279,7 @@
   textarea,
   button
 ):focus-visible {
-  outline: 2px solid rgba(49, 86, 179, .3);
+  outline: 2px solid color-mix(in srgb, var(--molsan-primary) 3%, transparent);
   outline-offset: 2px;
 }
 
@@ -1351,7 +1351,7 @@
   .expedientes-page,
   :is(.cg-page, .cg-unified-workspace)
 ) :where(button, a, input, select, textarea, [role="button"]):focus-visible {
-  outline: 2px solid rgba(49, 86, 179, .62);
+  outline: 2px solid color-mix(in srgb, var(--molsan-primary) 62%, transparent);
   outline-offset: 2px;
 }
 
@@ -1429,7 +1429,7 @@
   background: linear-gradient(145deg, #4268c5, #274694);
   border: 1px solid rgba(255, 255, 255, .7);
   border-radius: 16px;
-  box-shadow: 0 8px 22px rgba(49, 86, 179, .2);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--molsan-primary) 2%, transparent);
   font-size: 20px;
   font-weight: 850;
   letter-spacing: -1px;
@@ -1526,7 +1526,7 @@
   background: linear-gradient(145deg, #4268c5, #274694);
   border: 1px solid rgba(255, 255, 255, .7);
   border-radius: 16px;
-  box-shadow: 0 8px 22px rgba(49, 86, 179, .2);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--molsan-primary) 2%, transparent);
   font-size: 20px;
   font-weight: 850;
   letter-spacing: -1px;
@@ -2606,7 +2606,7 @@ body {
   .empleados-premium-page button:focus-visible, .panel-tecnico-premium button:focus-visible,
   .molsan-intranet-page button:focus-visible, .dashboard-premium-page button:focus-visible
 ) {
-  outline: 3px solid rgba(49, 86, 179, .24);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary) 24%, transparent);
   outline-offset: 2px;
 }
 
@@ -2674,7 +2674,7 @@ body {
   .empleados-premium-page textarea:focus-visible, .panel-tecnico-premium textarea:focus-visible,
   .molsan-intranet-page textarea:focus-visible
 ) {
-  outline: 3px solid rgba(49, 86, 179, .18);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary) 18%, transparent);
   outline-offset: 1px;
   border-color: var(--molsan-primary);
 }
@@ -3187,7 +3187,7 @@ table :is(th, td) {
   .informes-premium-page,
   .fusiones-page
 ) :is(input, select, textarea, button, a):focus-visible {
-  outline-color: rgba(49, 86, 179, .42);
+  outline-color: color-mix(in srgb, var(--molsan-primary) 42%, transparent);
   outline-offset: 2px;
 }
 
@@ -3316,7 +3316,7 @@ table :is(th, td) {
 
 :where(.agenda-premium-page, .logs-premium-page, .maestros-premium-page, .notificaciones-premium-page, .panel-tecnico-premium)
   :is(input, select, textarea, button, a):focus-visible {
-  outline-color: rgba(49, 86, 179, .42);
+  outline-color: color-mix(in srgb, var(--molsan-primary) 42%, transparent);
   outline-offset: 2px;
 }
 
@@ -3451,7 +3451,7 @@ table :is(th, td) {
   box-shadow: none;
 }
 .notargest :is(button, a, input, select, textarea):focus-visible {
-  outline: 2px solid rgba(49, 86, 179, .42) !important;
+  outline: 2px solid color-mix(in srgb, var(--molsan-primary) 42%, transparent) !important;
   outline-offset: 2px;
 }
 .notargest :is(.ng-contador, .ng-tarea, .ng-acceso):hover {
