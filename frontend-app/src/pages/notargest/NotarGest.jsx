@@ -534,7 +534,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
     <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
       <Sidebar
         brandName="NotarGest"
-        navigationItems={[
+        navigationItems={accesoERP && esAdminNotarGest && !tokenAdminNotaria ? [] : [
           { key: "inicio", label: "Dashboard", icon: "home" },
           { key: "recepcion", label: "Nuevos encargos", icon: "clipboard-list", badge: cuenta("recepcion") },
           { key: "firma", label: "Pendientes de firma", icon: "clock", badge: cuenta("firma") },
