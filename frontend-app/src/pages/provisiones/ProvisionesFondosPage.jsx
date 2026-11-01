@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 import "./ProvisionesFondosPage.css";
-import { formatEuro as dinero } from "../../utils/formatters";
+import { formatEuro as dinero, formatPercent } from "../../utils/formatters";
 
 const hoy = () => new Date().toISOString().slice(0, 10);
 
@@ -877,7 +877,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
                   ? "Al tratarse de la vivienda habitual, AJD / impuestos queda fijado en 0,00 € y no se aplica el porcentaje provincial."
                   : importeHipotecaProvincia(g.provincia) === null
                     ? "No hay porcentaje configurado para " + g.provincia + " en Catálogos → Tabla Provisiones de fondos. Introduce el impuesto manualmente."
-                    : "Como la hipoteca no se constituyó para adquirir la vivienda habitual, se aplica el " + String(importeHipotecaProvincia(g.provincia)).replace(".", ",") + " % al capital del préstamo. El resultado se refleja en AJD / impuestos y puedes revisarlo antes de guardar."}
+                    : "Como la hipoteca no se constituyó para adquirir la vivienda habitual, se aplica el " + formatPercent(importeHipotecaProvincia(g.provincia)) + " al capital del préstamo. El resultado se refleja en AJD / impuestos y puedes revisarlo antes de guardar."}
             </div>}
             {!normalizarCatalogo(g.tipo_carga).includes("hipotec") && <div role="note" className="mb-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900"><strong>Atención:</strong> en cargas administrativas, judiciales, bienes muebles u otras (por ejemplo, embargos) no se debe presupuestar gasto notarial. Añade en Observaciones una nota indicando la carga que debe cancelarse. El importe de Notaría queda a 0 €.</div>}
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
