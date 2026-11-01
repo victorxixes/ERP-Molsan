@@ -2255,7 +2255,7 @@ const permisosGlobales =
       <SeccionAcordeon
         titulo="Módulos visibles"
         descripcion="Control de los módulos disponibles para este empleado."
-        icono="📦"
+        icono="archive"
         contador={
           modulosVisibles.length
         }
@@ -2375,7 +2375,7 @@ const permisosGlobales =
       <SeccionAcordeon
         titulo="Permisos por módulo"
         descripcion="Control granular de las capacidades del empleado."
-        icono="🔧"
+        icono="tools"
         abierto={showPermisos}
         onToggle={() =>
           setShowPermisos(
@@ -2655,7 +2655,7 @@ const permisosGlobales =
       <SeccionAcordeon
         titulo="Auditoría del usuario"
         descripcion="Trazabilidad de las acciones realizadas por este empleado."
-        icono="📊"
+        icono="chart"
         contador={
           auditoriaFiltrada.length
         }
@@ -2969,7 +2969,7 @@ const permisosGlobales =
       <SeccionAcordeon
         titulo="Logs técnicos del usuario"
         descripcion="Eventos técnicos, errores e incidencias."
-        icono="📝"
+        icono="pen"
         contador={
           logsFiltrados.length
         }
