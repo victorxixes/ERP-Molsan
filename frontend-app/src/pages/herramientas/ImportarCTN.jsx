@@ -19,7 +19,7 @@ export default function ImportarCTN() {
   };
 
   return (
-    <div className="importar-ctn-premium herramientas-subpagina-premium min-h-full space-y-6 animate-fadeIn">
+    <div className="molsan-page-stack importar-ctn-premium herramientas-subpagina-premium min-h-full animate-fadeIn">
 
       {/* =====================================================
           CABECERA
