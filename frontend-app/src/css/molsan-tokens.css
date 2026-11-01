@@ -1,29 +1,42 @@
 /* MOLSAN ERP PREMIUM 2027 · GLASS LUXE
-   Fuente única de tokens visuales compartidos. */
+   Tokens semánticos únicos para todo el ERP y sus portales. */
 :root {
-  --molsan-font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color-scheme: light;
+  --molsan-font-family: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --molsan-font-size-2xs: 11px;
   --molsan-font-size-xs: 12px;
   --molsan-font-size-sm: 13px;
   --molsan-font-size-md: 14px;
   --molsan-font-size-lg: 16px;
+  --molsan-font-size-xl: 18px;
   --molsan-font-size-title: 26px;
+  --molsan-line-height: 1.5;
   --molsan-space-1: 4px;
   --molsan-space-2: 8px;
   --molsan-space-3: 12px;
   --molsan-space-4: 16px;
   --molsan-space-5: 20px;
   --molsan-space-6: 24px;
+  --molsan-space-8: 32px;
+  --molsan-space-10: 40px;
   --molsan-control-height: 40px;
   --molsan-control-height-compact: 34px;
+  --molsan-radius-xs: 6px;
   --molsan-radius-control: 10px;
   --molsan-radius-card: 18px;
-  --molsan-radius-dialog: 20px;
+  --molsan-radius-panel: 20px;
+  --molsan-radius-dialog: 22px;
+  --molsan-radius-pill: 999px;
+  /* Corporativo */
   --molsan-primary: #064675;
   --molsan-primary-hover: #04375B;
+  --molsan-primary-active: #032D4B;
   --molsan-primary-soft: #EAF2F8;
+  --molsan-primary-tint: #F2F7FB;
   --molsan-page-bg: #FFFFFF;
   --molsan-surface: #FFFFFF;
   --molsan-surface-soft: #F2F7FB;
+  --molsan-surface-raised: #FFFFFF;
   --molsan-table-head: #EAF2F8;
   --molsan-border: #D8E4EC;
   --molsan-border-light: #E8EFF4;
@@ -31,13 +44,27 @@
   --molsan-text: #173247;
   --molsan-text-secondary: #617789;
   --molsan-text-muted: #718696;
+  /* Estados semánticos: mismos significados en todas las pantallas */
   --molsan-success: #16845B;
+  --molsan-success-soft: #EAF7F0;
   --molsan-warning: #A96B12;
+  --molsan-warning-soft: #FFF5E5;
   --molsan-danger: #C43D4B;
+  --molsan-danger-soft: #FFF0F1;
   --molsan-info: #176B9A;
+  --molsan-info-soft: #EAF5FB;
+  /* Profundidad e interacción */
   --molsan-shadow-card: 0 8px 24px rgba(6, 50, 82, .075);
   --molsan-shadow-hover: 0 16px 34px rgba(6, 50, 82, .13);
   --molsan-shadow-popover: 0 18px 45px rgba(15, 42, 62, .18);
+  --molsan-shadow-focus: 0 0 0 3px rgba(6, 70, 117, .16);
   --molsan-transition-fast: 160ms ease;
   --molsan-transition-normal: 220ms ease;
+  /* Compatibilidad: las pantallas heredadas consumen también variables ERP. */
+  --erp-primary: var(--molsan-primary);
+  --erp-primary-soft: var(--molsan-primary-soft);
+  --erp-bg: var(--molsan-page-bg);
+  --erp-surface: var(--molsan-surface);
+  --erp-border: var(--molsan-border);
+  --erp-text: var(--molsan-text);
 }
