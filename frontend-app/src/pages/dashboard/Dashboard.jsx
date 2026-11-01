@@ -5,6 +5,7 @@
 
 import { useDashboard } from "../../hooks/useDashboard";
 import { useNavigate } from "react-router-dom";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "../../css/DashboardCancelagest.css";
 
 // ============================================================
@@ -113,9 +114,7 @@ function KpiCard({ icono, titulo, valor, descripcion }) {
             </div>
           )}
         </div>
-        <div className="dashboard-kpi__icon flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg" style={{ background: "var(--erp-primary-soft)", color: "var(--erp-primary)" }}>
-          {icono}
-        </div>
+        <MolsanIcon name={icono} size={42} tone="ocean" />
       </div>
     </div>
   );
@@ -124,9 +123,7 @@ function KpiCard({ icono, titulo, valor, descripcion }) {
 function ActividadCard({ actividad, total, porcentajeValor }) {
   return (
     <div className="flex items-center gap-3 border-b px-4 py-3.5 last:border-b-0 transition-colors duration-150 hover:bg-[var(--erp-surface-soft)]" style={{ borderColor: "var(--erp-border)" }}>
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg" style={{ background: "var(--erp-primary-soft)" }}>
-        {actividad.icono}
-      </div>
+      <MolsanIcon name={actividad.icono} size={42} tone="ocean" />
       <div className="min-w-0 flex-1">
         <div className="text-sm font-semibold" style={{ color: "var(--erp-text)" }}>
           {actividad.nombre}
@@ -156,9 +153,7 @@ function FirmaCard({ icono, titulo, total, porcentajeValor }) {
   return (
     <div className="erp-card p-5">
       <div className="flex items-center gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-xl" style={{ background: "var(--erp-primary-soft)" }}>
-          {icono}
-        </div>
+        <MolsanIcon name={icono} size={48} tone="ocean" />
         <div className="min-w-0 flex-1">
           <div className="text-sm font-semibold" style={{ color: "var(--erp-text)" }}>
             {titulo}
