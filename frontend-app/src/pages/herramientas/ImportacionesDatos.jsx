@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import "../../css/ImportacionesDatos.css";
 
 const IMPORTADORES = [
   { titulo: "Importar CTN", detalle: "Carga de información de notarías desde Excel.", icono: "🏛️", ruta: "/herramientas/importar-ctn", grupo: "Datos notariales" },
