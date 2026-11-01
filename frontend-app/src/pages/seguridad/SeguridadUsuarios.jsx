@@ -311,7 +311,7 @@ export default function SeguridadUsuarios() {
           CABECERA
       ====================================================== */}
 
-      <div className="erp-page-header">
+      <div className="erp-page-header molsan-page-header">
 
         <div>
           <div className="erp-eyebrow">
