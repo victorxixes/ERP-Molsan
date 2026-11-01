@@ -6,6 +6,7 @@ import {
 } from "react";
 
 import AuthenticatedPhoto from "../../components/AuthenticatedPhoto";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "./EmpleadosListadoPremium.css";
 
 import {
@@ -924,7 +925,7 @@ export default function EmpleadosListado({
 
       <header className="molsan-page-header">
         <div className="molsan-page-header__identity">
-          <div className="molsan-page-header__mark" aria-hidden="true">👥</div>
+          <div className="molsan-page-header__mark"><MolsanIcon name="users" size={42} /></div>
           <div className="min-w-0">
             <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
             <h1 className="molsan-page-header__title">Empleados</h1>
@@ -1218,7 +1219,7 @@ export default function EmpleadosListado({
             mb-3
             text-4xl
           ">
-            👤
+            <MolsanIcon name="person" size={24} />
           </div>
 
           <div className="
@@ -1402,7 +1403,7 @@ export default function EmpleadosListado({
                       bg-blue-50
                       text-blue-600
                     ">
-                      👤
+                      <MolsanIcon name="person" size={24} />
                     </div>
 
                     <div>
