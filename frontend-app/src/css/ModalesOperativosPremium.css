@@ -8,15 +8,15 @@
 @media(prefers-reduced-motion:reduce){.expediente-operativo-modal *,.empleado-operativo-modal *{animation:none!important;transition:none!important}}
 
 /* Algunos modales operativos aplican role="dialog" al propio contenedor raíz. */
-.expediente-operativo-modal[role="dialog"],
-.empleado-operativo-modal[role="dialog"] {
+.expediente-operativo-modal[role="dialog"]:not(.fixed),
+.empleado-operativo-modal[role="dialog"]:not(.fixed) {
   max-height: calc(100dvh - 1rem);
   overflow-y: auto;
   overscroll-behavior: contain;
 }
 @media (max-width: 640px) {
-  .expediente-operativo-modal[role="dialog"],
-  .empleado-operativo-modal[role="dialog"] {
+  .expediente-operativo-modal[role="dialog"]:not(.fixed),
+  .empleado-operativo-modal[role="dialog"]:not(.fixed) {
     width: 100%;
     max-height: calc(100dvh - .5rem);
     border-radius: .85rem;
