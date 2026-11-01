@@ -169,7 +169,7 @@ function Card({
     </>
   );
 
-  const clases = `group relative overflow-hidden rounded-[22px] border bg-white/80 p-5 shadow-[0_12px_35px_rgba(15,23,42,0.07)] backdrop-blur-xl transition-all duration-300 ${enConstruccion && !onClick && !link ? "cursor-default border-amber-200/80 bg-amber-50/30" : "cursor-pointer hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(15,23,42,0.11)] active:scale-[0.98]"} ${destacado ? "border-blue-200/80 bg-blue-50/50" : ""}`;
+  const clases = `utilidades-access-card group relative overflow-hidden rounded-[21px] border border-[#D8E4EC] bg-gradient-to-br from-white via-white to-[#F2F7FB] p-5 shadow-[0_8px_24px_rgba(6,50,82,0.065)] transition-all duration-300 ${enConstruccion && !onClick && !link ? "cursor-default border-amber-200/80 bg-amber-50/30" : "cursor-pointer hover:-translate-y-1 hover:border-[#B9D7E6] hover:shadow-[0_17px_34px_rgba(6,50,82,0.12)] active:scale-[0.99]"} ${destacado ? "border-[#B9D7E6] from-white to-[#EFF7FB]" : ""}`;
 
   if (enConstruccion && !onClick && !link) {
     return (
