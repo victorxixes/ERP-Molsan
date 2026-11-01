@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 import axios from "../../api/axios";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
+import { formatEuro as euros } from "../../utils/formatters";
 
 const hoy = () => new Date().toLocaleDateString("sv-SE");
-const euros = (v) => Number(v || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
+
 const fecha = (v) => v ? String(v).slice(0, 10).split("-").reverse().join("/") : "—";
 
 export default function ComplementosSaldo() {
