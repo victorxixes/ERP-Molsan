@@ -44,8 +44,8 @@ export default function LecturaCopias() {
   };
 
   return (
-    <main className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="molsan-page-header relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <main className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6">
+      <header className="molsan-page-header">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link>
         <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
