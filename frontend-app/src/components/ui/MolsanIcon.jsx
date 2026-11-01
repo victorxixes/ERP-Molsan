@@ -7,6 +7,9 @@ import React from "react";
  */
 const PATHS = {
   activity: <><path d="M3 12h4l2.2-7 4.1 14 2.2-7H21"/></>,
+  calendar: <><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17M8 14h3M8 17h6"/></>,
+  home: <><path d="m3 10 9-7 9 7M5 9v11h14V9M9 20v-6h6v6"/></>,
+  dashboard: <><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="5" rx="1.5"/><rect x="13" y="10" width="8" height="11" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/></>,
   users: <><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.2-3.6 2.6-5.7 6-5.7s5.8 2.1 6 5.7"/><path d="M16 5.2a3.1 3.1 0 0 1 0 5.8M17 14.4c2.3.7 3.6 2.5 3.8 5.1"/></>,
   pen: <><path d="m4 16.5-.9 4.4 4.4-.9L19 8.5a2.8 2.8 0 0 0-4-4Z"/><path d="m13.5 6 4.5 4.5M4 21h16"/></>,
   timer: <><circle cx="12" cy="13" r="8.2"/><path d="M12 8v5l3.3 2M9 2h6M12 2v2"/></>,
