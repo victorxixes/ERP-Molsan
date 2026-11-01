@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useState, useCallback, useMemo } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
@@ -97,7 +98,7 @@ export default function SubirDocumento() {
               text-2xl
             "
           >
-            📄
+            <MolsanIcon name="file" size={20} />
           </div>
 
           <div>
