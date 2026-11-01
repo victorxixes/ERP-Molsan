@@ -1085,7 +1085,7 @@
       .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
       .panel-card, .ficha-panel, .ficha-seccion, .form-section,
       .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-stat-card, .agenda-calendar-card, .agenda-list-table-wrap,
-      .logs-panel, .maestros-panel
+      .logs-panel, .maestros-panel, :is(div, section, article)[class*="rounded-2xl"][class*="bg-white"], :is(div, section, article)[class*="rounded-xl"][class*="bg-white"]
     ) {
     animation: none;
     transition: none;
