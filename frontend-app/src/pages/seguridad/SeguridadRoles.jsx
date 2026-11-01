@@ -700,28 +700,28 @@ export default function SeguridadRoles() {
           titulo="Total"
           valor={estadisticas.total}
           descripcion="Perfiles definidos"
-          icono="🛡️"
+          icono="shield"
         />
 
         <TarjetaMetrica
           titulo="Activos"
           valor={estadisticas.activos}
           descripcion="Disponibles para uso"
-          icono="🟢"
+          icono="check"
         />
 
         <TarjetaMetrica
           titulo="Usuarios"
           valor={estadisticas.usuariosAsignados}
           descripcion="Usuarios asignados"
-          icono="👤"
+          icono="person"
         />
 
         <TarjetaMetrica
           titulo="Con permisos"
           valor={estadisticas.rolesConPermisos}
           descripcion="Con configuración"
-          icono="🔐"
+          icono="lock"
         />
 
       </div>
@@ -1071,7 +1071,7 @@ export default function SeguridadRoles() {
                           rol.usuariosCount
                         }
                         descripcion="Asignados al rol"
-                        icono="👤"
+                        icono="person"
                       />
 
                       <TarjetaMetrica
@@ -1080,7 +1080,7 @@ export default function SeguridadRoles() {
                           rol.modulosCount
                         }
                         descripcion="Áreas disponibles"
-                        icono="📦"
+                        icono="archive"
                       />
 
                       <TarjetaMetrica
@@ -1089,7 +1089,7 @@ export default function SeguridadRoles() {
                           rol.permisosCount
                         }
                         descripcion="Autorizaciones"
-                        icono="🔐"
+                        icono="lock"
                       />
 
                     </div>
