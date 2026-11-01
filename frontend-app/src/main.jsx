@@ -21,6 +21,8 @@ import "./css/molsan-tables.css";
 import "./css/molsan-controls.css";
 // Componentes y módulos funcionales.
 import App from "./App";
+// Estilos de módulos y páginas antes de las capas globales compartidas.
+import "./css/molsan-module-styles.css";
 // Capa de armonización general.
 import "./css/MolsanRedesign2027.css";
 import "./css/MolsanPremium2027.css";
