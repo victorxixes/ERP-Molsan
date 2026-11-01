@@ -382,3 +382,167 @@
     border-radius: 10px;
   }
 }
+
+
+/* ============================================================
+   MOLSAN ERP PREMIUM 2027 · ACABADO VISUAL UNIFICADO
+   Extensión transversal a todas las páginas y subpáginas.
+   Replica la jerarquía, profundidad y microinteracciones de
+   las tarjetas del Espacio de trabajo sin tocar su contenido.
+   ============================================================ */
+
+:where(.erp-app-shell, .erp-main-content, .erp-page, main[class]) {
+  --molsan-card-radius: 19px;
+  --molsan-card-border: #D8E4EC;
+  --molsan-card-shadow: 0 9px 24px rgba(6, 50, 82, .065);
+  --molsan-card-shadow-hover: 0 17px 34px rgba(6, 50, 82, .12);
+  --molsan-card-heading: #064675;
+}
+
+/* Cabeceras principales: banda hielo, acento superior y jerarquía marcada. */
+:where(.erp-app-shell, .erp-main-content, .erp-page, main[class])
+:is(.erp-page-header, .molsan-page-header, [data-page-header="true"], .cg-page-header, .ctn-listado-header, .agenda-page-header) {
+  position: relative;
+  overflow: hidden;
+  padding: 16px 20px;
+  border: 1px solid #D8E4EC;
+  border-radius: 19px;
+  background:
+    radial-gradient(ellipse at 94% 8%, rgba(20,119,165,.12), transparent 30%),
+    linear-gradient(112deg, #F2F7FB 0%, #FFFFFF 62%, #F6FAFC 100%);
+  box-shadow: 0 8px 22px rgba(6,50,82,.055);
+}
+:where(.erp-app-shell, .erp-main-content, .erp-page, main[class])
+:is(.erp-page-header, .molsan-page-header, [data-page-header="true"], .cg-page-header, .ctn-listado-header, .agenda-page-header)::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #064675 0%, #2696A5 52%, rgba(38,150,165,0) 100%);
+  content: "";
+  pointer-events: none;
+}
+:where(.erp-app-shell, .erp-main-content, .erp-page, main[class])
+:is(.erp-page-header, .molsan-page-header, [data-page-header="true"], .cg-page-header, .ctn-listado-header, .agenda-page-header)
+:is(h1, h2, .molsan-page-header__title) {
+  color: #064675;
+  font-weight: 850;
+  letter-spacing: -.035em;
+}
+
+/* Superficies de tarjeta detectadas en los módulos y sus subpáginas. */
+:where(.erp-app-shell, .erp-main-content, .erp-page, main[class])
+:is(
+  .erp-card, .erp-card-soft, .molsan-panel, .erp-panel, .erp-surface,
+  [data-panel="true"], [data-card="true"], [data-cg-panel="true"],
+  .cg-panel, .cg-card, .cg-stat, .cg-section,
+  .ag-panel, .ag-kpi, .ag-card, .ag-ficha-encargo, .ag-encargo-subpanel,
+  .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .ng-modulo-card,
+  .ng-admin-notaria-card, .ng-finca-card,
+  .eg-panel, .eg-kpi, .eg-card, .eg-directorio-card,
+  .ctn-panel, .ctn-stat, .ctn-modal-seccion, .ctn-portal-card,
+  .kpi-card, .metric-card, .dashboard-card, .modulo-card,
+  .dashboard-kpi, .stat-card, .summary-card, .info-card,
+  .ficha-section, .ficha-bloque, .expediente-card,
+  .provision-card, .agenda-upcoming-card, .logs-panel, .maestros-panel
+) {
+  position: relative;
+  min-width: 0;
+  border: 1px solid var(--molsan-card-border, #D8E4EC);
+  border-radius: var(--molsan-card-radius, 19px);
+  background:
+    linear-gradient(145deg, #FFFFFF 0%, #FFFFFF 68%, #F2F7FB 100%);
+  box-shadow: var(--molsan-card-shadow, 0 9px 24px rgba(6,50,82,.065));
+  transition:
+    transform .22s cubic-bezier(.2,.75,.25,1),
+    box-shadow .22s ease,
+    border-color .22s ease,
+    background-color .22s ease;
+  animation: molsan-card-enter .42s both;
+}
+
+/* Cabeceras internas: tratamiento visible, sin modificar su estructura. */
+:where(.erp-app-shell, .erp-main-content, .erp-page, main[class])
+:is(
+  .erp-card, .erp-card-soft, .molsan-panel, .erp-panel, .erp-surface,
+  [data-panel="true"], [data-card="true"], [data-cg-panel="true"],
+  .cg-panel, .cg-card, .cg-section, .ag-panel, .ag-card,
+  .ng-panel, .ng-tarea, .ng-acceso, .eg-panel, .eg-card,
+  .kpi-card, .metric-card, .dashboard-card, .modulo-card,
+  .ficha-section, .ficha-bloque, .expediente-card
+)
+:is(> header, > .card-header, > .panel-header, > .section-header, > .ag-panel-cabecera, > .ng-panel-titulo, > .eg-panel-head, > .cg-section-heading) {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  margin: -1px -1px 14px;
+  padding: 12px 16px;
+  color: #064675;
+  border: 0;
+  border-bottom: 1px solid #D8E4EC;
+  border-radius: 18px 18px 0 0;
+  background:
+    linear-gradient(105deg, #EAF2F8 0%, #F5F9FC 70%, #FFFFFF 100%);
+  font-weight: 800;
+}
+:where(.erp-app-shell, .erp-main-content, .erp-page, main[class])
+:is(
+  .erp-card, .erp-card-soft, .molsan-panel, .erp-panel, .erp-surface,
+  [data-panel="true"], [data-card="true"], [data-cg-panel="true"],
+  .cg-panel, .cg-card, .cg-section, .ag-panel, .ag-card,
+  .ng-panel, .ng-tarea, .ng-acceso, .eg-panel, .eg-card,
+  .kpi-card, .metric-card, .dashboard-card, .modulo-card,
+  .ficha-section, .ficha-bloque, .expediente-card
+)
+:is(> header, > .card-header, > .panel-header, > .section-header, > .ag-panel-cabecera, > .ng-panel-titulo, > .eg-panel-head, > .cg-section-heading)
+:is(h2, h3, h4, strong) {
+  color: #064675;
+  font-weight: 850;
+  letter-spacing: -.025em;
+}
+
+/* Títulos directos de panel cuando no existe una cabecera HTML. */
+:where(.erp-app-shell, .erp-main-content, .erp-page, main[class])
+:is(.erp-card, .erp-card-soft, .molsan-panel, .erp-panel, .cg-panel, .ag-panel, .ng-panel, .eg-panel)
+> :is(h2, h3, [data-card-title="true"]) {
+  color: #064675;
+  font-weight: 850;
+  letter-spacing: -.025em;
+}
+
+/* Aparición escalonada y elevación suave al interactuar. */
+@keyframes molsan-card-enter {
+  from { opacity: 0; transform: translateY(9px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+:where(.erp-app-shell, .erp-main-content, .erp-page, main[class])
+:is(.erp-card, .erp-card-soft, .molsan-panel, .erp-panel, .erp-surface, [data-panel="true"], [data-card="true"], [data-cg-panel="true"], .cg-panel, .cg-card, .cg-stat, .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel, .eg-kpi, .eg-card, .kpi-card, .metric-card, .dashboard-card, .modulo-card, .dashboard-kpi, .stat-card, .summary-card, .info-card, .ficha-section, .ficha-bloque, .expediente-card, .provision-card, .agenda-upcoming-card, .logs-panel, .maestros-panel):nth-child(4n + 2) { animation-delay: .045s; }
+:where(.erp-app-shell, .erp-main-content, .erp-page, main[class])
+:is(.erp-card, .erp-card-soft, .molsan-panel, .erp-panel, .erp-surface, [data-panel="true"], [data-card="true"], [data-cg-panel="true"], .cg-panel, .cg-card, .cg-stat, .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel, .eg-kpi, .eg-card, .kpi-card, .metric-card, .dashboard-card, .modulo-card, .dashboard-kpi, .stat-card, .summary-card, .info-card, .ficha-section, .ficha-bloque, .expediente-card, .provision-card, .agenda-upcoming-card, .logs-panel, .maestros-panel):nth-child(4n + 3) { animation-delay: .09s; }
+:where(.erp-app-shell, .erp-main-content, .erp-page, main[class])
+:is(.erp-card, .erp-card-soft, .molsan-panel, .erp-panel, .erp-surface, [data-panel="true"], [data-card="true"], [data-cg-panel="true"], .cg-panel, .cg-card, .cg-stat, .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel, .eg-kpi, .eg-card, .kpi-card, .metric-card, .dashboard-card, .modulo-card, .dashboard-kpi, .stat-card, .summary-card, .info-card, .ficha-section, .ficha-bloque, .expediente-card, .provision-card, .agenda-upcoming-card, .logs-panel, .maestros-panel):nth-child(4n + 4) { animation-delay: .135s; }
+
+@media (hover: hover) and (pointer: fine) {
+  :where(.erp-app-shell, .erp-main-content, .erp-page, main[class])
+  :is(.erp-card, .erp-card-soft, .molsan-panel, .erp-panel, .erp-surface, [data-panel="true"], [data-card="true"], [data-cg-panel="true"], .cg-panel, .cg-card, .cg-stat, .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel, .eg-kpi, .eg-card, .kpi-card, .metric-card, .dashboard-card, .modulo-card, .dashboard-kpi, .stat-card, .summary-card, .info-card, .ficha-section, .ficha-bloque, .expediente-card, .provision-card, .agenda-upcoming-card, .logs-panel, .maestros-panel):hover {
+    transform: translateY(-3px) !important;
+    border-color: #B8D2E1;
+    box-shadow: var(--molsan-card-shadow-hover, 0 17px 34px rgba(6,50,82,.12));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.erp-app-shell, .erp-main-content, .erp-page, main[class])
+  :is(.erp-card, .erp-card-soft, .molsan-panel, .erp-panel, .erp-surface, [data-panel="true"], [data-card="true"], [data-cg-panel="true"], .cg-panel, .cg-card, .cg-stat, .ag-panel, .ag-kpi, .ag-card, .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel, .eg-kpi, .eg-card, .kpi-card, .metric-card, .dashboard-card, .modulo-card, .dashboard-kpi, .stat-card, .summary-card, .info-card, .ficha-section, .ficha-bloque, .expediente-card, .provision-card, .agenda-upcoming-card, .logs-panel, .maestros-panel) {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+@media (max-width: 760px) {
+  :where(.erp-app-shell, .erp-main-content, .erp-page, main[class])
+  :is(.erp-card, .erp-card-soft, .molsan-panel, .erp-panel, .cg-panel, .ag-panel, .ng-panel, .eg-panel, .kpi-card, .metric-card, .dashboard-card, .modulo-card, .ficha-section, .ficha-bloque, .expediente-card) {
+    border-radius: 15px;
+  }
+}
