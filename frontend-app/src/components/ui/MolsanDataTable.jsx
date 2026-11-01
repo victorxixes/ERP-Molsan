@@ -70,6 +70,11 @@ export default function MolsanDataTable({
     setPage(1);
   }, [searchTerm, pageSize]);
 
+  useEffect(() => {
+    const maxPage = Math.max(1, Math.ceil(orderedRows.length / pageSize));
+    setPage((current) => Math.min(current, maxPage));
+  }, [orderedRows.length, pageSize]);
+
   const handleSort = (column) => {
     if (column.sortable === false) return;
     const key = sortKeyOf(column);
