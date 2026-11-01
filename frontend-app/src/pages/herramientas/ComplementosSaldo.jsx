@@ -1,3 +1,4 @@
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
@@ -91,17 +92,23 @@ export default function ComplementosSaldo() {
       </div></div>
 
       {error && <div role="alert" className="m-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{error}</div>}
-      <div className="overflow-x-auto"><table className="w-full min-w-[1250px] border-collapse text-left text-sm">
-        <thead className="bg-white text-[10px] uppercase tracking-wider text-slate-500"><tr>{["Expediente", "Provisionado", "Saldo disponible", "Fecha de petición", "Saldo a solicitar", "Motivo", "Acciones", "Estado"].map((n) => <th key={n} className="border-b border-slate-200 px-4 py-3.5 font-extrabold">{n}</th>)}</tr></thead>
-        <tbody>{cargando ? <tr><td colSpan={8} className="px-5 py-14 text-center text-slate-500">Cargando solicitudes…</td></tr>
-          : items.length === 0 ? <tr><td colSpan={8} className="px-5 py-14 text-center"><div className="text-3xl">📋</div><p className="mt-2 font-bold text-slate-700">No hay solicitudes que mostrar</p><p className="mt-1 text-xs text-slate-500">Cuando se solicite un complemento desde la ficha de un expediente, aparecerá aquí.</p></td></tr>
-          : items.map((item) => { const cerrado = ["compensado", "cerrado"].includes(String(item.estado).toLowerCase()); return <tr key={item.id} className="border-b border-slate-100 last:border-0 hover:bg-blue-50/40">
-            <td className="px-4 py-3.5"><Link to={item.expediente_id ? `/expedientes/${item.expediente_id}` : "/expedientes"} className="font-extrabold text-blue-700 hover:underline">{item.numero_expediente}</Link></td>
-            <td className="whitespace-nowrap px-4 py-3.5 text-slate-600">{euros(item.provisionado)}</td><td className="whitespace-nowrap px-4 py-3.5 text-slate-600">{euros(item.saldo_disponible)}</td><td className="whitespace-nowrap px-4 py-3.5 text-slate-600">{fecha(item.fecha_solicitud)}</td><td className="whitespace-nowrap px-4 py-3.5 font-extrabold tabular-nums text-slate-900">{euros(item.importe)}</td><td className="max-w-[280px] whitespace-normal px-4 py-3.5 text-slate-600">{item.motivo || item.observaciones || "—"}</td>
-                        <td className="px-4 py-3.5"><button type="button" disabled={cerrado} onClick={() => cambiarEstado(item)} className={`rounded-lg border px-3 py-2 text-xs font-bold ${cerrado ? "border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100" : "border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100"}`}>{cerrado ? "Regularizado" : "Compensar"}</button></td>
-            <td className="px-4 py-3.5"><span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-bold ${cerrado ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-700"}`}>{cerrado ? "Compensado" : "Pendiente"}</span></td>
-          </tr>; })}</tbody>
-      </table></div>
+      <MolsanDataTable
+        rows={items}
+        rowKey="id"
+        minWidth="1350px"
+        initialSort={{ key: "fecha_solicitud", direction: "desc" }}
+        emptyText={cargando ? "Cargando solicitudes…" : "No hay solicitudes que mostrar. Cuando se solicite un complemento desde la ficha de un expediente, aparecerá aquí."}
+        columns={[
+          { key: "numero_expediente", header: "Expediente", accessor: "numero_expediente", sortType: "text", render: (value, item) => <Link to={item.expediente_id ? `/expedientes/${item.expediente_id}` : "/expedientes"} className="font-extrabold text-blue-700 hover:underline">{value}</Link> },
+          { key: "provisionado", header: "Provisionado", accessor: "provisionado", sortType: "currency", align: "right", render: (value) => euros(value) },
+          { key: "saldo_disponible", header: "Saldo disponible", accessor: "saldo_disponible", sortType: "currency", align: "right", render: (value) => euros(value) },
+          { key: "fecha_solicitud", header: "Fecha de petición", accessor: "fecha_solicitud", sortType: "date", render: (value) => fecha(value) },
+          { key: "importe", header: "Saldo a solicitar", accessor: "importe", sortType: "currency", align: "right", render: (value) => <strong className="tabular-nums">{euros(value)}</strong> },
+          { key: "motivo", header: "Motivo", accessor: (item) => item.motivo || item.observaciones, sortType: "text", render: (value) => value || "—" },
+          { key: "acciones", header: "Acciones", sortable: false, accessor: (item) => item.id, render: (_, item) => { const cerrado = ["compensado", "cerrado"].includes(String(item.estado).toLowerCase()); return <button type="button" disabled={cerrado} onClick={() => cambiarEstado(item)} className={`rounded-lg border px-3 py-2 text-xs font-bold ${cerrado ? "border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100" : "border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100"}`}>{cerrado ? "Regularizado" : "Compensar"}</button>; } },
+          { key: "estado", header: "Estado", accessor: (item) => ["compensado", "cerrado"].includes(String(item.estado).toLowerCase()) ? "Compensado" : "Pendiente", sortType: "text", render: (value) => <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-bold ${value === "Compensado" ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-700"}`}>{value}</span> },
+        ]}
+      />
       <footer className="flex flex-col gap-1 border-t border-slate-200 bg-slate-50/70 px-4 py-3 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between"><span>{items.length} solicitud(es) en el resultado actual</span><span>Los indicadores se actualizan con los filtros aplicados.</span></footer>
     </section>
   </div>;
