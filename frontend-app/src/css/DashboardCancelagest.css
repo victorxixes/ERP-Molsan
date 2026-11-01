@@ -95,7 +95,7 @@
   flex: 0 0 7px;
   background: var(--molsan-primary, #064675);
   border-radius: 50%;
-  box-shadow: 0 0 0 4px rgba(49, 86, 179, .1);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--molsan-primary) 1%, transparent);
 }
 
 .dashboard-cancelagest .ag-boton-actualizar {
@@ -116,12 +116,12 @@
 }
 
 .dashboard-cancelagest .ag-boton-actualizar:hover:not(:disabled) {
-  box-shadow: 0 6px 16px rgba(49, 86, 179, .18);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--molsan-primary) 18%, transparent);
   transform: translateY(-1px);
 }
 
 .dashboard-cancelagest .ag-boton-actualizar:focus-visible {
-  outline: 3px solid rgba(49, 86, 179, .22);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary) 22%, transparent);
   outline-offset: 2px;
 }
 
