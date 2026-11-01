@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import "../../css/HerramientasPremium.css";
 
 const COLUMNAS = [
@@ -17,6 +18,7 @@ export default function CatalogoOficinas() {
   const [oficinas, setOficinas] = useState([]);
   const [total, setTotal] = useState(0);
   const [pagina, setPagina] = useState(0);
+  const [orden, setOrden] = useState({ key: "oficina", direction: "asc" });
   const [cargando, setCargando] = useState(false);
   const [archivo, setArchivo] = useState(null);
   const [previsualizacion, setPrevisualizacion] = useState(null);
@@ -30,7 +32,7 @@ export default function CatalogoOficinas() {
     setCargando(true);
     setError("");
     try {
-      const respuesta = await axios.get(API, { params: { q: busqueda, limit: limite, offset: pagina * limite } });
+      const respuesta = await axios.get(API, { params: { q: busqueda, limit: limite, offset: pagina * limite, sort_by: orden.key, sort_dir: orden.direction } });
       setOficinas(respuesta.data.items || []);
       setTotal(Number(respuesta.data.total || 0));
     } catch (e) {
@@ -38,11 +40,13 @@ export default function CatalogoOficinas() {
     } finally {
       setCargando(false);
     }
-  }, [busqueda, pagina, recarga]);
+  }, [busqueda, pagina, recarga, orden]);
 
   useEffect(() => { cargarOficinas(); }, [cargarOficinas]);
 
   const columnasVisibles = useMemo(() => COLUMNAS, []);
+  const columnasTabla = useMemo(() => COLUMNAS.map(([key, header]) => ({ key, header, sortType: "text" })), []);
+  const cambiarOrden = (next) => { setOrden(next); setPagina(0); };
   const seleccionarArchivo = (evento) => {
     setArchivo(evento.target.files?.[0] || null);
     setPrevisualizacion(null);
@@ -172,16 +176,19 @@ export default function CatalogoOficinas() {
             </div>
           </label>
         </div>
-        <div className="overflow-x-auto rounded-xl border border-slate-200">
-          <table className="min-w-[1200px] w-full text-left text-sm">
-            <thead className="bg-slate-100 text-xs uppercase tracking-wide text-slate-600"><tr>{columnasVisibles.map(([campo, titulo]) => <th key={campo} className="whitespace-nowrap px-3 py-3 font-semibold">{titulo}</th>)}</tr></thead>
-            <tbody>
-              {cargando ? <tr><td colSpan={COLUMNAS.length} className="px-4 py-10 text-center text-slate-500">Cargando catálogo…</td></tr>
-                : oficinas.length ? oficinas.map((fila) => <tr key={fila.id} className="border-t border-slate-100 hover:bg-blue-50/50">{columnasVisibles.map(([campo]) => <td key={campo} className="max-w-64 truncate px-3 py-3 text-slate-700" title={fila[campo]}>{fila[campo] || "—"}</td>)}</tr>)
-                : <tr><td colSpan={COLUMNAS.length} className="px-4 py-10 text-center text-slate-500">No hay oficinas que mostrar. Importa tu Excel para comenzar.</td></tr>}
-            </tbody>
-          </table>
-        </div>
+        {cargando ? (
+          <div className="rounded-xl border border-slate-200 bg-white px-4 py-10 text-center text-slate-500">Cargando catálogo…</div>
+        ) : (
+          <MolsanDataTable
+            columns={columnasTabla.map((columna) => ({ ...columna, render: (valor) => valor || "—" }))}
+            rows={oficinas}
+            rowKey="id"
+            minWidth="1200px"
+            sortMode="server"
+            onSortChange={cambiarOrden}
+            emptyText="No hay oficinas que mostrar. Importa tu Excel para comenzar."
+          />
+        )}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-slate-500">Mostrando {total ? pagina * limite + 1 : 0}–{Math.min((pagina + 1) * limite, total)} de {total}</p>
           <div className="flex gap-2">
