@@ -5,12 +5,12 @@ const IMPORTADORES = [
   { titulo: "Importar CTN", detalle: "Carga de información de notarías desde Excel.", icono: "🏛️", ruta: "/herramientas/importar-ctn", grupo: "Datos notariales" },
   { titulo: "ABSIS · Pre Firma", detalle: "Importación de expedientes desde el Excel matriz ABSIS.", icono: "📂", ruta: "/herramientas/importador-absis", grupo: "Expedientes" },
   { titulo: "ABSIS · Post Firma", detalle: "Carga histórica de gastos y facturación, validación y consulta de registros.", icono: "🧾", ruta: "/herramientas/importador-absis/postfirma", grupo: "Datos económicos" },
-  { titulo: "Entidades bancarias", detalle: "Importación y actualización del catálogo de entidades.", icono: "🏦", ruta: "/herramientas/entidades-bancarias", grupo: "Datos territoriales y entidades" },
-  { titulo: "Municipios", detalle: "Importación de municipios y sus códigos territoriales.", icono: "🏘️", ruta: "/herramientas/municipios", grupo: "Datos territoriales y entidades" },
-  { titulo: "Registros de la propiedad", detalle: "Importación y actualización de registros.", icono: "🏛️", ruta: "/herramientas/registros-propiedad", grupo: "Datos territoriales y entidades" },
-  { titulo: "Oficinas liquidadoras", detalle: "Importación de oficinas y datos asociados.", icono: "🏢", ruta: "/herramientas/oficinas-liquidadoras", grupo: "Datos territoriales y entidades" },
+  { titulo: "Entidades bancarias", detalle: "Importación y actualización del catálogo de entidades.", icono: "🏦", ruta: "/herramientas/entidades-bancarias?importar=1", grupo: "Datos territoriales y entidades" },
+  { titulo: "Municipios", detalle: "Importación de municipios y sus códigos territoriales.", icono: "🏘️", ruta: "/herramientas/municipios?importar=1", grupo: "Datos territoriales y entidades" },
+  { titulo: "Registros de la propiedad", detalle: "Importación y actualización de registros.", icono: "🏛️", ruta: "/herramientas/registros-propiedad?importar=1", grupo: "Datos territoriales y entidades" },
+  { titulo: "Oficinas liquidadoras", detalle: "Importación de oficinas y datos asociados.", icono: "🏢", ruta: "/herramientas/oficinas-liquidadoras?importar=1", grupo: "Datos territoriales y entidades" },
   { titulo: "Catálogo de oficinas", detalle: "Importación validada de las 13 columnas del catálogo.", icono: "📑", ruta: "/catalogos/oficinas?importar=1", grupo: "Datos territoriales y entidades" },
-  { titulo: "Acciones de expediente", detalle: "Importación del catálogo de acciones de expediente.", icono: "⚙️", ruta: "/herramientas/acciones-expediente", grupo: "Catálogos operativos" },
+  { titulo: "Acciones de expediente", detalle: "Importación del catálogo de acciones de expediente.", icono: "⚙️", ruta: "/herramientas/acciones-expediente?importar=1", grupo: "Catálogos operativos" },
 ];
 
 export default function ImportacionesDatos() {
