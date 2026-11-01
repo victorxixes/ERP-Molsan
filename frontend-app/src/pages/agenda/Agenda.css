@@ -1,13 +1,13 @@
 /* MOLSAN ERP PREMIUM 2027 · Agenda
    Mejora visual aislada: no altera consultas, eventos ni sincronización. */
 .agenda-premium-page {
-  --agenda-primary: var(--molsan-primary, #3156b3);
-  --agenda-primary-soft: var(--molsan-primary-soft, #edf3ff);
-  --agenda-border: var(--molsan-border, #dce4ef);
+  --agenda-primary: var(--molsan-primary, #064675);
+  --agenda-primary-soft: var(--molsan-primary-soft, #EAF2F8);
+  --agenda-border: var(--molsan-border, #D8E4EC);
   --agenda-surface: var(--molsan-surface, #fff);
-  --agenda-soft: var(--molsan-surface-soft, #f7f9fc);
-  --agenda-text: var(--molsan-text, #17243a);
-  --agenda-muted: var(--molsan-text-muted, #64748b);
+  --agenda-soft: var(--molsan-surface-soft, #F2F7FB);
+  --agenda-text: var(--molsan-text, #173247);
+  --agenda-muted: var(--molsan-text-muted, #718696);
   min-width: 0;
   color: var(--agenda-text);
   font-size: 13px;
