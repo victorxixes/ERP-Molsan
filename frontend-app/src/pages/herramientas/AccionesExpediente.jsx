@@ -1,3 +1,5 @@
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import { sortRows } from "../../utils/sortRows";
 import MolsanButton from "../../components/ui/MolsanButton";
 import { useSearchParams } from "react-router-dom";
 import "../../css/ModalesHerramientasPremium.css";
@@ -300,6 +302,8 @@ export default function AccionesExpediente() {
     acciones,
     setAcciones,
   ] = useState([]);
+
+  const [ordenTabla, setOrdenTabla] = useState({ key: "departamento", direction: "asc" });
 
   const [
     loading,
@@ -693,13 +697,24 @@ export default function AccionesExpediente() {
     );
 
 
-  const accionesPagina =
-    acciones.slice(
-      (pagina - 1) *
-        POR_PAGINA,
-      pagina *
-        POR_PAGINA
-    );
+  const accionesOrdenadas = useMemo(
+    () => sortRows(acciones, {
+      key: ordenTabla.key,
+      accessor: (item) => item?.[ordenTabla.key],
+      sortType: ordenTabla.key === "activo" ? "boolean" : "text",
+    }, ordenTabla.direction),
+    [acciones, ordenTabla]
+  );
+
+  const accionesPagina = accionesOrdenadas.slice(
+    (pagina - 1) * POR_PAGINA,
+    pagina * POR_PAGINA
+  );
+
+  const cambiarOrdenTabla = (next) => {
+    setOrdenTabla(next.key ? next : { key: "departamento", direction: "asc" });
+    setPagina(1);
+  };
 
 
   useEffect(() => {
@@ -1883,277 +1898,23 @@ export default function AccionesExpediente() {
         </div>
 
 
-        <div className="overflow-x-auto">
-
-          <table
-            className="
-              w-full
-              min-w-[1100px]
-              text-sm
-              text-[var(--erp-text)]
-            "
-          >
-
-            <thead>
-
-              <tr
-                className="
-                  bg-[var(--erp-primary)]
-                  text-white
-                  text-left
-                "
-              >
-
-                <th className="px-4 py-3 font-semibold">
-                  Departamento
-                </th>
-
-                <th className="px-4 py-3 font-semibold">
-                  Sección
-                </th>
-
-                <th className="px-4 py-3 font-semibold">
-                  Actividad
-                </th>
-
-                <th className="px-4 py-3 font-semibold">
-                  Descripción
-                </th>
-
-                <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    text-center
-                  "
-                >
-                  Estado
-                </th>
-
-                <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    text-center
-                  "
-                >
-                  Acciones
-                </th>
-
-              </tr>
-
-            </thead>
-
-
-            <tbody>
-
-              {loading &&
-              accionesPagina.length ===
-                0 ? (
-
-                <tr>
-
-                  <td
-                    colSpan="6"
-                    className="
-                      px-4
-                      py-14
-                      text-center
-                      text-[var(--erp-text-soft)]
-                    "
-                  >
-                    Cargando acciones…
-                  </td>
-
-                </tr>
-
-              ) : accionesPagina.length ===
-                0 ? (
-
-                <tr>
-
-                  <td
-                    colSpan="6"
-                    className="
-                      px-4
-                      py-14
-                      text-center
-                      text-[var(--erp-text-soft)]
-                    "
-                  >
-                    No hay acciones del expediente.
-                  </td>
-
-                </tr>
-
-              ) : (
-
-                accionesPagina.map(
-                  (accion) => (
-
-                    <tr
-                      key={
-                        accion.id
-                      }
-                      className="
-                        border-b
-                        border-[var(--erp-border)]
-                        hover:bg-[var(--erp-primary-soft)]
-                        transition-colors
-                      "
-                    >
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                        "
-                      >
-                        {
-                          accion.departamento ||
-                          "—"
-                        }
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                        "
-                      >
-                        {
-                          accion.seccion ||
-                          "—"
-                        }
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                          font-medium
-                        "
-                      >
-                        {
-                          accion.actividad ||
-                          "—"
-                        }
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                          max-w-[520px]
-                        "
-                      >
-                        {
-                          accion.descripcion
-                        }
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                          text-center
-                        "
-                      >
-                        <BadgeActivo
-                          activo={
-                            accion.activo !==
-                            false
-                          }
-                        />
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                        "
-                      >
-
-                        <div
-                          className="
-                            flex
-                            items-center
-                            justify-center
-                            gap-2
-                          "
-                        >
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              abrirEditar(
-                                accion
-                              )
-                            }
-                            className="
-                              w-9
-                              h-9
-                              rounded-xl
-                              bg-white
-                              border
-                              border-[var(--erp-border)]
-                              text-[var(--erp-primary)]
-                              hover:bg-[var(--erp-primary-soft)]
-                              hover:border-[var(--erp-primary)]
-                              transition
-                            "
-                            title="Editar"
-                          >
-                            ✎
-                          </button>
-
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              eliminarAccion(
-                                accion
-                              )
-                            }
-                            className="
-                              w-9
-                              h-9
-                              rounded-xl
-                              bg-white
-                              border
-                              border-red-200
-                              text-red-600
-                              hover:bg-red-50
-                              transition
-                            "
-                            title="Eliminar"
-                          >
-                            ×
-                          </button>
-
-                        </div>
-
-                      </td>
-
-                    </tr>
-
-                  )
-                )
-
-              )}
-
-            </tbody>
-
-          </table>
-
-        </div>
+        <MolsanDataTable
+          rows={accionesPagina}
+          rowKey="id"
+          minWidth="1100px"
+          sortMode="server"
+          initialSort={{ key: "departamento", direction: "asc" }}
+          onSortChange={cambiarOrdenTabla}
+          emptyText={loading ? "Cargando acciones…" : "No hay acciones del expediente."}
+          columns={[
+            { key: "departamento", header: "Departamento", accessor: "departamento", sortType: "text" },
+            { key: "seccion", header: "Sección", accessor: "seccion", sortType: "text" },
+            { key: "actividad", header: "Actividad", accessor: "actividad", sortType: "text" },
+            { key: "descripcion", header: "Descripción", accessor: "descripcion", sortType: "text" },
+            { key: "activo", header: "Estado", accessor: (item) => item.activo !== false, sortType: "boolean", render: (value) => <BadgeActivo activo={value} /> },
+            { key: "acciones", header: "Acciones", sortable: false, align: "center", accessor: (item) => item.id, render: (_, item) => <div className="flex items-center justify-center gap-2"><button type="button" onClick={() => abrirEditar(item)} title="Editar" className="w-9 h-9 rounded-xl bg-white border border-[var(--erp-border)] text-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] transition">✎</button><button type="button" onClick={() => eliminarAccion(item)} title="Eliminar" className="w-9 h-9 rounded-xl bg-white border border-red-200 text-red-600 hover:bg-red-50 transition">×</button></div> },
+          ]}
+        />
 
 
         {/* ===================================================
