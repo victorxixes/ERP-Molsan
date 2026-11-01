@@ -583,7 +583,7 @@ export default function OficinasLiquidadoras() {
     (pagina - 1) * POR_PAGINA,
     pagina * POR_PAGINA
   );
-  const cambiarOrdenTabla = (next) => { setOrdenTabla(next); setPagina(1); };
+  const cambiarOrdenTabla = (next) => { setOrdenTabla(next.key ? next : { key: "oficina_liquidadora", direction: "asc" }); setPagina(1); };
 
 
   useEffect(() => {
