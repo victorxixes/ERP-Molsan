@@ -983,15 +983,7 @@ export default function SeguridadLogs() {
               <h1 className="molsan-page-header__title">Logs técnicos</h1>
 
 
-              <p
-                className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                  mt-0.5
-                "
-              >
-                Monitorización técnica y trazabilidad de eventos del ERP
-              </p>
+              <p className="molsan-page-header__description">Monitorización técnica y trazabilidad de eventos del ERP</p>
 
             </div>
 
