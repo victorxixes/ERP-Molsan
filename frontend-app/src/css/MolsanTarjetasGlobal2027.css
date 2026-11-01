@@ -111,7 +111,7 @@
   .ctn-panel, .expedientes-panel, .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
   .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi, .panel-card, .ficha-panel, .ficha-seccion,
   .form-section, .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-list-table-wrap,
-  .logs-panel, .maestros-panel, .ctn-detalle-stat, .ctn-detalle-panel, .ctn-detalle-info-card, [data-panel="true"], [data-cg-panel="true"]
+  .logs-panel, .maestros-panel, .dashboard-section-panel, .ctn-portal-card, .ctn-portal-field-card, .ctn-detalle-stat, .ctn-detalle-panel, .ctn-detalle-info-card, [data-panel="true"], [data-cg-panel="true"]
 ) {
   --molsan-card-tint: #F2F7FB;
   position: relative;
