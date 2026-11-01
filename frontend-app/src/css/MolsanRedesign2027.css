@@ -540,40 +540,6 @@
   .herramientas-subpagina-premium
 ) {
   background-color: var(--molsan-page-bg, #FFFFFF);
-}/* Superficies principales: las tarjetas dejan de parecer bloques planos. */
-:where(
-  :is(.cg-page, .cg-unified-workspace),
-  .expedientes-listado-premium,
-  .ficha-expediente-premium,
-  .agenda-premium-page,
-  .catalogos-premium-page,
-  .utilidades-premium-page,
-  .honorarios-gestoria-premium,
-  .empleados-premium-page,
-  .empleado-ficha-premium,
-  .empleado-editar-premium,
-  .empleado-perfil-premium,
-  .maestros-premium-page,
-  .logs-premium-page,
-  .seguridad-premium-page,
-  .seguridad-subpagina-premium,
-  .notificaciones-premium-page,
-  .panel-tecnico-premium,
-  .panel-tecnico-submodulo-premium,
-  .informes-premium-page,
-  .mensajes-premium-page,
-  .selector-modulos-premium,
-  .ctn-workspace-premium,
-  .encargagest-workspace-premium,
-  .molsan-intranet-page,
-  .provisiones-fondos-premium,
-  .provisiones-fondos-page,
-  .herramientas-subpagina-premium,
-  .herramienta-operativa-premium,
-  .catalogos-maestros-premium,
-  .catalogos-maestros-page
-) :is(.erp-card, .erp-card-soft, .bg-white, .bg-slate-50, .bg-gray-50, .bg-surface, [data-panel="true"]) {
-  background-clip: padding-box;
 }
 
 /* Secciones y cabeceras: jerarquía más clara sin cambiar su estructura. */
@@ -1229,16 +1195,6 @@
   :where(.ng-modal, .ag-resumen-modal, .ctn-modal-panel) {
     max-width: 100%;
   }
-}
-
-/* Cabeceras de panel con separación visual homogénea. */
-:where(
-  .apoderagest .ag-panel-cabecera,
-  .encargagest .eg-panel-head,
-  .notargest .ng-panel-titulo,
-  .ctn-listado-page .ctn-tabla-cabecera
-) {
-  border-bottom-color: var(--molsan-border-light, #e8edf4);
 }
 
 /* Controles: solo forma, tipografía y transiciones; no cambia colores funcionales. */
