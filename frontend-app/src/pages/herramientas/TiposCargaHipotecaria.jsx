@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import React, {
   useEffect,
   useMemo,
@@ -609,7 +610,7 @@ export default function TiposCargaHipotecaria() {
                   text-xl
                 "
               >
-                🏠
+                <MolsanIcon name="home" size={20} />
               </div>
 
               <div>
