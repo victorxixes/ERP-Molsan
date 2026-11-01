@@ -1424,3 +1424,14 @@ button:not(.molsan-table-sort):focus-visible {
     transform: none !important;
   }
 }
+
+
+/* Tonos semánticos de la iconografía MOLSAN compartida. */
+.molsan-icon-3d--ocean { color:#075783; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#eaf5fa 48%,#cfe6f1 100%); border-color:#c7e1ee; }
+.molsan-icon-3d--emerald { color:#16745c; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#eaf7f2 48%,#cceadd 100%); border-color:#c7e8dc; }
+.molsan-icon-3d--violet { color:#65509e; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#f1eefa 48%,#ded6f2 100%); border-color:#ddd5f1; }
+.molsan-icon-3d--amber { color:#96651b; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#fbf4e8 48%,#f0dfbd 100%); border-color:#eeddbd; }
+.molsan-icon-3d--cyan { color:#177a88; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#eaf7f8 48%,#cce9eb 100%); border-color:#c9e8eb; }
+.molsan-icon-3d--indigo { color:#3e5f9f; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#eef2fa 48%,#d5dff1 100%); border-color:#d4ddf0; }
+.molsan-icon-3d--slate { color:#536b7b; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#f2f7fb 48%,#dce7ee 100%); border-color:#d8e4ec; }
+.molsan-icon-3d svg { width:58%; height:58%; stroke:currentColor; stroke-width:1.85; }
