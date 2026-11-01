@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { Link } from "react-router-dom";
 
 export default function LecturaCancelaI() {
@@ -7,7 +8,7 @@ export default function LecturaCancelaI() {
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link>
         <div className="mt-3 flex flex-wrap items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl">📁</div>
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl"><MolsanIcon name="folder" size={20} /></div>
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Lectura Cancela I</h1>
@@ -19,7 +20,7 @@ export default function LecturaCancelaI() {
       </header>
       <section className="rounded-3xl border border-amber-200 bg-amber-50/50 p-6 sm:p-8">
         <div className="flex items-start gap-4">
-          <span className="text-3xl" aria-hidden="true">🚧</span>
+          <span className="text-3xl" aria-hidden="true"><MolsanIcon name="alert" size={20} /></span>
           <div>
             <h2 className="text-lg font-extrabold text-slate-900">Integración pendiente</h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">El acceso ya está habilitado, pero todavía no se ha implementado la lectura real de Cancela I. Queda pendiente definir y conectar el origen de los datos, el procesamiento y la presentación de resultados. Esta pantalla no consulta ni modifica datos reales.</p>
