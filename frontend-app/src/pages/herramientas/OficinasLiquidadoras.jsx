@@ -1101,25 +1101,10 @@ export default function OficinasLiquidadoras() {
           CABECERA
       ===================================================== */}
 
-      <div
-        className="
-          max-w-[1700px]
-          mx-auto
-          flex
-          flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-5
-        "
-      >
+      <header className="molsan-page-header catalogos-subpage-header">
 
         <div
-          className="molsan-page-header 
-            flex
-            items-center
-            gap-4
-          "
+          className="molsan-page-header__identity catalogos-subpage-header__identity"
         >
 
           <div
@@ -1173,14 +1158,7 @@ export default function OficinasLiquidadoras() {
         </div>
 
 
-        <div
-          className="
-            flex
-            flex-wrap
-            items-center
-            gap-2
-          "
-        >
+        <div className="molsan-page-header__actions catalogos-subpage-header__actions">
 
           <button
             type="button"
@@ -1252,7 +1230,7 @@ export default function OficinasLiquidadoras() {
 
         </div>
 
-      </div>
+      </header>
 
 
       {/* =====================================================
