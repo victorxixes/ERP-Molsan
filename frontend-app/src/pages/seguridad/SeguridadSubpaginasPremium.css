@@ -182,7 +182,7 @@
 
 
 /* Cabecera de Seguridad: misma escala, superficie y jerarquía que el Dashboard. */
-:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-header {
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-header:not(.molsan-page-header) {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -249,7 +249,7 @@
 }
 :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) :is(input,select,textarea):focus { border-color:var(--molsan-primary, #064675); outline:3px solid color-mix(in srgb,var(--molsan-primary, #064675) 15%,transparent); }
 @media(max-width:680px) {
-  :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-header { align-items:flex-start; padding:12px; gap:10px; margin-bottom:14px; }
+  :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-header:not(.molsan-page-header) { align-items:flex-start; padding:12px; gap:10px; margin-bottom:14px; }
   :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-header-status { width:100%; }
 }
 @media(prefers-reduced-motion:reduce) { :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn { transition:none; } }
