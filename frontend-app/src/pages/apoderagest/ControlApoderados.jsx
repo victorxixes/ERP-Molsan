@@ -151,7 +151,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
     {mensaje && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">{mensaje}</div>}
     {cargando && <p className="animate-pulse text-sm text-slate-500">Cargando información…</p>}
     {admin ? <>
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="erp-card rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="mb-4">
           <h2 className="text-lg font-bold text-slate-800">Colaboradores habilitados</h2>
           <p className="mt-1 text-sm text-slate-500">Activa aquí el acceso a «Mi liquidación» para cada empleado. El cambio se guarda en su ficha y determina quién puede validar firmas y presentar facturas.</p>
@@ -167,7 +167,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
           </table>
         </div>
       </section>
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="erp-card rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="text-lg font-bold text-slate-800">Liquidación mensual de colaboradores</h2>
@@ -190,7 +190,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
         <div className="rounded-2xl border border-slate-200 bg-white p-5"><p className="text-sm font-semibold text-slate-500">IVA total (21%)</p><p className="mt-2 text-2xl font-extrabold text-slate-900">{euros(items.reduce((s, x) => s + Number(x.iva || 0), 0))}</p></div>
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5"><p className="text-sm font-semibold text-emerald-800">Total facturación</p><p className="mt-2 text-2xl font-extrabold text-emerald-950">{euros(items.reduce((s, x) => s + Number(x.total ?? (Number(x.base_neta || 0) + Number(x.iva || 0))), 0))}</p></div>
       </section>
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="erp-card rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3"><div><h2 className="text-lg font-bold text-slate-800">Relación del mes · {periodo}</h2><p className="mt-1 text-sm text-slate-500">Las firmas se obtienen de la fecha de firma real en FichaExpediente. La factura solo se puede validar tras revisar la relación mensual.</p></div><span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold">{items.length} colaboradores</span></div>
         {items.length === 0 ? <p className="rounded-xl bg-slate-50 p-5 text-sm text-slate-500">No hay colaboradores habilitados ni relaciones para este periodo.</p> : <div className="overflow-x-auto"><table className="w-full min-w-[1250px] text-left text-sm">
           <thead><tr className="border-b bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
@@ -231,14 +231,14 @@ export default function ControlApoderados({ modo = "colaborador" }) {
         <div className="rounded-2xl border border-slate-200 bg-white p-5"><p className="text-sm font-semibold text-slate-500">IVA (21%)</p><p className="mt-2 text-2xl font-extrabold text-slate-900">{euros(item.iva)}</p></div>
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5"><p className="text-sm font-semibold text-emerald-800">Total</p><p className="mt-2 text-2xl font-extrabold text-emerald-950">{euros(item.total)}</p></div>
       </section>
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="erp-card rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-bold text-slate-800">Relación de expedientes firmados</h2><p className="mt-1 text-sm text-slate-500">Solo se incluyen expedientes cuya fecha de firma real pertenece al mes seleccionado y cuya ficha identifica este colaborador como apoderado.</p></div><span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold">{item.protocolos_firmados ?? item.expedientes?.length ?? 0} protocolos</span></div>
         {item.expedientes?.length ? <div className="mt-4 overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr className="border-b text-slate-500"><th className="p-3">Expediente</th><th className="p-3">Fecha firma</th><th className="p-3">Protocolo</th><th className="p-3">Notario</th></tr></thead><tbody>{item.expedientes.map((e) => <tr key={e.expediente_id} className="border-b last:border-0"><td className="p-3 font-semibold">{e.id_expediente}</td><td className="p-3">{fecha(e.fecha_firma)}</td><td className="p-3">{e.protocolo || "—"}</td><td className="p-3">{e.notario || "—"}</td></tr>)}</tbody></table></div> : <p className="mt-4 rounded-xl bg-slate-50 p-5 text-sm text-slate-500">No constan firmas reales a tu nombre en este periodo.</p>}
         <div className="mt-5 rounded-xl bg-slate-50 p-4"><p className="font-semibold text-slate-800">Estado: {estado(item.estado_relacion)}</p>{item.validado_en && <p className="mt-1 text-sm text-slate-500">Validada el {fecha(item.validado_en)} · versión {item.validado_version}</p>}
           {item.estado_relacion !== "validada" ? <><label className="mt-4 block text-sm font-medium text-slate-700">Observaciones o discrepancias (opcional)<textarea value={discrepancia} onChange={(e) => setDiscrepancia(e.target.value)} maxLength={2000} className="mt-1 min-h-24 w-full rounded-xl border border-slate-300 bg-white p-3" placeholder="Indica si falta una firma o hay algún dato incorrecto…" /></label><button onClick={validar} disabled={cargando} className="mt-3 rounded-xl bg-indigo-700 px-5 py-3 text-sm font-bold text-white disabled:opacity-50">Validar relación mensual</button></> : <p className="mt-2 text-sm text-emerald-700">Relación validada. Ya puedes presentar la factura del periodo.</p>}
         </div>
       </section>
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><h2 className="text-lg font-bold text-slate-800">Presentar factura mensual</h2><p className="mt-1 text-sm text-slate-500">Se habilita únicamente después de validar la relación. Formatos admitidos: PDF, XML, JPG o PNG; máximo 10 MB.</p>
+      <section className="erp-card rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><h2 className="text-lg font-bold text-slate-800">Presentar factura mensual</h2><p className="mt-1 text-sm text-slate-500">Se habilita únicamente después de validar la relación. Formatos admitidos: PDF, XML, JPG o PNG; máximo 10 MB.</p>
         {item.factura_nombre && <p className="mt-3 text-sm">Archivo presentado: <strong>{item.factura_nombre}</strong> · {estado(item.estado_factura)}</p>}
         {item.estado_relacion === "validada" ? <div className="mt-4 flex flex-wrap items-center gap-3"><input type="file" accept=".pdf,.xml,.jpg,.jpeg,.png" onChange={(e) => setArchivo(e.target.files?.[0] || null)} className="max-w-full text-sm" /><button onClick={subir} disabled={!archivo || cargando} className="rounded-xl bg-indigo-700 px-5 py-3 text-sm font-bold text-white disabled:opacity-50">{item.factura_nombre ? "Sustituir factura" : "Enviar factura"}</button></div> : <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">Primero valida la relación de expedientes.</p>}
         {item.factura_observaciones && <p className="mt-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-800">Observaciones de Molsan: {item.factura_observaciones}</p>}
@@ -248,7 +248,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
           <div className="mt-3 flex flex-wrap items-center gap-3"><input type="file" accept=".pdf,.xml,.jpg,.jpeg,.png" onChange={(e) => setJustificanteArchivo(e.target.files?.[0] || null)} className="max-w-full text-sm" /><button type="button" onClick={subirJustificante} disabled={!justificanteArchivo || cargando} className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-bold disabled:opacity-50">{item.justificante_nombre ? "Sustituir justificante" : "Subir justificante"}</button></div>
         </div>
       </section>
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="erp-card rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="text-lg font-bold text-slate-800">Histórico de liquidaciones</h2>
         <p className="mb-3 mt-1 text-sm text-slate-500">Consulta el estado de las relaciones y facturas de otros meses.</p>
         {historial.length ? <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr className="border-b text-slate-500"><th className="p-3">Periodo</th><th className="p-3">Firmas</th><th className="p-3">Relación</th><th className="p-3">Factura</th><th className="p-3">Consulta</th></tr></thead><tbody>{historial.map((h) => <tr key={h.id} className="border-b last:border-0"><td className="p-3 font-semibold">{h.periodo}</td><td className="p-3">{h.protocolos_firmados ?? h.expedientes?.length ?? 0}</td><td className="p-3">{estado(h.estado_relacion)}</td><td className="p-3">{estado(h.estado_factura)}</td><td className="p-3"><button onClick={() => setPeriodo(h.periodo)} className="font-semibold text-indigo-700 hover:underline">Abrir mes</button></td></tr>)}</tbody></table></div> : <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500">Todavía no hay otros periodos registrados.</p>}
