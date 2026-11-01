@@ -101,3 +101,16 @@
   font-size: 12px;
   line-height: 1.45;
 }
+
+@media (max-width: 640px) {
+  :is(.catalogos-premium-page, .utilidades-premium-page) > header {
+    padding: 12px;
+    margin-bottom: 14px;
+  }
+  :is(.catalogos-premium-page, .utilidades-premium-page) > header .w-12.h-12 {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    font-size: 14px;
+  }
+}
