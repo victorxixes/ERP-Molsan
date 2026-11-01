@@ -933,7 +933,7 @@
   border-bottom: 1px solid #D8E4EC;
   background: #F2F7FB;
 }
-:is(.ctn-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera, .ng-modal > header) h2 {
+:is(.ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera, .ng-modal > header) h2 {
   margin: 0;
   color: #064675;
   font-size: 18px;
@@ -941,7 +941,7 @@
   letter-spacing: -.02em;
   line-height: 1.3;
 }
-:is(.ctn-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera, .ng-modal > header) p {
+:is(.ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera, .ng-modal > header) p {
   margin: 4px 0 0;
   color: #617789;
   font-size: 12px;
@@ -1176,7 +1176,7 @@
   .erp-card-header, .molsan-panel__header, .ag-panel-cabecera h2,
   .ag-panel-cabecera h3, .ag-panel-header h2, .eg-card-header h2,
   .eg-panel-head h2, .eg-panel-head h3, .ng-panel-titulo h2,
-  .ctn-tabla-cabecera h2, .ctn-tabla-cabecera h3,
+  .ctn-tabla-cabecera h2, .ctn-tabla-cabecera h3, .agenda-list-heading h2,
   .eg-modal-section-heading h3, .molsan-section-header__title, .erp-card-title
 ) {
   margin: 0;
@@ -1191,7 +1191,7 @@
 /* Cabecera modal corporativa común para los distintos componentes heredados. */
 :is(
   .molsan-modal-header, .erp-modal-header, .modal-sj-header,
-  .ctn-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
+  .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
   .ng-modal > header, .ctn-modal-panel > header,
   .panel-modal-premium [role="dialog"] > header,
   .expediente-operativo-modal [role="dialog"] > header,
@@ -1209,10 +1209,11 @@
   border: 0;
   border-bottom: 1px solid #D8E4EC;
   box-shadow: none;
+  margin-bottom: 0;
 }
 :is(
   .molsan-modal-header, .erp-modal-header, .modal-sj-header,
-  .ctn-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
+  .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
   .ng-modal > header, .ctn-modal-panel > header,
   .panel-modal-premium [role="dialog"] > header,
   .expediente-operativo-modal [role="dialog"] > header,
@@ -1223,7 +1224,7 @@
 @media (max-width: 640px) {
   :is(
     .molsan-modal-header, .erp-modal-header, .modal-sj-header,
-    .ctn-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
+    .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
     .ng-modal > header, .ctn-modal-panel > header,
     .panel-modal-premium [role="dialog"] > header,
     .expediente-operativo-modal [role="dialog"] > header,
@@ -1263,7 +1264,7 @@
   .eg-secondary, .eg-button-primary, .ag-boton-actualizar,
   .ng-login-submit, .cg-button-primary, .erp-btn,
   .seguridad-subpagina-premium button:not(.erp-btn), .seguridad-premium-page button:not(.erp-btn),
-  .empleados-premium-page button:not([class*="rounded-full"]), .expedientes-page button:not([class*="rounded-full"])
+  .empleados-premium-page button:not([class*="rounded-full"]), .expedientes-page button:not([class*="rounded-full"]), .ctn-detalle-page button:not([class*="rounded-full"]), .provisiones-fondos-page button:not([class*="rounded-full"])
 ) {
   font-family: var(--molsan-font-family, Inter, "Segoe UI", sans-serif);
   font-weight: 700;
