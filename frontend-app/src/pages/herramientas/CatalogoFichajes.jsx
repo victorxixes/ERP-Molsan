@@ -26,7 +26,7 @@ export default function CatalogoFichajes() {
     } catch (e) { setError(e?.response?.data?.detail || "No se pudo guardar el tipo de ausencia."); }
     finally { setGuardando(false); }
   };
-  return <main className="catalogos-premium-page min-h-full space-y-6 animate-fadeIn">
+  return <main className="molsan-page-stack catalogos-premium-page min-h-full animate-fadeIn">
     <header className="molsan-page-header">
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
       <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">MOLSAN ERP PREMIUM 2027 · CATÁLOGOS</p>
