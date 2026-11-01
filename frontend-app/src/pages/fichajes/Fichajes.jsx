@@ -16,7 +16,7 @@ const TIPOS = [
   { value: "PAUSA_COMIDA_INICIO", label: "Pausa comida", icon: "meal", tone: "sky" },
   { value: "PAUSA_COMIDA_FIN", label: "Regreso comida", icon: "↩", tone: "blue" },
   { value: "PAUSA_CIGARRILLO_INICIO", label: "Pausa cigarrillo", icon: "pause", tone: "amber" },
-  { value: "PAUSA_CIGARRILLO_FIN", label: "Regreso cigarrillo", icon: "🚬", tone: "blue" },
+  { value: "PAUSA_CIGARRILLO_FIN", label: "Regreso cigarrillo", icon: "pause", tone: "blue" },
   { value: "AUSENCIA", label: "Registrar ausencia", icon: "calendar", tone: "violet" },
   { value: "SALIDA", label: "Salida del trabajo", icon: "arrowLeft", tone: "rose" },
 ];
