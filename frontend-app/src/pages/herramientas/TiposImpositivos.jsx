@@ -62,8 +62,8 @@ export default function TiposImpositivos() {
   };
 
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="molsan-page-header relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <main className="min-h-full space-y-6">
+      <header className="molsan-page-header">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-400" />
         <p className="text-xs font-bold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP PREMIUM 2027</p>
         <h1 className="mt-2 text-2xl font-extrabold text-slate-900">Tipos impositivos</h1>
