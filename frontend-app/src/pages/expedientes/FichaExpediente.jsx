@@ -7237,6 +7237,7 @@ const cuantiaFincasParaEnvio =
                     <Dato campo="Importe" valor={expediente.importe} tipo="numero" />
 
                     </div>
+                  </div>
                 </>
 
                     {actividadSeleccionada === "gestion-economica" && (
