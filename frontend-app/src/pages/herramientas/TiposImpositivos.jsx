@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import { formatPercent as fmt } from "../../utils/formatters";
 
 const VACIO = { nombre: "", categoria: "impuesto", impuesto: "IVA", porcentaje: "", territorio: "Territorio común", descripcion: "", activo: true };
-import { formatPercent as fmt } from "../../utils/formatters";
 
 export default function TiposImpositivos() {
   const [items, setItems] = useState([]);
