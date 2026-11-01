@@ -276,7 +276,7 @@ export default function MantenimientoTecnico() {
   }
 
   return (
-    <main className="min-h-full space-y-6">
+    <main className="molsan-page-stack min-h-full">
       <header className="molsan-page-header">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
