@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useMemo } from "react";
 import "./Notificaciones.css";
 import { useNotificacionesStore } from "../../store/notificacionesStore";
@@ -232,7 +233,7 @@ export default function Notificaciones() {
             <div
               className="molsan-page-header__mark"
             >
-              🔔
+              <MolsanIcon name="bell" size={42} bare />
             </div>
 
 
@@ -320,7 +321,7 @@ export default function Notificaciones() {
                 disabled:cursor-not-allowed
               "
             >
-              🗑️ Limpiar
+              <MolsanIcon name="trash" size={18} /> Limpiar
             </button>
 
           </div>
@@ -369,7 +370,7 @@ export default function Notificaciones() {
               mb-5
             "
           >
-            🔕
+            <MolsanIcon name="bell" size={48} />
           </div>
 
 
@@ -523,7 +524,7 @@ export default function Notificaciones() {
                       shadow-sm
                     `}
                   >
-                    {icono}
+                    <MolsanIcon name={icono} size={34} />
                   </div>
 
 
@@ -640,7 +641,7 @@ export default function Notificaciones() {
                             text-[10px]
                           "
                         >
-                          🏷️
+                          
                         </span>
 
                         {n.tipo || "general"}
