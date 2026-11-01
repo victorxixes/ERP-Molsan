@@ -1,3 +1,4 @@
+import MolsanButton from "../../components/ui/MolsanButton";
 import { useSearchParams } from "react-router-dom";
 import { sortRows } from "../../utils/sortRows";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
@@ -2794,31 +2795,7 @@ export default function OficinasLiquidadoras() {
                 </button>
 
 
-                <button
-                  type="submit"
-                  disabled={
-                    importando ||
-                    !archivo
-                  }
-                  className="
-                    px-4
-                    py-2.5
-                    rounded-xl
-                    bg-[var(--erp-primary)]
-                    text-white
-                    text-sm
-                    font-semibold
-                    shadow-sm
-                    hover:brightness-95
-                    transition
-                    disabled:opacity-50
-                    disabled:cursor-not-allowed
-                  "
-                >
-                  {importando
-                    ? "Importando..."
-                    : "Importar Excel"}
-                </button>
+                <MolsanButton type="submit" icon="upload" variant="primary" loading={importando} disabled={importando || !archivo}>{importando ? "Importando..." : "Importar Excel"}</MolsanButton>
 
               </div>
 
