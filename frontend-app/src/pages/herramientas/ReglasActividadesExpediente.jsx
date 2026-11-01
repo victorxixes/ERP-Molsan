@@ -68,8 +68,8 @@ export default function ReglasActividadesExpediente() {
   };
 
   return (
-    <main className="utilidades-premium-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-      <header className="molsan-page-header relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
+    <main className="utilidades-premium-page min-h-full space-y-6 animate-fadeIn">
+      <header className="molsan-page-header">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="relative flex flex-wrap items-start justify-between gap-4">
           <div className="flex items-start gap-4">
