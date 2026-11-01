@@ -1,127 +1,54 @@
-/* ============================================================
-   ERP SJ-2026 — Base global premium
-   ============================================================ */
-
-/* ============================================================
-   SUAVIZADO Y CONFIGURACIÓN GLOBAL
-   ============================================================ */
+/* MOLSAN ERP PREMIUM 2027 · Base neutral
+ *
+ * Esta hoja contiene únicamente normalización no visual y accesibilidad.
+ * La identidad corporativa se centraliza en molsan-tokens.css y en los
+ * componentes del design system. Evitamos selectores globales que alteren
+ * enlaces, tablas, código o controles de módulos de forma involuntaria.
+ */
 
 html {
   scroll-behavior: smooth;
 }
 
-
-/* El lienzo, la tipografía y el color globales se definen en MolsanRedesign2027.css. */
-
-/* ============================================================
-   SELECCIÓN DE TEXTO CORPORATIVA
-   ============================================================ */
-
 ::selection {
-  background: var(--erp-primary);
+  background: var(--molsan-primary, #064675);
   color: #ffffff;
 }
 
-
-/* ============================================================
-   SCROLL CORPORATIVO SJ-2026
-   ============================================================ */
-
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--sj-gris-azulado);
-  border-radius: 4px;
+  background: var(--molsan-border-strong, #b9cad8);
+  border-radius: 999px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #eef1f5;
+  background: var(--molsan-surface-soft, #f2f7fb);
 }
 
-
-/* ============================================================
-   ENLACES
-   ============================================================ */
-
-a {
-  color: var(--erp-primary);
-  text-decoration: none;
-  transition: color 0.25s ease;
-}
-
-a:hover {
-  color: var(--erp-primary-dark);
-}
-
-
-/* ============================================================
-   BOTONES BASE
-   ============================================================ */
-
-button {
-  font-family: inherit;
-  cursor: pointer;
-}
-
-button:active {
-  transform: none;
-}
-
-
-/* ============================================================
-   INPUTS BASE
-   ============================================================ */
-
+/* Normalización tipográfica mínima: no impone colores ni geometría. */
+button,
 input,
 textarea,
 select {
-  font-family: inherit;
-  color: var(--erp-text);
-  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+  font: inherit;
 }
 
-/* Los campos no deben desplazarse al pasar el cursor: evita saltos en grids
-   y formularios densos. El foco visible comunica la interacción de forma clara. */
+button {
+  cursor: pointer;
+}
+
+button:active,
 input:hover,
 textarea:hover,
 select:hover {
   transform: none;
 }
 
-
-/* ============================================================
-   TABLAS BASE
-   ============================================================ */
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-
-/* ============================================================
-   CÓDIGO Y PRE
-   ============================================================ */
-
-code,
-pre {
-  font-family: "Fira Code", monospace;
-  background: #f5f7fa;
-  padding: 4px 6px;
-  border-radius: 6px;
-}
-
-
-/* ============================================================
-   HR CORPORATIVO
-   ============================================================ */
-
 hr {
-  border: none;
-  border-top: 1px solid var(--sj-gris-azulado);
-  margin: 20px 0;
+  border: 0;
+  border-top: 1px solid var(--molsan-border, #d8e4ec);
 }
-
-
