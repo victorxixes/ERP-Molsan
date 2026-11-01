@@ -323,7 +323,7 @@ export default function SeguridadResumen({ empleadoId }) {
           <div>
           <p className="molsan-page-header__eyebrow">
             SEGURIDAD · USUARIO
-          </div>
+          </p>
 
           <div className="flex flex-wrap items-center gap-3">
 
@@ -354,7 +354,7 @@ export default function SeguridadResumen({ empleadoId }) {
               {empleado.usuario || "-"}
             </strong>
           </p>
-
+          </div>
         </div>
 
         <div className="molsan-page-header__actions">
