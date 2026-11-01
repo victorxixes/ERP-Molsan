@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -92,7 +93,7 @@ export default function Verifacti() {
     <div className="molsan-page-stack min-h-full animate-fadeIn">
       <header className="molsan-page-header">
         <div className="molsan-page-header__identity">
-          <div className="molsan-page-header__mark" aria-hidden="true">🧾</div>
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="receipt" size={20} /></div>
           <div className="min-w-0">
             <div className="molsan-page-header__eyebrow flex flex-wrap items-center gap-2">MOLSAN ERP · INTEGRACIONES <EstadoPendiente /></div>
             <h1 className="molsan-page-header__title">Verifacti</h1>
