@@ -612,9 +612,7 @@ export default function SeguridadRolEditor() {
                                   font-bold
                                 "
                               >
-                                {rol.nombre
-                                  .charAt(0)
-                                  .toUpperCase()}
+                                <MolsanIcon name="shield" size={28} tone="ocean" />
                               </div>
 
 
@@ -674,7 +672,7 @@ export default function SeguridadRolEditor() {
                                   transition
                                 "
                               >
-                                Editar
+                                <MolsanIcon name="pen" size={16} bare /> Editar
                               </button>
 
 
@@ -703,9 +701,8 @@ export default function SeguridadRolEditor() {
                                   transition
                                 "
                               >
-                                {eliminando
-                                  ? "Eliminando..."
-                                  : "Eliminar"}
+                                {eliminando ? <MolsanIcon name="refresh" size={16} bare /> : <MolsanIcon name="trash" size={16} bare />}
+                                {eliminando ? "Eliminando..." : "Eliminar"}
                               </button>
 
                             </div>
