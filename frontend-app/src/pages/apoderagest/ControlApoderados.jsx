@@ -136,14 +136,16 @@ export default function ControlApoderados({ modo = "colaborador" }) {
   };
 
   return <div className="control-apoderados-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-    <header className="molsan-page-header rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div><p className="text-xs font-bold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · APODERAGEST</p>
-          <h1 className="mt-2 text-2xl font-bold text-slate-800">{admin ? "Control Apoderados" : "Mi actividad y liquidaciones"}</h1>
-          <p className="mt-2 text-sm text-slate-500">{admin ? "Gestiona colaboradores, relaciones mensuales y revisión de facturas." : "Revisa las firmas reales del mes, valida la relación y presenta tu factura."}</p>
+    <header className="molsan-page-header">
+      <div className="molsan-page-header__identity">
+        <div className="molsan-page-header__mark" aria-hidden="true">AG</div>
+        <div className="min-w-0">
+          <p className="molsan-page-header__eyebrow">MOLSAN ERP · APODERAGEST</p>
+          <h1 className="molsan-page-header__title">{admin ? "Control Apoderados" : "Mi actividad y liquidaciones"}</h1>
+          <p className="molsan-page-header__description">{admin ? "Gestiona colaboradores, relaciones mensuales y revisión de facturas." : "Revisa las firmas reales del mes, valida la relación y presenta tu factura."}</p>
         </div>
-        <div className="flex items-center gap-3">{!admin && <label className="text-sm font-medium text-slate-600">Periodo <input type="month" value={periodo} onChange={(e) => setPeriodo(e.target.value)} className="ml-2 rounded-xl border border-slate-300 px-3 py-2" /></label>}<button onClick={cargar} className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold hover:bg-slate-50" disabled={cargando}>↻ Actualizar</button></div>
       </div>
+      <div className="molsan-page-header__actions">{!admin && <label className="text-sm font-medium text-slate-600">Periodo <input type="month" value={periodo} onChange={(e) => setPeriodo(e.target.value)} className="ml-2 rounded-xl border border-slate-300 px-3 py-2" /></label>}<button onClick={cargar} className="molsan-btn molsan-btn--secondary" disabled={cargando}>↻ Actualizar</button></div>
     </header>
     {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>}
     {mensaje && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">{mensaje}</div>}
