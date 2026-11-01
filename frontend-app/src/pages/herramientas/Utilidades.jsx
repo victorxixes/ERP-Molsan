@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "../../css/HerramientasPremium.css";
 
 /**
@@ -11,7 +12,7 @@ export default function Utilidades() {
     <div className="molsan-page-stack utilidades-premium-page min-h-full animate-fadeIn">
       <header className="molsan-page-header">
         <div className="molsan-page-header__identity">
-          <div className="molsan-page-header__mark" aria-hidden="true">⚙️</div>
+          <div className="molsan-page-header__mark" ><MolsanIcon name="settings" size={42} /></div>
           <div className="min-w-0">
             <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
             <h1 className="molsan-page-header__title">Utilidades del sistema</h1>
@@ -140,7 +141,7 @@ function Card({
         <div
           className={`molsan-icon-3d flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl transition-all duration-300 group-hover:scale-105 ${destacado ? "bg-blue-100 border-blue-200" : "bg-slate-50 border-slate-200"}`}
         >
-          {icon}
+          <MolsanIcon name={icon} size={46} />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
