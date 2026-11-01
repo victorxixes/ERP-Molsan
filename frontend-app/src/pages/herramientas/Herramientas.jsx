@@ -24,6 +24,7 @@ export default function Herramientas() {
 
       <div
         className="
+          molsan-page-header
           relative overflow-hidden
           rounded-[24px]
           border border-slate-200/80
