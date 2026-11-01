@@ -32,7 +32,7 @@
   color:var(--molsan-text-muted, #718696) !important; opacity:1;
 }
 .empleados-listado-premium .empleados-filtros-busqueda input:focus {
-  border-color:var(--molsan-primary, #064675) !important; outline:2px solid rgba(49,86,179,.42); outline-offset:1px;
+  border-color:var(--molsan-primary, #064675) !important; outline:2px solid color-mix(in srgb, var(--molsan-primary) 42%, transparent); outline-offset:1px;
 }
 .empleados-listado-premium .empleados-filtros-busqueda > span {
   color:var(--molsan-text-secondary,#526176) !important; font-size:1.1rem; z-index:1;
