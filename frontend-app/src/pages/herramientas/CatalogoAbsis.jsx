@@ -220,7 +220,7 @@ export default function CatalogoAbsis() {
               { key: "activo", header: "Estado", accessor: "activo", sortType: "boolean", render: (value) => <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${value ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{value ? "Activo" : "Inactivo"}</span> },
               { key: "acciones", header: "Acciones", sortable: false, align: "right", accessor: (fila) => fila.id, render: (_, fila) => <div className="flex justify-end gap-1"><button type="button" onClick={() => abrirEdicion(fila)} className="rounded-lg px-2 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-50">Editar</button><button type="button" onClick={() => eliminar(fila)} className="rounded-lg px-2 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50">Eliminar</button></div> },
             ]}
-          />ble></div>
+          />
         }
       </section>
 
