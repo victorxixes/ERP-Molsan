@@ -67,7 +67,7 @@ class ExpedienteVisibilityTests(unittest.TestCase):
             ) as cumple,
         ):
             validar_acceso_candidatos_expediente(db, SimpleNamespace(id=1), [expediente])
-        cumple.assert_called_once_with(db, empleado, expediente, {2: "Gestoría"})
+        cumple.assert_called_once_with(db, empleado, expediente, {2: "Gestoría"}, set())
 
     def test_employee_outside_scope_gets_not_found(self):
         empleado = SimpleNamespace(id=1, departamento_id=2)

@@ -37,6 +37,7 @@ from backend.app.expedientes.gastos.models import ExpedienteGasto
 from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
 from backend.app.expedientes.reparto import (
     asignar_gestor_automaticamente,
+    ids_asignaciones_provisionales,
     ids_expedientes_visibles,
     resolver_key_actividad,
     validar_visibilidad_expediente_request,
@@ -3165,6 +3166,8 @@ def avanzar_actividad_expediente(
     respuesta = expediente_a_dict(expediente)
     gestor_actual = db.query(Empleado).filter(Empleado.id == expediente.gestor_asignado_id).first() if getattr(expediente, "gestor_asignado_id", None) else None
     respuesta["gestor_asignado_nombre"] = " ".join(filter(None, [getattr(gestor_actual, "nombre", None), getattr(gestor_actual, "apellidos", None)])).strip() if gestor_actual else None
+    asignaciones_provisionales = ids_asignaciones_provisionales(db, gestor_actual.id) if gestor_actual else set()
+    respuesta["gestor_asignacion_provisional"] = str(expediente.id_expediente) in asignaciones_provisionales
     respuesta["actividad_actualizada"] = True
     respuesta["actividad_actual"] = expediente.actividad_actual
     return respuesta
@@ -4181,6 +4184,8 @@ def obtener_expediente(
     resultado = adjuntar_promociones_catalogo(db, [expediente_a_dict(expediente)])[0]
     gestor = db.query(Empleado).filter(Empleado.id == expediente.gestor_asignado_id).first() if getattr(expediente, "gestor_asignado_id", None) else None
     resultado["gestor_asignado_nombre"] = " ".join(filter(None, [getattr(gestor, "nombre", None), getattr(gestor, "apellidos", None)])).strip() if gestor else None
+    asignaciones_provisionales = ids_asignaciones_provisionales(db, gestor.id) if gestor else set()
+    resultado["gestor_asignacion_provisional"] = str(expediente.id_expediente) in asignaciones_provisionales
     return resultado
 
 
