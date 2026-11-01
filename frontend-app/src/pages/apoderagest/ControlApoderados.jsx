@@ -135,7 +135,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
     } catch (e) { setError(e?.response?.data?.detail || "No se ha podido descargar la factura."); }
   };
 
-  return <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+  return <div className="control-apoderados-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
     <header className="molsan-page-header rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div><p className="text-xs font-bold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · APODERAGEST</p>
