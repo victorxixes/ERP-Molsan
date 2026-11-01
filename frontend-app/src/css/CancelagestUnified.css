@@ -5,9 +5,9 @@
    ============================================================ */
 
 .cg-unified-workspace {
-  --cg-primary: var(--molsan-primary, #3156b3);
-  --cg-primary-hover: var(--molsan-primary-hover, #274694);
-  --cg-primary-soft: var(--molsan-primary-soft, #edf3ff);
+  --cg-primary: var(--molsan-primary, #064675);
+  --cg-primary-hover: var(--molsan-primary-hover, #04375B);
+  --cg-primary-soft: var(--molsan-primary-soft, #EAF2F8);
   --cg-page-bg: #eef3f9;
   --cg-surface: #ffffff;
   --cg-surface-soft: #f6f8fc;
@@ -166,24 +166,24 @@ select, textarea) {
 
 /* El dashboard de CancelaGest comparte la misma paleta corporativa. */
 .cg-page {
-  --cg-primary: var(--molsan-primary, #3156b3);
-  --cg-primary-hover: var(--molsan-primary-hover, #274694);
-  --cg-primary-soft: var(--molsan-primary-soft, #edf3ff);
+  --cg-primary: var(--molsan-primary, #064675);
+  --cg-primary-hover: var(--molsan-primary-hover, #04375B);
+  --cg-primary-soft: var(--molsan-primary-soft, #EAF2F8);
 }
 
 .cg-page .cg-button-primary {
   color: #fff;
-  background: linear-gradient(135deg, var(--molsan-primary, #3156b3), var(--molsan-primary-hover, #274694));
-  border: 1px solid var(--molsan-primary-hover, #274694);
+  background: linear-gradient(135deg, var(--molsan-primary, #064675), var(--molsan-primary-hover, #04375B));
+  border: 1px solid var(--molsan-primary-hover, #04375B);
 }
 
 .cg-page .cg-button-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #4268c5, var(--molsan-primary, #3156b3));
+  background: linear-gradient(135deg, #4268c5, var(--molsan-primary, #064675));
 }
 
 .cg-page .cg-module-icon {
-  color: var(--molsan-primary, #3156b3);
-  background: var(--molsan-primary-soft, #edf3ff);
+  color: var(--molsan-primary, #064675);
+  background: var(--molsan-primary-soft, #EAF2F8);
   border-color: #d7e3ff;
 }
 
@@ -194,18 +194,18 @@ select, textarea) {
 
 .cg-page .cg-month-bar,
 .cg-page .cg-bar-fill {
-  background: linear-gradient(180deg, #6c8de0, var(--molsan-primary, #3156b3));
+  background: linear-gradient(180deg, #6c8de0, var(--molsan-primary, #064675));
 }
 
 .cg-page .cg-bar-value {
-  color: var(--molsan-primary, #3156b3);
+  color: var(--molsan-primary, #064675);
 }
 
 
 /* Normalización de acentos Tailwind usados por Herramientas, Catálogos,
    Intranet e Informes: azul corporativo sin alterar colores semánticos. */
 .cg-unified-workspace :is([class*="bg-indigo-50"], [class*="bg-violet-50"]) {
-  background-color: var(--molsan-primary-soft, #edf3ff) !important;
+  background-color: var(--molsan-primary-soft, #EAF2F8) !important;
 }
 
 .cg-unified-workspace :is([class*="bg-indigo-100"], [class*="bg-violet-100"]) {
@@ -225,7 +225,7 @@ select, textarea) {
 }
 
 .cg-unified-workspace :is([class*="from-indigo-500"], [class*="from-indigo-600"], [class*="from-violet-500"], [class*="from-violet-600"]) {
-  --tw-gradient-from: var(--molsan-primary, #3156b3) var(--tw-gradient-from-position) !important;
+  --tw-gradient-from: var(--molsan-primary, #064675) var(--tw-gradient-from-position) !important;
   --tw-gradient-to: rgb(49 86 179 / 0) var(--tw-gradient-to-position) !important;
 }
 
