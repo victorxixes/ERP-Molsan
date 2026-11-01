@@ -181,49 +181,9 @@ export default function ImportarCTN() {
 
           <div className="flex justify-end">
 
-            <button
-              onClick={enviar}
-              disabled={!file || loading}
-              className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-xl
-                px-6 py-3
-                text-sm font-semibold
-                text-white
-                bg-gradient-to-r
-                from-blue-600
-                to-blue-500
-                shadow-[0_10px_25px_rgba(37,99,235,0.20)]
-                transition-all
-                hover:from-blue-500
-                hover:to-blue-400
-                active:scale-[0.98]
-                disabled:opacity-40
-                disabled:cursor-not-allowed
-              "
-            >
-
-              {loading && (
-                <span
-                  className="
-                    h-4 w-4
-                    rounded-full
-                    border-2
-                    border-white/30
-                    border-t-white
-                    animate-spin
-                  "
-                />
-              )}
-
-              {loading
-                ? "Importando..."
-                : "Importar fichero"}
-
-            </button>
+            <MolsanButton icon="upload" variant="primary" onClick={enviar} disabled={!file || loading} loading={loading}>
+              Importar fichero
+            </MolsanButton>   </button>
 
           </div>
 
