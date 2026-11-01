@@ -429,14 +429,7 @@ export default function Maestros() {
       ====================================================== */}
 
       <section
-        className="
-          bg-[var(--erp-surface)]
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          shadow-sm
-          overflow-hidden
-        "
+        className="erp-card overflow-hidden"
       >
 
         {/* ====================================================
