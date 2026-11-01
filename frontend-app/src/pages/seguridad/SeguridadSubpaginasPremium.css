@@ -255,10 +255,7 @@
 .seguridad-rol-editor-premium button[class*="bg-rose"],
 .seguridad-usuarios-premium button[class*="bg-rose"] { border:1px solid #fecaca; }
 .seguridad-rol-editor-premium .erp-card-header,
-.seguridad-usuarios-premium .erp-card-header {
-  display:flex; align-items:center; justify-content:space-between; gap:1rem;
-  padding:1.2rem 1.4rem; border-bottom:1px solid var(--molsan-border,#dbe3ef);
-}
+
 .seguridad-rol-editor-premium .erp-card-title,
 .seguridad-usuarios-premium .erp-card-title {
   margin:0; color:var(--molsan-text-strong,#17233a); font-size:1rem; font-weight:800; line-height:1.35;
@@ -286,13 +283,13 @@
 .seguridad-usuarios-premium .erp-alert-danger { border-color:#fecaca; background:#fef2f2; color:#b91c1c; }
 @media(max-width:900px) {
   .seguridad-usuarios-premium > .grid { grid-template-columns:minmax(0,1fr); }
-  .seguridad-usuarios-premium .erp-card-header { align-items:flex-start; }
+  
 }
 @media(max-width:640px) {
   .seguridad-rol-editor-premium > .erp-page-header,
   .seguridad-usuarios-premium > .erp-page-header { min-height:0; }
   .seguridad-rol-editor-premium .erp-card-header,
-  .seguridad-usuarios-premium .erp-card-header { padding:1rem; }
+  
   .seguridad-usuarios-premium .erp-card-body { padding:1rem; }
   .seguridad-rol-editor-premium table,
   .seguridad-usuarios-premium table { min-width:620px; }
@@ -304,7 +301,7 @@
 .seguridad-usuarios-layout > .erp-card,
 .seguridad-usuarios-layout > .space-y-6 { min-width:0; width:100%; }
 .seguridad-usuarios-layout > .erp-card { position:sticky; top:1rem; }
-.seguridad-usuarios-layout > .erp-card .erp-card-header { padding:1.1rem 1.2rem; }
+
 .seguridad-usuarios-layout > .erp-card .erp-card-body { min-width:0; }
 .seguridad-usuarios-layout > .erp-card .erp-card-body > * { min-width:0; max-width:100%; }
 /* El directorio se presenta como una lista vertical; evita mini tarjetas en columnas. */
