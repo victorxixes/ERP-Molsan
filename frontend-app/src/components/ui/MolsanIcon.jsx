@@ -88,6 +88,14 @@ const ALIASES = {
   "📨": "mail", "💬": "message", "👁": "eye", "📤": "upload", "🗑": "trash",
   "☕": "coffee", "✒️": "pen", "✓": "check", "↗": "arrowRight", "↙": "arrowLeft",
   "↩": "refresh", "◉": "eye", "🛠️": "tools",
+  "🏘": "building", "🏘️": "building", "🖋️": "pen", "✉️": "mail", "🚚": "truck",
+  "🕒": "clock", "🗂️": "folder", "🗃️": "archive", "⚖️": "scale", "🔑": "key",
+  "🔀": "refresh", "📝": "pen", "🖥️": "monitor", "📡": "monitor", "🌐": "globe",
+  "📦": "archive", "📥": "download", "📮": "mail", "📭": "inbox", "🏆": "trophy",
+  "🟢": "check", "🔔": "bell", "🔕": "bell", "🏷️": "tag", "🙈": "eye",
+  "🔌": "plug", "🧱": "building", "🚫": "alert", "💥": "alert", "🚪": "door",
+  "🔓": "lock", "🗓": "calendar", "🗓️": "calendar", "🗂": "folder", "🗃": "archive",
+
 
   "📊": "chart", "⚙": "settings", "▤": "file", "💼": "briefcase", "📚": "book", "✅": "check", "🔄": "refresh", "▦": "calendar",
   "▥": "chart", "AG": "users", "NG": "landmark", "◇": "landmark",
