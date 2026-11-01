@@ -4494,7 +4494,7 @@ const permisosDisponibles =
                           >
 
                             <div className="text-3xl">
-                              📋
+                              <MolsanIcon name="clipboard" size={20} />
                             </div>
 
                             <p
