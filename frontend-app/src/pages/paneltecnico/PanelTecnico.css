@@ -9,7 +9,6 @@
   
   padding: 0;
   
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
