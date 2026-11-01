@@ -935,7 +935,7 @@ export default function ApoderaGest() {
 
       {pestana === "Dashboard" ? (
         <section className="ag-contenido">
-          <div className="ag-titulo-seccion">
+          <div className="ag-panel ag-titulo-seccion">
             <div><span className="ag-kicker">VISTA GENERAL</span><h2>Resumen de actividad</h2><p>Una visión rápida de encargos, firmas y próximos compromisos.</p></div>
             {ultimaActualizacion ? <span className="ag-actualizado">Actualizado a las {ultimaActualizacion.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}</span> : null}
           </div>
