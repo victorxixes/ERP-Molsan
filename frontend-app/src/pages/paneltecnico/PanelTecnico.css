@@ -7,7 +7,7 @@
   min-width: 0;
   
   
-  padding: clamp(1rem, 2vw, 1.5rem);
+  padding: 0;
   
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
   backdrop-filter: none;
