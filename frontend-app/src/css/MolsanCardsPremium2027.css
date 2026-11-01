@@ -101,3 +101,128 @@
     transform: none !important;
   }
 }
+
+
+/* Superficies de tarjeta existentes en módulos que aún usan utilidades Tailwind.
+   Se limita a contenedores estructurales blancos con borde y radio; no alcanza
+   botones, campos, tablas ni filas de listado. */
+:where(
+  .ficha-expediente-premium,
+  .empleados-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .catalogos-premium-page,
+  .catalogos-maestros-premium,
+  .catalogos-maestros-page,
+  .maestros-premium-page,
+  .seguridad-premium-page,
+  .seguridad-subpagina-premium,
+  .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium,
+  .informes-premium-page,
+  .herramientas-subpagina-premium,
+  .herramienta-operativa-premium,
+  .agenda-premium-page,
+  .ctn-workspace-premium,
+  .encargagest-workspace-premium,
+  .provisiones-fondos-premium,
+  .provisiones-fondos-page,
+  .mensajes-premium-page,
+  .molsan-intranet-page
+) :where(div, section, article)[class~="border"][class*="rounded-"][class*="bg-white"] {
+  border-color: #D8E4EC;
+  border-radius: 17px;
+  background-image: linear-gradient(150deg, rgba(255,255,255,.98) 0%, #FFFFFF 64%, #F7FAFC 100%);
+  box-shadow: 0 7px 21px rgba(6, 50, 82, .045);
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+
+:where(
+  .ficha-expediente-premium,
+  .empleados-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .catalogos-premium-page,
+  .catalogos-maestros-premium,
+  .catalogos-maestros-page,
+  .maestros-premium-page,
+  .seguridad-premium-page,
+  .seguridad-subpagina-premium,
+  .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium,
+  .informes-premium-page,
+  .herramientas-subpagina-premium,
+  .herramienta-operativa-premium,
+  .agenda-premium-page,
+  .ctn-workspace-premium,
+  .encargagest-workspace-premium,
+  .provisiones-fondos-premium,
+  .provisiones-fondos-page,
+  .mensajes-premium-page,
+  .molsan-intranet-page
+) :where(div, section, article)[class~="border"][class*="rounded-"][class*="bg-white"]:hover {
+  border-color: #C7DCE8;
+  box-shadow: 0 11px 27px rgba(6, 50, 82, .075);
+}
+
+@media (max-width: 760px) {
+  :where(
+    .ficha-expediente-premium,
+    .empleados-premium-page,
+    .empleados-listado-premium,
+    .empleado-ficha-premium,
+    .empleado-editar-premium,
+    .catalogos-premium-page,
+    .catalogos-maestros-premium,
+    .catalogos-maestros-page,
+    .maestros-premium-page,
+    .seguridad-premium-page,
+    .seguridad-subpagina-premium,
+    .panel-tecnico-premium,
+    .panel-tecnico-submodulo-premium,
+    .informes-premium-page,
+    .herramientas-subpagina-premium,
+    .herramienta-operativa-premium,
+    .agenda-premium-page,
+    .ctn-workspace-premium,
+    .encargagest-workspace-premium,
+    .provisiones-fondos-premium,
+    .provisiones-fondos-page,
+    .mensajes-premium-page,
+    .molsan-intranet-page
+  ) :where(div, section, article)[class~="border"][class*="rounded-"][class*="bg-white"] {
+    border-radius: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(
+    .ficha-expediente-premium,
+    .empleados-premium-page,
+    .empleados-listado-premium,
+    .empleado-ficha-premium,
+    .empleado-editar-premium,
+    .catalogos-premium-page,
+    .catalogos-maestros-premium,
+    .catalogos-maestros-page,
+    .maestros-premium-page,
+    .seguridad-premium-page,
+    .seguridad-subpagina-premium,
+    .panel-tecnico-premium,
+    .panel-tecnico-submodulo-premium,
+    .informes-premium-page,
+    .herramientas-subpagina-premium,
+    .herramienta-operativa-premium,
+    .agenda-premium-page,
+    .ctn-workspace-premium,
+    .encargagest-workspace-premium,
+    .provisiones-fondos-premium,
+    .provisiones-fondos-page,
+    .mensajes-premium-page,
+    .molsan-intranet-page
+  ) :where(div, section, article)[class~="border"][class*="rounded-"][class*="bg-white"] {
+    transition: none !important;
+  }
+}
