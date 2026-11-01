@@ -23,6 +23,7 @@ import "./css/molsan-controls.css";
 import App from "./App";
 // Capa de armonización general.
 import "./css/MolsanRedesign2027.css";
+import "./css/MolsanPremium2027.css";
 // Última capa: neutraliza diferencias visuales propias de los módulos.
 
 // ============================================================
