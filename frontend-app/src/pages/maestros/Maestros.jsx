@@ -366,41 +366,16 @@ export default function Maestros() {
           CABECERA
       ====================================================== */}
 
-      <div
-        className="
-          flex
-          flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-4
-        "
-      >
+      <header className="molsan-page-header">
 
         <div>
 
           <div
-            className="molsan-page-header 
-              flex
-              items-center
-              gap-3
-            "
+            className="molsan-page-header__identity"
           >
 
             <div
-              className="
-                w-12
-                h-12
-                rounded-2xl
-                bg-[var(--erp-primary-soft)]
-                border
-                border-[var(--erp-border)]
-                text-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-                shadow-sm
-              "
+              className="molsan-page-header__mark"
             >
 
               <svg
@@ -417,25 +392,10 @@ export default function Maestros() {
 
             <div>
 
-              <h1
-                className="
-                  text-2xl
-                  font-bold
-                  text-[var(--erp-text)]
-                "
-              >
-                Maestros
-              </h1>
+              <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+              <h1 className="molsan-page-header__title">Maestros</h1>
 
-              <p
-                className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                  mt-1
-                "
-              >
-                Gestión de departamentos, secciones y cargos
-              </p>
+              <p className="molsan-page-header__description">Gestión de departamentos, secciones y cargos</p>
 
             </div>
 
@@ -445,21 +405,7 @@ export default function Maestros() {
 
 
         <div
-          className="
-            inline-flex
-            items-center
-            gap-2
-            px-3
-            py-2
-            rounded-xl
-            bg-[var(--erp-surface)]
-            border
-            border-[var(--erp-border)]
-            text-xs
-            font-medium
-            text-[var(--erp-text-soft)]
-            shadow-sm
-          "
+          className="molsan-page-header__actions"
         >
 
           <span
@@ -475,7 +421,7 @@ export default function Maestros() {
 
         </div>
 
-      </div>
+      </header>
 
 
       {/* ======================================================
