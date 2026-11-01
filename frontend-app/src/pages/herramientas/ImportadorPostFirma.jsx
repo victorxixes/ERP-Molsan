@@ -106,18 +106,18 @@ export default function ImportadorPostFirma() {
   };
 
   return (
-    <main className="herramientas-subpagina-premium min-h-screen space-y-5 bg-gradient-to-br from-slate-50 via-blue-50/40 to-slate-100 p-4 text-slate-700 md:p-6">
-      <header className="molsan-page-header rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
-        <div className="flex items-start gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-blue-200 bg-blue-50 text-2xl">📦</div>
+    <main className="herramientas-subpagina-premium min-h-screen space-y-5 text-slate-700">
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark">📦</div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-800 md:text-3xl">Importador ABSIS · Post Firma</h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Carga histórica pura y aislada. Los ficheros de distintos meses permanecen separados y no se aplican a expedientes ni a los gastos operativos del ERP.</p>
+            <h1 className="molsan-page-header__title">Importador ABSIS · Post Firma</h1>
+            <p className="molsan-page-header__description">Carga histórica pura y aislada. Los ficheros de distintos meses permanecen separados y no se aplican a expedientes ni a los gastos operativos del ERP.</p>
           </div>
         </div>
       </header>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+      <section className="erp-card p-5">
         <h2 className="text-lg font-bold text-slate-800">1. Seleccionar Excel</h2>
         <p className="mt-1 text-sm text-slate-500">Se conserva el contenido original de cada fila con datos y todas las columnas detectadas, incluida TIPOCONCEPTO cuando venga en el fichero.</p>
         <div className="mt-4 max-w-3xl">
@@ -134,7 +134,7 @@ export default function ImportadorPostFirma() {
         {error && <div role="alert" className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">{error}</div>}
       </section>
 
-      {validacion && <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+      {validacion && <section className="erp-card space-y-4 p-5">
         <div><h2 className="text-lg font-bold text-slate-800">2. Previsualización</h2><p className="mt-1 text-sm text-emerald-700">No se han guardado cambios.</p></div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <Metrica titulo="Filas con datos" valor={validacion.filas_con_datos} detalle={"Filas Excel: " + (validacion.filas_excel ?? "—")} />
@@ -146,7 +146,7 @@ export default function ImportadorPostFirma() {
         {validacion.por_estado_absis && <div><h3 className="mb-2 font-bold text-slate-700">Conteo informativo por estado (sin filtrar la carga)</h3><div className="flex flex-wrap gap-2">{Object.entries(validacion.por_estado_absis).map(([estado, cantidad]) => <span key={estado} className="rounded-lg border border-slate-200 px-3 py-2 text-xs">{estado}: <strong>{cantidad}</strong></span>)}</div></div>}
       </section>}
 
-      {resultado && <section className="space-y-4 rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm md:p-6">
+      {resultado && <section className="erp-card space-y-4 p-5">
         <div><h2 className="text-lg font-bold text-slate-800">Carga Post Firma guardada</h2><p className="mt-1 text-sm text-slate-500">{resultado.nota}</p></div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <Metrica titulo="Filas Excel" valor={resultado.filas_excel} />
