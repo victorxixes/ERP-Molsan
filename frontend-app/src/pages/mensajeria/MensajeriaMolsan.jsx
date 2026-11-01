@@ -148,6 +148,9 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 p-4"><div><h2 className="font-bold text-slate-800">{TABS.find(([id])=>id===tab)?.[1]}</h2><p className="text-xs text-slate-500">{lista.length} registro(s)</p></div><div className="flex flex-wrap gap-2"><input className={inputClass+" min-w-48"} value={q} onChange={(e)=>setQ(e.target.value)} placeholder="Buscar…" />{tab==="solicitudes" && <button onClick={()=>abrir("solicitud")} className="rounded-xl bg-blue-700 px-4 py-2 text-sm font-bold text-white">+ Nueva solicitud</button>}{tab==="control" && <button onClick={()=>abrir("servicio")} className="rounded-xl bg-blue-700 px-4 py-2 text-sm font-bold text-white">+ Servicio y tarifa</button>}{tab==="albaranes" && <button onClick={()=>abrir("albaran")} className="rounded-xl bg-blue-700 px-4 py-2 text-sm font-bold text-white">+ Registrar albarán</button>}{tab==="facturas" && <button onClick={()=>abrir("factura")} className="rounded-xl bg-blue-700 px-4 py-2 text-sm font-bold text-white">+ Registrar factura</button>}</div></div>
       {cargando ? <p className="p-6 text-sm text-slate-500">Cargando mensajería…</p> : tab==="control" ? <MolsanDataTable
         rows={servicios}
+          pagination
+          pageSize={25}
+
         rowKey="id"
         initialSort={{ key: "nombre", direction: "asc" }}
         emptyText="Aún no hay servicios ni tarifas configurados. No se han inventado precios."
@@ -161,6 +164,9 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
         ]}
       /> : tab==="solicitudes" ? <MolsanDataTable
         rows={lista}
+          pagination
+          pageSize={25}
+
         rowKey="id"
         initialSort={{ key: "fecha", direction: "desc" }}
         emptyText="No hay solicitudes. Crea la primera con «Nueva solicitud»."
@@ -175,6 +181,9 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
         ]}
       /> : tab==="albaranes" ? <MolsanDataTable
         rows={lista}
+          pagination
+          pageSize={25}
+
         rowKey="id"
         initialSort={{ key: "fecha", direction: "desc" }}
         emptyText="Todavía no hay albaranes registrados."
@@ -188,6 +197,9 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
         ]}
       /> : <MolsanDataTable
         rows={lista}
+          pagination
+          pageSize={25}
+
         rowKey="id"
         initialSort={{ key: "fecha", direction: "desc" }}
         emptyText="No hay facturas registradas."
