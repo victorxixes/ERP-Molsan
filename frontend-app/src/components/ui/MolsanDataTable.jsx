@@ -3,8 +3,8 @@ import { sortRows } from "../../utils/sortRows";
 
 /**
  * Tabla corporativa MOLSAN.
- * Para conjuntos paginados por servidor, usar sortMode="server" y onSortChange;
- * nunca ordenar localmente una página como si fuera el conjunto completo.
+ * Para conjuntos paginados o preordenados externamente, usar sortMode="external"
+ * y onSortChange; nunca ordenar localmente una página como si fuera el conjunto completo.
  * columns: [{ key, header, accessor?, sortType?, render?, align?, sortable? }]
  */
 export default function MolsanDataTable({
@@ -36,7 +36,7 @@ export default function MolsanDataTable({
         ? { key: sortKey, direction: "desc" }
         : { key: null, direction: null };
     setSort(next);
-    if (sortMode === "server") onSortChange?.(next, column);
+    if (sortMode !== "local") onSortChange?.(next, column);
   };
 
   return (
