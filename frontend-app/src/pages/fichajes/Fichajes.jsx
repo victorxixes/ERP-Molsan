@@ -313,7 +313,7 @@ export default function Fichajes({ modo = "empleado" }) {
                     emptyText="No hay marcajes para esta búsqueda."
                     columns={[
                       { key: "fecha", header: "Fecha", accessor: "fecha_hora", sortType: "date", render: (value) => fechaLarga(value) },
-                      { key: "hora", header: "Hora", accessor: "fecha_hora", sortType: "date", render: (value) => <strong className="tabular-nums">{hora(value)}</strong> },
+                      { key: "hora", header: "Hora", accessor: (item) => { const date = new Date(item.fecha_hora); return date.getHours() * 60 + date.getMinutes(); }, sortType: "number", render: (_, item) => <strong className="tabular-nums">{hora(item.fecha_hora)}</strong> },
                       { key: "tipo", header: "Marcaje", accessor: "tipo", sortType: "text", render: (value) => <span className="rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-bold">{formatearTipo(value)}</span> },
                       { key: "observaciones", header: "Observaciones", accessor: "observaciones", sortType: "text", render: (value) => value || "—" },
                     ]}
