@@ -18,18 +18,7 @@
   margin-left: 0;
   margin-right: 0;
   padding-top: 4px;
-}
-.encargagest .eg-kpi {
-  min-width: 0;
-  padding: 18px 19px 17px;
-  overflow: hidden;
-  border: 1px solid var(--molsan-border, #D8E4EC);
-}
-.encargagest .eg-panel {
-  min-width: 0;
-  overflow: hidden;
-  border: 1px solid var(--molsan-border, #D8E4EC);
-}
+}.encargagest .eg-kpi{min-width: 0; padding: 18px 19px 17px; overflow: hidden}.encargagest .eg-panel{min-width: 0; overflow: hidden}
 .encargagest .eg-panel-head {
   padding: 17px 19px;
   border-bottom: 1px solid #e9edf4;
@@ -81,8 +70,7 @@
 .encargagest .eg-main .border-blue-100 { border-color: var(--molsan-border, #D8E4EC); }
 .encargagest .eg-main .ag-estado { white-space: nowrap; }
 @media (max-width: 700px) {
-  .encargagest .ag-fecha-actual { flex: 1; min-width: 0; }
-  .encargagest .eg-kpi { padding: 14px; border-radius: 14px; }
+  .encargagest .ag-fecha-actual { flex: 1; min-width: 0; }.encargagest .eg-kpi{padding: 14px}
 }
 
 
@@ -202,15 +190,7 @@
   overflow-y: auto;
   scrollbar-color: #cbd5e1 transparent;
   scrollbar-width: thin;
-}
-.eg-modal-section {
-  min-width: 0;
-  padding: 18px;
-  background: rgba(255,255,255,.9);
-  border: 1px solid #e1e8f2;
-  border-radius: 18px;
-  box-shadow: 0 7px 23px rgba(31,48,79,.035), inset 0 1px 0 #fff;
-}
+}.eg-modal-section{min-width: 0; padding: 18px}
 .eg-modal-section-heading {
   display: flex;
   align-items: center;
@@ -337,8 +317,7 @@
   .eg-modal-heading h2 { font-size: 19px; }
   .eg-modal-heading p { font-size: 10px; }
   .eg-modal-contexto { padding: 10px 12px 0; }
-  .eg-modal-layout { padding: 12px; gap: 11px; }
-  .eg-modal-section { padding: 13px; border-radius: 14px; }
+  .eg-modal-layout { padding: 12px; gap: 11px; }.eg-modal-section{padding: 13px}
   .eg-modal-field-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
   .eg-modal-field-grid .eg-span-2 { grid-column: 1; }
   .eg-modal-footer { align-items: stretch; flex-direction: column; padding: 12px; }
@@ -467,11 +446,6 @@
 }
 .encargagest .eg-main button:not([class*="bg-rose-"]):not([class*="bg-emerald-"]):not([class*="bg-red-"]) {
   transition: border-color .16s ease, background-color .16s ease, box-shadow .16s ease, transform .16s ease;
-}
-.encargagest .eg-modal-form,
-.encargagest .eg-modal-section,
-.encargagest .eg-modal-carpeta-contrato {
-  border-color: var(--molsan-border, #D8E4EC);
 }
 .encargagest .eg-modal-header,
 .encargagest .eg-modal-section-heading {
