@@ -1,4 +1,5 @@
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { Fragment, useState, useEffect, useMemo } from "react";
 import { sortRows } from "../../utils/sortRows";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -2228,7 +2229,7 @@ function KpiCard({
             ${colores[clase]}
           `}
         >
-          {icon}
+          <MolsanIcon name={icon} size={44} tone={clase === "green" ? "emerald" : clase === "purple" ? "violet" : clase === "orange" ? "amber" : "ocean"} />
         </div>
 
       </div>
@@ -2371,7 +2372,7 @@ function GraficoCard({
               justify-center
             "
           >
-            {icono}
+            <MolsanIcon name={icono} size={36} tone="ocean" />
           </div>
 
 
@@ -2560,7 +2561,7 @@ function InformeKpi({ titulo, valor, subtitulo, icono }) {
           <div className="mt-2 text-2xl font-bold tracking-tight text-slate-800">{valor}</div>
           {subtitulo && <div className="mt-1 text-xs text-slate-400">{subtitulo}</div>}
         </div>
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-lg">{icono}</span>
+        <MolsanIcon name={icono} size={42} tone="ocean" />
       </div>
     </div>
   );
@@ -3678,7 +3679,7 @@ function ApartadoInformePendiente({ apartado }) {
       <div className="border-b border-slate-200/80 px-6 py-5">
         <div className="molsan-section-header flex items-start gap-3">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-xl">
-            {apartado.icono}
+            <MolsanIcon name={apartado.icono} size={44} tone="ocean" />
           </div>
           <div>
             <h2 className="text-xl font-bold text-slate-800">{detalle.encabezado}</h2>
@@ -3726,7 +3727,7 @@ export default function Informes() {
       <header className="molsan-page-header">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="molsan-page-header__identity flex items-center gap-3">
-            <div className="molsan-page-header__mark" aria-hidden="true">📊</div>
+            <div className="molsan-page-header__mark"><MolsanIcon name="chart" size={42} tone="ocean" /></div>
             <div>
               <div className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
               <h1 className="molsan-page-header__title">{apartadoSeleccionado ? apartadoSeleccionado.titulo : "Informes"}</h1>
@@ -3746,7 +3747,7 @@ export default function Informes() {
               onClick={() => navigate(`/informes/${apartado.key}`)}
               className="group erp-card flex min-h-[150px] items-start gap-4 p-5 text-left transition-all focus:outline-none focus:ring-2 focus:ring-blue-300"
             >
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-2xl transition group-hover:bg-blue-100">{apartado.icono}</span>
+              <MolsanIcon name={apartado.icono} size={48} tone="ocean" className="transition-transform group-hover:-translate-y-1" />
               <span className="min-w-0 flex-1">
                 <span className="block text-base font-bold text-slate-800">{apartado.titulo}</span>
                 <span className="mt-2 block text-sm leading-relaxed text-slate-500">{apartado.descripcion}</span>
