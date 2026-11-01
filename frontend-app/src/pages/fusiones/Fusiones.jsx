@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import { formatEuro as euros } from "../../utils/formatters";
 
 const ESTADOS = ["Pendiente", "En curso", "Aceptada", "Desestimada", "Facturadas"];
 
@@ -17,11 +18,7 @@ function fechaCorta(valor) {
   const f = new Date(valor);
   return Number.isNaN(f.getTime()) ? "—" : f.toLocaleDateString("es-ES");
 }
-function euros(valor) {
-  if (valor === null || valor === undefined || valor === "") return "—";
-  const n = Number(valor);
-  return Number.isFinite(n) ? n.toLocaleString("es-ES", { style: "currency", currency: "EUR" }) : "—";
-}
+
 function Icon({ name, size = 20 }) {
   const p = { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true };
   if (name === "merge") return <svg {...p}><path d="M7 3v5c0 2.2 1.8 4 4 4h2c2.2 0 4-1.8 4-4V3" /><path d="M7 21v-5c0-2.2 1.8-4 4-4h2c2.2 0 4 1.8 4 4v5" /><path d="M4 3h6M14 21h6" /></svg>;
