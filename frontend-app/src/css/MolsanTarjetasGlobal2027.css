@@ -291,12 +291,7 @@
     linear-gradient(112deg, #F2F7FB 0%, #FFFFFF 64%, #F6FAFC 100%);
   box-shadow: var(--molsan-premium-shadow, 0 8px 24px rgba(6,50,82,.065));
 }
-.molsan-page-header__identity {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
+
 .molsan-page-header__actions {
   display: flex;
   align-items: center;
@@ -319,11 +314,20 @@
 
 /* Tipografía canónica para cualquier cabecera marcada, independientemente
    del módulo que la renderice. La clase explícita evita tocar headers internos. */
+.molsan-page-header__eyebrow {
+  margin: 0 0 3px;
+  color: var(--molsan-premium-muted, #617789);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
 .molsan-page-header :is(h1, .molsan-page-header__title) {
   color: var(--molsan-premium-blue, #064675);
   font-size: 20px;
-  font-weight: 800;
-  letter-spacing: -.035em;
+  font-weight: 750;
+  letter-spacing: -.02em;
   line-height: 1.2;
 }
 .molsan-page-header :is(p, .molsan-page-header__description) {
@@ -344,12 +348,12 @@
   height: 40px;
   place-items: center;
   color: #FFFFFF;
-  border: 1px solid rgba(255,255,255,.55);
+  border: 0;
   border-radius: 11px;
   background: linear-gradient(145deg, #04375B, #0D638C);
   box-shadow: none;
   font-size: 15px;
-  font-weight: 850;
+  font-weight: 800;
   letter-spacing: -.03em;
 }
 
