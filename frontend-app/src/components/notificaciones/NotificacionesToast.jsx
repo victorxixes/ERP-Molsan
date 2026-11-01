@@ -1,3 +1,4 @@
+import MolsanIcon from "../ui/MolsanIcon";
 import {
   useEffect,
   useState,
@@ -387,7 +388,7 @@ function obtenerConfiguracion(
     case "nuevo_mensaje":
 
       return {
-        icono: "💬",
+        icono: "message",
         titulo: "Nuevo mensaje",
         color: "bg-blue-400",
       };
@@ -396,7 +397,7 @@ function obtenerConfiguracion(
     case "nuevo_archivo":
 
       return {
-        icono: "📎",
+        icono: "attachment",
         titulo: "Nuevo archivo",
         color: "bg-purple-400",
       };
@@ -405,7 +406,7 @@ function obtenerConfiguracion(
     case "online":
 
       return {
-        icono: "🟢",
+        icono: "check",
         titulo: "Usuario conectado",
         color: "bg-emerald-400",
       };
@@ -441,7 +442,7 @@ function obtenerConfiguracion(
     default:
 
       return {
-        icono: "🔔",
+        icono: "bell",
         titulo: "Nueva notificación",
         color: "bg-blue-400",
       };
