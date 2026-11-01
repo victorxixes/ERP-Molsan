@@ -2631,7 +2631,271 @@ export default function EntidadesBancarias() {
           </span>
 
 
-          <MolsanButton type="button" icon="upload" variant="secondary" loading={importando} disabled={!archivo || importando} onClick={onImportar} className="min-w-[190px]">{importando ? "Importando..." : "Importar entidades"}</MolsanButton>
+          <button
+            type="button"
+            disabled={
+              pagina >=
+              totalPaginas
+            }
+            onClick={() =>
+              setPagina(
+                (actual) =>
+                  Math.min(
+                    totalPaginas,
+                    actual + 1
+                  )
+              )
+            }
+            className="
+              rounded-lg
+              border
+              border-slate-200
+              bg-white
+              px-3
+              py-2
+              text-sm
+              font-medium
+              text-slate-600
+              transition
+              hover:bg-slate-50
+              disabled:cursor-not-allowed
+              disabled:opacity-40
+            "
+          >
+            Siguiente →
+          </button>
+
+        </div>
+
+      )}
+
+
+      {/* =====================================================
+          MODAL ENTIDAD
+      ===================================================== */}
+
+      {modalAbierto && (
+
+        <ModalEntidadBancaria
+          entidades={entidades}
+          modo={
+            modoModal
+          }
+          entidad={
+            entidadSeleccionada
+          }
+          guardando={
+            guardando
+          }
+          onCerrar={
+            cerrarModal
+          }
+          onGuardar={
+            guardarEntidad
+          }
+        />
+
+      )}
+
+
+      {/* =====================================================
+          MODAL IMPORTACIÓN
+      ===================================================== */}
+
+      {modalImportacionAbierto && (
+
+        <ModalImportarExcel
+          archivo={
+            archivoExcel
+          }
+          inputExcelRef={
+            inputExcelRef
+          }
+          importando={
+            importandoExcel
+          }
+          onSeleccionar={
+            seleccionarExcel
+          }
+          onQuitar={
+            quitarArchivoExcel
+          }
+          onImportar={
+            importarExcel
+          }
+          onCerrar={
+            cerrarImportacionExcel
+          }
+          formatearTamano={
+            formatearTamanoArchivo
+          }
+        />
+
+      )}
+
+    </div>
+
+  );
+
+}
+
+
+/* ============================================================
+   MODAL IMPORTAR EXCEL
+============================================================ */
+
+function ModalImportarExcel({
+  archivo,
+  inputExcelRef,
+  importando,
+  onSeleccionar,
+  onQuitar,
+  onImportar,
+  onCerrar,
+  formatearTamano
+}) {
+
+  return (
+
+    <div
+      className="
+        fixed
+        inset-0
+        z-50
+        flex
+        items-center
+        justify-center
+        bg-slate-950/40
+        p-4
+        backdrop-blur-sm
+      "
+      onMouseDown={(e) => {
+
+        if (
+          e.target ===
+            e.currentTarget &&
+          !importando
+        ) {
+
+          onCerrar();
+
+        }
+
+      }}
+    >
+
+      <div
+        className="
+          w-full
+          max-w-2xl
+          overflow-hidden
+          rounded-[26px]
+          border
+          border-slate-200
+          bg-white
+          shadow-[0_30px_80px_rgba(15,23,42,0.22)]
+        "
+      >
+
+        {/* CABECERA */}
+
+        <div
+          className="
+            border-b
+            border-slate-100
+            bg-slate-50/80
+            px-6
+            py-5
+          "
+        >
+
+          <div
+            className="
+              flex
+              items-center
+              justify-between
+            "
+          >
+
+            <div
+              className="
+                flex
+                items-center
+                gap-3
+              "
+            >
+
+              <div
+                className="
+                  flex
+                  h-11
+                  w-11
+                  items-center
+                  justify-center
+                  rounded-xl
+                  border
+                  border-emerald-100
+                  bg-emerald-50
+                  text-xl
+                "
+              >
+                📊
+              </div>
+
+
+              <div>
+
+                <h2
+                  className="
+                    text-lg
+                    font-bold
+                    text-slate-800
+                  "
+                >
+                  Importar entidades bancarias desde Excel
+                </h2>
+
+
+                <p
+                  className="
+                    mt-1
+                    text-xs
+                    text-slate-500
+                  "
+                >
+                  Carga masiva del catálogo financiero.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <button
+              type="button"
+              disabled={
+                importando
+              }
+              onClick={
+                onCerrar
+              }
+              className="
+                flex
+                h-9
+                w-9
+                items-center
+                justify-center
+                rounded-lg
+                text-slate-400
+                transition
+                hover:bg-slate-100
+                hover:text-slate-700
+                disabled:cursor-not-allowed
+                disabled:opacity-40
+              "
+            >
+              ✕
+            </button>
 
           </div>
 
@@ -2967,58 +3231,7 @@ export default function EntidadesBancarias() {
           </button>
 
 
-          <button
-            type="button"
-            disabled={
-              !archivo ||
-              importando
-            }
-            onClick={
-              onImportar
-            }
-            className="
-              inline-flex
-              min-w-[190px]
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              bg-emerald-600
-              px-5
-              py-2.5
-              text-sm
-              font-semibold
-              text-white
-              shadow-[0_8px_20px_rgba(5,150,105,0.18)]
-              transition
-              hover:bg-emerald-700
-              disabled:cursor-not-allowed
-              disabled:opacity-50
-            "
-          >
-
-            {importando && (
-
-              <span
-                className="
-                  h-4
-                  w-4
-                  animate-spin
-                  rounded-full
-                  border-2
-                  border-white/40
-                  border-t-white
-                "
-              />
-
-            )}
-
-
-            {importando
-              ? "Importando..."
-              : "Importar entidades"}
-
-          </button>
+          <MolsanButton type="button" icon="upload" variant="secondary" loading={importando} disabled={!archivo || importando} onClick={onImportar} className="min-w-[190px]">{importando ? "Importando..." : "Importar entidades"}</MolsanButton>
 
         </div>
 
