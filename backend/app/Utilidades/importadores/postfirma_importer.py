@@ -280,7 +280,7 @@ def listar_registros_postfirma(
     sort_by: str = "carga_id",
     sort_dir: str = "desc",
 ):
-    _crear_almacen()
+    _crear_almacen(db)
     if carga_id is not None:
         esquema = db.execute(text(
             "SELECT columnas_json FROM public.absis_postfirma_cargas WHERE id = :id"
