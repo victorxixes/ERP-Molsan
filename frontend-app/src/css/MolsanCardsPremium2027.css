@@ -355,3 +355,82 @@
 @media(max-width:760px){
   .panel-tecnico-submodulo-premium.monitor-realtime-premium > .molsan-page-header {border-radius:18px;padding:16px;}
 }
+
+
+/* Ajuste de cabeceras de las subpáginas de Catálogos: identidad a la izquierda y acciones dentro del mismo bloque, a la derecha. */
+.catalogos-premium-page .molsan-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 24px;
+  width: 100%;
+  min-width: 0;
+}
+.catalogos-premium-page .molsan-page-header__identity {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: left;
+}
+.catalogos-premium-page .molsan-page-header__identity > div:last-child { text-align: left; }
+.catalogos-premium-page .molsan-page-header__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  gap: 10px;
+  margin-left: auto;
+  text-align: right;
+}
+.catalogos-premium-page .molsan-page-header__actions > * { flex: 0 0 auto; }
+
+/* Tarjetas de acceso de Utilidades: misma superficie Glass Luxe que el resto del ERP. */
+.utilidades-premium-page .utilidades-access-card {
+  display: block;
+  width: 100%;
+  min-height: 132px;
+  border: 1px solid #D8E4EC;
+  border-radius: 21px;
+  background: linear-gradient(145deg, #FFFFFF 0%, #FFFFFF 58%, #F2F7FB 100%);
+  box-shadow: 0 8px 24px rgba(6,50,82,.065);
+  color: #18384D;
+  text-decoration: none;
+  animation: molsan-premium-card-enter .42s both;
+}
+.utilidades-premium-page .utilidades-access-card::before {
+  position: absolute;
+  top: 0;
+  left: 18px;
+  right: 18px;
+  height: 3px;
+  border-radius: 0 0 6px 6px;
+  background: linear-gradient(90deg,#064675 0%,#2696A5 70%,#8BC8D8 100%);
+  content: "";
+  pointer-events: none;
+}
+.utilidades-premium-page .utilidades-access-card:hover:not([aria-disabled="true"]) {
+  transform: translateY(-4px);
+  border-color: #B9D7E6;
+  box-shadow: 0 17px 34px rgba(6,50,82,.12);
+}
+.utilidades-premium-page .utilidades-access-card:focus-visible {
+  outline: 3px solid rgba(6,70,117,.22);
+  outline-offset: 3px;
+}
+.utilidades-premium-page .utilidades-access-card > div.flex.items-start > div:first-child {
+  border-color: #D8E4EC;
+  border-radius: 15px;
+  background: #EAF2F8;
+  color: #064675;
+}
+@media (max-width: 760px) {
+  .catalogos-premium-page .molsan-page-header { align-items: flex-start; flex-wrap: wrap; gap: 14px; }
+  .catalogos-premium-page .molsan-page-header__actions { width: 100%; margin-left: 0; justify-content: flex-start; flex-wrap: wrap; }
+  .utilidades-premium-page .utilidades-access-card { min-height: 0; border-radius: 17px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .utilidades-premium-page .utilidades-access-card { animation: none; transition: none; }
+  .utilidades-premium-page .utilidades-access-card:hover { transform: none; }
+}
