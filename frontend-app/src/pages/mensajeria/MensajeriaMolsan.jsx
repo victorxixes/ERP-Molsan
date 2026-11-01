@@ -1,3 +1,4 @@
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
@@ -145,7 +146,61 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
     <section className="flex flex-wrap gap-2">{(vistaCatalogo ? [TABS[1]] : TABS).map(([id,label]) => <button key={id} onClick={() => {setTab(id);setQ("");}} className={`rounded-xl px-4 py-2.5 text-sm font-bold transition ${tab===id?"bg-blue-700 text-white shadow":"border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"}`}>{label}</button>)}</section>
     <section className="erp-card overflow-hidden">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 p-4"><div><h2 className="font-bold text-slate-800">{TABS.find(([id])=>id===tab)?.[1]}</h2><p className="text-xs text-slate-500">{lista.length} registro(s)</p></div><div className="flex flex-wrap gap-2"><input className={inputClass+" min-w-48"} value={q} onChange={(e)=>setQ(e.target.value)} placeholder="Buscar…" />{tab==="solicitudes" && <button onClick={()=>abrir("solicitud")} className="rounded-xl bg-blue-700 px-4 py-2 text-sm font-bold text-white">+ Nueva solicitud</button>}{tab==="control" && <button onClick={()=>abrir("servicio")} className="rounded-xl bg-blue-700 px-4 py-2 text-sm font-bold text-white">+ Servicio y tarifa</button>}{tab==="albaranes" && <button onClick={()=>abrir("albaran")} className="rounded-xl bg-blue-700 px-4 py-2 text-sm font-bold text-white">+ Registrar albarán</button>}{tab==="facturas" && <button onClick={()=>abrir("factura")} className="rounded-xl bg-blue-700 px-4 py-2 text-sm font-bold text-white">+ Registrar factura</button>}</div></div>
-      {cargando ? <p className="p-6 text-sm text-slate-500">Cargando mensajería…</p> : tab==="control" ? <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead className="bg-slate-50 text-xs uppercase text-slate-500"><tr><th className="px-4 py-3">Servicio</th><th className="px-4 py-3">Tarifa base</th><th className="px-4 py-3">Suplemento</th><th className="px-4 py-3">Proveedor / código</th><th className="px-4 py-3">Estado</th><th className="px-4 py-3">Acción</th></tr></thead><tbody>{servicios.map((s)=><tr key={s.id} className="border-t border-slate-100"><td className="px-4 py-3"><b>{s.nombre}</b><p className="text-xs text-slate-500">{s.codigo||"Sin código interno"}</p></td><td className="px-4 py-3">{money(s.tarifa_base)}</td><td className="px-4 py-3">{money(s.suplemento)}</td><td className="px-4 py-3">{s.codigo_proveedor||"Pendiente de configurar"}</td><td className="px-4 py-3">{s.activo?"Activo":"Inactivo"}</td><td className="px-4 py-3"><button onClick={()=>abrir("servicio",s)} className="font-bold text-blue-700">Editar</button></td></tr>)}{!servicios.length&&<tr><td colSpan="6" className="p-8 text-center text-slate-500">Aún no hay servicios ni tarifas configurados. No se han inventado precios.</td></tr>}</tbody></table><div className="border-t border-slate-100 p-4 text-xs text-slate-500">Los servicios y tarifas también se mantienen desde Catálogos → Mensajería · Servicios y tarifas.</div></div> : tab==="solicitudes" ? <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead className="bg-slate-50 text-xs uppercase text-slate-500"><tr><th className="px-4 py-3">Referencia</th><th className="px-4 py-3">Solicitante</th><th className="px-4 py-3">Origen → destino</th><th className="px-4 py-3">Fecha</th><th className="px-4 py-3">Prioridad</th><th className="px-4 py-3">Estado</th><th className="px-4 py-3">Acción</th></tr></thead><tbody>{lista.map((s)=><tr key={s.id} className="border-t border-slate-100"><td className="px-4 py-3 font-bold text-blue-700">{s.referencia}</td><td className="px-4 py-3">{s.solicitante_nombre}</td><td className="px-4 py-3"><span className="block max-w-64 truncate">{s.origen}</span><span className="block max-w-64 truncate text-slate-500">→ {s.destino}</span></td><td className="px-4 py-3">{s.fecha_solicitada||"—"}</td><td className="px-4 py-3">{s.prioridad}</td><td className="px-4 py-3">{s.estado}</td><td className="px-4 py-3"><button onClick={()=>abrir("solicitud",s)} className="font-bold text-blue-700">Gestionar</button></td></tr>)}{!lista.length&&<tr><td colSpan="7" className="p-8 text-center text-slate-500">No hay solicitudes. Crea la primera con «Nueva solicitud».</td></tr>}</tbody></table></div> : tab==="albaranes" ? <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead className="bg-slate-50 text-xs uppercase text-slate-500"><tr><th className="px-4 py-3">Albarán interno / proveedor</th><th className="px-4 py-3">Fecha</th><th className="px-4 py-3">Solicitud</th><th className="px-4 py-3">Importe</th><th className="px-4 py-3">Entrega</th><th className="px-4 py-3">Acción</th></tr></thead><tbody>{lista.map((a)=><tr key={a.id} className="border-t border-slate-100"><td className="px-4 py-3 font-semibold">{a.numero_interno||"—"}<p className="text-xs text-slate-500">{a.numero_proveedor||"Sin número de proveedor"}</p></td><td className="px-4 py-3">{a.fecha||"—"}</td><td className="px-4 py-3">{a.solicitud_referencia||"Sin vincular"}</td><td className="px-4 py-3">{money(a.importe)}</td><td className="px-4 py-3">{a.entregado?"Entregado":"Pendiente"}</td><td className="px-4 py-3"><button onClick={()=>abrir("albaran",a)} className="font-bold text-blue-700">Editar</button></td></tr>)}{!lista.length&&<tr><td colSpan="6" className="p-8 text-center text-slate-500">Todavía no hay albaranes registrados.</td></tr>}</tbody></table></div> : <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead className="bg-slate-50 text-xs uppercase text-slate-500"><tr><th className="px-4 py-3">Factura</th><th className="px-4 py-3">Proveedor</th><th className="px-4 py-3">Fechas</th><th className="px-4 py-3">Base / impuestos / total</th><th className="px-4 py-3">Revisión</th><th className="px-4 py-3">Pago</th><th className="px-4 py-3">Acción</th></tr></thead><tbody>{lista.map((f)=><tr key={f.id} className="border-t border-slate-100"><td className="px-4 py-3 font-bold">{f.numero}</td><td className="px-4 py-3">{f.proveedor}</td><td className="px-4 py-3">{f.fecha_emision||"—"}<p className="text-xs text-slate-500">Vence: {f.fecha_vencimiento||"—"}</p></td><td className="px-4 py-3">{money(f.base_imponible)} / {money(f.importe_impuesto)} / <b>{money(f.total)}</b></td><td className="px-4 py-3">{f.estado_revision}</td><td className="px-4 py-3">{f.estado_pago}</td><td className="px-4 py-3"><button onClick={()=>abrir("factura",f)} className="font-bold text-blue-700">Editar</button></td></tr>)}{!lista.length&&<tr><td colSpan="7" className="p-8 text-center text-slate-500">No hay facturas registradas.</td></tr>}</tbody></table></div>}
+      {cargando ? <p className="p-6 text-sm text-slate-500">Cargando mensajería…</p> : tab==="control" ? <MolsanDataTable
+        rows={servicios}
+        rowKey="id"
+        initialSort={{ key: "nombre", direction: "asc" }}
+        emptyText="Aún no hay servicios ni tarifas configurados. No se han inventado precios."
+        columns={[
+          { key: "nombre", header: "Servicio", accessor: "nombre", sortType: "text", render: (value, item) => <><b>{value}</b><p className="text-xs text-slate-500">{item.codigo || "Sin código interno"}</p></> },
+          { key: "tarifa_base", header: "Tarifa base", accessor: "tarifa_base", sortType: "currency", align: "right", render: (value) => money(value) },
+          { key: "suplemento", header: "Suplemento", accessor: "suplemento", sortType: "currency", align: "right", render: (value) => money(value) },
+          { key: "codigo_proveedor", header: "Proveedor / código", accessor: "codigo_proveedor", sortType: "text", render: (value) => value || "Pendiente de configurar" },
+          { key: "activo", header: "Estado", accessor: "activo", sortType: "boolean", render: (value) => value ? "Activo" : "Inactivo" },
+          { key: "acciones", header: "Acción", sortable: false, accessor: (item) => item.id, render: (_, item) => <button type="button" onClick={() => abrir("servicio", item)} className="font-bold text-blue-700">Editar</button> },
+        ]}
+      /> : tab==="solicitudes" ? <MolsanDataTable
+        rows={lista}
+        rowKey="id"
+        initialSort={{ key: "fecha", direction: "desc" }}
+        emptyText="No hay solicitudes. Crea la primera con «Nueva solicitud»."
+        columns={[
+          { key: "referencia", header: "Referencia", accessor: "referencia", sortType: "text", render: (value) => <span className="font-bold text-blue-700">{value}</span> },
+          { key: "solicitante", header: "Solicitante", accessor: "solicitante_nombre", sortType: "text" },
+          { key: "destino", header: "Origen → destino", accessor: (item) => [item.origen, item.destino].filter(Boolean).join(" → "), sortType: "text", render: (_, item) => <><span className="block max-w-64 truncate">{item.origen}</span><span className="block max-w-64 truncate text-slate-500">→ {item.destino}</span></> },
+          { key: "fecha", header: "Fecha", accessor: "fecha_solicitada", sortType: "date" },
+          { key: "prioridad", header: "Prioridad", accessor: "prioridad", sortType: "text" },
+          { key: "estado", header: "Estado", accessor: "estado", sortType: "text" },
+          { key: "acciones", header: "Acción", sortable: false, accessor: (item) => item.id, render: (_, item) => <button type="button" onClick={() => abrir("solicitud", item)} className="font-bold text-blue-700">Gestionar</button> },
+        ]}
+      /> : tab==="albaranes" ? <MolsanDataTable
+        rows={lista}
+        rowKey="id"
+        initialSort={{ key: "fecha", direction: "desc" }}
+        emptyText="Todavía no hay albaranes registrados."
+        columns={[
+          { key: "numero", header: "Albarán interno / proveedor", accessor: (item) => item.numero_interno || item.numero_proveedor || "", sortType: "text", render: (_, item) => <><span className="font-semibold">{item.numero_interno || "—"}</span><p className="text-xs text-slate-500">{item.numero_proveedor || "Sin número de proveedor"}</p></> },
+          { key: "fecha", header: "Fecha", accessor: "fecha", sortType: "date" },
+          { key: "solicitud", header: "Solicitud", accessor: "solicitud_referencia", sortType: "text", render: (value) => value || "Sin vincular" },
+          { key: "importe", header: "Importe", accessor: "importe", sortType: "currency", align: "right", render: (value) => money(value) },
+          { key: "entregado", header: "Entrega", accessor: "entregado", sortType: "boolean", render: (value) => value ? "Entregado" : "Pendiente" },
+          { key: "acciones", header: "Acción", sortable: false, accessor: (item) => item.id, render: (_, item) => <button type="button" onClick={() => abrir("albaran", item)} className="font-bold text-blue-700">Editar</button> },
+        ]}
+      /> : <MolsanDataTable
+        rows={lista}
+        rowKey="id"
+        initialSort={{ key: "fecha", direction: "desc" }}
+        emptyText="No hay facturas registradas."
+        columns={[
+          { key: "numero", header: "Factura", accessor: "numero", sortType: "text" },
+          { key: "proveedor", header: "Proveedor", accessor: "proveedor", sortType: "text" },
+          { key: "fecha", header: "Fechas", accessor: "fecha_emision", sortType: "date", render: (_, item) => <>{item.fecha_emision || "—"}<p className="text-xs text-slate-500">Vence: {item.fecha_vencimiento || "—"}</p></> },
+          { key: "total", header: "Base / impuestos / total", accessor: "total", sortType: "currency", align: "right", render: (_, item) => <>{money(item.base_imponible)} / {money(item.importe_impuesto)} / <b>{money(item.total)}</b></> },
+          { key: "revision", header: "Revisión", accessor: "estado_revision", sortType: "text" },
+          { key: "pago", header: "Pago", accessor: "estado_pago", sortType: "text" },
+          { key: "acciones", header: "Acción", sortable: false, accessor: (item) => item.id, render: (_, item) => <button type="button" onClick={() => abrir("factura", item)} className="font-bold text-blue-700">Editar</button> },
+        ]}
+      />}
     </section>
     <section className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 text-sm text-amber-900"><b>Integración con proveedor: en construcción.</b> Hasta disponer del proveedor y su documentación técnica, las solicitudes, tarifas, albaranes y facturas se gestionan internamente. No se simulan envíos reales ni pagos.</section>
     {modal && <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-950/50 p-4" role="dialog" aria-modal="true"><div className="my-auto max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-7"><div className="flex items-start justify-between gap-4"><div><h2 className="text-xl font-bold text-slate-800">{modalTitle}</h2><p className="mt-1 text-sm text-slate-500">Los datos de proveedor o tarifa pueden quedar pendientes hasta disponer de la información real.</p></div><button onClick={()=>setModal("")} className="rounded-lg border px-3 py-1.5 text-slate-600">Cerrar</button></div>
