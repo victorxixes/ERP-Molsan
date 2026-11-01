@@ -25,6 +25,9 @@
   .encargagest,
   .notargest,
   .ctn-workspace-premium,
+  .ctn-detalle-page,
+  .dashboard-cancelagest,
+  .dashboard-premium-page,
   .cg-page,
   .cg-unified-workspace,
   .expedientes-page,
@@ -74,6 +77,9 @@
   .notargest-workspace-premium,
   .encargagest-workspace-premium,
   .ctn-workspace-premium,
+  .ctn-detalle-page,
+  .dashboard-cancelagest,
+  .dashboard-premium-page,
   .cg-page,
   .cg-unified-workspace,
   .expedientes-page,
@@ -133,6 +139,9 @@
 
 /* Acentos cromáticos discretos y alternos para dar personalidad a las tarjetas. */
 :where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .encargagest, .notargest, .ctn-workspace-premium,
+  .ctn-detalle-page,
+  .dashboard-cancelagest,
+  .dashboard-premium-page,
   .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
   .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
   .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
@@ -152,6 +161,9 @@
   --molsan-card-tint: #EAF5FA;
 }
 :where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .ctn-detalle-page,
+  .dashboard-cancelagest,
+  .dashboard-premium-page,
   .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
   .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
   .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
@@ -171,6 +183,9 @@
   --molsan-card-tint: #EAF7F2;
 }
 :where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .ctn-detalle-page,
+  .dashboard-cancelagest,
+  .dashboard-premium-page,
   .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
   .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
   .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
@@ -190,6 +205,9 @@
   --molsan-card-tint: #F1EEFA;
 }
 :where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .ctn-detalle-page,
+  .dashboard-cancelagest,
+  .dashboard-premium-page,
   .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
   .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
   .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
@@ -209,6 +227,9 @@
   --molsan-card-tint: #FBF4E8;
 }
 :where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .ctn-detalle-page,
+  .dashboard-cancelagest,
+  .dashboard-premium-page,
   .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
   .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
   .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
@@ -228,6 +249,9 @@
   --molsan-card-tint: #EAF7F8;
 }
 :where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .ctn-detalle-page,
+  .dashboard-cancelagest,
+  .dashboard-premium-page,
   .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
   .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
   .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
@@ -254,6 +278,9 @@
 
 /* Hover compartido: misma elevación y profundidad que las tarjetas de Espacios de trabajo. */
 :where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .ctn-detalle-page,
+  .dashboard-cancelagest,
+  .dashboard-premium-page,
   .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
   .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
   .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
@@ -275,6 +302,9 @@
 
 /* Títulos dentro de tarjetas: encabezado integrado, no titular flotante. */
 :where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .ctn-detalle-page,
+  .dashboard-cancelagest,
+  .dashboard-premium-page,
   .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
   .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
   .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
@@ -301,6 +331,9 @@
   letter-spacing: -.025em;
 }
 :where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .ctn-detalle-page,
+  .dashboard-cancelagest,
+  .dashboard-premium-page,
   .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
   .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
   .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
@@ -326,6 +359,9 @@
 
 /* Cabeceras de sección que ya forman parte de un panel. */
 :where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .ctn-detalle-page,
+  .dashboard-cancelagest,
+  .dashboard-premium-page,
   .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
   .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
   .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
@@ -349,6 +385,9 @@
 
 /* Cabeceras internas de panel: un mismo azul hielo y borde corporativo. */
 :where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .ctn-detalle-page,
+  .dashboard-cancelagest,
+  .dashboard-premium-page,
   .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
   .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
   .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
@@ -376,6 +415,9 @@
 
 /* Tablas integradas en paneles con cabecera azul hielo. */
 :where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .ctn-detalle-page,
+  .dashboard-cancelagest,
+  .dashboard-premium-page,
   .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
   .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
   .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
@@ -396,6 +438,9 @@
   border-color: var(--molsan-premium-border);
 }
 :where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .ctn-detalle-page,
+  .dashboard-cancelagest,
+  .dashboard-premium-page,
   .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
   .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
   .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
@@ -417,6 +462,9 @@
 /* Evita efectos de elevación sobre pantallas táctiles y respeta accesibilidad. */
 @media (hover: hover) and (pointer: fine) {
   :where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .ctn-detalle-page,
+  .dashboard-cancelagest,
+  .dashboard-premium-page,
   .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
   .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
   .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
@@ -436,6 +484,9 @@
 }
 @media (prefers-reduced-motion: reduce) {
   :where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .ctn-detalle-page,
+  .dashboard-cancelagest,
+  .dashboard-premium-page,
   .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
   .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
   .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
@@ -450,6 +501,9 @@
 }
 @media (max-width: 760px) {
   :where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+  .ctn-detalle-page,
+  .dashboard-cancelagest,
+  .dashboard-premium-page,
   .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
   .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
   .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
