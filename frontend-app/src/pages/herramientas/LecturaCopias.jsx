@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import "../../css/ModalesHerramientasPremium.css";
@@ -116,7 +117,7 @@ export default function LecturaCopias() {
             </thead>
             <tbody>
               {filas.length === 0 ? (
-                <tr><td colSpan={5} className="px-5 py-14 text-center"><div className="text-3xl">📄</div><p className="mt-2 font-bold text-slate-700">{procesando ? "Preparando resultados de ejemplo…" : "Todavía no hay resultados"}</p><p className="mt-1 text-xs text-slate-500">Selecciona una fecha y pulsa «Procesar» para ver la maqueta.</p></td></tr>
+                <tr><td colSpan={5} className="px-5 py-14 text-center"><div className="text-3xl"><MolsanIcon name="file" size={20} /></div><p className="mt-2 font-bold text-slate-700">{procesando ? "Preparando resultados de ejemplo…" : "Todavía no hay resultados"}</p><p className="mt-1 text-xs text-slate-500">Selecciona una fecha y pulsa «Procesar» para ver la maqueta.</p></td></tr>
               ) : filas.map((fila, index) => (
                 <tr key={fila.expediente} className="border-b border-slate-100 align-top last:border-0 hover:bg-slate-50/70">
                   <td className="whitespace-nowrap px-4 py-4 font-extrabold text-blue-700">{fila.expediente}</td>
