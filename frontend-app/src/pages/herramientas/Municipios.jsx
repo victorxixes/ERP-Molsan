@@ -1,4 +1,5 @@
 import MolsanButton from "../../components/ui/MolsanButton";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useSearchParams } from "react-router-dom";
 import { sortRows } from "../../utils/sortRows";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
@@ -1501,7 +1502,7 @@ export default function Municipios() {
                 shadow-sm
               "
             >
-              🏘️
+              <MolsanIcon name="building" size={42} />
             </div>
 
 
@@ -1548,7 +1549,7 @@ export default function Municipios() {
               title="Cargar códigos postales desde datos abiertos derivados del INE"
               className="inline-flex items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-4 py-2.5 text-sm font-semibold text-violet-700 shadow-sm transition-all hover:border-violet-300 hover:bg-violet-100 disabled:cursor-wait disabled:opacity-60"
             >
-              <span className="text-lg">{importandoCodigosNacionales ? "⏳" : "📮"}</span>
+              <span className="text-lg">{importandoCodigosNacionales ? "<MolsanIcon name="clock" size={18} />" : "<MolsanIcon name="mail" size={18} />"}</span>
               {importandoCodigosNacionales ? "Cargando códigos…" : "Cargar códigos postales de España"}
             </button>
 
@@ -1701,7 +1702,7 @@ export default function Municipios() {
                   text-slate-400
                 "
               >
-                🔎
+                <MolsanIcon name="search" size={20} />
               </span>
 
 
@@ -2053,7 +2054,7 @@ export default function Municipios() {
                 text-2xl
               "
             >
-              🔎
+              <MolsanIcon name="search" size={20} />
             </div>
 
 
@@ -2393,7 +2394,7 @@ function ModalImportarExcel({
                   border-emerald-100
                 "
               >
-                📊
+                <MolsanIcon name="chart" size={20} />
               </div>
 
 
@@ -2601,7 +2602,7 @@ function ModalImportarExcel({
                   shadow-sm
                 "
               >
-                📁
+                <MolsanIcon name="folder" size={20} />
               </div>
 
 
@@ -2675,7 +2676,7 @@ function ModalImportarExcel({
                     shadow-sm
                   "
                 >
-                  📄
+                  <MolsanIcon name="file" size={20} />
                 </div>
 
 
