@@ -16,19 +16,22 @@ export default function MolsanDataTable({
   onSortChange,
   className = "",
   minWidth,
+  initialSort = null,
 }) {
-  const [sort, setSort] = useState({ key: null, direction: "asc" });
+  const [sort, setSort] = useState(() => initialSort || { key: null, direction: "asc" });
+  const sortKeyOf = (column) => column.sortKey ?? column.key;
 
   const orderedRows = useMemo(() => {
     if (sortMode !== "local" || !sort.key) return rows;
-    const column = columns.find((item) => item.key === sort.key);
+    const column = columns.find((item) => sortKeyOf(item) === sort.key);
     return column ? sortRows(rows, column, sort.direction) : rows;
   }, [rows, columns, sort, sortMode]);
 
   const ordenar = (column) => {
     if (column.sortable === false) return;
-    const direction = sort.key === column.key && sort.direction === "asc" ? "desc" : "asc";
-    const next = { key: column.key, direction };
+    const sortKey = sortKeyOf(column);
+    const direction = sort.key === sortKey && sort.direction === "asc" ? "desc" : "asc";
+    const next = { key: sortKey, direction };
     setSort(next);
     if (sortMode === "server") onSortChange?.(next, column);
   };
@@ -39,7 +42,7 @@ export default function MolsanDataTable({
         <thead>
           <tr>
             {columns.map((column) => {
-              const active = sort.key === column.key;
+              const active = sort.key === sortKeyOf(column);
               const sortable = column.sortable !== false;
               return (
                 <th key={column.key} scope="col" aria-sort={active ? (sort.direction === "asc" ? "ascending" : "descending") : "none"} className={column.align === "right" ? "text-right" : column.align === "center" ? "text-center" : ""}>
