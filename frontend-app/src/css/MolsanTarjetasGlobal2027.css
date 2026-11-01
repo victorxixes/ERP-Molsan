@@ -5,13 +5,14 @@
    ============================================================ */
 
 :root {
-  --molsan-premium-blue: #064675;
-  --molsan-premium-ice: #F2F7FB;
-  --molsan-premium-table: #EAF2F8;
-  --molsan-premium-border: #D8E4EC;
-  --molsan-premium-muted: #617789;
-  --molsan-premium-shadow: 0 8px 24px rgba(6, 50, 82, .065);
-  --molsan-premium-shadow-hover: 0 17px 36px rgba(6, 50, 82, .12);
+  /* Alias de compatibilidad: los valores viven en molsan-tokens.css. */
+  --molsan-premium-blue: var(--molsan-primary, #064675);
+  --molsan-premium-ice: var(--molsan-surface-soft, #F2F7FB);
+  --molsan-premium-table: var(--molsan-table-head, #EAF2F8);
+  --molsan-premium-border: var(--molsan-border, #D8E4EC);
+  --molsan-premium-muted: var(--molsan-text-secondary, #617789);
+  --molsan-premium-shadow: var(--molsan-shadow-card, 0 8px 24px rgba(6, 50, 82, .065));
+  --molsan-premium-shadow-hover: var(--molsan-shadow-hover, 0 17px 36px rgba(6, 50, 82, .12));
 }
 
 /* Ámbitos: ERP principal y portales independientes. */
