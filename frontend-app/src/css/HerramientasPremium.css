@@ -88,10 +88,10 @@
   box-shadow: var(--molsan-shadow-card);
 }
 :is(.catalogos-premium-page, .utilidades-premium-page) > header .w-12.h-12 {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  font-size: 18px;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  font-size: 15px;
 }
 :is(.catalogos-premium-page, .utilidades-premium-page) > header h1 {
   font-size: 20px;
