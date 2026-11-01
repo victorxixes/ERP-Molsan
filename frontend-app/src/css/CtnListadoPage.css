@@ -29,60 +29,6 @@
   box-sizing: border-box;
 }
 
-.ctn-listado-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 18px;
-  padding: 12px 16px;
-  color: var(--molsan-text);
-  background: var(--molsan-surface);
-  border: 1px solid var(--molsan-border);
-  border-radius: 16px;
-  box-shadow: var(--molsan-shadow-card);
-}
-
-.ctn-listado-header-icon {
-  width: 40px;
-  height: 40px;
-  flex: 0 0 40px;
-  font-size: 15px;
-}
-
-.ctn-listado-header h1 {
-  margin: 0 0 3px;
-  color: var(--molsan-text);
-  font-size: 20px;
-  line-height: 1.2;
-  font-weight: 750;
-  letter-spacing: -.02em;
-}
-
-.ctn-listado-header p {
-  margin: 4px 0 0;
-  color: var(--molsan-text-secondary);
-  font-size: 12px;
-  line-height: 1.45;
-}
-
-.ctn-listado-header .ctn-listado-header-eyebrow {
-  margin: 0 0 3px;
-  color: var(--molsan-text-muted);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: .12em;
-  line-height: 1.4;
-}
-
-.ctn-listado-header-acciones {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 9px;
-}
-
 /* =========================================================
    BOTONES
    ========================================================= */
@@ -927,29 +873,6 @@
     padding: 14px;
   }
 
-  .ctn-listado-header {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 10px;
-    padding: 12px;
-    margin-bottom: 14px;
-  }
-
-  .ctn-listado-header-icon {
-    width: 36px;
-    height: 36px;
-    flex-basis: 36px;
-  }
-
-  .ctn-listado-header h1 {
-    font-size: 20px;
-  }
-
-  .ctn-listado-header-acciones {
-    justify-content: flex-start;
-    width: 100%;
-  }
-
   .ctn-filtros {
     padding: 13px;
   }
@@ -1464,11 +1387,6 @@
   background: var(--molsan-page-bg, #FFFFFF);
 }
 
-.ctn-listado-header h1 {
-  color: var(--molsan-text, #173247);
-  letter-spacing: -0.6px;
-}
-
 .ctn-filtros,
 .ctn-tabla-contenedor {
   border-color: var(--molsan-border, #D8E4EC);
@@ -1532,18 +1450,6 @@
 }
 
 @media (max-width: 760px) {
-  
-
-  .ctn-listado-header {
-    align-items: stretch;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .ctn-listado-header-acciones {
-    justify-content: flex-start;
-  }
-
   .ctn-filtros-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
