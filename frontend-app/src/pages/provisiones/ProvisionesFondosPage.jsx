@@ -908,6 +908,9 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
       <div className="mb-4 flex flex-col gap-3 sm:flex-row"><input className={`${input} mt-0 flex-1`} value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar por número, cliente, DNI/CIF o población…" /><button type="button" onClick={cargar} className={`${boton} border border-slate-300 text-slate-700 hover:bg-slate-50`}>Actualizar</button></div>
       {cargando ? <p role="status" aria-live="polite" className="py-8 text-center text-sm text-slate-500">Cargando histórico…</p> : filtrados.length === 0 ? <p className="py-8 text-center text-sm text-slate-500">Todavía no hay provisiones guardadas que coincidan con la búsqueda.</p> : <MolsanDataTable
         rows={filtrados}
+          pagination
+          pageSize={25}
+
         rowKey="id"
         minWidth="950px"
         initialSort={{ key: "fecha", direction: "desc" }}
