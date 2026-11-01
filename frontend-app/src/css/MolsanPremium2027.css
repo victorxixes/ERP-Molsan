@@ -964,7 +964,7 @@
    Se unifica la superficie; cada módulo conserva su layout,
    padding interno, contenido, estados y comportamiento funcional.
    ============================================================ */
-:where(
+:is(
   .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
   .apoderagest, .notargest, .encargagest, .ctn-listado-page,
   .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
@@ -978,13 +978,13 @@
   .cg-section, .cg-module-card, .ag-panel, .ag-kpi, .ag-card,
   .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel,
   .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
-  .ctn-panel, .ctn-modal-seccion, .ctn-detalle-panel,
+  .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-modal-resumen-firmas > div, .accesos-notariales-resumen-card, .ctn-detalle-panel,
   .ctn-detalle-info-card, .ctn-detalle-stat, .expedientes-panel,
   .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
   .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
   .panel-card, .ficha-panel, .ficha-seccion, .form-section,
   .section-card, .stat-card, .kpi-card, .agenda-upcoming-card,
-  .logs-panel, .maestros-panel, [data-panel="true"], [data-cg-panel="true"]
+  .logs-panel, .maestros-panel, .molsan-intranet-page > section, .molsan-intranet-page article, .notificaciones-premium-page article, .notificaciones-premium-page [role="article"], .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .panel-tecnico-submodulo-premium article, .empleado-ficha-premium > section, .seguridad-premium-page > section, .seguridad-acceso, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, .ctn-portal-card, .ctn-portal-field-card, [data-panel="true"], [data-cg-panel="true"]
 ) {
   --molsan-card-accent: var(--molsan-primary, #064675);
   min-width: 0;
@@ -1005,7 +1005,7 @@
     background-color .2s ease;
   animation: molsan-premium-card-enter .42s both;
 }
-:where(
+:is(
   .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
   .apoderagest, .notargest, .encargagest, .ctn-listado-page,
   .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
@@ -1019,18 +1019,18 @@
   .cg-section, .cg-module-card, .ag-panel, .ag-kpi, .ag-card,
   .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel,
   .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
-  .ctn-panel, .ctn-modal-seccion, .ctn-detalle-panel,
+  .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-modal-resumen-firmas > div, .accesos-notariales-resumen-card, .ctn-detalle-panel,
   .ctn-detalle-info-card, .ctn-detalle-stat, .expedientes-panel,
   .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
   .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
   .panel-card, .ficha-panel, .ficha-seccion, .form-section,
   .section-card, .stat-card, .kpi-card, .agenda-upcoming-card,
-  .logs-panel, .maestros-panel, [data-panel="true"], [data-cg-panel="true"]
+  .logs-panel, .maestros-panel, .molsan-intranet-page > section, .molsan-intranet-page article, .notificaciones-premium-page article, .notificaciones-premium-page [role="article"], .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .panel-tecnico-submodulo-premium article, .empleado-ficha-premium > section, .seguridad-premium-page > section, .seguridad-acceso, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, .ctn-portal-card, .ctn-portal-field-card, [data-panel="true"], [data-cg-panel="true"]
 ):hover {
   border-color: #B8D2E1;
   box-shadow: 0 19px 38px rgba(6, 50, 82, .13);
 }
-:where(
+:is(
   .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
   .apoderagest, .notargest, .encargagest, .ctn-listado-page,
   .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
@@ -1048,7 +1048,7 @@
   to { opacity: 1; transform: translateY(0); }
 }
 @media (prefers-reduced-motion: reduce) {
-  :where(.erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
+  :is(.erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
     .apoderagest, .notargest, .encargagest, .ctn-listado-page,
     .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
     .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
@@ -1059,7 +1059,7 @@
       .cg-section, .cg-module-card, .ag-panel, .ag-kpi, .ag-card,
       .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel,
       .eg-kpi, .eg-card, .eg-directorio-card, .ctn-panel,
-      .ctn-modal-seccion, .expedientes-panel, .expediente-card,
+      .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-modal-resumen-firmas > div, .accesos-notariales-resumen-card, .expedientes-panel, .expediente-card,
       .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
       .panel-card, .ficha-panel, .ficha-seccion, .form-section,
       .section-card, .stat-card, .kpi-card, .agenda-upcoming-card,
