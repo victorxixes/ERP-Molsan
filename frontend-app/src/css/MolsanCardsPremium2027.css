@@ -323,3 +323,19 @@
   .catalogos-premium-page .molsan-page-header { min-height:0; padding:16px; border-radius:18px; }
   .catalogos-premium-page .molsan-page-header__actions { width:100%; }
 }
+
+/* Retirar los marcos heredados que envolvían una segunda cabecera dentro.
+   La cabecera canónica pasa a ser la única superficie visual de título. */
+.catalogos-premium-page > div:has(.molsan-page-header),
+.catalogos-premium-page > section:has(.molsan-page-header) {
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  padding:0!important;
+  overflow:visible!important;
+}
+.catalogos-premium-page > div:has(.molsan-page-header) > .absolute,
+.catalogos-premium-page > section:has(.molsan-page-header) > .absolute { display:none!important; }
