@@ -2580,13 +2580,9 @@ body {
   .notargest .ng-panel, .notargest .ng-contador, .notargest .ng-acceso,
   .apoderagest .ag-panel, .apoderagest .ag-card,
   .encargagest .eg-kpi, .encargagest .eg-directorio-card,
-  .ctn-listado-page .ctn-panel, .ctn-detalle-header,
-  .expedientes-page__header, .expedientes-page .expediente-card,
-  .provisiones-fondos-page > header, .provisiones-fondos-page .pf-card,
+  .ctn-listado-page .ctn-panel, .expedientes-page .expediente-card,
+  .provisiones-fondos-page .pf-card,
   .dashboard-cancelagest .ag-card, .cg-page .cg-card,
-  .catalogos-premium-page > header, .utilidades-premium-page > header,
-  .seguridad-subpagina-premium .erp-page-header,
-  .seguridad-usuarios-premium .erp-page-header,
   .molsan-intranet-page article
 ) {
   color: var(--molsan-text, #173247);
@@ -2599,13 +2595,9 @@ body {
 }
 :where(
   .notargest .ng-panel-titulo, .apoderagest .ag-panel-header,
-  .encargagest .eg-card-header, .ctn-listado-header,
-  .ctn-detalle-header, .expedientes-page__header,
-  .catalogos-premium-page > header, .utilidades-premium-page > header,
-  .seguridad-subpagina-premium .erp-page-header,
-  .seguridad-usuarios-premium .erp-page-header
+  .encargagest .eg-card-header, .encargagest .eg-panel-head
 ) {
-  background: var(--molsan-surface, #fff);
+  background: var(--molsan-surface-soft, #F2F7FB);
   border-color: var(--molsan-border, #D8E4EC);
   box-shadow: none;
 }
