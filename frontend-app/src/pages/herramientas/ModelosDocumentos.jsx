@@ -4,6 +4,7 @@ import axios from "../../api/axios";
 import { Link } from "react-router-dom";
 import HonorariosGestoria from "./HonorariosGestoria";
 import ProvisionesFondosPage, { DocumentoLayoutDesigner } from "../provisiones/ProvisionesFondosPage";
+import { formatEuro as euros } from "../../utils/formatters";
 
 const documentos = [
   { id: "liquidacion", titulo: "Hoja de liquidación", subtitulo: "Cierre del expediente", estado: "Editor visual ampliado", color: "emerald", descripcion: "PDF oficial conservado tal como está confeccionado. Se añade un editor visual independiente para ajustar la distribución sin alterar el documento emitido. La hoja oficial se genera desde Liquidar expediente con los datos disponibles del expediente y Gestión económica; se previsualiza y solo se guarda cuando se acepta.", campos: ["Titular y NIF", "Número de expediente", "Contrato y oficina CaixaBank", "Datos de la gestoría", "Documentos realizados e importes", "Provisión de fondos", "Movimientos de Gestión económica", "Documentación entregada", "Lugar, fecha y conformidad"] },
@@ -29,7 +30,7 @@ function LiquidacionPreview({ datosMolsan, logoCliente, expediente, gastos = [],
   const importeProvision = Number(get("importe", "importe_provision") || 0);
   const totalPagado = gastos.filter(g => ["pagado", "pagada", "abonado", "abonada", "realizado", "efectuado", "efectuada", "paid"].includes(String(g.estado_pago || "").toLowerCase())).reduce((sum, g) => sum + Number(g.importe_resultante ?? g.importe ?? g.importe_total_bruto ?? 0), 0);
   const totalGastos = gastos.reduce((sum, g) => sum + Number(g.importe_resultante ?? g.importe ?? g.importe_total_bruto ?? 0), 0);
-  const euros = n => Number(n || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
+
   return <div className="mx-auto w-full max-w-[760px] bg-slate-100 p-3 sm:p-5">
     <article className="relative overflow-hidden bg-white p-4 text-slate-800 shadow-[0_12px_35px_rgba(15,23,42,.12)] sm:p-6">
       <div className="pointer-events-none absolute right-0 top-0 h-32 w-32 rounded-bl-full bg-sky-50/80" />
