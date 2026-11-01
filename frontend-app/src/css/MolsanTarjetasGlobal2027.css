@@ -574,3 +574,19 @@
   font-weight: 850;
   letter-spacing: -.03em;
 }
+
+/* Compatibilidad de iconos heredados dentro de cabeceras canónicas. */
+.molsan-page-header :is(.w-12.h-12, .w-11.h-11) {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+}
+@media (max-width: 760px) {
+  .molsan-page-header :is(.w-12.h-12, .w-11.h-11) {
+    flex-basis: 36px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+}
