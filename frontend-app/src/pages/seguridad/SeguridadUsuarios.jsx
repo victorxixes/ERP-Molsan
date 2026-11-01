@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSeguridad } from "../../hooks/useSeguridad";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import EmpleadosListado from "../empleados/EmpleadosListado";
 import { API_BASE } from "../../api/config";
 import { editarEmpleado } from "../../api/empleados";
@@ -532,7 +533,7 @@ export default function SeguridadUsuarios() {
                 <div className="erp-empty-state">
 
                   <div className="erp-empty-state-icon">
-                    🔐
+                    <MolsanIcon name="lock" size={24} />
                   </div>
 
                   <div>
@@ -843,7 +844,7 @@ export default function SeguridadUsuarios() {
                 <div className="erp-empty-state">
 
                   <div className="erp-empty-state-icon">
-                    🛡️
+                    <MolsanIcon name="shield" size={24} />
                   </div>
 
                   <div>
