@@ -164,18 +164,20 @@ export default function CatalogoAbsis() {
   }
 
   return (
-    <main className="molsan-page-stack min-h-full">
+    <main className="molsan-page-stack catalogos-premium-page min-h-full animate-fadeIn">
       <header className="molsan-page-header">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · DATOS ABSIS</p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">Catálogo ABSIS</h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Gestiona en una única pantalla los estados y listas auxiliares que utiliza la integración ABSIS. Cada lista se mantiene por separado y sus cambios quedan guardados en el servidor.</p>
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true">▦</div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · DATOS ABSIS</p>
+            <h1 className="molsan-page-header__title">Catálogo ABSIS</h1>
+            <p className="molsan-page-header__description">Gestiona en una única pantalla los estados y listas auxiliares que utiliza la integración ABSIS. Cada lista se mantiene por separado y sus cambios quedan guardados en el servidor.</p>
           </div>
-          <div className="rounded-2xl border border-indigo-100 bg-indigo-50 px-5 py-4">
-            <p className="text-3xl font-bold text-slate-900">{filas.filter((f) => f.activo).length}</p>
-            <p className="text-xs font-medium text-slate-500">entradas activas</p>
+        </div>
+        <div className="molsan-page-header__actions">
+          <div className="rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-right">
+            <p className="text-2xl font-bold text-white">{filas.filter((f) => f.activo).length}</p>
+            <p className="text-xs font-medium text-blue-100">entradas activas</p>
           </div>
         </div>
       </header>
