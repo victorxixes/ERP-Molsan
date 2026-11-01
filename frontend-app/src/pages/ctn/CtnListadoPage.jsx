@@ -192,10 +192,11 @@ export default function CtnListadoPage() {
   };
 
   const ordenarPor = (campo) => {
-    setOrden((actual) => ({
-      campo,
-      direccion: actual.campo === campo && actual.direccion === "asc" ? "desc" : "asc",
-    }));
+    setOrden((actual) => {
+      if (actual.campo !== campo) return { campo, direccion: "asc" };
+      if (actual.direccion === "asc") return { campo, direccion: "desc" };
+      return { campo: "apellidos", direccion: "asc" };
+    });
     setPagina(1);
   };
 
