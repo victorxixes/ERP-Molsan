@@ -1931,6 +1931,7 @@ export default function OficinasLiquidadoras() {
             rowKey="id"
             minWidth="1250px"
             sortMode="server"
+              initialSort={{ key: "oficina_liquidadora", direction: "asc" }}
             onSortChange={cambiarOrdenTabla}
             columns={[
               { key: "oficina_liquidadora", header: "Oficina Liquidadora", accessor: "oficina_liquidadora", sortType: "text" },
