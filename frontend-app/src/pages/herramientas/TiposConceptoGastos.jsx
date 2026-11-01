@@ -708,8 +708,8 @@ export default function TiposConceptoGastos() {
 
         <header className="molsan-page-header catalogos-subpage-header mb-6">
 
-          <div className="molsan-page-header__identity catalogos-subpage-header__identity">
-
+          <div className="catalogos-subpage-header__identity-wrap">
+            <div className="molsan-page-header__identity catalogos-subpage-header__identity">
               <div
                 className="
                   flex
