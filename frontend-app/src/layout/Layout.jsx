@@ -39,7 +39,7 @@ export default function Layout() {
     const contenedor = document.querySelector(".erp-main-inner");
     if (!contenedor) return undefined;
     const localizarCabecera = () => {
-      const encontrada = contenedor.querySelector(".molsan-page-header");
+      const encontrada = contenedor.querySelector(".molsan-page-header:not(.molsan-page-back-fallback)");
       setCabeceraSubpagina(encontrada || null);
     };
     localizarCabecera();
@@ -68,6 +68,11 @@ export default function Layout() {
         <div className="erp-main-inner w-full px-4 py-6 lg:px-6">
           <div className={`w-full${rutaCancelaGest ? " cg-unified-workspace" : ""}`}>
             <Outlet />
+      {esSubpagina && !cabeceraSubpagina ? (
+        <header className="molsan-page-header molsan-page-back-fallback">
+          <button type="button" className="molsan-page-back-button" onClick={volverSubpagina} aria-label="Volver a la página anterior"><span aria-hidden="true">←</span> Volver</button>
+        </header>
+      ) : null}
       {cabeceraSubpagina ? createPortal(
         <button type="button" className="molsan-page-back-button" onClick={volverSubpagina} aria-label="Volver a la página anterior">
           <span aria-hidden="true">←</span> Volver
