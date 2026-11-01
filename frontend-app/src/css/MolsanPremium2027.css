@@ -1435,3 +1435,38 @@ button:not(.molsan-table-sort):focus-visible {
 .molsan-icon-3d--indigo { color:#3e5f9f; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#eef2fa 48%,#d5dff1 100%); border-color:#d4ddf0; }
 .molsan-icon-3d--slate { color:#536b7b; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#f2f7fb 48%,#dce7ee 100%); border-color:#d8e4ec; }
 .molsan-icon-3d svg { width:58%; height:58%; stroke:currentColor; stroke-width:1.85; }
+
+
+/* Pictogramas de la navegación principal: relieve compacto y contraste por estado. */
+.molsan-nav-icon-3d {
+  display: inline-grid;
+  width: 27px;
+  height: 27px;
+  flex: 0 0 27px;
+  place-items: center;
+  color: #064675;
+  border: 1px solid #d8e4ec;
+  border-radius: 9px;
+  background: radial-gradient(circle at 28% 18%, #fff 0 12%, #f2f7fb 58%, #e3edf4 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.98), 0 2px 5px rgba(6,50,82,.09);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.molsan-nav-icon-3d svg {
+  width: 16px;
+  height: 16px;
+  filter: drop-shadow(0 1px 1px rgba(6,70,117,.2));
+}
+a:hover .molsan-nav-icon-3d {
+  transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.98), 0 4px 8px rgba(6,50,82,.13);
+}
+a[aria-current="page"] .molsan-nav-icon-3d {
+  color: #ffffff;
+  border-color: rgba(255,255,255,.38);
+  background: linear-gradient(145deg, rgba(255,255,255,.22), rgba(255,255,255,.08));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.26), 0 2px 5px rgba(0,0,0,.12);
+}
+@media (prefers-reduced-motion: reduce) {
+  .molsan-nav-icon-3d { transition: none; }
+  a:hover .molsan-nav-icon-3d { transform: none; }
+}
