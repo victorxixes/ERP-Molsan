@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuthStore } from "../../store/authStore";
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { API_BASE } from "../../api/config";
 
 const API_URL = `${API_BASE}/catalogos-absis`;
