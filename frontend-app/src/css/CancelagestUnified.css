@@ -334,3 +334,18 @@ select, textarea) {
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
 }
+
+
+/* Acción de retorno común para cabeceras de subpáginas del ERP. */
+.molsan-page-back-button {
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  flex:0 0 auto;min-height:38px;margin-left:auto;padding:8px 13px;
+  border:1px solid #D8E4EC;border-radius:11px;background:#FFFFFF;
+  color:#064675;font-size:12px;font-weight:750;white-space:nowrap;
+  box-shadow:0 3px 10px rgba(6,50,82,.045);
+  transition:background .16s ease,border-color .16s ease,transform .16s ease;
+}
+.molsan-page-back-button:hover { background:#F2F7FB;border-color:#AFC9DA;transform:translateX(-2px); }
+.molsan-page-back-button:focus-visible { outline:2px solid #064675;outline-offset:2px; }
+.molsan-page-back-button span { font-size:17px;line-height:1; }
+@media(max-width:640px){.molsan-page-back-button{min-height:34px;padding:6px 10px;font-size:11px}}
