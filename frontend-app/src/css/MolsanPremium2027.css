@@ -1233,3 +1233,40 @@
 .molsan-page-stack > .molsan-page-header {
   margin-bottom: 0;
 }
+
+
+/* Base de botones corporativa: conserva variantes de color y tamaños funcionales. */
+:is(.erp-main-content, .apoderagest, .notargest, .encargagest, .cg-page) :is(
+  .molsan-btn, .ctn-btn, .agenda-open-cita, .agenda-today-action,
+  .eg-secondary, .eg-button-primary, .ag-boton-actualizar,
+  .ng-login-submit, .cg-button-primary, .erp-btn
+) {
+  font-family: var(--molsan-font-family, Inter, "Segoe UI", sans-serif);
+  font-weight: 700;
+  border-radius: 11px;
+  transition:
+    color .18s ease,
+    background-color .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease,
+    transform .18s ease;
+}
+:is(.erp-main-content, .apoderagest, .notargest, .encargagest, .cg-page) :is(
+  .molsan-btn, .ctn-btn, .agenda-open-cita, .agenda-today-action,
+  .eg-secondary, .eg-button-primary, .ag-boton-actualizar,
+  .ng-login-submit, .cg-button-primary, .erp-btn
+):focus-visible {
+  outline: 3px solid rgba(6, 70, 117, .22);
+  outline-offset: 2px;
+}
+.informes-premium-page button:not([class*="rounded-full"]) {
+  font-family: var(--molsan-font-family, Inter, "Segoe UI", sans-serif);
+  font-weight: 700;
+  border-radius: 11px;
+  transition:
+    color .18s ease,
+    background-color .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease,
+    transform .18s ease;
+}
