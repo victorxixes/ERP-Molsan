@@ -289,3 +289,61 @@ body {
   .workspace-hero h1 { font-size:30px; }
   .workspace-app-card { min-height:232px;padding:20px; }
 }
+
+
+/* Ajuste solicitado tras revisión visual del Preview · 01/11/2026 */
+/* Espacios de trabajo: misma información, cabecera más compacta. */
+.selector-modulos-premium.workspace-premium .workspace-hero {
+  min-height: 0;
+  padding: 24px clamp(24px, 3vw, 36px);
+  border-radius: 22px;
+}
+.selector-modulos-premium.workspace-premium .workspace-hero h1 {
+  font-size: clamp(28px, 2.6vw, 34px);
+  line-height: 1.14;
+}
+.selector-modulos-premium.workspace-premium .workspace-brand-mark {
+  width: 54px;
+  height: 54px;
+}
+.selector-modulos-premium.workspace-premium .workspace-hero-content {
+  gap: 8px;
+}
+.selector-modulos-premium.workspace-premium .workspace-welcome {
+  margin-top: 2px;
+  line-height: 1.55;
+}
+.selector-modulos-premium.workspace-premium .workspace-hero-meta {
+  margin-top: 10px;
+}
+.selector-modulos-premium.workspace-premium .workspace-hero-actions {
+  gap: 10px;
+}
+@media (max-width: 720px) {
+  .selector-modulos-premium.workspace-premium .workspace-hero {
+    padding: 20px;
+  }
+}
+
+/* Dashboard: cabecera algo más contenida y sin fecha ni acciones superiores. */
+.dashboard-cancelagest .dashboard-header {
+  padding: 18px 26px !important;
+  margin-bottom: 22px !important;
+  border-radius: 19px;
+}
+.dashboard-cancelagest .dashboard-header .ag-marca {
+  width: 58px;
+  height: 58px;
+  flex-basis: 58px;
+  border-radius: 15px;
+  font-size: 19px;
+}
+.dashboard-cancelagest .dashboard-header .ag-hero h1 {
+  margin: 4px 0 !important;
+  font-size: clamp(26px, 2.4vw, 32px) !important;
+}
+@media (max-width: 760px) {
+  .dashboard-cancelagest .dashboard-header {
+    padding: 18px !important;
+  }
+}
