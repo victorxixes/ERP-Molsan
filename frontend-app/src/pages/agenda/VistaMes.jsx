@@ -107,7 +107,18 @@ export default function VistaMes({
   const hoyStr = new Date().toLocaleDateString("sv-SE");
 
   return (
-    <div className="agenda-vista-premium agenda-vista-mes-premium text-xs text-[var(--erp-text)] animate-fade-in">
+    <>
+      <header className="molsan-page-header agenda-vista-page-header">
+        <div className="molsan-page-header__identity">
+          <span className="molsan-page-header__mark" aria-hidden="true">AG</span>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · APODERAGEST</p>
+            <h1 className="molsan-page-header__title">Agenda · Vista mensual</h1>
+            <p className="molsan-page-header__description">Consulta la actividad mensual y la distribución de citas.</p>
+          </div>
+        </div>
+      </header>
+<div className="agenda-vista-premium agenda-vista-mes-premium text-xs text-[var(--erp-text)] animate-fade-in">
 
       {/* CABECERA DÍAS */}
 
@@ -310,5 +321,6 @@ export default function VistaMes({
 
       </div>
     </div>
+    </>
   );
 }
