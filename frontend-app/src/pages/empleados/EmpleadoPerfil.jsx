@@ -729,7 +729,9 @@ export default function EmpleadoPerfil({
           CABECERA
       ====================================================== */}
 
-      <section className="
+      <header className="
+        molsan-page-header
+        empleado-perfil-page-header
         erp-card
         p-6
       ">
@@ -925,7 +927,7 @@ export default function EmpleadoPerfil({
 
         </div>
 
-      </section>
+      </header>
 
 
       {/* ======================================================
