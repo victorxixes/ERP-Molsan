@@ -205,6 +205,7 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
     <div className="mt-5">
       <MolsanDataTable
         rows={marcajes}
+          searchable
           pagination
           pageSize={25}
 
