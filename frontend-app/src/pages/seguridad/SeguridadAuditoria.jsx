@@ -1488,15 +1488,7 @@ export default function SeguridadAuditoria() {
               <p className="molsan-page-header__eyebrow">MOLSAN ERP · SEGURIDAD</p>
               <h1 className="molsan-page-header__title">Auditoría</h1>
 
-              <p
-                className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                  mt-1
-                "
-              >
-                Registro de actividad y operaciones de seguridad del ERP
-              </p>
+              <p className="molsan-page-header__description">Registro de actividad y operaciones de seguridad del ERP</p>
 
             </div>
 
