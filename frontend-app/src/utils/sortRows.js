@@ -51,7 +51,12 @@ export function sortRows(rows, column, direction = "asc") {
     ? column.accessor
     : (row) => row?.[column.accessor ?? column.key];
   const multiplier = direction === "desc" ? -1 : 1;
-  return [...rows].sort((left, right) =>
-    compareValues(getValue(left), getValue(right), column.sortType || "text") * multiplier
-  );
+  return [...rows].sort((left, right) => {
+    const a = getValue(left);
+    const b = getValue(right);
+    const emptyA = a === null || a === undefined || a === "";
+    const emptyB = b === null || b === undefined || b === "";
+    if (emptyA || emptyB) return emptyA === emptyB ? 0 : emptyA ? 1 : -1;
+    return compareValues(a, b, column.sortType || "text") * multiplier;
+  });
 }
