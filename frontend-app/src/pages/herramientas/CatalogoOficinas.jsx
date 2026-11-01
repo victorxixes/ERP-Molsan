@@ -182,6 +182,7 @@ export default function CatalogoOficinas() {
             rowKey="id"
             minWidth="1200px"
             sortMode="server"
+              initialSort={{ key: "oficina", direction: "asc" }}
             onSortChange={cambiarOrden}
             emptyText="No hay oficinas que mostrar. Importa tu Excel para comenzar."
           />
