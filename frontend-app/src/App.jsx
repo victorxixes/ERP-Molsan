@@ -441,7 +441,7 @@ export default function App() {
             element={<Dashboard />}
           />
 
-          <Route path="cancelagest" element={<Cancelagest />} />
+          <Route path="cancelagest" element={<Navigate to="/dashboard" replace />} />
 
           {/* Fichaje Molsan: módulo de empleado y control administrativo. */}
           <Route path="fichajes" element={<Fichajes modo="empleado" />} />
