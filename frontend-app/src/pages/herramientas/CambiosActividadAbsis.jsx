@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import "../../css/ModalesHerramientasPremium.css";
@@ -67,7 +68,7 @@ export default function CambiosActividadAbsis() {
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link>
         <div className="mt-3 flex flex-wrap items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl">🔀</div>
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl"><MolsanIcon name="refresh" size={20} /></div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Cambios de actividad ABSIS</h1>
