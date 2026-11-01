@@ -1426,7 +1426,7 @@
   height: 62px;
   place-items: center;
   color: #fff;
-  background: linear-gradient(145deg, #4268c5, #274694);
+  background: linear-gradient(145deg, var(--molsan-primary), var(--molsan-primary-hover));
   border: 1px solid rgba(255, 255, 255, .7);
   border-radius: 16px;
   box-shadow: 0 8px 22px color-mix(in srgb, var(--molsan-primary) 2%, transparent);
@@ -1523,7 +1523,7 @@
   height: 62px;
   place-items: center;
   color: #fff;
-  background: linear-gradient(145deg, #4268c5, #274694);
+  background: linear-gradient(145deg, var(--molsan-primary), var(--molsan-primary-hover));
   border: 1px solid rgba(255, 255, 255, .7);
   border-radius: 16px;
   box-shadow: 0 8px 22px color-mix(in srgb, var(--molsan-primary) 2%, transparent);
