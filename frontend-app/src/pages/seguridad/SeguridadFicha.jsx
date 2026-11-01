@@ -6,6 +6,7 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 import MODULOS_ERP from "../../config/modulos";
 import { editarEmpleado } from "../../api/empleados";
@@ -173,7 +174,7 @@ function SeccionAcordeon({
               text-lg
             "
           >
-            {icono}
+            <MolsanIcon name={icono} size={34} />
           </div>
 
           <div className="min-w-0">
@@ -1820,8 +1821,8 @@ const permisosGlobales =
             {guardandoVisibilidad
               ? "Guardando…"
               : empleado.visible_en_listado === false
-                ? "👁️ Mostrar en Empleados"
-                : "🙈 Ocultar de Empleados"}
+                ? "Mostrar en Empleados"
+                : "Ocultar de Empleados"}
           </button>
 
           {empleado.activo ? (
@@ -2004,7 +2005,7 @@ const permisosGlobales =
               text-[var(--erp-text)]
             "
           >
-            🔐 Credenciales y acceso
+            Credenciales y acceso
           </h2>
 
           <p
