@@ -76,7 +76,6 @@ export default function CtnListadoPage() {
   const [accesosEncargaGest, setAccesosEncargaGest] = useState([]);
   const [errorEncargaGest, setErrorEncargaGest] = useState("");
 
-  const [orden, setOrden] = useState({ campo: "apellidos", direccion: "asc" });
   const filtrosIniciales = {
     q: "",
     provincia: "",
@@ -155,23 +154,6 @@ export default function CtnListadoPage() {
     return () => { activo = false; };
   }, []);
 
-  const filasOrdenadas = useMemo(() => {
-    const copia = [...items];
-    const obtener = (item, campo) => {
-      if (campo === "nombre_completo") return nombreNotario(item);
-      if (campo === "notario_asociado") return listaAsociados(item);
-      return item?.[campo] ?? "";
-    };
-    copia.sort((a, b) => {
-      const av = obtener(a, orden.campo);
-      const bv = obtener(b, orden.campo);
-      const comparacion = typeof av === "number" && typeof bv === "number"
-        ? av - bv
-        : String(av).localeCompare(String(bv), "es", { sensitivity: "base", numeric: true });
-      return orden.direccion === "asc" ? comparacion : -comparacion;
-    });
-    return copia;
-  }, [items, orden]);
 
   const cambiarFiltro = (campo, valor) => setFiltros((actual) => ({ ...actual, [campo]: valor }));
 
@@ -186,16 +168,6 @@ export default function CtnListadoPage() {
     setFiltros(vacios);
     setFiltrosAplicados(vacios);
     setPagina(1);
-  };
-
-  const ordenarPor = (campo) => setOrden((actual) => ({
-    campo,
-    direccion: actual.campo === campo && actual.direccion === "asc" ? "desc" : "asc",
-  }));
-
-  const indicadorOrden = (campo) => {
-    if (orden.campo !== campo) return "↕";
-    return orden.direccion === "asc" ? "↑" : "↓";
   };
 
   const cerrarFichaNotaria = async () => {
@@ -325,21 +297,21 @@ export default function CtnListadoPage() {
         <div className="ctn-tabla-scroll">
           <table className="ctn-tabla molsan-table">
             <thead><tr>
-              <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("id")}>ID {indicadorOrden("id")}</button></th>
-              <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("nombre_completo")}>Notario {indicadorOrden("nombre_completo")}</button></th>
-              <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("nif")}>NIF {indicadorOrden("nif")}</button></th>
-              <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("municipio")}>Municipio {indicadorOrden("municipio")}</button></th>
-              <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("provincia")}>Provincia {indicadorOrden("provincia")}</button></th>
+              <th>ID</th>
+              <th>Notario</th>
+              <th>NIF</th>
+              <th>Municipio</th>
+              <th>Provincia</th>
               <th>VC</th><th>Apoderado</th>
-              <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("notario_asociado")}>Notario asociado {indicadorOrden("notario_asociado")}</button></th>
+              <th>Notario asociado</th>
               <th>Acceso NotarGest</th><th>Acceso EncargaGest</th><th>Distancia</th><th>Acciones</th>
             </tr></thead>
             <tbody>
               {cargando && items.length === 0 ? (
                 <tr><td colSpan={12} className="ctn-tabla-vacio">Cargando notarios…</td></tr>
-              ) : filasOrdenadas.length === 0 ? (
+              ) : items.length === 0 ? (
                 <tr><td colSpan={12} className="ctn-tabla-vacio">No hay notarios que coincidan con los filtros.</td></tr>
-              ) : filasOrdenadas.map((item) => {
+              ) : items.map((item) => {
                 const vc = etiquetaVc(item.vc);
                 return (
                   <tr key={item.id}>
