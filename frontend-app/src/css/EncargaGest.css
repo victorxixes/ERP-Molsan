@@ -88,28 +88,11 @@
   max-height: calc(100dvh - 36px);
   min-height: 0;
   overflow: hidden;
-  color: var(--molsan-text, #17243a);
-  background: var(--molsan-surface, #fff);
-  border: 1px solid var(--molsan-border, #D8E4EC);
-  border-radius: var(--molsan-radius-dialog, 16px);
-  box-shadow: 0 16px 44px rgba(25,42,70,.16);
-}
-.eg-modal-header {
-  position: relative;
-  display: flex;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: 15px;
-  padding: 19px 24px;
-  border-bottom: 1px solid var(--molsan-border-light, #e8edf4);
-  background: var(--molsan-surface-soft, #F2F7FB);
-}
-.eg-modal-header::before {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  content: "";
-  background: linear-gradient(90deg, transparent, var(--molsan-primary, #064675) 28%, var(--molsan-primary-hover, #04375B) 70%, transparent);
+  
+  
+  
+  
+  
 }
 .eg-modal-brand {
   display: grid;
@@ -295,8 +278,7 @@
 }
 @media (max-width: 650px) {
   .eg-modal-overlay { padding: 7px; }
-  .eg-modal-form { max-height: calc(100dvh - 14px); border-radius: 17px; }
-  .eg-modal-header { gap: 10px; padding: 14px; }
+  .eg-modal-form { max-height: calc(100dvh - 14px);  }
   .eg-modal-brand { flex-basis: 43px; width: 43px; height: 43px; border-radius: 13px; font-size: 15px; }
   .eg-modal-heading h2 { font-size: 19px; }
   .eg-modal-heading p { font-size: 10px; }
