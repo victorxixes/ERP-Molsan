@@ -268,6 +268,8 @@ export default function EmpleadoEditar({
       {/* CABECERA */}
 
       <div className="
+        molsan-page-header
+        empleado-editar-page-header
         flex
         items-center
         justify-between
