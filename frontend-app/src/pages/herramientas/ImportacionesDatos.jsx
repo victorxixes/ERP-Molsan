@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "../../css/ImportacionesDatos.css";
 
 const IMPORTADORES = [
@@ -19,7 +20,7 @@ export default function ImportacionesDatos() {
     <main className="molsan-page molsan-page-stack importaciones-datos-premium">
       <header className="molsan-page-header">
         <div className="molsan-page-header__identity">
-          <div className="molsan-page-header__mark molsan-icon-3d" aria-hidden="true">⇧</div>
+          <div className="molsan-page-header__mark"><MolsanIcon name="download" size={42} bare /></div>
           <div className="min-w-0">
             <p className="molsan-page-header__eyebrow">MOLSAN ERP · CENTRO DE DATOS</p>
             <h1 className="molsan-page-header__title">Importaciones y datos</h1>
@@ -39,7 +40,7 @@ export default function ImportacionesDatos() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {IMPORTADORES.filter((item) => item.grupo === grupo).map((item) => (
               <Link key={item.ruta} to={item.ruta} className="importaciones-datos-card group">
-                <span className="importaciones-datos-card__icon molsan-icon-3d" aria-hidden="true">{item.icono}</span>
+                <span className="importaciones-datos-card__icon"><MolsanIcon name={item.icono} size={44} /></span>
                 <span className="min-w-0 flex-1">
                   <strong>{item.titulo}</strong>
                   <span>{item.detalle}</span>
