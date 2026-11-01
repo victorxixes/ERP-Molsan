@@ -91,7 +91,7 @@ export default function LogsAvanzados() {
       >
         <div>
           <div
-            className="
+            className="molsan-page-header 
               flex
               items-center
               gap-3
