@@ -17,70 +17,6 @@
   color: var(--molsan-text);
 }
 
-.molsan-page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  min-width: 0;
-  margin: 0 0 20px;
-  padding: 0 0 16px;
-  border-bottom: 1px solid var(--molsan-border);
-}
-
-.molsan-page-header__identity {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-
-.molsan-page-header__mark {
-  display: grid;
-  flex: 0 0 36px;
-  width: 36px;
-  height: 36px;
-  place-items: center;
-  border: 1px solid color-mix(in srgb, var(--molsan-primary) 12%, transparent);
-  border-radius: 11px;
-  background: var(--molsan-primary-soft);
-  color: var(--molsan-primary);
-}
-
-.molsan-page-header__eyebrow {
-  margin: 0 0 3px;
-  color: var(--molsan-text-muted);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  line-height: 1.4;
-  text-transform: uppercase;
-}
-
-.molsan-page-header__title {
-  margin: 0;
-  color: var(--molsan-text);
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  line-height: 1.25;
-}
-
-.molsan-page-header__description {
-  margin: 4px 0 0;
-  color: var(--molsan-text-muted);
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.molsan-page-header__actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
 /* Títulos de sección */
 .molsan-section-header {
   display: flex;
@@ -134,15 +70,6 @@
 
 /* Respeto a pantallas pequeñas y preferencias de movimiento */
 @media (max-width: 640px) {
-  .molsan-page-header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .molsan-page-header__actions {
-    width: 100%;
-    justify-content: flex-start;
-  }
 
   .molsan-panel__header,
   .molsan-panel__body {
