@@ -95,6 +95,9 @@ const ALIASES = {
   "🟢": "check", "🔔": "bell", "🔕": "bell", "🏷️": "tag", "🙈": "eye",
   "🔌": "plug", "🧱": "building", "🚫": "alert", "💥": "alert", "🚪": "door",
   "🔓": "lock", "🗓": "calendar", "🗓️": "calendar", "🗂": "folder", "🗃": "archive",
+  "📗": "fileCheck", "🏷": "tag", "🚧": "alert", "🔧": "tools", "🖋": "pen",
+  "🖥": "monitor", "🛡": "shield", "🏛": "courthouse", "📡": "monitor",
+
 
 
   "📊": "chart", "⚙": "settings", "▤": "file", "💼": "briefcase", "📚": "book", "✅": "check", "🔄": "refresh", "▦": "calendar",
