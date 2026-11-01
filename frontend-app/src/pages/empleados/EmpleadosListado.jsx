@@ -922,8 +922,7 @@ export default function EmpleadosListado({
           CABECERA
       ====================================================== */}
 
-      <div className="
-        rounded-2xl
+      <header className="molsan-page-header empleados-page-header rounded-2xl
         border
         border-[var(--erp-border)]
         bg-[var(--erp-surface)]
@@ -1033,7 +1032,7 @@ export default function EmpleadosListado({
 
         </div>
 
-      </div>
+      </header>
 
 
       {/* ======================================================
