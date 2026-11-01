@@ -434,7 +434,7 @@ def listar_notarias(
     asociada = aliased(Notaria)
     asociados_nombre = (
         select(func.coalesce(func.string_agg(
-            func.trim(func.concat(func.coalesce(asociada.nombre, ""), " ", func.coalesce(asociada.apellidos, "")),
+            func.trim(func.concat(func.coalesce(asociada.nombre, ""), " ", func.coalesce(asociada.apellidos, ""))),
             ", "
         ), ""))
         .select_from(notarios_asociados_table.join(asociada, asociada.id == notarios_asociados_table.c.asociado_id))
