@@ -5,6 +5,7 @@ import React, {
 } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 
 
 // ============================================================
