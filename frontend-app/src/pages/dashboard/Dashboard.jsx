@@ -396,7 +396,7 @@ export default function Dashboard() {
       {/* FIRMAS REALIZADAS */}
       <section className="dashboard-section-panel min-w-0">
         <div className="mb-4 flex flex-col gap-1">
-          <h2 className="text-lg font-bold" style={{ color: "var(--erp-text)" }}>Firmas realizadas</h2
+          <h2 className="text-lg font-bold" style={{ color: "var(--erp-text)" }}>Firmas realizadas</h2>
           <p className="text-sm" style={{ color: "var(--erp-text-soft)" }}>
             Distribución de las firmas realizadas según la modalidad seleccionada en el encargo al notario.
           </p>
