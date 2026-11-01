@@ -13,15 +13,6 @@ import "../../css/PortalProfesionalShared.css";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import { formatEuro } from "../../utils/formatters";
 
-const PESTANAS = [
-  { nombre: "Dashboard", icono: "◫" },
-  { nombre: "Agenda", icono: "▦" },
-  { nombre: "Encargos", icono: "▤" },
-  { nombre: "Mensajes", icono: "✉" },
-  { nombre: "Intranet", icono: "⌂" },
-  { nombre: "CTN", icono: "◇" },
-];
-
 function fechaLegible(valor) {
   if (!valor) return "—";
   const fecha = new Date(valor);
@@ -211,8 +202,8 @@ function ImprimirEncargos({ encargos = [] }) {
   };
   return (
     <div className="ag-print-tools">
-      <button type="button" className="ag-print-action" onClick={() => imprimir("lista")}>⎙ Imprimir listado</button>
-      <button type="button" className="ag-print-action ag-print-action-secundario" onClick={() => imprimir("fichas")}>▤ Imprimir fichas detalladas</button>
+      <button type="button" className="ag-print-action" onClick={() => imprimir("lista")}><MolsanIcon name="file" size={16} bare /> Imprimir listado</button>
+      <button type="button" className="ag-print-action ag-print-action-secundario" onClick={() => imprimir("fichas")}><MolsanIcon name="files" size={16} bare /> Imprimir fichas detalladas</button>
       <section className="ag-print-root ag-encargos-print-root" aria-hidden="true">
         <header className="ag-print-header"><strong>MOLSAN ERP · APODERAGEST</strong><h1>Listado de encargos</h1><p>{encargos.length} {encargos.length === 1 ? "encargo" : "encargos"} · Impreso el {new Date().toLocaleDateString("es-ES")}</p></header>
         <table className="ag-print-table"><thead><tr><th>Expediente</th><th>Solicitante</th><th>Notario</th><th>Fecha prevista</th><th>Horario</th><th>Estado</th></tr></thead><tbody>{encargos.map((e, i) => <tr key={String(e.id_expediente || e.id || i)}><td>{texto(e.id_expediente || e.id)}{e.bloqueado ? <small>Bloqueado</small> : null}</td><td>{texto(e.nombre_solicitante || e.solicitante)}<small>{texto(e.nif_solicitante || e.dni_solicitante, "")}</small></td><td>{texto(e.nombre_notario || e.notario)}</td><td>{fechaLegible(e.fecha_prevista_firma)}</td><td>{horaLegible(e.hora_prevista_firma)}{e.hora_fin_prevista_firma ? " – " + horaLegible(e.hora_fin_prevista_firma) : ""}</td><td>{e.fecha_firma || e.protocolo ? "Firmado" : e.bloqueado ? "Bloqueado" : "Pendiente"}</td></tr>)}</tbody></table>
@@ -494,7 +485,7 @@ function TablaEncargos({ encargos, onFirmado }) {
         return (
           <section className="ag-panel ag-grupo-notario ag-grupo-apoderado" key={grupo.clave}>
             <button type="button" className="ag-panel-cabecera ag-notario-grupo-trigger ag-apoderado-grupo-trigger" aria-expanded={abierto} onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: !actual[grupo.clave] }))}>
-              <span className="ag-notario-grupo-icono" aria-hidden="true">♙</span>
+              <span className="ag-notario-grupo-icono" aria-hidden="true"><MolsanIcon name="users" size={24} bare /></span>
               <span className="ag-notario-grupo-info">
                 <span className="ag-notario-linea-unica">
                   <strong>{grupo.nombre}</strong>
@@ -502,7 +493,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                 </span>
               </span>
               <span className="ag-notario-contadores">
-                <span className="ag-contador ag-contador-firmas">✓ {grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas</span>
+                <span className="ag-contador ag-contador-firmas"><MolsanIcon name="check" size={13} bare /> {grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas</span>
                 <span className="ag-contador">{grupo.expedientes.length} {grupo.expedientes.length === 1 ? "encargo" : "encargos"}</span>
                 <span className={`ag-contador-bloqueados${expedientesBloqueados > 0 ? " tiene-bloqueados" : ""}`}>{expedientesBloqueados} {expedientesBloqueados === 1 ? "bloqueado" : "bloqueados"}</span>
                 <span className="ag-contador">Ver encargos →</span>
@@ -604,7 +595,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                               const renderCarpeta = (titulo, icono, lista, vacio) => (
                                 <details className="ag-carpeta-apoderado" key={titulo} open>
                                   <summary className="ag-carpeta-apoderado-cabecera">
-                                    <span className="ag-carpeta-apoderado-icono" aria-hidden="true">{icono}</span>
+                                    <span className="ag-carpeta-apoderado-icono" aria-hidden="true"><MolsanIcon name={icono} size={19} bare /></span>
                                     <div><strong>{titulo}</strong><small>{lista.length} documento{lista.length === 1 ? "" : "s"}</small></div>
                                   </summary>
                                   {lista.length ? (
@@ -621,12 +612,12 @@ function TablaEncargos({ encargos, onFirmado }) {
                               );
                               return (
                                 <div className="ag-carpetas-apoderado">
-                                  {renderCarpeta("Borradores de escritura", "▤", borradores, "No hay borradores de escritura disponibles.")}
-                                  {renderCarpeta("Hoja de encargo firmada", "▣", hojaEncargo, "No hay hojas de encargo firmadas disponibles.")}
-                                  {renderCarpeta("Justificante de cancelación", "▣", justificantes, "No hay justificantes de cancelación disponibles.")}
-                                  {renderCarpeta("Nota simple registral", "▧", notasSimples, "No hay notas simples registrales disponibles.")}
-                                  {renderCarpeta("Otros", "▣", otros, "No hay documentos clasificados en Otros.")}
-                                  {restantes.length > 0 && renderCarpeta("Resto de documentación", "▧", restantes, "")}
+                                  {renderCarpeta("Borradores de escritura", "file", borradores, "No hay borradores de escritura disponibles.")}
+                                  {renderCarpeta("Hoja de encargo firmada", "fileCheck", hojaEncargo, "No hay hojas de encargo firmadas disponibles.")}
+                                  {renderCarpeta("Justificante de cancelación", "fileCheck", justificantes, "No hay justificantes de cancelación disponibles.")}
+                                  {renderCarpeta("Nota simple registral", "file", notasSimples, "No hay notas simples registrales disponibles.")}
+                                  {renderCarpeta("Otros", "folder", otros, "No hay documentos clasificados en Otros.")}
+                                  {restantes.length > 0 && renderCarpeta("Resto de documentación", "folder", restantes, "")}
                                 </div>
                               );
                             })()}
@@ -642,7 +633,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                                       {documentoVisor.previsualizable ? (documentoVisor.mime.startsWith("image/") || ["png","jpg","jpeg","webp","gif"].includes(documentoVisor.nombre.split(".").pop()?.toLowerCase()) ? <img src={documentoVisor.url} alt={documentoVisor.nombre} className="ag-visor-imagen" /> : <iframe title={documentoVisor.nombre} src={documentoVisor.url} className="ag-visor-pdf" />) : <div className="ag-visor-estado"><strong>Vista previa no disponible para este formato.</strong><span>Descarga el archivo para abrirlo con la aplicación correspondiente.</span><button type="button" onClick={descargarDocumentoVisor}>Descargar documento</button></div>}
                                     </div>
                                   </>
-                                ) : <div className="ag-visor-inline-vacio"><span aria-hidden="true">▤</span><strong>Visor de documentos PDF</strong><p>Selecciona «Ver en visor» en una carpeta para consultar el documento aquí.</p></div>}
+                                ) : <div className="ag-visor-inline-vacio"><MolsanIcon name="file" size={30} bare /><strong>Visor de documentos PDF</strong><p>Selecciona «Ver en visor» en una carpeta para consultar el documento aquí.</p></div>}
                               </div>
                           </details>
                           <details open className="ag-encargo-subpanel ag-ficha-registral">
@@ -924,7 +915,7 @@ export default function ApoderaGest() {
 
       {error ? (
         <div className="ag-alerta-error" role="alert">
-          <span className="ag-alerta-icono">!</span>
+          <span className="ag-alerta-icono"><MolsanIcon name="alert" size={18} bare /></span>
           <div><strong>No se han podido actualizar los datos</strong><p>{error}</p></div>
           <button type="button" onClick={cargarDatos} disabled={cargando}>Reintentar</button>
         </div>
@@ -971,7 +962,7 @@ export default function ApoderaGest() {
                           <div className="ag-cita-titulo-fila">
                             <strong>{texto(cita.tipo_cita, "Cita")}</strong>
                             {cita.tipo_firma ? <span className="ag-cita-modalidad">{texto(cita.tipo_firma)}</span> : null}
-                            {cita.tipo_cita === "Firma notarial" ? <span className={`ag-firma-indicador ${firmaRealizada ? "realizada" : ""}`}>{firmaRealizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</span> : null}
+                            {cita.tipo_cita === "Firma notarial" ? <span className={`ag-firma-indicador ${firmaRealizada ? "realizada" : ""}`}>{firmaRealizada ? <><MolsanIcon name="check" size={13} bare /> Firma realizada</> : <><MolsanIcon name="clock" size={13} bare /> Pendiente de firma</>}</span> : null}
                           </div>
                           <div className="ag-cita-datos">
                             <span className="ag-cita-horario"><b>Horario</b>{texto(cita.hora_inicio, "—").slice(0, 5)} – {texto(cita.hora_fin, "—").slice(0, 5)}</span>
