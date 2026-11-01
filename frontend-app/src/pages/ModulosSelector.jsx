@@ -23,7 +23,7 @@ const MODULOS = {
     estilo: "cg",
   },
   notargest: {
-    nombre: "Notargest",
+    nombre: "NotarGest",
     descripcion: "Herramientas y operaciones del entorno de notaría.",
     ruta: "/notargest",
     siglas: "NG",
