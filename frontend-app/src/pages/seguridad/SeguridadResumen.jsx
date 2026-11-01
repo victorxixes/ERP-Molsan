@@ -259,7 +259,7 @@ export default function SeguridadResumen({ empleadoId }) {
     return (
       <div className="erp-page seguridad-subpagina-premium seguridad-resumen-premium">
 
-        <div className="erp-page-header">
+        <div className="erp-page-header molsan-page-header">
 
           <div>
             <div className="erp-eyebrow">
