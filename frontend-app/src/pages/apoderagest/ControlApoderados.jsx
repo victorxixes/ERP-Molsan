@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
+import { formatEuro as euros } from "../../utils/formatters";
 
 const mesActual = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; };
 const moverMes = (periodo, delta) => { const [y, m] = periodo.split("-").map(Number); const d = new Date(y, m - 1 + delta, 1); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; };
-const euros = (v) => new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(v || 0));
+
 const fecha = (v) => v ? new Date(v).toLocaleDateString("es-ES") : "—";
 const estado = (v) => ({ pendiente: "Pendiente de validar", validada: "Relación validada", sin_factura: "Sin factura", pendiente_revision: "Factura pendiente", aceptada: "Factura aceptada", rechazada: "Factura rechazada", correccion_solicitada: "Corrección solicitada" }[v] || v || "—");
 
