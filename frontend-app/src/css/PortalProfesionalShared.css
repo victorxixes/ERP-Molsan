@@ -1892,7 +1892,7 @@
 
 /* MOLSAN ERP PREMIUM 2027 · cabecera común integrada para ApoderaGest y NotarGest. */
 .apoderagest > .ag-hero,
-.notargest .ng-content > .ag-hero {
+.notargest.ng-content > .ag-hero {
   position: relative;
   display: flex;
   align-items: center;
@@ -1912,12 +1912,12 @@
   filter: none !important;
 }
 .apoderagest > .ag-hero .ag-hero-identidad,
-.notargest .ng-content > .ag-hero .ag-hero-identidad {
+.notargest.ng-content > .ag-hero .ag-hero-identidad {
   align-items: center;
   gap: 16px;
 }
 .apoderagest > .ag-hero .ag-marca,
-.notargest .ng-content > .ag-hero .ag-marca {
+.notargest.ng-content > .ag-hero .ag-marca {
   width: 52px;
   height: 52px;
   flex-basis: 52px;
@@ -1930,13 +1930,13 @@
   letter-spacing: -.4px;
 }
 .apoderagest > .ag-hero .ag-eyebrow,
-.notargest .ng-content > .ag-hero .ag-eyebrow {
+.notargest.ng-content > .ag-hero .ag-eyebrow {
   color: var(--molsan-primary, #064675);
   font-size: 10px;
   letter-spacing: .12em;
 }
 .apoderagest > .ag-hero h1,
-.notargest .ng-content > .ag-hero h1 {
+.notargest.ng-content > .ag-hero h1 {
   margin: 3px 0 4px;
   color: var(--molsan-primary, #064675) !important;
   font-size: clamp(23px, 2.2vw, 29px);
@@ -1945,14 +1945,14 @@
   letter-spacing: -.55px;
 }
 .apoderagest > .ag-hero p,
-.notargest .ng-content > .ag-hero p {
+.notargest.ng-content > .ag-hero p {
   margin: 0;
   color: var(--molsan-text-secondary, #617789) !important;
   font-size: 13px;
   line-height: 1.5;
 }
 .apoderagest > .ag-hero .ag-hero-acciones,
-.notargest .ng-content > .ag-hero .ag-hero-acciones {
+.notargest.ng-content > .ag-hero .ag-hero-acciones {
   gap: 9px;
 }
 .apoderagest .ag-kpi-icono svg,
@@ -1969,14 +1969,14 @@
 }
 @media (max-width: 700px) {
   .apoderagest > .ag-hero,
-  .notargest .ng-content > .ag-hero {
+  .notargest.ng-content > .ag-hero {
     align-items: flex-start;
     flex-direction: column;
     padding: 17px;
     margin-bottom: 16px;
   }
   .apoderagest > .ag-hero .ag-hero-acciones,
-  .notargest .ng-content > .ag-hero .ag-hero-acciones {
+  .notargest.ng-content > .ag-hero .ag-hero-acciones {
     justify-content: flex-start;
     width: 100%;
   }
