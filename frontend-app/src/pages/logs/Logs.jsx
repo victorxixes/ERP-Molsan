@@ -221,42 +221,8 @@ export default function Logs() {
       ===================================================== */}
 
       <section
-        className="molsan-page-header relative overflow-hidden"
+        className="molsan-page-header"
       >
-
-        {/* Línea superior */}
-
-        <div
-          className="
-            absolute
-            top-0
-            left-0
-            right-0
-            h-px
-            bg-gradient-to-r
-            from-transparent
-            via-blue-400/50
-            to-transparent
-          "
-        />
-
-
-        {/* Decoración */}
-
-        <div
-          className="
-            absolute
-            -top-20
-            -right-20
-            w-48
-            h-48
-            rounded-full
-            bg-blue-400/10
-            blur-3xl
-            pointer-events-none
-          "
-        />
-
 
         <div
           className="
