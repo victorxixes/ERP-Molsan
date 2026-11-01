@@ -956,3 +956,116 @@
 }
 
 .modal-sj { border:1px solid #D8E4EC; border-radius:18px; }
+
+
+/* ============================================================
+   MOLSAN ERP PREMIUM 2027 · TARJETA CORPORATIVA ÚNICA
+   Referencia visual: .workspace-app-card de Espacios de trabajo.
+   Se unifica la superficie; cada módulo conserva su layout,
+   padding interno, contenido, estados y comportamiento funcional.
+   ============================================================ */
+:where(
+  .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
+  .apoderagest, .notargest, .encargagest, .ctn-listado-page,
+  .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
+  .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
+  .utilidades-premium-page, .maestros-premium-page, .informes-premium-page,
+  .mensajes-premium-page, .mensajeria, .provisiones-fondos-page,
+  .panel-tecnico-premium, .seguridad-premium-page,
+  .herramientas-subpagina-premium, .catalogos-maestros-premium
+) :is(
+  .erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi,
+  .cg-section, .cg-module-card, .ag-panel, .ag-kpi, .ag-card,
+  .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel,
+  .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
+  .ctn-panel, .ctn-modal-seccion, .ctn-detalle-panel,
+  .ctn-detalle-info-card, .ctn-detalle-stat, .expedientes-panel,
+  .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
+  .panel-card, .ficha-panel, .ficha-seccion, .form-section,
+  .section-card, .stat-card, .kpi-card, .agenda-upcoming-card,
+  .logs-panel, .maestros-panel, [data-panel="true"], [data-cg-panel="true"]
+) {
+  --molsan-card-accent: var(--molsan-primary, #064675);
+  min-width: 0;
+  border-color: var(--molsan-border, #D8E4EC);
+  border-radius: 21px;
+  background-color: #FFFFFF;
+  background-image:
+    linear-gradient(var(--molsan-card-accent), var(--molsan-card-accent)),
+    linear-gradient(150deg, #FFFFFF 0%, #FFFFFF 56%, #F7FAFC 100%);
+  background-size: 100% 4px, 100% 100%;
+  background-position: top left, top left;
+  background-repeat: no-repeat;
+  box-shadow: 0 9px 24px rgba(6, 50, 82, .065);
+  transition:
+    transform .2s cubic-bezier(.2,.75,.25,1),
+    box-shadow .2s ease,
+    border-color .2s ease,
+    background-color .2s ease;
+  animation: molsan-premium-card-enter .42s both;
+}
+:where(
+  .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
+  .apoderagest, .notargest, .encargagest, .ctn-listado-page,
+  .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
+  .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
+  .utilidades-premium-page, .maestros-premium-page, .informes-premium-page,
+  .mensajes-premium-page, .mensajeria, .provisiones-fondos-page,
+  .panel-tecnico-premium, .seguridad-premium-page,
+  .herramientas-subpagina-premium, .catalogos-maestros-premium
+) :is(
+  .erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi,
+  .cg-section, .cg-module-card, .ag-panel, .ag-kpi, .ag-card,
+  .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel,
+  .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
+  .ctn-panel, .ctn-modal-seccion, .ctn-detalle-panel,
+  .ctn-detalle-info-card, .ctn-detalle-stat, .expedientes-panel,
+  .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
+  .panel-card, .ficha-panel, .ficha-seccion, .form-section,
+  .section-card, .stat-card, .kpi-card, .agenda-upcoming-card,
+  .logs-panel, .maestros-panel, [data-panel="true"], [data-cg-panel="true"]
+):hover {
+  border-color: #B8D2E1;
+  box-shadow: 0 19px 38px rgba(6, 50, 82, .13);
+}
+:where(
+  .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
+  .apoderagest, .notargest, .encargagest, .ctn-listado-page,
+  .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
+  .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
+  .utilidades-premium-page, .maestros-premium-page, .informes-premium-page,
+  .mensajes-premium-page, .mensajeria, .provisiones-fondos-page,
+  .panel-tecnico-premium, .seguridad-premium-page,
+  .herramientas-subpagina-premium, .catalogos-maestros-premium
+) :is(.erp-card, .erp-card-soft, .cg-kpi, .ag-kpi, .ng-contador, .eg-kpi,
+     .dashboard-kpi, .stat-card, .kpi-card):is(a, button, [role="button"]):hover {
+  transform: translateY(-5px);
+}
+@keyframes molsan-premium-card-enter {
+  from { opacity: 0; transform: translateY(9px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
+    .apoderagest, .notargest, .encargagest, .ctn-listado-page,
+    .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
+    .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
+    .utilidades-premium-page, .maestros-premium-page, .informes-premium-page,
+    .mensajes-premium-page, .mensajeria, .provisiones-fondos-page,
+    .panel-tecnico-premium, .seguridad-premium-page) :is(
+      .erp-card, .erp-card-soft, .molsan-panel, .cg-panel, .cg-kpi,
+      .cg-section, .cg-module-card, .ag-panel, .ag-kpi, .ag-card,
+      .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel,
+      .eg-kpi, .eg-card, .eg-directorio-card, .ctn-panel,
+      .ctn-modal-seccion, .expedientes-panel, .expediente-card,
+      .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
+      .panel-card, .ficha-panel, .ficha-seccion, .form-section,
+      .section-card, .stat-card, .kpi-card, .agenda-upcoming-card,
+      .logs-panel, .maestros-panel
+    ) {
+    animation: none;
+    transition: none;
+  }
+}
