@@ -278,7 +278,7 @@
 .ag-tabla tbody tr:hover,
 .ng-tabla tbody tr:hover,
 .encargagest .eg-directorio-tabla tbody tr:hover {
-  background: #f7f9fd;
+  background: var(--molsan-surface-soft);
 }
 
 .cg-page .cg-button-primary,
@@ -356,7 +356,7 @@
 .cg-page input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):focus-visible,
 .cg-page select:focus-visible,
 .cg-page textarea:focus-visible {
-  outline: 3px solid rgba(49, 86, 179, 0.2);
+  outline: 3px solid rgba(6, 70, 117, 0.18);
   outline-offset: 1px;
   border-color: var(--molsan-primary);
 }
@@ -396,7 +396,7 @@
 .notargest a:focus-visible,
 .encargagest a:focus-visible,
 .cg-page a:focus-visible {
-  outline: 3px solid rgba(49, 86, 179, 0.24);
+  outline: 3px solid rgba(6, 70, 117, 0.22);
   outline-offset: 2px;
 }
 
