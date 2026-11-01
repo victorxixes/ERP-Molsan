@@ -80,7 +80,7 @@ export default function CrearNoticia() {
           "
         />
 
-        <div className="flex items-center gap-4">
+        <div className="molsan-page-header flex items-center gap-4">
 
           <div
             className="
