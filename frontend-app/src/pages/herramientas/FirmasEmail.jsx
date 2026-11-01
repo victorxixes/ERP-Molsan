@@ -47,7 +47,7 @@ export default function FirmasEmail() {
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
       <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <Link to="/herramientas/catalogos" className="text-xs font-bold text-blue-600 hover:text-blue-700">← Volver a Catálogos</Link>
+          <Link to="/catalogos" className="text-xs font-bold text-blue-600 hover:text-blue-700">← Volver a Catálogos</Link>
           <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Firma corporativa de email</h1>
           <p className="mt-1 text-sm text-slate-500">Configura el pie común que acompaña a la firma personal del empleado remitente.</p>
         </div>
