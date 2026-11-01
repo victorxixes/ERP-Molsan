@@ -1208,3 +1208,22 @@
     .empleado-operativo-modal [role="dialog"] > header
   ) { padding: 14px; gap: 10px; }
 }
+
+
+/* Encabezados de bloques de Provisiones: misma banda que el resto de tarjetas. */
+.provisiones-fondos-page :is(section, article) > :is(header, .mb-4.flex.items-center.justify-between) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  color: #064675;
+  background: #F2F7FB;
+  border-bottom: 1px solid #D8E4EC;
+}
+.provisiones-fondos-page :is(section, article) > :is(header, .mb-4.flex.items-center.justify-between) :is(h2, h3) {
+  margin: 0;
+  color: #064675;
+  font-size: 15px;
+  font-weight: 800;
+}
