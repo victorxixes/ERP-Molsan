@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
@@ -81,8 +82,8 @@ export default function ProcesoAbsis() {
     } finally { setExportando(false); }
   }
 
-  return <main className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-    <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+  return <main className="molsan-page-stack herramienta-operativa-premium herramientas-subpagina-premium min-h-full">
+    <header className="molsan-page-header">
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
       <Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link>
       <div className="mt-2 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -128,7 +129,7 @@ export default function ProcesoAbsis() {
           <thead className="bg-white text-[10px] uppercase tracking-wide text-slate-500"><tr>{["Expediente","Fecha de envío","ID","IDAbsis","Tipo","Fecha de creación","Fecha de incidencia","Tipo de incidencia","Acciones del envío"].map((h) => <th key={h} className="border-b border-slate-200 px-3 py-3 font-extrabold">{h}</th>)}</tr></thead>
           <tbody>
             {cargando ? <tr><td colSpan={9} className="px-5 py-12 text-center text-slate-500">Cargando envíos…</td></tr>
-            : items.length === 0 ? <tr><td colSpan={9} className="px-5 py-12 text-center"><div className="text-3xl">📦</div><p className="mt-2 font-bold text-slate-700">No hay envíos para mostrar</p><p className="mt-1 text-xs text-slate-500">Los registros aparecerán aquí cuando se registren envíos o incidencias ABSIS.</p></td></tr>
+            : items.length === 0 ? <tr><td colSpan={9} className="px-5 py-12 text-center"><div className="text-3xl"><MolsanIcon name="archive" size={20} /></div><p className="mt-2 font-bold text-slate-700">No hay envíos para mostrar</p><p className="mt-1 text-xs text-slate-500">Los registros aparecerán aquí cuando se registren envíos o incidencias ABSIS.</p></td></tr>
             : items.map((item) => <tr key={item.id} className="border-b border-slate-100 align-top last:border-0 hover:bg-slate-50/70">
               <td className="px-3 py-3 font-bold text-blue-700">{item.expediente || "—"}</td><td className="whitespace-nowrap px-3 py-3 text-slate-600">{euroFecha(item.fecha_envio)}</td><td className="px-3 py-3 text-slate-600">{item.id}</td><td className="px-3 py-3 text-slate-600">{item.id_absis || "—"}</td><td className="px-3 py-3 text-slate-700">{item.tipo || "—"}</td><td className="whitespace-nowrap px-3 py-3 text-slate-600">{euroFecha(item.fecha_creacion)}</td><td className="whitespace-nowrap px-3 py-3 text-slate-600">{euroFecha(item.fecha_incidencia)}</td><td className="max-w-[220px] px-3 py-3"><span className={`inline-flex rounded-full px-2 py-1 font-semibold ${item.tipo_incidencia ? "bg-rose-50 text-rose-700" : "bg-slate-100 text-slate-500"}`}>{item.tipo_incidencia || "Sin incidencia"}</span></td>
               <td className="px-3 py-3"><div className="flex min-w-[290px] flex-wrap gap-1.5"><button disabled={accionando !== null} onClick={() => accion(item.id,"eliminar")} className="rounded-lg border border-rose-200 bg-rose-50 px-2 py-1.5 font-bold text-rose-700 disabled:opacity-50">{accionando === `${item.id}-eliminar` ? "…" : "Eliminar"}</button><button disabled={accionando !== null} onClick={() => accion(item.id,"reintentar")} className="rounded-lg border border-blue-200 bg-blue-50 px-2 py-1.5 font-bold text-blue-700 disabled:opacity-50">{accionando === `${item.id}-reintentar` ? "…" : "Reintentar"}</button><button disabled={accionando !== null || item.estado === "Pasado"} onClick={() => accion(item.id,"pasado")} className="rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-1.5 font-bold text-emerald-700 disabled:opacity-50">{item.estado === "Pasado" ? "Dado por pasado" : "Dar por pasado"}</button></div></td>

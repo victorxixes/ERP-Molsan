@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useMemo } from "react";
 import "./Notificaciones.css";
 import { useNotificacionesStore } from "../../store/notificacionesStore";
@@ -40,14 +41,14 @@ export default function Notificaciones() {
   // ==========================================================
 
   const iconosTipo = {
-    error: "⛔",
-    security: "🔐",
-    warning: "⚠️",
-    success: "✅",
-    info: "ℹ️",
-    noticia: "📰",
-    sistema: "⚙️",
-    default: "🔔",
+    error: "alert",
+    security: "lock",
+    warning: "alert",
+    success: "check",
+    info: "help",
+    noticia: "newspaper",
+    sistema: "settings",
+    default: "bell",
   };
 
   // ==========================================================
@@ -214,28 +215,11 @@ export default function Notificaciones() {
           ====================================================== */}
 
       <div
-        className="
-          relative
-          overflow-hidden
-          bg-white
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          p-5
-          md:p-6
-          shadow-sm
-        "
+        className="molsan-page-header"
       >
 
         <div
-          className="
-            flex
-            flex-col
-            md:flex-row
-            md:items-center
-            md:justify-between
-            gap-4
-          "
+          className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
         >
 
           {/* ==================================================
@@ -243,55 +227,22 @@ export default function Notificaciones() {
               ================================================== */}
 
           <div
-            className="
-              flex
-              items-center
-              gap-4
-            "
+            className="molsan-page-header__identity"
           >
 
             <div
-              className="
-                w-12
-                h-12
-                rounded-xl
-                bg-[var(--erp-primary-soft)]
-                border
-                border-[var(--erp-border)]
-                flex
-                items-center
-                justify-center
-                text-2xl
-                shadow-sm
-              "
+              className="molsan-page-header__mark"
             >
-              🔔
+              <MolsanIcon name="bell" size={42} bare />
             </div>
 
 
             <div>
 
-              <h1
-                className="
-                  text-2xl
-                  md:text-3xl
-                  font-bold
-                  tracking-tight
-                  text-[var(--erp-text)]
-                "
-              >
-                Notificaciones
-              </h1>
+              <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+              <h1 className="molsan-page-header__title">Notificaciones</h1>
 
-              <p
-                className="
-                  text-sm
-                  mt-1
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                Actividad y avisos en tiempo real del ERP.
-              </p>
+              <p className="molsan-page-header__description">Actividad y avisos en tiempo real del ERP.</p>
 
             </div>
 
@@ -303,11 +254,7 @@ export default function Notificaciones() {
               ================================================== */}
 
           <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
+            className="molsan-page-header__actions"
           >
 
             {/* CONTADOR */}
@@ -374,7 +321,7 @@ export default function Notificaciones() {
                 disabled:cursor-not-allowed
               "
             >
-              🗑️ Limpiar
+              <MolsanIcon name="trash" size={18} /> Limpiar
             </button>
 
           </div>
@@ -423,7 +370,7 @@ export default function Notificaciones() {
               mb-5
             "
           >
-            🔕
+            <MolsanIcon name="bell" size={48} />
           </div>
 
 
@@ -577,7 +524,7 @@ export default function Notificaciones() {
                       shadow-sm
                     `}
                   >
-                    {icono}
+                    <MolsanIcon name={icono} size={34} />
                   </div>
 
 
@@ -694,7 +641,7 @@ export default function Notificaciones() {
                             text-[10px]
                           "
                         >
-                          🏷️
+                          
                         </span>
 
                         {n.tipo || "general"}

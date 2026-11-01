@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import {
   useCallback,
   useMemo,
@@ -700,7 +701,7 @@ export default function SeguridadPermisos() {
         "
       >
         <div className="text-3xl">
-          🔑
+          <MolsanIcon name="key" size={18} />
         </div>
 
         <p
@@ -735,81 +736,21 @@ export default function SeguridadPermisos() {
 
       {/* CABECERA */}
 
-      <div
-        className="
-          flex
-          flex-col
-          gap-4
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-5
-          shadow-sm
-          md:flex-row
-          md:items-center
-          md:justify-between
-        "
-      >
+      <div className="molsan-page-header">
 
-        <div
-          className="
-            flex
-            items-center
-            gap-3
-          "
-        >
+        <div className="molsan-page-header__identity">
 
-          <div
-            className="
-              flex
-              h-11
-              w-11
-              shrink-0
-              items-center
-              justify-center
-              rounded-xl
-              bg-[var(--erp-primary-soft)]
-              text-xl
-            "
-          >
-            🔑
+          <div className="molsan-page-header__mark">
+            <MolsanIcon name="key" size={18} />
           </div>
 
           <div>
 
-            <p
-              className="
-                text-[11px]
-                font-semibold
-                uppercase
-                tracking-[0.14em]
-                text-[var(--erp-primary)]
-              "
-            >
-              Centro de seguridad
-            </p>
+            <p className="molsan-page-header__eyebrow">SEGURIDAD · ADMINISTRACIÓN</p>
 
-            <h2
-              className="
-                mt-1
-                text-xl
-                font-bold
-                text-[var(--erp-text)]
-              "
-            >
-              Permisos por módulo
-            </h2>
+            <h2 className="molsan-page-header__title">Permisos por módulo</h2>
 
-            <p
-              className="
-                mt-0.5
-                text-sm
-                text-[var(--erp-text-soft)]
-              "
-            >
-              {empleado?.nombre || "Empleado"}
-            </p>
+            <p className="molsan-page-header__description">{empleado?.nombre || "Empleado"}</p>
 
           </div>
 

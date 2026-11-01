@@ -6,6 +6,7 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "./SeguridadSubpaginasPremium.css";
 
 export default function SeguridadResumen({ empleadoId }) {
@@ -259,20 +260,15 @@ export default function SeguridadResumen({ empleadoId }) {
     return (
       <div className="erp-page seguridad-subpagina-premium seguridad-resumen-premium">
 
-        <div className="erp-page-header">
+        <div className="molsan-page-header">
 
-          <div>
-            <div className="erp-eyebrow">
-              SEGURIDAD
+          <div className="molsan-page-header__identity">
+            <div className="molsan-page-header__mark" aria-hidden="true">SG</div>
+            <div className="min-w-0">
+              <p className="molsan-page-header__eyebrow">MOLSAN ERP · SEGURIDAD</p>
+              <h1 className="molsan-page-header__title">Resumen de seguridad</h1>
+              <p className="molsan-page-header__description">Información, permisos y actividad del usuario.</p>
             </div>
-
-            <h1 className="erp-page-title">
-              Resumen de seguridad
-            </h1>
-
-            <p className="erp-page-description">
-              Información, permisos y actividad del usuario.
-            </p>
           </div>
 
         </div>
@@ -284,7 +280,7 @@ export default function SeguridadResumen({ empleadoId }) {
             <div className="erp-empty-state">
 
               <div className="erp-empty-state-icon">
-                🔐
+                <MolsanIcon name="lock" size={24} />
               </div>
 
               <div>
@@ -321,17 +317,18 @@ export default function SeguridadResumen({ empleadoId }) {
           CABECERA
       ====================================================== */}
 
-      <div className="erp-page-header">
+      <div className="molsan-page-header">
 
-        <div>
-
-          <div className="erp-eyebrow">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true">SG</div>
+          <div>
+          <p className="molsan-page-header__eyebrow">
             SEGURIDAD · USUARIO
-          </div>
+          </p>
 
           <div className="flex flex-wrap items-center gap-3">
 
-            <h1 className="erp-page-title">
+            <h1 className="molsan-page-header__title">
               Resumen de seguridad
             </h1>
 
@@ -349,7 +346,7 @@ export default function SeguridadResumen({ empleadoId }) {
 
           </div>
 
-          <p className="erp-page-description">
+          <p className="molsan-page-header__description">
             {empleado.nombre || "-"}{" "}
             {empleado.apellidos || ""}
             {" · "}
@@ -358,10 +355,10 @@ export default function SeguridadResumen({ empleadoId }) {
               {empleado.usuario || "-"}
             </strong>
           </p>
-
+          </div>
         </div>
 
-        <div className="erp-page-header-status">
+        <div className="molsan-page-header__actions">
 
           {empleado.rol_nombre && (
             <span className="erp-badge erp-badge-primary">

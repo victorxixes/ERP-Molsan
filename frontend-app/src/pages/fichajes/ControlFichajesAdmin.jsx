@@ -1,3 +1,5 @@
+import MolsanButton from "../../components/ui/MolsanButton";
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 
@@ -88,9 +90,33 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
     catch (e) { setError(e?.response?.data?.detail || "No se pudo consultar el historial."); }
   };
 
+  const exportarRegistroHorario = async () => {
+    setGuardando(true); setError(""); setMensaje("");
+    try {
+      const respuesta = await axios.get("/fichajes/admin/marcajes/exportar", {
+        params: { desde: desde || undefined, hasta: hasta || undefined, empleado_id: empleadoId || undefined, tipo: tipo || undefined },
+        responseType: "blob",
+      });
+      const blob = new Blob([respuesta.data], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const enlace = document.createElement("a");
+      enlace.href = url;
+      enlace.download = `registro_jornada_${desde || "inicio"}_${hasta || "actualidad"}.csv`;
+      document.body.appendChild(enlace);
+      enlace.click();
+      enlace.remove();
+      URL.revokeObjectURL(url);
+      setMensaje("Registro horario exportado con resumen diario e historial de auditoría.");
+    } catch (e) {
+      setError(e?.response?.data?.detail || "No se pudo exportar el registro horario.");
+    } finally { setGuardando(false); }
+  };
+
   const cambiarPeriodo = async (cerrado) => {
     if (!desde) { setError("Selecciona una fecha del mes que quieras gestionar."); return; }
     if (motivoPeriodo.trim().length < 5) { setError("Indica un motivo de al menos cinco caracteres."); return; }
+    const accion = cerrado ? "cerrar" : "reabrir";
+    if (!window.confirm(`¿Confirmas ${accion} el periodo ${desde.slice(0, 7)}? El motivo quedará registrado en la auditoría.`)) return;
     const data = new FormData();
     data.append("anio", desde.slice(0, 4)); data.append("mes", String(Number(desde.slice(5, 7))));
     data.append("cerrado", cerrado ? "true" : "false"); data.append("motivo", motivoPeriodo.trim());
@@ -164,7 +190,7 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
   const input = "mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-800";
   const label = "block text-xs font-bold text-slate-600";
 
-  return <div className="p-4 sm:p-6">
+  return <div className="min-w-0">
     <section className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4">
       <h2 className="font-bold text-emerald-950">Asignación anual de vacaciones</h2><p className="mt-1 text-xs text-emerald-900">Configura los días iniciales de cada empleado; las solicitudes aprobadas descuentan el saldo.</p>
       <form className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" onSubmit={async (e) => { e.preventDefault(); setGuardando(true); setError(""); setMensaje(""); try { const d = new FormData(); d.append("empleado_id", empleadoBolsaId); d.append("anio", anioBolsa); d.append("dias_asignados", diasBolsa); await axios.post("/fichajes/admin/vacaciones-bolsa", d); setMensaje("Bolsa anual de vacaciones guardada."); } catch (err) { setError(err?.response?.data?.detail || "No se pudo guardar la bolsa de vacaciones."); } finally { setGuardando(false); } }}>
@@ -182,14 +208,15 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
       <label className={label}>Buscar empleado / observación<input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Nombre, usuario, nota…" className={input} /></label>
       <label className={label}>Tipo de movimiento<select value={tipo} onChange={(e) => setTipo(e.target.value)} className={input}><option value="">Todos los tipos</option>{TIPOS.map((t) => <option key={t[0]} value={t[0]}>{t[1]}</option>)}</select></label>
       <label className={label}>Estado del registro<select value={estado} onChange={(e) => setEstado(e.target.value)} className={input}><option value="">Todos</option><option value="ORIGINAL">Sin correcciones</option><option value="MODIFICADO">Con historial administrativo</option></select></label>
-      <div className="flex items-end"><button type="button" onClick={cargar} className="w-full rounded-xl border bg-white px-4 py-3 text-sm font-bold">Actualizar datos</button></div>
-      <div className="flex items-end"><button type="button" onClick={() => abrirEditor(null)} className="w-full rounded-xl bg-emerald-700 px-4 py-3 text-sm font-bold text-white">+ Añadir marcaje olvidado</button></div>
+      <div className="flex items-end"><MolsanButton type="button" variant="secondary" icon="refresh" className="w-full" onClick={cargar}>Actualizar datos</MolsanButton></div>
+      <div className="flex items-end"><MolsanButton type="button" variant="secondary" icon="download" className="w-full" disabled={guardando || !desde || !hasta} onClick={exportarRegistroHorario}>Exportar registro horario</MolsanButton></div>
+      <div className="flex items-end"><MolsanButton type="button" variant="primary" icon="plus" className="w-full" onClick={() => abrirEditor(null)}>Añadir marcaje olvidado</MolsanButton></div>
     </div>
 
     <section className="mt-5 rounded-2xl border border-amber-200 bg-amber-50/60 p-4">
       <div className="flex flex-wrap items-center justify-between gap-2"><div><h3 className="font-bold text-amber-950">Cierre y protección de periodos</h3><p className="mt-1 text-xs text-amber-900">Mes seleccionado: {desde ? desde.slice(5,7) + "/" + desde.slice(0,4) : "—"} · {periodo?.cerrado ? "CERRADO" : "Abierto"}</p></div>{periodo?.cerrado && <span className="rounded-lg bg-amber-200 px-3 py-1.5 text-xs font-extrabold text-amber-950">Periodo cerrado</span>}</div>
       <p className="mt-1 text-xs text-amber-900">Los meses cerrados bloquean las altas y correcciones. Reabrirlos requiere un motivo que queda registrado.</p>
-      <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto_auto]"><label className={label}>Motivo obligatorio<input value={motivoPeriodo} onChange={(e) => setMotivoPeriodo(e.target.value)} placeholder="Ej. nómina procesada…" className={input} /></label><button type="button" disabled={guardando || !!periodo?.cerrado} onClick={() => cambiarPeriodo(true)} className="self-end rounded-xl bg-amber-800 px-4 py-3 text-sm font-bold text-white disabled:opacity-40">Cerrar mes</button><button type="button" disabled={guardando || !periodo?.cerrado} onClick={() => cambiarPeriodo(false)} className="self-end rounded-xl border border-amber-300 bg-white px-4 py-3 text-sm font-bold text-amber-950 disabled:opacity-40">Reabrir mes</button></div>
+      <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto_auto]"><label className={label}>Motivo obligatorio<input value={motivoPeriodo} onChange={(e) => setMotivoPeriodo(e.target.value)} placeholder="Ej. nómina procesada…" className={input} /></label><MolsanButton type="button" variant="secondary" disabled={guardando || !!periodo?.cerrado} className="self-end" onClick={() => cambiarPeriodo(true)}>Cerrar mes</MolsanButton><MolsanButton type="button" variant="secondary" disabled={guardando || !periodo?.cerrado} className="self-end" onClick={() => cambiarPeriodo(false)}>Reabrir mes</MolsanButton></div>
       <div className="mt-3 flex flex-wrap gap-2">{periodos.filter((p) => p.cerrado).map((p) => <span key={p.anio + "-" + p.mes} className="rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-bold">{PAD(p.mes)}/{p.anio} · Cerrado</span>)}</div>
     </section>
 
@@ -198,10 +225,28 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
 
     <div className="mt-5 grid gap-3 sm:grid-cols-3"><article className="rounded-2xl border p-4"><p className="text-xs font-bold text-slate-500">Marcajes en el periodo</p><p className="mt-2 text-3xl font-extrabold">{marcajes.length}</p></article><article className="rounded-2xl border p-4"><p className="text-xs font-bold text-slate-500">Empleados con marcajes</p><p className="mt-2 text-3xl font-extrabold">{empleadosConMarcajes}</p></article><article className="rounded-2xl border p-4"><p className="text-xs font-bold text-slate-500">Marcajes corregidos / añadidos</p><p className="mt-2 text-3xl font-extrabold">{marcajes.filter((m) => m.modificado).length}</p></article></div>
 
-    <div className="mt-5 overflow-x-auto rounded-2xl border border-[var(--erp-border)]">
-      <table className="w-full min-w-[1250px] text-left text-sm"><thead><tr className="border-b bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><th className="p-3">Empleado</th><th className="p-3">Fecha</th><th className="p-3">Hora</th><th className="p-3">Tipo</th><th className="p-3">Observaciones</th><th className="p-3">Estado</th><th className="p-3">Horas cerradas periodo</th><th className="p-3">Acciones</th></tr></thead>
-        <tbody>{marcajes.map((m) => <tr key={m.id} className="border-b last:border-0"><td className="p-3 font-semibold">{m.empleado_nombre}</td><td className="p-3">{HUMAN_DATE(m.fecha_hora)}</td><td className="p-3 font-bold">{HUMAN_TIME(m.fecha_hora)}</td><td className="p-3">{LABEL(m.tipo)}</td><td className="max-w-[220px] p-3 text-slate-500">{m.observaciones || "—"}</td><td className="p-3">{m.modificado ? <span className="rounded-lg bg-amber-100 px-2 py-1 text-xs font-bold text-amber-900">{m.ultima_accion === "ALTA_ADMIN" ? "Añadido por administración" : "Corregido por administración"}</span> : <span className="text-xs text-slate-500">Original</span>}{m.periodo_cerrado && <span className="ml-1 rounded-lg bg-slate-100 px-2 py-1 text-xs font-bold">Mes cerrado</span>}</td><td className="p-3"><span className="font-bold">{resumenHoras.get(m.empleado_id)?.horas ?? "—"} h</span><span className="block text-[10px] text-slate-500">Incompletas: {resumenHoras.get(m.empleado_id)?.incompletas ?? "—"}</span></td><td className="p-3"><div className="flex gap-2"><button type="button" disabled={m.periodo_cerrado} onClick={() => abrirEditor(m)} className="rounded-lg border px-3 py-2 text-xs font-bold disabled:opacity-40">Corregir</button><button type="button" onClick={() => verHistorial(m)} className="rounded-lg border border-blue-200 px-3 py-2 text-xs font-bold text-blue-800">Historial</button></div></td></tr>)}{!marcajes.length && <tr><td colSpan="8" className="p-10 text-center text-slate-400">{cargando ? "Cargando marcajes…" : "No hay marcajes para los filtros seleccionados."}</td></tr>}</tbody>
-      </table>
+    <div className="mt-5">
+      <MolsanDataTable
+        rows={marcajes}
+          searchable
+          pagination
+          pageSize={25}
+
+        rowKey="id"
+        minWidth="1250px"
+        initialSort={{ key: "fecha", direction: "desc" }}
+        emptyText={cargando ? "Cargando marcajes…" : "No hay marcajes para los filtros seleccionados."}
+        columns={[
+          { key: "empleado", header: "Empleado", accessor: "empleado_nombre", sortType: "text" },
+          { key: "fecha", header: "Fecha", accessor: "fecha_hora", sortType: "date", render: (value) => HUMAN_DATE(value) },
+          { key: "hora", header: "Hora", accessor: (item) => { const date = new Date(item.fecha_hora); return date.getHours() * 60 + date.getMinutes(); }, sortType: "number", render: (_, item) => <strong className="tabular-nums">{HUMAN_TIME(item.fecha_hora)}</strong> },
+          { key: "tipo", header: "Tipo", accessor: "tipo", sortType: "text", render: (value) => LABEL(value) },
+          { key: "observaciones", header: "Observaciones", accessor: "observaciones", sortType: "text", render: (value) => value || "—" },
+          { key: "estado", header: "Estado", accessor: (item) => item.modificado ? (item.ultima_accion === "ALTA_ADMIN" ? "Añadido por administración" : "Corregido por administración") : "Original", sortType: "text", render: (_, item) => <div className="flex flex-wrap gap-1">{item.modificado ? <span className="rounded-lg bg-amber-100 px-2 py-1 text-xs font-bold text-amber-900">{item.ultima_accion === "ALTA_ADMIN" ? "Añadido por administración" : "Corregido por administración"}</span> : <span className="text-xs text-slate-500">Original</span>}{item.periodo_cerrado && <span className="rounded-lg bg-slate-100 px-2 py-1 text-xs font-bold">Mes cerrado</span>}</div> },
+          { key: "horas", header: "Horas cerradas periodo", accessor: (item) => resumenHoras.get(item.empleado_id)?.horas ?? null, sortType: "number", render: (value, item) => <><span className="font-bold">{value ?? "—"} h</span><span className="block text-[10px] text-slate-500">Incompletas: {resumenHoras.get(item.empleado_id)?.incompletas ?? "—"}</span></> },
+          { key: "acciones", header: "Acciones", sortable: false, align: "center", accessor: (item) => item.id, render: (_, item) => <div className="flex gap-2"><button type="button" disabled={item.periodo_cerrado} onClick={() => abrirEditor(item)} className="rounded-lg border px-3 py-2 text-xs font-bold disabled:opacity-40">Corregir</button><button type="button" onClick={() => verHistorial(item)} className="rounded-lg border border-blue-200 px-3 py-2 text-xs font-bold text-blue-800">Historial</button></div> },
+        ]}
+      />
     </div>
 
     {historialId !== null && <section className="mt-5 rounded-2xl border border-blue-200 bg-blue-50/40 p-4"><div className="flex items-center justify-between gap-3"><h3 className="font-bold">Historial de auditoría del marcaje #{historialId}</h3><button type="button" onClick={() => setHistorialId(null)} className="rounded-lg border bg-white px-3 py-2 text-xs font-bold">Cerrar</button></div><div className="mt-3 space-y-3">{historial.map((a) => <article key={a.id} className="rounded-xl border bg-white p-3"><p className="text-sm font-bold">{a.accion === "ALTA_ADMIN" ? "Alta administrativa" : "Corrección administrativa"} · {a.actor_nombre}</p><p className="mt-1 text-xs text-slate-500">{a.creado_en ? new Date(a.creado_en).toLocaleString("es-ES") : "—"} · Motivo: {a.motivo}</p><div className="mt-2 grid gap-2 sm:grid-cols-2"><div className="rounded-lg bg-rose-50 p-2 text-xs"><p className="font-bold">Antes</p><pre className="mt-1 whitespace-pre-wrap">{a.datos_anteriores ? JSON.stringify(a.datos_anteriores, null, 2) : "No existía: alta administrativa."}</pre></div><div className="rounded-lg bg-emerald-50 p-2 text-xs"><p className="font-bold">Después</p><pre className="mt-1 whitespace-pre-wrap">{JSON.stringify(a.datos_nuevos, null, 2)}</pre></div></div></article>)}{!historial.length && <p className="text-sm text-slate-500">Este registro todavía no tiene cambios administrativos auditados.</p>}</div></section>}

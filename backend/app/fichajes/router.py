@@ -1,9 +1,10 @@
 from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
-from io import BytesIO
+from io import BytesIO, StringIO
 from urllib.parse import quote
 import unicodedata
 import json
+import csv
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import StreamingResponse
@@ -238,6 +239,12 @@ def crear_marcaje(
         creado_por_id=usuario.id,
     )
     db.add(marcaje)
+    db.flush()
+    nuevo = _snapshot_marcaje(marcaje)
+    _registrar_auditoria_marcaje(
+        db, marcaje, usuario, "ALTA_EMPLEADO", None, nuevo,
+        "Marcaje registrado por el empleado desde el módulo de Fichajes."
+    )
     db.commit()
     db.refresh(marcaje)
     return _marcaje_dict(marcaje)
@@ -463,6 +470,162 @@ def admin_marcajes(
                           "creado_por_id": m.creado_por_id, "modificado": modificado, "ultima_accion": ultima_accion.get(m.id),
                           "periodo_cerrado": _periodo_esta_cerrado(db, m.fecha_hora)})
     return resultado
+
+
+@router.get("/admin/marcajes/exportar")
+def admin_exportar_marcajes(
+    desde: date | None = Query(default=None),
+    hasta: date | None = Query(default=None),
+    empleado_id: int | None = Query(default=None),
+    tipo: str | None = Query(default=None),
+    usuario=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Exporta el registro horario detallado y su resumen diario con historial de correcciones."""
+    require_perm_modulo(usuario, "control-fichajes", "ver")
+    _exigir_admin(usuario)
+    if desde and hasta and desde > hasta:
+        raise HTTPException(status_code=422, detail="La fecha inicial no puede ser posterior a la fecha final.")
+
+    consulta = db.query(FichajeMarcaje, Empleado).join(
+        Empleado, Empleado.id == FichajeMarcaje.empleado_id
+    )
+    if empleado_id:
+        consulta = consulta.filter(FichajeMarcaje.empleado_id == empleado_id)
+    if desde:
+        consulta = consulta.filter(
+            FichajeMarcaje.fecha_hora >= datetime.combine(desde, time.min).replace(tzinfo=ZoneInfo("Europe/Madrid"))
+        )
+    if hasta:
+        consulta = consulta.filter(
+            FichajeMarcaje.fecha_hora < datetime.combine(hasta + timedelta(days=1), time.min).replace(tzinfo=ZoneInfo("Europe/Madrid"))
+        )
+    if tipo:
+        consulta = consulta.filter(FichajeMarcaje.tipo == tipo.strip().upper())
+    filas = consulta.order_by(FichajeMarcaje.empleado_id, FichajeMarcaje.fecha_hora, FichajeMarcaje.id).all()
+
+    ids = [marcaje.id for marcaje, _ in filas]
+    historial_por_marcaje = {}
+    if ids:
+        auditorias = db.query(FichajeMarcajeAuditoria).filter(
+            FichajeMarcajeAuditoria.marcaje_id.in_(ids)
+        ).order_by(FichajeMarcajeAuditoria.creado_en, FichajeMarcajeAuditoria.id).all()
+        for auditoria in auditorias:
+            historial_por_marcaje.setdefault(auditoria.marcaje_id, []).append({
+                "accion": auditoria.accion,
+                "actor_id": auditoria.actor_id,
+                "motivo": auditoria.motivo,
+                "datos_anteriores": json.loads(auditoria.datos_anteriores) if auditoria.datos_anteriores else None,
+                "datos_nuevos": json.loads(auditoria.datos_nuevos) if auditoria.datos_nuevos else None,
+                "registrado_en": auditoria.creado_en.isoformat() if auditoria.creado_en else None,
+            })
+
+    def fecha_local(marcaje):
+        instante = marcaje.fecha_hora
+        if instante is None:
+            return None
+        if instante.tzinfo is None:
+            instante = instante.replace(tzinfo=timezone.utc)
+        return instante.astimezone(ZoneInfo("Europe/Madrid"))
+
+    resumen_diario = {}
+    for marcaje, _empleado in filas:
+        instante = fecha_local(marcaje)
+        if instante is None:
+            continue
+        clave = (marcaje.empleado_id, instante.date().isoformat())
+        resumen = resumen_diario.setdefault(clave, {"inicio": None, "fin": None})
+        if marcaje.tipo == "ENTRADA" and (resumen["inicio"] is None or instante < resumen["inicio"]):
+            resumen["inicio"] = instante
+        if marcaje.tipo == "SALIDA" and (resumen["fin"] is None or instante > resumen["fin"]):
+            resumen["fin"] = instante
+
+    salida = StringIO()
+    salida.write("\ufeff")
+    escritor = csv.writer(salida, delimiter=";", lineterminator="\r\n")
+    escritor.writerow([
+        "ID empleado", "Empleado", "Fecha jornada", "Inicio jornada", "Fin jornada",
+        "ID marcaje", "Fecha y hora del evento", "Tipo de evento", "Observaciones",
+        "Marcaje modificado", "Historial de auditoría (JSON)",
+    ])
+    for marcaje, empleado in filas:
+        instante = fecha_local(marcaje)
+        if instante is None:
+            continue
+        clave = (marcaje.empleado_id, instante.date().isoformat())
+        resumen = resumen_diario.get(clave, {})
+        inicio = resumen.get("inicio")
+        fin = resumen.get("fin")
+        historial = historial_por_marcaje.get(marcaje.id, [])
+        escritor.writerow([
+            marcaje.empleado_id,
+            _nombre_completo(empleado) or empleado.usuario,
+            instante.date().isoformat(),
+            inicio.strftime("%H:%M:%S") if inicio else "",
+            fin.strftime("%H:%M:%S") if fin else "",
+            marcaje.id,
+            instante.isoformat(),
+            marcaje.tipo,
+            marcaje.observaciones or "",
+            "SI" if historial else "NO",
+            json.dumps(historial, ensure_ascii=False, default=str),
+        ])
+
+    # Incluir también el rastro de marcajes eliminados: la FK deja marcaje_id
+    # a NULL, pero los snapshots de auditoría deben seguir siendo exportables.
+    auditorias_huerfanas = db.query(FichajeMarcajeAuditoria).filter(
+        FichajeMarcajeAuditoria.marcaje_id.is_(None)
+    )
+    if empleado_id:
+        auditorias_huerfanas = auditorias_huerfanas.filter(
+            FichajeMarcajeAuditoria.empleado_id == empleado_id
+        )
+    for auditoria in auditorias_huerfanas.order_by(
+        FichajeMarcajeAuditoria.creado_en, FichajeMarcajeAuditoria.id
+    ).all():
+        try:
+            snapshot = json.loads(auditoria.datos_anteriores or auditoria.datos_nuevos or "{}")
+            fecha_snapshot = datetime.fromisoformat(str(snapshot.get("fecha_hora", "")).replace("Z", "+00:00"))
+            if fecha_snapshot.tzinfo is None:
+                fecha_snapshot = fecha_snapshot.replace(tzinfo=ZoneInfo("Europe/Madrid"))
+            fecha_snapshot = fecha_snapshot.astimezone(ZoneInfo("Europe/Madrid"))
+        except (TypeError, ValueError, json.JSONDecodeError):
+            continue
+        if desde and fecha_snapshot.date() < desde:
+            continue
+        if hasta and fecha_snapshot.date() > hasta:
+            continue
+        if tipo and str(snapshot.get("tipo", "")).strip().upper() != tipo.strip().upper():
+            continue
+        empleado = db.query(Empleado).filter(Empleado.id == auditoria.empleado_id).first()
+        escritor.writerow([
+            auditoria.empleado_id,
+            (_nombre_completo(empleado) or empleado.usuario) if empleado else f"Empleado {auditoria.empleado_id}",
+            fecha_snapshot.date().isoformat(),
+            "",
+            "",
+            "SIN MARCA ACTUAL",
+            fecha_snapshot.isoformat(),
+            auditoria.accion,
+            auditoria.motivo,
+            "SI",
+            json.dumps([{
+                "accion": auditoria.accion,
+                "actor_id": auditoria.actor_id,
+                "motivo": auditoria.motivo,
+                "datos_anteriores": snapshot,
+                "datos_nuevos": json.loads(auditoria.datos_nuevos) if auditoria.datos_nuevos else None,
+                "registrado_en": auditoria.creado_en.isoformat() if auditoria.creado_en else None,
+            }], ensure_ascii=False, default=str),
+        ])
+
+    contenido = salida.getvalue().encode("utf-8")
+    nombre = f"registro_jornada_{desde.isoformat() if desde else 'inicio'}_{hasta.isoformat() if hasta else 'actualidad'}.csv"
+    return StreamingResponse(
+        iter([contenido]),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{quote(nombre)}"},
+    )
 
 
 @router.post("/admin/marcajes")

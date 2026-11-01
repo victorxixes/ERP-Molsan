@@ -1,3 +1,4 @@
+import { formatEuro } from "../../utils/formatters";
 import {
   useEffect,
   useState,
@@ -5,6 +6,7 @@ import {
 import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "./ExpedientesListado.css";
 
 import {
@@ -289,25 +291,25 @@ const COLUMNAS = [
   {
     key: "capital",
     label: "Capital",
-    tipo: "numero",
+    tipo: "moneda",
   },
 
   {
     key: "importe",
     label: "Importe",
-    tipo: "numero",
+    tipo: "moneda",
   },
 
   {
     key: "saldo_real",
     label: "Saldo real",
-    tipo: "numero",
+    tipo: "moneda",
   },
 
   {
     key: "saldo_disponible",
     label: "Saldo disponible",
-    tipo: "numero",
+    tipo: "moneda",
   },
 
 
@@ -549,7 +551,7 @@ const COLUMNAS = [
   { key: "fecha_presentacion_tributaria", label: "Fecha presentación tributaria", tipo: "fecha" },
   { key: "fecha_liquidacion_tributaria", label: "Fecha liquidación tributaria", tipo: "fecha" },
   { key: "oficina_liquidadora", label: "Oficina liquidadora", tipo: "texto" },
-  { key: "base_imponible", label: "Base imponible", tipo: "numero" },
+  { key: "base_imponible", label: "Base imponible", tipo: "moneda" },
   { key: "tributacion", label: "Tributación", tipo: "texto" },
   { key: "impuesto_ajd_itp", label: "Impuesto (AJD/ITP)", tipo: "texto" },
   { key: "fecha_vencimiento_asiento", label: "Fecha vencimiento asiento", tipo: "fecha" },
@@ -737,7 +739,7 @@ function CeldaRepositorioDigital({ expedienteId, repositorioKey, valor, onAbrir 
         title={`Abrir carpeta y ver ${cantidad} archivo(s)`}
         aria-label={`Abrir ${cantidad} documento(s)`}
       >
-        <span aria-hidden="true">📄</span>
+        <MolsanIcon name="file" size={24} />
         <span>{cantidad > 1 ? cantidad : "PDF"}</span>
       </button>
       {hover && (
@@ -751,7 +753,7 @@ function CeldaRepositorioDigital({ expedienteId, repositorioKey, valor, onAbrir 
               <div className="max-h-56 space-y-1 overflow-auto">
                 {documentos.map((doc) => (
                   <button key={doc.id} type="button" onMouseEnter={() => previsualizar(doc)} onFocus={() => previsualizar(doc)} onClick={() => previsualizar(doc)} className="block w-full rounded-lg px-2 py-2 text-left text-xs hover:bg-[var(--erp-primary-soft)]" title={doc.nombre_original || "Ver documento"}>
-                    <span className="mr-1" aria-hidden="true">📄</span>{doc.nombre_original || "Documento"}
+                    <MolsanIcon name="file" size={20} className="mr-1" />{doc.nombre_original || "Documento"}
                     {doc.fecha_subida && <span className="mt-1 block text-[10px]" style={{ color: "var(--erp-text-soft)" }}>{new Date(doc.fecha_subida).toLocaleDateString("es-ES")}</span>}
                   </button>
                 ))}
@@ -1012,6 +1014,10 @@ function formatearValor(
   // ==========================================================
   // NÚMERO
   // ==========================================================
+
+  if (tipo === "moneda") {
+    return formatEuro(valor);
+  }
 
   if (
     tipo === "numero"
@@ -2111,21 +2117,11 @@ export default function ExpedientesListado() {
           columna
       ) {
 
-        setOrdenMultiple([
-
-          {
-
-            columna,
-
-            direccion:
-              actual.direccion ===
-              "asc"
-                ? "desc"
-                : "asc",
-
-          },
-
-        ]);
+        if (actual.direccion === "asc") {
+          setOrdenMultiple([{ columna, direccion: "desc" }]);
+        } else {
+          setOrdenMultiple([]);
+        }
 
       } else {
 
@@ -2168,39 +2164,13 @@ export default function ExpedientesListado() {
       indice !== -1
     ) {
 
-      setOrdenMultiple(
-        (actual) =>
-          actual.map(
-            (
-              orden,
-              index
-            ) => {
-
-              if (
-                index !==
-                indice
-              ) {
-
-                return orden;
-
-              }
-
-
-              return {
-
-                ...orden,
-
-                direccion:
-                  orden.direccion ===
-                  "asc"
-                    ? "desc"
-                    : "asc",
-
-              };
-
-            }
-          )
-      );
+      setOrdenMultiple((actual) => {
+        const seleccionado = actual[indice];
+        if (seleccionado?.direccion === "desc") {
+          return actual.filter((_, index) => index !== indice);
+        }
+        return actual.map((orden, index) => index === indice ? { ...orden, direccion: "desc" } : orden);
+      });
 
     } else {
 
@@ -2385,10 +2355,8 @@ export default function ExpedientesListado() {
         molsan-page
         expedientes-page
         min-h-full
-
-        p-4
-        sm:p-6
-        lg:p-8
+        w-full
+        p-0
 
         text-[var(--erp-text)]
 
@@ -2430,7 +2398,7 @@ export default function ExpedientesListado() {
 
       {/* Área principal de trabajo de expedientes */}
 
-      <main className="min-w-0 w-full space-y-6">
+      <main className="molsan-page-stack min-w-0 w-full">
         <header className="molsan-page-header expedientes-page__header">
           <div className="molsan-page-header__identity">
             <div className="expedientes-page__header-icon molsan-page-header__mark" aria-hidden="true">EXP</div>
@@ -2450,7 +2418,7 @@ export default function ExpedientesListado() {
       <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-12">
         <div className="space-y-3 xl:col-span-4">
       {/* SLA GLOBAL: CIRCUITOS DIFERENCIADOS */}
-      <section className="space-y-3" aria-label="SLA global por circuito">
+      <section className="erp-card space-y-3 p-4 sm:p-5" aria-label="SLA global por circuito">
         <div>
           <h3 className="text-base font-bold text-[var(--erp-text)]">SLA global por circuito</h3>
           <p className="text-sm text-[var(--erp-text-soft)]">Controles independientes de los plazos de cada actividad. Pulsa un circuito para ver sus expedientes fuera de plazo.</p>
@@ -2493,7 +2461,7 @@ export default function ExpedientesListado() {
                   setColumnasVisibles(COLUMNAS_POR_DEFECTO);
                   setPagina(1);
                 }}
-                className="rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
+                className="erp-card border p-4 text-left focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
                 style={{
                   borderColor: activa ? circuito.borde : "var(--erp-border)",
                   background: activa ? circuito.fondo : "var(--erp-surface)",
@@ -2502,7 +2470,7 @@ export default function ExpedientesListado() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: circuito.fondo }}>{circuito.icono}</span>
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: circuito.fondo }}><MolsanIcon name={circuito.icono} size={44} /></span>
                     <div className="min-w-0">
                       <div className="font-bold text-[var(--erp-text)]">{circuito.titulo}</div>
                       <div className="mt-1 text-xs text-[var(--erp-text-soft)]">{circuito.descripcion}</div>
@@ -2529,7 +2497,7 @@ export default function ExpedientesListado() {
         </section>
 
       {/* ESTADOS DIFERENCIALES: son estados del expediente, no actividades ni SLA */}
-      <section className="space-y-1" aria-label="Estados diferenciales del expediente">
+      <section className="erp-card space-y-3 p-4 sm:p-5" aria-label="Estados diferenciales del expediente">
         <div>
           <h3 className="text-base font-bold text-[var(--erp-text)]">Estados diferenciales</h3>
           <p className="text-sm text-[var(--erp-text-soft)]">Estos filtros se basan en el estado del expediente. No son actividades y no calculan SLA.</p>
@@ -2555,11 +2523,11 @@ export default function ExpedientesListado() {
                   setColumnasVisibles(COLUMNAS_POR_DEFECTO);
                   setPagina(1);
                 }}
-                className="min-h-[116px] rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
+                className="erp-card min-h-[116px] border p-4 text-left focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
                 style={{ background: activa ? estado.fondo : "var(--erp-surface)", borderColor: activa ? estado.borde : "var(--erp-border)", boxShadow: activa ? `0 0 0 1px ${estado.borde}` : undefined }}
               >
                 <div className="flex items-start justify-between gap-3">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: estado.fondo }}>{estado.icono}</span>
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: estado.fondo }}><MolsanIcon name={estado.icono} size={42} /></span>
                   <span className="text-3xl font-extrabold tabular-nums" style={{ color: estado.borde }}>{loading ? "…" : formatearNumero(totalesEstadosDiferenciales[estado.codigo])}</span>
                 </div>
                 <div className="mt-3 font-bold text-[var(--erp-text)]">{estado.titulo}</div>
@@ -2572,21 +2540,21 @@ export default function ExpedientesListado() {
       </section>
       {/* Acciones principales: agrupadas justo debajo de los bloques de tarjetas */}
       <section className="w-full flex flex-wrap items-center justify-start gap-2 -mt-2" aria-label="Acciones de expedientes">
-        <button type="button" onClick={exportarExcel} disabled={loading} className="rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50" style={{ background: "var(--erp-success)" }}>📊 Exportar Excel</button>
-        <button type="button" onClick={() => setMostrarFiltros(true)} className="rounded-xl border px-4 py-2.5 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)", background: "var(--erp-surface)" }}>🔎 Filtros avanzados</button>
+        <button type="button" onClick={exportarExcel} disabled={loading} className="rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50" style={{ background: "var(--erp-success)" }}><MolsanIcon name="chart" size={20} /> Exportar Excel</button>
+        <button type="button" onClick={() => setMostrarFiltros(true)} className="rounded-xl border px-4 py-2.5 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)", background: "var(--erp-surface)" }}><MolsanIcon name="search" size={20} /> Filtros avanzados</button>
         <button
           type="button"
           onClick={() => setMostrarAyudaControlPlazos(true)}
           className="inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-bold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
           style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface)", color: "var(--erp-primary)" }}
         >
-          📌 Ver Control de plazos
+          <MolsanIcon name="calendar" size={20} /> Ver Control de plazos
         </button>
       </section>
         </div>
         <div className="min-w-0 xl:col-span-8">
       {/* GRIDS DE ACTIVIDAD */}
-      <section className="space-y-3" aria-label="Expedientes por actividad">
+      <section className="erp-card space-y-3 p-4 sm:p-5" aria-label="Expedientes por actividad">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div><h3 className="text-base font-bold text-[var(--erp-text)]">{(configuracionesVisibilidad.find((item) => item.actividad_key === actividadSeleccionada)?.nombre_tabla) || "Expedientes por actividad"}</h3><p className="text-sm text-[var(--erp-text-soft)]">Pulsa un grid para ver debajo la tabla con los expedientes de esa actividad.</p></div>
           {actividadSeleccionada && <button type="button" onClick={() => { setActividadSeleccionada(""); setAlertaSeleccionada(""); setColumnasVisibles(COLUMNAS_POR_DEFECTO); setFiltroActividad(""); setFiltrosAplicados((actual) => ({ ...actual, actividad: "" })); setPagina(1); }} className="self-start rounded-lg border px-3 py-2 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-primary)", background: "var(--erp-surface)" }}>Ver todas las actividades</button>}
@@ -2614,9 +2582,9 @@ export default function ExpedientesListado() {
                 setFiltroActividad(activa ? "" : valorBackend);
                 setFiltrosAplicados((actual) => ({ ...actual, actividad: activa ? "" : valorBackend })); setPagina(1);
               }}
-              className="min-h-[148px] rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
+              className="erp-card min-h-[148px] border p-4 text-left focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
               style={{ background: activa ? "var(--erp-primary-soft)" : "var(--erp-surface)", borderColor: activa ? "var(--erp-primary)" : "var(--erp-border)", boxShadow: activa ? "0 0 0 1px var(--erp-primary)" : undefined }}>
-              <div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: activa ? "rgba(59,130,246,.14)" : "var(--erp-surface-soft)" }}>{actividad.icono}</span><span className="text-3xl font-extrabold tabular-nums" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text)" }}>{loadingActividades ? "…" : formatearNumero(total)}</span></div>
+              <div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: activa ? "rgba(59,130,246,.14)" : "var(--erp-surface-soft)" }}><MolsanIcon name={actividad.icono} size={42} /></span><span className="text-3xl font-extrabold tabular-nums" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text)" }}>{loadingActividades ? "…" : formatearNumero(total)}</span></div>
               <div className="mt-3 text-sm font-bold leading-snug text-[var(--erp-text)]">{actividad.label}</div>
               <div className="mt-3">
                 {loadingAlertasControl ? (
@@ -2638,7 +2606,7 @@ export default function ExpedientesListado() {
       </section>
       {/* BÚSQUEDA FÁCIL: ocupa todo el ancho disponible */}
       <section
-        className="w-full rounded-2xl border p-3 sm:p-4 shadow-sm space-y-2"
+        className="erp-card w-full p-3 sm:p-4 space-y-2"
         style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
         aria-label="Buscar expedientes"
       >
@@ -2657,7 +2625,7 @@ export default function ExpedientesListado() {
           }}
         >
           <div className="relative min-w-0 flex-1">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg" aria-hidden="true">🔎</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg" aria-hidden="true"><MolsanIcon name="search" size={20} /></span>
             <input
               type="search"
               value={busquedaRapida}
@@ -2933,7 +2901,7 @@ export default function ExpedientesListado() {
                               />
                             ) : columna.key === "carpeta_digital" ? (
                               Number.parseInt(String(expediente[columna.key] || "").match(/\d+/)?.[0] || "0", 10) > 0 ? (
-                                <button type="button" onClick={() => setCarpetaDigitalSeleccionada({ expedienteId: expediente.id_expediente || expediente.id, actividadId: actividadSeleccionada })} className="rounded-lg border px-2 py-1 text-xs font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-primary)" }}>📂 {expediente[columna.key]}</button>
+                                <button type="button" onClick={() => setCarpetaDigitalSeleccionada({ expedienteId: expediente.id_expediente || expediente.id, actividadId: actividadSeleccionada })} className="rounded-lg border px-2 py-1 text-xs font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-primary)" }}><MolsanIcon name="folderOpen" size={18} /> {expediente[columna.key]}</button>
                               ) : null
                             ) : columna.key === "id_expediente" ? (
                               <Link to={`/expedientes/${encodeURIComponent(expediente.id_expediente || expediente.id || "")}`} className="font-extrabold text-[var(--erp-primary)] underline-offset-2 hover:underline" title={`Abrir ficha del expediente ${expediente.id_expediente || expediente.id || ""}`}>
@@ -3329,7 +3297,7 @@ export default function ExpedientesListado() {
             <header className="flex items-start justify-between gap-4 border-b border-slate-200 bg-slate-50 px-5 py-4">
               <div>
                 <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Expedientes</p>
-                <h2 id="titulo-control-plazos" className="mt-1 text-lg font-extrabold text-slate-900">📌 Control de plazos</h2>
+                <h2 id="titulo-control-plazos" className="mt-1 text-lg font-extrabold text-slate-900"><MolsanIcon name="calendar" size={22} /> Control de plazos</h2>
               </div>
               <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} aria-label="Cerrar" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100">✕</button>
             </header>

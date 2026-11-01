@@ -1,6 +1,6 @@
 /* MOLSAN ERP Premium 2027 · acceso, perfiles y CTN */
 .login-principal-premium,.modulo-pendiente-premium,.empleado-perfil-premium,.ctn-workspace-premium { min-width:0; }
-.login-principal-premium input:focus-visible,.login-principal-premium button:focus-visible,.modulo-pendiente-premium button:focus-visible,.empleado-perfil-premium button:focus-visible,.empleado-perfil-premium input:focus-visible,.empleado-perfil-premium select:focus-visible,.ctn-workspace-premium button:focus-visible,.ctn-workspace-premium input:focus-visible { outline:2px solid var(--molsan-primary,#3156b3); outline-offset:2px; }
+.login-principal-premium input:focus-visible,.login-principal-premium button:focus-visible,.modulo-pendiente-premium button:focus-visible,.empleado-perfil-premium button:focus-visible,.empleado-perfil-premium input:focus-visible,.empleado-perfil-premium select:focus-visible,.ctn-workspace-premium button:focus-visible,.ctn-workspace-premium input:focus-visible { outline:2px solid var(--molsan-primary, #064675); outline-offset:2px; }
 .login-principal-premium input,.login-principal-premium button { max-width:100%; }
 .modulo-pendiente-premium { min-height:calc(100dvh - 6rem); }
 .empleado-perfil-premium img { max-width:100%; }
@@ -8,3 +8,106 @@
 .empleado-perfil-premium td,.empleado-perfil-premium th,.ctn-workspace-premium td,.ctn-workspace-premium th { overflow-wrap:anywhere; }
 @media(max-width:640px){.empleado-perfil-premium,.ctn-workspace-premium{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}}
 @media(prefers-reduced-motion:reduce){.login-principal-premium *,.modulo-pendiente-premium *,.empleado-perfil-premium *,.ctn-workspace-premium *{animation:none!important;transition:none!important}}
+
+
+/* =========================================================
+   LOGIN · HÍBRIDO MOLSAN 2027
+   Refuerza la identidad visual sin alterar el formulario,
+   autenticación, validaciones ni navegación.
+   ========================================================= */
+.login-principal-premium {
+  --login-ink: #123F5E;
+  --login-muted: #617789;
+  --login-line: #D8E4EC;
+  background:
+    radial-gradient(ellipse at 12% 16%, rgba(20,119,165,.11), transparent 31%),
+    radial-gradient(ellipse at 88% 84%, rgba(6,70,117,.09), transparent 32%),
+    linear-gradient(135deg,#F2F7FB 0%,#FFFFFF 48%,#F6FAFC 100%) !important;
+}
+.login-principal-premium::before,
+.login-principal-premium::after {
+  position:absolute;
+  content:"";
+  pointer-events:none;
+  border:1px solid rgba(6,70,117,.075);
+  border-radius:50%;
+}
+.login-principal-premium::before {
+  width:min(58vw,680px);height:min(58vw,680px);
+  top:-31%;left:-17%;
+  box-shadow:0 0 0 34px rgba(6,70,117,.018),0 0 0 78px rgba(6,70,117,.014);
+}
+.login-principal-premium::after {
+  width:min(48vw,560px);height:min(48vw,560px);
+  right:-15%;bottom:-30%;
+  background:radial-gradient(circle,rgba(20,119,165,.045),transparent 68%);
+}
+.login-principal-premium > .relative.z-10 { max-width:460px !important; }
+.login-principal-premium > .relative.z-10 > div {
+  border:1px solid rgba(216,228,236,.92) !important;
+  border-radius:28px !important;
+  background:rgba(255,255,255,.91) !important;
+  box-shadow:0 28px 78px rgba(6,50,82,.13),0 3px 12px rgba(6,50,82,.035) !important;
+  backdrop-filter:blur(22px);
+}
+.login-principal-premium img[alt="Molsan"] {
+  filter:drop-shadow(0 8px 14px rgba(6,50,82,.09));
+}
+.login-principal-premium h1 {
+  color:#064675 !important;
+  font-weight:850 !important;
+  letter-spacing:-.045em !important;
+}
+.login-principal-premium h1::after {
+  display:block;
+  width:46px;height:3px;
+  margin:13px auto 0;
+  border-radius:99px;
+  background:linear-gradient(90deg,#064675,#55A9C5);
+  content:"";
+}
+.login-principal-premium label {
+  color:#24465D !important;
+  font-weight:750 !important;
+  letter-spacing:-.01em;
+}
+.login-principal-premium input {
+  min-height:50px;
+  border-color:#D8E4EC !important;
+  border-radius:13px !important;
+  background:#FBFDFE !important;
+  color:#173247 !important;
+  box-shadow:inset 0 1px 2px rgba(6,50,82,.025) !important;
+}
+.login-principal-premium input:hover { border-color:#AFC5D4 !important; }
+.login-principal-premium input:focus {
+  border-color:#397EA4 !important;
+  box-shadow:0 0 0 4px rgba(6,70,117,.10) !important;
+}
+.login-principal-premium form > button[type="submit"] {
+  min-height:52px;
+  border:1px solid #064675 !important;
+  border-radius:14px !important;
+  background:linear-gradient(112deg,#04375B 0%,#064675 62%,#1477A5 100%) !important;
+  box-shadow:0 12px 25px rgba(6,70,117,.20) !important;
+  letter-spacing:.01em;
+}
+.login-principal-premium form > button[type="submit"]:hover:not(:disabled) {
+  background:linear-gradient(112deg,#032D4B 0%,#064675 58%,#0D638C 100%) !important;
+  box-shadow:0 16px 30px rgba(6,70,117,.25) !important;
+  transform:translateY(-1px);
+}
+.login-principal-premium > .relative.z-10 > div > div:last-child {
+  border-color:#E5EDF2 !important;
+}
+.login-principal-premium > .relative.z-10 > div > div:last-child p:first-child {
+  color:#617789 !important;
+  font-weight:700 !important;
+}
+@media(max-width:520px) {
+  .login-principal-premium { padding:18px 14px !important; }
+  .login-principal-premium > .relative.z-10 > div { border-radius:22px !important; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .login-principal-premium::before,.login-principal-premium::after { display:none; }
+}

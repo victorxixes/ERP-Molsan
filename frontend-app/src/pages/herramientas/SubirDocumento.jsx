@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useState, useCallback, useMemo } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
@@ -57,7 +58,7 @@ export default function SubirDocumento() {
   ]);
 
   return (
-    <div className="subir-documento-premium herramientas-subpagina-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6 animate-fadeIn">
+    <div className="molsan-page-stack subir-documento-premium herramientas-subpagina-premium min-h-full animate-fadeIn">
 
       {/* =====================================================
           CABECERA
@@ -85,7 +86,7 @@ export default function SubirDocumento() {
           "
         />
 
-        <div className="flex items-center gap-4">
+        <div className="molsan-page-header">
 
           <div
             className="
@@ -97,7 +98,7 @@ export default function SubirDocumento() {
               text-2xl
             "
           >
-            📄
+            <MolsanIcon name="file" size={20} />
           </div>
 
           <div>
@@ -239,7 +240,7 @@ export default function SubirDocumento() {
             >
 
               <span className="text-3xl">
-                {file ? "📎" : "☁️"}
+                <MolsanIcon name={file ? "attachment" : "upload"} size={22} />
               </span>
 
               <span className="text-sm font-medium text-slate-600">

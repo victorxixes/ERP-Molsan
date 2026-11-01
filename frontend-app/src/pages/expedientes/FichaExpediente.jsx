@@ -3,12 +3,14 @@ import { createPortal } from "react-dom";
 
 import { Link, useParams } from "react-router-dom";
 import axios from "../../api/axios";
+import { formatDecimal, formatEuro, formatPercent } from "../../utils/formatters";
 
 import { obtenerExpediente, obtenerListadoExpedientes, enviarExpedienteANotario } from "../../api/expedientes";
 
 import EnviarANotarioModal from "../../components/expedientes/EnviarANotarioModal";
 import LiquidarExpedienteModal from "../../components/expedientes/LiquidarExpedienteModal";
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import TraspasoSaldoPanel from "../../components/expedientes/TraspasoSaldoPanel";
 import { useAuthStore } from "../../store/authStore";
 import "./FichaExpedientePremium.css";
@@ -128,13 +130,7 @@ function formatearNumero(valor) {
     return String(valor);
   }
 
-  return new Intl.NumberFormat(
-    "es-ES",
-    {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }
-  ).format(numero);
+  return formatDecimal(numero);
 }
 
 
@@ -229,37 +225,37 @@ const ACTIVIDADES_EXPEDIENTES = [
   {
     key: "documentacion-previa",
     label: "Documentación previa",
-    icono: "📄",
+    icono: "file",
   },
 
   {
     key: "sede-notarial",
     label: "Sede notarial",
-    icono: "🏛️",
+    icono: "courthouse",
   },
 
   {
     key: "sede-notarial-protocolo",
     label: "Sede notarial con protocolo",
-    icono: "📜",
+    icono: "scroll",
   },
 
   {
     key: "gestion-economica",
     label: "Gestión económica",
-    icono: "💼",
+    icono: "briefcase",
   },
 
   {
     key: "liquidacion-impuestos",
     label: "Liquidación de impuestos",
-    icono: "💶",
+    icono: "euro",
   },
 
   {
     key: "tramitacion-inscripcion",
     label: "Tramitación inscripción",
-    icono: "🏢",
+    icono: "building",
   },
 
   {
@@ -271,7 +267,7 @@ const ACTIVIDADES_EXPEDIENTES = [
   {
     key: "facturacion-cierre",
     label: "Cierre del expediente",
-    icono: "🧾",
+    icono: "receipt",
   },
 ];
 
@@ -927,16 +923,16 @@ function IconoSeccion({
   tipo = "default",
 }) {
   const iconos = {
-    estado: "◉",
-    titular: "👤",
-    solicitante: "👥",
-    economico: "📊",
-    notario: "✒️",
-    observaciones: "▣",
-    actividad: "⚙️",
-    finca: "🏠",
-    registro: "📚",
-    accion: "⚡",
+    estado: "eye",
+    titular: "person",
+    solicitante: "users",
+    economico: "chart",
+    notario: "pen",
+    observaciones: "video",
+    actividad: "settings",
+    finca: "home",
+    registro: "book",
+    accion: "activity",
   };
 
   return (
@@ -947,10 +943,7 @@ function IconoSeccion({
       "
       aria-hidden="true"
     >
-      {
-        iconos[tipo] ||
-        "▣"
-      }
+      <MolsanIcon name={iconos[tipo] || "file"} size={30} />
     </span>
   );
 }
@@ -5043,7 +5036,7 @@ const cuantiaFincasParaEnvio =
                         });
                         const fases = [
                           {
-                            key: "documentacion-previa", label: "Documentación previa", icono: "📄",
+                            key: "documentacion-previa", label: "Documentación previa", icono: "file",
                             checks: [
                               requisito(
                                 "Certificado Saldo «0» erróneo",
@@ -5086,14 +5079,14 @@ const cuantiaFincasParaEnvio =
                             ],
                           },
                           {
-                            key: "sede-notarial", label: "Sede notarial", icono: "🏛️",
+                            key: "sede-notarial", label: "Sede notarial", icono: "courthouse",
                             checks: [
                               requisito("Notario", Boolean(notario), "Falta seleccionar o indicar el notario en Enviar a notario"),
                               requisito("Fecha de envío", Boolean(fechaEnvio), "No consta la fecha de envío a notario"),
                             ],
                           },
                           {
-                            key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "📜",
+                            key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "scroll",
                             checks: [
                               requisito("Apoderado", Boolean(valor("apoderado")), "Selecciona Gestoría o CaixaBank"),
                               requisito("Fecha firma", Boolean(fechaFirma), "No consta la fecha de firma"),
@@ -5107,7 +5100,7 @@ const cuantiaFincasParaEnvio =
                             ],
                           },
                           {
-                            key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "💶",
+                            key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "euro",
                             checks: [
                               requisito("Fecha presentación tributaria", Boolean(valor("fecha_presentacion_tributaria")), "Falta la fecha de presentación tributaria"),
                               requisito("Fecha liquidación tributaria", Boolean(valor("fecha_liquidacion_tributaria")), "Falta la fecha de liquidación tributaria"),
@@ -5119,7 +5112,7 @@ const cuantiaFincasParaEnvio =
                             ],
                           },
                           {
-                            key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "🏢",
+                            key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "building",
                             checks: [
                               requisito("Fecha presentación", Boolean(valor("fecha_presentacion")), "Falta la fecha de presentación en Registro"),
                               requisito("Fecha vencimiento asiento (+60 días naturales)", Boolean(valor("fecha_vencimiento_asiento", "fecha_vencimiento")), "No consta la fecha de vencimiento del asiento, calculada a 60 días naturales desde la presentación"),
@@ -5170,7 +5163,7 @@ const cuantiaFincasParaEnvio =
                             ],
                           },
                           {
-                            key: "facturacion-cierre", label: "Facturación y cierre", icono: "🧾",
+                            key: "facturacion-cierre", label: "Facturación y cierre", icono: "receipt",
                             checks: [
                               requisito("Fecha de facturación", Boolean(valor("facturacion_fecha")), "Falta la fecha de facturación"),
                               requisito("Entrega al cliente", Boolean(valor("fecha_entregado_cliente")), "Falta la fecha de entrega al cliente"),
@@ -5197,9 +5190,9 @@ const cuantiaFincasParaEnvio =
                                     aria-label={"Ir a " + fase.label + ". " + (completa ? "Control superado" : pendientes.length + " tareas pendientes")}
                                   >
                                     <span className="flex items-center gap-3">
-                                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-lg ${completa ? "bg-emerald-100" : actual ? "bg-blue-100" : "bg-slate-100"}`}>{completa ? "✓" : fase.icono}</span>
+                                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-lg ${completa ? "bg-emerald-100" : actual ? "bg-blue-100" : "bg-slate-100"}`}>{completa ? <MolsanIcon name="check" size={22} tone="emerald" /> : <MolsanIcon name={fase.icono} size={30} />}</span>
                                       <span className="min-w-0 flex-1">
-                                        <span className="block text-sm font-extrabold text-slate-800">{fase.icono} {fase.label}</span>
+                                        <span className="block text-sm font-extrabold text-slate-800"><MolsanIcon name={fase.icono} size={20} /> {fase.label}</span>
                                         <span className={`mt-1 block text-xs font-semibold ${completa ? "text-emerald-700" : actual ? "text-blue-700" : "text-amber-700"}`}>
                                           {completa ? "Control superado" : actual ? "Actividad actual · requiere revisión" : "Con incidencias pendientes"}
                                         </span>
@@ -5283,7 +5276,7 @@ const cuantiaFincasParaEnvio =
                               })}
                               <article className="min-w-0 rounded-xl border border-violet-200 bg-violet-50/40 p-3">
                                 <div className="flex items-center gap-2">
-                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-violet-300 bg-white text-sm">💶</div>
+                                  <MolsanIcon name="euro" size={34} tone="violet" />
                                   <div className="min-w-0 flex-1">
                                     <p className="text-xs font-bold text-slate-800">PPAD</p>
                                     <p className="mt-0.5 text-[10px] font-semibold text-violet-700">{cargandoPpad ? "Cargando registros…" : `${ppadItems.length} registro(s) · ${ppadItems.filter((item) => !item.compensado).length} pendiente(s)`}</p>
@@ -5295,13 +5288,13 @@ const cuantiaFincasParaEnvio =
                                   {!cargandoPpad && !errorPpad && ppadItems.length === 0 && <p className="text-[11px] text-slate-500">No hay registros PPAD en este expediente.</p>}
                                   {ppadItems.map((item) => <div key={item.id} className="flex items-start justify-between gap-2 text-[11px]">
                                     <span className="min-w-0 text-slate-700"><strong>{item.concepto || "PPAD"}</strong><span className="block text-[10px] text-slate-500">{item.compensado ? "✓ Compensado" : "◷ Pendiente"}{item.imputable_a || item.imputableA ? ` · ${item.imputable_a || item.imputableA}` : ""}</span></span>
-                                    <span className="shrink-0 font-bold tabular-nums text-slate-800">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</span>
+                                    <span className="shrink-0 font-bold tabular-nums text-slate-800">{formatEuro(Number(item.importe) || 0)}</span>
                                   </div>)}
                                 </div>}
                               </article>
                               <article className="min-w-0 rounded-xl border border-amber-200 bg-amber-50/40 p-3">
                                 <div className="flex items-center gap-2">
-                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-amber-300 bg-white text-sm">💰</div>
+                                  <MolsanIcon name="wallet" size={34} tone="amber" />
                                   <div className="min-w-0 flex-1">
                                     <p className="text-xs font-bold text-slate-800">Complementos de saldo</p>
                                     <p className="mt-0.5 text-[10px] font-semibold text-amber-800">{cargandoComplementosExpediente ? "Cargando solicitudes…" : `${complementosSaldoExpediente.length} solicitud(es) · ${complementosSaldoExpediente.filter((item) => !["compensado", "cerrado"].includes(String(item.estado || "").toLowerCase())).length} pendiente(s)`}</p>
@@ -5313,7 +5306,7 @@ const cuantiaFincasParaEnvio =
                                   {!cargandoComplementosExpediente && !errorComplementosExpediente && complementosSaldoExpediente.length === 0 && <p className="text-[11px] text-slate-500">No hay solicitudes de complemento para este expediente.</p>}
                                   {complementosSaldoExpediente.map((item) => <div key={item.id} className="flex items-start justify-between gap-2 text-[11px]">
                                     <span className="min-w-0 text-slate-700"><strong>{item.motivo || "Complemento de saldo"}</strong><span className="block text-[10px] text-slate-500">{item.fecha_solicitud ? formatearFecha(item.fecha_solicitud) : "Sin fecha"} · {item.estado || "Pendiente"}</span></span>
-                                    <span className="shrink-0 font-bold tabular-nums text-slate-800">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</span>
+                                    <span className="shrink-0 font-bold tabular-nums text-slate-800">{formatEuro(Number(item.importe) || 0)}</span>
                                   </div>)}
                                 </div>}
                               </article>
@@ -5488,9 +5481,9 @@ const cuantiaFincasParaEnvio =
           </div>
 
           {/* Ficha y acciones en una sola línea, debajo de los bloques principales */}
-          <div className="mt-3 flex w-full min-w-0 flex-wrap items-center gap-2 overflow-x-hidden rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2">
+          <div className="molsan-page-toolbar mt-3 w-full overflow-x-hidden">
             <div className="flex shrink-0 items-center gap-2 pr-2">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-lg text-blue-600">📁</div>
+              <MolsanIcon name="folder" size={34} />
               <div className="min-w-[150px]">
                 <p className="whitespace-nowrap text-[9px] font-bold uppercase tracking-[0.12em] text-slate-400">Ficha de expediente</p>
                 <h1 className="whitespace-nowrap text-base font-extrabold leading-tight text-slate-800">{valorVisible(expediente.id_expediente)}</h1>
@@ -5519,7 +5512,7 @@ const cuantiaFincasParaEnvio =
                   <span className="mr-1 shrink-0 text-[9px] font-bold uppercase tracking-wide text-slate-400">Relacionados</span>
                   {primerosRelacionados.map((relacionado) => (
                     <Link key={String(relacionado.id_expediente)} to={`/expedientes/${encodeURIComponent(relacionado.id_expediente)}`} className="inline-flex max-w-[180px] min-w-0 shrink items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[10px] font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50" title={relacionado.actividad_actual || "Abrir expediente relacionado"}>
-                      <span className="shrink-0 text-blue-700">📁</span>
+                      <MolsanIcon name="folder" size={20} />
                       <span className="truncate">{valorVisible(relacionado.id_expediente)}</span>
                     </Link>
                   ))}
@@ -5531,13 +5524,13 @@ const cuantiaFincasParaEnvio =
                 </div>
               ) : null;
             })()}
-            {expedienteBloqueado && <span className="inline-flex shrink-0 items-center rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[10px] font-extrabold text-red-800">🔒 BLOQUEADO · {motivoBloqueoExpediente}</span>}
+            {expedienteBloqueado && <span className="inline-flex shrink-0 items-center rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[10px] font-extrabold text-red-800"><MolsanIcon name="lock" size={16} /> BLOQUEADO · {motivoBloqueoExpediente}</span>}
             <div className="flex shrink-0 items-center gap-1.5">
-              <button type="button" onClick={abrirDefecto} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-blue-700 shadow-sm transition hover:bg-blue-100" title="Registrar un defecto registral">➕ Alta defecto</button>
-              <Boton onClick={abrirControlExpediente} className="!shrink-0 !rounded-lg !px-2.5 !py-2 !text-[11px] !leading-tight">{expedienteBloqueado ? "🔒 Control / desbloqueo" : "🔐 Control y bloqueo"}</Boton>
-              <button type="button" onClick={abrirReclamacionOficina} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-amber-800 shadow-sm transition hover:bg-amber-100">✉️ Emails</button>
-              <button type="button" onClick={() => window.alert("Pendiente: enlazar este botón con la dirección real del área de clientes.")} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[11px] font-bold leading-tight text-slate-600 shadow-sm transition hover:bg-slate-100" title="Pendiente de enlazar con el área de clientes">🔗 Área de clientes</button>
-              {tieneDefecto && <button type="button" onClick={abrirDefecto} className="animate-pulse inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-red-700 shadow-sm">⚠️ DEFECTO REGISTRAL</button>}
+              <button type="button" onClick={abrirDefecto} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-blue-700 shadow-sm transition hover:bg-blue-100" title="Registrar un defecto registral"><MolsanIcon name="plus" size={16} /> Alta defecto</button>
+              <Boton onClick={abrirControlExpediente} className="!shrink-0 !rounded-lg !px-2.5 !py-2 !text-[11px] !leading-tight">{expedienteBloqueado ? "Control / desbloqueo" : "Control y bloqueo"}</Boton>
+              <button type="button" onClick={abrirReclamacionOficina} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-amber-800 shadow-sm transition hover:bg-amber-100"><MolsanIcon name="mail" size={16} /> Emails</button>
+              <button type="button" onClick={() => window.alert("Pendiente: enlazar este botón con la dirección real del área de clientes.")} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[11px] font-bold leading-tight text-slate-600 shadow-sm transition hover:bg-slate-100" title="Pendiente de enlazar con el área de clientes"><MolsanIcon name="link" size={16} /> Área de clientes</button>
+              {tieneDefecto && <button type="button" onClick={abrirDefecto} className="animate-pulse inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-red-700 shadow-sm"><MolsanIcon name="alert" size={16} tone="amber" /> DEFECTO REGISTRAL</button>}
             </div>
             <div className="ml-auto flex shrink-0 items-center gap-2">
               <div className="inline-flex max-w-[260px] items-center gap-1.5 rounded-lg border border-blue-100 bg-white px-2.5 py-2 text-[11px]">
@@ -5601,7 +5594,7 @@ const cuantiaFincasParaEnvio =
                       onClick={() => { setMostrarControlCalidad(true); cargarDocumentosCierre(); }}
                       className={`flex h-[84px] w-[190px] min-w-[190px] shrink-0 flex-col justify-start rounded-xl border px-3 py-2 text-left transition ${mostrarControlCalidad ? "border-violet-300 bg-violet-50 shadow-sm" : "border-violet-200 bg-white hover:bg-violet-50"}`}
                     >
-                      <span className={`text-xs font-bold ${mostrarControlCalidad ? "text-violet-700" : "text-violet-800"}`}>🛡️ Control de calidad</span>
+                      <span className={`text-xs font-bold ${mostrarControlCalidad ? "text-violet-700" : "text-violet-800"}`}><MolsanIcon name="shield" size={18} /> Control de calidad</span>
                       <span className="mt-2 text-[9px] font-semibold text-slate-500">Revisión independiente</span>
                     </button>
                   )}
@@ -5760,7 +5753,7 @@ const cuantiaFincasParaEnvio =
 
               <div className="min-w-0 flex-1">
                 <h3 className="text-base font-bold text-slate-800">
-                  {actividadSeleccionadaDef.icono} {actividadSeleccionadaDef.label}
+                  <MolsanIcon name={actividadSeleccionadaDef.icono} size={28} /> {actividadSeleccionadaDef.label}
                 </h3>
                 <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
                   <span className="inline-flex items-center gap-1.5">
@@ -5860,17 +5853,17 @@ const cuantiaFincasParaEnvio =
                       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                         <div className="rounded-xl border border-indigo-100 bg-indigo-50/70 p-4">
                           <p className="text-[10px] font-bold uppercase tracking-wide text-indigo-700">Saldo inicial</p>
-                          <p className="mt-2 text-xl font-extrabold tabular-nums text-slate-900">{importeInicialDisponible ? `${importeInicialProvision.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
+                          <p className="mt-2 text-xl font-extrabold tabular-nums text-slate-900">{importeInicialDisponible ? formatEuro(importeInicialProvision) : "—"}</p>
                           <p className="mt-1 text-[10px] text-slate-500">Campo Importe del expediente</p>
                         </div>
                         <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 p-4">
                           <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-700">Saldo pendiente</p>
-                          <p className={`mt-2 text-xl font-extrabold tabular-nums ${resumenEconomico.saldoActual < 0 ? "text-red-700" : "text-emerald-700"}`}>{importeInicialDisponible ? `${resumenEconomico.saldoActual.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
+                          <p className={`mt-2 text-xl font-extrabold tabular-nums ${resumenEconomico.saldoActual < 0 ? "text-red-700" : "text-emerald-700"}`}>{importeInicialDisponible ? formatEuro(resumenEconomico.saldoActual) : "—"}</p>
                           <p className="mt-1 text-[10px] text-slate-500">Tras descontar pagos confirmados</p>
                         </div>
                         <div className="rounded-xl border border-slate-200 bg-white p-4">
                           <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Total imputado</p>
-                          <p className="mt-2 text-xl font-extrabold tabular-nums text-slate-900">{importeInicialDisponible ? ` ${(importeInicialProvision - resumenEconomico.saldoActual).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`.trim() : `${resumenEconomico.movimientos.reduce((s, m) => s + Math.abs(Number(m.importeMovimiento || 0)), 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}</p>
+                          <p className="mt-2 text-xl font-extrabold tabular-nums text-slate-900">{importeInicialDisponible ? formatEuro(importeInicialProvision - resumenEconomico.saldoActual) : formatEuro(resumenEconomico.movimientos.reduce((s, m) => s + Math.abs(Number(m.importeMovimiento || 0)), 0))}</p>
                           <p className="mt-1 text-[10px] text-slate-500">Pagos contabilizados</p>
                         </div>
                         <div className="rounded-xl border border-slate-200 bg-white p-4">
@@ -5881,7 +5874,7 @@ const cuantiaFincasParaEnvio =
                       </div>
                       {importeInicialDisponible && importeInicialProvision > 0 && (
                         <div className="mt-4">
-                          <div className="mb-2 flex items-center justify-between gap-3"><span className="text-xs font-semibold text-slate-600">Consumo del saldo inicial</span><span className="text-xs font-bold tabular-nums text-slate-600">{Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100)).toLocaleString("es-ES", { maximumFractionDigits: 1 })}%</span></div>
+                          <div className="mb-2 flex items-center justify-between gap-3"><span className="text-xs font-semibold text-slate-600">Consumo del saldo inicial</span><span className="text-xs font-bold tabular-nums text-slate-600">{formatPercent(Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100)))}</span></div>
                           <div className="h-2 overflow-hidden rounded-full bg-slate-100"><div className={`h-full rounded-full ${resumenEconomico.saldoActual < 0 ? "bg-red-500" : "bg-emerald-500"}`} style={{ width: `${Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100))}%` }} /></div>
                         </div>
                       )}
@@ -5897,9 +5890,9 @@ const cuantiaFincasParaEnvio =
                               <thead className="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500"><tr><th className="px-3 py-3 font-bold">ID de pago</th><th className="px-3 py-3 font-bold">Fecha</th><th className="px-3 py-3 font-bold">Tipo de documento</th><th className="px-3 py-3 text-right font-bold">Cuantía documento</th><th className="px-3 py-3 text-right font-bold">Impuesto</th><th className="px-3 py-3 text-right font-bold">Total</th><th className="px-3 py-3 font-bold">Estado</th><th className="px-3 py-3 text-right font-bold">Saldo tras pago</th><th className="px-3 py-3 font-bold">Acciones</th></tr></thead>
                               <tbody className="divide-y divide-slate-100">
                                 {resumenEconomico.movimientos.length === 0 && gastosPendientesResumen.length === 0 && <tr><td colSpan={9} className="px-4 py-6 text-center text-slate-500">Todavía no hay gastos ni pagos registrados.</td></tr>}
-                                {gastosPendientesResumen.map((gasto) => { const fmtPendiente = (valor) => Number(valor ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); const importe = Math.abs(Number(gasto.importe_resultante ?? gasto.importe ?? 0)); const base = Number(gasto.base_imponible ?? gasto.base_sujeta_impuestos ?? gasto.base_exenta_impuestos ?? 0); const impuesto = Number(gasto.importe_impuesto ?? gasto.impuesto ?? gasto.iva ?? 0); return <tr key={"pendiente-" + gasto.id} className="bg-amber-50/40 text-slate-700"><td className="whitespace-nowrap px-3 py-3 font-extrabold text-amber-700">{gasto.numero_documento || ("GAS-" + String(gasto.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(gasto.fecha_factura || gasto.fecha || gasto.created_at)}</td><td className="px-3 py-3"><span className="font-semibold">{gasto.tipo || "Gasto registrado"}</span>{gasto.descripcion ? <span className="mt-1 block text-slate-500">{gasto.descripcion}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{fmtPendiente(base > 0 ? base : importe)} €</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{impuesto > 0 ? `${fmtPendiente(impuesto)} €` : "—"}</td><td className="whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums">{fmtPendiente(importe)} €</td><td className="whitespace-nowrap px-3 py-3"><span className="rounded-full bg-amber-100 px-2 py-1 text-[10px] font-bold text-amber-800">Pendiente</span></td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{importeInicialDisponible ? `${fmtPendiente(resumenEconomico.saldoActual)} €` : "—"}</td><td className="px-3 py-3">{esAdministradorSesion ? <button type="button" onClick={() => abrirOrdenPago(gasto)} disabled={importe <= 0} className="rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[10px] font-bold text-emerald-800 hover:bg-emerald-100 disabled:opacity-50">Pagar</button> : <span className="text-[10px] text-slate-400">Solo administración</span>}</td></tr>; })}}
+                                {gastosPendientesResumen.map((gasto) => { const fmtPendiente = (valor) => formatEuro(Number(valor ?? 0)); const importe = Math.abs(Number(gasto.importe_resultante ?? gasto.importe ?? 0)); const base = Number(gasto.base_imponible ?? gasto.base_sujeta_impuestos ?? gasto.base_exenta_impuestos ?? 0); const impuesto = Number(gasto.importe_impuesto ?? gasto.impuesto ?? gasto.iva ?? 0); return <tr key={"pendiente-" + gasto.id} className="bg-amber-50/40 text-slate-700"><td className="whitespace-nowrap px-3 py-3 font-extrabold text-amber-700">{gasto.numero_documento || ("GAS-" + String(gasto.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(gasto.fecha_factura || gasto.fecha || gasto.created_at)}</td><td className="px-3 py-3"><span className="font-semibold">{gasto.tipo || "Gasto registrado"}</span>{gasto.descripcion ? <span className="mt-1 block text-slate-500">{gasto.descripcion}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{fmtPendiente(base > 0 ? base : importe)}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{impuesto > 0 ? fmtPendiente(impuesto) : "—"}</td><td className="whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums">{fmtPendiente(importe)}</td><td className="whitespace-nowrap px-3 py-3"><span className="rounded-full bg-amber-100 px-2 py-1 text-[10px] font-bold text-amber-800">Pendiente</span></td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{importeInicialDisponible ? fmtPendiente(resumenEconomico.saldoActual) : "—"}</td><td className="px-3 py-3">{esAdministradorSesion ? <button type="button" onClick={() => abrirOrdenPago(gasto)} disabled={importe <= 0} className="rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[10px] font-bold text-emerald-800 hover:bg-emerald-100 disabled:opacity-50">Pagar</button> : <span className="text-[10px] text-slate-400">Solo administración</span>}</td></tr>; })}
                                 {resumenEconomico.movimientos.map((movimiento) => {
-                                  const fmt = (valor) => Number(valor ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                  const fmt = (valor) => formatEuro(Number(valor ?? 0));
                                   const importeMovimiento = Math.abs(Number(movimiento.importeMovimiento ?? movimiento.importe_resultante ?? movimiento.importe ?? 0));
                                   const textoMovimiento = normalizarTexto([movimiento.tipo, movimiento.concepto_pago, movimiento.descripcion, movimiento.tipo_impuesto].filter(Boolean).join(" "));
                                   const esPagoImpuesto = movimiento.es_movimiento_pago && /impuesto|ajd|itp|tribut/.test(textoMovimiento);
@@ -5908,7 +5901,7 @@ const cuantiaFincasParaEnvio =
                                   const total = movimiento.es_movimiento_pago ? importeMovimiento : Math.abs(Number(movimiento.importe_resultante ?? movimiento.importe ?? movimiento.importe_total_bruto ?? importeMovimiento));
                                   const estado = movimiento.es_movimiento_pago ? (movimiento.anulado_en ? "Anulado" : "Pagado") : String(movimiento.estado_pago || "Pagado").trim();
                                   const saldoTrasMovimiento = importeInicialDisponible ? Number(movimiento.saldoCalculado) : null;
-                                  return <tr key={movimiento.id} className="text-slate-700 transition-colors hover:bg-indigo-50/40"><td className="whitespace-nowrap px-3 py-3 font-extrabold text-indigo-700">{movimiento.numero_documento || ("PAG-" + String(movimiento.pago_id || movimiento.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(movimiento.fecha || movimiento.fecha_factura)}</td><td className="px-3 py-3"><span className="font-semibold">{movimiento.tipo || "Documento"}</span>{movimiento.concepto_pago ? <span className="mt-1 block text-slate-500">{movimiento.concepto_pago}</span> : movimiento.descripcion ? <span className="mt-1 block text-slate-500">{movimiento.descripcion}</span> : null}{movimiento.tipo_impuesto && !movimiento.es_movimiento_pago ? <span className="mt-1 block text-[10px] text-slate-400">{movimiento.tipo_impuesto}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{cuantiaDocumento === null || cuantiaDocumento === 0 ? "—" : `${fmt(cuantiaDocumento)} €`}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{impuesto > 0 ? `${fmt(impuesto)} €` : "—"}</td><td className="whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums">{fmt(total)} €</td><td className="whitespace-nowrap px-3 py-3"><span className={"rounded-full px-2 py-1 text-[10px] font-bold " + (estado === "Anulado" ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700")}>{estado}</span>{movimiento.motivo_anulacion ? <span className="mt-1 block max-w-[220px] whitespace-normal text-[10px] text-red-600" title={movimiento.motivo_anulacion}>Motivo: {movimiento.motivo_anulacion}</span> : null}</td><td className={"whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums " + (saldoTrasMovimiento !== null && saldoTrasMovimiento < 0 ? "text-red-700" : "text-slate-900")}>{saldoTrasMovimiento === null ? "—" : (fmt(saldoTrasMovimiento) + " €")}</td><td className="px-3 py-3">{movimiento.es_movimiento_pago && !movimiento.anulado_en && esAdministradorSesion ? <button type="button" onClick={() => void anularPagoGasto(movimiento)} className="rounded-lg border border-red-200 px-2.5 py-1.5 text-[10px] font-bold text-red-700 hover:bg-red-50">Anular pago</button> : movimiento.anulado_en ? <span className="text-[10px] font-semibold text-slate-500">Anulado</span> : "—"}</td></tr>;
+                                  return <tr key={movimiento.id} className="text-slate-700 transition-colors hover:bg-indigo-50/40"><td className="whitespace-nowrap px-3 py-3 font-extrabold text-indigo-700">{movimiento.numero_documento || ("PAG-" + String(movimiento.pago_id || movimiento.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(movimiento.fecha || movimiento.fecha_factura)}</td><td className="px-3 py-3"><span className="font-semibold">{movimiento.tipo || "Documento"}</span>{movimiento.concepto_pago ? <span className="mt-1 block text-slate-500">{movimiento.concepto_pago}</span> : movimiento.descripcion ? <span className="mt-1 block text-slate-500">{movimiento.descripcion}</span> : null}{movimiento.tipo_impuesto && !movimiento.es_movimiento_pago ? <span className="mt-1 block text-[10px] text-slate-400">{movimiento.tipo_impuesto}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{cuantiaDocumento === null || cuantiaDocumento === 0 ? "—" : fmt(cuantiaDocumento)}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{impuesto > 0 ? fmt(impuesto) : "—"}</td><td className="whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums">{fmt(total)}</td><td className="whitespace-nowrap px-3 py-3"><span className={"rounded-full px-2 py-1 text-[10px] font-bold " + (estado === "Anulado" ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700")}>{estado}</span>{movimiento.motivo_anulacion ? <span className="mt-1 block max-w-[220px] whitespace-normal text-[10px] text-red-600" title={movimiento.motivo_anulacion}>Motivo: {movimiento.motivo_anulacion}</span> : null}</td><td className={"whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums " + (saldoTrasMovimiento !== null && saldoTrasMovimiento < 0 ? "text-red-700" : "text-slate-900")}>{saldoTrasMovimiento === null ? "—" : fmt(saldoTrasMovimiento)}</td><td className="px-3 py-3">{movimiento.es_movimiento_pago && !movimiento.anulado_en && esAdministradorSesion ? <button type="button" onClick={() => void anularPagoGasto(movimiento)} className="rounded-lg border border-red-200 px-2.5 py-1.5 text-[10px] font-bold text-red-700 hover:bg-red-50">Anular pago</button> : movimiento.anulado_en ? <span className="text-[10px] font-semibold text-slate-500">Anulado</span> : "—"}</td></tr>;
                                 })}
                               </tbody>
                             </table>
@@ -5919,7 +5912,7 @@ const cuantiaFincasParaEnvio =
                       {gastosPendientesResumen.length > 0 && <p className="mt-3 rounded-lg border border-amber-100 bg-amber-50 px-3 py-2 text-xs text-amber-800">{gastosPendientesResumen.length} gasto(s) registrado(s) todavía pendiente(s); no se descuentan del saldo hasta confirmar el pago.</p>}
                       <div className="mt-3 flex justify-end border-t border-slate-100 pt-3">
                         <button type="button" onClick={() => generarHonorariosGestoria?.()} disabled={generandoHonorariosGestoria || !generarHonorariosGestoria} className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-emerald-700 px-5 py-2.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-emerald-800 disabled:opacity-50" title="Generar y guardar la factura en Honorarios gestoría, sin crear pagos ni avisos de deuda">
-                          {generandoHonorariosGestoria ? "Generando factura…" : "🧾 Facturar"}
+                          {generandoHonorariosGestoria ? "Generando factura…" : "Facturar"}
                         </button>
                       </div>
                     </div>
@@ -5993,7 +5986,7 @@ const cuantiaFincasParaEnvio =
                                   <h3 className="mb-3 text-sm font-extrabold text-slate-800">6. Datos fiscales</h3>
                                   <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                                     <label className="block text-xs font-bold text-slate-600">Base imponible total
-                                      <input readOnly value={(gastoForm.base_exenta_impuestos !== "" || gastoForm.base_sujeta_impuestos !== "") ? (Number(gastoForm.base_exenta_impuestos || 0) + Number(gastoForm.base_sujeta_impuestos || 0)).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ""} placeholder="Pendiente de lectura del PDF" className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                      <input readOnly value={(gastoForm.base_exenta_impuestos !== "" || gastoForm.base_sujeta_impuestos !== "") ? (Number(gastoForm.base_exenta_impuestos || 0) + Number(gastoForm.base_sujeta_impuestos || 0)) : ""} placeholder="Pendiente de lectura del PDF" className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-normal text-slate-800" />
                                     </label>
                                     <label className="block text-xs font-bold text-slate-600">Base exenta / no sujeta
                                       <input type="number" min="0" step="0.01" value={gastoForm.base_exenta_impuestos || ""} onChange={(e) => setGastoForm((a) => ({ ...a, base_exenta_impuestos: e.target.value }))} placeholder="Pendiente de lectura del PDF" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal text-slate-800" />
@@ -6019,7 +6012,7 @@ const cuantiaFincasParaEnvio =
                                   </div>
                                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
                                     <label className="block text-xs font-bold text-slate-600">Importe total de factura (€)
-                                      <input readOnly value={Number(gastoForm.importe_total_bruto || (gastosExpediente.find((g) => String(g.id) === String(pagoGastoSeleccionadoId))?.importe_total_bruto ?? gastosExpediente.find((g) => String(g.id) === String(pagoGastoSeleccionadoId))?.importe_resultante ?? gastosExpediente.find((g) => String(g.id) === String(pagoGastoSeleccionadoId))?.importe ?? 0)).toLocaleString("es-ES", { minimumFractionDigits:2, maximumFractionDigits:2 })} className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-extrabold text-slate-900" />
+                                      <input readOnly value={Number(gastoForm.importe_total_bruto || (gastosExpediente.find((g) => String(g.id) === String(pagoGastoSeleccionadoId))?.importe_total_bruto ?? gastosExpediente.find((g) => String(g.id) === String(pagoGastoSeleccionadoId))?.importe_resultante ?? gastosExpediente.find((g) => String(g.id) === String(pagoGastoSeleccionadoId))?.importe ?? 0))} className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-extrabold text-slate-900" />
                                     </label>
                                     <label className="block text-xs font-bold text-slate-600">Importe de este pago (€)
                                       <input required type="number" min="0.01" step="0.01" value={pagoRealForm.importe} onChange={(e) => setPagoRealForm((a) => ({ ...a, importe: e.target.value }))} className="mt-1 w-full rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm font-extrabold text-emerald-900" />
@@ -6070,7 +6063,7 @@ const cuantiaFincasParaEnvio =
                                       porcentaje_retencion: "0",
                                       tipo_retencion: "Sin retención",
                                     }));
-                                  } }} className="w-full rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · base {Number(x.base_imponible ?? x.importe ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € + {String(x.tipo_impuesto || "IVA").toUpperCase()} {Number(x.porcentaje_impuesto ?? 21)}% · total {Number(x.importe || 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</option>)}</select><span className="mt-1 block text-[11px] text-slate-500">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
+                                  } }} className="w-full rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · base {formatEuro(Number(x.base_imponible ?? x.importe ?? 0))} + {String(x.tipo_impuesto || "IVA").toUpperCase()} {formatPercent(Number(x.porcentaje_impuesto ?? 21))} · total {formatEuro(Number(x.importe || 0))}</option>)}</select><span className="mt-1 block text-[11px] text-slate-500">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Concepto del gasto *</span><select required value={gastoForm.tipo} onChange={(e) => setGastoForm((a) => ({...a, tipo:e.target.value, descripcion:a.descripcion || e.target.options[e.target.selectedIndex]?.text || e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">{cargandoConceptosGasto ? "Cargando catálogo…" : "Selecciona un concepto"}</option>{conceptosGasto.map((c) => <option key={String(c.value)} value={String(c.value)}>{c.label}</option>)}{!conceptosGasto.some((c) => String(c.value) === "Honorarios de gestoría") && <option value="Honorarios de gestoría">Honorarios de gestoría</option>}</select></label>
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tipo de concepto ABSIS (TIPOCONCEPTO)</span><select value={gastoForm.tipo_concepto_absis} onChange={(e) => setGastoForm((a) => ({ ...a, tipo_concepto_absis: e.target.value }))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">{cargandoTiposConceptoAbsis ? "Cargando catálogo ABSIS…" : tiposConceptoAbsis.length ? "Selecciona el tipo ABSIS" : "Sin valores activos en Catálogo ABSIS"}</option>{tiposConceptoAbsis.map((item) => <option key={item.id} value={String(item.codigo || item.valor || "")}>{item.codigo ? `${item.codigo} — ${item.valor}` : item.valor}</option>)}</select><span className="mt-1 block text-[11px] text-slate-500">Opcional hasta validar con Informática los códigos oficiales y su correspondencia con el concepto interno.</span></label>
                                 <div className="grid gap-3 sm:grid-cols-2">
@@ -6096,10 +6089,10 @@ const cuantiaFincasParaEnvio =
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tramo de impuesto</span><select value={gastoForm.tramo_impuesto} onChange={(e)=>setGastoForm(a=>({...a,tramo_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{["Exento","General","Reducido","Super reducido","Único"].map(x=><option key={x}>{x}</option>)}</select></label>
                                 <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tipo impositivo</span><select value={gastoForm.tipo_impuesto} onChange={(e)=>{const v=e.target.value;setGastoForm(a=>({...a,tipo_impuesto:v,porcentaje_impuesto:v==="IVA 21%"?"21":v==="IGIC 5%"?"5":v==="IGIC 6,50%"?"6.5":v==="IGIC 7%"?"7":"0"}))}} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{!["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].includes(gastoForm.tipo_impuesto) && <option value={gastoForm.tipo_impuesto}>{gastoForm.tipo_impuesto}</option>}{["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].map(x=><option key={x}>{x}</option>)}</select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Porcentaje (%)</span><input type="number" min="0" max="100" step="0.01" value={gastoForm.porcentaje_impuesto} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
                                 <div className="grid gap-3 sm:grid-cols-2">{[["Base exenta (€)","base_exenta_impuestos"],["Base sujeta (€)","base_sujeta_impuestos"]].map(([label,key])=><label key={key} className="block"><span className="mb-1 block text-xs font-bold text-slate-700">{label}</span><input type="number" min="0" step="0.01" value={gastoForm[key]} onChange={(e)=>setGastoForm(a=>({...a,[key]:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>)}</div>
-                                <div className="rounded-lg border border-slate-200 bg-white p-3 text-xs"><div className="flex justify-between"><span>Impuesto calculado</span><strong>{impuestoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div></div>
+                                <div className="rounded-lg border border-slate-200 bg-white p-3 text-xs"><div className="flex justify-between"><span>Impuesto calculado</span><strong>{formatEuro(impuestoCalculadoGasto)}</strong></div></div>
                                 <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Base exenta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_exenta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_exenta_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Base sujeta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_sujeta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_sujeta_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
                                 <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Retención</span><select value={gastoForm.tipo_retencion} onChange={(e)=>setGastoForm(a=>({...a,tipo_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>IRPF profesionales</option><option>Sin retención</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">IRPF (%)</span><input type="number" min="0" max="21" step="0.01" value={gastoForm.porcentaje_retencion} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
-                                <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4"><div className="flex justify-between text-xs text-slate-600"><span>Retención calculada</span><strong>{retencionCalculadaGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span className="text-xs font-bold text-indigo-900">Resultado calculado</span><strong className="text-2xl text-indigo-950">{resultadoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><label className="mt-3 block"><span className="mb-1 block text-xs font-bold text-slate-700">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
+                                <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4"><div className="flex justify-between text-xs text-slate-600"><span>Retención calculada</span><strong>{formatEuro(retencionCalculadaGasto)}</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span className="text-xs font-bold text-indigo-900">Resultado calculado</span><strong className="text-2xl text-indigo-950">{formatEuro(resultadoCalculadoGasto)}</strong></div><label className="mt-3 block"><span className="mb-1 block text-xs font-bold text-slate-700">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Descripción *</span><input required value={gastoForm.descripcion} onChange={(e)=>setGastoForm(a=>({...a,descripcion:e.target.value}))} placeholder="Concepto detallado de la factura" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
                               </div>
                               <aside className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-3">
@@ -6243,8 +6236,8 @@ const cuantiaFincasParaEnvio =
                     <p className="mt-2 text-[11px] text-slate-500">Registrar la solicitud no envía nada ni avanza el expediente. El avance se valida por separado.</p>
                   </div>
                   <div className="mt-4 flex flex-wrap justify-end gap-2">
-                    <Boton onClick={() => guardarEstadoAbsis(false)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Guardando…" : "💾 Guardar datos para integración"}</Boton>
-                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Registrando…" : estadoDocumentacionAbsis.solicitud_registrada_localmente ? "✓ Solicitud pendiente registrada" : "📨 Registrar solicitud pendiente"}</Boton>
+                    <Boton onClick={() => guardarEstadoAbsis(false)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Guardando…" : "Guardar datos para integración"}</Boton>
+                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Registrando…" : estadoDocumentacionAbsis.solicitud_registrada_localmente ? "✓ Solicitud pendiente registrada" : "Registrar solicitud pendiente"}</Boton>
                   </div>
                   {estadoDocumentacionAbsis.solicitud_registrada_localmente && <p className="mt-2 text-right text-xs font-semibold text-amber-700">Pendiente de API externa; todavía no transmitida a ABSIS.</p>}
                 </section>
@@ -6505,7 +6498,7 @@ const cuantiaFincasParaEnvio =
                     </p>
                     <p className="mt-1 text-[11px] text-slate-500">La vinculación automática con Notargest se completará cuando esté disponible la integración de documentos.</p>
                     <button type="button" onClick={() => setMostrarCarpetaDigital(true)} className="mt-3 rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">
-                      📁 Abrir carpeta digital
+                      Abrir carpeta digital
                     </button>
                   </div>
                   <div className="rounded-xl border border-slate-200 bg-white p-3">
@@ -6523,7 +6516,7 @@ const cuantiaFincasParaEnvio =
                 </div>
                 <div className="mt-3 flex justify-end">
                   <Boton tipo="primary" onClick={() => registrarSolicitudIntegracionPendiente("sede-notarial-protocolo")} disabled={guardandoActividad || registrandoSolicitudIntegracion}>
-                    {registrandoSolicitudIntegracion ? "Registrando…" : "📨 Registrar solicitud pendiente"}
+                    {registrandoSolicitudIntegracion ? "Registrando…" : "Registrar solicitud pendiente"}
                   </Boton>
                 </div>
               </section>
@@ -6623,7 +6616,7 @@ const cuantiaFincasParaEnvio =
                     </p>
                     <p className="mt-1 text-[11px] text-slate-500">La asociación automática del PDF desde Notargest requiere conectar la integración documental.</p>
                     <button type="button" onClick={() => setMostrarCarpetaDigital(true)} className="mt-3 rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">
-                      📁 Abrir carpeta digital
+                      Abrir carpeta digital
                     </button>
                   </div>
                   <div className="rounded-xl border border-slate-200 bg-white p-3">
@@ -6640,7 +6633,7 @@ const cuantiaFincasParaEnvio =
                 </div>
                 <div className="mt-3 flex justify-end">
                   <Boton tipo="primary" onClick={() => registrarSolicitudIntegracionPendiente("liquidacion-impuestos")} disabled={guardandoActividad || registrandoSolicitudIntegracion}>
-                    {registrandoSolicitudIntegracion ? "Registrando…" : "📨 Registrar solicitud pendiente"}
+                    {registrandoSolicitudIntegracion ? "Registrando…" : "Registrar solicitud pendiente"}
                   </Boton>
                 </div>
               </section>
@@ -6683,7 +6676,7 @@ const cuantiaFincasParaEnvio =
                               <div><span className="block text-slate-400">Población</span><strong>{finca.poblacion || "—"}</strong></div>
                               <div><span className="block text-slate-400">Provincia</span><strong>{finca.provincia || "—"}</strong></div>
                               <div><span className="block text-slate-400">Inscripción</span><strong>{finca.inscripcion || "—"}</strong></div>
-                              <div><span className="block text-slate-400">Cuantía</span><strong>{finca.cuantia !== null && finca.cuantia !== undefined && finca.cuantia !== "" ? Number(finca.cuantia).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €" : "—"}</strong></div>
+                              <div><span className="block text-slate-400">Cuantía</span><strong>{finca.cuantia !== null && finca.cuantia !== undefined && finca.cuantia !== "" ? formatEuro(Number(finca.cuantia)) : "—"}</strong></div>
                               <div><span className="block text-slate-400">Contrato</span><strong>{finca.contrato || "—"}</strong></div>
                               <div><span className="block text-slate-400">Entidad original</span><strong>{finca.entidad_original || "—"}</strong></div>
                               <div><span className="block text-slate-400">Fecha constitución</span><strong>{finca.fecha_constitucion || "—"}</strong></div>
@@ -6767,14 +6760,14 @@ const cuantiaFincasParaEnvio =
                       disabled={generandoHonorariosGestoria}
                       className="rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-extrabold text-white hover:bg-emerald-800 disabled:opacity-50"
                     >
-                      {generandoHonorariosGestoria ? "Generando…" : "💶 Generar honorarios de gestoría"}
+                      {generandoHonorariosGestoria ? "Generando…" : "Generar honorarios de gestoría"}
                     </button>
                   </div>
                   {honorariosGestoria && (
                     <div className="mt-3 rounded-xl border border-emerald-200 bg-white p-3">
                       <p className="text-xs text-slate-500">Tarifa aplicada: {honorariosGestoria.tarifa}</p>
                       <p className="mt-1 text-2xl font-extrabold text-emerald-800">
-                        {Number(honorariosGestoria.importe).toLocaleString("es-ES", { style: "currency", currency: "EUR" })}
+                        {formatEuro(Number(honorariosGestoria.importe))}
                       </p>
                       <p className="mt-1 text-[11px] text-slate-500">Entidad detectada: {honorariosGestoria.entidad || "No identificada"}</p>
                       {honorariosGestoria.guardado && <p className="mt-1 text-xs font-semibold text-emerald-700">Registrado en el backend.</p>}
@@ -6801,7 +6794,7 @@ const cuantiaFincasParaEnvio =
                 Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)
               ) && (
                 <Boton tipo="primary" onClick={guardarCamposActividad} disabled={guardandoActividad || expedienteBloqueado}>
-                  {guardandoActividad ? "Guardando…" : "💾 Guardar datos de actividad"}
+                  {guardandoActividad ? "Guardando…" : "Guardar datos de actividad"}
                 </Boton>
               )}
               {actividadSeleccionada === "documentacion-previa" && actividadActual === "documentacion-previa" && (
@@ -6893,7 +6886,7 @@ const cuantiaFincasParaEnvio =
                   <div key={item.id} className={`rounded-lg border px-3 py-2 ${item.compensado ? "border-emerald-200 bg-emerald-50/60" : "border-amber-200 bg-amber-50/70"}`}>
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="min-w-0 break-words text-xs font-bold text-slate-800">{item.concepto || "PPAD"}</span>
-                      <span className="text-xs font-extrabold text-slate-800">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</span>
+                      <span className="text-xs font-extrabold text-slate-800">{formatEuro(Number(item.importe) || 0)}</span>
                     </div>
                     <p className="mt-1 text-[10px] text-slate-600">Realizado por: <strong>{item.usuario_creador || "Usuario no registrado"}</strong>{item.fecha_creacion ? ` · ${formatearFecha(item.fecha_creacion)}` : ""}</p>
                     {item.compensado ? (
@@ -6943,7 +6936,7 @@ const cuantiaFincasParaEnvio =
                         </div>
                         <div>
                           <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Importe</div>
-                          <div className="mt-1 text-sm font-semibold text-slate-800">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</div>
+                          <div className="mt-1 text-sm font-semibold text-slate-800">{formatEuro(Number(item.importe) || 0)}</div>
                         </div>
                         <div>
                           <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Imputable a</div>
@@ -6973,7 +6966,7 @@ const cuantiaFincasParaEnvio =
                               ? "Este PPAD ya está compensado. ¿Confirmas que quieres eliminarlo como administrador?"
                               : "¿Confirmas que quieres eliminar este concepto PPAD?";
                             if (window.confirm(mensaje)) eliminarPpad(item.id);
-                          }}>🗑️ Eliminar</Boton>
+                          }}>Eliminar</Boton>
                         )}
                       </div>
                     </article>
@@ -7100,7 +7093,7 @@ const cuantiaFincasParaEnvio =
                 <p className="rounded-xl border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-500">Todavía no hay observaciones añadidas.</p>
               )}
               <button type="button" onClick={() => { setComentario(""); setErrorObservaciones(""); setMostrarObservaciones(true); }} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100">
-                💬 Ver historial y gestionar observaciones <span className="rounded-full bg-white px-2 py-0.5 text-[10px]">{observacionesExpediente.length}</span>
+                Ver historial y gestionar observaciones <span className="rounded-full bg-white px-2 py-0.5 text-[10px]">{observacionesExpediente.length}</span>
               </button>
             </div>
           </Seccion>
@@ -7150,7 +7143,7 @@ const cuantiaFincasParaEnvio =
           ====================================================== */}
             <section className="w-full max-w-none min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_10px_28px_rgba(30,41,59,0.08)]">
               <div className="hidden flex-wrap items-center justify-center gap-3 border-b border-slate-100 bg-white px-4 py-4 text-center sm:px-5">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-100 bg-white text-xl shadow-sm">🏛️</div>
+                <MolsanIcon name="courthouse" size={42} tone="indigo" />
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-extrabold text-slate-800">Envío a notario</h3>
                   <p className="mt-0.5 text-[11px] text-slate-500">Encargo al notario, datos de firma y facturación</p>
@@ -7220,23 +7213,18 @@ const cuantiaFincasParaEnvio =
                                 if (documento.cuantia == null || documento.cuantia === "") {
                                   return "Sin cuantía";
                                 }
-                                return `${Number(documento.cuantia).toLocaleString("es-ES", {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })} €`;
+                                return formatEuro(Number(documento.cuantia));
                               })
                               .join(" | ")
                           : expediente.cuantia != null
-                            ? `${Number(expediente.cuantia).toLocaleString("es-ES", {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              })} €`
+                            ? formatEuro(Number(expediente.cuantia))
                             : null
                       }
                     />
                     <Dato campo="Importe" valor={expediente.importe} tipo="numero" />
 
                     </div>
+                  </div>
 
                     {actividadSeleccionada === "gestion-economica" && (
                       <section className="mt-4 rounded-xl border border-indigo-100 bg-white p-4">
@@ -7326,18 +7314,15 @@ const cuantiaFincasParaEnvio =
                         <div className="mt-4 grid gap-3 sm:grid-cols-2">
                           <div className="rounded-xl border border-indigo-100 bg-indigo-50/70 p-4">
                             <p className="text-[11px] font-bold uppercase tracking-wide text-indigo-700">Importe inicial de la provisión</p>
-                            <p className="mt-1 text-2xl font-extrabold tabular-nums text-slate-900">{importeInicialDisponible ? `${importeInicialProvision.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
+                            <p className="mt-1 text-2xl font-extrabold tabular-nums text-slate-900">{importeInicialDisponible ? formatEuro(importeInicialProvision) : "—"}</p>
                             <p className="mt-1 text-[10px] text-slate-500">Campo Importe · Excel de Absis</p>
                           </div>
                           <div className="rounded-xl border border-slate-200 bg-white p-4">
                             <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Saldo real actual</p>
-                            <p className={`mt-1 text-2xl font-extrabold tabular-nums ${resumenEconomico.saldoActual < 0 ? "text-red-700" : "text-emerald-700"}`}>{importeInicialDisponible ? `${resumenEconomico.saldoActual.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
+                            <p className={`mt-1 text-2xl font-extrabold tabular-nums ${resumenEconomico.saldoActual < 0 ? "text-red-700" : "text-emerald-700"}`}>{importeInicialDisponible ? formatEuro(resumenEconomico.saldoActual) : "—"}</p>
                             <p className="mt-1 text-[10px] text-slate-500">Importe inicial menos pagos confirmados</p>
                           </div>
                         </div>
-
-                  
-                )}
 
                         <div className="mt-4">
                           <h5 className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-600">Movimientos de la provisión</h5>
@@ -7363,8 +7348,8 @@ const cuantiaFincasParaEnvio =
                                       <td className="whitespace-nowrap px-5 py-4 font-extrabold text-indigo-700">{movimiento.numero_documento || `PAG-${String(movimiento.id).padStart(6, "0")}`}</td>
                                       <td className="whitespace-nowrap px-5 py-4 text-slate-600">{movimiento.fecha ? formatearFecha(movimiento.fecha) : "—"}</td>
                                       <td className="px-5 py-4 font-semibold text-slate-800">{movimiento.descripcion || movimiento.tipo || "Gasto"}</td>
-                                      <td className="whitespace-nowrap px-5 py-4 text-right font-bold text-red-700">{movimiento.importeMovimiento === 0 ? "0,00 €" : `−${Math.abs(movimiento.importeMovimiento).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}</td>
-                                      <td className={`whitespace-nowrap px-5 py-4 text-right text-base font-extrabold ${movimiento.saldoCalculado < 0 ? "text-red-700" : "text-slate-900"}`}>{movimiento.saldoCalculado.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</td>
+                                      <td className="whitespace-nowrap px-5 py-4 text-right font-bold text-red-700">{formatEuro(movimiento.importeMovimiento)}</td>
+                                      <td className={`whitespace-nowrap px-5 py-4 text-right text-base font-extrabold ${movimiento.saldoCalculado < 0 ? "text-red-700" : "text-slate-900"}`}>{formatEuro(movimiento.saldoCalculado)}</td>
                                     </tr>
                                   ))}
                                 </tbody>
@@ -7420,7 +7405,7 @@ const cuantiaFincasParaEnvio =
                                       porcentaje_retencion: "0",
                                       tipo_retencion: "Sin retención",
                                     }));
-                                  } }} className="w-full rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · base {Number(x.base_imponible ?? x.importe ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € + {String(x.tipo_impuesto || "IVA").toUpperCase()} {Number(x.porcentaje_impuesto ?? 21)}% · total {Number(x.importe || 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</option>)}</select><span className="mt-1 block text-[11px] text-slate-500">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
+                                  } }} className="w-full rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · base {formatEuro(Number(x.base_imponible ?? x.importe ?? 0))} + {String(x.tipo_impuesto || "IVA").toUpperCase()} {formatPercent(Number(x.porcentaje_impuesto ?? 21))} · total {formatEuro(Number(x.importe || 0))}</option>)}</select><span className="mt-1 block text-[11px] text-slate-500">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Concepto del gasto *</span><select required value={gastoForm.tipo} onChange={(e) => setGastoForm((a) => ({...a, tipo:e.target.value, descripcion:a.descripcion || e.target.options[e.target.selectedIndex]?.text || e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">{cargandoConceptosGasto ? "Cargando catálogo…" : "Selecciona un concepto"}</option>{conceptosGasto.map((c) => <option key={String(c.value)} value={String(c.value)}>{c.label}</option>)}{!conceptosGasto.some((c) => String(c.value) === "Honorarios de gestoría") && <option value="Honorarios de gestoría">Honorarios de gestoría</option>}</select></label>
                                 <div className="grid gap-3 sm:grid-cols-2">
                                   <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">NIF/CIF/NIE notario</span><input value={gastoForm.nif_notario} onChange={(e)=>setGastoForm(a=>({...a,nif_notario:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
@@ -7442,10 +7427,10 @@ const cuantiaFincasParaEnvio =
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tramo de impuesto</span><select value={gastoForm.tramo_impuesto} onChange={(e)=>setGastoForm(a=>({...a,tramo_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{["Exento","General","Reducido","Super reducido","Único"].map(x=><option key={x}>{x}</option>)}</select></label>
                                 <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tipo impositivo</span><select value={gastoForm.tipo_impuesto} onChange={(e)=>{const v=e.target.value;setGastoForm(a=>({...a,tipo_impuesto:v,porcentaje_impuesto:v==="IVA 21%"?"21":v==="IGIC 5%"?"5":v==="IGIC 6,50%"?"6.5":v==="IGIC 7%"?"7":"0"}))}} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{!["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].includes(gastoForm.tipo_impuesto) && <option value={gastoForm.tipo_impuesto}>{gastoForm.tipo_impuesto}</option>}{["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].map(x=><option key={x}>{x}</option>)}</select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Porcentaje (%)</span><input type="number" min="0" max="100" step="0.01" value={gastoForm.porcentaje_impuesto} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
                                 <div className="grid gap-3 sm:grid-cols-2">{[["Base exenta (€)","base_exenta_impuestos"],["Base sujeta (€)","base_sujeta_impuestos"]].map(([label,key])=><label key={key} className="block"><span className="mb-1 block text-xs font-bold text-slate-700">{label}</span><input type="number" min="0" step="0.01" value={gastoForm[key]} onChange={(e)=>setGastoForm(a=>({...a,[key]:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>)}</div>
-                                <div className="rounded-lg border border-slate-200 bg-white p-3 text-xs"><div className="flex justify-between"><span>Impuesto calculado</span><strong>{impuestoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div></div>
+                                <div className="rounded-lg border border-slate-200 bg-white p-3 text-xs"><div className="flex justify-between"><span>Impuesto calculado</span><strong>{formatEuro(impuestoCalculadoGasto)}</strong></div></div>
                                 <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Base exenta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_exenta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_exenta_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Base sujeta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_sujeta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_sujeta_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
                                 <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Retención</span><select value={gastoForm.tipo_retencion} onChange={(e)=>setGastoForm(a=>({...a,tipo_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>IRPF profesionales</option><option>Sin retención</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">IRPF (%)</span><input type="number" min="0" max="21" step="0.01" value={gastoForm.porcentaje_retencion} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
-                                <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4"><div className="flex justify-between text-xs text-slate-600"><span>Retención calculada</span><strong>{retencionCalculadaGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span className="text-xs font-bold text-indigo-900">Resultado calculado</span><strong className="text-2xl text-indigo-950">{resultadoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><label className="mt-3 block"><span className="mb-1 block text-xs font-bold text-slate-700">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
+                                <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4"><div className="flex justify-between text-xs text-slate-600"><span>Retención calculada</span><strong>{formatEuro(retencionCalculadaGasto)}</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span className="text-xs font-bold text-indigo-900">Resultado calculado</span><strong className="text-2xl text-indigo-950">{formatEuro(resultadoCalculadoGasto)}</strong></div><label className="mt-3 block"><span className="mb-1 block text-xs font-bold text-slate-700">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Descripción *</span><input required value={gastoForm.descripcion} onChange={(e)=>setGastoForm(a=>({...a,descripcion:e.target.value}))} placeholder="Concepto detallado de la factura" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
                               </div>
                               <aside className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-3">
@@ -7496,7 +7481,7 @@ const cuantiaFincasParaEnvio =
                                     </div>
                                   </div>
                                   <span className="whitespace-nowrap text-base font-extrabold text-slate-900">
-                                    {gasto.importe_resultante == null && gasto.importe == null ? "—" : `${Number(gasto.importe_resultante ?? gasto.importe).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}
+                                    {gasto.importe_resultante == null && gasto.importe == null ? "—" : formatEuro(Number(gasto.importe_resultante ?? gasto.importe))}
                                   </span>
                                   {(() => {
                                     const estadoPago = String(gasto.estado_pago || "Pendiente").trim().toLowerCase();
@@ -7519,10 +7504,10 @@ const cuantiaFincasParaEnvio =
                         </div>
                       </section>
                     )}
-                </div>
                 </>
-              </div>
-            </section>
+                </div>
+              </section>
+            </div>
           </div>
         </div>
  
@@ -7617,7 +7602,7 @@ const cuantiaFincasParaEnvio =
         footer={
           <div className="flex flex-wrap justify-center gap-3">
             <Boton onClick={() => setMostrarAvisoBloqueoExpediente(false)}>Entendido</Boton>
-            <Boton tipo="primary" onClick={() => { setMostrarAvisoBloqueoExpediente(false); abrirControlExpediente(); }}>🔐 Gestionar bloqueo</Boton>
+            <Boton tipo="primary" onClick={() => { setMostrarAvisoBloqueoExpediente(false); abrirControlExpediente(); }}>Gestionar bloqueo</Boton>
           </div>
         }
       >
@@ -7639,7 +7624,7 @@ const cuantiaFincasParaEnvio =
       </Modal>
 
       {/* CONTROL DE BLOQUEO */}
-      <Modal open={mostrarControlExpediente} onClose={()=>!guardandoControlExpediente&&setMostrarControlExpediente(false)} titulo="🔐 Control del expediente" subtitulo={`Expediente ${valorVisible(expediente?.id_expediente)}`} ancho="max-w-[760px]" footer={<div className="flex justify-end gap-2"><Boton onClick={()=>setMostrarControlExpediente(false)} disabled={guardandoControlExpediente}>Cancelar</Boton><Boton tipo="primary" onClick={guardarControlExpediente} disabled={guardandoControlExpediente}>{guardandoControlExpediente?"Guardando…":"💾 Guardar control"}</Boton></div>}>
+      <Modal open={mostrarControlExpediente} onClose={()=>!guardandoControlExpediente&&setMostrarControlExpediente(false)} titulo="Control del expediente" subtitulo={`Expediente ${valorVisible(expediente?.id_expediente)}`} ancho="max-w-[760px]" footer={<div className="flex justify-end gap-2"><Boton onClick={()=>setMostrarControlExpediente(false)} disabled={guardandoControlExpediente}>Cancelar</Boton><Boton tipo="primary" onClick={guardarControlExpediente} disabled={guardandoControlExpediente}>{guardandoControlExpediente?"Guardando…":"Guardar control"}</Boton></div>}>
         <div className="space-y-4">
           {estadoLegadoBloqueante&&<p role="alert" className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm font-bold text-amber-900">El estado {expediente?.estado_expediente} mantiene el bloqueo automático. Para desbloquearlo, debe corregirse primero el estado del expediente.</p>}
           <label className="flex items-start gap-3 rounded-xl border p-4"><input type="checkbox" className="mt-1" checked={!!controlExpediente.liquidado_sin_tramitar} onChange={e=>setControlExpediente(v=>({...v,liquidado_sin_tramitar:e.target.checked}))}/><span className="flex-1"><strong className="block text-sm">Liquidado sin tramitar</strong><span className="block text-xs text-slate-500">Bloquea el expediente y genera aviso central.</span>{controlExpediente.liquidado_sin_tramitar&&<input aria-label="Fecha liquidado sin tramitar" type="date" className="mt-3 w-full rounded-lg border p-2" value={controlExpediente.fecha_liquidacion_sin_tramitar||""} onChange={e=>setControlExpediente(v=>({...v,fecha_liquidacion_sin_tramitar:e.target.value}))}/>}</span></label>
@@ -7678,7 +7663,7 @@ const cuantiaFincasParaEnvio =
         disabled={guardandoDefecto}
         onClick={guardarDefectoRegistral}
       >
-        {guardandoDefecto ? "Guardando…" : "💾 Guardar defecto"}
+        {guardandoDefecto ? "Guardando…" : "Guardar defecto"}
       </Boton>
     </>
   }
@@ -7730,7 +7715,7 @@ const cuantiaFincasParaEnvio =
               <div className="flex flex-wrap gap-2">
                 {defecto.calificacion_nombre && (
                   <Boton onClick={() => descargarPDFCalificacion(defecto)}>
-                    📄 Descargar PDF
+                    Descargar PDF
                   </Boton>
                 )}
                 <Boton onClick={() => editarDefectoRegistrado(defecto)}>
@@ -8000,7 +7985,7 @@ const cuantiaFincasParaEnvio =
           setMostrarFincas(false);
           setFincaEditandoId(null);
         }}
-        titulo={fincaEditandoId !== null ? "🏠 Editar finca" : "🏠 Nueva finca"}
+        titulo={fincaEditandoId !== null ? "Editar finca" : "Nueva finca"}
         subtitulo="Datos registrales del expediente"
         ancho="max-w-5xl"
         footer={
@@ -8018,7 +8003,7 @@ const cuantiaFincasParaEnvio =
               onClick={guardarFinca}
               disabled={guardandoFinca}
             >
-              {guardandoFinca ? "Guardando..." : "💾 Guardar finca"}
+              {guardandoFinca ? "Guardando..." : "Guardar finca"}
             </Boton>
           </>
         }
@@ -8227,7 +8212,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={modalSelectorRegistro}
         onClose={() => setModalSelectorRegistro(false)}
-        titulo="📚 Catálogo de Registros de la Propiedad"
+        titulo="Catálogo de Registros de la Propiedad"
         subtitulo="Busca y vincula un registro al expediente"
         ancho="max-w-4xl"
         footer={<Boton onClick={() => setModalSelectorRegistro(false)}>Cerrar</Boton>}
@@ -8255,7 +8240,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={Boolean(registroDetalleAbierto)}
         onClose={() => setRegistroDetalleAbierto(null)}
-        titulo="🏛️ Datos del Registro de la Propiedad"
+        titulo="Datos del Registro de la Propiedad"
         subtitulo={registroDetalleAbierto?.registro_propiedad || "Datos del catálogo"}
         ancho="max-w-3xl"
         footer={<Boton onClick={() => setRegistroDetalleAbierto(null)}>Cerrar</Boton>}
@@ -8284,7 +8269,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={oficinaDetalleAbierta}
         onClose={() => setOficinaDetalleAbierta(false)}
-        titulo="🏢 Datos de la oficina"
+        titulo="Datos de la oficina"
         subtitulo={expediente?.oficina || "Catálogo de oficinas"}
         ancho="max-w-3xl"
         footer={<Boton onClick={() => setOficinaDetalleAbierta(false)}>Cerrar</Boton>}
@@ -8391,7 +8376,7 @@ const cuantiaFincasParaEnvio =
         tipo="primary"
         onClick={guardarAccion}
       >
-        💾 Asignar acción
+        Asignar acción
       </Boton>
     </>
   }
@@ -8470,7 +8455,7 @@ const cuantiaFincasParaEnvio =
                       }}
                       className="shrink-0 rounded-md border border-red-200 px-2 py-1 text-[10px] font-bold text-red-700 hover:bg-red-50 disabled:opacity-50"
                     >
-                      🗑️ Eliminar
+                      Eliminar
                     </button>
                   )}
                 </div>
@@ -8796,7 +8781,7 @@ const cuantiaFincasParaEnvio =
         onClose={() =>
           setMostrarObservaciones(false)
         }
-        titulo="💬 Observaciones"
+        titulo="Observaciones"
         subtitulo="Comentario y destino dentro del expediente"
         ancho="max-w-3xl"
         footer={
@@ -8817,7 +8802,7 @@ const cuantiaFincasParaEnvio =
                 (visionesComentario.actividad && !destinatarioObservacion)
               }
             >
-              {guardandoObservacion ? "Guardando…" : "💾 Guardar comentario"}
+              {guardandoObservacion ? "Guardando…" : "Guardar comentario"}
             </Boton>
           </>
         }
@@ -8993,7 +8978,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={mostrarModalFacturaHonorarios}
         onClose={() => !guardandoFacturaHonorarios && setMostrarModalFacturaHonorarios(false)}
-        titulo="🧾 Factura de honorarios gestoría"
+        titulo="Factura de honorarios gestoría"
         subtitulo={`Expediente ${expediente?.id_expediente || ""} · Revisa los datos antes de registrar`}
         ancho="max-w-5xl"
         footer={
@@ -9002,10 +8987,10 @@ const cuantiaFincasParaEnvio =
             <div className="flex flex-wrap gap-2">
               {previsualizandoFacturaHonorarios && <Boton onClick={() => setPrevisualizandoFacturaHonorarios(false)} disabled={guardandoFacturaHonorarios}>← Editar datos</Boton>}
               {!previsualizandoFacturaHonorarios ? (
-                <Boton tipo="primary" onClick={() => setPrevisualizandoFacturaHonorarios(true)}>👁 Previsualizar factura</Boton>
+                <Boton tipo="primary" onClick={() => setPrevisualizandoFacturaHonorarios(true)}><MolsanIcon name="eye" size={18} /> Previsualizar factura</Boton>
               ) : (
                 <Boton tipo="primary" onClick={confirmarFacturaHonorarios} disabled={guardandoFacturaHonorarios}>
-                  {guardandoFacturaHonorarios ? "Guardando…" : "💾 Guardar y facturar"}
+                  {guardandoFacturaHonorarios ? "Guardando…" : "Guardar y facturar"}
                 </Boton>
               )}
             </div>
@@ -9017,11 +9002,11 @@ const cuantiaFincasParaEnvio =
           <div className="grid gap-3 md:grid-cols-3">
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Provisión de fondos</p>
-              <p className="mt-1 text-lg font-extrabold text-slate-800">{Number(String(facturaHonorariosForm.provisionFondos || "0").replace(",", "." ) || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</p>
+              <p className="mt-1 text-lg font-extrabold text-slate-800">{formatEuro(Number(String(facturaHonorariosForm.provisionFondos || "0").replace(",", "." ) || 0))}</p>
             </div>
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Saldo disponible (dato del expediente)</p>
-              <p className="mt-1 text-lg font-extrabold text-slate-800">{Number(String(facturaHonorariosForm.saldoDisponible || "0").replace(",", "." ) || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</p>
+              <p className="mt-1 text-lg font-extrabold text-slate-800">{formatEuro(Number(String(facturaHonorariosForm.saldoDisponible || "0").replace(",", "." ) || 0))}</p>
             </div>
             <div className={`rounded-xl border p-3 ${empleadoEnFactura ? "border-amber-300 bg-amber-50" : "border-slate-200 bg-slate-50"}`}>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -9039,7 +9024,7 @@ const cuantiaFincasParaEnvio =
                     setFacturaHonorariosForm((actual) => actualizarImportesFacturaHonorarios({
                       ...actual,
                       baseImponible: base.toFixed(2),
-                      observaciones: esEmpleado ? `Cliente empleado: descuento del 50 % (${descuento.toFixed(2)} €) sobre honorarios.` : "",
+                      observaciones: esEmpleado ? `Cliente empleado: descuento del 50 % (${formatEuro(descuento)}) sobre honorarios.` : "",
                     }));
                   }}
                   className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none focus:border-amber-500"
@@ -9064,10 +9049,10 @@ const cuantiaFincasParaEnvio =
               </div>
               <div className="overflow-hidden rounded-xl border border-slate-200">
                 <div className="grid grid-cols-[1fr_auto] gap-3 bg-slate-50 px-4 py-3 text-xs font-bold text-slate-600"><span>Concepto</span><span>Importe</span></div>
-                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-100 px-4 py-3 text-sm"><span>Base imponible</span><span>{Number(facturaHonorariosForm.baseImponible || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
-                {empleadoEnFactura && <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-100 bg-amber-50/60 px-4 py-3 text-sm text-amber-900"><span>Descuento empleado (50 %)</span><span className="font-semibold">− {(Math.round((Math.max(0, Number(baseHonorariosOriginal) || 0) * 0.5 + Number.EPSILON) * 100) / 100).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>}
-                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-100 px-4 py-3 text-sm"><span>{facturaHonorariosForm.tipoImpuesto} ({facturaHonorariosForm.porcentajeImpuesto}%)</span><span>{Number(facturaHonorariosForm.importeImpuesto || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
-                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-200 bg-emerald-50 px-4 py-4 font-extrabold text-emerald-900"><span>TOTAL FACTURA</span><span>{Number(facturaHonorariosForm.totalFactura || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
+                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-100 px-4 py-3 text-sm"><span>Base imponible</span><span>{formatEuro(Number(facturaHonorariosForm.baseImponible || 0))}</span></div>
+                {empleadoEnFactura && <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-100 bg-amber-50/60 px-4 py-3 text-sm text-amber-900"><span>Descuento empleado (50 %)</span><span className="font-semibold">− {formatEuro(Math.round((Math.max(0, Number(baseHonorariosOriginal) || 0) * 0.5 + Number.EPSILON) * 100) / 100)}</span></div>}
+                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-100 px-4 py-3 text-sm"><span>{facturaHonorariosForm.tipoImpuesto} ({formatPercent(Number(facturaHonorariosForm.porcentajeImpuesto || 0))})</span><span>{formatEuro(Number(facturaHonorariosForm.importeImpuesto || 0))}</span></div>
+                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-200 bg-emerald-50 px-4 py-4 font-extrabold text-emerald-900"><span>TOTAL FACTURA</span><span>{formatEuro(Number(facturaHonorariosForm.totalFactura || 0))}</span></div>
               </div>
               {facturaHonorariosForm.observaciones && <p className="mt-4 whitespace-pre-wrap text-sm text-slate-600">{facturaHonorariosForm.observaciones}</p>}
               <p className="mt-4 text-xs text-amber-700">Vista previa de revisión. Al pulsar «Guardar y facturar», el ERP generará y descargará la factura en PDF con número {expediente?.id_expediente || "—"} - {facturaHonorariosForm.numeroFactura || "pendiente de asignación"}, usando la plantilla oficial asociada al concepto de honorarios de gestoría.</p>
@@ -9105,7 +9090,7 @@ const cuantiaFincasParaEnvio =
                 <div className="grid gap-3 md:grid-cols-3">
                   <label className="text-xs font-semibold text-slate-600">Base imponible (€)<input type="number" min="0" step="0.01" value={facturaHonorariosForm.baseImponible} onChange={e => setFacturaHonorariosForm(f => actualizarImportesFacturaHonorarios(f,{baseImponible:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
                   <label className="text-xs font-semibold text-slate-600">IVA (€)<input type="number" value={facturaHonorariosForm.importeImpuesto} readOnly className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm" /></label>
-                  <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2"><span className="block text-xs font-semibold text-emerald-700">Total honorarios (€)</span><strong className="mt-1 block text-sm text-emerald-800">{Number(facturaHonorariosForm.totalFactura || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</strong></div>
+                  <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2"><span className="block text-xs font-semibold text-emerald-700">Total honorarios (€)</span><strong className="mt-1 block text-sm text-emerald-800">{formatEuro(Number(facturaHonorariosForm.totalFactura || 0))}</strong></div>
                 </div>
                 <label className="mt-3 block text-xs font-semibold text-slate-600">Observaciones<textarea value={facturaHonorariosForm.observaciones} onChange={e => setFacturaHonorariosForm(f => ({...f,observaciones:e.target.value}))} rows={2} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
               </section>
@@ -9159,7 +9144,7 @@ const cuantiaFincasParaEnvio =
             <div className="flex gap-2">
               <Boton onClick={() => { setMostrarModalDatosActividad(false); setPestanaActividad("documentos"); }}>Cerrar</Boton>
               <Boton tipo="primary" onClick={guardarCamposActividad} disabled={guardandoActividad}>
-                {guardandoActividad ? "Guardando…" : "💾 Guardar datos"}
+                {guardandoActividad ? "Guardando…" : "Guardar datos"}
               </Boton>
             </div>
           </div>
@@ -9252,7 +9237,7 @@ const cuantiaFincasParaEnvio =
                 </label>
               </div>
               <section className="mt-3 rounded-xl border border-slate-200 bg-white p-4">
-                <h4 className="mb-3 text-sm font-extrabold text-slate-800">📁 Repositorios digitales</h4>
+                <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800"><MolsanIcon name="folder" size={22} /> Repositorios digitales</h4>
                 <RepositorioDocumentosInline
                   expedienteId={expediente?.id_expediente || expediente?.id || id}
                   categorias={["Hoja de Encargo firmada", "Justificante de cancelación", "Nota simple registral"]}
@@ -9346,7 +9331,7 @@ const cuantiaFincasParaEnvio =
             ) : actividadSeleccionada === "facturacion-cierre" ? (
               <div className="grid min-w-0 grid-cols-1 items-start gap-3">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Cierre del expediente</h4>
+                <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800"><MolsanIcon name="clipboard" size={22} /> Datos · Cierre del expediente</h4>
                 <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {[
                     { key: "fecha_fin_actividad", label: "Fecha de cierre" },
@@ -9381,7 +9366,7 @@ const cuantiaFincasParaEnvio =
             ) : actividadSeleccionada === "liquidacion-impuestos" ? (
               <div className="grid min-w-0 grid-cols-1 items-start gap-3">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Liquidación de impuestos</h4>
+                  <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800"><MolsanIcon name="clipboard" size={22} /> Datos · Liquidación de impuestos</h4>
                   <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
                       const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
@@ -9415,7 +9400,7 @@ const cuantiaFincasParaEnvio =
             ) : actividadSeleccionada === "tramitacion-inscripcion" ? (
               <div className="grid min-w-0 grid-cols-1 items-start gap-3">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Tramitación inscripción</h4>
+                  <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800"><MolsanIcon name="clipboard" size={22} /> Datos · Tramitación inscripción</h4>
                   <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
                       const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
@@ -9517,7 +9502,7 @@ const cuantiaFincasParaEnvio =
                 disabled={registrandoSolicitudIntegracion || expedienteBloqueado}
                 className="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-lg bg-sky-700 px-4 py-2.5 text-xs font-extrabold text-white transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {registrandoSolicitudIntegracion ? "Registrando solicitud…" : "📤 Enviar a ABSIS"}
+                {registrandoSolicitudIntegracion ? "Registrando solicitud…" : "Enviar a ABSIS"}
               </button>
             </div>
             <p className="mt-2 text-[11px] leading-relaxed text-sky-900">
@@ -9596,7 +9581,6 @@ const cuantiaFincasParaEnvio =
           </div>
         </div>
       </div>
-    </div>
   );
 }
 

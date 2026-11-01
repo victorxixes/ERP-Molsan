@@ -1,3 +1,8 @@
+import MolsanButton from "../../components/ui/MolsanButton";
+import MolsanIcon from "../../components/ui/MolsanIcon";
+import { useSearchParams } from "react-router-dom";
+import { sortRows } from "../../utils/sortRows";
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { useEffect, useMemo, useRef, useState } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
@@ -156,6 +161,10 @@ async function leerRespuestaServidor(
 ============================================================ */
 
 export default function Municipios() {
+  const [ordenTabla, setOrdenTabla] = useState({ key: "municipio", direction: "asc" });
+
+  const [searchParams] = useSearchParams();
+
 
 
   // ==========================================================
@@ -550,14 +559,18 @@ export default function Municipios() {
   ]);
 
 
-  const municipiosPagina =
-    municipiosFiltrados.slice(
-      (pagina - 1) *
-        FILAS_POR_PAGINA,
-
-      pagina *
-        FILAS_POR_PAGINA
-    );
+  const municipiosOrdenados = useMemo(
+    () => sortRows(municipiosFiltrados, { key: ordenTabla.key, accessor: (item) => {
+      if (ordenTabla.key === "codigos_postales") return (item.codigos_postales || []).join(", ");
+      return item?.[ordenTabla.key];
+    }, sortType: "text" }, ordenTabla.direction),
+    [municipiosFiltrados, ordenTabla]
+  );
+  const municipiosPagina = municipiosOrdenados.slice(
+    (pagina - 1) * FILAS_POR_PAGINA,
+    pagina * FILAS_POR_PAGINA
+  );
+  const cambiarOrdenTabla = (next) => { setOrdenTabla(next.key ? next : { key: "municipio", direction: "asc" }); setPagina(1); };
 
 
   // ==========================================================
@@ -1452,11 +1465,15 @@ export default function Municipios() {
   // ==========================================================
   // RENDER
   // ==========================================================
+  useEffect(() => {
+    if (searchParams.get("importar") === "1") abrirImportacionExcel();
+  }, [searchParams]);
+
 
   return (
 
     <div
-      className="municipios-premium herramientas-subpagina-premium catalogo-maestro-modal-premium 
+      className="catalogos-premium-page municipios-premium herramientas-subpagina-premium catalogo-maestro-modal-premium 
         min-h-full
         p-4 sm:p-6 lg:p-8
         space-y-6
@@ -1468,45 +1485,11 @@ export default function Municipios() {
           CABECERA
       ===================================================== */}
 
-      <div
-        className="
-          relative overflow-hidden
-          rounded-[24px]
-          border border-slate-200/80
-          bg-white/80
-          backdrop-blur-xl
-          shadow-[0_18px_50px_rgba(15,23,42,0.08)]
-          p-6 sm:p-7
-        "
-      >
+      <header className="molsan-page-header catalogos-subpage-header">
 
-        <div
-          className="
-            absolute inset-x-0 top-0 h-px
-            bg-gradient-to-r
-            from-transparent
-            via-blue-400/60
-            to-transparent
-          "
-        />
+        <div className="catalogos-subpage-header__layout">
 
-
-        <div
-          className="
-            relative
-            flex flex-col
-            gap-5
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-          "
-        >
-
-          <div
-            className="
-              flex items-center gap-4
-            "
-          >
+          <div className="molsan-page-header__identity catalogos-subpage-header__identity">
 
             <div
               className="
@@ -1519,7 +1502,7 @@ export default function Municipios() {
                 shadow-sm
               "
             >
-              🏘️
+              <MolsanIcon name="building" size={42} />
             </div>
 
 
@@ -1557,14 +1540,7 @@ export default function Municipios() {
               BOTONES CABECERA
           ================================================= */}
 
-          <div
-            className="
-              flex
-              flex-col
-              sm:flex-row
-              gap-2
-            "
-          >
+          <div className="molsan-page-header__actions catalogos-subpage-header__actions">
 
             <button
               type="button"
@@ -1573,45 +1549,12 @@ export default function Municipios() {
               title="Cargar códigos postales desde datos abiertos derivados del INE"
               className="inline-flex items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-4 py-2.5 text-sm font-semibold text-violet-700 shadow-sm transition-all hover:border-violet-300 hover:bg-violet-100 disabled:cursor-wait disabled:opacity-60"
             >
-              <span className="text-lg">{importandoCodigosNacionales ? "⏳" : "📮"}</span>
+              <span className="text-lg">{importandoCodigosNacionales ? <MolsanIcon name="clock" size={18} /> : <MolsanIcon name="mail" size={18} />}</span>
               {importandoCodigosNacionales ? "Cargando códigos…" : "Cargar códigos postales de España"}
             </button>
 
 
-            <button
-              type="button"
-              onClick={
-                abrirImportacionExcel
-              }
-              className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-xl
-                border border-emerald-200
-                bg-emerald-50
-                px-5
-                py-2.5
-                text-sm
-                font-semibold
-                text-emerald-700
-                shadow-sm
-                transition-all
-                hover:border-emerald-300
-                hover:bg-emerald-100
-                hover:-translate-y-0.5
-                active:scale-[0.98]
-              "
-            >
-
-              <span className="text-lg">
-                📊
-              </span>
-
-              Importar Excel
-
-            </button>
+            
 
 
             <button
@@ -1651,7 +1594,7 @@ export default function Municipios() {
 
         </div>
 
-      </div>
+      </header>
 
 
       {/* =====================================================
@@ -1759,7 +1702,7 @@ export default function Municipios() {
                   text-slate-400
                 "
               >
-                🔎
+                <MolsanIcon name="search" size={20} />
               </span>
 
 
@@ -2111,7 +2054,7 @@ export default function Municipios() {
                 text-2xl
               "
             >
-              🔎
+              <MolsanIcon name="search" size={20} />
             </div>
 
 
@@ -2142,243 +2085,21 @@ export default function Municipios() {
 
           <div className="overflow-x-auto">
 
-            <table
-              className="
-                w-full
-                min-w-[800px]
-                border-collapse
-              "
-            >
-
-              <thead>
-
-                <tr
-                  className="
-                    border-b
-                    border-slate-200
-                    bg-slate-50/80
-                  "
-                >
-
-                  <th
-                    className="
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    Comunidad autónoma
-                  </th>
-
-
-                  <th
-                    className="
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    Provincia
-                  </th>
-
-
-                  <th
-                    className="
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    Municipio
-                  </th>
-
-                  <th className="px-5 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                    Códigos postales
-                  </th>
-
-                  <th
-                    className="
-                      w-[150px]
-                      px-5
-                      py-3.5
-                      text-right
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    Acciones
-                  </th>
-
-                </tr>
-
-              </thead>
-
-
-              <tbody>
-
-                {municipiosPagina.map(
-                  (municipio) => (
-
-                    <tr
-                      key={
-                        municipio.id
-                      }
-                      className="
-                        group
-                        border-b
-                        border-slate-100
-                        transition-colors
-                        hover:bg-blue-50/40
-                      "
-                    >
-
-                      <td
-                        className="
-                          px-5
-                          py-3.5
-                          text-sm
-                          text-slate-600
-                        "
-                      >
-                        {municipio.ccaa}
-                      </td>
-
-
-                      <td
-                        className="
-                          px-5
-                          py-3.5
-                          text-sm
-                          text-slate-600
-                        "
-                      >
-                        {municipio.provincia}
-                      </td>
-
-
-                      <td
-                        className="
-                          px-5
-                          py-3.5
-                          text-sm
-                          font-semibold
-                          text-slate-700
-                        "
-                      >
-                        {municipio.municipio}
-                      </td>
-
-                      <td className="px-5 py-3.5 text-sm text-slate-600">
-                        {(municipio.codigos_postales || []).length ? (
-                          <span title={"Códigos: " + municipio.codigos_postales.join(", ")}>
-                            <strong>{municipio.codigo_postal_principal || municipio.codigos_postales[0]}</strong>
-                            {(municipio.codigos_postales.length > 1) && <span className="ml-2 text-xs text-slate-400">+{municipio.codigos_postales.length - 1}</span>}
-                          </span>
-                        ) : <span className="text-slate-400">Sin asignar</span>}
-                      </td>
-
-                      <td
-                        className="
-                          px-5
-                          py-3.5
-                        "
-                      >
-
-                        <div
-                          className="
-                            flex
-                            justify-end
-                            gap-2
-                          "
-                        >
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              abrirEditar(
-                                municipio
-                              )
-                            }
-                            title="Editar municipio"
-                            className="
-                              flex
-                              h-9
-                              w-9
-                              items-center
-                              justify-center
-                              rounded-lg
-                              border
-                              border-slate-200
-                              bg-white
-                              text-slate-500
-                              transition
-                              hover:border-blue-200
-                              hover:bg-blue-50
-                              hover:text-blue-600
-                            "
-                          >
-                            ✏️
-                          </button>
-
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              eliminarMunicipio(
-                                municipio
-                              )
-                            }
-                            title="Eliminar municipio"
-                            className="
-                              flex
-                              h-9
-                              w-9
-                              items-center
-                              justify-center
-                              rounded-lg
-                              border
-                              border-slate-200
-                              bg-white
-                              text-slate-500
-                              transition
-                              hover:border-red-200
-                              hover:bg-red-50
-                              hover:text-red-600
-                            "
-                          >
-                            🗑️
-                          </button>
-
-                        </div>
-
-                      </td>
-
-                    </tr>
-
-                  )
-                )}
-
-              </tbody>
-
-            </table>
+            <MolsanDataTable
+              rows={municipiosPagina}
+              rowKey="id"
+              minWidth="800px"
+              sortMode="server"
+              initialSort={{ key: "municipio", direction: "asc" }}
+              onSortChange={cambiarOrdenTabla}
+              columns={[
+                { key: "ccaa", header: "Comunidad autónoma", accessor: "ccaa", sortType: "text" },
+                { key: "provincia", header: "Provincia", accessor: "provincia", sortType: "text" },
+                { key: "municipio", header: "Municipio", accessor: "municipio", sortType: "text" },
+                { key: "codigos_postales", header: "Códigos postales", accessor: (item) => (item.codigos_postales || []).join(", "), sortType: "text", render: (_, item) => (item.codigos_postales || []).length ? <span title={"Códigos: " + item.codigos_postales.join(", ")}><strong>{item.codigo_postal_principal || item.codigos_postales[0]}</strong>{item.codigos_postales.length > 1 && <span className="ml-2 text-xs text-slate-400">+{item.codigos_postales.length - 1}</span>}</span> : <span className="text-slate-400">Sin asignar</span> },
+                { key: "acciones", header: "Acciones", sortable: false, align: "right", accessor: (item) => item.id, render: (_, item) => <div className="flex justify-end gap-2"><button type="button" onClick={() => abrirEditar(item)} title="Editar municipio" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 hover:bg-blue-50">Editar</button><button type="button" onClick={() => eliminarMunicipio(item)} title="Eliminar municipio" className="rounded-lg border border-red-200 bg-white px-3 py-2 text-xs text-red-600 hover:bg-red-50">Eliminar</button></div> },
+              ]}
+            />
 
           </div>
 
@@ -2673,7 +2394,7 @@ function ModalImportarExcel({
                   border-emerald-100
                 "
               >
-                📊
+                <MolsanIcon name="chart" size={20} />
               </div>
 
 
@@ -2881,7 +2602,7 @@ function ModalImportarExcel({
                   shadow-sm
                 "
               >
-                📁
+                <MolsanIcon name="folder" size={20} />
               </div>
 
 
@@ -2955,7 +2676,7 @@ function ModalImportarExcel({
                     shadow-sm
                   "
                 >
-                  📄
+                  <MolsanIcon name="file" size={20} />
                 </div>
 
 
@@ -3069,58 +2790,7 @@ function ModalImportarExcel({
           </button>
 
 
-          <button
-            type="button"
-            disabled={
-              !archivo ||
-              importando
-            }
-            onClick={
-              onImportar
-            }
-            className="
-              inline-flex
-              min-w-[180px]
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              bg-emerald-600
-              px-5
-              py-2.5
-              text-sm
-              font-semibold
-              text-white
-              shadow-[0_8px_20px_rgba(5,150,105,0.18)]
-              transition
-              hover:bg-emerald-700
-              disabled:cursor-not-allowed
-              disabled:opacity-50
-            "
-          >
-
-            {importando && (
-
-              <span
-                className="
-                  h-4
-                  w-4
-                  animate-spin
-                  rounded-full
-                  border-2
-                  border-white/40
-                  border-t-white
-                "
-              />
-
-            )}
-
-
-            {importando
-              ? "Importando..."
-              : "Importar municipios"}
-
-          </button>
+          <MolsanButton type="button" icon="upload" variant="secondary" loading={importando} disabled={!archivo || importando} onClick={onImportar} className="min-w-[180px]">{importando ? "Importando..." : "Importar municipios"}</MolsanButton>
 
         </div>
 

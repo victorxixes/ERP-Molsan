@@ -1,3 +1,4 @@
+import MolsanIcon from "../ui/MolsanIcon";
 import {
   useEffect,
   useState,
@@ -790,7 +791,7 @@ export default function AutocompleteNotario({
                           whitespace-nowrap
                         "
                       >
-                        🚗{" "}
+                        <MolsanIcon name="car" size={18} />{" "}
                         {km.toFixed(1)} km
                       </div>
 

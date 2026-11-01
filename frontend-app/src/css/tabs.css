@@ -11,19 +11,19 @@
 .tab-sj {
   padding: 10px 18px;
   border-radius: var(--molsan-radius-control, 9px);
-  background-color: var(--molsan-surface-soft, #f7f9fc);
-  color: var(--molsan-text-secondary, #526176);
+  background-color: var(--molsan-surface-soft, #F2F7FB);
+  color: var(--molsan-text-secondary, #617789);
   cursor: pointer;
   font-weight: 600;
   transition: background-color var(--molsan-transition-fast, 150ms ease), color var(--molsan-transition-fast, 150ms ease), border-color var(--molsan-transition-fast, 150ms ease);
 }
 
 .tab-sj:hover {
-  background-color: var(--molsan-primary-soft, #edf3ff);
-  color: var(--molsan-primary, #3156b3);
+  background-color: var(--molsan-primary-soft, #EAF2F8);
+  color: var(--molsan-primary, #064675);
 }
 
 .tab-sj.active {
-  background-color: var(--molsan-primary, #3156b3);
+  background-color: var(--molsan-primary, #064675);
   color: white;
 }

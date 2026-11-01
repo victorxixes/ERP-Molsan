@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useEffect, useState } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
@@ -58,11 +59,11 @@ export default function CambiarGestorExpediente() {
   }
 
   return (
-    <div className="cambiar-gestor-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="molsan-page-stack cambiar-gestor-premium herramientas-subpagina-premium min-h-full">
+      <header className="molsan-page-header">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="flex flex-wrap items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-3xl">🔁</div>
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-3xl"><MolsanIcon name="refresh" size={20} /></div>
           <div className="min-w-0 flex-1">
             <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl">Cambiar gestor de expediente</h1>
             <p className="mt-1 text-sm text-slate-500">Busca el expediente y reasígnalo manualmente. El cambio quedará registrado en el historial de gestores.</p>

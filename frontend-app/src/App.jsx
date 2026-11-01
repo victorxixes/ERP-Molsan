@@ -22,7 +22,6 @@ const ModuloPendiente = lazy(() => import("./pages/ModuloPendiente"));
 
 /* DASHBOARD */
 const Dashboard = lazy(() => import("./pages/dashboard/Dashboard.jsx"));
-const Cancelagest = lazy(() => import("./pages/cancelagest/Cancelagest.jsx"));
 
 /* AGENDA */
 const Agenda = lazy(() => import("./pages/agenda/Agenda.jsx"));
@@ -55,6 +54,7 @@ const Mensajes = lazy(() => import("./pages/mensajes/Mensajes.jsx"));
 /* HERRAMIENTAS */
 const Herramientas = lazy(() => import("./pages/herramientas/Herramientas.jsx"));
 const ImportarCTN = lazy(() => import("./pages/herramientas/ImportarCTN.jsx"));
+const ImportacionesDatos = lazy(() => import("./pages/herramientas/ImportacionesDatos.jsx"));
 const ImportadorAbsis = lazy(() => import("./pages/herramientas/importador_absis"));
 const ImportadorPostFirma = lazy(() => import("./pages/herramientas/ImportadorPostFirma.jsx"));
 const Utilidades = lazy(() => import("./pages/herramientas/Utilidades.jsx"));
@@ -440,7 +440,7 @@ export default function App() {
             element={<Dashboard />}
           />
 
-          <Route path="cancelagest" element={<Cancelagest />} />
+          <Route path="cancelagest" element={<Navigate to="/dashboard" replace />} />
 
           {/* Fichaje Molsan: módulo de empleado y control administrativo. */}
           <Route path="fichajes" element={<Fichajes modo="empleado" />} />
@@ -614,6 +614,8 @@ export default function App() {
             path="herramientas/importador-absis/postfirma"
             element={<ImportadorPostFirma />}
           />
+
+          <Route path="herramientas/importaciones-datos" element={<ImportacionesDatos />} />
 
           <Route
             path="herramientas/utilidades"

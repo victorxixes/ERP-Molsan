@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSeguridad } from "../../hooks/useSeguridad";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import EmpleadosListado from "../empleados/EmpleadosListado";
 import { API_BASE } from "../../api/config";
 import { editarEmpleado } from "../../api/empleados";
@@ -311,24 +312,24 @@ export default function SeguridadUsuarios() {
           CABECERA
       ====================================================== */}
 
-      <div className="erp-page-header">
+      <div className="molsan-page-header">
 
-        <div>
-          <div className="erp-eyebrow">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__eyebrow">
             SEGURIDAD
           </div>
 
-          <h1 className="erp-page-title">
+          <h1 className="molsan-page-header__title">
             Usuarios y seguridad
           </h1>
 
-          <p className="erp-page-description">
+          <p className="molsan-page-header__description">
             Gestión de usuarios, permisos, estado de acceso,
             auditoría y actividad de seguridad.
           </p>
         </div>
 
-        <div className="erp-page-header-status">
+        <div className="molsan-page-header__actions">
           <span className="erp-badge erp-badge-primary">
             Centro de Seguridad
           </span>
@@ -532,7 +533,7 @@ export default function SeguridadUsuarios() {
                 <div className="erp-empty-state">
 
                   <div className="erp-empty-state-icon">
-                    🔐
+                    <MolsanIcon name="lock" size={24} />
                   </div>
 
                   <div>
@@ -843,7 +844,7 @@ export default function SeguridadUsuarios() {
                 <div className="erp-empty-state">
 
                   <div className="erp-empty-state-icon">
-                    🛡️
+                    <MolsanIcon name="shield" size={24} />
                   </div>
 
                   <div>

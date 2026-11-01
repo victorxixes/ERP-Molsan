@@ -1,3 +1,5 @@
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanButton from "../../components/ui/MolsanButton";
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 
@@ -145,7 +147,21 @@ export default function FestivosCompensaciones({ modo = "empleado", onUpdated })
       </form>
       <div className="overflow-x-auto rounded-2xl border">
         <h3 className="p-4 font-bold">Festivos configurados</h3>
-        <table className="w-full min-w-[600px] text-left text-sm"><thead><tr className="border-y bg-slate-50 text-xs uppercase text-slate-500"><th className="p-3">Fecha</th><th className="p-3">Festivo</th><th className="p-3">Ámbito</th><th className="p-3">Estado</th></tr></thead><tbody>{calendarioFestivos.map(f => <tr key={f.id} className="border-b last:border-0"><td className="p-3">{fechaBonita(f.fecha)}</td><td className="p-3 font-semibold">{f.nombre}</td><td className="p-3">{f.ambito}</td><td className="p-3">{f.activo ? "Activo" : "Inactivo"}</td></tr>)}{!calendarioFestivos.length && <tr><td colSpan="4" className="p-8 text-center text-slate-400">Todavía no se ha configurado ningún festivo.</td></tr>}</tbody></table>
+        <MolsanDataTable
+          rows={calendarioFestivos}
+          rowKey="id"
+          pagination
+          pageSize={25}
+          searchable
+          initialSort={{ key: "fecha", direction: "asc" }}
+          emptyText="Todavía no se ha configurado ningún festivo."
+          columns={[
+            { key: "fecha", header: "Fecha", accessor: "fecha", sortType: "date", render: (value) => fechaBonita(value) },
+            { key: "nombre", header: "Festivo", accessor: "nombre", sortType: "text" },
+            { key: "ambito", header: "Ámbito", accessor: "ambito", sortType: "text" },
+            { key: "activo", header: "Estado", accessor: (item) => item.activo ? "Activo" : "Inactivo", sortType: "text" },
+          ]}
+        />
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -157,21 +173,81 @@ export default function FestivosCompensaciones({ modo = "empleado", onUpdated })
 
       <div className="overflow-x-auto rounded-2xl border">
         <h3 className="p-4 font-bold">Festivos trabajados · validación</h3>
-        <table className="w-full min-w-[850px] text-left text-sm"><thead><tr className="border-y bg-slate-50 text-xs uppercase text-slate-500"><th className="p-3">Empleado</th><th className="p-3">Fecha</th><th className="p-3">Horas</th><th className="p-3">Estado</th><th className="p-3">Compensación</th><th className="p-3">Acciones</th></tr></thead><tbody>{festivos.map(f => <tr key={f.id} className="border-b last:border-0"><td className="p-3 font-semibold">{f.empleado_nombre}</td><td className="p-3">{fechaBonita(f.fecha)}</td><td className="p-3">{f.horas_trabajadas}</td><td className="p-3">{estado(f.estado)}</td><td className="p-3">{f.cantidad_compensable == null ? "—" : `${f.cantidad_compensable} ${f.unidad_compensable}`}</td><td className="p-3">{f.estado === "PENDIENTE" ? <div className="flex gap-2"><button disabled={guardando} onClick={() => validarFestivo(f, "VALIDADO")} className="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white">Validar</button><button disabled={guardando} onClick={() => validarFestivo(f, "RECHAZADO")} className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700">Rechazar</button></div> : "Resuelto"}</td></tr>)}{!festivos.length && <tr><td colSpan="6" className="p-8 text-center text-slate-400">No hay festivos registrados.</td></tr>}</tbody></table>
+        <MolsanDataTable
+          rows={festivos}
+          rowKey="id"
+          pagination
+          pageSize={25}
+          searchable
+          initialSort={{ key: "fecha", direction: "desc" }}
+          emptyText="No hay festivos registrados."
+          columns={[
+            { key: "empleado", header: "Empleado", accessor: "empleado_nombre", sortType: "text" },
+            { key: "fecha", header: "Fecha", accessor: "fecha", sortType: "date", render: (value) => fechaBonita(value) },
+            { key: "horas", header: "Horas", accessor: "horas_trabajadas", sortType: "number", align: "right" },
+            { key: "estado", header: "Estado", accessor: "estado", sortType: "text", render: (value) => estado(value) },
+            { key: "compensacion", header: "Compensación", accessor: (item) => item.cantidad_compensable == null ? "" : `${item.cantidad_compensable} ${item.unidad_compensable}`, sortType: "text", render: (value) => value || "—" },
+            { key: "acciones", header: "Acciones", sortable: false, accessor: (item) => item.id, render: (_, item) => item.estado === "PENDIENTE" ? <div className="flex gap-2"><MolsanButton type="button" variant="success" icon="check" loading={guardando} className="molsan-btn--compact" onClick={() => validarFestivo(item, "VALIDADO")}>Validar</MolsanButton><MolsanButton type="button" variant="danger" icon="close" loading={guardando} className="molsan-btn--compact" onClick={() => validarFestivo(item, "RECHAZADO")}>Rechazar</MolsanButton></div> : "Resuelto" },
+          ]}
+        />
       </div>
 
       <div className="overflow-x-auto rounded-2xl border">
         <h3 className="p-4 font-bold">Solicitudes de disfrute</h3>
-        <table className="w-full min-w-[850px] text-left text-sm"><thead><tr className="border-y bg-slate-50 text-xs uppercase text-slate-500"><th className="p-3">Empleado</th><th className="p-3">Fecha de disfrute</th><th className="p-3">Cantidad</th><th className="p-3">Estado</th><th className="p-3">Observaciones</th><th className="p-3">Acciones</th></tr></thead><tbody>{solicitudes.map(s => <tr key={s.id} className="border-b last:border-0"><td className="p-3 font-semibold">{s.empleado_nombre}</td><td className="p-3">{fechaBonita(s.fecha_disfrute)}</td><td className="p-3">{s.cantidad} {s.unidad}</td><td className="p-3">{estado(s.estado)}</td><td className="p-3">{s.observaciones || "—"}</td><td className="p-3">{s.estado === "SOLICITADO" ? <div className="flex gap-2"><button disabled={guardando} onClick={() => resolverSolicitud(s, "APROBADO")} className="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white">Aprobar</button><button disabled={guardando} onClick={() => resolverSolicitud(s, "RECHAZADO")} className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700">Rechazar</button></div> : "Resuelta"}</td></tr>)}{!solicitudes.length && <tr><td colSpan="6" className="p-8 text-center text-slate-400">No hay solicitudes.</td></tr>}</tbody></table>
+        <MolsanDataTable
+          rows={solicitudes}
+          rowKey="id"
+          pagination
+          pageSize={25}
+          searchable
+          initialSort={{ key: "fecha_disfrute", direction: "desc" }}
+          emptyText="No hay solicitudes."
+          columns={[
+            { key: "empleado", header: "Empleado", accessor: "empleado_nombre", sortType: "text" },
+            { key: "fecha_disfrute", header: "Fecha de disfrute", accessor: "fecha_disfrute", sortType: "date", render: (value) => fechaBonita(value) },
+            { key: "cantidad", header: "Cantidad", accessor: (item) => Number(item.cantidad || 0), sortType: "number", render: (_, item) => `${item.cantidad} ${item.unidad}` },
+            { key: "estado", header: "Estado", accessor: "estado", sortType: "text", render: (value) => estado(value) },
+            { key: "observaciones", header: "Observaciones", accessor: "observaciones", sortType: "text", render: (value) => value || "—" },
+            { key: "acciones", header: "Acciones", sortable: false, accessor: (item) => item.id, render: (_, item) => item.estado === "SOLICITADO" ? <div className="flex gap-2"><MolsanButton type="button" variant="success" icon="check" loading={guardando} className="molsan-btn--compact" onClick={() => resolverSolicitud(item, "APROBADO")}>Aprobar</MolsanButton><MolsanButton type="button" variant="danger" icon="close" loading={guardando} className="molsan-btn--compact" onClick={() => resolverSolicitud(item, "RECHAZADO")}>Rechazar</MolsanButton></div> : "Resuelta" },
+          ]}
+        />
       </div>
 
       <div className="overflow-x-auto rounded-2xl border">
         <h3 className="p-4 font-bold">Saldos de compensación por empleado</h3>
-        <table className="w-full min-w-[520px] text-left text-sm"><thead><tr className="border-y bg-slate-50 text-xs uppercase text-slate-500"><th className="p-3">Empleado</th><th className="p-3">Días disponibles</th><th className="p-3">Horas disponibles</th></tr></thead><tbody>{saldos.map(s => <tr key={s.empleado_id} className="border-b last:border-0"><td className="p-3 font-semibold">{s.empleado_nombre}</td><td className="p-3">{s.saldo_dias}</td><td className="p-3">{s.saldo_horas}</td></tr>)}</tbody></table>
+        <MolsanDataTable
+          rows={saldos}
+          rowKey="empleado_id"
+          pagination
+          pageSize={25}
+          searchable
+          initialSort={{ key: "empleado_nombre", direction: "asc" }}
+          emptyText="No hay saldos de compensación."
+          columns={[
+            { key: "empleado_nombre", header: "Empleado", accessor: "empleado_nombre", sortType: "text" },
+            { key: "saldo_dias", header: "Días disponibles", accessor: "saldo_dias", sortType: "number", align: "right" },
+            { key: "saldo_horas", header: "Horas disponibles", accessor: "saldo_horas", sortType: "number", align: "right" },
+          ]}
+        />
       </div>
       <div className="overflow-x-auto rounded-2xl border">
         <h3 className="p-4 font-bold">Auditoría de cambios</h3>
-        <table className="w-full min-w-[780px] text-left text-sm"><thead><tr className="border-y bg-slate-50 text-xs uppercase text-slate-500"><th className="p-3">Fecha y hora</th><th className="p-3">Empleado</th><th className="p-3">Acción</th><th className="p-3">Estado</th><th className="p-3">Detalle</th></tr></thead><tbody>{auditoria.map(a => <tr key={a.id} className="border-b last:border-0"><td className="p-3">{a.creado_en ? new Date(a.creado_en).toLocaleString("es-ES") : "—"}</td><td className="p-3">{a.empleado_nombre}</td><td className="p-3">{a.entidad} · {a.accion}</td><td className="p-3">{a.estado_anterior || "—"} → {a.estado_nuevo || "—"}</td><td className="p-3">{a.detalle || "—"}</td></tr>)}{!auditoria.length && <tr><td colSpan="5" className="p-8 text-center text-slate-400">No hay cambios auditados.</td></tr>}</tbody></table>
+        <MolsanDataTable
+          rows={auditoria}
+          rowKey="id"
+          pagination
+          pageSize={25}
+          searchable
+          initialSort={{ key: "creado_en", direction: "desc" }}
+          emptyText="No hay cambios auditados."
+          columns={[
+            { key: "creado_en", header: "Fecha y hora", accessor: "creado_en", sortType: "date", render: (value) => value ? new Date(value).toLocaleString("es-ES") : "—" },
+            { key: "empleado", header: "Empleado", accessor: "empleado_nombre", sortType: "text" },
+            { key: "accion", header: "Acción", accessor: (item) => `${item.entidad} · ${item.accion}`, sortType: "text" },
+            { key: "estado", header: "Estado", accessor: (item) => `${item.estado_anterior || "—"} → ${item.estado_nuevo || "—"}`, sortType: "text" },
+            { key: "detalle", header: "Detalle", accessor: "detalle", sortType: "text", render: (value) => value || "—" },
+          ]}
+        />
       </div>
     </> : <>
       <div className="grid gap-3 sm:grid-cols-2">
@@ -201,15 +277,58 @@ export default function FestivosCompensaciones({ modo = "empleado", onUpdated })
       </form>
       <div className="overflow-x-auto rounded-2xl border">
         <h3 className="p-4 font-bold">Festivos trabajados</h3>
-        <table className="w-full min-w-[650px] text-left text-sm"><thead><tr className="border-y bg-slate-50 text-xs uppercase text-slate-500"><th className="p-3">Fecha</th><th className="p-3">Horas</th><th className="p-3">Estado</th><th className="p-3">Saldo generado</th><th className="p-3">Observaciones</th></tr></thead><tbody>{(resumen.festivos || []).map(f => <tr key={f.id} className="border-b last:border-0"><td className="p-3">{fechaBonita(f.fecha)}</td><td className="p-3">{f.horas_trabajadas}</td><td className="p-3">{estado(f.estado)}</td><td className="p-3">{f.cantidad_compensable == null ? "—" : `${f.cantidad_compensable} ${f.unidad_compensable}`}</td><td className="p-3">{f.observaciones || "—"}</td></tr>)}{!(resumen.festivos || []).length && <tr><td colSpan="5" className="p-8 text-center text-slate-400">Aún no hay festivos registrados por administración.</td></tr>}</tbody></table>
+        <MolsanDataTable
+          rows={resumen.festivos || []}
+          rowKey="id"
+          pagination
+          pageSize={25}
+          searchable
+          initialSort={{ key: "fecha", direction: "desc" }}
+          emptyText="Aún no hay festivos registrados por administración."
+          columns={[
+            { key: "fecha", header: "Fecha", accessor: "fecha", sortType: "date", render: (value) => fechaBonita(value) },
+            { key: "horas", header: "Horas", accessor: "horas_trabajadas", sortType: "number", align: "right" },
+            { key: "estado", header: "Estado", accessor: "estado", sortType: "text", render: (value) => estado(value) },
+            { key: "saldo", header: "Saldo generado", accessor: (item) => item.cantidad_compensable == null ? "" : `${item.cantidad_compensable} ${item.unidad_compensable}`, sortType: "text", render: (value) => value || "—" },
+            { key: "observaciones", header: "Observaciones", accessor: "observaciones", sortType: "text", render: (value) => value || "—" },
+          ]}
+        />
       </div>
       <div className="overflow-x-auto rounded-2xl border">
         <h3 className="p-4 font-bold">Solicitudes e historial de disfrute</h3>
-        <table className="w-full min-w-[650px] text-left text-sm"><thead><tr className="border-y bg-slate-50 text-xs uppercase text-slate-500"><th className="p-3">Fecha</th><th className="p-3">Cantidad</th><th className="p-3">Estado</th><th className="p-3">Observaciones</th></tr></thead><tbody>{(resumen.solicitudes || []).map(s => <tr key={s.id} className="border-b last:border-0"><td className="p-3">{fechaBonita(s.fecha_disfrute)}</td><td className="p-3">{s.cantidad} {s.unidad}</td><td className="p-3">{estado(s.estado)}</td><td className="p-3">{s.observaciones || "—"}</td></tr>)}{!(resumen.solicitudes || []).length && <tr><td colSpan="4" className="p-8 text-center text-slate-400">Todavía no has solicitado compensaciones.</td></tr>}</tbody></table>
+        <MolsanDataTable
+          rows={resumen.solicitudes || []}
+          rowKey="id"
+          pagination
+          pageSize={25}
+          searchable
+          initialSort={{ key: "fecha_disfrute", direction: "desc" }}
+          emptyText="Todavía no has solicitado compensaciones."
+          columns={[
+            { key: "fecha_disfrute", header: "Fecha", accessor: "fecha_disfrute", sortType: "date", render: (value) => fechaBonita(value) },
+            { key: "cantidad", header: "Cantidad", accessor: (item) => Number(item.cantidad || 0), sortType: "number", render: (_, item) => `${item.cantidad} ${item.unidad}` },
+            { key: "estado", header: "Estado", accessor: "estado", sortType: "text", render: (value) => estado(value) },
+            { key: "observaciones", header: "Observaciones", accessor: "observaciones", sortType: "text", render: (value) => value || "—" },
+          ]}
+        />
       </div>
       <div className="overflow-x-auto rounded-2xl border">
         <h3 className="p-4 font-bold">Libro de movimientos</h3>
-        <table className="w-full min-w-[620px] text-left text-sm"><thead><tr className="border-y bg-slate-50 text-xs uppercase text-slate-500"><th className="p-3">Fecha</th><th className="p-3">Movimiento</th><th className="p-3">Cantidad</th><th className="p-3">Detalle</th></tr></thead><tbody>{(resumen.movimientos || []).map(m => <tr key={m.id} className="border-b last:border-0"><td className="p-3">{fechaBonita(m.fecha)}</td><td className="p-3">{m.tipo === "ABONO" ? "Saldo generado" : m.tipo === "CONSUMO" ? "Compensación utilizada" : "Ajuste"} </td><td className="p-3">{m.tipo === "CONSUMO" ? "−" : "+"}{m.cantidad} {m.unidad}</td><td className="p-3">{m.observaciones || "—"}</td></tr>)}{!(resumen.movimientos || []).length && <tr><td colSpan="4" className="p-8 text-center text-slate-400">Sin movimientos todavía.</td></tr>}</tbody></table>
+        <MolsanDataTable
+          rows={resumen.movimientos || []}
+          rowKey="id"
+          pagination
+          pageSize={25}
+          searchable
+          initialSort={{ key: "fecha", direction: "desc" }}
+          emptyText="Sin movimientos todavía."
+          columns={[
+            { key: "fecha", header: "Fecha", accessor: "fecha", sortType: "date", render: (value) => fechaBonita(value) },
+            { key: "tipo", header: "Movimiento", accessor: (item) => item.tipo === "ABONO" ? "Saldo generado" : item.tipo === "CONSUMO" ? "Compensación utilizada" : "Ajuste", sortType: "text" },
+            { key: "cantidad", header: "Cantidad", accessor: (item) => Number(item.cantidad || 0), sortType: "number", render: (_, item) => `${item.tipo === "CONSUMO" ? "−" : "+"}${item.cantidad} ${item.unidad}` },
+            { key: "detalle", header: "Detalle", accessor: "observaciones", sortType: "text", render: (value) => value || "—" },
+          ]}
+        />
       </div>
     </>}
   </section>;

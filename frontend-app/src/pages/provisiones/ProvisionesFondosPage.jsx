@@ -1,9 +1,12 @@
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 import "./ProvisionesFondosPage.css";
+import { formatEuro as dinero, formatPercent } from "../../utils/formatters";
 
 const hoy = () => new Date().toISOString().slice(0, 10);
-const dinero = (v) => new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(v || 0));
+
 const totalConceptos = (g) => Math.round((["notaria", "ajd", "registro", "gestion"].reduce((s, k) => s + Number(g?.[k] || 0), 0) + Number.EPSILON) * 100) / 100;
 const compactarEntidad = (valor) => normalizarCatalogo(valor).replace(/[^a-z0-9]/g, "");
 const vaciaGarantia = () => ({ entidad: "", capital: "", finca: "", cru_idufir: "", registro_propiedad: "", poblacion: "", provincia: "", tipo_carga: "prestamo hipotecario", condicion_resolutoria: "no", adquisicion_vivienda_habitual: "", notaria: "0", ajd: "0", registro: "0", gestion: "0", total: "0" });
@@ -729,7 +732,17 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
   };
 
 
-  if (soloEditorPlantilla) return <main className="provisiones-fondos-page w-full min-w-0 p-3 md:p-6 space-y-4">
+  if (soloEditorPlantilla) return <main className="molsan-page-stack catalogos-premium-page provisiones-fondos-page w-full min-w-0">
+    <header className="molsan-page-header">
+      <div className="molsan-page-header__identity">
+        <div className="molsan-page-header__mark" aria-hidden="true">PF</div>
+        <div className="min-w-0">
+          <p className="molsan-page-header__eyebrow">MOLSAN ERP · UTILIDADES</p>
+          <h1 className="molsan-page-header__title">Diseño de plantilla · Provisión de fondos</h1>
+          <p className="molsan-page-header__description">Configura la distribución visual del documento corporativo.</p>
+        </div>
+      </div>
+    </header>
     <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1"><p className="text-xs font-black uppercase tracking-wider text-sky-700">Datos corporativos vinculados</p><h3 className="mt-1 font-bold text-slate-900">Datos Molsan</h3><p className="mt-1 text-xs text-slate-500">La cabecera utiliza la información guardada en Utilidades → Datos Molsan. Los cambios de razón social, CIF, domicilio y contacto se gestionan allí.</p>
@@ -747,20 +760,34 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
     </section>
     <div className="provision-editor-layout provision-editor-layout-solo"><div className="provision-editor-designer min-w-0"><DocumentoLayoutDesigner tipo="provision" datosMolsan={datosCorporativos} /></div></div>
   </main>;
-  if (modoCatalogo) return <main className="provisiones-fondos-page w-full min-w-0 space-y-6 p-3 md:p-6"><header className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/85 px-5 py-5 shadow-sm"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700">MOLSAN ERP PREMIUM 2027 · CATÁLOGOS ECONÓMICOS</p><h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800">Tabla Provisiones de fondos</h1><p className="mt-1 max-w-3xl text-sm text-slate-500">Configura importes estimativos y criterios iniciales. Estos valores sirven de referencia para nuevas provisiones; los registros históricos no se recalculan al cambiar la tabla.</p></header><ConfiguracionConceptosProvisiones /></main>;
-
-  return <main className="provisiones-fondos-page w-full min-w-0 space-y-6 p-3 md:p-6">
-    <header className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/85 px-4 py-4 shadow-sm backdrop-blur-xl sm:px-5">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-400/60 to-transparent" />
-      <div className="relative z-10 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+  if (modoCatalogo) return <main className="molsan-page-stack catalogos-premium-page provisiones-fondos-page w-full min-w-0">
+    <header className="molsan-page-header">
+      <div className="molsan-page-header__identity">
+        <div className="molsan-page-header__mark" aria-hidden="true">PF</div>
         <div className="min-w-0">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700">MOLSAN ERP PREMIUM 2027 · GLASS LUXE</p>
-          <h1 className="mt-1 text-xl font-bold tracking-tight text-slate-800">Provisión estimativa</h1>
-          <p className="mt-1 text-sm text-slate-500">Gestión de presupuestos independientes, con histórico y documento PDF.</p>
+          <p className="molsan-page-header__eyebrow">MOLSAN ERP · CATÁLOGOS ECONÓMICOS</p>
+          <h1 className="molsan-page-header__title">Tabla Provisiones de fondos</h1>
+          <p className="molsan-page-header__description">Configura importes estimativos y criterios iniciales. Estos valores sirven de referencia para nuevas provisiones; los registros históricos no se recalculan al cambiar la tabla.</p>
         </div>
+      </div>
+    </header>
+    <ConfiguracionConceptosProvisiones />
+  </main>;
+
+  return <main className="molsan-page-stack catalogos-premium-page provisiones-fondos-page w-full min-w-0">
+    <header className="molsan-page-header">
+      <div className="molsan-page-header__identity">
+        <div className="molsan-page-header__mark" aria-hidden="true">PF</div>
+        <div className="min-w-0">
+          <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+          <h1 className="molsan-page-header__title">Provisión estimativa</h1>
+          <p className="molsan-page-header__description">Gestión de presupuestos independientes, con histórico y documento PDF.</p>
+          {form.id && <span className="mt-2 inline-flex rounded-full border border-blue-100 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-800">Editando {form.numero || `provisión #${form.id}`}</span>}
+        </div>
+      </div>
+      <div className="molsan-page-header__actions">
         <button type="button" onClick={nueva} className={`${boton} shrink-0 bg-blue-600 text-white shadow-sm hover:bg-blue-700`}>＋ Nueva provisión</button>
       </div>
-      {form.id && <div className="relative z-10 mt-3 inline-flex rounded-full border border-blue-100 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-800">Editando {form.numero || `provisión #${form.id}`}</div>}
     </header>
 
     {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{String(error)}</div>}
@@ -852,7 +879,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
                   ? "Al tratarse de la vivienda habitual, AJD / impuestos queda fijado en 0,00 € y no se aplica el porcentaje provincial."
                   : importeHipotecaProvincia(g.provincia) === null
                     ? "No hay porcentaje configurado para " + g.provincia + " en Catálogos → Tabla Provisiones de fondos. Introduce el impuesto manualmente."
-                    : "Como la hipoteca no se constituyó para adquirir la vivienda habitual, se aplica el " + String(importeHipotecaProvincia(g.provincia)).replace(".", ",") + " % al capital del préstamo. El resultado se refleja en AJD / impuestos y puedes revisarlo antes de guardar."}
+                    : "Como la hipoteca no se constituyó para adquirir la vivienda habitual, se aplica el " + formatPercent(importeHipotecaProvincia(g.provincia)) + " al capital del préstamo. El resultado se refleja en AJD / impuestos y puedes revisarlo antes de guardar."}
             </div>}
             {!normalizarCatalogo(g.tipo_carga).includes("hipotec") && <div role="note" className="mb-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900"><strong>Atención:</strong> en cargas administrativas, judiciales, bienes muebles u otras (por ejemplo, embargos) no se debe presupuestar gasto notarial. Añade en Observaciones una nota indicando la carga que debe cancelarse. El importe de Notaría queda a 0 €.</div>}
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
@@ -880,7 +907,24 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
 
     <Seccion titulo="Histórico de provisiones guardadas" detalle="Busca, recupera y modifica una provisión anterior o vuelve a generar su documento.">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row"><input className={`${input} mt-0 flex-1`} value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar por número, cliente, DNI/CIF o población…" /><button type="button" onClick={cargar} className={`${boton} border border-slate-300 text-slate-700 hover:bg-slate-50`}>Actualizar</button></div>
-      {cargando ? <p role="status" aria-live="polite" className="py-8 text-center text-sm text-slate-500">Cargando histórico…</p> : filtrados.length === 0 ? <p className="py-8 text-center text-sm text-slate-500">Todavía no hay provisiones guardadas que coincidan con la búsqueda.</p> : <div className="overflow-x-auto"><table className="w-full min-w-[760px] border-collapse text-left text-sm"><thead><tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500"><th className="px-3 py-3">Número / fecha</th><th className="px-3 py-3">Cliente</th><th className="px-3 py-3">Población</th><th className="px-3 py-3 text-right">Importe</th><th className="px-3 py-3">Acciones</th></tr></thead><tbody>{filtrados.map((it) => <tr key={it.id} className="border-b border-slate-100 hover:bg-slate-50"><td className="px-3 py-3"><p className="font-bold text-slate-900">{it.numero}</p><p className="text-xs text-slate-500">{it.fecha || "—"}</p></td><td className="px-3 py-3"><p className="font-semibold">{it.cliente?.nombre || "—"}</p><p className="text-xs text-slate-500">{it.cliente?.nif || ""}</p></td><td className="px-3 py-3">{it.cliente?.poblacion || "—"}</td><td className="px-3 py-3 text-right font-bold tabular-nums">{dinero(it.importe_total)}</td><td className="px-3 py-3"><div className="flex flex-col items-start gap-1"><button type="button" onClick={() => recuperar(it)} className="font-semibold text-blue-700 hover:underline">Abrir / editar</button><button type="button" onClick={() => abrirEmail(it)} className="font-semibold text-emerald-700 hover:underline">Enviar por email</button></div></td></tr>)}</tbody></table></div>}
+      {cargando ? <p role="status" aria-live="polite" className="py-8 text-center text-sm text-slate-500">Cargando histórico…</p> : filtrados.length === 0 ? <p className="py-8 text-center text-sm text-slate-500">Todavía no hay provisiones guardadas que coincidan con la búsqueda.</p> : <MolsanDataTable
+        rows={filtrados}
+          pagination
+          pageSize={25}
+
+        rowKey="id"
+        minWidth="950px"
+        initialSort={{ key: "fecha", direction: "desc" }}
+        emptyText="Todavía no hay provisiones guardadas que coincidan con la búsqueda."
+        columns={[
+          { key: "numero", header: "Número", accessor: "numero", sortType: "text", render: (value, item) => <><p className="font-bold text-slate-900">{value}</p><p className="text-xs text-slate-500">{item.fecha || "—"}</p></> },
+          { key: "fecha", header: "Fecha", accessor: "fecha", sortType: "date" },
+          { key: "cliente", header: "Cliente", accessor: (item) => item.cliente?.nombre, sortType: "text", render: (_, item) => <><p className="font-semibold">{item.cliente?.nombre || "—"}</p><p className="text-xs text-slate-500">{item.cliente?.nif || ""}</p></> },
+          { key: "poblacion", header: "Población", accessor: (item) => item.cliente?.poblacion, sortType: "text", render: (value) => value || "—" },
+          { key: "importe", header: "Importe", accessor: "importe_total", sortType: "currency", align: "right", render: (value) => <strong className="tabular-nums">{dinero(value)}</strong> },
+          { key: "acciones", header: "Acciones", sortable: false, accessor: (item) => item.id, render: (_, item) => <div className="flex flex-col items-start gap-1"><button type="button" onClick={() => recuperar(item)} className="font-semibold text-blue-700 hover:underline">Abrir / editar</button><button type="button" onClick={() => abrirEmail(item)} className="font-semibold text-emerald-700 hover:underline">Enviar por email</button></div> },
+        ]}
+      />}
 
     </Seccion>
     {emailDraft && <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/55 p-3 backdrop-blur-sm sm:p-6" role="dialog" aria-modal="true" aria-label="Enviar provisión por email">
@@ -898,7 +942,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
           <label className={label}>Asunto<input className={input} required maxLength={500} value={emailDraft.asunto} onChange={(e) => setEmailDraft((d) => ({ ...d, asunto: e.target.value }))} /></label>
           <label className={label}>Mensaje<textarea className={input + " min-h-56 resize-y"} required value={emailDraft.cuerpo} onChange={(e) => setEmailDraft((d) => ({ ...d, cuerpo: e.target.value }))} /></label>
           {!emailDraft.smtp_configurado && <div role="status" className="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950"><span className="text-xl">⚠️</span><div><p className="font-bold">Envío pendiente de configuración SMTP</p><p className="mt-1">La plantilla y el correo están preparados, pero todavía no se pueden enviar emails. Falta configurar el servicio SMTP en el backend. Cuando esté configurado, este botón permitirá realizar el envío.</p></div></div>}
-          <div className="flex items-center gap-3 rounded-xl border border-red-100 bg-red-50/70 p-3 text-sm text-slate-700"><span className="text-2xl">📎</span><div><p className="font-semibold">PDF de la provisión</p><p className="text-xs text-slate-500">Se genera desde la provisión seleccionada y se adjunta al correo automáticamente.</p></div></div>
+          <div className="flex items-center gap-3 rounded-xl border border-red-100 bg-red-50/70 p-3 text-sm text-slate-700"><MolsanIcon name="attachment" size={36} /><div><p className="font-semibold">PDF de la provisión</p><p className="text-xs text-slate-500">Se genera desde la provisión seleccionada y se adjunta al correo automáticamente.</p></div></div>
           {emailDraft.historial?.length > 0 && <section className="rounded-xl border border-slate-200 bg-slate-50 p-3"><h3 className="mb-2 text-sm font-bold text-slate-800">Últimos envíos</h3><div className="space-y-2">{emailDraft.historial.map((envio, i) => <div key={envio.creado_en || i} className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white px-3 py-2 text-xs"><div><p className="font-semibold text-slate-700">{envio.destinatario}</p><p className="text-slate-500">{envio.creado_en ? new Date(envio.creado_en).toLocaleString("es-ES") : "Fecha no disponible"}</p></div><span className={envio.estado === "enviado" ? "rounded-full bg-emerald-100 px-2 py-1 font-bold text-emerald-800" : "rounded-full bg-red-100 px-2 py-1 font-bold text-red-800"}>{envio.estado === "enviado" ? "Enviado" : "Error"}</span></div>)}</div></section>}
           <div className="flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-4">
             <button type="button" onClick={() => { setEmailDraft(null); setEmailProvisionId(null); }} className={boton + " border border-slate-300 text-slate-700 hover:bg-slate-50"}>Cancelar</button>

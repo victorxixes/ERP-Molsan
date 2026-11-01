@@ -60,7 +60,7 @@ const MODULOS_ERP = [
 
   {
     key: "control-fichajes",
-    label: "Gestión de fichajes",
+    label: "Control de Fichajes",
     route: "/control-fichajes",
     permiso: "control-fichajes",
     icon: "clock",
@@ -210,12 +210,12 @@ const MODULOS_ERP = [
   {
     key: "cancelagest",
     label: "CancelaGest",
-    route: "/cancelagest",
+    route: "/dashboard",
     icon: "file-check",
   },
   {
     key: "notargest",
-    label: "Notargest",
+    label: "NotarGest",
     route: "/notargest",
     icon: "landmark",
   },

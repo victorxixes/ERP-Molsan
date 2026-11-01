@@ -1471,117 +1471,23 @@ export default function SeguridadAuditoria() {
           CABECERA
           ====================================================== */}
 
-      <section
-        className="
-          bg-[var(--erp-surface)]
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          shadow-sm
-          px-6
-          py-5
-        "
-      >
-
-        <div
-          className="
-            flex
-            flex-col
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-            gap-5
-          "
-        >
-
-          <div
-            className="
-              flex
-              items-center
-              gap-4
-            "
-          >
-
-            <div
-              className="
-                w-12
-                h-12
-                rounded-2xl
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-              "
-            >
-
-              <Icono
-                name="clipboard"
-                className="w-6 h-6"
-              />
-
-            </div>
-
-
-            <div>
-
-              <h1
-                className="
-                  text-2xl
-                  font-bold
-                  text-[var(--erp-text)]
-                "
-              >
-                Auditoría
-              </h1>
-
-              <p
-                className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                  mt-1
-                "
-              >
-                Registro de actividad y operaciones de seguridad del ERP
-              </p>
-
-            </div>
-
+      <section className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true">
+            <Icono name="clipboard" className="w-5 h-5" />
           </div>
-
-
-          <div
-            className="
-              flex
-              items-center
-              gap-2
-              px-3
-              py-2
-              rounded-xl
-              bg-[var(--erp-bg)]
-              border
-              border-[var(--erp-border)]
-              text-xs
-              text-[var(--erp-text-soft)]
-              w-fit
-            "
-          >
-
-            <span
-              className="
-                w-1.5
-                h-1.5
-                rounded-full
-                bg-emerald-500
-              "
-            />
-
-            Histórico protegido
-
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · SEGURIDAD</p>
+            <h1 className="molsan-page-header__title">Auditoría</h1>
+            <p className="molsan-page-header__description">Registro de actividad y operaciones de seguridad del ERP</p>
           </div>
-
         </div>
-
+        <div className="molsan-page-header__actions">
+          <span className="inline-flex items-center gap-2 rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2 text-xs text-[var(--molsan-text-muted)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            Histórico protegido
+          </span>
+        </div>
       </section>
 
 

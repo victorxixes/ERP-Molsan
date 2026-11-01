@@ -26,7 +26,7 @@
 .textarea-sj:focus {
   border-color: var(--sj-azul);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(49, 86, 179, .13);
+  box-shadow: var(--molsan-shadow-focus, 0 0 0 3px rgba(6, 70, 117, .16));
 }
 
 .input-sj.error,
@@ -48,14 +48,14 @@
 .textarea-sj:disabled {
   opacity: 0.55;
   cursor: not-allowed;
-  background: var(--molsan-surface-soft, #f7f9fc);
+  background: var(--molsan-surface-soft, #F2F7FB);
 }
 
 .label-sj {
   font-weight: 600;
   margin-bottom: 6px;
   display: block;
-  color: var(--molsan-primary, #3156b3);
+  color: var(--molsan-primary, #064675);
   letter-spacing: 0.2px;
 }
 

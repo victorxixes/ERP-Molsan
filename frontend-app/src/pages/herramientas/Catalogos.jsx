@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "../../css/HerramientasPremium.css";
 
 /**
@@ -155,15 +156,14 @@ const GRUPOS = [
 
 export default function Catalogos() {
   return (
-    <main className="catalogos-premium-page min-h-full space-y-7 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-      <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="relative flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl shadow-sm">▦</div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">MOLSAN ERP PREMIUM 2027</p>
-            <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Catálogos</h1>
-            <p className="mt-1 text-sm text-slate-500">Centraliza los datos maestros que utilizan los módulos y procesos de la gestoría.</p>
+    <main className="molsan-page-stack catalogos-premium-page min-h-full animate-fadeIn">
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark"><MolsanIcon name="book" size={42} bare /></div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">Catálogos</h1>
+            <p className="molsan-page-header__description">Centraliza los datos maestros que utilizan los módulos y procesos de la gestoría.</p>
           </div>
         </div>
       </header>
@@ -182,11 +182,11 @@ export default function Catalogos() {
                 <Link
                   key={item.ruta}
                   to={item.ruta}
-                  className={`group relative overflow-hidden rounded-[22px] border p-5 shadow-[0_12px_35px_rgba(15,23,42,0.07)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(15,23,42,0.11)] active:scale-[0.98] ${item.destacado ? "border-blue-200/80 bg-blue-50/70" : "border-slate-200/80 bg-white/85"}`}
+                  className="group erp-card relative overflow-hidden p-5 transition-all duration-300 active:scale-[0.98]"
                 >
                   <div className="flex items-start gap-4">
-                    <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl ${item.destacado ? "border-blue-200 bg-blue-100" : "border-slate-200 bg-slate-50"}`}>
-                      {item.icon}
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center">
+                      <MolsanIcon name={item.icon} size={48} />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="text-base font-semibold text-slate-800">{item.titulo}</h3>

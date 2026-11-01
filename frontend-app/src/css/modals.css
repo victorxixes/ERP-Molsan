@@ -18,14 +18,14 @@
   max-height: calc(100dvh - 32px);
   overflow-y: auto;
   box-shadow: var(--molsan-shadow-popover, 0 18px 45px rgba(15, 23, 42, .14));
-  border: 1px solid var(--molsan-border, #dce4ef);
+  border: 1px solid var(--molsan-border, #D8E4EC);
 }
 
 
 .modal-sj-header {
   font-weight: 600;
   margin-bottom: 16px;
-  color: var(--molsan-primary, #3156b3);
+  color: var(--molsan-primary, #064675);
 }
 
 .modal-sj-footer {

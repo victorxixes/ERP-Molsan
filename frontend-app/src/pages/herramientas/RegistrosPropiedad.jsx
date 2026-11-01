@@ -1,3 +1,8 @@
+import MolsanButton from "../../components/ui/MolsanButton";
+import MolsanIcon from "../../components/ui/MolsanIcon";
+import { useSearchParams } from "react-router-dom";
+import { sortRows } from "../../utils/sortRows";
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import {
   useEffect,
   useMemo,
@@ -165,6 +170,10 @@ async function leerRespuestaServidor(
 ============================================================ */
 
 export default function RegistrosPropiedad() {
+  const [ordenTabla, setOrdenTabla] = useState({ key: "registro_propiedad", direction: "asc" });
+
+  const [searchParams] = useSearchParams();
+
 
 
   // ==========================================================
@@ -603,16 +612,15 @@ export default function RegistrosPropiedad() {
   ]);
 
 
-  const registrosPagina =
-    registrosFiltrados.slice(
-      (
-        pagina - 1
-      ) *
-      FILAS_POR_PAGINA,
-
-      pagina *
-      FILAS_POR_PAGINA
-    );
+  const registrosOrdenados = useMemo(
+    () => sortRows(registrosFiltrados, { key: ordenTabla.key, accessor: (item) => ordenTabla.key === "email" ? (item.email_1 || item.email_2 || "") : item?.[ordenTabla.key], sortType: ordenTabla.key === "tiene_of_liq" ? "boolean" : "text" }, ordenTabla.direction),
+    [registrosFiltrados, ordenTabla]
+  );
+  const registrosPagina = registrosOrdenados.slice(
+    (pagina - 1) * FILAS_POR_PAGINA,
+    pagina * FILAS_POR_PAGINA
+  );
+  const cambiarOrdenTabla = (next) => { setOrdenTabla(next.key ? next : { key: "registro_propiedad", direction: "asc" }); setPagina(1); };
 
 
   // ==========================================================
@@ -1649,11 +1657,15 @@ export default function RegistrosPropiedad() {
   // ==========================================================
   // RENDER
   // ==========================================================
+  useEffect(() => {
+    if (searchParams.get("importar") === "1") abrirImportacionExcel();
+  }, [searchParams]);
+
 
   return (
 
     <div
-      className="registros-propiedad-premium herramientas-subpagina-premium catalogo-maestro-modal-premium 
+      className="catalogos-premium-page registros-propiedad-premium herramientas-subpagina-premium catalogo-maestro-modal-premium 
         min-h-full
         p-4 sm:p-6 lg:p-8
         space-y-6
@@ -1665,53 +1677,11 @@ export default function RegistrosPropiedad() {
           CABECERA
       ===================================================== */}
 
-      <div
-        className="
-          relative
-          overflow-hidden
-          rounded-[24px]
-          border
-          border-slate-200/80
-          bg-white/80
-          p-6 sm:p-7
-          shadow-[0_18px_50px_rgba(15,23,42,0.08)]
-          backdrop-blur-xl
-        "
-      >
+      <header className="molsan-page-header catalogos-subpage-header">
 
-        <div
-          className="
-            absolute
-            inset-x-0
-            top-0
-            h-px
-            bg-gradient-to-r
-            from-transparent
-            via-blue-400/60
-            to-transparent
-          "
-        />
+        <div className="catalogos-subpage-header__layout">
 
-
-        <div
-          className="
-            relative
-            flex
-            flex-col
-            gap-5
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-          "
-        >
-
-          <div
-            className="
-              flex
-              items-center
-              gap-4
-            "
-          >
+          <div className="molsan-page-header__identity catalogos-subpage-header__identity">
 
             <div
               className="
@@ -1729,7 +1699,7 @@ export default function RegistrosPropiedad() {
                 shadow-sm
               "
             >
-              🏛️
+              <MolsanIcon name="courthouse" size={42} />
             </div>
 
 
@@ -1768,50 +1738,9 @@ export default function RegistrosPropiedad() {
               BOTONES
           ================================================= */}
 
-          <div
-            className="
-              flex
-              flex-col
-              gap-2
-              sm:flex-row
-            "
-          >
+          <div className="molsan-page-header__actions catalogos-subpage-header__actions">
 
-            <button
-              type="button"
-              onClick={
-                abrirImportacionExcel
-              }
-              className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-xl
-                border
-                border-emerald-200
-                bg-emerald-50
-                px-5
-                py-2.5
-                text-sm
-                font-semibold
-                text-emerald-700
-                shadow-sm
-                transition-all
-                hover:-translate-y-0.5
-                hover:border-emerald-300
-                hover:bg-emerald-100
-                active:scale-[0.98]
-              "
-            >
-
-              <span className="text-lg">
-                📊
-              </span>
-
-              Importar Excel
-
-            </button>
+            
 
 
             <button
@@ -1851,7 +1780,7 @@ export default function RegistrosPropiedad() {
 
         </div>
 
-      </div>
+      </header>
 
 
       {/* =====================================================
@@ -1963,7 +1892,7 @@ export default function RegistrosPropiedad() {
                   text-slate-400
                 "
               >
-                🔎
+                <MolsanIcon name="search" size={20} />
               </span>
 
 
@@ -2391,7 +2320,7 @@ export default function RegistrosPropiedad() {
                 text-2xl
               "
             >
-              🏛️
+              <MolsanIcon name="courthouse" size={42} />
             </div>
 
 
@@ -2422,531 +2351,26 @@ export default function RegistrosPropiedad() {
 
           <div className="overflow-x-auto">
 
-            <table
-              className="
-                w-full
-                min-w-[1500px]
-                border-collapse
-              "
-            >
-
-              <thead>
-
-                <tr
-                  className="
-                    border-b
-                    border-slate-200
-                    bg-slate-50/80
-                  "
-                >
-
-                  <th
-                    className="
-                      min-w-[220px]
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    Registro
-                  </th>
-
-
-                  <th
-                    className="
-                      min-w-[190px]
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    Registrador
-                  </th>
-
-
-                  <th
-                    className="
-                      min-w-[300px]
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    Dirección
-                  </th>
-
-
-                  <th
-                    className="
-                      w-[100px]
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    C.P.
-                  </th>
-
-
-                  <th
-                    className="
-                      w-[170px]
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    Población
-                  </th>
-
-
-                  <th
-                    className="
-                      w-[150px]
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    Provincia
-                  </th>
-
-
-                  <th
-                    className="
-                      w-[150px]
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    Teléfono
-                  </th>
-
-
-                  <th
-                    className="
-                      w-[160px]
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    Email
-                  </th>
-
-
-                  <th
-                    className="
-                      w-[150px]
-                      px-5
-                      py-3.5
-                      text-left
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    Of. Liq.
-                  </th>
-
-
-                  <th
-                    className="
-                      w-[130px]
-                      px-5
-                      py-3.5
-                      text-right
-                      text-[11px]
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    Acciones
-                  </th>
-
-                </tr>
-
-              </thead>
-
-
-              <tbody>
-
-                {registrosPagina.map(
-                  (registro) => (
-
-                    <tr
-                      key={
-                        registro.id
-                      }
-                      className="
-                        group
-                        border-b
-                        border-slate-100
-                        transition-colors
-                        hover:bg-blue-50/40
-                      "
-                    >
-
-                      {/* REGISTRO */}
-
-                      <td
-                        className="
-                          px-5
-                          py-3.5
-                          align-top
-                        "
-                      >
-
-                        <div
-                          className="
-                            text-sm
-                            font-semibold
-                            leading-5
-                            text-slate-700
-                          "
-                        >
-                          {
-                            registro.registro_propiedad
-                          }
-                        </div>
-
-                      </td>
-
-
-                      {/* REGISTRADOR */}
-
-                      <td
-                        className="
-                          px-5
-                          py-3.5
-                          align-top
-                          text-sm
-                          text-slate-600
-                        "
-                      >
-                        {
-                          registro.nombre_registrador ||
-                          (
-                            <span
-                              className="
-                                italic
-                                text-slate-300
-                              "
-                            >
-                              Sin registrar
-                            </span>
-                          )
-                        }
-                      </td>
-
-
-                      {/* DIRECCIÓN */}
-
-                      <td
-                        className="
-                          px-5
-                          py-3.5
-                          align-top
-                          text-sm
-                          leading-5
-                          text-slate-500
-                        "
-                      >
-                        {
-                          registro.direccion ||
-                          (
-                            <span
-                              className="
-                                italic
-                                text-slate-300
-                              "
-                            >
-                              Sin dirección
-                            </span>
-                          )
-                        }
-                      </td>
-
-
-                      {/* C.P. */}
-
-                      <td
-                        className="
-                          px-5
-                          py-3.5
-                          align-top
-                          font-mono
-                          text-sm
-                          text-slate-600
-                        "
-                      >
-                        {
-                          registro.codigo_postal ||
-                          "—"
-                        }
-                      </td>
-
-
-                      {/* POBLACIÓN */}
-
-                      <td
-                        className="
-                          px-5
-                          py-3.5
-                          align-top
-                          text-sm
-                          text-slate-600
-                        "
-                      >
-                        {
-                          registro.poblacion ||
-                          "—"
-                        }
-                      </td>
-
-
-                      {/* PROVINCIA */}
-
-                      <td
-                        className="
-                          px-5
-                          py-3.5
-                          align-top
-                          text-sm
-                          text-slate-600
-                        "
-                      >
-                        {
-                          registro.provincia ||
-                          "—"
-                        }
-                      </td>
-
-
-                      {/* TELÉFONO */}
-
-                      <td
-                        className="
-                          px-5
-                          py-3.5
-                          align-top
-                          text-sm
-                          text-slate-600
-                        "
-                      >
-                        {
-                          registro.telefono ||
-                          "—"
-                        }
-                      </td>
-
-
-                      {/* EMAIL */}
-
-                      <td
-                        className="
-                          px-5
-                          py-3.5
-                          align-top
-                          text-xs
-                          text-slate-500
-                        "
-                      >
-
-                        {
-                          registro.email_1 ||
-                          registro.email_2 ||
-                          "—"
-                        }
-
-                      </td>
-
-
-                      {/* OFICINA */}
-
-                      <td
-                        className="
-                          px-5
-                          py-3.5
-                          align-top
-                        "
-                      >
-
-                        {registro.tiene_of_liq ? (
-
-                          <span
-                            className="
-                              inline-flex
-                              rounded-full
-                              border
-                              border-emerald-200
-                              bg-emerald-50
-                              px-3
-                              py-1
-                              text-xs
-                              font-semibold
-                              text-emerald-700
-                            "
-                          >
-                            Sí
-                          </span>
-
-                        ) : (
-
-                          <span
-                            className="
-                              inline-flex
-                              rounded-full
-                              border
-                              border-slate-200
-                              bg-slate-50
-                              px-3
-                              py-1
-                              text-xs
-                              font-medium
-                              text-slate-500
-                            "
-                          >
-                            No
-                          </span>
-
-                        )}
-
-                      </td>
-
-
-                      {/* ACCIONES */}
-
-                      <td
-                        className="
-                          px-5
-                          py-3.5
-                          align-top
-                        "
-                      >
-
-                        <div
-                          className="
-                            flex
-                            justify-end
-                            gap-2
-                          "
-                        >
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              abrirEditar(
-                                registro
-                              )
-                            }
-                            title="Editar registro"
-                            className="
-                              flex
-                              h-9
-                              w-9
-                              items-center
-                              justify-center
-                              rounded-lg
-                              border
-                              border-slate-200
-                              bg-white
-                              text-slate-500
-                              transition
-                              hover:border-blue-200
-                              hover:bg-blue-50
-                              hover:text-blue-600
-                            "
-                          >
-                            ✏️
-                          </button>
-
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              eliminarRegistro(
-                                registro
-                              )
-                            }
-                            title="Eliminar registro"
-                            className="
-                              flex
-                              h-9
-                              w-9
-                              items-center
-                              justify-center
-                              rounded-lg
-                              border
-                              border-slate-200
-                              bg-white
-                              text-slate-500
-                              transition
-                              hover:border-red-200
-                              hover:bg-red-50
-                              hover:text-red-600
-                            "
-                          >
-                            🗑️
-                          </button>
-
-                        </div>
-
-                      </td>
-
-                    </tr>
-
-                  )
-                )}
-
-              </tbody>
-
-            </table>
+            <MolsanDataTable
+              rows={registrosPagina}
+              rowKey="id"
+              minWidth="1500px"
+              sortMode="server"
+              initialSort={{ key: "registro_propiedad", direction: "asc" }}
+              onSortChange={cambiarOrdenTabla}
+              columns={[
+                { key: "registro_propiedad", header: "Registro", accessor: "registro_propiedad", sortType: "text" },
+                { key: "nombre_registrador", header: "Registrador", accessor: "nombre_registrador", sortType: "text" },
+                { key: "direccion", header: "Dirección", accessor: "direccion", sortType: "text" },
+                { key: "codigo_postal", header: "C.P.", accessor: "codigo_postal", sortType: "text" },
+                { key: "poblacion", header: "Población", accessor: "poblacion", sortType: "text" },
+                { key: "provincia", header: "Provincia", accessor: "provincia", sortType: "text" },
+                { key: "telefono", header: "Teléfono", accessor: "telefono", sortType: "text" },
+                { key: "email", header: "Email", accessor: (item) => item.email_1 || item.email_2 || "", sortType: "text" },
+                { key: "tiene_of_liq", header: "Oficina liquidadora", accessor: "tiene_of_liq", sortType: "boolean", render: (value) => <span className={value ? "rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700" : "rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-500"}>{value ? "Sí" : "No"}</span> },
+                { key: "acciones", header: "Acciones", sortable: false, align: "right", accessor: (item) => item.id, render: (_, item) => <div className="flex justify-end gap-2"><button type="button" onClick={() => abrirEditar(item)} title="Editar registro" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 hover:bg-blue-50">Editar</button><button type="button" onClick={() => eliminarRegistro(item)} title="Eliminar registro" className="rounded-lg border border-red-200 bg-white px-3 py-2 text-xs text-red-600 hover:bg-red-50">Eliminar</button></div> },
+              ]}
+            />
 
           </div>
 
@@ -3243,7 +2667,7 @@ function ModalImportarExcel({
                   text-xl
                 "
               >
-                📊
+                <MolsanIcon name="chart" size={20} />
               </div>
 
 
@@ -3459,7 +2883,7 @@ function ModalImportarExcel({
                   shadow-sm
                 "
               >
-                📁
+                <MolsanIcon name="folder" size={20} />
               </div>
 
 
@@ -3533,7 +2957,7 @@ function ModalImportarExcel({
                     shadow-sm
                   "
                 >
-                  📄
+                  <MolsanIcon name="file" size={20} />
                 </div>
 
 
@@ -3645,58 +3069,7 @@ function ModalImportarExcel({
           </button>
 
 
-          <button
-            type="button"
-            disabled={
-              !archivo ||
-              importando
-            }
-            onClick={
-              onImportar
-            }
-            className="
-              inline-flex
-              min-w-[210px]
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              bg-emerald-600
-              px-5
-              py-2.5
-              text-sm
-              font-semibold
-              text-white
-              shadow-[0_8px_20px_rgba(5,150,105,0.18)]
-              transition
-              hover:bg-emerald-700
-              disabled:cursor-not-allowed
-              disabled:opacity-50
-            "
-          >
-
-            {importando && (
-
-              <span
-                className="
-                  h-4
-                  w-4
-                  animate-spin
-                  rounded-full
-                  border-2
-                  border-white/40
-                  border-t-white
-                "
-              />
-
-            )}
-
-
-            {importando
-              ? "Importando..."
-              : "Importar registros"}
-
-          </button>
+          <MolsanButton type="button" icon="upload" variant="secondary" loading={importando} disabled={!archivo || importando} onClick={onImportar} className="min-w-[210px]">{importando ? "Importando..." : "Importar registros"}</MolsanButton>
 
         </div>
 

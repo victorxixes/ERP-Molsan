@@ -1,3 +1,6 @@
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanButton from "../../components/ui/MolsanButton";
+import { formatEuro } from "../../utils/formatters";
 import { useCallback, useEffect, useState } from "react";
 import "./CtnDetallePage.css";
 import { useNavigate, useParams } from "react-router-dom";
@@ -153,14 +156,20 @@ export default function CtnDetallePage() {
   if (!notaria) return <div className="ctn-detalle-page"><p>{error || "No se ha encontrado el notario."}</p><button onClick={() => navigate(-1)}>Volver</button></div>;
 
   return (
-    <div className="ctn-detalle-page ctn-detalle-page--content">
-      <div className="ctn-detalle-header">
-        <div>
-          <h1 className="ctn-detalle-title">{nombreNotario(notaria)}</h1>
-          <div className="ctn-detalle-meta">Ficha CTN · NIF: {valor(notaria.nif)} · Código: {valor(notaria.codigo)}</div>
+    <div className="molsan-page-stack ctn-detalle-page ctn-detalle-page--content">
+      <header className="ctn-detalle-header molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true">CTN</div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">{nombreNotario(notaria)}</h1>
+            <p className="molsan-page-header__description">Ficha CTN · NIF: {valor(notaria.nif)} · Código: {valor(notaria.codigo)}</p>
+          </div>
         </div>
-        <button type="button" onClick={() => navigate(-1)}>Volver al listado</button>
-      </div>
+        <div className="molsan-page-header__actions">
+          <button type="button" className="molsan-btn molsan-btn--secondary" onClick={() => navigate(-1)}>Volver al listado</button>
+        </div>
+      </header>
 
       {error && <div role="alert" className="ctn-detalle-alert">{error}</div>}
 
@@ -219,19 +228,21 @@ export default function CtnDetallePage() {
         <h3 className="ctn-detalle-subtitle">Asociaciones actuales ({asociadas.length})</h3>
         {asociadas.length === 0 ? <p>No hay notarios asociados.</p> : (
           <div className="ctn-detalle-table-wrap">
-            <table className="ctn-detalle-table">
-              <thead><tr><th className="ctn-detalle-th">Notario</th><th className="ctn-detalle-th">NIF</th><th className="ctn-detalle-th">Municipio</th><th className="ctn-detalle-th">Acción</th></tr></thead>
-              <tbody>
-                {asociadas.map((n) => (
-                  <tr key={n.id}>
-                    <td className="ctn-detalle-td">{nombreNotario(n)}</td>
-                    <td className="ctn-detalle-td">{valor(n.nif)}</td>
-                    <td className="ctn-detalle-td">{valor(n.municipio)}</td>
-                    <td className="ctn-detalle-td"><button type="button" disabled={guardandoAsociacion} onClick={() => quitarAsociacion(n.id)}>Eliminar asociación</button></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <MolsanDataTable
+              rows={asociadas}
+              rowKey="id"
+              pagination
+              pageSize={25}
+              searchable
+              initialSort={{ key: "nombre", direction: "asc" }}
+              emptyText="No hay notarios asociados."
+              columns={[
+                { key: "nombre", header: "Notario", accessor: (item) => nombreNotario(item), sortType: "text" },
+                { key: "nif", header: "NIF", accessor: "nif", sortType: "text", render: (value) => valor(value) },
+                { key: "municipio", header: "Municipio", accessor: "municipio", sortType: "text", render: (value) => valor(value) },
+                { key: "acciones", header: "Acción", sortable: false, accessor: (item) => item.id, render: (_, item) => <MolsanButton type="button" variant="danger" icon="delete" className="molsan-btn--compact" disabled={guardandoAsociacion} onClick={() => quitarAsociacion(item.id)}>Eliminar asociación</MolsanButton> },
+              ]}
+            />
           </div>
         )}
       </section>
@@ -249,23 +260,25 @@ export default function CtnDetallePage() {
             </form>
             {cargandoHistorico ? <p>Cargando firmas…</p> : historico.length === 0 ? <p>No se han encontrado firmas registradas para esta modalidad.</p> : (
               <div className="ctn-detalle-history-table-wrap">
-                <table className="ctn-detalle-table ctn-detalle-table--history">
-                  <thead><tr>{["Fecha firma", "Expediente", "Titular", "NIF titular", "Solicitante", "Protocolo", "Oficina", "Importe"].map((x) => <th key={x} className="ctn-detalle-th">{x}</th>)}</tr></thead>
-                  <tbody>
-                    {historico.map((f, i) => (
-                      <tr key={f.id ?? `${f.id_expediente}-${i}`}>
-                        <td className="ctn-detalle-td">{valor(f.fecha_firma)}</td>
-                        <td className="ctn-detalle-td">{valor(f.id_expediente)}</td>
-                        <td className="ctn-detalle-td">{valor(f.nombre_titular)}</td>
-                        <td className="ctn-detalle-td">{valor(f.nif_titular)}</td>
-                        <td className="ctn-detalle-td">{valor(f.nombre_solicitante)}</td>
-                        <td className="ctn-detalle-td">{valor(f.protocolo)}</td>
-                        <td className="ctn-detalle-td">{valor(f.oficina)}</td>
-                        <td className="ctn-detalle-td">{valor(f.importe ?? f.capital)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <MolsanDataTable
+                  rows={historico}
+                  rowKey="id"
+                  minWidth="1350px"
+                  pagination
+                  pageSize={25}
+                  initialSort={{ key: "fecha_firma", direction: "desc" }}
+                  emptyText="No se han encontrado firmas registradas para esta modalidad."
+                  columns={[
+                    { key: "fecha_firma", header: "Fecha firma", accessor: "fecha_firma", sortType: "date", render: (value) => valor(value) },
+                    { key: "id_expediente", header: "Expediente", accessor: "id_expediente", sortType: "text", render: (value) => valor(value) },
+                    { key: "nombre_titular", header: "Titular", accessor: "nombre_titular", sortType: "text", render: (value) => valor(value) },
+                    { key: "nif_titular", header: "NIF titular", accessor: "nif_titular", sortType: "text", render: (value) => valor(value) },
+                    { key: "nombre_solicitante", header: "Solicitante", accessor: "nombre_solicitante", sortType: "text", render: (value) => valor(value) },
+                    { key: "protocolo", header: "Protocolo", accessor: "protocolo", sortType: "text", render: (value) => valor(value) },
+                    { key: "oficina", header: "Oficina", accessor: "oficina", sortType: "text", render: (value) => valor(value) },
+                    { key: "importe", header: "Importe", accessor: (item) => item.importe ?? item.capital, sortType: "currency", align: "right", render: (value) => formatEuro(value) },
+                  ]}
+                />
               </div>
             )}
             <div className="ctn-detalle-muted ctn-detalle-results-count"> {historico.length}</div>

@@ -1,0 +1,53 @@
+/* MOLSAN ERP PREMIUM 2027
+ * Hoja de entrada única para estilos específicos de módulos y páginas.
+ *
+ * Orden deliberado:
+ * 1. Componentes compartidos y portales.
+ * 2. Módulos operativos.
+ * 3. Hojas de página.
+ *
+ * main.jsx importa este archivo antes de las capas globales MOLSAN.
+ * Así, las reglas de layout de cada módulo quedan debajo del tema común
+ * y no cambian de precedencia cuando una ruta se carga de forma diferida.
+ * Los selectores siguen aislados por sus clases raíz; no se cambia lógica.
+ */
+
+/* Componentes compartidos y portales */
+@import "./ComponentesAccesoPremium.css";
+@import "./ComponentesCompartidosPremium.css";
+@import "./ComponentesOperativosPremium.css";
+@import "./LayoutPortalesPremium.css";
+@import "./ModalesHerramientasPremium.css";
+@import "./ModalesOperativosPremium.css";
+@import "./PortalProfesionalShared.css";
+
+/* Módulos */
+@import "./Cancelagest.css";
+@import "./CancelagestUnified.css";
+@import "./CatalogosMaestrosPremium.css";
+@import "./CtnListadoPage.css";
+@import "./DashboardCancelagest.css";
+@import "./EncargaGest.css";
+@import "./EncargaGestWorkspace.css";
+
+@import "./HerramientasPremium.css";
+@import "./NotarGest.css";
+
+/* Páginas */
+@import "../pages/agenda/Agenda.css";
+@import "../pages/ctn/CtnDetallePage.css";
+@import "../pages/empleados/EmpleadoEditar.css";
+@import "../pages/empleados/EmpleadoFicha.css";
+@import "../pages/empleados/EmpleadosListadoPremium.css";
+@import "../pages/empleados/EmpleadosModulo2026.css";
+@import "../pages/expedientes/ExpedientesListado.css";
+@import "../pages/expedientes/FichaExpedientePremium.css";
+@import "../pages/intranet/Intranet.css";
+@import "../pages/logs/Logs.css";
+@import "../pages/maestros/Maestros.css";
+@import "../pages/notificaciones/Notificaciones.css";
+@import "../pages/paneltecnico/PanelTecnico.css";
+@import "../pages/paneltecnico/PanelTecnicoSubmodulos.css";
+@import "../pages/provisiones/ProvisionesFondosPage.css";
+@import "../pages/seguridad/Seguridad.css";
+@import "../pages/seguridad/SeguridadSubpaginasPremium.css";

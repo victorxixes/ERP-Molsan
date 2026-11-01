@@ -87,38 +87,20 @@ export default function AuditoriaAvanzada() {
   // ============================================================
 
   return (
-    <div className="auditoria-avanzada-premium panel-tecnico-submodulo-premium space-y-6 animate-fade-in">
+    <div className="molsan-page-stack auditoria-avanzada-premium panel-tecnico-submodulo-premium animate-fade-in">
 
       {/* ======================================================
           CABECERA
           ====================================================== */}
 
       <div
-        className="
-          flex
-          flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-4
-        "
+        className="molsan-page-header"
       >
 
-        <div className="flex items-center gap-3">
+        <div className="molsan-page-header__identity">
 
           <div
-            className="
-              w-11
-              h-11
-              rounded-2xl
-              bg-[var(--erp-primary-soft)]
-              text-[var(--erp-primary)]
-              border
-              border-[var(--erp-border)]
-              flex
-              items-center
-              justify-center
-            "
+            className="molsan-page-header__mark"
           >
             <svg className="w-5 h-5">
               <use href="/icons/icons.svg#shield" />
@@ -128,21 +110,13 @@ export default function AuditoriaAvanzada() {
           <div>
 
             <h1
-              className="
-                text-2xl
-                font-bold
-                text-[var(--erp-text)]
-              "
+              className="molsan-page-header__title"
             >
               Auditoría Avanzada
             </h1>
 
             <p
-              className="
-                text-sm
-                text-[var(--erp-text-soft)]
-                mt-0.5
-              "
+              className="molsan-page-header__description"
             >
               Control y trazabilidad de la actividad del sistema
             </p>

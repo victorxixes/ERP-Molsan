@@ -206,6 +206,44 @@ const iconos = {
     </>
   ),
 
+  briefcase: (
+    <>
+      <rect x="3" y="7" width="18" height="13" rx="2" />
+      <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+      <path d="M3 12h18M10 12v2h4v-2" />
+    </>
+  ),
+
+  "file-check": (
+    <>
+      <path d="M6 3h8l4 4v14H6z" />
+      <path d="M14 3v5h5" />
+      <path d="m8 15 2 2 5-5" />
+    </>
+  ),
+
+  landmark: (
+    <>
+      <path d="m3 8 9-5 9 5H3Z" />
+      <path d="M4 10v9M9 10v9M15 10v9M20 10v9M2 21h20M3 8h18" />
+    </>
+  ),
+
+  "clipboard-list": (
+    <>
+      <rect x="5" y="4" width="14" height="17" rx="2" />
+      <path d="M9 4V3h6v1M9 9h6M9 13h6M9 17h4" />
+    </>
+  ),
+
+  newspaper: (
+    <>
+      <path d="M4 5h14v15H4z" />
+      <path d="M18 8h2v12H6" />
+      <path d="M7 9h8M7 13h8M7 17h4" />
+    </>
+  ),
+
 };
 
 
@@ -222,22 +260,18 @@ const NavIcon = ({ name }) => {
     iconos.activity;
 
   return (
-    <svg
-      className="
-        w-4
-        h-4
-        flex-shrink-0
-      "
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {contenido}
-    </svg>
+    <span className="molsan-nav-icon-3d" aria-hidden="true">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {contenido}
+      </svg>
+    </span>
   );
 };
 
@@ -976,10 +1010,11 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       return true;
     }).map((modulo) => ({
       key: modulo.key, to: modulo.route, label: modulo.label,
+      // Los iconos del catálogo central se renderizan directamente.
+      // Solo traducimos los dos nombres heredados que aún no tienen dibujo propio.
       icon: ({
-        "user-group": "user-group", "file-check": "folder", briefcase: "activity",
-        landmark: "globe", "clipboard-list": "clipboard", clock: "clock",
-        settings: "settings", package: "truck", wrench: "settings",
+        package: "truck",
+        wrench: "settings",
       })[modulo.icon] || modulo.icon,
     })).filter((modulo, index, lista) => lista.findIndex((otro) => otro.key === modulo.key) === index);
   };
@@ -1212,7 +1247,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                         }}
                         aria-haspopup={esMenu ? "menu" : undefined} aria-expanded={esMenu ? abierto : undefined}
                         aria-current={activeNavigationItem === item.label ? "page" : undefined}
-                        className={`flex items-center gap-1.5 whitespace-nowrap font-medium transition-all duration-200 border flex-shrink-0 ${brandName === "NotarGest" ? "px-3 py-2 rounded-full text-[12px]" : "px-2.5 py-1.5 rounded-lg text-[12px]"} ${(item.directRoute && pathname.replace(/\/$/, "") === item.to) || activeNavigationItem === item.label ? "bg-[var(--erp-primary)] text-white border-[var(--erp-primary)] shadow-sm" : abierto ? "bg-transparent text-[var(--erp-text)] border-[var(--erp-primary)]" : "bg-white text-[var(--erp-text)] border-[var(--erp-border)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)] hover:border-[var(--erp-primary)]"} ${item.attention ? "ng-boton-firmas-urgentes ng-urgencias-activas" : ""}`}>
+                        className={`flex items-center gap-1.5 whitespace-nowrap font-medium transition-all duration-200 border flex-shrink-0 px-2.5 py-1.5 rounded-lg text-[12px] ${(item.directRoute && pathname.replace(/\/$/, "") === item.to) || activeNavigationItem === item.label ? "bg-[var(--erp-primary)] text-white border-[var(--erp-primary)] shadow-sm" : abierto ? "bg-transparent text-[var(--erp-text)] border-[var(--erp-primary)]" : "bg-white text-[var(--erp-text)] border-[var(--erp-border)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)] hover:border-[var(--erp-primary)]"} ${item.attention ? "ng-boton-firmas-urgentes ng-urgencias-activas" : ""}`}>
                         <NavIcon name={item.icon} /><span>{item.label}</span>
                         {esMenu && <ChevronIcon open={abierto} />}
                         {(item.badge > 0 || (item.label === "Mensajes" && mensajesNoLeidos > 0)) ? <span className={item.label === "Mensajes" ? "min-w-[19px] h-[19px] px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold" : "min-w-[19px] h-[19px] px-1 flex items-center justify-center rounded-full bg-[var(--erp-primary-soft)] text-[var(--erp-primary)] text-[10px] font-bold"}>{item.label === "Mensajes" ? mensajesNoLeidos : item.badge}</span> : null}

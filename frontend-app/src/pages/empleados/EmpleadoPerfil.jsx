@@ -588,7 +588,7 @@ export default function EmpleadoPerfil({
             text-4xl
             mb-3
           ">
-            👤
+            <MolsanIcon name="person" size={42} />
           </div>
 
           <div className="
@@ -729,10 +729,7 @@ export default function EmpleadoPerfil({
           CABECERA
       ====================================================== */}
 
-      <section className="
-        erp-card
-        p-6
-      ">
+      <header className="molsan-page-header empleado-perfil-page-header">
 
         <div className="
           flex
@@ -748,11 +745,7 @@ export default function EmpleadoPerfil({
               IDENTIDAD
           -------------------------------------------------- */}
 
-          <div className="
-            flex
-            items-center
-            gap-5
-          ">
+          <div className="molsan-page-header__identity">
 
             <div className="
               w-20
@@ -793,7 +786,7 @@ export default function EmpleadoPerfil({
                   justify-center
                   text-2xl
                 ">
-                  👤
+                  <MolsanIcon name="person" size={42} />
                 </div>
 
               )}
@@ -803,23 +796,10 @@ export default function EmpleadoPerfil({
 
             <div>
 
-              <div className="
-                text-xs
-                uppercase
-                tracking-[0.16em]
-                font-semibold
-                text-[var(--erp-primary)]
-              ">
-                Perfil de empleado
-              </div>
+              <p className="molsan-page-header__eyebrow">PERFIL DE EMPLEADO</p>
 
 
-              <h1 className="
-                text-2xl
-                font-semibold
-                text-[var(--erp-text)]
-                mt-1
-              ">
+              <h1 className="molsan-page-header__title">
 
                 {empleado.nombre || ""}{" "}
 
@@ -925,7 +905,7 @@ export default function EmpleadoPerfil({
 
         </div>
 
-      </section>
+      </header>
 
 
       {/* ======================================================
@@ -991,22 +971,22 @@ export default function EmpleadoPerfil({
             [
               "basicos",
               "Datos básicos",
-              "👤",
+              "person",
             ],
             [
               "personales",
               "Datos personales",
-              "🏠",
+              "home",
             ],
             [
               "laborales",
               "Datos laborales",
-              "💼",
+              "briefcase",
             ],
             [
               "auditoria",
               "Auditoría",
-              "🛡️",
+              "shield",
             ],
           ].map(
             ([
@@ -1040,7 +1020,7 @@ export default function EmpleadoPerfil({
               >
 
                 <span>
-                  {icon}
+                  <MolsanIcon name={icon} size={24} />
                 </span>
 
                 {label}
@@ -1254,7 +1234,7 @@ export default function EmpleadoPerfil({
                     justify-center
                     text-3xl
                   ">
-                    👤
+                    <MolsanIcon name="person" size={42} />
                   </div>
 
                 )}

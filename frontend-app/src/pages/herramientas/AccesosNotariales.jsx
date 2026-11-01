@@ -1,3 +1,6 @@
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanButton from "../../components/ui/MolsanButton";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
@@ -96,22 +99,22 @@ export default function AccesosNotariales() {
     <main className="ctn-listado-page molsan-page" aria-busy={cargando}>
       <header className="ctn-listado-header molsan-page-header">
         <div className="ctn-listado-header-identidad molsan-page-header__identity">
-          <div className="ctn-listado-header-icon molsan-page-header__mark" aria-hidden="true">🔐</div>
+          <div className="ctn-listado-header-icon molsan-page-header__mark"><MolsanIcon name="lock" size={42} bare /></div>
           <div className="min-w-0">
             <p className="ctn-listado-header-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · UTILIDADES</p>
-            <h1>Accesos notariales</h1>
-            <p>Gestión centralizada y restringida de accesos a NotarGest y EncargaGest.</p>
+            <h1 className="molsan-page-header__title">Accesos notariales</h1>
+            <p className="molsan-page-header__description">Gestión centralizada y restringida de accesos a NotarGest y EncargaGest.</p>
           </div>
         </div>
-        <button type="button" className="ctn-btn ctn-btn-secondary molsan-btn molsan-btn--secondary" onClick={() => navigate("/herramientas/utilidades")}>Volver a Utilidades</button>
+        <div className="molsan-page-header__actions"><button type="button" className="molsan-btn molsan-btn--secondary" onClick={() => navigate("/herramientas/utilidades")}>Volver a Utilidades</button></div>
       </header>
       <section className="accesos-notariales-resumen" aria-label="Resumen de accesos habilitados">
         <article className="accesos-notariales-resumen-card">
-          <span aria-hidden="true">🔐</span>
+          <MolsanIcon name="lock" size={20} />
           <div><p>Notarios habilitados en NotarGest</p><strong>{resumen.notargest === null ? "—" : resumen.notargest}</strong><small>Acceso activo al portal</small></div>
         </article>
         <article className="accesos-notariales-resumen-card">
-          <span aria-hidden="true">📋</span>
+          <MolsanIcon name="clipboard" size={20} />
           <div><p>Notarios habilitados en EncargaGest</p><strong>{resumen.encargagest === null ? "—" : resumen.encargagest}</strong><small>Acceso activo al portal</small></div>
         </article>
       </section>
@@ -123,18 +126,22 @@ export default function AccesosNotariales() {
       </section>
       {error && <div className="ctn-modal-alerta ctn-modal-alerta--spaced" role="alert">{error}</div>}
       <section className="ctn-modal-seccion">
-        <div className="ctn-modal-tabla-scroll">
-          <table className="ctn-modal-tabla">
-            <thead><tr><th>Notario</th><th>NIF</th><th>Municipio</th><th>Provincia</th><th>Gestión</th></tr></thead>
-            <tbody>
-              {cargando ? <tr><td colSpan="5">Cargando notarías…</td></tr> :
-                resultados.length ? resultados.map(n => <tr key={n.id}>
-                  <td><strong>{nombre(n) || "Notaría " + n.id}</strong></td><td>{n.nif || "—"}</td><td>{n.municipio || "—"}</td><td>{n.provincia || "—"}</td>
-                  <td><button type="button" className="ctn-btn ctn-btn-secondary ctn-btn-small" onClick={() => abrir(n)}>Gestionar accesos</button></td>
-                </tr>) : <tr><td colSpan="5">No se han encontrado notarías.</td></tr>}
-            </tbody>
-          </table>
-        </div>
+        <MolsanDataTable
+          rows={resultados}
+          rowKey="id"
+          minWidth="900px"
+          pagination
+          pageSize={25}
+          initialSort={{ key: "nombre", direction: "asc" }}
+          emptyText={cargando ? "Cargando notarías…" : "No se han encontrado notarías."}
+          columns={[
+            { key: "nombre", header: "Notario", accessor: (item) => nombre(item) || "Notaría " + item.id, sortType: "text", render: (_, item) => <strong>{nombre(item) || "Notaría " + item.id}</strong> },
+            { key: "nif", header: "NIF", accessor: "nif", sortType: "text", render: (value) => value || "—" },
+            { key: "municipio", header: "Municipio", accessor: "municipio", sortType: "text", render: (value) => value || "—" },
+            { key: "provincia", header: "Provincia", accessor: "provincia", sortType: "text", render: (value) => value || "—" },
+            { key: "acciones", header: "Gestión", sortable: false, accessor: (item) => item.id, render: (_, notaria) => <MolsanButton type="button" variant="secondary" className="molsan-btn--compact" onClick={() => abrir(notaria)}>Gestionar accesos</MolsanButton> },
+          ]}
+        />
       </section>
       {seleccionada && <ModalCtnDetalle open={true} notaria={seleccionada} mostrarAccesosPortales={true} onClose={() => setSeleccionada(null)} />}
     </main>

@@ -21,16 +21,16 @@
    ============================================================ */
 
 .table-sj thead {
-  background-color: var(--molsan-surface-soft, #f7f9fc);
-  color: var(--molsan-text-secondary, #526176);
+  background-color: var(--molsan-table-head, #EAF2F8);
+  color: var(--molsan-text-secondary, #617789);
   font-weight: 700;
   letter-spacing: normal;
 }
 
 .table-sj th {
-  color: var(--molsan-text-secondary, #526176);
+  color: var(--molsan-text-secondary, #617789);
   font-weight: 700;
-  background-color: var(--molsan-surface-soft, #f7f9fc);
+  background-color: var(--molsan-table-head, #EAF2F8);
 }
 
 

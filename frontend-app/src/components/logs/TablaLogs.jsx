@@ -1,4 +1,5 @@
 import { useMemo, useCallback, useState } from "react";
+import MolsanIcon from "../ui/MolsanIcon";
 import "../../css/ComponentesCompartidosPremium.css";
 
 /**
@@ -601,7 +602,7 @@ export default function TablaLogs({
                   "
                   aria-hidden="true"
                 >
-                  🔎
+                  <MolsanIcon name="search" size={20} />
                 </span>
 
                 <input
@@ -747,7 +748,7 @@ export default function TablaLogs({
                 <span
                   aria-hidden="true"
                 >
-                  📊
+                  <MolsanIcon name="chart" size={20} />
                 </span>
 
                 Descargar Excel
@@ -904,7 +905,7 @@ export default function TablaLogs({
                         "
                         aria-hidden="true"
                       >
-                        📋
+                        <MolsanIcon name="clipboard" size={20} />
                       </span>
 
                       <span
@@ -983,7 +984,7 @@ export default function TablaLogs({
                                 valor
                               ] ||
                               iconosEvento.default ||
-                              "📄";
+                              "file";
 
                             return (
                               <td

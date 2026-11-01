@@ -1,127 +1,30 @@
-/* ============================================================
-   ERP SJ-2026 — Base global premium
-   ============================================================ */
-
-/* ============================================================
-   SUAVIZADO Y CONFIGURACIÓN GLOBAL
-   ============================================================ */
-
-html {
-  scroll-behavior: smooth;
-}
-
-
-/* El lienzo, la tipografía y el color globales se definen en MolsanRedesign2027.css. */
-
-/* ============================================================
-   SELECCIÓN DE TEXTO CORPORATIVA
-   ============================================================ */
-
-::selection {
-  background: var(--erp-primary);
+/* MOLSAN ERP PREMIUM 2027 · Base neutral y aislada
+ * Los resets se limitan al shell del ERP para no alterar contenido externo,
+ * widgets embebidos ni diálogos montados fuera de la aplicación.
+ */
+.erp-app-shell { scroll-behavior: smooth; }
+.erp-app-shell ::selection {
+  background: var(--molsan-primary, #064675);
   color: #ffffff;
 }
-
-
-/* ============================================================
-   SCROLL CORPORATIVO SJ-2026
-   ============================================================ */
-
-::-webkit-scrollbar {
+.erp-app-shell::-webkit-scrollbar,
+.erp-app-shell *::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
-
-::-webkit-scrollbar-thumb {
-  background: var(--sj-gris-azulado);
-  border-radius: 4px;
+.erp-app-shell::-webkit-scrollbar-thumb,
+.erp-app-shell *::-webkit-scrollbar-thumb {
+  background: var(--molsan-border-strong, #b9cad8);
+  border-radius: 999px;
 }
-
-::-webkit-scrollbar-track {
-  background: #eef1f5;
+.erp-app-shell::-webkit-scrollbar-track,
+.erp-app-shell *::-webkit-scrollbar-track {
+  background: var(--molsan-surface-soft, #f2f7fb);
 }
-
-
-/* ============================================================
-   ENLACES
-   ============================================================ */
-
-a {
-  color: var(--erp-primary);
-  text-decoration: none;
-  transition: color 0.25s ease;
+.erp-app-shell :is(button, input, textarea, select) { font: inherit; }
+.erp-app-shell button { cursor: pointer; }
+.erp-app-shell :is(button:active, input:hover, textarea:hover, select:hover) { transform: none; }
+.erp-app-shell hr {
+  border: 0;
+  border-top: 1px solid var(--molsan-border, #d8e4ec);
 }
-
-a:hover {
-  color: var(--erp-primary-dark);
-}
-
-
-/* ============================================================
-   BOTONES BASE
-   ============================================================ */
-
-button {
-  font-family: inherit;
-  cursor: pointer;
-}
-
-button:active {
-  transform: none;
-}
-
-
-/* ============================================================
-   INPUTS BASE
-   ============================================================ */
-
-input,
-textarea,
-select {
-  font-family: inherit;
-  color: var(--erp-text);
-  transition: border-color 0.16s ease, box-shadow 0.16s ease;
-}
-
-/* Los campos no deben desplazarse al pasar el cursor: evita saltos en grids
-   y formularios densos. El foco visible comunica la interacción de forma clara. */
-input:hover,
-textarea:hover,
-select:hover {
-  transform: none;
-}
-
-
-/* ============================================================
-   TABLAS BASE
-   ============================================================ */
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-
-/* ============================================================
-   CÓDIGO Y PRE
-   ============================================================ */
-
-code,
-pre {
-  font-family: "Fira Code", monospace;
-  background: #f5f7fa;
-  padding: 4px 6px;
-  border-radius: 6px;
-}
-
-
-/* ============================================================
-   HR CORPORATIVO
-   ============================================================ */
-
-hr {
-  border: none;
-  border-top: 1px solid var(--sj-gris-azulado);
-  margin: 20px 0;
-}
-
-

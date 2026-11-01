@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import MolsanIcon from "../ui/MolsanIcon";
 import { useIntranet } from "../../hooks/useIntranet";
 
 import "../../css/LayoutPortalesPremium.css";
@@ -306,7 +307,7 @@ export default function DocumentosTable() {
                         text-xl
                       "
                     >
-                      📄
+                      <MolsanIcon name="file" size={32} />
                     </div>
 
                     <p

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanButton from "../../components/ui/MolsanButton";
 import "../../css/HerramientasPremium.css";
 
 export default function CatalogoFichajes() {
@@ -26,12 +28,16 @@ export default function CatalogoFichajes() {
     } catch (e) { setError(e?.response?.data?.detail || "No se pudo guardar el tipo de ausencia."); }
     finally { setGuardando(false); }
   };
-  return <main className="catalogos-premium-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-    <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-      <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">MOLSAN ERP PREMIUM 2027 · CATÁLOGOS</p>
-      <h1 className="mt-2 text-2xl font-bold text-slate-800 sm:text-3xl">Fichajes · Tipos de ausencia</h1>
-      <p className="mt-2 text-sm text-slate-500">Mantén los motivos disponibles en Fichaje Molsan y define si requieren justificante.</p>
+  return <main className="molsan-page-stack catalogos-premium-page min-h-full animate-fadeIn">
+    <header className="molsan-page-header">
+      <div className="molsan-page-header__identity">
+        <div className="molsan-page-header__mark" aria-hidden="true">◷</div>
+        <div className="min-w-0">
+          <p className="molsan-page-header__eyebrow">MOLSAN ERP · CATÁLOGOS OPERATIVOS</p>
+          <h1 className="molsan-page-header__title">Fichajes · Tipos de ausencia</h1>
+          <p className="molsan-page-header__description">Mantén los motivos disponibles en Fichajes y define si requieren justificante.</p>
+        </div>
+      </div>
     </header>
     {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">{error}</div>}
     {mensaje && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{mensaje}</div>}
@@ -42,12 +48,15 @@ export default function CatalogoFichajes() {
           <input required maxLength={120} value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Ej. Acompañamiento médico" className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 font-normal text-slate-800" />
         </label>
         <label className="flex items-center gap-2 pb-3 text-sm text-slate-700"><input type="checkbox" checked={requiereJustificante} onChange={(e) => setRequiereJustificante(e.target.checked)} /> Requiere justificante</label>
-        <button disabled={guardando} className="rounded-xl bg-blue-700 px-5 py-3 text-sm font-bold text-white disabled:opacity-50">{guardando ? "Guardando…" : "Añadir al catálogo"}</button>
+        <MolsanButton type="submit" icon="plus" variant="primary" disabled={guardando} loading={guardando}>Añadir al catálogo</MolsanButton>
       </form>
     </section>
     <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="border-b border-slate-100 px-5 py-4"><h2 className="font-bold text-slate-800">Tipos disponibles</h2><p className="text-sm text-slate-500">{tipos.length} tipos configurados</p></div>
-      {cargando ? <p className="p-5 text-sm text-slate-500">Cargando catálogo…</p> : <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead className="bg-slate-50 text-xs uppercase text-slate-500"><tr><th className="px-5 py-3">Tipo de ausencia</th><th className="px-5 py-3">Justificante</th></tr></thead><tbody>{tipos.map((t) => <tr key={t.id} className="border-t border-slate-100"><td className="px-5 py-3 font-semibold text-slate-800">{t.nombre}</td><td className="px-5 py-3">{t.requiere_justificante ? <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">Sí</span> : <span className="text-slate-500">No</span>}</td></tr>)}</tbody></table></div>}
+      {cargando ? <p className="p-5 text-sm text-slate-500">Cargando catálogo…</p> : <MolsanDataTable rows={tipos} rowKey="id" columns={[
+        { key: "nombre", header: "Tipo de ausencia", accessor: "nombre", sortType: "text" },
+        { key: "requiere_justificante", header: "Justificante", accessor: "requiere_justificante", sortType: "boolean", render: (value) => value ? <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">Sí</span> : <span className="text-slate-500">No</span> },
+      ]} emptyText="No hay tipos de ausencia configurados." />}
     </section>
   </main>;
 }

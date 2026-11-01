@@ -17,70 +17,6 @@
   color: var(--molsan-text);
 }
 
-.molsan-page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  min-width: 0;
-  margin: 0 0 20px;
-  padding: 0 0 16px;
-  border-bottom: 1px solid var(--molsan-border);
-}
-
-.molsan-page-header__identity {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-
-.molsan-page-header__mark {
-  display: grid;
-  flex: 0 0 42px;
-  width: 42px;
-  height: 42px;
-  place-items: center;
-  border: 1px solid rgba(49, 86, 179, 0.12);
-  border-radius: 11px;
-  background: var(--molsan-primary-soft);
-  color: var(--molsan-primary);
-}
-
-.molsan-page-header__eyebrow {
-  margin: 0 0 3px;
-  color: var(--molsan-text-muted);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  line-height: 1.4;
-  text-transform: uppercase;
-}
-
-.molsan-page-header__title {
-  margin: 0;
-  color: var(--molsan-text);
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  line-height: 1.25;
-}
-
-.molsan-page-header__description {
-  margin: 4px 0 0;
-  color: var(--molsan-text-muted);
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.molsan-page-header__actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
 /* Títulos de sección */
 .molsan-section-header {
   display: flex;
@@ -107,23 +43,7 @@
 }
 
 /* Paneles y tarjetas */
-.molsan-panel {
-  min-width: 0;
-  color: var(--molsan-text);
-  background: var(--molsan-surface);
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-card);
-  box-shadow: var(--molsan-shadow-card);
-}
-
-.molsan-panel__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--molsan-border-light);
-}
+.molsan-panel { min-width: 0; color: var(--molsan-text); }
 
 .molsan-panel__body {
   min-width: 0;
@@ -132,69 +52,9 @@
 
 /* Botones, campos, tablas y estados se definen en molsan-controls.css y molsan-tables.css. */
 
-/*
- * Puente visual temporal para las cabeceras actuales.
- * Normaliza las cabeceras existentes sin tocar sus componentes, rutas o lógica.
- * Cuando cada pantalla migre a molsan-page-header, estas reglas podrán retirarse.
- */
-.cg-page .cg-hero,
-.ag-hero,
-.ng-cabecera,
-.encargagest .eg-hero {
-  align-items: center;
-  gap: 16px;
-  padding: 16px 20px;
-  margin-bottom: 20px;
-  color: var(--molsan-text);
-  background: var(--molsan-surface);
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-card);
-  box-shadow: var(--molsan-shadow-card);
-}
-
-.cg-page .cg-hero h1,
-.ag-hero h1,
-.ng-cabecera h1,
-.encargagest .eg-hero h1 {
-  color: var(--molsan-text);
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  line-height: 1.25;
-}
-
-.cg-page .cg-hero p,
-.ag-hero p,
-.ng-cabecera p,
-.encargagest .eg-hero p {
-  color: var(--molsan-text-muted);
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.cg-page .cg-hero .cg-eyebrow,
-.ag-hero .ag-eyebrow,
-.ng-cabecera .ng-sobrelinea,
-.encargagest .eg-hero .ag-eyebrow {
-  color: var(--molsan-text-muted);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-
 /* Respeto a pantallas pequeñas y preferencias de movimiento */
 @media (max-width: 640px) {
-  .molsan-page-header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
 
-  .molsan-page-header__actions {
-    width: 100%;
-    justify-content: flex-start;
-  }
-
-  .molsan-panel__header,
   .molsan-panel__body {
     padding: 12px;
   }
@@ -207,25 +67,6 @@
   .molsan-table tbody tr {
     transition: none;
   }
-}
-
-
-/* Puente de compatibilidad para paneles, tablas y botones heredados. */
-.cg-page .cg-panel,
-.ag-panel,
-.ng-panel,
-.encargagest .eg-panel {
-  color: var(--molsan-text);
-  background: var(--molsan-surface);
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-card);
-  box-shadow: var(--molsan-shadow-card);
-}
-
-.ag-panel-cabecera,
-.ng-panel-titulo,
-.encargagest .eg-panel-head {
-  border-bottom-color: var(--molsan-border-light);
 }
 
 .ag-tabla-marco,
@@ -278,7 +119,7 @@
 .ag-tabla tbody tr:hover,
 .ng-tabla tbody tr:hover,
 .encargagest .eg-directorio-tabla tbody tr:hover {
-  background: #f7f9fd;
+  background: var(--molsan-surface-soft);
 }
 
 .cg-page .cg-button-primary,
@@ -327,18 +168,6 @@
 }
 
 
-/* Las reglas responsivas quedan al final para prevalecer sobre el puente legado. */
-@media (max-width: 640px) {
-  .cg-page .cg-hero,
-  .ag-hero,
-  .ng-cabecera,
-  .encargagest .eg-hero {
-    align-items: flex-start;
-    flex-direction: column;
-    padding: 14px;
-  }
-}
-
 /*
  * Acabado común de controles para las pantallas operativas ya existentes.
  * Selectores limitados a los módulos identificados; no afecta al login ni
@@ -356,7 +185,7 @@
 .cg-page input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):focus-visible,
 .cg-page select:focus-visible,
 .cg-page textarea:focus-visible {
-  outline: 3px solid rgba(49, 86, 179, 0.2);
+  outline: 3px solid rgba(6, 70, 117, 0.18);
   outline-offset: 1px;
   border-color: var(--molsan-primary);
 }
@@ -369,13 +198,6 @@
 .encargagest .eg-panel-head,
 .cg-page .cg-section-heading {
   min-width: 0;
-}
-
-.apoderagest .ag-panel,
-.notargest .ng-panel,
-.encargagest .eg-panel,
-.cg-page .cg-panel {
-  overflow-wrap: anywhere;
 }
 
 .apoderagest .ag-panel-cabecera h2,
@@ -396,17 +218,11 @@
 .notargest a:focus-visible,
 .encargagest a:focus-visible,
 .cg-page a:focus-visible {
-  outline: 3px solid rgba(49, 86, 179, 0.24);
+  outline: 3px solid rgba(6, 70, 117, 0.22);
   outline-offset: 2px;
 }
 
 @media (max-width: 640px) {
-  .apoderagest .ag-panel,
-  .notargest .ng-panel,
-  .encargagest .eg-panel,
-  .cg-page .cg-panel {
-    border-radius: var(--molsan-radius-card, 14px);
-  }
 
   .apoderagest .ag-panel-cabecera,
   .notargest .ng-panel-titulo,
@@ -418,20 +234,6 @@
 }
 
 /* Intranet: misma jerarquía de cabecera, superficies y tablas que el ERP. */
-.molsan-intranet-page > header {
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-panel);
-  background: var(--molsan-surface);
-  box-shadow: var(--molsan-shadow-panel);
-}
-
-.molsan-intranet-page > section {
-  border-color: var(--molsan-border);
-  border-radius: var(--molsan-radius-panel);
-  background: var(--molsan-surface);
-  box-shadow: var(--molsan-shadow-panel);
-}
-
 .molsan-intranet-page h1,
 .molsan-intranet-page h2,
 .molsan-intranet-page h3 {
@@ -449,7 +251,7 @@
 .molsan-intranet-page textarea:focus-visible,
 .molsan-intranet-page select:focus-visible,
 .molsan-intranet-page button:focus-visible {
-  outline: 3px solid rgba(49, 86, 179, 0.22);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary) 22%, transparent);
   outline-offset: 2px;
 }
 
@@ -471,11 +273,7 @@
     gap: 16px;
   }
 
-  .molsan-intranet-page > header,
-  .molsan-intranet-page > section {
-    border-radius: var(--molsan-radius-card, 14px);
   }
-}
 
 
 /* Tokens compartidos para los módulos operativos.
@@ -563,14 +361,6 @@
   }
 }
 @media (max-width: 640px) {
-  .ctn-listado-page {
-    padding: 14px;
-  }
-  .ctn-listado-header {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 12px;
-  }
   .ctn-listado-header-acciones {
     width: 100%;
     justify-content: flex-start;
@@ -585,32 +375,13 @@
     align-items: stretch;
     padding: 8px;
   }
-  .ctn-modal-panel {
-    width: 100%;
-    max-height: calc(100dvh - 16px);
-    border-radius: var(--molsan-radius-card, 14px);
+  .ctn-modal-panel { width:100%; max-height:calc(100dvh - 16px); }
   }
-  .ctn-modal-header {
-    padding: 16px;
-  }
-}
 
 /* Provisiones de fondos: misma superficie, campos y tablas que el ERP. */
 .provisiones-fondos-page {
   color: var(--molsan-text);
   background: var(--molsan-page-bg);
-}
-.provisiones-fondos-page > header {
-  border-color: var(--molsan-border);
-  border-radius: var(--molsan-radius-panel);
-  box-shadow: var(--molsan-shadow-panel);
-}
-.provisiones-fondos-page > form > section,
-.provisiones-fondos-page > section {
-  min-width: 0;
-  border-color: var(--molsan-border);
-  border-radius: var(--molsan-radius-panel);
-  box-shadow: var(--molsan-shadow-panel);
 }
 .provisiones-fondos-page label {
   min-width: 0;
@@ -628,7 +399,7 @@
 .provisiones-fondos-page select:focus-visible,
 .provisiones-fondos-page textarea:focus-visible,
 .provisiones-fondos-page button:focus-visible {
-  outline: 3px solid rgba(49, 86, 179, 0.22);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary) 22%, transparent);
   outline-offset: 2px;
 }
 .provisiones-fondos-page table {
@@ -651,10 +422,6 @@
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
 @media (max-width: 640px) {
-  .provisiones-fondos-page > form > section,
-  .provisiones-fondos-page > section {
-    padding: 14px;
-  }
   .provisiones-fondos-page .sticky {
     position: static;
   }

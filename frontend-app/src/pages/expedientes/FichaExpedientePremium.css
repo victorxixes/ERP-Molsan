@@ -1,7 +1,7 @@
 /* Revisión integral: ficha de expediente */
 .ficha-expediente-premium {
   min-width: 0;
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
 }
 .ficha-expediente-premium > section,
 .ficha-expediente-premium article,
@@ -35,17 +35,14 @@
 .ficha-expediente-premium textarea:focus-visible,
 .ficha-expediente-premium button:focus-visible,
 .ficha-expediente-premium a:focus-visible {
-  outline: 2px solid var(--molsan-primary, #3156b3);
+  outline: 2px solid var(--molsan-primary, #064675);
   outline-offset: 2px;
 }
 .ficha-expediente-premium img {
   max-width: 100%;
 }
 @media (max-width: 720px) {
-  .ficha-expediente-premium {
-    padding-left: .75rem;
-    padding-right: .75rem;
-  }
+  .ficha-expediente-premium { min-width:0; }
   /* Mantener el ancho natural de las tablas dentro de su contenedor
      desplazable: evita comprimir columnas y cortar acciones en móvil. */
   .ficha-expediente-premium .overflow-x-auto table {
@@ -62,3 +59,13 @@
     transition-duration: .01ms !important;
   }
 }
+
+
+/* Ficha de expediente: compatibilidad de utilidades azules/índigo con Glass Luxe. */
+.ficha-expediente-premium :is([class~="bg-blue-50"], [class~="bg-indigo-50"], [class~="bg-sky-50"], [class~="bg-blue-100"], [class~="hover:bg-blue-100"]:hover, [class~="hover:bg-indigo-50"]:hover, [class~="hover:bg-indigo-100"]:hover) { background-color: var(--molsan-primary-soft); }
+.ficha-expediente-premium :is([class~="bg-blue-600"], [class~="bg-indigo-600"]) { background-color: var(--molsan-primary); }
+.ficha-expediente-premium :is([class~="hover:bg-indigo-700"], [class~="hover:bg-blue-700"]):hover { background-color: var(--molsan-primary-hover); }
+.ficha-expediente-premium :is([class~="text-blue-600"], [class~="text-blue-700"], [class~="text-indigo-600"], [class~="text-indigo-700"], [class~="text-indigo-800"], [class~="text-indigo-900"], [class~="text-indigo-950"], [class~="text-sky-800"], [class~="text-sky-900"]) { color: var(--molsan-primary); }
+.ficha-expediente-premium :is([class~="border-blue-100"], [class~="border-blue-200"], [class~="border-indigo-100"], [class~="border-indigo-200"], [class~="border-sky-200"]) { border-color: var(--molsan-border); }
+.ficha-expediente-premium :is([class~="border-blue-300"], [class~="border-indigo-300"]) { border-color: var(--molsan-border-strong); }
+.ficha-expediente-premium :is([class~="focus:border-blue-400"]:focus) { border-color: var(--molsan-primary); }

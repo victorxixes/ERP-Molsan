@@ -1,4 +1,5 @@
 import "../../css/ModalesOperativosPremium.css";
+import MolsanIcon from "../ui/MolsanIcon";
 
 import {
   useEffect,
@@ -2464,7 +2465,7 @@ const permisosDisponibles =
               >
 
                 <span className="mr-2">
-                  {item.icon}
+                  <MolsanIcon name={item.icon} size={22} />
                 </span>
 
                 {item.label}
@@ -4493,7 +4494,7 @@ const permisosDisponibles =
                           >
 
                             <div className="text-3xl">
-                              📋
+                              <MolsanIcon name="clipboard" size={20} />
                             </div>
 
                             <p

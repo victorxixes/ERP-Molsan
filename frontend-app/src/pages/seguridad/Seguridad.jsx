@@ -21,7 +21,7 @@ function texto(value, fallback = "") {
 
 function Indicador({ icon, label, value, detail }) {
   return (
-    <div className="rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+    <div className="erp-card rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wider text-[var(--erp-text-soft)]">{label}</p>
@@ -93,19 +93,20 @@ export default function Seguridad() {
   }, [auditoriaList]);
 
   return (
-    <div className="seguridad-premium-page animate-fade-in space-y-6">
-      <header className="rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] px-6 py-5 shadow-sm">
+    <div className="molsan-page-stack seguridad-premium-page animate-fade-in">
+      <header className="molsan-page-header">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--erp-primary-soft)] text-[var(--erp-primary)]">
+          <div className="molsan-page-header__identity">
+            <span className="molsan-page-header__mark">
               <Icono name="shield" className="h-6 w-6" />
             </span>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-[var(--erp-text)]">Centro de seguridad</h1>
-              <p className="mt-1 text-sm text-[var(--erp-text-soft)]">Resumen general y accesos a la administración de seguridad de Molsan ERP.</p>
+              <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+              <h1 className="molsan-page-header__title">Centro de seguridad</h1>
+              <p className="molsan-page-header__description">Resumen general y accesos a la administración de seguridad de Molsan ERP.</p>
             </div>
           </div>
-          <span className="inline-flex w-fit items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-[var(--erp-bg)] px-3 py-2 text-xs text-[var(--erp-text-soft)]">
+          <span className="molsan-page-header__actions">
             <Icono name="folder" className="h-4 w-4" />
             Panel de administración
           </span>

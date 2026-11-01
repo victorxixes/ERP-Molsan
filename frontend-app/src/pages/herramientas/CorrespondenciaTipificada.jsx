@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
@@ -249,14 +250,14 @@ export default function CorrespondenciaTipificada() {
   }
 
   return (
-    <div className="correspondencia-tipificada-premium herramientas-subpagina-premium min-h-full space-y-5 p-4 pb-10 sm:p-6 lg:p-8 animate-fadeIn">
-      <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
+    <div className="molsan-page-stack catalogos-premium-page correspondencia-tipificada-premium herramientas-subpagina-premium min-h-full animate-fadeIn">
+      <header className="molsan-page-header">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl">✉️</div>
             <div>
-              <Link to="/herramientas/catalogos" className="text-xs font-bold text-blue-600 hover:text-blue-700">← Volver a Catálogos</Link>
+              <Link to="/catalogos" className="text-xs font-bold text-blue-600 hover:text-blue-700">← Volver a Catálogos</Link>
               <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Correspondencia tipificada</h1>
               <p className="mt-1 text-sm text-slate-500">Plantillas reutilizables con campos vinculados a los expedientes.</p>
             </div>
@@ -383,8 +384,8 @@ export default function CorrespondenciaTipificada() {
             </div>
 
             <div className="mt-5 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
-              <button type="button" onClick={guardarPlantilla} disabled={guardando} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-50">{guardando ? "Guardando…" : "💾 Guardar plantilla"}</button>
-              <button type="button" onClick={() => setMostrarVistaPrevia((v) => !v)} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">👁 Vista previa</button>
+              <button type="button" onClick={guardarPlantilla} disabled={guardando} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-50">{guardando ? "Guardando…" : "Guardar plantilla"}</button>
+              <button type="button" onClick={() => setMostrarVistaPrevia((v) => !v)} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50"><MolsanIcon name="eye" size={20} /> Vista previa</button>
               {plantillaId && <button type="button" onClick={duplicarPlantilla} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">⧉ Duplicar</button>}
               {plantillaId && <button type="button" onClick={eliminarPlantilla} className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-bold text-rose-700 hover:bg-rose-100">Eliminar</button>}
             </div>

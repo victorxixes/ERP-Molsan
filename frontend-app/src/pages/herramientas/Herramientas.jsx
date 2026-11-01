@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 import "../../css/ComponentesOperativosPremium.css";
 
@@ -16,61 +17,22 @@ import "../../css/ComponentesOperativosPremium.css";
 
 export default function Herramientas() {
   return (
-    <div className="herramientas-home-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6 animate-fadeIn">
+    <div className="molsan-page-stack herramientas-home-premium min-h-full animate-fadeIn">
 
       {/* =====================================================
           CABECERA
       ===================================================== */}
 
-      <div
-        className="
-          relative overflow-hidden
-          rounded-[24px]
-          border border-slate-200/80
-          bg-white/80
-          backdrop-blur-xl
-          shadow-[0_18px_50px_rgba(15,23,42,0.08)]
-          p-6 sm:p-7
-        "
-      >
-        <div
-          className="
-            absolute inset-x-0 top-0 h-px
-            bg-gradient-to-r
-            from-transparent
-            via-blue-400/60
-            to-transparent
-          "
-        />
-
-        <div className="relative flex items-center gap-4">
-
-          <div
-            className="
-              flex h-12 w-12 shrink-0
-              items-center justify-center
-              rounded-2xl
-              bg-blue-50
-              border border-blue-100
-              text-2xl
-              shadow-sm
-            "
-          >
-            🛠️
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark"><MolsanIcon name="tools" size={42} bare /></div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">Herramientas</h1>
+            <p className="molsan-page-header__description">Herramientas y procesos auxiliares del sistema.</p>
           </div>
-
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-800">
-              Herramientas
-            </h1>
-
-            <p className="mt-1 text-sm text-slate-500">
-              Herramientas y procesos auxiliares del sistema.
-            </p>
-          </div>
-
         </div>
-      </div>
+      </header>
 
 
       {/* =====================================================
@@ -78,13 +40,6 @@ export default function Herramientas() {
       ===================================================== */}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-
-        <Card
-          icon="📥"
-          titulo="Importar CTN"
-          descripcion="Importar fichero Excel con información de notarías."
-          link="/herramientas/importar-ctn"
-        />
 
         <Card
           icon="📰"
@@ -105,14 +60,6 @@ export default function Herramientas() {
           titulo="Informes"
           descripcion="Consultar listados y estadísticas de apoderados."
           link="/herramientas/informes"
-        />
-
-        <Card
-          icon="📦"
-          titulo="Importador ABSIS"
-          descripcion="Importar expedientes desde el Excel matriz ABSIS."
-          link="/herramientas/importador-absis"
-          destacado
         />
 
       </div>
@@ -191,7 +138,7 @@ function Card({
             }
           `}
         >
-          {icon}
+          <MolsanIcon name={icon} size={46} />
         </div>
 
 

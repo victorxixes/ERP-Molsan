@@ -1,6 +1,6 @@
 /* MOLSAN ERP · controles de formulario, botones y estados */
 .molsan-btn { display:inline-flex; min-height:var(--molsan-control-height); align-items:center; justify-content:center; gap:8px; padding:0 12px; border:1px solid transparent; border-radius:var(--molsan-radius-control); font:inherit; font-size:var(--molsan-font-size-md); font-weight:650; line-height:1.2; text-decoration:none; white-space:nowrap; cursor:pointer; transition:color var(--molsan-transition-fast),background-color var(--molsan-transition-fast),border-color var(--molsan-transition-fast),box-shadow var(--molsan-transition-fast); }
-.molsan-btn:focus-visible,.molsan-field__control:focus-visible { outline:3px solid rgba(49,86,179,.24); outline-offset:2px; }
+.molsan-btn:focus-visible,.molsan-field__control:focus-visible { outline:3px solid rgba(6,70,117,.22); outline-offset:2px; }
 .molsan-btn:disabled,.molsan-btn[aria-disabled="true"] { cursor:not-allowed; opacity:.55; }
 .molsan-btn--primary { color:#fff; background:var(--molsan-primary); border-color:var(--molsan-primary); }
 .molsan-btn--primary:hover:not(:disabled) { color:#fff; background:var(--molsan-primary-hover); border-color:var(--molsan-primary-hover); }
@@ -11,10 +11,76 @@
 .molsan-field { display:flex; min-width:0; flex-direction:column; gap:6px; }
 .molsan-field__label { color:var(--molsan-text); font-size:var(--molsan-font-size-md); font-weight:600; line-height:1.4; }
 .molsan-field__control { width:100%; min-width:0; min-height:var(--molsan-control-height); padding:7px 10px; color:var(--molsan-text); background:var(--molsan-surface); border:1px solid var(--molsan-border-strong); border-radius:var(--molsan-radius-control); font:inherit; font-size:var(--molsan-font-size-md); }
-.molsan-field__control:focus-visible { outline:none; border-color:var(--molsan-primary); box-shadow:0 0 0 3px rgba(49,86,179,.13); }
+.molsan-field__control:focus-visible { outline:none; border-color:var(--molsan-primary); box-shadow:0 0 0 3px rgba(6,70,117,.14); }
 .molsan-field__control:disabled { color:var(--molsan-text-muted); background:var(--molsan-surface-soft); cursor:not-allowed; }
 .molsan-status { display:inline-flex; align-items:center; gap:6px; max-width:100%; padding:3px 8px; border:1px solid transparent; border-radius:999px; font-size:var(--molsan-font-size-sm); font-weight:650; line-height:1.4; }
 .molsan-status--success { color:var(--molsan-success); background:#eaf8f0; border-color:#ccebd9; }
 .molsan-status--warning { color:var(--molsan-warning); background:#fff7e8; border-color:#f4e1b6; }
 .molsan-status--danger { color:var(--molsan-danger); background:#fff0f1; border-color:#f4d0d4; }
-.molsan-status--info { color:var(--molsan-primary); background:var(--molsan-primary-soft); border-color:#d8e3ff; }
+.molsan-status--info { color:var(--molsan-primary); background:var(--molsan-primary-soft); border-color:var(--molsan-border); }
+
+
+/* MOLSAN BUTTON SYSTEM · acciones operativas */
+.molsan-btn {
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 11px;
+  font-family: var(--molsan-font-family);
+  font-weight: 700;
+  letter-spacing: -.01em;
+  box-shadow: 0 2px 5px rgba(6, 50, 82, .045);
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease, border-color 180ms ease;
+}
+.molsan-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(6, 50, 82, .10);
+}
+.molsan-btn:active:not(:disabled) { transform: translateY(0) scale(.985); }
+.molsan-btn--primary { color:#fff; background:linear-gradient(135deg,#075487,#064675); border-color:#064675; }
+.molsan-btn--secondary { color:#064675; background:linear-gradient(145deg,#fff,#F2F7FB); border-color:#D8E4EC; }
+.molsan-btn--success { color:#fff; background:#16845B; border-color:#16845B; }
+.molsan-btn--danger { color:#fff; background:#B42318; border-color:#B42318; }
+.molsan-btn--danger:hover:not(:disabled) { background:#941B13; }
+.molsan-btn--ghost { color:#617789; background:transparent; border-color:transparent; box-shadow:none; }
+.molsan-btn--ghost:hover:not(:disabled) { color:#064675; background:#EAF2F8; box-shadow:none; }
+.molsan-btn__icon { width:16px; height:16px; flex:0 0 auto; }
+.molsan-btn__spinner {
+  width:15px; height:15px; flex:0 0 auto; border:2px solid currentColor;
+  border-right-color:transparent; border-radius:50%; animation:molsan-spin .7s linear infinite;
+}
+@keyframes molsan-spin { to { transform:rotate(360deg); } }
+
+/* Iconos con profundidad Glass Luxe. Aplicación progresiva mediante clase. */
+.molsan-icon-3d {
+  display:inline-grid; place-items:center; flex:0 0 auto;
+  border:1px solid #D8E4EC; border-radius:16px;
+  color:#064675;
+  background:radial-gradient(circle at 30% 22%,#fff 0%,#fff 18%,#EAF2F8 62%,#DCEAF3 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 5px 12px rgba(6,50,82,.10);
+  transform:translateZ(0);
+  transition:transform 220ms ease,box-shadow 220ms ease;
+}
+a:hover .molsan-icon-3d,button:hover .molsan-icon-3d,.molsan-icon-3d.is-active {
+  transform:translateY(-2px) scale(1.045);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 9px 18px rgba(6,50,82,.15);
+}
+.molsan-icon-3d svg { filter:drop-shadow(0 1px 1px rgba(6,70,117,.18)); }
+@media(prefers-reduced-motion:reduce) {
+  .molsan-btn,.molsan-icon-3d { transition:none; }
+  .molsan-btn__spinner { animation:none; }
+}
+
+/* Microinteracción Glass Luxe: iconos nítidos, con profundidad discreta y sin movimiento continuo. */
+.molsan-btn__icon {
+  filter: drop-shadow(0 1px 1px rgba(255,255,255,.28)) drop-shadow(0 1px 1px rgba(6,70,117,.12));
+  transition: transform 180ms ease, filter 180ms ease;
+}
+.molsan-btn:hover:not(:disabled) .molsan-btn__icon {
+  transform: translateY(-1px) scale(1.055);
+  filter: drop-shadow(0 2px 2px rgba(255,255,255,.38)) drop-shadow(0 2px 3px rgba(6,70,117,.18));
+}
+.molsan-btn:active:not(:disabled) .molsan-btn__icon { transform: scale(.96); }
+@media (prefers-reduced-motion: reduce) {
+  .molsan-btn__icon { transition: none; }
+  .molsan-btn:hover:not(:disabled) .molsan-btn__icon { transform: none; }
+}

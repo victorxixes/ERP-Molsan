@@ -1,6 +1,10 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useState, useEffect } from "react";
 import axios from "../../api/axios";
+import MolsanButton from "../../components/ui/MolsanButton";
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import "../../css/ModalesHerramientasPremium.css";
+import { formatEuro as euros } from "../../utils/formatters";
 
 const CAMPO = "block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:font-semibold file:text-blue-700";
 
@@ -24,6 +28,7 @@ export default function ImportadorPostFirma() {
   const [totalRegistros, setTotalRegistros] = useState(0);
   const [columnasInforme, setColumnasInforme] = useState([]);
   const [offset, setOffset] = useState(0);
+  const [ordenTabla, setOrdenTabla] = useState({ key: "carga_id", direction: "desc" });
   const TAMANO_PAGINA = 100;
 
   const cargarCargas = async () => {
@@ -37,9 +42,9 @@ export default function ImportadorPostFirma() {
     }
   };
 
-  const cargarRegistros = async (id = cargaSeleccionada, pagina = offset) => {
+  const cargarRegistros = async (id = cargaSeleccionada, pagina = offset, orden = ordenTabla) => {
     try {
-      const params = { limit: TAMANO_PAGINA, offset: pagina };
+      const params = { limit: TAMANO_PAGINA, offset: pagina, sort_by: orden.key, sort_dir: orden.direction };
       if (id) params.carga_id = Number(id);
       const respuesta = await axios.get("/utilidades/importador-absis/postfirma/registros", { params });
       setRegistros(Array.isArray(respuesta.data?.items) ? respuesta.data.items : []);
@@ -51,7 +56,9 @@ export default function ImportadorPostFirma() {
   };
 
   useEffect(() => { cargarCargas(); }, []);
-  useEffect(() => { cargarRegistros(cargaSeleccionada, offset); }, [cargaSeleccionada, offset]);
+  useEffect(() => { cargarRegistros(cargaSeleccionada, offset, ordenTabla); }, [cargaSeleccionada, offset, ordenTabla]);
+
+  const cambiarOrdenTabla = (next) => { setOrdenTabla(next); setOffset(0); };
 
   const ejecutar = async (modo) => {
     setError("");
@@ -100,24 +107,21 @@ export default function ImportadorPostFirma() {
   };
 
   const columnas = columnasInforme;
-  const euros = (valor) => {
-    const numero = Number(valor ?? 0);
-    return Number.isFinite(numero) ? numero.toLocaleString("es-ES", { style: "currency", currency: "EUR" }) : "—";
-  };
+
 
   return (
-    <main className="herramientas-subpagina-premium min-h-screen space-y-5 bg-gradient-to-br from-slate-50 via-blue-50/40 to-slate-100 p-4 text-slate-700 md:p-6">
-      <header className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
-        <div className="flex items-start gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-blue-200 bg-blue-50 text-2xl">📦</div>
+    <main className="molsan-page-stack herramientas-subpagina-premium min-h-screen text-slate-700">
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark"><MolsanIcon name="archive" size={20} /></div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-800 md:text-3xl">Importador ABSIS · Post Firma</h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Carga histórica pura y aislada. Los ficheros de distintos meses permanecen separados y no se aplican a expedientes ni a los gastos operativos del ERP.</p>
+            <h1 className="molsan-page-header__title">Importador ABSIS · Post Firma</h1>
+            <p className="molsan-page-header__description">Carga histórica pura y aislada. Los ficheros de distintos meses permanecen separados y no se aplican a expedientes ni a los gastos operativos del ERP.</p>
           </div>
         </div>
       </header>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+      <section className="erp-card p-5">
         <h2 className="text-lg font-bold text-slate-800">1. Seleccionar Excel</h2>
         <p className="mt-1 text-sm text-slate-500">Se conserva el contenido original de cada fila con datos y todas las columnas detectadas, incluida TIPOCONCEPTO cuando venga en el fichero.</p>
         <div className="mt-4 max-w-3xl">
@@ -127,14 +131,14 @@ export default function ImportadorPostFirma() {
         </div>
         <p className="mt-3 max-w-3xl text-xs leading-5 text-slate-500">No hay filtros por fecha, estado, concepto o IDGASTO. No se deduplican filas. Cada nueva carga, incluso si el nombre o el contenido coincide con otra, queda registrada como una carga independiente.</p>
         <div className="mt-5 flex flex-wrap gap-3">
-          <button type="button" onClick={() => ejecutar("validar")} disabled={cargando || !archivo} className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50">{cargando ? "Procesando…" : "Previsualizar sin guardar"}</button>
-          <button type="button" onClick={() => ejecutar("importar")} disabled={cargando || !archivo} className="rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50">{cargando ? "Procesando…" : "Guardar histórico completo"}</button>
+          <MolsanButton icon="check" variant="secondary" onClick={() => ejecutar("validar")} disabled={cargando || !archivo} loading={cargando}>Previsualizar sin guardar</MolsanButton>
+          <MolsanButton icon="upload" variant="primary" onClick={() => ejecutar("importar")} disabled={cargando || !archivo} loading={cargando}>Guardar histórico completo</MolsanButton>
         </div>
         <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900"><strong>Almacenamiento aislado:</strong> esta carga no crea ni actualiza gastos, pagos o expedientes y no relaciona los IDs del cliente con los identificadores internos del ERP.</div>
         {error && <div role="alert" className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">{error}</div>}
       </section>
 
-      {validacion && <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+      {validacion && <section className="erp-card space-y-4 p-5">
         <div><h2 className="text-lg font-bold text-slate-800">2. Previsualización</h2><p className="mt-1 text-sm text-emerald-700">No se han guardado cambios.</p></div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <Metrica titulo="Filas con datos" valor={validacion.filas_con_datos} detalle={"Filas Excel: " + (validacion.filas_excel ?? "—")} />
@@ -146,7 +150,7 @@ export default function ImportadorPostFirma() {
         {validacion.por_estado_absis && <div><h3 className="mb-2 font-bold text-slate-700">Conteo informativo por estado (sin filtrar la carga)</h3><div className="flex flex-wrap gap-2">{Object.entries(validacion.por_estado_absis).map(([estado, cantidad]) => <span key={estado} className="rounded-lg border border-slate-200 px-3 py-2 text-xs">{estado}: <strong>{cantidad}</strong></span>)}</div></div>}
       </section>}
 
-      {resultado && <section className="space-y-4 rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm md:p-6">
+      {resultado && <section className="erp-card space-y-4 p-5">
         <div><h2 className="text-lg font-bold text-slate-800">Carga Post Firma guardada</h2><p className="mt-1 text-sm text-slate-500">{resultado.nota}</p></div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <Metrica titulo="Filas Excel" valor={resultado.filas_excel} />
@@ -162,16 +166,34 @@ export default function ImportadorPostFirma() {
       <section id="historico-postfirma" className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div><h2 className="text-lg font-bold text-slate-800">Histórico Post Firma · datos originales</h2><p className="mt-1 text-sm text-slate-500">Consulta independiente por fichero. Las filas repetidas y los meses distintos se conservan por separado.</p></div>
-          <button type="button" onClick={() => { cargarCargas(); cargarRegistros(cargaSeleccionada, offset); }} className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600">↻ Actualizar</button>
+          <button type="button" onClick={() => { cargarCargas(); cargarRegistros(cargaSeleccionada, offset, ordenTabla); }} className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600">↻ Actualizar</button>
         </div>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
-          <div><label htmlFor="postfirma-carga" className="mb-2 block text-sm font-semibold text-slate-700">Fichero / carga</label><select id="postfirma-carga" value={cargaSeleccionada} onChange={(e) => { setCargaSeleccionada(e.target.value); setOffset(0); }} className={CAMPO}><option value="">Todas las cargas</option>{cargas.map((carga) => <option key={carga.id} value={String(carga.id)}>{"#" + carga.id + " · " + carga.nombre_archivo + " · " + carga.filas_guardadas + " filas"}</option>)}</select></div>
+          <div><label htmlFor="postfirma-carga" className="mb-2 block text-sm font-semibold text-slate-700">Fichero / carga</label><select id="postfirma-carga" value={cargaSeleccionada} onChange={(e) => { setCargaSeleccionada(e.target.value); setOffset(0); setOrdenTabla({ key: "carga_id", direction: "desc" }); }} className={CAMPO}><option value="">Todas las cargas</option>{cargas.map((carga) => <option key={carga.id} value={String(carga.id)}>{"#" + carga.id + " · " + carga.nombre_archivo + " · " + carga.filas_guardadas + " filas"}</option>)}</select></div>
           <p className="text-sm text-slate-500">Registros: <strong className="text-slate-800">{totalRegistros.toLocaleString("es-ES")}</strong></p>
         </div>
-        <div className="overflow-auto rounded-xl border border-slate-200"><table className="min-w-max w-full text-left text-xs">
-          <thead className="sticky top-0 z-10 bg-slate-100 text-slate-600"><tr><th className="whitespace-nowrap px-3 py-3">Carga</th><th className="whitespace-nowrap px-3 py-3">Fila Excel</th>{columnas.map((columna) => <th key={columna} className="whitespace-nowrap px-3 py-3">{columna || "(columna sin título)"}</th>)}</tr></thead>
-          <tbody className="divide-y divide-slate-100">{registros.map((fila) => <tr key={fila.id} className="hover:bg-blue-50/50"><td className="whitespace-nowrap px-3 py-2">{fila.archivo + " · #" + fila.carga_id}</td><td className="whitespace-nowrap px-3 py-2">{fila.numero_fila}</td>{columnas.map((columna) => { const valor = fila.datos?.[columna]; return <td key={columna} className="max-w-xs whitespace-nowrap px-3 py-2">{valor == null || valor === "" ? "—" : typeof valor === "object" ? JSON.stringify(valor) : String(valor)}</td>; })}</tr>)}{!registros.length && <tr><td colSpan={Math.max(2, columnas.length + 2)} className="px-4 py-8 text-center text-slate-500">Todavía no hay filas importadas en el histórico Post Firma.</td></tr>}</tbody>
-        </table></div>
+        <MolsanDataTable
+          rows={registros}
+          rowKey="id"
+          minWidth="1200px"
+          sortMode="server"
+          initialSort={{ key: "carga_id", direction: "desc" }}
+          onSortChange={cambiarOrdenTabla}
+          emptyText="Todavía no hay filas importadas en el histórico Post Firma."
+          columns={[
+            { key: "archivo", header: "Carga", accessor: (fila) => fila.archivo + " · #" + fila.carga_id, sortType: "text" },
+            { key: "numero_fila", header: "Fila Excel", accessor: "numero_fila", sortType: "number" },
+            ...columnas.map((columna, index) => ({
+              key: `${columna || "columna_sin_titulo"}_${index}`,
+              sortKey: columna,
+              header: columna || "(columna sin título)",
+              sortable: Boolean(columna),
+              accessor: (fila) => fila.datos?.[columna],
+              sortType: "text",
+              render: (valor) => valor == null || valor === "" ? "—" : typeof valor === "object" ? JSON.stringify(valor) : String(valor),
+            })),
+          ]}
+        />
         <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-xs text-slate-500">Mostrando {registros.length ? offset + 1 : 0}–{Math.min(offset + registros.length, totalRegistros)} de {totalRegistros.toLocaleString("es-ES")}</p><div className="flex gap-2"><button type="button" disabled={offset <= 0} onClick={() => setOffset((v) => Math.max(0, v - TAMANO_PAGINA))} className="rounded-lg border border-slate-200 px-3 py-2 text-sm disabled:opacity-40">← Anterior</button><button type="button" disabled={offset + TAMANO_PAGINA >= totalRegistros} onClick={() => setOffset((v) => v + TAMANO_PAGINA)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm disabled:opacity-40">Siguiente →</button></div></div>
       </section>
     </main>

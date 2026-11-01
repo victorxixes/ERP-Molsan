@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "../../css/HerramientasPremium.css";
 
 /**
@@ -8,14 +9,14 @@ import "../../css/HerramientasPremium.css";
 export default function Utilidades() {
 
   return (
-    <div className="utilidades-premium-page min-h-full space-y-7 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-      <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="relative flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl shadow-sm">⚙️</div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Utilidades del sistema</h1>
-            <p className="mt-1 text-sm text-slate-500">Accede a importaciones, integraciones y herramientas de trabajo directamente desde el ERP.</p>
+    <div className="molsan-page-stack utilidades-premium-page min-h-full animate-fadeIn">
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" ><MolsanIcon name="settings" size={42} bare /></div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">Utilidades del sistema</h1>
+            <p className="molsan-page-header__description">Accede a importaciones, integraciones y herramientas de trabajo directamente desde el ERP.</p>
           </div>
         </div>
       </header>
@@ -40,10 +41,8 @@ export default function Utilidades() {
         <Card icon="🔐" titulo="Accesos notariales" descripcion="Busca una notaría y administra por separado sus accesos a NotarGest y EncargaGest, con historial de cambios." link="/herramientas/utilidades/accesos-notariales" />
       </Grupo>
 
-      <Grupo titulo="Importaciones y datos" descripcion="Carga información desde los ficheros de trabajo autorizados.">
-        <Card icon="📥" titulo="Importar CTN" descripcion="Importar un Excel con información de notarías." link="/herramientas/importar-ctn" />
-        <Card icon="📦" titulo="Importador ABSIS" descripcion="Importar expedientes desde el Excel matriz ABSIS." etapa="Carga Pre firma" link="/herramientas/importador-absis" destacado />
-        <Card icon="📦" titulo="Importador ABSIS" descripcion="Importar el histórico Excel de gastos y facturación Post Firma, validar los datos y abrir su informe." etapa="Post Firma" link="/herramientas/importador-absis/postfirma" destacado />
+      <Grupo titulo="Importaciones y datos" descripcion="Accede desde un único centro a las cargas, validaciones y actualizaciones de información del ERP.">
+        <Card icon="⇧" titulo="Centro de importaciones" descripcion="Accede a los importadores de CTN, ABSIS, catálogos territoriales y datos operativos, con sus procesos de validación." link="/herramientas/importaciones-datos" destacado />
       </Grupo>
 
       <Grupo titulo="Integraciones y comunicaciones" descripcion="Seguimiento de los procesos de intercambio de información con los sistemas de nuestros clientes.">
@@ -140,9 +139,8 @@ function Card({
       />
       <div className="flex items-start gap-4">
         <div
-          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl transition-all duration-300 group-hover:scale-105 ${destacado ? "bg-blue-100 border-blue-200" : "bg-slate-50 border-slate-200"}`}
-        >
-          {icon}
+          className="flex h-12 w-12 shrink-0 items-center justify-center">
+          <MolsanIcon name={icon} size={48} />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -169,7 +167,7 @@ function Card({
     </>
   );
 
-  const clases = `group relative overflow-hidden rounded-[22px] border bg-white/80 p-5 shadow-[0_12px_35px_rgba(15,23,42,0.07)] backdrop-blur-xl transition-all duration-300 ${enConstruccion && !onClick && !link ? "cursor-default border-amber-200/80 bg-amber-50/30" : "cursor-pointer hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(15,23,42,0.11)] active:scale-[0.98]"} ${destacado ? "border-blue-200/80 bg-blue-50/50" : ""}`;
+  const clases = `utilidades-access-card group relative overflow-hidden rounded-[21px] border border-[#D8E4EC] bg-gradient-to-br from-white via-white to-[#F2F7FB] p-5 shadow-[0_8px_24px_rgba(6,50,82,0.065)] transition-all duration-300 ${enConstruccion && !onClick && !link ? "cursor-default border-amber-200/80 bg-amber-50/30" : "cursor-pointer hover:-translate-y-1 hover:border-[#B9D7E6] hover:shadow-[0_17px_34px_rgba(6,50,82,0.12)] active:scale-[0.99]"} ${destacado ? "border-[#B9D7E6] from-white to-[#EFF7FB]" : ""}`;
 
   if (enConstruccion && !onClick && !link) {
     return (

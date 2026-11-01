@@ -1,21 +1,16 @@
 /* MOLSAN ERP PREMIUM 2027 · Panel técnico */
 .panel-tecnico-premium {
   min-width: 0;
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
 }
 .panel-tecnico-premium > section:not(:first-child) {
   min-width: 0;
-  border: 1px solid var(--molsan-border, #dce4ef);
-  border-radius: var(--molsan-radius-card, 14px);
-  padding: clamp(1rem, 2vw, 1.5rem);
-  background: var(--molsan-surface, #fff);
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
+  
+  
+  padding: 0;
+  
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-}
-.panel-tecnico-premium > section:not(:first-child) > div:first-child {
-  padding-bottom: .85rem;
-  border-bottom: 1px solid var(--molsan-border, rgba(148, 163, 184, .2));
 }
 .panel-tecnico-premium h2,
 .panel-tecnico-premium h3 {
@@ -25,7 +20,7 @@
 .panel-tecnico-premium input:focus-visible,
 .panel-tecnico-premium select:focus-visible,
 .panel-tecnico-premium textarea:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--molsan-primary, #3156b3) 35%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary, #064675) 35%, transparent);
   outline-offset: 2px;
 }
 .panel-tecnico-premium table thead {
@@ -34,7 +29,7 @@
   z-index: 1;
 }
 .panel-tecnico-premium table tbody tr:hover {
-  background: color-mix(in srgb, var(--molsan-primary, #3156b3) 6%, transparent);
+  background: color-mix(in srgb, var(--molsan-primary, #064675) 6%, transparent);
 }
 .panel-tecnico-premium pre,
 .panel-tecnico-premium code {
@@ -48,3 +43,45 @@
 @media (prefers-reduced-motion: reduce) {
   .panel-tecnico-premium * { scroll-behavior: auto !important; }
 }
+
+
+/* Cabecera del Panel Técnico: escala compacta y jerarquía compartida. */
+.panel-tecnico-premium > section:first-child .w-11.h-11 {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+
+
+.panel-tecnico-header { position: relative; z-index: 2; }
+.panel-tecnico-header__identity { display:flex; align-items:center; gap:14px; min-width:0; flex-wrap:wrap; }
+.panel-tecnico-operativo {
+  display:inline-flex; align-items:center; gap:8px; min-height:34px; padding:7px 11px;
+  border:1px solid #b9e3ce; border-radius:999px; background:#eef9f3; color:#176b49;
+  font-size:12px; font-weight:750; white-space:nowrap;
+}
+.panel-tecnico-operativo > span { width:8px; height:8px; border-radius:50%; background:#20a36a; box-shadow:0 0 0 4px rgba(32,163,106,.12); }
+.panel-tecnico-seccion { min-width:0; padding:0; }
+.monitor-realtime-premium .monitor-realtime-title { color:#064675 !important; }
+.monitor-realtime-premium .monitor-realtime-subtitle { color:#617789 !important; }
+
+/* El Monitor Realtime es una sección interna del Monitor del Sistema,
+   no una segunda cabecera de página. */
+.monitor-realtime-section-header {
+  background: linear-gradient(135deg, #F7FAFC 0%, #F2F7FB 100%);
+}
+.monitor-realtime-section-header .monitor-realtime-title { color:#064675 !important; }
+.monitor-realtime-section-header .monitor-realtime-subtitle { color:#617789 !important; }
+
+/* Cabecera única del Panel Técnico. */
+.panel-tecnico-header { position: relative; z-index: 2; }
+.panel-tecnico-header__identity { display:flex; align-items:center; gap:14px; min-width:0; flex-wrap:wrap; }
+.panel-tecnico-operativo {
+  display:inline-flex; align-items:center; gap:8px; min-height:34px; padding:7px 11px;
+  border:1px solid #b9e3ce; border-radius:999px; background:#eef9f3; color:#176b49;
+  font-size:12px; font-weight:750; white-space:nowrap;
+}
+.panel-tecnico-operativo > span { width:8px; height:8px; border-radius:50%; background:#20a36a; box-shadow:0 0 0 4px rgba(32,163,106,.12); }
+.panel-tecnico-seccion { min-width:0; padding:0; }
+.monitor-realtime-premium .monitor-realtime-title { color:#064675 !important; }
+.monitor-realtime-premium .monitor-realtime-subtitle { color:#617789 !important; }

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "../../api/axios";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
+import { formatEuro as euros } from "../../utils/formatters";
 
 function fecha(valor) {
   if (!valor) return "—";
@@ -15,9 +16,7 @@ function fecha(valor) {
   return Number.isNaN(parsed.getTime()) ? texto : parsed.toLocaleDateString("es-ES");
 }
 
-function euros(valor) {
-  return new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(valor) || 0);
-}
+
 
 function coincide(item, texto) {
   if (!texto.trim()) return true;
@@ -110,8 +109,8 @@ export default function PPAD() {
   }
 
   return (
-    <div className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
+    <div className="molsan-page-stack herramienta-operativa-premium herramientas-subpagina-premium min-h-full">
+      <header className="molsan-page-header">
         <div className="h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
           <div>

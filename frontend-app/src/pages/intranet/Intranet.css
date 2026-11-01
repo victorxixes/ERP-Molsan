@@ -1,21 +1,11 @@
 /* MOLSAN ERP PREMIUM 2027 · Intranet
    Adaptación visual acotada: conserva estructura y lógica funcional. */
 .molsan-intranet-page {
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
 }
 .molsan-intranet-page > section,
 .molsan-intranet-page > div:not(.pointer-events-none) {
   border-color: var(--molsan-border, rgba(148, 163, 184, .28));
-}
-.molsan-intranet-page article {
-  border-color: var(--molsan-border, rgba(148, 163, 184, .28));
-  border-radius: var(--molsan-radius-card, 14px);
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
-  transition: border-color .16s ease, box-shadow .16s ease;
-}
-.molsan-intranet-page article:hover {
-  border-color: var(--molsan-border, #dce4ef);
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
 }
 .molsan-intranet-page input:not([type="checkbox"]):not([type="radio"]),
 .molsan-intranet-page select,
@@ -28,7 +18,7 @@
 .molsan-intranet-page select:focus-visible,
 .molsan-intranet-page textarea:focus-visible,
 .molsan-intranet-page button:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--molsan-primary, #3156b3) 32%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary, #064675) 32%, transparent);
   outline-offset: 2px;
 }
 .molsan-intranet-page table {
@@ -42,9 +32,6 @@
   max-width: 100%;
 }
 @media (max-width: 640px) {
-  .molsan-intranet-page article {
-    border-radius: .9rem;
-  }
   .molsan-intranet-page section {
     min-width: 0;
   }
@@ -58,3 +45,17 @@
     animation-iteration-count: 1 !important;
   }
 }
+
+
+/* Paleta Molsan para las utilidades Tailwind heredadas de Intranet. */
+.molsan-intranet-page [class~="bg-blue-600"] { background-color: var(--molsan-primary) !important; }
+.molsan-intranet-page [class~="hover:bg-blue-700"]:hover { background-color: var(--molsan-primary-hover) !important; }
+.molsan-intranet-page [class~="bg-blue-50"],
+.molsan-intranet-page [class~="bg-cyan-50"] { background-color: var(--molsan-primary-soft); }
+.molsan-intranet-page [class~="text-blue-700"],
+.molsan-intranet-page [class~="text-cyan-700"] { color: var(--molsan-primary); }
+.molsan-intranet-page [class~="border-blue-100"],
+.molsan-intranet-page [class~="border-blue-200"],
+.molsan-intranet-page [class~="border-cyan-100"],
+.molsan-intranet-page [class~="border-cyan-200"] { border-color: var(--molsan-border); }
+.molsan-intranet-page [class~="focus:border-blue-400"]:focus { border-color: var(--molsan-primary); }

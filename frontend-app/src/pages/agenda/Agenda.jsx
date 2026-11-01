@@ -416,8 +416,8 @@ export default function Agenda({ soloApoderado = false } = {}) {
   // ============================================================
 
   return (
-    <div className="agenda-premium-page space-y-5 p-6 text-[var(--erp-text)] animate-fade-in">
-      {/* CABECERA Y NAVEGACIÓN */}
+    <div className="molsan-page-stack agenda-premium-page text-[var(--erp-text)] animate-fade-in">
+      {/* NAVEGACIÓN Y FILTROS */}
 
       <div className="erp-card p-4 shadow-sm">
         <div className="flex flex-wrap items-center gap-3">
@@ -546,10 +546,10 @@ export default function Agenda({ soloApoderado = false } = {}) {
 
       {/* INDICADORES DEL PERÍODO */}
       <section className="agenda-resumen-grid" aria-label="Resumen de citas del mes">
-        <article className="agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-blue">▦</span><div><span className="agenda-stat-label">Citas del mes</span><strong>{citasDelPeriodo.length}</strong><small>{MESES[month - 1]} de {year}</small></div></article>
-        <article className="agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-amber">◷</span><div><span className="agenda-stat-label">Por realizar</span><strong>{citasPorRealizar}</strong><small>Hoy y fechas futuras</small></div></article>
-        <article className="agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-green">⌖</span><div><span className="agenda-stat-label">Presenciales</span><strong>{citasPresenciales}</strong><small>Según tipo de firma</small></div></article>
-        <article className="agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-purple">▣</span><div><span className="agenda-stat-label">Videoconferencias</span><strong>{citasVideoconferencia}</strong><small>Según tipo de firma</small></div></article>
+        <article className="erp-card agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-blue" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17M8 14h3M8 17h6"/></svg></span><div><span className="agenda-stat-label">Citas del mes</span><strong>{citasDelPeriodo.length}</strong><small>{MESES[month - 1]} de {year}</small></div></article>
+        <article className="erp-card agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-amber" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span><div><span className="agenda-stat-label">Por realizar</span><strong>{citasPorRealizar}</strong><small>Hoy y fechas futuras</small></div></article>
+        <article className="erp-card agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-green" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><div><span className="agenda-stat-label">Presenciales</span><strong>{citasPresenciales}</strong><small>Según tipo de firma</small></div></article>
+        <article className="erp-card agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-purple" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/></svg></span><div><span className="agenda-stat-label">Videoconferencias</span><strong>{citasVideoconferencia}</strong><small>Según tipo de firma</small></div></article>
       </section>
 
       {/* FILTROS Y CALENDARIO */}

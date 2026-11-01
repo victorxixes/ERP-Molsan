@@ -344,7 +344,7 @@ export default function ModalCtnDetalle({
       {/* CABECERA DE LA FICHA */}
 
       <header
-        className="ctn-modal-header molsan-page-header ctn-modal-header-unified"
+        className="ctn-modal-header molsan-modal-header ctn-modal-header-unified"
       >
         <div className="ctn-modal-header-identity">
           <span className="ctn-modal-eyebrow">

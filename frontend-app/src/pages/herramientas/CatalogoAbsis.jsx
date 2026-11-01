@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuthStore } from "../../store/authStore";
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { API_BASE } from "../../api/config";
 
 const API_URL = `${API_BASE}/catalogos-absis`;
@@ -164,18 +165,20 @@ export default function CatalogoAbsis() {
   }
 
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · DATOS ABSIS</p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">Catálogo ABSIS</h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Gestiona en una única pantalla los estados y listas auxiliares que utiliza la integración ABSIS. Cada lista se mantiene por separado y sus cambios quedan guardados en el servidor.</p>
+    <main className="molsan-page-stack catalogos-premium-page min-h-full animate-fadeIn">
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true">▦</div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · DATOS ABSIS</p>
+            <h1 className="molsan-page-header__title">Catálogo ABSIS</h1>
+            <p className="molsan-page-header__description">Gestiona en una única pantalla los estados y listas auxiliares que utiliza la integración ABSIS. Cada lista se mantiene por separado y sus cambios quedan guardados en el servidor.</p>
           </div>
-          <div className="rounded-2xl border border-indigo-100 bg-indigo-50 px-5 py-4">
-            <p className="text-3xl font-bold text-slate-900">{filas.filter((f) => f.activo).length}</p>
-            <p className="text-xs font-medium text-slate-500">entradas activas</p>
+        </div>
+        <div className="molsan-page-header__actions">
+          <div className="rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-right">
+            <p className="text-2xl font-bold text-white">{filas.filter((f) => f.activo).length}</p>
+            <p className="text-xs font-medium text-blue-100">entradas activas</p>
           </div>
         </div>
       </header>
@@ -207,18 +210,18 @@ export default function CatalogoAbsis() {
         </div>
         {cargando ? <div className="p-10 text-center text-sm text-slate-500">Cargando listado…</div> :
           visibles.length === 0 ? <div className="p-10 text-center"><p className="font-semibold text-slate-700">Todavía no hay entradas en esta lista</p><p className="mt-1 text-sm text-slate-500">Usa «Añadir entrada» para incorporar el primer valor.</p></div> :
-          <div className="overflow-x-auto"><table className="w-full min-w-[680px] text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr>
-              <th className="px-5 py-3 font-semibold">Código</th><th className="px-5 py-3 font-semibold">Valor</th><th className="px-5 py-3 font-semibold">Descripción</th><th className="px-5 py-3 font-semibold">Estado</th><th className="px-5 py-3 text-right font-semibold">Acciones</th>
-            </tr></thead>
-            <tbody className="divide-y divide-slate-100">{visibles.map((fila) => <tr key={fila.id} className="hover:bg-slate-50/70">
-              <td className="whitespace-nowrap px-5 py-3 font-mono text-xs text-slate-600">{fila.codigo || "—"}</td>
-              <td className="px-5 py-3 font-medium text-slate-800">{fila.valor || "—"}</td>
-              <td className="max-w-xl px-5 py-3 text-slate-600">{fila.descripcion || "—"}</td>
-              <td className="px-5 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${fila.activo ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{fila.activo ? "Activo" : "Inactivo"}</span></td>
-              <td className="whitespace-nowrap px-5 py-3 text-right"><button type="button" onClick={() => abrirEdicion(fila)} className="rounded-lg px-2 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-50">Editar</button><button type="button" onClick={() => eliminar(fila)} className="ml-1 rounded-lg px-2 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50">Eliminar</button></td>
-            </tr>)}</tbody>
-          </table></div>
+          <MolsanDataTable
+            rows={visibles}
+            rowKey="id"
+            minWidth="680px"
+            columns={[
+              { key: "codigo", header: "Código", accessor: "codigo", sortType: "text" },
+              { key: "valor", header: "Valor", accessor: "valor", sortType: "text" },
+              { key: "descripcion", header: "Descripción", accessor: "descripcion", sortType: "text" },
+              { key: "activo", header: "Estado", accessor: "activo", sortType: "boolean", render: (value) => <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${value ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{value ? "Activo" : "Inactivo"}</span> },
+              { key: "acciones", header: "Acciones", sortable: false, align: "right", accessor: (fila) => fila.id, render: (_, fila) => <div className="flex justify-end gap-1"><button type="button" onClick={() => abrirEdicion(fila)} className="rounded-lg px-2 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-50">Editar</button><button type="button" onClick={() => eliminar(fila)} className="rounded-lg px-2 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50">Eliminar</button></div> },
+            ]}
+          />
         }
       </section>
 

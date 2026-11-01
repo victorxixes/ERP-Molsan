@@ -1,3 +1,6 @@
+import MolsanButton from "../../components/ui/MolsanButton";
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import FichajesResumen from "./FichajesResumen.jsx";
@@ -7,15 +10,15 @@ import SolicitudesAusencia from "./SolicitudesAusencia.jsx";
 import DocumentosAdmin from "./DocumentosAdmin.jsx";
 
 const TIPOS = [
-  { value: "ENTRADA", label: "Entrada a trabajar", icon: "↗", tone: "emerald" },
-  { value: "PAUSA_DESAYUNO_INICIO", label: "Pausa desayuno", icon: "☕", tone: "amber" },
-  { value: "PAUSA_DESAYUNO_FIN", label: "Regreso desayuno", icon: "↩", tone: "blue" },
-  { value: "PAUSA_COMIDA_INICIO", label: "Pausa comida", icon: "🍽️", tone: "sky" },
+  { value: "ENTRADA", label: "Entrada a trabajar", icon: "arrowRight", tone: "emerald" },
+  { value: "PAUSA_DESAYUNO_INICIO", label: "Pausa desayuno", icon: "coffee", tone: "amber" },
+  { value: "PAUSA_DESAYUNO_FIN", label: "Regreso desayuno", icon: "refresh", tone: "blue" },
+  { value: "PAUSA_COMIDA_INICIO", label: "Pausa comida", icon: "meal", tone: "sky" },
   { value: "PAUSA_COMIDA_FIN", label: "Regreso comida", icon: "↩", tone: "blue" },
-  { value: "PAUSA_CIGARRILLO_INICIO", label: "Pausa cigarrillo", icon: "🚬", tone: "amber" },
-  { value: "PAUSA_CIGARRILLO_FIN", label: "Regreso cigarrillo", icon: "🚬", tone: "blue" },
-  { value: "AUSENCIA", label: "Registrar ausencia", icon: "📅", tone: "violet" },
-  { value: "SALIDA", label: "Salida del trabajo", icon: "↙", tone: "rose" },
+  { value: "PAUSA_CIGARRILLO_INICIO", label: "Pausa cigarrillo", icon: "pause", tone: "amber" },
+  { value: "PAUSA_CIGARRILLO_FIN", label: "Regreso cigarrillo", icon: "pause", tone: "blue" },
+  { value: "AUSENCIA", label: "Registrar ausencia", icon: "calendar", tone: "violet" },
+  { value: "SALIDA", label: "Salida del trabajo", icon: "arrowLeft", tone: "rose" },
 ];
 const TIPOS_DOCUMENTO = ["Justificante médico", "Vacaciones", "Ausencia", "Permiso", "Otro"];
 const FECHA_HOY = new Date();
@@ -229,17 +232,17 @@ export default function Fichajes({ modo = "empleado" }) {
     : [{ id: "resumen", label: "Resumen de marcajes" }, { id: "calendario", label: "Calendario mensual" }, { id: "documentos", label: "Documentos" }, { id: "personal", label: "Información personal" }, { id: "ausencias", label: "Solicitudes de ausencia" }, { id: "compensaciones", label: "Festivos y compensaciones" }];
 
   return (
-    <main className="fichajes-premium-page mx-auto w-full max-w-[1500px] space-y-6 p-4 text-[var(--erp-text)] sm:p-6">
-      <header className="relative overflow-hidden rounded-3xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-6 shadow-sm sm:p-8">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-700 via-cyan-500 to-emerald-400" />
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-extrabold tracking-[.2em] text-blue-700">MOLSAN ERP · PREMIUM 2027</p>
-            <h1 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">{esAdminVista ? "Control de Fichajes" : "Fichaje Molsan"}</h1>
-            <p className="mt-2 text-sm text-[var(--erp-text-soft)]">{esAdminVista ? "Supervisión de marcajes de la plantilla." : "Registro de jornada y gestión de justificantes personales."}</p>
+    <main className="molsan-page-stack fichajes-premium-page w-full text-[var(--erp-text)]">
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true">⏱</div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">{esAdminVista ? "Control de Fichajes" : "Fichaje Molsan"}</h1>
+            <p className="molsan-page-header__description">{esAdminVista ? "Supervisión de marcajes de la plantilla." : "Registro de jornada y gestión de justificantes personales."}</p>
           </div>
-          {!esAdminVista && perfil && <div className="rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3"><p className="text-xs text-blue-700">Empleado</p><p className="font-bold text-slate-900">{perfil.nombre}</p><p className="text-xs text-slate-500">{perfil.usuario}</p></div>}
         </div>
+        {!esAdminVista && perfil && <div className="molsan-page-header__actions"><div className="rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2"><p className="text-xs text-[var(--molsan-text-muted)]">Empleado</p><p className="font-bold text-[var(--molsan-text)]">{perfil.nombre}</p><p className="text-xs text-[var(--molsan-text-muted)]">{perfil.usuario}</p></div></div>}
       </header>
 
       {mensaje && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">{mensaje}</div>}
@@ -255,7 +258,7 @@ export default function Fichajes({ modo = "empleado" }) {
               <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 {TIPOS.map((t) => (
                   <button key={t.value} type="button" disabled={guardando} onClick={() => t.value === "AUSENCIA" ? setMostrarSelectorAusencia(true) : enviarMarcaje(t.value)} className={`flex min-h-[94px] items-center gap-4 rounded-2xl border px-5 py-4 text-left font-bold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:cursor-wait disabled:opacity-50 ${t.tone === "emerald" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : t.tone === "rose" ? "border-rose-200 bg-rose-50 text-rose-800" : t.tone === "amber" ? "border-amber-200 bg-amber-50 text-amber-900" : t.tone === "violet" ? "border-violet-200 bg-violet-50 text-violet-900" : t.tone === "blue" ? "border-blue-200 bg-blue-50 text-blue-900" : "border-sky-200 bg-sky-50 text-sky-900"}`}>
-                    <span className="grid h-11 w-11 place-items-center rounded-xl bg-white/80 text-2xl">{t.icon}</span><span>{t.label}<span className="mt-1 block text-xs font-medium opacity-70">Registrar ahora</span></span>
+                    <MolsanIcon name={t.icon} size={44} tone="ocean" /><span>{t.label}<span className="mt-1 block text-xs font-medium opacity-70">Registrar ahora</span></span>
                   </button>
                 ))}
               </div>
@@ -304,7 +307,24 @@ export default function Fichajes({ modo = "empleado" }) {
             {!esAdminVista && pestana === "resumen" && (
               <div className="p-4 sm:p-6">
                 <div className="flex flex-wrap items-end justify-between gap-3"><div><h2 className="text-lg font-bold">Resumen de marcajes</h2><p className="text-sm text-[var(--erp-text-soft)]">Busca por tipo, fecha, hora u observaciones.</p></div><label className="w-full max-w-sm text-xs font-bold text-slate-500">Buscar<input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Ej. Entrada, 09:00…" className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm font-normal" /></label></div>
-                <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[560px] text-left text-sm"><thead><tr className="border-b text-xs uppercase tracking-wide text-slate-400"><th className="px-3 py-3">Fecha</th><th className="px-3 py-3">Hora</th><th className="px-3 py-3">Marcaje</th><th className="px-3 py-3">Observaciones</th></tr></thead><tbody>{marcajesFiltrados.map((m) => <tr key={m.id} className="border-b border-slate-100 last:border-0"><td className="px-3 py-3">{fechaLarga(m.fecha_hora)}</td><td className="px-3 py-3 font-bold tabular-nums">{hora(m.fecha_hora)}</td><td className="px-3 py-3"><span className="rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-bold">{formatearTipo(m.tipo)}</span></td><td className="px-3 py-3 text-slate-500">{m.observaciones || "—"}</td></tr>)}{marcajesFiltrados.length === 0 && <tr><td colSpan="4" className="px-3 py-10 text-center text-slate-400">No hay marcajes para esta búsqueda.</td></tr>}</tbody></table></div>
+                <div className="mt-4">
+                  <MolsanDataTable
+                    rows={marcajesFiltrados}
+          searchable
+          pagination
+          pageSize={25}
+
+                    rowKey="id"
+                    initialSort={{ key: "fecha", direction: "desc" }}
+                    emptyText="No hay marcajes para esta búsqueda."
+                    columns={[
+                      { key: "fecha", header: "Fecha", accessor: "fecha_hora", sortType: "date", render: (value) => fechaLarga(value) },
+                      { key: "hora", header: "Hora", accessor: (item) => { const date = new Date(item.fecha_hora); return date.getHours() * 60 + date.getMinutes(); }, sortType: "number", render: (_, item) => <strong className="tabular-nums">{hora(item.fecha_hora)}</strong> },
+                      { key: "tipo", header: "Marcaje", accessor: "tipo", sortType: "text", render: (value) => <span className="rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-bold">{formatearTipo(value)}</span> },
+                      { key: "observaciones", header: "Observaciones", accessor: "observaciones", sortType: "text", render: (value) => value || "—" },
+                    ]}
+                  />
+                </div>
               </div>
             )}
 
@@ -315,7 +335,7 @@ export default function Fichajes({ modo = "empleado" }) {
                   <label className="block text-xs font-bold text-slate-600">Tipo de justificación<select value={tipoDocumento} onChange={(e) => setTipoDocumento(e.target.value)} className="mt-1 w-full rounded-xl border bg-white px-3 py-3 text-sm font-normal">{TIPOS_DOCUMENTO.map((t) => <option key={t}>{t}</option>)}</select></label>
                   <label className="block text-xs font-bold text-slate-600">Fecha del documento<input type="date" value={fechaDocumento} onChange={(e) => setFechaDocumento(e.target.value)} required className="mt-1 w-full rounded-xl border bg-white px-3 py-3 text-sm font-normal" /></label>
                   <label className="block text-xs font-bold text-slate-600">Archivo<input type="file" required onChange={(e) => setArchivo(e.target.files?.[0] || null)} className="mt-1 block w-full rounded-xl border bg-white p-2 text-sm font-normal" /><span className="mt-1 block font-normal text-slate-400">Máximo 10 MB por archivo.</span></label>
-                  <button disabled={guardando} className="w-full rounded-xl bg-blue-700 px-4 py-3 text-sm font-bold text-white hover:bg-blue-800 disabled:opacity-50">{guardando ? "Guardando…" : "Guardar documento"}</button>
+                  <MolsanButton type="submit" variant="primary" icon="upload" loading={guardando} className="w-full">{guardando ? "Guardando…" : "Guardar documento"}</MolsanButton>
                 </form>
                 <div><h2 className="font-bold">Historial de documentos</h2><div className="mt-3 space-y-2">{documentos.map((d) => <div key={d.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--erp-border)] p-3"><div className="min-w-0"><p className="truncate text-sm font-bold">{d.nombre_archivo}</p><p className="mt-1 text-xs text-slate-500">{d.tipo_justificante} · Fecha: {d.fecha_documento} · Subido: {d.subido_en ? fechaLarga(d.subido_en) : "—"}</p><p className="mt-1 text-xs font-bold text-blue-700">Revisión: {d.revision_estado === "APROBADO" ? "Aprobado" : d.revision_estado === "RECHAZADO" ? "Rechazado" : "Pendiente"}</p>{d.revision_motivo && <p className="mt-1 text-xs text-slate-500">{d.revision_motivo}</p>}</div><button type="button" onClick={() => descargar(d)} className="rounded-lg border px-3 py-2 text-xs font-bold hover:bg-slate-50">Descargar</button></div>)}{documentos.length === 0 && <p className="rounded-xl border border-dashed p-8 text-center text-sm text-slate-400">Todavía no has adjuntado documentos.</p>}</div></div>
               </div>
@@ -343,14 +363,26 @@ export default function Fichajes({ modo = "empleado" }) {
                   <div className="rounded-xl bg-amber-50 px-4 py-2 text-sm font-bold text-amber-900">Pendientes: {vacacionesAdmin.filter(v => v.estado === "SOLICITADO").length}</div>
                 </div>
                 <div className="mb-4 grid gap-3 sm:grid-cols-2"><label className="text-xs font-bold text-slate-500">Filtrar empleado<select value={empleadoFiltro} onChange={e => setEmpleadoFiltro(e.target.value)} className="mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-sm font-normal"><option value="">Toda la plantilla</option>{empleados.map(e => <option key={e.id} value={e.id}>{e.nombre}</option>)}</select></label><div className="flex items-end"><button type="button" onClick={() => recargarAdmin().catch(e => setError(e?.response?.data?.detail || "No se pudieron actualizar las solicitudes."))} className="rounded-xl border px-4 py-2.5 text-sm font-bold">Actualizar solicitudes</button></div></div>
-                <div className="overflow-x-auto rounded-2xl border border-[var(--erp-border)]">
-                  <table className="w-full min-w-[850px] text-left text-sm">
-                    <thead><tr className="border-b bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><th className="p-3">Empleado</th><th className="p-3">Desde</th><th className="p-3">Hasta</th><th className="p-3">Días</th><th className="p-3">Estado</th><th className="p-3">Observaciones</th><th className="p-3">Acciones</th></tr></thead>
-                    <tbody>{vacacionesAdmin.map(v => <tr key={v.id} className="border-b last:border-0">
-                      <td className="p-3 font-semibold">{v.empleado_nombre}</td><td className="p-3">{fechaLarga(v.fecha_inicio)}</td><td className="p-3">{fechaLarga(v.fecha_fin)}</td><td className="p-3">{v.dias}</td><td className="p-3"><span className={v.estado === "SOLICITADO" ? "rounded-lg bg-amber-100 px-2 py-1 text-xs font-bold text-amber-900" : v.estado === "APROBADO" ? "rounded-lg bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-900" : "rounded-lg bg-rose-100 px-2 py-1 text-xs font-bold text-rose-900"}>{v.estado === "SOLICITADO" ? "Pendiente" : v.estado === "APROBADO" ? "Aprobada" : "Rechazada"}</span></td>
-                      <td className="max-w-[220px] p-3 text-slate-500">{v.observaciones || "—"}</td><td className="p-3">{v.estado === "SOLICITADO" ? <div className="flex gap-2"><button type="button" disabled={guardando} onClick={() => resolverVacaciones(v, "APROBADO")} className="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white disabled:opacity-50">Aprobar</button><button type="button" disabled={guardando} onClick={() => resolverVacaciones(v, "RECHAZADO")} className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700 disabled:opacity-50">Rechazar</button></div> : "Resuelta"}</td>
-                    </tr>)}{!vacacionesAdmin.length && <tr><td colSpan="7" className="p-10 text-center text-slate-400">No hay solicitudes de vacaciones registradas.</td></tr>}</tbody>
-                  </table>
+                <div className="rounded-2xl border border-[var(--erp-border)]">
+                  <MolsanDataTable
+                    rows={vacacionesAdmin}
+          searchable
+          pagination
+          pageSize={25}
+
+                    rowKey="id"
+                    initialSort={{ key: "fecha_inicio", direction: "desc" }}
+                    emptyText="No hay solicitudes de vacaciones registradas."
+                    columns={[
+                      { key: "empleado", header: "Empleado", accessor: "empleado_nombre", sortType: "text" },
+                      { key: "fecha_inicio", header: "Desde", accessor: "fecha_inicio", sortType: "date", render: (value) => fechaLarga(value) },
+                      { key: "fecha_fin", header: "Hasta", accessor: "fecha_fin", sortType: "date", render: (value) => fechaLarga(value) },
+                      { key: "dias", header: "Días", accessor: "dias", sortType: "number", align: "right" },
+                      { key: "estado", header: "Estado", accessor: "estado", sortType: "text", render: (value) => <span className={value === "SOLICITADO" ? "rounded-lg bg-amber-100 px-2 py-1 text-xs font-bold text-amber-900" : value === "APROBADO" ? "rounded-lg bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-900" : "rounded-lg bg-rose-100 px-2 py-1 text-xs font-bold text-rose-900"}>{value === "SOLICITADO" ? "Pendiente" : value === "APROBADO" ? "Aprobada" : "Rechazada"}</span> },
+                      { key: "observaciones", header: "Observaciones", accessor: "observaciones", sortType: "text", render: (value) => value || "—" },
+                      { key: "acciones", header: "Acciones", sortable: false, accessor: (item) => item.id, render: (_, item) => item.estado === "SOLICITADO" ? <div className="flex gap-2"><MolsanButton type="button" variant="success" icon="check" loading={guardando} className="molsan-btn--compact" onClick={() => resolverVacaciones(item, "APROBADO")}>Aprobar</MolsanButton><MolsanButton type="button" variant="danger" icon="close" loading={guardando} className="molsan-btn--compact" onClick={() => resolverVacaciones(item, "RECHAZADO")}>Rechazar</MolsanButton></div> : "Resuelta" },
+                    ]}
+                  />
                 </div>
               </div>
             )}

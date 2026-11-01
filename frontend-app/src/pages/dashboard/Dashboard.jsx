@@ -5,6 +5,7 @@
 
 import { useDashboard } from "../../hooks/useDashboard";
 import { useNavigate } from "react-router-dom";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "../../css/DashboardCancelagest.css";
 
 // ============================================================
@@ -16,49 +17,49 @@ const ACTIVIDADES = [
     key: "documentacion_previa",
     nombre: "Documentación previa",
     descripcion: "Preparación y revisión inicial del expediente",
-    icono: "📄",
+    icono: "file",
   },
   {
     key: "sede_notarial",
     nombre: "Sede notarial",
     descripcion: "Expedientes enviados al notario pendientes de firma",
-    icono: "🏛️",
+    icono: "courthouse",
   },
   {
     key: "sede_notarial_con_protocolo",
     nombre: "Sede notarial con protocolo",
     descripcion: "Expedientes firmados con protocolo asignado",
-    icono: "✍️",
+    icono: "pen",
   },
   {
     key: "gestion_economica",
     nombre: "Gestión económica",
     descripcion: "Revisión y gestión de los datos económicos del expediente",
-    icono: "💼",
+    icono: "briefcase",
   },
   {
     key: "liquidacion_impuestos",
     nombre: "Liquidación de impuestos",
     descripcion: "Presentación y liquidación tributaria",
-    icono: "💶",
+    icono: "euro",
   },
   {
     key: "tramitacion_inscripcion",
     nombre: "Tramitación inscripción",
     descripcion: "Presentación y seguimiento registral",
-    icono: "📚",
+    icono: "book",
   },
   {
     key: "defectos_registrales",
     nombre: "Defectos registrales",
     descripcion: "Gestión de defectos y subsanaciones",
-    icono: "⚠️",
+    icono: "alert",
   },
   {
     key: "facturacion_cierre",
     nombre: "Facturación y cierre",
     descripcion: "Facturación, cierre y archivo del expediente",
-    icono: "✅",
+    icono: "check",
   },
 ];
 
@@ -113,9 +114,7 @@ function KpiCard({ icono, titulo, valor, descripcion }) {
             </div>
           )}
         </div>
-        <div className="dashboard-kpi__icon flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg" style={{ background: "var(--erp-primary-soft)", color: "var(--erp-primary)" }}>
-          {icono}
-        </div>
+        <MolsanIcon name={icono} size={42} tone="ocean" />
       </div>
     </div>
   );
@@ -124,9 +123,7 @@ function KpiCard({ icono, titulo, valor, descripcion }) {
 function ActividadCard({ actividad, total, porcentajeValor }) {
   return (
     <div className="flex items-center gap-3 border-b px-4 py-3.5 last:border-b-0 transition-colors duration-150 hover:bg-[var(--erp-surface-soft)]" style={{ borderColor: "var(--erp-border)" }}>
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg" style={{ background: "var(--erp-primary-soft)" }}>
-        {actividad.icono}
-      </div>
+      <MolsanIcon name={actividad.icono} size={42} tone="ocean" />
       <div className="min-w-0 flex-1">
         <div className="text-sm font-semibold" style={{ color: "var(--erp-text)" }}>
           {actividad.nombre}
@@ -156,9 +153,7 @@ function FirmaCard({ icono, titulo, total, porcentajeValor }) {
   return (
     <div className="erp-card p-5">
       <div className="flex items-center gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-xl" style={{ background: "var(--erp-primary-soft)" }}>
-          {icono}
-        </div>
+        <MolsanIcon name={icono} size={48} tone="ocean" />
         <div className="min-w-0 flex-1">
           <div className="text-sm font-semibold" style={{ color: "var(--erp-text)" }}>
             {titulo}
@@ -268,36 +263,14 @@ export default function Dashboard() {
   return (
     <div className="erp-page w-full dashboard-cancelagest molsan-page" aria-busy={loading}>
       {/* CABECERA UNIFICADA CON APODERAGEST Y NOTARGEST */}
-      <header className="ag-hero molsan-page-header dashboard-header" style={{ "--ag-muted": "#748198", "--ag-ink": "#17243a" }}>
+      <header className="ag-hero molsan-page-header dashboard-header" style={{ "--ag-muted": "var(--molsan-text-muted)", "--ag-ink": "var(--molsan-text)" }}>
         <div className="ag-hero-identidad molsan-page-header__identity">
-          <div className="ag-marca cg-marca-cancelagest" aria-label="CancelaGest">CG</div>
+          <div className="ag-marca cg-marca-cancelagest molsan-page-header__mark" aria-label="CancelaGest">CG</div>
           <div>
-            <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
-            <h1>Dashboard</h1>
-            <p>Resumen operativo de expedientes, actividad del circuito y firmas realizadas.</p>
+            <div className="ag-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
+            <h1 className="molsan-page-header__title">Dashboard</h1>
+            <p className="molsan-page-header__description">Resumen operativo de expedientes, actividad del circuito y firmas realizadas.</p>
           </div>
-        </div>
-        <div className="ag-hero-acciones molsan-page-header__actions">
-          <div className="ag-fecha-actual">
-            <span className="ag-punto-vivo" aria-hidden="true" />
-            <span>{fechaActual}</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigate("/modulos")}
-            className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"
-          >
-            <span aria-hidden="true">▦</span> Ir a módulos
-          </button>
-          <button
-            type="button"
-            className="ag-boton-actualizar"
-            onClick={cargarDashboard}
-            disabled={loading}
-          >
-            <span aria-hidden="true" className={loading ? "ag-icono-girando" : ""}>↻</span>
-            {loading ? "Actualizando…" : "Actualizar datos"}
-          </button>
         </div>
       </header>
 
@@ -317,16 +290,16 @@ export default function Dashboard() {
 
       {/* KPIs PRINCIPALES */}
       <div className="dashboard-kpis mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard icono="📁" titulo="Total expedientes" valor={numero(totalExpedientes)} descripcion="Expedientes registrados" />
-        <KpiCard icono="🔄" titulo="Actividades" valor="7" descripcion="Etapas del circuito" />
-        <KpiCard icono="📊" titulo="En circuito" valor={numero(enCircuito)} descripcion="Expedientes por actividad" />
-        <KpiCard icono="⏱️" titulo="Media hasta firma" valor={mediaGeneral == null ? "—" : `${decimal(mediaGeneral, 1)} días`} descripcion="Desde envío hasta firma" />
+        <KpiCard icono="folder" titulo="Total expedientes" valor={numero(totalExpedientes)} descripcion="Expedientes registrados" />
+        <KpiCard icono="refresh" titulo="Actividades" valor="7" descripcion="Etapas del circuito" />
+        <KpiCard icono="chart" titulo="En circuito" valor={numero(enCircuito)} descripcion="Expedientes por actividad" />
+        <KpiCard icono="timer" titulo="Media hasta firma" valor={mediaGeneral == null ? "—" : `${decimal(mediaGeneral, 1)} días`} descripcion="Desde envío hasta firma" />
       </div>
 
       {/* ACTIVIDADES + TIEMPO MEDIO HASTA FIRMA */}
       <div className="dashboard-main-grid mb-6 grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
       {/* ACTIVIDADES */}
-      <section className="min-w-0">
+      <section className="dashboard-section-panel min-w-0">
         <div className="mb-4">
           <h2 className="text-lg font-bold" style={{ color: "var(--erp-text)" }}>Expedientes por actividad</h2>
           <p className="mt-1 text-sm" style={{ color: "var(--erp-text-soft)" }}>
@@ -347,7 +320,7 @@ export default function Dashboard() {
       ====================================================== */}
       <div className="min-w-0">
         {/* MEDIA DE FIRMA POR TIPO DE OPERACIÓN */}
-        <section className="min-w-0">
+        <section className="dashboard-section-panel min-w-0">
           <div className="mb-4">
             <h2 className="text-lg font-bold" style={{ color: "var(--erp-text)" }}>
               Tiempo medio hasta firma
@@ -397,7 +370,7 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="px-5 py-10 text-center">
-                <div className="mb-2 text-3xl">📊</div>
+                <div className="mb-2 flex justify-center"><MolsanIcon name="chart" size={44} /></div>
                 <div className="text-sm font-medium" style={{ color: "var(--erp-text)" }}>
                   Todavía no hay datos de firmas por tipo de operación.
                 </div>
@@ -409,14 +382,8 @@ export default function Dashboard() {
           </div>
         </section>
 
-      </div>
-
-      </div>
-
-      {/* FIRMAS REALIZADAS + DISTRIBUCIÓN DEL CIRCUITO */}
-      <div className="dashboard-signatures-wrap mb-6">
       {/* FIRMAS REALIZADAS */}
-      <section className="min-w-0">
+      <section className="dashboard-section-panel min-w-0">
         <div className="mb-4 flex flex-col gap-1">
           <h2 className="text-lg font-bold" style={{ color: "var(--erp-text)" }}>Firmas realizadas</h2>
           <p className="text-sm" style={{ color: "var(--erp-text-soft)" }}>
@@ -424,12 +391,13 @@ export default function Dashboard() {
           </p>
         </div>
         <div className="dashboard-firmas-grid grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <KpiCard icono="✍️" titulo="Total firmas" valor={numero(totalFirmas)} descripcion="Firmas realizadas" />
-          <FirmaCard icono="🏛️" titulo="Presencial" total={firmasPresenciales} porcentajeValor={porcentajePresencial} />
-          <FirmaCard icono="💻" titulo="Videoconferencia" total={firmasVideoconferencia} porcentajeValor={porcentajeVideoconferencia} />
+          <KpiCard icono="pen" titulo="Total firmas" valor={numero(totalFirmas)} descripcion="Firmas realizadas" />
+          <FirmaCard icono="courthouse" titulo="Presencial" total={firmasPresenciales} porcentajeValor={porcentajePresencial} />
+          <FirmaCard icono="monitor" titulo="Videoconferencia" total={firmasVideoconferencia} porcentajeValor={porcentajeVideoconferencia} />
         </div>
       </section>
 
+      </div>
       </div>
 
       {/* NOTA TÉCNICA */}

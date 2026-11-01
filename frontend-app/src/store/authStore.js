@@ -78,10 +78,18 @@ function tokenEstaExpirado(token) {
       return false;
     }
 
-    const payloadBase64 = partes[1];
+    // JWT usa Base64URL: normalizamos sus dos caracteres especiales
+    // y completamos el padding antes de pasarlo a atob().
+    const payloadBase64 = partes[1]
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
+    const payloadBase64Padded = payloadBase64.padEnd(
+      Math.ceil(payloadBase64.length / 4) * 4,
+      "="
+    );
 
     const payloadJson = decodeURIComponent(
-      atob(payloadBase64)
+      atob(payloadBase64Padded)
         .split("")
         .map(
           (caracter) =>

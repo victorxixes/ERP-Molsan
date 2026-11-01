@@ -10,7 +10,8 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from cryptography.fernet import Fernet, InvalidToken
-from sqlalchemy import Column, ForeignKey, Integer, Table, and_, func, or_, text
+from sqlalchemy import Column, ForeignKey, Integer, Table, Float, and_, case, cast, func, literal, or_, select, text
+from sqlalchemy.orm import aliased
 from sqlalchemy.orm import Session
 from openpyxl import Workbook
 
@@ -421,22 +422,85 @@ def listar_notarias(
     asociado: str | None = Query(None, description="Filtra por nombre, apellidos o NIF del notario asociado"),
     page: int = Query(1, ge=1),
     page_size: int = Query(15, ge=1, le=200),
+    sort_by: str = Query("apellidos", max_length=40),
+    sort_dir: str = Query("asc", regex="^(asc|desc)$"),
     db: Session = Depends(get_db),
 ):
     query = _aplicar_filtros_notarias(db, provincia, municipio, vc, apoderado, q, asociado)
     total = query.count()
+
+    # Ordenación en base de datos antes de paginar: nunca se ordena solo la
+    # página visible. Los campos calculados también tienen expresión SQL.
+    asociada = aliased(Notaria)
+    asociados_nombre = (
+        select(func.coalesce(func.string_agg(
+            func.trim(func.concat(func.coalesce(asociada.nombre, ""), " ", func.coalesce(asociada.apellidos, ""))),
+            ", "
+        ), ""))
+        .select_from(notarios_asociados_table.join(asociada, asociada.id == notarios_asociados_table.c.asociado_id))
+        .where(notarios_asociados_table.c.notario_id == Notaria.id)
+        .scalar_subquery()
+    )
+    acceso_encargagest = (
+        select(EncargoExternoUsuario.habilitado)
+        .where(EncargoExternoUsuario.notaria_id == Notaria.id)
+        .scalar_subquery()
+    )
+
+    lat_valida = Notaria.lat.op("~")(r"^-?[0-9]+(\.[0-9]+)?$")
+    lng_valida = Notaria.lng.op("~")(r"^-?[0-9]+(\.[0-9]+)?$")
+    latitud = case((lat_valida, cast(Notaria.lat, Float)), else_=None)
+    longitud = case((lng_valida, cast(Notaria.lng, Float)), else_=None)
+    phi1 = func.radians(literal(MOLSAN_LAT))
+    phi2 = func.radians(latitud)
+    delta_phi = func.radians(latitud - literal(MOLSAN_LAT))
+    delta_lambda = func.radians(longitud - literal(MOLSAN_LNG))
+    haversine = (
+        func.pow(func.sin(delta_phi / 2), 2)
+        + func.cos(phi1) * func.cos(phi2) * func.pow(func.sin(delta_lambda / 2), 2)
+    )
+    distancia_sql = case(
+        (and_(lat_valida, lng_valida), 6371.0 * 2 * func.asin(func.sqrt(func.least(1.0, haversine)))),
+        else_=None,
+    )
+
+    nombre_completo_sql = func.trim(func.concat(func.coalesce(Notaria.nombre, ""), " ", func.coalesce(Notaria.apellidos, "")))
+    expresiones_orden = {
+        "id": Notaria.id,
+        "nombre_completo": nombre_completo_sql,
+        "nif": Notaria.nif,
+        "municipio": Notaria.municipio,
+        "provincia": Notaria.provincia,
+        "vc": Notaria.vc,
+        "apoderado": Notaria.apoderado,
+        "notario_asociado": asociados_nombre,
+        "notargest_habilitado": Notaria.notargest_habilitado,
+        "encargagest_habilitado": func.coalesce(acceso_encargagest, False),
+        "distancia_km": distancia_sql,
+        "apellidos": Notaria.apellidos,
+    }
+    expresion = expresiones_orden.get(sort_by, Notaria.apellidos)
+    orden = expresion.desc().nullslast() if sort_dir.lower() == "desc" else expresion.asc().nullslast()
     filas = (
-        query.order_by(Notaria.apellidos.asc().nullslast(), Notaria.nombre.asc().nullslast())
+        query.order_by(orden, Notaria.id.asc())
         .offset((page - 1) * page_size)
         .limit(page_size)
         .all()
     )
+
+    accesos_encarga = {
+        int(notaria_id): bool(habilitado)
+        for notaria_id, habilitado in db.query(
+            EncargoExternoUsuario.notaria_id, EncargoExternoUsuario.habilitado
+        ).filter(EncargoExternoUsuario.notaria_id.in_([fila.id for fila in filas])).all()
+    } if filas else {}
     items = []
     for notaria in filas:
         data = _notaria_con_asociaciones(db, notaria)
         data["distancia_km"] = _distancia_de_notaria(notaria)
+        data["encargagest_habilitado"] = accesos_encarga.get(int(notaria.id), False)
         items.append(data)
-    return {"items": items, "total": total, "page": page, "page_size": page_size}
+    return {"items": items, "total": total, "page": page, "page_size": page_size, "sort_by": sort_by if sort_by in expresiones_orden else "apellidos", "sort_dir": sort_dir.lower()}
 
 
 @router.get("/exportar-excel")

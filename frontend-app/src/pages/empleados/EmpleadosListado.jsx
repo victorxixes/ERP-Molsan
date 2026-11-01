@@ -6,6 +6,7 @@ import {
 } from "react";
 
 import AuthenticatedPhoto from "../../components/AuthenticatedPhoto";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "./EmpleadosListadoPremium.css";
 
 import {
@@ -916,124 +917,32 @@ export default function EmpleadosListado({
 
   return (
 
-    <div className="empleados-listado-premium space-y-5 animate-fade-in" aria-busy={cargando}>
+    <div className="molsan-page-stack empleados-listado-premium animate-fade-in" aria-busy={cargando}>
 
       {/* ======================================================
           CABECERA
       ====================================================== */}
 
-      <div className="
-        rounded-2xl
-        border
-        border-[var(--erp-border)]
-        bg-[var(--erp-surface)]
-        px-5
-        py-5
-        shadow-sm
-      ">
-
-        <div className="
-          flex
-          flex-col
-          gap-4
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-        ">
-
-          <div>
-
-            <div className="
-              flex
-              items-center
-              gap-3
-            ">
-
-              <div className="
-                flex
-                h-11
-                w-11
-                items-center
-                justify-center
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                shadow-sm
-              ">
-                👥
-              </div>
-
-
-              <div>
-
-                <h1 className="
-                  text-xl
-                  font-bold
-                  tracking-tight
-                  text-[var(--erp-text)]
-                ">
-                  Empleados
-                </h1>
-
-                <p className="
-                  mt-0.5
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                ">
-                  Gestión y administración de empleados
-                </p>
-
-              </div>
-
-            </div>
-
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark"><MolsanIcon name="users" size={42} bare /></div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">Empleados</h1>
+            <p className="molsan-page-header__description">Gestión y administración de empleados.</p>
           </div>
-
-
+        </div>
+        <div className="molsan-page-header__actions">
           <button
             type="button"
-            onClick={
-              abrirNuevo
-            }
-            className="
-              inline-flex
-              h-11
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              bg-[var(--erp-primary)]
-              px-5
-              text-sm
-              font-semibold
-              text-white
-              shadow-sm
-              transition-all
-              duration-200
-              hover:brightness-95
-              hover:shadow-md
-              active:scale-[0.98]
-            "
+            onClick={abrirNuevo}
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 text-sm font-semibold text-white shadow-none transition-all duration-200 hover:bg-white/20 hover:shadow-md active:scale-[0.98]"
           >
-
-            <span className="
-              text-lg
-              leading-none
-            ">
-              +
-            </span>
-
-            <span>
-              Nuevo empleado
-            </span>
-
+            <span className="text-lg leading-none">+</span>
+            <span>Nuevo empleado</span>
           </button>
-
         </div>
-
-      </div>
+      </header>
 
 
       {/* ======================================================
@@ -1310,7 +1219,7 @@ export default function EmpleadosListado({
             mb-3
             text-4xl
           ">
-            👤
+            <MolsanIcon name="person" size={24} />
           </div>
 
           <div className="
@@ -1494,7 +1403,7 @@ export default function EmpleadosListado({
                       bg-blue-50
                       text-blue-600
                     ">
-                      👤
+                      <MolsanIcon name="person" size={24} />
                     </div>
 
                     <div>

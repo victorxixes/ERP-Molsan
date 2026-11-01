@@ -1,0 +1,1501 @@
+/* MOLSAN ERP PREMIUM 2027 · GLASS LUXE
+   Capa global de armonización + Espacio de trabajo.
+   Mantiene la lógica de los módulos intacta. */
+
+/* La base de documento y el layout compartido se definen en
+   MolsanRedesign2027.css. Esta capa conserva el ajuste del shell
+   y la presentación específica del selector de espacios. */
+.erp-app-shell {
+  background: var(--molsan-page-bg) !important;
+  color: var(--molsan-text);
+}
+
+:where(
+  .selector-modulos-premium,
+  .catalogos-premium-page,
+  .herramientas-home-premium,
+  .expedientes-listado-premium,
+  .ficha-expediente-premium,
+  .agenda-premium-page,
+  .seguridad-premium-page,
+  .seguridad-subpagina-premium,
+  .panel-tecnico-premium,
+  .informes-premium-page,
+  .empleados-premium-page,
+  .maestros-premium-page,
+  .provisiones-fondos-premium,
+  .provisiones-fondos-page,
+  .ctn-workspace-premium,
+  .encargagest-workspace-premium,
+  .cg-page,
+  .cg-unified-workspace
+) {
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+}
+
+:where(
+  .selector-modulos-premium,
+  .catalogos-premium-page,
+  .herramientas-home-premium,
+  .expedientes-listado-premium,
+  .ficha-expediente-premium,
+  .agenda-premium-page,
+  .seguridad-premium-page,
+  .seguridad-subpagina-premium,
+  .panel-tecnico-premium,
+  .informes-premium-page,
+  .empleados-premium-page,
+  .maestros-premium-page,
+  .provisiones-fondos-premium,
+  .provisiones-fondos-page,
+  .ctn-workspace-premium,
+  .encargagest-workspace-premium,
+  .cg-page,
+  .cg-unified-workspace
+) :where(h1) {
+  color: var(--molsan-primary);
+  letter-spacing: -.025em;
+  font-weight: 750;
+}
+
+:where(
+  .selector-modulos-premium,
+  .catalogos-premium-page,
+  .herramientas-home-premium,
+  .expedientes-listado-premium,
+  .ficha-expediente-premium,
+  .agenda-premium-page,
+  .seguridad-premium-page,
+  .seguridad-subpagina-premium,
+  .panel-tecnico-premium,
+  .informes-premium-page,
+  .empleados-premium-page,
+  .maestros-premium-page,
+  .provisiones-fondos-premium,
+  .provisiones-fondos-page,
+  .ctn-workspace-premium,
+  .encargagest-workspace-premium,
+  .cg-page,
+  .cg-unified-workspace
+) :where(h2, h3) {
+  color: #174D70;
+  letter-spacing: -.015em;
+}
+
+:where(.molsan-table-wrap) {
+  border-color: var(--molsan-border);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+@media (max-width: 760px) {
+  .erp-main-inner {
+    padding-inline: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .erp-app-shell,
+  .erp-app-shell *,
+  .erp-app-shell *::before,
+  .erp-app-shell *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* ESPACIO DE TRABAJO · selector de aplicaciones */
+.selector-modulos-premium.workspace-premium {
+  position: relative;
+  isolation: isolate;
+  min-height: calc(100vh - 112px);
+  overflow: hidden;
+  padding: clamp(18px, 3vw, 38px);
+  border: 1px solid #D4E2EB;
+  border-radius: 26px;
+  background:
+    radial-gradient(ellipse at 94% 4%, rgba(20,119,165,.12), transparent 26%),
+    linear-gradient(180deg, #EEF5F9 0%, #FFFFFF 44%, #F6F9FB 100%);
+  box-shadow: 0 22px 54px rgba(6,50,82,.085);
+}
+
+.selector-modulos-premium.workspace-premium .workspace-hero {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 0;
+  overflow: hidden;
+  padding: 18px 24px;
+  color: #FFFFFF;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 86% 18%, rgba(116,199,219,.18), transparent 27%),
+    linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
+  box-shadow: 0 22px 46px rgba(4,55,91,.22);
+}
+
+.workspace-hero::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  content: "";
+  background: linear-gradient(90deg, #6CC5D9 0%, #8CB8D8 38%, rgba(255,255,255,.08) 100%);
+}
+
+.workspace-hero-content,
+.workspace-hero-actions {
+  position: relative;
+  z-index: 2;
+}
+
+.workspace-hero-content {
+  max-width: 720px;
+}
+
+.selector-modulos-premium.workspace-premium .workspace-brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 8px;
+}
+
+.selector-modulos-premium.workspace-premium .workspace-brand-mark {
+  display: grid;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  color: #FFFFFF;
+  border: 1px solid rgba(255,255,255,.32);
+  border-radius: 11px;
+  background: rgba(255,255,255,.12);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
+}
+
+.selector-modulos-premium.workspace-premium .workspace-brand-mark svg {
+  width: 25px;
+  height: 25px;
+}
+
+.selector-modulos-premium.workspace-premium .workspace-brand-lockup strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 850;
+  letter-spacing: .16em;
+  line-height: 1.1;
+}
+
+.selector-modulos-premium.workspace-premium .workspace-brand-lockup small {
+  display: block;
+  margin-top: 4px;
+  color: #C6DFEC;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: .17em;
+}
+
+.workspace-eyebrow,
+.workspace-section-kicker {
+  display: block;
+  margin: 0 0 8px;
+  color: #A9D7E8;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .17em;
+}
+
+.selector-modulos-premium.workspace-premium .workspace-hero h1 {
+  margin: 0;
+  color: #FFFFFF !important;
+  font-size: clamp(24px, 2.2vw, 29px);
+  font-weight: 780;
+  letter-spacing: -.04em;
+  line-height: 1.15;
+}
+
+.selector-modulos-premium.workspace-premium .workspace-welcome {
+  max-width: 580px;
+  margin: 4px 0 0;
+  color: #D8EAF3;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.selector-modulos-premium.workspace-premium .workspace-hero-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 8px;
+  color: #D0E5EF;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.workspace-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #54D6A0;
+  box-shadow: 0 0 0 4px rgba(84,214,160,.15);
+}
+
+.workspace-meta-divider {
+  width: 1px;
+  height: 14px;
+  margin-inline: 4px;
+  background: rgba(255,255,255,.25);
+}
+
+.selector-modulos-premium.workspace-premium .workspace-hero-actions {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.workspace-user-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 190px;
+  padding: 10px 13px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 14px;
+  background: rgba(255,255,255,.10);
+  backdrop-filter: blur(12px);
+}
+
+.workspace-user-avatar {
+  display: grid;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  color: #064675;
+  border-radius: 11px;
+  background: #E6F2F8;
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.workspace-user-chip strong,
+.workspace-user-chip small {
+  display: block;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workspace-user-chip strong {
+  color: #FFFFFF;
+  font-size: 12px;
+}
+
+.workspace-user-chip small {
+  margin-top: 3px;
+  color: #C6DFEC;
+  font-size: 10px;
+}
+
+.workspace-logout {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 13px;
+  color: #FFFFFF;
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 11px;
+  background: rgba(255,255,255,.08);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--molsan-transition-fast), transform var(--molsan-transition-fast);
+}
+
+.workspace-logout svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.workspace-logout:hover {
+  background: rgba(255,255,255,.17);
+  transform: translateY(-1px);
+}
+
+.workspace-logout:focus-visible {
+  outline: 2px solid rgba(255,255,255,.65);
+  outline-offset: 2px;
+}
+
+.workspace-hero-orb {
+  position: absolute;
+  z-index: 1;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.workspace-hero-orb-one {
+  top: -170px;
+  right: 12%;
+  width: 390px;
+  height: 390px;
+  box-shadow: 0 0 0 35px rgba(255,255,255,.025), 0 0 0 75px rgba(255,255,255,.02);
+}
+
+.workspace-hero-orb-two {
+  right: -70px;
+  bottom: -235px;
+  width: 410px;
+  height: 410px;
+  background: rgba(95,185,211,.08);
+}
+
+.workspace-apps-section {
+  padding: clamp(32px, 4vw, 48px) 2px 0;
+}
+
+.workspace-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 25px;
+}
+
+.workspace-section-kicker {
+  margin-bottom: 7px;
+  color: #52778F;
+  font-size: 10px;
+  letter-spacing: .19em;
+}
+
+.workspace-section-heading h2 {
+  margin: 0;
+  color: #064675;
+  font-size: clamp(23px, 2.5vw, 29px);
+  font-weight: 850;
+  letter-spacing: -.04em;
+}
+
+.workspace-section-heading p {
+  margin: 6px 0 0;
+  color: #617789;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.workspace-app-count {
+  flex: 0 0 auto;
+  padding: 9px 14px;
+  color: #31566F;
+  border: 1px solid #D8E4EC;
+  border-radius: 999px;
+  background: rgba(255,255,255,.9);
+  box-shadow: 0 3px 10px rgba(6,50,82,.035);
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.workspace-app-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 19px;
+}
+
+.workspace-app-card {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 266px;
+  flex-direction: column;
+  align-items: stretch;
+  overflow: hidden;
+  padding: 24px;
+  text-align: left;
+  color: var(--molsan-text);
+  border: 1px solid #D8E4EC;
+  border-radius: 21px;
+  background: linear-gradient(150deg, #FFFFFF 0%, #FFFFFF 56%, #F7FAFC 100%);
+  box-shadow: 0 9px 24px rgba(6,50,82,.065);
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
+}
+
+.workspace-card-accent {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 4px;
+  background: var(--workspace-accent);
+}
+
+.workspace-card-topline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.workspace-app-icon {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  color: var(--workspace-ink);
+  border: 1px solid var(--workspace-border);
+  border-radius: 17px;
+  background: var(--workspace-tint);
+  box-shadow: 0 5px 14px rgba(6,50,82,.045), inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+.workspace-app-icon svg,
+.workspace-card-open svg,
+.workspace-card-footer svg,
+.workspace-empty-icon svg {
+  width: 25px;
+  height: 25px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.workspace-card-open {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  color: #8195A3;
+  border: 1px solid #E6EDF2;
+  border-radius: 50%;
+  background: #FFFFFF;
+  transition: color .2s ease, background .2s ease, transform .2s ease;
+}
+
+.workspace-card-open svg {
+  width: 17px;
+  height: 17px;
+}
+
+.workspace-app-category {
+  margin-top: 25px;
+  color: #7890A0;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .16em;
+  line-height: 1.4;
+}
+
+.workspace-app-title {
+  margin-top: 7px;
+  color: #064675;
+  font-size: 20px;
+  font-weight: 850;
+  letter-spacing: -.035em;
+  line-height: 1.25;
+}
+
+.workspace-app-description {
+  margin-top: 9px;
+  color: #637B8B;
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+
+.workspace-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 19px;
+  color: var(--workspace-ink);
+  border-top: 1px solid #EDF2F5;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .01em;
+}
+
+.workspace-card-footer svg {
+  width: 17px;
+  height: 17px;
+  transition: transform .2s ease;
+}
+
+.workspace-app-card:hover {
+  z-index: 1;
+  transform: translateY(-5px);
+  border-color: var(--workspace-border);
+  background: linear-gradient(150deg, #FFFFFF 0%, #FFFFFF 56%, var(--workspace-tint) 100%);
+  box-shadow: 0 19px 38px rgba(6,50,82,.13);
+}
+
+.workspace-app-card:hover .workspace-card-open {
+  color: #FFFFFF;
+  border-color: var(--workspace-accent);
+  background: var(--workspace-accent);
+  transform: rotate(4deg);
+}
+
+.workspace-app-card:hover .workspace-card-footer svg {
+  transform: translateX(4px);
+}
+
+.workspace-app-card:focus-visible {
+  outline: 3px solid rgba(6,70,117,.28);
+  outline-offset: 3px;
+}
+
+.workspace-tone-ocean {
+  --workspace-accent: #1477A5;
+  --workspace-ink: #07537D;
+  --workspace-tint: #EAF5FA;
+  --workspace-border: #C7E1EE;
+}
+
+.workspace-tone-emerald {
+  --workspace-accent: #249477;
+  --workspace-ink: #16745C;
+  --workspace-tint: #EAF7F2;
+  --workspace-border: #C7E8DC;
+}
+
+.workspace-tone-violet {
+  --workspace-accent: #7865B5;
+  --workspace-ink: #65509E;
+  --workspace-tint: #F1EEFA;
+  --workspace-border: #DDD5F1;
+}
+
+.workspace-tone-amber {
+  --workspace-accent: #C18A35;
+  --workspace-ink: #96651B;
+  --workspace-tint: #FBF4E8;
+  --workspace-border: #EEDDBD;
+}
+
+.workspace-tone-cyan {
+  --workspace-accent: #2696A5;
+  --workspace-ink: #177A88;
+  --workspace-tint: #EAF7F8;
+  --workspace-border: #C9E8EB;
+}
+
+.workspace-tone-indigo {
+  --workspace-accent: #5574B8;
+  --workspace-ink: #3E5F9F;
+  --workspace-tint: #EEF2FA;
+  --workspace-border: #D4DDF0;
+}
+
+.workspace-empty-state {
+  display: grid;
+  justify-items: center;
+  padding: 48px 24px;
+  text-align: center;
+  border: 1px dashed #C9DCE8;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #FFFFFF, #F7FAFC);
+  box-shadow: 0 10px 28px rgba(6,50,82,.05);
+}
+
+.workspace-empty-icon {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  color: #9A6B22;
+  border-radius: 18px;
+  background: #FFF4E5;
+}
+
+.workspace-empty-state h2 {
+  margin: 16px 0 0;
+  color: #173F59;
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.workspace-empty-state p {
+  max-width: 620px;
+  margin: 8px 0 0;
+  color: #617789;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.workspace-empty-state small {
+  margin-top: 12px;
+  color: #8295A2;
+  font-size: 11px;
+}
+
+.workspace-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 40px;
+  color: #718696;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.workspace-footer-mark {
+  display: grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  color: #FFFFFF;
+  border-radius: 6px;
+  background: var(--molsan-primary);
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.workspace-footer-separator {
+  color: #B5C2CA;
+}
+
+@media (max-width: 1100px) {
+  .workspace-app-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .selector-modulos-premium.workspace-premium {
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .selector-modulos-premium.workspace-premium .workspace-hero {
+    flex-direction: column;
+    padding: 18px;
+    border-radius: 19px;
+    gap: 14px;
+  }
+
+  .selector-modulos-premium.workspace-premium .workspace-hero h1 {
+    font-size: 26px;
+  }
+
+  .selector-modulos-premium.workspace-premium .workspace-hero-actions {
+    width: 100%;
+    align-items: stretch;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .workspace-user-chip {
+    flex: 1 1 180px;
+    min-width: 0;
+  }
+
+  .workspace-logout {
+    flex: 0 0 auto;
+  }
+
+  .workspace-apps-section {
+    padding-top: 28px;
+  }
+
+  .workspace-app-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .workspace-app-card {
+    min-height: 232px;
+    padding: 20px;
+  }
+
+  .workspace-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace-app-card,
+  .workspace-app-card *,
+  .workspace-logout {
+    transition: none !important;
+  }
+}
+
+/* CABECERA CORPORATIVA CANÓNICA · PATRÓN ESPACIOS DE TRABAJO
+   La identidad, proporciones, jerarquía y acabado se comparten con workspace-hero. */
+.selector-modulos-premium.workspace-premium .workspace-hero,
+.molsan-page-header {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  min-width: 0;
+  margin: 0 0 20px;
+  padding: 18px 24px;
+  overflow: hidden;
+  color: #FFFFFF;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 86% 18%, rgba(116,199,219,.18), transparent 27%),
+    linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
+  box-shadow: 0 22px 46px rgba(4,55,91,.22);
+}
+.selector-modulos-premium.workspace-premium .workspace-hero::after,
+.molsan-page-header::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  content: "";
+  background: linear-gradient(90deg, #6CC5D9 0%, #8CB8D8 38%, rgba(255,255,255,.08) 100%);
+  pointer-events: none;
+}
+.molsan-page-header__identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.molsan-page-header__mark {
+  display: grid;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  color: #FFFFFF;
+  border: 1px solid rgba(255,255,255,.32);
+  border-radius: 11px;
+  background: rgba(255,255,255,.12);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
+  font-size: 15px;
+  font-weight: 850;
+}
+.molsan-page-header__eyebrow {
+  margin: 0 0 5px;
+  color: #C6DFEC;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .17em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+.molsan-page-header :is(h1, .molsan-page-header__title) {
+  margin: 0;
+  color: #FFFFFF;
+  font-size: clamp(22px, 2.2vw, 29px);
+  font-weight: 780;
+  letter-spacing: -.04em;
+  line-height: 1.15;
+}
+.molsan-page-header__description {
+  margin: 7px 0 0;
+  color: #C6DFEC;
+  font-size: 12px;
+  line-height: 1.55;
+}
+.molsan-page-header__actions {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-left: auto;
+}
+.molsan-page-header__actions > :is(button, a, span) {
+  border-color: rgba(255,255,255,.28);
+}
+@media (max-width: 760px) {
+  .molsan-page-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .molsan-page-header__mark {
+    flex-basis: 36px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    font-size: 14px;
+  }
+  .molsan-page-header__actions {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-start;
+    align-items: center;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .molsan-page-header,
+  .molsan-page-header::after {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* Compatibilidad de cabeceras heredadas: cualquier página que use la clase
+   común recibe la misma escala de icono, descripción y acciones. */
+.molsan-page-header p:not(.molsan-page-header__eyebrow) {
+  margin: 7px 0 0;
+  color: #C6DFEC;
+  font-size: 12px;
+  line-height: 1.55;
+}
+.molsan-page-header :is(.w-12.h-12, .w-11.h-11, .w-14.h-14) {
+  display: grid;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  color: #FFFFFF;
+  border: 1px solid rgba(255,255,255,.32);
+  border-radius: 11px;
+  background: rgba(255,255,255,.12);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
+}
+.molsan-page-header :is(button, a) {
+  border-color: rgba(255,255,255,.32);
+  border-radius: 11px;
+  color: #FFFFFF;
+  background: rgba(255,255,255,.12);
+  box-shadow: none;
+}
+.molsan-page-header :is(button, a):hover:not(:disabled) {
+  border-color: rgba(255,255,255,.58);
+  color: #FFFFFF;
+  background: rgba(255,255,255,.2);
+  box-shadow: 0 5px 14px rgba(0,0,0,.12);
+  transform: translateY(-1px);
+}
+@media (max-width: 760px) {
+  .molsan-page-header :is(.w-12.h-12, .w-11.h-11, .w-14.h-14) {
+    flex-basis: 36px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+}
+
+/* Superficies de modales: un mismo panel y cabecera en todos los módulos. */
+.molsan-modal-panel,
+.ctn-modal-panel,
+.eg-modal-form,
+.ng-modal,
+.ag-resumen-modal,
+.modal-sj,
+.expediente-operativo-modal [role="dialog"],
+.empleado-operativo-modal [role="dialog"] {
+  border: 1px solid #D8E4EC;
+  border-radius: 18px;
+  background: #FFFFFF;
+  box-shadow: 0 18px 45px rgba(6,50,82,.16);
+}
+.molsan-modal-header,
+.ctn-modal-header,
+.eg-modal-header,
+.ag-resumen-modal-cabecera,
+.ng-modal > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 20px;
+  color: #064675;
+  border-bottom: 1px solid #D8E4EC;
+  background: #F2F7FB;
+}
+:is(.ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera, .ng-modal > header) h2 {
+  margin: 0;
+  color: #064675;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.3;
+}
+:is(.ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera, .ng-modal > header) p {
+  margin: 4px 0 0;
+  color: #617789;
+  font-size: 12px;
+  line-height: 1.5;
+}
+@media (max-width: 760px) {
+  .molsan-modal-header,
+  .ctn-modal-header,
+  .eg-modal-header,
+  .ag-resumen-modal-cabecera,
+  .ng-modal > header { padding: 14px; gap: 10px; }
+}
+
+.modal-sj { border:1px solid #D8E4EC; border-radius:18px; }
+
+
+/* ============================================================
+   MOLSAN ERP PREMIUM 2027 · TARJETA CORPORATIVA ÚNICA
+   Referencia visual: .workspace-app-card de Espacios de trabajo.
+   Se unifica la superficie; cada módulo conserva su layout,
+   padding interno, contenido, estados y comportamiento funcional.
+   ============================================================ */
+:is(
+  .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
+  .apoderagest, .notargest, .encargagest, .ctn-listado-page,
+  .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
+  .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
+  .utilidades-premium-page, .maestros-premium-page, .informes-premium-page,
+  .mensajes-premium-page, .mensajeria, .provisiones-fondos-page,
+  .panel-tecnico-premium, .seguridad-premium-page,
+  .herramientas-subpagina-premium, .catalogos-maestros-premium
+) :is(
+  .erp-card, .erp-card-soft, .card-sj, .molsan-panel, .cg-panel, .cg-kpi,
+  .cg-section, .cg-module-card, .ag-panel, .ag-kpi, .ag-card,
+  .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel,
+  .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
+  .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-modal-resumen-firmas > div, .accesos-notariales-resumen-card, .ctn-detalle-panel,
+  .ctn-detalle-info-card, .ctn-detalle-stat, .expedientes-panel,
+  .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
+  .panel-card, .ficha-panel, .ficha-seccion, .form-section,
+  .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-stat-card, .agenda-calendar-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, .dashboard-section-panel, .molsan-intranet-page > section, .molsan-intranet-page article, .notificaciones-premium-page article, .notificaciones-premium-page [role="article"], .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .panel-tecnico-submodulo-premium article, .empleado-ficha-premium > section, .seguridad-premium-page > section, .seguridad-acceso, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, .ctn-portal-card, .ctn-portal-field-card, :is(div, section, article)[class*="rounded-2xl"][class*="bg-white"], :is(div, section, article)[class*="rounded-xl"][class*="bg-white"], [data-panel="true"], [data-cg-panel="true"]
+){
+  --molsan-card-accent: var(--molsan-primary, #064675);
+  min-width: 0;
+  border-radius: 21px;
+  box-shadow: 0 9px 24px rgba(6, 50, 82, .065);
+  transition:
+    transform .2s cubic-bezier(.2,.75,.25,1),
+    box-shadow .2s ease,
+    border-color .2s ease,
+    background-color .2s ease;
+  animation: molsan-premium-card-enter .42s both;
+}
+:is(
+  .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
+  .apoderagest, .notargest, .encargagest, .ctn-listado-page,
+  .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
+  .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
+  .utilidades-premium-page, .maestros-premium-page, .informes-premium-page,
+  .mensajes-premium-page, .mensajeria, .provisiones-fondos-page,
+  .panel-tecnico-premium, .seguridad-premium-page,
+  .herramientas-subpagina-premium, .catalogos-maestros-premium
+) :is(
+  .erp-card, .erp-card-soft, .card-sj, .molsan-panel, .cg-panel, .cg-kpi,
+  .cg-section, .cg-module-card, .ag-panel, .ag-kpi, .ag-card,
+  .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel,
+  .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
+  .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-modal-resumen-firmas > div, .accesos-notariales-resumen-card, .ctn-detalle-panel,
+  .ctn-detalle-info-card, .ctn-detalle-stat, .expedientes-panel,
+  .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
+  .panel-card, .ficha-panel, .ficha-seccion, .form-section,
+  .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-stat-card, .agenda-calendar-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, .dashboard-section-panel, .molsan-intranet-page > section, .molsan-intranet-page article, .notificaciones-premium-page article, .notificaciones-premium-page [role="article"], .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .panel-tecnico-submodulo-premium article, .empleado-ficha-premium > section, .seguridad-premium-page > section, .seguridad-acceso, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, .ctn-portal-card, .ctn-portal-field-card, :is(div, section, article)[class*="rounded-2xl"][class*="bg-white"], :is(div, section, article)[class*="rounded-xl"][class*="bg-white"], [data-panel="true"], [data-cg-panel="true"]
+):not([class*="bg-emerald"]):not([class*="bg-green"]):not([class*="bg-amber"]):not([class*="bg-yellow"]):not([class*="bg-rose"]):not([class*="bg-red"]):not([class*="bg-blue"]):not([class*="bg-indigo"]):not([class*="bg-violet"]):not([class*="border-emerald"]):not([class*="border-green"]):not([class*="border-amber"]):not([class*="border-yellow"]):not([class*="border-rose"]):not([class*="border-red"]):not([class*="border-blue"]):not([class*="border-indigo"]):not([class*="border-violet"]):not([class*="bg-sky"]):not([class*="bg-cyan"]):not([class*="bg-teal"]):not([class*="bg-lime"]):not([class*="bg-orange"]):not([class*="bg-fuchsia"]):not([class*="bg-purple"]):not([class*="border-sky"]):not([class*="border-cyan"]):not([class*="border-teal"]):not([class*="border-lime"]):not([class*="border-orange"]):not([class*="border-fuchsia"]):not([class*="border-purple"]):not([style*="background"]) {
+  border: 1px solid var(--molsan-border, #D8E4EC);
+  background-color: #FFFFFF;
+  background-image:
+    linear-gradient(var(--molsan-card-accent), var(--molsan-card-accent)),
+    linear-gradient(150deg, #FFFFFF 0%, #FFFFFF 56%, #F7FAFC 100%);
+  background-size: 100% 4px, 100% 100%;
+  background-position: top left, top left;
+  background-repeat: no-repeat;
+}
+:is(
+  .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
+  .apoderagest, .notargest, .encargagest, .ctn-listado-page,
+  .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
+  .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
+  .utilidades-premium-page, .maestros-premium-page, .informes-premium-page,
+  .mensajes-premium-page, .mensajeria, .provisiones-fondos-page,
+  .panel-tecnico-premium, .seguridad-premium-page,
+  .herramientas-subpagina-premium, .catalogos-maestros-premium
+) :is(
+  .erp-card, .erp-card-soft, .card-sj, .molsan-panel, .cg-panel, .cg-kpi,
+  .cg-section, .cg-module-card, .ag-panel, .ag-kpi, .ag-card,
+  .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel,
+  .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
+  .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-modal-resumen-firmas > div, .accesos-notariales-resumen-card, .ctn-detalle-panel,
+  .ctn-detalle-info-card, .ctn-detalle-stat, .expedientes-panel,
+  .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
+  .panel-card, .ficha-panel, .ficha-seccion, .form-section,
+  .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-stat-card, .agenda-calendar-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, .dashboard-section-panel, .molsan-intranet-page > section, .molsan-intranet-page article, .notificaciones-premium-page article, .notificaciones-premium-page [role="article"], .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .panel-tecnico-submodulo-premium article, .empleado-ficha-premium > section, .seguridad-premium-page > section, .seguridad-acceso, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, .ctn-portal-card, .ctn-portal-field-card, :is(div, section, article)[class*="rounded-2xl"][class*="bg-white"], :is(div, section, article)[class*="rounded-xl"][class*="bg-white"], [data-panel="true"], [data-cg-panel="true"]
+):hover {
+  box-shadow: 0 19px 38px rgba(6, 50, 82, .13);
+}
+:is(
+  .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
+  .apoderagest, .notargest, .encargagest, .ctn-listado-page,
+  .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
+  .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
+  .utilidades-premium-page, .maestros-premium-page, .informes-premium-page,
+  .mensajes-premium-page, .mensajeria, .provisiones-fondos-page,
+  .panel-tecnico-premium, .seguridad-premium-page,
+  .herramientas-subpagina-premium, .catalogos-maestros-premium
+) :is(.erp-card, .erp-card-soft, .cg-kpi, .ag-kpi, .ng-contador, .eg-kpi,
+     .dashboard-kpi, .stat-card, .kpi-card):is(a, button, [role="button"]):hover {
+  transform: translateY(-5px);
+}
+@keyframes molsan-premium-card-enter {
+  from { opacity: 0; transform: translateY(9px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
+    .apoderagest, .notargest, .encargagest, .ctn-listado-page,
+    .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
+    .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
+    .utilidades-premium-page, .maestros-premium-page, .informes-premium-page,
+    .mensajes-premium-page, .mensajeria, .provisiones-fondos-page,
+    .panel-tecnico-premium, .seguridad-premium-page) :is(
+      .erp-card, .erp-card-soft, .card-sj, .molsan-panel, .cg-panel, .cg-kpi,
+      .cg-section, .cg-module-card, .ag-panel, .ag-kpi, .ag-card,
+      .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel,
+      .eg-kpi, .eg-card, .eg-directorio-card, .ctn-panel,
+      .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-modal-resumen-firmas > div, .accesos-notariales-resumen-card, .expedientes-panel, .expediente-card,
+      .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
+      .panel-card, .ficha-panel, .ficha-seccion, .form-section,
+      .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-stat-card, .agenda-calendar-card, .agenda-list-table-wrap,
+      .logs-panel, .maestros-panel, :is(div, section, article)[class*="rounded-2xl"][class*="bg-white"], :is(div, section, article)[class*="rounded-xl"][class*="bg-white"]
+    ) {
+    animation: none;
+    transition: none;
+  }
+}
+
+
+/* Contenedor vertical común para todas las páginas y subpáginas del ERP. */
+.molsan-page-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  min-width: 0;
+}
+.molsan-page-stack > * { min-width: 0; }
+
+
+/* Cabecera compacta de modal: no debe heredar la cabecera hero de página. */
+.molsan-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px 20px;
+  color: var(--molsan-primary, #064675);
+  border: 0;
+  border-bottom: 1px solid var(--molsan-border, #D8E4EC);
+  border-radius: 20px 20px 0 0;
+  background: var(--molsan-surface-soft, #F2F7FB);
+  box-shadow: none;
+}
+.molsan-modal-header::after { display: none; }
+.molsan-modal-header :is(h1, h2, h3, p) { color: inherit; }
+.molsan-page-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px 12px;
+  color: var(--molsan-text, #18384D);
+  border: 1px solid var(--molsan-border, #D8E4EC);
+  border-radius: 14px;
+  background: var(--molsan-surface-soft, #F2F7FB);
+}
+
+
+/* Cabeceras internas de tarjetas: misma jerarquía y banda azul hielo en todos los módulos. */
+:is(
+  .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
+  .apoderagest, .notargest, .encargagest, .ctn-listado-page,
+  .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
+  .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
+  .utilidades-premium-page, .maestros-premium-page, .informes-premium-page,
+  .mensajes-premium-page, .mensajeria, .provisiones-fondos-page,
+  .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .seguridad-premium-page, .seguridad-subpagina-premium,
+  .herramientas-subpagina-premium, .catalogos-maestros-premium
+) :is(
+  .erp-card-header, .molsan-panel__header, .ag-panel-cabecera,
+  .ag-panel-header, .eg-card-header, .eg-panel-head, .ng-panel-titulo,
+  .ctn-tabla-cabecera, .eg-modal-section-heading, .agenda-list-heading, .molsan-section-header
+) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px 16px;
+  color: #064675;
+  background: #F2F7FB;
+  border-bottom: 1px solid #D8E4EC;
+}
+:is(
+  .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
+  .apoderagest, .notargest, .encargagest, .ctn-listado-page,
+  .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
+  .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
+  .utilidades-premium-page, .maestros-premium-page, .informes-premium-page,
+  .mensajes-premium-page, .mensajeria, .provisiones-fondos-page,
+  .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .seguridad-premium-page, .seguridad-subpagina-premium,
+  .herramientas-subpagina-premium, .catalogos-maestros-premium
+) :is(
+  .erp-card-header, .molsan-panel__header, .ag-panel-cabecera h2,
+  .ag-panel-cabecera h3, .ag-panel-header h2, .eg-card-header h2,
+  .eg-panel-head h2, .eg-panel-head h3, .ng-panel-titulo h2,
+  .ctn-tabla-cabecera h2, .ctn-tabla-cabecera h3, .agenda-list-heading h2,
+  .eg-modal-section-heading h3, .molsan-section-header__title, .erp-card-title
+) {
+  margin: 0;
+  color: #064675;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.3;
+}
+
+
+/* Cabecera modal corporativa común para los distintos componentes heredados. */
+:is(
+  .molsan-modal-header, .erp-modal-header, .modal-sj-header,
+  .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
+  .ng-modal > header, .ctn-modal-panel > header,
+  .panel-modal-premium [role="dialog"] > header,
+  .expediente-operativo-modal [role="dialog"] > header,
+  .empleado-operativo-modal [role="dialog"] > header
+) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px 20px;
+  color: #064675;
+  background: #F2F7FB;
+  border: 0;
+  border-bottom: 1px solid #D8E4EC;
+  box-shadow: none;
+  margin-bottom: 0;
+}
+:is(
+  .molsan-modal-header, .erp-modal-header, .modal-sj-header,
+  .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
+  .ng-modal > header, .ctn-modal-panel > header,
+  .panel-modal-premium [role="dialog"] > header,
+  .expediente-operativo-modal [role="dialog"] > header,
+  .empleado-operativo-modal [role="dialog"] > header
+) :is(h1, h2, h3, p) {
+  color: #064675;
+}
+@media (max-width: 640px) {
+  :is(
+    .molsan-modal-header, .erp-modal-header, .modal-sj-header,
+    .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
+    .ng-modal > header, .ctn-modal-panel > header,
+    .panel-modal-premium [role="dialog"] > header,
+    .expediente-operativo-modal [role="dialog"] > header,
+    .empleado-operativo-modal [role="dialog"] > header
+  ) { padding: 14px; gap: 10px; }
+}
+
+
+/* Encabezados de bloques de Provisiones: misma banda que el resto de tarjetas. */
+.provisiones-fondos-page :is(section, article) > :is(header, .mb-4.flex.items-center.justify-between) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  color: #064675;
+  background: #F2F7FB;
+  border-bottom: 1px solid #D8E4EC;
+}
+.provisiones-fondos-page :is(section, article) > :is(header, .mb-4.flex.items-center.justify-between) :is(h2, h3) {
+  margin: 0;
+  color: #064675;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+
+/* El stack común ya controla la separación bajo la cabecera hero. */
+.molsan-page-stack > .molsan-page-header {
+  margin-bottom: 0;
+}
+
+
+/* Base de botones corporativa: conserva variantes de color y tamaños funcionales. */
+:is(.erp-main-content, .apoderagest, .notargest, .encargagest, .cg-page) :is(
+  .molsan-btn, .ctn-btn, .agenda-open-cita, .agenda-today-action,
+  .eg-secondary, .eg-button-primary, .ag-boton-actualizar,
+  .ng-login-submit, .cg-button-primary, .erp-btn,
+  .seguridad-subpagina-premium button:not(.erp-btn), .seguridad-premium-page button:not(.erp-btn),
+  .empleados-premium-page button:not([class*="rounded-full"]), .expedientes-page button:not([class*="rounded-full"]), .ctn-detalle-page button:not([class*="rounded-full"]), .provisiones-fondos-page button:not([class*="rounded-full"])
+) {
+  font-family: var(--molsan-font-family, Inter, "Segoe UI", sans-serif);
+  font-weight: 700;
+  border-radius: 11px;
+  transition:
+    color .18s ease,
+    background-color .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease,
+    transform .18s ease;
+}
+:is(.erp-main-content, .apoderagest, .notargest, .encargagest, .cg-page) :is(
+  .molsan-btn, .ctn-btn, .agenda-open-cita, .agenda-today-action,
+  .eg-secondary, .eg-button-primary, .ag-boton-actualizar,
+  .ng-login-submit, .cg-button-primary, .erp-btn,
+  .seguridad-subpagina-premium button:not(.erp-btn), .seguridad-premium-page button:not(.erp-btn),
+  .empleados-premium-page button:not([class*="rounded-full"]), .expedientes-page button:not([class*="rounded-full"])
+):focus-visible {
+  outline: 3px solid rgba(6, 70, 117, .22);
+  outline-offset: 2px;
+}
+.informes-premium-page button:not([class*="rounded-full"]) {
+  font-family: var(--molsan-font-family, Inter, "Segoe UI", sans-serif);
+  font-weight: 700;
+  border-radius: 11px;
+  transition:
+    color .18s ease,
+    background-color .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease,
+    transform .18s ease;
+}
+
+
+/* Glass Luxe Evolution · profundidad y presencia de la iconografía de cabecera */
+.molsan-page-header__mark {
+  display:inline-grid;
+  place-items:center;
+  border:1px solid rgba(190,214,230,.9);
+  border-radius:15px;
+  color:#064675;
+  background:radial-gradient(circle at 28% 20%,#fff 0%,#fff 16%,#EAF2F8 62%,#D9E9F3 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.98),0 5px 13px rgba(6,50,82,.12);
+  text-shadow:0 1px 1px rgba(6,70,117,.16);
+  transform:translateZ(0);
+  transition:transform .22s ease,box-shadow .22s ease;
+}
+.molsan-page-header:hover .molsan-page-header__mark {
+  transform:translateY(-1px) scale(1.035);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.98),0 8px 17px rgba(6,50,82,.16);
+}
+.molsan-page-header__mark :is(svg,img) { filter:drop-shadow(0 1px 1px rgba(6,70,117,.2)); }
+@media(prefers-reduced-motion:reduce) {
+  .molsan-page-header__mark { transition:none; }
+  .molsan-page-header:hover .molsan-page-header__mark { transform:none; }
+}
+
+/* Normalización transversal de botones heredados: conserva los colores de cada acción,
+   pero comparte altura mínima, tipografía, radio, foco y respuesta táctil. */
+:is(.erp-main-content, .molsan-page, .apoderagest, .notargest, .encargagest, .cg-page)
+button:not(.molsan-table-sort):not([class*="rounded-full"]):not([class*="rounded-2xl"]) {
+  min-height: 38px;
+  border-radius: 11px;
+  font-family: var(--molsan-font-family, Inter, "Segoe UI", sans-serif);
+  font-weight: 650;
+  transition: color .18s ease, background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+:is(.erp-main-content, .molsan-page, .apoderagest, .notargest, .encargagest, .cg-page)
+button:not(.molsan-table-sort):focus-visible {
+  outline: 3px solid rgba(6,70,117,.22);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.erp-main-content, .molsan-page, .apoderagest, .notargest, .encargagest, .cg-page)
+  button:not(.molsan-table-sort) { transition: none; }
+}
+
+
+/* MOLSAN ERP PREMIUM 2027 · Iconografía Glass Luxe
+   Tratamiento volumétrico común para los pictogramas de Espacios de trabajo. */
+.workspace-app-icon {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--workspace-accent) 30%, #ffffff);
+  border-radius: 19px;
+  background:
+    radial-gradient(circle at 24% 16%, rgba(255,255,255,.98) 0 8%, rgba(255,255,255,.34) 27%, transparent 48%),
+    linear-gradient(145deg, color-mix(in srgb, var(--workspace-tint) 62%, #ffffff), var(--workspace-tint) 58%, color-mix(in srgb, var(--workspace-accent) 15%, #ffffff));
+  box-shadow:
+    0 9px 18px color-mix(in srgb, var(--workspace-accent) 13%, transparent),
+    0 2px 4px rgba(15, 45, 65, .08),
+    inset 0 2px 2px rgba(255,255,255,.96),
+    inset 0 -3px 6px color-mix(in srgb, var(--workspace-accent) 12%, transparent);
+  transition: transform .28s cubic-bezier(.2,.8,.2,1), box-shadow .28s ease, border-color .28s ease;
+}
+
+.workspace-app-icon::before {
+  content: "";
+  position: absolute;
+  inset: 1px 1px auto;
+  height: 48%;
+  border-radius: 17px 17px 50% 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,.76), rgba(255,255,255,0));
+  pointer-events: none;
+  z-index: 0;
+}
+
+.workspace-app-icon::after {
+  content: "";
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  right: -13px;
+  bottom: -16px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--workspace-accent) 18%, transparent);
+  filter: blur(3px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.workspace-app-icon svg {
+  position: relative;
+  z-index: 1;
+  width: 29px;
+  height: 29px;
+  color: var(--workspace-ink);
+  stroke: currentColor;
+  stroke-width: 1.85;
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,.9)) drop-shadow(0 2px 2px color-mix(in srgb, var(--workspace-accent) 25%, transparent));
+  transition: transform .28s cubic-bezier(.2,.8,.2,1), filter .28s ease;
+}
+
+.workspace-app-card:hover .workspace-app-icon {
+  transform: translateY(-3px) rotate(-2deg) scale(1.035);
+  border-color: color-mix(in srgb, var(--workspace-accent) 54%, #ffffff);
+  box-shadow:
+    0 14px 24px color-mix(in srgb, var(--workspace-accent) 20%, transparent),
+    0 4px 8px rgba(15, 45, 65, .1),
+    inset 0 2px 2px rgba(255,255,255,.98),
+    inset 0 -3px 7px color-mix(in srgb, var(--workspace-accent) 15%, transparent);
+}
+
+.workspace-app-card:hover .workspace-app-icon svg {
+  transform: translateY(-1px) scale(1.06);
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,.95)) drop-shadow(0 4px 3px color-mix(in srgb, var(--workspace-accent) 32%, transparent));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace-app-icon,
+  .workspace-app-icon svg {
+    transition: none !important;
+  }
+  .workspace-app-card:hover .workspace-app-icon,
+  .workspace-app-card:hover .workspace-app-icon svg {
+    transform: none !important;
+  }
+}
+
+
+/* Tonos semánticos de la iconografía MOLSAN compartida. */
+.molsan-icon-3d--ocean { color:#075783; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#eaf5fa 48%,#cfe6f1 100%); border-color:#c7e1ee; }
+.molsan-icon-3d--emerald { color:#16745c; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#eaf7f2 48%,#cceadd 100%); border-color:#c7e8dc; }
+.molsan-icon-3d--violet { color:#65509e; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#f1eefa 48%,#ded6f2 100%); border-color:#ddd5f1; }
+.molsan-icon-3d--amber { color:#96651b; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#fbf4e8 48%,#f0dfbd 100%); border-color:#eeddbd; }
+.molsan-icon-3d--cyan { color:#177a88; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#eaf7f8 48%,#cce9eb 100%); border-color:#c9e8eb; }
+.molsan-icon-3d--indigo { color:#3e5f9f; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#eef2fa 48%,#d5dff1 100%); border-color:#d4ddf0; }
+.molsan-icon-3d--slate { color:#536b7b; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#f2f7fb 48%,#dce7ee 100%); border-color:#d8e4ec; }
+.molsan-icon-3d svg { width:58%; height:58%; stroke:currentColor; stroke-width:1.85; }
+
+
+/* Pictogramas de la navegación principal: relieve compacto y contraste por estado. */
+.molsan-nav-icon-3d {
+  display: inline-grid;
+  width: 27px;
+  height: 27px;
+  flex: 0 0 27px;
+  place-items: center;
+  color: #064675;
+  border: 1px solid #d8e4ec;
+  border-radius: 9px;
+  background: radial-gradient(circle at 28% 18%, #fff 0 12%, #f2f7fb 58%, #e3edf4 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.98), 0 2px 5px rgba(6,50,82,.09);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.molsan-nav-icon-3d svg {
+  width: 16px;
+  height: 16px;
+  filter: drop-shadow(0 1px 1px rgba(6,70,117,.2));
+}
+a:hover .molsan-nav-icon-3d {
+  transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.98), 0 4px 8px rgba(6,50,82,.13);
+}
+a[aria-current="page"] .molsan-nav-icon-3d {
+  color: #ffffff;
+  border-color: rgba(255,255,255,.38);
+  background: linear-gradient(145deg, rgba(255,255,255,.22), rgba(255,255,255,.08));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.26), 0 2px 5px rgba(0,0,0,.12);
+}
+@media (prefers-reduced-motion: reduce) {
+  .molsan-nav-icon-3d { transition: none; }
+  a:hover .molsan-nav-icon-3d { transform: none; }
+}
+
+/* Superficie común de iconos MOLSAN: el pictograma sustituye al emoji heredado. */
+.molsan-icon-3d {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  vertical-align: middle;
+  border: 1px solid #c7dce8;
+  border-radius: 13px;
+  background: radial-gradient(circle at 28% 18%, #fff 0 12%, #f2f7fb 56%, #dceaf2 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.98), inset 0 -2px 4px rgba(6,70,117,.055), 0 4px 9px rgba(6,50,82,.09);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.molsan-icon-3d svg { width: 58%; height: 58%; stroke: currentColor; stroke-width: 1.85; }
+.molsan-icon-3d--ocean { color:#075783; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#eaf5fa 48%,#cfe6f1 100%); border-color:#c7e1ee; }
+.molsan-icon-3d--emerald { color:#16745c; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#eaf7f2 48%,#cceadd 100%); border-color:#c7e8dc; }
+.molsan-icon-3d--violet { color:#65509e; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#f1eefa 48%,#ded6f2 100%); border-color:#ddd5f1; }
+.molsan-icon-3d--amber { color:#96651b; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#fbf4e8 48%,#f0dfbd 100%); border-color:#eeddbd; }
+.molsan-icon-3d--cyan { color:#177a88; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#eaf7f8 48%,#cce9eb 100%); border-color:#c9e8eb; }
+.molsan-icon-3d--indigo { color:#3e5f9f; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#eef2fa 48%,#d5dff1 100%); border-color:#d4ddf0; }
+.molsan-icon-3d--slate { color:#536b7b; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#f2f7fb 48%,#dce7ee 100%); border-color:#d8e4ec; }
+@media (prefers-reduced-motion: reduce) { .molsan-icon-3d { transition:none; } }
+
+.molsan-icon-3d--bare {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.molsan-icon-3d--bare svg { filter: none; }

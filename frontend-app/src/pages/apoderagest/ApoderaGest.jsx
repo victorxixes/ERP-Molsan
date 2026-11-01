@@ -10,15 +10,8 @@ import CtnListadoPage from "../ctn/CtnListadoPage";
 import { useAuthStore } from "../../store/authStore";
 import { createPortal } from "react-dom";
 import "../../css/PortalProfesionalShared.css";
-
-const PESTANAS = [
-  { nombre: "Dashboard", icono: "◫" },
-  { nombre: "Agenda", icono: "▦" },
-  { nombre: "Encargos", icono: "▤" },
-  { nombre: "Mensajes", icono: "✉" },
-  { nombre: "Intranet", icono: "⌂" },
-  { nombre: "CTN", icono: "◇" },
-];
+import MolsanIcon from "../../components/ui/MolsanIcon";
+import { formatEuro } from "../../utils/formatters";
 
 function fechaLegible(valor) {
   if (!valor) return "—";
@@ -105,7 +98,7 @@ function euros(valor) {
   if (valor === null || valor === undefined || valor === "") return "—";
   const numero = Number(valor);
   return Number.isFinite(numero)
-    ? new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(numero)
+    ? formatEuro(numero)
     : String(valor);
 }
 
@@ -148,7 +141,7 @@ function TarjetaIndicador({
     <>
       <div className="ag-kpi-superior">
         <span className="ag-kpi-titulo">{titulo}</span>
-        <span className="ag-kpi-icono" aria-hidden="true">{icono}</span>
+        <span className="ag-kpi-icono" aria-hidden="true"><MolsanIcon name={icono} size={28} bare /></span>
       </div>
       <div className="ag-kpi-valor">{valor}</div>
       {detalle ? <div className="ag-kpi-detalle">{detalle}</div> : null}
@@ -162,11 +155,11 @@ function TarjetaIndicador({
   ) : <article className={`ag-kpi ${variante}`}>{contenido}</article>;
 }
 
-function EstadoVacio({ icono = "◇", titulo, detalle }) {
+function EstadoVacio({ icono = "file", titulo, detalle }) {
   return (
     <div className="ag-vacio">
       <span className="ag-vacio-icono" aria-hidden="true">
-        {icono}
+        <MolsanIcon name={icono} size={34} bare />
       </span>
       <h3>{titulo}</h3>
       <p>{detalle}</p>
@@ -209,8 +202,8 @@ function ImprimirEncargos({ encargos = [] }) {
   };
   return (
     <div className="ag-print-tools">
-      <button type="button" className="ag-print-action" onClick={() => imprimir("lista")}>⎙ Imprimir listado</button>
-      <button type="button" className="ag-print-action ag-print-action-secundario" onClick={() => imprimir("fichas")}>▤ Imprimir fichas detalladas</button>
+      <button type="button" className="ag-print-action" onClick={() => imprimir("lista")}><MolsanIcon name="file" size={16} bare /> Imprimir listado</button>
+      <button type="button" className="ag-print-action ag-print-action-secundario" onClick={() => imprimir("fichas")}><MolsanIcon name="files" size={16} bare /> Imprimir fichas detalladas</button>
       <section className="ag-print-root ag-encargos-print-root" aria-hidden="true">
         <header className="ag-print-header"><strong>MOLSAN ERP · APODERAGEST</strong><h1>Listado de encargos</h1><p>{encargos.length} {encargos.length === 1 ? "encargo" : "encargos"} · Impreso el {new Date().toLocaleDateString("es-ES")}</p></header>
         <table className="ag-print-table"><thead><tr><th>Expediente</th><th>Solicitante</th><th>Notario</th><th>Fecha prevista</th><th>Horario</th><th>Estado</th></tr></thead><tbody>{encargos.map((e, i) => <tr key={String(e.id_expediente || e.id || i)}><td>{texto(e.id_expediente || e.id)}{e.bloqueado ? <small>Bloqueado</small> : null}</td><td>{texto(e.nombre_solicitante || e.solicitante)}<small>{texto(e.nif_solicitante || e.dni_solicitante, "")}</small></td><td>{texto(e.nombre_notario || e.notario)}</td><td>{fechaLegible(e.fecha_prevista_firma)}</td><td>{horaLegible(e.hora_prevista_firma)}{e.hora_fin_prevista_firma ? " – " + horaLegible(e.hora_fin_prevista_firma) : ""}</td><td>{e.fecha_firma || e.protocolo ? "Firmado" : e.bloqueado ? "Bloqueado" : "Pendiente"}</td></tr>)}</tbody></table>
@@ -478,7 +471,7 @@ function TablaEncargos({ encargos, onFirmado }) {
   }
 
   if (!encargos.length) {
-    return <EstadoVacio icono="▤" titulo="No hay encargos pendientes de firma" detalle="Aquí aparecen los expedientes enviados al notario que aún no tienen fecha de firma real ni protocolo." />;
+    return <EstadoVacio icono="file" titulo="No hay encargos pendientes de firma" detalle="Aquí aparecen los expedientes enviados al notario que aún no tienen fecha de firma real ni protocolo." />;
   }
 
   return (
@@ -492,7 +485,7 @@ function TablaEncargos({ encargos, onFirmado }) {
         return (
           <section className="ag-panel ag-grupo-notario ag-grupo-apoderado" key={grupo.clave}>
             <button type="button" className="ag-panel-cabecera ag-notario-grupo-trigger ag-apoderado-grupo-trigger" aria-expanded={abierto} onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: !actual[grupo.clave] }))}>
-              <span className="ag-notario-grupo-icono" aria-hidden="true">♙</span>
+              <span className="ag-notario-grupo-icono" aria-hidden="true"><MolsanIcon name="users" size={24} bare /></span>
               <span className="ag-notario-grupo-info">
                 <span className="ag-notario-linea-unica">
                   <strong>{grupo.nombre}</strong>
@@ -500,7 +493,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                 </span>
               </span>
               <span className="ag-notario-contadores">
-                <span className="ag-contador ag-contador-firmas">✓ {grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas</span>
+                <span className="ag-contador ag-contador-firmas"><MolsanIcon name="check" size={13} bare /> {grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas</span>
                 <span className="ag-contador">{grupo.expedientes.length} {grupo.expedientes.length === 1 ? "encargo" : "encargos"}</span>
                 <span className={`ag-contador-bloqueados${expedientesBloqueados > 0 ? " tiene-bloqueados" : ""}`}>{expedientesBloqueados} {expedientesBloqueados === 1 ? "bloqueado" : "bloqueados"}</span>
                 <span className="ag-contador">Ver encargos →</span>
@@ -509,7 +502,7 @@ function TablaEncargos({ encargos, onFirmado }) {
             {abierto ? createPortal((
               <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label={`Encargos de ${grupo.nombre}`} onMouseDown={(e) => { if (e.target === e.currentTarget) setAbiertos(actual => ({ ...actual, [grupo.clave]: false })); }}>
                 <div className="flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
-                  <header className="flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4">
+                  <header className="molsan-modal-header flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4">
                     <div><span className="text-xs font-semibold uppercase tracking-widest text-slate-500">APODERAGEST · BLOQUE DE APODERADO</span><h3 className="mt-1 text-xl font-bold text-slate-900">{grupo.nombre}</h3><p className="text-sm text-slate-600">{grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas registradas · {grupo.expedientes.length} encargos</p></div>
                     <button type="button" className="rounded-xl border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-slate-100" onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: false }))}>Cerrar ✕</button>
                   </header>
@@ -602,7 +595,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                               const renderCarpeta = (titulo, icono, lista, vacio) => (
                                 <details className="ag-carpeta-apoderado" key={titulo} open>
                                   <summary className="ag-carpeta-apoderado-cabecera">
-                                    <span className="ag-carpeta-apoderado-icono" aria-hidden="true">{icono}</span>
+                                    <span className="ag-carpeta-apoderado-icono" aria-hidden="true"><MolsanIcon name={icono} size={19} bare /></span>
                                     <div><strong>{titulo}</strong><small>{lista.length} documento{lista.length === 1 ? "" : "s"}</small></div>
                                   </summary>
                                   {lista.length ? (
@@ -619,12 +612,12 @@ function TablaEncargos({ encargos, onFirmado }) {
                               );
                               return (
                                 <div className="ag-carpetas-apoderado">
-                                  {renderCarpeta("Borradores de escritura", "▤", borradores, "No hay borradores de escritura disponibles.")}
-                                  {renderCarpeta("Hoja de encargo firmada", "▣", hojaEncargo, "No hay hojas de encargo firmadas disponibles.")}
-                                  {renderCarpeta("Justificante de cancelación", "▣", justificantes, "No hay justificantes de cancelación disponibles.")}
-                                  {renderCarpeta("Nota simple registral", "▧", notasSimples, "No hay notas simples registrales disponibles.")}
-                                  {renderCarpeta("Otros", "▣", otros, "No hay documentos clasificados en Otros.")}
-                                  {restantes.length > 0 && renderCarpeta("Resto de documentación", "▧", restantes, "")}
+                                  {renderCarpeta("Borradores de escritura", "file", borradores, "No hay borradores de escritura disponibles.")}
+                                  {renderCarpeta("Hoja de encargo firmada", "fileCheck", hojaEncargo, "No hay hojas de encargo firmadas disponibles.")}
+                                  {renderCarpeta("Justificante de cancelación", "fileCheck", justificantes, "No hay justificantes de cancelación disponibles.")}
+                                  {renderCarpeta("Nota simple registral", "file", notasSimples, "No hay notas simples registrales disponibles.")}
+                                  {renderCarpeta("Otros", "folder", otros, "No hay documentos clasificados en Otros.")}
+                                  {restantes.length > 0 && renderCarpeta("Resto de documentación", "folder", restantes, "")}
                                 </div>
                               );
                             })()}
@@ -640,7 +633,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                                       {documentoVisor.previsualizable ? (documentoVisor.mime.startsWith("image/") || ["png","jpg","jpeg","webp","gif"].includes(documentoVisor.nombre.split(".").pop()?.toLowerCase()) ? <img src={documentoVisor.url} alt={documentoVisor.nombre} className="ag-visor-imagen" /> : <iframe title={documentoVisor.nombre} src={documentoVisor.url} className="ag-visor-pdf" />) : <div className="ag-visor-estado"><strong>Vista previa no disponible para este formato.</strong><span>Descarga el archivo para abrirlo con la aplicación correspondiente.</span><button type="button" onClick={descargarDocumentoVisor}>Descargar documento</button></div>}
                                     </div>
                                   </>
-                                ) : <div className="ag-visor-inline-vacio"><span aria-hidden="true">▤</span><strong>Visor de documentos PDF</strong><p>Selecciona «Ver en visor» en una carpeta para consultar el documento aquí.</p></div>}
+                                ) : <div className="ag-visor-inline-vacio"><MolsanIcon name="file" size={30} bare /><strong>Visor de documentos PDF</strong><p>Selecciona «Ver en visor» en una carpeta para consultar el documento aquí.</p></div>}
                               </div>
                           </details>
                           <details open className="ag-encargo-subpanel ag-ficha-registral">
@@ -894,14 +887,14 @@ export default function ApoderaGest() {
           <div className="w-full apoderagest">
       <header className="ag-hero molsan-page-header">
         <div className="ag-hero-identidad molsan-page-header__identity">
-          <div className="ag-marca">AG</div>
+          <div className="ag-marca molsan-page-header__mark">AG</div>
           <div>
-            <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
+            <div className="ag-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
             <h1 className="molsan-page-header__title">ApoderaGest</h1>
             <p className="molsan-page-header__description">Centro de gestión de encargos, firmas y actividad del apoderado.</p>
           </div>
         </div>
-        <div className="ag-hero-acciones">
+        <div className="ag-hero-acciones molsan-page-header__actions">
           <div className="ag-fecha-actual">
             <span className="ag-punto-vivo" />
             <span>{fechaActual}</span>
@@ -911,10 +904,10 @@ export default function ApoderaGest() {
             onClick={() => navigate("/modulos")}
             className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"
           >
-            <span aria-hidden="true">▦</span> Ir a módulos
+            <MolsanIcon name="dashboard" size={17} bare /> Ir a módulos
           </button>
           <button type="button" className="ag-boton-actualizar" onClick={cargarDatos} disabled={cargando}>
-            <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
+            <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true"><MolsanIcon name="refresh" size={16} bare /></span>
             {cargando ? "Actualizando…" : "Actualizar datos"}
           </button>
         </div>
@@ -922,7 +915,7 @@ export default function ApoderaGest() {
 
       {error ? (
         <div className="ag-alerta-error" role="alert">
-          <span className="ag-alerta-icono">!</span>
+          <span className="ag-alerta-icono"><MolsanIcon name="alert" size={18} bare /></span>
           <div><strong>No se han podido actualizar los datos</strong><p>{error}</p></div>
           <button type="button" onClick={cargarDatos} disabled={cargando}>Reintentar</button>
         </div>
@@ -934,20 +927,20 @@ export default function ApoderaGest() {
 
       {pestana === "Dashboard" ? (
         <section className="ag-contenido">
-          <div className="ag-titulo-seccion">
+          <div className="ag-panel ag-titulo-seccion ag-panel-resumen-heading">
             <div><span className="ag-kicker">VISTA GENERAL</span><h2>Resumen de actividad</h2><p>Una visión rápida de encargos, firmas y próximos compromisos.</p></div>
             {ultimaActualizacion ? <span className="ag-actualizado">Actualizado a las {ultimaActualizacion.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}</span> : null}
           </div>
           <div className="ag-grid-kpi">
-            <TarjetaIndicador titulo="Total de encargos" valor={numeroLegible(dashboard?.total_encargos ?? 0)} detalle="Volumen registrado" icono="▤" variante="ag-kpi-azul" onClick={() => abrirResumenEncargos("todos", "Todos los encargos")} />
-            <TarjetaIndicador titulo="Firmados" valor={numeroLegible(dashboard?.firmados ?? 0)} detalle="Encargos completados" icono="✓" variante="ag-kpi-verde" onClick={() => abrirResumenEncargos("firmados", "Encargos firmados")} />
-            <TarjetaIndicador titulo="Pendientes" valor={numeroLegible(dashboard?.pendientes ?? 0)} detalle="Requieren seguimiento" icono="◷" variante="ag-kpi-ambar" onClick={() => abrirResumenEncargos("pendientes", "Encargos pendientes")} />
-            <TarjetaIndicador titulo="Media hasta firma" valor={dashboard?.media_dias_hasta_firma == null ? "—" : `${Math.abs(dashboard.media_dias_hasta_firma)} días ${dashboard.media_dias_hasta_firma < 0 ? "antes" : dashboard.media_dias_hasta_firma > 0 ? "después" : "en fecha"}`} detalle="Desde fecha prevista hasta fecha real" icono="↗" variante="ag-kpi-violeta" onClick={() => abrirResumenEncargos("media", "Encargos incluidos en la media hasta firma")} />
+            <TarjetaIndicador titulo="Total de encargos" valor={numeroLegible(dashboard?.total_encargos ?? 0)} detalle="Volumen registrado" icono="file" variante="ag-kpi-azul" onClick={() => abrirResumenEncargos("todos", "Todos los encargos")} />
+            <TarjetaIndicador titulo="Firmados" valor={numeroLegible(dashboard?.firmados ?? 0)} detalle="Encargos completados" icono="check" variante="ag-kpi-verde" onClick={() => abrirResumenEncargos("firmados", "Encargos firmados")} />
+            <TarjetaIndicador titulo="Pendientes" valor={numeroLegible(dashboard?.pendientes ?? 0)} detalle="Requieren seguimiento" icono="clock" variante="ag-kpi-ambar" onClick={() => abrirResumenEncargos("pendientes", "Encargos pendientes")} />
+            <TarjetaIndicador titulo="Media hasta firma" valor={dashboard?.media_dias_hasta_firma == null ? "—" : `${Math.abs(dashboard.media_dias_hasta_firma)} días ${dashboard.media_dias_hasta_firma < 0 ? "antes" : dashboard.media_dias_hasta_firma > 0 ? "después" : "en fecha"}`} detalle="Desde fecha prevista hasta fecha real" icono="chart" variante="ag-kpi-violeta" onClick={() => abrirResumenEncargos("media", "Encargos incluidos en la media hasta firma")} />
           </div>
           <div className="ag-grid-secundario">
-            <TarjetaIndicador titulo="Firmas presenciales" valor={numeroLegible(dashboard?.firmas_presenciales)} detalle="Actividad presencial" icono="⌖" onClick={() => abrirResumenEncargos("presenciales", "Firmas presenciales")} />
-            <TarjetaIndicador titulo="Firmas por videoconferencia" valor={numeroLegible(dashboard?.firmas_videoconferencia)} detalle="Actividad remota" icono="▣" onClick={() => abrirResumenEncargos("videoconferencia", "Firmas por videoconferencia")} />
-            <TarjetaIndicador titulo="Kilómetros presenciales" valor={dashboard?.kilometros_presenciales == null ? "Pendiente" : `${numeroLegible(dashboard.kilometros_presenciales)} km`} detalle={`Desde CP ${dashboard?.origen_kilometros || "08016"} · ${dashboard?.firmas_presenciales_con_distancia ?? 0}/${dashboard?.firmas_presenciales ?? 0} distancias calculadas en línea recta`} icono="⌁" onClick={() => abrirResumenEncargos("kilometros", "Firmas presenciales · cálculo de kilómetros")} />
+            <TarjetaIndicador titulo="Firmas presenciales" valor={numeroLegible(dashboard?.firmas_presenciales)} detalle="Actividad presencial" icono="pin" onClick={() => abrirResumenEncargos("presenciales", "Firmas presenciales")} />
+            <TarjetaIndicador titulo="Firmas por videoconferencia" valor={numeroLegible(dashboard?.firmas_videoconferencia)} detalle="Actividad remota" icono="video" onClick={() => abrirResumenEncargos("videoconferencia", "Firmas por videoconferencia")} />
+            <TarjetaIndicador titulo="Kilómetros presenciales" valor={dashboard?.kilometros_presenciales == null ? "Pendiente" : `${numeroLegible(dashboard.kilometros_presenciales)} km`} detalle={`Desde CP ${dashboard?.origen_kilometros || "08016"} · ${dashboard?.firmas_presenciales_con_distancia ?? 0}/${dashboard?.firmas_presenciales ?? 0} distancias calculadas en línea recta`} icono="car" onClick={() => abrirResumenEncargos("kilometros", "Firmas presenciales · cálculo de kilómetros")} />
           </div>
           <div className="ag-dashboard-inferior-grid">
             <section className="ag-panel ag-panel-proximas">
@@ -955,7 +948,7 @@ export default function ApoderaGest() {
                 <div><span className="ag-kicker">PLANIFICACIÓN</span><h3>Próximas citas</h3></div>
                 <button type="button" className="ag-enlace-accion" onClick={() => setPestana("Agenda")}>Ver agenda <span>→</span></button>
               </div>
-              {!agenda.length ? <EstadoVacio icono="▦" titulo="No hay citas disponibles" detalle="Cuando existan citas asignadas, podrás consultarlas desde aquí." /> : (
+              {!agenda.length ? <EstadoVacio icono="calendar" titulo="No hay citas disponibles" detalle="Cuando existan citas asignadas, podrás consultarlas desde aquí." /> : (
                 <div className="ag-proximas-lista">
                   {agenda.slice(0, 5).map((cita, i) => {
                     const firmaRealizada = String(cita.observaciones || "").toUpperCase().includes("FIRMA REALIZADA");
@@ -969,7 +962,7 @@ export default function ApoderaGest() {
                           <div className="ag-cita-titulo-fila">
                             <strong>{texto(cita.tipo_cita, "Cita")}</strong>
                             {cita.tipo_firma ? <span className="ag-cita-modalidad">{texto(cita.tipo_firma)}</span> : null}
-                            {cita.tipo_cita === "Firma notarial" ? <span className={`ag-firma-indicador ${firmaRealizada ? "realizada" : ""}`}>{firmaRealizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</span> : null}
+                            {cita.tipo_cita === "Firma notarial" ? <span className={`ag-firma-indicador ${firmaRealizada ? "realizada" : ""}`}>{firmaRealizada ? <><MolsanIcon name="check" size={13} bare /> Firma realizada</> : <><MolsanIcon name="clock" size={13} bare /> Pendiente de firma</>}</span> : null}
                           </div>
                           <div className="ag-cita-datos">
                             <span className="ag-cita-horario"><b>Horario</b>{texto(cita.hora_inicio, "—").slice(0, 5)} – {texto(cita.hora_fin, "—").slice(0, 5)}</span>
@@ -1018,7 +1011,7 @@ export default function ApoderaGest() {
               {(() => {
                 const datos = dashboard?.volumen_anual_por_apoderado || [];
                 const maximo = Math.max(1, ...datos.map((item) => Number(item.total || 0)));
-                if (!datos.length) return <EstadoVacio icono="▥" titulo="Todavía no hay firmas registradas este año" detalle="Cuando los apoderados registren firmas con fecha y protocolo, aparecerán aquí." />;
+                if (!datos.length) return <EstadoVacio icono="chart" titulo="Todavía no hay firmas registradas este año" detalle="Cuando los apoderados registren firmas con fecha y protocolo, aparecerán aquí." />;
                 return <div className="ag-grafico-apoderados">{datos.map((item) => (
                   <div className="ag-apoderado-barra" key={item.apoderado}>
                     <div className="ag-apoderado-barra-cabecera"><strong title={item.apoderado}>{item.apoderado}</strong><span>{item.total}</span></div>
@@ -1094,7 +1087,7 @@ export default function ApoderaGest() {
               <button type="button" className="ag-resumen-modal-cerrar" onClick={() => setModalResumen(null)} aria-label="Cerrar modal">✕</button>
             </header>
             <div className="ag-resumen-modal-cuerpo">
-              {!encargosDelResumen.length ? <EstadoVacio icono="▤" titulo="No hay expedientes en este bloque" detalle="No hay encargos que coincidan con este indicador." /> : (
+              {!encargosDelResumen.length ? <EstadoVacio icono="file" titulo="No hay expedientes en este bloque" detalle="No hay encargos que coincidan con este indicador." /> : (
                 <div className="ag-resumen-tabla-wrap">
                   <table className="ag-resumen-tabla">
                     <thead><tr><th>Expediente</th><th>Solicitante</th><th>Notario</th><th>Apoderado</th><th>Fecha prevista</th><th>Fecha de firma</th><th>Protocolo</th><th>Modalidad</th><th>Estado</th><th></th></tr></thead>

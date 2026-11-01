@@ -99,50 +99,50 @@ export default function Logs() {
        AUTENTICACIÓN
     -------------------------------------------------------- */
 
-    login: "🔑",
-    LOGIN: "🔑",
+    login: "key",
+    LOGIN: "key",
 
-    login_success: "🔓",
-    LOGIN_SUCCESS: "🔓",
+    login_success: "lock",
+    LOGIN_SUCCESS: "lock",
 
-    login_error: "⛔",
-    LOGIN_ERROR: "⛔",
+    login_error: "alert",
+    LOGIN_ERROR: "alert",
 
-    logout: "🚪",
-    LOGOUT: "🚪",
+    logout: "door",
+    LOGOUT: "door",
 
 
     /* --------------------------------------------------------
        SEGURIDAD
     -------------------------------------------------------- */
 
-    security: "🔐",
-    SECURITY: "🔐",
+    security: "lock",
+    SECURITY: "lock",
 
-    security_error: "🛡️",
-    SECURITY_ERROR: "🛡️",
+    security_error: "shield",
+    SECURITY_ERROR: "shield",
 
-    permission_denied: "🚫",
-    PERMISSION_DENIED: "🚫",
+    permission_denied: "alert",
+    PERMISSION_DENIED: "alert",
 
 
     /* --------------------------------------------------------
        ERRORES
     -------------------------------------------------------- */
 
-    error: "⛔",
-    ERROR: "⛔",
+    error: "alert",
+    ERROR: "alert",
 
-    exception: "💥",
-    EXCEPTION: "💥",
+    exception: "alert",
+    EXCEPTION: "alert",
 
 
     /* --------------------------------------------------------
        AVISOS
     -------------------------------------------------------- */
 
-    warning: "⚠️",
-    WARNING: "⚠️",
+    warning: "alert",
+    WARNING: "alert",
 
 
     /* --------------------------------------------------------
@@ -163,38 +163,38 @@ export default function Logs() {
     update: "✏️",
     UPDATE: "✏️",
 
-    delete: "🗑️",
-    DELETE: "🗑️",
+    delete: "trash",
+    DELETE: "trash",
 
 
     /* --------------------------------------------------------
        IMPORTACIONES / EXPORTACIONES
     -------------------------------------------------------- */
 
-    import: "📥",
-    IMPORT: "📥",
+    import: "download",
+    IMPORT: "download",
 
-    import_success: "📥",
-    IMPORT_SUCCESS: "📥",
+    import_success: "download",
+    IMPORT_SUCCESS: "download",
 
-    import_error: "⛔",
-    IMPORT_ERROR: "⛔",
+    import_error: "alert",
+    IMPORT_ERROR: "alert",
 
-    export: "📤",
-    EXPORT: "📤",
+    export: "upload",
+    EXPORT: "upload",
 
-    export_success: "📤",
-    EXPORT_SUCCESS: "📤",
+    export_success: "upload",
+    EXPORT_SUCCESS: "upload",
 
-    export_error: "⛔",
-    EXPORT_ERROR: "⛔",
+    export_error: "alert",
+    EXPORT_ERROR: "alert",
 
 
     /* --------------------------------------------------------
        DEFAULT
     -------------------------------------------------------- */
 
-    default: "📋",
+    default: "clipboard",
 
   };
 
@@ -221,53 +221,8 @@ export default function Logs() {
       ===================================================== */}
 
       <section
-        className="
-          relative
-          overflow-hidden
-          rounded-[24px]
-          border
-          border-white/80
-          bg-white/80
-          backdrop-blur-2xl
-          shadow-[0_15px_45px_rgba(15,23,42,0.08)]
-          p-6
-          sm:p-7
-        "
+        className="molsan-page-header"
       >
-
-        {/* Línea superior */}
-
-        <div
-          className="
-            absolute
-            top-0
-            left-0
-            right-0
-            h-px
-            bg-gradient-to-r
-            from-transparent
-            via-blue-400/50
-            to-transparent
-          "
-        />
-
-
-        {/* Decoración */}
-
-        <div
-          className="
-            absolute
-            -top-20
-            -right-20
-            w-48
-            h-48
-            rounded-full
-            bg-blue-400/10
-            blur-3xl
-            pointer-events-none
-          "
-        />
-
 
         <div
           className="
@@ -285,18 +240,7 @@ export default function Logs() {
           >
 
             <div
-              className="
-                flex
-                items-center
-                justify-center
-                w-11
-                h-11
-                rounded-xl
-                bg-blue-50
-                border
-                border-blue-100
-                shadow-sm
-              "
+              className="molsan-page-header__mark"
             >
 
               <span
