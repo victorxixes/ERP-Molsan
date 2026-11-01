@@ -25,8 +25,8 @@ export default function ImportarCTN() {
           CABECERA
       ===================================================== */}
 
-      <div
-        className="
+      <header
+        className="molsan-page-header "
           relative overflow-hidden
           rounded-[24px]
           border border-slate-200/80
