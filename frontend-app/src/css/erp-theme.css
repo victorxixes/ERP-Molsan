@@ -795,7 +795,7 @@
 .erp-page select:focus-visible {
 
   outline:
-    3px solid rgba(49, 86, 179, 0.25);
+    3px solid color-mix(in srgb, var(--molsan-primary) 25%, transparent);
 
   outline-offset:
     2px;
