@@ -159,7 +159,7 @@ export default function Catalogos() {
     <main className="molsan-page-stack catalogos-premium-page min-h-full animate-fadeIn">
       <header className="molsan-page-header">
         <div className="molsan-page-header__identity">
-          <div className="molsan-page-header__mark"><MolsanIcon name="book" size={42} /></div>
+          <div className="molsan-page-header__mark"><MolsanIcon name="book" size={42} bare /></div>
           <div className="min-w-0">
             <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
             <h1 className="molsan-page-header__title">Catálogos</h1>
@@ -185,8 +185,8 @@ export default function Catalogos() {
                   className="group erp-card relative overflow-hidden p-5 transition-all duration-300 active:scale-[0.98]"
                 >
                   <div className="flex items-start gap-4">
-                    <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl ${item.destacado ? "border-blue-200 bg-blue-100" : "border-slate-200 bg-slate-50"}`}>
-                      <MolsanIcon name={item.icon} size={46} />
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center">
+                      <MolsanIcon name={item.icon} size={48} />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="text-base font-semibold text-slate-800">{item.titulo}</h3>
