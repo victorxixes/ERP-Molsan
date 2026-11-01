@@ -1069,3 +1069,14 @@
     transition: none;
   }
 }
+
+
+/* Contenedor vertical común para todas las páginas y subpáginas del ERP. */
+.molsan-page-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  min-width: 0;
+}
+.molsan-page-stack > * { min-width: 0; }
