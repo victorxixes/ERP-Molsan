@@ -45,8 +45,6 @@
 /* Paneles y tarjetas */
 .molsan-panel { min-width: 0; color: var(--molsan-text); }
 
-.molsan-panel__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; }
-
 .molsan-panel__body {
   min-width: 0;
   padding: 16px;
@@ -57,7 +55,6 @@
 /* Respeto a pantallas pequeñas y preferencias de movimiento */
 @media (max-width: 640px) {
 
-  .molsan-panel__header,
   .molsan-panel__body {
     padding: 12px;
   }
