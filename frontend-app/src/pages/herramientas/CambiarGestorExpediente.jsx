@@ -59,7 +59,7 @@ export default function CambiarGestorExpediente() {
 
   return (
     <div className="cambiar-gestor-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <header className="molsan-page-header relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-3xl">🔁</div>
