@@ -402,25 +402,6 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* FIRMAS REALIZADAS + DISTRIBUCIÓN DEL CIRCUITO */}
-      <div className="dashboard-signatures-wrap mb-6">
-      {/* FIRMAS REALIZADAS */}
-      <section className="dashboard-section-panel min-w-0">
-        <div className="mb-4 flex flex-col gap-1">
-          <h2 className="text-lg font-bold" style={{ color: "var(--erp-text)" }}>Firmas realizadas</h2>
-          <p className="text-sm" style={{ color: "var(--erp-text-soft)" }}>
-            Distribución de las firmas realizadas según la modalidad seleccionada en el encargo al notario.
-          </p>
-        </div>
-        <div className="dashboard-firmas-grid grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <KpiCard icono="✍️" titulo="Total firmas" valor={numero(totalFirmas)} descripcion="Firmas realizadas" />
-          <FirmaCard icono="🏛️" titulo="Presencial" total={firmasPresenciales} porcentajeValor={porcentajePresencial} />
-          <FirmaCard icono="💻" titulo="Videoconferencia" total={firmasVideoconferencia} porcentajeValor={porcentajeVideoconferencia} />
-        </div>
-      </section>
-
-      </div>
-
       {/* NOTA TÉCNICA */}
       {!firmasRealizadas && (
         <div className="mt-6 rounded-xl border px-4 py-3 text-xs" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)", color: "var(--erp-text-soft)" }}>
