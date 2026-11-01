@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import { API_BASE } from "../../api/config";
@@ -265,7 +266,7 @@ export default function MantenimientoTecnico() {
     return (
       <div className="mantenimiento-tecnico-premium">
         <div className="mx-auto max-w-3xl rounded-2xl border border-rose-200 bg-white p-6 shadow-sm">
-          <div className="text-2xl">🔒 Acceso restringido</div>
+          <div className="text-2xl"><MolsanIcon name="lock" size={20} /> Acceso restringido</div>
           <p className="mt-2 text-sm text-slate-600">
             Tu usuario no tiene habilitado el módulo Utilidades. Si necesitas
             acceder, solicita que se active desde la ficha del empleado.
@@ -311,7 +312,7 @@ export default function MantenimientoTecnico() {
       <section className="grid grid-cols-1 gap-5 xl:grid-cols-2">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="mb-4 flex items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-xl">🔎</div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-xl"><MolsanIcon name="search" size={20} /></div>
             <div>
               <h2 className="text-lg font-bold text-slate-900">Diagnóstico rápido</h2>
               <p className="mt-1 text-sm text-slate-500">
@@ -342,7 +343,7 @@ export default function MantenimientoTecnico() {
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="mb-4 flex items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-xl">🧱</div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-xl"><MolsanIcon name="building" size={20} /></div>
             <div>
               <h2 className="text-lg font-bold text-slate-900">Inspección de tablas</h2>
               <p className="mt-1 text-sm text-slate-500">
