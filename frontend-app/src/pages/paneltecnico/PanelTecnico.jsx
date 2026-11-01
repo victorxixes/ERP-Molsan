@@ -41,7 +41,7 @@ export default function PanelTecnico() {
           ====================================================== */}
 
       <section
-        className="
+        className="molsan-page-header 
           relative
           overflow-hidden
           rounded-3xl
