@@ -2290,7 +2290,6 @@ body {
 :is(.apoderagest) .ag-hero,
 :is(.encargagest) .eg-hero,
 :is(.cg-page) .cg-hero,
-:is(.ctn-listado-page) .ctn-listado-header,
 :is(.expedientes-listado-premium) .expedientes-header {
   color: var(--molsan-text);
   background: var(--molsan-surface);
@@ -2303,7 +2302,6 @@ body {
 :is(.apoderagest) .ag-hero h1,
 :is(.encargagest) .eg-hero h1,
 :is(.cg-page) .cg-hero h1,
-:is(.ctn-listado-page) .ctn-listado-header h1,
 :is(.expedientes-listado-premium) .expedientes-header h1 {
   color: var(--molsan-text);
   font-size: var(--molsan-font-size-title);
@@ -2370,8 +2368,7 @@ body {
   :is(.apoderagest) .ag-hero,
   :is(.encargagest) .eg-hero,
   :is(.cg-page) .cg-hero,
-  :is(.ctn-listado-page) .ctn-listado-header,
-  :is(.expedientes-listado-premium) .expedientes-header {
+    :is(.expedientes-listado-premium) .expedientes-header {
     padding: 14px;
     gap: 10px;
   }
