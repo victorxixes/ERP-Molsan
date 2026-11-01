@@ -1,3 +1,4 @@
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PortalLogin from "../../components/PortalLogin";
@@ -560,15 +561,26 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         <section className="ng-modal ng-modal-pagos ng-modal-pagos-amplio" role="dialog" aria-modal="true" aria-labelledby="ng-pagos-titulo">
           <header><div><span className="ng-kicker">NOTARGEST · GESTIÓN ECONÓMICA</span><h2 id="ng-pagos-titulo">Solicitudes de Pago efectuadas por Molsan</h2><p>Pagos registrados desde la Ficha de expediente y vinculados a la notaría.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setPagosAbiertos(false)}>Cerrar ✕</button></header>
           <div className="ng-pagos-tabla-wrap">
-            <table className="ng-tabla ng-tabla-pagos"><thead><tr><th>N.º expediente</th><th>Fecha de pago</th><th>Nombre</th><th>DNI</th><th>Importe</th><th>Protocolo</th><th>Fecha de firma</th><th>Factura notarial</th><th>Justificante</th></tr></thead>
-              <tbody>{pagosNotario.map(item => <tr key={item.id}>
-                <td><button type="button" className="ng-abrir" onClick={() => { setPagosAbiertos(false); abrirExpediente({id_expediente:item.id_expediente}); }}>{texto(item.id_expediente)}</button></td>
-                <td>{esFecha(item.fecha_pago)}</td><td>{texto(item.nombre)}</td><td>{texto(item.dni)}</td><td>{euros(item.importe)}</td><td>{texto(item.protocolo)}</td><td>{esFecha(item.fecha_firma)}</td>
-                <td>{item.factura_notarial_id ? <button type="button" className="ng-pdf-link" title="Abrir factura notarial PDF" onClick={() => abrirPdfPago(item,"factura")}><span>PDF</span></button> : "—"}</td>
-                <td>{item.justificante_documento_id || item.justificante_url ? <button type="button" className="ng-pdf-link" title="Abrir justificante PDF" onClick={() => abrirPdfPago(item,"justificante")}><span>PDF</span></button> : "—"}</td>
-              </tr>)}</tbody>
-            </table>
-            {!cargandoPagos && pagosNotario.length === 0 && <div className="ng-modal-vacio"><strong>No hay pagos efectuados</strong><p>Los pagos marcados como «Pagado» en Ficha de expediente aparecerán aquí cuando estén vinculados a esta notaría.</p></div>}
+            <MolsanDataTable
+              rows={pagosNotario}
+              rowKey="id"
+              minWidth="1300px"
+              initialSort={{ key: "fecha_pago", direction: "desc" }}
+              emptyText="No hay pagos efectuados. Los pagos marcados como «Pagado» en Ficha de expediente aparecerán aquí cuando estén vinculados a esta notaría."
+              columns={[
+                { key: "id_expediente", header: "N.º expediente", accessor: "id_expediente", sortType: "text", render: (value, item) => <button type="button" className="ng-abrir" onClick={() => { setPagosAbiertos(false); abrirExpediente({id_expediente:item.id_expediente}); }}>{texto(value)}</button> },
+                { key: "fecha_pago", header: "Fecha de pago", accessor: "fecha_pago", sortType: "date", render: (value) => esFecha(value) },
+                { key: "nombre", header: "Nombre", accessor: "nombre", sortType: "text", render: (value) => texto(value) },
+                { key: "dni", header: "DNI", accessor: "dni", sortType: "text", render: (value) => texto(value) },
+                { key: "importe", header: "Importe", accessor: "importe", sortType: "currency", align: "right", render: (value) => euros(value) },
+                { key: "protocolo", header: "Protocolo", accessor: "protocolo", sortType: "text", render: (value) => texto(value) },
+                { key: "fecha_firma", header: "Fecha de firma", accessor: "fecha_firma", sortType: "date", render: (value) => esFecha(value) },
+                { key: "factura", header: "Factura notarial", sortable: false, accessor: (item) => item.factura_notarial_id, render: (_, item) => item.factura_notarial_id ? <button type="button" className="ng-pdf-link" title="Abrir factura notarial PDF" onClick={() => abrirPdfPago(item,"factura")}><span>PDF</span></button> : "—" },
+                { key: "justificante", header: "Justificante", sortable: false, accessor: (item) => item.justificante_documento_id || item.justificante_url, render: (_, item) => item.justificante_documento_id || item.justificante_url ? <button type="button" className="ng-pdf-link" title="Abrir justificante PDF" onClick={() => abrirPdfPago(item,"justificante")}><span>PDF</span></button> : "—" },
+              ]}
+            />
+            {cargandoPagos && <p className="ng-mensaje">Cargando pagos…</p>}
+          </div>}
             {cargandoPagos && <p className="ng-mensaje">Cargando pagos…</p>}
           </div>
         </section>
