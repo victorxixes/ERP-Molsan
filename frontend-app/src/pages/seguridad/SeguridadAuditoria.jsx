@@ -1471,50 +1471,9 @@ export default function SeguridadAuditoria() {
           CABECERA
           ====================================================== */}
 
-      <section
-        className="
-          molsan-page-header
-          bg-[var(--erp-surface)]
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          shadow-sm
-          px-6
-          py-5
-        "
-      >
+      <section className="molsan-page-header">
 
-        <div
-          className="
-            flex
-            flex-col
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-            gap-5
-          "
-        >
-
-          <div
-            className="
-              flex
-              items-center
-              gap-4
-            "
-          >
-
-            <div
-              className="
-                w-12
-                h-12
-                rounded-2xl
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-              "
-            >
+        <div className="molsan-page-header__mark">
 
               <Icono
                 name="clipboard"
@@ -1526,15 +1485,8 @@ export default function SeguridadAuditoria() {
 
             <div>
 
-              <h1
-                className="
-                  text-2xl
-                  font-bold
-                  text-[var(--erp-text)]
-                "
-              >
-                Auditoría
-              </h1>
+              <p className="molsan-page-header__eyebrow">MOLSAN ERP · SEGURIDAD</p>
+              <h1 className="molsan-page-header__title">Auditoría</h1>
 
               <p
                 className="
