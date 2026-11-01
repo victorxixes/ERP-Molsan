@@ -5488,7 +5488,7 @@ const cuantiaFincasParaEnvio =
           </div>
 
           {/* Ficha y acciones en una sola línea, debajo de los bloques principales */}
-          <div className="mt-3 flex w-full min-w-0 flex-wrap items-center gap-2 overflow-x-hidden rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2">
+          <div className="molsan-page-header mt-3 flex w-full min-w-0 flex-wrap items-center gap-2 overflow-x-hidden rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2">
             <div className="flex shrink-0 items-center gap-2 pr-2">
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-lg text-blue-600">📁</div>
               <div className="min-w-[150px]">
