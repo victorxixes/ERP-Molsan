@@ -22,6 +22,8 @@
   .apoderagest,
   .notargest-workspace-premium,
   .encargagest-workspace-premium,
+  .encargagest,
+  .notargest,
   .ctn-workspace-premium,
   .cg-page,
   .cg-unified-workspace,
@@ -109,7 +111,7 @@
   .ctn-panel, .expedientes-panel, .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
   .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi, .panel-card, .ficha-panel, .ficha-seccion,
   .form-section, .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-list-table-wrap,
-  .logs-panel, .maestros-panel, [data-panel="true"], [data-cg-panel="true"]
+  .logs-panel, .maestros-panel, .ctn-detalle-stat, .ctn-detalle-panel, .ctn-detalle-info-card, [data-panel="true"], [data-cg-panel="true"]
 ) {
   --molsan-card-tint: #F2F7FB;
   position: relative;
@@ -130,7 +132,7 @@
 }
 
 /* Acentos cromáticos discretos y alternos para dar personalidad a las tarjetas. */
-:where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .ctn-workspace-premium,
+:where(.erp-main-content, .erp-page, .apoderagest, .notargest-workspace-premium, .encargagest-workspace-premium, .encargagest, .notargest, .ctn-workspace-premium,
   .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
   .agenda-premium-page, .catalogos-premium-page, .utilidades-premium-page, .honorarios-gestoria-premium,
   .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
@@ -353,10 +355,18 @@
   .maestros-premium-page, .logs-premium-page, .seguridad-subpagina-premium, .seguridad-usuarios-premium,
   .seguridad-auditoria-premium, .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
   .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .provisiones-fondos-page,
-  .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria) :is(.molsan-panel__header, .ag-panel-cabecera, .ag-panel-header, .eg-card-header, .eg-panel-head, .ng-panel-titulo, .ctn-tabla-cabecera) {
+  .herramientas-subpagina-premium, .herramienta-operativa-premium, .catalogos-maestros-premium, .catalogos-maestros-page, .mensajeria) :is(.molsan-panel__header, .ag-panel-cabecera, .ag-panel-header, .eg-card-header, .eg-panel-head, .ng-panel-titulo, .ctn-tabla-cabecera, .erp-card-header, .eg-modal-section-heading) {
   color: #064675;
   background: #F2F7FB;
   border-color: #D8E4EC;
+}
+:where(.erp-main-content, .erp-page, .apoderagest, .notargest, .encargagest, .cg-page, .cg-unified-workspace, .panel-tecnico-premium, .seguridad-subpagina-premium, .seguridad-usuarios-premium) :is(.ag-panel-cabecera h3, .ag-panel-header h2, .eg-panel-head h2, .eg-panel-head h3, .ng-panel-titulo h2, .erp-card-title) {
+  margin: 0;
+  color: #064675;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.3;
 }
 
 /* Tablas integradas en paneles con cabecera azul hielo. */
