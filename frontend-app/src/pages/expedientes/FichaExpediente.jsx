@@ -5036,7 +5036,7 @@ const cuantiaFincasParaEnvio =
                         });
                         const fases = [
                           {
-                            key: "documentacion-previa", label: "Documentación previa", icono: "📄",
+                            key: "documentacion-previa", label: "Documentación previa", icono: "file",
                             checks: [
                               requisito(
                                 "Certificado Saldo «0» erróneo",
@@ -5079,14 +5079,14 @@ const cuantiaFincasParaEnvio =
                             ],
                           },
                           {
-                            key: "sede-notarial", label: "Sede notarial", icono: "🏛️",
+                            key: "sede-notarial", label: "Sede notarial", icono: "courthouse",
                             checks: [
                               requisito("Notario", Boolean(notario), "Falta seleccionar o indicar el notario en Enviar a notario"),
                               requisito("Fecha de envío", Boolean(fechaEnvio), "No consta la fecha de envío a notario"),
                             ],
                           },
                           {
-                            key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "📜",
+                            key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "scroll",
                             checks: [
                               requisito("Apoderado", Boolean(valor("apoderado")), "Selecciona Gestoría o CaixaBank"),
                               requisito("Fecha firma", Boolean(fechaFirma), "No consta la fecha de firma"),
@@ -5100,7 +5100,7 @@ const cuantiaFincasParaEnvio =
                             ],
                           },
                           {
-                            key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "💶",
+                            key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "euro",
                             checks: [
                               requisito("Fecha presentación tributaria", Boolean(valor("fecha_presentacion_tributaria")), "Falta la fecha de presentación tributaria"),
                               requisito("Fecha liquidación tributaria", Boolean(valor("fecha_liquidacion_tributaria")), "Falta la fecha de liquidación tributaria"),
@@ -5112,7 +5112,7 @@ const cuantiaFincasParaEnvio =
                             ],
                           },
                           {
-                            key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "🏢",
+                            key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "building",
                             checks: [
                               requisito("Fecha presentación", Boolean(valor("fecha_presentacion")), "Falta la fecha de presentación en Registro"),
                               requisito("Fecha vencimiento asiento (+60 días naturales)", Boolean(valor("fecha_vencimiento_asiento", "fecha_vencimiento")), "No consta la fecha de vencimiento del asiento, calculada a 60 días naturales desde la presentación"),
@@ -5163,7 +5163,7 @@ const cuantiaFincasParaEnvio =
                             ],
                           },
                           {
-                            key: "facturacion-cierre", label: "Facturación y cierre", icono: "🧾",
+                            key: "facturacion-cierre", label: "Facturación y cierre", icono: "receipt",
                             checks: [
                               requisito("Fecha de facturación", Boolean(valor("facturacion_fecha")), "Falta la fecha de facturación"),
                               requisito("Entrega al cliente", Boolean(valor("fecha_entregado_cliente")), "Falta la fecha de entrega al cliente"),
@@ -5526,11 +5526,11 @@ const cuantiaFincasParaEnvio =
             })()}
             {expedienteBloqueado && <span className="inline-flex shrink-0 items-center rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[10px] font-extrabold text-red-800"><MolsanIcon name="lock" size={16} /> BLOQUEADO · {motivoBloqueoExpediente}</span>}
             <div className="flex shrink-0 items-center gap-1.5">
-              <button type="button" onClick={abrirDefecto} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-blue-700 shadow-sm transition hover:bg-blue-100" title="Registrar un defecto registral">➕ Alta defecto</button>
+              <button type="button" onClick={abrirDefecto} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-blue-700 shadow-sm transition hover:bg-blue-100" title="Registrar un defecto registral"><MolsanIcon name="plus" size={16} /> Alta defecto</button>
               <Boton onClick={abrirControlExpediente} className="!shrink-0 !rounded-lg !px-2.5 !py-2 !text-[11px] !leading-tight">{expedienteBloqueado ? "Control / desbloqueo" : "Control y bloqueo"}</Boton>
-              <button type="button" onClick={abrirReclamacionOficina} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-amber-800 shadow-sm transition hover:bg-amber-100">✉️ Emails</button>
-              <button type="button" onClick={() => window.alert("Pendiente: enlazar este botón con la dirección real del área de clientes.")} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[11px] font-bold leading-tight text-slate-600 shadow-sm transition hover:bg-slate-100" title="Pendiente de enlazar con el área de clientes">🔗 Área de clientes</button>
-              {tieneDefecto && <button type="button" onClick={abrirDefecto} className="animate-pulse inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-red-700 shadow-sm">⚠️ DEFECTO REGISTRAL</button>}
+              <button type="button" onClick={abrirReclamacionOficina} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-amber-800 shadow-sm transition hover:bg-amber-100"><MolsanIcon name="mail" size={16} /> Emails</button>
+              <button type="button" onClick={() => window.alert("Pendiente: enlazar este botón con la dirección real del área de clientes.")} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[11px] font-bold leading-tight text-slate-600 shadow-sm transition hover:bg-slate-100" title="Pendiente de enlazar con el área de clientes"><MolsanIcon name="link" size={16} /> Área de clientes</button>
+              {tieneDefecto && <button type="button" onClick={abrirDefecto} className="animate-pulse inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-red-700 shadow-sm"><MolsanIcon name="alert" size={16} tone="amber" /> DEFECTO REGISTRAL</button>}
             </div>
             <div className="ml-auto flex shrink-0 items-center gap-2">
               <div className="inline-flex max-w-[260px] items-center gap-1.5 rounded-lg border border-blue-100 bg-white px-2.5 py-2 text-[11px]">
