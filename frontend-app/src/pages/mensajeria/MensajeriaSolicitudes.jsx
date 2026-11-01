@@ -203,7 +203,7 @@ export default function MensajeriaSolicitudes() {
     finally { setGuardando(false); }
   };
 
-  return <main className="catalogos-premium-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
+  return <main className="catalogos-premium-page min-h-full space-y-6 animate-fadeIn">
     <header className="molsan-page-header">
       <div className="molsan-page-header__identity">
         <div className="molsan-page-header__mark" aria-hidden="true">MS</div>
