@@ -2936,6 +2936,9 @@ function InformeFirmas() {
         <div className="erp-card-header flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4"><div><h3 className="font-bold text-slate-800">Resumen por tipo de operación</h3><p className="mt-1 text-xs text-slate-500">Conteo de firmas reales y días medios cuando existen fecha de envío y de firma.</p></div><span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">{periodo}</span></div>
         {loading ? <PanelEstadoInforme loading /> : datos.por_tipo_operacion.length === 0 ? <PanelEstadoInforme vacio /> : <MolsanDataTable
           rows={datos.por_tipo_operacion}
+          pagination
+          pageSize={25}
+
           rowKey="tipo_operacion"
           initialSort={{ key: "tipo_operacion", direction: "asc" }}
           emptyText="No hay datos para este periodo."
@@ -3196,6 +3199,9 @@ function InformeNotarios() {
         {loading ? <PanelEstadoInforme loading /> : porNotario.length === 0 ? <PanelEstadoInforme vacio /> : (
           <div className="max-h-[620px] overflow-auto"><MolsanDataTable
             rows={porNotario}
+          pagination
+          pageSize={25}
+
             rowKey="clave_notario"
             minWidth="1400px"
             initialSort={{ key: "total_firmas", direction: "desc" }}
@@ -3229,6 +3235,9 @@ function InformeNotarios() {
         {loading ? <PanelEstadoInforme loading /> : detalle.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales con los filtros seleccionados." /> : (
           <div className="max-h-[650px] overflow-auto"><MolsanDataTable
             rows={detalle}
+          pagination
+          pageSize={25}
+
             rowKey="id"
             minWidth="1250px"
             initialSort={{ key: "fecha_firma", direction: "desc" }}
@@ -3354,6 +3363,9 @@ function InformeSLA() {
         <div className="border-b border-slate-200/80 px-5 py-4"><h3 className="font-bold text-slate-800">Expedientes por actividad</h3><p className="mt-1 text-xs text-slate-500">Medias, objetivos y número de incumplimientos por actividad para los expedientes filtrados.</p></div>
         {loading ? <PanelEstadoInforme loading /> : <MolsanDataTable
           rows={resumenActividades}
+          pagination
+          pageSize={25}
+
           rowKey="key"
           minWidth="950px"
           initialSort={{ key: "label", direction: "asc" }}
