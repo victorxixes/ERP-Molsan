@@ -41,27 +41,10 @@
   touch-action: manipulation;
 }
 @media (max-width: 640px) {
-  .maestros-premium-page { padding: 1rem; }
+  .maestros-premium-page { min-width:0; }
   .maestros-premium-page section { border-radius: .9rem; }
   .maestros-premium-page table { min-width: 480px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .maestros-premium-page tbody tr { transition: none; }
 }
-
-
-/* Cabecera de Maestros integrada en la misma superficie compacta del ERP. */
-.maestros-premium-page > div:first-child {
-  padding: 12px 16px;
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-card);
-  background: var(--molsan-surface);
-  box-shadow: var(--molsan-shadow-card);
-}
-.maestros-premium-page > div:first-child .w-12.h-12 {
-  width: 36px !important;
-  height: 36px !important;
-  border-radius: 10px !important;
-}
-.maestros-premium-page > div:first-child h1 { font-size: 20px !important; line-height: 1.2; }
-.maestros-premium-page > div:first-child p { font-size: 12px !important; }
