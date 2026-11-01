@@ -249,7 +249,7 @@ export default function CorrespondenciaTipificada() {
   }
 
   return (
-    <div className="molsan-page-stack correspondencia-tipificada-premium herramientas-subpagina-premium min-h-full animate-fadeIn">
+    <div className="molsan-page-stack catalogos-premium-page correspondencia-tipificada-premium herramientas-subpagina-premium min-h-full animate-fadeIn">
       <header className="molsan-page-header">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
