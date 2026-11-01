@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanButton from "../../components/ui/MolsanButton";
 import "../../css/CatalogosMaestrosPremium.css";
 
 const API = "/tipos-expediente";
@@ -135,7 +136,7 @@ export default function TiposExpediente() {
           <label className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 md:col-span-2">
             <input type="checkbox" checked={activo} onChange={(e) => setActivo(e.target.checked)} /> Activo
           </label>
-          <div className="flex items-end md:col-span-1"><button disabled={guardando || !nombre.trim()} className="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50" type="submit">{guardando ? "..." : editando ? "Guardar" : "Añadir"}</button></div>
+          <div className="flex items-end md:col-span-1"><MolsanButton type="submit" block icon={editando ? "check" : "plus"} variant="primary" disabled={guardando || !nombre.trim()} loading={guardando}>{editando ? "Guardar" : "Añadir"}</MolsanButton></div>
         </form>
       </div></div>}
 
