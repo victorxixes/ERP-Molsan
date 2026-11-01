@@ -309,6 +309,7 @@ export default function Fichajes({ modo = "empleado" }) {
                 <div className="mt-4">
                   <MolsanDataTable
                     rows={marcajesFiltrados}
+          searchable
           pagination
           pageSize={25}
 
@@ -364,6 +365,7 @@ export default function Fichajes({ modo = "empleado" }) {
                 <div className="rounded-2xl border border-[var(--erp-border)]">
                   <MolsanDataTable
                     rows={vacacionesAdmin}
+          searchable
           pagination
           pageSize={25}
 
