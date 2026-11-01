@@ -254,12 +254,6 @@ select, textarea) {
   font-weight: 650;
 }
 
-.cg-unified-workspace :is(
-  .erp-card, .erp-card-soft, .molsan-panel, [data-cg-panel="true"]
-) > :is(header, .card-header, .panel-header, .section-header) {
-  border-bottom-color: var(--cg-border-light);
-}
-
 /* Cabeceras de página heredadas: consistencia sin reemplazar su contenido. */
 .cg-unified-workspace :is(
   .page-header, .pagina-header, .listado-header, .cabecera-pagina,
