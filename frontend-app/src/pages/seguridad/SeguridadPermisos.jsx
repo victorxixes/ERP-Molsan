@@ -737,6 +737,7 @@ export default function SeguridadPermisos() {
 
       <div
         className="
+          molsan-page-header
           flex
           flex-col
           gap-4
