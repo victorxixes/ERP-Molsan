@@ -2672,13 +2672,6 @@ body {
    por los módulos. Solo cambia presentación, nunca comportamiento.
    ============================================================ */
 
-/* Las superficies de los portales se normalizan en el bloque canónico inferior. */
-:where(.notargest .ng-cabecera, .apoderagest .ag-hero, .encargagest .eg-hero) {
-  color: var(--molsan-text, #173247);
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-}
 :where(.apoderagest .ag-panel-cabecera, .encargagest .eg-panel-head,
        .notargest .ng-panel-titulo) {
   color: var(--molsan-text, #173247);
@@ -2865,19 +2858,6 @@ table :is(th, td) {
   outline-offset: 2px;
 }
 
-:where(
-  .catalogos-premium-page,
-  .utilidades-premium-page
-) > .molsan-page-header {
-  color: var(--molsan-text, #173247);
-  background: var(--molsan-surface, #fff);
-  border: 1px solid var(--molsan-border, #D8E4EC);
-  border-radius: var(--molsan-radius-card, 14px);
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-
 :where(.empleados-listado-premium, .seguridad-usuarios-premium) .erp-card,
 :where(.empleados-listado-premium, .seguridad-usuarios-premium) .erp-page-header,
 :where(.fusiones-page) .erp-card,
@@ -3029,7 +3009,7 @@ table :is(th, td) {
 }
 
 :where(.expedientes-page, .agenda-premium-page, .ctn-detalle-page, .cg-page, .notargest, .apoderagest.notargest, .encargagest)
-  :is(.erp-card, .erp-card-soft, .molsan-panel, .molsan-page-header) {
+  :is(.erp-card, .erp-card-soft, .molsan-panel) {
   background: var(--molsan-surface, #fff);
   border-color: var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-card, 14px);
