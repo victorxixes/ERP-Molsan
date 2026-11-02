@@ -234,7 +234,7 @@ export default function CrearNoticia() {
                 animate-fadeIn
               "
             >
-              <span>✓</span>
+              <MolsanIcon name="check" size={15} />
               <span>Noticia creada correctamente.</span>
             </div>
           )}
