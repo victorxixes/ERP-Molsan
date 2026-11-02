@@ -9,7 +9,7 @@ import { useAuthStore } from "../../store/authStore";
 import { formatEuro as euros } from "../../utils/formatters";
 
 const tieneTokenExternoEncargaGest = () => Boolean(
-  localStorage.getItem("encargagest_token") || sessionStorage.getItem("encargagest_soporte_token")
+  sessionStorage.getItem("encargagest_token") || sessionStorage.getItem("encargagest_soporte_token")
 );
 
 const ESTADOS = [
