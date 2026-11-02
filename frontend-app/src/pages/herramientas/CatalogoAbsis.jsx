@@ -173,12 +173,13 @@ export default function CatalogoAbsis() {
             <p className="molsan-page-header__eyebrow">MOLSAN ERP · DATOS ABSIS</p>
             <h1 className="molsan-page-header__title">Catálogo ABSIS</h1>
             <p className="molsan-page-header__description">Gestiona en una única pantalla los estados y listas auxiliares que utiliza la integración ABSIS. Cada lista se mantiene por separado y sus cambios quedan guardados en el servidor.</p>
+            <button type="button" onClick={() => window.history.back()} className="molsan-btn molsan-btn--secondary mt-3">← Volver</button>
           </div>
         </div>
         <div className="molsan-page-header__actions">
-          <div className="rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-right">
-            <p className="text-2xl font-bold text-white">{filas.filter((f) => f.activo).length}</p>
-            <p className="text-xs font-medium text-blue-100">entradas activas</p>
+          <div className="rounded-xl border border-white/30 bg-white/10 px-4 py-3 text-right text-white shadow-sm">
+            <p className="text-2xl font-extrabold leading-tight text-white">{filas.filter((f) => f.activo).length}</p>
+            <p className="text-xs font-semibold tracking-wide text-white">entradas activas</p>
           </div>
         </div>
       </header>
