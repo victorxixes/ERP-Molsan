@@ -1021,7 +1021,7 @@ export default function TablaLogs({
                                       border-slate-200
                                     "
                                   >
-                                    {icono}
+                                    <MolsanIcon name={icono} size={17} />
                                   </span>
 
                                   <span
