@@ -39,7 +39,7 @@ export default function ImportacionesDatos() {
           <h2 className="molsan-section-header__title">{grupo}</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {IMPORTADORES.filter((item) => item.grupo === grupo).map((item) => (
-              <Link key={item.ruta} to={item.ruta} className="importaciones-datos-card group">
+              <Link key={item.ruta} to={item.ruta} className="erp-card importaciones-datos-card group">
                 <span className="importaciones-datos-card__icon"><MolsanIcon name={item.icono} size={44} /></span>
                 <span className="min-w-0 flex-1">
                   <strong>{item.titulo}</strong>
