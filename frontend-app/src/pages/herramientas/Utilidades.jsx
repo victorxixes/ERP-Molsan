@@ -9,7 +9,7 @@ import "../../css/HerramientasPremium.css";
 export default function Utilidades() {
 
   return (
-    <div className="molsan-page-stack utilidades-premium-page min-h-full animate-fadeIn">
+    <div className="molsan-page-stack utilidades-premium-page min-h-full">
       <header className="molsan-page-header">
         <div className="molsan-page-header__identity">
           <div className="molsan-page-header__mark" ><MolsanIcon name="settings" size={42} bare /></div>

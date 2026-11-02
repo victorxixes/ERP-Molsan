@@ -47,7 +47,10 @@ export default function Layout() {
         setTieneVolverPropio(false);
         return;
       }
-      const botonVolverExistente = Array.from(encontrada.querySelectorAll("button, a")).find((elemento) => {
+      // El botón insertado por este mismo Layout mediante createPortal no debe
+      // detectarse como un botón de retorno propio de la página. Si se incluye,
+      // el MutationObserver alterna entre desmontar y volver a montar el portal.
+      const botonVolverExistente = Array.from(encontrada.querySelectorAll("button:not([data-layout-back-button]), a")).find((elemento) => {
         const texto = (elemento.textContent || "").trim();
         const aria = elemento.getAttribute("aria-label") || "";
         return /\bvolver\b|regresar/i.test(texto) || /\bvolver\b|regresar/i.test(aria);
@@ -88,7 +91,7 @@ export default function Layout() {
           <div className={`w-full${rutaCancelaGest ? " cg-unified-workspace" : ""}`}>
             {esSubpagina && !cabeceraSubpagina && !tieneVolverPropio ? (
         <header className="molsan-page-header molsan-page-back-fallback">
-          <button type="button" className="molsan-page-back-button" onClick={volverSubpagina} aria-label="Volver a la página anterior"><span aria-hidden="true">←</span> Volver</button>
+          <button type="button" data-layout-back-button="true" className="molsan-page-back-button" onClick={volverSubpagina} aria-label="Volver a la página anterior"><span aria-hidden="true">←</span> Volver</button>
         </header>
       ) : null}
             <Outlet />
