@@ -244,12 +244,7 @@ export default function Logs() {
               className="molsan-page-header__mark"
             >
 
-              <span
-                className="text-xl"
-                aria-hidden="true"
-              >
-                📋
-              </span>
+              <MolsanIcon name="clipboard" size={30} bare />
 
             </div>
 
