@@ -308,82 +308,32 @@
 
 
 
-/* Alta de encargo: carpeta digital a la izquierda y datos del contrato a la derecha */
-.eg-contrato-layout { display:grid; grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr); gap:14px; align-items:start; }
-.eg-contrato-layout > .mb-3 { grid-column:1 / -1; }
-.eg-contrato-layout > .grid.grid-cols-1.gap-3.sm\\:grid-cols-2 { grid-column:2; grid-row:2; }
-.eg-contrato-layout > .mt-4.flex.flex-wrap.items-center.justify-between.gap-3 { grid-column:2; grid-row:3; margin-top:0; }
-.eg-contrato-layout > .mt-3.space-y-3 { grid-column:2; grid-row:4; }
-.eg-contrato-layout > .mt-4.border-t.border-blue-200.pt-3 { grid-column:1; grid-row:2 / span 3; min-width:0; margin-top:0; border-top:0; padding-top:0; }
-@media (max-width:900px) {
-  .eg-contrato-layout { grid-template-columns:minmax(0,1fr); }
-  .eg-contrato-layout > .mb-3,
-  .eg-contrato-layout > .grid.grid-cols-1.gap-3.sm\\:grid-cols-2,
-  .eg-contrato-layout > .mt-4.flex.flex-wrap.items-center.justify-between.gap-3,
-  .eg-contrato-layout > .mt-3.space-y-3,
-  .eg-contrato-layout > .mt-4.border-t.border-blue-200.pt-3 { grid-column:1; grid-row:auto; }
-  .eg-contrato-layout > .mt-4.border-t.border-blue-200.pt-3 { border-top:1px solid var(--molsan-border, #D8E4EC); padding-top:12px; }
+/* Estructura única del formulario de alta y edición. */
+.eg-modal-layout {
+  display:grid;
+  grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
+  align-items:start;
+  gap:16px;
 }
-
-
-/* Ajuste estructural robusto del formulario de contrato */
-
-.eg-contrato-layout > :nth-child(1) { grid-column:1 / -1; }
-.eg-contrato-layout > :nth-child(2) { grid-column:2; grid-row:2; }
-.eg-contrato-layout > :nth-child(3) { grid-column:2; grid-row:3; margin-top:0; }
-.eg-contrato-layout > :nth-child(4) { grid-column:2; grid-row:4; }
-.eg-contrato-layout > :nth-child(5) { grid-column:1; grid-row:2 / span 3; min-width:0; margin-top:0; border-top:0; padding-top:0; }
-@media (max-width:900px) {
-  
-  .eg-contrato-layout > :nth-child(n) { grid-column:1; grid-row:auto; }
-  .eg-contrato-layout > :nth-child(5) { border-top:1px solid var(--molsan-border, #D8E4EC); padding-top:12px; }
-}
-
-
-/* Distribución definitiva del alta: carpeta digital a la izquierda; datos completos a la derecha */
-.eg-modal-layout { grid-template-columns:minmax(300px,.82fr) minmax(0,1.18fr); align-items:start; }
-.eg-modal-datos { display:flex; flex-direction:column; min-width:0; }
-.eg-modal-datos > .eg-modal-section-heading {order:0}
-.eg-modal-datos > .eg-modal-field-grid { order:1; display:flex; flex-direction:column; min-width:0; }
-.eg-modal-datos > .eg-modal-field-grid > .eg-span-2:first-of-type { width:100%; }
-.eg-modal-datos .eg-contrato-layout { display:flex; flex-direction:column; width:100%; }
-.eg-modal-datos .eg-contrato-layout > :nth-child(1),
-.eg-modal-datos .eg-contrato-layout > :nth-child(2),
-.eg-modal-datos .eg-contrato-layout > :nth-child(3),
-.eg-modal-datos .eg-contrato-layout > :nth-child(4) { width:100%; }
-.eg-modal-carpeta-lateral { grid-column:1; grid-row:1; min-width:0; }
-.eg-modal-carpeta-lateral > .mt-4.border-t.border-blue-200.pt-3 { margin-top:0; border:0; padding:0; }
-.eg-modal-carpeta-lateral > .mt-4.border-t.border-blue-200.pt-3 > .grid { grid-template-columns:minmax(0,1fr); }
-
-
-@media (max-width:1100px) {
-  .eg-modal-layout { grid-template-columns:minmax(0,1fr); }
-  .eg-modal-carpeta-lateral { grid-column:1; grid-row:auto; }
-  .eg-modal-carpeta-lateral > .mt-4.border-t.border-blue-200.pt-3 > .grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
-}
-@media (max-width:650px) {
-  .eg-modal-carpeta-lateral > .mt-4.border-t.border-blue-200.pt-3 > .grid { grid-template-columns:minmax(0,1fr); }
-}
-
-
-/* Carpeta digital en columna independiente, junto a la ficha Datos del encargo */
-
 .eg-modal-datos { grid-column:2; grid-row:1; display:flex; flex-direction:column; min-width:0; }
 .eg-modal-datos > .eg-modal-field-grid { display:flex; flex-direction:column; min-width:0; }
-
 .eg-modal-carpeta-lateral { grid-column:1; grid-row:1; display:flex; flex-direction:column; gap:14px; min-width:0; }
-.eg-modal-carpeta-contrato { min-width:0; padding:14px; background:rgba(255,255,255,.9); border:1px solid #dfe6f0; border-radius:16px; }
+.eg-modal-carpeta-contrato { min-width:0; padding:14px; background:#fff; border:1px solid var(--molsan-border,#D8E4EC); border-radius:14px; }
 .eg-modal-carpeta-panel { margin:0!important; border:0!important; padding:0!important; }
 .eg-modal-carpeta-panel > .grid { grid-template-columns:minmax(0,1fr)!important; }
-
-
-@media (max-width:1100px) {
- 
- .eg-modal-datos,.eg-modal-carpeta-lateral { grid-column:1; grid-row:auto; }
- .eg-modal-carpeta-panel > .grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important; }
+.eg-contrato-layout { display:flex; flex-direction:column; gap:14px; width:100%; min-width:0; }
+.eg-contrato-layout > * { width:100%; min-width:0; }
+@media(max-width:1100px) {
+  .eg-modal-layout { grid-template-columns:minmax(0,1fr); }
+  .eg-modal-datos,.eg-modal-carpeta-lateral { grid-column:1; grid-row:auto; }
+  .eg-modal-carpeta-panel > .grid { grid-template-columns:repeat(2,minmax(0,1fr))!important; }
 }
-@media (max-width:650px) { .eg-modal-carpeta-panel > .grid { grid-template-columns:minmax(0,1fr)!important; } }
-
+@media(max-width:650px) {
+  .eg-modal-layout { padding:12px; gap:12px; }
+  .eg-modal-carpeta-panel > .grid { grid-template-columns:minmax(0,1fr)!important; }
+  .eg-modal-field-grid { grid-template-columns:minmax(0,1fr); }
+  .eg-modal-field-grid .eg-span-2 { grid-column:1; }
+}
 
 /* Ajustes de uniformidad corporativa: azul MOLSAN, sin dorados decorativos */
 .encargagest .eg-main input:focus,
@@ -663,3 +613,62 @@
 .encargagest .eg-main .eg-kpi-icono-alerta{color:#9A5A18!important;background:#FFF5E8!important;border-color:#F0D9B8!important}
 .encargagest .eg-main .eg-kpi>div{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important}
 .encargagest .eg-main .eg-kpi>p:first-child,.encargagest .eg-main .eg-kpi>p:last-child{margin:0!important;color:#617789!important}
+
+/* Autoridad visual EncargaGest · MOLSAN ERP PREMIUM 2027 */
+.encargagest { --eg-ink:#17344B; --eg-blue:#064675; --eg-muted:#617789; --eg-border:#D8E4EC; --eg-soft:#F2F7FB; }
+.encargagest .eg-main { display:flex; flex-direction:column; gap:18px; width:100%; max-width:none; margin:0; padding:4px 0 24px; }
+.encargagest .eg-main > section { min-width:0; }
+.encargagest .eg-kpi {
+  min-width:0; min-height:136px; padding:17px 18px; display:flex; flex-direction:column;
+  justify-content:space-between; gap:9px; border:1px solid var(--eg-border)!important;
+  border-radius:15px!important; background:#fff!important; box-shadow:0 5px 18px rgba(6,50,82,.055)!important;
+}
+.encargagest .eg-kpi > p { margin:0!important; color:var(--eg-muted)!important; }
+.encargagest .eg-kpi strong { color:var(--eg-blue)!important; font-variant-numeric:tabular-nums; }
+.encargagest .eg-kpi-icono {
+  display:grid!important; flex:0 0 40px!important; width:40px!important; height:40px!important;
+  place-items:center!important; color:var(--eg-blue)!important; background:#EAF2F8!important;
+  border:1px solid var(--eg-border)!important; border-radius:12px!important;
+}
+.encargagest .eg-kpi-icono-alerta { color:#9A5A18!important; background:#FFF5E8!important; border-color:#F0D9B8!important; }
+.encargagest .eg-panel,.encargagest .eg-directorio {
+  min-width:0; overflow:hidden; border:1px solid var(--eg-border)!important;
+  border-radius:16px!important; background:#fff!important; box-shadow:0 5px 18px rgba(6,50,82,.055)!important;
+}
+.encargagest .eg-panel-head,.encargagest .eg-directorio-cabecera {
+  display:flex; align-items:center; justify-content:space-between; gap:14px;
+  padding:16px 19px!important; border:0!important; border-bottom:1px solid var(--eg-border)!important;
+  border-radius:0!important; background:var(--eg-soft)!important;
+}
+.encargagest .eg-panel-head :is(h2,h3),.encargagest .eg-directorio-cabecera h2 { margin:0; color:var(--eg-blue)!important; font-weight:800; }
+.encargagest .eg-directorio-eyebrow,.encargagest .eg-directorio-contador strong { color:var(--eg-blue)!important; }
+.encargagest .eg-directorio-busqueda { border-color:var(--eg-border)!important; }
+.encargagest .eg-directorio-input-wrap { border-color:var(--eg-border)!important; border-radius:11px!important; color:var(--eg-blue)!important; }
+.encargagest .eg-directorio-input-wrap > span { font-size:inherit!important; }
+.encargagest .eg-directorio-tabla thead th { color:var(--eg-blue)!important; background:#EAF2F8!important; border-color:var(--eg-border)!important; }
+.encargagest .eg-directorio-tabla tbody td { border-color:var(--eg-border)!important; }
+.encargagest .eg-directorio-gestionar { background:var(--eg-blue)!important; }
+.encargagest .eg-directorio-habilitar,.encargagest .eg-directorio-global { color:var(--eg-blue)!important; border-color:var(--eg-border)!important; background:var(--eg-soft)!important; }
+.encargagest .eg-modal-overlay { background:rgba(3,28,46,.58); backdrop-filter:blur(4px); }
+.encargagest .eg-modal-form,.encargagest .eg-modal-perfil {
+  border:1px solid var(--eg-border)!important; border-radius:18px!important;
+  background:#fff!important; box-shadow:0 24px 64px rgba(3,28,46,.24)!important;
+}
+.encargagest .eg-modal-header,.encargagest .eg-perfil-cabecera {
+  color:#fff!important; background:linear-gradient(116deg,#032D4B 0%,#064675 58%,#0D638C 100%)!important;
+  border-color:rgba(255,255,255,.16)!important;
+}
+.encargagest .eg-modal-header :is(h2,h3,p,span),.encargagest .eg-perfil-cabecera :is(h2,h3,p,span) { color:#fff!important; }
+.encargagest .eg-modal-close { color:#fff!important; border-color:rgba(255,255,255,.3)!important; background:rgba(255,255,255,.12)!important; }
+.encargagest .eg-modal-section { border:1px solid var(--eg-border)!important; border-radius:14px!important; background:#fff!important; }
+.encargagest .eg-modal-section-icono { color:var(--eg-blue)!important; background:var(--eg-soft)!important; border-color:var(--eg-border)!important; }
+.encargagest :is(input,select,textarea):focus-visible { outline:3px solid rgba(6,70,117,.16)!important; outline-offset:1px; }
+.encargagest button:focus-visible { outline:3px solid rgba(6,70,117,.24)!important; outline-offset:2px!important; }
+@media(max-width:760px) {
+  .encargagest .eg-kpi { min-height:116px; padding:14px!important; }
+  .encargagest .eg-panel-head,.encargagest .eg-directorio-cabecera { align-items:flex-start; flex-direction:column; }
+  .encargagest .eg-modal-perfil { width:calc(100vw - 16px); max-width:calc(100vw - 16px); max-height:calc(100dvh - 16px); }
+}
+@media(prefers-reduced-motion:reduce) {
+  .encargagest * { scroll-behavior:auto!important; transition:none!important; animation:none!important; }
+}
