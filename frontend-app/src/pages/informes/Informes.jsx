@@ -1232,7 +1232,7 @@ function InformeCitasApoderados() {
               text-blue-500
             "
           >
-            ⚙
+            <MolsanIcon name="settings" size={20} />
           </div>
 
 
@@ -1470,7 +1470,7 @@ function InformeCitasApoderados() {
       >
 
         <KpiCard
-          icon="💻"
+          icon="monitor"
           titulo="Total VC"
           valor={totalVC}
           subtitulo="Videoconferencias"
@@ -1479,7 +1479,7 @@ function InformeCitasApoderados() {
 
 
         <KpiCard
-          icon="👤"
+          icon="person"
           titulo="Total Presencial"
           valor={totalPresencial}
           subtitulo="Citas presenciales"
@@ -1488,7 +1488,7 @@ function InformeCitasApoderados() {
 
 
         <KpiCard
-          icon="🚗"
+          icon="car"
           titulo="Km Totales"
           valor={totalKm.toFixed(1)}
           subtitulo="Kilómetros"
@@ -1497,7 +1497,7 @@ function InformeCitasApoderados() {
 
 
         <KpiCard
-          icon="📈"
+          icon="chart"
           titulo="Media Citas"
           valor={mediaCitas.toFixed(1)}
           subtitulo="Por apoderado"
@@ -1506,7 +1506,7 @@ function InformeCitasApoderados() {
 
 
         <KpiCard
-          icon="📍"
+          icon="pin"
           titulo="Media Km"
           valor={mediaKm.toFixed(1)}
           subtitulo="Por apoderado"
@@ -2049,7 +2049,7 @@ function InformeCitasApoderados() {
           <GraficoCard
             titulo="Videoconferencias"
             descripcion="VC por apoderado"
-            icono="💻"
+            icono="monitor"
           >
 
             <canvas
@@ -2062,7 +2062,7 @@ function InformeCitasApoderados() {
           <GraficoCard
             titulo="Presencial"
             descripcion="Citas presenciales por apoderado"
-            icono="👤"
+            icono="person"
           >
 
             <canvas
@@ -2075,7 +2075,7 @@ function InformeCitasApoderados() {
           <GraficoCard
             titulo="Desplazamientos"
             descripcion="Kilómetros presenciales"
-            icono="🚗"
+            icono="car"
           >
 
             <canvas
@@ -2385,13 +2385,13 @@ const APARTADOS_INFORMES = [
     key: "apoderados",
     titulo: "Informe citas apoderados",
     descripcion: "Citas presenciales, videoconferencias y desplazamientos.",
-    icono: "👥",
+    icono: "users",
   },
   {
     key: "firmas",
     titulo: "Informe firmas",
     descripcion: "Seguimiento de las firmas realizadas.",
-    icono: "✍️",
+    icono: "pen",
   },
   {
     key: "sla",
@@ -2403,13 +2403,13 @@ const APARTADOS_INFORMES = [
     key: "facturacion",
     titulo: "Informes de facturación",
     descripcion: "Resumen de importes, facturas y estados.",
-    icono: "🧾",
+    icono: "receipt",
   },
   {
     key: "notarios",
     titulo: "Informes de notarios",
     descripcion: "Actividad y estadísticas por notario.",
-    icono: "🏛️",
+    icono: "courthouse",
   },
 ];
 
@@ -2715,10 +2715,10 @@ function InformeFirmas() {
         </div>
       )}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        <InformeKpi icono="✍️" titulo="Firmas reales" valor={numeroInforme(resumen.total_firmas)} subtitulo="Expedientes con fecha de firma" />
-        <InformeKpi icono="💻" titulo="Videoconferencia" valor={numeroInforme(resumen.videoconferencia)} />
-        <InformeKpi icono="🏛️" titulo="Presencial" valor={numeroInforme(resumen.presencial)} />
-        <InformeKpi icono="❔" titulo="Sin clasificar" valor={numeroInforme(resumen.sin_clasificar)} />
+        <InformeKpi icono="pen" titulo="Firmas reales" valor={numeroInforme(resumen.total_firmas)} subtitulo="Expedientes con fecha de firma" />
+        <InformeKpi icono="monitor" titulo="Videoconferencia" valor={numeroInforme(resumen.videoconferencia)} />
+        <InformeKpi icono="courthouse" titulo="Presencial" valor={numeroInforme(resumen.presencial)} />
+        <InformeKpi icono="help" titulo="Sin clasificar" valor={numeroInforme(resumen.sin_clasificar)} />
         <InformeKpi icono="⏱️" titulo="Media envío-firma" valor={resumen.media_dias_envio_firma == null ? "—" : `${numeroInforme(resumen.media_dias_envio_firma, 1)} días`} subtitulo={`${numeroInforme(resumen.firmas_con_tiempo_calculable)} con fechas válidas`} />
       </div>
 
@@ -2928,11 +2928,11 @@ function InformeNotarios() {
       <AvisoInforme error={error} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-        <InformeKpi icono="✍️" titulo="Expedientes firmados" valor={numeroInforme(resumen.total_firmas)} subtitulo="Firmas reales en el periodo" />
-        <InformeKpi icono="🏛️" titulo="Notarios con actividad" valor={numeroInforme(resumen.total_notarios)} subtitulo="Con al menos una firma" />
-        <InformeKpi icono="💻" titulo="Videoconferencia" valor={numeroInforme(resumen.videoconferencia)} />
-        <InformeKpi icono="🤝" titulo="Presencial" valor={numeroInforme(resumen.presencial)} />
-        <InformeKpi icono="❔" titulo="Sin clasificar" valor={numeroInforme(resumen.sin_clasificar)} subtitulo="Modalidad pendiente de confirmar" />
+        <InformeKpi icono="pen" titulo="Expedientes firmados" valor={numeroInforme(resumen.total_firmas)} subtitulo="Firmas reales en el periodo" />
+        <InformeKpi icono="courthouse" titulo="Notarios con actividad" valor={numeroInforme(resumen.total_notarios)} subtitulo="Con al menos una firma" />
+        <InformeKpi icono="monitor" titulo="Videoconferencia" valor={numeroInforme(resumen.videoconferencia)} />
+        <InformeKpi icono="handshake" titulo="Presencial" valor={numeroInforme(resumen.presencial)} />
+        <InformeKpi icono="help" titulo="Sin clasificar" valor={numeroInforme(resumen.sin_clasificar)} subtitulo="Modalidad pendiente de confirmar" />
         <InformeKpi icono="⏱️" titulo="Media envío-firma" valor={resumen.media_dias_envio_firma == null ? "—" : `${numeroInforme(resumen.media_dias_envio_firma, 1)} días`} subtitulo={`${numeroInforme(resumen.firmas_con_tiempo_calculable)} con fechas válidas`} />
       </div>
 
@@ -3115,9 +3115,9 @@ function InformeSLA() {
   return (
     <section className="informes-report-content space-y-5">
 <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-        <InformeKpi icono="📁" titulo="Expedientes" valor={numeroInforme(items.length)} subtitulo="Según el grupo y la búsqueda" />
+        <InformeKpi icono="folder" titulo="Expedientes" valor={numeroInforme(items.length)} subtitulo="Según el grupo y la búsqueda" />
         <InformeKpi icono="⏱️" titulo="Duración global media" valor={mediaGlobal == null ? "—" : `${numeroInforme(mediaGlobal, 1)} días`} subtitulo={`${numeroInforme(globalesDentro)} dentro de plazo de ${numeroInforme(globalesEvaluables.length)} evaluables`} />
-        <InformeKpi icono="⚠️" titulo="Actividades fuera de plazo" valor={numeroInforme(fuera)} subtitulo={cumplimiento == null ? "Sin datos suficientes para calcular cumplimiento" : `${cumplimiento}% de cumplimiento en actividades con objetivo`} />
+        <InformeKpi icono="alert" titulo="Actividades fuera de plazo" valor={numeroInforme(fuera)} subtitulo={cumplimiento == null ? "Sin datos suficientes para calcular cumplimiento" : `${cumplimiento}% de cumplimiento en actividades con objetivo`} />
       </div>
       <section className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-sm backdrop-blur-xl">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_minmax(220px,0.5fr)]">
@@ -3350,9 +3350,9 @@ function InformeFacturacion() {
   
   const campo = "block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
   const grupos = [
-    { key: "con_provision", titulo: "Cancelación con provisión", descripcion: "TIPOOPERACION: CANCELACIÓN / CANCELACIÓN CON PROVISIÓN", icono: "🏦", acento: "emerald" },
-    { key: "sin_provision", titulo: "Cancelación sin provisión", descripcion: "TIPOOPERACION: CANCELACIÓN SIN PROVISIÓN", icono: "📄", acento: "amber" },
-    { key: "otros", titulo: "Otros tipos de operación", descripcion: "Filas importadas cuyo TIPOOPERACION no es una cancelación", icono: "📋", acento: "blue" },
+    { key: "con_provision", titulo: "Cancelación con provisión", descripcion: "TIPOOPERACION: CANCELACIÓN / CANCELACIÓN CON PROVISIÓN", icono: "bank", acento: "emerald" },
+    { key: "sin_provision", titulo: "Cancelación sin provisión", descripcion: "TIPOOPERACION: CANCELACIÓN SIN PROVISIÓN", icono: "file", acento: "amber" },
+    { key: "otros", titulo: "Otros tipos de operación", descripcion: "Filas importadas cuyo TIPOOPERACION no es una cancelación", icono: "clipboard", acento: "blue" },
   ];
   const renderTarjetas = (grupo) => {
     const r = resumen(grupo.key);
@@ -3364,10 +3364,10 @@ function InformeFacturacion() {
           <div className="ml-auto text-right"><div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Registros del periodo</div><div className="text-2xl font-extrabold text-slate-800">{loadingTarjetas ? "…" : numeroInforme(r.registros)}</div></div>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <InformeKpi titulo="Gastos Post Firma" valor={loadingTarjetas ? "…" : euros(r.total_gasto)} subtitulo={numeroInforme(r.registros) + " registros"} icono="🧾" />
-          <InformeKpi titulo="Base imponible" valor={loadingTarjetas ? "…" : euros(r.base_impuesto)} subtitulo="Base asociada al impuesto" icono="📑" />
-          <InformeKpi titulo="Base de retención" valor={loadingTarjetas ? "…" : euros(r.base_retencion)} subtitulo="Base sujeta a retención" icono="🧮" />
-          <InformeKpi titulo="Impuestos" valor={loadingTarjetas ? "…" : euros(r.total_impuesto)} subtitulo="Importe total de impuesto" icono="💶" />
+          <InformeKpi titulo="Gastos Post Firma" valor={loadingTarjetas ? "…" : euros(r.total_gasto)} subtitulo={numeroInforme(r.registros) + " registros"} icono="receipt" />
+          <InformeKpi titulo="Base imponible" valor={loadingTarjetas ? "…" : euros(r.base_impuesto)} subtitulo="Base asociada al impuesto" icono="files" />
+          <InformeKpi titulo="Base de retención" valor={loadingTarjetas ? "…" : euros(r.base_retencion)} subtitulo="Base sujeta a retención" icono="calculator" />
+          <InformeKpi titulo="Impuestos" valor={loadingTarjetas ? "…" : euros(r.total_impuesto)} subtitulo="Importe total de impuesto" icono="euro" />
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="rounded-2xl border border-emerald-100 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Cobrado</div><div className="mt-1 text-xl font-bold text-emerald-700">{loadingTarjetas ? "…" : euros(r.total_cobrado)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.cobrado)} registros</div></div>
@@ -3495,7 +3495,7 @@ function InformeFacturacion() {
           <section role="dialog" aria-modal="true" aria-labelledby="modal-facturacion-titulo" className="flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden rounded-2xl border border-white/70 bg-white shadow-2xl">
             <header className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200 px-5 py-4">
               <div><h2 id="modal-facturacion-titulo" className="text-xl font-bold text-slate-800">Detalle de facturación</h2><p className="mt-1 text-sm text-slate-500">Tabla Excel con los registros que cumplen los filtros seleccionados.</p></div>
-              <button type="button" onClick={() => setModalAbierto(false)} aria-label="Cerrar ventana" className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50">✕ Cerrar</button>
+              <button type="button" onClick={() => setModalAbierto(false)} aria-label="Cerrar ventana" className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50"><span>Cerrar</span><MolsanIcon name="x" size={16} /></button>
             </header>
             <form onSubmit={aplicar} className="grid grid-cols-1 gap-3 overflow-y-auto border-b border-slate-200 bg-slate-50/80 px-5 py-4 sm:grid-cols-2 xl:grid-cols-4">
               <label className="text-xs font-semibold text-slate-600">Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
