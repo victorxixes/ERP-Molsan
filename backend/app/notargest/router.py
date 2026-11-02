@@ -205,10 +205,10 @@ def migrar_notargest():
     print("[NOTARGEST MIGRACION] Migración de acceso revisada.", flush=True)
 
 def _registrar_password_inicial_notargest(notaria, nif: str) -> None:
-    """Registra el acceso inicial por NIF sin bloquear el primer inicio de sesión."""
+    """Registra el NIF como credencial provisional y exige cambiarla al entrar."""
     notaria.notargest_password_hash = hash_password(nif)
-    notaria.notargest_cambiar_password = False
-    notaria.notargest_password_provisional = False
+    notaria.notargest_cambiar_password = True
+    notaria.notargest_password_provisional = True
 
 
 def _validar_password_login_notargest(notaria, password, nif):
