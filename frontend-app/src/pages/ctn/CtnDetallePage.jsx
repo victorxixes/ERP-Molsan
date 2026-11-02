@@ -159,7 +159,7 @@ export default function CtnDetallePage() {
     <div className="molsan-page-stack ctn-detalle-page ctn-detalle-page--content">
       <header className="ctn-detalle-header molsan-page-header">
         <div className="molsan-page-header__identity">
-          <div className="molsan-page-header__mark" aria-hidden="true">CTN</div>
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="courthouse" size={32} bare /></div>
           <div className="min-w-0">
             <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
             <h1 className="molsan-page-header__title">{nombreNotario(notaria)}</h1>
