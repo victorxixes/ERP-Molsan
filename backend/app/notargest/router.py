@@ -438,6 +438,12 @@ def _url_documento_segura_notargest(valor):
     return url if parsed.scheme == "https" and parsed.netloc else None
 
 
+def _observacion_ctn_visible_notargest(notaria, tipo_acceso):
+    if tipo_acceso == "notario" and not bool(getattr(notaria, "_notargest_sesion_soporte", False)):
+        return None
+    return getattr(notaria, "observacion", None)
+
+
 def _filtrar_campos_sensibles_notario_externo(datos):
     """Retira notas internas e identificadores de gestión no destinados a la notaría."""
     for campo in (
@@ -768,7 +774,7 @@ def me(n=Depends(get_notario), db: Session = Depends(get_db)):
         "departamento_cancelaciones": getattr(n, "departamento_cancelaciones", None),
         "departamento_copias": getattr(n, "departamento_copias", None),
         "otros_departamentos": getattr(n, "otros_departamentos", None),
-        "observacion": (None if tipo_acceso == "notario" and not bool(getattr(n, "_notargest_sesion_soporte", False)) else getattr(n, "observacion", None)),
+        "observacion": _observacion_ctn_visible_notargest(n, tipo_acceso),
         "tipo_acceso": tipo_acceso,
         "requiere_cambio_password": (
             tipo_acceso == "notario"
