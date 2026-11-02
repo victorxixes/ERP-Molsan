@@ -7,6 +7,7 @@ import hmac
 import secrets
 import os
 import base64
+import mimetypes
 import threading
 import asyncio
 
@@ -37,6 +38,15 @@ ROOT.mkdir(parents=True, exist_ok=True)
 
 MAX_BYTES = int(os.getenv("ENCARGAGEST_MAX_DOCUMENT_BYTES", str(25 * 1024 * 1024)))
 EXTENSIONES_PERMITIDAS = {".pdf", ".doc", ".docx", ".xls", ".xlsx", ".jpg", ".jpeg", ".png", ".eml", ".msg", ".txt"}
+
+
+def _tipo_mime_seguro_encargagest(nombre):
+    extension = Path(str(nombre or "")).suffix.lower()
+    if extension not in EXTENSIONES_PERMITIDAS:
+        return "application/octet-stream"
+    return mimetypes.guess_type("documento" + extension)[0] or "application/octet-stream"
+
+
 CATEGORIAS_DOCUMENTO = {
     "Hoja de solicitud",
     "Certificado de saldo cero / deuda",
@@ -1649,7 +1659,7 @@ async def subir_documento(
             nombre_guardado=nombre_guardado,
             categoria=categoria,
             contrato_index=contrato_index,
-            tipo_mime=archivo.content_type,
+            tipo_mime=_tipo_mime_seguro_encargagest(nombre_original),
             tamano_bytes=len(contenido),
             subido_por_id=(usuario.get("usuario_id") if _es_externo(usuario) else usuario.id),
             subido_por_nombre=_nombre_usuario(usuario),
@@ -1681,7 +1691,7 @@ def descargar_documento(encargo_id: int, documento_id: int, db: Session = Depend
     ruta = (ROOT / documento.nombre_guardado).resolve()
     if ruta.parent != ROOT or not ruta.is_file():
         raise HTTPException(status_code=404, detail="El archivo no está disponible en el almacenamiento.")
-    return FileResponse(path=str(ruta), filename=documento.nombre_original, media_type=documento.tipo_mime or "application/octet-stream")
+    return FileResponse(path=str(ruta), filename=documento.nombre_original, media_type=_tipo_mime_seguro_encargagest(documento.nombre_original), headers={"X-Content-Type-Options": "nosniff"})
 
 
 @router.delete("/encargos/{encargo_id}/documentos/{documento_id}")
