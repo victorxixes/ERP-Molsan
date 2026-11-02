@@ -885,7 +885,7 @@ export default function ApoderaGest() {
       <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="w-full apoderagest">
-      <header className="ag-hero molsan-page-header">
+      <header className="ag-hero molsan-page-header dashboard-header">
         <div className="ag-hero-identidad molsan-page-header__identity">
           <div className="ag-marca molsan-page-header__mark">AG</div>
           <div>
