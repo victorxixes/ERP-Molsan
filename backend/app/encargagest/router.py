@@ -389,6 +389,7 @@ def get_encargagest_actor(request: Request, token=Depends(obtener_token_bearer),
             return {
                 "tipo": "externo", "id": acceso.id, "usuario_id": acceso.id,
                 "notaria_id": notaria.id, "nombre": nombre, "usuario": acceso.usuario,
+                "sesion_soporte": es_sesion_soporte,
                 "requiere_cambio_password": bool(acceso.password_provisional and not es_sesion_soporte),
             }
 
@@ -743,7 +744,7 @@ def mi_sesion_encargagest(usuario=Depends(get_encargagest_actor), db: Session = 
             "departamento_cancelaciones": getattr(notaria, "departamento_cancelaciones", None),
             "departamento_copias": getattr(notaria, "departamento_copias", None),
             "otros_departamentos": getattr(notaria, "otros_departamentos", None),
-            "observacion": getattr(notaria, "observacion", None),
+            "observacion": (getattr(notaria, "observacion", None) if usuario.get("sesion_soporte") else None),
             "requiere_cambio_password": bool(usuario.get("requiere_cambio_password", False)),
         }
     _autorizar(usuario, "ver")
