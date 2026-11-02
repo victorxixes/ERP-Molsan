@@ -1571,7 +1571,1839 @@ function InformeCitasApoderados() {
           "
         >
 
-          
+          <button
+            onClick={exportarExcel}
+            className="
+              px-4
+              py-2.5
+              rounded-xl
+              bg-emerald-500
+              hover:bg-emerald-600
+              border border-emerald-400
+              text-white
+              text-sm
+              font-semibold
+              shadow-[0_6px_18px_rgba(16,185,129,0.22)]
+              transition
+              active:scale-[0.97]
+              flex
+              items-center
+              gap-2
+            "
+          >
+            <MolsanIcon name="fileCheck" size={20} />
+            Exportar Excel
+          </button>
+
+
+          <button
+            onClick={exportarPDF}
+            className="
+              px-4
+              py-2.5
+              rounded-xl
+              bg-rose-500
+              hover:bg-rose-600
+              border border-rose-400
+              text-white
+              text-sm
+              font-semibold
+              shadow-[0_6px_18px_rgba(244,63,94,0.20)]
+              transition
+              active:scale-[0.97]
+              flex
+              items-center
+              gap-2
+            "
+          >
+            <MolsanIcon name="file" size={20} />
+            Exportar PDF
+          </button>
+
+        </div>
+
+      </div>
+
+
+      {/* ======================================================
+          TABLA
+      ====================================================== */}
+
+      <div
+        className="
+          bg-white/72
+          backdrop-blur-xl
+          border border-white/80
+          rounded-2xl
+          shadow-[0_10px_35px_rgba(55,85,120,0.09)]
+          overflow-hidden
+        "
+      >
+
+        <div
+          className="
+            px-6
+            py-5
+            border-b border-slate-200/80
+            flex
+            items-center
+            justify-between
+            gap-4
+          "
+        >
+
+          <div>
+
+            <h2
+              className="
+                text-xl
+                font-bold
+                text-slate-800
+              "
+            >
+              Detalle por apoderado
+            </h2>
+
+
+            <p
+              className="
+                text-xs
+                text-slate-400
+                mt-1
+              "
+            >
+              {filtrada.length} registros encontrados
+            </p>
+
+          </div>
+
+
+          <div
+            className="
+              px-3
+              py-1.5
+              rounded-lg
+              bg-blue-50
+              border border-blue-100
+              text-xs
+              text-blue-600
+              font-medium
+            "
+          >
+            {mesActual} {año}
+          </div>
+
+        </div>
+
+
+        <div
+          className="
+            overflow-x-auto
+          "
+        >
+
+          <table
+            className="
+              w-full
+              text-slate-700
+              text-sm
+            "
+          >
+
+            <thead
+              className="
+                bg-blue-50/70
+                border-b border-blue-100
+              "
+            >
+
+              <tr>
+
+                <ThOrden
+                  titulo="Apoderado"
+                  campo="nombre"
+                  orden={orden}
+                  ordenar={ordenar}
+                  align="left"
+                />
+
+
+                <ThOrden
+                  titulo="VC"
+                  campo="vc"
+                  orden={orden}
+                  ordenar={ordenar}
+                  align="center"
+                />
+
+
+                <ThOrden
+                  titulo="Presencial"
+                  campo="presencial"
+                  orden={orden}
+                  ordenar={ordenar}
+                  align="center"
+                />
+
+
+                <ThOrden
+                  titulo="Km Presenciales"
+                  campo="km"
+                  orden={orden}
+                  ordenar={ordenar}
+                  align="center"
+                />
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              {filtrada.length === 0 ? (
+
+                <tr>
+
+                  <td
+                    colSpan={4}
+                    className="
+                      py-12
+                      text-center
+                      text-slate-400
+                    "
+                  >
+
+                    <div
+                      className="
+                        text-3xl
+                        mb-2
+                      "
+                    >
+                      <MolsanIcon name="inbox" size={42} />
+                    </div>
+
+
+                    <div
+                      className="
+                        text-sm
+                        text-slate-500
+                      "
+                    >
+                      No hay datos para los filtros seleccionados.
+                    </div>
+
+                  </td>
+
+                </tr>
+
+              ) : (
+
+                filtrada.map(
+                  (row, index) => (
+
+                    <tr
+                      key={
+                        row.apoderado_id ??
+                        `${row.nombre}-${index}`
+                      }
+                      className="
+                        border-b
+                        border-slate-100
+                        hover:bg-blue-50/45
+                        transition
+                        group
+                      "
+                    >
+
+                      {/* APODERADO */}
+
+                      <td
+                        className="
+                          py-3.5
+                          px-6
+                          text-left
+                        "
+                      >
+
+                        <div
+                          className="
+                            flex
+                            items-center
+                            gap-3
+                          "
+                        >
+
+                          <div
+                            className="
+                              w-8
+                              h-8
+                              rounded-lg
+                              bg-blue-50
+                              border border-blue-100
+                              flex
+                              items-center
+                              justify-center
+                              text-xs
+                              text-blue-600
+                              font-semibold
+                              group-hover:bg-blue-100
+                              transition
+                            "
+                          >
+                            {index + 1}
+                          </div>
+
+
+                          <span
+                            className="
+                              font-semibold
+                              text-slate-700
+                            "
+                          >
+                            {row.nombre ||
+                              "Sin nombre"}
+                          </span>
+
+                        </div>
+
+                      </td>
+
+
+                      {/* VC */}
+
+                      <td
+                        className="
+                          py-3.5
+                          px-6
+                          text-center
+                        "
+                      >
+
+                        <span
+                          className="
+                            inline-flex
+                            min-w-[42px]
+                            justify-center
+                            px-2.5
+                            py-1
+                            rounded-lg
+                            bg-blue-50
+                            border border-blue-200
+                            text-blue-700
+                            font-semibold
+                          "
+                        >
+                          {row.vc}
+                        </span>
+
+                      </td>
+
+
+                      {/* PRESENCIAL */}
+
+                      <td
+                        className="
+                          py-3.5
+                          px-6
+                          text-center
+                        "
+                      >
+
+                        <span
+                          className="
+                            inline-flex
+                            min-w-[42px]
+                            justify-center
+                            px-2.5
+                            py-1
+                            rounded-lg
+                            bg-emerald-50
+                            border border-emerald-200
+                            text-emerald-700
+                            font-semibold
+                          "
+                        >
+                          {row.presencial}
+                        </span>
+
+                      </td>
+
+
+                      {/* KM */}
+
+                      <td
+                        className="
+                          py-3.5
+                          px-6
+                          text-center
+                        "
+                      >
+
+                        <span
+                          className="
+                            inline-flex
+                            min-w-[60px]
+                            justify-center
+                            px-2.5
+                            py-1
+                            rounded-lg
+                            bg-rose-50
+                            border border-rose-200
+                            text-rose-600
+                            font-semibold
+                          "
+                        >
+                          {row.km
+                            ? row.km.toFixed(1)
+                            : "0.0"}
+                        </span>
+
+                      </td>
+
+                    </tr>
+
+                  )
+                )
+
+              )}
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+
+      {/* ======================================================
+          GRÁFICOS
+      ====================================================== */}
+
+      <div>
+
+        <div
+          className="
+            mb-4
+            flex
+            items-center
+            gap-3
+          "
+        >
+
+          <div
+            className="
+              w-10
+              h-10
+              rounded-xl
+              bg-blue-50
+              border border-blue-100
+              flex
+              items-center
+              justify-center
+              text-blue-500
+            "
+          >
+            <MolsanIcon name="chart" size={22} />
+          </div>
+
+
+          <div>
+
+            <h2
+              className="
+                text-xl
+                font-bold
+                text-slate-800
+              "
+            >
+              Análisis gráfico
+            </h2>
+
+
+            <p
+              className="
+                text-sm
+                text-slate-400
+                mt-1
+              "
+            >
+              Comparativa visual de la actividad del periodo.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          className="
+            grid
+            grid-cols-1
+            lg:grid-cols-3
+            gap-5
+          "
+        >
+
+          <GraficoCard
+            titulo="Videoconferencias"
+            descripcion="VC por apoderado"
+            icono="💻"
+          >
+
+            <canvas
+              id="graficoVC"
+            />
+
+          </GraficoCard>
+
+
+          <GraficoCard
+            titulo="Presencial"
+            descripcion="Citas presenciales por apoderado"
+            icono="👤"
+          >
+
+            <canvas
+              id="graficoP"
+            />
+
+          </GraficoCard>
+
+
+          <GraficoCard
+            titulo="Desplazamientos"
+            descripcion="Kilómetros presenciales"
+            icono="🚗"
+          >
+
+            <canvas
+              id="graficoKm"
+            />
+
+          </GraficoCard>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  );
+
+}
+
+
+/* ============================================================
+   KPI
+============================================================ */
+
+function KpiCard({
+  icon,
+  titulo,
+  valor,
+  subtitulo,
+  clase,
+}) {
+
+  const fondos = {
+
+    blue:
+      "bg-blue-50/80 border-blue-200",
+
+    green:
+      "bg-emerald-50/80 border-emerald-200",
+
+    red:
+      "bg-rose-50/80 border-rose-200",
+
+    purple:
+      "bg-purple-50/80 border-purple-200",
+
+    orange:
+      "bg-orange-50/80 border-orange-200",
+
+  };
+
+
+
+  return (
+
+    <div
+      className={`
+        relative
+        overflow-hidden
+        rounded-2xl
+        border
+        p-5
+        shadow-[0_8px_25px_rgba(55,85,120,0.08)]
+        transition
+        hover:-translate-y-0.5
+        hover:shadow-[0_12px_30px_rgba(55,85,120,0.12)]
+        ${fondos[clase]}
+      `}
+    >
+
+      <div
+        className="
+          flex
+          items-center
+          justify-between
+          gap-3
+        "
+      >
+
+        <div>
+
+          <p
+            className="
+              text-xs
+              uppercase
+              tracking-wide
+              text-slate-500
+              font-semibold
+            "
+          >
+            {titulo}
+          </p>
+
+
+          <div
+            className="
+              text-3xl
+              font-bold
+              text-slate-800
+              mt-2
+            "
+          >
+            {valor}
+          </div>
+
+
+          <p
+            className="
+              text-xs
+              text-slate-400
+              mt-1
+            "
+          >
+            {subtitulo}
+          </p>
+
+        </div>
+
+
+        <MolsanIcon name={icon} size={44} tone={clase === "green" ? "emerald" : clase === "purple" ? "violet" : clase === "orange" ? "amber" : "ocean"} />
+
+      </div>
+
+    </div>
+
+  );
+
+}
+
+
+/* ============================================================
+   CABECERA TABLA
+============================================================ */
+
+function ThOrden({
+  titulo,
+  campo,
+  orden,
+  ordenar,
+  align = "left",
+}) {
+
+  const activo =
+    orden.campo === campo;
+
+
+  return (
+
+    <th
+      className={`
+        py-3.5
+        px-6
+        font-semibold
+        text-blue-800/80
+        cursor-pointer
+        select-none
+        hover:text-blue-900
+        transition
+        ${
+          align === "center"
+            ? "text-center"
+            : "text-left"
+        }
+      `}
+      onClick={() =>
+        ordenar(campo)
+      }
+    >
+
+      <span
+        className="
+          inline-flex
+          items-center
+          gap-2
+        "
+      >
+
+        {titulo}
+
+
+        <span
+          className={`
+            text-[10px]
+            transition
+            ${
+              activo
+                ? "text-blue-500"
+                : "text-blue-300"
+            }
+          `}
+        >
+
+          {activo
+            ? orden.asc
+              ? "▲"
+              : "▼"
+            : "↕"}
+
+        </span>
+
+      </span>
+
+    </th>
+
+  );
+
+}
+
+
+/* ============================================================
+   TARJETA GRÁFICO
+============================================================ */
+
+function GraficoCard({
+  titulo,
+  descripcion,
+  icono,
+  children,
+}) {
+
+  return (
+
+    <div
+      className="
+        bg-white/70
+        backdrop-blur-xl
+        border border-white/80
+        rounded-2xl
+        shadow-[0_10px_35px_rgba(55,85,120,0.09)]
+        overflow-hidden
+      "
+    >
+
+      <div
+        className="
+          px-5
+          py-4
+          border-b border-slate-200/80
+        "
+      >
+
+        <div
+          className="
+            flex
+            items-center
+            gap-3
+          "
+        >
+
+          <MolsanIcon name={icono} size={36} tone="ocean" />
+
+
+          <div>
+
+            <h3
+              className="
+                text-sm
+                font-semibold
+                text-slate-700
+              "
+            >
+              {titulo}
+            </h3>
+
+
+            <p
+              className="
+                text-xs
+                text-slate-400
+                mt-0.5
+              "
+            >
+              {descripcion}
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        className="
+          h-[300px]
+          p-5
+        "
+      >
+
+        {children}
+
+      </div>
+
+    </div>
+
+  );
+
+}
+
+// ============================================================
+// ERP MOLSAN — CONTENEDOR DEL MÓDULO INFORMES
+// Los informes que todavía no tienen backend quedan preparados
+// como apartados independientes, sin mostrar datos ficticios.
+// ============================================================
+
+const APARTADOS_INFORMES = [
+  {
+    key: "apoderados",
+    titulo: "Informe citas apoderados",
+    descripcion: "Citas presenciales, videoconferencias y desplazamientos.",
+    icono: "👥",
+  },
+  {
+    key: "firmas",
+    titulo: "Informe firmas",
+    descripcion: "Seguimiento de las firmas realizadas.",
+    icono: "✍️",
+  },
+  {
+    key: "sla",
+    titulo: "Informe SLA’s",
+    descripcion: "Control de plazos por actividad y grupo de cancelación.",
+    icono: "⏱️",
+  },
+  {
+    key: "facturacion",
+    titulo: "Informes de facturación",
+    descripcion: "Resumen de importes, facturas y estados.",
+    icono: "🧾",
+  },
+  {
+    key: "notarios",
+    titulo: "Informes de notarios",
+    descripcion: "Actividad y estadísticas por notario.",
+    icono: "🏛️",
+  },
+];
+
+// ============================================================
+// INFORME DE FIRMAS REALES Y INFORME DE NOTARIOS
+// Los dos informes consultan Expediente.fecha_firma; no usan citas
+// de Agenda como si fueran firmas realizadas.
+// ============================================================
+
+function fechaISOInforme(fecha) {
+  const year = fecha.getFullYear();
+  const month = String(fecha.getMonth() + 1).padStart(2, "0");
+  const day = String(fecha.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function filtrosInformeIniciales() {
+  const hoy = new Date();
+  return {
+    fecha_desde: fechaISOInforme(new Date(hoy.getFullYear(), hoy.getMonth(), 1)),
+    fecha_hasta: fechaISOInforme(hoy),
+    modalidad: "",
+    tipo_operacion: "",
+    notario: "",
+    apoderado: "",
+    q: "",
+  };
+}
+
+function fechaInformeVisible(valor) {
+  if (!valor) return "—";
+  const texto = String(valor);
+  const match = texto.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return match ? `${match[3]}/${match[2]}/${match[1]}` : texto;
+}
+
+function numeroInforme(valor, decimales = 0) {
+  if (valor === null || valor === undefined || valor === "" || Number.isNaN(Number(valor))) return "—";
+  return Number(valor).toLocaleString("es-ES", {
+    minimumFractionDigits: decimales,
+    maximumFractionDigits: decimales,
+  });
+}
+
+function escaparHTMLInforme(valor) {
+  return String(valor ?? "—").replace(/[&<>"']/g, (caracter) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[caracter]));
+}
+
+function imprimirInforme(titulo, periodo, columnas, filas) {
+  const ventana = window.open("", "_blank");
+  if (!ventana) {
+    window.alert("El navegador ha bloqueado la ventana de impresión. Permite las ventanas emergentes para exportar a PDF.");
+    return;
+  }
+  const th = columnas.map((c) => `<th>${escaparHTMLInforme(c.label)}</th>`).join("");
+  const trs = filas.map((fila) => `<tr>${columnas.map((c) => `<td>${escaparHTMLInforme(c.render ? c.render(fila) : fila[c.key])}</td>`).join("")}</tr>`).join("");
+  ventana.document.write(`<!doctype html><html lang="es"><head><meta charset="utf-8"/><title>${escaparHTMLInforme(titulo)}</title><style>
+    @page{size:landscape;margin:12mm}body{font-family:Arial,sans-serif;color:#24344d;padding:12px}h1{color:#183b66;margin:0 0 4px}p{color:#7186a3;margin:0 0 18px;font-size:12px}table{border-collapse:collapse;width:100%;font-size:9px}th{background:#edf4fc;color:#31577f;text-align:left}th,td{border:1px solid #dbe7f4;padding:6px;vertical-align:top}tr:nth-child(even){background:#f8fbfe}
+    </style></head><body><h1>${escaparHTMLInforme(titulo)}</h1><p>Periodo: ${escaparHTMLInforme(periodo)} · Registros: ${filas.length}</p><table><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table><script>window.onload=()=>window.print();</script></body></html>`);
+  ventana.document.close();
+}
+
+function descargarBlobInforme(blob, nombre) {
+  const url = URL.createObjectURL(blob);
+  const enlace = document.createElement("a");
+  enlace.href = url;
+  enlace.download = nombre;
+  document.body.appendChild(enlace);
+  enlace.click();
+  enlace.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+function CampoFiltroInforme({ label, value, onChange, type = "text", placeholder = "" }) {
+  return (
+    <label className="block min-w-0">
+      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</span>
+      <input type={type} value={value ?? ""} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+    </label>
+  );
+}
+
+function SelectFiltroInforme({ label, value, onChange, children }) {
+  return (
+    <label className="block min-w-0">
+      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</span>
+      <select value={value ?? ""} onChange={(e) => onChange(e.target.value)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">{children}</select>
+    </label>
+  );
+}
+
+function InformeKpi({ titulo, valor, subtitulo, icono }) {
+  return (
+    <div className="rounded-2xl border border-white/80 bg-white/75 p-4 shadow-[0_8px_25px_rgba(55,85,120,0.07)] backdrop-blur-xl">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{titulo}</div>
+          <div className="mt-2 text-2xl font-bold tracking-tight text-slate-800">{valor}</div>
+          {subtitulo && <div className="mt-1 text-xs text-slate-400">{subtitulo}</div>}
+        </div>
+        <MolsanIcon name={icono} size={42} tone="ocean" />
+      </div>
+    </div>
+  );
+}
+
+function mensajeErrorInforme(error) {
+  if (!error) return "";
+  if (typeof error === "string") return error;
+  if (Array.isArray(error)) {
+    const mensajes = error.map((item) => {
+      if (typeof item === "string") return item;
+      if (item && typeof item === "object") return item.msg || item.message || JSON.stringify(item);
+      return String(item);
+    }).filter(Boolean);
+    return mensajes.join(" · ");
+  }
+  if (typeof error === "object") return error.msg || error.message || error.detail || JSON.stringify(error);
+  return String(error);
+}
+
+function AvisoInforme({ error }) {
+  const mensaje = mensajeErrorInforme(error);
+  if (!mensaje) return null;
+  return <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{mensaje}</div>;
+}
+
+function PanelEstadoInforme({ loading, vacio, textoVacio = "No hay registros para los filtros seleccionados." }) {
+  if (loading) return <div className="px-5 py-12 text-center text-sm text-slate-500">Consultando datos reales del ERP…</div>;
+  if (vacio) return <div className="px-5 py-12 text-center text-sm text-slate-500"><div className="mb-2 flex justify-center"><MolsanIcon name="inbox" size={36} /></div>{textoVacio}</div>;
+  return null;
+}
+
+async function descargarExcelBackend(url, params, nombre) {
+  const respuesta = await axios.get(url, { params, responseType: "blob" });
+  descargarBlobInforme(respuesta.data, nombre);
+}
+
+// ------------------------------ INFORME DE FIRMAS ------------------------------
+function InformeFirmas() {
+  const [filtros, setFiltros] = useState(filtrosInformeIniciales);
+  const [aplicados, setAplicados] = useState(filtrosInformeIniciales);
+  const [datos, setDatos] = useState({ resumen: {}, por_tipo_operacion: [], items: [] });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [exportando, setExportando] = useState(false);
+  const [recarga, setRecarga] = useState(0);
+  const [editandoId, setEditandoId] = useState("");
+  const [edicionFirma, setEdicionFirma] = useState({ modalidad: "SIN_CLASIFICAR", fecha_envio: "" });
+  const [guardandoDatosFirma, setGuardandoDatosFirma] = useState(false);
+  const [mensajeEdicionFirma, setMensajeEdicionFirma] = useState("");
+  const [ordenFirmas, setOrdenFirmas] = useState({ key: "fecha_firma", direction: "desc" });
+
+  useEffect(() => {
+    let activo = true;
+    const cargar = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const params = Object.fromEntries(Object.entries(aplicados).filter(([, v]) => v !== "" && v != null));
+        const respuesta = await axios.get(`${API_BASE}/informes/firmas`, { params });
+        if (activo) setDatos({ resumen: respuesta.data?.resumen || {}, por_tipo_operacion: respuesta.data?.por_tipo_operacion || [], items: respuesta.data?.items || [] });
+      } catch (e) {
+        if (activo) {
+          setDatos({ resumen: {}, por_tipo_operacion: [], items: [] });
+          setError(e?.response?.data?.detail || "No se ha podido cargar el informe de firmas. Comprueba que el endpoint de informes esté instalado en el backend.");
+        }
+      } finally {
+        if (activo) setLoading(false);
+      }
+    };
+    cargar();
+    return () => { activo = false; };
+  }, [aplicados, recarga]);
+
+  const cambiar = (campo, valor) => setFiltros((actual) => ({ ...actual, [campo]: valor }));
+  const aplicar = (e) => {
+    e.preventDefault();
+    if (filtros.fecha_desde && filtros.fecha_hasta && filtros.fecha_desde > filtros.fecha_hasta) {
+      setError("La fecha desde no puede ser posterior a la fecha hasta.");
+      return;
+    }
+    setError("");
+    setAplicados({ ...filtros });
+  };
+  const limpiar = () => {
+    const inicial = filtrosInformeIniciales();
+    setFiltros(inicial);
+    setAplicados(inicial);
+    setError("");
+  };
+  const periodo = `${fechaInformeVisible(aplicados.fecha_desde)} – ${fechaInformeVisible(aplicados.fecha_hasta)}`;
+  const resumen = datos.resumen || {};
+  const filas = datos.items || [];
+  const firmasSinClasificar = Number(resumen.sin_clasificar || 0);
+  const firmasSinTiempo = Math.max(
+    0,
+    Number(resumen.total_firmas || 0) - Number(resumen.firmas_con_tiempo_calculable || 0)
+  );
+  const columnasPDF = [
+    { key: "fecha_firma", label: "Fecha firma", render: (f) => fechaInformeVisible(f.fecha_firma) },
+    { key: "id_expediente", label: "N.º expediente" },
+    { key: "nombre_titular", label: "Titular" },
+    { key: "tipo_operacion", label: "Tipo operación" },
+    { key: "modalidad", label: "Modalidad", render: (f) => f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : "Sin clasificar" },
+    { key: "nombre_notario", label: "Notario" },
+    { key: "apoderado", label: "Apoderado" },
+    { key: "fecha_envio", label: "Fecha envío", render: (f) => fechaInformeVisible(f.fecha_envio) },
+    { key: "dias_envio_firma", label: "Días envío-firma" },
+    { key: "protocolo", label: "Protocolo" },
+  ];
+
+  const filasOrdenadas = useMemo(() => {
+    if (!ordenFirmas.key) return filas;
+    return sortRows(filas, {
+      key: ordenFirmas.key,
+      accessor: (fila) => fila?.[ordenFirmas.key],
+      sortType: ["fecha_firma", "fecha_envio"].includes(ordenFirmas.key) ? "date" : ordenFirmas.key === "dias_envio_firma" ? "number" : "text",
+    }, ordenFirmas.direction);
+  }, [filas, ordenFirmas]);
+
+  const ordenarFirmas = (key) => {
+    setOrdenFirmas((actual) => actual.key !== key
+      ? { key, direction: "asc" }
+      : actual.direction === "asc"
+        ? { key, direction: "desc" }
+        : { key: null, direction: null });
+  };
+
+  const iniciarEdicionFirma = (fila) => {
+    setEditandoId(String(fila.id_expediente || ""));
+    setEdicionFirma({
+      modalidad: fila.modalidad === "VC" ? "VC" : fila.modalidad === "PRESENCIAL" ? "PRESENCIAL" : "SIN_CLASIFICAR",
+      fecha_envio: String(fila.fecha_envio || "").slice(0, 10),
+    });
+    setMensajeEdicionFirma("");
+    setError("");
+  };
+
+  const guardarDatosFirma = async (fila) => {
+    if (!fila?.id_expediente || guardandoDatosFirma) return;
+    setGuardandoDatosFirma(true);
+    setError("");
+    setMensajeEdicionFirma("");
+    try {
+      await axios.put(
+        `${API_BASE}/informes/firmas/${encodeURIComponent(fila.id_expediente)}/datos`,
+        {
+          modalidad: edicionFirma.modalidad,
+          fecha_envio: edicionFirma.fecha_envio || null,
+        }
+      );
+      setMensajeEdicionFirma(`Datos de la firma del expediente ${fila.id_expediente} guardados correctamente.`);
+      setEditandoId("");
+      setRecarga((valor) => valor + 1);
+    } catch (e) {
+      const detail = e?.response?.data?.detail;
+      setError(typeof detail === "string" ? detail : detail?.mensaje || JSON.stringify(detail) || "No se pudieron guardar los datos de la firma.");
+    } finally {
+      setGuardandoDatosFirma(false);
+    }
+  };
+
+  const exportarExcel = async () => {
+    setExportando(true);
+    setError("");
+    try {
+      const params = Object.fromEntries(Object.entries(aplicados).filter(([, v]) => v !== "" && v != null));
+      await descargarExcelBackend(`${API_BASE}/informes/firmas/exportar-excel`, params, `informe_firmas_${aplicados.fecha_desde || "desde_inicio"}_${aplicados.fecha_hasta || "hasta_hoy"}.xlsx`);
+    } catch (e) {
+      setError(e?.response?.data?.detail || "No se pudo exportar el informe de firmas a Excel.");
+    } finally { setExportando(false); }
+  };
+
+  return (
+    <section className="informes-report-content space-y-5">
+<form onSubmit={aplicar} className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-sm backdrop-blur-xl md:p-6">
+        <div className="mb-4 flex items-center justify-between gap-3"><div><h3 className="font-bold text-slate-800">Filtros del informe</h3><p className="mt-1 text-xs text-slate-500">El periodo se aplica a la fecha real de firma.</p></div><button type="button" onClick={limpiar} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Restablecer</button></div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <CampoFiltroInforme label="Fecha firma desde" type="date" value={filtros.fecha_desde} onChange={(v) => cambiar("fecha_desde", v)} />
+          <CampoFiltroInforme label="Fecha firma hasta" type="date" value={filtros.fecha_hasta} onChange={(v) => cambiar("fecha_hasta", v)} />
+          <SelectFiltroInforme label="Modalidad" value={filtros.modalidad} onChange={(v) => cambiar("modalidad", v)}><option value="">Todas las modalidades</option><option value="VC">Videoconferencia</option><option value="PRESENCIAL">Presencial</option><option value="SIN_CLASIFICAR">Sin clasificar</option></SelectFiltroInforme>
+          <CampoFiltroInforme label="Tipo de operación" value={filtros.tipo_operacion} onChange={(v) => cambiar("tipo_operacion", v)} placeholder="Filtrar operación" />
+          <CampoFiltroInforme label="Notario" value={filtros.notario} onChange={(v) => cambiar("notario", v)} placeholder="Nombre o NIF" />
+          <CampoFiltroInforme label="Apoderado" value={filtros.apoderado} onChange={(v) => cambiar("apoderado", v)} placeholder="Nombre del apoderado" />
+          <div className="sm:col-span-2"><CampoFiltroInforme label="Buscar expediente, titular, solicitante o protocolo" value={filtros.q} onChange={(v) => cambiar("q", v)} placeholder="N.º expediente, NIF, titular…" /></div>
+        </div>
+        <div className="mt-4 flex flex-wrap justify-end gap-3"><button type="submit" className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700">Aplicar filtros</button></div>
+      </form>
+
+      <AvisoInforme error={error} />
+      {mensajeEdicionFirma && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{mensajeEdicionFirma}</div>}
+      {(firmasSinClasificar > 0 || firmasSinTiempo > 0) && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <p className="font-bold">Hay datos históricos pendientes de completar</p>
+          <p className="mt-1">
+            {firmasSinClasificar > 0 ? `${numeroInforme(firmasSinClasificar)} firma(s) sin modalidad confirmada. ` : ""}
+            {firmasSinTiempo > 0 ? `${numeroInforme(firmasSinTiempo)} firma(s) sin fecha de envío válida. ` : ""}
+            Utiliza «Completar datos» en cada fila e introduce solo información verificada. No se deduce la modalidad ni la fecha a partir de las citas de Agenda.
+          </p>
+        </div>
+      )}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <InformeKpi icono="✍️" titulo="Firmas reales" valor={numeroInforme(resumen.total_firmas)} subtitulo="Expedientes con fecha de firma" />
+        <InformeKpi icono="💻" titulo="Videoconferencia" valor={numeroInforme(resumen.videoconferencia)} />
+        <InformeKpi icono="🏛️" titulo="Presencial" valor={numeroInforme(resumen.presencial)} />
+        <InformeKpi icono="❔" titulo="Sin clasificar" valor={numeroInforme(resumen.sin_clasificar)} />
+        <InformeKpi icono="⏱️" titulo="Media envío-firma" valor={resumen.media_dias_envio_firma == null ? "—" : `${numeroInforme(resumen.media_dias_envio_firma, 1)} días`} subtitulo={`${numeroInforme(resumen.firmas_con_tiempo_calculable)} con fechas válidas`} />
+      </div>
+
+      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
+        <div className="erp-card-header flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4"><div><h3 className="font-bold text-slate-800">Resumen por tipo de operación</h3><p className="mt-1 text-xs text-slate-500">Conteo de firmas reales y días medios cuando existen fecha de envío y de firma.</p></div><span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">{periodo}</span></div>
+        {loading ? <PanelEstadoInforme loading /> : datos.por_tipo_operacion.length === 0 ? <PanelEstadoInforme vacio /> : <MolsanDataTable
+          rows={datos.por_tipo_operacion}
+          pagination
+          pageSize={25}
+
+          rowKey="tipo_operacion"
+          initialSort={{ key: "tipo_operacion", direction: "asc" }}
+          emptyText="No hay datos para este periodo."
+          columns={[
+            { key: "tipo_operacion", header: "Tipo de operación", accessor: "tipo_operacion", sortType: "text" },
+            { key: "total_firmas", header: "Firmas", accessor: "total_firmas", sortType: "number", align: "right", render: (value) => numeroInforme(value) },
+            { key: "vc", header: "VC", accessor: "vc", sortType: "number", align: "right", render: (value) => numeroInforme(value) },
+            { key: "presencial", header: "Presencial", accessor: "presencial", sortType: "number", align: "right", render: (value) => numeroInforme(value) },
+            { key: "media_dias", header: "Media días", accessor: "media_dias", sortType: "number", align: "right", render: (value) => value == null ? "—" : `${numeroInforme(value, 1)} días` },
+          ]}
+        />}
+      </section>
+
+      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4"><div><h3 className="font-bold text-slate-800">Detalle de firmas</h3><p className="mt-1 text-xs text-slate-500">{numeroInforme(filas.length)} registros recibidos del backend. Puedes completar modalidad y fecha de envío desde la columna de acciones.</p></div><div className="flex flex-wrap gap-2"><button type="button" disabled={loading || exportando} onClick={exportarExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Exportando…" : "Exportar Excel"}</button><button type="button" disabled={loading || filas.length === 0} onClick={() => imprimirInforme("Informe de firmas reales", periodo, columnasPDF, filas)} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50"><MolsanIcon name="file" size={18} /> Exportar PDF</button></div></div>
+        {loading ? <PanelEstadoInforme loading /> : filas.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales para el periodo y los filtros seleccionados." /> : <div className="max-h-[700px] overflow-auto"><table className="w-full min-w-[1420px] text-sm"><thead className="sticky top-0 z-10 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr>{columnasPDF.map((columna) => <th key={columna.key} className="whitespace-nowrap px-4 py-3"><button type="button" className="molsan-table-sort" onClick={() => ordenarFirmas(columna.key)}>{columna.label} <span>{ordenFirmas.key === columna.key ? (ordenFirmas.direction === "asc" ? "↑" : "↓") : "↕"}</span></button></th>)}<th className="whitespace-nowrap px-4 py-3">Acciones</th></tr></thead><tbody>{filasOrdenadas.map((f, i) => <Fragment key={f.id ?? `${f.id_expediente}-${i}`}>
+          <tr className="border-t border-slate-100 hover:bg-blue-50/40">
+            <td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_firma)}</td>
+            <td className="px-4 py-3 font-semibold text-blue-700">{f.id_expediente || "—"}</td>
+            <td className="max-w-[240px] px-4 py-3">{f.nombre_titular || "—"}</td>
+            <td className="px-4 py-3">{f.tipo_operacion || "—"}</td>
+            <td className="px-4 py-3">{f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : <span className="font-semibold text-amber-700">Sin clasificar</span>}</td>
+            <td className="px-4 py-3">{f.nombre_notario || "—"}</td>
+            <td className="px-4 py-3">{f.apoderado || "—"}</td>
+            <td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_envio)}</td>
+            <td className="px-4 py-3 text-right">{f.dias_envio_firma == null ? "—" : numeroInforme(f.dias_envio_firma)}</td>
+            <td className="px-4 py-3">{f.protocolo || "—"}</td>
+            <td className="whitespace-nowrap px-4 py-3"><button type="button" onClick={() => String(editandoId) === String(f.id_expediente) ? setEditandoId("") : iniciarEdicionFirma(f)} className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100">{String(editandoId) === String(f.id_expediente) ? "Cancelar" : (f.modalidad === "SIN_CLASIFICAR" || !f.fecha_envio ? "Completar datos" : "Editar datos")}</button></td>
+          </tr>
+          {String(editandoId) === String(f.id_expediente) && (
+            <tr key={`${f.id_expediente}-editar`} className="border-t border-blue-100 bg-blue-50/60">
+              <td colSpan={11} className="px-4 py-4">
+                <div className="grid grid-cols-1 items-end gap-3 rounded-xl border border-blue-100 bg-white p-4 md:grid-cols-[minmax(220px,1fr)_minmax(220px,1fr)_auto]">
+                  <label className="block min-w-0"><span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">Fecha real de envío al notario</span><input type="date" max={String(f.fecha_firma || "").slice(0, 10)} value={edicionFirma.fecha_envio} disabled={guardandoDatosFirma} onChange={(e) => setEdicionFirma((actual) => ({ ...actual, fecha_envio: e.target.value }))} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" /></label>
+                  <label className="block min-w-0"><span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">Modalidad real de firma</span><select value={edicionFirma.modalidad} disabled={guardandoDatosFirma} onChange={(e) => setEdicionFirma((actual) => ({ ...actual, modalidad: e.target.value }))} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"><option value="SIN_CLASIFICAR">Sin clasificar</option><option value="VC">Videoconferencia</option><option value="PRESENCIAL">Presencial</option></select><span className="mt-1 block text-[11px] text-slate-400">Selecciona solo la modalidad confirmada para esta firma.</span></label>
+                  <div className="flex flex-wrap gap-2"><button type="button" disabled={guardandoDatosFirma} onClick={() => guardarDatosFirma(f)} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50">{guardandoDatosFirma ? "Guardando…" : "Guardar datos"}</button><button type="button" disabled={guardandoDatosFirma} onClick={() => setEditandoId("")} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50">Cancelar</button></div>
+                </div>
+              </td>
+            </tr>
+          )}
+        </Fragment>)}</tbody></table></div>}
+      </section>
+    </section>
+  );
+}
+
+
+// ------------------------------ INFORME DE NOTARIOS ------------------------------
+function InformeNotarios() {
+  const [filtros, setFiltros] = useState(filtrosInformeIniciales);
+  const [aplicados, setAplicados] = useState(filtrosInformeIniciales);
+  const [datos, setDatos] = useState({ resumen: {}, por_notario: [], items: [] });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [exportando, setExportando] = useState(false);
+  const [exportandoDetalle, setExportandoDetalle] = useState(false);
+  const [claveNotarioSeleccionado, setClaveNotarioSeleccionado] = useState("");
+
+  useEffect(() => {
+    let activo = true;
+    const cargar = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const params = Object.fromEntries(Object.entries(aplicados).filter(([, v]) => v !== "" && v != null));
+        const respuesta = await axios.get(`${API_BASE}/informes/notarios`, { params });
+        if (activo) {
+          setDatos({
+            resumen: respuesta.data?.resumen || {},
+            por_notario: respuesta.data?.por_notario || [],
+            items: respuesta.data?.items || [],
+          });
+        }
+      } catch (e) {
+        if (activo) {
+          setDatos({ resumen: {}, por_notario: [], items: [] });
+          setError(e?.response?.data?.detail || "No se ha podido cargar el informe de notarios. Comprueba que el endpoint esté desplegado en el backend.");
+        }
+      } finally {
+        if (activo) setLoading(false);
+      }
+    };
+    cargar();
+    return () => { activo = false; };
+  }, [aplicados]);
+
+  const cambiar = (campo, valor) => setFiltros((actual) => ({ ...actual, [campo]: valor }));
+  const aplicar = (e) => {
+    e.preventDefault();
+    if (filtros.fecha_desde && filtros.fecha_hasta && filtros.fecha_desde > filtros.fecha_hasta) {
+      setError("La fecha desde no puede ser posterior a la fecha hasta.");
+      return;
+    }
+    setError("");
+    setClaveNotarioSeleccionado("");
+    setAplicados({ ...filtros });
+  };
+  const limpiar = () => {
+    const inicial = filtrosInformeIniciales();
+    setFiltros(inicial);
+    setAplicados(inicial);
+    setClaveNotarioSeleccionado("");
+    setError("");
+  };
+
+  const resumen = datos.resumen || {};
+  const porNotario = datos.por_notario || [];
+  const items = datos.items || [];
+  const periodo = `${fechaInformeVisible(aplicados.fecha_desde)} – ${fechaInformeVisible(aplicados.fecha_hasta)}`;
+  const grupoSeleccionado = porNotario.find((f) => f.clave_notario === claveNotarioSeleccionado);
+  const detalle = claveNotarioSeleccionado
+    ? items.filter((f) => f.clave_notario === claveNotarioSeleccionado)
+    : items;
+
+  const columnasResumen = [
+    { key: "nombre_notario", label: "Notario" },
+    { key: "nif_notario", label: "NIF" },
+    { key: "total_firmas", label: "Firmados" },
+    { key: "vc", label: "Videoconferencia" },
+    { key: "presencial", label: "Presencial" },
+    { key: "sin_clasificar", label: "Sin clasificar" },
+    { key: "con_protocolo", label: "Con protocolo" },
+    { key: "media_dias_envio_firma", label: "Media envío-firma", render: (f) => f.media_dias_envio_firma == null ? "—" : `${numeroInforme(f.media_dias_envio_firma, 1)} días` },
+    { key: "ultima_firma", label: "Última firma", render: (f) => fechaInformeVisible(f.ultima_firma) },
+    { key: "tipos_operacion", label: "Tipos de operación", render: (f) => (f.tipos_operacion || []).join(", ") || "—" },
+  ];
+  const columnasDetalle = [
+    { key: "fecha_firma", label: "Fecha firma", render: (f) => fechaInformeVisible(f.fecha_firma) },
+    { key: "id_expediente", label: "N.º expediente" },
+    { key: "nombre_titular", label: "Titular" },
+    { key: "tipo_operacion", label: "Tipo operación" },
+    { key: "modalidad", label: "Modalidad", render: (f) => f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : "Sin clasificar" },
+    { key: "apoderado", label: "Apoderado" },
+    { key: "fecha_envio", label: "Fecha envío", render: (f) => fechaInformeVisible(f.fecha_envio) },
+    { key: "dias_envio_firma", label: "Días envío-firma" },
+    { key: "protocolo", label: "Protocolo" },
+    { key: "oficina", label: "Oficina" },
+  ];
+
+  const exportarExcel = async () => {
+    setExportando(true);
+    setError("");
+    try {
+      const params = Object.fromEntries(Object.entries(aplicados).filter(([, v]) => v !== "" && v != null));
+      await descargarExcelBackend(`${API_BASE}/informes/notarios/exportar-excel`, params, `informe_notarios_${aplicados.fecha_desde || "desde_inicio"}_${aplicados.fecha_hasta || "hasta_hoy"}.xlsx`);
+    } catch (e) {
+      setError(e?.response?.data?.detail || "No se pudo exportar el resumen de notarios a Excel.");
+    } finally {
+      setExportando(false);
+    }
+  };
+
+  const exportarDetalleExcel = async () => {
+    setExportandoDetalle(true);
+    setError("");
+    try {
+      const params = Object.fromEntries(Object.entries(aplicados).filter(([, v]) => v !== "" && v != null));
+      if (grupoSeleccionado?.nombre_notario) params.notario = grupoSeleccionado.nombre_notario;
+      await descargarExcelBackend(`${API_BASE}/informes/notarios/exportar-detalle-excel`, params, `detalle_firmas_notarios_${aplicados.fecha_desde || "desde_inicio"}_${aplicados.fecha_hasta || "hasta_hoy"}.xlsx`);
+    } catch (e) {
+      setError(e?.response?.data?.detail || "No se pudo exportar el detalle de firmas a Excel.");
+    } finally {
+      setExportandoDetalle(false);
+    }
+  };
+
+  const exportarResumenPDF = () => imprimirInforme("Informe de notarios", periodo, columnasResumen, porNotario);
+  const exportarDetallePDF = () => imprimirInforme(
+    grupoSeleccionado ? `Firmas de ${grupoSeleccionado.nombre_notario}` : "Detalle de firmas por notario",
+    periodo,
+    columnasDetalle,
+    detalle
+  );
+
+  const topNotarios = porNotario.slice(0, 8);
+  const maxFirmasNotario = topNotarios.reduce((maximo, fila) => Math.max(maximo, Number(fila.total_firmas || 0)), 1);
+
+  return (
+    <section className="informes-report-content space-y-5">
+<form onSubmit={aplicar} className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-sm backdrop-blur-xl md:p-6">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div><h3 className="font-bold text-slate-800">Filtros del informe</h3><p className="mt-1 text-xs text-slate-500">Las fechas se aplican a la firma realizada, no a las citas previstas de Agenda.</p></div>
+          <button type="button" onClick={limpiar} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Restablecer</button>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <CampoFiltroInforme label="Fecha firma desde" type="date" value={filtros.fecha_desde} onChange={(v) => cambiar("fecha_desde", v)} />
+          <CampoFiltroInforme label="Fecha firma hasta" type="date" value={filtros.fecha_hasta} onChange={(v) => cambiar("fecha_hasta", v)} />
+          <SelectFiltroInforme label="Modalidad de firma" value={filtros.modalidad} onChange={(v) => cambiar("modalidad", v)}><option value="">Todas las modalidades</option><option value="VC">Videoconferencia</option><option value="PRESENCIAL">Presencial</option><option value="SIN_CLASIFICAR">Sin clasificar</option></SelectFiltroInforme>
+          <CampoFiltroInforme label="Tipo de operación" value={filtros.tipo_operacion} onChange={(v) => cambiar("tipo_operacion", v)} placeholder="Ej. Cancelación sin provisión" />
+          <CampoFiltroInforme label="Notario / NIF" value={filtros.notario} onChange={(v) => cambiar("notario", v)} placeholder="Nombre o NIF del notario" />
+          <CampoFiltroInforme label="Apoderado" value={filtros.apoderado} onChange={(v) => cambiar("apoderado", v)} placeholder="Nombre del apoderado" />
+          <div className="sm:col-span-2"><CampoFiltroInforme label="Búsqueda general" value={filtros.q} onChange={(v) => cambiar("q", v)} placeholder="Expediente, titular, solicitante, protocolo u oficina" /></div>
+        </div>
+        <div className="mt-4 flex flex-wrap justify-end gap-3"><button type="submit" className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700">Aplicar filtros</button></div>
+      </form>
+
+      <AvisoInforme error={error} />
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+        <InformeKpi icono="✍️" titulo="Expedientes firmados" valor={numeroInforme(resumen.total_firmas)} subtitulo="Firmas reales en el periodo" />
+        <InformeKpi icono="🏛️" titulo="Notarios con actividad" valor={numeroInforme(resumen.total_notarios)} subtitulo="Con al menos una firma" />
+        <InformeKpi icono="💻" titulo="Videoconferencia" valor={numeroInforme(resumen.videoconferencia)} />
+        <InformeKpi icono="🤝" titulo="Presencial" valor={numeroInforme(resumen.presencial)} />
+        <InformeKpi icono="❔" titulo="Sin clasificar" valor={numeroInforme(resumen.sin_clasificar)} subtitulo="Modalidad pendiente de confirmar" />
+        <InformeKpi icono="⏱️" titulo="Media envío-firma" valor={resumen.media_dias_envio_firma == null ? "—" : `${numeroInforme(resumen.media_dias_envio_firma, 1)} días`} subtitulo={`${numeroInforme(resumen.firmas_con_tiempo_calculable)} con fechas válidas`} />
+      </div>
+
+      {(Number(resumen.sin_clasificar || 0) > 0 || Number(resumen.sin_notario_identificado || 0) > 0 || (Number(resumen.total_firmas || 0) > Number(resumen.firmas_con_tiempo_calculable || 0))) && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <p className="font-bold">Calidad de los datos del histórico</p>
+          <p className="mt-1">
+            {Number(resumen.sin_clasificar || 0) > 0 ? `${numeroInforme(resumen.sin_clasificar)} firma(s) sin modalidad confirmada. ` : ""}
+            {Number(resumen.sin_notario_identificado || 0) > 0 ? `${numeroInforme(resumen.sin_notario_identificado)} grupo(s) sin notario identificado. ` : ""}
+            {Number(resumen.total_firmas || 0) > Number(resumen.firmas_con_tiempo_calculable || 0) ? `${numeroInforme(Number(resumen.total_firmas || 0) - Number(resumen.firmas_con_tiempo_calculable || 0))} firma(s) sin fecha de envío válida.` : ""}
+          </p>
+        </div>
+      )}
+
+      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4">
+          <div><h3 className="font-bold text-slate-800">Ranking de actividad por notario</h3><p className="mt-1 text-xs text-slate-500">Los primeros puestos se ordenan por número de expedientes firmados en el periodo.</p></div>
+          <span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">{periodo}</span>
+        </div>
+        {loading ? <PanelEstadoInforme loading /> : topNotarios.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas de notarios para este periodo y filtros." /> : (
+          <div className="space-y-4 p-5">
+            {topNotarios.map((fila, indice) => (
+              <button key={fila.clave_notario} type="button" onClick={() => setClaveNotarioSeleccionado((actual) => actual === fila.clave_notario ? "" : fila.clave_notario)} className={`w-full rounded-xl border p-3 text-left transition hover:border-blue-200 hover:bg-blue-50/40 ${claveNotarioSeleccionado === fila.clave_notario ? "border-blue-300 bg-blue-50" : "border-slate-100 bg-white"}`}>
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xs font-bold text-blue-700">{indice + 1}</span><span className="min-w-0"><span className="block truncate text-sm font-semibold text-slate-800">{fila.nombre_notario}</span><span className="block text-xs text-slate-400">{fila.nif_notario || "NIF no informado"}</span></span></div>
+                  <span className="shrink-0 text-lg font-bold text-slate-800">{numeroInforme(fila.total_firmas)}</span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-blue-500 transition-all" style={{ width: `${Math.min(100, Math.max(0, (Number(fila.total_firmas || 0) / maxFirmasNotario) * 100))}%` }} /></div>
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-500"><span>VC: <strong className="text-slate-700">{numeroInforme(fila.vc)}</strong></span><span>Presencial: <strong className="text-slate-700">{numeroInforme(fila.presencial)}</strong></span><span>Sin clasificar: <strong className="text-slate-700">{numeroInforme(fila.sin_clasificar)}</strong></span><span>Última firma: <strong className="text-slate-700">{fechaInformeVisible(fila.ultima_firma)}</strong></span></div>
+              </button>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4">
+          <div><h3 className="font-bold text-slate-800">Resumen por notario</h3><p className="mt-1 text-xs text-slate-500">Incluye firmas por modalidad, media entre envío y firma, protocolo y tipos de operación.</p></div>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" disabled={loading || exportando} onClick={exportarExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Exportando…" : "Excel resumen"}</button>
+            <button type="button" disabled={loading || porNotario.length === 0} onClick={exportarResumenPDF} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50"><MolsanIcon name="file" size={18} /> PDF resumen</button>
+          </div>
+        </div>
+        {loading ? <PanelEstadoInforme loading /> : porNotario.length === 0 ? <PanelEstadoInforme vacio /> : (
+          <div className="max-h-[620px] overflow-auto"><MolsanDataTable
+            rows={porNotario}
+          pagination
+          pageSize={25}
+
+            rowKey="clave_notario"
+            minWidth="1400px"
+            initialSort={{ key: "total_firmas", direction: "desc" }}
+            emptyText="No hay datos de notarios para el periodo seleccionado."
+            columns={[
+              { key: "nombre_notario", header: "Notario", accessor: "nombre_notario", sortType: "text" },
+              { key: "nif_notario", header: "NIF", accessor: "nif_notario", sortType: "text" },
+              { key: "total_firmas", header: "Firmados", accessor: "total_firmas", sortType: "number", align: "right", render: (value) => numeroInforme(value) },
+              { key: "vc", header: "VC", accessor: "vc", sortType: "number", align: "right", render: (value) => numeroInforme(value) },
+              { key: "presencial", header: "Presencial", accessor: "presencial", sortType: "number", align: "right", render: (value) => numeroInforme(value) },
+              { key: "sin_clasificar", header: "Sin clasificar", accessor: "sin_clasificar", sortType: "number", align: "right", render: (value) => numeroInforme(value) },
+              { key: "con_protocolo", header: "Con protocolo", accessor: "con_protocolo", sortType: "number", align: "right", render: (value) => numeroInforme(value) },
+              { key: "media_dias_envio_firma", header: "Media días", accessor: "media_dias_envio_firma", sortType: "number", align: "right", render: (value) => value == null ? "—" : numeroInforme(value, 1) },
+              { key: "ultima_firma", header: "Última firma", accessor: "ultima_firma", sortType: "date", render: (value) => fechaInformeVisible(value) },
+              { key: "numero_tipos_operacion", header: "Operaciones", accessor: "numero_tipos_operacion", sortType: "number", render: (value) => numeroInforme(value) },
+              { key: "detalle", header: "Detalle", sortable: false, accessor: (item) => item.clave_notario, render: (_, item) => <button type="button" onClick={() => setClaveNotarioSeleccionado((actual) => actual === item.clave_notario ? "" : item.clave_notario)} className="whitespace-nowrap rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100">{claveNotarioSeleccionado === item.clave_notario ? "Ocultar" : "Ver firmas"}</button> },
+            ]}
+          /></div>
+        )}
+      </section>
+
+      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4">
+          <div><h3 className="font-bold text-slate-800">{grupoSeleccionado ? `Firmas de ${grupoSeleccionado.nombre_notario}` : "Detalle de firmas por notario"}</h3><p className="mt-1 text-xs text-slate-500">{numeroInforme(detalle.length)} expediente(s) con fecha de firma real. {grupoSeleccionado ? "Se ha filtrado el detalle por el notario seleccionado." : "Puedes seleccionar un notario en el ranking o en el resumen para acotar la lista."}</p></div>
+          <div className="flex flex-wrap gap-2">
+            {claveNotarioSeleccionado && <button type="button" onClick={() => setClaveNotarioSeleccionado("")} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Ver todos</button>}
+            <button type="button" disabled={loading || exportandoDetalle} onClick={exportarDetalleExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportandoDetalle ? "Exportando…" : "Excel detalle"}</button>
+            <button type="button" disabled={loading || detalle.length === 0} onClick={exportarDetallePDF} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50"><MolsanIcon name="file" size={18} /> PDF detalle</button>
+          </div>
+        </div>
+        {loading ? <PanelEstadoInforme loading /> : detalle.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales con los filtros seleccionados." /> : (
+          <div className="max-h-[650px] overflow-auto"><MolsanDataTable
+            rows={detalle}
+          pagination
+          pageSize={25}
+
+            rowKey="id"
+            minWidth="1250px"
+            initialSort={{ key: "fecha_firma", direction: "desc" }}
+            emptyText="No hay firmas reales con los filtros seleccionados."
+            columns={[
+              { key: "fecha_firma", header: "Fecha firma", accessor: "fecha_firma", sortType: "date", render: (value) => fechaInformeVisible(value) },
+              { key: "id_expediente", header: "N.º expediente", accessor: "id_expediente", sortType: "text", render: (value) => <strong className="text-blue-700">{value || "—"}</strong> },
+              { key: "nombre_titular", header: "Titular", accessor: "nombre_titular", sortType: "text", render: (value) => value || "—" },
+              { key: "tipo_operacion", header: "Tipo operación", accessor: "tipo_operacion", sortType: "text", render: (value) => value || "—" },
+              { key: "modalidad", header: "Modalidad", accessor: (item) => item.modalidad === "VC" ? "Videoconferencia" : item.modalidad === "PRESENCIAL" ? "Presencial" : "Sin clasificar", sortType: "text", render: (value) => value === "Sin clasificar" ? <span className="font-semibold text-amber-700">{value}</span> : value },
+              { key: "nombre_notario", header: "Notario", accessor: "nombre_notario", sortType: "text", render: (value) => value || "—" },
+              { key: "apoderado", header: "Apoderado", accessor: "apoderado", sortType: "text", render: (value) => value || "—" },
+              { key: "fecha_envio", header: "Fecha envío", accessor: "fecha_envio", sortType: "date", render: (value) => fechaInformeVisible(value) },
+              { key: "dias_envio_firma", header: "Días envío-firma", accessor: "dias_envio_firma", sortType: "number", align: "right", render: (value) => value == null ? "—" : numeroInforme(value) },
+              { key: "protocolo", header: "Protocolo", accessor: "protocolo", sortType: "text", render: (value) => value || "—" },
+              { key: "oficina", header: "Oficina", accessor: "oficina", sortType: "text", render: (value) => value || "—" },
+            ]}
+          /></div>
+        )}
+      </section>
+    </section>
+  );
+}
+
+
+function InformeSLA() {
+  const [datos, setDatos] = useState({ items: [], actividades: [] });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [grupo, setGrupo] = useState("todos");
+  const [busqueda, setBusqueda] = useState("");
+  const [expandido, setExpandido] = useState("");
+  const [recarga, setRecarga] = useState(0);
+  const [ordenSLA, setOrdenSLA] = useState({ key: "id_expediente", direction: "asc" });
+
+  useEffect(() => {
+    let activo = true;
+    setLoading(true);
+    setError("");
+    axios.get(`${API_BASE}/informes-sla`)
+      .then(({ data }) => { if (activo) setDatos({ items: data?.items || [], actividades: data?.actividades || [] }); })
+      .catch((e) => { if (activo) setError(e?.response?.data?.detail || "No se ha podido cargar el Informe SLA."); })
+      .finally(() => { if (activo) setLoading(false); });
+    return () => { activo = false; };
+  }, [recarga]);
+
+  const items = (datos.items || []).filter((item) => {
+    const coincideGrupo = grupo === "todos" || (grupo === "con-provision" && item.grupo === "Con provisión") || (grupo === "sin-provision" && item.grupo === "Sin provisión");
+    const q = normalizarInformeSLA(busqueda);
+    const texto = normalizarInformeSLA(`${item.id_expediente || ""} ${item.titular || ""} ${item.tipo_operacion || ""} ${item.producto_gtg || ""}`);
+    return coincideGrupo && (!q || texto.includes(q));
+  });
+  const actividadesPlanas = items.flatMap((item) => (item.actividades || []).map((actividad) => ({ ...actividad, id_expediente: item.id_expediente, titular: item.titular, grupo: item.grupo, entidad: item.entidad })));
+  const conObjetivo = actividadesPlanas.filter((a) => a.objetivo_dias != null && a.dias != null);
+  const dentro = conObjetivo.filter((a) => a.estado === "Dentro de plazo").length;
+  const fuera = actividadesPlanas.filter((a) => a.estado === "Fuera de plazo").length;
+  const cumplimiento = conObjetivo.length ? Math.round((dentro / conObjetivo.length) * 100) : null;
+  const globalesEvaluables = items.filter((x) => !x.excluido_global && x.dias_global != null);
+  const globalesDentro = globalesEvaluables.filter((x) => x.estado_global === "Dentro de plazo").length;
+  const mediaGlobal = globalesEvaluables.length ? globalesEvaluables.reduce((s, x) => s + Number(x.dias_global || 0), 0) / globalesEvaluables.length : null;
+
+  const resumenActividades = (datos.actividades || []).map((actividad) => {
+    const filas = actividadesPlanas.filter((a) => a.actividad_key === actividad.key);
+    const medidas = filas.filter((a) => a.dias != null);
+    const conObjetivoActividad = medidas.filter((a) => a.objetivo_dias != null);
+    const cumplen = conObjetivoActividad.filter((a) => a.estado === "Dentro de plazo").length;
+    const incumplen = conObjetivoActividad.filter((a) => a.estado === "Fuera de plazo").length;
+    return { ...actividad, total: filas.length, medidas: medidas.length, media: medidas.length ? medidas.reduce((s, a) => s + Number(a.dias), 0) / medidas.length : null, cumplen, incumplen };
+  });
+
+  const exportar = () => {
+    const encabezados = ["Expediente","Titular","Grupo","Entidad","Actividad","Inicio","Fin","Días","Objetivo SLA","Estado"];
+    const filas = actividadesPlanas.map((a) => [a.id_expediente,a.titular,a.grupo,a.entidad,a.actividad,a.fecha_inicio,a.fecha_fin,a.dias,a.objetivo_dias,a.estado]);
+    const csv = [encabezados, ...filas].map((fila) => fila.map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`).join(";")).join("\r\n");
+    descargarBlobInforme(new Blob(["\ufeff", csv], { type: "text/csv;charset=utf-8;" }), "informe_sla.csv");
+  };
+
+  const itemsOrdenados = useMemo(() => {
+    if (!ordenSLA.key) return items;
+    return sortRows(items, {
+      key: ordenSLA.key,
+      accessor: (item) => item?.[ordenSLA.key],
+      sortType: ordenSLA.key === "dias_global" ? "number" : "text",
+    }, ordenSLA.direction);
+  }, [items, ordenSLA]);
+
+  const ordenarSLA = (key) => {
+    setOrdenSLA((actual) => actual.key !== key
+      ? { key, direction: "asc" }
+      : actual.direction === "asc"
+        ? { key, direction: "desc" }
+        : { key: null, direction: null });
+  };
+
+  return (
+    <section className="informes-report-content space-y-5">
+<div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <InformeKpi icono="📁" titulo="Expedientes" valor={numeroInforme(items.length)} subtitulo="Según el grupo y la búsqueda" />
+        <InformeKpi icono="⏱️" titulo="Duración global media" valor={mediaGlobal == null ? "—" : `${numeroInforme(mediaGlobal, 1)} días`} subtitulo={`${numeroInforme(globalesDentro)} dentro de plazo de ${numeroInforme(globalesEvaluables.length)} evaluables`} />
+        <InformeKpi icono="⚠️" titulo="Actividades fuera de plazo" valor={numeroInforme(fuera)} subtitulo={cumplimiento == null ? "Sin datos suficientes para calcular cumplimiento" : `${cumplimiento}% de cumplimiento en actividades con objetivo`} />
+      </div>
+      <section className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-sm backdrop-blur-xl">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_minmax(220px,0.5fr)]">
+          <CampoFiltroInforme label="¿Qué expediente necesitas?" value={busqueda} onChange={setBusqueda} placeholder="Número de expediente, titular, operación o producto GTG" />
+          <SelectFiltroInforme label="Grupo de cancelación" value={grupo} onChange={setGrupo}>
+            <option value="todos">Todos los grupos</option><option value="con-provision">Cancelaciones con provisión</option><option value="sin-provision">Cancelaciones sin provisión</option>
+          </SelectFiltroInforme>
+        </div>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><p className="text-xs text-slate-500">{numeroInforme(items.length)} expedientes · días naturales. Los expedientes Hipotecario y Crédito Stock quedan excluidos del SLA global.</p><button type="button" onClick={exportar} disabled={actividadesPlanas.length === 0} className="rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"><MolsanIcon name="chart" size={18} /> Exportar Excel (CSV)</button></div>
+      </section>
+      <AvisoInforme error={error} />
+      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
+        <div className="border-b border-slate-200/80 px-5 py-4"><h3 className="font-bold text-slate-800">SLA global por circuito</h3><p className="mt-1 text-xs text-slate-500">Desde el inicio registrado de la primera actividad hasta el fin de Cierre del expediente. Gestión económica utiliza el objetivo global como referencia propia.</p></div>
+        {loading ? <PanelEstadoInforme loading /> : items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay expedientes que coincidan con los filtros." /> : <div className="max-h-[520px] overflow-auto"><table className="w-full min-w-[1050px] text-sm"><thead className="sticky top-0 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr>{[{ key: "id_expediente", label: "Expediente" }, { key: "titular", label: "Titular" }, { key: "grupo", label: "Grupo" }, { key: "entidad", label: "Entidad" }, { key: "dias_global", label: "Días globales" }, { key: "objetivo_global", label: "Objetivo" }, { key: "estado_global", label: "Estado" }].map((columna) => <th key={columna.key} className="whitespace-nowrap px-4 py-3"><button type="button" className="molsan-table-sort" onClick={() => ordenarSLA(columna.key)}>{columna.label} <span>{ordenSLA.key === columna.key ? (ordenSLA.direction === "asc" ? "↑" : "↓") : "↕"}</span></button></th>)}</tr></thead><tbody>{itemsOrdenados.map((item) => <Fragment key={item.id}><tr className="border-t border-slate-100 hover:bg-blue-50/40"><td className="px-4 py-3 font-semibold text-blue-700">{item.id_expediente || "—"}</td><td className="px-4 py-3">{item.titular || "—"}</td><td className="px-4 py-3">{item.grupo}</td><td className="px-4 py-3">{item.entidad}</td><td className="px-4 py-3 text-right">{item.dias_global == null ? "—" : numeroInforme(item.dias_global)}</td><td className="px-4 py-3 text-right">{item.excluido_global ? "Excluido" : `${item.objetivo_global} días`}</td><td className="px-4 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-bold ${item.estado_global === "Dentro de plazo" ? "bg-emerald-50 text-emerald-700" : item.estado_global === "Fuera de plazo" ? "bg-rose-50 text-rose-700" : item.estado_global === "Excluido" ? "bg-slate-100 text-slate-500" : "bg-amber-50 text-amber-700"}`}>{item.estado_global}</span><button type="button" onClick={() => setExpandido((v) => v === String(item.id) ? "" : String(item.id))} className="ml-3 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-xs font-semibold text-blue-700">{expandido === String(item.id) ? "Ocultar actividades" : "Ver actividades"}</button></td></tr>{expandido === String(item.id) && <tr><td colSpan={7} className="bg-slate-50/70 px-4 py-4"><div className="overflow-x-auto rounded-xl border border-slate-200 bg-white"><table className="w-full min-w-[950px] text-xs"><thead className="bg-slate-50 text-left text-slate-600"><tr>{["Actividad","Inicio","Fin","Duración","Objetivo","Estado"].map((x) => <th key={x} className="whitespace-nowrap px-3 py-2.5">{x}</th>)}</tr></thead><tbody>{item.actividades.map((a) => <tr key={a.actividad_key} className="border-t border-slate-100"><td className="px-3 py-2.5 font-semibold">{a.actividad}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_inicio)}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_fin)}</td><td className="px-3 py-2.5">{a.dias == null ? "—" : `${a.dias} días`}</td><td className="px-3 py-2.5">{a.objetivo_dias == null ? "Sin objetivo" : `${a.objetivo_dias} días`}</td><td className="px-3 py-2.5">{a.estado}</td></tr>)}</tbody></table></div></td></tr>}</Fragment>)}</tbody></table></div>}
+      </section>
+      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
+        <div className="border-b border-slate-200/80 px-5 py-4"><h3 className="font-bold text-slate-800">Expedientes por actividad</h3><p className="mt-1 text-xs text-slate-500">Medias, objetivos y número de incumplimientos por actividad para los expedientes filtrados.</p></div>
+        {loading ? <PanelEstadoInforme loading /> : <MolsanDataTable
+          rows={resumenActividades}
+          pagination
+          pageSize={25}
+
+          rowKey="key"
+          minWidth="950px"
+          initialSort={{ key: "label", direction: "asc" }}
+          emptyText="No hay resumen de actividades para los filtros seleccionados."
+          columns={[
+            { key: "label", header: "Actividad", accessor: "label", sortType: "text", render: (value) => <strong>{value}</strong> },
+            { key: "objetivo", header: "Objetivo", accessor: (item) => item.objetivo === "global" ? "40 / 70 días según grupo" : item.objetivo == null ? "Sin objetivo SLA" : `${item.objetivo} días`, sortType: "text" },
+            { key: "medidas", header: "Con fechas", accessor: "medidas", sortType: "number", align: "right", render: (value) => numeroInforme(value) },
+            { key: "media", header: "Duración media", accessor: "media", sortType: "number", align: "right", render: (value) => value == null ? "—" : `${numeroInforme(value, 1)} días` },
+            { key: "cumplen", header: "Dentro de plazo", accessor: "cumplen", sortType: "number", align: "right", render: (value) => <span className="text-emerald-700">{numeroInforme(value)}</span> },
+            { key: "incumplen", header: "Fuera de plazo", accessor: "incumplen", sortType: "number", align: "right", render: (value) => <span className="text-rose-700">{numeroInforme(value)}</span> },
+          ]}
+        />}
+      </section>
+    </section>
+  );
+}
+
+function normalizarInformeSLA(valor) {
+  return String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+}
+
+// Los metadatos internos ERP se separan de las 38 columnas originales de ABSIS.
+const COLUMNAS_POSTFIRMA = [
+  "ERP · Origen registro", "ERP · Estado consolidación", "ERP · Última sincronización",
+  "IDEXPEDIENTE", "FECHAALTA", "ORIGENBANKIA", "ACTIVIDADACTUAL",
+  "ESTADOACTIVIDAD", "IDPROVISION", "IMPORTEPROVISION", "TIPOPROVISION",
+  "DETALLEOPERACION", "TIPOOPERACION", "SUBTIPOOPERACION", "OFICINA", "DAN",
+  "IDGESTORIATRAMITE", "NOMBREGESTORIA", "NOMBREDOCUMENTO", "IDGASTO",
+  "CONCEPTOGASTO", "ESTADO", "ESTADOJUSTIFICANTE", "FECHAADJUNTARFACTURA",
+  "IMPGASTO", "IMPBASEIMPUESTO", "IMPBASERETENCION", "IMPIMPUESTO",
+  "FESTADO", "FPETICION", "FPAGO", "CTAORIGEN", "CTADESTINO", "FFACTURA",
+  "FORMAPAGO", "NUMFACTURA", "IDBENEFICIARIO", "BENEFICIARIO",
+  "NOMBREPAGADOR", "NIFPAGADOR"
+];
+
+const CACHE_POSTFIRMA_ABSIS = new WeakMap();
+
+function datosAbsisNormalizados(fila) {
+  if (!fila || typeof fila !== "object") return new Map();
+  const existente = CACHE_POSTFIRMA_ABSIS.get(fila);
+  if (existente) return existente;
+  const normalizados = Object.create(null);
+  Object.entries(fila.datos_absis || {}).forEach(([clave, valor]) => {
+    normalizados[clave.trim().toUpperCase()] = valor;
+  });
+  CACHE_POSTFIRMA_ABSIS.set(fila, normalizados);
+  return normalizados;
+}
+
+function valorColumnaPostFirma(fila, columna) {
+  const etiqueta = String(columna || "").trim().toUpperCase();
+  const internas = {
+    "ERP · ORIGEN REGISTRO": fila.origen_registro,
+    "ERP · ESTADO CONSOLIDACIÓN": fila.estado_consolidacion,
+    "ERP · ÚLTIMA SINCRONIZACIÓN": fila.fecha_ultima_sincronizacion,
+  };
+  if (Object.prototype.hasOwnProperty.call(internas, etiqueta)) {
+    const valorInterno = internas[etiqueta];
+    return valorInterno === undefined || valorInterno === null || valorInterno === "" ? "—" : String(valorInterno);
+  }
+
+  let valor = datosAbsisNormalizados(fila)[etiqueta];
+  if (valor === undefined || valor === null || valor === "") {
+    const alternativas = {
+      IDEXPEDIENTE: fila.id_expediente,
+      IDGASTO: fila.id_gasto_absis,
+      TIPOOPERACION: fila.tipo_operacion,
+      CONCEPTOGASTO: fila.concepto_gasto,
+      ESTADO: fila.estado,
+      ESTADOJUSTIFICANTE: fila.estado_justificante,
+      FECHAADJUNTARFACTURA: fila.fecha_adjuntar_factura,
+      IMPGASTO: fila.imp_gasto,
+      IMPBASEIMPUESTO: fila.imp_base_impuesto,
+      IMPBASERETENCION: fila.imp_base_retencion,
+      IMPIMPUESTO: fila.imp_impuesto,
+      FESTADO: fila.fecha_estado,
+      FPETICION: fila.fecha_peticion,
+      FPAGO: fila.fecha_pago,
+      FFACTURA: fila.fecha_factura_absis || fila.fecha_factura,
+      NUMFACTURA: fila.numero_factura_absis || fila.numero_factura,
+    };
+    valor = alternativas[etiqueta];
+  }
+  if (valor === undefined || valor === null || valor === "") return "—";
+  if (typeof valor === "object") return JSON.stringify(valor);
+  return String(valor);
+}
+
+const COLUMNAS_POSTFIRMA_CONFIG = COLUMNAS_POSTFIRMA.map((header) => ({
+  key: header,
+  header,
+  accessor: (fila) => valorColumnaPostFirma(fila, header),
+  sortType: ["IMPGASTO", "IMPBASEIMPUESTO", "IMPBASERETENCION", "IMPIMPUESTO", "IMPORTEPROVISION", "IDGASTO", "IDPROVISION", "IDGESTORIATRAMITE", "IDBENEFICIARIO"].includes(header) ? "number" :
+    ["FECHAALTA", "FECHAADJUNTARFACTURA", "FESTADO", "FPETICION", "FPAGO", "FFACTURA", "ERP · ÚLTIMA SINCRONIZACIÓN"].includes(header) ? "date" : "text",
+}));
+
+// Clasificación de estados originales ABSIS usada por las tarjetas de facturación.
+// Mantener los códigos originales; no equiparar estados internos del ERP.
+const ESTADOS_ABSIS_INFORME = [
+  { codigo: "PAGADO", etiqueta: "Pagado", descripcion: "Pagado según ABSIS", color: "emerald" },
+  { codigo: "PAG_RETRO", etiqueta: "Retrocedido", descripcion: "Pago retrocedido", color: "rose" },
+  { codigo: "ANULADO", etiqueta: "Anulado", descripcion: "Gasto anulado", color: "slate" },
+  { codigo: "PTE_CONS", etiqueta: "Consolidado", descripcion: "Consolidado según ABSIS", color: "blue" },
+  { codigo: "PAG_DENEGADO", etiqueta: "Denegado", descripcion: "Pago denegado", color: "rose" },
+  { codigo: "PTE_RESP_FAC", etiqueta: "Pendiente respuesta", descripcion: "Pendiente de respuesta de factura", color: "amber" },
+  { codigo: "ENTREGADA", etiqueta: "Entregada", descripcion: "Factura entregada", color: "blue" },
+  { codigo: "PTE_EXPORT_FAC", etiqueta: "Pendiente exportar", descripcion: "Pendiente de exportación", color: "amber" },
+];
+
+const ESTADOS_FACTURACION_ABSIS = {
+  cobrado: ["PAGADO"],
+  pendiente_factura: ["PTE_RESP_FAC", "PTE_EXPORT_FAC"],
+  incidencia: ["PAG_RETRO", "ANULADO", "PAG_DENEGADO"],
+  pendiente_cobro: ["PTE_CONS", "ENTREGADA"],
+};
+
+function estadoFacturacionAbsis(fila) {
+  const estado = String(fila?.estado ?? "").trim().toUpperCase().replace(/\s+/g, " ");
+  for (const [situacion, estados] of Object.entries(ESTADOS_FACTURACION_ABSIS)) {
+    if (estados.includes(estado)) return situacion;
+  }
+  return "sin_clasificar";
+}
+
+function resumenFacturacionPorTipo(items) {
+  const suma = (campo, situacion = null) => items.reduce((total, fila) => {
+    if (situacion && estadoFacturacionAbsis(fila) !== situacion) return total;
+    return total + (Number(fila[campo]) || 0);
+  }, 0);
+  const cuenta = (situacion) => items.filter((fila) => estadoFacturacionAbsis(fila) === situacion).length;
+  return {
+    registros: items.length, total_gasto: suma("imp_gasto"), base_impuesto: suma("imp_base_impuesto"),
+    base_retencion: suma("imp_base_retencion"), total_impuesto: suma("imp_impuesto"),
+    cobrado: cuenta("cobrado"), pendiente_cobro: cuenta("pendiente_cobro"),
+    pendiente_factura: cuenta("pendiente_factura"), incidencias: cuenta("incidencia"),
+    total_cobrado: suma("imp_gasto", "cobrado"), total_pendiente_cobro: suma("imp_gasto", "pendiente_cobro"),
+    total_pendiente_factura: suma("imp_gasto", "pendiente_factura"), total_incidencias: suma("imp_gasto", "incidencia"),
+  };
+}
+
+function InformeFacturacion() {
+  const filtrosIniciales = () => ({ ...filtrosInformeIniciales(), fecha_desde: "", fecha_hasta: "", modalidad: "todas", estado: "", estado_justificante: "", situacion: "" });
+  const [filtros, setFiltros] = useState(filtrosIniciales);
+  const [aplicados, setAplicados] = useState(filtrosIniciales);
+  const [datos, setDatos] = useState({ resumen: {}, items: [] });
+  const [datosTarjetas, setDatosTarjetas] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [loadingTarjetas, setLoadingTarjetas] = useState(true);
+  const [error, setError] = useState("");
+  const [exportando, setExportando] = useState(false);
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [recarga, setRecarga] = useState(0);
+
+  useEffect(() => {
+    let activo = true;
+    setLoadingTarjetas(true);
+    const paramsTarjetas = Object.fromEntries(Object.entries({
+      fecha_desde: aplicados.fecha_desde,
+      fecha_hasta: aplicados.fecha_hasta,
+      modalidad: "todas",
+    }).filter(([, valor]) => valor !== "" && valor != null));
+    axios.get(API_BASE + "/informes/facturacion", { params: paramsTarjetas }).then(({ data }) => {
+      if (activo) setDatosTarjetas(Array.isArray(data?.items) ? data.items : []);
+    }).catch((err) => {
+      if (activo) {
+        setDatosTarjetas([]);
+        setError(err?.response?.data?.detail || "No se pudieron actualizar los indicadores de facturación.");
+      }
+    }).finally(() => { if (activo) setLoadingTarjetas(false); });
+    return () => { activo = false; };
+  }, [aplicados.fecha_desde, aplicados.fecha_hasta, recarga]);
+
+  useEffect(() => {
+    if (!modalAbierto) return undefined;
+    let activo = true;
+    setLoading(true);
+    setError("");
+    const params = Object.fromEntries(Object.entries(aplicados).filter(([, v]) => v !== "" && v != null));
+    axios.get(API_BASE + "/informes/facturacion", { params })
+      .then(({ data }) => {
+        if (activo) setDatos({ resumen: data?.resumen || {}, items: Array.isArray(data?.items) ? data.items : [] });
+      })
+      .catch((err) => { if (activo) setError(err?.response?.data?.detail || "No se pudo cargar el detalle de facturación."); })
+      .finally(() => { if (activo) setLoading(false); });
+    return () => { activo = false; };
+  }, [aplicados, modalAbierto, recarga]);
+
+  const cambiar = (campo, valor) => {
+    setFiltros((actual) => ({ ...actual, [campo]: valor }));
+    if (campo === "fecha_desde" || campo === "fecha_hasta") {
+      setAplicados((actual) => ({ ...actual, [campo]: valor }));
+    }
+  };
+  const aplicar = (e) => { e.preventDefault(); setAplicados({ ...filtros }); };
+  const exportar = async () => {
+    setExportando(true);
+    setError("");
+    try {
+      const params = Object.fromEntries(Object.entries(filtros).filter(([, v]) => v !== "" && v != null));
+      await descargarExcelBackend(API_BASE + "/informes/facturacion/exportar-excel", params, "informe_postfirma_todas_las_filas.xlsx");
+    } catch (err) {
+      setError(err?.response?.data?.detail || "No se pudo exportar el informe.");
+    } finally { setExportando(false); }
+  };
+
+  const resumen = (modalidad) => resumenFacturacionPorTipo(datosTarjetas.filter((fila) => fila.tipo_cancelacion === modalidad));
+  
+  const campo = "block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
+  const grupos = [
+    { key: "con_provision", titulo: "Cancelación con provisión", descripcion: "TIPOOPERACION: CANCELACIÓN / CANCELACIÓN CON PROVISIÓN", icono: "🏦", acento: "emerald" },
+    { key: "sin_provision", titulo: "Cancelación sin provisión", descripcion: "TIPOOPERACION: CANCELACIÓN SIN PROVISIÓN", icono: "📄", acento: "amber" },
+    { key: "otros", titulo: "Otros tipos de operación", descripcion: "Filas importadas cuyo TIPOOPERACION no es una cancelación", icono: "📋", acento: "blue" },
+  ];
+  const renderTarjetas = (grupo) => {
+    const r = resumen(grupo.key);
+    return (
+    <section key={grupo.key} className="space-y-4 rounded-2xl border border-white/80 bg-white/55 p-4 shadow-sm backdrop-blur-xl sm:p-5">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className={"flex h-12 w-12 items-center justify-center rounded-xl text-2xl " + (grupo.acento === "emerald" ? "bg-emerald-50" : "bg-amber-50")}>{grupo.icono}</span>
+          <div><h3 className="text-lg font-bold text-slate-800">{grupo.titulo}</h3><p className="text-xs text-slate-500">{grupo.descripcion}</p></div>
+          <div className="ml-auto text-right"><div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Registros del periodo</div><div className="text-2xl font-extrabold text-slate-800">{loadingTarjetas ? "…" : numeroInforme(r.registros)}</div></div>
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <InformeKpi titulo="Gastos Post Firma" valor={loadingTarjetas ? "…" : euros(r.total_gasto)} subtitulo={numeroInforme(r.registros) + " registros"} icono="🧾" />
+          <InformeKpi titulo="Base imponible" valor={loadingTarjetas ? "…" : euros(r.base_impuesto)} subtitulo="Base asociada al impuesto" icono="📑" />
+          <InformeKpi titulo="Base de retención" valor={loadingTarjetas ? "…" : euros(r.base_retencion)} subtitulo="Base sujeta a retención" icono="🧮" />
+          <InformeKpi titulo="Impuestos" valor={loadingTarjetas ? "…" : euros(r.total_impuesto)} subtitulo="Importe total de impuesto" icono="💶" />
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="rounded-2xl border border-emerald-100 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Cobrado</div><div className="mt-1 text-xl font-bold text-emerald-700">{loadingTarjetas ? "…" : euros(r.total_cobrado)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.cobrado)} registros</div></div>
+          <div className="rounded-2xl border border-amber-100 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Pendiente de cobro</div><div className="mt-1 text-xl font-bold text-amber-700">{loadingTarjetas ? "…" : euros(r.total_pendiente_cobro)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.pendiente_cobro)} registros</div></div>
+          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Pendiente de factura</div><div className="mt-1 text-xl font-bold text-slate-700">{loadingTarjetas ? "…" : euros(r.total_pendiente_factura)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.pendiente_factura)} registros</div></div>
+          <div className="rounded-2xl border border-rose-100 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Importe con incidencias</div><div className="mt-1 text-xl font-bold text-rose-700">{loadingTarjetas ? "…" : euros(r.total_incidencias)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.incidencias)} registros</div></div>
+        </div>
+        <div className="flex justify-center border-t border-slate-100 pt-4">
+          <button
+            type="button"
+            onClick={() => {
+              const siguiente = { ...filtros, modalidad: grupo.key };
+              setFiltros(siguiente);
+              setAplicados(siguiente);
+              setModalAbierto(true);
+            }}
+            className={"inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold text-white shadow-sm transition " + (grupo.acento === "emerald" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-amber-600 hover:bg-amber-700")}
+          >
+            <MolsanIcon name="chart" size={18} /> Ver detalle y descargar Excel: {grupo.titulo}
+          </button>
+        </div>
+      </section>
+    );
+  };
+
+  return (
+    <>
+    <section className="informes-report-content space-y-5">
+      <div role="note" className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-900">
+        <span aria-hidden="true" className="text-lg">ℹ️</span>
+        <p><strong>Importante:</strong> para que cada gasto quede correctamente asociado a su expediente en el ERP, debe relacionarse el <strong>IDGASTO</strong> del Excel ABSIS con el expediente correspondiente. Los gastos sin esa relación deben revisarse; este informe no crea el vínculo automáticamente.</p>
+      </div>
+      <div className="informes-report-heading rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div><h2 className="text-xl font-bold text-slate-800">Informes de facturación</h2><p className="mt-1 text-sm text-slate-500">Indicadores de Post Firma por tipo de operación y por estado original de ABSIS. El periodo se filtra por FPAGO.</p></div>
+          <button type="button" onClick={() => setRecarga((v) => v + 1)} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">↻ Actualizar</button>
         </div>
         <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <label className="text-xs font-semibold text-slate-600">Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
@@ -1603,7 +3435,151 @@ function InformeCitasApoderados() {
               : estadoInfo.color === "blue" ? "border-blue-200 bg-blue-50/70 text-blue-800"
               : "border-slate-200 bg-slate-50 text-slate-800";
             return (
+              <button key={estadoInfo.codigo} type="button" disabled={loadingTarjetas} onClick={() => {
+                const siguiente = { ...filtros, modalidad: "todas", estado: estadoInfo.codigo };
+                setFiltros(siguiente);
+                setAplicados(siguiente);
+                setModalAbierto(true);
+              }} className={"rounded-xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:opacity-60 " + acento}>
+                <div className="text-xs font-bold uppercase tracking-wide">{estadoInfo.etiqueta}</div>
+                <div className="mt-2 text-2xl font-extrabold tabular-nums">{loadingTarjetas ? "…" : numeroInforme(filasEstado.length)}</div>
+                <div className="mt-1 text-sm font-semibold tabular-nums">{loadingTarjetas ? "…" : euros(importeEstado)}</div>
+                <div className="mt-1 text-xs opacity-80">{estadoInfo.descripcion}</div>
+                <div className="mt-3 text-xs font-bold underline underline-offset-2">Ver registros</div>
+              </button>
+            );
+          })}
+        </div>
+        {(() => {
+          const estados = datosTarjetas.reduce((acumulado, fila) => {
+            const estado = String(fila.estado ?? "").trim() || "(vacío)";
+            if (!acumulado[estado]) acumulado[estado] = { filas: 0, importe: 0 };
+            acumulado[estado].filas += 1;
+            acumulado[estado].importe += Number(fila.imp_gasto || 0);
+            return acumulado;
+          }, {});
+          const listaEstados = Object.entries(estados).sort((a, b) => {
+            if (a[0] === "(vacío)") return 1;
+            if (b[0] === "(vacío)") return -1;
+            return a[0].localeCompare(b[0], "es");
+          });
+          return loadingTarjetas ? (
+            <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm text-slate-500">Cargando estados ABSIS…</div>
+          ) : listaEstados.length === 0 ? (
+            <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm text-slate-500">No hay registros para el periodo seleccionado.</div>
+          ) : (
+            <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200">
+              <MolsanDataTable
+                rows={listaEstados.map(([estado, dato]) => ({ estado, filas: dato.filas, importe: dato.importe }))}
+                rowKey="estado"
+                minWidth="700px"
+                initialSort={{ key: "filas", direction: "desc" }}
+                emptyText="No hay registros para el periodo seleccionado."
+                columns={[
+                  { key: "estado", header: "Estado (Excel ABSIS)", accessor: "estado", sortType: "text" },
+                  { key: "filas", header: "Registros", accessor: "filas", sortType: "number", align: "right", render: (value) => numeroInforme(value) },
+                  { key: "importe", header: "Importe IMPGASTO", accessor: "importe", sortType: "currency", align: "right", render: (value) => euros(value) },
+                  { key: "consulta", header: "Consulta", sortable: false, accessor: "estado", render: (estado) => estado === "(vacío)" ? <span className="text-xs text-slate-400">Sin código</span> : <button type="button" onClick={() => { const siguiente = { ...filtros, modalidad: "todas", estado }; setFiltros(siguiente); setAplicados(siguiente); setModalAbierto(true); }} className="rounded-lg border border-blue-200 bg-white px-3 py-1.5 text-xs font-bold text-blue-700 hover:bg-blue-50">Ver registros</button> },
+                ]}
+              />
+            </div>
+          );
+        })()}
+        <p className="mt-3 text-xs leading-5 text-slate-500">Las tarjetas muestran los ocho códigos acordados de ESTADO. Los códigos originales se conservan; los valores vacíos o desconocidos siguen apareciendo en el desglose inferior. PAG_RETRO no se contabiliza como cobro efectivo. La consulta no modifica datos.</p>
+      </section>
+
+      <AvisoInforme error={error} />
+
+      {modalAbierto && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-2 backdrop-blur-sm sm:p-5" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }}>
+          <section role="dialog" aria-modal="true" aria-labelledby="modal-facturacion-titulo" className="flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden rounded-2xl border border-white/70 bg-white shadow-2xl">
+            <header className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200 px-5 py-4">
+              <div><h2 id="modal-facturacion-titulo" className="text-xl font-bold text-slate-800">Detalle de facturación</h2><p className="mt-1 text-sm text-slate-500">Tabla Excel con los registros que cumplen los filtros seleccionados.</p></div>
+              <button type="button" onClick={() => setModalAbierto(false)} aria-label="Cerrar ventana" className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50">✕ Cerrar</button>
+            </header>
+            <form onSubmit={aplicar} className="grid grid-cols-1 gap-3 overflow-y-auto border-b border-slate-200 bg-slate-50/80 px-5 py-4 sm:grid-cols-2 xl:grid-cols-4">
+              <label className="text-xs font-semibold text-slate-600">Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
+              <label className="text-xs font-semibold text-slate-600">Fecha hasta<input className={campo} type="date" value={filtros.fecha_hasta} onChange={(e) => cambiar("fecha_hasta", e.target.value)} /></label>
+              <label className="text-xs font-semibold text-slate-600">Clasificación<select className={campo} value={filtros.modalidad} onChange={(e) => cambiar("modalidad", e.target.value)}><option value="todas">Todas</option><option value="con_provision">Cancelación con provisión</option><option value="sin_provision">Cancelación sin provisión</option><option value="otros">Otros tipos de operación</option></select></label>
+              <label className="text-xs font-semibold text-slate-600">Tipo operación<input className={campo} value={filtros.tipo_operacion || ""} onChange={(e) => cambiar("tipo_operacion", e.target.value)} placeholder="Filtrar operación" /></label>
+              <label className="text-xs font-semibold text-slate-600">Estado ABSIS<input className={campo} value={filtros.estado || ""} onChange={(e) => cambiar("estado", e.target.value)} placeholder="Filtrar estado" /></label>
+              <label className="text-xs font-semibold text-slate-600">Estado justificante<input className={campo} value={filtros.estado_justificante || ""} onChange={(e) => cambiar("estado_justificante", e.target.value)} placeholder="Filtrar justificante" /></label>
+              <label className="text-xs font-semibold text-slate-600">Situación económica<select className={campo} value={filtros.situacion} onChange={(e) => cambiar("situacion", e.target.value)}><option value="">Todas</option><option value="cobrado">Cobrado (estado ABSIS)</option><option value="pendiente_cobro">Pendiente de cobro</option><option value="pendiente_factura">Pendiente de factura</option><option value="incidencia">Con incidencia</option></select></label>
+              <label className="text-xs font-semibold text-slate-600">Buscar expediente / factura<input className={campo} value={filtros.q || ""} onChange={(e) => cambiar("q", e.target.value)} placeholder="Nº expediente, IDGASTO o factura" /></label>
+              <div className="flex flex-wrap items-center gap-2 sm:col-span-2 xl:col-span-4">
+                <button type="submit" className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700">Aplicar filtros</button>
+                <button type="button" onClick={exportar} disabled={exportando} className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-50 disabled:opacity-50">{exportando ? "Exportando…" : "↓ Descargar Excel"}</button>
+                <span className="text-xs text-slate-500">La selección de fechas también actualiza las tarjetas del informe.</span>
               </div>
+            </form>
+            <div className="flex-1 overflow-auto">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-3"><div className="text-sm font-semibold text-slate-700">{loading ? "Consultando registros…" : numeroInforme(datos.items.length) + " registros encontrados"}</div><div className="text-xs text-slate-500">Filtro del informe: CONCEPTOGASTO = HONORARIOS GESTORÍA y BENEFICIARIO = *MOLSAN. IDPAGO sigue desconectado.</div></div>
+              {loading ? <PanelEstadoInforme loading /> : datos.items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay filas Post Firma para los filtros seleccionados." /> : (
+                <div className="max-h-[58vh] overflow-auto">
+                  <MolsanDataTable
+                    rows={datos.items}
+                    rowKey={(fila, index) => `${fila.id_gasto_absis || "sin-id"}-${fila.id_expediente || ""}-${index}`}
+                    minWidth="2600px"
+                    pagination
+                    pageSize={25}
+                    searchable
+                    searchPlaceholder="Buscar en las columnas originales de ABSIS…"
+                    initialSort={{ key: "IDGASTO", direction: "asc" }}
+                    emptyText="No hay filas Post Firma para los filtros seleccionados."
+                    columns={COLUMNAS_POSTFIRMA_CONFIG}
+                  />
+                </div>
+              )}
+            </div>
+          </section>
+        </div>
+      )}
+    </section>
+    <InformeHistoricoPostFirma />
+    </>
+  );
+}
+
+// Visor independiente del almacén histórico Post Firma.
+function InformeHistoricoPostFirma() {
+  const [cargas, setCargas] = useState([]);
+  const [cargaSeleccionada, setCargaSeleccionada] = useState("");
+  const [registros, setRegistros] = useState([]);
+  const [columnas, setColumnas] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
+  const [cargandoCargas, setCargandoCargas] = useState(false);
+  const [cargandoFilas, setCargandoFilas] = useState(false);
+  const [error, setError] = useState("");
+  const limite = 100;
+  useEffect(() => {
+    let activo = true; setCargandoCargas(true);
+    axios.get("/utilidades/importador-absis/postfirma/cargas").then(({data}) => {
+      if (!activo) return; const lista = Array.isArray(data?.items) ? data.items : [];
+      setCargas(lista); setCargaSeleccionada((actual) => actual || (lista[0] ? String(lista[0].id) : ""));
+    }).catch((err) => { if (activo) setError(err?.response?.data?.detail || "No se pudo cargar el histórico Post Firma."); })
+      .finally(() => { if (activo) setCargandoCargas(false); });
+    return () => { activo = false; };
+  }, []);
+  useEffect(() => {
+    if (!cargaSeleccionada) { setRegistros([]); setColumnas([]); setTotal(0); return undefined; }
+    let activo = true; setCargandoFilas(true); setError("");
+    axios.get("/utilidades/importador-absis/postfirma/registros", {params:{carga_id:Number(cargaSeleccionada),limit:limite,offset}})
+      .then(({data}) => { if (!activo) return; setRegistros(Array.isArray(data?.items)?data.items:[]); setColumnas(Array.isArray(data?.columnas)?data.columnas:[]); setTotal(Number(data?.total||0)); })
+      .catch((err) => { if (activo) setError(err?.response?.data?.detail || "No se pudieron consultar las filas originales."); })
+      .finally(() => { if (activo) setCargandoFilas(false); });
+    return () => { activo = false; };
+  }, [cargaSeleccionada, offset]);
+  const cargaActual = cargas.find((c) => String(c.id) === String(cargaSeleccionada));
+  const mostrarValor = (v) => v === null || v === undefined || v === "" ? "—" : typeof v === "object" ? JSON.stringify(v) : String(v);
+  const actualizar = async () => {
+    setError(""); setCargandoCargas(true);
+    try { const {data}=await axios.get("/utilidades/importador-absis/postfirma/cargas"); const lista=Array.isArray(data?.items)?data.items:[]; setCargas(lista); if (!lista.some((c)=>String(c.id)===String(cargaSeleccionada))) {setCargaSeleccionada(lista[0]?String(lista[0].id):"");setOffset(0);} }
+    catch(err){setError(err?.response?.data?.detail||"No se pudo actualizar el histórico.");} finally{setCargandoCargas(false);}
+  };
+  return (
+    <section className="space-y-4 rounded-2xl border border-white/80 bg-white/70 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.08)]">
+      <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="text-xl font-bold text-slate-800">Histórico bruto Post Firma</h2><p className="mt-1 max-w-3xl text-sm text-slate-500">Consulta las filas originales por fichero y mes. No vincula expedientes, no modifica Gestión económica y no consolida movimientos.</p></div><button type="button" onClick={actualizar} disabled={cargandoCargas} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50">↻ Actualizar cargas</button></div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4"><label className="text-xs font-semibold text-slate-600 sm:col-span-2">Fichero importado<select value={cargaSeleccionada} onChange={(e)=>{setCargaSeleccionada(e.target.value);setOffset(0);}} className="mt-1 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700" disabled={cargandoCargas||!cargas.length}>{!cargas.length&&<option value="">No hay cargas disponibles</option>}{cargas.map((c)=><option key={c.id} value={String(c.id)}>{c.nombre_archivo} · carga #{c.id} · {c.filas_guardadas} filas</option>)}</select></label><div className="rounded-xl border border-slate-200 bg-slate-50 p-3"><p className="text-xs font-semibold text-slate-500">Filas Excel</p><p className="mt-1 text-xl font-bold text-slate-800">{cargaActual?.filas_excel??"—"}</p></div><div className="rounded-xl border border-slate-200 bg-slate-50 p-3"><p className="text-xs font-semibold text-slate-500">Filas guardadas</p><p className="mt-1 text-xl font-bold text-slate-800">{cargaActual?.filas_guardadas??"—"}</p></div></div>
       {cargaActual&&<p className="break-all text-xs text-slate-500">Fecha de carga: {cargaActual.fecha_carga||"—"} · SHA-256: {cargaActual.sha256||"—"}</p>}{error&&<p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white"><div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-3"><div><h3 className="font-bold text-slate-800">Filas originales</h3><p className="text-xs text-slate-500">Columnas dinámicas del Excel, incluida TIPOCONCEPTO cuando exista.</p></div><span className="text-sm font-semibold text-slate-600">{total.toLocaleString("es-ES")} filas</span></div>
