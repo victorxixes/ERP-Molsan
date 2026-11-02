@@ -4,7 +4,7 @@ import { useAuthStore } from "../store/authStore";
 import MODULOS_ERP from "../config/modulos";
 import MolsanIcon from "../components/ui/MolsanIcon";
 import { API_BASE } from "../api/config";
-import { configurarSesionEncargaGest } from "../api/encargagest";
+import { configurarSesionSoporteEncargaGest } from "../api/encargagest";
 import "../css/ModalesHerramientasPremium.css";
 
 const CATALOGO_MODULOS = Object.fromEntries(
@@ -203,7 +203,7 @@ export default function ModulosSelector() {
         setModalSoporte(null);
         navigate("/notargest?modo_soporte=1");
       } else {
-        configurarSesionEncargaGest("externo", data.token);
+        configurarSesionSoporteEncargaGest(data.token);
         setModalSoporte(null);
         navigate("/encargagest/notario");
       }
