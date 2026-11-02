@@ -4,6 +4,7 @@ import unittest
 from backend.app.notargest.router import (
     _filtrar_campos_sensibles_notario_externo,
     _es_gestor_asignado,
+    _documento_visible_notargest_externo,
 )
 
 
@@ -54,6 +55,27 @@ class NotarGestExternalPayloadTests(unittest.TestCase):
     def test_unassigned_expedient_has_no_valid_comment_recipient(self):
         expediente = type("Expediente", (), {"gestor_asignado_id": None})()
         self.assertFalse(_es_gestor_asignado(expediente, 27))
+
+    def test_external_document_allowlist_includes_notarial_documents(self):
+        for category in (
+            "Documentos ABSIS",
+            "Hoja de encargo firmada",
+            "Factura notarial",
+            "Presentación Registro",
+            "Copia simple",
+            "Justificante de pago",
+        ):
+            self.assertTrue(_documento_visible_notargest_externo(category), category)
+
+    def test_external_document_allowlist_hides_internal_economic_documents(self):
+        for category in (
+            "Factura registral",
+            "Honorarios gestoría",
+            "Otros impuestos",
+            "Liquidación interna",
+            "Otros",
+        ):
+            self.assertFalse(_documento_visible_notargest_externo(category), category)
 
 
 if __name__ == "__main__":
