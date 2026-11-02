@@ -720,7 +720,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                 ))}
               </div>
             </section>
-            <div className="ng-admin-individual-titulo"><span className="ng-admin-global-eyebrow">DETALLE POR NOTARÍA</span><h3>Situación individual</h3><p>Cada ficha muestra los contadores y las incidencias de esa notaría.</p></div>
+            <header className="ng-admin-individual-titulo" aria-label="Detalle por notaría"><span className="ng-admin-global-eyebrow">DETALLE POR NOTARÍA</span><h2>Situación individual</h2><p>Cada ficha muestra los contadores y las incidencias de esa notaría.</p></header>
             <div className="ng-admin-notarias-grid">
               {notariasSeleccionables.map(item => {
                 const urgentes = Number(item.firmas_urgentes || 0);
