@@ -829,7 +829,6 @@ def _hay_defectos_abiertos_notargest(expediente):
 
 
 ESTADOS_PERMITIDOS_DOCUMENTO_NOTARGEST = {
-    "factura": {"factura"},
     "presentacion": {"registro"},
     "ajd": {"ajd"},
     "defecto": {"inscripcion"},
@@ -1071,7 +1070,6 @@ def actualizar_cierre(expediente_id: str, data: dict, n=Depends(get_notario), db
 async def subir_documento_workflow(expediente_id: str, categoria: str = Form(...), archivo: UploadFile = File(...), n=Depends(get_notario), db: Session = Depends(get_db)):
     e = _expediente_autorizado(expediente_id, n, db)
     categorias = {
-        "factura": ("Factura notarial", "application/pdf", "registro"),
         "presentacion": ("Presentación Registro", None, "ajd"),
         "ajd": ("AJD/ITP", None, "inscripcion"),
         "defecto": ("Defecto registral", "application/pdf", None),
