@@ -10,7 +10,6 @@ import CtnListadoPage from "../ctn/CtnListadoPage";
 import { useAuthStore } from "../../store/authStore";
 import { createPortal } from "react-dom";
 import "../../css/PortalProfesionalShared.css";
-import "../../css/PortalProfesionalPremium2027.css";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import { formatEuro } from "../../utils/formatters";
 
