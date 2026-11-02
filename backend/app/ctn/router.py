@@ -41,7 +41,14 @@ router = APIRouter(
 def _es_administrador_portales(usuario):
     rol = getattr(usuario, "rol", None)
     nombre = str(getattr(rol, "nombre", "") or "").strip().casefold()
-    return nombre in {"administrador", "admin", "administrador del sistema"}
+    return nombre in {
+        "administrador",
+        "administradora",
+        "admin",
+        "superadmin",
+        "superadministrador",
+        "administrador del sistema",
+    }
 
 
 def _tiene_permiso_portal(usuario, portal, accion="ver"):
