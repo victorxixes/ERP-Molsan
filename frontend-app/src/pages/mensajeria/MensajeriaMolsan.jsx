@@ -1,4 +1,5 @@
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
@@ -132,7 +133,7 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
         </div>
       </div>
     </header>
-    {vistaGestion && <section className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900"><div className="flex items-start gap-3"><span className="text-xl">⚠️</span><div><b>Integración API con la empresa de mensajería pendiente.</b><p className="mt-1">La conexión automática todavía debe desarrollarse y validarse con la documentación técnica del proveedor. Mientras tanto, la gestión de solicitudes, estados y comunicaciones funciona dentro del ERP; no se envían pedidos reales al transportista desde esta pantalla.</p></div></div></section>}
+    {vistaGestion && <section className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900"><div className="flex items-start gap-3"><span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-amber-200 bg-white text-amber-700"><MolsanIcon name="alert" size={20} /></span><div><b>Integración API con la empresa de mensajería pendiente.</b><p className="mt-1">La conexión automática todavía debe desarrollarse y validarse con la documentación técnica del proveedor. Mientras tanto, la gestión de solicitudes, estados y comunicaciones funciona dentro del ERP; no se envían pedidos reales al transportista desde esta pantalla.</p></div></div></section>}
     {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">{error}</div>}
     {mensaje && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{mensaje}</div>}
     {vistaGestion && <MensajeriaProveedores />}
