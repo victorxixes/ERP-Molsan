@@ -375,10 +375,10 @@ export default function App() {
         <Route path="encargagest/notario" element={<EncargaGest accessMode="external" />} />
         
         {/* Espacio interno EncargaGest: módulos compartidos sin entrar en CancelaGest. */}
-        <Route path="encargagest/ctn" element={<EncargaGestWorkspace page="ctn" />} />
-        <Route path="encargagest/agenda" element={<EncargaGestWorkspace page="agenda" />} />
-        <Route path="encargagest/mensajes" element={<EncargaGestWorkspace page="mensajes" />} />
-        <Route path="encargagest/intranet" element={<EncargaGestWorkspace page="intranet" />} />
+        <Route path="encargagest/ctn" element={<RequireAuth><EncargaGestWorkspace page="ctn" /></RequireAuth>} />
+        <Route path="encargagest/agenda" element={<RequireAuth><EncargaGestWorkspace page="agenda" /></RequireAuth>} />
+        <Route path="encargagest/mensajes" element={<RequireAuth><EncargaGestWorkspace page="mensajes" /></RequireAuth>} />
+        <Route path="encargagest/intranet" element={<RequireAuth><EncargaGestWorkspace page="intranet" /></RequireAuth>} />
 
         <Route
           path="notargest"
