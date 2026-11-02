@@ -1,5 +1,5 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Sidebar from "../components/Sidebar";
 import { useAuthStore } from "../store/authStore";
@@ -28,13 +28,14 @@ export default function Layout() {
     "/cancelagest", "/notargest", "/encargagest",
   ]);
   const esSubpagina = !rutasPrincipales.has(pathname);
+  const esSubpaginaCatalogosUtilidades = esSubpagina && /^\/(?:catalogos|herramientas\/utilidades)(?:\/|$)/i.test(pathname);
 
   // Las rutas dentro de Layout pertenecen al ERP operativo de CancelaGest.
   // Los portales independientes (ApoderaGest, NotarGest y EncargaGest) no usan este Layout.
   // Seguridad, auditoría y panel técnico conservan su presentación especializada.
   const rutaCancelaGest = !/^\/(paneltecnico|seguridad|auditoria)(\/|$)/i.test(pathname);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setCabeceraSubpagina(null);
     setTieneVolverPropio(false);
     if (!esSubpagina) return undefined;
@@ -89,7 +90,7 @@ export default function Layout() {
       <main className="erp-main-content relative min-h-[calc(100vh-70px)]">
         <div className="erp-main-inner w-full px-4 py-6 lg:px-6">
           <div className={`w-full${rutaCancelaGest ? " cg-unified-workspace" : ""}`}>
-            {esSubpagina && !cabeceraSubpagina && !tieneVolverPropio ? (
+            {esSubpagina && !esSubpaginaCatalogosUtilidades && !cabeceraSubpagina && !tieneVolverPropio ? (
         <header className="molsan-page-header molsan-page-back-fallback">
           <button type="button" className="molsan-page-back-button" onClick={volverSubpagina} aria-label="Volver a la página anterior"><span aria-hidden="true">←</span> Volver</button>
         </header>
