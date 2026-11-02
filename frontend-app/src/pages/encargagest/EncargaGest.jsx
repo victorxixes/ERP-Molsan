@@ -1384,11 +1384,11 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
 
 
       {perfilAbierto && modo === "externo" && (
-        <div className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-slate-950/60 p-3 backdrop-blur-sm sm:p-4 lg:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget) setPerfilAbierto(false); }}>
+        <div className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-slate-950/60 p-3 backdrop-blur-sm sm:p-4 lg:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget && !sesion?.requiere_cambio_password) setPerfilAbierto(false); }}>
           <section role="dialog" aria-modal="true" aria-labelledby="eg-perfil-titulo" className="eg-modal-perfil my-0 w-full max-w-[1180px] min-w-0 max-h-[calc(100vh-2rem)] overflow-y-auto rounded-3xl border border-white/70 bg-white shadow-2xl">
             <header className="eg-perfil-cabecera flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50 px-5 py-4 sm:px-7">
               <div><p className="text-[9px] font-extrabold tracking-[0.18em] text-blue-700">ENCARGAGEST · FICHA CTN</p><h2 id="eg-perfil-titulo" className="mt-1 text-xl font-black text-slate-900">Ficha del notario</h2><p className="mt-1 text-xs text-slate-500">Datos de la notaría registrados en el catálogo CTN.</p></div>
-              <button type="button" onClick={() => setPerfilAbierto(false)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500" aria-label="Cerrar ventana"><MolsanIcon name="x" size={20} tone="ocean" /></button>
+              <button type="button" onClick={() => setPerfilAbierto(false)} disabled={Boolean(sesion?.requiere_cambio_password)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500 disabled:cursor-not-allowed disabled:opacity-30" aria-label="Cerrar ventana"><MolsanIcon name="x" size={20} tone="ocean" /></button>
             </header>
             <div className="eg-perfil-layout grid min-w-0 grid-cols-1 gap-5 p-4 sm:p-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.85fr)] lg:gap-6 lg:p-7">
               <div>
@@ -1413,6 +1413,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
               </div>
               <form onSubmit={cambiarPasswordPerfil} className="eg-perfil-seguridad h-fit space-y-3 rounded-2xl border border-slate-200 p-4">
                 <h3 className="text-sm font-extrabold text-slate-900">Cambiar contraseña</h3>
+                {sesion?.requiere_cambio_password && <p role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-900">Debes sustituir la contraseña inicial antes de acceder a los encargos. La nueva contraseña debe tener al menos 8 caracteres.</p>}
                 {mensajePasswordPerfil && <p role="status" className="rounded-lg bg-emerald-50 p-2 text-xs text-emerald-800">{mensajePasswordPerfil}</p>}
                 {errorPasswordPerfil && <p role="alert" className="rounded-lg bg-rose-50 p-2 text-xs text-rose-700">{errorPasswordPerfil}</p>}
                 <label className="block text-xs font-semibold text-slate-600">Contraseña actual<input required type="password" autoComplete="current-password" value={passwordActualPerfil} onChange={e=>setPasswordActualPerfil(e.target.value)} className={inputClass + " mt-1"} /></label>
