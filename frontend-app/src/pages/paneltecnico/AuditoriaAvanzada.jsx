@@ -93,89 +93,13 @@ export default function AuditoriaAvanzada() {
           CABECERA
           ====================================================== */}
 
-      <div
-        className="molsan-page-header"
-      >
-
-        <div className="molsan-page-header__identity">
-
-          <div
-            className="molsan-page-header__mark"
-          >
-            <svg className="w-5 h-5">
-              <use href="/icons/icons.svg#shield" />
-            </svg>
-          </div>
-
-          <div>
-
-            <h1
-              className="molsan-page-header__title"
-            >
-              Auditoría Avanzada
-            </h1>
-
-            <p
-              className="molsan-page-header__description"
-            >
-              Control y trazabilidad de la actividad del sistema
-            </p>
-
-          </div>
-
+      <div className="flex justify-end">
+        <div className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-[var(--erp-surface-soft)] px-4 py-2 text-sm">
+          <span className="h-2 w-2 rounded-full bg-[var(--erp-primary)]" />
+          <span className="font-semibold text-[var(--erp-text)]">{filtrados.length}</span>
+          <span className="text-[var(--erp-text-soft)]">registros</span>
         </div>
-
-
-        {/* CONTADOR */}
-
-        <div
-          className="
-            inline-flex
-            items-center
-            gap-2
-            px-4
-            py-2
-            rounded-xl
-            bg-[var(--erp-surface)]
-            border
-            border-[var(--erp-border)]
-            shadow-sm
-            w-fit
-          "
-        >
-
-          <span
-            className="
-              w-2
-              h-2
-              rounded-full
-              bg-[var(--erp-primary)]
-            "
-          />
-
-          <span
-            className="
-              text-sm
-              font-semibold
-              text-[var(--erp-text)]
-            "
-          >
-            {filtrados.length}
-          </span>
-
-          <span
-            className="
-              text-sm
-              text-[var(--erp-text-soft)]
-            "
-          >
-            registros
-          </span>
-
-        </div>
-
       </div>
-
 
       {/* ======================================================
           MÉTRICAS
