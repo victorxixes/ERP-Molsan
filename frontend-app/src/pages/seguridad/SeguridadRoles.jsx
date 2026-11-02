@@ -806,11 +806,7 @@ export default function SeguridadRoles() {
               "
             >
               Nombre{" "}
-              {orden.campo === "nombre"
-                ? orden.asc
-                  ? "↑"
-                  : "↓"
-                : ""}
+              {orden.campo === "nombre" ? <MolsanIcon name={orden.asc ? "arrowUp" : "arrowDown"} size={13} inline /> : ""}
             </button>
 
 
@@ -835,12 +831,7 @@ export default function SeguridadRoles() {
               "
             >
               Usuarios{" "}
-              {orden.campo ===
-                "usuariosCount"
-                ? orden.asc
-                  ? "↑"
-                  : "↓"
-                : ""}
+              {orden.campo === "usuariosCount" ? <MolsanIcon name={orden.asc ? "arrowUp" : "arrowDown"} size={13} inline /> : ""}
             </button>
 
           </div>
