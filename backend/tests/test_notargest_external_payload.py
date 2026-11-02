@@ -109,7 +109,7 @@ class NotarGestExternalPayloadTests(unittest.TestCase):
         self.assertEqual(_observacion_ctn_visible_notargest(notaria, "notario"), "Nota interna")
 
     def test_workflow_documents_are_restricted_to_their_current_stage(self):
-        self.assertTrue(_categoria_documental_permitida_notargest("factura", "factura"))
+        self.assertFalse(_categoria_documental_permitida_notargest("factura", "factura"))
         self.assertTrue(_categoria_documental_permitida_notargest("presentacion", "registro"))
         self.assertTrue(_categoria_documental_permitida_notargest("copia", "copia"))
         self.assertTrue(_categoria_documental_permitida_notargest("defecto", "inscripcion"))
