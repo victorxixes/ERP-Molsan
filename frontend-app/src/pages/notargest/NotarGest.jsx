@@ -40,7 +40,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
   const [notariasSeleccionables, setNotariasSeleccionables] = useState([]);
   const [notariaAdminSeleccionada, setNotariaAdminSeleccionada] = useState("");
   const [cargandoSelectorNotaria, setCargandoSelectorNotaria] = useState(false);
-  const token = accesoERP ? (tokenAdminNotaria || tokenERP) : tokenNotario;
+  const token = accesoERP ? (esAdminNotarGest ? (tokenAdminNotaria || tokenERP) : "") : tokenNotario;
   const [usuario, setUsuario] = useState("");
   const [password, setPassword] = useState("");
   const [expedientes, setExpedientes] = useState([]);
@@ -530,6 +530,28 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
     }
     await cargar();
   };
+
+  if (accesoERP && !esAdminNotarGest) {
+    return (
+      <div className="min-h-screen bg-[var(--erp-bg)] px-4 py-10 text-[var(--erp-text)]">
+        <main className="mx-auto flex min-h-[60vh] w-full max-w-3xl items-center justify-center">
+          <section className="w-full rounded-2xl border border-[var(--molsan-border)] bg-white p-7 text-center shadow-[var(--molsan-shadow-card)]">
+            <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] text-[var(--molsan-primary)]">
+              <MolsanIcon name="lock" size={24} bare />
+            </div>
+            <p className="mb-2 text-xs font-extrabold uppercase tracking-[.14em] text-[var(--molsan-text-muted)]">MOLSAN ERP · SEGURIDAD</p>
+            <h1 className="text-xl font-extrabold text-[var(--molsan-primary)]">Acceso restringido</h1>
+            <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-[var(--molsan-text-muted)]">
+              NotarGest está reservado a las cuentas de notaría. El acceso interno de soporte está limitado a administradores ERP autorizados.
+            </p>
+            <button type="button" className="molsan-btn molsan-btn--primary mt-5" onClick={() => navigate("/modulos")}>
+              Volver a módulos
+            </button>
+          </section>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
