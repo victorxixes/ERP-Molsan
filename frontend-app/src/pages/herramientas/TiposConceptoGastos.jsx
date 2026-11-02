@@ -5,6 +5,7 @@ import React, {
 } from "react";
 import axios from "../../api/axios";
 import { API_BASE as API_ROOT } from "../../api/config";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
@@ -898,7 +899,7 @@ export default function TiposConceptoGastos() {
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-indigo-600">Plantilla documental vinculada</p>
               <h2 className="mt-1 text-lg font-extrabold text-slate-800">Factura de honorarios · Concepto ID 6</h2>
               <p className="mt-1 text-sm text-slate-500">La plantilla Word se asocia exclusivamente al registro «honorarios gestoría» del catálogo. Se utiliza al pulsar «Guardar y facturar» en la FichaExpediente y nunca se adjunta a los emails.</p>
-              {plantillaFactura?.plantilla_cargada && <p className="mt-3 break-all text-sm font-semibold text-emerald-700">✓ Plantilla actual: {plantillaFactura.factura_nombre}</p>}
+              {plantillaFactura?.plantilla_cargada && <p className="mt-3 break-all text-sm font-semibold text-emerald-700"><MolsanIcon name="check" size={14} inline /> Plantilla actual: {plantillaFactura.factura_nombre}</p>}
               {plantillaFactura && <p className="mt-1 text-xs text-slate-500">Vinculación confirmada: ID {plantillaFactura.concepto_gasto_id} · {plantillaFactura.concepto_gasto}</p>}
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
