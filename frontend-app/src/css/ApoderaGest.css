@@ -1996,7 +1996,7 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   background:var(--molsan-primary-soft,#EAF2F8);
   border-color:var(--molsan-border,#D8E4EC);
 }
-.ag-grupo-modal-overlay{
+.apoderagest.ag-grupo-modal-overlay{
   position:fixed;
   inset:0;
   z-index:1000;
@@ -2007,7 +2007,7 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   background:rgba(12,31,48,.62);
   backdrop-filter:blur(5px);
 }
-.ag-grupo-modal{
+.apoderagest .ag-grupo-modal{
   width:min(1500px,100%);
   max-height:min(92vh,100dvh - 32px);
   border:1px solid var(--molsan-border,#D8E4EC);
@@ -2015,18 +2015,18 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   background:#FFFFFF;
   box-shadow:0 24px 70px rgba(4,35,58,.24);
 }
-.ag-grupo-modal-cabecera{
+.apoderagest .ag-grupo-modal-cabecera{
   flex:0 0 auto;
   padding:18px 22px;
   background:var(--molsan-surface-soft,#F2F7FB);
   border-bottom:1px solid var(--molsan-border,#D8E4EC);
 }
-.ag-grupo-modal-cabecera h3{
+.apoderagest .ag-grupo-modal-cabecera h3{
   color:var(--molsan-primary,#064675);
   font-size:19px;
   font-weight:850;
 }
-.ag-grupo-modal-cerrar{
+.apoderagest .ag-grupo-modal-cerrar{
   display:inline-flex;
   align-items:center;
   gap:8px;
@@ -2037,10 +2037,10 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   color:var(--molsan-primary,#064675);
   font-size:11px;
 }
-.ag-grupo-modal-cerrar:hover{
+.apoderagest .ag-grupo-modal-cerrar:hover{
   background:var(--molsan-primary-soft,#EAF2F8);
 }
-.ag-grupo-modal .ag-encargos-detalle-lista{
+.apoderagest .ag-grupo-modal .ag-encargos-detalle-lista{
   min-height:0;
   overflow:auto;
   overscroll-behavior:contain;
@@ -2096,8 +2096,8 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
     flex-direction:column;
     gap:10px;
   }
-  .ag-grupo-modal{max-height:calc(100dvh - 16px);border-radius:13px}
-  .ag-grupo-modal-cabecera{align-items:flex-start;padding:14px}
+  .apoderagest .ag-grupo-modal{max-height:calc(100dvh - 16px);border-radius:13px}
+  .apoderagest .ag-grupo-modal-cabecera{align-items:flex-start;padding:14px}
   .apoderagest .ag-resumen-modal-cabecera{padding:14px}
 }
 @media(max-width:480px){
@@ -2110,8 +2110,8 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
     gap:8px;
     padding:14px;
   }
-  .ag-grupo-modal-overlay{padding:8px}
-  .ag-grupo-modal-cabecera{gap:10px}
+  .apoderagest.ag-grupo-modal-overlay{padding:8px}
+  .apoderagest .ag-grupo-modal-cabecera{gap:10px}
 }
 @media(prefers-reduced-motion:reduce){
   .apoderagest .ag-kpi-interactiva:hover{transform:none}
