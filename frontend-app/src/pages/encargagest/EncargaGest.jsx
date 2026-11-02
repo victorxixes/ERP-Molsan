@@ -248,6 +248,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
       const params = { notaria_id: modo === "interno" && notariaActiva ? Number(notariaActiva) : undefined };
       const res = await axios.get("/encargagest/resumen", { params });
       setResumen(res.data || { total: 0, por_estado: {}, requieren_atencion: 0 });
+      setPagina(1);
       await cargarListado(1, busqueda, filtroEstado, notariaActiva);
     } catch (e) {
       setError(e?.response?.data?.detail || "No se han podido cargar los datos de EncargaGest. Comprueba los permisos del módulo y vuelve a intentarlo.");
@@ -310,6 +311,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
 
   useEffect(() => {
     if (modo !== "interno" && modo !== "externo") return undefined;
+    if (modo === "externo" && sesion?.requiere_cambio_password) return undefined;
     const intervalo = window.setInterval(async () => {
       if (refrescoEnCurso.current) return;
       refrescoEnCurso.current = true;
@@ -334,7 +336,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
       }
     }, 15000);
     return () => window.clearInterval(intervalo);
-  }, [modo, pagina, busqueda, filtroEstado, filtroNotariaId, seleccionadoId]);
+  }, [modo, pagina, busqueda, filtroEstado, filtroNotariaId, seleccionadoId, sesion?.requiere_cambio_password]);
 
   const filas = useMemo(() => items, [items]);
   const totalPaginas = Math.max(1, Math.ceil(total / 20));
