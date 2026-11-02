@@ -1,7 +1,7 @@
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { sortRows } from "../../utils/sortRows";
 import MolsanButton from "../../components/ui/MolsanButton";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import "../../css/ModalesHerramientasPremium.css";
 import React, {
   useCallback,
@@ -1282,8 +1282,8 @@ export default function AccionesExpediente() {
 
       <div
         className="
-          max-w-[1700px]
-          mx-auto
+          w-full
+          min-w-0
           flex
           flex-col
           lg:flex-row
@@ -1294,7 +1294,7 @@ export default function AccionesExpediente() {
       >
 
         <div
-          className="molsan-page-header 
+          className="
             flex
             items-center
             gap-4
@@ -1351,6 +1351,7 @@ export default function AccionesExpediente() {
               Catálogo de acciones y actividades
               disponibles para los expedientes
             </p>
+            <Link to="/herramientas" className="molsan-btn molsan-btn--secondary mt-3 inline-flex">← Volver</Link>
 
           </div>
 
@@ -1406,7 +1407,7 @@ export default function AccionesExpediente() {
 
         </div>
 
-      </div>
+        </header>
 
 
       {/* =====================================================
@@ -1463,8 +1464,8 @@ export default function AccionesExpediente() {
 
       <section
         className="
-          max-w-[1700px]
-          mx-auto
+          w-full
+          min-w-0
           grid
           grid-cols-1
           sm:grid-cols-3
@@ -1580,8 +1581,8 @@ export default function AccionesExpediente() {
       <section
         className="
           erp-card
-          max-w-[1700px]
-          mx-auto
+          w-full
+          min-w-0
           p-4
         "
       >
@@ -1850,8 +1851,8 @@ export default function AccionesExpediente() {
       <section
         className="
           erp-card
-          max-w-[1700px]
-          mx-auto
+          w-full
+          min-w-0
           overflow-hidden
         "
       >
