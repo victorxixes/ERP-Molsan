@@ -157,6 +157,39 @@
 .apoderagest .ag-busqueda>input,.encargagest .eg-directorio-input-wrap>input{min-width:0!important}
 .apoderagest button:focus-visible,.encargagest button:focus-visible,.notargest.ng-content button:focus-visible,.ng-admin-notarias button:focus-visible{outline:3px solid rgba(6,70,117,.22)!important;outline-offset:2px!important}
 .apoderagest .molsan-icon-3d,.encargagest .molsan-icon-3d,.notargest .molsan-icon-3d,.ng-admin-notarias .molsan-icon-3d{flex-shrink:0}
+/* Modales de las tres áreas: misma identidad, contraste y jerarquía. */
+.apoderagest .ag-resumen-modal-overlay,.encargagest .eg-modal-overlay,.notargest .ng-modal-overlay{
+  background:rgba(3,28,46,.58)!important;backdrop-filter:blur(4px)!important;-webkit-backdrop-filter:blur(4px)!important;
+}
+.apoderagest .ag-resumen-modal,.encargagest .eg-modal-form,.notargest .ng-modal{
+  color:var(--molsan-prof-text)!important;border:1px solid var(--molsan-prof-border)!important;
+  border-radius:18px!important;background:#fff!important;box-shadow:0 24px 64px rgba(3,28,46,.24)!important;
+}
+.apoderagest .ag-resumen-modal-cabecera,.encargagest .eg-modal-header,.notargest .ng-modal>header{
+  display:flex!important;align-items:center!important;justify-content:space-between!important;gap:14px!important;
+  padding:18px 22px!important;color:#fff!important;border:0!important;border-bottom:1px solid rgba(255,255,255,.14)!important;
+  border-radius:0!important;background:linear-gradient(116deg,#032D4B 0%,#064675 58%,#0D638C 100%)!important;
+}
+.apoderagest .ag-resumen-modal-cabecera :is(h2,h3,p,span),
+.encargagest .eg-modal-header :is(h2,h3,p,span),
+.notargest .ng-modal>header :is(h2,h3,p,span,.ng-kicker){color:#fff!important}
+.encargagest .eg-modal-close{
+  color:#fff!important;border-color:rgba(255,255,255,.32)!important;background:rgba(255,255,255,.12)!important;
+}
+.encargagest .eg-modal-close:hover{background:rgba(255,255,255,.22)!important}
+.apoderagest .ag-resumen-modal-cuerpo,.encargagest .eg-modal-layout,.notargest .ng-modal-lista{
+  background:#fff!important;
+}
+.apoderagest .ag-resumen-tabla-wrap{border-color:var(--molsan-prof-border)!important}
+.apoderagest .ag-resumen-tabla th{color:var(--molsan-prof-blue)!important;background:var(--molsan-prof-table)!important}
+.encargagest .eg-modal-section,.notargest .ng-modal-vacio,.notargest .ng-aviso-item{
+  border-color:var(--molsan-prof-border)!important;border-radius:12px!important;
+}
+@media(max-width:760px){
+  .apoderagest .ag-resumen-modal-cabecera,.encargagest .eg-modal-header,.notargest .ng-modal>header{padding:15px!important}
+  .apoderagest .ag-resumen-modal-cuerpo{padding:14px!important}
+}
+
 /* Responsive: misma jerarquía sin cabeceras comprimidas ni tarjetas desiguales. */
 @media(max-width:900px){
   .apoderagest>header.ag-hero,.encargagest>header.ag-hero,.notargest.ng-content>header.ag-hero,.ng-admin-notarias>header.ag-hero{
