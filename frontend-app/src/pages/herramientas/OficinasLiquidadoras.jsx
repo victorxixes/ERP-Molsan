@@ -1,4 +1,5 @@
 import MolsanButton from "../../components/ui/MolsanButton";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useSearchParams } from "react-router-dom";
 import { sortRows } from "../../utils/sortRows";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
@@ -1136,10 +1137,7 @@ export default function OficinasLiquidadoras() {
               shrink-0
             "
           >
-            <Icono
-              name="database"
-              className="w-6 h-6"
-            />
+            <MolsanIcon name="landmark" size={40} tone="ocean" />
           </div>
 
 
