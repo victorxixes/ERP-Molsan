@@ -4,7 +4,6 @@ import PortalLogin from "../../components/PortalLogin";
 import Sidebar from "../../components/Sidebar";
 import "../../css/PortalProfesionalShared.css";
 import "../../css/EncargaGest.css";
-import "../../css/PortalProfesionalPremium2027.css";
 import axios, { configurarSesionEncargaGest, limpiarSesionEncargaGest } from "../../api/encargagest";
 import { useAuthStore } from "../../store/authStore";
 import { formatEuro as euros } from "../../utils/formatters";
