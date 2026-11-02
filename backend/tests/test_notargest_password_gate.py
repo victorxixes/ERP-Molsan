@@ -7,16 +7,28 @@ from backend.app.notargest.router import (
     _requiere_cambio_password_notargest,
     _ruta_permitida_durante_cambio_password,
     _es_administrador_notargest,
+    _registrar_password_inicial_notargest,
+    normalizar_nif,
+    verificar_password,
 )
 
 
 class NotarGestPasswordGateTests(unittest.TestCase):
-    def test_provisional_password_requires_change(self):
+    def test_initial_nif_password_does_not_force_a_password_change(self):
         notaria = SimpleNamespace(
             notargest_cambiar_password=True,
             notargest_password_provisional=True,
+            notargest_password_hash=None,
         )
-        self.assertTrue(_requiere_cambio_password_notargest(notaria))
+        nif = "12345678Z"
+        _registrar_password_inicial_notargest(notaria, nif)
+        self.assertFalse(_requiere_cambio_password_notargest(notaria))
+        self.assertTrue(verificar_password(nif, notaria.notargest_password_hash))
+        self.assertFalse(notaria.notargest_password_provisional)
+
+    def test_nif_normalization_accepts_uppercase_letter_and_separators(self):
+        self.assertEqual(normalizar_nif(" 12345678z "), "12345678Z")
+        self.assertEqual(normalizar_nif("12-345-678-Z"), "12345678Z")
 
     def test_changed_password_does_not_require_change(self):
         notaria = SimpleNamespace(
