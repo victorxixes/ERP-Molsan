@@ -88,7 +88,7 @@ export default function ProcesoAbsis() {
       <Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link>
       <div className="mt-2 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div><h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Proceso de ABSIS</h1><p className="mt-1 text-sm text-slate-500">Seguimiento de expedientes enviados, incidencias y acciones de envío.</p></div>
-        
+        <button onClick={() => Promise.all([cargarActividades(), cargarItems()])} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">↻ Actualizar</button>
       </div>
     </header>
 
