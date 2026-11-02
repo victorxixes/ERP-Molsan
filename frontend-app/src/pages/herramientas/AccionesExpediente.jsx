@@ -1416,8 +1416,8 @@ export default function AccionesExpediente() {
 
         <div
           className="
-            max-w-[1700px]
-            mx-auto
+            w-full
+            min-w-0
             rounded-xl
             border
             border-green-200
@@ -1438,8 +1438,8 @@ export default function AccionesExpediente() {
 
         <div
           className="
-            max-w-[1700px]
-            mx-auto
+            w-full
+            min-w-0
             rounded-xl
             border
             border-red-200
