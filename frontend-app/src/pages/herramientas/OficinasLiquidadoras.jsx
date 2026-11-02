@@ -1,4 +1,5 @@
 import MolsanButton from "../../components/ui/MolsanButton";
+import { API_BASE as API_ROOT } from "../../api/config";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useSearchParams } from "react-router-dom";
 import { sortRows } from "../../utils/sortRows";
@@ -34,11 +35,7 @@ import "../../css/CatalogosMaestrosPremium.css";
 // CONFIGURACIÓN API
 // ============================================================
 
-const API_ORIGEN =
-  "https://agenda-intranet-b.onrender.com";
-
-const API_BASE =
-  `${API_ORIGEN}/api/oficinas-liquidadoras`;
+const API_BASE = `${API_ROOT}/oficinas-liquidadoras`;
 
 const API_IMPORTAR_EXCEL =
   `${API_BASE}/importar-excel`;
