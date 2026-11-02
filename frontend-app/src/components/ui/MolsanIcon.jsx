@@ -81,6 +81,9 @@ const PATHS = {
   tag: <><path d="M3 12V4h8l10 10-7 7z"/><circle cx="8" cy="8" r="1"/></>,
   plug: <><path d="M9 3v6M15 3v6M6 9h12v3a6 6 0 0 1-6 6v3M12 18v3"/></>,
   door: <><path d="M5 21V3h14v18M9 21V9h6v12M12 15h.01"/></>,
+  chevronDown: <><path d="m6 9 6 6 6-6"/></>,
+  maximize: <><path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5"/></>,
+  minimize: <><path d="M8 3v5H3M16 3v5h5M3 16h5v5M21 16h-5v5"/></>,
 
 
 
