@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useAuthStore } from "../store/authStore";
 import { useIntranetStore } from "../store/intranetStore";
+import { API_BASE } from "../api/config";
 
 const AUTH_CLOSE_CODES = new Set([4001, 4002, 4003, 4004, 4005, 4006, 4401, 4403]);
 const MAX_RECONNECT_DELAY = 30000;
@@ -59,11 +60,9 @@ export const useIntranetWS = () => {
       ) return;
 
       const configuredWs = String(import.meta.env.VITE_WS_URL || "").replace(/\/+$/, "");
-      const configuredApi = String(
-        import.meta.env.VITE_API_URL || "https://agenda-intranet-b.onrender.com"
-      ).replace(/\/+$/, "");
+      const configuredApi = new URL(API_BASE, window.location.href);
       const wsBase = configuredWs ||
-        configuredApi.replace(/^http:/i, "ws:").replace(/^https:/i, "wss:");
+        configuredApi.origin.replace(/^http:/i, "ws:").replace(/^https:/i, "wss:");
 
       if (!wsBase) {
         console.warn("WS Intranet: falta la URL del servicio realtime.");
