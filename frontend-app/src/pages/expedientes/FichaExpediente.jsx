@@ -6807,8 +6807,8 @@ const cuantiaFincasParaEnvio =
                   {guardandoActividad
                     ? "Validando…"
                     : actividadActual === "facturacion-cierre"
-                      ? <><MolsanIcon name="check" size={15} inline /> Validar y cerrar expediente</>}
-                      : <><MolsanIcon name="arrowRight" size={15} inline /> Validar y avanzar actividad</>}}
+                      ? <><MolsanIcon name="check" size={15} inline /> Validar y cerrar expediente</>
+                      : <><MolsanIcon name="arrowRight" size={15} inline /> Validar y avanzar actividad</>}
                 </Boton>
               )}
             </div>
