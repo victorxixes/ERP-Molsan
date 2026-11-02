@@ -1628,21 +1628,7 @@ export default function EntidadesBancarias() {
             
 
 
-            <button
-              type="button"
-              onClick={descargarExcel}
-              disabled={cargando || entidadesOrdenadas.length === 0}
-              className="
-                inline-flex items-center justify-center gap-2 rounded-xl
-                border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold
-                text-slate-700 shadow-sm transition hover:border-indigo-200
-                hover:bg-indigo-50 hover:text-indigo-700 disabled:cursor-not-allowed disabled:opacity-50
-              "
-              title="Descargar el catálogo filtrado en Excel"
-            >
-              <span className="text-lg">⬇️</span>
-              Descargar Excel
-            </button>
+            <MolsanButton type="button" onClick={descargarExcel} disabled={cargando || entidadesOrdenadas.length === 0} icon="download" variant="secondary" title="Descargar el catálogo filtrado en Excel">Descargar Excel</MolsanButton>
 
 
             <button
