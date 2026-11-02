@@ -33,7 +33,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
   // aunque el navegador conserve una sesión de empleado de MOLSAN.
   const accesoERP = accessMode !== "external" && Boolean(tokenERP && empleadoERP);
   const rolNotarGest = String(empleadoERP?.rol?.nombre || empleadoERP?.rol_nombre || empleadoERP?.nombre_rol || "").trim().toLowerCase();
-  const esAdminNotarGest = String(empleadoERP?.usuario || "").trim().toLowerCase() === "admin" || /^(admin|administrador|administradora|superadmin)$/.test(rolNotarGest);
+  const esAdminNotarGest = String(empleadoERP?.usuario || "").trim().toLowerCase() === "admin" || /^(admin|administrador|administradora|superadmin|superadministrador|administrador del sistema)$/.test(rolNotarGest);
   const [tokenNotario, setTokenNotario] = useState(() => localStorage.getItem(TOKEN_KEY) || "");
   const [tokenAdminNotaria, setTokenAdminNotaria] = useState(() => sessionStorage.getItem("notargest_soporte_token") || "");
   const [notariasSeleccionables, setNotariasSeleccionables] = useState([]);
