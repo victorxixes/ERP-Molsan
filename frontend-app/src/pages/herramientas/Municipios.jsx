@@ -2994,7 +2994,7 @@ function ModalMunicipio({
                 hover:text-slate-700
               "
             >
-              ✕
+              <MolsanIcon name="x" size={16} />
             </button>
 
           </div>
