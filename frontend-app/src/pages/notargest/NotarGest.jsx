@@ -560,14 +560,14 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
           { key: "inicio", label: "Dashboard", icon: "home" },
           { key: "recepcion", label: "Nuevos encargos", icon: "clipboard-list", badge: cuenta("recepcion") },
           { key: "firma", label: "Pendientes de firma", icon: "clock", badge: cuenta("firma") },
-          { key: "copia", label: "Pendientes copias simples", icon: "files", badge: cuenta("copia") },
-          { key: "factura", label: "Pendientes de factura notarial", icon: "receipt", badge: cuenta("factura") },
-          { key: "ajd", label: "Pendientes de AJD / ITP", icon: "file-text", badge: cuenta("ajd") },
-          { key: "registro", label: "Pendientes de presentación registral", icon: "folder-check", badge: cuenta("registro") },
-          { key: "defectos", label: "Expedientes con defectos", icon: "alert-triangle", badge: cuenta("defectos") },
-          { key: "inscripcion", label: "Inscripciones registrales", icon: "book-check", badge: cuenta("inscripcion") },
-          { key: "cerrada", label: "Escrituras cerradas inscritas", icon: "check-circle", badge: cuenta("cerrada") },
-          { key: "firmas_urgentes", label: "Firmas urgentes", icon: "zap", badge: expedientes.filter(x => x.firma_urgente).length, attention: expedientes.some(x => x.firma_urgente) },
+          { key: "copia", label: "Pendientes copias simples", icon: "file-check", badge: cuenta("copia") },
+          { key: "factura", label: "Pendientes de factura notarial", icon: "briefcase", badge: cuenta("factura") },
+          { key: "ajd", label: "Pendientes de AJD / ITP", icon: "file-check", badge: cuenta("ajd") },
+          { key: "registro", label: "Pendientes de presentación registral", icon: "folder", badge: cuenta("registro") },
+          { key: "defectos", label: "Expedientes con defectos", icon: "shield", badge: cuenta("defectos") },
+          { key: "inscripcion", label: "Inscripciones registrales", icon: "newspaper", badge: cuenta("inscripcion") },
+          { key: "cerrada", label: "Escrituras cerradas inscritas", icon: "file-check", badge: cuenta("cerrada") },
+          { key: "firmas_urgentes", label: "Firmas urgentes", icon: "activity", badge: expedientes.filter(x => x.firma_urgente).length, attention: expedientes.some(x => x.firma_urgente) },
         ]}
         activeNavigationItem={sidebarVista}
         onNavigationItemClick={navegarSidebar}
