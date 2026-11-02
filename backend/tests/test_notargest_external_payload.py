@@ -8,6 +8,9 @@ from backend.app.notargest.router import (
     _url_documento_segura_notargest,
     _observacion_ctn_visible_notargest,
     _categoria_documental_permitida_notargest,
+    _expediente_autorizado,
+    _pago_corresponde_a_notario,
+    Expediente,
 )
 
 
@@ -107,6 +110,44 @@ class NotarGestExternalPayloadTests(unittest.TestCase):
             "_notargest_sesion_soporte": True,
         })()
         self.assertEqual(_observacion_ctn_visible_notargest(notaria, "notario"), "Nota interna")
+
+    def test_notary_cannot_open_another_notarys_expedient(self):
+        expediente = type("Expediente", (), {
+            "id_expediente": "EXP-1",
+            "notario_id": 12,
+            "fecha_envio_notario": "2026-10-01",
+            "notargest_estado": "recepcion",
+        })()
+
+        class Query:
+            def filter(self, *args, **kwargs):
+                return self
+            def first(self):
+                return expediente
+
+        class DB:
+            def query(self, model):
+                if model is not Expediente:
+                    raise AssertionError("Consulta inesperada")
+                return Query()
+
+        notaria_correcta = type("Notaria", (), {"id": 12, "nif": "12345678Z", "nombre": "Notaría", "apellidos": "Uno"})()
+        notaria_ajena = type("Notaria", (), {"id": 13, "nif": "87654321X", "nombre": "Notaría", "apellidos": "Dos"})()
+        self.assertIs(_expediente_autorizado("EXP-1", notaria_correcta, DB()), expediente)
+        from fastapi import HTTPException
+        with self.assertRaises(HTTPException) as error:
+            _expediente_autorizado("EXP-1", notaria_ajena, DB())
+        self.assertEqual(error.exception.status_code, 403)
+
+    def test_external_notary_only_sees_payments_explicitly_assigned_to_it(self):
+        notaria = type("Notaria", (), {"id": 12, "nif": "12345678Z", "nombre": "Notaría", "apellidos": "Uno"})()
+        expediente = type("Expediente", (), {"nif_notario": "12345678Z", "nombre_notario": "Notaría Uno"})()
+        gasto_correcto = type("Gasto", (), {"nif_notario": "12345678Z", "nombre_notario": "Notaría Uno"})()
+        gasto_otro_nif = type("Gasto", (), {"nif_notario": "87654321X", "nombre_notario": "Notaría Uno"})()
+        gasto_sin_destinatario = type("Gasto", (), {"nif_notario": None, "nombre_notario": None})()
+        self.assertTrue(_pago_corresponde_a_notario(notaria, gasto_correcto, expediente))
+        self.assertFalse(_pago_corresponde_a_notario(notaria, gasto_otro_nif, expediente))
+        self.assertFalse(_pago_corresponde_a_notario(notaria, gasto_sin_destinatario, expediente))
 
     def test_workflow_documents_are_restricted_to_their_current_stage(self):
         self.assertFalse(_categoria_documental_permitida_notargest("factura", "factura"))
