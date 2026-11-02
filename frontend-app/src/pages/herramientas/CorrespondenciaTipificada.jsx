@@ -255,14 +255,14 @@ export default function CorrespondenciaTipificada() {
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl">✉️</div>
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[var(--molsan-border)] bg-[var(--molsan-surface)] text-[var(--molsan-primary)]"><MolsanIcon name="mail" size={26} /></div>
             <div>
               <Link to="/catalogos" className="text-xs font-bold text-blue-600 hover:text-blue-700">← Volver a Catálogos</Link>
               <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Correspondencia tipificada</h1>
               <p className="mt-1 text-sm text-slate-500">Plantillas reutilizables con campos vinculados a los expedientes.</p>
             </div>
           </div>
-          <button type="button" onClick={nuevaPlantilla} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700">＋ Nueva plantilla</button>
+          <button type="button" onClick={nuevaPlantilla} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700"><MolsanIcon name="plus" size={14} inline /> Nueva plantilla</button>
         </div>
       </header>
 
@@ -280,7 +280,7 @@ export default function CorrespondenciaTipificada() {
             <select value={categoriaFiltro} onChange={(e) => setCategoriaFiltro(e.target.value)} className={inputClass}><option value="Todas">Todas las tipologías</option>{CATEGORIAS.map((cat) => <option key={cat} value={cat}>{cat}</option>)}</select>
           </div>
           {cargando ? <p className="p-8 text-center text-sm text-slate-400">Cargando plantillas…</p> : plantillasFiltradas.length === 0 ? (
-            <div className="p-10 text-center"><div className="text-3xl">✉️</div><h3 className="mt-3 font-bold text-slate-800">{plantillas.length ? "No hay plantillas que coincidan" : "Todavía no hay plantillas creadas"}</h3><p className="mt-1 text-sm text-slate-500">{plantillas.length ? "Prueba con otra búsqueda o categoría." : "Pulsa «Nueva plantilla» para crear el primer modelo de correspondencia."}</p>{!plantillas.length && <button type="button" onClick={nuevaPlantilla} className="mt-4 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700">＋ Nueva plantilla</button>}</div>
+            <div className="p-10 text-center"><div className="flex justify-center"><MolsanIcon name="mail" size={34} /></div><h3 className="mt-3 font-bold text-slate-800">{plantillas.length ? "No hay plantillas que coincidan" : "Todavía no hay plantillas creadas"}</h3><p className="mt-1 text-sm text-slate-500">{plantillas.length ? "Prueba con otra búsqueda o categoría." : "Pulsa «Nueva plantilla» para crear el primer modelo de correspondencia."}</p>{!plantillas.length && <button type="button" onClick={nuevaPlantilla} className="mt-4 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700">＋ Nueva plantilla</button>}</div>
           ) : (
             <div className="overflow-x-auto"><table className="w-full min-w-[820px] border-collapse text-left text-sm">
               <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-5 py-3 font-bold">Nombre de la plantilla</th><th className="px-5 py-3 font-bold">Tipología / proceso</th><th className="px-5 py-3 font-bold">Asunto</th><th className="px-5 py-3 font-bold">Estado</th><th className="px-5 py-3 text-right font-bold">Acciones</th></tr></thead>
