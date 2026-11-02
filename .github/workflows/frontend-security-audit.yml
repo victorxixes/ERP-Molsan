@@ -1,4 +1,4 @@
-name: Frontend dependency security audit
+name: Frontend npm vulnerability audit
 
 on:
   pull_request:
