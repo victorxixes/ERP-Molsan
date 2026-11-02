@@ -1529,6 +1529,7 @@ async def subir_factura_notarial(expediente_id: str, archivo: UploadFile = File(
     if ruta.parent != ROOT:
         raise HTTPException(status_code=400, detail="Nombre de archivo no válido")
     ruta.write_bytes(contenido)
+    ruta_anterior = None
     try:
         if anterior:
             ruta_anterior = (ROOT / anterior.nombre_guardado).resolve()
@@ -1537,9 +1538,6 @@ async def subir_factura_notarial(expediente_id: str, archivo: UploadFile = File(
             anterior.tipo_mime = "application/pdf"
             anterior.tamano_bytes = len(contenido)
             anterior.fecha_subida = datetime.utcnow()
-            db.commit()
-            if ruta_anterior.parent == ROOT:
-                ruta_anterior.unlink(missing_ok=True)
             doc = anterior
         else:
             doc = DocumentoCarpetaDigital(
@@ -1548,13 +1546,14 @@ async def subir_factura_notarial(expediente_id: str, archivo: UploadFile = File(
                 tipo_mime="application/pdf", tamano_bytes=len(contenido), fecha_subida=datetime.utcnow()
             )
             db.add(doc)
-            db.commit()
-            db.refresh(doc)
+        e.notargest_estado = "registro"
+        e.actividad_actual = ESTADOS_NOTARGEST["registro"]
+        db.commit()
+        db.refresh(doc)
+        if ruta_anterior and ruta_anterior.parent == ROOT:
+            ruta_anterior.unlink(missing_ok=True)
     except Exception:
         db.rollback()
         ruta.unlink(missing_ok=True)
         raise
-    e.notargest_estado = "registro"
-    e.actividad_actual = ESTADOS_NOTARGEST["registro"]
-    db.commit()
     return {"ok": True, "id": doc.id, "nombre": doc.nombre_original, "fecha_subida": _fecha(doc.fecha_subida), "estado": "registro"}
