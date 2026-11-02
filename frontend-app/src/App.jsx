@@ -362,14 +362,12 @@ export default function App() {
         
         
         <Route
-
-        
           path="encargagest"
-
-        
-          element={<EncargaGest />}
-
-        
+          element={
+            <RequireAuth>
+              <EncargaGest />
+            </RequireAuth>
+          }
         />
 
         <Route path="encargagest/notario" element={<EncargaGest accessMode="external" />} />
@@ -382,7 +380,11 @@ export default function App() {
 
         <Route
           path="notargest"
-          element={<NotarGest />}
+          element={
+            <RequireAuth>
+              <NotarGest />
+            </RequireAuth>
+          }
         />
 
         {/* Portales externos para notarías: rutas explícitas y separadas. */}
