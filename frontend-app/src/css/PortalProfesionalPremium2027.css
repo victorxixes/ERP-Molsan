@@ -1,102 +1,221 @@
-/* MOLSAN ERP PREMIUM 2027 · SHELL COMPARTIDO DE PORTALES PROFESIONALES
-   Estructura y superficies alineadas con .erp-page del Dashboard.
-   Los estilos funcionales propios de cada portal se conservan. */
-.molsan-professional-shell {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  margin-inline: auto;
-  color: var(--molsan-text, #173247);
+/* MOLSAN ERP PREMIUM 2027 · CANONICAL PROFESSIONAL PORTALS
+   This file is imported LAST by main.jsx, after module CSS and all legacy
+   premium layers. It is the single cascade authority for these three portals.
+   Functional/layout rules remain in the module stylesheets. */
+:root {
+  --molsan-prof-bg:#FFFFFF;
+  --molsan-prof-surface:#FFFFFF;
+  --molsan-prof-soft:#F2F7FB;
+  --molsan-prof-table:#EAF2F8;
+  --molsan-prof-border:#D8E4EC;
+  --molsan-prof-blue:#064675;
+  --molsan-prof-muted:#617789;
 }
-.molsan-professional-shell *,
-.molsan-professional-shell *::before,
-.molsan-professional-shell *::after { box-sizing: border-box; }
-.molsan-professional-shell > .molsan-page-header,
-.molsan-professional-shell > header.molsan-page-header {
-  flex: 0 0 auto;
-  width: 100%;
-  min-width: 0;
-  min-height: 76px;
-  margin: 0 0 2px;
-  padding: 12px 20px;
-  border: 1px solid rgba(255,255,255,.14);
-  border-radius: 18px;
-  background:
-    radial-gradient(circle at 86% 18%, rgba(116,199,219,.18), transparent 27%),
-    linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
-  box-shadow: 0 12px 28px rgba(4,55,91,.16);
+/* Page frame: use the same full-width content rhythm as Dashboard. */
+.erp-page.molsan-professional-shell,
+.apoderagest.encargagest.erp-page.molsan-professional-shell,
+.erp-page.molsan-professional-shell.notargest-workspace-premium {
+  box-sizing:border-box!important;
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  color:#173247!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  overflow:visible!important;
 }
-.molsan-professional-shell .molsan-page-header__identity { gap: 12px; }
-.molsan-professional-shell .molsan-page-header__mark {
-  flex-basis: 42px;
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
+.erp-page.molsan-professional-shell *,
+.erp-page.molsan-professional-shell *::before,
+.erp-page.molsan-professional-shell *::after {box-sizing:border-box}
+/* Canonical shared header. Specificity intentionally beats the accumulated
+   !important rules in the legacy portal stylesheets. */
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header,
+.encargagest > header.ag-hero.molsan-page-header.dashboard-header,
+.notargest.ng-content > header.ag-hero.molsan-page-header.dashboard-header,
+.ng-admin-notarias > header.ag-hero.molsan-page-header.dashboard-header {
+  position:relative!important;
+  display:flex!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  min-height:112px!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  flex-wrap:wrap!important;
+  gap:18px!important;
+  margin:0 0 20px!important;
+  padding:20px 24px!important;
+  overflow:hidden!important;
+  color:#FFFFFF!important;
+  border:1px solid rgba(255,255,255,.16)!important;
+  border-radius:18px!important;
+  background:radial-gradient(circle at 86% 18%,rgba(116,199,219,.18),transparent 27%),linear-gradient(116deg,#032D4B 0%,#064675 54%,#0D638C 100%)!important;
+  box-shadow:0 12px 28px rgba(4,55,91,.16)!important;
+  animation:none!important;
+  transition:none!important;
+  opacity:1!important;
+  transform:none!important;
+  filter:none!important;
 }
-.molsan-professional-shell .molsan-page-header__eyebrow {
-  margin-bottom: 4px;
-  font-size: 9px;
-  letter-spacing: .15em;
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header::after,
+.encargagest > header.ag-hero.molsan-page-header.dashboard-header::after,
+.notargest.ng-content > header.ag-hero.molsan-page-header.dashboard-header::after,
+.ng-admin-notarias > header.ag-hero.molsan-page-header.dashboard-header::after {
+  content:""!important;position:absolute!important;right:0!important;bottom:0!important;left:0!important;height:3px!important;
+  background:linear-gradient(90deg,#6CC5D9 0%,#8CB8D8 38%,rgba(255,255,255,.08) 100%)!important;
+  pointer-events:none!important;
 }
-.molsan-professional-shell .molsan-page-header :is(h1,.molsan-page-header__title) {
-  font-size: clamp(21px, 1.8vw, 25px);
-  line-height: 1.12;
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__identity,
+.encargagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__identity,
+.notargest.ng-content > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__identity,
+.ng-admin-notarias > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__identity {
+  display:flex!important;align-items:center!important;gap:14px!important;min-width:0!important;flex:1 1 auto!important;
 }
-.molsan-professional-shell .molsan-page-header__description {
-  max-width: 760px;
-  margin-top: 4px;
-  font-size: 11px;
-  line-height: 1.4;
-  white-space: normal;
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__mark,
+.encargagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__mark,
+.notargest.ng-content > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__mark,
+.ng-admin-notarias > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__mark {
+  display:grid!important;flex:0 0 48px!important;width:48px!important;height:48px!important;place-items:center!important;
+  color:#FFFFFF!important;border:1px solid rgba(255,255,255,.30)!important;border-radius:13px!important;
+  background:rgba(255,255,255,.12)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.18)!important;
 }
-.molsan-professional-shell :is(.ag-panel,.ag-kpi,.ag-card,.ng-panel,.ng-contador,.ng-tarea,.ng-acceso,.eg-panel,.eg-kpi,.eg-card,.eg-directorio-card,.ng-dashboard-grafico,.ng-admin-global-resumen,.ng-admin-notaria-card) {
-  min-width: 0;
-  border-color: var(--molsan-border, #D8E4EC);
-  border-radius: 18px;
-  box-shadow: 0 8px 24px rgba(6,50,82,.065);
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__eyebrow,
+.encargagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__eyebrow,
+.notargest.ng-content > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__eyebrow,
+.ng-admin-notarias > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__eyebrow {
+  margin:0 0 5px!important;color:#C6DFEC!important;font-size:10px!important;font-weight:800!important;letter-spacing:.14em!important;line-height:1.4!important;
 }
-.molsan-professional-shell :is(h2,h3,h4) {
-  letter-spacing: -.015em;
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__title,
+.encargagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__title,
+.notargest.ng-content > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__title,
+.ng-admin-notarias > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__title {
+  margin:0!important;color:#FFFFFF!important;font-size:clamp(22px,2vw,28px)!important;font-weight:800!important;letter-spacing:-.035em!important;line-height:1.15!important;
 }
-.molsan-professional-shell :is(table):not(.molsan-table) thead th {
-  color: #064675;
-  background: #EAF2F8;
-  border-bottom-color: #D8E4EC;
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__description,
+.encargagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__description,
+.notargest.ng-content > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__description,
+.ng-admin-notarias > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__description {
+  display:block!important;max-width:780px!important;margin:5px 0 0!important;color:#D1E4EE!important;font-size:12px!important;line-height:1.5!important;white-space:normal!important;overflow:visible!important;
 }
-.molsan-professional-shell :is(input,select,textarea) {
-  border-color: #D8E4EC;
-  border-radius: 10px;
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions,
+.encargagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions,
+.notargest.ng-content > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions,
+.ng-admin-notarias > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions {
+  display:flex!important;align-items:center!important;justify-content:flex-end!important;flex-wrap:wrap!important;gap:8px!important;margin-left:auto!important;
 }
-.molsan-professional-shell :is(input,select,textarea):focus {
-  border-color: #6D9FBD;
-  outline: 3px solid rgba(6,70,117,.10);
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions > :is(button,a),
+.encargagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions > :is(button,a),
+.notargest.ng-content > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions > :is(button,a),
+.ng-admin-notarias > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions > :is(button,a) {
+  min-height:36px!important;padding:0 12px!important;color:#FFFFFF!important;border:1px solid rgba(255,255,255,.3)!important;border-radius:10px!important;background:rgba(255,255,255,.12)!important;box-shadow:none!important;font-size:11px!important;font-weight:750!important;
 }
-.molsan-professional-shell :is(.ag-grid-kpi,.ng-admin-kpis,.ng-dashboard-graficos,.ng-admin-notarias-grid) {
-  min-width: 0;
+/* The admin selector is a workspace surface, not a second white application
+   frame nested inside the Dashboard page. */
+.ng-admin-notarias {
+  box-sizing:border-box!important;width:auto!important;max-width:none!important;min-width:0!important;
+  margin:0!important;padding:24px clamp(16px,2vw,28px)!important;overflow:visible!important;
+  color:#173247!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;
 }
-@media (max-width: 760px) {
-  .molsan-professional-shell { gap: 16px; }
-  .molsan-professional-shell > .molsan-page-header,
-  .molsan-professional-shell > header.molsan-page-header {
-    min-height: 0;
-    padding: 14px;
-    border-radius: 16px;
+.ng-admin-notarias > .ng-admin-global-resumen,
+.ng-admin-notarias > .ng-admin-notarias-grid,
+.ng-admin-notarias > .ng-admin-individual-titulo {min-width:0!important}
+/* Premium surfaces: preserve each module's semantic structure and status
+   colors, but normalize geometry, border, shadow and neutral canvas. */
+.apoderagest .ag-panel,
+.apoderagest .ag-grid-kpi > .ag-kpi,
+.apoderagest .ag-grid-secundario > .ag-kpi,
+.apoderagest .ag-dashboard-inferior-grid > .ag-panel,
+.encargagest .eg-panel,
+.encargagest .eg-kpi,
+.notargest.ng-content .ng-panel,
+.notargest.ng-content .ng-dashboard-grafico,
+.notargest.ng-content .ng-dashboard-kpis > article,
+.notargest.ng-content .ng-detalle-bloque,
+.ng-admin-notarias .ng-admin-global-resumen,
+.ng-admin-notarias .ng-admin-notaria-card,
+.ng-admin-notarias .ng-admin-circuito {
+  min-width:0!important;border:1px solid #D8E4EC!important;border-radius:16px!important;
+  background:#FFFFFF!important;box-shadow:0 6px 18px rgba(6,50,82,.055)!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+.apoderagest .ag-panel-cabecera,
+.apoderagest .ag-titulo-seccion,
+.encargagest .eg-panel-head,
+.notargest.ng-content .ng-panel-titulo,
+.notargest.ng-content .ng-bloque-heading,
+.ng-admin-notarias .ng-admin-global-titulo {
+  color:#064675!important;border-color:#D8E4EC!important;background:#F2F7FB!important;
+}
+.apoderagest .ag-kicker,
+.encargagest .eg-panel-head p,
+.notargest.ng-content .ng-kicker,
+.ng-admin-notarias .ng-admin-global-eyebrow {color:#617789!important}
+.apoderagest .ag-grid-kpi > .ag-kpi,
+.apoderagest .ag-grid-secundario > .ag-kpi,
+.encargagest .eg-kpi,
+.notargest.ng-content .ng-dashboard-kpis > article,
+.ng-admin-notarias .ng-admin-kpi-button {
+  border:1px solid #D8E4EC!important;border-radius:15px!important;background:#FFFFFF!important;
+  box-shadow:0 5px 16px rgba(6,50,82,.05)!important;
+}
+.apoderagest .ag-grid-kpi > .ag-kpi:hover,
+.apoderagest .ag-grid-secundario > .ag-kpi:hover,
+.encargagest .eg-kpi:hover,
+.ng-admin-notarias .ng-admin-kpi-button:hover {
+  border-color:#B9D7E6!important;box-shadow:0 9px 22px rgba(6,50,82,.075)!important;
+}
+/* Tables and form controls share the corporate surfaces in all portals. */
+.apoderagest .ag-panel table thead th,
+.encargagest .eg-main table thead th,
+.notargest.ng-content table thead th,
+.ng-admin-notarias table thead th,
+.notargest.ng-content .ng-tabla th {
+  color:#064675!important;background:#EAF2F8!important;border-color:#D8E4EC!important;
+}
+.apoderagest .ag-panel table tbody td,
+.encargagest .eg-main table tbody td,
+.notargest.ng-content table tbody td,
+.ng-admin-notarias table tbody td,
+.notargest.ng-content .ng-tabla td {border-color:#D8E4EC!important}
+.apoderagest :is(input,select,textarea),
+.encargagest :is(input,select,textarea),
+.notargest.ng-content :is(input,select,textarea),
+.ng-admin-notarias :is(input,select,textarea) {
+  border-color:#D8E4EC!important;border-radius:10px!important;
+}
+.apoderagest :is(input,select,textarea):focus,
+.encargagest :is(input,select,textarea):focus,
+.notargest.ng-content :is(input,select,textarea):focus,
+.ng-admin-notarias :is(input,select,textarea):focus {
+  border-color:#6D9FBD!important;outline:3px solid rgba(6,70,117,.10)!important;
+}
+/* EncargaGest has an extra internal main wrapper; keep its content aligned
+   with the shared page width rather than a narrower legacy panel. */
+.encargagest > .eg-main {width:100%!important;max-width:none!important;margin:0!important;padding:4px 0 24px!important}
+.encargagest .eg-directorio {border-color:#D8E4EC!important;border-radius:16px!important;box-shadow:0 6px 18px rgba(6,50,82,.055)!important}
+.encargagest .eg-directorio-cabecera {background:#F2F7FB!important;border-color:#D8E4EC!important}
+.encargagest .eg-directorio-tabla thead th {color:#064675!important;background:#EAF2F8!important;border-color:#D8E4EC!important}
+/* Responsive header and spacing */
+@media(max-width:760px) {
+  .apoderagest > header.ag-hero.molsan-page-header.dashboard-header,
+  .encargagest > header.ag-hero.molsan-page-header.dashboard-header,
+  .notargest.ng-content > header.ag-hero.molsan-page-header.dashboard-header,
+  .ng-admin-notarias > header.ag-hero.molsan-page-header.dashboard-header {
+    min-height:0!important;align-items:flex-start!important;flex-direction:column!important;gap:12px!important;padding:16px!important;border-radius:16px!important;
   }
-  .molsan-professional-shell .molsan-page-header__mark {
-    flex-basis: 38px;
-    width: 38px;
-    height: 38px;
+  .apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions,
+  .encargagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions,
+  .notargest.ng-content > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions,
+  .ng-admin-notarias > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions {
+    width:100%!important;margin-left:0!important;justify-content:flex-start!important;
   }
-  .molsan-professional-shell .molsan-page-header__actions {
-    width: 100%;
-    margin-left: 0;
-    justify-content: flex-start;
-  }
+  .ng-admin-notarias {padding:16px!important}
 }
-@media (prefers-reduced-motion: reduce) {
-  .molsan-professional-shell * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+@media(prefers-reduced-motion:reduce) {
+  .molsan-professional-shell *, .ng-admin-notarias * {transition:none!important;animation:none!important}
 }
