@@ -275,14 +275,35 @@ def firmar_encargo(
             status_code=403,
             detail="Este expediente no está asignado al apoderado autenticado.",
         )
+    if encargo.get("bloqueado"):
+        raise HTTPException(
+            status_code=423,
+            detail="El expediente está bloqueado y no se puede registrar ni corregir la firma.",
+        )
 
     expediente = (
         db.query(Expediente)
         .filter(Expediente.id_expediente == str(id_expediente))
+        .with_for_update()
         .first()
     )
     if expediente is None:
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+
+    # Segunda comprobación sobre la fila bloqueada para evitar operar con
+    # un estado de bloqueo que haya cambiado entre la consulta y la escritura.
+    estado_expediente = str(getattr(expediente, "estado_expediente", "") or "").strip().upper()
+    bloqueado_actual = bool(
+        getattr(expediente, "bloqueo_manual", False)
+        or estado_expediente.startswith(("LST", "RST"))
+        or getattr(expediente, "liquidado_sin_tramitar", False)
+        or getattr(expediente, "cambio_gestoria", False)
+    )
+    if bloqueado_actual:
+        raise HTTPException(
+            status_code=423,
+            detail="El expediente está bloqueado y no se puede registrar ni corregir la firma.",
+        )
 
     protocolo = datos.protocolo.strip()
     # La firma puede corregirse desde ApoderaGest por el apoderado asignado.
