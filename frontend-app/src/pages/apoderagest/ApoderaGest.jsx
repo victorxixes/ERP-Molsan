@@ -205,7 +205,7 @@ function ImprimirEncargos({ encargos = [] }) {
       <button type="button" className="ag-print-action ag-print-action-secundario" onClick={() => imprimir("fichas")}><MolsanIcon name="files" size={16} bare /> Imprimir fichas detalladas</button>
       <section className="ag-print-root ag-encargos-print-root" aria-hidden="true">
         <header className="ag-print-header"><strong>MOLSAN ERP · APODERAGEST</strong><h1>Listado de encargos</h1><p>{encargos.length} {encargos.length === 1 ? "encargo" : "encargos"} · Impreso el {new Date().toLocaleDateString("es-ES")}</p></header>
-        <table className="ag-print-table"><thead><tr><th>Expediente</th><th>Solicitante</th><th>Notario</th><th>Fecha prevista</th><th>Horario</th><th>Estado</th></tr></thead><tbody>{encargos.map((e, i) => <tr key={String(e.id_expediente || e.id || i)}><td>{texto(e.id_expediente || e.id)}{e.bloqueado ? <small>Bloqueado</small> : null}</td><td>{texto(e.nombre_solicitante || e.solicitante)}<small>{texto(e.nif_solicitante || e.dni_solicitante, "")}</small></td><td>{texto(e.nombre_notario || e.notario)}</td><td>{fechaLegible(e.fecha_prevista_firma)}</td><td>{horaLegible(e.hora_prevista_firma)}{e.hora_fin_prevista_firma ? " – " + horaLegible(e.hora_fin_prevista_firma) : ""}</td><td>{e.fecha_firma || e.protocolo ? "Firmado" : e.bloqueado ? "Bloqueado" : "Pendiente"}</td></tr>)}</tbody></table>
+        <table className="ag-print-table"><thead><tr><th>Expediente</th><th>Solicitante</th><th>Notario</th><th>Fecha prevista</th><th>Horario</th><th>Estado</th></tr></thead><tbody>{encargos.map((e, i) => <tr key={String(e.id_expediente || e.id || i)}><td>{texto(e.id_expediente || e.id)}{e.bloqueado ? <small>Bloqueado</small> : null}</td><td>{texto(e.nombre_solicitante || e.solicitante)}<small>{texto(e.nif_solicitante || e.dni_solicitante, "")}</small></td><td>{texto(e.nombre_notario || e.notario)}</td><td>{fechaLegible(e.fecha_prevista_firma)}</td><td>{horaLegible(e.hora_prevista_firma)}{e.hora_fin_prevista_firma ? " – " + horaLegible(e.hora_fin_prevista_firma) : ""}</td><td>{e.fecha_firma && e.protocolo ? "Firmado" : e.bloqueado ? "Bloqueado" : "Pendiente"}</td></tr>)}</tbody></table>
         <div className="ag-print-fichas">
           {encargos.map((e, i) => {
             const fincas = Array.isArray(e.fincas) ? e.fincas : [];
@@ -216,7 +216,7 @@ function ImprimirEncargos({ encargos = [] }) {
                 <div><small>Solicitante</small><strong>{texto(e.nombre_solicitante || e.solicitante)}</strong></div>
                 <div><small>NIF / CIF</small><strong>{texto(e.nif_solicitante || e.dni_solicitante)}</strong></div>
                 <div><small>Notario</small><strong>{texto(e.nombre_notario || e.notario)}</strong></div>
-                <div><small>Estado</small><strong>{e.fecha_firma || e.protocolo ? "Firmado" : e.bloqueado ? "Bloqueado" : "Pendiente de firma"}</strong></div>
+                <div><small>Estado</small><strong>{e.fecha_firma && e.protocolo ? "Firmado" : e.bloqueado ? "Bloqueado" : "Pendiente de firma"}</strong></div>
                 <div><small>Fecha prevista de firma</small><strong>{fechaLegible(e.fecha_prevista_firma)}</strong></div>
                 <div><small>Horario</small><strong>{horaLegible(e.hora_prevista_firma)}{e.hora_fin_prevista_firma ? " – " + horaLegible(e.hora_fin_prevista_firma) : ""}</strong></div>
                 <div><small>Fecha de firma</small><strong>{fechaLegible(e.fecha_firma)}</strong></div>
@@ -367,8 +367,13 @@ function TablaEncargos({ encargos, onFirmado }) {
 
   async function firmar(encargo) {
     const id = String(encargo.id_expediente || encargo.id);
+    if (encargo.bloqueado) {
+      setErroresFirma((actual) => ({ ...actual, [id]: "El expediente está bloqueado y no se puede registrar ni corregir la firma." }));
+      return;
+    }
     const valores = firmas[id] || {};
-    const fechaFirma = valores.fecha_firma || encargo.fecha_firma || encargo.fecha_prevista_firma || fechaHoyLocal();
+    // La fecha prevista nunca se convierte automáticamente en fecha real de firma.
+    const fechaFirma = valores.fecha_firma || encargo.fecha_firma || "";
     const tipoFirma = valores.tipo_firma || encargo.tipo_firma || "Presencial";
     if (!fechaFirma || !String(valores.protocolo || encargo.protocolo || "").trim() || !String(valores.notario_otorgante || encargo.notario_otorgante || encargo.nombre_notario || encargo.notario || "").trim() || !["Videoconferencia", "Presencial"].includes(tipoFirma)) {
       setErroresFirma((actual) => ({ ...actual, [id]: "Indica la fecha, el número de protocolo, el notario otorgante y el tipo de firma." }));
@@ -660,10 +665,10 @@ function TablaEncargos({ encargos, onFirmado }) {
                             <summary className="ag-ficha-bloque-heading"><span>05 · CIERRE DE FIRMA</span><h4>Confirmar firma</h4></summary>
                             <p>Al pulsar «Firmar», la fecha y el protocolo se guardan en los campos oficiales de FichaExpediente.</p>
                             <div className="ag-firmar-controles">
-                              <label className="ag-firma-fecha">Fecha de firma<input type="date" value={firma.fecha_firma || encargo.fecha_firma || encargo.fecha_prevista_firma || fechaHoyLocal()} onChange={(e) => cambiarFirma(id, "fecha_firma", e.target.value)} /></label>
-                              <label className="ag-firma-protocolo">Número de protocolo<input type="text" maxLength={200} value={firma.protocolo || encargo.protocolo || ""} onChange={(e) => cambiarFirma(id, "protocolo", e.target.value)} placeholder="N.º protocolo" /></label>
-                              <label className="ag-firma-tipo">Tipo de firma<select value={firma.tipo_firma || encargo.tipo_firma || "Presencial"} onChange={(e) => cambiarFirma(id, "tipo_firma", e.target.value)}><option value="Videoconferencia">Videoconferencia</option><option value="Presencial">Presencial</option></select></label>
-                              <label className="ag-firma-notario">Notario otorgante<select value={firma.notario_otorgante || encargo.notario_otorgante || encargo.nombre_notario || encargo.notario || ""} onChange={(e) => cambiarFirma(id, "notario_otorgante", e.target.value)}>
+                              <label className="ag-firma-fecha">Fecha de firma<input type="date" value={firma.fecha_firma || encargo.fecha_firma || ""} max={fechaHoyLocal()} disabled={!!encargo.bloqueado || !!guardandoFirma[id]} onChange={(e) => cambiarFirma(id, "fecha_firma", e.target.value)} /></label>
+                              <label className="ag-firma-protocolo">Número de protocolo<input type="text" maxLength={200} value={firma.protocolo || encargo.protocolo || ""} disabled={!!encargo.bloqueado || !!guardandoFirma[id]} onChange={(e) => cambiarFirma(id, "protocolo", e.target.value)} placeholder="N.º protocolo" /></label>
+                              <label className="ag-firma-tipo">Tipo de firma<select value={firma.tipo_firma || encargo.tipo_firma || "Presencial"} disabled={!!encargo.bloqueado || !!guardandoFirma[id]} onChange={(e) => cambiarFirma(id, "tipo_firma", e.target.value)}><option value="Videoconferencia">Videoconferencia</option><option value="Presencial">Presencial</option></select></label>
+                              <label className="ag-firma-notario">Notario otorgante<select value={firma.notario_otorgante || encargo.notario_otorgante || encargo.nombre_notario || encargo.notario || ""} disabled={!!encargo.bloqueado || !!guardandoFirma[id]} onChange={(e) => cambiarFirma(id, "notario_otorgante", e.target.value)}>
                                 <option value={encargo.nombre_notario || encargo.notario || ""}>{encargo.nombre_notario || encargo.notario || "Notario del encargo"}</option>
                                 {(() => {
                                   const normalizar = (v) => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es");
@@ -673,7 +678,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                                   return asociados.map((n) => { const nombre = n.nombre_completo || [n.nombre, n.apellidos].filter(Boolean).join(" "); return <option key={n.id} value={nombre}>{nombre}</option>; });
                                 })()}
                               </select></label>
-                              <button className="ag-firma-boton" type="button" disabled={!!guardandoFirma[id]} onClick={() => firmar(encargo)}>{guardandoFirma[id] ? "Guardando…" : "Firmar"}</button>
+                              <button className="ag-firma-boton" type="button" disabled={!!encargo.bloqueado || !!guardandoFirma[id]} onClick={() => firmar(encargo)}>{guardandoFirma[id] ? "Guardando…" : "Firmar"}</button>
                             </div>
                             {erroresFirma[id] && <p className="ag-firma-error">{erroresFirma[id]}</p>}
                             {mensajeFirma[id] && <p className="ag-firma-ok">{mensajeFirma[id]}</p>}
