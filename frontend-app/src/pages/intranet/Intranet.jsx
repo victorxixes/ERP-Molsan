@@ -151,9 +151,6 @@ export default function Intranet() {
           <p className="molsan-page-header__description">Noticias, documentación y actividad interna de Molsan</p>
         </div>
       </div>
-      <div className="molsan-page-header__actions">
-        <span className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-100 bg-white/80 px-4 py-2 text-xs font-semibold text-emerald-700"><span className="h-2 w-2 rounded-full bg-emerald-500" />Actualización automática activa</span>
-      </div>
     </header>
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
       <div className="erp-card rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Noticias publicadas</p><p className="mt-1 text-2xl font-bold text-slate-800">{noticias.length}</p></div>
