@@ -210,6 +210,23 @@ def _registrar_password_inicial_notargest(notaria, nif: str) -> None:
     notaria.notargest_password_provisional = False
 
 
+def _validar_password_login_notargest(notaria, password, nif):
+    password_nif = hmac.compare_digest(normalizar_nif(password), nif)
+    if password_nif and not getattr(notaria, "notargest_password_hash", None):
+        # Primer acceso: conserva el comportamiento de alta inicial con NIF.
+        _registrar_password_inicial_notargest(notaria, nif)
+        return True
+    password_hash = getattr(notaria, "notargest_password_hash", None)
+    if not password_hash:
+        return False
+    valido = verificar_password(password, password_hash)
+    if valido and not password_nif:
+        notaria.notargest_password_provisional = False
+    # Un reset administrativo ya tiene hash y marca provisional: no se debe
+    # limpiar esa marca por el mero hecho de iniciar sesión con el NIF.
+    return valido
+
+
 def _requiere_cambio_password_notargest(notaria) -> bool:
     return bool(
         getattr(notaria, "notargest_cambiar_password", True)
@@ -548,16 +565,10 @@ def login(data: LoginNotario, db: Session = Depends(get_db)):
         db.commit()
         raise HTTPException(status_code=401, detail="Acceso no habilitado. Contacta con Molsan.")
     password_nif = hmac.compare_digest(normalizar_nif(data.password), nif)
-    if password_nif and (not n.notargest_password_hash or _requiere_cambio_password_notargest(n)):
-        _registrar_password_inicial_notargest(n, nif)
+    valido = _validar_password_login_notargest(n, data.password, nif)
+    if valido and password_nif and not getattr(n, "notargest_password_hash", None):
+        # La primera contraseña por NIF se cifra para la gestión de accesos CTN.
         n.notargest_password_enc = cifrar_password_portal(nif)
-        valido = True
-    elif n.notargest_password_hash:
-        valido = verificar_password(data.password, n.notargest_password_hash)
-        if valido and not password_nif:
-            n.notargest_password_provisional = False
-    else:
-        valido = False
     if not valido:
         db.execute(text("""
             INSERT INTO ctn_portal_accesos_historial (notaria_id, portal, evento, resultado, usuario, detalle)
