@@ -6,7 +6,6 @@ import PortalLogin from "../../components/PortalLogin";
 import Sidebar from "../../components/Sidebar";
 import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
-import "../../css/PortalProfesionalShared.css";
 import "../../css/NotarGest.css";
 import { formatEuro as euros } from "../../utils/formatters";
 
@@ -578,18 +577,18 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         onLogoutClick={salir}
         headerActions={
           <>
-            <div className="ag-fecha-actual" aria-label={`Fecha actual: ${fechaActual}`}>
-              <span className="ag-punto-vivo" aria-hidden="true" />
+            <div className="ng-sidebar-date" aria-label={`Fecha actual: ${fechaActual}`}>
+              <span className="ng-sidebar-live-dot" aria-hidden="true" />
               <span>{fechaActual}</span>
             </div>
             <button
               type="button"
-              className="ag-boton-actualizar"
+              className="ng-sidebar-refresh"
               onClick={actualizarDatosSidebar}
               disabled={cargando || cargandoSelectorNotaria}
               aria-live="polite"
             >
-              <MolsanIcon name="refresh" size={22} className={cargando || cargandoSelectorNotaria ? "ag-icono-girando" : ""} tone="ocean" />
+              <MolsanIcon name="refresh" size={22} className={cargando || cargandoSelectorNotaria ? "ng-icono-girando" : ""} tone="ocean" />
               {cargando || cargandoSelectorNotaria ? "Actualizando…" : "Actualizar datos"}
             </button>
           </>
