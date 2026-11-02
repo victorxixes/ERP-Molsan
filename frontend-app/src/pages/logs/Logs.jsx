@@ -1,4 +1,5 @@
 import { useCallback, useEffect } from "react";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "./Logs.css";
 
 import { useLogs } from "../../hooks/useLogs";
@@ -149,19 +150,19 @@ export default function Logs() {
        INFORMACIÓN
     -------------------------------------------------------- */
 
-    info: "ℹ️",
-    INFO: "ℹ️",
+    info: "help",
+    INFO: "help",
 
 
     /* --------------------------------------------------------
        OPERACIONES
     -------------------------------------------------------- */
 
-    create: "➕",
-    CREATE: "➕",
+    create: "plus",
+    CREATE: "plus",
 
-    update: "✏️",
-    UPDATE: "✏️",
+    update: "pen",
+    UPDATE: "pen",
 
     delete: "trash",
     DELETE: "trash",
