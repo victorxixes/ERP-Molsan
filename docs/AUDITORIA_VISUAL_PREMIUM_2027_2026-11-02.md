@@ -50,3 +50,10 @@ La auditoría solo se dará por finalizada cuando:
 - exista evidencia reproducible de las comprobaciones.
 
 **Exclusión confirmada por el usuario:** no se exige almacenamiento documental persistente en Render.
+
+## Estado de Preview comprobado el 02/11/2026
+
+- Frontend Preview `molsan-premium-2027-preview`: rama configurada `molsan-premium-2027-global`; último deploy live observado en commit `7aa16ad74b788e90761b130384ab8398abefb55d`.
+- API Preview `molsan-glass-luxe-preview-api`: rama configurada `molsan-premium-2027-glass-luxe`; último deploy live observado en commit `5f1716333afeaa5d092d9ae65eb2c824970464d1`.
+- La rama visual `audit/visual-premium-20261102` y las ramas de auditoría frontend/API todavía no están publicadas conjuntamente en Preview. Por tanto, no se puede atribuir al código de esta auditoría una validación visual desplegada.
+- No se ha lanzado ningún deploy ni se ha cambiado la configuración de los servicios. Para validar el aspecto final en navegador habrá que autorizar una publicación controlada en Preview y coordinar las ramas frontend y API.
