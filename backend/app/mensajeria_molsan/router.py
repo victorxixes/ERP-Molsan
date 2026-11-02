@@ -20,11 +20,18 @@ def _exigir_permiso_mensajeria(usuario, accion: str):
 
 def _es_administrador_mensajeria(usuario) -> bool:
     rol_obj = getattr(usuario, "rol", None)
-    rol = str(getattr(rol_obj, "nombre", "") or "").strip().lower()
-    nombre_usuario = str(getattr(usuario, "usuario", "") or "").strip().lower()
-    return nombre_usuario == "admin" or rol in {
-        "admin", "administrador", "administradora", "superadmin", "superusuario", "superuser"
+    rol = str(getattr(rol_obj, "nombre", "") or "").strip().casefold().replace("_", " ").replace("-", " ")
+    nombre_usuario = str(getattr(usuario, "usuario", "") or "").strip().casefold()
+    roles_administradores = {
+        "admin", "administrador", "administradora", "superadmin", "super admin",
+        "superadministrador", "super administradora", "administrador del sistema",
+        "administrador general", "superusuario", "superuser", "super usuario",
     }
+    try:
+        rol_id = int(getattr(usuario, "rol_id", getattr(rol_obj, "id", -1)))
+    except (TypeError, ValueError):
+        rol_id = -1
+    return nombre_usuario == "admin" or rol_id == 0 or rol in roles_administradores
 
 
 def _exigir_gestion_mensajeria(usuario, accion: str):
