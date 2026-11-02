@@ -8,6 +8,7 @@ from backend.app.encargagest.router import (
     _ruta_permitida_durante_cambio_password_encargagest,
     _es_administrador_encargagest,
     _exigir_admin_encargagest,
+    _observacion_ctn_visible_encargagest,
 )
 
 
@@ -37,6 +38,16 @@ class EncargaGestPasswordGateTests(unittest.TestCase):
         self.assertTrue(_ruta_permitida_durante_cambio_password_encargagest("/api/encargagest/cambiar-password"))
         self.assertFalse(_ruta_permitida_durante_cambio_password_encargagest("/api/encargagest/encargos"))
         self.assertFalse(_ruta_permitida_durante_cambio_password_encargagest("/encargagest/me"))
+
+    def test_internal_ctn_observation_hidden_from_external_encargagest(self):
+        notaria = SimpleNamespace(observacion="Nota interna")
+        usuario = {"tipo": "externo", "sesion_soporte": False}
+        self.assertIsNone(_observacion_ctn_visible_encargagest(notaria, usuario))
+
+    def test_internal_ctn_observation_visible_in_admin_support_session(self):
+        notaria = SimpleNamespace(observacion="Nota interna")
+        usuario = {"tipo": "externo", "sesion_soporte": True}
+        self.assertEqual(_observacion_ctn_visible_encargagest(notaria, usuario), "Nota interna")
 
 
 if __name__ == "__main__":
