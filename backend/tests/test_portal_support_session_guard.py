@@ -69,6 +69,16 @@ class PortalSupportSessionGuardTests(unittest.TestCase):
             _validar_admin_soporte_encargagest({"empleado_admin_id": 4}, FakeDB(admin))
         self.assertEqual(error.exception.status_code, 403)
 
+    def test_encargagest_support_session_is_revoked_when_module_is_hidden(self):
+        admin = SimpleNamespace(**{
+            **self.admin.__dict__,
+            "modulos_visibles_list": ["notargest"],
+        })
+        with patch("backend.app.encargagest.router.require_perm_modulo"):
+            with self.assertRaises(HTTPException) as error:
+                _validar_admin_soporte_encargagest({"empleado_admin_id": 4}, FakeDB(admin))
+        self.assertEqual(error.exception.status_code, 403)
+
 
 if __name__ == "__main__":
     unittest.main()
