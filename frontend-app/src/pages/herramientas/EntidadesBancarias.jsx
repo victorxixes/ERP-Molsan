@@ -2482,7 +2482,7 @@ export default function EntidadesBancarias() {
                               hover:text-blue-600
                             "
                           >
-                            ✏️
+                            <MolsanIcon name="pen" size={15} />
                           </button>
 
 
@@ -2878,7 +2878,7 @@ function ModalImportarExcel({
                 disabled:opacity-40
               "
             >
-              ✕
+              <MolsanIcon name="x" size={16} />
             </button>
 
           </div>
@@ -3415,7 +3415,7 @@ function ModalEntidadBancaria({
                 disabled:opacity-50
               "
             >
-              ✕
+              <MolsanIcon name="x" size={16} />
             </button>
 
           </div>

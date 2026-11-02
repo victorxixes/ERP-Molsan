@@ -521,7 +521,7 @@ export default function ImportadorAbsis() {
                                             font-semibold
                                         "
                                     >
-                                        <span>✓</span>
+                                        <MolsanIcon name="check" size={15} />
                                         Excel seleccionado
                                     </div>
 
@@ -652,7 +652,7 @@ export default function ImportadorAbsis() {
                                 flex-shrink-0
                             "
                         >
-                            ⛔
+                            <MolsanIcon name="alert" size={20} />
                         </div>
 
 
@@ -732,7 +732,7 @@ export default function ImportadorAbsis() {
                                 text-green-600
                             "
                         >
-                            ✓
+                            <MolsanIcon name="check" size={20} />
                         </div>
 
 
@@ -947,7 +947,7 @@ export default function ImportadorAbsis() {
                             "
                         >
 
-                            ⚠️ La importación terminó con{" "}
+                            <MolsanIcon name="alert" size={14} inline /> La importación terminó con{" "}
 
                             <strong>
                                 {resultado.errores}

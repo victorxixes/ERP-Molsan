@@ -42,21 +42,21 @@ export default function Herramientas() {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
 
         <Card
-          icon="📰"
+          icon="newspaper"
           titulo="Crear noticia"
           descripcion="Publicar una nueva noticia en la intranet."
           link="/herramientas/utilidades/crear-noticia"
         />
 
         <Card
-          icon="📄"
+          icon="file"
           titulo="Subir documento"
           descripcion="Subir documentos y archivos a la intranet."
           link="/herramientas/utilidades/subir-documento"
         />
 
         <Card
-          icon="📊"
+          icon="chart"
           titulo="Informes"
           descripcion="Consultar listados y estadísticas de apoderados."
           link="/herramientas/informes"

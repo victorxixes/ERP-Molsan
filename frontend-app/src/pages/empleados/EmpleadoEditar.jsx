@@ -5,6 +5,7 @@ import {
 } from "react";
 
 import "./EmpleadoEditar.css";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 import {
   obtenerEmpleado,
@@ -470,7 +471,7 @@ export default function EmpleadoEditar({
         ">
 
           {guardado &&
-            "✓ Cambios guardados correctamente"}
+            <><MolsanIcon name="check" size={14} inline /> Cambios guardados correctamente</>}
 
         </div>
 

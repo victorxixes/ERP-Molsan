@@ -805,14 +805,14 @@ const ACTIVIDADES_ABSIS = [
 // ============================================================
 
 const ACTIVIDADES_EXPEDIENTES = [
-  { key: "documentacion-previa", label: "Documentación previa", icono: "📄", aliases: ["Documentación previa"] },
-  { key: "sede-notarial", label: "Sede notarial", icono: "🏛️", aliases: ["Sede notarial", "Sede Notarial"] },
-  { key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "📜", aliases: ["Sede notarial con protocolo", "Sede Notarial con protocolo"] },
-  { key: "gestion-economica", label: "Gestión económica", icono: "💼", aliases: ["Gestión económica", "Gestion economica"] },
-  { key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "💶", aliases: ["Liquidación de impuestos", "Liquidación impuestos", "Liquidacion de impuestos", "Liquidacion impuestos"] },
-  { key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "🏢", aliases: ["Tramitación inscripción", "Tramitacion inscripcion"] },
-  { key: "defectos-registrales", label: "Defectos registrales", icono: "⚠️", aliases: ["Defectos registrales", "Defectos Registrales"] },
-  { key: "facturacion-cierre", label: "Facturación y cierre", icono: "🧾", aliases: ["Facturación y cierre", "Facturacion y cierre"] },
+  { key: "documentacion-previa", label: "Documentación previa", icono: "file", aliases: ["Documentación previa"] },
+  { key: "sede-notarial", label: "Sede notarial", icono: "courthouse", aliases: ["Sede notarial", "Sede Notarial"] },
+  { key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "scroll", aliases: ["Sede notarial con protocolo", "Sede Notarial con protocolo"] },
+  { key: "gestion-economica", label: "Gestión económica", icono: "briefcase", aliases: ["Gestión económica", "Gestion economica"] },
+  { key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "euro", aliases: ["Liquidación de impuestos", "Liquidación impuestos", "Liquidacion de impuestos", "Liquidacion impuestos"] },
+  { key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "building", aliases: ["Tramitación inscripción", "Tramitacion inscripcion"] },
+  { key: "defectos-registrales", label: "Defectos registrales", icono: "alert", aliases: ["Defectos registrales", "Defectos Registrales"] },
+  { key: "facturacion-cierre", label: "Facturación y cierre", icono: "receipt", aliases: ["Facturación y cierre", "Facturacion y cierre"] },
 ];
 
 // ============================================================
@@ -2428,7 +2428,7 @@ export default function ExpedientesListado() {
               titulo: "Circuito CaixaBank",
               descripcion: "Propia entidad · Vinculada propia entidad",
               plazo: "40 días",
-              icono: "🏦",
+              icono: "bank",
               borde: "#2563eb",
               fondo: "rgba(37, 99, 235, 0.07)",
             },
@@ -2437,7 +2437,7 @@ export default function ExpedientesListado() {
               titulo: "Circuito otra entidad",
               descripcion: "Vinculada otra entidad · Otra entidad",
               plazo: "70 días",
-              icono: "🏢",
+              icono: "building",
               borde: "#b7791f",
               fondo: "rgba(183, 121, 31, 0.08)",
             },
@@ -2484,7 +2484,7 @@ export default function ExpedientesListado() {
                     <div className="text-xs text-[var(--erp-text-soft)]">expedientes fuera de plazo</div>
                   </div>
                   <div className="text-sm font-semibold" style={{ color: circuito.borde }}>
-                    {activa ? "Circuito seleccionado ✓" : "Ver expedientes →"}
+                    {activa ? <>Circuito seleccionado <MolsanIcon name="check" size={13} inline /></> : <>Ver expedientes <MolsanIcon name="arrowRight" size={13} inline /></>}
                   </div>
                 </div>
               </button>
@@ -2502,8 +2502,8 @@ export default function ExpedientesListado() {
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {[
-            { codigo: "PVA", titulo: "Pendientes de Validar", icono: "🔎", borde: "#2563eb", fondo: "rgba(37, 99, 235, 0.08)" },
-            { codigo: "RST", titulo: "Retención", icono: "⏸️", borde: "#7e22ce", fondo: "rgba(126, 34, 206, 0.08)" },
+            { codigo: "PVA", titulo: "Pendientes de Validar", icono: "search", borde: "#2563eb", fondo: "rgba(37, 99, 235, 0.08)" },
+            { codigo: "RST", titulo: "Retención", icono: "pause", borde: "#7e22ce", fondo: "rgba(126, 34, 206, 0.08)" },
           ].map((estado) => {
             const activa = filtrosAplicados.estadoExpediente.trim().toLocaleUpperCase("es-ES") === estado.codigo;
             return (
@@ -2589,7 +2589,7 @@ export default function ExpedientesListado() {
                   <span className="inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)" }}>Calculando plazos…</span>
                 ) : reglaPlazo ? (
                   <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold ${cantidadPlazo > 0 ? "border-amber-300 bg-amber-50 text-amber-800" : "border-emerald-200 bg-emerald-50 text-emerald-800"}`}>
-                    {cantidadPlazo > 0 ? "⚠ " : "✓ "}{reglaPlazo.etiqueta(formatearNumero(cantidadPlazo))}
+                    {cantidadPlazo > 0 ? <MolsanIcon name="alert" size={13} inline /> : <MolsanIcon name="check" size={13} inline />} {reglaPlazo.etiqueta(formatearNumero(cantidadPlazo))}
                   </span>
                 ) : (
                   actividad.key !== "documentacion-previa" ? (
@@ -3297,7 +3297,7 @@ export default function ExpedientesListado() {
                 <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Expedientes</p>
                 <h2 id="titulo-control-plazos" className="mt-1 text-lg font-extrabold text-slate-900"><MolsanIcon name="calendar" size={22} /> Control de plazos</h2>
               </div>
-              <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} aria-label="Cerrar" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100">✕</button>
+              <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} aria-label="Cerrar" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100"><MolsanIcon name="x" size={16} /></button>
             </header>
             <div className="space-y-3 px-5 py-5 text-sm leading-6 text-slate-700">
               <p>Los recuentos por actividad son independientes del SLA global:</p>

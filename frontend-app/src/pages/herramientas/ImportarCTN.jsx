@@ -161,7 +161,7 @@ export default function ImportarCTN() {
                 animate-fadeIn
               "
             >
-              <span>✓</span>
+              <MolsanIcon name="check" size={15} />
 
               <div className="min-w-0">
 
@@ -215,7 +215,7 @@ export default function ImportarCTN() {
                     font-bold
                   "
                 >
-                  ✓
+                  <MolsanIcon name="check" size={20} />
                 </div>
 
                 <div>

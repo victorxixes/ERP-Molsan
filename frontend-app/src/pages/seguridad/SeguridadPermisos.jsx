@@ -1152,8 +1152,8 @@ export default function SeguridadPermisos() {
                           `}
                         >
                           {completo
-                            ? "✓"
-                            : "🔑"}
+                            ? "check"
+                            : "key"}
                         </span>
 
 
