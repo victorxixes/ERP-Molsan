@@ -147,7 +147,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
           <p className="molsan-page-header__description">{admin ? "Gestiona colaboradores, relaciones mensuales y revisión de facturas." : "Revisa las firmas reales del mes, valida la relación y presenta tu factura."}</p>
         </div>
       </div>
-      <div className="molsan-page-header__actions">{!admin && <label className="text-sm font-medium text-slate-600">Periodo <input type="month" value={periodo} onChange={(e) => setPeriodo(e.target.value)} className="ml-2 rounded-xl border border-slate-300 px-3 py-2" /></label>}<button onClick={cargar} className="molsan-btn molsan-btn--secondary" disabled={cargando}>↻ Actualizar</button></div>
+      <div className="molsan-page-header__actions">{!admin && <label className="text-sm font-medium text-slate-600">Periodo <input type="month" value={periodo} onChange={(e) => setPeriodo(e.target.value)} className="ml-2 rounded-xl border border-slate-300 px-3 py-2" /></label>}</div>
     </header>
     {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>}
     {mensaje && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">{mensaje}</div>}
