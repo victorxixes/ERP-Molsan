@@ -89,8 +89,18 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
     if (accesoERP && esAdminNotarGest && !tokenAdminNotaria) return;
     setCargando(true); setError("");
     try {
-      const [perfil, lista] = await Promise.all([peticion("/notargest/me"), peticion("/notargest/expedientes")]);
-      setNotario(perfil); setExpedientes(lista.items || []);
+      // La sesión provisional solo puede consultar el perfil y cambiar la
+      // contraseña. No lanzar /expedientes hasta completar ese paso.
+      const perfil = await peticion("/notargest/me");
+      setNotario(perfil);
+      if (perfil?.requiere_cambio_password) {
+        setPerfilNotarioAbierto(true);
+        setMensajePasswordPerfil("Debes cambiar la contraseña inicial antes de acceder a NotarGest.");
+        setExpedientes([]);
+        return;
+      }
+      const lista = await peticion("/notargest/expedientes");
+      setExpedientes(lista.items || []);
       try {
         const pagosData = await peticion("/notargest/pagos");
         setPagosNotario(pagosData.items || []);
@@ -253,9 +263,12 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         body: JSON.stringify({ password_actual: passwordActualPerfil, password_nueva: passwordNuevaPerfil }),
       });
       setMensajePasswordPerfil(resultado.mensaje || "Contraseña actualizada correctamente.");
+      setNotario((actual) => actual ? { ...actual, requiere_cambio_password: false } : actual);
       setPasswordActualPerfil("");
       setPasswordNuevaPerfil("");
       setPasswordConfirmarPerfil("");
+      setPerfilNotarioAbierto(false);
+      await cargar();
     } catch (e) {
       setErrorPasswordPerfil(e.message || "No se ha podido actualizar la contraseña.");
     } finally {
@@ -308,7 +321,11 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       const response = await fetch(`${API_BASE}/notargest/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ usuario: usuario.trim().toUpperCase(), password: password.trim() }) });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.detail || "Credenciales incorrectas.");
-      localStorage.setItem(TOKEN_KEY, data.token); setTokenNotario(data.token); setNotario(data.notario); setPassword("");
+      localStorage.setItem(TOKEN_KEY, data.token);
+      setTokenNotario(data.token);
+      setNotario({ ...data.notario, requiere_cambio_password: Boolean(data.requiere_cambio_password) });
+      setPerfilNotarioAbierto(Boolean(data.requiere_cambio_password));
+      setPassword("");
     } catch (e2) { setError(e2.message); } finally { setCargando(false); }
   }
   function salir() {
@@ -624,7 +641,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
           </div>
         </section>
       </div>}
-      {perfilNotarioAbierto && <div className="ng-modal-overlay ng-modal-overlay-scroll" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setPerfilNotarioAbierto(false); }}><section className="ng-modal ng-modal-perfil ng-modal-perfil-scroll" role="dialog" aria-modal="true" aria-labelledby="ng-perfil-titulo"><header><div><span className="ng-kicker">FICHA CTN</span><h2 id="ng-perfil-titulo">Ficha del notario</h2><p>Datos de la notaría registrados en el catálogo CTN.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setPerfilNotarioAbierto(false)}>Cerrar <MolsanIcon name="x" size={18} tone="ocean" /></button></header><div className="grid grid-cols-1 gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)]">
+      {perfilNotarioAbierto && <div className="ng-modal-overlay ng-modal-overlay-scroll" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget && !notario?.requiere_cambio_password) setPerfilNotarioAbierto(false); }}><section className="ng-modal ng-modal-perfil ng-modal-perfil-scroll" role="dialog" aria-modal="true" aria-labelledby="ng-perfil-titulo"><header><div><span className="ng-kicker">FICHA CTN</span><h2 id="ng-perfil-titulo">Ficha del notario</h2><p>Datos de la notaría registrados en el catálogo CTN.</p></div><button type="button" className="ng-boton-secundario" disabled={Boolean(notario?.requiere_cambio_password)} onClick={() => setPerfilNotarioAbierto(false)}>Cerrar <MolsanIcon name="x" size={18} tone="ocean" /></button></header><div className="grid grid-cols-1 gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)]">
           <div className="min-w-0">
             <div className="ng-perfil-identidad"><div className="ng-perfil-avatar"><MolsanIcon name="courthouse" size={36} tone="ocean" /></div><div><strong>{texto(notario?.nombre)}</strong><span>{texto(notario?.nif)}</span></div></div>
             <div className="ng-perfil-datos">{[["Nombre",notario?.nombre],["NIF",notario?.nif],["Usuario",notario?.nif],["Teléfono",notario?.telefono],["Dirección",notario?.direccion],["Código postal",notario?.cp],["Municipio",notario?.municipio],["Provincia",notario?.provincia],["Código CTN",notario?.codigo],["Videoconferencia",notario?.vc],["Apoderado asociado",notario?.apoderado],["Departamento cancelaciones",notario?.departamento_cancelaciones],["Departamento copias",notario?.departamento_copias],["Otros departamentos",notario?.otros_departamentos]].map(([label,value]) => <div className="ng-dato" key={label}><small>{label}</small><strong>{texto(value)}</strong></div>)}</div>
@@ -632,6 +649,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
           </div>
           <form onSubmit={cambiarPasswordPerfil} className="h-fit space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
             <div><h3 className="text-sm font-extrabold text-slate-900">Seguridad de la cuenta</h3><p className="mt-1 text-xs leading-5 text-slate-500">Usuario: NIF completo registrado en CTN. Si aún no has cambiado la contraseña inicial, utiliza tu NIF como contraseña.</p></div>
+            {notario?.requiere_cambio_password && <p role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-900">Debes sustituir la contraseña inicial antes de acceder a tus expedientes. La nueva contraseña debe tener al menos 8 caracteres.</p>}
             {mensajePasswordPerfil && <p role="status" className="rounded-lg bg-emerald-50 p-2 text-xs text-emerald-800">{mensajePasswordPerfil}</p>}
             {errorPasswordPerfil && <p role="alert" className="rounded-lg bg-rose-50 p-2 text-xs text-rose-700">{errorPasswordPerfil}</p>}
             <label className="block text-xs font-semibold text-slate-600">Contraseña actual<input required type="password" autoComplete="current-password" value={passwordActualPerfil} onChange={e=>setPasswordActualPerfil(e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm" /></label>
