@@ -5,6 +5,7 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "./SeguridadSubpaginasPremium.css";
 
 
@@ -362,11 +363,7 @@ function CabeceraOrden({
           `}
         >
 
-          {activa
-            ? orden.asc
-              ? "▲"
-              : "▼"
-            : "↕"}
+          <MolsanIcon name={activa ? (orden.asc ? "arrowUp" : "arrowDown") : "arrowUpDown"} size={13} />
 
         </span>
 
