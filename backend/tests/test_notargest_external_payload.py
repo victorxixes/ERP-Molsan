@@ -5,6 +5,7 @@ from backend.app.notargest.router import (
     _filtrar_campos_sensibles_notario_externo,
     _es_gestor_asignado,
     _documento_visible_notargest_externo,
+    _url_documento_segura_notargest,
 )
 
 
@@ -76,6 +77,20 @@ class NotarGestExternalPayloadTests(unittest.TestCase):
             "Otros",
         ):
             self.assertFalse(_documento_visible_notargest_externo(category), category)
+
+    def test_payment_proof_url_allows_https_and_safe_relative_paths(self):
+        self.assertEqual(
+            _url_documento_segura_notargest("https://files.example.com/proof.pdf"),
+            "https://files.example.com/proof.pdf",
+        )
+        self.assertEqual(
+            _url_documento_segura_notargest("/api/documentos/123"),
+            "/api/documentos/123",
+        )
+
+    def test_payment_proof_url_rejects_active_and_insecure_schemes(self):
+        for url in ("javascript:alert(1)", "http://files.example.com/proof.pdf", "//evil.example/x"):
+            self.assertIsNone(_url_documento_segura_notargest(url), url)
 
 
 if __name__ == "__main__":
