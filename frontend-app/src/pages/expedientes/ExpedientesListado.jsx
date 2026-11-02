@@ -2410,9 +2410,7 @@ export default function ExpedientesListado() {
               </p>
             </div>
           </div>
-          <div className="molsan-page-header__actions">
-            <span className="expedientes-page__header-note">Gestión y seguimiento</span>
-          </div>
+
         </header>
 
       <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-12">
