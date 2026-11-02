@@ -127,7 +127,7 @@ export default function TiposExpediente() {
       {mostrarModal && <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm" onMouseDown={(e) => { if (e.target === e.currentTarget) cerrarModal(); }}><div role="dialog" aria-modal="true" aria-labelledby="tipo-expediente-modal-title" className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[24px] border border-slate-200 bg-white p-5 shadow-2xl sm:p-6">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div><h2 id="tipo-expediente-modal-title" className="text-lg font-bold text-slate-800">{editando ? "Editar tipo de expediente" : "Nuevo tipo de expediente"}</h2><p className="mt-1 text-sm text-slate-500">Los identificadores históricos se conservan; las nuevas altas reciben un ID automático.</p></div>
-          <button type="button" onClick={cerrarModal} disabled={guardando} aria-label="Cerrar ventana" className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50">Cerrar ✕</button>
+          <button type="button" onClick={cerrarModal} disabled={guardando} aria-label="Cerrar ventana" className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50">Cerrar <MolsanIcon name="x" size={14} inline /></button>
         </div>
         <form onSubmit={guardar} className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-12">
           <label className="text-sm font-semibold text-slate-700 md:col-span-5">Descripción
