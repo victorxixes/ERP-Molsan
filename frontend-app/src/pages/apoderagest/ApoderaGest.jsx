@@ -9,7 +9,7 @@ import Mensajes from "../mensajes/Mensajes";
 import CtnListadoPage from "../ctn/CtnListadoPage";
 import { useAuthStore } from "../../store/authStore";
 import { createPortal } from "react-dom";
-import "../../css/PortalProfesionalShared.css";
+import "../../css/ApoderaGest.css";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import { formatEuro } from "../../utils/formatters";
 
