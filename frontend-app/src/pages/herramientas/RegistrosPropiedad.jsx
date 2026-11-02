@@ -3324,7 +3324,7 @@ function ModalRegistroPropiedad({
                 disabled:opacity-50
               "
             >
-              ✕
+              <MolsanIcon name="x" size={16} />
             </button>
 
           </div>
