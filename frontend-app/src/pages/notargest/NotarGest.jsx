@@ -10,6 +10,14 @@ import "../../css/NotarGest.css";
 import { formatEuro as euros } from "../../utils/formatters";
 
 const TOKEN_KEY = "notargest_token";
+
+// Compatibilidad con sesiones antiguas: mover el token compartido a la pestaña
+// actual y retirar la clave global para evitar cruces entre notarías.
+if (!sessionStorage.getItem(TOKEN_KEY)) {
+  const tokenHeredado = localStorage.getItem(TOKEN_KEY);
+  if (tokenHeredado) sessionStorage.setItem(TOKEN_KEY, tokenHeredado);
+}
+localStorage.removeItem(TOKEN_KEY);
 const bandejas = [
   { id: "recepcion", titulo: "Pendientes de recepción", campo: "pendiente_recepcion" },
   { id: "firma", titulo: "Pendientes de firma", campo: "pendiente_firma" },
@@ -34,7 +42,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
   const accesoERP = accessMode !== "external" && Boolean(tokenERP && empleadoERP);
   const rolNotarGest = String(empleadoERP?.rol?.nombre || empleadoERP?.rol_nombre || empleadoERP?.nombre_rol || "").trim().toLowerCase();
   const esAdminNotarGest = String(empleadoERP?.usuario || "").trim().toLowerCase() === "admin" || /^(admin|administrador|administradora|superadmin|superadministrador|administrador del sistema)$/.test(rolNotarGest);
-  const [tokenNotario, setTokenNotario] = useState(() => localStorage.getItem(TOKEN_KEY) || "");
+  const [tokenNotario, setTokenNotario] = useState(() => sessionStorage.getItem(TOKEN_KEY) || "");
   const [tokenAdminNotaria, setTokenAdminNotaria] = useState(() => sessionStorage.getItem("notargest_soporte_token") || "");
   const [notariasSeleccionables, setNotariasSeleccionables] = useState([]);
   const [notariaAdminSeleccionada, setNotariaAdminSeleccionada] = useState("");
@@ -117,7 +125,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       }
     } catch (e) {
       setError(e.message);
-      if (!accesoERP && /sesión|acceso notargest deshabilitado|caducado/i.test(e.message)) { localStorage.removeItem(TOKEN_KEY); setTokenNotario(""); }
+      if (!accesoERP && /sesión|acceso notargest deshabilitado|caducado/i.test(e.message)) { sessionStorage.removeItem(TOKEN_KEY); setTokenNotario(""); }
     } finally { setCargando(false); }
   }, [token, peticion, accesoERP, esAdminNotarGest, tokenAdminNotaria]);
   useEffect(() => { cargar(); }, [cargar]);
@@ -321,7 +329,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       const response = await fetch(`${API_BASE}/notargest/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ usuario: usuario.trim().toUpperCase(), password: password.trim() }) });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.detail || "Credenciales incorrectas.");
-      localStorage.setItem(TOKEN_KEY, data.token);
+      sessionStorage.setItem(TOKEN_KEY, data.token);
       setTokenNotario(data.token);
       setNotario({ ...data.notario, requiere_cambio_password: Boolean(data.requiere_cambio_password) });
       setPerfilNotarioAbierto(Boolean(data.requiere_cambio_password));
@@ -334,7 +342,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       navigate("/login", { replace: true });
       return;
     }
-    localStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
     setTokenNotario("");
     setNotario(null);
     setExpedientes([]);
