@@ -361,6 +361,39 @@ def _campos_ficha_central(expediente):
     return resultado
 
 
+CATEGORIAS_DOCUMENTALES_VISIBLES_NOTARGEST = {
+    "documentos absis",
+    "hoja de encargo firmada",
+    "justificante de cancelación",
+    "nota simple registral",
+    "borradores de escritura",
+    "borradores escrituras",
+    "otros documentos",
+    "factura notarial",
+    "presentación registro",
+    "presentacion registro",
+    "hoja de presentación",
+    "hoja presentacion",
+    "ajd/itp",
+    "defecto registral",
+    "subsanación del defecto",
+    "subsanacion del defecto",
+    "hoja de inscripción",
+    "hoja de inscripcion",
+    "copia simple",
+    "justificante de pago",
+    "justificante pago",
+}
+
+
+def _documento_visible_notargest_externo(documento_o_categoria):
+    categoria = (
+        getattr(documento_o_categoria, "categoria", documento_o_categoria)
+        or ""
+    )
+    return str(categoria).strip().casefold() in CATEGORIAS_DOCUMENTALES_VISIBLES_NOTARGEST
+
+
 def _filtrar_campos_sensibles_notario_externo(datos):
     """Retira notas internas e identificadores de gestión no destinados a la notaría."""
     for campo in (
@@ -1108,6 +1141,8 @@ def detalle_expediente(expediente_id: str, n=Depends(get_notario), db: Session =
     e = _expediente_autorizado(expediente_id, n, db)
     fincas = db.query(ExpedienteFinca).filter(ExpedienteFinca.expediente_id == e.id).all()
     docs = db.query(DocumentoCarpetaDigital).filter(DocumentoCarpetaDigital.expediente_id == str(e.id_expediente)).order_by(DocumentoCarpetaDigital.fecha_subida.desc()).all()
+    if not _es_usuario_erp(n):
+        docs = [d for d in docs if _documento_visible_notargest_externo(d)]
     obs = db.query(ExpedienteObservacion).filter(
         ExpedienteObservacion.expediente_id == e.id,
         ExpedienteObservacion.activo.is_(True),
@@ -1170,7 +1205,7 @@ def avisos_notargest(n=Depends(get_notario), db: Session = Depends(get_db)):
     docs = db.query(DocumentoCarpetaDigital).filter(DocumentoCarpetaDigital.expediente_id.in_(list(ids_documentales.keys()))).order_by(DocumentoCarpetaDigital.fecha_subida.desc()).limit(1000).all()
     for d in docs:
         e = ids_documentales.get(str(d.expediente_id))
-        if not e or e.fecha_firma or (e.protocolo or "").strip() or d.id in leidos_por_tipo.get("documento", set()):
+        if not e or (not _es_usuario_erp(n) and not _documento_visible_notargest_externo(d)) or e.fecha_firma or (e.protocolo or "").strip() or d.id in leidos_por_tipo.get("documento", set()):
             continue
         envio = getattr(e, "fecha_envio_notario", None) or getattr(e, "fecha_envio", None)
         subida = d.fecha_subida
@@ -1203,6 +1238,8 @@ def marcar_aviso_leido_notargest(tipo: str, aviso_id: int, n=Depends(get_notario
             DocumentoCarpetaDigital.id == aviso_id,
             DocumentoCarpetaDigital.expediente_id.in_(list(ids_documentales) or ["__none__"]),
         ).first()
+        if aviso and not _es_usuario_erp(n) and not _documento_visible_notargest_externo(aviso):
+            aviso = None
     if not aviso:
         raise HTTPException(status_code=404, detail="La notificación no existe o no está autorizada.")
     db.execute(text("""
@@ -1329,7 +1366,7 @@ def descargar_documento(expediente_id: str, documento_id: int, n=Depends(get_not
         DocumentoCarpetaDigital.id == documento_id,
         DocumentoCarpetaDigital.expediente_id == str(e.id_expediente)
     ).first()
-    if not doc:
+    if not doc or (not _es_usuario_erp(n) and not _documento_visible_notargest_externo(doc)):
         raise HTTPException(status_code=404, detail="Documento no encontrado")
     ruta = (ROOT / doc.nombre_guardado).resolve()
     if ruta.parent != ROOT or not ruta.is_file():
