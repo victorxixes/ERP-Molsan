@@ -1267,9 +1267,6 @@ export default function AccionesExpediente() {
       className="
         catalogos-premium-page herramientas-subpagina-premium erp-page
         min-h-full
-        p-4
-        sm:p-6
-        lg:p-8
         text-[var(--erp-text)]
         space-y-6
         animate-fade-in
@@ -1295,7 +1292,7 @@ export default function AccionesExpediente() {
       >
 
         <div
-          className="
+          className="molsan-page-header__identity
             flex
             items-center
             gap-4
