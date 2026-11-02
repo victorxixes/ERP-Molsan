@@ -860,11 +860,10 @@ export default function TablaLogs({
                               }
                             `}
                           >
-                            {activo
-                              ? orden.asc
-                                ? "▲"
-                                : "▼"
-                              : "↕"}
+                            <MolsanIcon
+                              name={activo ? (orden.asc ? "arrowUp" : "arrowDown") : "arrowUpDown"}
+                              size={13}
+                            />
                           </span>
                         </div>
                       </th>
@@ -1138,7 +1137,7 @@ export default function TablaLogs({
             disabled:opacity-40
           "
         >
-          ← Anterior
+          <MolsanIcon name="arrowLeft" size={14} inline /> Anterior
         </button>
 
 
@@ -1221,7 +1220,7 @@ export default function TablaLogs({
             disabled:opacity-40
           "
         >
-          Siguiente →
+          Siguiente <MolsanIcon name="arrowRight" size={14} inline />
         </button>
 
 
