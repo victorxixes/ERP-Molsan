@@ -14,7 +14,7 @@ const TIPOS = [
   { value: "PAUSA_DESAYUNO_INICIO", label: "Pausa desayuno", icon: "coffee", tone: "amber" },
   { value: "PAUSA_DESAYUNO_FIN", label: "Regreso desayuno", icon: "refresh", tone: "blue" },
   { value: "PAUSA_COMIDA_INICIO", label: "Pausa comida", icon: "meal", tone: "sky" },
-  { value: "PAUSA_COMIDA_FIN", label: "Regreso comida", icon: "↩", tone: "blue" },
+  { value: "PAUSA_COMIDA_FIN", label: "Regreso comida", icon: "refresh", tone: "blue" },
   { value: "PAUSA_CIGARRILLO_INICIO", label: "Pausa cigarrillo", icon: "pause", tone: "amber" },
   { value: "PAUSA_CIGARRILLO_FIN", label: "Regreso cigarrillo", icon: "pause", tone: "blue" },
   { value: "AUSENCIA", label: "Registrar ausencia", icon: "calendar", tone: "violet" },
@@ -235,10 +235,10 @@ export default function Fichajes({ modo = "empleado" }) {
     <main className="molsan-page-stack fichajes-premium-page w-full text-[var(--erp-text)]">
       <header className="molsan-page-header">
         <div className="molsan-page-header__identity">
-          <div className="molsan-page-header__mark" aria-hidden="true">⏱</div>
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="timer" size={32} bare /></div>
           <div className="min-w-0">
             <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
-            <h1 className="molsan-page-header__title">{esAdminVista ? "Control de Fichajes" : "Fichaje Molsan"}</h1>
+            <h1 className="molsan-page-header__title">{esAdminVista ? "Control de Fichajes" : "Fichajes"}</h1>
             <p className="molsan-page-header__description">{esAdminVista ? "Supervisión de marcajes de la plantilla." : "Registro de jornada y gestión de justificantes personales."}</p>
           </div>
         </div>
