@@ -87,7 +87,7 @@ export default function AuditoriaAvanzada() {
   // ============================================================
 
   return (
-    <div className="molsan-page-stack auditoria-avanzada-premium panel-tecnico-submodulo-premium animate-fade-in">
+    <div className="molsan-page-stack auditoria-avanzada-premium panel-tecnico-submodulo-premium">
 
       {/* ======================================================
           CABECERA
