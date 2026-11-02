@@ -229,13 +229,18 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
     setCargando(true);
     setError("");
     try {
-      const [nts, me] = await Promise.all([
-        axios.get("/encargagest/notarias"),
-        axios.get("/encargagest/me"),
-      ]);
+      // Consultar primero la sesión: una cuenta con contraseña provisional
+      // solo puede acceder a /me y /cambiar-password hasta completar el cambio.
+      const me = await axios.get("/encargagest/me");
+      setSesion(me.data || null);
+      if (me.data?.requiere_cambio_password) {
+        setPerfilAbierto(true);
+        setMensaje("Por seguridad, cambia la contraseña inicial para acceder al portal.");
+        return;
+      }
+      const nts = await axios.get("/encargagest/notarias");
       const listaNotarias = Array.isArray(nts.data) ? nts.data : [];
       setNotarias(listaNotarias);
-      setSesion(me.data || null);
       if (me.data?.modo === "externo") {
         setForm((actual) => ({ ...actual, notaria_id: String(me.data.notaria_id || "") }));
       }
@@ -708,8 +713,10 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         notaria_id: respuesta.data.notaria?.id,
         notaria_nombre: respuesta.data.notaria?.nombre,
         usuario: respuesta.data.usuario,
+        requiere_cambio_password: Boolean(respuesta.data.requiere_cambio_password),
       });
       setLoginPassword("");
+      setPerfilAbierto(Boolean(respuesta.data.requiere_cambio_password));
       setModo("externo");
     } catch (e) {
       setLoginError(e?.response?.data?.detail || "No se ha podido iniciar sesión. Comprueba el usuario y la contraseña.");
@@ -738,9 +745,12 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         password_nueva: passwordNuevaPerfil,
       });
       setMensajePasswordPerfil(respuesta.data?.mensaje || "Contraseña actualizada correctamente.");
+      setSesion((actual) => actual ? { ...actual, requiere_cambio_password: false } : actual);
       setPasswordActualPerfil("");
       setPasswordNuevaPerfil("");
       setPasswordConfirmarPerfil("");
+      setPerfilAbierto(false);
+      await cargarTodo();
     } catch (e) {
       setErrorPasswordPerfil(e?.response?.data?.detail || "No se ha podido actualizar la contraseña.");
     } finally {
