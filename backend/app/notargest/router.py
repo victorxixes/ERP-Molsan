@@ -5,6 +5,7 @@ import secrets
 import os
 import base64
 import uuid
+from urllib.parse import urlparse
 from pathlib import Path
 from datetime import date, datetime, time, timedelta
 
@@ -204,10 +205,28 @@ def migrar_notargest():
     print("[NOTARGEST MIGRACION] Migración de acceso revisada.", flush=True)
 
 def _registrar_password_inicial_notargest(notaria, nif: str) -> None:
-    """Registra el acceso inicial por NIF sin bloquear el primer inicio de sesión."""
+    """Registra el NIF como credencial provisional y exige cambiarla al entrar."""
     notaria.notargest_password_hash = hash_password(nif)
-    notaria.notargest_cambiar_password = False
-    notaria.notargest_password_provisional = False
+    notaria.notargest_cambiar_password = True
+    notaria.notargest_password_provisional = True
+
+
+def _validar_password_login_notargest(notaria, password, nif):
+    password_nif = hmac.compare_digest(normalizar_nif(password), nif)
+    if password_nif and not getattr(notaria, "notargest_password_hash", None):
+        # Primer acceso: conserva el comportamiento de alta inicial con NIF.
+        _registrar_password_inicial_notargest(notaria, nif)
+        notaria.notargest_password_enc = cifrar_password_portal(nif)
+        return True
+    password_hash = getattr(notaria, "notargest_password_hash", None)
+    if not password_hash:
+        return False
+    valido = verificar_password(password, password_hash)
+    if valido and not password_nif:
+        notaria.notargest_password_provisional = False
+    # Un reset administrativo ya tiene hash y marca provisional: no se debe
+    # limpiar esa marca por el mero hecho de iniciar sesión con el NIF.
+    return valido
 
 
 def _requiere_cambio_password_notargest(notaria) -> bool:
@@ -247,9 +266,15 @@ def get_notario(request: Request, token=Depends(obtener_token_bearer), db: Sessi
             n = db.query(Notaria).filter(Notaria.id == int(payload["notaria_id"])).first()
             if not n or not n.notargest_habilitado:
                 raise HTTPException(status_code=403, detail="Acceso NotarGest deshabilitado")
+            es_sesion_soporte = bool(payload.get("seleccion_admin"))
+            if es_sesion_soporte:
+                _validar_admin_soporte_notargest(payload, db)
+                # El administrador accede con sus propios permisos; no debe
+                # quedar bloqueado por la contraseña provisional de la notaría.
+                setattr(n, "_notargest_sesion_soporte", True)
 
             requiere_cambio = _requiere_cambio_password_notargest(n)
-            if requiere_cambio and not _ruta_permitida_durante_cambio_password(request.url.path):
+            if requiere_cambio and not es_sesion_soporte and not _ruta_permitida_durante_cambio_password(request.url.path):
                 raise HTTPException(
                     status_code=403,
                     detail="Debes cambiar la contraseña provisional antes de acceder a NotarGest.",
@@ -267,6 +292,13 @@ def get_notario(request: Request, token=Depends(obtener_token_bearer), db: Sessi
         # Toda sesión ERP necesita permiso de lectura del módulo; las
         # operaciones que mutan datos requieren además editar/eliminar.
         require_perm_modulo(empleado, "notargest", "ver")
+        # El acceso ERP interno a NotarGest está reservado a administración.
+        # La misma política se aplica en API aunque el cliente oculte la pantalla.
+        if not _es_administrador_notargest(empleado):
+            raise HTTPException(
+                status_code=403,
+                detail="El acceso interno de NotarGest está reservado a administración.",
+            )
         accion_requerida = _accion_requerida_notargest(
             request.method,
             request.url.path,
@@ -352,13 +384,85 @@ def _campos_ficha_central(expediente):
     return resultado
 
 
+CATEGORIAS_DOCUMENTALES_VISIBLES_NOTARGEST = {
+    "documentos absis",
+    "hoja de encargo firmada",
+    "hoja encargo firmada",
+    "justificante de cancelación",
+    "justificante cancelación",
+    "nota simple registral",
+    "borradores de escritura",
+    "borradores de escrituras",
+    "borradores escrituras",
+    "otros documentos",
+    "factura notarial",
+    "presentación registro",
+    "presentacion registro",
+    "hoja de presentación",
+    "hoja presentación",
+    "hoja presentacion",
+    "ajd/itp",
+    "defecto registral",
+    "subsanación del defecto",
+    "subsanacion del defecto",
+    "hoja de inscripción",
+    "hoja de inscripcion",
+    "hoja inscripción",
+    "hoja inscripcion",
+    "subsanación defecto",
+    "subsanacion defecto",
+    "copia simple",
+    "justificante de pago",
+    "justificante pago",
+}
+
+
+def _documento_visible_notargest_externo(documento_o_categoria):
+    categoria = (
+        getattr(documento_o_categoria, "categoria", documento_o_categoria)
+        or ""
+    )
+    return str(categoria).strip().casefold() in CATEGORIAS_DOCUMENTALES_VISIBLES_NOTARGEST
+
+
+def _url_documento_segura_notargest(valor):
+    url = str(valor or "").strip()
+    if not url:
+        return None
+    if url.startswith("/") and not url.startswith("//"):
+        return url
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        return None
+    return url if parsed.scheme == "https" and parsed.netloc else None
+
+
+def _observacion_ctn_visible_notargest(notaria, tipo_acceso):
+    if tipo_acceso == "notario" and not bool(getattr(notaria, "_notargest_sesion_soporte", False)):
+        return None
+    return getattr(notaria, "observacion", None)
+
+
 def _filtrar_campos_sensibles_notario_externo(datos):
-    """Retira campos financieros internos que no forman parte del portal notarial."""
+    """Retira notas internas e identificadores de gestión no destinados a la notaría."""
     for campo in (
         "saldo_real", "saldo_disponible", "origen_bankia", "producto_gtg",
-        "tipo_provision", "id_provision",
+        "tipo_provision", "id_provision", "apoderado_empleado_id",
+        # Las observaciones generales no tienen control de visibilidad. La
+        # notaría solo debe recibir las entradas filtradas de observaciones_notaria.
+        "observaciones",
     ):
         datos.pop(campo, None)
+
+    # No divulgar el texto libre del bloqueo interno; conservar solo un aviso
+    # operativo neutro para que la notaría sepa que debe contactar con MOLSAN.
+    if datos.get("bloqueado"):
+        datos["motivo_bloqueo_efectivo"] = (
+            "Expediente bloqueado temporalmente. Contacta con MOLSAN para continuar."
+        )
+    else:
+        datos.pop("motivo_bloqueo_efectivo", None)
     return datos
 
 def _resumen(e, db):
@@ -481,17 +585,7 @@ def login(data: LoginNotario, db: Session = Depends(get_db)):
         """), {"id": n.id, "usuario": nif})
         db.commit()
         raise HTTPException(status_code=401, detail="Acceso no habilitado. Contacta con Molsan.")
-    password_nif = hmac.compare_digest(normalizar_nif(data.password), nif)
-    if password_nif and (not n.notargest_password_hash or _requiere_cambio_password_notargest(n)):
-        _registrar_password_inicial_notargest(n, nif)
-        n.notargest_password_enc = cifrar_password_portal(nif)
-        valido = True
-    elif n.notargest_password_hash:
-        valido = verificar_password(data.password, n.notargest_password_hash)
-        if valido and not password_nif:
-            n.notargest_password_provisional = False
-    else:
-        valido = False
+    valido = _validar_password_login_notargest(n, data.password, nif)
     if not valido:
         db.execute(text("""
             INSERT INTO ctn_portal_accesos_historial (notaria_id, portal, evento, resultado, usuario, detalle)
@@ -520,8 +614,30 @@ def login(data: LoginNotario, db: Session = Depends(get_db)):
 
 def _es_administrador_notargest(usuario):
     nombre_usuario = str(getattr(usuario, "usuario", "") or "").strip().casefold()
-    rol = str(getattr(getattr(usuario, "rol", None), "nombre", "") or "").strip().casefold()
-    return nombre_usuario == "admin" or rol in {"admin", "administrador", "administradora", "superadmin"}
+    rol_obj = getattr(usuario, "rol", None)
+    rol = str(getattr(rol_obj, "nombre", "") or "").strip().casefold()
+    try:
+        rol_id = int(getattr(usuario, "rol_id", getattr(rol_obj, "id", -1)))
+    except (TypeError, ValueError):
+        rol_id = -1
+    return nombre_usuario == "admin" or rol_id == 0 or rol in {"admin", "administrador", "administradora", "superadmin", "superadministrador", "administrador del sistema"}
+
+
+def _validar_admin_soporte_notargest(payload, db):
+    try:
+        admin_id = int(payload.get("empleado_admin_id") or 0)
+    except (TypeError, ValueError):
+        admin_id = 0
+    admin = db.query(Empleado).filter(Empleado.id == admin_id).first() if admin_id else None
+    if not admin or getattr(admin, "activo", True) is False:
+        raise HTTPException(status_code=401, detail="La sesión de soporte NotarGest ya no está autorizada.")
+    if not _es_administrador_notargest(admin):
+        raise HTTPException(status_code=403, detail="El administrador que abrió esta sesión ya no tiene permisos de soporte.")
+    modulos = getattr(admin, "modulos_visibles_list", None) or []
+    if not any(str(m).strip().casefold() == "notargest" for m in modulos):
+        raise HTTPException(status_code=403, detail="NotarGest ya no está habilitado para el administrador.")
+    require_perm_modulo(admin, "notargest", "ver")
+    return admin
 
 
 @router.get("/seleccion/notarias")
@@ -663,9 +779,13 @@ def me(n=Depends(get_notario), db: Session = Depends(get_db)):
         "departamento_cancelaciones": getattr(n, "departamento_cancelaciones", None),
         "departamento_copias": getattr(n, "departamento_copias", None),
         "otros_departamentos": getattr(n, "otros_departamentos", None),
-        "observacion": getattr(n, "observacion", None),
+        "observacion": _observacion_ctn_visible_notargest(n, tipo_acceso),
         "tipo_acceso": tipo_acceso,
-        "requiere_cambio_password": _requiere_cambio_password_notargest(n),
+        "requiere_cambio_password": (
+            tipo_acceso == "notario"
+            and _requiere_cambio_password_notargest(n)
+            and not bool(getattr(n, "_notargest_sesion_soporte", False))
+        ),
     }
 
 @router.post("/cambiar-password")
@@ -705,6 +825,27 @@ ESTADOS_NOTARGEST = {
     "copia": "Pendientes de copia simple",
     "cerrada": "Escrituras cerradas inscritas",
 }
+
+
+def _hay_defectos_abiertos_notargest(expediente):
+    return str(getattr(expediente, "tiene_defectos_abiertos", "") or "").strip().casefold() in {
+        "si", "sí", "true", "1", "abierto"
+    }
+
+
+ESTADOS_PERMITIDOS_DOCUMENTO_NOTARGEST = {
+    "presentacion": {"registro"},
+    "ajd": {"ajd"},
+    "defecto": {"inscripcion"},
+    "subsanacion": {"inscripcion"},
+    "inscripcion": {"inscripcion"},
+    "copia": {"copia"},
+}
+
+
+def _categoria_documental_permitida_notargest(categoria, estado):
+    return estado in ESTADOS_PERMITIDOS_DOCUMENTO_NOTARGEST.get(categoria, set())
+
 
 # La migración de estas columnas se centraliza en main.py para evitar DDL concurrente.
 def migrar_workflow_notargest():
@@ -776,8 +917,9 @@ def _estado_workflow(e):
 
 @router.get("/admin/expedientes/{expediente_id}/actividad")
 def consultar_actividad_desde_utilidades(expediente_id: str, actor=Depends(get_notario), db: Session = Depends(get_db)):
-    if not _es_usuario_erp(actor):
-        raise HTTPException(status_code=403, detail="Esta consulta solo está disponible para usuarios ERP.")
+    if not _es_usuario_erp(actor) or not _es_administrador_notargest(actor):
+        raise HTTPException(status_code=403, detail="Esta consulta administrativa solo está disponible para administradores ERP.")
+    require_perm_modulo(actor, "notargest", "ver")
     e = db.query(Expediente).filter(Expediente.id_expediente == str(expediente_id)).first()
     if not e:
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
@@ -830,7 +972,7 @@ def mover_actividad_desde_utilidades(expediente_id: str, data: dict, actor=Depen
 
 @router.post("/expedientes/{expediente_id}/estado")
 def cambiar_estado_workflow(expediente_id: str, data: dict, n=Depends(get_notario), db: Session = Depends(get_db)):
-    e = _expediente_autorizado(expediente_id, n, db)
+    e = _expediente_autorizado(expediente_id, n, db, bloquear=True)
     destino = str(data.get("estado") or "").strip()
     if destino not in ESTADOS_NOTARGEST:
         raise HTTPException(status_code=400, detail="Estado NotarGest no válido")
@@ -850,43 +992,76 @@ def cambiar_estado_workflow(expediente_id: str, data: dict, n=Depends(get_notari
 
 @router.patch("/expedientes/{expediente_id}/firma")
 def actualizar_datos_firma(expediente_id: str, data: dict, n=Depends(get_notario), db: Session = Depends(get_db)):
-    e = _expediente_autorizado(expediente_id, n, db)
+    e = _expediente_autorizado(expediente_id, n, db, bloquear=True)
     fecha = data.get("fecha_firma")
     protocolo = str(data.get("protocolo") or "").strip()
+    fecha_entrante = e.fecha_firma
+    if fecha:
+        try:
+            fecha_entrante = date.fromisoformat(str(fecha)[:10])
+        except ValueError:
+            raise HTTPException(status_code=400, detail="La fecha de firma no es válida")
+    protocolo_entrante = protocolo or (getattr(e, "protocolo", None) or "").strip()
 
-    if e.fecha_firma or (getattr(e, "protocolo", None) or "").strip():
-        fecha_entrante = None
-        if fecha:
-            try:
-                fecha_entrante = date.fromisoformat(str(fecha)[:10])
-            except ValueError:
-                raise HTTPException(status_code=400, detail="La fecha de firma no es válida")
-        if fecha_entrante == e.fecha_firma and protocolo == (e.protocolo or "").strip():
-            return {"ok": True, "fecha_firma": _fecha(e.fecha_firma), "protocolo": e.protocolo, "sin_cambios": True}
-        raise HTTPException(
-            status_code=409,
-            detail="La firma ya está registrada y no puede borrarse ni sustituirse desde NotarGest.",
-        )
+    if e.fecha_firma and fecha_entrante and fecha_entrante != e.fecha_firma:
+        raise HTTPException(status_code=409, detail="La fecha de firma ya está registrada y no puede sustituirse desde NotarGest.")
+    if (getattr(e, "protocolo", None) or "").strip() and protocolo_entrante != (e.protocolo or "").strip():
+        raise HTTPException(status_code=409, detail="El protocolo ya está registrado y no puede sustituirse desde NotarGest.")
+    if e.fecha_firma and (getattr(e, "protocolo", None) or "").strip():
+        return {"ok": True, "fecha_firma": _fecha(e.fecha_firma), "protocolo": e.protocolo, "sin_cambios": True}
 
-    if not fecha or not protocolo:
+    if _estado_workflow(e) != "firma":
+        raise HTTPException(status_code=400, detail="Solo puedes registrar la firma cuando el expediente está en la fase de firma.")
+    if len(protocolo_entrante) > 100:
+        raise HTTPException(status_code=400, detail="El protocolo no puede superar los 100 caracteres.")
+    if not fecha_entrante or not protocolo_entrante:
         raise HTTPException(status_code=400, detail="Para registrar una firma debes indicar fecha y protocolo.")
-    try:
-        e.fecha_firma = date.fromisoformat(str(fecha)[:10])
-    except ValueError:
-        raise HTTPException(status_code=400, detail="La fecha de firma no es válida")
-    e.protocolo = protocolo
+    e.fecha_firma = fecha_entrante
+    e.protocolo = protocolo_entrante
     e.escritura_firmada = True
     db.commit()
     return {"ok": True, "fecha_firma": _fecha(e.fecha_firma), "protocolo": e.protocolo}
 
 @router.patch("/expedientes/{expediente_id}/cierre")
 def actualizar_cierre(expediente_id: str, data: dict, n=Depends(get_notario), db: Session = Depends(get_db)):
-    e = _expediente_autorizado(expediente_id, n, db)
-    for campo in ("notargest_fecha_cierre", "notargest_fecha_envio_gestoria"):
-        valor = data.get(campo)
-        if valor:
-            try: setattr(e, campo, date.fromisoformat(str(valor)[:10]))
-            except ValueError: raise HTTPException(status_code=400, detail=f"Fecha no válida: {campo}")
+    e = _expediente_autorizado(expediente_id, n, db, bloquear=True)
+    estado_actual = _estado_workflow(e)
+    fecha_cierre_entrada = data.get("notargest_fecha_cierre")
+    fecha_envio_entrada = data.get("notargest_fecha_envio_gestoria")
+
+    if fecha_cierre_entrada:
+        if estado_actual not in {"copia", "cerrada"}:
+            raise HTTPException(status_code=400, detail="El expediente solo puede cerrarse después de completar la fase de copia simple.")
+        if _hay_defectos_abiertos_notargest(e):
+            raise HTTPException(status_code=400, detail="No se puede cerrar el expediente mientras haya defectos registrales abiertos.")
+        if estado_actual == "copia":
+            copia = db.query(DocumentoCarpetaDigital).filter(
+                DocumentoCarpetaDigital.expediente_id == str(e.id_expediente),
+                DocumentoCarpetaDigital.categoria == "Copia simple",
+            ).first()
+            if not copia:
+                raise HTTPException(status_code=400, detail="Adjunta la copia simple antes de registrar el cierre.")
+        try:
+            nueva_fecha_cierre = date.fromisoformat(str(fecha_cierre_entrada)[:10])
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Fecha no válida: notargest_fecha_cierre")
+        if e.notargest_fecha_cierre and nueva_fecha_cierre != e.notargest_fecha_cierre:
+            raise HTTPException(status_code=409, detail="La fecha de cierre ya está registrada y no puede sustituirse desde el portal.")
+        e.notargest_fecha_cierre = nueva_fecha_cierre
+
+    if fecha_envio_entrada:
+        if not e.notargest_fecha_cierre:
+            raise HTTPException(status_code=400, detail="Registra primero la fecha de cierre antes de indicar el envío a gestoría.")
+        try:
+            nueva_fecha_envio = date.fromisoformat(str(fecha_envio_entrada)[:10])
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Fecha no válida: notargest_fecha_envio_gestoria")
+        if nueva_fecha_envio < e.notargest_fecha_cierre:
+            raise HTTPException(status_code=400, detail="La fecha de envío a gestoría no puede ser anterior a la fecha de cierre.")
+        if e.notargest_fecha_envio_gestoria and nueva_fecha_envio != e.notargest_fecha_envio_gestoria:
+            raise HTTPException(status_code=409, detail="La fecha de envío a gestoría ya está registrada y no puede sustituirse desde el portal.")
+        e.notargest_fecha_envio_gestoria = nueva_fecha_envio
+
     if e.notargest_fecha_cierre:
         e.notargest_estado = "cerrada"
         e.actividad_actual = ESTADOS_NOTARGEST["cerrada"]
@@ -895,9 +1070,8 @@ def actualizar_cierre(expediente_id: str, data: dict, n=Depends(get_notario), db
 
 @router.post("/expedientes/{expediente_id}/documentos-workflow")
 async def subir_documento_workflow(expediente_id: str, categoria: str = Form(...), archivo: UploadFile = File(...), n=Depends(get_notario), db: Session = Depends(get_db)):
-    e = _expediente_autorizado(expediente_id, n, db)
+    e = _expediente_autorizado(expediente_id, n, db, bloquear=True)
     categorias = {
-        "factura": ("Factura notarial", "application/pdf", "registro"),
         "presentacion": ("Presentación Registro", None, "ajd"),
         "ajd": ("AJD/ITP", None, "inscripcion"),
         "defecto": ("Defecto registral", "application/pdf", None),
@@ -908,12 +1082,20 @@ async def subir_documento_workflow(expediente_id: str, categoria: str = Form(...
     if categoria not in categorias:
         raise HTTPException(status_code=400, detail="Tipo de documento no válido")
     categoria_carpeta, mime_fijo, siguiente = categorias[categoria]
+    estado_actual = _estado_workflow(e)
+    if not _categoria_documental_permitida_notargest(categoria, estado_actual):
+        raise HTTPException(
+            status_code=400,
+            detail=f"El documento {categoria_carpeta} no corresponde a la fase actual del expediente ({ESTADOS_NOTARGEST.get(estado_actual, estado_actual)}).",
+        )
+    if categoria == "subsanacion" and not _hay_defectos_abiertos_notargest(e):
+        raise HTTPException(status_code=400, detail="No hay defectos registrales abiertos que requieran subsanación.")
+    if categoria in {"inscripcion", "copia"} and _hay_defectos_abiertos_notargest(e):
+        raise HTTPException(status_code=400, detail="Resuelve primero los defectos registrales antes de continuar.")
     nombre = (archivo.filename or "documento").replace("\\", "/").rsplit("/", 1)[-1]
     extension, tipo_mime_seguro = _tipo_mime_notargest_seguro(nombre)
     if categoria in ("factura", "defecto", "subsanacion", "inscripcion", "copia") and extension != ".pdf":
         raise HTTPException(status_code=400, detail="Este documento debe adjuntarse en PDF")
-    if categoria == "copia" and str(getattr(e, "tiene_defectos_abiertos", "") or "").strip().casefold() in {"si", "sí", "true", "1", "abierto"}:
-        raise HTTPException(status_code=400, detail="No se puede cerrar el expediente mientras haya defectos registrales abiertos. Adjunta primero la subsanación del defecto.")
     try:
         contenido = await archivo.read(MAX_WORKFLOW_UPLOAD_BYTES + 1)
     finally:
@@ -967,8 +1149,11 @@ def mis_expedientes(n=Depends(get_notario), db: Session = Depends(get_db)):
         items.append(item)
     return {"items": items, "total": len(items)}
 
-def _expediente_autorizado(expediente_id, n, db):
-    e = db.query(Expediente).filter(Expediente.id_expediente == str(expediente_id)).first()
+def _expediente_autorizado(expediente_id, n, db, bloquear=False):
+    consulta = db.query(Expediente).filter(Expediente.id_expediente == str(expediente_id))
+    if bloquear:
+        consulta = consulta.with_for_update()
+    e = consulta.first()
     if not e:
         raise HTTPException(status_code=404, detail="Expediente no encontrado")
     if _es_usuario_erp(n):
@@ -987,6 +1172,43 @@ def _expediente_autorizado(expediente_id, n, db):
     return e
 
 
+def _pago_corresponde_a_notario(n, gasto, expediente):
+    """Evita mezclar pagos de notarías cuando los datos de gasto y expediente discrepan."""
+    nif_gasto = normalizar_nif(getattr(gasto, "nif_notario", None) or "")
+    nombre_gasto = " ".join((getattr(gasto, "nombre_notario", None) or "").split()).casefold()
+    nif_expediente = normalizar_nif(getattr(expediente, "nif_notario", None) or "")
+    nombre_expediente = " ".join((getattr(expediente, "nombre_notario", None) or "").split()).casefold()
+
+    if _es_usuario_erp(n):
+        coincide = bool(
+            (nif_gasto and nif_expediente and nif_gasto == nif_expediente)
+            or (nombre_gasto and nombre_expediente and nombre_gasto == nombre_expediente)
+        )
+        if not coincide:
+            return False
+        if nif_gasto and nif_expediente and nif_gasto != nif_expediente:
+            return False
+        if nombre_gasto and nombre_expediente and nombre_gasto != nombre_expediente:
+            return False
+        return True
+
+    nif_notario = normalizar_nif(getattr(n, "nif", None) or "")
+    nombre_notario = " ".join(
+        x for x in [getattr(n, "nombre", None), getattr(n, "apellidos", None)] if x
+    ).strip().casefold()
+
+    # La notaría solo debe ver pagos dirigidos explícitamente a ella.
+    # La identidad del expediente por sí sola no permite distinguir honorarios
+    # notariales de gastos de registro, impuestos o gestoría.
+    if not (nif_gasto or nombre_gasto):
+        return False
+    if nif_gasto and (not nif_notario or nif_gasto != nif_notario):
+        return False
+    if nombre_gasto and (not nombre_notario or nombre_gasto != nombre_notario):
+        return False
+    return True
+
+
 @router.get("/pagos")
 def pagos_notario(n=Depends(get_notario), db: Session = Depends(get_db)):
     """Solicitudes de pago ya efectuadas desde la ficha del expediente al notario."""
@@ -1001,33 +1223,32 @@ def pagos_notario(n=Depends(get_notario), db: Session = Depends(get_db)):
         .limit(2000)
         .all()
     )
-    nombre_notario = " ".join(x for x in [getattr(n, "nombre", None), getattr(n, "apellidos", None)] if x).strip()
-    nif_notario = normalizar_nif(getattr(n, "nif", None) or "")
     resultados = []
     for gasto, expediente in consulta:
-        nif_gasto = normalizar_nif(getattr(gasto, "nif_notario", None) or "")
-        nombre_gasto = " ".join((getattr(gasto, "nombre_notario", None) or "").split()).casefold()
-        nif_expediente = normalizar_nif(getattr(expediente, "nif_notario", None) or "")
-        nombre_expediente = " ".join((getattr(expediente, "nombre_notario", None) or "").split()).casefold()
-        if _es_usuario_erp(n):
-            # Para el usuario ERP, solo pagos dirigidos al notario registrado en el expediente.
-            identidad_valida = bool(nif_gasto or nombre_gasto) and (
-                (nif_gasto and nif_expediente and nif_gasto == nif_expediente)
-                or (nombre_gasto and nombre_expediente and nombre_gasto == nombre_expediente)
-            )
-        else:
-            identidad_valida = bool(
-                (nif_notario and (nif_gasto == nif_notario or nif_expediente == nif_notario))
-                or (nombre_notario and (nombre_gasto == nombre_notario.casefold() or nombre_expediente == nombre_notario.casefold()))
-            )
-        if not identidad_valida:
+        if not _es_usuario_erp(n):
+            try:
+                _expediente_autorizado(expediente.id_expediente, n, db)
+            except HTTPException:
+                continue
+        if not _pago_corresponde_a_notario(n, gasto, expediente):
             continue
 
         documentos = db.query(DocumentoCarpetaDigital).filter(
             DocumentoCarpetaDigital.expediente_id == str(expediente.id_expediente)
         ).all()
         factura = next((d for d in documentos if (d.categoria or "").strip().casefold() == "factura notarial"), None)
-        justificante = next((d for d in documentos if "justificante" in (d.categoria or "").casefold() and "pago" in (d.categoria or "").casefold()), None)
+        justificante = next((
+            d for d in documentos
+            if "justificante" in (d.categoria or "").casefold()
+            and "pago" in (d.categoria or "").casefold()
+            and (_es_usuario_erp(n) or _documento_visible_notargest_externo(d))
+        ), None)
+        if not justificante and getattr(gasto, "documento_carpeta_id", None):
+            justificante = next((
+                d for d in documentos
+                if d.id == gasto.documento_carpeta_id
+                and (_es_usuario_erp(n) or _documento_visible_notargest_externo(d))
+            ), None)
         resultados.append({
             "id": gasto.id,
             "id_expediente": expediente.id_expediente,
@@ -1038,8 +1259,8 @@ def pagos_notario(n=Depends(get_notario), db: Session = Depends(get_db)):
             "protocolo": getattr(expediente, "protocolo", None),
             "fecha_firma": _fecha(getattr(expediente, "fecha_firma", None)),
             "factura_notarial_id": getattr(factura, "id", None),
-            "justificante_documento_id": getattr(justificante, "id", None) or getattr(gasto, "documento_carpeta_id", None),
-            "justificante_url": getattr(gasto, "documento_url", None),
+            "justificante_documento_id": getattr(justificante, "id", None),
+            "justificante_url": _url_documento_segura_notargest(getattr(gasto, "documento_url", None)),
         })
     return {"items": resultados, "total": len(resultados)}
 
@@ -1048,6 +1269,8 @@ def detalle_expediente(expediente_id: str, n=Depends(get_notario), db: Session =
     e = _expediente_autorizado(expediente_id, n, db)
     fincas = db.query(ExpedienteFinca).filter(ExpedienteFinca.expediente_id == e.id).all()
     docs = db.query(DocumentoCarpetaDigital).filter(DocumentoCarpetaDigital.expediente_id == str(e.id_expediente)).order_by(DocumentoCarpetaDigital.fecha_subida.desc()).all()
+    if not _es_usuario_erp(n):
+        docs = [d for d in docs if _documento_visible_notargest_externo(d)]
     obs = db.query(ExpedienteObservacion).filter(
         ExpedienteObservacion.expediente_id == e.id,
         ExpedienteObservacion.activo.is_(True),
@@ -1110,7 +1333,7 @@ def avisos_notargest(n=Depends(get_notario), db: Session = Depends(get_db)):
     docs = db.query(DocumentoCarpetaDigital).filter(DocumentoCarpetaDigital.expediente_id.in_(list(ids_documentales.keys()))).order_by(DocumentoCarpetaDigital.fecha_subida.desc()).limit(1000).all()
     for d in docs:
         e = ids_documentales.get(str(d.expediente_id))
-        if not e or e.fecha_firma or (e.protocolo or "").strip() or d.id in leidos_por_tipo.get("documento", set()):
+        if not e or (not _es_usuario_erp(n) and not _documento_visible_notargest_externo(d)) or e.fecha_firma or (e.protocolo or "").strip() or d.id in leidos_por_tipo.get("documento", set()):
             continue
         envio = getattr(e, "fecha_envio_notario", None) or getattr(e, "fecha_envio", None)
         subida = d.fecha_subida
@@ -1143,6 +1366,8 @@ def marcar_aviso_leido_notargest(tipo: str, aviso_id: int, n=Depends(get_notario
             DocumentoCarpetaDigital.id == aviso_id,
             DocumentoCarpetaDigital.expediente_id.in_(list(ids_documentales) or ["__none__"]),
         ).first()
+        if aviso and not _es_usuario_erp(n) and not _documento_visible_notargest_externo(aviso):
+            aviso = None
     if not aviso:
         raise HTTPException(status_code=404, detail="La notificación no existe o no está autorizada.")
     db.execute(text("""
@@ -1153,18 +1378,42 @@ def marcar_aviso_leido_notargest(tipo: str, aviso_id: int, n=Depends(get_notario
     db.commit()
     return {"ok": True, "tipo": tipo, "aviso_id": aviso_id, "leida": True}
 
+def _es_gestor_asignado(expediente, empleado_id):
+    try:
+        asignado_id = int(getattr(expediente, "gestor_asignado_id", None) or 0)
+        destinatario_id = int(empleado_id or 0)
+    except (TypeError, ValueError):
+        return False
+    return bool(asignado_id and destinatario_id and asignado_id == destinatario_id)
+
+
 @router.get("/gestores")
-def listar_gestores_notargest(n=Depends(get_notario), db: Session = Depends(get_db)):
-    empleados = db.query(Empleado).filter(Empleado.activo.is_(True)).order_by(Empleado.apellidos.asc(), Empleado.nombre.asc()).all()
-    return [{"id": e.id, "nombre": " ".join(filter(None, [e.nombre, e.apellidos]))} for e in empleados]
+def listar_gestores_notargest(
+    expediente_id: str,
+    n=Depends(get_notario),
+    db: Session = Depends(get_db),
+):
+    expediente = _expediente_autorizado(expediente_id, n, db)
+    gestor_id = getattr(expediente, "gestor_asignado_id", None)
+    if not gestor_id:
+        return []
+    gestor = db.query(Empleado).filter(
+        Empleado.id == gestor_id,
+        Empleado.activo.is_(True),
+    ).first()
+    if not gestor:
+        return []
+    return [{"id": gestor.id, "nombre": " ".join(filter(None, [gestor.nombre, gestor.apellidos]))}]
 
 
 @router.post("/expedientes/{expediente_id}/comentarios")
 def crear_comentario_gestor_notargest(expediente_id: str, datos: ComentarioGestorNotarGest, n=Depends(get_notario), db: Session = Depends(get_db)):
     expediente = _expediente_autorizado(expediente_id, n, db)
+    if not _es_gestor_asignado(expediente, datos.empleado_destinatario_id):
+        raise HTTPException(status_code=403, detail="Solo puedes dirigir comentarios al gestor asignado a este expediente.")
     destinatario = db.query(Empleado).filter(Empleado.id == datos.empleado_destinatario_id, Empleado.activo.is_(True)).first()
     if not destinatario:
-        raise HTTPException(status_code=404, detail="El gestor seleccionado no existe o está inactivo.")
+        raise HTTPException(status_code=404, detail="El gestor asignado no existe o está inactivo.")
     comentario = datos.comentario.strip()
     if not comentario:
         raise HTTPException(status_code=400, detail="Escribe un comentario antes de guardarlo.")
@@ -1245,7 +1494,7 @@ def descargar_documento(expediente_id: str, documento_id: int, n=Depends(get_not
         DocumentoCarpetaDigital.id == documento_id,
         DocumentoCarpetaDigital.expediente_id == str(e.id_expediente)
     ).first()
-    if not doc:
+    if not doc or (not _es_usuario_erp(n) and not _documento_visible_notargest_externo(doc)):
         raise HTTPException(status_code=404, detail="Documento no encontrado")
     ruta = (ROOT / doc.nombre_guardado).resolve()
     if ruta.parent != ROOT or not ruta.is_file():
@@ -1262,7 +1511,9 @@ def descargar_documento(expediente_id: str, documento_id: int, n=Depends(get_not
 
 @router.post("/expedientes/{expediente_id}/factura-notarial")
 async def subir_factura_notarial(expediente_id: str, archivo: UploadFile = File(...), n=Depends(get_notario), db: Session = Depends(get_db)):
-    e = _expediente_autorizado(expediente_id, n, db)
+    e = _expediente_autorizado(expediente_id, n, db, bloquear=True)
+    if _estado_workflow(e) != "factura":
+        raise HTTPException(status_code=400, detail="La factura notarial solo puede adjuntarse durante la fase de factura.")
     nombre = (archivo.filename or "factura.pdf").replace("\\", "/").rsplit("/", 1)[-1]
     if not nombre.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Adjunta la factura en formato PDF")
@@ -1280,6 +1531,7 @@ async def subir_factura_notarial(expediente_id: str, archivo: UploadFile = File(
     if ruta.parent != ROOT:
         raise HTTPException(status_code=400, detail="Nombre de archivo no válido")
     ruta.write_bytes(contenido)
+    ruta_anterior = None
     try:
         if anterior:
             ruta_anterior = (ROOT / anterior.nombre_guardado).resolve()
@@ -1288,9 +1540,6 @@ async def subir_factura_notarial(expediente_id: str, archivo: UploadFile = File(
             anterior.tipo_mime = "application/pdf"
             anterior.tamano_bytes = len(contenido)
             anterior.fecha_subida = datetime.utcnow()
-            db.commit()
-            if ruta_anterior.parent == ROOT:
-                ruta_anterior.unlink(missing_ok=True)
             doc = anterior
         else:
             doc = DocumentoCarpetaDigital(
@@ -1299,13 +1548,16 @@ async def subir_factura_notarial(expediente_id: str, archivo: UploadFile = File(
                 tipo_mime="application/pdf", tamano_bytes=len(contenido), fecha_subida=datetime.utcnow()
             )
             db.add(doc)
-            db.commit()
-            db.refresh(doc)
+        e.notargest_estado = "registro"
+        e.actividad_actual = ESTADOS_NOTARGEST["registro"]
+        db.commit()
     except Exception:
         db.rollback()
         ruta.unlink(missing_ok=True)
         raise
-    e.notargest_estado = "registro"
-    e.actividad_actual = ESTADOS_NOTARGEST["registro"]
-    db.commit()
+    if ruta_anterior and ruta_anterior.parent == ROOT:
+        try:
+            ruta_anterior.unlink(missing_ok=True)
+        except OSError as exc:
+            print(f"[NOTARGEST] No se pudo retirar la factura anterior {ruta_anterior.name}: {exc!r}", flush=True)
     return {"ok": True, "id": doc.id, "nombre": doc.nombre_original, "fecha_subida": _fecha(doc.fecha_subida), "estado": "registro"}

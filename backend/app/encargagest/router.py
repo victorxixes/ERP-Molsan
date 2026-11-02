@@ -7,6 +7,7 @@ import hmac
 import secrets
 import os
 import base64
+import mimetypes
 import threading
 import asyncio
 
@@ -37,6 +38,15 @@ ROOT.mkdir(parents=True, exist_ok=True)
 
 MAX_BYTES = int(os.getenv("ENCARGAGEST_MAX_DOCUMENT_BYTES", str(25 * 1024 * 1024)))
 EXTENSIONES_PERMITIDAS = {".pdf", ".doc", ".docx", ".xls", ".xlsx", ".jpg", ".jpeg", ".png", ".eml", ".msg", ".txt"}
+
+
+def _tipo_mime_seguro_encargagest(nombre):
+    extension = Path(str(nombre or "")).suffix.lower()
+    if extension not in EXTENSIONES_PERMITIDAS:
+        return "application/octet-stream"
+    return mimetypes.guess_type("documento" + extension)[0] or "application/octet-stream"
+
+
 CATEGORIAS_DOCUMENTO = {
     "Hoja de solicitud",
     "Certificado de saldo cero / deuda",
@@ -243,8 +253,39 @@ def _es_externo(actor):
 
 def _es_administrador_encargagest(usuario):
     nombre_usuario = str(getattr(usuario, "usuario", "") or "").strip().casefold()
-    rol = str(getattr(getattr(usuario, "rol", None), "nombre", "") or "").strip().casefold()
-    return nombre_usuario == "admin" or rol in {"admin", "administrador", "administradora", "superadmin"}
+    rol_obj = getattr(usuario, "rol", None)
+    rol = str(getattr(rol_obj, "nombre", "") or "").strip().casefold()
+    try:
+        rol_id = int(getattr(usuario, "rol_id", getattr(rol_obj, "id", -1)))
+    except (TypeError, ValueError):
+        rol_id = -1
+    return nombre_usuario == "admin" or rol_id == 0 or rol in {"admin", "administrador", "administradora", "superadmin", "superadministrador", "administrador del sistema"}
+
+
+def _exigir_admin_encargagest(usuario):
+    if _es_externo(usuario) or not _es_administrador_encargagest(usuario):
+        raise HTTPException(
+            status_code=403,
+            detail="La administración de accesos externos de EncargaGest está reservada a administradores.",
+        )
+    return usuario
+
+
+def _validar_admin_soporte_encargagest(payload, db):
+    try:
+        admin_id = int(payload.get("empleado_admin_id") or 0)
+    except (TypeError, ValueError):
+        admin_id = 0
+    admin = db.query(Empleado).filter(Empleado.id == admin_id).first() if admin_id else None
+    if not admin or getattr(admin, "activo", True) is False:
+        raise HTTPException(status_code=401, detail="La sesión de soporte EncargaGest ya no está autorizada.")
+    if not _es_administrador_encargagest(admin):
+        raise HTTPException(status_code=403, detail="El administrador que abrió esta sesión ya no tiene permisos de soporte.")
+    modulos = getattr(admin, "modulos_visibles_list", None) or []
+    if not any(str(modulo).strip().casefold() == "encargagest" for modulo in modulos):
+        raise HTTPException(status_code=403, detail="EncargaGest ya no está habilitado para el administrador.")
+    _autorizar(admin, "ver")
+    return admin
 
 
 def _ids_notarias_asignadas(usuario):
@@ -338,7 +379,10 @@ def get_encargagest_actor(request: Request, token=Depends(obtener_token_bearer),
             ).first()
             if not acceso:
                 raise HTTPException(status_code=401, detail="El acceso EncargaGest está deshabilitado.")
-            if acceso.password_provisional and not _ruta_permitida_durante_cambio_password_encargagest(request.url.path):
+            es_sesion_soporte = bool(payload.get("seleccion_admin"))
+            if es_sesion_soporte:
+                _validar_admin_soporte_encargagest(payload, db)
+            if acceso.password_provisional and not es_sesion_soporte and not _ruta_permitida_durante_cambio_password_encargagest(request.url.path):
                 raise HTTPException(
                     status_code=403,
                     detail="Debes cambiar la contraseña provisional antes de acceder a EncargaGest.",
@@ -350,7 +394,8 @@ def get_encargagest_actor(request: Request, token=Depends(obtener_token_bearer),
             return {
                 "tipo": "externo", "id": acceso.id, "usuario_id": acceso.id,
                 "notaria_id": notaria.id, "nombre": nombre, "usuario": acceso.usuario,
-                "requiere_cambio_password": bool(acceso.password_provisional),
+                "sesion_soporte": es_sesion_soporte,
+                "requiere_cambio_password": bool(acceso.password_provisional and not es_sesion_soporte),
             }
 
         empleado_id = payload.get("id")
@@ -369,6 +414,10 @@ def get_encargagest_actor(request: Request, token=Depends(obtener_token_bearer),
     except Exception as exc:
         print(f"ERROR AUTENTICACIÓN ENCARGAGEST: {exc}", flush=True)
         raise HTTPException(status_code=401, detail="No se pudo validar la sesión EncargaGest.")
+
+
+def _observacion_ctn_visible_encargagest(notaria, usuario):
+    return getattr(notaria, "observacion", None) if _es_externo(usuario) and usuario.get("sesion_soporte") else None
 
 
 def _nombre_usuario(usuario):
@@ -704,7 +753,7 @@ def mi_sesion_encargagest(usuario=Depends(get_encargagest_actor), db: Session = 
             "departamento_cancelaciones": getattr(notaria, "departamento_cancelaciones", None),
             "departamento_copias": getattr(notaria, "departamento_copias", None),
             "otros_departamentos": getattr(notaria, "otros_departamentos", None),
-            "observacion": getattr(notaria, "observacion", None),
+            "observacion": _observacion_ctn_visible_encargagest(notaria, usuario),
             "requiere_cambio_password": bool(usuario.get("requiere_cambio_password", False)),
         }
     _autorizar(usuario, "ver")
@@ -752,6 +801,7 @@ def cambiar_password_encargagest(datos: CambioPasswordEncargaGest, usuario=Depen
 @router.get("/accesos")
 def listar_accesos_encargagest(db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _exigir_interno(usuario, "ver")
+    _exigir_admin_encargagest(usuario)
     notarías = db.query(Notaria).order_by(Notaria.apellidos.asc(), Notaria.nombre.asc()).all()
     accesos = {item.notaria_id: item for item in db.query(EncargoExternoUsuario).all()}
     return [{
@@ -767,6 +817,7 @@ def listar_accesos_encargagest(db: Session = Depends(get_db), usuario=Depends(ge
 @router.post("/accesos")
 def guardar_acceso_encargagest(datos: AccesoEncargaGest, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _exigir_interno(usuario, "editar")
+    _exigir_admin_encargagest(usuario)
     notaria = db.query(Notaria).filter(Notaria.id == datos.notaria_id).first()
     if not notaria:
         raise HTTPException(status_code=404, detail="Notaría CTN no encontrada.")
@@ -1622,7 +1673,7 @@ async def subir_documento(
             nombre_guardado=nombre_guardado,
             categoria=categoria,
             contrato_index=contrato_index,
-            tipo_mime=archivo.content_type,
+            tipo_mime=_tipo_mime_seguro_encargagest(nombre_original),
             tamano_bytes=len(contenido),
             subido_por_id=(usuario.get("usuario_id") if _es_externo(usuario) else usuario.id),
             subido_por_nombre=_nombre_usuario(usuario),
@@ -1654,7 +1705,7 @@ def descargar_documento(encargo_id: int, documento_id: int, db: Session = Depend
     ruta = (ROOT / documento.nombre_guardado).resolve()
     if ruta.parent != ROOT or not ruta.is_file():
         raise HTTPException(status_code=404, detail="El archivo no está disponible en el almacenamiento.")
-    return FileResponse(path=str(ruta), filename=documento.nombre_original, media_type=documento.tipo_mime or "application/octet-stream")
+    return FileResponse(path=str(ruta), filename=documento.nombre_original, media_type=_tipo_mime_seguro_encargagest(documento.nombre_original), headers={"X-Content-Type-Options": "nosniff"})
 
 
 @router.delete("/encargos/{encargo_id}/documentos/{documento_id}")
