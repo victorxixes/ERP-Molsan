@@ -1,4 +1,5 @@
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanButton from "../../components/ui/MolsanButton";
 import { formatEuro } from "../../utils/formatters";
 import { useCallback, useEffect, useState } from "react";
