@@ -1482,12 +1482,7 @@ export default function SeguridadAuditoria() {
             <p className="molsan-page-header__description">Registro de actividad y operaciones de seguridad del ERP</p>
           </div>
         </div>
-        <div className="molsan-page-header__actions">
-          <span className="inline-flex items-center gap-2 rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2 text-xs text-[var(--molsan-text-muted)]">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            Histórico protegido
-          </span>
-        </div>
+
       </section>
 
 
