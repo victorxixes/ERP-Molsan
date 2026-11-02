@@ -4,9 +4,10 @@ import MolsanButton from "../../components/ui/MolsanButton";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
+import { API_BASE as API_ROOT } from "../../api/config";
 import "../../css/CtnListadoPage.css";
 
-const API_BASE = (import.meta.env.VITE_API_URL || "https://agenda-intranet-b.onrender.com/api").replace(/\/$/, "");
+const API_BASE = API_ROOT;
 function headers() {
   const token = localStorage.getItem("token");
   return { Accept: "application/json", ...(token ? { Authorization: "Bearer " + token } : {}) };
