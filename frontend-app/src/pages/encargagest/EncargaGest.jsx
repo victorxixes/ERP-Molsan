@@ -844,11 +844,11 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         <Sidebar
           brandName="EncargaGest"
           navigationItems={[
-            { key: "ctn", label: "CTN", icon: "building" },
+            { key: "ctn", label: "CTN", icon: "database" },
             { key: "agenda", label: "Agenda", icon: "calendar" },
-            { key: "mensajes", label: "Mensajes", icon: "message" },
-            { key: "intranet", label: "Intranet", icon: "file-text" },
-            { key: "encargos", label: "Encargos", icon: "clipboard" },
+            { key: "mensajes", label: "Mensajes", icon: "chat" },
+            { key: "intranet", label: "Intranet", icon: "newspaper" },
+            { key: "encargos", label: "Encargos", icon: "clipboard-list" },
           ]}
           activeNavigationItem="Encargos"
           onNavigationItemClick={(label) => {
