@@ -6,6 +6,7 @@ from backend.app.notargest.router import (
     _es_gestor_asignado,
     _documento_visible_notargest_externo,
     _url_documento_segura_notargest,
+    _observacion_ctn_visible_notargest,
 )
 
 
@@ -91,6 +92,20 @@ class NotarGestExternalPayloadTests(unittest.TestCase):
     def test_payment_proof_url_rejects_active_and_insecure_schemes(self):
         for url in ("javascript:alert(1)", "http://files.example.com/proof.pdf", "//evil.example/x"):
             self.assertIsNone(_url_documento_segura_notargest(url), url)
+
+    def test_internal_ctn_observations_are_hidden_from_external_notaries(self):
+        notaria = type("Notaria", (), {
+            "observacion": "Nota interna",
+            "_notargest_sesion_soporte": False,
+        })()
+        self.assertIsNone(_observacion_ctn_visible_notargest(notaria, "notario"))
+
+    def test_ctn_observations_remain_visible_to_internal_support(self):
+        notaria = type("Notaria", (), {
+            "observacion": "Nota interna",
+            "_notargest_sesion_soporte": True,
+        })()
+        self.assertEqual(_observacion_ctn_visible_notargest(notaria, "notario"), "Nota interna")
 
 
 if __name__ == "__main__":
