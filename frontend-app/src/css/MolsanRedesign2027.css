@@ -2808,3 +2808,15 @@ table :is(th, td) {
   transform: none !important;
   filter: none !important;
 }
+
+
+/* Ancho y caja de cabecera común para Fusiones y Mensajería. */
+:is(.erp-page, .catalogos-premium-page) > .molsan-page-header--standard {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  align-self: stretch;
+  margin-inline: 0;
+}
