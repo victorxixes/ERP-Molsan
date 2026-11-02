@@ -271,14 +271,15 @@ function normalizarEmpleado(empleado) {
 ========================================================= */
 
 function limpiarSesionLocal() {
+  for (const clave of ["token", "empleado", "notargest_token", "encargagest_token", "encargagest_mode"]) {
+    localStorage.removeItem(clave);
+  }
 
-  localStorage.removeItem(
-    "token"
-  );
-
-  localStorage.removeItem(
-    "empleado"
-  );
+  // Las sesiones de soporte son delegaciones temporales de la sesión ERP.
+  // Nunca deben sobrevivir al cierre o cambio de identidad del empleado.
+  for (const clave of ["notargest_soporte_token", "notargest_soporte_notaria"]) {
+    sessionStorage.removeItem(clave);
+  }
 }
 
 
