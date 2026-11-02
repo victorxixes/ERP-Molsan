@@ -466,7 +466,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
   const navigate = useNavigate();
   const { pathname } = useLocation();
   // Los portales de notarios externos mantienen su navegación aislada del ERP interno.
-  const esPortalNotarialExterno = /^\/(?:notargest|encargagest)-notarios(?:\/|$)/i.test(pathname);
+  const esPortalNotarialExterno = /^\/(?:notargest|encargagest)(?:-notarios|-notario|\/notario)(?:\/|$)/i.test(pathname);
 
   const empleado = useAuthStore(
     (s) => s.empleado
