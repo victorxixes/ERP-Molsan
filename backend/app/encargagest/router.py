@@ -256,6 +256,20 @@ def _exigir_admin_encargagest(usuario):
     return usuario
 
 
+def _validar_admin_soporte_encargagest(payload, db):
+    try:
+        admin_id = int(payload.get("empleado_admin_id") or 0)
+    except (TypeError, ValueError):
+        admin_id = 0
+    admin = db.query(Empleado).filter(Empleado.id == admin_id).first() if admin_id else None
+    if not admin or getattr(admin, "activo", True) is False:
+        raise HTTPException(status_code=401, detail="La sesión de soporte EncargaGest ya no está autorizada.")
+    if not _es_administrador_encargagest(admin):
+        raise HTTPException(status_code=403, detail="El administrador que abrió esta sesión ya no tiene permisos de soporte.")
+    _autorizar(admin, "ver")
+    return admin
+
+
 def _ids_notarias_asignadas(usuario):
     valor = getattr(usuario, "notarias_encargagest_ids", None)
     if isinstance(valor, str):
@@ -347,6 +361,8 @@ def get_encargagest_actor(request: Request, token=Depends(obtener_token_bearer),
             ).first()
             if not acceso:
                 raise HTTPException(status_code=401, detail="El acceso EncargaGest está deshabilitado.")
+            if payload.get("seleccion_admin"):
+                _validar_admin_soporte_encargagest(payload, db)
             if acceso.password_provisional and not _ruta_permitida_durante_cambio_password_encargagest(request.url.path):
                 raise HTTPException(
                     status_code=403,
