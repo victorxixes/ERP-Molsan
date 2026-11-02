@@ -2719,7 +2719,7 @@ function ModalImportarExcel({
                 disabled:opacity-40
               "
             >
-              ✕
+              <MolsanIcon name="x" size={16} />
             </button>
 
           </div>
@@ -3321,7 +3321,7 @@ function ModalRegistroPropiedad({
                 disabled:opacity-50
               "
             >
-              ✕
+              <MolsanIcon name="x" size={16} />
             </button>
 
           </div>
