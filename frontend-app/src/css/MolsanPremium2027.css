@@ -168,13 +168,13 @@
 
 .selector-modulos-premium.workspace-premium .workspace-brand-mark {
   display: grid;
-  flex: 0 0 40px;
-  width: 40px;
-  height: 40px;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
   place-items: center;
   color: #FFFFFF;
   border: 1px solid rgba(255,255,255,.32);
-  border-radius: 11px;
+  border-radius: 10px;
   background: rgba(255,255,255,.12);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
 }
@@ -744,10 +744,9 @@
   }
 }
 
-/* CABECERA CORPORATIVA CANÓNICA · PATRÓN ESPACIOS DE TRABAJO
-   La identidad, proporciones, jerarquía y acabado se comparten con workspace-hero. */
-.selector-modulos-premium.workspace-premium .workspace-hero,
-.molsan-page-header {
+/* CABECERA CORPORATIVA CANÓNICA · MOLSAN ERP PREMIUM 2027
+   Referencia visual: Dashboard. Cabecera estable y compacta (60–64 px). */
+.selector-modulos-premium.workspace-premium .workspace-hero {
   position: relative;
   display: flex;
   align-items: flex-start;
@@ -766,13 +765,37 @@
     linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
   box-shadow: 0 22px 46px rgba(4,55,91,.22);
 }
+.molsan-page-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 12px;
+  min-width: 0;
+  min-height: 60px;
+  margin: 0 0 16px;
+  padding: 5px 16px;
+  overflow: hidden;
+  color: #FFFFFF;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 86% 18%, rgba(116,199,219,.18), transparent 27%),
+    linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
+  box-shadow: 0 12px 28px rgba(4,55,91,.18);
+  animation: none;
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
 .selector-modulos-premium.workspace-premium .workspace-hero::after,
 .molsan-page-header::after {
   position: absolute;
   right: 0;
   bottom: 0;
   left: 0;
-  height: 4px;
+  height: 3px;
   content: "";
   background: linear-gradient(90deg, #6CC5D9 0%, #8CB8D8 38%, rgba(255,255,255,.08) 100%);
   pointer-events: none;
@@ -780,52 +803,57 @@
 .molsan-page-header__identity {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
+  flex: 1 1 auto;
 }
 .molsan-page-header__mark {
   display: grid;
-  flex: 0 0 40px;
-  width: 40px;
-  height: 40px;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
   place-items: center;
   color: #FFFFFF;
   border: 1px solid rgba(255,255,255,.32);
-  border-radius: 11px;
+  border-radius: 10px;
   background: rgba(255,255,255,.12);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 850;
 }
 .molsan-page-header__eyebrow {
-  margin: 0 0 5px;
+  margin: 0 0 1px;
   color: #C6DFEC;
-  font-size: 10px;
+  font-size: 8.5px;
   font-weight: 750;
-  letter-spacing: .17em;
-  line-height: 1.4;
+  letter-spacing: .14em;
+  line-height: 1.15;
   text-transform: uppercase;
 }
 .molsan-page-header :is(h1, .molsan-page-header__title) {
   margin: 0;
   color: #FFFFFF;
-  font-size: clamp(22px, 2.2vw, 29px);
-  font-weight: 780;
-  letter-spacing: -.04em;
-  line-height: 1.15;
+  font-size: clamp(19px, 1.8vw, 22px);
+  font-weight: 800;
+  letter-spacing: -.035em;
+  line-height: 1.05;
 }
 .molsan-page-header__description {
-  margin: 7px 0 0;
+  margin: 2px 0 0;
   color: #C6DFEC;
-  font-size: 12px;
-  line-height: 1.55;
+  font-size: 10px;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .molsan-page-header__actions {
   display: flex;
-  align-items: flex-end;
+  flex: 0 0 auto;
+  align-items: center;
   justify-content: flex-end;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   margin-left: auto;
 }
 .molsan-page-header__actions > :is(button, a, span) {
@@ -833,18 +861,19 @@
 }
 @media (max-width: 760px) {
   .molsan-page-header {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 12px;
-    padding: 16px;
-    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    padding: 8px 12px;
   }
   .molsan-page-header__mark {
-    flex-basis: 36px;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    font-size: 14px;
+    flex-basis: 34px;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    font-size: 13px;
+  }
+  .molsan-page-header__description {
+    display: none;
   }
   .molsan-page-header__actions {
     width: 100%;
@@ -864,10 +893,13 @@
 /* Compatibilidad de cabeceras heredadas: cualquier página que use la clase
    común recibe la misma escala de icono, descripción y acciones. */
 .molsan-page-header p:not(.molsan-page-header__eyebrow) {
-  margin: 7px 0 0;
+  margin: 2px 0 0;
   color: #C6DFEC;
-  font-size: 12px;
-  line-height: 1.55;
+  font-size: 10px;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .molsan-page-header :is(.w-12.h-12, .w-11.h-11, .w-14.h-14) {
   display: grid;
