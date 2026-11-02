@@ -2,11 +2,19 @@ import axios from "axios";
 import { API_BASE } from "./config";
 import { useAuthStore } from "../store/authStore";
 
+const TOKEN_EXTERNO_KEY = "encargagest_token";
 const TOKEN_SOPORTE_KEY = "encargagest_soporte_token";
 const MODO_SESION_KEY = "encargagest_mode";
 
-// El modo pertenece a la pestaña: localStorage compartía el estado entre
-// sesiones internas y externas abiertas simultáneamente.
+// Migración de compatibilidad: el token antiguo vivía en localStorage y se
+// compartía entre pestañas. Se traslada a sessionStorage para aislar cada tab.
+if (!sessionStorage.getItem(TOKEN_EXTERNO_KEY)) {
+  const tokenHeredado = localStorage.getItem(TOKEN_EXTERNO_KEY);
+  if (tokenHeredado) sessionStorage.setItem(TOKEN_EXTERNO_KEY, tokenHeredado);
+}
+localStorage.removeItem(TOKEN_EXTERNO_KEY);
+localStorage.removeItem("encargagest_mode");
+
 let modoSesion = sessionStorage.getItem(MODO_SESION_KEY) === "externo" ? "externo" : "interno";
 
 export function configurarSesionEncargaGest(modo, token) {
@@ -14,13 +22,14 @@ export function configurarSesionEncargaGest(modo, token) {
   if (modoSesion === "externo") {
     if (token) {
       sessionStorage.removeItem(TOKEN_SOPORTE_KEY);
-      localStorage.setItem("encargagest_token", token);
+      sessionStorage.setItem(TOKEN_EXTERNO_KEY, token);
     }
     sessionStorage.setItem(MODO_SESION_KEY, "externo");
   } else {
-    // No borrar el token externo de localStorage: puede pertenecer a otra
-    // pestaña que mantiene una sesión notarial independiente.
+    // El token externo también es por pestaña: al cambiar a sesión interna
+    // se limpia únicamente el contexto de esta pestaña.
     sessionStorage.removeItem(TOKEN_SOPORTE_KEY);
+    sessionStorage.removeItem(TOKEN_EXTERNO_KEY);
     sessionStorage.removeItem(MODO_SESION_KEY);
   }
 }
@@ -33,8 +42,9 @@ export function configurarSesionSoporteEncargaGest(tokenSoporte) {
 }
 
 export function limpiarSesionEncargaGest() {
-  localStorage.removeItem("encargagest_token");
-  localStorage.removeItem("encargagest_mode"); // Limpieza de la clave heredada.
+  localStorage.removeItem("encargagest_token"); // Limpieza de sesiones heredadas.
+  localStorage.removeItem("encargagest_mode");
+  sessionStorage.removeItem(TOKEN_EXTERNO_KEY);
   sessionStorage.removeItem(TOKEN_SOPORTE_KEY);
   sessionStorage.removeItem(MODO_SESION_KEY);
   modoSesion = "interno";
@@ -43,7 +53,7 @@ export function limpiarSesionEncargaGest() {
 const api = axios.create({ baseURL: API_BASE, timeout: 30000 });
 api.interceptors.request.use((config) => {
   const token = modoSesion === "externo"
-    ? (sessionStorage.getItem(TOKEN_SOPORTE_KEY) || localStorage.getItem("encargagest_token"))
+    ? (sessionStorage.getItem(TOKEN_SOPORTE_KEY) || sessionStorage.getItem(TOKEN_EXTERNO_KEY))
     : (useAuthStore.getState().token || localStorage.getItem("token"));
   if (token) {
     config.headers = config.headers || {};
