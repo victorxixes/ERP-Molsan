@@ -5,6 +5,7 @@ import secrets
 import os
 import base64
 import uuid
+from urllib.parse import urlparse
 from pathlib import Path
 from datetime import date, datetime, time, timedelta
 
@@ -422,6 +423,19 @@ def _documento_visible_notargest_externo(documento_o_categoria):
         or ""
     )
     return str(categoria).strip().casefold() in CATEGORIAS_DOCUMENTALES_VISIBLES_NOTARGEST
+
+
+def _url_documento_segura_notargest(valor):
+    url = str(valor or "").strip()
+    if not url:
+        return None
+    if url.startswith("/") and not url.startswith("//"):
+        return url
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        return None
+    return url if parsed.scheme == "https" and parsed.netloc else None
 
 
 def _filtrar_campos_sensibles_notario_externo(datos):
@@ -1147,7 +1161,18 @@ def pagos_notario(n=Depends(get_notario), db: Session = Depends(get_db)):
             DocumentoCarpetaDigital.expediente_id == str(expediente.id_expediente)
         ).all()
         factura = next((d for d in documentos if (d.categoria or "").strip().casefold() == "factura notarial"), None)
-        justificante = next((d for d in documentos if "justificante" in (d.categoria or "").casefold() and "pago" in (d.categoria or "").casefold()), None)
+        justificante = next((
+            d for d in documentos
+            if "justificante" in (d.categoria or "").casefold()
+            and "pago" in (d.categoria or "").casefold()
+            and (_es_usuario_erp(n) or _documento_visible_notargest_externo(d))
+        ), None)
+        if not justificante and getattr(gasto, "documento_carpeta_id", None):
+            justificante = next((
+                d for d in documentos
+                if d.id == gasto.documento_carpeta_id
+                and (_es_usuario_erp(n) or _documento_visible_notargest_externo(d))
+            ), None)
         resultados.append({
             "id": gasto.id,
             "id_expediente": expediente.id_expediente,
@@ -1158,8 +1183,8 @@ def pagos_notario(n=Depends(get_notario), db: Session = Depends(get_db)):
             "protocolo": getattr(expediente, "protocolo", None),
             "fecha_firma": _fecha(getattr(expediente, "fecha_firma", None)),
             "factura_notarial_id": getattr(factura, "id", None),
-            "justificante_documento_id": getattr(justificante, "id", None) or getattr(gasto, "documento_carpeta_id", None),
-            "justificante_url": getattr(gasto, "documento_url", None),
+            "justificante_documento_id": getattr(justificante, "id", None),
+            "justificante_url": _url_documento_segura_notargest(getattr(gasto, "documento_url", None)),
         })
     return {"items": resultados, "total": len(resultados)}
 
