@@ -603,7 +603,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
           </div>
         </section>
       </div>}
-      {perfilNotarioAbierto && <div className="ng-modal-overlay ng-modal-overlay-scroll" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setPerfilNotarioAbierto(false); }}><section className="ng-modal ng-modal-perfil ng-modal-perfil-scroll" role="dialog" aria-modal="true" aria-labelledby="ng-perfil-titulo"><header><div><span className="ng-kicker">FICHA CTN</span><h2 id="ng-perfil-titulo">Ficha del notario</h2><p>Datos de la notaría registrados en el catálogo CTN.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setPerfilNotarioAbierto(false)}>Cerrar ✕</button></header><div className="grid grid-cols-1 gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)]">
+      {perfilNotarioAbierto && <div className="ng-modal-overlay ng-modal-overlay-scroll" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setPerfilNotarioAbierto(false); }}><section className="ng-modal ng-modal-perfil ng-modal-perfil-scroll" role="dialog" aria-modal="true" aria-labelledby="ng-perfil-titulo"><header><div><span className="ng-kicker">FICHA CTN</span><h2 id="ng-perfil-titulo">Ficha del notario</h2><p>Datos de la notaría registrados en el catálogo CTN.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setPerfilNotarioAbierto(false)}>Cerrar <MolsanIcon name="x" size={14} bare /></button></header><div className="grid grid-cols-1 gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)]">
           <div className="min-w-0">
             <div className="ng-perfil-identidad"><div className="ng-perfil-avatar"><MolsanIcon name="courthouse" size={36} /></div><div><strong>{texto(notario?.nombre)}</strong><span>{texto(notario?.nif)}</span></div></div>
             <div className="ng-perfil-datos">{[["Nombre",notario?.nombre],["NIF",notario?.nif],["Usuario",notario?.nif],["Teléfono",notario?.telefono],["Dirección",notario?.direccion],["Código postal",notario?.cp],["Municipio",notario?.municipio],["Provincia",notario?.provincia],["Código CTN",notario?.codigo],["Videoconferencia",notario?.vc],["Apoderado asociado",notario?.apoderado],["Departamento cancelaciones",notario?.departamento_cancelaciones],["Departamento copias",notario?.departamento_copias],["Otros departamentos",notario?.otros_departamentos]].map(([label,value]) => <div className="ng-dato" key={label}><small>{label}</small><strong>{texto(value)}</strong></div>)}</div>
@@ -647,7 +647,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                       { key: "actividad", header: "Actividad actual", accessor: "actividad_actual", sortType: "text", render: (value) => texto(value) },
                       { key: "estado", header: "Estado", accessor: (item) => item.notargest_estado || item.estado_actividad || item.estado_expediente, sortType: "text", render: (value) => texto(value) },
                       { key: "fecha_firma", header: "Fecha firma", accessor: "fecha_firma", sortType: "date", render: (value) => esFecha(value) },
-                      { key: "acciones", header: "", sortable: false, accessor: (item) => item.id_expediente, render: (_, item) => <button type="button" className="ng-abrir" disabled={cargando} onClick={() => abrirFichaDesdeResumen(item)}>Abrir ficha →</button> },
+                      { key: "acciones", header: "", sortable: false, accessor: (item) => item.id_expediente, render: (_, item) => <button type="button" className="ng-abrir" disabled={cargando} onClick={() => abrirFichaDesdeResumen(item)}>Abrir ficha <MolsanIcon name="arrowRight" size={13} bare /></button> },
                     ]}
                   />
                 </div>
@@ -762,7 +762,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                 </article>;
               })}
             </div>
-          </> : <div className="ng-admin-notaria-activa"><div><span className="ng-kicker">NOTARÍA SELECCIONADA</span><h2>{notariasSeleccionables.find(x=>String(x.id)===String(notariaAdminSeleccionada))?.nombre || notario?.nombre || "Notaría"}</h2><p>Estás gestionando esta notaría como administrador.</p></div><button type="button" className="ng-boton-secundario" onClick={()=>seleccionarNotariaAdmin("")}>← Volver al control de notarías</button></div>}
+          </> : <div className="ng-admin-notaria-activa"><div><span className="ng-kicker">NOTARÍA SELECCIONADA</span><h2>{notariasSeleccionables.find(x=>String(x.id)===String(notariaAdminSeleccionada))?.nombre || notario?.nombre || "Notaría"}</h2><p>Estás gestionando esta notaría como administrador.</p></div><button type="button" className="ng-boton-secundario" onClick={()=>seleccionarNotariaAdmin("")}><MolsanIcon name="arrowLeft" size={14} bare /> Volver al control de notarías</button></div>}
         </section>
       )}
       {(!accesoERP || !esAdminNotarGest || Boolean(tokenAdminNotaria)) && <main className="relative min-h-[calc(100vh-70px)]">
@@ -868,7 +868,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
             { key: "fecha_prevista", header: "Fecha prevista", accessor: "fecha_prevista_firma", sortType: "date", render: (value) => esFecha(value) },
             { key: "hora", header: "Hora", accessor: "hora_prevista_firma", sortType: "text", render: (value) => texto(value) },
             { key: "notario", header: "Notario", accessor: "nombre_notario", sortType: "text", render: (value) => texto(value) },
-            { key: "acciones", header: "Acción", sortable: false, accessor: (item) => item.id, render: (_, item) => <button type="button" className="ng-login-submit" onClick={() => abrirExpediente(item)}>Abrir ficha →</button> },
+            { key: "acciones", header: "Acción", sortable: false, accessor: (item) => item.id, render: (_, item) => <button type="button" className="ng-login-submit" onClick={() => abrirExpediente(item)}>Abrir ficha <MolsanIcon name="arrowRight" size={13} bare /></button> },
           ]}
         />
       </div>
