@@ -277,7 +277,7 @@ function limpiarSesionLocal() {
 
   // Las sesiones de soporte son delegaciones temporales de la sesión ERP.
   // Nunca deben sobrevivir al cierre o cambio de identidad del empleado.
-  for (const clave of ["notargest_soporte_token", "notargest_soporte_notaria"]) {
+  for (const clave of ["notargest_soporte_token", "notargest_soporte_notaria", "encargagest_soporte_token"]) {
     sessionStorage.removeItem(clave);
   }
 }
