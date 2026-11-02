@@ -219,3 +219,138 @@
 @media(prefers-reduced-motion:reduce) {
   .molsan-professional-shell *, .ng-admin-notarias * {transition:none!important;animation:none!important}
 }
+
+
+/* FINAL NORMALIZATION · gestoría workspace portals
+   These selectors target the actual rendered module classes, not assumed wrappers. */
+.apoderagest .ag-grid-kpi,
+.apoderagest .ag-grid-secundario,
+.encargagest .eg-main > section,
+.notargest.ng-content .ng-dashboard-analitica,
+.ng-admin-notarias .ng-admin-global-resumen { min-width:0!important; }
+.apoderagest .ag-kpi,
+.apoderagest .ag-panel,
+.encargagest .eg-main .eg-kpi,
+.encargagest .eg-main .eg-panel,
+.encargagest .eg-main .eg-directorio,
+.notargest.ng-content .ng-panel,
+.notargest.ng-content .ng-dashboard-grafico,
+.notargest.ng-content .ng-dashboard-ciclo,
+.notargest.ng-content .ng-detalle-bloque,
+.ng-admin-notarias .ng-admin-global-resumen,
+.ng-admin-notarias .ng-admin-notaria-card,
+.ng-admin-notarias .ng-admin-circuito {
+  color:#173247!important;
+  border:1px solid #D8E4EC!important;
+  border-radius:16px!important;
+  background:#FFFFFF!important;
+  box-shadow:0 5px 18px rgba(6,50,82,.065)!important;
+}
+.apoderagest .ag-kpi,
+.encargagest .eg-main .eg-kpi,
+.ng-admin-notarias .ng-admin-kpi-button {
+  position:relative!important;
+  display:flex!important;
+  min-height:132px!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  justify-content:flex-start!important;
+  gap:10px!important;
+  padding:18px 19px!important;
+  text-align:left!important;
+  border:1px solid #D8E4EC!important;
+  border-radius:15px!important;
+  background:#FFFFFF!important;
+  box-shadow:0 5px 16px rgba(6,50,82,.055)!important;
+  transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease!important;
+}
+.apoderagest .ag-kpi:hover,
+.encargagest .eg-main .eg-kpi:hover,
+.ng-admin-notarias .ng-admin-kpi-button:hover {
+  border-color:#AFCBDD!important;
+  box-shadow:0 9px 22px rgba(6,50,82,.09)!important;
+  transform:translateY(-2px)!important;
+}
+.apoderagest .ag-kpi-superior,
+.encargagest .eg-main .eg-kpi > .eg-kpi-head {
+  display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;
+}
+.apoderagest .ag-kpi-titulo,
+.encargagest .eg-main .eg-kpi > p:first-child {
+  color:#617789!important;font-size:10px!important;font-weight:850!important;letter-spacing:.11em!important;text-transform:uppercase!important;line-height:1.45!important;
+}
+.apoderagest .ag-kpi-icono,
+.encargagest .eg-main .eg-kpi-icono,
+.encargagest .eg-main .eg-kpi > div > span:last-child {
+  display:grid!important;flex:0 0 42px!important;width:42px!important;height:42px!important;place-items:center!important;
+  color:#064675!important;background:#EAF2F8!important;border:1px solid #D8E4EC!important;border-radius:12px!important;
+}
+.apoderagest .ag-kpi-valor,
+.encargagest .eg-main .eg-kpi strong {
+  color:#064675!important;font-size:27px!important;font-weight:850!important;line-height:1.15!important;letter-spacing:-.035em!important;
+}
+.apoderagest .ag-kpi-detalle,
+.encargagest .eg-main .eg-kpi > p:last-child {
+  color:#617789!important;font-size:11px!important;line-height:1.5!important;
+}
+.apoderagest .ag-panel-cabecera,
+.apoderagest .ag-titulo-seccion,
+.encargagest .eg-panel-head,
+.notargest.ng-content .ng-panel-titulo,
+.notargest.ng-content .ng-bloque-heading,
+.ng-admin-notarias .ng-admin-global-titulo {
+  display:flex!important;align-items:center!important;justify-content:space-between!important;gap:14px!important;
+  min-height:62px!important;margin:0 0 14px!important;padding:15px 18px!important;
+  color:#064675!important;background:#F2F7FB!important;border:1px solid #D8E4EC!important;border-radius:13px!important;
+}
+.apoderagest .ag-titulo-seccion:not(.ag-panel),
+.apoderagest .ag-panel-cabecera:not(.ag-panel) { border:1px solid #D8E4EC!important; }
+.apoderagest .ag-titulo-seccion h2,
+.apoderagest .ag-panel-cabecera h2,
+.apoderagest .ag-panel-cabecera h3,
+.encargagest .eg-panel-head h2,
+.encargagest .eg-panel-head h3,
+.notargest.ng-content .ng-panel-titulo h2,
+.notargest.ng-content .ng-bloque-heading h3,
+.ng-admin-notarias .ng-admin-global-titulo h3 {
+  margin:0!important;color:#064675!important;font-size:15px!important;font-weight:850!important;letter-spacing:-.02em!important;line-height:1.35!important;
+}
+.apoderagest .ag-titulo-seccion p,
+.apoderagest .ag-panel-cabecera p,
+.encargagest .eg-panel-head p,
+.notargest.ng-content .ng-panel-titulo p,
+.notargest.ng-content .ng-bloque-heading p,
+.ng-admin-notarias .ng-admin-global-titulo p {
+  margin:4px 0 0!important;color:#617789!important;font-size:11px!important;line-height:1.5!important;
+}
+/* NotarGest has both the notary selector and the professional workspace. */
+.ng-admin-notarias .ng-admin-global-resumen {padding:18px!important;margin:0 0 18px!important}
+.ng-admin-notarias .ng-admin-global-titulo {margin:0 0 14px!important}
+.ng-admin-notarias .ng-admin-kpis {display:grid!important;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))!important;gap:12px!important}
+.ng-admin-notarias .ng-admin-kpi-button {min-height:116px!important;align-items:flex-start!important;justify-content:space-between!important}
+.ng-admin-notarias .ng-admin-kpi-button > svg,
+.ng-admin-notarias .ng-admin-kpi-button > span:first-of-type {color:#064675!important}
+.notargest.ng-content .ng-dashboard-graficos {gap:16px!important}
+.notargest.ng-content .ng-dashboard-grafico {padding:18px!important}
+.notargest.ng-content .ng-panel {margin:0 0 18px!important;overflow:hidden!important}
+.notargest.ng-content .ng-panel > .ng-panel-titulo {margin:0!important;border:0!important;border-bottom:1px solid #D8E4EC!important;border-radius:0!important}
+.notargest.ng-content .ng-ficha-cuerpo,
+.notargest.ng-content .ng-ficha-premium {background:#F2F7FB!important}
+.notargest.ng-content .ng-detalle-bloque {background:#FFFFFF!important}
+.encargagest .eg-main {display:flex!important;flex-direction:column!important;gap:18px!important}
+.encargagest .eg-main > section.grid {gap:12px!important}
+.encargagest .eg-main .eg-panel {padding:0!important;overflow:hidden!important}
+.encargagest .eg-main .eg-panel-head {margin:0!important;padding:17px 19px!important;border:0!important;border-bottom:1px solid #D8E4EC!important;border-radius:0!important;background:#F2F7FB!important}
+.encargagest .eg-main .eg-directorio {padding:0!important;overflow:hidden!important;background:#FFFFFF!important}
+.encargagest .eg-main .eg-directorio-cabecera {padding:18px 20px!important;background:#F2F7FB!important;border-bottom:1px solid #D8E4EC!important}
+.encargagest .eg-main .eg-directorio-cabecera h2 {color:#064675!important;font-size:16px!important;font-weight:850!important}
+.encargagest .eg-main .eg-directorio-cabecera p {color:#617789!important}
+.apoderagest .ag-grid-kpi,.apoderagest .ag-grid-secundario {gap:12px!important}
+.apoderagest .ag-panel {overflow:hidden!important}
+.apoderagest .ag-panel > .ag-panel-cabecera {border:0!important;border-bottom:1px solid #D8E4EC!important;border-radius:0!important}
+@media(max-width:760px) {
+ .apoderagest .ag-kpi,.encargagest .eg-main .eg-kpi {min-height:112px!important;padding:14px!important}
+ .apoderagest .ag-titulo-seccion,.apoderagest .ag-panel-cabecera,.encargagest .eg-panel-head,.notargest.ng-content .ng-panel-titulo,.notargest.ng-content .ng-bloque-heading {align-items:flex-start!important;flex-direction:column!important}
+ .ng-admin-notarias .ng-admin-kpis {grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:520px) {.ng-admin-notarias .ng-admin-kpis {grid-template-columns:1fr!important}}
