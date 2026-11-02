@@ -161,7 +161,6 @@ export default function ImportadorPostFirma() {
         </div>
         <p className="break-all text-xs text-slate-500">Huella del fichero SHA-256: {resultado.sha256}</p>
         
-        </div>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
           <div><label htmlFor="postfirma-carga" className="mb-2 block text-sm font-semibold text-slate-700">Fichero / carga</label><select id="postfirma-carga" value={cargaSeleccionada} onChange={(e) => { setCargaSeleccionada(e.target.value); setOffset(0); setOrdenTabla({ key: "carga_id", direction: "desc" }); }} className={CAMPO}><option value="">Todas las cargas</option>{cargas.map((carga) => <option key={carga.id} value={String(carga.id)}>{"#" + carga.id + " · " + carga.nombre_archivo + " · " + carga.filas_guardadas + " filas"}</option>)}</select></div>
           <p className="text-sm text-slate-500">Registros: <strong className="text-slate-800">{totalRegistros.toLocaleString("es-ES")}</strong></p>
