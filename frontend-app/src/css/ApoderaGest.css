@@ -1,14 +1,6 @@
-/* MOLSAN ERP PREMIUM 2027 · ApoderaGest
-   Hoja autónoma del módulo; selectores extraídos del CSS compartido.
+/* MOLSAN ERP PREMIUM 2027 · APODERAGEST
+   Estilos exclusivos del módulo. Sin dependencia de PortalProfesionalShared.css.
 */
-@keyframes ag-girar{
-  to { transform: rotate(360deg); }
-
-@keyframes ag-aparecer{
-  from { opacity: 0; transform: translateY(4px); }
-  NotarGest y EncargaGest
-   ========================================================= */
-
 .apoderagest *,
 .apoderagest *::before,
 .apoderagest *::after{
@@ -67,24 +59,17 @@
   display: inline-block;
   animation: ag-girar 1s linear infinite;
 }
-/* Navegación horizontal */
-
-
-
-
-
-
-
-
-
-
-
-/* Contenido */
-
+@keyframes ag-girar{
+  to { transform: rotate(360deg); }
+}
 .ag-contenido{
   position: relative;
   min-width: 0;
   animation: ag-aparecer .22s ease-out;
+}
+@keyframes ag-aparecer{
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .ag-titulo-seccion{
   display: flex;
@@ -122,8 +107,6 @@
   font-weight: 750;
   white-space: nowrap;
 }
-/* Tarjetas de indicadores */
-
 .ag-grid-kpi{
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -207,8 +190,6 @@
 .ag-grid-secundario .ag-kpi-valor{
   font-size: clamp(20px, 2vw, 25px);
 }
-/* Paneles glass */
-
 .ag-panel{min-width: 0; padding: 0; overflow: hidden; backdrop-filter: none; -webkit-backdrop-filter: none}
 .ag-panel-proximas{
   padding: 20px 21px 8px;
@@ -283,8 +264,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* Buscadores y tablas */
-
 .ag-toolbar{
   display: flex;
   align-items: center;
@@ -373,8 +352,6 @@
   background: #f0f3f8;
   border-color: #e4e9f1;
 }
-carga y error */
-
 .ag-vacio{
   display: flex;
   flex-direction: column;
@@ -472,18 +449,6 @@ carga y error */
   border-radius: 50%;
   animation: ag-girar .75s linear infinite;
 }
-/* Secciones aún no conectadas */
-
-
-
-
-
-
-
-
-
-/* Pie */
-
 .ag-footer{
   display: flex;
   align-items: center;
@@ -499,12 +464,16 @@ carga y error */
   color: #64738d;
   font-weight: 850;
 }
-/* Accesibilidad */
-
 .apoderagest button:focus-visible,
 .apoderagest input:focus-visible{
   outline: 3px solid rgba(61, 103, 231, .35);
   outline-offset: 2px;
+}
+@media (max-width: 1100px){
+.ag-grid-kpi{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
 }
 @media (max-width: 700px){
 .ag-fecha-actual{
@@ -595,7 +564,6 @@ carga y error */
   }
 
 }
-/* Encargos desplegables: ficha completa del apoderado */
 .ag-encargos-detalle-lista{display:grid;gap:12px;padding:14px}
 .ag-encargo-detalle{overflow:hidden;border:1px solid #dce5f0;border-radius:14px;background:#fff}
 .ag-encargo-detalle-cabecera{display:flex;width:100%;align-items:center;justify-content:space-between;gap:16px;padding:14px 16px;text-align:left;background: var(--molsan-surface-soft, #F2F7FB);border:0;cursor:pointer}
@@ -645,16 +613,6 @@ carga y error */
 .ag-documentos-apoderado li{align-items:flex-start;flex-direction:column}
 
 }
-/* Visor integrado de documentos en Encargos */
-
-
-
-
-
-
-
-
-
 .ag-visor-acciones button,
 .ag-visor-estado button{padding:9px 13px;border:1px solid var(--molsan-border, #D8E4EC);border-radius:var(--molsan-radius-control,9px);background:var(--molsan-surface-soft, #F2F7FB);color:var(--molsan-text-secondary,#526176);font-size:12px;font-weight:800;cursor:pointer}
 .ag-visor-pdf{display:block;width:100%;height:100%;min-height:500px;border:0;background:#fff}
@@ -664,7 +622,6 @@ carga y error */
 .ag-visor-pdf{min-height:400px}
 
 }
-/* Dashboard · próximas citas con horario y responsables */
 .ag-panel-proximas .ag-proximas-lista{display:grid;gap:10px}
 .ag-panel-proximas .ag-cita-item{display:grid;grid-template-columns:64px minmax(0,1fr) 18px;align-items:start;gap:14px;padding:14px;border:1px solid #e3eaf3;border-radius:12px;background:#fff;transition:border-color .18s,box-shadow .18s}
 .ag-panel-proximas .ag-cita-item:hover{border-color:#c6d5ed;box-shadow:0 5px 16px rgba(30,55,90,.06)}
@@ -692,7 +649,6 @@ carga y error */
 .ag-alerta-bloqueo{display:flex;flex-direction:column;gap:5px;margin:0 14px 12px;padding:12px 14px;border:1px solid #f2c6c6;border-left:4px solid #b4232b;border-radius:10px;background:#fff3f3;color:#9f2028;font-size:12px}
 .ag-alerta-bloqueo strong{font-size:11px;letter-spacing:.04em}
 .ag-alerta-bloqueo span{color:#7f2730;line-height:1.5}
-/* ApoderaGest · ficha de encargo con la misma estructura visual premium de NotarGest */
 .ag-encargos-agrupados{display:grid;gap:14px}
 .ag-grupo-notario{overflow:hidden;border:1px solid rgba(224,231,241,.95);border-radius:17px;background:rgba(255,255,255,.88);box-shadow:0 8px 24px rgba(31,48,79,.035)}
 .ag-notario-grupo-trigger{min-height:70px;padding:15px 18px;background:linear-gradient(135deg,rgba(248,250,255,.98),rgba(241,246,255,.92));border-bottom:1px solid #e9edf4}
@@ -750,7 +706,6 @@ carga y error */
 .ag-encargo-detalle-cabecera>span:last-child{align-self:flex-start}
 
 }
-firma y observaciones */
 .ag-encargo-paneles.ag-ficha-paneles{grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);align-items:stretch}
 .ag-ficha-paneles .ag-encargo-subpanel.ag-ficha-envio:first-child{grid-column:auto!important}
 .ag-ficha-paneles .ag-ficha-envio,
@@ -793,7 +748,6 @@ firma y observaciones */
 .ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles{grid-template-columns:minmax(0,1fr)}
 
 }
-/* Carpeta digital de ApoderaGest: carpetas documentales compactas */
 .ag-carpetas-apoderado{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
 .ag-carpeta-apoderado{min-width:0;padding:12px;border:1px solid #e1e8f4;border-radius:13px;background:linear-gradient(145deg,#fff,#f8faff);box-shadow:0 4px 14px rgba(31,51,86,.035)}
 .ag-carpeta-apoderado-cabecera{display:flex;align-items:center;gap:10px;margin-bottom:9px}
@@ -809,7 +763,6 @@ firma y observaciones */
 .ag-carpetas-apoderado .ag-carpeta-apoderado:last-child:nth-child(3){grid-column:auto}
 
 }
-/* Fila compacta de aceptación de encargos CTN */
 .ag-aceptar-resumen{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:12px;align-items:end}
 .ag-aceptar-campo{display:flex;min-width:0;flex-direction:column;gap:6px}
 .ag-aceptar-campo>span{color:#738199;font-size:10px;font-weight:850;letter-spacing:.055em;text-transform:uppercase}
@@ -833,7 +786,6 @@ firma y observaciones */
 .ag-aceptar-resumen{grid-template-columns:minmax(0,1fr)}
 
 }
-/* Encargos CTN: una sola fila compacta en escritorio */
 .ag-aceptar-resumen{grid-template-columns:minmax(105px,.75fr) minmax(125px,.95fr) minmax(125px,.95fr) minmax(125px,.95fr) minmax(125px,.95fr) minmax(95px,.7fr) auto;gap:8px;padding:8px 10px;align-items:end}
 .ag-aceptar-campo{gap:4px}
 .ag-aceptar-campo>span{font-size:9px;letter-spacing:.025em;white-space:nowrap}
@@ -852,7 +804,6 @@ firma y observaciones */
 .ag-aceptar-resumen{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 
 }
-/* Ajuste final: los seis datos de aceptación en una única fila horizontal */
 .ag-aceptar-resumen{
   display:grid;
   grid-template-columns:minmax(105px,.75fr) minmax(135px,1fr) minmax(135px,1fr) minmax(155px,1.15fr) minmax(90px,.6fr) minmax(90px,.6fr) auto;
@@ -874,7 +825,6 @@ firma y observaciones */
 .ag-aceptar-resumen{grid-template-columns:repeat(2,minmax(0,1fr))}
 
 }
-/* ApoderaGest · cabecera compacta con contacto CTN y alertas de bloqueo */
 .ag-notario-grupo-trigger{
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
@@ -972,10 +922,6 @@ firma y observaciones */
   }
 
 }
-/* =========================================================
-   CONTENEDOR ERP COMPARTIDO
-   ApoderaGest reutiliza la barra superior común del ERP.
-   ========================================================= */
 .apoderagest{
   --ag-ink: var(--molsan-text, #17243a);
   --ag-muted: var(--molsan-text-muted, #64748b);
@@ -1017,7 +963,6 @@ firma y observaciones */
   background: #e9f8f0;
   border-color: #b9e7cf;
 }
-/* Dashboard ApoderaGest: citas en fila compacta y estadística mensual al lado */
 .ag-dashboard-inferior-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);align-items:stretch;gap:16px;margin-top:16px}
 .ag-dashboard-inferior-grid>.ag-panel{min-width:0;margin:0}
 .ag-panel-proximas,
@@ -1060,7 +1005,6 @@ firma y observaciones */
 .ag-grafico-etiqueta{font-size:8px}
 
 }
-/* ApoderaGest · Confirmación de firma compacta y comunicaciones con el gestor */
 .ag-ficha-paneles .ag-firmar-controles{grid-template-columns:minmax(170px,.7fr) minmax(95px,.38fr) minmax(150px,.62fr);gap:10px}
 .ag-ficha-paneles .ag-firmar-controles>label:nth-child(2){min-width:0}
 .ag-ficha-paneles .ag-firmar-controles>label:nth-child(2) input{min-width:0}
@@ -1083,7 +1027,6 @@ firma y observaciones */
 .ag-ficha-paneles .ag-firmar-controles{grid-template-columns:1fr}
 
 }
-/* Confirmar firma: una única línea compacta en escritorio */
 .ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles{display:grid;grid-template-columns:minmax(130px,.78fr) minmax(90px,.48fr) minmax(135px,.72fr) minmax(210px,1.25fr) auto;align-items:end;gap:8px}
 .ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles>label{min-width:0;gap:5px;font-size:10px;white-space:nowrap}
 .ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles input,
@@ -1109,7 +1052,6 @@ firma y observaciones */
 .ag-ficha-paneles .ag-ficha-facturacion .ag-encargo-grid{grid-template-columns:1fr}
 
 }
-/* Encargo notarial: tres bloques principales en una sola fila de escritorio. */
 .ag-encargo-paneles.ag-ficha-paneles{
   grid-template-columns:minmax(0,1fr) minmax(0,1.08fr) minmax(0,1fr);
   align-items:stretch;
@@ -1150,7 +1092,6 @@ firma y observaciones */
 .ag-ficha-paneles .ag-ficha-encargo-notarial .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 
 }
-visor PDF junto a la carpeta y firma urgente */
 .ag-ficha-paneles details.ag-encargo-subpanel{min-width:0;align-self:stretch}
 .ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;cursor:pointer;list-style:none}
 .ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading::-webkit-details-marker{display:none}
@@ -1182,10 +1123,42 @@ visor PDF junto a la carpeta y firma urgente */
 .ag-visor-inline-contenido{height:340px}
 
 }
+@media(min-width:901px){
+.ag-encargo-paneles.ag-ficha-paneles{
+    grid-template-columns:minmax(0,1fr) minmax(0,1.08fr) minmax(0,1fr);
+    align-items:start;
+  }
+.ag-ficha-paneles .ag-ficha-envio,
+.ag-ficha-paneles .ag-ficha-facturacion,
+.ag-ficha-paneles .ag-ficha-encargo-notarial{grid-column:auto!important}
+.ag-ficha-paneles .ag-ficha-encargo-notarial .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+}
 .ag-detalle-campo.ag-firma-urgente-activa{padding:8px 10px;border:1px solid #fecaca;border-radius:10px;background:#fff1f2}
 .ag-detalle-campo.ag-firma-urgente-activa>span{color:#b42318}
 .ag-detalle-campo.ag-firma-urgente-activa>strong{color:#b42318;font-weight:900}
 .ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading>small{flex-basis:100%;color:#77859a;font-size:10px;font-weight:500}
+@media(min-width:1101px){
+.ag-encargo-detalle-cabecera{gap:10px;padding:9px 12px}
+.ag-encargo-detalle-cabecera strong{font-size:12px;line-height:1.25}
+.ag-encargo-detalle-cabecera small{font-size:10px;line-height:1.25}
+.ag-encargo-detalle-cabecera>span:last-child{font-size:10px}
+.ag-aceptar-resumen{
+    grid-template-columns:minmax(105px,.78fr) minmax(105px,.78fr) minmax(100px,.72fr) minmax(112px,.88fr) minmax(112px,.88fr) minmax(112px,.88fr) minmax(84px,.62fr) minmax(84px,.62fr) auto!important;
+    gap:7px;
+    padding:7px 10px;
+    align-items:end;
+  }
+.ag-aceptar-resumen .ag-detalle-campo{padding:6px 8px;min-height:0}
+.ag-aceptar-resumen .ag-detalle-campo>span{font-size:8px;line-height:1.2;letter-spacing:0;white-space:normal}
+.ag-aceptar-resumen .ag-detalle-campo>strong{font-size:10px;line-height:1.2}
+.ag-aceptar-campo{gap:3px}
+.ag-aceptar-campo>span{font-size:8px;line-height:1.2;letter-spacing:0;white-space:normal}
+.ag-aceptar-campo input{height:30px;min-height:30px;padding:4px 6px;border-radius:7px;font-size:10px}
+.ag-aceptar-accion{min-height:30px}
+.ag-aceptar-accion button{min-height:30px;padding:5px 10px;font-size:10px;border-radius:7px}
+
+}
 @media(max-width:1100px){
 .ag-aceptar-resumen{grid-template-columns:repeat(4,minmax(0,1fr))}
 .ag-aceptar-campo>span{white-space:normal}
@@ -1194,6 +1167,39 @@ visor PDF junto a la carpeta y firma urgente */
 @media(max-width:460px){
 .ag-encargo-detalle-cabecera{gap:8px;padding:10px}
 .ag-encargo-detalle-cabecera>span:last-child{font-size:10px}
+
+}
+@media(min-width:901px){
+.ag-encargo-paneles.ag-ficha-paneles{
+    grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr) minmax(0,1fr);
+  }
+.ag-ficha-paneles .ag-ficha-registral{
+    grid-column:1!important;
+    grid-row:2;
+  }
+.ag-ficha-paneles .ag-ficha-archivo{
+    grid-column:2/4!important;
+    grid-row:2;
+  }
+.ag-ficha-paneles .ag-ficha-archivo .ag-archivo-layout{
+    grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
+    gap:14px;
+  }
+.ag-ficha-paneles .ag-ficha-archivo .ag-visor-inline{
+    position:sticky;
+    top:12px;
+  }
+.ag-ficha-paneles .ag-ficha-archivo .ag-visor-inline-contenido{
+    height:min(62vh,620px);
+    min-height:390px;
+    max-height:620px;
+  }
+.ag-ficha-paneles .ag-ficha-archivo .ag-visor-inline-contenido .ag-visor-pdf{
+    min-height:390px;
+  }
+.ag-ficha-paneles .ag-ficha-archivo .ag-visor-inline-vacio{
+    min-height:390px;
+  }
 
 }
 @media(max-width:900px){
@@ -1210,6 +1216,40 @@ visor PDF junto a la carpeta y firma urgente */
   }
 
 }
+@media(min-width:901px){
+.ag-encargo-paneles.ag-ficha-paneles{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr)!important;
+    align-items:stretch;
+  }
+.ag-ficha-paneles .ag-ficha-archivo{
+    grid-column:1!important;
+    grid-row:2;
+  }
+.ag-ficha-paneles .ag-ficha-visor{
+    grid-column:2!important;
+    grid-row:2;
+  }
+.ag-ficha-paneles .ag-ficha-registral{
+    grid-column:3!important;
+    grid-row:2;
+  }
+.ag-ficha-paneles .ag-ficha-visor .ag-visor-inline{
+    position:sticky;
+    top:12px;
+  }
+.ag-ficha-paneles .ag-ficha-visor .ag-visor-inline-contenido{
+    height:min(62vh,620px);
+    min-height:390px;
+    max-height:620px;
+  }
+.ag-ficha-paneles .ag-ficha-visor .ag-visor-inline-contenido .ag-visor-pdf{
+    min-height:390px;
+  }
+.ag-ficha-paneles .ag-ficha-visor .ag-visor-inline-vacio{
+    min-height:390px;
+  }
+
+}
 @media(max-width:900px){
 .ag-ficha-paneles .ag-ficha-archivo,
 .ag-ficha-paneles .ag-ficha-visor,
@@ -1222,7 +1262,6 @@ visor PDF junto a la carpeta y firma urgente */
   }
 
 }
-borde y flechas que FichaExpediente. */
 .ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading{
   align-items:center;
 }
@@ -1251,6 +1290,17 @@ borde y flechas que FichaExpediente. */
 .ag-ficha-paneles details.ag-encargo-subpanel:not([open])>.ag-ficha-bloque-heading::after{
   content:"⌄";
 }
+@media(min-width:901px){
+.ag-ficha-paneles .ag-ficha-firma{
+    grid-column:1/2!important;
+    grid-row:3;
+  }
+.ag-ficha-paneles .ag-ficha-observaciones{
+    grid-column:2/4!important;
+    grid-row:3;
+  }
+
+}
 @media(max-width:900px){
 .ag-ficha-paneles .ag-ficha-firma,
 .ag-ficha-paneles .ag-ficha-observaciones{
@@ -1259,6 +1309,10 @@ borde y flechas que FichaExpediente. */
   }
 
 }
+@keyframes ag-firma-urgente-parpadeo{
+  0%, 100% { background:#fff1f2; border-color:#fecaca; box-shadow:0 0 0 0 rgba(220,38,38,0); }
+  50% { background:#fee2e2; border-color:#dc2626; box-shadow:0 0 0 3px rgba(220,38,38,.16); }
+}
 .ag-detalle-campo.ag-firma-urgente-activa{
   animation:ag-firma-urgente-parpadeo 1.15s ease-in-out infinite;
 }
@@ -1266,7 +1320,6 @@ borde y flechas que FichaExpediente. */
 .ag-detalle-campo.ag-firma-urgente-activa{animation:none; background:#fee2e2; border-color:#dc2626;}
 
 }
-/* Impresión de agenda y encargos · MOLSAN ERP */
 .ag-print-tools{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:12px 0 16px}
 .ag-print-root{display:none}
 .ag-print-header{padding:0 0 14px;margin-bottom:16px;border-bottom:2px solid #263e70}
@@ -1291,8 +1344,6 @@ borde y flechas que FichaExpediente. */
 .ag-print-grid small{display:block;margin-bottom:3px;color:#64748b;font-size:9px}
 .ag-print-grid strong{font-size:10px;color:#1f2937;overflow-wrap:anywhere}
 @media print{
-body.molsan-print-encargos-lista *,
-body.molsan-print-encargos-fichas *{visibility:hidden!important}
 body.molsan-print-agenda .ag-agenda-print-root,
 body.molsan-print-agenda .ag-agenda-print-root *,
 body.molsan-print-encargos-lista .ag-encargos-print-root,
@@ -1316,7 +1367,6 @@ body.molsan-print-encargos-fichas .ag-print-ficha:last-child{break-after:auto;pa
 .ag-print-table td{padding:5px 6px!important}
 
 }
-/* ApoderaGest · tarjetas de apoderados en columnas y modal fuera del contenedor */
 .ag-encargos-agrupados.ag-apoderados-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));
@@ -1333,7 +1383,6 @@ body.molsan-print-encargos-fichas .ag-print-ficha:last-child{break-after:auto;pa
 .ag-apoderado-grupo-trigger .ag-notario-contadores{width:100%;justify-content:flex-start}
 
 }
-/* Dashboard general administrador: ranking anual por apoderado */
 .ag-estadistica-apoderados{padding:20px 22px;margin-top:18px}
 .ag-grafico-apoderados{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px 28px;padding:12px 0}
 .ag-apoderado-barra{min-width:0}
@@ -1346,7 +1395,6 @@ body.molsan-print-encargos-fichas .ag-print-ficha:last-child{break-after:auto;pa
 .ag-grafico-apoderados{grid-template-columns:minmax(0,1fr)}
 
 }
-/* ApoderaGest · indicadores interactivos con listado de expedientes */
 .apoderagest .ag-kpi-interactiva{
   appearance:none;-webkit-appearance:none;display:block;width:100%;min-width:0;
   font:inherit;text-align:left;color:inherit;cursor:pointer;
@@ -1385,9 +1433,6 @@ body.molsan-print-encargos-fichas .ag-print-ficha:last-child{break-after:auto;pa
 .ag-resumen-modal-cuerpo{padding:12px}
 
 }
-NotarGest y EncargaGest importan esta hoja.
-   ========================================================= */
-/* Las variables de ApoderaGest se declaran en el bloque raíz canónico. */
 .apoderagest :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea){
   max-width: 100%;
   min-width: 0;
@@ -1414,7 +1459,6 @@ NotarGest y EncargaGest importan esta hoja.
   outline: 2px solid rgb(49 86 179 / 58%);
   outline-offset: 2px;
 }
-/* Cards y paneles compartidos: definidos en MolsanModuleUnification.css. */
 .apoderagest :is(table, .ag-tabla, .eg-tabla, .ng-tabla){
   font-variant-numeric: tabular-nums;
 }
@@ -1443,7 +1487,6 @@ NotarGest y EncargaGest importan esta hoja.
   }
 
 }
-/* Visores y listados modales: altura dinámica y scroll fiable en móviles. */
 .ag-visor-overlay,
 .ag-resumen-modal-overlay{
   min-width: 0;
@@ -1486,7 +1529,6 @@ NotarGest y EncargaGest importan esta hoja.
   }
 
 }
-distinto del modal de documentos. */
 .ag-visor-inline,
 .ag-visor-inline-contenido{
   min-width: 0;
@@ -1524,7 +1566,6 @@ distinto del modal de documentos. */
   }
 
 }
-/* Dashboard de ApoderaGest: título de resumen integrado en una tarjeta común. */
 .ag-titulo-seccion.ag-panel-resumen-heading{
   display:flex;
   align-items:center;
@@ -1555,7 +1596,6 @@ distinto del modal de documentos. */
   }
 
 }
-/* ApoderaGest · misma cabecera compacta azul que Dashboard y NotarGest. */
 .apoderagest > .ag-hero.molsan-page-header{
   min-height: 60px;
   align-items: center;
@@ -1670,13 +1710,7 @@ distinto del modal de documentos. */
   }
 
 }
-/* ============================================================
-   MOLSAN ERP PREMIUM 2027 · CABECERA Y TARJETAS PROFESIONALES
-   ApoderaGest + EncargaGest: mismo patrón que el Dashboard global.
-   Esta capa final neutraliza las antiguas reglas compactas heredadas.
-   ============================================================ */
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header,
-.encargagest > header.ag-hero.molsan-page-header.dashboard-header{
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header{
   display:flex!important;
   position:relative!important;
   box-sizing:border-box!important;
@@ -1703,56 +1737,47 @@ distinto del modal de documentos. */
   transform:none!important;
   filter:none!important;
 }
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header::after,
-.encargagest > header.ag-hero.molsan-page-header.dashboard-header::after{
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header::after{
   position:absolute!important;
   right:0!important;bottom:0!important;left:0!important;
   height:3px!important;content:""!important;
   background:linear-gradient(90deg,#6CC5D9 0%,#8CB8D8 38%,rgba(255,255,255,.08) 100%)!important;
   pointer-events:none!important;
 }
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__identity,
-.encargagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__identity{
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__identity{
   display:flex!important;align-items:center!important;gap:16px!important;min-width:0!important;
 }
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__mark,
-.encargagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__mark{
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__mark{
   display:grid!important;place-items:center!important;
   flex:0 0 56px!important;width:56px!important;height:56px!important;
   color:#FFFFFF!important;border:1px solid rgba(255,255,255,.32)!important;
   border-radius:15px!important;background:rgba(255,255,255,.12)!important;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.18)!important;
 }
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__eyebrow,
-.encargagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__eyebrow{
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__eyebrow{
   margin:0 0 5px!important;color:#C6DFEC!important;font-size:10px!important;
   font-weight:800!important;letter-spacing:.14em!important;line-height:1.4!important;
 }
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__title,
-.encargagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__title{
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__title{
   margin:0!important;color:#FFFFFF!important;font-size:clamp(23px,2.2vw,30px)!important;
   font-weight:800!important;letter-spacing:-.04em!important;line-height:1.15!important;
 }
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__description,
-.encargagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__description{
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__description{
   display:block!important;margin:6px 0 0!important;color:#D1E4EE!important;
   font-size:12px!important;line-height:1.55!important;white-space:normal!important;
 }
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions,
-.encargagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions{
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions{
   display:flex!important;align-items:center!important;justify-content:flex-end!important;
   flex-wrap:wrap!important;gap:9px!important;margin-left:auto!important;
 }
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions > button,
-.encargagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions > button{
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions > button{
   display:inline-flex!important;align-items:center!important;justify-content:center!important;
   min-height:38px!important;padding:0 13px!important;color:#FFFFFF!important;
   border:1px solid rgba(255,255,255,.30)!important;border-radius:10px!important;
   background:rgba(255,255,255,.12)!important;box-shadow:none!important;
   font-size:11px!important;font-weight:750!important;
 }
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions > button:hover,
-.encargagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions > button:hover{
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions > button:hover{
   color:#FFFFFF!important;border-color:rgba(255,255,255,.58)!important;background:rgba(255,255,255,.2)!important;
 }
 .apoderagest .ag-panel,
@@ -1766,16 +1791,13 @@ distinto del modal de documentos. */
 .apoderagest .ag-grid-kpi > .ag-kpi:hover,
 .apoderagest .ag-grid-secundario > .ag-kpi:hover{ border-color:#C5DCE9!important;box-shadow:0 10px 24px rgba(6,50,82,.075)!important; }
 @media(max-width:760px){
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header,
-.encargagest > header.ag-hero.molsan-page-header.dashboard-header{
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header{
     min-height:0!important;align-items:flex-start!important;flex-direction:column!important;
     gap:14px!important;padding:16px!important;border-radius:17px!important;
   }
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions,
-.encargagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions{
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions{
     width:100%!important;margin-left:0!important;justify-content:flex-start!important;
   }
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__description,
-.encargagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__description{display:block!important}
+.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__description{display:block!important}
 
 }
