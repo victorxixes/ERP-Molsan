@@ -33,6 +33,24 @@ class RouteGuardPolicyTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertEqual(_resolver_accion(path, {"POST"}), "editar")
 
+    def test_apoderagest_routes_use_explicit_module_permissions(self):
+        self.assertEqual(
+            _resolver_modulo("/api/apoderagest/encargos", {"GET"}),
+            "apoderagest",
+        )
+        self.assertEqual(
+            _resolver_accion("/api/apoderagest/encargos", {"GET"}),
+            "ver",
+        )
+        self.assertEqual(
+            _resolver_modulo("/api/apoderagest/encargos/EXP-1/comentarios", {"POST"}),
+            "apoderagest",
+        )
+        self.assertEqual(
+            _resolver_accion("/api/apoderagest/encargos/EXP-1/comentarios", {"POST"}),
+            "crear",
+        )
+
     def test_absis_expediente_import_uses_utilidades_edit_permission(self):
         path = "/api/utilidades/importador-absis/expedientes"
         self.assertEqual(_resolver_modulo(path, {"POST"}), "utilidades")
