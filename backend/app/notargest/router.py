@@ -990,32 +990,29 @@ def actualizar_datos_firma(expediente_id: str, data: dict, n=Depends(get_notario
     e = _expediente_autorizado(expediente_id, n, db, bloquear=True)
     fecha = data.get("fecha_firma")
     protocolo = str(data.get("protocolo") or "").strip()
+    fecha_entrante = e.fecha_firma
+    if fecha:
+        try:
+            fecha_entrante = date.fromisoformat(str(fecha)[:10])
+        except ValueError:
+            raise HTTPException(status_code=400, detail="La fecha de firma no es válida")
+    protocolo_entrante = protocolo or (getattr(e, "protocolo", None) or "").strip()
 
-    if e.fecha_firma or (getattr(e, "protocolo", None) or "").strip():
-        fecha_entrante = None
-        if fecha:
-            try:
-                fecha_entrante = date.fromisoformat(str(fecha)[:10])
-            except ValueError:
-                raise HTTPException(status_code=400, detail="La fecha de firma no es válida")
-        if fecha_entrante == e.fecha_firma and protocolo == (e.protocolo or "").strip():
-            return {"ok": True, "fecha_firma": _fecha(e.fecha_firma), "protocolo": e.protocolo, "sin_cambios": True}
-        raise HTTPException(
-            status_code=409,
-            detail="La firma ya está registrada y no puede borrarse ni sustituirse desde NotarGest.",
-        )
+    if e.fecha_firma and fecha_entrante and fecha_entrante != e.fecha_firma:
+        raise HTTPException(status_code=409, detail="La fecha de firma ya está registrada y no puede sustituirse desde NotarGest.")
+    if (getattr(e, "protocolo", None) or "").strip() and protocolo_entrante != (e.protocolo or "").strip():
+        raise HTTPException(status_code=409, detail="El protocolo ya está registrado y no puede sustituirse desde NotarGest.")
+    if e.fecha_firma and (getattr(e, "protocolo", None) or "").strip():
+        return {"ok": True, "fecha_firma": _fecha(e.fecha_firma), "protocolo": e.protocolo, "sin_cambios": True}
 
     if _estado_workflow(e) != "firma":
         raise HTTPException(status_code=400, detail="Solo puedes registrar la firma cuando el expediente está en la fase de firma.")
-    if len(protocolo) > 100:
+    if len(protocolo_entrante) > 100:
         raise HTTPException(status_code=400, detail="El protocolo no puede superar los 100 caracteres.")
-    if not fecha or not protocolo:
+    if not fecha_entrante or not protocolo_entrante:
         raise HTTPException(status_code=400, detail="Para registrar una firma debes indicar fecha y protocolo.")
-    try:
-        e.fecha_firma = date.fromisoformat(str(fecha)[:10])
-    except ValueError:
-        raise HTTPException(status_code=400, detail="La fecha de firma no es válida")
-    e.protocolo = protocolo
+    e.fecha_firma = fecha_entrante
+    e.protocolo = protocolo_entrante
     e.escritura_firmada = True
     db.commit()
     return {"ok": True, "fecha_firma": _fecha(e.fecha_firma), "protocolo": e.protocolo}
