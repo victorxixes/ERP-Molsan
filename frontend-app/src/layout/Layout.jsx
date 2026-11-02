@@ -91,12 +91,12 @@ export default function Layout() {
           <div className={`w-full${rutaCancelaGest ? " cg-unified-workspace" : ""}`}>
             {esSubpagina && !cabeceraSubpagina && !tieneVolverPropio ? (
         <header className="molsan-page-header molsan-page-back-fallback">
-          <button type="button" data-layout-back-button="true" className="molsan-page-back-button" onClick={volverSubpagina} aria-label="Volver a la página anterior"><span aria-hidden="true">←</span> Volver</button>
+          <button type="button" className="molsan-page-back-button" onClick={volverSubpagina} aria-label="Volver a la página anterior"><span aria-hidden="true">←</span> Volver</button>
         </header>
       ) : null}
             <Outlet />
       {cabeceraSubpagina ? createPortal(
-        <button type="button" className="molsan-page-back-button" onClick={volverSubpagina} aria-label="Volver a la página anterior">
+        <button type="button" data-layout-back-button="true" className="molsan-page-back-button" onClick={volverSubpagina} aria-label="Volver a la página anterior">
           <span aria-hidden="true">←</span> Volver
         </button>,
         cabeceraSubpagina
