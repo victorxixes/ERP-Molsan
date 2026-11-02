@@ -17,6 +17,9 @@ class EncargaGestPasswordGateTests(unittest.TestCase):
         admin = SimpleNamespace(usuario="operador", rol=SimpleNamespace(nombre="Administrador"))
         empleado = SimpleNamespace(usuario="operador", rol=SimpleNamespace(nombre="Gestor"))
         self.assertTrue(_es_administrador_encargagest(admin))
+        for role in ("Superadmin", "Superadministrador", "Administrador del sistema"):
+            usuario = SimpleNamespace(usuario="operador", rol=SimpleNamespace(nombre=role))
+            self.assertTrue(_es_administrador_encargagest(usuario), role)
         self.assertFalse(_es_administrador_encargagest(empleado))
         self.assertIs(_exigir_admin_encargagest(admin), admin)
         with self.assertRaises(HTTPException) as error:
