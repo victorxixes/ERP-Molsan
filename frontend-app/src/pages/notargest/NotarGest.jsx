@@ -682,7 +682,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
           {!tokenAdminNotaria ? <>
             <header className="ng-hero ng-hero-notargest ng-admin-notarias-hero molsan-page-header">
               <div className="ng-hero-identidad molsan-page-header__identity">
-                <div className="ng-hero-marca molsan-page-header__mark" aria-label="NotarGest">NG</div>
+                <div className="ng-hero-marca molsan-page-header__mark" aria-label="NotarGest"><MolsanIcon name="courthouse" size={34} tone="ocean" /></div>
                 <div>
                   <div className="ng-hero-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
                   <h1 className="molsan-page-header__title">NotarGest</h1>
@@ -792,7 +792,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
             <div className="notargest ng-content">
     <header className="ng-hero ng-hero-notargest molsan-page-header">
       <div className="ng-hero-identidad molsan-page-header__identity">
-        <div className="ng-hero-marca molsan-page-header__mark" aria-label="NotarGest">NG</div>
+        <div className="ng-hero-marca molsan-page-header__mark" aria-label="NotarGest"><MolsanIcon name="courthouse" size={34} tone="ocean" /></div>
         <div>
           <div className="ng-hero-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
           <h1 className="molsan-page-header__title">NotarGest</h1>
