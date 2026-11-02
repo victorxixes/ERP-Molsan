@@ -160,7 +160,7 @@ export default function HonorariosGestoria({ soloPlantilla = false } = {}) {
 
       {(error || mensaje) && <div role="status" className={`rounded-xl border px-4 py-3 text-sm ${error ? "border-red-200 bg-red-50 text-red-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"}`}>{error || mensaje}</div>}
       </>}
-      <div className={soloPlantilla ? "space-y-6" : "grid items-start gap-6 2xl:grid-cols-[minmax(0,1.6fr)_minmax(360px,.8fr)]"}>
+      <div className={soloPlantilla ? "space-y-6" : "grid items-start gap-6 lg:grid-cols-2"}>
         {!soloPlantilla && <div className="min-w-0 space-y-6">
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
           <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4"><div><h2 className="font-extrabold text-slate-800">Tarifas configuradas</h2><p className="mt-1 text-xs text-slate-500">Base, tipo de impuesto y porcentaje son configurables; el total se calcula automáticamente.</p></div><button type="button" onClick={nuevo} className="rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-700">＋ Nuevo honorario</button></div>
@@ -179,7 +179,8 @@ export default function HonorariosGestoria({ soloPlantilla = false } = {}) {
             ]}
           />}
         </section>
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        </div>}
+        {!soloPlantilla && <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="mb-4"><h2 className="font-extrabold text-slate-800">{editando ? "Editar honorario" : "Crear honorario"}</h2><p className="mt-1 text-xs text-slate-500">Configura la base imponible y selecciona IVA, IGIC o exento. El impuesto y el total se calculan automáticamente.</p></div>
           <form onSubmit={guardar} className="space-y-4">
             <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Nombre del honorario *</span><input required minLength={2} maxLength={200} value={form.nombre} onChange={e=>setForm(a=>({...a,nombre:e.target.value}))} className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm" placeholder="Ej. Cancelaciones con provisión" /></label>
@@ -193,8 +194,7 @@ export default function HonorariosGestoria({ soloPlantilla = false } = {}) {
             <label className="flex items-center gap-2 rounded-xl bg-slate-50 p-3 text-sm"><input type="checkbox" checked={form.activo} onChange={e=>setForm(a=>({...a,activo:e.target.checked}))} />Honorario disponible en «Añadir pagos»</label>
             <div className="flex flex-wrap gap-2"><button disabled={guardando} className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">{guardando ? "Guardando…" : "Guardar honorario"}</button><button type="button" onClick={nuevo} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-600">Limpiar</button></div>
           </form>
-        </section>
-        </div>}
+        </section>}
         {soloPlantilla && <div className="min-w-0">
       <section className="rounded-2xl border border-indigo-200 bg-white p-5 shadow-sm">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
