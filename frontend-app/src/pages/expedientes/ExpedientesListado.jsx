@@ -805,14 +805,14 @@ const ACTIVIDADES_ABSIS = [
 // ============================================================
 
 const ACTIVIDADES_EXPEDIENTES = [
-  { key: "documentacion-previa", label: "Documentación previa", icono: "📄", aliases: ["Documentación previa"] },
-  { key: "sede-notarial", label: "Sede notarial", icono: "🏛️", aliases: ["Sede notarial", "Sede Notarial"] },
-  { key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "📜", aliases: ["Sede notarial con protocolo", "Sede Notarial con protocolo"] },
-  { key: "gestion-economica", label: "Gestión económica", icono: "💼", aliases: ["Gestión económica", "Gestion economica"] },
-  { key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "💶", aliases: ["Liquidación de impuestos", "Liquidación impuestos", "Liquidacion de impuestos", "Liquidacion impuestos"] },
-  { key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "🏢", aliases: ["Tramitación inscripción", "Tramitacion inscripcion"] },
-  { key: "defectos-registrales", label: "Defectos registrales", icono: "⚠️", aliases: ["Defectos registrales", "Defectos Registrales"] },
-  { key: "facturacion-cierre", label: "Facturación y cierre", icono: "🧾", aliases: ["Facturación y cierre", "Facturacion y cierre"] },
+  { key: "documentacion-previa", label: "Documentación previa", icono: "file", aliases: ["Documentación previa"] },
+  { key: "sede-notarial", label: "Sede notarial", icono: "courthouse", aliases: ["Sede notarial", "Sede Notarial"] },
+  { key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "scroll", aliases: ["Sede notarial con protocolo", "Sede Notarial con protocolo"] },
+  { key: "gestion-economica", label: "Gestión económica", icono: "briefcase", aliases: ["Gestión económica", "Gestion economica"] },
+  { key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "euro", aliases: ["Liquidación de impuestos", "Liquidación impuestos", "Liquidacion de impuestos", "Liquidacion impuestos"] },
+  { key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "building", aliases: ["Tramitación inscripción", "Tramitacion inscripcion"] },
+  { key: "defectos-registrales", label: "Defectos registrales", icono: "alert", aliases: ["Defectos registrales", "Defectos Registrales"] },
+  { key: "facturacion-cierre", label: "Facturación y cierre", icono: "receipt", aliases: ["Facturación y cierre", "Facturacion y cierre"] },
 ];
 
 // ============================================================
@@ -2428,7 +2428,7 @@ export default function ExpedientesListado() {
               titulo: "Circuito CaixaBank",
               descripcion: "Propia entidad · Vinculada propia entidad",
               plazo: "40 días",
-              icono: "🏦",
+              icono: "bank",
               borde: "#2563eb",
               fondo: "rgba(37, 99, 235, 0.07)",
             },
@@ -2437,7 +2437,7 @@ export default function ExpedientesListado() {
               titulo: "Circuito otra entidad",
               descripcion: "Vinculada otra entidad · Otra entidad",
               plazo: "70 días",
-              icono: "🏢",
+              icono: "building",
               borde: "#b7791f",
               fondo: "rgba(183, 121, 31, 0.08)",
             },
@@ -2502,7 +2502,7 @@ export default function ExpedientesListado() {
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {[
-            { codigo: "PVA", titulo: "Pendientes de Validar", icono: "🔎", borde: "#2563eb", fondo: "rgba(37, 99, 235, 0.08)" },
+            { codigo: "PVA", titulo: "Pendientes de Validar", icono: "search", borde: "#2563eb", fondo: "rgba(37, 99, 235, 0.08)" },
             { codigo: "RST", titulo: "Retención", icono: "⏸️", borde: "#7e22ce", fondo: "rgba(126, 34, 206, 0.08)" },
           ].map((estado) => {
             const activa = filtrosAplicados.estadoExpediente.trim().toLocaleUpperCase("es-ES") === estado.codigo;
