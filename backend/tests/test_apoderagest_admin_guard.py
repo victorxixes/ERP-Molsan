@@ -5,6 +5,7 @@ from types import SimpleNamespace
 
 from backend.app.apoderagest.encargos.router import _es_administrador_apoderagest
 from backend.app.apoderagest.liquidaciones import _es_admin
+from backend.app.apoderagest.dashboard.service import _es_administrador_apoderagest as _es_admin_dashboard
 
 
 class ApoderaGestAdminGuardTests(unittest.TestCase):
@@ -21,11 +22,13 @@ class ApoderaGestAdminGuardTests(unittest.TestCase):
             usuario = SimpleNamespace(usuario="operador", rol=SimpleNamespace(nombre=role), rol_id=4)
             self.assertTrue(_es_administrador_apoderagest(usuario), role)
             self.assertTrue(_es_admin(usuario), role)
+            self.assertTrue(_es_admin_dashboard(usuario), role)
 
     def test_administrative_job_title_is_not_an_admin_role(self):
         usuario = SimpleNamespace(usuario="operador", rol=SimpleNamespace(nombre="Administrativo"), rol_id=4)
         self.assertFalse(_es_administrador_apoderagest(usuario))
         self.assertFalse(_es_admin(usuario))
+        self.assertFalse(_es_admin_dashboard(usuario))
 
     def test_generic_utilities_edit_permission_does_not_grant_liquidation_admin(self):
         usuario = SimpleNamespace(
@@ -40,6 +43,7 @@ class ApoderaGestAdminGuardTests(unittest.TestCase):
         usuario = SimpleNamespace(usuario="admin", rol=SimpleNamespace(nombre="Gestor"), rol_id=4)
         self.assertTrue(_es_administrador_apoderagest(usuario))
         self.assertTrue(_es_admin(usuario))
+        self.assertTrue(_es_admin_dashboard(usuario))
 
     def test_global_explicit_apoderagest_admin_permission_is_accepted(self):
         usuario = {
