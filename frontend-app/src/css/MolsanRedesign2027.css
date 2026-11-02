@@ -2820,3 +2820,53 @@ table :is(th, td) {
   align-self: stretch;
   margin-inline: 0;
 }
+
+
+/* MOLSAN ERP PREMIUM 2027 · ancho y márgenes de Dashboard para Catálogos,
+   sus subpáginas y Logs. El contenido de tablas conserva su ancho disponible. */
+:where(
+  .catalogos-premium-page,
+  .herramientas-subpagina-premium,
+  .logs-premium-page
+) {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin-inline: 0;
+}
+
+:where(
+  .catalogos-premium-page,
+  .herramientas-subpagina-premium,
+  .logs-premium-page
+) > .molsan-page-header--dashboard-width,
+:where(
+  .catalogos-premium-page,
+  .herramientas-subpagina-premium,
+  .logs-premium-page
+) > section.molsan-page-header--dashboard-width {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  align-self: stretch;
+  margin: 0 0 20px !important;
+  padding: 10px 4px 26px !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+:where(
+  .catalogos-premium-page,
+  .herramientas-subpagina-premium
+) :is(.molsan-page-header, [data-page-header="true"]) {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin-inline: 0 !important;
+}
