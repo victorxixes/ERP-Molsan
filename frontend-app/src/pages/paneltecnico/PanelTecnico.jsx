@@ -3,6 +3,7 @@ import "./PanelTecnico.css";
 import { useAuthStore } from "../../store/authStore";
 import EmpleadosModulo2026 from "../empleados/EmpleadosModulo2026";
 import MonitorSistema from "./MonitorSistema";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import AuditoriaAvanzada from "./AuditoriaAvanzada";
 import LogsAvanzados from "./LogsAvanzados";
 import { puedeVerModulo } from "../../utils/permisos";
@@ -17,7 +18,7 @@ export default function PanelTecnico() {
         <div className="panel-tecnico-header__identity">
           <span className="panel-tecnico-operativo"><span aria-hidden="true" />Sistema operativo</span>
           <div className="molsan-page-header__mark" aria-hidden="true">
-            <svg className="w-5 h-5"><use href="/icons/icons.svg#shield" /></svg>
+            <MolsanIcon name="shield" size={30} tone="ocean" />
           </div>
           <div>
             <h1 className="molsan-page-header__title">Monitor del Sistema</h1>
@@ -53,7 +54,7 @@ export default function PanelTecnico() {
           <div className="overflow-hidden rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] shadow-sm">
             <div className="flex items-center gap-3 border-b border-[var(--erp-border)] px-6 py-4">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--erp-primary-soft)] text-[var(--erp-primary)]">
-                <svg className="h-4 w-4" aria-hidden="true"><use href="/icons/icons.svg#user-group" /></svg>
+                <MolsanIcon name="users" size={22} tone="ocean" />
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-[var(--erp-text)]">Empleados 2026</h3>
