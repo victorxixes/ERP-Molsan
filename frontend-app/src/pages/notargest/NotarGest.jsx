@@ -1034,8 +1034,9 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                     if (categoria === "Otros documentos") return !["documentos absis","absis","hoja de encargo firmada","hoja de encargo","justificante de cancelación","cancelación","nota simple","borrador","borradores de escritura"].some(p => cat.includes(p) || nom.includes(p));
                     return palabras.some(p => cat.includes(p) || nom.includes(p));
                   });
+                  const puedeAdjuntar = categoria !== "Documentación previa · Documentos ABSIS";
                   return <div className="ng-categoria-documental" key={categoria}>
-                    <div className="ng-categoria-heading"><div><strong>{categoria}</strong><small>{docs.length} archivo(s)</small></div><label className="ng-adjuntar-pdf"><MolsanIcon name="plus" size={18} tone="ocean" /> Adjuntar PDF<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { subirDocumentoCarpeta(categoria, e.target.files?.[0]); e.target.value = ""; }} /></label></div>
+                    <div className="ng-categoria-heading"><div><strong>{categoria}</strong><small>{docs.length} archivo(s)</small></div>{puedeAdjuntar ? <label className="ng-adjuntar-pdf"><MolsanIcon name="plus" size={18} tone="ocean" /> Adjuntar PDF<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { subirDocumentoCarpeta(categoria, e.target.files?.[0]); e.target.value = ""; }} /></label> : <small className="ng-categoria-solo-lectura">Solo lectura · documentación sincronizada desde ABSIS</small>}</div>
                     {docs.length ? docs.map(d => <div className="ng-archivo-row" key={d.id}><span className="ng-pdf-icon"><MolsanIcon name="file" size={22} tone="ocean" /> PDF</span><div className="ng-archivo-info"><strong>{d.nombre}</strong><small>{esFecha(d.fecha_subida)}</small></div><button type="button" className="ng-boton-secundario" onClick={() => abrirDocumento(d)}>Ver a la derecha</button></div>) : <p className="ng-vacio-categoria">Todavía no hay archivos. Usa «Adjuntar PDF» para incorporarlo aquí.</p>}
                   </div>;
                 })}
