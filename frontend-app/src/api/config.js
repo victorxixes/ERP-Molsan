@@ -1,9 +1,15 @@
 /**
  * Base común de API para llamadas Axios y recursos del backend.
- * La variable de Render prevalece; el valor por defecto evita que, si falta,
- * el navegador intente resolver rutas /api sobre el dominio del frontend.
+ *
+ * Cada entorno debe declarar VITE_API_URL explícitamente. Nunca se permite
+ * que una Preview o una compilación local caiga silenciosamente en Producción.
  */
-const API_BASE_CONFIGURADA = import.meta.env.VITE_API_URL;
-export const API_BASE = String(
-  API_BASE_CONFIGURADA || "https://agenda-intranet-b.onrender.com/api"
-).replace(/\/+$/, "");
+const API_BASE_CONFIGURADA = String(import.meta.env.VITE_API_URL || "").trim();
+
+if (!API_BASE_CONFIGURADA && import.meta.env.PROD) {
+  throw new Error(
+    "Configuración incompleta: define VITE_API_URL para este entorno antes de compilar."
+  );
+}
+
+export const API_BASE = String(API_BASE_CONFIGURADA || "/api").replace(/\/+$/, "");
