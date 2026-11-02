@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { listarNotarios } from "../../api/notarios";
 import { useAuthStore } from "../../store/authStore";
 import "../../css/HerramientasPremium.css";
@@ -206,7 +207,7 @@ export default function MensajeriaSolicitudes() {
   return <main className="molsan-page-stack catalogos-premium-page min-h-full ">
     <header className="molsan-page-header">
       <div className="molsan-page-header__identity">
-        <div className="molsan-page-header__mark" aria-hidden="true">MS</div>
+        <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="message" size={32} bare /></div>
         <div className="min-w-0">
           <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
           <h1 className="molsan-page-header__title">Mensajería</h1>
