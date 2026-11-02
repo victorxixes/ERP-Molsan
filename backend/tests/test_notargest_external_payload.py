@@ -1,7 +1,10 @@
 """El portal externo de NotarGest solo recibe notas visibles para la notaría."""
 import unittest
 
-from backend.app.notargest.router import (\n    _filtrar_campos_sensibles_notario_externo,\n    _es_gestor_asignado,\n)
+from backend.app.notargest.router import (
+    _filtrar_campos_sensibles_notario_externo,
+    _es_gestor_asignado,
+)
 
 
 class NotarGestExternalPayloadTests(unittest.TestCase):
