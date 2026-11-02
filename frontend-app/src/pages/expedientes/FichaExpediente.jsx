@@ -261,7 +261,7 @@ const ACTIVIDADES_EXPEDIENTES = [
   {
     key: "defectos-registrales",
     label: "Defectos registrales",
-    icono: "⚠️",
+    icono: "alert",
   },
 
   {
@@ -791,7 +791,7 @@ function RepositorioDocumentosInline({ expedienteId, categorias = [], titulo = "
                   <div className="mt-1 space-y-1">
                     {documentosCategoria.map((doc) => (
                       <div key={doc.id} className="flex flex-wrap items-center gap-2">
-                        <span className="min-w-0 flex-1 break-words text-[11px] font-semibold text-emerald-700">✓ {doc.nombre_original || doc.nombre || "Documento guardado"}</span>
+                        <span className="min-w-0 flex-1 break-words text-[11px] font-semibold text-emerald-700"><MolsanIcon name="check" size={13} inline /> {doc.nombre_original || doc.nombre || "Documento guardado"}</span>
                         <button type="button" onClick={() => abrirDocumento(doc)} className="rounded-md px-2 py-1 text-xs font-bold text-indigo-700 hover:bg-indigo-50">Ver</button>
                       </div>
                     ))}
@@ -1277,7 +1277,7 @@ function Modal({
               hover:text-slate-800
             "
           >
-            ✕
+            <MolsanIcon name="x" size={16} />
           </button>
         </div>
 
@@ -5129,7 +5129,7 @@ const cuantiaFincasParaEnvio =
                             ],
                           },
                           {
-                            key: "defectos-registrales", label: "Defectos registrales", icono: "⚠️",
+                            key: "defectos-registrales", label: "Defectos registrales", icono: "alert",
                             checks: [
                               requisito(
                                 "Control de defectos registrales",
@@ -5198,7 +5198,7 @@ const cuantiaFincasParaEnvio =
                                         </span>
                                       </span>
                                       <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-extrabold ${completa ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-800"}`}>
-                                        {completa ? "✓ Correcto" : pendientes.length + " pendiente(s)"}
+                                        {completa ? <><MolsanIcon name="check" size={13} inline /> Correcto</> : pendientes.length + " pendiente(s)"}
                                       </span>
                                     </span>
                                     <span className="mt-2 block text-[10px] font-semibold text-slate-400 group-hover:text-indigo-600">Abrir actividad →</span>
@@ -5236,7 +5236,7 @@ const cuantiaFincasParaEnvio =
                                         {completa ? "✓" : actual ? "●" : indice + 1}
                                       </div>
                                       <div className="min-w-0 flex-1">
-                                        <p className="text-xs font-bold text-slate-800">{fase.icono} {fase.label}</p>
+                                        <p className="text-xs font-bold text-slate-800"><MolsanIcon name={fase.icono} size={15} inline /> {fase.label}</p>
                                         <p className={`mt-0.5 text-[10px] font-semibold ${completa ? "text-emerald-700" : actual ? "text-blue-700" : "text-amber-700"}`}>
                                           {completa ? "Control superado" : actual ? "Actividad actual · requiere revisión" : "Con incidencias pendientes"}
                                         </p>
@@ -5262,7 +5262,7 @@ const cuantiaFincasParaEnvio =
                                             title={check.ok ? "Correcto" : "Pendiente"}
                                             className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] font-black ${check.ok ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}
                                           >
-                                            {check.ok ? "✓" : "✕"}
+                                            <MolsanIcon name={check.ok ? "check" : "x"} size={12} />
                                           </span>
                                           <span className={check.ok ? "text-emerald-800" : "text-red-800"}>
                                             <strong>{check.etiqueta}:</strong> {check.ok ? "Correcto" : check.detalle}
@@ -5496,7 +5496,7 @@ const cuantiaFincasParaEnvio =
             </div>
             <div className="flex shrink-0 flex-wrap items-center gap-2">
               <button type="button" onClick={abrirAgregarExpedientes} className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold text-blue-700 transition hover:bg-blue-100">
-                ➕ Agregar expediente relacionado
+                <MolsanIcon name="plus" size={15} /> Agregar expediente relacionado
               </button>
             </div>
             {(() => {
@@ -5789,7 +5789,7 @@ const cuantiaFincasParaEnvio =
 
               <div className="flex flex-wrap items-center gap-2">
                 <button type="button" onClick={() => { setErrorActividad(""); setMensajeActividad(""); setMostrarModalDatosActividad(true); }} className="inline-flex items-center gap-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-extrabold text-sky-800 transition hover:bg-sky-100">
-                  ☷ Datos de actividad
+                  <MolsanIcon name="clipboardList" size={15} /> Datos de actividad
                 </button>
                 <button type="button" onClick={() => { setPestanaActividad("datos"); setMostrarModalPpad(true); setErrorPpad(""); }} className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-extrabold text-indigo-800 transition hover:bg-indigo-100">
                   PPAD
@@ -5799,7 +5799,7 @@ const cuantiaFincasParaEnvio =
                   <TraspasoSaldoPanel expediente={expediente} visible={actividadSeleccionada === "gestion-economica"} />
                 )}
                 <button type="button" onClick={() => { setPestanaActividad("datos"); abrirAcciones(); }} className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-extrabold text-blue-700 transition hover:bg-blue-100">
-                  ⚡ Acciones
+                  <MolsanIcon name="zap" size={15} /> Acciones
                   {accionesExpediente.length > 0 && <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-blue-600 px-1.5 py-0.5 text-[10px] font-extrabold text-white">{accionesExpediente.length}</span>}
                 </button>
               </div>
@@ -6799,7 +6799,7 @@ const cuantiaFincasParaEnvio =
               )}
               {actividadSeleccionada === "documentacion-previa" && actividadActual === "documentacion-previa" && (
                 <Boton tipo="primary" onClick={avanzarActividad} disabled={guardandoActividad || expedienteBloqueado || !estadoDocumentacionAbsis.mover_siguiente_actividad}>
-                  {guardandoActividad ? "Validando…" : "➡️ Mover a Sede notarial sin protocolo"}
+                  {guardandoActividad ? "Validando…" : <><MolsanIcon name="arrowRight" size={15} inline /> Mover a Sede notarial sin protocolo</>}
                 </Boton>
               )}
               {actividadSeleccionada === actividadActual && actividadActual && actividadActual !== "documentacion-previa" && (
@@ -6807,8 +6807,8 @@ const cuantiaFincasParaEnvio =
                   {guardandoActividad
                     ? "Validando…"
                     : actividadActual === "facturacion-cierre"
-                      ? "✅ Validar y cerrar expediente"
-                      : "➡️ Validar y avanzar actividad"}
+                      ? <><MolsanIcon name="check" size={15} inline /> Validar y cerrar expediente</>}
+                      : <><MolsanIcon name="arrowRight" size={15} inline /> Validar y avanzar actividad</>}}
                 </Boton>
               )}
             </div>
@@ -7531,14 +7531,14 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={mostrarReclamarOficina}
         onClose={() => !enviandoReclamacion && setMostrarReclamarOficina(false)}
-        titulo="✉️ Emails del expediente"
+        titulo="Emails del expediente"
         subtitulo={`Expediente ${valorVisible(expediente?.id_expediente || id)} · Correspondencia tipificada e histórico`}
         ancho="max-w-5xl"
         footer={
           <div className="flex flex-wrap justify-end gap-2">
             <Boton onClick={() => setMostrarReclamarOficina(false)} disabled={enviandoReclamacion}>Cerrar</Boton>
             <Boton tipo="primary" onClick={enviarReclamacionOficina} disabled={enviandoReclamacion || !emailReclamacion.destinatario.trim() || !emailReclamacion.asunto.trim() || !emailReclamacion.cuerpo.trim() || /\[\[FALTA:/.test(emailReclamacion.destinatario + emailReclamacion.cc + emailReclamacion.asunto + emailReclamacion.cuerpo)}>
-              {enviandoReclamacion ? "Enviando…" : "✉️ Enviar email"}
+              {enviandoReclamacion ? "Enviando…" : <><MolsanIcon name="mail" size={15} inline /> Enviar email</>}
             </Boton>
           </div>
         }
@@ -7596,7 +7596,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={mostrarAvisoBloqueoExpediente}
         onClose={() => setMostrarAvisoBloqueoExpediente(false)}
-        titulo="⛔ AVISO DE BLOQUEO DEL EXPEDIENTE"
+        titulo="AVISO DE BLOQUEO DEL EXPEDIENTE"
         subtitulo={`Expediente ${valorVisible(expediente?.id_expediente)}`}
         ancho="max-w-[620px]"
         footer={
@@ -7607,7 +7607,7 @@ const cuantiaFincasParaEnvio =
         }
       >
         <div role="alert" className="rounded-2xl border-2 border-red-300 bg-red-50 p-5 text-center shadow-inner sm:p-7">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-red-200 bg-white text-4xl shadow-sm">⛔</div>
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-red-200 bg-white text-red-700 shadow-sm"><MolsanIcon name="alert" size={38} /></div>
           <p className="mt-4 text-xs font-black uppercase tracking-[0.18em] text-red-700">Expediente bloqueado</p>
           <h2 className="mt-2 text-xl font-black text-red-900 sm:text-2xl">{motivoBloqueoExpediente}</h2>
           {(String(expediente?.estado_expediente || "").trim().toUpperCase().startsWith("LST") || expediente?.liquidado_sin_tramitar) && (
@@ -7643,7 +7643,7 @@ const cuantiaFincasParaEnvio =
 <Modal
   open={mostrarDefecto}
   onClose={() => setMostrarDefecto(false)}
-  titulo="⚠️ Alta de defecto registral"
+  titulo="Alta de defecto registral"
   subtitulo={`Expediente ${valorVisible(expediente?.id_expediente)}`}
   ancho="max-w-4xl"
   footer={
@@ -7719,7 +7719,7 @@ const cuantiaFincasParaEnvio =
                   </Boton>
                 )}
                 <Boton onClick={() => editarDefectoRegistrado(defecto)}>
-                  ✏️ Editar
+                  <MolsanIcon name="pen" size={14} inline /> Editar
                 </Boton>
               </div>
             </div>
@@ -8361,7 +8361,7 @@ const cuantiaFincasParaEnvio =
 <Modal
   open={mostrarAcciones}
   onClose={() => setMostrarAcciones(false)}
-  titulo="⚡ Acciones del expediente"
+  titulo="Acciones del expediente"
   subtitulo="Asignar una acción del catálogo al expediente"
   ancho="max-w-3xl"
   footer={
@@ -8485,7 +8485,7 @@ const cuantiaFincasParaEnvio =
         onClose={() =>
           setMostrarAgregarExpedientes(false)
         }
-        titulo="➕ Expedientes relacionados"
+        titulo="Expedientes relacionados"
         subtitulo={
           `Agrupación por NIF · ${valorVisible(
             expediente.nif_titular
@@ -9114,15 +9114,15 @@ const cuantiaFincasParaEnvio =
                   const completos = items.every((item) => item.ok);
                   return <>
                     <div className={`mb-3 rounded-lg border px-3 py-2 text-xs font-bold ${completos ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-amber-200 bg-amber-50 text-amber-800"}`}>
-                      {completos ? "✓ Checklist completo según datos/documentos encontrados" : `${items.filter((item) => item.ok).length} de ${items.length} comprobaciones completas`}
+                      {completos ? <><MolsanIcon name="check" size={13} inline /> Checklist completo según datos/documentos encontrados</> : `${items.filter((item) => item.ok).length} de ${items.length} comprobaciones completas`}
                     </div>
                     <div className="grid gap-2 sm:grid-cols-2">
-                      {items.map((item) => <div key={item.nombre} className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs ${item.ok ? "border-emerald-100 bg-emerald-50/60 text-emerald-800" : "border-slate-200 bg-slate-50 text-slate-600"}`}><span className="font-extrabold">{item.ok ? "✓" : "□"}</span><span>{item.nombre}</span></div>)}
+                      {items.map((item) => <div key={item.nombre} className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs ${item.ok ? "border-emerald-100 bg-emerald-50/60 text-emerald-800" : "border-slate-200 bg-slate-50 text-slate-600"}`}><span className="inline-flex h-4 w-4 items-center justify-center"><MolsanIcon name={item.ok ? "check" : "file"} size={12} /></span><span>{item.nombre}</span></div>)}
                     </div>
                   </>;
                 })()}
                 {errorDocumentosCierre && <p className="mt-2 text-xs text-red-700">No se ha podido verificar la carpeta digital completa; revisa antes de facturar.</p>}
-                <button type="button" onClick={cargarDocumentosCierre} disabled={cargandoDocumentosCierre} className="mt-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-50">{cargandoDocumentosCierre ? "Comprobando…" : "↻ Actualizar checklist"}</button>
+                <button type="button" onClick={cargarDocumentosCierre} disabled={cargandoDocumentosCierre} className="mt-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-50">{cargandoDocumentosCierre ? "Comprobando…" : <><MolsanIcon name="refresh" size={13} inline /> Actualizar checklist</>}</button>
               </section>
             </>
           )}
@@ -9132,7 +9132,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={mostrarModalDatosActividad}
         onClose={() => setMostrarModalDatosActividad(false)}
-        titulo={`☷ Datos de actividad · ${ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"}`}
+        titulo={`Datos de actividad · ${ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"}`}
         subtitulo={`Expediente ${expediente?.id_expediente || ""}. Solo se muestran los campos propios de esta actividad.`}
         ancho="max-w-4xl"
         footer={
