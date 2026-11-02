@@ -247,11 +247,15 @@ def get_notario(request: Request, token=Depends(obtener_token_bearer), db: Sessi
             n = db.query(Notaria).filter(Notaria.id == int(payload["notaria_id"])).first()
             if not n or not n.notargest_habilitado:
                 raise HTTPException(status_code=403, detail="Acceso NotarGest deshabilitado")
-            if payload.get("seleccion_admin"):
+            es_sesion_soporte = bool(payload.get("seleccion_admin"))
+            if es_sesion_soporte:
                 _validar_admin_soporte_notargest(payload, db)
+                # El administrador accede con sus propios permisos; no debe
+                # quedar bloqueado por la contraseña provisional de la notaría.
+                setattr(n, "_notargest_sesion_soporte", True)
 
             requiere_cambio = _requiere_cambio_password_notargest(n)
-            if requiere_cambio and not _ruta_permitida_durante_cambio_password(request.url.path):
+            if requiere_cambio and not es_sesion_soporte and not _ruta_permitida_durante_cambio_password(request.url.path):
                 raise HTTPException(
                     status_code=403,
                     detail="Debes cambiar la contraseña provisional antes de acceder a NotarGest.",
@@ -736,7 +740,10 @@ def me(n=Depends(get_notario), db: Session = Depends(get_db)):
         "otros_departamentos": getattr(n, "otros_departamentos", None),
         "observacion": getattr(n, "observacion", None),
         "tipo_acceso": tipo_acceso,
-        "requiere_cambio_password": _requiere_cambio_password_notargest(n),
+        "requiere_cambio_password": (
+            _requiere_cambio_password_notargest(n)
+            and not bool(getattr(n, "_notargest_sesion_soporte", False))
+        ),
     }
 
 @router.post("/cambiar-password")
