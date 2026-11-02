@@ -7,6 +7,7 @@ from backend.app.notargest.router import (
     _documento_visible_notargest_externo,
     _url_documento_segura_notargest,
     _observacion_ctn_visible_notargest,
+    _categoria_documental_permitida_notargest,
 )
 
 
@@ -106,6 +107,15 @@ class NotarGestExternalPayloadTests(unittest.TestCase):
             "_notargest_sesion_soporte": True,
         })()
         self.assertEqual(_observacion_ctn_visible_notargest(notaria, "notario"), "Nota interna")
+
+    def test_workflow_documents_are_restricted_to_their_current_stage(self):
+        self.assertTrue(_categoria_documental_permitida_notargest("factura", "factura"))
+        self.assertTrue(_categoria_documental_permitida_notargest("presentacion", "registro"))
+        self.assertTrue(_categoria_documental_permitida_notargest("copia", "copia"))
+        self.assertTrue(_categoria_documental_permitida_notargest("defecto", "inscripcion"))
+        self.assertFalse(_categoria_documental_permitida_notargest("copia", "recepcion"))
+        self.assertFalse(_categoria_documental_permitida_notargest("factura", "firma"))
+        self.assertFalse(_categoria_documental_permitida_notargest("ajd", "inscripcion"))
 
 
 if __name__ == "__main__":
