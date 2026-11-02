@@ -1695,51 +1695,6 @@
 .ag-titulo-seccion.ag-panel-resumen-heading p { color:#617789; }
 
 
-/* ApoderaGest · la cabecera utiliza la misma superficie que el resto del ERP. */
-.apoderagest > .ag-hero.molsan-page-header {
-  min-height: 112px;
-  margin: 0 0 20px;
-  padding: 20px 24px;
-  border: 1px solid var(--molsan-border, #D8E4EC);
-  border-radius: var(--molsan-radius-card, 18px);
-  background: var(--molsan-surface, #FFFFFF);
-  box-shadow: var(--molsan-shadow-card, 0 8px 22px rgba(6,50,82,.055));
-  animation: none !important;
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
-}
-.apoderagest > .ag-hero.molsan-page-header .ag-marca {
-  width: 58px;
-  height: 58px;
-  flex-basis: 58px;
-  color: var(--molsan-primary, #064675);
-  background: var(--molsan-surface-soft, #F2F7FB);
-  border: 1px solid var(--molsan-border, #D8E4EC);
-  border-radius: 17px;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 5px 14px rgba(6,50,82,.08);
-}
-.apoderagest > .ag-hero.molsan-page-header .molsan-page-header__title {
-  margin: 0;
-  color: var(--molsan-primary, #064675);
-  font-size: clamp(21px, 2vw, 27px);
-  font-weight: 850;
-  line-height: 1.15;
-  letter-spacing: -.035em;
-}
-.apoderagest > .ag-hero.molsan-page-header .molsan-page-header__description {
-  margin: 6px 0 0;
-  color: var(--molsan-text-secondary, #617789);
-  font-size: 12px;
-  line-height: 1.55;
-}
-.apoderagest > .ag-hero.molsan-page-header .molsan-page-header__actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 9px;
-}
 .apoderagest .ag-kpi-icono .molsan-icon-3d,
 .apoderagest .ag-vacio-icono .molsan-icon-3d {
   display: inline-grid;
@@ -1758,61 +1713,79 @@
 }
 
 
-/* MOLSAN ERP PREMIUM 2027 · cierre visual de ApoderaGest
-   Acabado común aplicado al portal completo sin alterar su lógica ni navegación. */
+/* ApoderaGest · misma cabecera compacta azul que Dashboard y NotarGest. */
 .apoderagest > .ag-hero.molsan-page-header {
-  min-height: 112px;
+  min-height: 60px;
   align-items: center;
-  gap: 18px;
-  padding: 20px 24px;
-  border: 1px solid var(--molsan-border, #D8E4EC);
-  border-radius: var(--molsan-radius-card, 16px);
-  background: var(--molsan-surface, #FFFFFF);
-  box-shadow: var(--molsan-shadow-card, 0 8px 24px rgba(6,50,82,.055));
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 5px 16px;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 86% 18%, rgba(116,199,219,.18), transparent 27%),
+    linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
+  box-shadow: 0 12px 28px rgba(4,55,91,.18);
   animation: none !important;
   opacity: 1 !important;
   transform: none !important;
   filter: none !important;
 }
-.apoderagest > .ag-hero.molsan-page-header .ag-marca {
-  flex: 0 0 58px;
-  width: 58px;
-  height: 58px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--molsan-border, #D8E4EC);
-  border-radius: 15px;
-  background: var(--molsan-surface-soft, #F2F7FB);
-  color: var(--molsan-primary, #064675);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 5px 14px rgba(6,50,82,.07);
+.apoderagest > .ag-hero.molsan-page-header .ag-marca.molsan-page-header__mark {
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  color: #FFFFFF;
+  border: 1px solid rgba(255,255,255,.32);
+  border-radius: 10px;
+  background: rgba(255,255,255,.12);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
 }
 .apoderagest > .ag-hero.molsan-page-header .molsan-page-header__eyebrow {
-  margin: 0 0 5px;
-  color: var(--molsan-text-muted, #617789);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: .13em;
+  margin: 0 0 1px;
+  color: #C6DFEC;
+  font-size: 8.5px;
+  line-height: 1.15;
 }
 .apoderagest > .ag-hero.molsan-page-header .molsan-page-header__title {
   margin: 0;
-  color: var(--molsan-primary, #064675);
-  font-size: clamp(21px, 2vw, 27px);
+  color: #FFFFFF;
+  font-size: clamp(19px, 1.8vw, 22px);
   font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -.03em;
+  line-height: 1.05;
+  letter-spacing: -.035em;
 }
 .apoderagest > .ag-hero.molsan-page-header .molsan-page-header__description {
-  margin: 6px 0 0;
-  color: var(--molsan-text-muted, #617789);
-  font-size: 12px;
-  line-height: 1.55;
+  margin: 2px 0 0;
+  color: #C6DFEC;
+  font-size: 10px;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .apoderagest > .ag-hero.molsan-page-header .molsan-page-header__actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 9px;
+  gap: 6px;
+}
+@media (max-width: 760px) {
+  .apoderagest > .ag-hero.molsan-page-header {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+  }
+  .apoderagest > .ag-hero.molsan-page-header .molsan-page-header__description {
+    display: none;
+  }
+  .apoderagest > .ag-hero.molsan-page-header .molsan-page-header__actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
 }
 .apoderagest .ag-panel,
 .apoderagest .ag-grid-kpi > *,
@@ -1832,7 +1805,7 @@
   background: var(--molsan-surface, #FFFFFF);
 }
 .apoderagest .ag-kicker,
-.apoderagest .ag-eyebrow {
+.apoderagest .ag-eyebrow:not(.molsan-page-header__eyebrow) {
   color: var(--molsan-text-muted, #617789);
 }
 .apoderagest button:focus-visible,
