@@ -215,6 +215,7 @@ def _validar_password_login_notargest(notaria, password, nif):
     if password_nif and not getattr(notaria, "notargest_password_hash", None):
         # Primer acceso: conserva el comportamiento de alta inicial con NIF.
         _registrar_password_inicial_notargest(notaria, nif)
+        notaria.notargest_password_enc = cifrar_password_portal(nif)
         return True
     password_hash = getattr(notaria, "notargest_password_hash", None)
     if not password_hash:
@@ -564,11 +565,7 @@ def login(data: LoginNotario, db: Session = Depends(get_db)):
         """), {"id": n.id, "usuario": nif})
         db.commit()
         raise HTTPException(status_code=401, detail="Acceso no habilitado. Contacta con Molsan.")
-    password_nif = hmac.compare_digest(normalizar_nif(data.password), nif)
     valido = _validar_password_login_notargest(n, data.password, nif)
-    if valido and password_nif and not getattr(n, "notargest_password_hash", None):
-        # La primera contraseña por NIF se cifra para la gestión de accesos CTN.
-        n.notargest_password_enc = cifrar_password_portal(nif)
     if not valido:
         db.execute(text("""
             INSERT INTO ctn_portal_accesos_historial (notaria_id, portal, evento, resultado, usuario, detalle)
