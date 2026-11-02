@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from backend.app.database import get_db
+from backend.app.database import SessionLocal, get_db
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 
@@ -131,6 +131,13 @@ def _ensure_tables(db: Session):
     db.commit()
 
 
+@router.on_event("startup")
+def inicializar_tablas_mensajeria():
+    """Prepara el esquema auxiliar una vez al arrancar, no en cada petición."""
+    with SessionLocal() as db:
+        _ensure_tables(db)
+
+
 def _dict(row):
     return dict(row._mapping) if row is not None else None
 
@@ -211,7 +218,6 @@ class FacturaIn(BaseModel):
 @router.get("/resumen")
 def resumen(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "ver")
-    _ensure_tables(db)
     return {
         "solicitudes": db.execute(text("SELECT COUNT(*) FROM mensajeria_solicitudes")).scalar() or 0,
         "pendientes": db.execute(text("SELECT COUNT(*) FROM mensajeria_solicitudes WHERE estado NOT IN ('Entregada','Cancelada')")).scalar() or 0,
@@ -223,14 +229,12 @@ def resumen(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
 @router.get("/servicios")
 def listar_servicios(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_permiso_mensajeria(usuario, "ver")
-    _ensure_tables(db)
     return _rows(db, "SELECT * FROM mensajeria_servicios ORDER BY activo DESC, nombre")
 
 
 @router.post("/servicios")
 def crear_servicio(data: ServicioIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "crear")
-    _ensure_tables(db)
     try:
         result = db.execute(text("""
             INSERT INTO mensajeria_servicios
@@ -248,7 +252,6 @@ def crear_servicio(data: ServicioIn, db: Session = Depends(get_db), usuario=Depe
 @router.patch("/servicios/{servicio_id}")
 def actualizar_servicio(servicio_id: int, data: ServicioIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "editar")
-    _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
     payload["id"] = servicio_id
     result = db.execute(text("""
@@ -266,7 +269,6 @@ def actualizar_servicio(servicio_id: int, data: ServicioIn, db: Session = Depend
 @router.get("/solicitudes")
 def listar_solicitudes(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "ver")
-    _ensure_tables(db)
     return _rows(db, """SELECT s.*, c.nombre AS servicio_nombre FROM mensajeria_solicitudes s
         LEFT JOIN mensajeria_servicios c ON c.id=s.servicio_id ORDER BY s.creado_en DESC""")
 
@@ -274,7 +276,6 @@ def listar_solicitudes(db: Session = Depends(get_db), usuario=Depends(get_curren
 @router.post("/solicitudes")
 def crear_solicitud(data: SolicitudIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "crear")
-    _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
     telefono_entrega = payload.get("telefono_entrega") or payload.get("telefono_destino")
     payload["telefono_entrega"] = telefono_entrega
@@ -295,7 +296,6 @@ def crear_solicitud(data: SolicitudIn, db: Session = Depends(get_db), usuario=De
 @router.patch("/solicitudes/{solicitud_id}")
 def actualizar_solicitud(solicitud_id: int, data: SolicitudIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "editar")
-    _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
     telefono_entrega = payload.get("telefono_entrega") or payload.get("telefono_destino")
     payload["telefono_entrega"] = telefono_entrega
@@ -318,7 +318,6 @@ def actualizar_solicitud(solicitud_id: int, data: SolicitudIn, db: Session = Dep
 @router.get("/albaranes")
 def listar_albaranes(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "ver")
-    _ensure_tables(db)
     return _rows(db, """SELECT a.*, s.referencia AS solicitud_referencia FROM mensajeria_albaranes a
         LEFT JOIN mensajeria_solicitudes s ON s.id=a.solicitud_id ORDER BY a.fecha DESC NULLS LAST, a.id DESC""")
 
@@ -326,7 +325,6 @@ def listar_albaranes(db: Session = Depends(get_db), usuario=Depends(get_current_
 @router.post("/albaranes")
 def crear_albaran(data: AlbaranIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "crear")
-    _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
     result = db.execute(text("""
         INSERT INTO mensajeria_albaranes (numero_interno,numero_proveedor,proveedor,fecha,solicitud_id,servicio_id,importe,entregado,fecha_entrega,observaciones,documento_url)
@@ -339,7 +337,6 @@ def crear_albaran(data: AlbaranIn, db: Session = Depends(get_db), usuario=Depend
 @router.patch("/albaranes/{albaran_id}")
 def actualizar_albaran(albaran_id: int, data: AlbaranIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "editar")
-    _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
     payload["id"] = albaran_id
     result = db.execute(text("""
@@ -355,7 +352,6 @@ def actualizar_albaran(albaran_id: int, data: AlbaranIn, db: Session = Depends(g
 @router.get("/facturas")
 def listar_facturas(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "ver")
-    _ensure_tables(db)
     facturas = _rows(db, "SELECT * FROM mensajeria_facturas ORDER BY fecha_emision DESC NULLS LAST, id DESC")
     for factura in facturas:
         factura["albaran_ids"] = [r["albaran_id"] for r in _rows(db, "SELECT albaran_id FROM mensajeria_factura_albaran WHERE factura_id=:id", {"id": factura["id"]})]
@@ -365,7 +361,6 @@ def listar_facturas(db: Session = Depends(get_db), usuario=Depends(get_current_u
 @router.post("/facturas")
 def crear_factura(data: FacturaIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "crear")
-    _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
     albaran_ids = payload.pop("albaran_ids", [])
     try:
@@ -388,7 +383,6 @@ def crear_factura(data: FacturaIn, db: Session = Depends(get_db), usuario=Depend
 @router.patch("/facturas/{factura_id}")
 def actualizar_factura(factura_id: int, data: FacturaIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "editar")
-    _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
     albaran_ids = payload.pop("albaran_ids", [])
     payload["id"] = factura_id
@@ -411,7 +405,6 @@ def actualizar_factura(factura_id: int, data: FacturaIn, db: Session = Depends(g
 @router.get("/mis-solicitudes")
 def listar_mis_solicitudes(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_permiso_mensajeria(usuario, "ver")
-    _ensure_tables(db)
     usuario_id = getattr(usuario, "id", None)
     if usuario_id is None:
         raise HTTPException(status_code=401, detail="No se ha podido identificar al empleado.")
@@ -423,7 +416,6 @@ def listar_mis_solicitudes(db: Session = Depends(get_db), usuario=Depends(get_cu
 @router.post("/mis-solicitudes")
 def crear_mi_solicitud(data: SolicitudIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_permiso_mensajeria(usuario, "crear")
-    _ensure_tables(db)
     usuario_id = getattr(usuario, "id", None)
     if usuario_id is None:
         raise HTTPException(status_code=401, detail="No se ha podido identificar al empleado.")
@@ -469,14 +461,12 @@ class ProveedorMensajeriaIn(BaseModel):
 @router.get("/proveedores")
 def listar_proveedores(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "ver")
-    _ensure_tables(db)
     return _rows(db, "SELECT * FROM mensajeria_proveedores ORDER BY principal DESC, activo DESC, nombre")
 
 
 @router.post("/proveedores")
 def crear_proveedor(data: ProveedorMensajeriaIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "crear")
-    _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
     try:
         cantidad = db.execute(text("SELECT COUNT(*) FROM mensajeria_proveedores")).scalar() or 0
@@ -499,7 +489,6 @@ def crear_proveedor(data: ProveedorMensajeriaIn, db: Session = Depends(get_db), 
 @router.patch("/proveedores/{proveedor_id}")
 def actualizar_proveedor(proveedor_id: int, data: ProveedorMensajeriaIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_gestion_mensajeria(usuario, "editar")
-    _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
     payload["id"] = proveedor_id
     try:
@@ -532,7 +521,6 @@ def _comprobar_acceso_solicitud(solicitud, usuario):
 @router.get("/solicitudes/{solicitud_id}/comunicaciones")
 def listar_comunicaciones(solicitud_id: int, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_permiso_mensajeria(usuario, "ver")
-    _ensure_tables(db)
     existe = db.execute(text("SELECT id FROM mensajeria_solicitudes WHERE id=:id"), {"id": solicitud_id}).fetchone()
     if not existe:
         raise HTTPException(status_code=404, detail="Solicitud no encontrada.")
@@ -549,7 +537,6 @@ class ComunicacionIn(BaseModel):
 @router.post("/solicitudes/{solicitud_id}/comunicaciones")
 def crear_comunicacion(solicitud_id: int, data: ComunicacionIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_permiso_mensajeria(usuario, "ver")
-    _ensure_tables(db)
     solicitud = db.execute(text("SELECT id,solicitante_id FROM mensajeria_solicitudes WHERE id=:id"), {"id": solicitud_id}).fetchone()
     if not solicitud:
         raise HTTPException(status_code=404, detail="Solicitud no encontrada.")
