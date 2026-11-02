@@ -255,7 +255,7 @@ export default function CtnListadoPage() {
     <main className="molsan-page-stack ctn-listado-page molsan-page" aria-busy={cargando}>
       <header className="ctn-listado-header molsan-page-header">
         <div className="ctn-listado-header-identidad molsan-page-header__identity">
-          <div className="ctn-listado-header-icon molsan-page-header__mark" aria-hidden="true">CTN</div>
+          <div className="ctn-listado-header-icon molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="courthouse" size={32} bare /></div>
           <div className="min-w-0">
             <p className="ctn-listado-header-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
             <h1 className="molsan-page-header__title">Listado CTN</h1>
