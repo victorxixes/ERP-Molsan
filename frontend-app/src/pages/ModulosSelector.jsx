@@ -347,7 +347,7 @@ export default function ModulosSelector() {
                 <h2 id="soporte-notaria-titulo" className="mt-1 text-xl font-extrabold text-slate-900">{modalSoporte === "notargest" ? "NotarGest – Notarios" : "EncargaGest – Notarios"}</h2>
                 <p className="mt-1 text-sm text-slate-500">Solo aparecen notarías con el acceso a este portal habilitado.</p>
               </div>
-              <button type="button" onClick={() => setModalSoporte(null)} disabled={Boolean(abriendoNotaria)} className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50" aria-label="Cerrar">✕</button>
+              <button type="button" onClick={() => setModalSoporte(null)} disabled={Boolean(abriendoNotaria)} className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50" aria-label="Cerrar"><MolsanIcon name="x" size={16} bare /></button>
             </header>
             <div className="border-b border-slate-100 p-5">
               <label className="relative block">
