@@ -749,6 +749,20 @@ export default function ApoderaGest() {
   const navigate = useNavigate();
   const empleado = useAuthStore((state) => state.empleado);
   const usuarioId = empleado?.empleado_id ?? empleado?.id ?? null;
+  const modulosVisibles = [
+    ...(Array.isArray(empleado?.modulos_visibles_list) ? empleado.modulos_visibles_list : []),
+    ...(Array.isArray(empleado?.modulos_visibles) ? empleado.modulos_visibles : []),
+  ];
+  const permisosModulo = empleado?.permisos_modulo_dict || empleado?.permisos_modulo || {};
+  const entradaPermisosApoderagest = Object.entries(permisosModulo).find(
+    ([modulo]) => String(modulo).trim().toLowerCase() === "apoderagest"
+  );
+  const accionesApoderagest = Array.isArray(entradaPermisosApoderagest?.[1])
+    ? entradaPermisosApoderagest[1].map((accion) => String(accion).trim().toLowerCase())
+    : [];
+  const tieneAccesoApoderagest =
+    modulosVisibles.some((modulo) => String(modulo).trim().toLowerCase() === "apoderagest") &&
+    accionesApoderagest.includes("ver");
 
   const [dashboard, setDashboard] = useState(null);
   const [agenda, setAgenda] = useState([]);
@@ -762,6 +776,7 @@ export default function ApoderaGest() {
 
 
   const cargarDatos = useCallback(async () => {
+    if (!tieneAccesoApoderagest) return;
     setCargando(true);
     setError("");
 
@@ -801,11 +816,11 @@ export default function ApoderaGest() {
     } finally {
       setCargando(false);
     }
-  }, []);
+  }, [tieneAccesoApoderagest]);
 
   useEffect(() => {
-    cargarDatos();
-  }, [cargarDatos]);
+    if (tieneAccesoApoderagest) cargarDatos();
+  }, [cargarDatos, tieneAccesoApoderagest]);
 
   const esEncargoFirmado = (encargo) => Boolean(encargo?.fecha_firma && String(encargo?.protocolo || "").trim());
   const normalizarModalidad = (valor) => String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
@@ -863,6 +878,28 @@ export default function ApoderaGest() {
     month: "long",
     year: "numeric",
   }).format(new Date());
+
+  if (!tieneAccesoApoderagest) {
+    return (
+      <div className="min-h-screen bg-[var(--erp-bg)] px-4 py-10 text-[var(--erp-text)]">
+        <main className="mx-auto flex min-h-[60vh] w-full max-w-3xl items-center justify-center">
+          <section className="w-full rounded-2xl border border-[var(--molsan-border)] bg-white p-7 text-center shadow-[var(--molsan-shadow-card)]">
+            <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] text-[var(--molsan-primary)]">
+              <MolsanIcon name="lock" size={24} bare />
+            </div>
+            <p className="mb-2 text-xs font-extrabold uppercase tracking-[.14em] text-[var(--molsan-text-muted)]">MOLSAN ERP · SEGURIDAD</p>
+            <h1 className="text-xl font-extrabold text-[var(--molsan-primary)]">Acceso restringido</h1>
+            <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-[var(--molsan-text-muted)]">
+              ApoderaGest está reservado a los apoderados con el módulo visible y el permiso de lectura asignado en Seguridad.
+            </p>
+            <button type="button" className="molsan-btn molsan-btn--primary mt-5" onClick={() => navigate("/modulos")}>
+              Volver a módulos
+            </button>
+          </section>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
