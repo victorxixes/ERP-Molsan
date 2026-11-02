@@ -76,7 +76,7 @@ export default function Fusiones() {
   ];
 
   return <main className="molsan-page-stack erp-page min-h-full text-[var(--erp-text)]">
-    <section className="molsan-page-header">
+    <header className="molsan-page-header molsan-page-header--standard">
       <div className="molsan-page-header__identity">
         <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="merge" size={42} bare /></div>
         <div className="min-w-0">
@@ -85,7 +85,7 @@ export default function Fusiones() {
           <p className="molsan-page-header__description">Consulta y seguimiento de solicitudes de fusión recibidas desde la gestión de expedientes.</p>
         </div>
       </div>
-    </section>
+    </header>
 
     {error && <div role="alert" className="flex flex-col gap-3 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-semibold">No se han podido cargar las solicitudes</p><p className="mt-1 leading-5">{error}</p></div><button type="button" onClick={cargarSolicitudes} className="shrink-0 rounded-lg border border-rose-200 bg-white px-3 py-2 text-xs font-semibold hover:bg-rose-100">Reintentar</button></div>}
 
