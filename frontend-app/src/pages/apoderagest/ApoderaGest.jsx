@@ -133,6 +133,7 @@ function TarjetaIndicador({
   valor,
   detalle,
   icono,
+  tono = "ocean",
   variante = "",
   onClick,
 }) {
@@ -140,7 +141,7 @@ function TarjetaIndicador({
     <>
       <div className="ag-kpi-superior">
         <span className="ag-kpi-titulo">{titulo}</span>
-        <span className="ag-kpi-icono" aria-hidden="true"><MolsanIcon name={icono} size={28} bare /></span>
+        <span className="ag-kpi-icono" aria-hidden="true"><MolsanIcon name={icono} size={34} tone={tono} /></span>
       </div>
       <div className="ag-kpi-valor">{valor}</div>
       {detalle ? <div className="ag-kpi-detalle">{detalle}</div> : null}
@@ -154,11 +155,11 @@ function TarjetaIndicador({
   ) : <article className={`ag-kpi ${variante}`}>{contenido}</article>;
 }
 
-function EstadoVacio({ icono = "file", titulo, detalle }) {
+function EstadoVacio({ icono = "file", titulo, detalle, tono = "ocean" }) {
   return (
     <div className="ag-vacio">
       <span className="ag-vacio-icono" aria-hidden="true">
-        <MolsanIcon name={icono} size={34} bare />
+        <MolsanIcon name={icono} size={40} tone={tono} />
       </span>
       <h3>{titulo}</h3>
       <p>{detalle}</p>
@@ -489,7 +490,7 @@ function TablaEncargos({ encargos, onFirmado }) {
         return (
           <section className="ag-panel ag-grupo-notario ag-grupo-apoderado" key={grupo.clave}>
             <button type="button" className="ag-panel-cabecera ag-notario-grupo-trigger ag-apoderado-grupo-trigger" aria-expanded={abierto} onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: !actual[grupo.clave] }))}>
-              <span className="ag-notario-grupo-icono" aria-hidden="true"><MolsanIcon name="users" size={24} bare /></span>
+              <span className="ag-notario-grupo-icono" aria-hidden="true"><MolsanIcon name="users" size={30} tone="violet" /></span>
               <span className="ag-notario-grupo-info">
                 <span className="ag-notario-linea-unica">
                   <strong>{grupo.nombre}</strong>
@@ -599,7 +600,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                               const renderCarpeta = (titulo, icono, lista, vacio) => (
                                 <details className="ag-carpeta-apoderado" key={titulo} open>
                                   <summary className="ag-carpeta-apoderado-cabecera">
-                                    <span className="ag-carpeta-apoderado-icono" aria-hidden="true"><MolsanIcon name={icono} size={19} bare /></span>
+                                    <span className="ag-carpeta-apoderado-icono" aria-hidden="true"><MolsanIcon name={icono} size={27} tone="ocean" /></span>
                                     <div><strong>{titulo}</strong><small>{lista.length} documento{lista.length === 1 ? "" : "s"}</small></div>
                                   </summary>
                                   {lista.length ? (
@@ -914,7 +915,7 @@ export default function ApoderaGest() {
           { key: "agenda", label: "Agenda", icon: "calendar" },
           { key: "encargos", label: "Encargos", icon: "clipboard" },
           { key: "ctn", label: "CTN", icon: "globe" },
-          { key: "mensajes", label: "Mensajes", icon: "chat" },
+          { key: "mensajes", label: "Mensajes", icon: "message" },
           { key: "intranet", label: "Intranet", icon: "folder" },
           ...(empleado?.es_colaborador === true ? [
             { key: "liquidaciones", label: "Mi liquidación", icon: "receipt" },
@@ -928,7 +929,7 @@ export default function ApoderaGest() {
           <div className="erp-page molsan-page molsan-professional-shell w-full apoderagest">
       <header className="ag-hero molsan-page-header dashboard-header">
         <div className="ag-hero-identidad molsan-page-header__identity">
-          <div className="ag-marca molsan-page-header__mark">AG</div>
+          <div className="ag-marca ag-marca-icono molsan-page-header__mark" aria-label="ApoderaGest"><MolsanIcon name="shield" size={36} tone="ocean" /></div>
           <div>
             <div className="ag-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
             <h1 className="molsan-page-header__title">ApoderaGest</h1>
@@ -969,15 +970,15 @@ export default function ApoderaGest() {
             {ultimaActualizacion ? <span className="ag-actualizado">Actualizado a las {ultimaActualizacion.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}</span> : null}
           </div>
           <div className="ag-grid-kpi">
-            <TarjetaIndicador titulo="Total de encargos" valor={numeroLegible(dashboard?.total_encargos ?? 0)} detalle="Volumen registrado" icono="file" variante="ag-kpi-azul" onClick={() => abrirResumenEncargos("todos", "Todos los encargos")} />
-            <TarjetaIndicador titulo="Firmados" valor={numeroLegible(dashboard?.firmados ?? 0)} detalle="Encargos completados" icono="check" variante="ag-kpi-verde" onClick={() => abrirResumenEncargos("firmados", "Encargos firmados")} />
-            <TarjetaIndicador titulo="Pendientes" valor={numeroLegible(dashboard?.pendientes ?? 0)} detalle="Requieren seguimiento" icono="clock" variante="ag-kpi-ambar" onClick={() => abrirResumenEncargos("pendientes", "Encargos pendientes")} />
-            <TarjetaIndicador titulo="Media hasta firma" valor={dashboard?.media_dias_hasta_firma == null ? "—" : `${Math.abs(dashboard.media_dias_hasta_firma)} días ${dashboard.media_dias_hasta_firma < 0 ? "antes" : dashboard.media_dias_hasta_firma > 0 ? "después" : "en fecha"}`} detalle="Desde fecha prevista hasta fecha real" icono="chart" variante="ag-kpi-violeta" onClick={() => abrirResumenEncargos("media", "Encargos incluidos en la media hasta firma")} />
+            <TarjetaIndicador titulo="Total de encargos" valor={numeroLegible(dashboard?.total_encargos ?? 0)} detalle="Volumen registrado" icono="fileCheck" tono="ocean" variante="ag-kpi-azul" onClick={() => abrirResumenEncargos("todos", "Todos los encargos")} />
+            <TarjetaIndicador titulo="Firmados" valor={numeroLegible(dashboard?.firmados ?? 0)} detalle="Encargos completados" icono="check" tono="emerald" variante="ag-kpi-verde" onClick={() => abrirResumenEncargos("firmados", "Encargos firmados")} />
+            <TarjetaIndicador titulo="Pendientes" valor={numeroLegible(dashboard?.pendientes ?? 0)} detalle="Requieren seguimiento" icono="timer" tono="amber" variante="ag-kpi-ambar" onClick={() => abrirResumenEncargos("pendientes", "Encargos pendientes")} />
+            <TarjetaIndicador titulo="Media hasta firma" valor={dashboard?.media_dias_hasta_firma == null ? "—" : `${Math.abs(dashboard.media_dias_hasta_firma)} días ${dashboard.media_dias_hasta_firma < 0 ? "antes" : dashboard.media_dias_hasta_firma > 0 ? "después" : "en fecha"}`} detalle="Desde fecha prevista hasta fecha real" icono="chart" tono="violet" variante="ag-kpi-violeta" onClick={() => abrirResumenEncargos("media", "Encargos incluidos en la media hasta firma")} />
           </div>
           <div className="ag-grid-secundario">
-            <TarjetaIndicador titulo="Firmas presenciales" valor={numeroLegible(dashboard?.firmas_presenciales)} detalle="Actividad presencial" icono="pin" onClick={() => abrirResumenEncargos("presenciales", "Firmas presenciales")} />
-            <TarjetaIndicador titulo="Firmas por videoconferencia" valor={numeroLegible(dashboard?.firmas_videoconferencia)} detalle="Actividad remota" icono="video" onClick={() => abrirResumenEncargos("videoconferencia", "Firmas por videoconferencia")} />
-            <TarjetaIndicador titulo="Kilómetros presenciales" valor={dashboard?.kilometros_presenciales == null ? "Pendiente" : `${numeroLegible(dashboard.kilometros_presenciales)} km`} detalle={`Desde CP ${dashboard?.origen_kilometros || "08016"} · ${dashboard?.firmas_presenciales_con_distancia ?? 0}/${dashboard?.firmas_presenciales ?? 0} distancias calculadas en línea recta`} icono="car" onClick={() => abrirResumenEncargos("kilometros", "Firmas presenciales · cálculo de kilómetros")} />
+            <TarjetaIndicador titulo="Firmas presenciales" valor={numeroLegible(dashboard?.firmas_presenciales)} detalle="Actividad presencial" icono="pin" tono="cyan" onClick={() => abrirResumenEncargos("presenciales", "Firmas presenciales")} />
+            <TarjetaIndicador titulo="Firmas por videoconferencia" valor={numeroLegible(dashboard?.firmas_videoconferencia)} detalle="Actividad remota" icono="video" tono="violet" onClick={() => abrirResumenEncargos("videoconferencia", "Firmas por videoconferencia")} />
+            <TarjetaIndicador titulo="Kilómetros presenciales" valor={dashboard?.kilometros_presenciales == null ? "Pendiente" : `${numeroLegible(dashboard.kilometros_presenciales)} km`} detalle={`Desde CP ${dashboard?.origen_kilometros || "08016"} · ${dashboard?.firmas_presenciales_con_distancia ?? 0}/${dashboard?.firmas_presenciales ?? 0} distancias calculadas en línea recta`} icono="car" tono="indigo" onClick={() => abrirResumenEncargos("kilometros", "Firmas presenciales · cálculo de kilómetros")} />
           </div>
           <div className="ag-dashboard-inferior-grid">
             <section className="ag-panel ag-panel-proximas">
