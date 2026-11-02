@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
 import { API_BASE as API_ROOT } from "../../api/config";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "../../css/CtnListadoPage.css";
 
 const API_BASE = API_ROOT;
@@ -252,7 +253,7 @@ export default function CtnListadoPage() {
     <main className="molsan-page-stack ctn-listado-page molsan-page" aria-busy={cargando}>
       <header className="ctn-listado-header molsan-page-header">
         <div className="ctn-listado-header-identidad molsan-page-header__identity">
-          <div className="ctn-listado-header-icon molsan-page-header__mark" aria-hidden="true">CTN</div>
+          <div className="ctn-listado-header-icon molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="courthouse" size={32} bare /></div>
           <div className="min-w-0">
             <p className="ctn-listado-header-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
             <h1 className="molsan-page-header__title">Listado CTN</h1>
@@ -339,8 +340,8 @@ export default function CtnListadoPage() {
                     <td>{texto(item.nif)}</td><td>{texto(item.municipio)}</td><td>{texto(item.provincia)}</td>
                     <td><span className={`ctn-etiqueta ${vc.clase}`}>{vc.texto}</span></td>
                     <td>{texto(item.apoderado)}</td><td>{texto(listaAsociados(item))}</td>
-                    <td><span className={`ctn-etiqueta ${item.notargest_habilitado ? "ctn-etiqueta-si" : "ctn-etiqueta-neutra"}`} title="El acceso se gestiona desde la ficha de la notaría">{item.notargest_habilitado ? "✓ Habilitado" : "Deshabilitado"}</span></td>
-                    <td>{errorEncargaGest ? <span className="ctn-etiqueta ctn-etiqueta-neutra" title={errorEncargaGest}>No disponible</span> : (() => { const acceso = accesosEncargaGest.find((x) => Number(x.notaria_id) === Number(item.id)); const habilitado = Boolean(acceso?.tiene_acceso && acceso?.habilitado); const configurado = Boolean(acceso?.tiene_acceso); return <span className={`ctn-etiqueta ${habilitado ? "ctn-etiqueta-si" : "ctn-etiqueta-neutra"}`} title="El acceso se gestiona desde la ficha de la notaría">{habilitado ? "✓ Habilitado" : configurado ? "Deshabilitado" : "Sin configurar"}</span>; })}</td>
+                    <td><span className={`ctn-etiqueta ${item.notargest_habilitado ? "ctn-etiqueta-si" : "ctn-etiqueta-neutra"}`} title="El acceso se gestiona desde la ficha de la notaría">{item.notargest_habilitado ? <><MolsanIcon name="check" size={12} inline /> Habilitado</> : "Deshabilitado"}</span></td>
+                    <td>{errorEncargaGest ? <span className="ctn-etiqueta ctn-etiqueta-neutra" title={errorEncargaGest}>No disponible</span> : (() => { const acceso = accesosEncargaGest.find((x) => Number(x.notaria_id) === Number(item.id)); const habilitado = Boolean(acceso?.tiene_acceso && acceso?.habilitado); const configurado = Boolean(acceso?.tiene_acceso); return <span className={`ctn-etiqueta ${habilitado ? "ctn-etiqueta-si" : "ctn-etiqueta-neutra"}`} title="El acceso se gestiona desde la ficha de la notaría">{habilitado ? <><MolsanIcon name="check" size={12} inline /> Habilitado</> : configurado ? "Deshabilitado" : "Sin configurar"}</span>; })}</td>
                     <td>{item.distancia_km == null ? "—" : `${Number(item.distancia_km).toLocaleString("es-ES", { maximumFractionDigits: 1 })} km`}</td>
                     <td><button type="button" className="ctn-btn ctn-btn-primary ctn-btn-small molsan-btn molsan-btn--primary molsan-btn--compact" onClick={() => setNotariaSeleccionada(item)}>Ver ficha</button></td>
                   </tr>
