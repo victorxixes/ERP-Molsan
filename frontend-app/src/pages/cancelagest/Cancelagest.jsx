@@ -89,7 +89,7 @@ export default function Cancelagest() {
         </div>
         <div className="cg-hero-acciones">
           <div className="cg-fecha">{fechaActual}</div>
-          <button type="button" className="cg-button-primary" onClick={cargar} disabled={cargando}>{cargando ? "Actualizando…" : "↻ Actualizar datos"}</button>
+          
         </div>
       </header>
 
