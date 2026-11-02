@@ -560,9 +560,6 @@
   .encargagest .eg-main { padding-left: 12px; padding-right: 12px; }
   
 }
-@media (max-width: 760px) {
-  .encargagest { padding: 14px; }
-}
 
 /* Robustez final del perfil CTN en EncargaGest: viewport móvil y contenido largo. */
 .encargagest .eg-modal-perfil {
