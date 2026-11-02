@@ -891,8 +891,9 @@ def _estado_workflow(e):
 
 @router.get("/admin/expedientes/{expediente_id}/actividad")
 def consultar_actividad_desde_utilidades(expediente_id: str, actor=Depends(get_notario), db: Session = Depends(get_db)):
-    if not _es_usuario_erp(actor):
-        raise HTTPException(status_code=403, detail="Esta consulta solo está disponible para usuarios ERP.")
+    if not _es_usuario_erp(actor) or not _es_administrador_notargest(actor):
+        raise HTTPException(status_code=403, detail="Esta consulta administrativa solo está disponible para administradores ERP.")
+    require_perm_modulo(actor, "notargest", "ver")
     e = db.query(Expediente).filter(Expediente.id_expediente == str(expediente_id)).first()
     if not e:
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
