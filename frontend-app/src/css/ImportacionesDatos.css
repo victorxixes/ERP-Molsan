@@ -7,10 +7,9 @@
 .importaciones-datos-notice strong { display:block; margin-bottom:3px; color:#064675; font-size:14px; }
 .importaciones-datos-card {
   display:flex; min-width:0; min-height:112px; align-items:center; gap:14px;
-  padding:17px; border:1px solid #D8E4EC; border-radius:19px;
-  color:#173247; background:linear-gradient(145deg,#fff 0%,#fff 58%,#F2F7FB 100%);
-  box-shadow:0 7px 20px rgba(6,50,82,.055);
-  text-decoration:none; transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+  padding:17px; border-radius:19px;
+  color:#173247; text-decoration:none;
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
 }
 .importaciones-datos-card:hover {
   transform:translateY(-3px); border-color:#B9D7E6;
