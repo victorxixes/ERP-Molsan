@@ -276,6 +276,9 @@ def _validar_admin_soporte_encargagest(payload, db):
         raise HTTPException(status_code=401, detail="La sesión de soporte EncargaGest ya no está autorizada.")
     if not _es_administrador_encargagest(admin):
         raise HTTPException(status_code=403, detail="El administrador que abrió esta sesión ya no tiene permisos de soporte.")
+    modulos = getattr(admin, "modulos_visibles_list", None) or []
+    if not any(str(modulo).strip().casefold() == "encargagest" for modulo in modulos):
+        raise HTTPException(status_code=403, detail="EncargaGest ya no está habilitado para el administrador.")
     _autorizar(admin, "ver")
     return admin
 
