@@ -1541,19 +1541,21 @@ a[aria-current="page"] .molsan-nav-icon-3d {
   display: flex !important;
   width: 100% !important;
   min-width: 0 !important;
-  min-height: 112px !important;
+  min-height: 60px !important;
+  height: 60px !important;
+  max-height: 64px !important;
   align-items: center !important;
   justify-content: space-between !important;
-  flex-wrap: wrap !important;
-  gap: 18px !important;
-  margin: 0 0 20px !important;
-  padding: 20px 24px !important;
-  overflow: visible !important;
-  color: #173247 !important;
-  border: 1px solid #D8E4EC !important;
+  flex-wrap: nowrap !important;
+  gap: 12px !important;
+  margin: 0 0 16px !important;
+  padding: 5px 16px !important;
+  overflow: hidden !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
   border-radius: 16px !important;
-  background: #FFFFFF !important;
-  box-shadow: 0 8px 24px rgba(6,50,82,.055) !important;
+  background: radial-gradient(circle at 86% 18%, rgba(116,199,219,.18), transparent 27%), linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%) !important;
+  box-shadow: 0 12px 28px rgba(4,55,91,.16) !important;
   animation: none !important;
   transition: none !important;
   opacity: 1 !important;
@@ -1572,39 +1574,43 @@ a[aria-current="page"] .molsan-nav-icon-3d {
 .apoderagest > .ag-hero.molsan-page-header .molsan-page-header__mark,
 .apoderagest.notargest-workspace-premium .notargest.ng-content > .ng-hero-apoderagest .molsan-page-header__mark {
   display: grid !important;
-  flex: 0 0 58px !important;
-  width: 58px !important;
-  height: 58px !important;
+  flex: 0 0 36px !important;
+  width: 36px !important;
+  height: 36px !important;
   place-items: center !important;
-  color: #064675 !important;
-  border: 1px solid #D8E4EC !important;
-  border-radius: 15px !important;
-  background: #F2F7FB !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 5px 14px rgba(6,50,82,.07) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255,255,255,.30) !important;
+  border-radius: 10px !important;
+  background: rgba(255,255,255,.12) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18) !important;
 }
 .apoderagest > .ag-hero.molsan-page-header .molsan-page-header__eyebrow,
 .apoderagest.notargest-workspace-premium .notargest.ng-content > .ng-hero-apoderagest .molsan-page-header__eyebrow {
-  margin: 0 0 5px !important;
-  color: #617789 !important;
-  font-size: 10px !important;
+  margin: 0 0 1px !important;
+  color: #C6DFEC !important;
+  font-size: 8.5px !important;
   font-weight: 800 !important;
-  letter-spacing: .13em !important;
+  letter-spacing: .14em !important;
+  line-height: 1.15 !important;
 }
 .apoderagest > .ag-hero.molsan-page-header .molsan-page-header__title,
 .apoderagest.notargest-workspace-premium .notargest.ng-content > .ng-hero-apoderagest .molsan-page-header__title {
   margin: 0 !important;
-  color: #064675 !important;
-  font-size: clamp(21px, 2vw, 27px) !important;
+  color: #FFFFFF !important;
+  font-size: clamp(19px, 1.8vw, 22px) !important;
   font-weight: 800 !important;
-  line-height: 1.15 !important;
-  letter-spacing: -.03em !important;
+  line-height: 1.05 !important;
+  letter-spacing: -.035em !important;
 }
 .apoderagest > .ag-hero.molsan-page-header .molsan-page-header__description,
 .apoderagest.notargest-workspace-premium .notargest.ng-content > .ng-hero-apoderagest .molsan-page-header__description {
-  margin: 6px 0 0 !important;
-  color: #617789 !important;
-  font-size: 12px !important;
-  line-height: 1.55 !important;
+  margin: 2px 0 0 !important;
+  color: #C6DFEC !important;
+  font-size: 10px !important;
+  line-height: 1.15 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 .apoderagest > .ag-hero.molsan-page-header .molsan-page-header__actions,
 .apoderagest.notargest-workspace-premium .notargest.ng-content > .ng-hero-apoderagest .molsan-page-header__actions {
@@ -1612,7 +1618,7 @@ a[aria-current="page"] .molsan-nav-icon-3d {
   align-items: center !important;
   justify-content: flex-end !important;
   flex-wrap: wrap !important;
-  gap: 9px !important;
+  gap: 6px !important;
   margin-left: auto !important;
 }
 .apoderagest .ag-panel,
@@ -1645,14 +1651,20 @@ a[aria-current="page"] .molsan-nav-icon-3d {
 @media (max-width: 700px) {
   .apoderagest > .ag-hero.molsan-page-header,
   .apoderagest.notargest-workspace-premium .notargest.ng-content > .ng-hero-apoderagest {
-    align-items: flex-start !important;
-    flex-direction: column !important;
-    padding: 16px !important;
+    min-height: 60px !important;
+    height: auto !important;
+    max-height: none !important;
+    align-items: center !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 8px 12px !important;
+    padding: 8px 12px !important;
   }
   .apoderagest > .ag-hero.molsan-page-header .molsan-page-header__actions,
   .apoderagest.notargest-workspace-premium .notargest.ng-content > .ng-hero-apoderagest .molsan-page-header__actions {
-    width: 100% !important;
-    justify-content: flex-start !important;
+    width: auto !important;
+    margin-left: auto !important;
+    justify-content: flex-end !important;
   }
 }
 
