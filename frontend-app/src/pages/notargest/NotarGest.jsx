@@ -171,7 +171,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       const id = encodeURIComponent(item.id_expediente || item.numero_expediente);
       const [detalleResponse, gestoresResponse] = await Promise.all([
         fetch(`${API_BASE}/notargest/expedientes/${id}`, { headers }),
-        fetch(`${API_BASE}/notargest/gestores`, { headers }),
+        fetch(`${API_BASE}/notargest/gestores?expediente_id=${encodeURIComponent(item.id_expediente || item.numero_expediente)}`, { headers }),
       ]);
       const detalleData = await detalleResponse.json().catch(() => ({}));
       const gestoresData = await gestoresResponse.json().catch(() => []);
@@ -333,7 +333,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       const id = encodeURIComponent(item.id_expediente || item.numero_expediente);
       const [data, listaGestores] = await Promise.all([
         peticion(`/notargest/expedientes/${id}`),
-        peticion("/notargest/gestores"),
+        peticion(`/notargest/gestores?expediente_id=${id}`),
       ]);
       setDetalle(data); setGestores(Array.isArray(listaGestores) ? listaGestores : []);
       setComentarioGestor(""); setGestorDestinatario("");
