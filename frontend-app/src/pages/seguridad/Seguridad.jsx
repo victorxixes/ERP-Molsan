@@ -120,8 +120,8 @@ export default function Seguridad() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-            <Indicador icon="user-group" label="Empleados" value={empleadosList.length} detail="Registros disponibles" />
-            <Indicador icon="user-group" label="Activos" value={empleadosActivos} detail="Empleados marcados como activos" />
+            <Indicador icon="users" label="Empleados" value={empleadosList.length} detail="Registros disponibles" />
+            <Indicador icon="users" label="Activos" value={empleadosActivos} detail="Empleados marcados como activos" />
             <Indicador icon="shield" label="Roles" value={rolesList.length} detail="Roles registrados" />
             <Indicador icon="shield" label="Permisos" value={permisosList.length} detail="Permisos registrados" />
             <Indicador icon="clipboard-list" label="Auditoría" value={auditoriaList.length} detail="Eventos disponibles" />
@@ -135,7 +135,7 @@ export default function Seguridad() {
           <p className="mt-0.5 text-sm text-[var(--erp-text-soft)]">Cada función tiene su propia pantalla para evitar formularios y listados duplicados.</p>
         </div>
         <div className="seguridad-accesos-grid">
-          <Acceso to="/seguridad/usuarios" icon="user-group" title="Empleados y permisos" description="Selecciona empleados y gestiona su acceso según los permisos de tu perfil." />
+          <Acceso to="/seguridad/usuarios" icon="users" title="Empleados y permisos" description="Selecciona empleados y gestiona su acceso según los permisos de tu perfil." />
           <Acceso to="/seguridad/roles/editor" icon="shield" title="Roles" description="Crea, edita y administra los perfiles de seguridad que se asignan a los empleados." />
           <Acceso to="/seguridad/modulos" icon="folder" title="Módulos y permisos" description="Consulta los módulos del ERP y la configuración de acceso disponible." />
           <Acceso to="/auditoria" icon="clipboard-list" title="Auditoría" description="Consulta las operaciones y los eventos registrados en el sistema." />
