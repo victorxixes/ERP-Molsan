@@ -254,7 +254,7 @@ def _es_externo(actor):
 def _es_administrador_encargagest(usuario):
     nombre_usuario = str(getattr(usuario, "usuario", "") or "").strip().casefold()
     rol = str(getattr(getattr(usuario, "rol", None), "nombre", "") or "").strip().casefold()
-    return nombre_usuario == "admin" or rol in {"admin", "administrador", "administradora", "superadmin"}
+    return nombre_usuario == "admin" or rol in {"admin", "administrador", "administradora", "superadmin", "superadministrador", "administrador del sistema"}
 
 
 def _exigir_admin_encargagest(usuario):
