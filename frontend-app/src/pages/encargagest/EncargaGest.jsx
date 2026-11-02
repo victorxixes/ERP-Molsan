@@ -860,16 +860,6 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
                 <span className="ag-punto-vivo" aria-hidden="true" />
                 <span>{fechaActual}</span>
               </div>
-              <button
-                type="button"
-                onClick={cargarTodo}
-                disabled={cargando}
-                className="ag-boton-actualizar"
-                aria-live="polite"
-              >
-                <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
-                {cargando ? "Actualizando…" : "Actualizar datos"}
-              </button>
             </>
           }
           onProfileClick={() => {
@@ -881,7 +871,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         />
       )}
       <div className="ag-fondo-decorativo" aria-hidden="true" />
-      <header className="ag-hero eg-hero molsan-page-header">
+      <header className="ag-hero eg-hero molsan-page-header dashboard-header">
         <div className="ag-hero-identidad molsan-page-header__identity">
           <div className="ag-marca eg-marca molsan-page-header__mark" aria-label="EncargaGest">EG</div>
           <div>
@@ -899,10 +889,6 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
               </div>
               <button type="button" onClick={irAModulos} className="eg-secondary"><span aria-hidden="true">▦</span> Ir a módulos</button>
               <button type="button" onClick={salirEncargaGest} className="eg-secondary">Cerrar sesión</button>
-              <button type="button" onClick={cargarTodo} disabled={cargando} className="ag-boton-actualizar">
-                <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
-                {cargando ? "Actualizando…" : "Actualizar datos"}
-              </button>
             </>
           )}
         </div>
