@@ -828,6 +828,21 @@ def _hay_defectos_abiertos_notargest(expediente):
     }
 
 
+ESTADOS_PERMITIDOS_DOCUMENTO_NOTARGEST = {
+    "factura": {"factura"},
+    "presentacion": {"registro"},
+    "ajd": {"ajd"},
+    "defecto": {"inscripcion"},
+    "subsanacion": {"inscripcion"},
+    "inscripcion": {"inscripcion"},
+    "copia": {"copia"},
+}
+
+
+def _categoria_documental_permitida_notargest(categoria, estado):
+    return estado in ESTADOS_PERMITIDOS_DOCUMENTO_NOTARGEST.get(categoria, set())
+
+
 # La migración de estas columnas se centraliza en main.py para evitar DDL concurrente.
 def migrar_workflow_notargest():
     """Comprueba columnas del workflow y no bloquea el arranque por migraciones auxiliares."""
@@ -1068,16 +1083,7 @@ async def subir_documento_workflow(expediente_id: str, categoria: str = Form(...
         raise HTTPException(status_code=400, detail="Tipo de documento no válido")
     categoria_carpeta, mime_fijo, siguiente = categorias[categoria]
     estado_actual = _estado_workflow(e)
-    estados_permitidos = {
-        "factura": {"factura"},
-        "presentacion": {"registro"},
-        "ajd": {"ajd"},
-        "defecto": {"inscripcion"},
-        "subsanacion": {"inscripcion"},
-        "inscripcion": {"inscripcion"},
-        "copia": {"copia"},
-    }
-    if estado_actual not in estados_permitidos[categoria]:
+    if not _categoria_documental_permitida_notargest(categoria, estado_actual):
         raise HTTPException(
             status_code=400,
             detail=f"El documento {categoria_carpeta} no corresponde a la fase actual del expediente ({ESTADOS_NOTARGEST.get(estado_actual, estado_actual)}).",
