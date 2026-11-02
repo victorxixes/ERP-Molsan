@@ -26,7 +26,7 @@ function fechaLegible(valor) {
 function horaLegible(valor) {
   if (!valor) return "—";
   const textoHora = String(valor);
-  const coincidencia = textoHora.match(/(?:T|^)(\d{2}:\d{2})/);
+  const coincidencia = textoHora.match(/(?:T|\s|^)(\d{2}:\d{2})/);
   return coincidencia ? coincidencia[1] : textoHora.slice(0, 5);
 }
 
@@ -34,32 +34,6 @@ function texto(valor, alternativa = "—") {
   return valor === null || valor === undefined || valor === ""
     ? alternativa
     : String(valor);
-}
-
-function normalizarNombreNotario(valor) {
-  return String(valor || "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim()
-    .replace(/\s+/g, " ")
-    .toLocaleLowerCase("es");
-}
-
-function encontrarNotarioCtn(grupo, catalogo) {
-  const nif = normalizarNombreNotario(grupo?.nif);
-  if (nif) {
-    const porNif = catalogo.find((notario) =>
-      normalizarNombreNotario(notario.nif) === nif
-    );
-    if (porNif) return porNif;
-  }
-
-  const nombre = normalizarNombreNotario(grupo?.nombre);
-  return catalogo.find((notario) =>
-    normalizarNombreNotario(
-      notario.nombre_completo || [notario.nombre, notario.apellidos].filter(Boolean).join(" ")
-    ) === nombre
-  ) || null;
 }
 
 function normalizarCategoriaDocumento(valor) {
@@ -120,6 +94,7 @@ function EstadoPill({ valor }) {
   } else if (
     normalizado.includes("cancel") ||
     normalizado.includes("rechaz") ||
+    normalizado.includes("bloquead") ||
     normalizado.includes("error")
   ) {
     clase = "ag-estado-alerta";
@@ -141,7 +116,7 @@ function TarjetaIndicador({
     <>
       <div className="ag-kpi-superior">
         <span className="ag-kpi-titulo">{titulo}</span>
-        <span className="ag-kpi-icono" aria-hidden="true"><MolsanIcon name={icono} size={34} tone={tono} /></span>
+        <span className="ag-kpi-icono" aria-hidden="true"><MolsanIcon name={icono} size={40} tone={tono} /></span>
       </div>
       <div className="ag-kpi-valor">{valor}</div>
       {detalle ? <div className="ag-kpi-detalle">{detalle}</div> : null}
@@ -202,8 +177,8 @@ function ImprimirEncargos({ encargos = [] }) {
   };
   return (
     <div className="ag-print-tools">
-      <button type="button" className="ag-print-action" onClick={() => imprimir("lista")}><MolsanIcon name="file" size={16} bare /> Imprimir listado</button>
-      <button type="button" className="ag-print-action ag-print-action-secundario" onClick={() => imprimir("fichas")}><MolsanIcon name="files" size={16} bare /> Imprimir fichas detalladas</button>
+      <button type="button" className="ag-print-action" onClick={() => imprimir("lista")}><MolsanIcon name="file" size={20} tone="ocean" /> Imprimir listado</button>
+      <button type="button" className="ag-print-action ag-print-action-secundario" onClick={() => imprimir("fichas")}><MolsanIcon name="files" size={20} tone="slate" /> Imprimir fichas detalladas</button>
       <section className="ag-print-root ag-encargos-print-root" aria-hidden="true">
         <header className="ag-print-header"><strong>MOLSAN ERP · APODERAGEST</strong><h1>Listado de encargos</h1><p>{encargos.length} {encargos.length === 1 ? "encargo" : "encargos"} · Impreso el {new Date().toLocaleDateString("es-ES")}</p></header>
         <table className="ag-print-table"><thead><tr><th>Expediente</th><th>Solicitante</th><th>Notario</th><th>Fecha prevista</th><th>Horario</th><th>Estado</th></tr></thead><tbody>{encargos.map((e, i) => <tr key={String(e.id_expediente || e.id || i)}><td>{texto(e.id_expediente || e.id)}{e.bloqueado ? <small>Bloqueado</small> : null}</td><td>{texto(e.nombre_solicitante || e.solicitante)}<small>{texto(e.nif_solicitante || e.dni_solicitante, "")}</small></td><td>{texto(e.nombre_notario || e.notario)}</td><td>{fechaLegible(e.fecha_prevista_firma)}</td><td>{horaLegible(e.hora_prevista_firma)}{e.hora_fin_prevista_firma ? " – " + horaLegible(e.hora_fin_prevista_firma) : ""}</td><td>{e.fecha_firma && e.protocolo ? "Firmado" : e.bloqueado ? "Bloqueado" : "Pendiente"}</td></tr>)}</tbody></table>
@@ -280,12 +255,19 @@ function TablaEncargos({ encargos, onFirmado }) {
     let activo = true;
     axios.get("/apoderagest/encargos/gestores")
       .then(({ data }) => { if (activo) setGestoresDisponibles(Array.isArray(data) ? data : []); })
-      .catch((error) => {
-        console.error("No se ha podido cargar el catálogo de gestores de ApoderaGest.");
+      .catch(() => {
         if (activo) setGestoresDisponibles([]);
       });
     return () => { activo = false; };
   }, []);
+
+  // Libera la URL temporal al cerrar el visor o desmontar la pestaña.
+  useEffect(() => {
+    const url = documentoVisor?.url;
+    return () => {
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [documentoVisor?.url]);
 
   const grupos = useMemo(() => agruparEncargosPorApoderado(encargos), [encargos]);
 
@@ -317,7 +299,8 @@ function TablaEncargos({ encargos, onFirmado }) {
       hora_inicio: horaLegible(encargo.hora_prevista_firma) === "—" ? "09:00" : horaLegible(encargo.hora_prevista_firma),
       hora_fin: horaLegible(encargo.hora_fin_prevista_firma) === "—" ? "10:00" : horaLegible(encargo.hora_fin_prevista_firma),
     };
-    if (!valores.fecha_envio || !valores.numero_solicitud_pnc?.trim() || !valores.fecha_solicitud_pnc || !valores.fecha_prevista_firma || !valores.hora_inicio || !valores.hora_fin) {
+    const numeroSolicitud = String(valores.numero_solicitud_pnc ?? "").trim();
+    if (!valores.fecha_envio || !numeroSolicitud || !valores.fecha_solicitud_pnc || !valores.fecha_prevista_firma || !valores.hora_inicio || !valores.hora_fin) {
       setErroresAceptacion((actual) => ({ ...actual, [id]: "Completa la fecha de envío, el número y fecha de solicitud PNC, la fecha prevista y el horario de firma." }));
       return;
     }
@@ -331,7 +314,7 @@ function TablaEncargos({ encargos, onFirmado }) {
     try {
       const { data } = await axios.post(`/apoderagest/encargos/${encodeURIComponent(id)}/aceptar`, {
         fecha_envio: valores.fecha_envio,
-        numero_solicitud_pnc: valores.numero_solicitud_pnc.trim(),
+        numero_solicitud_pnc: numeroSolicitud,
         fecha_solicitud_pnc: valores.fecha_solicitud_pnc,
         fecha_prevista_firma: valores.fecha_prevista_firma,
         hora_inicio: valores.hora_inicio,
@@ -438,7 +421,7 @@ function TablaEncargos({ encargos, onFirmado }) {
 
   async function abrirDocumento(encargo, documento) {
     try {
-      const ruta = documento.url_descarga || `/expedientes/${encodeURIComponent(encargo.id_expediente)}/carpeta-digital/${documento.id}/descargar`;
+      const ruta = documento.url_descarga || `/expedientes/${encodeURIComponent(encargo.id_expediente || encargo.id)}/carpeta-digital/${documento.id}/descargar`;
       const res = await axios.get(ruta, { responseType: "blob" });
       const nombre = documento.nombre_original || "Documento";
       const extension = nombre.split(".").pop()?.toLowerCase() || "";
@@ -453,7 +436,6 @@ function TablaEncargos({ encargos, onFirmado }) {
       const blob = new Blob([res.data], { type: mime });
       const url = URL.createObjectURL(blob);
       const previsualizable = mime === "application/pdf" || mime.startsWith("image/") || ["png", "jpg", "jpeg", "webp", "gif"].includes(extension);
-      if (documentoVisor?.url) URL.revokeObjectURL(documentoVisor.url);
       setDocumentoVisor({ ...documento, expedienteId: String(encargo.id_expediente || encargo.id), nombre, url, mime, previsualizable });
     } catch (error) {
       window.alert(error?.response?.data?.detail || "No se ha podido abrir el documento en el visor.");
@@ -461,7 +443,6 @@ function TablaEncargos({ encargos, onFirmado }) {
   }
 
   function cerrarVisor() {
-    if (documentoVisor?.url) URL.revokeObjectURL(documentoVisor.url);
     setDocumentoVisor(null);
   }
 
@@ -483,14 +464,11 @@ function TablaEncargos({ encargos, onFirmado }) {
     <div className="ag-encargos-agrupados ag-apoderados-grid">
       {grupos.map((grupo) => {
         const abierto = Boolean(abiertos[grupo.clave]);
-        const notarioCtn = encontrarNotarioCtn(grupo, catalogoCtn);
         const expedientesBloqueados = grupo.expedientes.filter((encargo) => Boolean(encargo.bloqueado)).length;
-        const direccionNotario = [notarioCtn?.direccion, notarioCtn?.cp].filter(Boolean).join(" · ");
-        const ubicacionNotario = [notarioCtn?.municipio, notarioCtn?.provincia].filter(Boolean).join(" · ");
         return (
           <section className="ag-panel ag-grupo-notario ag-grupo-apoderado" key={grupo.clave}>
             <button type="button" className="ag-panel-cabecera ag-notario-grupo-trigger ag-apoderado-grupo-trigger" aria-expanded={abierto} onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: !actual[grupo.clave] }))}>
-              <span className="ag-notario-grupo-icono" aria-hidden="true"><MolsanIcon name="users" size={30} tone="violet" /></span>
+              <span className="ag-notario-grupo-icono" aria-hidden="true"><MolsanIcon name="users" size={34} tone="violet" /></span>
               <span className="ag-notario-grupo-info">
                 <span className="ag-notario-linea-unica">
                   <strong>{grupo.nombre}</strong>
@@ -505,7 +483,7 @@ function TablaEncargos({ encargos, onFirmado }) {
               </span>
             </button>
             {abierto ? createPortal((
-              <div className="ag-grupo-modal-overlay fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label={`Encargos de ${grupo.nombre}`} onMouseDown={(e) => { if (e.target === e.currentTarget) setAbiertos(actual => ({ ...actual, [grupo.clave]: false })); }}>
+              <div className="apoderagest ag-portal-root ag-grupo-modal-overlay fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label={`Encargos de ${grupo.nombre}`} onMouseDown={(e) => { if (e.target === e.currentTarget) setAbiertos(actual => ({ ...actual, [grupo.clave]: false })); }}>
                 <div className="ag-grupo-modal flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
                   <header className="ag-grupo-modal-cabecera molsan-modal-header flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4">
                     <div><span className="text-xs font-semibold uppercase tracking-widest text-slate-500">APODERAGEST · BLOQUE DE APODERADO</span><h3 className="mt-1 text-xl font-bold text-slate-900">{grupo.nombre}</h3><p className="text-sm text-slate-600">{grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas registradas · {grupo.expedientes.length} encargos</p></div>
@@ -517,6 +495,8 @@ function TablaEncargos({ encargos, onFirmado }) {
                   const detalleAbierto = Boolean(abiertos[`exp-${id}`]);
                   const firma = firmas[id] || {};
                   const facturacion = encargo.facturacion || {};
+                  const documentosEscritura = Array.isArray(encargo.documentos_escritura) ? encargo.documentos_escritura : [];
+                  const observacionesApoderado = Array.isArray(encargo.observaciones_apoderado) ? encargo.observaciones_apoderado : [];
                   return (
                     <article className="ag-encargo-detalle ag-ficha-encargo" key={id}>
                       <button type="button" className="ag-encargo-detalle-cabecera" aria-expanded={detalleAbierto} onClick={() => setAbiertos(actual => ({ ...actual, [`exp-${id}`]: !actual[`exp-${id}`] }))}>
@@ -575,8 +555,8 @@ function TablaEncargos({ encargos, onFirmado }) {
                               <CampoDetalle etiqueta="Subtipo de operación" valor={encargo.subtipo_operacion} />
                               <CampoDetalle etiqueta="Importe" valor={encargo.importe != null ? euros(encargo.importe) : null} />
                               <CampoDetalle etiqueta="Saldo disponible" valor={encargo.saldo_disponible != null ? euros(encargo.saldo_disponible) : null} />
-                              <CampoDetalle etiqueta="Tipo del documento formalizado" valor={(encargo.documentos_escritura || []).map((doc) => doc.tipo_documento).filter(Boolean).join(", ") || encargo.tipo_documento || encargo.formato_escritura || encargo.tipo_tramite} />
-                              <CampoDetalle etiqueta="Cuantía del documento" valor={(encargo.documentos_escritura || []).some((doc) => doc.cuantia != null) ? euros((encargo.documentos_escritura || []).reduce((total, doc) => total + (Number(doc.cuantia) || 0), 0)) : (encargo.cuantia_documento != null ? euros(encargo.cuantia_documento) : null)} />
+                              <CampoDetalle etiqueta="Tipo del documento formalizado" valor={documentosEscritura.map((doc) => doc.tipo_documento).filter(Boolean).join(", ") || encargo.tipo_documento || encargo.formato_escritura || encargo.tipo_tramite} />
+                              <CampoDetalle etiqueta="Cuantía del documento" valor={documentosEscritura.some((doc) => doc.cuantia != null) ? euros(documentosEscritura.reduce((total, doc) => total + (Number(doc.cuantia) || 0), 0)) : (encargo.cuantia_documento != null ? euros(encargo.cuantia_documento) : null)} />
                               <CampoDetalle etiqueta="Firma urgente" valor={encargo.firma_urgente ? "SÍ · URGENTE" : "No"} clase={encargo.firma_urgente ? "ag-firma-urgente-activa" : ""} />
                               <CampoDetalle etiqueta="Datos del envío" valor={fechaLegible(encargo.fecha_envio_notario || encargo.fecha_envio)} />
                               <CampoDetalle etiqueta="Oficina" valor={encargo.oficina} />
@@ -587,7 +567,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                             <summary className="ag-ficha-bloque-heading"><span>04 · ARCHIVO</span><h4>Carpeta digital</h4><small>Documentación disponible para consultar desde el expediente.</small></summary>
                               <div className="ag-archivo-carpetas">
                             {(() => {
-                              const documentos = encargo.documentos || [];
+                              const documentos = Array.isArray(encargo.documentos) ? encargo.documentos : [];
                               const normalizar = (valor) => normalizarCategoriaDocumento(valor);
                               const esCategoria = (doc, opciones) => opciones.some((opcion) => normalizar(doc?.categoria).includes(normalizar(opcion)) || normalizar(doc?.nombre_original).includes(normalizar(opcion)));
                               const borradores = documentos.filter(esBorradorEscritura);
@@ -638,12 +618,12 @@ function TablaEncargos({ encargos, onFirmado }) {
                                       {documentoVisor.previsualizable ? (documentoVisor.mime.startsWith("image/") || ["png","jpg","jpeg","webp","gif"].includes(documentoVisor.nombre.split(".").pop()?.toLowerCase()) ? <img src={documentoVisor.url} alt={documentoVisor.nombre} className="ag-visor-imagen" /> : <iframe title={documentoVisor.nombre} src={documentoVisor.url} className="ag-visor-pdf" />) : <div className="ag-visor-estado"><strong>Vista previa no disponible para este formato.</strong><span>Descarga el archivo para abrirlo con la aplicación correspondiente.</span><button type="button" onClick={descargarDocumentoVisor}>Descargar documento</button></div>}
                                     </div>
                                   </>
-                                ) : <div className="ag-visor-inline-vacio"><MolsanIcon name="file" size={30} bare /><strong>Visor de documentos PDF</strong><p>Selecciona «Ver en visor» en una carpeta para consultar el documento aquí.</p></div>}
+                                ) : <div className="ag-visor-inline-vacio"><MolsanIcon name="file" size={34} tone="ocean" /><strong>Visor de documentos PDF</strong><p>Selecciona «Ver en visor» en una carpeta para consultar el documento aquí.</p></div>}
                               </div>
                           </details>
                           <details open className="ag-encargo-subpanel ag-ficha-registral">
-                            <summary className="ag-ficha-bloque-heading"><span>03 · INFORMACIÓN REGISTRAL</span><h4>Fincas y registros de la propiedad</h4></summary>
-                            {encargo.fincas?.length ? encargo.fincas.map((finca, i) => (
+                            <summary className="ag-ficha-bloque-heading"><span>05 · INFORMACIÓN REGISTRAL</span><h4>Fincas y registros de la propiedad</h4></summary>
+                            {Array.isArray(encargo.fincas) && encargo.fincas.length ? encargo.fincas.map((finca, i) => (
                               <div className="ag-finca-registro" key={`${id}-finca-${i}`}>
                                 <div className="ag-encargo-grid">
                                   <CampoDetalle etiqueta="Finca" valor={finca.finca} />
@@ -663,7 +643,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                             )) : <p className="ag-encargo-vacio">No constan fincas registradas en el expediente.</p>}
                           </details>
                           <details open className="ag-encargo-subpanel ag-firmar-panel ag-ficha-firma">
-                            <summary className="ag-ficha-bloque-heading"><span>05 · CIERRE DE FIRMA</span><h4>Confirmar firma</h4></summary>
+                            <summary className="ag-ficha-bloque-heading"><span>06 · CIERRE DE FIRMA</span><h4>Confirmar firma</h4></summary>
                             <p>Al pulsar «Firmar», la fecha y el protocolo se guardan en los campos oficiales de FichaExpediente.</p>
                             <div className="ag-firmar-controles">
                               <label className="ag-firma-fecha">Fecha de firma<input type="date" value={firma.fecha_firma || encargo.fecha_firma || ""} max={fechaHoyLocal()} disabled={!!encargo.bloqueado || !!guardandoFirma[id]} onChange={(e) => cambiarFirma(id, "fecha_firma", e.target.value)} /></label>
@@ -685,11 +665,11 @@ function TablaEncargos({ encargos, onFirmado }) {
                             {mensajeFirma[id] && <p className="ag-firma-ok">{mensajeFirma[id]}</p>}
                           </details>
                           <details open className="ag-encargo-subpanel ag-ficha-observaciones">
-                            <summary className="ag-ficha-bloque-heading"><span>06 · COMUNICACIONES</span><h4>Observaciones y mensajes al gestor</h4></summary>
+                            <summary className="ag-ficha-bloque-heading"><span>07 · COMUNICACIONES</span><h4>Observaciones y mensajes al gestor</h4></summary>
                             <h5 className="ag-comunicaciones-subtitulo">Observaciones visibles para el apoderado</h5>
-                            {encargo.observaciones_apoderado?.length ? (
+                            {observacionesApoderado.length ? (
                               <ul className="ag-observaciones-apoderado">
-                                {encargo.observaciones_apoderado.map((obs) => <li key={obs.id}><p>{obs.comentario}</p><small>{obs.fecha ? new Date(obs.fecha).toLocaleString("es-ES") : "Fecha no disponible"}</small></li>)}
+                                {observacionesApoderado.map((obs) => <li key={obs.id}><p>{obs.comentario}</p><small>{obs.fecha ? new Date(obs.fecha).toLocaleString("es-ES") : "Fecha no disponible"}</small></li>)}
                               </ul>
                             ) : <p className="ag-encargo-vacio">No hay observaciones marcadas como «Visible apoderado».</p>}
                             <div className="ag-comentario-gestor">
@@ -722,31 +702,6 @@ function TablaEncargos({ encargos, onFirmado }) {
       })}
     </div>
   );
-}
-
-function nombreNotaria(notaria) {
-  if (!notaria) return "Notaría";
-
-  const nombreCompleto = [
-    notaria.nombre,
-    notaria.apellidos,
-  ].filter(Boolean).join(" ").trim();
-
-  return (
-    nombreCompleto ||
-    notaria.nombre_completo ||
-    notaria.nombre_notario ||
-    `Notaría ${notaria.id}`
-  );
-}
-
-function normalizarRespuesta(respuesta) {
-  const datos = respuesta?.data ?? respuesta;
-  if (Array.isArray(datos)) return datos;
-  if (Array.isArray(datos?.items)) return datos.items;
-  if (Array.isArray(datos?.resultados)) return datos.resultados;
-  if (Array.isArray(datos?.notarias)) return datos.notarias;
-  return [];
 }
 
 export default function ApoderaGest() {
@@ -871,7 +826,7 @@ export default function ApoderaGest() {
         encargo.fecha_envio_notario,
         encargo.fecha_prevista_firma,
         encargo.observaciones,
-        ...(encargo.fincas || []).flatMap((f) => [f.finca, f.registro, f.cru_idufir]),
+        ...(Array.isArray(encargo.fincas) ? encargo.fincas : []).flatMap((f) => [f.finca, f.registro, f.cru_idufir]),
       ].some((valor) => String(valor ?? "").toLowerCase().includes(termino))
     );
   }, [encargos, busquedaEncargos]);
@@ -890,7 +845,7 @@ export default function ApoderaGest() {
         <main className="mx-auto flex min-h-[60vh] w-full max-w-3xl items-center justify-center">
           <section className="w-full rounded-2xl border border-[var(--molsan-border)] bg-white p-7 text-center shadow-[var(--molsan-shadow-card)]">
             <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] text-[var(--molsan-primary)]">
-              <MolsanIcon name="lock" size={24} bare />
+              <MolsanIcon name="lock" size={30} tone="ocean" />
             </div>
             <p className="mb-2 text-xs font-extrabold uppercase tracking-[.14em] text-[var(--molsan-text-muted)]">MOLSAN ERP · SEGURIDAD</p>
             <h1 className="text-xl font-extrabold text-[var(--molsan-primary)]">Acceso restringido</h1>
@@ -915,10 +870,10 @@ export default function ApoderaGest() {
           { key: "agenda", label: "Agenda", icon: "calendar" },
           { key: "encargos", label: "Encargos", icon: "clipboard" },
           { key: "ctn", label: "CTN", icon: "globe" },
-          { key: "mensajes", label: "Mensajes", icon: "message" },
+          { key: "mensajes", label: "Mensajes", icon: "chat" },
           { key: "intranet", label: "Intranet", icon: "folder" },
           ...(empleado?.es_colaborador === true ? [
-            { key: "liquidaciones", label: "Mi liquidación", icon: "receipt" },
+            { key: "liquidaciones", label: "Mi liquidación", icon: "clipboard" },
           ] : []),
         ]}
         activeNavigationItem={pestana}
@@ -929,7 +884,7 @@ export default function ApoderaGest() {
           <div className="erp-page molsan-page molsan-professional-shell w-full apoderagest">
       <header className="ag-hero molsan-page-header dashboard-header">
         <div className="ag-hero-identidad molsan-page-header__identity">
-          <div className="ag-marca ag-marca-icono molsan-page-header__mark" aria-label="ApoderaGest"><MolsanIcon name="shield" size={36} tone="ocean" /></div>
+          <div className="ag-marca ag-marca-icono molsan-page-header__mark" role="img" aria-label="ApoderaGest"><MolsanIcon name="shield" size={42} tone="ocean" /></div>
           <div>
             <div className="ag-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
             <h1 className="molsan-page-header__title">ApoderaGest</h1>
@@ -946,14 +901,14 @@ export default function ApoderaGest() {
             onClick={() => navigate("/modulos")}
             className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"
           >
-            <MolsanIcon name="dashboard" size={17} bare /> Ir a módulos
+            <MolsanIcon name="dashboard" size={20} tone="ocean" /> Ir a módulos
           </button>
         </div>
       </header>
 
       {error ? (
         <div className="ag-alerta-error" role="alert">
-          <span className="ag-alerta-icono"><MolsanIcon name="alert" size={18} bare /></span>
+          <span className="ag-alerta-icono"><MolsanIcon name="alert" size={22} tone="amber" /></span>
           <div><strong>No se han podido actualizar los datos</strong><p>{error}</p></div>
           <button type="button" onClick={cargarDatos} disabled={cargando}>Reintentar</button>
         </div>
@@ -1085,7 +1040,7 @@ export default function ApoderaGest() {
           <div className="ag-titulo-seccion"><div><span className="ag-kicker">{esAdministradorEncargos ? "SUPERVISIÓN GLOBAL" : "GESTIÓN OPERATIVA"}</span><h2>{esAdministradorEncargos ? "Todos los encargos de ApoderaGest" : "Mis encargos"}</h2><p>{esAdministradorEncargos ? "Vista de administrador: encargos de todos los apoderados, incluidos los asignados a tu propio usuario. Puedes buscar por apoderado, expediente, titular o notario." : "Seguimiento de tus expedientes, titulares y estado de firma."}</p></div><span className="ag-contador">{encargos.length} encargos</span></div>
           <div className="ag-panel">
             <div className="ag-toolbar">
-              <label className="ag-busqueda"><MolsanIcon name="search" size={16} bare /><input type="search" value={busquedaEncargos} onChange={(e) => setBusquedaEncargos(e.target.value)} placeholder={esAdministradorEncargos ? "Buscar apoderado, expediente, titular, notario o estado…" : "Buscar expediente, titular, notario o estado…"} aria-label="Buscar encargos" /></label>
+              <label className="ag-busqueda"><MolsanIcon name="search" size={20} tone="ocean" /><input type="search" value={busquedaEncargos} onChange={(e) => setBusquedaEncargos(e.target.value)} placeholder={esAdministradorEncargos ? "Buscar apoderado, expediente, titular, notario o estado…" : "Buscar expediente, titular, notario o estado…"} aria-label="Buscar encargos" /></label>
               <span className="ag-resultados">{encargosFiltrados.length} resultados</span>
             </div>
             <TablaEncargos encargos={encargosFiltrados} onFirmado={cargarDatos} />
