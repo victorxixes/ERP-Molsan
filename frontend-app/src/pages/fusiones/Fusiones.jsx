@@ -85,9 +85,6 @@ export default function Fusiones() {
           <p className="molsan-page-header__description">Consulta y seguimiento de solicitudes de fusión recibidas desde la gestión de expedientes.</p>
         </div>
       </div>
-      <div className="molsan-page-header__actions">
-        <button type="button" onClick={cargarSolicitudes} disabled={cargando} className="molsan-btn molsan-btn--secondary"><MolsanIcon name="refresh" size={18} bare />{cargando ? "Actualizando…" : "Actualizar datos"}</button>
-      </div>
     </section>
 
     {error && <div role="alert" className="flex flex-col gap-3 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-semibold">No se han podido cargar las solicitudes</p><p className="mt-1 leading-5">{error}</p></div><button type="button" onClick={cargarSolicitudes} className="shrink-0 rounded-lg border border-rose-200 bg-white px-3 py-2 text-xs font-semibold hover:bg-rose-100">Reintentar</button></div>}
