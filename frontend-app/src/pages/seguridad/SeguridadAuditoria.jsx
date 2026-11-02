@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import "./SeguridadSubpaginasPremium.css";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
 
@@ -32,18 +33,8 @@ import { useSeguridad } from "../../hooks/useSeguridad";
  * ============================================================
  */
 
-const Icono = ({
-  name,
-  className = "w-5 h-5",
-}) => (
-  <svg
-    className={`${className} flex-shrink-0`}
-    aria-hidden="true"
-  >
-    <use
-      href={`/icons/icons.svg#${name}`}
-    />
-  </svg>
+const Icono = ({ name, className = "w-5 h-5" }) => (
+  <MolsanIcon name={name === "user-group" ? "users" : name} size={24} className={className} />
 );
 
 
@@ -1505,7 +1496,7 @@ export default function SeguridadAuditoria() {
 
 
           <KPI
-            icon="user-group"
+            icon="users"
             titulo="Usuarios"
             valor={usuarios}
             descripcion="Usuarios con actividad"
