@@ -1280,8 +1280,9 @@ export default function AccionesExpediente() {
           CABECERA
       ===================================================== */}
 
-      <div
+      <header
         className="
+          molsan-page-header
           w-full
           min-w-0
           flex
