@@ -1083,8 +1083,11 @@ def _pago_corresponde_a_notario(n, gasto, expediente):
         x for x in [getattr(n, "nombre", None), getattr(n, "apellidos", None)] if x
     ).strip().casefold()
 
-    # Un dato de identidad explícito en el gasto debe coincidir; nunca basta
-    # con que el otro campo coincida si este identifica a una notaría distinta.
+    # La notaría solo debe ver pagos dirigidos explícitamente a ella.
+    # La identidad del expediente por sí sola no permite distinguir honorarios
+    # notariales de gastos de registro, impuestos o gestoría.
+    if not (nif_gasto or nombre_gasto):
+        return False
     if nif_gasto and (not nif_notario or nif_gasto != nif_notario):
         return False
     if nombre_gasto and (not nombre_notario or nombre_gasto != nombre_notario):
