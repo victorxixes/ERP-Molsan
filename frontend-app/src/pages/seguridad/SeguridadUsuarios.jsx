@@ -562,11 +562,11 @@ export default function SeguridadUsuarios() {
               <div className="erp-card-body">
                 <div className="flex flex-wrap gap-2" role="tablist" aria-label="Secciones de seguridad del empleado">
                   {[
-                    { id: "resumen", label: "Resumen", icon: "◈" },
-                    { id: "modulos", label: "Módulos", icon: "▦" },
-                    { id: "permisos", label: "Permisos", icon: "⚿" },
-                    { id: "roles", label: "Roles", icon: "♙" },
-                    { id: "auditoria", label: "Auditoría", icon: "◷" },
+                    { id: "resumen", label: "Resumen", icon: "shield" },
+                    { id: "modulos", label: "Módulos", icon: "dashboard" },
+                    { id: "permisos", label: "Permisos", icon: "key" },
+                    { id: "roles", label: "Roles", icon: "person" },
+                    { id: "auditoria", label: "Auditoría", icon: "clock" },
                   ].map((tab) => (
                     <button
                       key={tab.id}
@@ -578,7 +578,7 @@ export default function SeguridadUsuarios() {
                         ? "border-[var(--erp-primary)] bg-[var(--erp-primary-soft)] text-[var(--erp-primary)] shadow-sm"
                         : "border-[var(--erp-border)] bg-[var(--erp-surface)] text-[var(--erp-text-soft)] hover:bg-[var(--erp-bg)]"}`}
                     >
-                      <span className="mr-2" aria-hidden="true">{tab.icon}</span>{tab.label}
+                      <span className="mr-2 inline-flex" aria-hidden="true"><MolsanIcon name={tab.icon} size={16} /></span>{tab.label}
                     </button>
                   ))}
                 </div>
