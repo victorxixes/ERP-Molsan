@@ -994,6 +994,40 @@ def _expediente_autorizado(expediente_id, n, db):
     return e
 
 
+def _pago_corresponde_a_notario(n, gasto, expediente):
+    """Evita mezclar pagos de notarías cuando los datos de gasto y expediente discrepan."""
+    nif_gasto = normalizar_nif(getattr(gasto, "nif_notario", None) or "")
+    nombre_gasto = " ".join((getattr(gasto, "nombre_notario", None) or "").split()).casefold()
+    nif_expediente = normalizar_nif(getattr(expediente, "nif_notario", None) or "")
+    nombre_expediente = " ".join((getattr(expediente, "nombre_notario", None) or "").split()).casefold()
+
+    if _es_usuario_erp(n):
+        coincide = bool(
+            (nif_gasto and nif_expediente and nif_gasto == nif_expediente)
+            or (nombre_gasto and nombre_expediente and nombre_gasto == nombre_expediente)
+        )
+        if not coincide:
+            return False
+        if nif_gasto and nif_expediente and nif_gasto != nif_expediente:
+            return False
+        if nombre_gasto and nombre_expediente and nombre_gasto != nombre_expediente:
+            return False
+        return True
+
+    nif_notario = normalizar_nif(getattr(n, "nif", None) or "")
+    nombre_notario = " ".join(
+        x for x in [getattr(n, "nombre", None), getattr(n, "apellidos", None)] if x
+    ).strip().casefold()
+
+    # Un dato de identidad explícito en el gasto debe coincidir; nunca basta
+    # con que el otro campo coincida si este identifica a una notaría distinta.
+    if nif_gasto and (not nif_notario or nif_gasto != nif_notario):
+        return False
+    if nombre_gasto and (not nombre_notario or nombre_gasto != nombre_notario):
+        return False
+    return True
+
+
 @router.get("/pagos")
 def pagos_notario(n=Depends(get_notario), db: Session = Depends(get_db)):
     """Solicitudes de pago ya efectuadas desde la ficha del expediente al notario."""
@@ -1008,26 +1042,14 @@ def pagos_notario(n=Depends(get_notario), db: Session = Depends(get_db)):
         .limit(2000)
         .all()
     )
-    nombre_notario = " ".join(x for x in [getattr(n, "nombre", None), getattr(n, "apellidos", None)] if x).strip()
-    nif_notario = normalizar_nif(getattr(n, "nif", None) or "")
     resultados = []
     for gasto, expediente in consulta:
-        nif_gasto = normalizar_nif(getattr(gasto, "nif_notario", None) or "")
-        nombre_gasto = " ".join((getattr(gasto, "nombre_notario", None) or "").split()).casefold()
-        nif_expediente = normalizar_nif(getattr(expediente, "nif_notario", None) or "")
-        nombre_expediente = " ".join((getattr(expediente, "nombre_notario", None) or "").split()).casefold()
-        if _es_usuario_erp(n):
-            # Para el usuario ERP, solo pagos dirigidos al notario registrado en el expediente.
-            identidad_valida = bool(nif_gasto or nombre_gasto) and (
-                (nif_gasto and nif_expediente and nif_gasto == nif_expediente)
-                or (nombre_gasto and nombre_expediente and nombre_gasto == nombre_expediente)
-            )
-        else:
-            identidad_valida = bool(
-                (nif_notario and (nif_gasto == nif_notario or nif_expediente == nif_notario))
-                or (nombre_notario and (nombre_gasto == nombre_notario.casefold() or nombre_expediente == nombre_notario.casefold()))
-            )
-        if not identidad_valida:
+        if not _es_usuario_erp(n):
+            try:
+                _expediente_autorizado(expediente.id_expediente, n, db)
+            except HTTPException:
+                continue
+        if not _pago_corresponde_a_notario(n, gasto, expediente):
             continue
 
         documentos = db.query(DocumentoCarpetaDigital).filter(
