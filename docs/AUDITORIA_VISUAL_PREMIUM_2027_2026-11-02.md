@@ -67,3 +67,5 @@ La auditoría solo se dará por finalizada cuando:
 - La API registró `Application startup complete` y `Uvicorn running`; no se encontraron respuestas HTTP 5xx en los logs de peticiones consultados después del arranque.
 - El aviso del logger `[STORAGE][CRITICAL]` se mantiene anotado, pero queda fuera del alcance de esta auditoría por decisión expresa del usuario: no se almacenarán documentos en Render.
 - Aún falta ejecutar pruebas E2E autenticadas por rol/portal y revisión visual manual de todas las páginas en navegador, escritorio y móvil. Estado de despliegue live no equivale a auditoría funcional/visual aprobada.
+
+- Tras los merges de Preview, CI también terminó correctamente sobre los commits desplegados: frontend `8568b3e` (Frontend build, Validar Fichaje, EncargaGest checks, Backend audit, Control Apoderados y Consolidación Post Firma: todos success); API `bedbc66` (Backend audit, EncargaGest checks, Control Apoderados, Validar Fichaje y Consolidación Post Firma: todos success).
