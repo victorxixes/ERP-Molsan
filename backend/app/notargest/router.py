@@ -267,6 +267,13 @@ def get_notario(request: Request, token=Depends(obtener_token_bearer), db: Sessi
         # Toda sesión ERP necesita permiso de lectura del módulo; las
         # operaciones que mutan datos requieren además editar/eliminar.
         require_perm_modulo(empleado, "notargest", "ver")
+        # El acceso ERP interno a NotarGest está reservado a administración.
+        # La misma política se aplica en API aunque el cliente oculte la pantalla.
+        if not _es_administrador_notargest(empleado):
+            raise HTTPException(
+                status_code=403,
+                detail="El acceso interno de NotarGest está reservado a administración.",
+            )
         accion_requerida = _accion_requerida_notargest(
             request.method,
             request.url.path,
