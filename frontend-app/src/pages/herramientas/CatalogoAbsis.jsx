@@ -177,9 +177,9 @@ export default function CatalogoAbsis() {
           </div>
         </div>
         <div className="molsan-page-header__actions">
-          <div className="rounded-xl border border-white/30 bg-white/10 px-4 py-3 text-right text-white shadow-sm">
-            <p className="text-2xl font-extrabold leading-tight text-white">{filas.filter((f) => f.activo).length}</p>
-            <p className="text-xs font-semibold tracking-wide text-white">entradas activas</p>
+          <div className="rounded-xl border border-[#D8E4EC] bg-[#F2F7FB] px-4 py-3 text-right shadow-sm">
+            <p className="text-2xl font-extrabold leading-tight text-[#064675]">{filas.filter((f) => f.activo).length}</p>
+            <p className="text-xs font-bold tracking-wide text-[#617789]">entradas activas</p>
           </div>
         </div>
       </header>
