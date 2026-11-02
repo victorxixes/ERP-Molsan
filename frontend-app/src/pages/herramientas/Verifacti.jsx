@@ -5,12 +5,12 @@ import { Link } from "react-router-dom";
 import "../../css/ComponentesOperativosPremium.css";
 
 const SECCIONES = [
-  { id: "resumen", label: "Resumen", icon: "◫" },
-  { id: "facturas", label: "Consultar facturas", icon: "⌕" },
-  { id: "crear", label: "Nueva factura", icon: "+" },
-  { id: "operaciones", label: "Subsanar / anular", icon: "↻" },
-  { id: "xml", label: "XML y exportaciones", icon: "⇩" },
-  { id: "api", label: "API y documentación", icon: "⌘" },
+  { id: "resumen", label: "Resumen", icon: "dashboard" },
+  { id: "facturas", label: "Consultar facturas", icon: "search" },
+  { id: "crear", label: "Nueva factura", icon: "plus" },
+  { id: "operaciones", label: "Subsanar / anular", icon: "refresh" },
+  { id: "xml", label: "XML y exportaciones", icon: "download" },
+  { id: "api", label: "API y documentación", icon: "settings" },
 ];
 
 const ENDPOINTS = [
@@ -111,7 +111,7 @@ export default function Verifacti() {
           <nav className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 xl:grid-cols-1">
             {SECCIONES.map((item) => <button key={item.id} type="button" onClick={() => cambiarSeccion(item.id)}
               className={`flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold transition ${seccion === item.id ? "bg-blue-600 text-white shadow-md shadow-blue-200" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}>
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-black/5 text-lg">{item.icon}</span><span>{item.label}</span>
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-black/5"><MolsanIcon name={item.icon} size={17} /></span><span>{item.label}</span>
             </button>)}
           </nav>
           <div className="mt-4 rounded-xl border border-amber-100 bg-amber-50/70 p-3">
@@ -125,18 +125,18 @@ export default function Verifacti() {
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 2xl:grid-cols-4">
               <Metric icon="plug" label="Conexión API" value="Sin conectar" hint="La clave API aún no está configurada" />
               <Metric icon="file" label="Facturas consultadas" value="—" hint="Disponible al activar la conexión" />
-              <Metric icon="☑️" label="Registros aceptados" value="—" hint="Pendiente de consulta a Verifacti" />
-              <Metric icon="⚠️" label="Incidencias" value="—" hint="Sin datos reales todavía" />
+              <Metric icon="check" label="Registros aceptados" value="—" hint="Pendiente de consulta a Verifacti" />
+              <Metric icon="alert" label="Incidencias" value="—" hint="Sin datos reales todavía" />
             </div>
             <Panel title="Centro de control" description="Accesos a las operaciones contempladas en la API oficial de Verifacti.">
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 {[
-                  ["⌕", "Consultar facturas", "Buscar por ejercicio, periodo, serie o número.", "facturas"],
-                  ["＋", "Registrar factura", "Preparar los campos de una nueva factura.", "crear"],
-                  ["↻", "Subsanaciones y anulaciones", "Preparar una operación sobre un registro existente.", "operaciones"],
+                  ["search", "Consultar facturas", "Buscar por ejercicio, periodo, serie o número.", "facturas"],
+                  ["plus", "Registrar factura", "Preparar los campos de una nueva factura.", "crear"],
+                  ["refresh", "Subsanaciones y anulaciones", "Preparar una operación sobre un registro existente.", "operaciones"],
                   ["download", "XML y exportaciones", "Consultar XML de una factura o preparar una exportación.", "xml"],
                 ].map(([icon, title, desc, id]) => <button key={id} onClick={() => cambiarSeccion(id)} className="flex items-start gap-3 rounded-2xl border border-slate-200 p-4 text-left transition hover:border-blue-200 hover:bg-blue-50/40">
-                  <MolsanIcon name={icon} size={40} /><span><strong className="block text-sm text-slate-800">{title}</strong><span className="mt-1 block text-sm leading-5 text-slate-500">{desc}</span></span><span className="ml-auto text-slate-300">→</span>
+                  <MolsanIcon name={icon} size={40} /><span><strong className="block text-sm text-slate-800">{title}</strong><span className="mt-1 block text-sm leading-5 text-slate-500">{desc}</span></span><span className="ml-auto text-slate-300"><MolsanIcon name="arrowRight" size={15} /></span>
                 </button>)}
               </div>
             </Panel>
