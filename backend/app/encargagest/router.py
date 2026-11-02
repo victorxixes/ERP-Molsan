@@ -371,9 +371,10 @@ def get_encargagest_actor(request: Request, token=Depends(obtener_token_bearer),
             ).first()
             if not acceso:
                 raise HTTPException(status_code=401, detail="El acceso EncargaGest está deshabilitado.")
-            if payload.get("seleccion_admin"):
+            es_sesion_soporte = bool(payload.get("seleccion_admin"))
+            if es_sesion_soporte:
                 _validar_admin_soporte_encargagest(payload, db)
-            if acceso.password_provisional and not _ruta_permitida_durante_cambio_password_encargagest(request.url.path):
+            if acceso.password_provisional and not es_sesion_soporte and not _ruta_permitida_durante_cambio_password_encargagest(request.url.path):
                 raise HTTPException(
                     status_code=403,
                     detail="Debes cambiar la contraseña provisional antes de acceder a EncargaGest.",
@@ -385,7 +386,7 @@ def get_encargagest_actor(request: Request, token=Depends(obtener_token_bearer),
             return {
                 "tipo": "externo", "id": acceso.id, "usuario_id": acceso.id,
                 "notaria_id": notaria.id, "nombre": nombre, "usuario": acceso.usuario,
-                "requiere_cambio_password": bool(acceso.password_provisional),
+                "requiere_cambio_password": bool(acceso.password_provisional and not es_sesion_soporte),
             }
 
         empleado_id = payload.get("id")
