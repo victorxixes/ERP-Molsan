@@ -5233,7 +5233,7 @@ const cuantiaFincasParaEnvio =
                                   <article key={fase.key} className={`min-w-0 rounded-xl border p-3 ${completa ? "border-emerald-200 bg-emerald-50/40" : actual ? "border-blue-200 bg-blue-50/40" : "border-slate-200 bg-white"}`}>
                                     <div className="flex items-center gap-3">
                                       <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-extrabold ${completa ? "border-emerald-500 bg-emerald-500 text-white" : actual ? "border-blue-500 bg-white text-blue-700" : "border-slate-300 bg-white text-slate-400"}`}>
-                                        {completa ? "✓" : actual ? "●" : indice + 1}
+                                        {completa ? <MolsanIcon name="check" size={14} /> : actual ? <MolsanIcon name="activity" size={14} /> : indice + 1}
                                       </div>
                                       <div className="min-w-0 flex-1">
                                         <p className="text-xs font-bold text-slate-800"><MolsanIcon name={fase.icono} size={15} inline /> {fase.label}</p>
@@ -5242,7 +5242,7 @@ const cuantiaFincasParaEnvio =
                                         </p>
                                       </div>
                                       <span className={`rounded-full px-2 py-1 text-[10px] font-bold ${completa ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-800"}`}>
-                                        {completa ? "✓ Correcto" : `${pendientes.length} pendiente(s)`}
+                                        {completa ? <><MolsanIcon name="check" size={13} inline /> Correcto</> : `${pendientes.length} pendiente(s)`}
                                       </span>
                                       <button
                                         type="button"
@@ -5287,7 +5287,7 @@ const cuantiaFincasParaEnvio =
                                   {errorPpad && <p role="alert" className="text-[10px] text-red-700">{errorPpad}</p>}
                                   {!cargandoPpad && !errorPpad && ppadItems.length === 0 && <p className="text-[11px] text-slate-500">No hay registros PPAD en este expediente.</p>}
                                   {ppadItems.map((item) => <div key={item.id} className="flex items-start justify-between gap-2 text-[11px]">
-                                    <span className="min-w-0 text-slate-700"><strong>{item.concepto || "PPAD"}</strong><span className="block text-[10px] text-slate-500">{item.compensado ? "✓ Compensado" : "◷ Pendiente"}{item.imputable_a || item.imputableA ? ` · ${item.imputable_a || item.imputableA}` : ""}</span></span>
+                                    <span className="min-w-0 text-slate-700"><strong>{item.concepto || "PPAD"}</strong><span className="block text-[10px] text-slate-500">{item.compensado ? <><MolsanIcon name="check" size={12} inline /> Compensado</> : <><MolsanIcon name="clock" size={12} inline /> Pendiente</>}{item.imputable_a || item.imputableA ? ` · ${item.imputable_a || item.imputableA}` : ""}</span></span>
                                     <span className="shrink-0 font-bold tabular-nums text-slate-800">{formatEuro(Number(item.importe) || 0)}</span>
                                   </div>)}
                                 </div>}
@@ -6237,7 +6237,7 @@ const cuantiaFincasParaEnvio =
                   </div>
                   <div className="mt-4 flex flex-wrap justify-end gap-2">
                     <Boton onClick={() => guardarEstadoAbsis(false)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Guardando…" : "Guardar datos para integración"}</Boton>
-                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Registrando…" : estadoDocumentacionAbsis.solicitud_registrada_localmente ? "✓ Solicitud pendiente registrada" : "Registrar solicitud pendiente"}</Boton>
+                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Registrando…" : estadoDocumentacionAbsis.solicitud_registrada_localmente ? <><MolsanIcon name="check" size={14} inline /> Solicitud pendiente registrada</> : "Registrar solicitud pendiente"}</Boton>
                   </div>
                   {estadoDocumentacionAbsis.solicitud_registrada_localmente && <p className="mt-2 text-right text-xs font-semibold text-amber-700">Pendiente de API externa; todavía no transmitida a ABSIS.</p>}
                 </section>
@@ -6890,9 +6890,9 @@ const cuantiaFincasParaEnvio =
                     </div>
                     <p className="mt-1 text-[10px] text-slate-600">Realizado por: <strong>{item.usuario_creador || "Usuario no registrado"}</strong>{item.fecha_creacion ? ` · ${formatearFecha(item.fecha_creacion)}` : ""}</p>
                     {item.compensado ? (
-                      <p className="mt-1 text-[11px] font-semibold text-emerald-700">✓ PPAD compensado{item.fecha_compensacion ? ` el ${formatearFecha(item.fecha_compensacion)}` : ""}.</p>
+                      <p className="mt-1 text-[11px] font-semibold text-emerald-700"><MolsanIcon name="check" size={13} inline /> PPAD compensado{item.fecha_compensacion ? ` el ${formatearFecha(item.fecha_compensacion)}` : ""}.</p>
                     ) : (
-                      <p role="status" className="mt-1 text-[11px] font-bold text-amber-800">⚠ PPAD pendiente de compensar.</p>
+                      <p role="status" className="mt-1 text-[11px] font-bold text-amber-800"><MolsanIcon name="alert" size={13} inline /> PPAD pendiente de compensar.</p>
                     )}
                     {!item.compensado && !String(expediente?.fecha_firma || "").slice(0, 10) && (
                       <p className="mt-1 text-[10px] text-slate-600">La compensación estará disponible cuando el expediente tenga fecha de firma.</p>
@@ -6918,7 +6918,7 @@ const cuantiaFincasParaEnvio =
                     <h3 id="modal-ppad-titulo" className="text-base font-extrabold text-slate-900">PPAD · Conceptos y compensaciones</h3>
                     <p className="mt-1 text-xs text-slate-500">Historial completo de PPAD de este expediente.</p>
                   </div>
-                  <button type="button" onClick={() => { setMostrarModalPpad(false); cancelarPpad(); }} aria-label="Cerrar PPAD" className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50">✕ Cerrar</button>
+                  <button type="button" onClick={() => { setMostrarModalPpad(false); cancelarPpad(); }} aria-label="Cerrar PPAD" className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50"><MolsanIcon name="x" size={14} inline /> Cerrar</button>
                 </header>
                 <div className="space-y-3 p-4 sm:p-6">
                   {errorPpad && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorPpad}</p>}
@@ -6950,11 +6950,11 @@ const cuantiaFincasParaEnvio =
                       </div>
                       <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
                         {item.compensado ? (
-                          <span className="mr-auto rounded-full border border-emerald-200 bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold text-emerald-800">✓ COMPENSADO</span>
+                          <span className="mr-auto rounded-full border border-emerald-200 bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold text-emerald-800"><MolsanIcon name="check" size={12} inline /> COMPENSADO</span>
                         ) : (
                           <>
                             <Boton tipo="primary" onClick={() => compensarPpad(item)} disabled={guardandoPpad || !String(expediente?.fecha_firma || "").slice(0, 10)}>
-                              {guardandoPpad ? "Registrando…" : "✓ Compensar"}
+                              {guardandoPpad ? "Registrando…" : <><MolsanIcon name="check" size={14} inline /> Compensar</>}
                             </Boton>
                             {!String(expediente?.fecha_firma || "").slice(0, 10) && <span className="text-[10px] text-slate-500">Disponible tras informar la fecha de firma.</span>}
                           </>
@@ -7085,7 +7085,7 @@ const cuantiaFincasParaEnvio =
                   </div>
                   {observacionesExpediente[0].visibilidad === "Gestor" && (
                     <p className={`mt-2 text-[11px] font-semibold ${observacionesExpediente[0].estado_validacion === "Validada" ? "text-emerald-700" : "text-amber-700"}`}>
-                      {observacionesExpediente[0].estado_validacion === "Validada" ? "✓ Validada por el destinatario" : "⏳ Pendiente de validación del destinatario"}
+                      {observacionesExpediente[0].estado_validacion === "Validada" ? <><MolsanIcon name="check" size={13} inline /> Validada por el destinatario</> : <><MolsanIcon name="clock" size={13} inline /> Pendiente de validación del destinatario</>}
                     </p>
                   )}
                 </article>
@@ -7135,7 +7135,7 @@ const cuantiaFincasParaEnvio =
           <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-8">
         {/* ENVÍO A NOTARIO: CENTRADO DEBAJO DE PPAD E INFORMACIÓN CREDITICIA */}
         <div className="min-w-0 w-full xl:col-span-8">
-          {expedienteBloqueado && esRetencionSinTramitar && <section role="alert" className="mx-auto mb-4 w-full rounded-2xl border-2 border-red-300 bg-red-50 px-5 py-4 shadow-sm"><p className="text-xs font-black uppercase text-red-700">⛔ Expediente bloqueado</p><h2 className="mt-1 text-base font-extrabold text-red-900">RETENCIÓN SIN TRAMITAR</h2><p className="mt-1 text-sm text-red-800">Estado RST: retención sin tramitar.</p><p className="mt-2 text-xs font-semibold text-red-700">Las actividades no se pueden modificar ni avanzar mientras esté bloqueado.</p><button type="button" onClick={abrirControlExpediente} className="mt-2 rounded-lg border border-red-300 bg-white px-3 py-2 text-xs font-bold text-red-800">Gestionar bloqueo</button></section>}
+          {expedienteBloqueado && esRetencionSinTramitar && <section role="alert" className="mx-auto mb-4 w-full rounded-2xl border-2 border-red-300 bg-red-50 px-5 py-4 shadow-sm"><p className="text-xs font-black uppercase text-red-700"><MolsanIcon name="alert" size={13} inline /> Expediente bloqueado</p><h2 className="mt-1 text-base font-extrabold text-red-900">RETENCIÓN SIN TRAMITAR</h2><p className="mt-1 text-sm text-red-800">Estado RST: retención sin tramitar.</p><p className="mt-2 text-xs font-semibold text-red-700">Las actividades no se pueden modificar ni avanzar mientras esté bloqueado.</p><button type="button" onClick={abrirControlExpediente} className="mt-2 rounded-lg border border-red-300 bg-white px-3 py-2 text-xs font-bold text-red-800">Gestionar bloqueo</button></section>}
           <div className="flex w-full min-w-0 justify-center">
           {/* =====================================================
               FICHA COMPLETA DE ENVÍO A NOTARIO
@@ -8953,10 +8953,10 @@ const cuantiaFincasParaEnvio =
                     {observacion.visibilidad === "Gestor" && (
                       <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
                         <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${observacion.estado_validacion === "Validada" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-800"}`}>
-                          {observacion.estado_validacion === "Validada" ? `✓ Validada por ${observacion.validado_por || "empleado destinatario"} · ${observacion.validado_en ? new Date(observacion.validado_en).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : ""}` : "⏳ Pendiente de validación"}
+                          {observacion.estado_validacion === "Validada" ? <><MolsanIcon name="check" size={13} inline /> Validada por {observacion.validado_por || "empleado destinatario"} · {observacion.validado_en ? new Date(observacion.validado_en).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : ""}</> : <><MolsanIcon name="clock" size={13} inline /> Pendiente de validación</>}
                         </span>
                         {Number(empleadoSesion?.id) === Number(observacion.empleado_destinatario_id) && observacion.estado_validacion !== "Validada" && (
-                          <button type="button" onClick={() => validarObservacionInterna(observacion)} className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100">✓ Validar observación</button>
+                          <button type="button" onClick={() => validarObservacionInterna(observacion)} className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100"><MolsanIcon name="check" size={13} inline /> Validar observación</button>
                         )}
                       </div>
                     )}
