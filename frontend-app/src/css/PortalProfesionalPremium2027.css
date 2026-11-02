@@ -1,0 +1,102 @@
+/* MOLSAN ERP PREMIUM 2027 · SHELL COMPARTIDO DE PORTALES PROFESIONALES
+   Estructura y superficies alineadas con .erp-page del Dashboard.
+   Los estilos funcionales propios de cada portal se conservan. */
+.molsan-professional-shell {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-inline: auto;
+  color: var(--molsan-text, #173247);
+}
+.molsan-professional-shell *,
+.molsan-professional-shell *::before,
+.molsan-professional-shell *::after { box-sizing: border-box; }
+.molsan-professional-shell > .molsan-page-header,
+.molsan-professional-shell > header.molsan-page-header {
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 76px;
+  margin: 0 0 2px;
+  padding: 12px 20px;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 86% 18%, rgba(116,199,219,.18), transparent 27%),
+    linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
+  box-shadow: 0 12px 28px rgba(4,55,91,.16);
+}
+.molsan-professional-shell .molsan-page-header__identity { gap: 12px; }
+.molsan-professional-shell .molsan-page-header__mark {
+  flex-basis: 42px;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+}
+.molsan-professional-shell .molsan-page-header__eyebrow {
+  margin-bottom: 4px;
+  font-size: 9px;
+  letter-spacing: .15em;
+}
+.molsan-professional-shell .molsan-page-header :is(h1,.molsan-page-header__title) {
+  font-size: clamp(21px, 1.8vw, 25px);
+  line-height: 1.12;
+}
+.molsan-professional-shell .molsan-page-header__description {
+  max-width: 760px;
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: normal;
+}
+.molsan-professional-shell :is(.ag-panel,.ag-kpi,.ag-card,.ng-panel,.ng-contador,.ng-tarea,.ng-acceso,.eg-panel,.eg-kpi,.eg-card,.eg-directorio-card,.ng-dashboard-grafico,.ng-admin-global-resumen,.ng-admin-notaria-card) {
+  min-width: 0;
+  border-color: var(--molsan-border, #D8E4EC);
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(6,50,82,.065);
+}
+.molsan-professional-shell :is(h2,h3,h4) {
+  letter-spacing: -.015em;
+}
+.molsan-professional-shell :is(table):not(.molsan-table) thead th {
+  color: #064675;
+  background: #EAF2F8;
+  border-bottom-color: #D8E4EC;
+}
+.molsan-professional-shell :is(input,select,textarea) {
+  border-color: #D8E4EC;
+  border-radius: 10px;
+}
+.molsan-professional-shell :is(input,select,textarea):focus {
+  border-color: #6D9FBD;
+  outline: 3px solid rgba(6,70,117,.10);
+}
+.molsan-professional-shell :is(.ag-grid-kpi,.ng-admin-kpis,.ng-dashboard-graficos,.ng-admin-notarias-grid) {
+  min-width: 0;
+}
+@media (max-width: 760px) {
+  .molsan-professional-shell { gap: 16px; }
+  .molsan-professional-shell > .molsan-page-header,
+  .molsan-professional-shell > header.molsan-page-header {
+    min-height: 0;
+    padding: 14px;
+    border-radius: 16px;
+  }
+  .molsan-professional-shell .molsan-page-header__mark {
+    flex-basis: 38px;
+    width: 38px;
+    height: 38px;
+  }
+  .molsan-professional-shell .molsan-page-header__actions {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-start;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .molsan-professional-shell * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
