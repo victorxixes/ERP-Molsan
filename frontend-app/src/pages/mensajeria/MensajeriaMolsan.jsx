@@ -44,6 +44,17 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
   const cargar = useCallback(async () => {
     setCargando(true); setError("");
     try {
+      // La vista de catálogo solo necesita el endpoint de servicios. No debe
+      // disparar consultas de gestión que exigen permisos adicionales.
+      if (vistaCatalogo) {
+        const catalogo = await axios.get("/mensajeria/servicios");
+        setServicios(catalogo.data || []);
+        setSolicitudes([]);
+        setAlbaranes([]);
+        setFacturas([]);
+        setResumen({});
+        return;
+      }
       const [s,c,a,f,r] = await Promise.all([
         axios.get("/mensajeria/solicitudes"), axios.get("/mensajeria/servicios"),
         axios.get("/mensajeria/albaranes"), axios.get("/mensajeria/facturas"), axios.get("/mensajeria/resumen")
@@ -51,7 +62,7 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
       setSolicitudes(s.data || []); setServicios(c.data || []); setAlbaranes(a.data || []); setFacturas(f.data || []); setResumen(r.data || {});
     } catch (e) { setError(e?.response?.data?.detail || "No se han podido cargar los datos de mensajería."); }
     finally { setCargando(false); }
-  }, []);
+  }, [vistaCatalogo]);
   useEffect(() => { cargar(); }, [cargar]);
 
   useEffect(() => {
