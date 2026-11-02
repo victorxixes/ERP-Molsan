@@ -119,7 +119,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
   const empleado = useAuthStore((state) => state.empleado);
   const tokenERP = useAuthStore((state) => state.token);
   const rolEncargaGest = String(empleado?.rol?.nombre || empleado?.rol_nombre || empleado?.nombre_rol || "").trim().toLowerCase();
-  const esAdminEncargaGest = String(empleado?.usuario || "").trim().toLowerCase() === "admin" || /^(admin|administrador|administradora|superadmin)$/.test(rolEncargaGest);
+  const esAdminEncargaGest = String(empleado?.usuario || "").trim().toLowerCase() === "admin" || /^(admin|administrador|administradora|superadmin|superadministrador|administrador del sistema)$/.test(rolEncargaGest);
   const [modo, setModo] = useState(() => (
     accessMode === "external"
       ? (tieneTokenExternoEncargaGest() ? "externo" : "login")
