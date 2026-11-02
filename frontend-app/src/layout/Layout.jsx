@@ -41,34 +41,52 @@ export default function Layout() {
     if (!esSubpagina) return undefined;
     const contenedor = document.querySelector(".erp-main-inner");
     if (!contenedor) return undefined;
+
+    let observador = null;
+    let finalizado = false;
     const localizarCabecera = () => {
+      if (finalizado) return true;
       const encontrada = contenedor.querySelector(".molsan-page-header:not(.molsan-page-back-fallback)");
-      if (!encontrada) {
-        setCabeceraSubpagina(null);
-        setTieneVolverPropio(false);
-        return;
-      }
-      // El botón insertado por este mismo Layout mediante createPortal no debe
-      // detectarse como un botón de retorno propio de la página. Si se incluye,
-      // el MutationObserver alterna entre desmontar y volver a montar el portal.
-      const botonVolverExistente = Array.from(encontrada.querySelectorAll("button:not([data-layout-back-button]), a")).find((elemento) => {
+      if (!encontrada) return false;
+
+      const botonVolverExistente = Array.from(
+        encontrada.querySelectorAll("button:not([data-layout-back-button]), a")
+      ).find((elemento) => {
         const texto = (elemento.textContent || "").trim();
         const aria = elemento.getAttribute("aria-label") || "";
-        return /\bvolver\b|regresar/i.test(texto) || /\bvolver\b|regresar/i.test(aria);
+        return /\\bvolver\\b|regresar/i.test(texto) || /\\bvolver\\b|regresar/i.test(aria);
       });
+
       if (botonVolverExistente) {
         botonVolverExistente.classList.add("molsan-page-back-button");
         setTieneVolverPropio(true);
         setCabeceraSubpagina(null);
-        return;
+      } else {
+        setTieneVolverPropio(false);
+        setCabeceraSubpagina(encontrada);
       }
-      setTieneVolverPropio(false);
-      setCabeceraSubpagina(encontrada);
+
+      // El observador solo espera al primer pintado de la cabecera diferida.
+      // Se desconecta al encontrarla para no reubicar el portal con cada cambio
+      // de datos, tabla o tarjeta dentro de la subpágina.
+      finalizado = true;
+      observador?.disconnect();
+      return true;
     };
-    localizarCabecera();
-    const observador = new MutationObserver(localizarCabecera);
-    observador.observe(contenedor, { childList: true, subtree: true });
-    return () => observador.disconnect();
+
+    if (!localizarCabecera()) {
+      observador = new MutationObserver(() => {
+        if (localizarCabecera()) observador?.disconnect();
+      });
+      observador.observe(contenedor, { childList: true, subtree: true });
+      // Cierra la pequeña ventana entre la primera consulta y observe().
+      localizarCabecera();
+    }
+
+    return () => {
+      finalizado = true;
+      observador?.disconnect();
+    };
   }, [pathname, esSubpagina]);
 
   const volverSubpagina = () => {
@@ -88,7 +106,7 @@ export default function Layout() {
       <Sidebar />
       <NotificacionesToast />
       <main className="erp-main-content relative min-h-[calc(100vh-70px)]">
-        <div className="erp-main-inner w-full px-4 py-6 lg:px-6">
+        <div className={`erp-main-inner w-full px-4 py-6 lg:px-6${esSubpaginaCatalogosUtilidades ? " molsan-tools-subpage" : ""}`}>
           <div className={`w-full${rutaCancelaGest ? " cg-unified-workspace" : ""}`}>
             {esSubpagina && !esSubpaginaCatalogosUtilidades && !cabeceraSubpagina && !tieneVolverPropio ? (
         <header className="molsan-page-header molsan-page-back-fallback">
