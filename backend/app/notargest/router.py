@@ -362,12 +362,24 @@ def _campos_ficha_central(expediente):
 
 
 def _filtrar_campos_sensibles_notario_externo(datos):
-    """Retira campos financieros internos que no forman parte del portal notarial."""
+    """Retira notas internas e identificadores de gestión no destinados a la notaría."""
     for campo in (
         "saldo_real", "saldo_disponible", "origen_bankia", "producto_gtg",
-        "tipo_provision", "id_provision",
+        "tipo_provision", "id_provision", "apoderado_empleado_id",
+        # Las observaciones generales no tienen control de visibilidad. La
+        # notaría solo debe recibir las entradas filtradas de observaciones_notaria.
+        "observaciones",
     ):
         datos.pop(campo, None)
+
+    # No divulgar el texto libre del bloqueo interno; conservar solo un aviso
+    # operativo neutro para que la notaría sepa que debe contactar con MOLSAN.
+    if datos.get("bloqueado"):
+        datos["motivo_bloqueo_efectivo"] = (
+            "Expediente bloqueado temporalmente. Contacta con MOLSAN para continuar."
+        )
+    else:
+        datos.pop("motivo_bloqueo_efectivo", None)
     return datos
 
 def _resumen(e, db):
