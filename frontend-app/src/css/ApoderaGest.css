@@ -6,30 +6,6 @@
 .apoderagest *::after{
   box-sizing: border-box;
 }
-.apoderagest .ag-fondo-decorativo{
-  position: absolute;
-  z-index: -1;
-  top: -130px;
-  right: -100px;
-  width: 360px;
-  height: 360px;
-  pointer-events: none;
-  border: 1px solid rgba(93, 125, 207, 0.09);
-  border-radius: 50%;
-}
-.apoderagest .ag-fondo-decorativo::before,
-.apoderagest .ag-fondo-decorativo::after{
-  position: absolute;
-  content: "";
-  border: 1px solid rgba(93, 125, 207, 0.08);
-  border-radius: 50%;
-}
-.apoderagest .ag-fondo-decorativo::before{
-  inset: 28px;
-}
-.apoderagest .ag-fondo-decorativo::after{
-  inset: 58px;
-}
 .apoderagest .ag-fecha-actual{
   display: flex;
   align-items: center;
@@ -50,14 +26,6 @@
   background: #21b982;
   border-radius: 50%;
   box-shadow: 0 0 0 4px rgba(33, 185, 130, 0.10);
-}
-.apoderagest .ag-boton-actualizar:disabled{
-  cursor: wait;
-  opacity: .7;
-}
-.apoderagest .ag-icono-girando{
-  display: inline-block;
-  animation: ag-girar 1s linear infinite;
 }
 @keyframes ag-girar{
   to { transform: rotate(360deg); }
@@ -613,7 +581,6 @@
 .apoderagest .ag-documentos-apoderado li{align-items:flex-start;flex-direction:column}
 
 }
-.apoderagest .ag-visor-acciones button,
 .apoderagest .ag-visor-estado button{padding:9px 13px;border:1px solid var(--molsan-border, #D8E4EC);border-radius:var(--molsan-radius-control,9px);background:var(--molsan-surface-soft, #F2F7FB);color:var(--molsan-text-secondary,#526176);font-size:12px;font-weight:800;cursor:pointer}
 .apoderagest .ag-visor-pdf{display:block;width:100%;height:100%;min-height:500px;border:0;background:#fff}
 .apoderagest .ag-visor-imagen{display:block;max-width:100%;max-height:100%;object-fit:contain;box-shadow:0 8px 30px rgba(20,35,60,.18)}
@@ -637,10 +604,8 @@
 .apoderagest .ag-panel-proximas .ag-cita-datos b{color:#8290a4;font-size:9px;font-weight:850;letter-spacing:.04em;text-transform:uppercase}
 .apoderagest .ag-panel-proximas .ag-cita-datos .ag-cita-horario{color:#1d5b4b;font-weight:800}
 .apoderagest .ag-panel-proximas .ag-cita-datos .ag-cita-horario b{color:#6e8c82}
-.apoderagest .ag-panel-proximas .ag-cita-flecha{align-self:center;color:#9aabc3;font-size:22px}
 @media(max-width:680px){
 .apoderagest .ag-panel-proximas .ag-cita-item{grid-template-columns:52px minmax(0,1fr);gap:10px;padding:11px}
-.apoderagest .ag-panel-proximas .ag-cita-flecha{display:none}
 .apoderagest .ag-panel-proximas .ag-cita-datos{grid-template-columns:1fr}
 .apoderagest .ag-panel-proximas .ag-cita-fecha{min-height:50px}
 .apoderagest .ag-panel-proximas .ag-cita-fecha strong{font-size:17px}
@@ -675,8 +640,6 @@
 .apoderagest .ag-ficha-paneles .ag-detalle-campo{padding:10px 11px;background:#f8faff;border:1px solid #edf1f8;border-radius:10px}
 .apoderagest .ag-ficha-paneles .ag-detalle-campo small{font-size:9px;color:#7c8aa2;font-weight:750}
 .apoderagest .ag-ficha-paneles .ag-detalle-campo strong{font-size:11px;line-height:1.45;color:#273853;overflow-wrap:anywhere}
-.apoderagest .ag-ficha-paneles .ag-cuantias-documentos{margin-top:15px;padding-top:13px;border-top:1px solid #edf1f6}
-.apoderagest .ag-ficha-paneles .ag-cuantias-documentos h5{color:#34445e;font-size:11px;font-weight:850}
 .apoderagest .ag-ficha-paneles .ag-documentos-apoderado li{border-color:#edf1f6;background:#fff;border-radius:10px;margin-top:8px;padding:11px}
 .apoderagest .ag-ficha-paneles .ag-documentos-apoderado li>span strong{color:#2c3c58;font-size:11px}
 .apoderagest .ag-ficha-paneles .ag-documentos-apoderado li>span small{color:#8491a5;font-size:10px}
@@ -870,12 +833,6 @@
   letter-spacing: .035em;
   white-space: nowrap;
 }
-.apoderagest .ag-notario-linea-unica .ag-notario-sin-ficha{
-  color: #8793a6;
-  font-size: 10px;
-  font-style: italic;
-  font-weight: 500;
-}
 .apoderagest .ag-notario-contadores{
   display: flex;
   flex-direction: column;
@@ -942,7 +899,6 @@
   box-shadow: none;
   font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
 }
-.apoderagest .ag-fondo-decorativo{ display: none; }
 .apoderagest .ag-firma-indicador{
   display: inline-flex;
   align-items: center;
@@ -1008,10 +964,8 @@
 .apoderagest .ag-ficha-paneles .ag-firmar-controles{grid-template-columns:minmax(170px,.7fr) minmax(95px,.38fr) minmax(150px,.62fr);gap:10px}
 .apoderagest .ag-ficha-paneles .ag-firmar-controles>label:nth-child(2){min-width:0}
 .apoderagest .ag-ficha-paneles .ag-firmar-controles>label:nth-child(2) input{min-width:0}
-.apoderagest .ag-firmar-notario-accion select,
 .apoderagest .ag-comentario-gestor select,
 .apoderagest .ag-comentario-gestor textarea{width:100%;min-height:40px;padding:9px 11px;border:1px solid #dce4f0;border-radius:10px;background:#fff;color:#24334b;font:inherit;font-size:12px}
-.apoderagest .ag-firmar-notario-accion button,
 .apoderagest .ag-comentario-gestor button{min-height:40px;padding:0 18px;border:1px solid var(--molsan-primary-hover, #04375B);border-radius:10px;background:#3158d8;color:#fff;font-size:11px;font-weight:850;cursor:pointer}
 .apoderagest .ag-comunicaciones-subtitulo{margin:14px 0 8px;color:#40516b;font-size:11px;font-weight:850}
 .apoderagest .ag-comentario-gestor{display:grid;gap:10px;margin-top:15px;padding:14px;border:1px solid #e0e7f2;border-radius:12px;background:#f8faff}
@@ -1181,10 +1135,6 @@
     grid-column:2/4!important;
     grid-row:2;
   }
-.apoderagest .ag-ficha-paneles .ag-ficha-archivo .ag-archivo-layout{
-    grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
-    gap:14px;
-  }
 .apoderagest .ag-ficha-paneles .ag-ficha-archivo .ag-visor-inline{
     position:sticky;
     top:12px;
@@ -1207,9 +1157,6 @@
 .apoderagest .ag-ficha-paneles .ag-ficha-registral{
     grid-column:1/-1!important;
     grid-row:auto!important;
-  }
-.apoderagest .ag-ficha-paneles .ag-ficha-archivo .ag-archivo-layout{
-    grid-template-columns:minmax(0,1fr);
   }
 .apoderagest .ag-ficha-paneles .ag-ficha-archivo .ag-visor-inline{
     position:static;
@@ -1459,7 +1406,7 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   outline: 2px solid rgb(49 86 179 / 58%);
   outline-offset: 2px;
 }
-.apoderagest :is(table, .ag-tabla, .eg-tabla, .ng-tabla){
+.apoderagest table{
   font-variant-numeric: tabular-nums;
 }
 .apoderagest table thead th{
@@ -1482,25 +1429,21 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 .apoderagest{
     padding: 14px;
   }
-.apoderagest :is(table, .ag-tabla, .eg-tabla, .ng-tabla){
+.apoderagest table{
     max-width: 100%;
   }
 
 }
-.apoderagest .ag-visor-overlay,
 .apoderagest .ag-resumen-modal-overlay{
   min-width: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
 }
-.apoderagest .ag-visor-modal,
 .apoderagest .ag-resumen-modal{
   min-width: 0;
   max-height: calc(100dvh - 36px);
 }
-.apoderagest .ag-visor-cabecera,
-.apoderagest .ag-visor-contenido,
 .apoderagest .ag-resumen-modal-cuerpo,
 .apoderagest .ag-resumen-tabla-wrap{
   min-width: 0;
@@ -1512,7 +1455,6 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   overscroll-behavior-x: contain;
 }
 @media (max-width: 650px){
-.apoderagest .ag-visor-overlay,
 .apoderagest .ag-resumen-modal-overlay{
     padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom));
   }
@@ -1584,92 +1526,6 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   display: inline-grid;
   vertical-align: middle;
 }
-@media (max-width: 700px){
-.apoderagest > .ag-hero.molsan-page-header{
-    align-items: flex-start;
-    flex-direction: column;
-    padding: 16px;
-  }
-.apoderagest > .ag-hero.molsan-page-header .molsan-page-header__actions{
-    justify-content: flex-start;
-    width: 100%;
-  }
-
-}
-.apoderagest > .ag-hero.molsan-page-header{
-  min-height: 60px;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: nowrap;
-  gap: 12px;
-  margin: 0 0 16px;
-  padding: 5px 16px;
-  border: 1px solid rgba(255,255,255,.14);
-  border-radius: 16px;
-  background:
-    radial-gradient(circle at 86% 18%, rgba(116,199,219,.18), transparent 27%),
-    linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
-  box-shadow: 0 12px 28px rgba(4,55,91,.18);
-  animation: none !important;
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
-}
-.apoderagest > .ag-hero.molsan-page-header .ag-marca.molsan-page-header__mark{
-  flex: 0 0 36px;
-  width: 36px;
-  height: 36px;
-  color: #FFFFFF;
-  border: 1px solid rgba(255,255,255,.32);
-  border-radius: 10px;
-  background: rgba(255,255,255,.12);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
-}
-.apoderagest > .ag-hero.molsan-page-header .molsan-page-header__eyebrow{
-  margin: 0 0 1px;
-  color: #C6DFEC;
-  font-size: 8.5px;
-  line-height: 1.15;
-}
-.apoderagest > .ag-hero.molsan-page-header .molsan-page-header__title{
-  margin: 0;
-  color: #FFFFFF;
-  font-size: clamp(19px, 1.8vw, 22px);
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -.035em;
-}
-.apoderagest > .ag-hero.molsan-page-header .molsan-page-header__description{
-  margin: 2px 0 0;
-  color: #C6DFEC;
-  font-size: 10px;
-  line-height: 1.15;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.apoderagest > .ag-hero.molsan-page-header .molsan-page-header__actions{
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
-}
-@media (max-width: 760px){
-.apoderagest > .ag-hero.molsan-page-header{
-    align-items: flex-start;
-    flex-wrap: wrap;
-    padding: 8px 12px;
-  }
-.apoderagest > .ag-hero.molsan-page-header .molsan-page-header__description{
-    display: none;
-  }
-.apoderagest > .ag-hero.molsan-page-header .molsan-page-header__actions{
-    width: 100%;
-    justify-content: flex-start;
-  }
-
-}
 .apoderagest .ag-panel,
 .apoderagest .ag-grid-kpi > *,
 .apoderagest .ag-grid-secundario > *,
@@ -1697,18 +1553,6 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 .apoderagest select:focus-visible,
 .apoderagest textarea:focus-visible{
   outline-color: color-mix(in srgb, var(--molsan-primary, #064675) 28%, transparent);
-}
-@media (max-width: 700px){
-.apoderagest > .ag-hero.molsan-page-header{
-    align-items: flex-start;
-    flex-direction: column;
-    padding: 16px;
-  }
-.apoderagest > .ag-hero.molsan-page-header .molsan-page-header__actions{
-    width: 100%;
-    justify-content: flex-start;
-  }
-
 }
 .apoderagest > header.ag-hero.molsan-page-header.dashboard-header{
   display:flex!important;
@@ -1802,3 +1646,42 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 
 }
 
+/* Elementos de ApoderaGest que completan su hoja autónoma. */
+.apoderagest .ag-print-tools .ag-print-action{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:38px;padding:9px 13px;color:var(--molsan-primary,#064675);
+  background:#FFFFFF;border:1px solid var(--molsan-border,#D8E4EC);
+  border-radius:var(--molsan-radius-control,9px);font-size:11px;font-weight:800;
+  cursor:pointer;transition:background-color .16s ease,border-color .16s ease,box-shadow .16s ease;
+}
+.apoderagest .ag-print-tools .ag-print-action:hover{
+  background:var(--molsan-primary-soft,#EAF2F8);
+  border-color:var(--molsan-border-strong,#B8CBD9);
+}
+.apoderagest .ag-print-tools .ag-print-action-secundario{
+  color:var(--molsan-text-secondary,#617789);
+  background:var(--molsan-surface-soft,#F2F7FB);
+}
+.apoderagest .ag-notario-grupo-icono{
+  display:grid;flex:0 0 40px;width:40px;height:40px;place-items:center;
+  color:var(--molsan-primary,#064675);background:var(--molsan-primary-soft,#EAF2F8);
+  border:1px solid var(--molsan-border,#D8E4EC);border-radius:12px;
+}
+.apoderagest .ag-contador-firmas{
+  color:#13734F;background:#E8F8F1;border-color:#CDEFE0;
+}
+.apoderagest .ag-resumen-modal-cabecera{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+  padding:18px 22px;background:var(--molsan-surface-soft,#F2F7FB);
+  border-bottom:1px solid var(--molsan-border-light,#E8EDF4);
+}
+.apoderagest .ag-resumen-modal-cabecera h2{
+  margin:3px 0 0;color:var(--molsan-primary,#064675);
+  font-size:clamp(18px,2vw,22px);font-weight:850;line-height:1.25;
+}
+.apoderagest .ag-resumen-modal-cabecera p{
+  margin:5px 0 0;color:var(--molsan-text-secondary,#617789);font-size:11px;
+}
+@media(max-width:650px){
+  .apoderagest .ag-resumen-modal-cabecera{padding:14px;gap:10px}
+}
