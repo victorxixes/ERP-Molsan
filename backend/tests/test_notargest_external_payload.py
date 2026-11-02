@@ -1,7 +1,7 @@
 """El portal externo de NotarGest solo recibe notas visibles para la notaría."""
 import unittest
 
-from backend.app.notargest.router import _filtrar_campos_sensibles_notario_externo
+from backend.app.notargest.router import (\n    _filtrar_campos_sensibles_notario_externo,\n    _es_gestor_asignado,\n)
 
 
 class NotarGestExternalPayloadTests(unittest.TestCase):
@@ -41,6 +41,16 @@ class NotarGestExternalPayloadTests(unittest.TestCase):
         payload = {"bloqueado": False, "motivo_bloqueo_efectivo": "motivo privado"}
         result = _filtrar_campos_sensibles_notario_externo(payload)
         self.assertNotIn("motivo_bloqueo_efectivo", result)
+
+    def test_notary_can_only_address_the_manager_assigned_to_the_expedient(self):
+        expediente = type("Expediente", (), {"gestor_asignado_id": 27})()
+        self.assertTrue(_es_gestor_asignado(expediente, 27))
+        self.assertFalse(_es_gestor_asignado(expediente, 28))
+        self.assertFalse(_es_gestor_asignado(expediente, None))
+
+    def test_unassigned_expedient_has_no_valid_comment_recipient(self):
+        expediente = type("Expediente", (), {"gestor_asignado_id": None})()
+        self.assertFalse(_es_gestor_asignado(expediente, 27))
 
 
 if __name__ == "__main__":
