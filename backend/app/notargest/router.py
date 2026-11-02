@@ -821,6 +821,13 @@ ESTADOS_NOTARGEST = {
     "cerrada": "Escrituras cerradas inscritas",
 }
 
+
+def _hay_defectos_abiertos_notargest(expediente):
+    return str(getattr(expediente, "tiene_defectos_abiertos", "") or "").strip().casefold() in {
+        "si", "sí", "true", "1", "abierto"
+    }
+
+
 # La migración de estas columnas se centraliza en main.py para evitar DDL concurrente.
 def migrar_workflow_notargest():
     """Comprueba columnas del workflow y no bloquea el arranque por migraciones auxiliares."""
@@ -984,6 +991,10 @@ def actualizar_datos_firma(expediente_id: str, data: dict, n=Depends(get_notario
             detail="La firma ya está registrada y no puede borrarse ni sustituirse desde NotarGest.",
         )
 
+    if _estado_workflow(e) != "firma":
+        raise HTTPException(status_code=400, detail="Solo puedes registrar la firma cuando el expediente está en la fase de firma.")
+    if len(protocolo) > 100:
+        raise HTTPException(status_code=400, detail="El protocolo no puede superar los 100 caracteres.")
     if not fecha or not protocolo:
         raise HTTPException(status_code=400, detail="Para registrar una firma debes indicar fecha y protocolo.")
     try:
@@ -998,11 +1009,43 @@ def actualizar_datos_firma(expediente_id: str, data: dict, n=Depends(get_notario
 @router.patch("/expedientes/{expediente_id}/cierre")
 def actualizar_cierre(expediente_id: str, data: dict, n=Depends(get_notario), db: Session = Depends(get_db)):
     e = _expediente_autorizado(expediente_id, n, db)
-    for campo in ("notargest_fecha_cierre", "notargest_fecha_envio_gestoria"):
-        valor = data.get(campo)
-        if valor:
-            try: setattr(e, campo, date.fromisoformat(str(valor)[:10]))
-            except ValueError: raise HTTPException(status_code=400, detail=f"Fecha no válida: {campo}")
+    estado_actual = _estado_workflow(e)
+    fecha_cierre_entrada = data.get("notargest_fecha_cierre")
+    fecha_envio_entrada = data.get("notargest_fecha_envio_gestoria")
+
+    if fecha_cierre_entrada:
+        if estado_actual not in {"copia", "cerrada"}:
+            raise HTTPException(status_code=400, detail="El expediente solo puede cerrarse después de completar la fase de copia simple.")
+        if _hay_defectos_abiertos_notargest(e):
+            raise HTTPException(status_code=400, detail="No se puede cerrar el expediente mientras haya defectos registrales abiertos.")
+        if estado_actual == "copia":
+            copia = db.query(DocumentoCarpetaDigital).filter(
+                DocumentoCarpetaDigital.expediente_id == str(e.id_expediente),
+                DocumentoCarpetaDigital.categoria == "Copia simple",
+            ).first()
+            if not copia:
+                raise HTTPException(status_code=400, detail="Adjunta la copia simple antes de registrar el cierre.")
+        try:
+            nueva_fecha_cierre = date.fromisoformat(str(fecha_cierre_entrada)[:10])
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Fecha no válida: notargest_fecha_cierre")
+        if e.notargest_fecha_cierre and nueva_fecha_cierre != e.notargest_fecha_cierre:
+            raise HTTPException(status_code=409, detail="La fecha de cierre ya está registrada y no puede sustituirse desde el portal.")
+        e.notargest_fecha_cierre = nueva_fecha_cierre
+
+    if fecha_envio_entrada:
+        if not e.notargest_fecha_cierre:
+            raise HTTPException(status_code=400, detail="Registra primero la fecha de cierre antes de indicar el envío a gestoría.")
+        try:
+            nueva_fecha_envio = date.fromisoformat(str(fecha_envio_entrada)[:10])
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Fecha no válida: notargest_fecha_envio_gestoria")
+        if nueva_fecha_envio < e.notargest_fecha_cierre:
+            raise HTTPException(status_code=400, detail="La fecha de envío a gestoría no puede ser anterior a la fecha de cierre.")
+        if e.notargest_fecha_envio_gestoria and nueva_fecha_envio != e.notargest_fecha_envio_gestoria:
+            raise HTTPException(status_code=409, detail="La fecha de envío a gestoría ya está registrada y no puede sustituirse desde el portal.")
+        e.notargest_fecha_envio_gestoria = nueva_fecha_envio
+
     if e.notargest_fecha_cierre:
         e.notargest_estado = "cerrada"
         e.actividad_actual = ESTADOS_NOTARGEST["cerrada"]
@@ -1024,12 +1067,29 @@ async def subir_documento_workflow(expediente_id: str, categoria: str = Form(...
     if categoria not in categorias:
         raise HTTPException(status_code=400, detail="Tipo de documento no válido")
     categoria_carpeta, mime_fijo, siguiente = categorias[categoria]
+    estado_actual = _estado_workflow(e)
+    estados_permitidos = {
+        "factura": {"factura"},
+        "presentacion": {"registro"},
+        "ajd": {"ajd"},
+        "defecto": {"inscripcion"},
+        "subsanacion": {"inscripcion"},
+        "inscripcion": {"inscripcion"},
+        "copia": {"copia"},
+    }
+    if estado_actual not in estados_permitidos[categoria]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"El documento {categoria_carpeta} no corresponde a la fase actual del expediente ({ESTADOS_NOTARGEST.get(estado_actual, estado_actual)}).",
+        )
+    if categoria == "subsanacion" and not _hay_defectos_abiertos_notargest(e):
+        raise HTTPException(status_code=400, detail="No hay defectos registrales abiertos que requieran subsanación.")
+    if categoria in {"inscripcion", "copia"} and _hay_defectos_abiertos_notargest(e):
+        raise HTTPException(status_code=400, detail="Resuelve primero los defectos registrales antes de continuar.")
     nombre = (archivo.filename or "documento").replace("\\", "/").rsplit("/", 1)[-1]
     extension, tipo_mime_seguro = _tipo_mime_notargest_seguro(nombre)
     if categoria in ("factura", "defecto", "subsanacion", "inscripcion", "copia") and extension != ".pdf":
         raise HTTPException(status_code=400, detail="Este documento debe adjuntarse en PDF")
-    if categoria == "copia" and str(getattr(e, "tiene_defectos_abiertos", "") or "").strip().casefold() in {"si", "sí", "true", "1", "abierto"}:
-        raise HTTPException(status_code=400, detail="No se puede cerrar el expediente mientras haya defectos registrales abiertos. Adjunta primero la subsanación del defecto.")
     try:
         contenido = await archivo.read(MAX_WORKFLOW_UPLOAD_BYTES + 1)
     finally:
