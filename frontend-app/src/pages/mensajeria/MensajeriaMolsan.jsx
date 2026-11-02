@@ -1,4 +1,5 @@
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
@@ -43,6 +44,17 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
   const cargar = useCallback(async () => {
     setCargando(true); setError("");
     try {
+      // La vista de catálogo solo necesita el endpoint de servicios. No debe
+      // disparar consultas de gestión que exigen permisos adicionales.
+      if (vistaCatalogo) {
+        const catalogo = await axios.get("/mensajeria/servicios");
+        setServicios(catalogo.data || []);
+        setSolicitudes([]);
+        setAlbaranes([]);
+        setFacturas([]);
+        setResumen({});
+        return;
+      }
       const [s,c,a,f,r] = await Promise.all([
         axios.get("/mensajeria/solicitudes"), axios.get("/mensajeria/servicios"),
         axios.get("/mensajeria/albaranes"), axios.get("/mensajeria/facturas"), axios.get("/mensajeria/resumen")
@@ -50,7 +62,7 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
       setSolicitudes(s.data || []); setServicios(c.data || []); setAlbaranes(a.data || []); setFacturas(f.data || []); setResumen(r.data || {});
     } catch (e) { setError(e?.response?.data?.detail || "No se han podido cargar los datos de mensajería."); }
     finally { setCargando(false); }
-  }, []);
+  }, [vistaCatalogo]);
   useEffect(() => { cargar(); }, [cargar]);
 
   useEffect(() => {
@@ -124,7 +136,7 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
   return <main className="molsan-page-stack catalogos-premium-page min-h-full ">
     <header className="molsan-page-header">
       <div className="molsan-page-header__identity">
-        <div className="molsan-page-header__mark" aria-hidden="true">MS</div>
+        <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="truck" size={32} tone="ocean" /></div>
         <div className="min-w-0">
           <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
           <h1 className="molsan-page-header__title">{vistaCatalogo ? "Mensajería · Servicios y tarifas" : vistaGestion ? "Mensajería Gestión" : "Mensajería"}</h1>
@@ -132,7 +144,7 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
         </div>
       </div>
     </header>
-    {vistaGestion && <section className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900"><div className="flex items-start gap-3"><span className="text-xl">⚠️</span><div><b>Integración API con la empresa de mensajería pendiente.</b><p className="mt-1">La conexión automática todavía debe desarrollarse y validarse con la documentación técnica del proveedor. Mientras tanto, la gestión de solicitudes, estados y comunicaciones funciona dentro del ERP; no se envían pedidos reales al transportista desde esta pantalla.</p></div></div></section>}
+    {vistaGestion && <section className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900"><div className="flex items-start gap-3"><MolsanIcon name="alert" size={22} tone="ocean" /><div><b>Integración API con la empresa de mensajería pendiente.</b><p className="mt-1">La conexión automática todavía debe desarrollarse y validarse con la documentación técnica del proveedor. Mientras tanto, la gestión de solicitudes, estados y comunicaciones funciona dentro del ERP; no se envían pedidos reales al transportista desde esta pantalla.</p></div></div></section>}
     {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">{error}</div>}
     {mensaje && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{mensaje}</div>}
     {vistaGestion && <MensajeriaProveedores />}
@@ -211,7 +223,7 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
         ]}
       />}
     </section>
-    <section className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 text-sm text-amber-900"><b>Integración con proveedor: en construcción.</b> Hasta disponer del proveedor y su documentación técnica, las solicitudes, tarifas, albaranes y facturas se gestionan internamente. No se simulan envíos reales ni pagos.</section>
+    {!vistaGestion && !vistaCatalogo && <section className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 text-sm text-amber-900"><b>Integración con proveedor: en construcción.</b> Hasta disponer del proveedor y su documentación técnica, las solicitudes se gestionan internamente. No se simulan envíos reales ni pagos.</section>}
     {modal && <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-950/50 p-4" role="dialog" aria-modal="true"><div className="my-auto max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-7"><div className="flex items-start justify-between gap-4"><div><h2 className="text-xl font-bold text-slate-800">{modalTitle}</h2><p className="mt-1 text-sm text-slate-500">Los datos de proveedor o tarifa pueden quedar pendientes hasta disponer de la información real.</p></div><button onClick={()=>setModal("")} className="rounded-lg border px-3 py-1.5 text-slate-600">Cerrar</button></div>
       <form onSubmit={guardar} className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
       {modal==="solicitud" && <><Field label="Empleado solicitante" name="solicitante_nombre" required /><Field label="Fecha solicitada" name="fecha_solicitada" type="date" /><Field label="Dirección de recogida / origen" name="origen" required full /><Field label="Dirección de entrega / destino" name="destino" required full /><Field label="Contacto en origen" name="contacto_origen" /><Field label="Contacto en destino" name="contacto_destino" /><Field label="Teléfono de recogida" name="telefono_recogida" /><Field label="Teléfono de entrega" name="telefono_entrega" /><Field label="Expediente relacionado (opcional)" name="expediente_id" /><Field label="Prioridad" name="prioridad" options={["Baja","Normal","Alta","Urgente"].map(v=>({value:v,label:v}))} /><Field label="Servicio / tarifa" name="servicio_id" options={servicios.filter(s=>s.activo).map(s=>({value:String(s.id),label:s.nombre+(s.tarifa_base==null?" · tarifa pendiente":` · ${money(s.tarifa_base)}`)}))} /><Field label="Coste previsto" name="coste_previsto" type="number" /><Field label="Estado" name="estado" options={["Pendiente","Aceptada","Preparando","En tránsito","Entregada","Incidencia","Cancelada"].map(v=>({value:v,label:v}))} /><Field label="Responsable" name="responsable" /><Field label="Estado del proveedor" name="estado_proveedor" /><Field label="Descripción / instrucciones" name="descripcion" type="textarea" full /><Field label="Incidencia" name="incidencia" type="textarea" full /></>}

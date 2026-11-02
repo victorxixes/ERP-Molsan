@@ -8,8 +8,13 @@ export default function PortalAccessTabs({ notariaId }) {
   const empleadoSesion = useAuthStore((state) => state.empleado);
   const nombreRol = String(
     empleadoSesion?.rol_nombre || empleadoSesion?.rol?.nombre || empleadoSesion?.role?.name || ""
-  ).normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
-  const esAdministrador = /(^|\s)(admin|administrador)(\s|$)/.test(nombreRol);
+  ).normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase().replace(/[_-]/g, " ");
+  const nombreUsuario = String(empleadoSesion?.usuario || "").trim().toLowerCase();
+  const rolId = Number(empleadoSesion?.rol_id ?? empleadoSesion?.rol?.id ?? -1);
+  const esAdministrador = nombreUsuario === "admin" || rolId === 0 || new Set([
+    "admin", "administrador", "administradora", "superadmin",
+    "superadministrador", "administrador del sistema",
+  ]).has(nombreRol);
   const permisosEmpleado = empleadoSesion?.permisos_modulo_dict || empleadoSesion?.permisos_modulo || {};
   const modulosVisibles = Array.isArray(empleadoSesion?.modulos_visibles_list)
     ? empleadoSesion.modulos_visibles_list
@@ -139,7 +144,7 @@ export default function PortalAccessTabs({ notariaId }) {
               <strong className={`ctn-portal-state ${acceso.habilitado ? "is-enabled" : "is-disabled"}`}>{acceso.habilitado ? "HABILITADO" : "DESHABILITADO"}</strong>
               <div className="ctn-portal-muted ctn-portal-muted--spaced">{acceso.configurado ? "Credenciales configuradas" : "Todavía no se han generado credenciales"}</div>
             </div>
-            {puedeGestionar && <button type="button" className="ctn-portal-button" disabled={procesando || (portal === "encargagest" && !acceso.configurado)}
+            {puedeGestionar && <button type="button" className="ctn-portal-button" disabled={procesando || !acceso.configurado}
               onClick={() => ejecutar("toggle")}>
               {acceso.habilitado ? "Deshabilitar acceso" : "Habilitar acceso"}
             </button>}

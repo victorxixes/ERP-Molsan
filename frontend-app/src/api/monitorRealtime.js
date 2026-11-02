@@ -1,4 +1,5 @@
 import axios from "./axios";
+import { API_BASE } from "./config";
 
 /**
  * ============================================================
@@ -40,19 +41,11 @@ import axios from "./axios";
 ============================================================ */
 
 const getBackendBaseUrl = () => {
-
-  const apiUrl = import.meta.env.VITE_API_URL;
-
-  if (!apiUrl) {
-    throw new Error(
-      "VITE_API_URL no está configurada."
-    );
-  }
-
-  return apiUrl
-    .replace(/\/api\/?$/, "")
-    .replace(/\/$/, "");
-};
+  const base = typeof window !== "undefined" ? window.location.href : "http://localhost";
+  const apiUrl = new URL(API_BASE, base);
+  apiUrl.pathname = apiUrl.pathname.replace(/\/api\/?$/i, "").replace(/\/+$/, "");
+  return apiUrl.origin + apiUrl.pathname;
+}
 
 
 /* ============================================================

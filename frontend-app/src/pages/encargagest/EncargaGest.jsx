@@ -8,6 +8,10 @@ import axios, { configurarSesionEncargaGest, limpiarSesionEncargaGest } from "..
 import { useAuthStore } from "../../store/authStore";
 import { formatEuro as euros } from "../../utils/formatters";
 
+const tieneTokenExternoEncargaGest = () => Boolean(
+  sessionStorage.getItem("encargagest_token") || sessionStorage.getItem("encargagest_soporte_token")
+);
+
 const ESTADOS = [
   { valor: "", texto: "Todos los estados" },
   { valor: "EN_PROCESO", texto: "Recibido · pendiente de autorizar" },
@@ -115,11 +119,13 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
   const empleado = useAuthStore((state) => state.empleado);
   const tokenERP = useAuthStore((state) => state.token);
   const rolEncargaGest = String(empleado?.rol?.nombre || empleado?.rol_nombre || empleado?.nombre_rol || "").trim().toLowerCase();
-  const esAdminEncargaGest = String(empleado?.usuario || "").trim().toLowerCase() === "admin" || /^(admin|administrador|administradora|superadmin)$/.test(rolEncargaGest);
+  const esAdminEncargaGest = String(empleado?.usuario || "").trim().toLowerCase() === "admin" ||
+    Number(empleado?.rol_id ?? empleado?.rol?.id ?? -1) === 0 ||
+    /^(admin|administrador|administradora|superadmin|superadministrador|administrador del sistema)$/.test(rolEncargaGest);
   const [modo, setModo] = useState(() => (
     accessMode === "external"
-      ? (localStorage.getItem("encargagest_token") ? "externo" : "login")
-      : (empleado && tokenERP ? "interno" : (localStorage.getItem("encargagest_token") ? "externo" : "login"))
+      ? (tieneTokenExternoEncargaGest() ? "externo" : "login")
+      : (empleado && tokenERP ? "interno" : (tieneTokenExternoEncargaGest() ? "externo" : "login"))
   ));
   const [sesion, setSesion] = useState(null);
   const [loginUsuario, setLoginUsuario] = useState("");
@@ -229,13 +235,18 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
     setCargando(true);
     setError("");
     try {
-      const [nts, me] = await Promise.all([
-        axios.get("/encargagest/notarias"),
-        axios.get("/encargagest/me"),
-      ]);
+      // Consultar primero la sesión: una cuenta con contraseña provisional
+      // solo puede acceder a /me y /cambiar-password hasta completar el cambio.
+      const me = await axios.get("/encargagest/me");
+      setSesion(me.data || null);
+      if (me.data?.requiere_cambio_password) {
+        setPerfilAbierto(true);
+        setMensaje("Por seguridad, cambia la contraseña inicial para acceder al portal.");
+        return;
+      }
+      const nts = await axios.get("/encargagest/notarias");
       const listaNotarias = Array.isArray(nts.data) ? nts.data : [];
       setNotarias(listaNotarias);
-      setSesion(me.data || null);
       if (me.data?.modo === "externo") {
         setForm((actual) => ({ ...actual, notaria_id: String(me.data.notaria_id || "") }));
       }
@@ -243,6 +254,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
       const params = { notaria_id: modo === "interno" && notariaActiva ? Number(notariaActiva) : undefined };
       const res = await axios.get("/encargagest/resumen", { params });
       setResumen(res.data || { total: 0, por_estado: {}, requieren_atencion: 0 });
+      setPagina(1);
       await cargarListado(1, busqueda, filtroEstado, notariaActiva);
     } catch (e) {
       setError(e?.response?.data?.detail || "No se han podido cargar los datos de EncargaGest. Comprueba los permisos del módulo y vuelve a intentarlo.");
@@ -255,7 +267,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
     // Las rutas públicas de notaría deben mantener su sesión independiente,
     // incluso si el navegador conserva credenciales del ERP interno.
     if (accessMode === "external") {
-      if (localStorage.getItem("encargagest_token")) {
+      if (tieneTokenExternoEncargaGest()) {
         configurarSesionEncargaGest("externo");
         setModo("externo");
       } else {
@@ -269,7 +281,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
       setModo("interno");
       return;
     }
-    if (localStorage.getItem("encargagest_token")) {
+    if (tieneTokenExternoEncargaGest()) {
       configurarSesionEncargaGest("externo");
       setModo("externo");
     } else {
@@ -305,6 +317,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
 
   useEffect(() => {
     if (modo !== "interno" && modo !== "externo") return undefined;
+    if (modo === "externo" && sesion?.requiere_cambio_password) return undefined;
     const intervalo = window.setInterval(async () => {
       if (refrescoEnCurso.current) return;
       refrescoEnCurso.current = true;
@@ -329,7 +342,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
       }
     }, 15000);
     return () => window.clearInterval(intervalo);
-  }, [modo, pagina, busqueda, filtroEstado, filtroNotariaId, seleccionadoId]);
+  }, [modo, pagina, busqueda, filtroEstado, filtroNotariaId, seleccionadoId, sesion?.requiere_cambio_password]);
 
   const filas = useMemo(() => items, [items]);
   const totalPaginas = Math.max(1, Math.ceil(total / 20));
@@ -708,8 +721,10 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         notaria_id: respuesta.data.notaria?.id,
         notaria_nombre: respuesta.data.notaria?.nombre,
         usuario: respuesta.data.usuario,
+        requiere_cambio_password: Boolean(respuesta.data.requiere_cambio_password),
       });
       setLoginPassword("");
+      setPerfilAbierto(Boolean(respuesta.data.requiere_cambio_password));
       setModo("externo");
     } catch (e) {
       setLoginError(e?.response?.data?.detail || "No se ha podido iniciar sesión. Comprueba el usuario y la contraseña.");
@@ -738,9 +753,12 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         password_nueva: passwordNuevaPerfil,
       });
       setMensajePasswordPerfil(respuesta.data?.mensaje || "Contraseña actualizada correctamente.");
+      setSesion((actual) => actual ? { ...actual, requiere_cambio_password: false } : actual);
       setPasswordActualPerfil("");
       setPasswordNuevaPerfil("");
       setPasswordConfirmarPerfil("");
+      setPerfilAbierto(false);
+      await cargarTodo();
     } catch (e) {
       setErrorPasswordPerfil(e?.response?.data?.detail || "No se ha podido actualizar la contraseña.");
     } finally {
@@ -844,11 +862,11 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         <Sidebar
           brandName="EncargaGest"
           navigationItems={[
-            { key: "ctn", label: "CTN", icon: "building" },
+            { key: "ctn", label: "CTN", icon: "database" },
             { key: "agenda", label: "Agenda", icon: "calendar" },
-            { key: "mensajes", label: "Mensajes", icon: "message" },
-            { key: "intranet", label: "Intranet", icon: "file-text" },
-            { key: "encargos", label: "Encargos", icon: "clipboard" },
+            { key: "mensajes", label: "Mensajes", icon: "chat" },
+            { key: "intranet", label: "Intranet", icon: "newspaper" },
+            { key: "encargos", label: "Encargos", icon: "clipboard-list" },
           ]}
           activeNavigationItem="Encargos"
           onNavigationItemClick={(label) => {
@@ -1372,11 +1390,11 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
 
 
       {perfilAbierto && modo === "externo" && (
-        <div className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-slate-950/60 p-3 backdrop-blur-sm sm:p-4 lg:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget) setPerfilAbierto(false); }}>
+        <div className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-slate-950/60 p-3 backdrop-blur-sm sm:p-4 lg:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget && !sesion?.requiere_cambio_password) setPerfilAbierto(false); }}>
           <section role="dialog" aria-modal="true" aria-labelledby="eg-perfil-titulo" className="eg-modal-perfil my-0 w-full max-w-[1180px] min-w-0 max-h-[calc(100vh-2rem)] overflow-y-auto rounded-3xl border border-white/70 bg-white shadow-2xl">
             <header className="eg-perfil-cabecera flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50 px-5 py-4 sm:px-7">
               <div><p className="text-[9px] font-extrabold tracking-[0.18em] text-blue-700">ENCARGAGEST · FICHA CTN</p><h2 id="eg-perfil-titulo" className="mt-1 text-xl font-black text-slate-900">Ficha del notario</h2><p className="mt-1 text-xs text-slate-500">Datos de la notaría registrados en el catálogo CTN.</p></div>
-              <button type="button" onClick={() => setPerfilAbierto(false)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500" aria-label="Cerrar ventana"><MolsanIcon name="x" size={20} tone="ocean" /></button>
+              <button type="button" onClick={() => setPerfilAbierto(false)} disabled={Boolean(sesion?.requiere_cambio_password)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500 disabled:cursor-not-allowed disabled:opacity-30" aria-label="Cerrar ventana"><MolsanIcon name="x" size={20} tone="ocean" /></button>
             </header>
             <div className="eg-perfil-layout grid min-w-0 grid-cols-1 gap-5 p-4 sm:p-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.85fr)] lg:gap-6 lg:p-7">
               <div>
@@ -1401,6 +1419,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
               </div>
               <form onSubmit={cambiarPasswordPerfil} className="eg-perfil-seguridad h-fit space-y-3 rounded-2xl border border-slate-200 p-4">
                 <h3 className="text-sm font-extrabold text-slate-900">Cambiar contraseña</h3>
+                {sesion?.requiere_cambio_password && <p role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-900">Debes sustituir la contraseña inicial antes de acceder a los encargos. La nueva contraseña debe tener al menos 8 caracteres.</p>}
                 {mensajePasswordPerfil && <p role="status" className="rounded-lg bg-emerald-50 p-2 text-xs text-emerald-800">{mensajePasswordPerfil}</p>}
                 {errorPasswordPerfil && <p role="alert" className="rounded-lg bg-rose-50 p-2 text-xs text-rose-700">{errorPasswordPerfil}</p>}
                 <label className="block text-xs font-semibold text-slate-600">Contraseña actual<input required type="password" autoComplete="current-password" value={passwordActualPerfil} onChange={e=>setPasswordActualPerfil(e.target.value)} className={inputClass + " mt-1"} /></label>

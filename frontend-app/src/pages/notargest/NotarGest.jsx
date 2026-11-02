@@ -10,6 +10,14 @@ import "../../css/NotarGest.css";
 import { formatEuro as euros } from "../../utils/formatters";
 
 const TOKEN_KEY = "notargest_token";
+
+// Compatibilidad con sesiones antiguas: mover el token compartido a la pestaña
+// actual y retirar la clave global para evitar cruces entre notarías.
+if (!sessionStorage.getItem(TOKEN_KEY)) {
+  const tokenHeredado = localStorage.getItem(TOKEN_KEY);
+  if (tokenHeredado) sessionStorage.setItem(TOKEN_KEY, tokenHeredado);
+}
+localStorage.removeItem(TOKEN_KEY);
 const bandejas = [
   { id: "recepcion", titulo: "Pendientes de recepción", campo: "pendiente_recepcion" },
   { id: "firma", titulo: "Pendientes de firma", campo: "pendiente_firma" },
@@ -33,8 +41,10 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
   // aunque el navegador conserve una sesión de empleado de MOLSAN.
   const accesoERP = accessMode !== "external" && Boolean(tokenERP && empleadoERP);
   const rolNotarGest = String(empleadoERP?.rol?.nombre || empleadoERP?.rol_nombre || empleadoERP?.nombre_rol || "").trim().toLowerCase();
-  const esAdminNotarGest = String(empleadoERP?.usuario || "").trim().toLowerCase() === "admin" || /^(admin|administrador|administradora|superadmin)$/.test(rolNotarGest);
-  const [tokenNotario, setTokenNotario] = useState(() => localStorage.getItem(TOKEN_KEY) || "");
+  const esAdminNotarGest = String(empleadoERP?.usuario || "").trim().toLowerCase() === "admin" ||
+    Number(empleadoERP?.rol_id ?? empleadoERP?.rol?.id ?? -1) === 0 ||
+    /^(admin|administrador|administradora|superadmin|superadministrador|administrador del sistema)$/.test(rolNotarGest);
+  const [tokenNotario, setTokenNotario] = useState(() => sessionStorage.getItem(TOKEN_KEY) || "");
   const [tokenAdminNotaria, setTokenAdminNotaria] = useState(() => sessionStorage.getItem("notargest_soporte_token") || "");
   const [notariasSeleccionables, setNotariasSeleccionables] = useState([]);
   const [notariaAdminSeleccionada, setNotariaAdminSeleccionada] = useState("");
@@ -89,8 +99,18 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
     if (accesoERP && esAdminNotarGest && !tokenAdminNotaria) return;
     setCargando(true); setError("");
     try {
-      const [perfil, lista] = await Promise.all([peticion("/notargest/me"), peticion("/notargest/expedientes")]);
-      setNotario(perfil); setExpedientes(lista.items || []);
+      // La sesión provisional solo puede consultar el perfil y cambiar la
+      // contraseña. No lanzar /expedientes hasta completar ese paso.
+      const perfil = await peticion("/notargest/me");
+      setNotario(perfil);
+      if (perfil?.requiere_cambio_password) {
+        setPerfilNotarioAbierto(true);
+        setMensajePasswordPerfil("Debes cambiar la contraseña inicial antes de acceder a NotarGest.");
+        setExpedientes([]);
+        return;
+      }
+      const lista = await peticion("/notargest/expedientes");
+      setExpedientes(lista.items || []);
       try {
         const pagosData = await peticion("/notargest/pagos");
         setPagosNotario(pagosData.items || []);
@@ -107,7 +127,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       }
     } catch (e) {
       setError(e.message);
-      if (!accesoERP && /sesión|acceso notargest deshabilitado|caducado/i.test(e.message)) { localStorage.removeItem(TOKEN_KEY); setTokenNotario(""); }
+      if (!accesoERP && /sesión|acceso notargest deshabilitado|caducado/i.test(e.message)) { sessionStorage.removeItem(TOKEN_KEY); setTokenNotario(""); }
     } finally { setCargando(false); }
   }, [token, peticion, accesoERP, esAdminNotarGest, tokenAdminNotaria]);
   useEffect(() => { cargar(); }, [cargar]);
@@ -171,7 +191,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       const id = encodeURIComponent(item.id_expediente || item.numero_expediente);
       const [detalleResponse, gestoresResponse] = await Promise.all([
         fetch(`${API_BASE}/notargest/expedientes/${id}`, { headers }),
-        fetch(`${API_BASE}/notargest/gestores`, { headers }),
+        fetch(`${API_BASE}/notargest/gestores?expediente_id=${encodeURIComponent(item.id_expediente || item.numero_expediente)}`, { headers }),
       ]);
       const detalleData = await detalleResponse.json().catch(() => ({}));
       const gestoresData = await gestoresResponse.json().catch(() => []);
@@ -253,9 +273,12 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         body: JSON.stringify({ password_actual: passwordActualPerfil, password_nueva: passwordNuevaPerfil }),
       });
       setMensajePasswordPerfil(resultado.mensaje || "Contraseña actualizada correctamente.");
+      setNotario((actual) => actual ? { ...actual, requiere_cambio_password: false } : actual);
       setPasswordActualPerfil("");
       setPasswordNuevaPerfil("");
       setPasswordConfirmarPerfil("");
+      setPerfilNotarioAbierto(false);
+      await cargar();
     } catch (e) {
       setErrorPasswordPerfil(e.message || "No se ha podido actualizar la contraseña.");
     } finally {
@@ -308,7 +331,11 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       const response = await fetch(`${API_BASE}/notargest/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ usuario: usuario.trim().toUpperCase(), password: password.trim() }) });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.detail || "Credenciales incorrectas.");
-      localStorage.setItem(TOKEN_KEY, data.token); setTokenNotario(data.token); setNotario(data.notario); setPassword("");
+      sessionStorage.setItem(TOKEN_KEY, data.token);
+      setTokenNotario(data.token);
+      setNotario({ ...data.notario, requiere_cambio_password: Boolean(data.requiere_cambio_password) });
+      setPerfilNotarioAbierto(Boolean(data.requiere_cambio_password));
+      setPassword("");
     } catch (e2) { setError(e2.message); } finally { setCargando(false); }
   }
   function salir() {
@@ -317,7 +344,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       navigate("/login", { replace: true });
       return;
     }
-    localStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
     setTokenNotario("");
     setNotario(null);
     setExpedientes([]);
@@ -333,7 +360,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       const id = encodeURIComponent(item.id_expediente || item.numero_expediente);
       const [data, listaGestores] = await Promise.all([
         peticion(`/notargest/expedientes/${id}`),
-        peticion("/notargest/gestores"),
+        peticion(`/notargest/gestores?expediente_id=${id}`),
       ]);
       setDetalle(data); setGestores(Array.isArray(listaGestores) ? listaGestores : []);
       setComentarioGestor(""); setGestorDestinatario("");
@@ -560,14 +587,14 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
           { key: "inicio", label: "Dashboard", icon: "home" },
           { key: "recepcion", label: "Nuevos encargos", icon: "clipboard-list", badge: cuenta("recepcion") },
           { key: "firma", label: "Pendientes de firma", icon: "clock", badge: cuenta("firma") },
-          { key: "copia", label: "Pendientes copias simples", icon: "files", badge: cuenta("copia") },
-          { key: "factura", label: "Pendientes de factura notarial", icon: "receipt", badge: cuenta("factura") },
-          { key: "ajd", label: "Pendientes de AJD / ITP", icon: "file-text", badge: cuenta("ajd") },
-          { key: "registro", label: "Pendientes de presentación registral", icon: "folder-check", badge: cuenta("registro") },
-          { key: "defectos", label: "Expedientes con defectos", icon: "alert-triangle", badge: cuenta("defectos") },
-          { key: "inscripcion", label: "Inscripciones registrales", icon: "book-check", badge: cuenta("inscripcion") },
-          { key: "cerrada", label: "Escrituras cerradas inscritas", icon: "check-circle", badge: cuenta("cerrada") },
-          { key: "firmas_urgentes", label: "Firmas urgentes", icon: "zap", badge: expedientes.filter(x => x.firma_urgente).length, attention: expedientes.some(x => x.firma_urgente) },
+          { key: "copia", label: "Pendientes copias simples", icon: "file-check", badge: cuenta("copia") },
+          { key: "factura", label: "Pendientes de factura notarial", icon: "briefcase", badge: cuenta("factura") },
+          { key: "ajd", label: "Pendientes de AJD / ITP", icon: "file-check", badge: cuenta("ajd") },
+          { key: "registro", label: "Pendientes de presentación registral", icon: "folder", badge: cuenta("registro") },
+          { key: "defectos", label: "Expedientes con defectos", icon: "shield", badge: cuenta("defectos") },
+          { key: "inscripcion", label: "Inscripciones registrales", icon: "newspaper", badge: cuenta("inscripcion") },
+          { key: "cerrada", label: "Escrituras cerradas inscritas", icon: "file-check", badge: cuenta("cerrada") },
+          { key: "firmas_urgentes", label: "Firmas urgentes", icon: "activity", badge: expedientes.filter(x => x.firma_urgente).length, attention: expedientes.some(x => x.firma_urgente) },
         ]}
         activeNavigationItem={sidebarVista}
         onNavigationItemClick={navegarSidebar}
@@ -624,7 +651,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
           </div>
         </section>
       </div>}
-      {perfilNotarioAbierto && <div className="ng-modal-overlay ng-modal-overlay-scroll" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setPerfilNotarioAbierto(false); }}><section className="ng-modal ng-modal-perfil ng-modal-perfil-scroll" role="dialog" aria-modal="true" aria-labelledby="ng-perfil-titulo"><header><div><span className="ng-kicker">FICHA CTN</span><h2 id="ng-perfil-titulo">Ficha del notario</h2><p>Datos de la notaría registrados en el catálogo CTN.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setPerfilNotarioAbierto(false)}>Cerrar <MolsanIcon name="x" size={18} tone="ocean" /></button></header><div className="grid grid-cols-1 gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)]">
+      {perfilNotarioAbierto && <div className="ng-modal-overlay ng-modal-overlay-scroll" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget && !notario?.requiere_cambio_password) setPerfilNotarioAbierto(false); }}><section className="ng-modal ng-modal-perfil ng-modal-perfil-scroll" role="dialog" aria-modal="true" aria-labelledby="ng-perfil-titulo"><header><div><span className="ng-kicker">FICHA CTN</span><h2 id="ng-perfil-titulo">Ficha del notario</h2><p>Datos de la notaría registrados en el catálogo CTN.</p></div><button type="button" className="ng-boton-secundario" disabled={Boolean(notario?.requiere_cambio_password)} onClick={() => setPerfilNotarioAbierto(false)}>Cerrar <MolsanIcon name="x" size={18} tone="ocean" /></button></header><div className="grid grid-cols-1 gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)]">
           <div className="min-w-0">
             <div className="ng-perfil-identidad"><div className="ng-perfil-avatar"><MolsanIcon name="courthouse" size={36} tone="ocean" /></div><div><strong>{texto(notario?.nombre)}</strong><span>{texto(notario?.nif)}</span></div></div>
             <div className="ng-perfil-datos">{[["Nombre",notario?.nombre],["NIF",notario?.nif],["Usuario",notario?.nif],["Teléfono",notario?.telefono],["Dirección",notario?.direccion],["Código postal",notario?.cp],["Municipio",notario?.municipio],["Provincia",notario?.provincia],["Código CTN",notario?.codigo],["Videoconferencia",notario?.vc],["Apoderado asociado",notario?.apoderado],["Departamento cancelaciones",notario?.departamento_cancelaciones],["Departamento copias",notario?.departamento_copias],["Otros departamentos",notario?.otros_departamentos]].map(([label,value]) => <div className="ng-dato" key={label}><small>{label}</small><strong>{texto(value)}</strong></div>)}</div>
@@ -632,6 +659,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
           </div>
           <form onSubmit={cambiarPasswordPerfil} className="h-fit space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
             <div><h3 className="text-sm font-extrabold text-slate-900">Seguridad de la cuenta</h3><p className="mt-1 text-xs leading-5 text-slate-500">Usuario: NIF completo registrado en CTN. Si aún no has cambiado la contraseña inicial, utiliza tu NIF como contraseña.</p></div>
+            {notario?.requiere_cambio_password && <p role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-900">Debes sustituir la contraseña inicial antes de acceder a tus expedientes. La nueva contraseña debe tener al menos 8 caracteres.</p>}
             {mensajePasswordPerfil && <p role="status" className="rounded-lg bg-emerald-50 p-2 text-xs text-emerald-800">{mensajePasswordPerfil}</p>}
             {errorPasswordPerfil && <p role="alert" className="rounded-lg bg-rose-50 p-2 text-xs text-rose-700">{errorPasswordPerfil}</p>}
             <label className="block text-xs font-semibold text-slate-600">Contraseña actual<input required type="password" autoComplete="current-password" value={passwordActualPerfil} onChange={e=>setPasswordActualPerfil(e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm" /></label>
@@ -938,18 +966,18 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
     </section>}
     {esDetalle && <section className="ng-panel ng-ficha">
       <div className="ng-panel-titulo ng-ficha-cabecera"><div><h2>{titulo}</h2><small>Ficha operativa del expediente · NotarGest</small></div><button className="ng-volver" onClick={() => setVista(vistaOrigenFicha.current || "inicio")}><MolsanIcon name="arrowLeft" size={20} tone="ocean" /> Volver al listado</button></div>
-      {detalle.bloqueado && <div className="ng-alerta ng-bloqueo-expediente" role="alert"><span className="ng-alerta-icono">!</span><div><strong>EXPEDIENTE BLOQUEADO EN CANCELAGEST</strong><p>{texto(detalle.motivo_bloqueo_efectivo || detalle.motivo_bloqueo || "Este expediente está bloqueado. Consulta con gestión antes de continuar.")}</p></div></div>}
+      {detalle.bloqueado && <div className="ng-alerta ng-bloqueo-expediente" role="alert"><span className="ng-alerta-icono" aria-hidden="true"><MolsanIcon name="alert" size={18} tone="amber" /></span><div><strong>EXPEDIENTE BLOQUEADO EN CANCELAGEST</strong><p>{texto(detalle.motivo_bloqueo_efectivo || detalle.motivo_bloqueo || "Este expediente está bloqueado. Consulta con gestión antes de continuar.")}</p></div></div>}
       <div className="ng-ficha-cuerpo ng-ficha-premium">
         <details className="ng-detalle-bloque ng-workflow ng-bloque-estado ng-acordeon-ficha">
           <summary className="ng-bloque-heading"><div><span className="ng-kicker">FLUJO DE TRABAJO</span><h3>Gestión del estado</h3></div><span className={`ng-estado-pill ng-estado-${detalle.notargest_estado || "pendiente"}`}>{texto(bandejas.find(x => x.id === detalle.notargest_estado)?.titulo || detalle.notargest_estado)}</span><span className="ng-acordeon-flecha" aria-hidden="true"><MolsanIcon name="chevronDown" size={18} tone="ocean" /></span></summary>
           {detalle.notargest_estado === "recepcion" && <button className="ng-login-submit" disabled={cargando} onClick={() => cambiarEstado("firma")}>Recepción encargo · Pasar a pendientes de firma</button>}
-          {detalle.notargest_estado === "firma" && <div className="ng-workflow-form ng-firma-form"><label>Fecha de firma<input type="date" value={firmaFecha} onChange={e => setFirmaFecha(e.target.value)} /></label><label>Protocolo<input value={protocolo} onChange={e => setProtocolo(e.target.value)} placeholder="Número de protocolo" /></label><button className="ng-login-submit" disabled={cargando || !firmaFecha || !protocolo.trim()} onClick={() => cambiarEstado("factura")}>Guardar firma y pasar a pendientes de factura notaría</button><p className="ng-ayuda-campo">Esta acción solo está disponible mientras el expediente está en <strong>Pendientes de firma</strong>.</p></div>}
+          {detalle.notargest_estado === "firma" && <div className="ng-workflow-form ng-firma-form"><label>Fecha de firma<input type="date" value={firmaFecha} disabled={cargando || Boolean(detalle.fecha_firma)} onChange={e => setFirmaFecha(e.target.value)} /></label><label>Protocolo<input value={protocolo} disabled={cargando || Boolean(detalle.protocolo)} onChange={e => setProtocolo(e.target.value)} placeholder="Número de protocolo" /></label><button className="ng-login-submit" disabled={cargando || !firmaFecha || !protocolo.trim()} onClick={() => cambiarEstado("factura")}>Guardar firma y pasar a pendientes de factura notaría</button><p className="ng-ayuda-campo">Esta acción solo está disponible mientras el expediente está en <strong>Pendientes de firma</strong>.</p></div>}
           {detalle.notargest_estado === "factura" && <p>Adjunta la factura notarial desde su bandeja. Al subirla, el expediente pasará a presentación en Registro.</p>}
           {detalle.notargest_estado === "registro" && <label className="ng-adjuntar">Subir justificante de presentación en Registro<input type="file" disabled={cargando} onChange={e => { subirDocumentoWorkflow("presentacion", e.target.files?.[0]); e.target.value = ""; }} /></label>}
           {detalle.notargest_estado === "ajd" && <label className="ng-adjuntar">Subir justificante AJD / ITP<input type="file" disabled={cargando} onChange={e => { subirDocumentoWorkflow("ajd", e.target.files?.[0]); e.target.value = ""; }} /></label>}
-          {["inscripcion", "copia"].includes(detalle.notargest_estado) && <div className="ng-workflow-form"><label>Defecto registral (PDF)<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { subirDocumentoWorkflow("defecto", e.target.files?.[0]); e.target.value = ""; }} /></label><label>Hoja de inscripción (PDF)<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { subirDocumentoWorkflow("inscripcion", e.target.files?.[0]); e.target.value = ""; }} /></label>{String(detalle.tiene_defectos_abiertos || "").trim().toLowerCase() === "si" && <label>Subsanación del defecto (PDF)<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { subirDocumentoWorkflow("subsanacion", e.target.files?.[0]); e.target.value = ""; }} /></label>}<p>Los documentos se guardan en la Carpeta Digital. Si hay un defecto abierto, se deberá adjuntar la subsanación antes de cerrar.</p></div>}
+          {detalle.notargest_estado === "inscripcion" && <div className="ng-workflow-form"><label>Defecto registral (PDF)<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { subirDocumentoWorkflow("defecto", e.target.files?.[0]); e.target.value = ""; }} /></label>{["si", "sí", "true", "1", "abierto"].includes(String(detalle.tiene_defectos_abiertos || "").trim().toLowerCase()) ? <label>Subsanación del defecto (PDF)<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { subirDocumentoWorkflow("subsanacion", e.target.files?.[0]); e.target.value = ""; }} /></label> : <label>Hoja de inscripción (PDF)<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { subirDocumentoWorkflow("inscripcion", e.target.files?.[0]); e.target.value = ""; }} /></label>}<p>Los documentos se guardan en la Carpeta Digital. Si hay un defecto abierto, se deberá adjuntar la subsanación antes de continuar con la inscripción.</p></div>}
           {detalle.notargest_estado === "copia" && <label className="ng-adjuntar">Subir copia simple (PDF)<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { subirDocumentoWorkflow("copia", e.target.files?.[0]); e.target.value = ""; }} /></label>}
-          {detalle.notargest_estado === "cerrada" && <div className="ng-workflow-form"><label>Fecha de cierre<input type="date" value={fechaCierre} onChange={e => setFechaCierre(e.target.value)} /></label><label>Fecha de envío a gestoría<input type="date" value={fechaEnvioGestoria} onChange={e => setFechaEnvioGestoria(e.target.value)} /></label><button className="ng-login-submit" disabled={cargando || !fechaCierre} onClick={guardarCierre}>Guardar cierre y envío a gestoría</button></div>}
+          {detalle.notargest_estado === "cerrada" && <div className="ng-workflow-form"><label>Fecha de cierre<input type="date" value={fechaCierre} disabled={cargando || Boolean(detalle.notargest_fecha_cierre)} onChange={e => setFechaCierre(e.target.value)} /></label><label>Fecha de envío a gestoría<input type="date" value={fechaEnvioGestoria} disabled={cargando || Boolean(detalle.notargest_fecha_envio_gestoria)} onChange={e => setFechaEnvioGestoria(e.target.value)} /></label><button className="ng-login-submit" disabled={cargando || !fechaCierre} onClick={guardarCierre}>Guardar cierre y envío a gestoría</button></div>}
         </details>
 
         <div className="ng-datos-superiores">
@@ -1016,8 +1044,9 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                     if (categoria === "Otros documentos") return !["documentos absis","absis","hoja de encargo firmada","hoja de encargo","justificante de cancelación","cancelación","nota simple","borrador","borradores de escritura"].some(p => cat.includes(p) || nom.includes(p));
                     return palabras.some(p => cat.includes(p) || nom.includes(p));
                   });
+                  const puedeAdjuntar = categoria !== "Documentación previa · Documentos ABSIS";
                   return <div className="ng-categoria-documental" key={categoria}>
-                    <div className="ng-categoria-heading"><div><strong>{categoria}</strong><small>{docs.length} archivo(s)</small></div><label className="ng-adjuntar-pdf"><MolsanIcon name="plus" size={18} tone="ocean" /> Adjuntar PDF<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { subirDocumentoCarpeta(categoria, e.target.files?.[0]); e.target.value = ""; }} /></label></div>
+                    <div className="ng-categoria-heading"><div><strong>{categoria}</strong><small>{docs.length} archivo(s)</small></div>{puedeAdjuntar ? <label className="ng-adjuntar-pdf"><MolsanIcon name="plus" size={18} tone="ocean" /> Adjuntar PDF<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { subirDocumentoCarpeta(categoria, e.target.files?.[0]); e.target.value = ""; }} /></label> : <small className="ng-categoria-solo-lectura">Solo lectura · documentación sincronizada desde ABSIS</small>}</div>
                     {docs.length ? docs.map(d => <div className="ng-archivo-row" key={d.id}><span className="ng-pdf-icon"><MolsanIcon name="file" size={22} tone="ocean" /> PDF</span><div className="ng-archivo-info"><strong>{d.nombre}</strong><small>{esFecha(d.fecha_subida)}</small></div><button type="button" className="ng-boton-secundario" onClick={() => abrirDocumento(d)}>Ver a la derecha</button></div>) : <p className="ng-vacio-categoria">Todavía no hay archivos. Usa «Adjuntar PDF» para incorporarlo aquí.</p>}
                   </div>;
                 })}

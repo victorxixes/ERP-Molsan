@@ -4,6 +4,7 @@ import React, {
   useState,
 } from "react";
 import axios from "../../api/axios";
+import { API_BASE as API_ROOT } from "../../api/config";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
@@ -19,11 +20,7 @@ import "../../css/CatalogosMaestrosPremium.css";
 // CONFIGURACIÓN API
 // ============================================================
 
-const API_ORIGEN =
-  "https://agenda-intranet-b.onrender.com";
-
-const API_BASE =
-  `${API_ORIGEN}/api/tipos-concepto-gastos`;
+const API_BASE = `${API_ROOT}/tipos-concepto-gastos`;
 
 
 // ============================================================

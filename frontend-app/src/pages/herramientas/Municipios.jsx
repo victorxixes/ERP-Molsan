@@ -1,4 +1,5 @@
 import MolsanButton from "../../components/ui/MolsanButton";
+import { API_BASE as API_ROOT } from "../../api/config";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useSearchParams } from "react-router-dom";
 import { sortRows } from "../../utils/sortRows";
@@ -52,11 +53,7 @@ import "../../css/CatalogosMaestrosPremium.css";
    El frontend y el backend están en servicios Render distintos.
 ============================================================ */
 
-const API_ORIGEN =
-  "https://agenda-intranet-b.onrender.com";
-
-const API_BASE =
-  `${API_ORIGEN}/api/municipios`;
+const API_BASE = `${API_ROOT}/municipios`;
 
 const API_IMPORTAR_EXCEL =
   `${API_BASE}/importar-excel`;

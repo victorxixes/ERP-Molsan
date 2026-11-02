@@ -4,7 +4,7 @@ import { useAuthStore } from "../store/authStore";
 import MODULOS_ERP from "../config/modulos";
 import MolsanIcon from "../components/ui/MolsanIcon";
 import { API_BASE } from "../api/config";
-import { configurarSesionEncargaGest } from "../api/encargagest";
+import { configurarSesionSoporteEncargaGest } from "../api/encargagest";
 import "../css/ModalesHerramientasPremium.css";
 
 const CATALOGO_MODULOS = Object.fromEntries(
@@ -103,7 +103,7 @@ export default function ModulosSelector() {
     const rolesAdministradores = new Set([
       "admin", "administrador", "administradora", "superadmin",
       "super admin", "superadministrador", "super administradora",
-      "superuser", "super usuario", "superusuario", "administrador general",
+      "superuser", "super usuario", "superusuario", "administrador general", "administrador del sistema",
     ]);
     const esAdmin =
       empleado.es_admin === true ||
@@ -203,7 +203,7 @@ export default function ModulosSelector() {
         setModalSoporte(null);
         navigate("/notargest?modo_soporte=1");
       } else {
-        configurarSesionEncargaGest("externo", data.token);
+        configurarSesionSoporteEncargaGest(data.token);
         setModalSoporte(null);
         navigate("/encargagest/notario");
       }
@@ -347,7 +347,7 @@ export default function ModulosSelector() {
                 <h2 id="soporte-notaria-titulo" className="mt-1 text-xl font-extrabold text-slate-900">{modalSoporte === "notargest" ? "NotarGest – Notarios" : "EncargaGest – Notarios"}</h2>
                 <p className="mt-1 text-sm text-slate-500">Solo aparecen notarías con el acceso a este portal habilitado.</p>
               </div>
-              <button type="button" onClick={() => setModalSoporte(null)} disabled={Boolean(abriendoNotaria)} className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50" aria-label="Cerrar">✕</button>
+              <button type="button" onClick={() => setModalSoporte(null)} disabled={Boolean(abriendoNotaria)} className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50" aria-label="Cerrar"><MolsanIcon name="x" size={16} bare /></button>
             </header>
             <div className="border-b border-slate-100 p-5">
               <label className="relative block">

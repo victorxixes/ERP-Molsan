@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import "../../css/ModalesHerramientasPremium.css";
+import { API_BASE } from "../../api/config";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 
 import {
@@ -400,7 +401,7 @@ export default function Mensajes({
 
           const response =
             await fetch(
-              `${import.meta.env.VITE_API_URL}/mensajes/upload`,
+              `${API_BASE}/mensajes/upload`,
               {
                 method:
                   "POST",
@@ -591,7 +592,7 @@ export default function Mensajes({
       }
 
 
-      return `${import.meta.env.VITE_API_URL}${foto}`;
+      return `${API_BASE}${foto}`;
 
     };
 
