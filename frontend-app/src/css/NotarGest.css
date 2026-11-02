@@ -1514,3 +1514,90 @@
     transition: none !important;
   }
 }
+
+
+/* NotarGest · tarjetas reales del resumen consolidado (son BUTTON, no ARTICLE). */
+.ng-admin-notarias .ng-admin-kpis-global{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:14px!important;
+}
+.ng-admin-notarias .ng-admin-kpis-global > .ng-admin-kpi-button{
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  justify-content:flex-start!important;
+  gap:9px!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:160px!important;
+  margin:0!important;
+  padding:19px 18px 16px!important;
+  position:relative!important;
+  overflow:hidden!important;
+  text-align:left!important;
+  color:#173247!important;
+  background:linear-gradient(145deg,#fff 0%,#fff 58%,#F2F7FB 100%)!important;
+  border:1px solid #D8E4EC!important;
+  border-radius:14px!important;
+  box-shadow:0 4px 14px rgba(36,50,74,.06)!important;
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease!important;
+}
+.ng-admin-notarias .ng-admin-kpis-global > .ng-admin-kpi-button::before{
+  content:""!important;
+  position:absolute!important;
+  inset:0 16px auto!important;
+  width:auto!important;
+  height:3px!important;
+  border-radius:0 0 5px 5px!important;
+  background:linear-gradient(90deg,#064675,#2696A5)!important;
+}
+.ng-admin-notarias .ng-admin-kpis-global > .ng-admin-kpi-button:nth-child(5n+2)::before{background:linear-gradient(90deg,#087C72,#65BDB0)!important}
+.ng-admin-notarias .ng-admin-kpis-global > .ng-admin-kpi-button:nth-child(5n+3)::before{background:linear-gradient(90deg,#5276B8,#91ACD9)!important}
+.ng-admin-notarias .ng-admin-kpis-global > .ng-admin-kpi-button:nth-child(5n+4)::before{background:linear-gradient(90deg,#B47A27,#E7BD72)!important}
+.ng-admin-notarias .ng-admin-kpis-global > .ng-admin-kpi-button:nth-child(5n+5)::before{background:linear-gradient(90deg,#7460B4,#B1A2E1)!important}
+.ng-admin-notarias .ng-admin-kpis-global > .ng-admin-kpi-button > span{
+  display:block!important;
+  min-height:34px;
+  color:#617789!important;
+  font-size:12px!important;
+  font-weight:750!important;
+  line-height:1.4!important;
+}
+.ng-admin-notarias .ng-admin-kpis-global > .ng-admin-kpi-button > strong{
+  display:block!important;
+  margin:auto 0 0!important;
+  color:#064675!important;
+  font-size:clamp(27px,2.1vw,34px)!important;
+  font-weight:850!important;
+  line-height:1!important;
+  letter-spacing:-.04em!important;
+  font-variant-numeric:tabular-nums;
+}
+.ng-admin-notarias .ng-admin-kpis-global > .ng-admin-kpi-button > strong.ng-cifra-urgente{color:#B45309!important}
+.ng-admin-notarias .ng-admin-kpis-global > .ng-admin-kpi-button > small{
+  display:flex!important;
+  align-items:center;
+  gap:5px;
+  margin:0!important;
+  color:#064675!important;
+  font-size:10px!important;
+  font-weight:800!important;
+}
+.ng-admin-notarias .ng-admin-kpis-global > .ng-admin-kpi-button:hover{
+  transform:translateY(-2px)!important;
+  border-color:#B9D7E6!important;
+  box-shadow:0 12px 26px rgba(6,50,82,.11)!important;
+}
+.ng-admin-notarias .ng-admin-kpis-global > .ng-admin-kpi-button:focus-visible{outline:3px solid rgba(6,70,117,.24)!important;outline-offset:3px!important}
+@media(max-width:1350px){.ng-admin-notarias .ng-admin-kpis-global{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+@media(max-width:1050px){.ng-admin-notarias .ng-admin-kpis-global{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media(max-width:760px){
+ .ng-admin-notarias .ng-admin-kpis-global{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+ .ng-admin-notarias .ng-admin-kpis-global > .ng-admin-kpi-button{min-height:142px!important;padding:16px 13px 14px!important}
+ .ng-admin-notarias .ng-admin-kpis-global > .ng-admin-kpi-button > span{font-size:11px!important}
+}
+@media(max-width:420px){.ng-admin-notarias .ng-admin-kpis-global{grid-template-columns:1fr!important}}
