@@ -39,9 +39,9 @@ class NotarGestPaymentScopeTests(unittest.TestCase):
         )
         self.assertFalse(_pago_corresponde_a_notario(self.notaria, gasto, self.expediente))
 
-    def test_missing_expense_identity_can_use_the_authorized_expedient_scope(self):
+    def test_missing_expense_identity_is_not_exposed_as_a_notary_payment(self):
         gasto = SimpleNamespace(nif_notario=None, nombre_notario=None)
-        self.assertTrue(_pago_corresponde_a_notario(self.notaria, gasto, self.expediente))
+        self.assertFalse(_pago_corresponde_a_notario(self.notaria, gasto, self.expediente))
 
 
 if __name__ == "__main__":
