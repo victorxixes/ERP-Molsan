@@ -967,7 +967,7 @@ def mover_actividad_desde_utilidades(expediente_id: str, data: dict, actor=Depen
 
 @router.post("/expedientes/{expediente_id}/estado")
 def cambiar_estado_workflow(expediente_id: str, data: dict, n=Depends(get_notario), db: Session = Depends(get_db)):
-    e = _expediente_autorizado(expediente_id, n, db)
+    e = _expediente_autorizado(expediente_id, n, db, bloquear=True)
     destino = str(data.get("estado") or "").strip()
     if destino not in ESTADOS_NOTARGEST:
         raise HTTPException(status_code=400, detail="Estado NotarGest no válido")
@@ -987,7 +987,7 @@ def cambiar_estado_workflow(expediente_id: str, data: dict, n=Depends(get_notari
 
 @router.patch("/expedientes/{expediente_id}/firma")
 def actualizar_datos_firma(expediente_id: str, data: dict, n=Depends(get_notario), db: Session = Depends(get_db)):
-    e = _expediente_autorizado(expediente_id, n, db)
+    e = _expediente_autorizado(expediente_id, n, db, bloquear=True)
     fecha = data.get("fecha_firma")
     protocolo = str(data.get("protocolo") or "").strip()
 
@@ -1022,7 +1022,7 @@ def actualizar_datos_firma(expediente_id: str, data: dict, n=Depends(get_notario
 
 @router.patch("/expedientes/{expediente_id}/cierre")
 def actualizar_cierre(expediente_id: str, data: dict, n=Depends(get_notario), db: Session = Depends(get_db)):
-    e = _expediente_autorizado(expediente_id, n, db)
+    e = _expediente_autorizado(expediente_id, n, db, bloquear=True)
     estado_actual = _estado_workflow(e)
     fecha_cierre_entrada = data.get("notargest_fecha_cierre")
     fecha_envio_entrada = data.get("notargest_fecha_envio_gestoria")
@@ -1068,7 +1068,7 @@ def actualizar_cierre(expediente_id: str, data: dict, n=Depends(get_notario), db
 
 @router.post("/expedientes/{expediente_id}/documentos-workflow")
 async def subir_documento_workflow(expediente_id: str, categoria: str = Form(...), archivo: UploadFile = File(...), n=Depends(get_notario), db: Session = Depends(get_db)):
-    e = _expediente_autorizado(expediente_id, n, db)
+    e = _expediente_autorizado(expediente_id, n, db, bloquear=True)
     categorias = {
         "presentacion": ("Presentación Registro", None, "ajd"),
         "ajd": ("AJD/ITP", None, "inscripcion"),
@@ -1147,8 +1147,11 @@ def mis_expedientes(n=Depends(get_notario), db: Session = Depends(get_db)):
         items.append(item)
     return {"items": items, "total": len(items)}
 
-def _expediente_autorizado(expediente_id, n, db):
-    e = db.query(Expediente).filter(Expediente.id_expediente == str(expediente_id)).first()
+def _expediente_autorizado(expediente_id, n, db, bloquear=False):
+    consulta = db.query(Expediente).filter(Expediente.id_expediente == str(expediente_id))
+    if bloquear:
+        consulta = consulta.with_for_update()
+    e = consulta.first()
     if not e:
         raise HTTPException(status_code=404, detail="Expediente no encontrado")
     if _es_usuario_erp(n):
@@ -1506,7 +1509,7 @@ def descargar_documento(expediente_id: str, documento_id: int, n=Depends(get_not
 
 @router.post("/expedientes/{expediente_id}/factura-notarial")
 async def subir_factura_notarial(expediente_id: str, archivo: UploadFile = File(...), n=Depends(get_notario), db: Session = Depends(get_db)):
-    e = _expediente_autorizado(expediente_id, n, db)
+    e = _expediente_autorizado(expediente_id, n, db, bloquear=True)
     if _estado_workflow(e) != "factura":
         raise HTTPException(status_code=400, detail="La factura notarial solo puede adjuntarse durante la fase de factura.")
     nombre = (archivo.filename or "factura.pdf").replace("\\", "/").rsplit("/", 1)[-1]
