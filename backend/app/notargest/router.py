@@ -203,6 +203,13 @@ def migrar_notargest():
 
     print("[NOTARGEST MIGRACION] Migración de acceso revisada.", flush=True)
 
+def _registrar_password_inicial_notargest(notaria, nif: str) -> None:
+    """Registra el acceso inicial por NIF sin bloquear el primer inicio de sesión."""
+    notaria.notargest_password_hash = hash_password(nif)
+    notaria.notargest_cambiar_password = False
+    notaria.notargest_password_provisional = False
+
+
 def _requiere_cambio_password_notargest(notaria) -> bool:
     return bool(
         getattr(notaria, "notargest_cambiar_password", True)
@@ -475,11 +482,9 @@ def login(data: LoginNotario, db: Session = Depends(get_db)):
         db.commit()
         raise HTTPException(status_code=401, detail="Acceso no habilitado. Contacta con Molsan.")
     password_nif = hmac.compare_digest(normalizar_nif(data.password), nif)
-    if password_nif and (not n.notargest_password_hash or getattr(n, "notargest_password_provisional", True)):
-        n.notargest_password_hash = hash_password(nif)
+    if password_nif and (not n.notargest_password_hash or _requiere_cambio_password_notargest(n)):
+        _registrar_password_inicial_notargest(n, nif)
         n.notargest_password_enc = cifrar_password_portal(nif)
-        n.notargest_cambiar_password = True
-        n.notargest_password_provisional = True
         valido = True
     elif n.notargest_password_hash:
         valido = verificar_password(data.password, n.notargest_password_hash)
