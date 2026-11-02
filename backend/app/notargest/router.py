@@ -614,8 +614,13 @@ def login(data: LoginNotario, db: Session = Depends(get_db)):
 
 def _es_administrador_notargest(usuario):
     nombre_usuario = str(getattr(usuario, "usuario", "") or "").strip().casefold()
-    rol = str(getattr(getattr(usuario, "rol", None), "nombre", "") or "").strip().casefold()
-    return nombre_usuario == "admin" or rol in {"admin", "administrador", "administradora", "superadmin", "superadministrador", "administrador del sistema"}
+    rol_obj = getattr(usuario, "rol", None)
+    rol = str(getattr(rol_obj, "nombre", "") or "").strip().casefold()
+    try:
+        rol_id = int(getattr(usuario, "rol_id", getattr(rol_obj, "id", -1)))
+    except (TypeError, ValueError):
+        rol_id = -1
+    return nombre_usuario == "admin" or rol_id == 0 or rol in {"admin", "administrador", "administradora", "superadmin", "superadministrador", "administrador del sistema"}
 
 
 def _validar_admin_soporte_notargest(payload, db):
