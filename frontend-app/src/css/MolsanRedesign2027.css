@@ -2774,3 +2774,37 @@ table :is(th, td) {
   filter: none !important;
   backface-visibility: hidden;
 }
+
+
+/* MOLSAN ERP PREMIUM 2027 · estabilización definitiva de cabeceras en subpáginas
+   Se aplica a cualquier nivel del árbol, no solo a un header hijo directo. */
+:where(
+  .utilidades-premium-page,
+  .catalogos-premium-page,
+  .herramientas-subpagina-premium,
+  .crear-noticia-premium
+) :is(header, [data-page-header="true"], .molsan-page-header) {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  backface-visibility: visible !important;
+  will-change: auto !important;
+}
+:where(
+  .utilidades-premium-page,
+  .catalogos-premium-page,
+  .herramientas-subpagina-premium,
+  .crear-noticia-premium
+) :is(header, [data-page-header="true"], .molsan-page-header).animate-fadeIn,
+:where(
+  .utilidades-premium-page,
+  .catalogos-premium-page,
+  .herramientas-subpagina-premium,
+  .crear-noticia-premium
+) :is(header, [data-page-header="true"], .molsan-page-header) .animate-fadeIn {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
