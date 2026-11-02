@@ -271,6 +271,21 @@ function TablaEncargos({ encargos, onFirmado }) {
 
   const grupos = useMemo(() => agruparEncargosPorApoderado(encargos), [encargos]);
 
+  useEffect(() => {
+    const clavesAbiertas = grupos.filter((grupo) => abiertos[grupo.clave]).map((grupo) => grupo.clave);
+    if (!clavesAbiertas.length) return undefined;
+    const cerrarConEscape = (event) => {
+      if (event.key !== "Escape") return;
+      setAbiertos((actual) => {
+        const siguiente = { ...actual };
+        clavesAbiertas.forEach((clave) => { siguiente[clave] = false; });
+        return siguiente;
+      });
+    };
+    window.addEventListener("keydown", cerrarConEscape);
+    return () => window.removeEventListener("keydown", cerrarConEscape);
+  }, [abiertos, grupos]);
+
   function cambiarDatoAceptacion(encargo, campo, valor) {
     const id = String(encargo.id_expediente || encargo.id);
     setDatosAceptacion((actual) => ({
@@ -487,7 +502,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                 <div className="ag-grupo-modal flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
                   <header className="ag-grupo-modal-cabecera molsan-modal-header flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4">
                     <div><span className="text-xs font-semibold uppercase tracking-widest text-slate-500">APODERAGEST · BLOQUE DE APODERADO</span><h3 className="mt-1 text-xl font-bold text-slate-900">{grupo.nombre}</h3><p className="text-sm text-slate-600">{grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas registradas · {grupo.expedientes.length} encargos</p></div>
-                    <button type="button" className="ag-grupo-modal-cerrar rounded-xl border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-slate-100" onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: false }))}>Cerrar <MolsanIcon name="x" size={14} bare /></button>
+                    <button type="button" className="ag-grupo-modal-cerrar rounded-xl border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-slate-100" autoFocus onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: false }))}>Cerrar <MolsanIcon name="x" size={14} bare /></button>
                   </header>
                   <div className="ag-encargos-detalle-lista ag-ficha-premium overflow-y-auto p-4">
                 {grupo.expedientes.map((encargo, indice) => {
@@ -781,6 +796,15 @@ export default function ApoderaGest() {
   useEffect(() => {
     if (tieneAccesoApoderagest) cargarDatos();
   }, [cargarDatos, tieneAccesoApoderagest]);
+
+  useEffect(() => {
+    if (!modalResumen) return undefined;
+    const cerrarConEscape = (event) => {
+      if (event.key === "Escape") setModalResumen(null);
+    };
+    window.addEventListener("keydown", cerrarConEscape);
+    return () => window.removeEventListener("keydown", cerrarConEscape);
+  }, [modalResumen]);
 
   const esEncargoFirmado = (encargo) => Boolean(encargo?.fecha_firma && String(encargo?.protocolo || "").trim());
   const normalizarModalidad = (valor) => String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
@@ -1077,7 +1101,7 @@ export default function ApoderaGest() {
           <section className="ag-resumen-modal" role="dialog" aria-modal="true" aria-labelledby="ag-resumen-modal-titulo">
             <header className="ag-resumen-modal-cabecera">
               <div><span className="ag-kicker">APODERAGEST · RESUMEN DE ACTIVIDAD</span><h2 id="ag-resumen-modal-titulo">{modalResumen.titulo}</h2><p>{encargosDelResumen.length} expediente(s) en este indicador.</p></div>
-              <button type="button" className="ag-resumen-modal-cerrar" onClick={() => setModalResumen(null)} aria-label="Cerrar modal"><MolsanIcon name="x" size={16} bare /></button>
+              <button type="button" className="ag-resumen-modal-cerrar" autoFocus onClick={() => setModalResumen(null)} aria-label="Cerrar modal"><MolsanIcon name="x" size={16} bare /></button>
             </header>
             <div className="ag-resumen-modal-cuerpo">
               {!encargosDelResumen.length ? <EstadoVacio icono="file" titulo="No hay expedientes en este bloque" detalle="No hay encargos que coincidan con este indicador." /> : (
