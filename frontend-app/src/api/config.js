@@ -13,3 +13,9 @@ if (!API_BASE_CONFIGURADA && import.meta.env.PROD) {
 }
 
 export const API_BASE = String(API_BASE_CONFIGURADA || "/api").replace(/\/+$/, "");
+
+/** Devuelve el origen efectivo de la API, resolviendo también /api en local. */
+export function getApiOrigin() {
+  const base = typeof window !== "undefined" ? window.location.href : "http://localhost";
+  return new URL(API_BASE, base).origin;
+}
