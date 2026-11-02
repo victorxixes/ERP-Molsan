@@ -279,15 +279,7 @@ function KPI({
 
 
   return (
-    <div
-      className="
-        bg-[var(--erp-surface)]
-        border
-        border-[var(--erp-border)]
-        rounded-2xl
-        shadow-sm
-        p-5
-      "
+    <div className="erp-card p-5"
     >
 
       <div
