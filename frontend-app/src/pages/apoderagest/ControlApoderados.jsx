@@ -1,4 +1,5 @@
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
@@ -140,7 +141,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
   return <div className="molsan-page-stack control-apoderados-page min-h-full">
     <header className="molsan-page-header">
       <div className="molsan-page-header__identity">
-        <div className="molsan-page-header__mark" aria-hidden="true">AG</div>
+        <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="users" size={34} bare /></div>
         <div className="min-w-0">
           <p className="molsan-page-header__eyebrow">MOLSAN ERP · APODERAGEST</p>
           <h1 className="molsan-page-header__title">{admin ? "Control Apoderados" : "Mi actividad y liquidaciones"}</h1>
@@ -226,7 +227,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
       </section>
       {firmasAbiertas && <div className="fixed inset-0 z-[12000] flex items-center justify-center bg-slate-950/50 p-4" role="dialog" aria-modal="true" aria-label="Listado de firmas">
         <section className="max-h-[85vh] w-full max-w-4xl overflow-hidden rounded-3xl bg-white shadow-2xl">
-          <header className="flex items-start justify-between gap-4 border-b border-slate-200 p-5"><div><p className="text-xs font-bold uppercase tracking-widest text-indigo-600">Control Apoderados · {periodo}</p><h2 className="mt-1 text-xl font-bold text-slate-900">Firmas de {firmasAbiertas.colaborador}</h2><p className="mt-1 text-sm text-slate-500">{firmasAbiertas.protocolos_firmados ?? firmasAbiertas.expedientes?.length ?? 0} protocolos únicos · {firmasAbiertas.expedientes?.length || 0} expedientes</p></div><button type="button" onClick={() => setFirmasAbiertas(null)} className="rounded-xl border px-3 py-2 font-semibold">Cerrar ✕</button></header>
+          <header className="flex items-start justify-between gap-4 border-b border-slate-200 p-5"><div><p className="text-xs font-bold uppercase tracking-widest text-indigo-600">Control Apoderados · {periodo}</p><h2 className="mt-1 text-xl font-bold text-slate-900">Firmas de {firmasAbiertas.colaborador}</h2><p className="mt-1 text-sm text-slate-500">{firmasAbiertas.protocolos_firmados ?? firmasAbiertas.expedientes?.length ?? 0} protocolos únicos · {firmasAbiertas.expedientes?.length || 0} expedientes</p></div><button type="button" onClick={() => setFirmasAbiertas(null)} className="inline-flex items-center gap-2 rounded-xl border border-[var(--molsan-border)] px-3 py-2 font-semibold text-[var(--molsan-primary)]"><span>Cerrar</span><MolsanIcon name="x" size={16} /></button></header>
           <div className="max-h-[65vh] overflow-auto p-5"><MolsanDataTable
             rows={firmasAbiertas.expedientes || []}
           searchable
