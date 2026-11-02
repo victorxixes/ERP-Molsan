@@ -144,22 +144,59 @@ def _coordenadas_de_encargo(encargo, por_nif, por_nombre, objetos_nif, objetos_n
 
 
 def _es_administrador_apoderagest(usuario):
-    """Detecta cuentas administrativas para agregar datos de todos los apoderados."""
-    rol = getattr(usuario, "rol", None)
-    nombres = [getattr(usuario, "rol_nombre", None), getattr(usuario, "nombre_rol", None),
-               getattr(rol, "nombre", None), getattr(rol, "nombre_rol", None), getattr(rol, "codigo", None)]
-    if any("admin" in str(nombre or "").casefold() for nombre in nombres):
+    """Detecta roles administrativos explícitos o permisos globales de ApoderaGest."""
+    def valor(objeto, clave, defecto=None):
+        return objeto.get(clave, defecto) if isinstance(objeto, dict) else getattr(objeto, clave, defecto)
+
+    rol = valor(usuario, "rol")
+    nombres = [
+        valor(usuario, "rol_nombre"),
+        valor(usuario, "nombre_rol"),
+        valor(rol, "nombre"),
+        valor(rol, "nombre_rol"),
+        valor(rol, "codigo"),
+    ]
+    roles_administradores = {
+        "admin", "administrador", "administradora", "superadmin",
+        "super admin", "superadministrador", "super administradora",
+        "administrador del sistema", "administrador general",
+        "superuser", "super usuario", "superusuario",
+    }
+    if any(
+        str(nombre or "").strip().casefold().replace("_", " ").replace("-", " ")
+        in roles_administradores
+        for nombre in nombres
+    ):
         return True
-    for fuente in (getattr(usuario, "permisos_modulo_dict", None) or {},
-                   getattr(rol, "permisos_modulo_dict", None) or {}):
+    try:
+        if int(valor(usuario, "rol_id", valor(rol, "id", -1))) == 0:
+            return True
+    except (TypeError, ValueError):
+        pass
+
+    fuentes = (
+        valor(usuario, "permisos_modulo_dict", {}) or {},
+        valor(rol, "permisos_modulo_dict", {}) or {},
+    )
+    for fuente in fuentes:
+        if not isinstance(fuente, dict):
+            continue
         for clave, acciones in fuente.items():
-            if str(clave).casefold() in {"*", "apoderagest.*", "apoderagest", "administracion.*"} and ("*" in (acciones or []) or "ver_todos" in (acciones or []) or "administrar" in (acciones or [])):
+            if str(clave).strip().casefold() not in {
+                "*", "apoderagest.*", "apoderagest", "administracion.*",
+            }:
+                continue
+            if isinstance(acciones, dict):
+                if any(bool(acciones.get(accion)) for accion in ("*", "ver_todos", "administrar", "admin", "ver_todo")):
+                    return True
+            elif isinstance(acciones, (list, tuple, set)):
+                if any(str(accion).strip().casefold() in {"*", "ver_todos", "administrar", "admin", "ver_todo"} for accion in acciones):
+                    return True
+            elif str(acciones).strip().casefold() in {"*", "ver_todos", "administrar", "admin", "ver_todo", "true"}:
                 return True
     if isinstance(usuario, dict):
-        rol_txt = " ".join(str(usuario.get(k) or "") for k in ("rol", "rol_nombre", "nombre_rol", "perfil", "tipo_usuario"))
-        if "admin" in rol_txt.casefold():
-            return True
-    return False
+        return str(usuario.get("usuario") or "").strip().casefold() == "admin"
+    return str(getattr(usuario, "usuario", "") or "").strip().casefold() == "admin"
 
 
 def obtener_dashboard(db, usuario):
