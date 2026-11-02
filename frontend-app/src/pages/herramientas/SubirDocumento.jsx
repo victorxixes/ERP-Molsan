@@ -58,7 +58,7 @@ export default function SubirDocumento() {
   ]);
 
   return (
-    <div className="molsan-page-stack subir-documento-premium herramientas-subpagina-premium min-h-full animate-fadeIn">
+    <div className="molsan-page-stack subir-documento-premium herramientas-subpagina-premium min-h-full ">
 
       {/* =====================================================
           CABECERA

@@ -28,7 +28,7 @@ export default function CatalogoFichajes() {
     } catch (e) { setError(e?.response?.data?.detail || "No se pudo guardar el tipo de ausencia."); }
     finally { setGuardando(false); }
   };
-  return <main className="molsan-page-stack catalogos-premium-page min-h-full animate-fadeIn">
+  return <main className="molsan-page-stack catalogos-premium-page min-h-full ">
     <header className="molsan-page-header">
       <div className="molsan-page-header__identity">
         <div className="molsan-page-header__mark" aria-hidden="true">◷</div>
