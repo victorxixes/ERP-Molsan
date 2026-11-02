@@ -337,7 +337,7 @@ export default function SubirDocumento() {
                 animate-fadeIn
               "
             >
-              <span>✓</span>
+              <MolsanIcon name="check" size={15} />
               <span>Documento subido correctamente.</span>
             </div>
           )}
