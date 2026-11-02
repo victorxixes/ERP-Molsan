@@ -74,7 +74,7 @@ export default function LogsAvanzados() {
   // ============================================================
 
   return (
-    <div className="molsan-page-stack logs-avanzados-premium panel-tecnico-submodulo-premium animate-fade-in">
+    <div className="molsan-page-stack logs-avanzados-premium panel-tecnico-submodulo-premium">
 
       {/* ======================================================
           CABECERA
