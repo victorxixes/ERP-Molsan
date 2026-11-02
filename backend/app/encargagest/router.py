@@ -247,6 +247,15 @@ def _es_administrador_encargagest(usuario):
     return nombre_usuario == "admin" or rol in {"admin", "administrador", "administradora", "superadmin"}
 
 
+def _exigir_admin_encargagest(usuario):
+    if _es_externo(usuario) or not _es_administrador_encargagest(usuario):
+        raise HTTPException(
+            status_code=403,
+            detail="La administración de accesos externos de EncargaGest está reservada a administradores.",
+        )
+    return usuario
+
+
 def _ids_notarias_asignadas(usuario):
     valor = getattr(usuario, "notarias_encargagest_ids", None)
     if isinstance(valor, str):
@@ -752,6 +761,7 @@ def cambiar_password_encargagest(datos: CambioPasswordEncargaGest, usuario=Depen
 @router.get("/accesos")
 def listar_accesos_encargagest(db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _exigir_interno(usuario, "ver")
+    _exigir_admin_encargagest(usuario)
     notarías = db.query(Notaria).order_by(Notaria.apellidos.asc(), Notaria.nombre.asc()).all()
     accesos = {item.notaria_id: item for item in db.query(EncargoExternoUsuario).all()}
     return [{
@@ -767,6 +777,7 @@ def listar_accesos_encargagest(db: Session = Depends(get_db), usuario=Depends(ge
 @router.post("/accesos")
 def guardar_acceso_encargagest(datos: AccesoEncargaGest, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _exigir_interno(usuario, "editar")
+    _exigir_admin_encargagest(usuario)
     notaria = db.query(Notaria).filter(Notaria.id == datos.notaria_id).first()
     if not notaria:
         raise HTTPException(status_code=404, detail="Notaría CTN no encontrada.")
