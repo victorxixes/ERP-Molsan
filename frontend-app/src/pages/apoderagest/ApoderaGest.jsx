@@ -906,10 +906,6 @@ export default function ApoderaGest() {
           >
             <MolsanIcon name="dashboard" size={17} bare /> Ir a módulos
           </button>
-          <button type="button" className="ag-boton-actualizar" onClick={cargarDatos} disabled={cargando}>
-            <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true"><MolsanIcon name="refresh" size={16} bare /></span>
-            {cargando ? "Actualizando…" : "Actualizar datos"}
-          </button>
         </div>
       </header>
 
