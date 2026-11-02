@@ -8,6 +8,10 @@ import axios, { configurarSesionEncargaGest, limpiarSesionEncargaGest } from "..
 import { useAuthStore } from "../../store/authStore";
 import { formatEuro as euros } from "../../utils/formatters";
 
+const tieneTokenExternoEncargaGest = () => Boolean(
+  localStorage.getItem("encargagest_token") || sessionStorage.getItem("encargagest_soporte_token")
+);
+
 const ESTADOS = [
   { valor: "", texto: "Todos los estados" },
   { valor: "EN_PROCESO", texto: "Recibido · pendiente de autorizar" },
@@ -118,8 +122,8 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
   const esAdminEncargaGest = String(empleado?.usuario || "").trim().toLowerCase() === "admin" || /^(admin|administrador|administradora|superadmin)$/.test(rolEncargaGest);
   const [modo, setModo] = useState(() => (
     accessMode === "external"
-      ? (localStorage.getItem("encargagest_token") ? "externo" : "login")
-      : (empleado && tokenERP ? "interno" : (localStorage.getItem("encargagest_token") ? "externo" : "login"))
+      ? (tieneTokenExternoEncargaGest() ? "externo" : "login")
+      : (empleado && tokenERP ? "interno" : (tieneTokenExternoEncargaGest() ? "externo" : "login"))
   ));
   const [sesion, setSesion] = useState(null);
   const [loginUsuario, setLoginUsuario] = useState("");
@@ -261,7 +265,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
     // Las rutas públicas de notaría deben mantener su sesión independiente,
     // incluso si el navegador conserva credenciales del ERP interno.
     if (accessMode === "external") {
-      if (localStorage.getItem("encargagest_token")) {
+      if (tieneTokenExternoEncargaGest()) {
         configurarSesionEncargaGest("externo");
         setModo("externo");
       } else {
@@ -275,7 +279,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
       setModo("interno");
       return;
     }
-    if (localStorage.getItem("encargagest_token")) {
+    if (tieneTokenExternoEncargaGest()) {
       configurarSesionEncargaGest("externo");
       setModo("externo");
     } else {
