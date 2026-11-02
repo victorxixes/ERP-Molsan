@@ -8,6 +8,7 @@ import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
 import "../../css/PortalProfesionalShared.css";
 import "../../css/NotarGest.css";
+import "../../css/PortalProfesionalPremium2027.css";
 import { formatEuro as euros } from "../../utils/formatters";
 
 const TOKEN_KEY = "notargest_token";
@@ -657,7 +658,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         </div>
       )}
       {accesoERP && esAdminNotarGest && (
-        <section className="ng-admin-notarias">
+        <section className="ng-admin-notarias molsan-professional-shell">
           {!tokenAdminNotaria ? <>
             <header className="ag-hero molsan-page-header dashboard-header ng-admin-notarias-hero">
               <div className="ag-hero-identidad molsan-page-header__identity">
@@ -767,7 +768,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       )}
       {(!accesoERP || !esAdminNotarGest || Boolean(tokenAdminNotaria)) && <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
-          <div className="w-full apoderagest notargest-workspace-premium">
+          <div className="erp-page molsan-page molsan-professional-shell w-full apoderagest notargest-workspace-premium">
             <div className="notargest ng-content">
     <header className="ag-hero molsan-page-header dashboard-header ng-hero-apoderagest">
       <div className="ag-hero-identidad molsan-page-header__identity">
