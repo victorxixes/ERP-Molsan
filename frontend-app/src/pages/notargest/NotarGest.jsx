@@ -8,7 +8,6 @@ import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
 import "../../css/PortalProfesionalShared.css";
 import "../../css/NotarGest.css";
-import "../../css/PortalProfesionalPremium2027.css";
 import { formatEuro as euros } from "../../utils/formatters";
 
 const TOKEN_KEY = "notargest_token";
