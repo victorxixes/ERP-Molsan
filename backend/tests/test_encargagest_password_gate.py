@@ -9,6 +9,7 @@ from backend.app.encargagest.router import (
     _es_administrador_encargagest,
     _exigir_admin_encargagest,
     _observacion_ctn_visible_encargagest,
+    _notaria_permitida,
 )
 
 
@@ -39,6 +40,27 @@ class EncargaGestPasswordGateTests(unittest.TestCase):
         self.assertTrue(_ruta_permitida_durante_cambio_password_encargagest("/api/encargagest/cambiar-password"))
         self.assertFalse(_ruta_permitida_durante_cambio_password_encargagest("/api/encargagest/encargos"))
         self.assertFalse(_ruta_permitida_durante_cambio_password_encargagest("/encargagest/me"))
+
+    def test_external_actor_is_scoped_to_its_own_notary(self):
+        externo = {"tipo": "externo", "notaria_id": 7}
+        self.assertTrue(_notaria_permitida(externo, 7))
+        self.assertFalse(_notaria_permitida(externo, 8))
+
+    def test_internal_employee_is_scoped_to_assigned_notaries(self):
+        empleado = SimpleNamespace(
+            usuario="gestor",
+            rol=SimpleNamespace(nombre="Gestor"),
+            rol_id=4,
+            notarias_encargagest_ids=[7, "9"],
+        )
+        self.assertTrue(_notaria_permitida(empleado, 7))
+        self.assertTrue(_notaria_permitida(empleado, 9))
+        self.assertFalse(_notaria_permitida(empleado, 8))
+
+    def test_administrator_can_access_notary_scope(self):
+        admin = SimpleNamespace(usuario="admin", rol=SimpleNamespace(nombre="Administrador"), rol_id=0)
+        self.assertTrue(_notaria_permitida(admin, 7))
+        self.assertTrue(_notaria_permitida(admin, 999))
 
     def test_internal_ctn_observation_hidden_from_external_encargagest(self):
         notaria = SimpleNamespace(observacion="Nota interna")
