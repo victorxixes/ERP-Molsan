@@ -57,6 +57,7 @@ class NotarGestPasswordGateTests(unittest.TestCase):
 
     def test_admin_only_guard_recognizes_admin_roles(self):
         self.assertTrue(_es_administrador_notargest(SimpleNamespace(usuario="admin", rol=None)))
+        self.assertTrue(_es_administrador_notargest(SimpleNamespace(usuario="cuenta-tecnica", rol_id=0)))
         self.assertTrue(_es_administrador_notargest(SimpleNamespace(usuario="operador", rol=SimpleNamespace(nombre="Administrador"))))
         self.assertTrue(_es_administrador_notargest(SimpleNamespace(usuario="operador", rol=SimpleNamespace(nombre="Superadministrador"))))
         self.assertTrue(_es_administrador_notargest(SimpleNamespace(usuario="operador", rol=SimpleNamespace(nombre="Administrador del sistema"))))
