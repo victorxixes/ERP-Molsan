@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PortalLogin from "../../components/PortalLogin";
 import Sidebar from "../../components/Sidebar";
@@ -134,6 +134,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
   const [accesoHabilitado, setAccesoHabilitado] = useState(true);
   const [guardandoAcceso, setGuardandoAcceso] = useState(false);
   const [resumen, setResumen] = useState({ total: 0, por_estado: {}, requieren_atencion: 0 });
+  const refrescoEnCurso = useRef(false);
   const [items, setItems] = useState([]);
   const [notarias, setNotarias] = useState([]);
   const [directorioBusqueda, setDirectorioBusqueda] = useState("");
@@ -306,6 +307,8 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
   useEffect(() => {
     if (modo !== "interno" && modo !== "externo") return undefined;
     const intervalo = window.setInterval(async () => {
+      if (refrescoEnCurso.current) return;
+      refrescoEnCurso.current = true;
       try {
         const [res, listado] = await Promise.all([
           axios.get("/encargagest/resumen", { params: modo === "interno" && filtroNotariaId ? { notaria_id: Number(filtroNotariaId) } : undefined }),
@@ -321,9 +324,11 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
           setDetalle(actual.data);
         }
       } catch {
-        // La siguiente actualización automática volverá a intentarlo sin interrumpir el trabajo.
+        // La siguiente actualización volverá a intentarlo sin interrumpir el trabajo.
+      } finally {
+        refrescoEnCurso.current = false;
       }
-    }, 5000);
+    }, 15000);
     return () => window.clearInterval(intervalo);
   }, [modo, pagina, busqueda, filtroEstado, filtroNotariaId, seleccionadoId]);
 
@@ -334,8 +339,9 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
   useEffect(() => {
     if (modo !== "interno" || !esAdminEncargaGest) return undefined;
     let vigente = true;
-    setDirectorioCargando(true);
-    axios.get("/encargagest/directorio/notarias", {
+    const espera = window.setTimeout(() => {
+      setDirectorioCargando(true);
+      axios.get("/encargagest/directorio/notarias", {
       params: {
         q: directorioBusqueda.trim() || undefined,
         alcance: directorioTodos ? "todas" : "habilitadas",
@@ -348,8 +354,9 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
       setDirectorioTotal(Number(respuesta.data?.total || 0));
     }).catch((e) => {
       if (vigente) setError(e?.response?.data?.detail || "No se ha podido cargar el directorio de notarías.");
-    }).finally(() => { if (vigente) setDirectorioCargando(false); });
-    return () => { vigente = false; };
+      }).finally(() => { if (vigente) setDirectorioCargando(false); });
+    }, 300);
+    return () => { vigente = false; window.clearTimeout(espera); };
   }, [modo, esAdminEncargaGest, directorioBusqueda, directorioTodos, directorioPagina]);
 
   function aplicarFiltroRapido(estado) {
@@ -970,7 +977,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         <section className="mt-6 grid min-w-0 grid-cols-1 gap-5 2xl:grid-cols-[minmax(380px,0.92fr)_minmax(0,1.45fr)]">
           <div className="eg-panel min-w-0">
             <div className="eg-panel-head">
-              <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-extrabold text-slate-900">Bandeja de encargos</h2><p className="mt-1 text-xs text-slate-500">{total} solicitudes encontradas</p></div><div className="flex items-center gap-2"><span className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">Página {pagina} / {totalPaginas}</span>{modo === "externo" && <button type="button" onClick={() => { setModalNuevo(true); setErrorAccion(""); }} className="eg-button-primary whitespace-nowrap">＋ Nuevo encargo</button>}</div></div>
+              <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-extrabold text-slate-900">Bandeja de encargos</h2><p className="mt-1 text-xs text-slate-500">{total} solicitudes encontradas</p></div><div className="flex items-center gap-2"><span className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">Página {pagina} / {totalPaginas}</span>{modo === "externo" && <button type="button" onClick={() => { setModalNuevo(true); setErrorAccion(""); }} className="eg-button-primary whitespace-nowrap"><MolsanIcon name="plus" size={15} bare /> Nuevo encargo</button>}</div></div>
               <form className="mt-4 space-y-2" onSubmit={aplicarFiltros}>
                 <input className={inputClass} type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar referencia, notaría, titular o banco…" />
                 <div className="flex gap-2">
@@ -1166,7 +1173,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
                 <h2>Registrar nuevo encargo</h2>
                 <p>Completa los datos de la solicitud y adjunta la documentación en su categoría.</p>
               </div>
-              <button type="button" disabled={guardando} onClick={() => setModalNuevo(false)} className="eg-modal-close" aria-label="Cerrar modal">×</button>
+              <button type="button" disabled={guardando} onClick={() => setModalNuevo(false)} className="eg-modal-close" aria-label="Cerrar modal"><MolsanIcon name="x" size={17} bare /></button>
             </header>
 
             {modo === "interno" ? (
@@ -1214,7 +1221,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
                   </Campo>
                   <div className="eg-span-2 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
                     <div><p className="text-xs font-black uppercase tracking-wider text-blue-700">Contratos y fincas</p><p className="mt-1 text-xs text-slate-500">Cada contrato conserva su carpeta digital. Una misma finca puede estar asociada a contratos diferentes.</p></div>
-                    <button type="button" onClick={anadirContrato} className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-extrabold text-white">＋ Añadir otro contrato</button>
+                    <button type="button" onClick={anadirContrato} className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-extrabold text-white"><MolsanIcon name="plus" size={14} bare /> Añadir otro contrato</button>
                   </div>
                   {form.contratos.map((contrato, indiceContrato) => (
                     <div key={indiceContrato} className="eg-span-2 eg-contrato-layout rounded-2xl border border-blue-200 bg-blue-50/40 p-4">
@@ -1224,7 +1231,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
                         <Campo etiqueta="Número de préstamo"><input maxLength={150} value={contrato.numero_prestamo} onChange={(e) => cambiarContrato(indiceContrato, "numero_prestamo", e.target.value)} placeholder="Referencia del préstamo" className={inputClass} /></Campo>
                         <Campo etiqueta="Fecha de constitución"><input type="date" value={contrato.fecha_constitucion} onChange={(e) => cambiarContrato(indiceContrato, "fecha_constitucion", e.target.value)} className={inputClass} /></Campo>
                       </div>
-                      <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><h5 className="text-xs font-black uppercase tracking-wider text-slate-700">Fincas del contrato ({contrato.fincas.length})</h5><button type="button" onClick={() => anadirFinca(indiceContrato)} className="rounded-lg border border-blue-300 bg-white px-3 py-2 text-[11px] font-extrabold text-blue-800">＋ Añadir finca</button></div>
+                      <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><h5 className="text-xs font-black uppercase tracking-wider text-slate-700">Fincas del contrato ({contrato.fincas.length})</h5><button type="button" onClick={() => anadirFinca(indiceContrato)} className="rounded-lg border border-blue-300 bg-white px-3 py-2 text-[11px] font-extrabold text-blue-800"><MolsanIcon name="plus" size={13} bare /> Añadir finca</button></div>
                       <div className="mt-3 space-y-3">
                         {contrato.fincas.map((finca, indiceFinca) => (
                           <div key={indiceFinca} className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-white p-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
@@ -1233,7 +1240,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
                             <Campo etiqueta="Sección"><input maxLength={100} value={finca.seccion ?? ""} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "seccion", e.target.value)} placeholder="Sección registral" className={inputClass} /></Campo>
                             <Campo etiqueta="Capital inscrito en el registro (€)"><input type="number" min="0" step="0.01" value={finca.capital_inscrito ?? ""} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "capital_inscrito", e.target.value)} placeholder="0,00" className={inputClass} /></Campo>
                             <Campo etiqueta="Municipio del registro"><input maxLength={200} list="eg-catalogo-municipios-registro" value={finca.municipio_registro} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "municipio_registro", e.target.value)} placeholder="Busca un municipio…" autoComplete="off" className={inputClass} /></Campo>
-                            <div className="flex items-end gap-2"><div className="min-w-0 flex-1"><Campo etiqueta="Registro de la Propiedad"><input maxLength={200} value={finca.registro_propiedad} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "registro_propiedad", e.target.value)} placeholder="Registro de la Propiedad" className={inputClass} /></Campo></div>{contrato.fincas.length > 1 && <button type="button" onClick={() => quitarFinca(indiceContrato, indiceFinca)} className="mb-0.5 rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700">×</button>}</div>
+                            <div className="flex items-end gap-2"><div className="min-w-0 flex-1"><Campo etiqueta="Registro de la Propiedad"><input maxLength={200} value={finca.registro_propiedad} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "registro_propiedad", e.target.value)} placeholder="Registro de la Propiedad" className={inputClass} /></Campo></div>{contrato.fincas.length > 1 && <button type="button" onClick={() => quitarFinca(indiceContrato, indiceFinca)} className="mb-0.5 rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700"><MolsanIcon name="x" size={14} bare /></button>}</div>
                           </div>
                         ))}
                       </div>
@@ -1296,7 +1303,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
             </datalist>
             <header className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-slate-200 bg-white/95 px-5 py-4 backdrop-blur sm:px-7">
               <div><p className="text-[9px] font-black tracking-[0.18em] text-blue-700">ENCARGAGEST · EDICIÓN COMPARTIDA</p><h2 className="mt-1 text-xl font-black text-slate-900">Editar encargo {detalle.referencia}</h2><p className="mt-1 text-xs text-slate-500">Los cambios se guardan en el registro común y se mostrarán también en el portal de la notaría.</p></div>
-              <button type="button" disabled={guardandoEdicion} onClick={() => setModalEditar(false)} className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 text-slate-500">×</button>
+              <button type="button" disabled={guardandoEdicion} onClick={() => setModalEditar(false)} className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 text-slate-500" aria-label="Cerrar edición"><MolsanIcon name="x" size={16} bare /></button>
             </header>
             <div className="space-y-5 p-5 sm:p-7">
               <section className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -1312,7 +1319,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
                 <Campo etiqueta="Observaciones de la solicitud" className="md:col-span-2 xl:col-span-3"><textarea rows={2} maxLength={10000} value={editForm.observaciones} onChange={(e) => cambiarDatoEdicion("observaciones", e.target.value)} className={inputClass} /></Campo>
                 <Campo etiqueta="Nota interna MOLSAN" className="md:col-span-2 xl:col-span-3"><textarea rows={2} maxLength={10000} value={editForm.observaciones_internas} onChange={(e) => cambiarDatoEdicion("observaciones_internas", e.target.value)} className={inputClass} /></Campo>
               </section>
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3"><div><h3 className="text-sm font-black text-slate-900">Contratos y fincas</h3><p className="mt-1 text-xs text-slate-500">Puedes añadir o modificar varios contratos y todas sus fincas.</p></div><button type="button" onClick={anadirContratoEdicion} className="rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-extrabold text-white">＋ Añadir contrato</button></div>
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3"><div><h3 className="text-sm font-black text-slate-900">Contratos y fincas</h3><p className="mt-1 text-xs text-slate-500">Puedes añadir o modificar varios contratos y todas sus fincas.</p></div><button type="button" onClick={anadirContratoEdicion} className="rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-extrabold text-white"><MolsanIcon name="plus" size={14} bare /> Añadir contrato</button></div>
               {editForm.contratos.map((contrato, contratoIndex) => (
                 <section key={"editar-contrato-" + contratoIndex} className="rounded-2xl border border-blue-200 bg-blue-50/40 p-4">
                   <div className="mb-3 flex flex-wrap items-center justify-between gap-3"><h4 className="text-sm font-black text-slate-900">Contrato {contratoIndex + 1}</h4>{editForm.contratos.length > 1 && <button type="button" onClick={() => setEditForm((actual) => ({ ...actual, contratos: actual.contratos.filter((_, i) => i !== contratoIndex) }))} className="text-xs font-bold text-rose-700">Eliminar contrato</button>}</div>
@@ -1370,7 +1377,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
           <section role="dialog" aria-modal="true" aria-labelledby="eg-perfil-titulo" className="eg-modal-perfil my-0 w-full max-w-[1180px] min-w-0 max-h-[calc(100vh-2rem)] overflow-y-auto rounded-3xl border border-white/70 bg-white shadow-2xl">
             <header className="eg-perfil-cabecera flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50 px-5 py-4 sm:px-7">
               <div><p className="text-[9px] font-extrabold tracking-[0.18em] text-blue-700">ENCARGAGEST · FICHA CTN</p><h2 id="eg-perfil-titulo" className="mt-1 text-xl font-black text-slate-900">Ficha del notario</h2><p className="mt-1 text-xs text-slate-500">Datos de la notaría registrados en el catálogo CTN.</p></div>
-              <button type="button" onClick={() => setPerfilAbierto(false)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500">×</button>
+              <button type="button" onClick={() => setPerfilAbierto(false)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500" aria-label="Cerrar ventana"><MolsanIcon name="x" size={16} bare /></button>
             </header>
             <div className="eg-perfil-layout grid min-w-0 grid-cols-1 gap-5 p-4 sm:p-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.85fr)] lg:gap-6 lg:p-7">
               <div>
