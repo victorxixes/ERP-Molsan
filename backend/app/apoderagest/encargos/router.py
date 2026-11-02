@@ -138,6 +138,8 @@ def _es_administrador_apoderagest(usuario) -> bool:
         for nombre in nombres_rol
     ):
         return True
+    if str(_valor_usuario(usuario, "usuario", "") or "").strip().casefold() == "admin":
+        return True
     try:
         if int(_valor_usuario(usuario, "rol_id", _valor_usuario(rol, "id", -1))) == 0:
             return True
