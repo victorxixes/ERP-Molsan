@@ -99,7 +99,175 @@ export default function CtnListadoPage() {
   };
 
   const cabeceraOrdenable = (label, key) => (
-    
+    <button type="button" className="molsan-table-sort" onClick={() => cambiarOrden(key)} aria-label={`Ordenar por ${label}`}>
+      <span>{label}</span>
+      <span className={`molsan-table-sort__indicator ${orden.key === key ? "is-active" : ""}`} aria-hidden="true">
+        {orden.key === key ? (orden.direction === "asc" ? "↑" : "↓") : "↕"}
+      </span>
+    </button>
+  );
+
+  const cargarListado = useCallback(
+    async (paginaSolicitada = pagina, filtrosActuales = filtrosAplicados) => {
+      setCargando(true);
+      setError("");
+      try {
+        const params = new URLSearchParams({
+          page: String(paginaSolicitada),
+          page_size: String(PAGE_SIZE),
+        });
+        if (orden.key && orden.direction) {
+          params.set("sort_by", orden.key);
+          params.set("sort_dir", orden.direction);
+        }
+        Object.entries(filtrosActuales).forEach(([key, value]) => {
+          if (value?.trim()) params.set(key, value.trim());
+        });
+
+        const response = await fetch(`${API_BASE}/ctn/notarias?${params.toString()}`, {
+          headers: cabecerasConToken({ Accept: "application/json" }),
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          let mensaje = `Error HTTP ${response.status} al cargar el listado CTN.`;
+          try {
+            const body = await response.json();
+            if (body?.detail) mensaje = typeof body.detail === "string" ? body.detail : JSON.stringify(body.detail);
+          } catch {
+            // Puede que el servidor devuelva una respuesta no JSON.
+          }
+          throw new Error(mensaje);
+        }
+
+        const data = await response.json();
+        const filas = Array.isArray(data) ? data : data.items || data.notarias || data.results || [];
+        setItems(filas);
+        setTotal(Number(data.total ?? data.count ?? filas.length));
+        setPagina(Number(data.page ?? paginaSolicitada));
+      } catch (err) {
+        console.error("No se ha podido cargar el listado CTN.");
+        setItems([]);
+        setTotal(0);
+        setError(leerDetalleError(err, "No se ha podido cargar el listado de notarios."));
+      } finally {
+        setCargando(false);
+      }
+    },
+    [pagina, filtrosAplicados, orden]
+  );
+
+  useEffect(() => {
+    cargarListado(pagina, filtrosAplicados);
+  }, [pagina, filtrosAplicados, cargarListado]);
+
+  useEffect(() => {
+    let activo = true;
+    fetch(`${API_BASE}/encargagest/accesos`, {
+      headers: cabecerasConToken({ Accept: "application/json" }),
+      credentials: "include",
+    })
+      .then(async (response) => {
+        const body = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(body?.detail || `Error HTTP ${response.status}`);
+        return body;
+      })
+      .then((data) => { if (activo) setAccesosEncargaGest(Array.isArray(data) ? data : []); })
+      .catch((err) => { if (activo) setErrorEncargaGest(leerDetalleError(err, "No se ha podido consultar el estado de los accesos EncargaGest.")); });
+    return () => { activo = false; };
+  }, []);
+
+
+  const cambiarFiltro = (campo, valor) => setFiltros((actual) => ({ ...actual, [campo]: valor }));
+
+  const aplicarFiltros = (event) => {
+    event?.preventDefault();
+    setPagina(1);
+    setFiltrosAplicados({ ...filtros });
+  };
+
+  const limpiarFiltros = () => {
+    const vacios = { ...filtrosIniciales };
+    setFiltros(vacios);
+    setFiltrosAplicados(vacios);
+    setPagina(1);
+  };
+
+  const cerrarFichaNotaria = async () => {
+    setNotariaSeleccionada(null);
+    await cargarListado(pagina, filtrosAplicados);
+    try {
+      const response = await fetch(`${API_BASE}/encargagest/accesos`, {
+        headers: cabecerasConToken({ Accept: "application/json" }),
+        credentials: "include",
+      });
+      const data = await response.json().catch(() => []);
+      if (response.ok) setAccesosEncargaGest(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.warn("No se ha podido actualizar el estado de accesos EncargaGest.");
+    }
+  };
+
+  const exportarExcel = async () => {
+    setExportando(true);
+    setError("");
+    try {
+      const params = new URLSearchParams();
+      Object.entries(filtrosAplicados).forEach(([key, value]) => {
+        if (value?.trim()) params.set(key, value.trim());
+      });
+      const query = params.toString();
+      const response = await fetch(`${API_BASE}/ctn/exportar-excel${query ? `?${query}` : ""}`, {
+        headers: cabecerasConToken({
+          Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        }),
+        credentials: "include",
+      });
+      if (!response.ok) {
+        let mensaje = `Error HTTP ${response.status} al exportar Excel.`;
+        try {
+          const body = await response.json();
+          if (body?.detail) mensaje = typeof body.detail === "string" ? body.detail : JSON.stringify(body.detail);
+        } catch {
+          // Puede que el servidor devuelva una respuesta no JSON.
+        }
+        throw new Error(mensaje);
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const enlace = document.createElement("a");
+      enlace.href = url;
+      enlace.download = `CTN_notarios_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      document.body.appendChild(enlace);
+      enlace.click();
+      enlace.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) {
+      console.error("No se ha podido exportar el Excel de CTN.");
+      setError(leerDetalleError(err, "No se ha podido exportar el Excel."));
+    } finally {
+      setExportando(false);
+    }
+  };
+
+  return (
+    <main className="molsan-page-stack ctn-listado-page molsan-page" aria-busy={cargando}>
+      <header className="ctn-listado-header molsan-page-header">
+        <div className="ctn-listado-header-identidad molsan-page-header__identity">
+          <div className="ctn-listado-header-icon molsan-page-header__mark" aria-hidden="true">CTN</div>
+          <div className="min-w-0">
+            <p className="ctn-listado-header-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">Listado CTN</h1>
+            <p className="molsan-page-header__description">Consulta, filtra y gestiona los notarios y sus asociaciones.</p>
+          </div>
+        </div>
+        <div className="ctn-listado-header-acciones molsan-page-header__actions">
+          <button type="button" className="ctn-btn ctn-btn-excel molsan-btn" onClick={exportarExcel} disabled={exportando}>
+            {exportando ? "Preparando Excel…" : "⇩ Exportar Excel"}
+          </button>
+          <button type="button" className="ctn-btn ctn-btn-secondary molsan-btn molsan-btn--secondary" onClick={() => cargarListado(pagina, filtrosAplicados)} disabled={cargando}>
+            {cargando ? "Actualizando…" : "↻ Actualizar"}
+          </button>
         </div>
       </header>
 
