@@ -4,6 +4,7 @@ import PortalLogin from "../../components/PortalLogin";
 import Sidebar from "../../components/Sidebar";
 import "../../css/PortalProfesionalShared.css";
 import "../../css/EncargaGest.css";
+import "../../css/PortalProfesionalPremium2027.css";
 import axios, { configurarSesionEncargaGest, limpiarSesionEncargaGest } from "../../api/encargagest";
 import { useAuthStore } from "../../store/authStore";
 import { formatEuro as euros } from "../../utils/formatters";
@@ -832,7 +833,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
   }).format(new Date());
 
   return (
-    <div className="apoderagest encargagest">
+    <div className="apoderagest encargagest erp-page molsan-page molsan-professional-shell">
       {modo === "interno" && (
         <Sidebar
           brandName="EncargaGest"
