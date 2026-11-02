@@ -352,7 +352,11 @@ export default function App() {
           
           <Route
             path="apoderagest"
-            element={<ApoderaGest />}
+            element={
+              <RequireAuth>
+                <ApoderaGest />
+              </RequireAuth>
+            }
           />
 
         
