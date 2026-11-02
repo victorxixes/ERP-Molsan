@@ -106,10 +106,7 @@ export default function Seguridad() {
               <p className="molsan-page-header__description">Resumen general y accesos a la administración de seguridad de Molsan ERP.</p>
             </div>
           </div>
-          <span className="molsan-page-header__actions">
-            <Icono name="folder" className="h-4 w-4" />
-            Panel de administración
-          </span>
+
         </div>
       </header>
 
