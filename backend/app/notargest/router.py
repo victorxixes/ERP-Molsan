@@ -768,7 +768,7 @@ def me(n=Depends(get_notario), db: Session = Depends(get_db)):
         "departamento_cancelaciones": getattr(n, "departamento_cancelaciones", None),
         "departamento_copias": getattr(n, "departamento_copias", None),
         "otros_departamentos": getattr(n, "otros_departamentos", None),
-        "observacion": getattr(n, "observacion", None),
+        "observacion": (None if tipo_acceso == "notario" and not bool(getattr(n, "_notargest_sesion_soporte", False)) else getattr(n, "observacion", None)),
         "tipo_acceso": tipo_acceso,
         "requiere_cambio_password": (
             tipo_acceso == "notario"
