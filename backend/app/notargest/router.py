@@ -247,6 +247,8 @@ def get_notario(request: Request, token=Depends(obtener_token_bearer), db: Sessi
             n = db.query(Notaria).filter(Notaria.id == int(payload["notaria_id"])).first()
             if not n or not n.notargest_habilitado:
                 raise HTTPException(status_code=403, detail="Acceso NotarGest deshabilitado")
+            if payload.get("seleccion_admin"):
+                _validar_admin_soporte_notargest(payload, db)
 
             requiere_cambio = _requiere_cambio_password_notargest(n)
             if requiere_cambio and not _ruta_permitida_durante_cambio_password(request.url.path):
@@ -529,6 +531,23 @@ def _es_administrador_notargest(usuario):
     nombre_usuario = str(getattr(usuario, "usuario", "") or "").strip().casefold()
     rol = str(getattr(getattr(usuario, "rol", None), "nombre", "") or "").strip().casefold()
     return nombre_usuario == "admin" or rol in {"admin", "administrador", "administradora", "superadmin"}
+
+
+def _validar_admin_soporte_notargest(payload, db):
+    try:
+        admin_id = int(payload.get("empleado_admin_id") or 0)
+    except (TypeError, ValueError):
+        admin_id = 0
+    admin = db.query(Empleado).filter(Empleado.id == admin_id).first() if admin_id else None
+    if not admin or getattr(admin, "activo", True) is False:
+        raise HTTPException(status_code=401, detail="La sesión de soporte NotarGest ya no está autorizada.")
+    if not _es_administrador_notargest(admin):
+        raise HTTPException(status_code=403, detail="El administrador que abrió esta sesión ya no tiene permisos de soporte.")
+    modulos = getattr(admin, "modulos_visibles_list", None) or []
+    if not any(str(m).strip().casefold() == "notargest" for m in modulos):
+        raise HTTPException(status_code=403, detail="NotarGest ya no está habilitado para el administrador.")
+    require_perm_modulo(admin, "notargest", "ver")
+    return admin
 
 
 @router.get("/seleccion/notarias")
