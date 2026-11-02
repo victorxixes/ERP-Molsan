@@ -131,9 +131,6 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
           <p className="molsan-page-header__description">{vistaCatalogo ? "Catálogo interno de servicios, tarifas, suplementos e impuestos." : "Gestiona las solicitudes recibidas, los pedidos al proveedor, las incidencias, los albaranes y las facturas."}</p>
         </div>
       </div>
-      <div className="molsan-page-header__actions">
-        <button onClick={cargar} className="molsan-btn molsan-btn--secondary">↻ Actualizar</button>
-      </div>
     </header>
     {vistaGestion && <section className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900"><div className="flex items-start gap-3"><span className="text-xl">⚠️</span><div><b>Integración API con la empresa de mensajería pendiente.</b><p className="mt-1">La conexión automática todavía debe desarrollarse y validarse con la documentación técnica del proveedor. Mientras tanto, la gestión de solicitudes, estados y comunicaciones funciona dentro del ERP; no se envían pedidos reales al transportista desde esta pantalla.</p></div></div></section>}
     {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">{error}</div>}
