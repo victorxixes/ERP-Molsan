@@ -18,8 +18,8 @@
 .ng-workflow{display:flex;flex-direction:column;align-items:flex-start;gap:14px}.ng-workflow-form{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px;width:100%}.ng-workflow-form label{display:flex;flex-direction:column;gap:6px;min-width:190px;flex:1}.ng-workflow-form input{min-height:40px;padding:9px 12px;border:1px solid rgba(148,163,184,.35);border-radius:10px;background:rgba(255,255,255,.72);color:#172033}.ng-workflow .ng-login-submit{width:auto;max-width:100%;padding:11px 18px}.ng-workflow p{margin:0}@media(max-width:700px){.ng-workflow-form{align-items:stretch;flex-direction:column}.ng-workflow .ng-login-submit{width:100%}}
 
 /* NotarGest · identidad visual unificada con ApoderaGest Glass Luxe */
-.apoderagest.notargest{--ag-ink:var(--molsan-text, #173247);--ag-muted:var(--molsan-text-muted, #718696);--ag-line:var(--molsan-border, #D8E4EC);--ag-panel:var(--molsan-surface,#fff);--ag-blue:var(--molsan-primary,#064675);--ag-blue-dark:var(--molsan-primary-hover, #04375B);position:relative;isolation:isolate;width:100%;max-width:none;min-width:0;margin:0;padding:clamp(16px,2.2vw,30px);overflow:hidden;color:var(--ag-ink);background:var(--molsan-page-bg, #FFFFFF);border:1px solid var(--molsan-border, #D8E4EC);border-radius:var(--molsan-radius-card,14px);font-family:var(--molsan-font-family,Inter,ui-sans-serif,system-ui,sans-serif)}
-.apoderagest.notargest *,.apoderagest.notargest *:before,.apoderagest.notargest *:after{box-sizing:border-box}
+.apoderagest .notargest{--ag-ink:var(--molsan-text, #173247);--ag-muted:var(--molsan-text-muted, #718696);--ag-line:var(--molsan-border, #D8E4EC);--ag-panel:var(--molsan-surface,#fff);--ag-blue:var(--molsan-primary,#064675);--ag-blue-dark:var(--molsan-primary-hover, #04375B);position:relative;isolation:isolate;width:100%;max-width:none;min-width:0;margin:0;padding:clamp(16px,2.2vw,30px);overflow:hidden;color:var(--ag-ink);background:var(--molsan-page-bg, #FFFFFF);border:1px solid var(--molsan-border, #D8E4EC);border-radius:var(--molsan-radius-card,14px);font-family:var(--molsan-font-family,Inter,ui-sans-serif,system-ui,sans-serif)}
+.apoderagest .notargest *,.apoderagest .notargest *:before,.apoderagest .notargest *:after{box-sizing:border-box}
 
 
 
@@ -72,7 +72,7 @@
 
 
 
-@media(max-width:700px){.apoderagest.notargest{padding:14px;border-radius:18px}.notargest .ng-panel-titulo {}.notargest .ng-filtros{align-items:stretch;flex-direction:column;padding:12px}.notargest .ng-filtros label{align-items:stretch;flex-direction:column}.notargest .ng-ficha-cuerpo{padding:12px}.notargest .ng-detalle-bloque{padding:13px}}
+@media(max-width:700px){.apoderagest .notargest{padding:14px;border-radius:18px}.notargest .ng-panel-titulo {}.notargest .ng-filtros{align-items:stretch;flex-direction:column;padding:12px}.notargest .ng-filtros label{align-items:stretch;flex-direction:column}.notargest .ng-ficha-cuerpo{padding:12px}.notargest .ng-detalle-bloque{padding:13px}}
 @media(max-width:520px){.notargest .ng-datos-grid{grid-template-columns:1fr}.notargest .ng-documento{align-items:flex-start;flex-direction:column}}
 
 
@@ -1767,4 +1767,50 @@
     width:100%!important;margin-left:0!important;justify-content:flex-start!important;
   }
   .notargest.ng-content .ng-dashboard-grafico {padding:14px!important}
+}
+
+
+/* NotarGest · iconografía y superficies coherentes con Dashboard Glass Luxe */
+.notargest.ng-content {
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+}
+.notargest .ng-admin-notaria-icono,
+.notargest .ng-admin-circuito-icono {
+  display:contents!important;
+  width:auto!important;height:auto!important;
+  padding:0!important;border:0!important;border-radius:0!important;
+  background:transparent!important;box-shadow:none!important;
+}
+.notargest .ng-acordeon-ficha>.ng-bloque-heading .ng-acordeon-flecha {
+  border-color:#D8E4EC!important;
+  border-radius:10px!important;
+  background:#F2F7FB!important;
+  color:#064675!important;
+}
+.notargest .ng-acordeon-ficha[open]>.ng-bloque-heading .ng-acordeon-flecha {
+  border-color:#B9D7E6!important;
+  background:#EAF2F8!important;
+  color:#064675!important;
+}
+.notargest .ng-adjuntar-pdf {
+  gap:8px!important;
+  color:#064675!important;
+  border-color:#D8E4EC!important;
+  border-radius:10px!important;
+  background:#F2F7FB!important;
+}
+.notargest .ng-adjuntar-pdf:hover {
+  color:#064675!important;
+  border-color:#B9D7E6!important;
+  background:#EAF2F8!important;
+}
+.notargest :is(button,a,label):focus-visible {
+  outline:3px solid rgba(6,70,117,.22)!important;
+  outline-offset:2px!important;
+}
+@media(max-width:760px) {
+  .notargest.ng-content {padding:16px!important}
 }
