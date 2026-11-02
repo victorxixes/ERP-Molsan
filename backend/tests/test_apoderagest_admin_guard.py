@@ -3,7 +3,7 @@
 import unittest
 from types import SimpleNamespace
 
-from backend.app.apoderagest.encargos.router import _es_administrador_apoderagest
+from backend.app.apoderagest.encargos.router import _es_administrador_apoderagest, _es_gestor_asignado_apoderagest
 from backend.app.apoderagest.liquidaciones import _es_admin
 from backend.app.apoderagest.dashboard.service import _es_administrador_apoderagest as _es_admin_dashboard
 
@@ -44,6 +44,13 @@ class ApoderaGestAdminGuardTests(unittest.TestCase):
         self.assertTrue(_es_administrador_apoderagest(usuario))
         self.assertTrue(_es_admin(usuario))
         self.assertTrue(_es_admin_dashboard(usuario))
+
+    def test_apoderagest_comment_recipient_must_be_the_assigned_manager(self):
+        expediente = SimpleNamespace(gestor_asignado_id=27)
+        self.assertTrue(_es_gestor_asignado_apoderagest(expediente, 27))
+        self.assertFalse(_es_gestor_asignado_apoderagest(expediente, 28))
+        self.assertFalse(_es_gestor_asignado_apoderagest(SimpleNamespace(gestor_asignado_id=None), 27))
+        self.assertFalse(_es_gestor_asignado_apoderagest(expediente, "no-id"))
 
     def test_global_explicit_apoderagest_admin_permission_is_accepted(self):
         usuario = {
