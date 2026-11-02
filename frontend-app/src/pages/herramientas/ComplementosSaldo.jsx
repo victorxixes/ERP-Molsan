@@ -1,4 +1,5 @@
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
@@ -71,16 +72,16 @@ export default function ComplementosSaldo() {
     <header className="molsan-page-header">
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div><Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link><h1 className="mt-2 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Complementos de saldo</h1><p className="mt-1 text-sm text-slate-500">Control de solicitudes, importes y estado de cada complemento.</p></div>
+        <div><Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline"><MolsanIcon name="arrowLeft" size={13} inline /> Volver a Utilidades</Link><h1 className="mt-2 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Complementos de saldo</h1><p className="mt-1 text-sm text-slate-500">Control de solicitudes, importes y estado de cada complemento.</p></div>
         
       </div>
     </header>
 
     <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      <Metrica titulo="Peticiones de complemento" valor={metricas.total} detalle="Solicitudes según los filtros" icono="▤" />
-      <Metrica titulo="Importe total solicitado" valor={euros(metricas.importe)} detalle="Suma de los complementos" icono="€" />
-      <Metrica titulo="Pendientes" valor={metricas.pendientes} detalle={`Importe abierto: ${euros(metricas.importePendiente)}`} icono="◷" alerta />
-      <Metrica titulo="Compensados" valor={metricas.cerrados} detalle="Solicitudes regularizadas" icono="✓" verde />
+      <Metrica titulo="Peticiones de complemento" valor={metricas.total} detalle="Solicitudes según los filtros" icono="clipboardList" />
+      <Metrica titulo="Importe total solicitado" valor={euros(metricas.importe)} detalle="Suma de los complementos" icono="euro" />
+      <Metrica titulo="Pendientes" valor={metricas.pendientes} detalle={`Importe abierto: ${euros(metricas.importePendiente)}`} icono="clock" alerta />
+      <Metrica titulo="Compensados" valor={metricas.cerrados} detalle="Solicitudes regularizadas" icono="check" verde />
     </section>
 
     <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
@@ -88,7 +89,7 @@ export default function ComplementosSaldo() {
         <label className="min-w-0 flex-1"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Buscar expediente</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="N.º de expediente…" className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100" /></label>
         <label className="w-full xl:w-48"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Estado</span><select value={estadoFiltro} onChange={(e) => setEstadoFiltro(e.target.value)} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm"><option value="">Todos</option><option value="Pendiente">Pendiente</option><option value="Compensado">Compensado</option></select></label>
         <label className="w-full xl:w-56"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Oficina</span><input value={oficinaFiltro} onChange={(e) => setOficinaFiltro(e.target.value)} placeholder="Todas las oficinas" className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm" /></label>
-        <button type="button" onClick={exportarExcel} disabled={exportando} className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60">{exportando ? "Preparando…" : "↓ Descargar Excel"}</button>
+        <button type="button" onClick={exportarExcel} disabled={exportando} className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60">{exportando ? "Preparando…" : "<MolsanIcon name="download" size={14} inline /> Descargar Excel"}</button>
       </div></div>
 
       {error && <div role="alert" className="m-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{error}</div>}
@@ -119,6 +120,6 @@ export default function ComplementosSaldo() {
 
 function Metrica({ titulo, valor, detalle, icono, alerta = false, verde = false }) {
   return <div className={`rounded-2xl border p-4 shadow-sm ${alerta ? "border-amber-200 bg-amber-50/70" : verde ? "border-emerald-200 bg-emerald-50/60" : "border-slate-200 bg-white"}`}>
-    <div className="flex items-start justify-between gap-2"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">{titulo}</p><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/80 text-lg font-extrabold text-slate-600 shadow-sm">{icono}</span></div><p className="mt-3 text-2xl font-extrabold tracking-tight text-slate-900">{valor}</p><p className="mt-1 text-xs text-slate-500">{detalle}</p>
+    <div className="flex items-start justify-between gap-2"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">{titulo}</p><span className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--molsan-border)] bg-white/80 text-[var(--molsan-primary)] shadow-sm"><MolsanIcon name={icono} size={20} /></span></div><p className="mt-3 text-2xl font-extrabold tracking-tight text-slate-900">{valor}</p><p className="mt-1 text-xs text-slate-500">{detalle}</p>
   </div>;
 }
