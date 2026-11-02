@@ -79,10 +79,15 @@ def _es_admin(usuario):
         "super usuario",
         "superusuario",
         "administrador general",
+        "administrador del sistema",
     }
+    try:
+        rol_id = int(getattr(usuario, "rol_id", getattr(getattr(usuario, "rol", None), "id", -1)))
+    except (TypeError, ValueError):
+        rol_id = -1
     # No se debe conceder administración por coincidencias parciales como
     # "gestor" o "manager": los roles operativos no son administradores.
-    return usuario_norm == "admin" or rol_norm in roles_administradores
+    return usuario_norm == "admin" or rol_id == 0 or rol_norm in roles_administradores
 
 
 def _exigir_admin(usuario):
