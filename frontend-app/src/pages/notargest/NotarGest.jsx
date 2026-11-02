@@ -659,19 +659,17 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       {accesoERP && esAdminNotarGest && (
         <section className="ng-admin-notarias">
           {!tokenAdminNotaria ? <>
-            <header className="ng-control-hero">
-              <div className="ng-control-identidad molsan-page-header__identity">
-                <div className="ng-control-logo molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="courthouse" size={42} bare /></div>
-                <div className="ng-control-titulos min-w-0">
-                  <span className="ng-control-eyebrow">MOLSAN ERP · PREMIUM 2027</span>
-                  <h2>NotarGest</h2>
-                  <p>Visión global del trabajo notarial y detalle operativo de cada notaría habilitada.</p>
+            <header className="ag-hero molsan-page-header dashboard-header ng-admin-notarias-hero">
+              <div className="ag-hero-identidad molsan-page-header__identity">
+                <div className="ag-marca molsan-page-header__mark" aria-label="NotarGest">NG</div>
+                <div>
+                  <div className="ag-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
+                  <h1 className="molsan-page-header__title">NotarGest</h1>
+                  <p className="molsan-page-header__description">Visión global del trabajo notarial y detalle operativo de cada notaría habilitada.</p>
                 </div>
               </div>
-              <div className="ng-control-acciones">
-                <div className="ng-control-botones">
-                  <button type="button" className="molsan-btn molsan-btn--secondary" onClick={() => navigate("/modulos")}><MolsanIcon name="dashboard" size={18} bare /> Ir a módulos</button>
-                </div>
+              <div className="ag-hero-acciones molsan-page-header__actions">
+                <button type="button" className="molsan-btn molsan-btn--secondary" onClick={() => navigate("/modulos")}><MolsanIcon name="dashboard" size={18} bare /> Ir a módulos</button>
               </div>
             </header>
             {cargandoSelectorNotaria && <p className="ng-mensaje">Calculando pendientes de las notarías…</p>}
@@ -771,7 +769,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="w-full apoderagest notargest-workspace-premium">
             <div className="notargest ng-content">
-    <header className="ag-hero molsan-page-header ng-hero-apoderagest">
+    <header className="ag-hero molsan-page-header dashboard-header ng-hero-apoderagest">
       <div className="ag-hero-identidad molsan-page-header__identity">
         <div className="ag-marca ng-marca-notargest molsan-page-header__mark" aria-label="NotarGest">NG</div>
         <div>
