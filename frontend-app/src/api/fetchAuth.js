@@ -5,9 +5,9 @@
  * Nunca envía el token a dominios distintos del backend configurado.
  */
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://agenda-intranet-b.onrender.com";
+import { API_BASE } from "./config";
+
+const API_BASE_URL = API_BASE;
 
 if (
   typeof window !== "undefined" &&
