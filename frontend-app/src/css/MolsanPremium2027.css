@@ -1499,3 +1499,149 @@ a[aria-current="page"] .molsan-nav-icon-3d {
   box-shadow: none !important;
 }
 .molsan-icon-3d--bare svg { filter: none; }
+
+
+/* MOLSAN ERP PREMIUM 2027 · cierre real de portales MOLSAN
+   Esta es la última hoja global que carga main.jsx: los ajustes de estos
+   portales deben vivir aquí para prevalecer sobre el hero genérico anterior. */
+.apoderagest > .ag-hero.molsan-page-header,
+.apoderagest.notargest-workspace-premium .notargest.ng-content > .ng-hero-apoderagest {
+  display: flex !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 112px !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: wrap !important;
+  gap: 18px !important;
+  margin: 0 0 20px !important;
+  padding: 20px 24px !important;
+  overflow: visible !important;
+  color: #173247 !important;
+  border: 1px solid #D8E4EC !important;
+  border-radius: 16px !important;
+  background: #FFFFFF !important;
+  box-shadow: 0 8px 24px rgba(6,50,82,.055) !important;
+  animation: none !important;
+  transition: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  will-change: auto !important;
+}
+.apoderagest > .ag-hero.molsan-page-header::before,
+.apoderagest > .ag-hero.molsan-page-header::after,
+.apoderagest.notargest-workspace-premium .notargest.ng-content > .ng-hero-apoderagest::before,
+.apoderagest.notargest-workspace-premium .notargest.ng-content > .ng-hero-apoderagest::after {
+  animation: none !important;
+  transition: none !important;
+  opacity: 1 !important;
+}
+.apoderagest > .ag-hero.molsan-page-header .molsan-page-header__mark,
+.apoderagest.notargest-workspace-premium .notargest.ng-content > .ng-hero-apoderagest .molsan-page-header__mark {
+  display: grid !important;
+  flex: 0 0 58px !important;
+  width: 58px !important;
+  height: 58px !important;
+  place-items: center !important;
+  color: #064675 !important;
+  border: 1px solid #D8E4EC !important;
+  border-radius: 15px !important;
+  background: #F2F7FB !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 5px 14px rgba(6,50,82,.07) !important;
+}
+.apoderagest > .ag-hero.molsan-page-header .molsan-page-header__eyebrow,
+.apoderagest.notargest-workspace-premium .notargest.ng-content > .ng-hero-apoderagest .molsan-page-header__eyebrow {
+  margin: 0 0 5px !important;
+  color: #617789 !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  letter-spacing: .13em !important;
+}
+.apoderagest > .ag-hero.molsan-page-header .molsan-page-header__title,
+.apoderagest.notargest-workspace-premium .notargest.ng-content > .ng-hero-apoderagest .molsan-page-header__title {
+  margin: 0 !important;
+  color: #064675 !important;
+  font-size: clamp(21px, 2vw, 27px) !important;
+  font-weight: 800 !important;
+  line-height: 1.15 !important;
+  letter-spacing: -.03em !important;
+}
+.apoderagest > .ag-hero.molsan-page-header .molsan-page-header__description,
+.apoderagest.notargest-workspace-premium .notargest.ng-content > .ng-hero-apoderagest .molsan-page-header__description {
+  margin: 6px 0 0 !important;
+  color: #617789 !important;
+  font-size: 12px !important;
+  line-height: 1.55 !important;
+}
+.apoderagest > .ag-hero.molsan-page-header .molsan-page-header__actions,
+.apoderagest.notargest-workspace-premium .notargest.ng-content > .ng-hero-apoderagest .molsan-page-header__actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  flex-wrap: wrap !important;
+  gap: 9px !important;
+  margin-left: auto !important;
+}
+.apoderagest .ag-panel,
+.apoderagest .ag-grid-kpi > *,
+.apoderagest .ag-grid-secundario > *,
+.apoderagest .ag-dashboard-inferior-grid > *,
+.apoderagest.notargest-workspace-premium .notargest .ng-panel,
+.apoderagest.notargest-workspace-premium .notargest .ng-dashboard-grafico,
+.apoderagest.notargest-workspace-premium .notargest .ng-detalle-bloque {
+  min-width: 0 !important;
+  border: 1px solid #D8E4EC !important;
+  border-radius: 14px !important;
+  background: #FFFFFF !important;
+  box-shadow: 0 6px 18px rgba(6,50,82,.045) !important;
+}
+.apoderagest.notargest-workspace-premium .notargest .ng-panel-titulo,
+.apoderagest.notargest-workspace-premium .notargest .ng-bloque-heading {
+  color: #064675 !important;
+  border-color: #D8E4EC !important;
+  background: #F2F7FB !important;
+}
+.apoderagest.notargest-workspace-premium .notargest .ng-tabla th {
+  color: #617789 !important;
+  background: #EAF2F8 !important;
+}
+.apoderagest.notargest-workspace-premium .notargest .ng-tabla td {
+  color: #173247 !important;
+  border-color: #D8E4EC !important;
+}
+@media (max-width: 700px) {
+  .apoderagest > .ag-hero.molsan-page-header,
+  .apoderagest.notargest-workspace-premium .notargest.ng-content > .ng-hero-apoderagest {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+    padding: 16px !important;
+  }
+  .apoderagest > .ag-hero.molsan-page-header .molsan-page-header__actions,
+  .apoderagest.notargest-workspace-premium .notargest.ng-content > .ng-hero-apoderagest .molsan-page-header__actions {
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+}
+
+/* Utilidades, Catálogos y fichas: bloquear animación de entrada en la raíz,
+   cabecera, pseudoelementos y descendientes de cabecera. */
+:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium).animate-fadeIn,
+:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) header,
+:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) [data-page-header="true"],
+:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) .molsan-page-header {
+  animation: none !important;
+  transition: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  will-change: auto !important;
+}
+:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) header::before,
+:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) header::after,
+:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) .molsan-page-header::before,
+:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) .molsan-page-header::after {
+  animation: none !important;
+  transition: none !important;
+  opacity: 1 !important;
+}
