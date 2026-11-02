@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { listarNotarios } from "../../api/notarios";
 import { useAuthStore } from "../../store/authStore";
 import "../../css/HerramientasPremium.css";
@@ -85,7 +86,7 @@ function SelectorUbicacion({ titulo, valor, onChange, notarias, registros, munic
         <input className={inputClass + " mt-1.5"} value={busqueda || valor.busqueda} onChange={(e) => { const texto = e.target.value; setBusqueda(texto); onChange({ ...valor, busqueda: texto, referencia_id: "" }); }} placeholder={valor.tipo === "Notaria" ? "Nombre, apellidos, NIF, código o población…" : "Nombre del registro, registrador o población…"} />
       </label>
       {busqueda && <div className="max-h-44 overflow-y-auto rounded-xl border border-slate-200 bg-white">{filtradas.map((item) => <button type="button" key={item.id} onClick={() => elegir(item)} className="block w-full border-b border-slate-100 px-3 py-2.5 text-left text-sm last:border-b-0 hover:bg-blue-50"><span className="block font-semibold text-slate-800">{valor.tipo === "Notaria" ? (item.nombre_completo || [item.nombre, item.apellidos].filter(Boolean).join(" ")) : item.registro_propiedad}</span><span className="block text-xs text-slate-500">{[item.direccion, item.cp || item.codigo_postal, item.municipio || item.poblacion, item.provincia].filter(Boolean).join(" · ") || "Sin dirección en el catálogo"}</span></button>)}{!filtradas.length && <p className="p-3 text-sm text-slate-500">No hay coincidencias en el catálogo.</p>}</div>}
-      {valor.referencia_id && <p className="text-xs font-semibold text-emerald-700">✓ Datos cargados desde el catálogo. Puedes revisar la dirección.</p>}
+      {valor.referencia_id && <p className="text-xs font-semibold text-emerald-700"><MolsanIcon name="check" size={15} inline /> Datos cargados desde el catálogo. Puedes revisar la dirección.</p>}
     </>}
     <div className="grid gap-3 sm:grid-cols-2">
       <label className="block text-xs font-bold uppercase tracking-wide text-slate-500 sm:col-span-2">Dirección
@@ -206,7 +207,7 @@ export default function MensajeriaSolicitudes() {
   return <main className="molsan-page-stack catalogos-premium-page min-h-full ">
     <header className="molsan-page-header">
       <div className="molsan-page-header__identity">
-        <div className="molsan-page-header__mark" aria-hidden="true">MS</div>
+        <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="message" size={32} bare /></div>
         <div className="min-w-0">
           <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
           <h1 className="molsan-page-header__title">Mensajería</h1>
