@@ -72,7 +72,7 @@ export default function ComplementosSaldo() {
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div><Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link><h1 className="mt-2 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Complementos de saldo</h1><p className="mt-1 text-sm text-slate-500">Control de solicitudes, importes y estado de cada complemento.</p></div>
-        
+        <button type="button" onClick={cargar} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">↻ Actualizar</button>
       </div>
     </header>
 
