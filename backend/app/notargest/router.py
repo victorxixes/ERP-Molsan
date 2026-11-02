@@ -1509,6 +1509,8 @@ def descargar_documento(expediente_id: str, documento_id: int, n=Depends(get_not
 @router.post("/expedientes/{expediente_id}/factura-notarial")
 async def subir_factura_notarial(expediente_id: str, archivo: UploadFile = File(...), n=Depends(get_notario), db: Session = Depends(get_db)):
     e = _expediente_autorizado(expediente_id, n, db)
+    if _estado_workflow(e) != "factura":
+        raise HTTPException(status_code=400, detail="La factura notarial solo puede adjuntarse durante la fase de factura.")
     nombre = (archivo.filename or "factura.pdf").replace("\\", "/").rsplit("/", 1)[-1]
     if not nombre.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Adjunta la factura en formato PDF")
