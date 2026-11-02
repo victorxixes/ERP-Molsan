@@ -2,9 +2,16 @@ name: EncargaGest checks
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, molsan-premium-2027-global, molsan-premium-2027-glass-luxe]
   push:
-    branches: [main, feature/encargagest-mvp, feature/encargagest-safe-workspace]
+    branches:
+      - main
+      - feature/encargagest-mvp
+      - feature/encargagest-safe-workspace
+      - molsan-premium-2027-global
+      - molsan-premium-2027-glass-luxe
+      - audit-fixes-frontend
+      - audit-fixes-api
 
 permissions:
   contents: read
@@ -24,7 +31,7 @@ jobs:
         with:
           node-version: 20
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm install --include=optional --no-audit --no-fund
       - name: Build
         run: npm run build
 
@@ -40,10 +47,9 @@ jobs:
           python-version: "3.11"
       - name: Compile backend modules
         run: python -m compileall -q backend
-
       - name: Install backend dependencies
         run: pip install -r backend/requirements.txt
-      - name: Import full FastAPI application
+      - name: Import full FastAPI application and run tests
         env:
           DATABASE_URL: sqlite:////tmp/molsan-encargagest-ci.db
           JWT_SECRET: ci-smoke-test-secret-key-0123456789abcdef
