@@ -504,11 +504,11 @@ function TablaEncargos({ encargos, onFirmado }) {
               </span>
             </button>
             {abierto ? createPortal((
-              <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label={`Encargos de ${grupo.nombre}`} onMouseDown={(e) => { if (e.target === e.currentTarget) setAbiertos(actual => ({ ...actual, [grupo.clave]: false })); }}>
-                <div className="flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
-                  <header className="molsan-modal-header flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4">
+              <div className="ag-grupo-modal-overlay fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label={`Encargos de ${grupo.nombre}`} onMouseDown={(e) => { if (e.target === e.currentTarget) setAbiertos(actual => ({ ...actual, [grupo.clave]: false })); }}>
+                <div className="ag-grupo-modal flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+                  <header className="ag-grupo-modal-cabecera molsan-modal-header flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4">
                     <div><span className="text-xs font-semibold uppercase tracking-widest text-slate-500">APODERAGEST · BLOQUE DE APODERADO</span><h3 className="mt-1 text-xl font-bold text-slate-900">{grupo.nombre}</h3><p className="text-sm text-slate-600">{grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas registradas · {grupo.expedientes.length} encargos</p></div>
-                    <button type="button" className="rounded-xl border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-slate-100" onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: false }))}>Cerrar <MolsanIcon name="x" size={14} bare /></button>
+                    <button type="button" className="ag-grupo-modal-cerrar rounded-xl border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-slate-100" onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: false }))}>Cerrar <MolsanIcon name="x" size={14} bare /></button>
                   </header>
                   <div className="ag-encargos-detalle-lista ag-ficha-premium overflow-y-auto p-4">
                 {grupo.expedientes.map((encargo, indice) => {
@@ -520,7 +520,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                     <article className="ag-encargo-detalle ag-ficha-encargo" key={id}>
                       <button type="button" className="ag-encargo-detalle-cabecera" aria-expanded={detalleAbierto} onClick={() => setAbiertos(actual => ({ ...actual, [`exp-${id}`]: !actual[`exp-${id}`] }))}>
                         <span><strong>Expediente {texto(encargo.id_expediente || encargo.id)}</strong><small>{texto(encargo.nombre_solicitante || encargo.solicitante)}{(encargo.nif_solicitante || encargo.dni_solicitante) ? ` · ${texto(encargo.nif_solicitante || encargo.dni_solicitante)}` : ""}</small></span>
-                        <span>{detalleAbierto ? "Ocultar detalles ⌃" : "Ver todos los datos ⌄"}</span>
+                        <span className="ag-expediente-toggle-label">{detalleAbierto ? "Ocultar detalles" : "Ver todos los datos"} <MolsanIcon className="ag-expediente-toggle-icono" name="chevronDown" size={14} bare /></span>
                       </button>
                       {encargo.bloqueado && <div className="ag-alerta-bloqueo" role="alert"><strong>EXPEDIENTE BLOQUEADO EN CANCELAGEST</strong><span>{texto(encargo.motivo_bloqueo_efectivo || encargo.motivo_bloqueo || "Este expediente está bloqueado. Consulta con gestión antes de continuar.")}</span></div>}
                       <div className="ag-encargo-resumen ag-ficha-resumen ag-aceptar-resumen">
