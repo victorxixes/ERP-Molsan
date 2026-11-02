@@ -16,7 +16,7 @@
   transform:translateY(-3px); border-color:#B9D7E6;
   box-shadow:0 14px 28px rgba(6,50,82,.11);
 }
-.importaciones-datos-card__icon { width:48px; height:48px; font-size:22px; }
+.importaciones-datos-card__icon { display:grid; flex:0 0 52px; width:52px; height:52px; place-items:center; border:1px solid #D8E4EC; border-radius:16px; background:#EAF2F8; color:#064675; box-shadow:inset 0 1px 0 rgba(255,255,255,.9); }
 .importaciones-datos-card strong { display:block; color:#064675; font-size:14px; font-weight:800; }
 .importaciones-datos-card span span { display:block; margin-top:4px; color:#617789; font-size:12px; line-height:1.45; }
 .importaciones-datos-card__arrow { color:#91A8B8; font-size:22px; transition:transform .2s ease,color .2s ease; }
