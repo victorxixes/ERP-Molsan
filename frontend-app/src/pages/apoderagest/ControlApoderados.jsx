@@ -1,4 +1,5 @@
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
@@ -140,7 +141,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
   return <div className="molsan-page-stack control-apoderados-page min-h-full">
     <header className="molsan-page-header">
       <div className="molsan-page-header__identity">
-        <div className="molsan-page-header__mark" aria-hidden="true">AG</div>
+        <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="users" size={34} bare /></div>
         <div className="min-w-0">
           <p className="molsan-page-header__eyebrow">MOLSAN ERP · APODERAGEST</p>
           <h1 className="molsan-page-header__title">{admin ? "Control Apoderados" : "Mi actividad y liquidaciones"}</h1>
