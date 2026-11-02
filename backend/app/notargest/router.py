@@ -1213,18 +1213,42 @@ def marcar_aviso_leido_notargest(tipo: str, aviso_id: int, n=Depends(get_notario
     db.commit()
     return {"ok": True, "tipo": tipo, "aviso_id": aviso_id, "leida": True}
 
+def _es_gestor_asignado(expediente, empleado_id):
+    try:
+        asignado_id = int(getattr(expediente, "gestor_asignado_id", None) or 0)
+        destinatario_id = int(empleado_id or 0)
+    except (TypeError, ValueError):
+        return False
+    return bool(asignado_id and destinatario_id and asignado_id == destinatario_id)
+
+
 @router.get("/gestores")
-def listar_gestores_notargest(n=Depends(get_notario), db: Session = Depends(get_db)):
-    empleados = db.query(Empleado).filter(Empleado.activo.is_(True)).order_by(Empleado.apellidos.asc(), Empleado.nombre.asc()).all()
-    return [{"id": e.id, "nombre": " ".join(filter(None, [e.nombre, e.apellidos]))} for e in empleados]
+def listar_gestores_notargest(
+    expediente_id: str,
+    n=Depends(get_notario),
+    db: Session = Depends(get_db),
+):
+    expediente = _expediente_autorizado(expediente_id, n, db)
+    gestor_id = getattr(expediente, "gestor_asignado_id", None)
+    if not gestor_id:
+        return []
+    gestor = db.query(Empleado).filter(
+        Empleado.id == gestor_id,
+        Empleado.activo.is_(True),
+    ).first()
+    if not gestor:
+        return []
+    return [{"id": gestor.id, "nombre": " ".join(filter(None, [gestor.nombre, gestor.apellidos]))}]
 
 
 @router.post("/expedientes/{expediente_id}/comentarios")
 def crear_comentario_gestor_notargest(expediente_id: str, datos: ComentarioGestorNotarGest, n=Depends(get_notario), db: Session = Depends(get_db)):
     expediente = _expediente_autorizado(expediente_id, n, db)
+    if not _es_gestor_asignado(expediente, datos.empleado_destinatario_id):
+        raise HTTPException(status_code=403, detail="Solo puedes dirigir comentarios al gestor asignado a este expediente.")
     destinatario = db.query(Empleado).filter(Empleado.id == datos.empleado_destinatario_id, Empleado.activo.is_(True)).first()
     if not destinatario:
-        raise HTTPException(status_code=404, detail="El gestor seleccionado no existe o está inactivo.")
+        raise HTTPException(status_code=404, detail="El gestor asignado no existe o está inactivo.")
     comentario = datos.comentario.strip()
     if not comentario:
         raise HTTPException(status_code=400, detail="Escribe un comentario antes de guardarlo.")
