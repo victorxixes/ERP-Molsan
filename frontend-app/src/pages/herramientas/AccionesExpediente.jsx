@@ -1,5 +1,6 @@
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { API_BASE as API_ROOT } from "../../api/config";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { sortRows } from "../../utils/sortRows";
 import MolsanButton from "../../components/ui/MolsanButton";
 import { Link, useSearchParams } from "react-router-dom";
@@ -1908,7 +1909,7 @@ export default function AccionesExpediente() {
             { key: "actividad", header: "Actividad", accessor: "actividad", sortType: "text" },
             { key: "descripcion", header: "Descripción", accessor: "descripcion", sortType: "text" },
             { key: "activo", header: "Estado", accessor: (item) => item.activo !== false, sortType: "boolean", render: (value) => <BadgeActivo activo={value} /> },
-            { key: "acciones", header: "Acciones", sortable: false, align: "center", accessor: (item) => item.id, render: (_, item) => <div className="flex items-center justify-center gap-2"><button type="button" onClick={() => abrirEditar(item)} title="Editar" className="w-9 h-9 rounded-xl bg-white border border-[var(--erp-border)] text-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] transition">✎</button><button type="button" onClick={() => eliminarAccion(item)} title="Eliminar" className="w-9 h-9 rounded-xl bg-white border border-red-200 text-red-600 hover:bg-red-50 transition">×</button></div> },
+            { key: "acciones", header: "Acciones", sortable: false, align: "center", accessor: (item) => item.id, render: (_, item) => <div className="flex items-center justify-center gap-2"><button type="button" onClick={() => abrirEditar(item)} title="Editar" className="w-9 h-9 rounded-xl bg-white border border-[var(--erp-border)] text-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] transition"><MolsanIcon name="pen" size={15} /></button><button type="button" onClick={() => eliminarAccion(item)} title="Eliminar" className="w-9 h-9 rounded-xl bg-white border border-red-200 text-red-600 hover:bg-red-50 transition"><MolsanIcon name="x" size={15} /></button></div> },
           ]}
         />
 
