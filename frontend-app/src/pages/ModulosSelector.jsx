@@ -103,7 +103,7 @@ export default function ModulosSelector() {
     const rolesAdministradores = new Set([
       "admin", "administrador", "administradora", "superadmin",
       "super admin", "superadministrador", "super administradora",
-      "superuser", "super usuario", "superusuario", "administrador general",
+      "superuser", "super usuario", "superusuario", "administrador general", "administrador del sistema",
     ]);
     const esAdmin =
       empleado.es_admin === true ||
