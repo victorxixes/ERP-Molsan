@@ -160,7 +160,7 @@ export default function HonorariosGestoria({ soloPlantilla = false } = {}) {
 
       {(error || mensaje) && <div role="status" className={`rounded-xl border px-4 py-3 text-sm ${error ? "border-red-200 bg-red-50 text-red-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"}`}>{error || mensaje}</div>}
       </>}
-      <div className={soloPlantilla ? "space-y-6" : "grid items-start gap-6 lg:grid-cols-2"}>
+      <div className={soloPlantilla ? "space-y-6" : "grid items-start gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(360px,1fr)]"}>
         {!soloPlantilla && <div className="min-w-0 space-y-6">
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
           <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4"><div><h2 className="font-extrabold text-slate-800">Tarifas configuradas</h2><p className="mt-1 text-xs text-slate-500">Base, tipo de impuesto y porcentaje son configurables; el total se calcula automáticamente.</p></div><button type="button" onClick={nuevo} className="rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-700">＋ Nuevo honorario</button></div>
