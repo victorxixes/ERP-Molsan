@@ -145,7 +145,7 @@ function TarjetaIndicador({
       </div>
       <div className="ag-kpi-valor">{valor}</div>
       {detalle ? <div className="ag-kpi-detalle">{detalle}</div> : null}
-      {onClick ? <span className="ag-kpi-ver-expedientes">Ver expedientes ↗</span> : null}
+      {onClick ? <span className="ag-kpi-ver-expedientes">Ver expedientes <MolsanIcon name="arrowRight" size={13} bare /></span> : null}
     </>
   );
   return onClick ? (
@@ -496,7 +496,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                 <span className="ag-contador ag-contador-firmas"><MolsanIcon name="check" size={13} bare /> {grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas</span>
                 <span className="ag-contador">{grupo.expedientes.length} {grupo.expedientes.length === 1 ? "encargo" : "encargos"}</span>
                 <span className={`ag-contador-bloqueados${expedientesBloqueados > 0 ? " tiene-bloqueados" : ""}`}>{expedientesBloqueados} {expedientesBloqueados === 1 ? "bloqueado" : "bloqueados"}</span>
-                <span className="ag-contador">Ver encargos →</span>
+                <span className="ag-contador">Ver encargos <MolsanIcon name="arrowRight" size={13} bare /></span>
               </span>
             </button>
             {abierto ? createPortal((
@@ -504,7 +504,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                 <div className="flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
                   <header className="molsan-modal-header flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4">
                     <div><span className="text-xs font-semibold uppercase tracking-widest text-slate-500">APODERAGEST · BLOQUE DE APODERADO</span><h3 className="mt-1 text-xl font-bold text-slate-900">{grupo.nombre}</h3><p className="text-sm text-slate-600">{grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas registradas · {grupo.expedientes.length} encargos</p></div>
-                    <button type="button" className="rounded-xl border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-slate-100" onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: false }))}>Cerrar ✕</button>
+                    <button type="button" className="rounded-xl border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-slate-100" onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: false }))}>Cerrar <MolsanIcon name="x" size={14} bare /></button>
                   </header>
                   <div className="ag-encargos-detalle-lista ag-ficha-premium overflow-y-auto p-4">
                 {grupo.expedientes.map((encargo, indice) => {
@@ -942,7 +942,7 @@ export default function ApoderaGest() {
             <section className="ag-panel ag-panel-proximas">
               <div className="ag-panel-cabecera">
                 <div><span className="ag-kicker">PLANIFICACIÓN</span><h3>Próximas citas</h3></div>
-                <button type="button" className="ag-enlace-accion" onClick={() => setPestana("Agenda")}>Ver agenda <span>→</span></button>
+                <button type="button" className="ag-enlace-accion" onClick={() => setPestana("Agenda")}>Ver agenda <MolsanIcon name="arrowRight" size={14} bare /></button>
               </div>
               {!agenda.length ? <EstadoVacio icono="calendar" titulo="No hay citas disponibles" detalle="Cuando existan citas asignadas, podrás consultarlas desde aquí." /> : (
                 <div className="ag-proximas-lista">
@@ -1043,7 +1043,7 @@ export default function ApoderaGest() {
           <div className="ag-titulo-seccion"><div><span className="ag-kicker">{esAdministradorEncargos ? "SUPERVISIÓN GLOBAL" : "GESTIÓN OPERATIVA"}</span><h2>{esAdministradorEncargos ? "Todos los encargos de ApoderaGest" : "Mis encargos"}</h2><p>{esAdministradorEncargos ? "Vista de administrador: encargos de todos los apoderados, incluidos los asignados a tu propio usuario. Puedes buscar por apoderado, expediente, titular o notario." : "Seguimiento de tus expedientes, titulares y estado de firma."}</p></div><span className="ag-contador">{encargos.length} encargos</span></div>
           <div className="ag-panel">
             <div className="ag-toolbar">
-              <label className="ag-busqueda"><span aria-hidden="true">⌕</span><input type="search" value={busquedaEncargos} onChange={(e) => setBusquedaEncargos(e.target.value)} placeholder={esAdministradorEncargos ? "Buscar apoderado, expediente, titular, notario o estado…" : "Buscar expediente, titular, notario o estado…"} aria-label="Buscar encargos" /></label>
+              <label className="ag-busqueda"><MolsanIcon name="search" size={16} bare /><input type="search" value={busquedaEncargos} onChange={(e) => setBusquedaEncargos(e.target.value)} placeholder={esAdministradorEncargos ? "Buscar apoderado, expediente, titular, notario o estado…" : "Buscar expediente, titular, notario o estado…"} aria-label="Buscar encargos" /></label>
               <span className="ag-resultados">{encargosFiltrados.length} resultados</span>
             </div>
             <TablaEncargos encargos={encargosFiltrados} onFirmado={cargarDatos} />
@@ -1080,7 +1080,7 @@ export default function ApoderaGest() {
           <section className="ag-resumen-modal" role="dialog" aria-modal="true" aria-labelledby="ag-resumen-modal-titulo">
             <header className="ag-resumen-modal-cabecera">
               <div><span className="ag-kicker">APODERAGEST · RESUMEN DE ACTIVIDAD</span><h2 id="ag-resumen-modal-titulo">{modalResumen.titulo}</h2><p>{encargosDelResumen.length} expediente(s) en este indicador.</p></div>
-              <button type="button" className="ag-resumen-modal-cerrar" onClick={() => setModalResumen(null)} aria-label="Cerrar modal">✕</button>
+              <button type="button" className="ag-resumen-modal-cerrar" onClick={() => setModalResumen(null)} aria-label="Cerrar modal"><MolsanIcon name="x" size={16} bare /></button>
             </header>
             <div className="ag-resumen-modal-cuerpo">
               {!encargosDelResumen.length ? <EstadoVacio icono="file" titulo="No hay expedientes en este bloque" detalle="No hay encargos que coincidan con este indicador." /> : (
@@ -1100,7 +1100,7 @@ export default function ApoderaGest() {
                         <td>{texto(encargo.protocolo)}</td>
                         <td>{texto(encargo.tipo_firma)}</td>
                         <td><EstadoPill valor={firmado ? "Firmado" : encargo.bloqueado ? "Bloqueado" : "Pendiente de firma"} /></td>
-                        <td><button type="button" className="ag-resumen-ir-encargo" onClick={() => { setBusquedaEncargos(String(id)); setPestana("Encargos"); setModalResumen(null); }}>Ver en encargos →</button></td>
+                        <td><button type="button" className="ag-resumen-ir-encargo" onClick={() => { setBusquedaEncargos(String(id)); setPestana("Encargos"); setModalResumen(null); }}>Ver en encargos <MolsanIcon name="arrowRight" size={13} bare /></button></td>
                       </tr>;
                     })}</tbody>
                   </table>
