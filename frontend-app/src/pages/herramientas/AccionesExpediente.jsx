@@ -1313,13 +1313,7 @@ export default function AccionesExpediente() {
             "
           >
 
-            <Icono
-              name="clipboard"
-              className="
-                w-6
-                h-6
-              "
-            />
+            <MolsanIcon name="clipboardList" size={36} tone="ocean" />
 
           </div>
 
@@ -1347,7 +1341,7 @@ export default function AccionesExpediente() {
               Catálogo de acciones y actividades
               disponibles para los expedientes
             </p>
-            <Link to="/herramientas" className="molsan-btn molsan-btn--secondary mt-3 inline-flex">← Volver</Link>
+            <Link to="/herramientas" className="molsan-btn molsan-btn--secondary mt-3 inline-flex">← Volver a herramientas</Link>
 
           </div>
 
