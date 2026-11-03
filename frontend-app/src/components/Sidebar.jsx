@@ -343,21 +343,7 @@ const NavIcon = ({ name }) => (
  * ============================================================
  */
 
-const ProfileIcon = () => (
-  <svg
-    className="w-[18px] h-[18px]"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <circle cx="12" cy="8" r="4" />
-    <path d="M5 21c0-3.9 3.1-7 7-7s7 3.1 7 7" />
-  </svg>
-);
+const ProfileIcon = () => <MolsanIcon name="person" size={18} bare />;
 
 
 /**
@@ -366,22 +352,7 @@ const ProfileIcon = () => (
  * ============================================================
  */
 
-const LogoutIcon = () => (
-  <svg
-    className="w-[18px] h-[18px]"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-    <path d="M16 17l5-5-5-5" />
-    <path d="M21 12H9" />
-  </svg>
-);
+const LogoutIcon = () => <MolsanIcon name="logout" size={18} bare />;
 
 
 /**
@@ -390,21 +361,7 @@ const LogoutIcon = () => (
  * ============================================================
  */
 
-const BellIcon = () => (
-  <svg
-    className="w-[18px] h-[18px]"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
-    <path d="M10 21h4" />
-  </svg>
-);
+const BellIcon = () => <MolsanIcon name="bell" size={18} bare />;
 
 
 /**
@@ -413,26 +370,7 @@ const BellIcon = () => (
  * ============================================================
  */
 
-const ChevronIcon = ({ open }) => (
-  <svg
-    className={`
-      w-3.5
-      h-3.5
-      transition-transform
-      duration-200
-      ${open ? "rotate-180" : ""}
-    `}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="m6 9 6 6-6-6" />
-  </svg>
-);
+const ChevronIcon = ({ open }) => <MolsanIcon name="chevronDown" size={14} bare className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />;
 
 
 /**
@@ -1674,18 +1612,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                 "
               >
 
-                <svg
-                  className="w-4 h-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  aria-hidden="true"
-                >
-                  <path d="M6 6l12 12" />
-                  <path d="M18 6 6 18" />
-                </svg>
+                <MolsanIcon name="x" size={16} bare />
 
               </button>
 
