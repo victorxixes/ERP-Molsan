@@ -702,7 +702,7 @@ export default function Mensajes({
 
       <header className="molsan-page-header mensajes-page-header relative z-10">
         <div className="molsan-page-header__identity">
-          <div className="molsan-page-header__mark" aria-hidden="true">MSG</div>
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="message" size={22} tone="ocean" /></div>
           <div className="min-w-0">
             <p className="molsan-page-header__eyebrow">MOLSAN ERP · COMUNICACIÓN INTERNA</p>
             <h1 className="molsan-page-header__title">Mensajes</h1>
