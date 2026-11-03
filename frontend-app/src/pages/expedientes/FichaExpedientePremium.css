@@ -69,3 +69,43 @@
 .ficha-expediente-premium :is([class~="border-blue-100"], [class~="border-blue-200"], [class~="border-indigo-100"], [class~="border-indigo-200"], [class~="border-sky-200"]) { border-color: var(--molsan-border); }
 .ficha-expediente-premium :is([class~="border-blue-300"], [class~="border-indigo-300"]) { border-color: var(--molsan-border-strong); }
 .ficha-expediente-premium :is([class~="focus:border-blue-400"]:focus) { border-color: var(--molsan-primary); }
+
+
+/* FichaExpediente · datos homogéneos, sin mosaico de tarjetas por campo. */
+.ficha-expediente-premium .ficha-dato {
+  min-width: 0;
+  padding: 9px 2px 10px;
+  border: 0;
+  border-bottom: 1px solid var(--molsan-border, #D8E4EC);
+  border-radius: 0;
+  background: transparent;
+}
+.ficha-expediente-premium .ficha-dato__label {
+  margin: 0 0 4px;
+  color: var(--molsan-secondary-text, #617789);
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1.35;
+  letter-spacing: .035em;
+}
+.ficha-expediente-premium .ficha-dato__value {
+  min-width: 0;
+  color: var(--molsan-text, #173247);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.ficha-expediente-premium .ficha-dato--compacto {
+  padding-top: 6px;
+  padding-bottom: 7px;
+}
+.ficha-expediente-premium .ficha-dato--compacto .ficha-dato__value {
+  font-size: 12px;
+}
+.ficha-expediente-premium .ficha-dato--destacado .ficha-dato__value {
+  color: var(--molsan-primary, #064675);
+}
+.ficha-expediente-premium .ficha-dato:last-child {
+  border-bottom-color: transparent;
+}
