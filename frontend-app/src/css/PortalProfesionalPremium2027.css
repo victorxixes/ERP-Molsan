@@ -240,14 +240,14 @@
 /* Responsive: misma jerarquía sin cabeceras comprimidas ni tarjetas desiguales. */
 @media(max-width:760px){
   :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias)>header.ag-hero.molsan-page-header{
-    min-height:88px!important;height:auto!important;max-height:none!important;
-    flex-wrap:wrap!important;gap:8px 12px!important;padding:8px 12px!important;
+    min-height:88px;height:auto;max-height:none;
+    flex-wrap:wrap;gap:8px 12px;padding:8px 12px;
   }
   :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__description{
-    display:none!important;
+    display:none;
   }
   :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__actions{
-    width:auto!important;margin-left:auto!important;justify-content:flex-end!important;
+    width:auto;margin-left:auto;justify-content:flex-end;
   }
 }
 @media(max-width:760px){
