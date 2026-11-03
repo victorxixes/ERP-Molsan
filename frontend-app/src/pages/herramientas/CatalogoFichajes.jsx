@@ -49,7 +49,7 @@ export default function CatalogoFichajes() {
           <input required maxLength={120} value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Ej. Acompañamiento médico" className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 font-normal text-slate-800" />
         </label>
         <label className="flex items-center gap-2 pb-3 text-sm text-slate-700"><input type="checkbox" checked={requiereJustificante} onChange={(e) => setRequiereJustificante(e.target.checked)} /> Requiere justificante</label>
-        <MolsanButton type="submit" icon="plus" variant="primary" disabled={guardando} loading={guardando}>Añadir al catálogo</MolsanButton>
+        <MolsanButton type="submit" icon="plus" variant="success" disabled={guardando} loading={guardando}>Añadir al catálogo</MolsanButton>
       </form>
     </section>
     <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
