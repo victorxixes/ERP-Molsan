@@ -1160,38 +1160,7 @@ export default function OficinasLiquidadoras() {
           
 
 
-          <button
-            type="button"
-            onClick={
-              abrirNueva
-            }
-            className="
-              inline-flex
-              items-center
-              gap-2
-              px-4
-              py-2.5
-              rounded-xl
-              bg-[var(--erp-primary)]
-              hover:brightness-95
-              text-white
-              text-sm
-              font-semibold
-              shadow-sm
-              transition
-            "
-          >
-            <span
-              className="
-                text-lg
-                leading-none
-              "
-            >
-              +
-            </span>
-
-            Nueva oficina
-          </button>
+          <MolsanButton type="button" onClick={abrirNueva} icon="plus" variant="success">Nueva oficina</MolsanButton>
 
         </div>
 
