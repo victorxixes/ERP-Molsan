@@ -19,7 +19,6 @@
 @import "./LayoutPortalesPremium.css";
 @import "./ModalesHerramientasPremium.css";
 @import "./ModalesOperativosPremium.css";
-@import "./PortalProfesionalShared.css";
 
 /* Módulos */
 @import "./Cancelagest.css";
@@ -51,3 +50,15 @@
 @import "../pages/provisiones/ProvisionesFondosPage.css";
 @import "../pages/seguridad/Seguridad.css";
 @import "../pages/seguridad/SeguridadSubpaginasPremium.css";
+
+
+/* Reglas compartidas de portales integradas aquí para evitar una hoja huérfana. */
+.notargest .ng-tabla { min-width: 1450px; }
+.notargest .ng-bloqueo-expediente { margin: 0 18px 14px; }
+@media print {
+  @page { size: A4 portrait; margin: 12mm; }
+  body.molsan-print-agenda *,
+  body.molsan-print-encargos-lista *,
+  body.molsan-print-encargos-fichas * { visibility: hidden !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+}
