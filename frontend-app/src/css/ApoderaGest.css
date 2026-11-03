@@ -1554,76 +1554,7 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 .apoderagest textarea:focus-visible{
   outline-color: color-mix(in srgb, var(--molsan-primary, #064675) 28%, transparent);
 }
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header{
-  display:flex!important;
-  position:relative!important;
-  box-sizing:border-box!important;
-  width:100%!important;
-  min-width:0!important;
-  min-height:112px!important;
-  align-items:center!important;
-  justify-content:space-between!important;
-  flex-wrap:wrap!important;
-  gap:20px!important;
-  margin:0 0 20px!important;
-  padding:20px 24px!important;
-  overflow:hidden!important;
-  color:#FFFFFF!important;
-  border:1px solid rgba(255,255,255,.14)!important;
-  border-radius:20px!important;
-  background:
-    radial-gradient(circle at 86% 18%,rgba(116,199,219,.18),transparent 27%),
-    linear-gradient(116deg,#032D4B 0%,#064675 54%,#0D638C 100%)!important;
-  box-shadow:0 18px 38px rgba(4,55,91,.18)!important;
-  animation:none!important;
-  transition:none!important;
-  opacity:1!important;
-  transform:none!important;
-  filter:none!important;
-}
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header::after{
-  position:absolute!important;
-  right:0!important;bottom:0!important;left:0!important;
-  height:3px!important;content:""!important;
-  background:linear-gradient(90deg,#6CC5D9 0%,#8CB8D8 38%,rgba(255,255,255,.08) 100%)!important;
-  pointer-events:none!important;
-}
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__identity{
-  display:flex!important;align-items:center!important;gap:16px!important;min-width:0!important;
-}
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__mark{
-  display:grid!important;place-items:center!important;
-  flex:0 0 56px!important;width:56px!important;height:56px!important;
-  color:#FFFFFF!important;border:1px solid rgba(255,255,255,.32)!important;
-  border-radius:15px!important;background:rgba(255,255,255,.12)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.18)!important;
-}
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__eyebrow{
-  margin:0 0 5px!important;color:#C6DFEC!important;font-size:10px!important;
-  font-weight:800!important;letter-spacing:.14em!important;line-height:1.4!important;
-}
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__title{
-  margin:0!important;color:#FFFFFF!important;font-size:clamp(23px,2.2vw,30px)!important;
-  font-weight:800!important;letter-spacing:-.04em!important;line-height:1.15!important;
-}
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__description{
-  display:block!important;margin:6px 0 0!important;color:#D1E4EE!important;
-  font-size:12px!important;line-height:1.55!important;white-space:normal!important;
-}
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions{
-  display:flex!important;align-items:center!important;justify-content:flex-end!important;
-  flex-wrap:wrap!important;gap:9px!important;margin-left:auto!important;
-}
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions > button{
-  display:inline-flex!important;align-items:center!important;justify-content:center!important;
-  min-height:38px!important;padding:0 13px!important;color:#FFFFFF!important;
-  border:1px solid rgba(255,255,255,.30)!important;border-radius:10px!important;
-  background:rgba(255,255,255,.12)!important;box-shadow:none!important;
-  font-size:11px!important;font-weight:750!important;
-}
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions > button:hover{
-  color:#FFFFFF!important;border-color:rgba(255,255,255,.58)!important;background:rgba(255,255,255,.2)!important;
-}
+/* Cabecera gestionada por PortalProfesionalPremium2027.css. */
 .apoderagest .ag-panel,
 .apoderagest .ag-grid-kpi > .ag-kpi,
 .apoderagest .ag-grid-secundario > .ag-kpi{
@@ -2119,24 +2050,6 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 
 
 /* Iconografía visible y tridimensional · MOLSAN PREMIUM 2027 */
-.apoderagest .ag-hero .ag-marca-icono{
-  display:grid;
-  flex:0 0 58px;
-  width:58px;
-  height:58px;
-  min-width:58px;
-  min-height:58px;
-  place-items:center;
-  padding:0;
-  overflow:visible;
-  border:1px solid rgba(255,255,255,.72);
-  border-radius:17px;
-  background:linear-gradient(145deg,#FFFFFF 0%,#EAF3FA 100%);
-  box-shadow:0 9px 22px rgba(4,39,66,.18),inset 0 1px 0 rgba(255,255,255,.95);
-}
-.apoderagest .ag-hero .ag-marca-icono .molsan-icon-3d{
-  filter:drop-shadow(0 3px 4px rgba(6,50,82,.2));
-}
 .apoderagest .ag-kpi-icono{
   flex:0 0 54px;
   width:54px;
@@ -2200,9 +2113,5 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   filter:drop-shadow(0 2px 3px rgba(6,50,82,.15));
 }
 @media(max-width:760px){
-  .apoderagest .ag-hero .ag-marca-icono{
-    flex-basis:50px;width:50px;height:50px;min-width:50px;min-height:50px;
-    border-radius:14px;
-  }
   .apoderagest .ag-kpi-icono{flex-basis:48px;width:48px;height:48px}
 }
