@@ -151,6 +151,8 @@ class GastoResponse(GastoBase):
     estado_justificante: Optional[str] = None
     imp_gasto: Optional[Decimal] = None
     fecha_pago: Optional[date] = None
+    total_pagado: Optional[Decimal] = None
+    saldo_pendiente: Optional[Decimal] = None
 
 
 def _obtener_expediente(db: Session, expediente_id: int):
@@ -206,10 +208,41 @@ def _validar_calculo(datos: dict):
             raise HTTPException(status_code=422, detail="El importe resultante debe ser el total bruto menos la retención.")
 
 
+def _estado_legacy_pagado(estado: object) -> bool:
+    return str(estado or "").strip().casefold() in {"pagado", "pagada", "abonado", "abonada", "efectuado", "efectuada", "paid"}
+
+
+def _total_pagado_efectivo(estado: object, importe_obligacion: object, total_movimientos: object, numero_movimientos: int) -> Decimal:
+    total = _decimal_opcional(total_movimientos) or Decimal("0.00")
+    if numero_movimientos == 0 and _estado_legacy_pagado(estado):
+        return _decimal_opcional(importe_obligacion) or Decimal("0.00")
+    return total
+
+
 @router.get("/{expediente_id}/gastos", response_model=list[GastoResponse])
 def listar_gastos(expediente_id: int, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     expediente = _obtener_expediente(db, expediente_id)
-    return db.query(ExpedienteGasto).filter(ExpedienteGasto.expediente_id == expediente.id).order_by(ExpedienteGasto.fecha.desc(), ExpedienteGasto.id.desc()).all()
+    gastos = db.query(ExpedienteGasto).filter(ExpedienteGasto.expediente_id == expediente.id).order_by(ExpedienteGasto.fecha.desc(), ExpedienteGasto.id.desc()).all()
+    pagos_por_gasto = {}
+    tabla_pagos = db.execute(text("SELECT to_regclass('public.expediente_gasto_pagos')")).scalar()
+    if tabla_pagos:
+        filas = db.execute(text("""
+            SELECT p.gasto_id, COALESCE(SUM(p.importe) FILTER (WHERE p.anulado_en IS NULL), 0) AS total_pagado,
+                   COUNT(*) AS numero_movimientos
+            FROM public.expediente_gasto_pagos p
+            JOIN public.expediente_gastos g ON g.id = p.gasto_id
+            WHERE g.expediente_id = :expediente_id
+            GROUP BY p.gasto_id
+        """), {"expediente_id": expediente.id}).mappings().all()
+        pagos_por_gasto = {int(f["gasto_id"]): (f["total_pagado"], int(f["numero_movimientos"])) for f in filas}
+    for gasto in gastos:
+        importe_obligacion = gasto.importe_resultante if gasto.importe_resultante is not None else gasto.importe
+        total_movimientos, numero_movimientos = pagos_por_gasto.get(gasto.id, (Decimal("0.00"), 0))
+        total_pagado = _total_pagado_efectivo(gasto.estado_pago, importe_obligacion, total_movimientos, numero_movimientos)
+        obligacion = _decimal_opcional(importe_obligacion) or Decimal("0.00")
+        gasto.total_pagado = total_pagado
+        gasto.saldo_pendiente = max(Decimal("0.00"), obligacion - total_pagado)
+    return gastos
 
 
 def _tipo_gasto_desde_categoria(categoria: str) -> str | None:
