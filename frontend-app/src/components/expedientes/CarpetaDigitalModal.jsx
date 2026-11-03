@@ -235,6 +235,7 @@ export default function CarpetaDigitalModal({
   };
 
   const bloqueActividad = useMemo(() => resolverBloque(actividadId), [actividadId]);
+  const usarFormatoResumenSede = !["documentacion-previa", "control-calidad"].includes(normalizar(actividadId)) && !normalizar(actividadId).includes("auditoria");
   const esCancelacionSinProvision = normalizar(tipoOperacion) === "cancelacion-sin-provision";
   const bloquesVisibles = useMemo(() => {
     if (!modoActividad) return BLOQUES;
@@ -1045,9 +1046,9 @@ export default function CarpetaDigitalModal({
                           <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">{seccion.titulo}</h5>
                           <div className="space-y-0 px-2.5 py-1.5">
                             {seccion.campos.map(([etiqueta, valor]) => (
-                              <div key={etiqueta} className={(String(actividadId || "").toLowerCase().includes("auditoria") || String(actividadId || "").toLowerCase().includes("auditoría")) ? "min-w-0 border-b border-slate-100 py-1.5 last:border-b-0" : "min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2"}>
-                                <p className={(String(actividadId || "").toLowerCase().includes("auditoria") || String(actividadId || "").toLowerCase().includes("auditoría")) ? "text-[10px] font-bold text-slate-500" : "text-[10px] font-bold uppercase tracking-wide text-slate-500"}>{etiqueta}</p>
-                                <p className={(String(actividadId || "").toLowerCase().includes("auditoria") || String(actividadId || "").toLowerCase().includes("auditoría")) ? "break-words text-[11px] font-semibold text-slate-800" : "mt-0.5 break-words text-xs font-semibold text-slate-800"}>{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                              <div key={etiqueta} className={(!usarFormatoResumenSede) ? "min-w-0 border-b border-slate-100 py-1.5 last:border-b-0" : "min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2"}>
+                                <p className={(!usarFormatoResumenSede) ? "text-[10px] font-bold text-slate-500" : "text-[10px] font-bold uppercase tracking-wide text-slate-500"}>{etiqueta}</p>
+                                <p className={(!usarFormatoResumenSede) ? "break-words text-[11px] font-semibold text-slate-800" : "mt-0.5 break-words text-xs font-semibold text-slate-800"}>{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
                               </div>
                             ))}
                           </div>
@@ -1072,9 +1073,9 @@ export default function CarpetaDigitalModal({
                               .map((campo) => {
                                 const valor = datosPanelActividad?.[campo.key];
                                 return (
-                                  <div key={campo.key} className="min-w-0 rounded-md border border-slate-100 bg-slate-50/60 px-2 py-1.5">
-                                    <p className="text-[10px] font-bold text-slate-500">{campo.label}</p>
-                                    <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                                  <div key={campo.key} className={usarFormatoResumenSede ? "min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2" : "min-w-0 rounded-md border border-slate-100 bg-slate-50/60 px-2 py-1.5"}>
+                                    <p className={usarFormatoResumenSede ? "text-[10px] font-bold uppercase tracking-wide text-slate-500" : "text-[10px] font-bold text-slate-500"}>{campo.label}</p>
+                                    <p className={usarFormatoResumenSede ? "mt-0.5 break-words text-xs font-semibold text-slate-800" : "break-words text-[11px] font-semibold text-slate-800"}>{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
                                   </div>
                                 );
                               })}
@@ -1092,9 +1093,9 @@ export default function CarpetaDigitalModal({
                               ["Fecha firma", datosEnvioNotario?.fecha_firma || datosEnvioNotario?.fecha_real_firma || datosPanelActividad?.fecha_firma || datosPanelActividad?.fecha_real_firma],
                               ["Protocolo", datosEnvioNotario?.protocolo || datosPanelActividad?.protocolo || datosPanelActividad?.numero_protocolo],
                             ].map(([etiqueta, valor]) => (
-                              <div key={etiqueta} className="min-w-0 border-b border-slate-100 py-1.5 last:border-b-0">
-                                <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
-                                <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                              <div key={etiqueta} className={usarFormatoResumenSede ? "min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2" : "min-w-0 border-b border-slate-100 py-1.5 last:border-b-0"}>
+                                <p className={usarFormatoResumenSede ? "text-[10px] font-bold uppercase tracking-wide text-slate-500" : "text-[10px] font-bold text-slate-500"}>{etiqueta}</p>
+                                <p className={usarFormatoResumenSede ? "mt-0.5 break-words text-xs font-semibold text-slate-800" : "break-words text-[11px] font-semibold text-slate-800"}>{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
                               </div>
                             ))}
                           </div>
@@ -1115,9 +1116,9 @@ export default function CarpetaDigitalModal({
                               ["Email", datosPanelActividad?.facturacion_email || datosPanelActividad?.email_facturacion || datosPanelActividad?.correo_facturacion],
                               ["Empleado", [true, "true", "1", "si", "sí"].includes(String(datosPanelActividad?.facturacion_empleado ?? expedienteDatos?.facturacion_empleado ?? false).trim().toLowerCase()) ? "Sí" : "No"],
                             ].map(([etiqueta, valor]) => (
-                              <div key={etiqueta} className="min-w-0 border-b border-slate-100 py-1.5 last:border-b-0">
-                                <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
-                                <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                              <div key={etiqueta} className={usarFormatoResumenSede ? "min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2" : "min-w-0 border-b border-slate-100 py-1.5 last:border-b-0"}>
+                                <p className={usarFormatoResumenSede ? "text-[10px] font-bold uppercase tracking-wide text-slate-500" : "text-[10px] font-bold text-slate-500"}>{etiqueta}</p>
+                                <p className={usarFormatoResumenSede ? "mt-0.5 break-words text-xs font-semibold text-slate-800" : "break-words text-[11px] font-semibold text-slate-800"}>{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
                               </div>
                             ))}
                           </div>
@@ -1144,9 +1145,9 @@ export default function CarpetaDigitalModal({
                               ["Número de entrada", datosPanelActividad?.numero_entrada],
                               ["Fecha recogida notario o presentación telemática", datosPanelActividad?.fecha_recogida_notario_presentacion_telematica || datosPanelActividad?.fecha_recogida_notario_o_presentacion_telematica],
                             ].map(([etiqueta, valor]) => (
-                              <div key={etiqueta} className="min-w-0 border-b border-slate-100 py-1.5 last:border-b-0">
-                                <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
-                                <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                              <div key={etiqueta} className={usarFormatoResumenSede ? "min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2" : "min-w-0 border-b border-slate-100 py-1.5 last:border-b-0"}>
+                                <p className={usarFormatoResumenSede ? "text-[10px] font-bold uppercase tracking-wide text-slate-500" : "text-[10px] font-bold text-slate-500"}>{etiqueta}</p>
+                                <p className={usarFormatoResumenSede ? "mt-0.5 break-words text-xs font-semibold text-slate-800" : "break-words text-[11px] font-semibold text-slate-800"}>{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
                               </div>
                             ))}
                           </div>
@@ -1166,9 +1167,9 @@ export default function CarpetaDigitalModal({
                               ["Email", datosPanelActividad?.facturacion_email || datosPanelActividad?.email_facturacion],
                               ["Empleado", [true, "true", "1", "si", "sí"].includes(String(datosPanelActividad?.facturacion_empleado ?? expedienteDatos?.facturacion_empleado ?? false).trim().toLowerCase()) ? "Sí" : "No"],
                             ].map(([etiqueta, valor]) => (
-                              <div key={etiqueta} className="min-w-0 border-b border-slate-100 py-1.5 last:border-b-0">
-                                <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
-                                <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                              <div key={etiqueta} className={usarFormatoResumenSede ? "min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2" : "min-w-0 border-b border-slate-100 py-1.5 last:border-b-0"}>
+                                <p className={usarFormatoResumenSede ? "text-[10px] font-bold uppercase tracking-wide text-slate-500" : "text-[10px] font-bold text-slate-500"}>{etiqueta}</p>
+                                <p className={usarFormatoResumenSede ? "mt-0.5 break-words text-xs font-semibold text-slate-800" : "break-words text-[11px] font-semibold text-slate-800"}>{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
                               </div>
                             ))}
                           </div>
@@ -1214,9 +1215,9 @@ export default function CarpetaDigitalModal({
                             <h5 className="border-b border-slate-100 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-800">{seccion.titulo}</h5>
                             <div className="grid min-w-0 grid-cols-1 gap-1.5 px-3 py-2 sm:grid-cols-2 2xl:grid-cols-3">
                               {seccion.campos.map(([etiqueta, valor]) => (
-                                <div key={etiqueta} className="flex min-w-0 flex-col items-start gap-0.5 rounded-md border border-slate-100 bg-slate-50/60 px-2 py-1.5">
-                                  <span className="text-[10px] font-bold leading-tight text-slate-500">{etiqueta}</span>
-                                  <span className="min-w-0 break-words text-[11px] font-semibold leading-snug text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</span>
+                                <div key={etiqueta} className={usarFormatoResumenSede ? "min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2" : "flex min-w-0 flex-col items-start gap-0.5 rounded-md border border-slate-100 bg-slate-50/60 px-2 py-1.5"}>
+                                  <span className={usarFormatoResumenSede ? "text-[10px] font-bold uppercase tracking-wide text-slate-500" : "text-[10px] font-bold leading-tight text-slate-500"}>{etiqueta}</span>
+                                  <span className={usarFormatoResumenSede ? "mt-0.5 min-w-0 break-words text-xs font-semibold text-slate-800" : "min-w-0 break-words text-[11px] font-semibold leading-snug text-slate-800"}>{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</span>
                                 </div>
                               ))}
                             </div>
@@ -1235,9 +1236,9 @@ export default function CarpetaDigitalModal({
                           .map((campo) => {
                           const valor = datosPanelActividad?.[campo.key];
                           return (
-                            <div key={campo.key} className="min-w-0 border-b border-slate-100 pb-1.5">
-                              <p className="text-[10px] font-bold text-slate-500">{campo.label}</p>
-                              <p className="break-words text-[11px] font-semibold text-slate-800">
+                            <div key={campo.key} className={usarFormatoResumenSede ? "min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2" : "min-w-0 border-b border-slate-100 pb-1.5"}>
+                              <p className={usarFormatoResumenSede ? "text-[10px] font-bold uppercase tracking-wide text-slate-500" : "text-[10px] font-bold text-slate-500"}>{campo.label}</p>
+                              <p className={usarFormatoResumenSede ? "mt-0.5 break-words text-xs font-semibold text-slate-800" : "break-words text-[11px] font-semibold text-slate-800"}>
                                 {valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}
                               </p>
                             </div>
