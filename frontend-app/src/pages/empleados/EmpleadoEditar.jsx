@@ -270,7 +270,7 @@ export default function EmpleadoEditar({
 
       <div className="molsan-page-header">
         <div className="molsan-page-header__identity">
-          <div className="molsan-page-header__mark" aria-hidden="true">EMP</div>
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="user" size={22} tone="ocean" /></div>
           <div>
             <p className="molsan-page-header__eyebrow">MOLSAN ERP · EMPLEADOS</p>
             <h2 className="molsan-page-header__title">Editar empleado</h2>
