@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "../../api/axios";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanButton from "../../components/ui/MolsanButton";
 import { Link } from "react-router-dom";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
@@ -166,7 +167,7 @@ export default function HonorariosGestoria({ soloPlantilla = false } = {}) {
       <div className={soloPlantilla ? "space-y-6" : "grid items-start gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(360px,1fr)]"}>
         {!soloPlantilla && <div className="min-w-0 space-y-6">
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4"><div><h2 className="font-extrabold text-slate-800">Tarifas configuradas</h2><p className="mt-1 text-xs text-slate-500">Base, tipo de impuesto y porcentaje son configurables; el total se calcula automáticamente.</p></div><button type="button" onClick={nuevo} className="rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-700">＋ Nuevo honorario</button></div>
+          <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4"><div><h2 className="font-extrabold text-slate-800">Tarifas configuradas</h2><p className="mt-1 text-xs text-slate-500">Base, tipo de impuesto y porcentaje son configurables; el total se calcula automáticamente.</p></div><MolsanButton type="button" onClick={nuevo} icon="plus" variant="success">Nuevo honorario</MolsanButton></div>
           {cargando ? <p className="p-6 text-sm text-slate-500">Cargando tarifas…</p> : items.length === 0 ? <p className="p-6 text-sm text-slate-500">Todavía no hay tarifas.</p> : <MolsanDataTable
             rows={items}
             rowKey="id"
@@ -195,7 +196,7 @@ export default function HonorariosGestoria({ soloPlantilla = false } = {}) {
             </div>
             <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Descripción / notas</span><textarea rows={3} maxLength={2000} value={form.descripcion} onChange={e=>setForm(a=>({...a,descripcion:e.target.value}))} className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm" /></label>
             <label className="flex items-center gap-2 rounded-xl bg-slate-50 p-3 text-sm"><input type="checkbox" checked={form.activo} onChange={e=>setForm(a=>({...a,activo:e.target.checked}))} />Honorario disponible en «Añadir pagos»</label>
-            <div className="flex flex-wrap gap-2"><button disabled={guardando} className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">{guardando ? "Guardando…" : "Guardar honorario"}</button><button type="button" onClick={nuevo} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-600">Limpiar</button></div>
+            <div className="flex flex-wrap gap-2"><MolsanButton type="submit" disabled={guardando} loading={guardando} icon="check" variant="success">Guardar honorario</MolsanButton><button type="button" onClick={nuevo} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-600">Limpiar</button></div>
           </form>
         </section>}
         {soloPlantilla && <div className="min-w-0">
