@@ -1001,6 +1001,12 @@ class ProvisionIndependienteInput(BaseModel):
     garantias: List[dict] = Field(default_factory=list)
     observaciones: Optional[str] = None
 
+    @validator("garantias")
+    def validar_garantias(cls, valor):
+        if not valor:
+            raise ValueError("Añade al menos una garantía u operación.")
+        return valor
+
 
 def _total_garantia_independiente(garantia: dict) -> Decimal:
     """Recalcula la garantía con los cuatro conceptos que forman su provisión."""
@@ -1008,12 +1014,6 @@ def _total_garantia_independiente(garantia: dict) -> Decimal:
         (_dinero(garantia.get(campo, 0)) for campo in ("notaria", "ajd", "registro", "gestion")),
         Decimal("0.00"),
     ).quantize(Decimal("0.01"))
-
-    @validator("garantias")
-    def validar_garantias(cls, valor):
-        if not valor:
-            raise ValueError("Añade al menos una garantía u operación.")
-        return valor
 
 
 def _independiente_dict(item: ProvisionIndependiente) -> dict:
