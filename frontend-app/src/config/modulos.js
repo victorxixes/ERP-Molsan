@@ -128,7 +128,7 @@ const MODULOS_ERP = [
     key: "auditoria",
     label: "Auditoría",
     route: "/auditoria",
-    icon: "chart",
+    icon: "shield",
   },
 
   {
