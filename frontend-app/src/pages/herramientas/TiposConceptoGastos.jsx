@@ -686,9 +686,9 @@ export default function TiposConceptoGastos() {
   return (
     <div
       className="
-        catalogos-premium-page tipos-concepto-gastos-premium herramientas-subpagina-premium
-        min-h-screen
-        bg-slate-50
+        molsan-page-stack catalogos-premium-page tipos-concepto-gastos-premium herramientas-subpagina-premium
+        min-h-full
+        bg-transparent
         w-full
         px-0
         py-0
