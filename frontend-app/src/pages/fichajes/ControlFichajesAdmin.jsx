@@ -197,7 +197,7 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
         <label className={label}>Empleado<select required value={empleadoBolsaId} onChange={(e) => setEmpleadoBolsaId(e.target.value)} className={input}><option value="">Selecciona empleado…</option>{empleados.map((e) => <option key={e.id} value={e.id}>{e.nombre}</option>)}</select></label>
         <label className={label}>Año<input required type="number" min="2000" max="2100" value={anioBolsa} onChange={(e) => setAnioBolsa(e.target.value)} className={input} /></label>
         <label className={label}>Días asignados<input required type="number" min="0" max="60" value={diasBolsa} onChange={(e) => setDiasBolsa(e.target.value)} className={input} /></label>
-        <div className="flex items-end"><button disabled={guardando || !empleadoBolsaId} className="w-full rounded-xl bg-emerald-700 px-4 py-3 text-sm font-bold text-white disabled:opacity-50">Guardar asignación</button></div>
+        <div className="flex items-end"><MolsanButton type="submit" disabled={guardando || !empleadoBolsaId} loading={guardando} icon="check" variant="success" className="w-full">Guardar asignación</MolsanButton></div>
       </form>
     </section>
 
@@ -209,8 +209,8 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
       <label className={label}>Tipo de movimiento<select value={tipo} onChange={(e) => setTipo(e.target.value)} className={input}><option value="">Todos los tipos</option>{TIPOS.map((t) => <option key={t[0]} value={t[0]}>{t[1]}</option>)}</select></label>
       <label className={label}>Estado del registro<select value={estado} onChange={(e) => setEstado(e.target.value)} className={input}><option value="">Todos</option><option value="ORIGINAL">Sin correcciones</option><option value="MODIFICADO">Con historial administrativo</option></select></label>
       <div className="flex items-end"><MolsanButton type="button" variant="secondary" icon="refresh" className="w-full" onClick={cargar}>Actualizar datos</MolsanButton></div>
-      <div className="flex items-end"><MolsanButton type="button" variant="secondary" icon="download" className="w-full" disabled={guardando || !desde || !hasta} onClick={exportarRegistroHorario}>Exportar registro horario</MolsanButton></div>
-      <div className="flex items-end"><MolsanButton type="button" variant="primary" icon="plus" className="w-full" onClick={() => abrirEditor(null)}>Añadir marcaje olvidado</MolsanButton></div>
+      <div className="flex items-end"><MolsanButton type="button" variant="excel" icon="download" className="w-full" disabled={guardando || !desde || !hasta} onClick={exportarRegistroHorario}>Exportar registro horario</MolsanButton></div>
+      <div className="flex items-end"><MolsanButton type="button" variant="success" icon="plus" className="w-full" onClick={() => abrirEditor(null)}>Añadir marcaje olvidado</MolsanButton></div>
     </div>
 
     <section className="mt-5 rounded-2xl border border-amber-200 bg-amber-50/60 p-4">
