@@ -89,6 +89,7 @@ class OperacionProvisionInput(BaseModel):
     entidad: str = Field(..., min_length=1, max_length=300)
     numero_prestamo: Optional[str] = Field(None, max_length=200)
     capital: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
+    territorio: Literal["Península", "Canarias"] = "Península"
     tarifa_id: Optional[int] = Field(None, ge=1)
     aplicar_tarifa: bool = True
     honorarios_base: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
@@ -164,22 +165,31 @@ def _buscar_expediente(db: Session, id_expediente: str) -> Expediente:
     return item
 
 
+def _tarifa_aplicable(tarifa: TarifaProvision, tipo: str, entidad: str, capital: Decimal, territorio: str) -> bool:
+    if not bool(getattr(tarifa, "activo", False)):
+        return False
+    if _normalizar(getattr(tarifa, "tipo", "")) != _normalizar(_tipo_valido(tipo)):
+        return False
+    if (getattr(tarifa, "territorio", "Península") or "Península") != territorio:
+        return False
+    minimo = Decimal(str(tarifa.capital_minimo or 0))
+    maximo = Decimal(str(tarifa.capital_maximo)) if tarifa.capital_maximo is not None else None
+    if capital < minimo or (maximo is not None and capital > maximo):
+        return False
+    key_tarifa = _normalizar(tarifa.entidad)
+    return key_tarifa in {"*", _normalizar(entidad)}
+
+
 def _buscar_tarifa(db: Session, tipo: str, entidad: str, capital: Decimal, territorio: str = "Península") -> Optional[TarifaProvision]:
-    # La tarifa se busca por entidad (o tarifa genérica), territorio y tramo de capital.
-    # El tipo de operación y el estado activo no intervienen en esta selección.
     tarifas = db.query(TarifaProvision).all()
-    key_entidad = _normalizar(entidad)
     aplicables = []
     for tarifa in tarifas:
+        if not _tarifa_aplicable(tarifa, tipo, entidad, capital, territorio):
+            continue
         minimo = Decimal(str(tarifa.capital_minimo or 0))
         maximo = Decimal(str(tarifa.capital_maximo)) if tarifa.capital_maximo is not None else None
-        if (getattr(tarifa, "territorio", "Península") or "Península") != territorio:
-            continue
-        if capital < minimo or (maximo is not None and capital > maximo):
-            continue
         key_tarifa = _normalizar(tarifa.entidad)
-        if key_tarifa not in {"*", key_entidad}:
-            continue
+        key_entidad = _normalizar(entidad)
         anchura = (maximo - minimo) if maximo is not None else Decimal("9999999999999999")
         aplicables.append((0 if key_tarifa == key_entidad and key_entidad != "*" else 1, anchura, tarifa.id, tarifa))
     if not aplicables:
@@ -280,17 +290,16 @@ def _crear_operacion(db: Session, provision: ProvisionFondo, datos: OperacionPro
     entidad = datos.entidad.strip()
     capital = _dinero(datos.capital)
     tarifa = None
-    if datos.aplicar_tarifa:
-        tarifa = _buscar_tarifa(db, provision.tipo, entidad, capital)
-    if datos.aplicar_tarifa and datos.tarifa_id and not tarifa:
+    if datos.aplicar_tarifa and datos.tarifa_id:
         candidata = db.query(TarifaProvision).filter(TarifaProvision.id == datos.tarifa_id).first()
-        if candidata and _normalizar(candidata.entidad) in {"*", _normalizar(entidad)}:
-            minimo = Decimal(str(candidata.capital_minimo or 0))
-            maximo = Decimal(str(candidata.capital_maximo)) if candidata.capital_maximo is not None else None
-            if capital >= minimo and (maximo is None or capital <= maximo):
-                tarifa = candidata
-        if not tarifa:
-            raise HTTPException(status_code=422, detail=f"La tarifa #{datos.tarifa_id} no coincide con la entidad o el capital de la operación.")
+        if candidata is None or not _tarifa_aplicable(candidata, provision.tipo, entidad, capital, datos.territorio):
+            raise HTTPException(
+                status_code=422,
+                detail=f"La tarifa #{datos.tarifa_id} está inactiva o no coincide con el tipo, territorio, entidad o capital de la operación.",
+            )
+        tarifa = candidata
+    elif datos.aplicar_tarifa:
+        tarifa = _buscar_tarifa(db, provision.tipo, entidad, capital, datos.territorio)
 
     if datos.aplicar_tarifa and not tarifa:
         raise HTTPException(
