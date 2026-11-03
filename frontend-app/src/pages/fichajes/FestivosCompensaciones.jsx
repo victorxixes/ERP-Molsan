@@ -132,7 +132,7 @@ export default function FestivosCompensaciones({ modo = "empleado", onUpdated })
           <label className="text-xs font-bold text-slate-600">Horas trabajadas<input required type="number" min="0.25" max="24" step="0.25" value={horas} onChange={e => setHoras(e.target.value)} className={`mt-1 w-full ${caja}`} /></label>
           <label className="text-xs font-bold text-slate-600">Observaciones<input maxLength="500" value={observaciones} onChange={e => setObservaciones(e.target.value)} placeholder="Turno, autorización…" className={`mt-1 w-full ${caja}`} /></label>
         </div>
-        <button disabled={guardando || !empleadoId} className={`mt-3 ${boton}`}>Registrar para validar</button>
+        <MolsanButton type="submit" variant="success" icon="check" disabled={guardando || !empleadoId} className="mt-3">Registrar para validar</MolsanButton>
       </form>
 
       <form onSubmit={(e) => { e.preventDefault(); const d = new FormData(); d.append("fecha", fecha); d.append("nombre", nombreFestivo); d.append("ambito", ambitoFestivo); return ejecutar(() => axios.post("/fichajes/admin/compensaciones/calendario", d)); }} className="rounded-2xl border border-violet-100 bg-violet-50/50 p-4">
@@ -142,7 +142,7 @@ export default function FestivosCompensaciones({ modo = "empleado", onUpdated })
           <label className="text-xs font-bold text-slate-600">Fecha<input required type="date" value={fecha} onChange={e => setFecha(e.target.value)} className={`mt-1 w-full ${caja}`} /></label>
           <label className="text-xs font-bold text-slate-600">Nombre del festivo<input required maxLength="160" value={nombreFestivo} onChange={e => setNombreFestivo(e.target.value)} placeholder="Ej. Fiesta local" className={`mt-1 w-full ${caja}`} /></label>
           <label className="text-xs font-bold text-slate-600">Ámbito<select value={ambitoFestivo} onChange={e => setAmbitoFestivo(e.target.value)} className={`mt-1 w-full ${caja}`}><option value="ESTATAL">Estatal</option><option value="AUTONOMICO">Autonómico</option><option value="LOCAL">Local</option><option value="EMPRESA">Empresa</option></select></label>
-          <div className="flex items-end"><button disabled={guardando} className={`w-full ${boton}`}>Añadir al calendario</button></div>
+          <div className="flex items-end"><MolsanButton type="submit" variant="success" icon="plus" disabled={guardando} className="w-full">Añadir al calendario</MolsanButton></div>
         </div>
       </form>
       <div className="overflow-x-auto rounded-2xl border">
@@ -262,7 +262,7 @@ export default function FestivosCompensaciones({ modo = "empleado", onUpdated })
           <label className="text-xs font-bold text-slate-600">Unidad<select value={unidad} onChange={e => setUnidad(e.target.value)} className={`mt-1 w-full ${caja}`}><option value="DIAS">Días</option><option value="HORAS">Horas</option></select></label>
           <label className="text-xs font-bold text-slate-600">Observaciones<input maxLength="500" value={observaciones} onChange={e => setObservaciones(e.target.value)} placeholder="Motivo opcional…" className={`mt-1 w-full ${caja}`} /></label>
         </div>
-        <button disabled={guardando} className={`mt-3 ${boton}`}>Enviar solicitud</button>
+        <MolsanButton type="submit" variant="success" icon="check" disabled={guardando} className="mt-3">Enviar solicitud</MolsanButton>
       </form>
       <form onSubmit={(e) => { e.preventDefault(); const d = new FormData(); d.append("fecha", fechaFestivoTrabajado); d.append("horas_trabajadas", horas); d.append("observaciones", observaciones); return ejecutar(() => axios.post("/fichajes/compensaciones/mis-festivos", d)); }} className="rounded-2xl border border-amber-100 bg-amber-50/50 p-4">
         <h3 className="font-bold">Comunicar un festivo trabajado</h3>
@@ -271,7 +271,7 @@ export default function FestivosCompensaciones({ modo = "empleado", onUpdated })
           <label className="text-xs font-bold text-slate-600">Festivo<select required value={fechaFestivoTrabajado} onChange={e => setFechaFestivoTrabajado(e.target.value)} className={`mt-1 w-full ${caja}`}><option value="">Selecciona un festivo…</option>{(resumen.calendario_festivos || []).filter(f => f.fecha <= hoy()).map(f => <option key={f.id} value={f.fecha}>{fechaBonita(f.fecha)} · {f.nombre}</option>)}</select></label>
           <label className="text-xs font-bold text-slate-600">Horas trabajadas<input required type="number" min="0.25" max="24" step="0.25" value={horas} onChange={e => setHoras(e.target.value)} className={`mt-1 w-full ${caja}`} /></label>
           <label className="text-xs font-bold text-slate-600">Observaciones<input maxLength="500" value={observaciones} onChange={e => setObservaciones(e.target.value)} placeholder="Turno, autorización…" className={`mt-1 w-full ${caja}`} /></label>
-          <div className="flex items-end"><button disabled={guardando || !(resumen.calendario_festivos || []).some(f => f.fecha === fechaFestivoTrabajado && f.fecha <= hoy())} className={`w-full ${boton}`}>Enviar para validar</button></div>
+          <div className="flex items-end"><MolsanButton type="submit" variant="success" icon="check" disabled={guardando || !(resumen.calendario_festivos || []).some(f => f.fecha === fechaFestivoTrabajado && f.fecha <= hoy())} className="w-full">Enviar para validar</MolsanButton></div>
         </div>
         {!(resumen.calendario_festivos || []).length && <p className="mt-3 text-xs text-amber-800">No hay festivos configurados todavía. Contacta con administración para que los añada al calendario laboral.</p>}
       </form>
