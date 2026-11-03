@@ -380,14 +380,7 @@ export default function Maestros() {
               className="molsan-page-header__mark"
             >
 
-              <svg
-                className="w-6 h-6"
-                aria-hidden="true"
-              >
-                <use
-                  href="/icons/icons.svg#database"
-                />
-              </svg>
+              <MolsanIcon name="building" size={22} tone="ocean" />
 
             </div>
 
