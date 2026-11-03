@@ -159,7 +159,7 @@ export default function Catalogos() {
     <main className="molsan-page-stack catalogos-premium-page min-h-full ">
       <header className="molsan-page-header">
         <div className="molsan-page-header__identity">
-          <div className="molsan-page-header__mark"><MolsanIcon name="book" size={42} bare /></div>
+          <div className="molsan-page-header__mark"><MolsanIcon name="book" size={22} tone="ocean" /></div>
           <div className="min-w-0">
             <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
             <h1 className="molsan-page-header__title">Catálogos</h1>
