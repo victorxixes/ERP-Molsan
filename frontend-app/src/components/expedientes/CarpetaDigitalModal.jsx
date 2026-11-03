@@ -585,7 +585,7 @@ export default function CarpetaDigitalModal({
                 </button>
                 <button type="button" onClick={() => verDocumento(doc)} className="rounded-md px-2 py-1 text-[11px] font-bold text-indigo-700 hover:bg-indigo-100">Ver</button>
                 <button type="button" onClick={() => descargar(doc)} className="rounded-md px-2 py-1 text-[11px] font-bold text-slate-600 hover:bg-slate-100" title="Descargar">↓</button>
-                <button type="button" onClick={() => eliminar(doc)} className="rounded-md px-2 py-1 text-[11px] font-bold text-red-600 hover:bg-red-50" title="Eliminar">✕</button>
+                <button type="button" onClick={() => eliminar(doc)} className="rounded-md px-2 py-1 text-[11px] font-bold text-red-600 hover:bg-red-50" title="Eliminar"><MolsanIcon name="x" size={12} /></button>
               </li>
             ))}
           </ul>
@@ -660,7 +660,7 @@ export default function CarpetaDigitalModal({
             </div>
             <div className="flex shrink-0 items-center gap-2">
               <span className="hidden rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600 sm:inline-flex">{BLOQUES.length} actividades + Otros</span>
-              <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100">✕ Cerrar</button>
+              <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100"><MolsanIcon name="x" size={14} /> Cerrar</button>
             </div>
           </header>
 
@@ -717,7 +717,7 @@ export default function CarpetaDigitalModal({
               {modoActividad && (
                 <section className="mb-3 rounded-xl border border-blue-200 bg-white p-3 shadow-sm">
                   <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                    <div><h4 className="text-xs font-extrabold text-slate-800">⏱️ Control SLA · {bloqueActividad?.titulo || actividadId}</h4><p className="mt-0.5 text-[10px] text-slate-500">Fechas propias de esta actividad; no se comparten con las demás fases.</p></div>
+                    <div><h4 className="text-xs font-extrabold text-slate-800"><MolsanIcon name="timer" size={14} /> Control SLA · {bloqueActividad?.titulo || actividadId}</h4><p className="mt-0.5 text-[10px] text-slate-500">Fechas propias de esta actividad; no se comparten con las demás fases.</p></div>
                     <button type="button" onClick={guardarFechasSlaActividad} disabled={guardandoFechasSla} className="rounded-lg bg-blue-600 px-3 py-2 text-[11px] font-bold text-white hover:bg-blue-700 disabled:opacity-50">{guardandoFechasSla ? "Guardando…" : "Guardar fechas"}</button>
                   </div>
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -910,7 +910,7 @@ export default function CarpetaDigitalModal({
                 <h2 className="mt-1 text-lg font-bold text-slate-900">Carpeta digital</h2>
                 <p className="text-xs text-slate-500">Expediente {expedienteId || "—"} · {totalArchivos} archivo(s)</p>
               </div>
-              <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100">✕ Cerrar</button>
+              <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100"><MolsanIcon name="x" size={14} /> Cerrar</button>
             </header>
           )}
 
