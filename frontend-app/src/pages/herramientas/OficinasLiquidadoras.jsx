@@ -1097,14 +1097,12 @@ export default function OficinasLiquidadoras() {
   return (
     <div
       className="
-        catalogos-premium-page oficinas-liquidadoras-premium herramientas-subpagina-premium
+        molsan-page-stack catalogos-premium-page oficinas-liquidadoras-premium herramientas-subpagina-premium
         erp-page
         min-h-full
-        p-4
-        sm:p-6
-        lg:p-8
+        w-full
+        min-w-0
         text-[var(--erp-text)]
-        space-y-6
         animate-fade-in
       "
     >
