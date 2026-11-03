@@ -2750,7 +2750,7 @@ function ModalImportarExcel({
           </button>
 
 
-          <MolsanButton type="button" icon="upload" variant="secondary" loading={importando} disabled={!archivo || importando} onClick={onImportar} className="min-w-[180px]">{importando ? "Importando..." : "Importar municipios"}</MolsanButton>
+          <MolsanButton type="button" icon="upload" variant="excel" loading={importando} disabled={!archivo || importando} onClick={onImportar} className="min-w-[180px]">{importando ? "Importando..." : "Importar municipios"}</MolsanButton>
 
         </div>
 
