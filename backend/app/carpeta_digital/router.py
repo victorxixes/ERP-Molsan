@@ -392,7 +392,7 @@ def previsualizar_cierre_documental(expediente_id: str, db: Session = Depends(ge
             GROUP BY p.gasto_id
         """), {"expediente_id": expediente.id}).mappings().all()
         pagos_por_gasto = {int(f["gasto_id"]): (float(f["total_pagado"] or 0), int(f["numero_movimientos"])) for f in filas_pagos}
-    estados_pagados = {"pagado", "pagada", "abonado", "abonada", "efectuado", "efectuada", "paid"}
+    estados_pagados = {"pagado", "pagada", "abonado", "abonada", "efectuado", "efectuada", "realizado", "realizada", "paid"}
     total_pagado = 0.0
     for gasto in gastos:
         importe_obligacion = gasto.importe_resultante if gasto.importe_resultante is not None else gasto.importe
