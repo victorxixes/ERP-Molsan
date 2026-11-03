@@ -2747,7 +2747,7 @@ export default function OficinasLiquidadoras() {
                 </button>
 
 
-                <MolsanButton type="submit" icon="upload" variant="primary" loading={importando} disabled={importando || !archivo}>{importando ? "Importando..." : "Importar Excel"}</MolsanButton>
+                <MolsanButton type="submit" icon="upload" variant="excel" loading={importando} disabled={importando || !archivo}>{importando ? "Importando..." : "Importar Excel"}</MolsanButton>
 
               </div>
 
