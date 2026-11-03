@@ -966,7 +966,7 @@ export default function Maestros() {
                   columns={[
                     { key: "id", header: "ID", accessor: "id", sortType: "number", align: "center" },
                     { key: "nombre", header: "Nombre", accessor: "nombre", sortType: "text", render: (value) => <strong>{value || "—"}</strong> },
-                    { key: "acciones", header: "Acciones", sortable: false, accessor: (item) => item.id, align: "right", render: (_, registro) => <div className="flex items-center justify-end gap-2"><MolsanButton type="button" variant="secondary" icon="pencil" className="molsan-btn--compact" disabled={guardando} onClick={() => abrirEditar(registro)}>Editar</MolsanButton><MolsanButton type="button" variant="danger" icon="trash-2" className="molsan-btn--compact" disabled={guardando} onClick={() => eliminar(registro)}>Eliminar</MolsanButton></div> },
+                    { key: "acciones", header: "Acciones", sortable: false, accessor: (item) => item.id, align: "right", render: (_, registro) => <div className="flex items-center justify-end gap-2"><MolsanButton type="button" variant="secondary" icon="edit" className="molsan-btn--compact" disabled={guardando} onClick={() => abrirEditar(registro)}>Editar</MolsanButton><MolsanButton type="button" variant="danger" icon="delete" className="molsan-btn--compact" disabled={guardando} onClick={() => eliminar(registro)}>Eliminar</MolsanButton></div> },
                   ]}
                 />
 
