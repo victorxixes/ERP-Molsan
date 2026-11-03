@@ -49,81 +49,81 @@
 .encargagest>header.ag-hero.molsan-page-header,
 .notargest.ng-content>header.ng-hero.molsan-page-header,
 .ng-admin-notarias>header.ng-hero.molsan-page-header{
-  position:relative!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:space-between!important;
-  flex-wrap:nowrap!important;
-  gap:12px!important;
-  width:100%!important;
-  max-width:none!important;
-  min-width:0!important;
-  min-height:88px!important;
-  height:auto!important;
-  max-height:none!important;
-  margin:0 0 16px!important;
-  padding:14px 20px!important;
-  overflow:hidden!important;
-  color:#fff!important;
-  border:1px solid rgba(255,255,255,.16)!important;
-  border-radius:18px!important;
-  background:radial-gradient(circle at 86% 18%,rgba(116,199,219,.18),transparent 27%),linear-gradient(116deg,#032D4B 0%,#064675 54%,#0D638C 100%)!important;
-  box-shadow:0 12px 28px rgba(4,55,91,.16)!important;
-  animation:none!important;
-  transition:none!important;
-  opacity:1!important;
-  transform:none!important;
-  filter:none!important;
-  will-change:auto!important;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:nowrap;
+  gap:12px;
+  width:100%;
+  max-width:none;
+  min-width:0;
+  min-height:88px;
+  height:auto;
+  max-height:none;
+  margin:0 0 16px;
+  padding:14px 20px;
+  overflow:hidden;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:18px;
+  background:radial-gradient(circle at 86% 18%,rgba(116,199,219,.18),transparent 27%),linear-gradient(116deg,#032D4B 0%,#064675 54%,#0D638C 100%);
+  box-shadow:0 12px 28px rgba(4,55,91,.16);
+  animation:none;
+  transition:none;
+  opacity:1;
+  transform:none;
+  filter:none;
+  will-change:auto;
 }
 .apoderagest>header.ag-hero::after,.encargagest>header.ag-hero::after,
 .notargest.ng-content>header.ng-hero::after,.ng-admin-notarias>header.ng-hero::after{
-  content:""!important;
-  position:absolute!important;
-  right:0!important;bottom:0!important;left:0!important;height:3px!important;
-  background:linear-gradient(90deg,#6CC5D9 0%,#8CB8D8 38%,rgba(255,255,255,.08) 100%)!important;
-  pointer-events:none!important;
+  content:"";
+  position:absolute;
+  right:0;bottom:0;left:0;height:3px;
+  background:linear-gradient(90deg,#6CC5D9 0%,#8CB8D8 38%,rgba(255,255,255,.08) 100%);
+  pointer-events:none;
 }
 :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__identity{
-  display:flex!important;align-items:center!important;gap:10px!important;
-  min-width:0!important;flex:1 1 auto!important;
+  display:flex;align-items:center;gap:10px;
+  min-width:0;flex:1 1 auto;
 }
 :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__mark{
-  display:grid!important;place-items:center!important;
-  flex:0 0 42px!important;width:42px!important;height:42px!important;
-  color:#fff!important;border:1px solid rgba(255,255,255,.3)!important;
-  border-radius:10px!important;background:rgba(255,255,255,.12)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.18)!important;
+  display:grid;place-items:center;
+  flex:0 0 42px;width:42px;height:42px;
+  color:#fff;border:1px solid rgba(255,255,255,.3);
+  border-radius:10px;background:rgba(255,255,255,.12);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18);
 }
 :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__eyebrow{
-  margin:0 0 1px!important;color:#C6DFEC!important;font-size:9px!important;
-  font-weight:800!important;letter-spacing:.14em!important;line-height:1.15!important;
+  margin:0 0 1px;color:#C6DFEC;font-size:9px;
+  font-weight:800;letter-spacing:.14em;line-height:1.15;
 }
 :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__title{
-  margin:0!important;color:#fff!important;font-size:clamp(21px,2vw,25px)!important;
-  font-weight:800!important;letter-spacing:-.035em!important;line-height:1.1!important;
+  margin:0;color:#fff;font-size:clamp(21px,2vw,25px);
+  font-weight:800;letter-spacing:-.035em;line-height:1.1;
 }
 :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__description{
-  display:block!important;max-width:780px!important;margin:2px 0 0!important;
-  color:#C6DFEC!important;font-size:11.5px!important;line-height:1.35!important;
-  white-space:normal!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  display:block;max-width:780px;margin:2px 0 0;
+  color:#C6DFEC;font-size:11.5px;line-height:1.35;
+  white-space:normal;overflow:hidden;text-overflow:ellipsis;
 }
 :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__actions{
-  position:relative!important;z-index:1!important;display:flex!important;
-  align-items:center!important;justify-content:flex-end!important;flex-wrap:wrap!important;
-  flex:0 0 auto!important;gap:6px!important;margin-left:auto!important;width:auto!important;
+  position:relative;z-index:1;display:flex;
+  align-items:center;justify-content:flex-end;flex-wrap:wrap;
+  flex:0 0 auto;gap:6px;margin-left:auto;width:auto;
 }
 :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__actions>button,
 :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__actions>a{
-  display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;
-  min-height:34px!important;padding:0 10px!important;color:#fff!important;
-  border:1px solid rgba(255,255,255,.3)!important;border-radius:10px!important;
-  background:rgba(255,255,255,.12)!important;box-shadow:none!important;
-  font-size:11px!important;font-weight:750!important;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  min-height:34px;padding:0 10px;color:#fff;
+  border:1px solid rgba(255,255,255,.3);border-radius:10px;
+  background:rgba(255,255,255,.12);box-shadow:none;
+  font-size:11px;font-weight:750;
 }
 :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__actions>button:hover,
 :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__actions>a:hover{
-  color:#fff!important;border-color:rgba(255,255,255,.58)!important;background:rgba(255,255,255,.2)!important;
+  color:#fff;border-color:rgba(255,255,255,.58);background:rgba(255,255,255,.2);
 }
 /* Tarjetas KPI: altura, jerarquía, superficies e iconografía homogéneas. */
 .apoderagest .ag-kpi,.encargagest .eg-kpi,.encargagest .eg-main .ag-kpi,
