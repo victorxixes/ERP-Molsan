@@ -164,7 +164,7 @@ export default function TiposExpediente() {
             { key: "nombre", header: "Descripción", accessor: "nombre", sortType: "text" },
             { key: "grupo", header: "Grupo", accessor: "grupo", sortType: "text" },
             { key: "activo", header: "Estado", accessor: "activo", sortType: "boolean", render: (value) => <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${value ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{value ? "Activo" : "Inactivo"}</span> },
-            { key: "acciones", header: "Acciones", sortable: false, align: "right", accessor: (tipo) => tipo.id, render: (_, tipo) => <div className="flex justify-end gap-2"><button type="button" onClick={() => abrirEditar(tipo)} className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100">Editar</button><button type="button" onClick={() => eliminar(tipo)} className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">Eliminar</button></div> },
+            { key: "acciones", header: "Acciones", sortable: false, align: "right", accessor: (tipo) => tipo.id, render: (_, tipo) => <div className="flex justify-end gap-2"><MolsanButton type="button" onClick={() => abrirEditar(tipo)} variant="secondary" className="molsan-btn--compact">Editar</MolsanButton><MolsanButton type="button" onClick={() => eliminar(tipo)} variant="danger" className="molsan-btn--compact">Eliminar</MolsanButton></div> },
           ]}
         />
       </section>
