@@ -1566,12 +1566,7 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 .apoderagest .ag-grid-kpi > .ag-kpi:hover,
 .apoderagest .ag-grid-secundario > .ag-kpi:hover{ border-color:#C5DCE9!important;box-shadow:0 10px 24px rgba(6,50,82,.075)!important; }
 
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__actions{
-    width:100%!important;margin-left:0!important;justify-content:flex-start!important;
-  }
-.apoderagest > header.ag-hero.molsan-page-header.dashboard-header .molsan-page-header__description{display:block!important}
 
-}
 
 /* Elementos de ApoderaGest que completan su hoja autónoma. */
 .apoderagest .ag-print-tools .ag-print-action{
