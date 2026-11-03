@@ -422,7 +422,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
         <div className="molsan-page-header__identity">
           <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="calendar" size={24} tone="ocean" /></div>
           <div className="min-w-0">
-            <p className="molsan-page-header__eyebrow">MOLSAN ERP · APODERAGEST</p>
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
             <h1 className="molsan-page-header__title">Agenda · Vista {vista === "mes" ? "mensual" : vista === "semana" ? "semanal" : "diaria"}</h1>
             <p className="molsan-page-header__description">{vista === "mes" ? "Consulta la actividad mensual y la distribución de citas." : vista === "semana" ? "Consulta la planificación semanal de citas y firmas." : "Consulta las citas y firmas organizadas por horas."}</p>
           </div>
