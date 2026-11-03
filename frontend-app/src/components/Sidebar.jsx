@@ -1,4 +1,5 @@
 import MODULOS_ERP from "../config/modulos";
+import MolsanIcon from "./ui/MolsanIcon";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { createPortal } from "react-dom";
 import {
@@ -331,27 +332,9 @@ const iconos = {
  * ============================================================
  */
 
-const NavIcon = ({ name }) => {
-
-  const contenido =
-    iconos[name] ||
-    iconos.activity;
-
-  return (
-    <span className="molsan-nav-icon-3d" aria-hidden="true">
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        {contenido}
-      </svg>
-    </span>
-  );
-};
+const NavIcon = ({ name }) => (
+  <MolsanIcon name={name} size={27} className="molsan-nav-icon-3d" />
+);
 
 
 /**
