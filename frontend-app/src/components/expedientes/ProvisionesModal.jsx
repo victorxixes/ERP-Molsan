@@ -91,7 +91,7 @@ export default function ProvisionesModal({ idExpediente, onClose }) {
       operaciones: (item.operaciones || []).map((op) => ({
         entidad: op.entidad || "", numero_prestamo: op.numero_prestamo || "", capital: String(op.capital ?? 0),
         aplicar_tarifa: op.aplicar_tarifa !== false, tarifa_id: op.tarifa_id || null,
-        territorio: tarifas.find((t) => Number(t.id) === Number(op.tarifa_id))?.territorio || "Península",
+        territorio: op.territorio || tarifas.find((t) => Number(t.id) === Number(op.tarifa_id))?.territorio || "Península",
         honorarios_base: String(op.honorarios_base ?? op.honorarios ?? 0), honorarios: String(op.honorarios ?? 0),
         suplidos: String(op.suplidos ?? 0), gastos_registro: String(op.gastos_registro ?? 0), otros_gastos: String(op.otros_gastos ?? 0),
         notaria: String(op.notaria ?? 0), impuestos: String(op.impuestos ?? 0), ajustes_motivo: op.ajustes_motivo || "",
