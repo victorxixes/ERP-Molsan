@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import axios from "../../api/axios";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import MolsanButton from "../../components/ui/MolsanButton";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "../../css/HerramientasPremium.css";
 
 const COLUMNAS = [
