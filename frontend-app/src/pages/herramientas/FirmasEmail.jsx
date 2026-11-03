@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanButton from "../../components/ui/MolsanButton";
 import "../../css/HerramientasPremium.css";
 
 const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
@@ -72,7 +73,7 @@ export default function FirmasEmail() {
         <textarea rows={6} value={firmaPie} onChange={(e) => setFirmaPie(e.target.value)} placeholder={"MOLSAN\nGestoría y tramitación\nTel. · Web · Dirección"} className={inputClass} />
       </label>
       <div className="flex justify-end">
-        <button type="button" onClick={guardar} disabled={guardando} className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-60">{guardando ? "Guardando…" : "Guardar firma corporativa"}</button>
+        <MolsanButton type="button" onClick={guardar} disabled={guardando} loading={guardando} icon="check" variant="success">Guardar firma corporativa</MolsanButton>
       </div>
     </section>}
   </main>;
