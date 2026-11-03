@@ -107,6 +107,7 @@ const ALIASES = {
   edit: "pen",
   delete: "trash",
   close: "x",
+  user: "person",
   AG: "users",
   NG: "landmark",
 };
