@@ -7,6 +7,7 @@ import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanButton from "../../components/ui/MolsanButton";
 import "./ExpedientesListado.css";
 
 import {
@@ -2538,7 +2539,7 @@ export default function ExpedientesListado() {
       </section>
       {/* Acciones principales: agrupadas justo debajo de los bloques de tarjetas */}
       <section className="w-full flex flex-wrap items-center justify-start gap-2 -mt-2" aria-label="Acciones de expedientes">
-        <button type="button" onClick={exportarExcel} disabled={loading} className="rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50" style={{ background: "var(--erp-success)" }}><MolsanIcon name="chart" size={20} /> Exportar Excel</button>
+        <MolsanButton type="button" onClick={exportarExcel} disabled={loading} icon="download" variant="excel">Exportar Excel</MolsanButton>
         <button type="button" onClick={() => setMostrarFiltros(true)} className="rounded-xl border px-4 py-2.5 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)", background: "var(--erp-surface)" }}><MolsanIcon name="search" size={20} /> Filtros avanzados</button>
         <button
           type="button"
