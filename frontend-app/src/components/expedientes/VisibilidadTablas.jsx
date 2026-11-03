@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import MolsanIcon from "../ui/MolsanIcon";
 
 import "../../css/ComponentesOperativosPremium.css";
 
@@ -151,12 +152,12 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
     <div className={modal ? "visibilidad-tablas-premium erp-page fixed inset-0 z-[12000] overflow-y-auto bg-slate-900/40 p-3 sm:p-6" : "visibilidad-tablas-premium erp-page w-full"} role={modal ? "dialog" : undefined} aria-modal={modal ? "true" : undefined} aria-label={titulo || "Visibilidad tablas"}>
       <div className={"mx-auto " + (modal ? "my-2 " : "") + "max-w-7xl overflow-hidden rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-bg)] shadow-[var(--erp-shadow-lg)]"}>
         <header className="flex flex-wrap items-center gap-3 bg-[var(--erp-primary)] px-5 py-4 text-white">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-xl">⚙️</div>
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-xl"><MolsanIcon name="settings" size={20} /></div>
           <div className="min-w-0 flex-1">
             <h2 className="text-lg font-extrabold">{titulo || (ambito === "personal" ? "Mi visibilidad de tablas" : "Visibilidad tablas")}</h2>
             <p className="text-xs text-white/85">{ambito === "personal" ? "Personaliza tus preferencias sin modificar la configuración general." : `Empleado ID ${empleadoId ?? "actual"} · Columnas de Excel y repositorios de carpeta digital por actividad`}</p>
           </div>
-          {modal && <button type="button" onClick={onClose} className="rounded-lg border border-white/30 px-3 py-2 text-sm font-semibold text-white hover:bg-white/10">Cerrar ✕</button>}
+          {modal && <button type="button" onClick={onClose} className="rounded-lg border border-white/30 px-3 py-2 text-sm font-semibold text-white hover:bg-white/10">Cerrar <MolsanIcon name="x" size={14} /></button>}
         </header>
 
         <div className="space-y-5 p-4 sm:p-6">
