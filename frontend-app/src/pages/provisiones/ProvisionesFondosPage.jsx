@@ -735,7 +735,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
   if (soloEditorPlantilla) return <main className="molsan-page-stack catalogos-premium-page provisiones-fondos-page w-full min-w-0">
     <header className="molsan-page-header">
       <div className="molsan-page-header__identity">
-        <div className="molsan-page-header__mark" aria-hidden="true">PF</div>
+        <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="receipt" size={22} tone="ocean" /></div>
         <div className="min-w-0">
           <p className="molsan-page-header__eyebrow">MOLSAN ERP · UTILIDADES</p>
           <h1 className="molsan-page-header__title">Diseño de plantilla · Provisión de fondos</h1>
@@ -763,7 +763,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
   if (modoCatalogo) return <main className="molsan-page-stack catalogos-premium-page provisiones-fondos-page w-full min-w-0">
     <header className="molsan-page-header">
       <div className="molsan-page-header__identity">
-        <div className="molsan-page-header__mark" aria-hidden="true">PF</div>
+        <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="receipt" size={22} tone="ocean" /></div>
         <div className="min-w-0">
           <p className="molsan-page-header__eyebrow">MOLSAN ERP · CATÁLOGOS ECONÓMICOS</p>
           <h1 className="molsan-page-header__title">Tabla Provisiones de fondos</h1>
@@ -777,7 +777,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
   return <main className="molsan-page-stack catalogos-premium-page provisiones-fondos-page w-full min-w-0">
     <header className="molsan-page-header">
       <div className="molsan-page-header__identity">
-        <div className="molsan-page-header__mark" aria-hidden="true">PF</div>
+        <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="receipt" size={22} tone="ocean" /></div>
         <div className="min-w-0">
           <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
           <h1 className="molsan-page-header__title">Provisión estimativa</h1>
