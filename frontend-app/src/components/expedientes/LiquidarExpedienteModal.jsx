@@ -35,15 +35,23 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
       facturacion_email: valor(expediente, "facturacion_email", "email_facturacion"),
       fecha_fin_actividad: String(expediente?.fecha_fin_actividad || "").slice(0, 10),
     });
-    setFilas((Array.isArray(movimientos) ? movimientos : []).map((g) => ({
-      ...g,
-      _tipo: String(g.tipo || g.descripcion || "Gasto"),
-      _importePagado: g.total_pagado !== undefined && g.total_pagado !== null
+    setFilas((Array.isArray(movimientos) ? movimientos : []).map((g) => {
+      const importeObligacion = Number(g.importe_resultante ?? g.importe_total_bruto ?? g.importe ?? 0);
+      const importePagado = g.total_pagado !== undefined && g.total_pagado !== null
         ? Number(g.total_pagado)
-        : (["pagado", "pagada", "realizado", "abonado", "abonada", "paid"].includes(String(g.estado_pago || "").toLowerCase())
-          ? Number(g.importe_resultante ?? g.importe ?? g.importe_total_bruto ?? 0)
-          : 0),
-    })));
+        : (["pagado", "pagada", "realizado", "abonado", "abonada", "efectuado", "efectuada", "paid"].includes(String(g.estado_pago || "").trim().toLowerCase())
+          ? importeObligacion
+          : 0);
+      return {
+        ...g,
+        _tipo: String(g.tipo || g.descripcion || "Gasto"),
+        _importeObligacion: importeObligacion,
+        _importePagado: importePagado,
+        _estadoPago: importeObligacion > 0 && importePagado >= importeObligacion
+          ? "Pagado"
+          : importePagado > 0 ? "Parcial" : "Pendiente",
+      };
+    }));
   }, [expediente, movimientos]);
 
   const importeInicial = Number(expediente?.importe || 0);
@@ -161,8 +169,8 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
                   {filas.map((fila, idx) => <tr key={fila.id || idx} className="border-t border-slate-100">
                     <td className="whitespace-nowrap px-3 py-2">{String(fila.fecha_pago || fila.fecha || fila.fecha_factura || "").slice(0,10) || "—"}</td>
                     <td className="px-3 py-2 text-slate-700">{fila._tipo}</td>
-                    <td className="whitespace-nowrap px-3 py-2 text-right font-semibold">{dinero(fila.importe_total_bruto ?? fila.importe ?? fila.importe_resultante)}</td>
-                    <td className="px-3 py-2"><span className={fila._pagado ? "font-bold text-emerald-700" : "font-semibold text-amber-700"}>{fila._pagado ? "Pagado" : "Pendiente · registrar desde Pagar"}</span></td>
+                    <td className="whitespace-nowrap px-3 py-2 text-right font-semibold">{dinero(fila._importeObligacion)}</td>
+                    <td className="px-3 py-2"><span className={fila._estadoPago === "Pagado" ? "font-bold text-emerald-700" : fila._estadoPago === "Parcial" ? "font-bold text-blue-700" : "font-semibold text-amber-700"}>{fila._estadoPago}{fila._importePagado > 0 ? ` · ${dinero(fila._importePagado)}` : " · registrar desde Pagar"}</span></td>
                   </tr>)}
                   <tr className="border-t-2 border-indigo-200 bg-indigo-50/60"><td className="whitespace-nowrap px-3 py-2 text-slate-600">{form.fecha_fin_actividad || "—"}</td><td className="px-3 py-2 font-extrabold text-indigo-900">Liquidación final</td><td className="px-3 py-2 text-right font-extrabold text-indigo-900">{dinero(saldoLiquidacion)}</td><td className="px-3 py-2 text-slate-600">Saldo calculado</td></tr>
                 </tbody>

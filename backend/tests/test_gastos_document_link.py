@@ -8,6 +8,7 @@ from backend.app.expedientes.gastos.router import (
     _tipo_gasto_desde_categoria,
     _validar_documento_economico,
     _total_pagado_efectivo,
+    _importe_obligacion_gasto,
 )
 
 
@@ -68,6 +69,19 @@ class EconomicDocumentLinkTests(unittest.TestCase):
         with self.assertRaises(HTTPException) as caught:
             _validar_documento_economico(self.expediente, None, "Factura registral")
         self.assertEqual(caught.exception.status_code, 404)
+
+    def test_obligation_prefers_net_amount_then_gross_then_legacy_amount(self):
+        from decimal import Decimal
+        net = SimpleNamespace(importe_resultante=Decimal("90.00"), importe_total_bruto=Decimal("100.00"), importe=Decimal("95.00"))
+        gross = SimpleNamespace(importe_resultante=None, importe_total_bruto=Decimal("100.00"), importe=Decimal("95.00"))
+        legacy = SimpleNamespace(importe_resultante=None, importe_total_bruto=None, importe=Decimal("95.00"))
+        self.assertEqual(_importe_obligacion_gasto(net), Decimal("90.00"))
+        self.assertEqual(_importe_obligacion_gasto(gross), Decimal("100.00"))
+        self.assertEqual(_importe_obligacion_gasto(legacy), Decimal("95.00"))
+
+    def test_legacy_paid_without_movements_blocks_additional_payment_balance(self):
+        from decimal import Decimal
+        self.assertEqual(_total_pagado_efectivo("Pagado", "100.00", "0.00", 0), Decimal("100.00"))
 
     def test_partial_payments_use_only_real_payment_movements(self):
         from decimal import Decimal

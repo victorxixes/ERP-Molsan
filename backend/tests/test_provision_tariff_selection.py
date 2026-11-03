@@ -3,7 +3,8 @@ import unittest
 from decimal import Decimal
 from types import SimpleNamespace
 
-from backend.app.provisiones.router import _buscar_tarifa, _tarifa_aplicable
+from fastapi import HTTPException
+from backend.app.provisiones.router import _buscar_tarifa, _tarifa_aplicable, _importe_configurable, _validar_motivo_total_manual
 
 
 class FakeQuery:
@@ -58,6 +59,18 @@ class ProvisionTariffSelectionTests(unittest.TestCase):
         self.assertFalse(_tarifa_aplicable(tariff(2, tipo="cancelacion"), "provision", "Banco A", Decimal("100"), "Península"))
         self.assertFalse(_tarifa_aplicable(tariff(3, territorio="Canarias"), "provision", "Banco A", Decimal("100"), "Península"))
         self.assertTrue(_tarifa_aplicable(tariff(4), "provision", "Banco A", Decimal("100"), "Península"))
+
+    def test_explicit_zero_is_not_replaced_by_configured_amount(self):
+        self.assertEqual(_importe_configurable(Decimal("0.00"), Decimal("45.00")), Decimal("0.00"))
+
+    def test_omitted_amount_uses_configured_amount(self):
+        self.assertEqual(_importe_configurable(None, Decimal("45.00")), Decimal("45.00"))
+
+    def test_manual_total_different_from_components_requires_reason(self):
+        with self.assertRaises(HTTPException) as caught:
+            _validar_motivo_total_manual(Decimal("100.00"), Decimal("95.00"), "")
+        self.assertEqual(caught.exception.status_code, 422)
+        _validar_motivo_total_manual(Decimal("100.00"), Decimal("95.00"), "Ajuste autorizado")
 
     def test_capital_must_be_inside_configured_range(self):
         bounded = tariff(1, minimo="100", maximo="200")

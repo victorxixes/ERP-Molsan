@@ -75,6 +75,16 @@ def _tipo_valido(tipo: str) -> str:
     raise HTTPException(status_code=422, detail="El tipo debe ser 'provision' o 'cancelacion'.")
 
 
+def _importe_configurable(valor: object, previsto: object) -> Decimal:
+    """Respeta un cero explícito; solo utiliza el catálogo cuando el campo se omite."""
+    return _dinero(valor) if valor is not None else _dinero(previsto)
+
+
+def _validar_motivo_total_manual(total_componentes: Decimal, importe_manual: Optional[Decimal], motivo: Optional[str]) -> None:
+    if importe_manual is not None and importe_manual != total_componentes and not (motivo or "").strip():
+        raise HTTPException(status_code=422, detail="Indica el motivo del ajuste cuando el total manual difiere de la suma de conceptos.")
+
+
 class FincaProvisionInput(BaseModel):
     finca: Optional[str] = Field(None, max_length=200)
     cru_idufir: Optional[str] = Field(None, max_length=200)
@@ -95,10 +105,10 @@ class OperacionProvisionInput(BaseModel):
     honorarios_base: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
     honorarios: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
     suplidos: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
-    gastos_registro: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
+    gastos_registro: Optional[Decimal] = Field(None, ge=0, max_digits=14, decimal_places=2)
     otros_gastos: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
-    notaria: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
-    impuestos: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
+    notaria: Optional[Decimal] = Field(None, ge=0, max_digits=14, decimal_places=2)
+    impuestos: Optional[Decimal] = Field(None, ge=0, max_digits=14, decimal_places=2)
     ajustes_motivo: Optional[str] = Field(None, max_length=1000)
     condonar_honorarios: bool = False
     importe_manual: Optional[Decimal] = Field(None, ge=0, max_digits=14, decimal_places=2)
@@ -309,26 +319,8 @@ def _crear_operacion(db: Session, provision: ProvisionFondo, datos: OperacionPro
             detail="No hay una tarifa que coincida con la entidad, el territorio y el capital. Configura el tarifario o desactiva 'Aplicar tarifa configurada' para introducir los importes manualmente.",
         )
 
-    if tarifa:
-        honorarios_base = _dinero(tarifa.honorarios)
-        # Solo se admiten importes distintos a la tarifa cuando el usuario
-        # deja constancia expresa del motivo del ajuste.
-        con_ajuste = bool((datos.ajustes_motivo or "").strip())
-        honorarios = Decimal("0.00") if datos.condonar_honorarios else (_dinero(datos.honorarios) if con_ajuste else honorarios_base)
-        suplidos = _dinero(datos.suplidos) if con_ajuste else _dinero(tarifa.suplidos)
-        gastos_registro = _dinero(datos.gastos_registro) if con_ajuste else _dinero(tarifa.gastos_registro)
-        otros_gastos = _dinero(datos.otros_gastos) if con_ajuste else _dinero(tarifa.otros_gastos)
-        tarifa_id = tarifa.id
-    else:
-        honorarios_base = _dinero(datos.honorarios_base if datos.honorarios_base else datos.honorarios)
-        honorarios = Decimal("0.00") if datos.condonar_honorarios else _dinero(datos.honorarios)
-        suplidos = _dinero(datos.suplidos)
-        gastos_registro = _dinero(datos.gastos_registro)
-        otros_gastos = _dinero(datos.otros_gastos)
-        tarifa_id = None
-
-    # Los importes configurados son una referencia inicial para operaciones nuevas.
-    # No se recalculan operaciones históricas cuando cambia el catálogo general.
+    # Los importes configurados son valores iniciales para operaciones nuevas.
+    # Un cero enviado expresamente debe respetarse; solo None usa el valor previsto.
     def importe_configurado(codigo: str) -> Decimal:
         item = db.query(ConceptoImporteProvision).filter(
             ConceptoImporteProvision.codigo == codigo,
@@ -337,19 +329,48 @@ def _crear_operacion(db: Session, provision: ProvisionFondo, datos: OperacionPro
         return _dinero(item.importe_previsto) if item and item.modo == "previsto" and item.importe_previsto is not None else Decimal("0.00")
 
     notaria_base = importe_configurado("notaria")
+    registro_configurado = importe_configurado("registro")
     impuestos_base = importe_configurado("impuestos")
-    notaria = _dinero(datos.notaria) if datos.notaria else notaria_base
-    impuestos = _dinero(datos.impuestos) if datos.impuestos else impuestos_base
+
+    if tarifa:
+        honorarios_base = _dinero(tarifa.honorarios)
+        con_ajuste = bool((datos.ajustes_motivo or "").strip())
+        honorarios = Decimal("0.00") if datos.condonar_honorarios else (_dinero(datos.honorarios) if con_ajuste else honorarios_base)
+        suplidos = _dinero(datos.suplidos) if con_ajuste else _dinero(tarifa.suplidos)
+        gastos_registro_base = _dinero(tarifa.gastos_registro)
+        gastos_registro = _dinero(datos.gastos_registro) if con_ajuste and datos.gastos_registro is not None else gastos_registro_base
+        otros_gastos = _dinero(datos.otros_gastos) if con_ajuste else _dinero(tarifa.otros_gastos)
+        tarifa_id = tarifa.id
+        suplidos_base = _dinero(tarifa.suplidos)
+        otros_gastos_base = _dinero(tarifa.otros_gastos)
+    else:
+        honorarios_base = _dinero(datos.honorarios_base if datos.honorarios_base is not None else datos.honorarios)
+        honorarios = Decimal("0.00") if datos.condonar_honorarios else _dinero(datos.honorarios)
+        suplidos = _dinero(datos.suplidos)
+        gastos_registro_base = registro_configurado
+        gastos_registro = _importe_configurable(datos.gastos_registro, registro_configurado)
+        otros_gastos = _dinero(datos.otros_gastos)
+        tarifa_id = None
+        suplidos_base = _dinero(datos.suplidos)
+        otros_gastos_base = _dinero(datos.otros_gastos)
+
+    notaria = _importe_configurable(datos.notaria, notaria_base)
+    impuestos = _importe_configurable(datos.impuestos, impuestos_base)
     importe_manual = _dinero(datos.importe_manual) if datos.importe_manual is not None else None
-    total = importe_manual if importe_manual is not None else (honorarios + suplidos + gastos_registro + otros_gastos + notaria + impuestos).quantize(Decimal("0.01"))
+    total_componentes = (
+        honorarios + suplidos + gastos_registro + otros_gastos + notaria + impuestos
+    ).quantize(Decimal("0.01"))
+    _validar_motivo_total_manual(total_componentes, importe_manual, datos.ajustes_motivo)
+    total = importe_manual if importe_manual is not None else total_componentes
+
     auditoria = []
     for codigo, base, efectivo in (
         ("honorarios", honorarios_base, honorarios),
         ("notaria", notaria_base, notaria),
-        ("registro", _dinero(tarifa.gastos_registro) if tarifa else _dinero(datos.gastos_registro), gastos_registro),
+        ("registro", gastos_registro_base, gastos_registro),
         ("impuestos", impuestos_base, impuestos),
-        ("suplidos", _dinero(tarifa.suplidos) if tarifa else _dinero(datos.suplidos), suplidos),
-        ("otros_gastos", _dinero(tarifa.otros_gastos) if tarifa else _dinero(datos.otros_gastos), otros_gastos),
+        ("suplidos", suplidos_base, suplidos),
+        ("otros_gastos", otros_gastos_base, otros_gastos),
     ):
         if codigo == "honorarios" and datos.condonar_honorarios:
             continue
@@ -363,6 +384,16 @@ def _crear_operacion(db: Session, provision: ProvisionFondo, datos: OperacionPro
                 "usuario_id": getattr(usuario, "id", None) if not isinstance(usuario, dict) else usuario.get("id"),
                 "motivo": (datos.ajustes_motivo or "").strip(),
             })
+    if importe_manual is not None and importe_manual != total_componentes:
+        auditoria.append({
+            "concepto": "total_manual",
+            "importe_base": str(total_componentes),
+            "importe_efectivo": str(importe_manual),
+            "diferencia": str((importe_manual-total_componentes).quantize(Decimal("0.01"))),
+            "fecha": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat(),
+            "usuario_id": getattr(usuario, "id", None) if not isinstance(usuario, dict) else usuario.get("id"),
+            "motivo": (datos.ajustes_motivo or "").strip(),
+        })
     if auditoria and not (datos.ajustes_motivo or "").strip():
         raise HTTPException(status_code=422, detail="Indica el motivo de los ajustes manuales de la provisión.")
     operacion = ProvisionOperacion(
@@ -379,9 +410,9 @@ def _crear_operacion(db: Session, provision: ProvisionFondo, datos: OperacionPro
         otros_gastos=otros_gastos,
         notaria=notaria,
         impuestos=impuestos,
-        gastos_registro_base=_dinero(tarifa.gastos_registro) if tarifa else _dinero(datos.gastos_registro),
-        suplidos_base=_dinero(tarifa.suplidos) if tarifa else _dinero(datos.suplidos),
-        otros_gastos_base=_dinero(tarifa.otros_gastos) if tarifa else _dinero(datos.otros_gastos),
+        gastos_registro_base=gastos_registro_base,
+        suplidos_base=suplidos_base,
+        otros_gastos_base=otros_gastos_base,
         ajustes_motivo=(datos.ajustes_motivo or "").strip() or None,
         ajustes_auditoria=auditoria,
         condonar_honorarios=bool(datos.condonar_honorarios),

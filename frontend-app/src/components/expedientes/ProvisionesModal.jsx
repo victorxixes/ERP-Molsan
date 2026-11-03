@@ -7,8 +7,12 @@ const hoy = () => new Date().toISOString().slice(0, 10);
 
 const numero = (valor) => (valor === "" || valor === null || valor === undefined ? 0 : Number(valor));
 const nuevaFinca = () => ({ finca: "", cru_idufir: "", registro_propiedad_id: "", registro_propiedad: "", provincia: "", poblacion: "", seccion: "" });
-const nuevaOperacion = () => ({ entidad: "", numero_prestamo: "", capital: "0", territorio: "Península", aplicar_tarifa: true, tarifa_id: null, honorarios_base: "0", honorarios: "0", suplidos: "0", gastos_registro: "0", otros_gastos: "0", notaria: "0", impuestos: "0", ajustes_motivo: "", condonar_honorarios: false, importe_manual: "", observaciones: "", fincas: [nuevaFinca()] });
-const nuevoFormulario = (tipo = "provision") => ({ tipo, fecha: hoy(), observaciones: "", operaciones: [nuevaOperacion()] });
+const importePrevisto = (conceptos, codigo) => {
+  const item = (conceptos || []).find((concepto) => concepto.codigo === codigo);
+  return item?.activo && item?.modo === "previsto" && item.importe_previsto != null ? String(item.importe_previsto) : "0";
+};
+const nuevaOperacion = (conceptos = []) => ({ entidad: "", numero_prestamo: "", capital: "0", territorio: "Península", aplicar_tarifa: true, tarifa_id: null, honorarios_base: "0", honorarios: "0", suplidos: "0", gastos_registro: importePrevisto(conceptos, "registro"), otros_gastos: "0", notaria: importePrevisto(conceptos, "notaria"), impuestos: importePrevisto(conceptos, "impuestos"), ajustes_motivo: "", condonar_honorarios: false, importe_manual: "", observaciones: "", fincas: [nuevaFinca()] });
+const nuevoFormulario = (tipo = "provision", conceptos = []) => ({ tipo, fecha: hoy(), observaciones: "", operaciones: [nuevaOperacion(conceptos)] });
 const nuevaTarifa = () => ({ tipo: "provision", entidad: "*", territorio: "Península", capital_minimo: "0", capital_maximo: "", honorarios: "0", suplidos: "0", gastos_registro: "0", otros_gastos: "0" });
 const clsInput = "mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
 const clsLabel = "block text-xs font-semibold text-slate-600";
@@ -27,6 +31,7 @@ export default function ProvisionesModal({ idExpediente, onClose }) {
   const [provisiones, setProvisiones] = useState([]);
   const [tarifas, setTarifas] = useState([]);
   const [registros, setRegistros] = useState([]);
+  const [conceptosImportes, setConceptosImportes] = useState([]);
   const [fincasExpediente, setFincasExpediente] = useState([]);
   const [expediente, setExpediente] = useState(null);
   const [form, setForm] = useState(nuevoFormulario());
@@ -49,12 +54,14 @@ export default function ProvisionesModal({ idExpediente, onClose }) {
       axios.get(`/expedientes/provisiones/tarifas/catalogo-registros`),
       axios.get(rutaExp),
       axios.get(`${rutaExp}/fincas`),
+      axios.get(`/expedientes/provisiones/conceptos-importes`),
     ]);
     if (resultados[0].status === "fulfilled") setProvisiones(resultados[0].value?.data?.items || []);
     else setError(resultados[0].reason?.response?.data?.detail || "No se pudo cargar el histórico de provisiones.");
     if (resultados[1].status === "fulfilled") setTarifas(Array.isArray(resultados[1].value?.data) ? resultados[1].value.data : []);
     const registrosCargados = resultados[2].status === "fulfilled" && Array.isArray(resultados[2].value?.data) ? resultados[2].value.data : [];
     if (resultados[2].status === "fulfilled") setRegistros(registrosCargados);
+    if (resultados[5].status === "fulfilled") setConceptosImportes(resultados[5].value?.data?.items || []);
     if (resultados[4].status === "fulfilled") {
       const lista = resultados[4].value?.data?.items || [];
       const normalizar = (valor) => String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
@@ -76,7 +83,7 @@ export default function ProvisionesModal({ idExpediente, onClose }) {
 
   function crearNuevo(tipo = "provision") {
     setProvisionEditando(null);
-    const nuevo = nuevoFormulario(tipo);
+    const nuevo = nuevoFormulario(tipo, conceptosImportes);
     if (fincasExpediente.length) nuevo.operaciones[0].fincas = fincasExpediente.map((f) => ({ ...f }));
     setForm(nuevo);
     setAviso(""); setError(""); setVista("formulario");
@@ -231,13 +238,13 @@ export default function ProvisionesModal({ idExpediente, onClose }) {
             {op.aplicar_tarifa && <div className="flex flex-wrap items-center gap-3 rounded-lg bg-blue-50 p-3"><button type="button" className={`${clsBoton} bg-blue-700 text-white hover:bg-blue-800`} onClick={() => calcularTarifa(i)}>Calcular tarifa</button><span className="text-sm text-blue-900">{op.tarifa_id ? `Tarifa #${op.tarifa_id} aplicada` : "Busca el tramo por entidad y capital."}</span><label className="flex items-center gap-2 text-sm font-semibold text-slate-700"><input type="checkbox" checked={op.condonar_honorarios} onChange={(e) => { const value = e.target.checked; cambiarOperacion(i, "condonar_honorarios", value); if (value) cambiarOperacion(i, "honorarios", "0"); else if (op.honorarios_base) cambiarOperacion(i, "honorarios", String(op.honorarios_base)); }} /> Condonar honorarios</label></div>}
             {!op.aplicar_tarifa && <div className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">Los importes de esta operación se introducen manualmente.</div>}
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><Campo label="Honorarios (€)" value={op.honorarios} onChange={(v) => cambiarOperacion(i, "honorarios", v)} type="number" min="0" step="0.01" /><Campo label="Notaría (€)" value={op.notaria} onChange={(v) => cambiarOperacion(i, "notaria", v)} type="number" min="0" step="0.01" /><Campo label="Registro (€)" value={op.gastos_registro} onChange={(v) => cambiarOperacion(i, "gastos_registro", v)} type="number" min="0" step="0.01" /><Campo label="Impuestos (€)" value={op.impuestos} onChange={(v) => cambiarOperacion(i, "impuestos", v)} type="number" min="0" step="0.01" /><Campo label="Suplidos (€)" value={op.suplidos} onChange={(v) => cambiarOperacion(i, "suplidos", v)} type="number" min="0" step="0.01" /><Campo label="Otros gastos (€)" value={op.otros_gastos} onChange={(v) => cambiarOperacion(i, "otros_gastos", v)} type="number" min="0" step="0.01" /><Campo label="Total manual (€), opcional" value={op.importe_manual} onChange={(v) => cambiarOperacion(i, "importe_manual", v)} type="number" min="0" step="0.01" placeholder="Automático" /></div>
-            <div className="rounded-lg border border-amber-200 bg-amber-50 p-3"><p className="text-xs text-amber-900">Puedes ajustar los importes previstos de esta operación sin cambiar el catálogo general. Si modificas una tarifa, indica el motivo para que quede trazado.</p><Campo label="Motivo del ajuste (obligatorio si cambias importes de tarifa)" value={op.ajustes_motivo} onChange={(v) => cambiarOperacion(i, "ajustes_motivo", v)} placeholder="Ej.: particularidad registral, importe confirmado por notaría…" /></div>
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-3"><p className="text-xs text-amber-900">Puedes ajustar los importes previstos de esta operación sin cambiar el catálogo general. Si modificas una tarifa, indica el motivo para que quede trazado.</p><Campo label="Motivo del ajuste (obligatorio si cambias importes o el total manual)" value={op.ajustes_motivo} onChange={(v) => cambiarOperacion(i, "ajustes_motivo", v)} placeholder="Ej.: particularidad registral, importe confirmado por notaría…" /></div>
             <Campo label="Observaciones de la operación" value={op.observaciones} onChange={(v) => cambiarOperacion(i, "observaciones", v)} />
             <div className="space-y-3 border-t border-slate-100 pt-4"><div className="flex items-center justify-between gap-2"><div><h4 className="text-sm font-bold text-slate-800">Fincas y Registros</h4><p className="text-xs text-slate-500">Puedes añadir varias fincas a cada préstamo.</p></div><button type="button" className={`${clsBoton} bg-slate-100 text-slate-700`} onClick={() => cambiarOperacion(i, "fincas", [...op.fincas, nuevaFinca()])}>+ Añadir finca</button></div>
               {op.fincas.map((f, j) => <div key={j} className="grid gap-3 rounded-lg bg-slate-50 p-3 sm:grid-cols-2 lg:grid-cols-4"><Campo label="Número de finca" value={f.finca} onChange={(v) => cambiarFinca(i, j, "finca", v)} /><Campo label="CRU / IDUFIR" value={f.cru_idufir} onChange={(v) => cambiarFinca(i, j, "cru_idufir", v)} /><Selector label="Registro de la Propiedad" value={f.registro_propiedad_id} onChange={(v) => cambiarRegistro(i, j, v)}><option value="">Seleccionar del catálogo…</option>{registros.map((r) => <option key={r.id} value={String(r.id)}>{r.registro_propiedad}{r.poblacion ? ` · ${r.poblacion}` : ""}{r.provincia ? ` (${r.provincia})` : ""}</option>)}</Selector><Campo label="Sección" value={f.seccion} onChange={(v) => cambiarFinca(i, j, "seccion", v)} /><Campo label="Población" value={f.poblacion} onChange={(v) => cambiarFinca(i, j, "poblacion", v)} /><Campo label="Provincia" value={f.provincia} onChange={(v) => cambiarFinca(i, j, "provincia", v)} />{op.fincas.length > 1 && <div className="flex items-end"><button type="button" className={`${clsBoton} bg-red-50 text-red-700`} onClick={() => cambiarOperacion(i, "fincas", op.fincas.filter((_, k) => k !== j))}>Quitar finca</button></div>}</div>)}
             </div><div className="flex justify-end rounded-lg bg-slate-900 px-4 py-3 text-white"><span className="text-sm">Total operación: <b className="ml-2 text-lg">{importe(op.importe_manual !== "" && op.importe_manual != null ? numero(op.importe_manual) : (op.condonar_honorarios ? 0 : numero(op.honorarios)) + numero(op.suplidos) + numero(op.gastos_registro) + numero(op.otros_gastos) + numero(op.notaria) + numero(op.impuestos))}</b></span></div>
           </article>)}
-          <div className="flex flex-wrap items-center justify-between gap-3"><button type="button" className={`${clsBoton} border border-slate-300 bg-white text-slate-700`} onClick={() => setForm((x) => ({ ...x, operaciones: [...x.operaciones, nuevaOperacion()] }))}>+ Añadir otro préstamo</button><div className="text-right"><div className="text-xs text-slate-500">Total general estimado</div><div className="text-2xl font-extrabold text-slate-900">{importe(totalFormulario)}</div></div></div>
+          <div className="flex flex-wrap items-center justify-between gap-3"><button type="button" className={`${clsBoton} border border-slate-300 bg-white text-slate-700`} onClick={() => setForm((x) => ({ ...x, operaciones: [...x.operaciones, nuevaOperacion(conceptosImportes)] }))}>+ Añadir otro préstamo</button><div className="text-right"><div className="text-xs text-slate-500">Total general estimado</div><div className="text-2xl font-extrabold text-slate-900">{importe(totalFormulario)}</div></div></div>
           <div className="flex flex-wrap justify-end gap-2 border-t border-slate-200 pt-4"><button type="button" className={`${clsBoton} bg-slate-200 text-slate-700`} onClick={() => { setVista("historial"); setProvisionEditando(null); setError(""); }}>Cancelar</button><button type="submit" disabled={guardando} className={`${clsBoton} bg-emerald-700 px-5 text-white hover:bg-emerald-800`}>{guardando ? "Guardando…" : provisionEditando ? "Guardar cambios" : "Guardar registro"}</button></div>
         </form>}
 

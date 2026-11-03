@@ -13,6 +13,7 @@ from backend.app.auth.dependencies import get_current_user
 from backend.app.expedientes.gastos.models import ExpedienteGasto
 from backend.app.expedientes.models import Expediente
 from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
+from backend.app.expedientes.gastos.calculos import importe_obligacion_gasto, total_pagado_efectivo
 
 router = APIRouter(prefix="/expedientes", tags=["Gastos de expedientes"])
 CENTIMO = Decimal("0.01")
@@ -212,11 +213,12 @@ def _estado_legacy_pagado(estado: object) -> bool:
     return str(estado or "").strip().casefold() in {"pagado", "pagada", "abonado", "abonada", "efectuado", "efectuada", "realizado", "realizada", "paid"}
 
 
+def _importe_obligacion_gasto(gasto) -> Decimal:
+    return importe_obligacion_gasto(gasto)
+
+
 def _total_pagado_efectivo(estado: object, importe_obligacion: object, total_movimientos: object, numero_movimientos: int) -> Decimal:
-    total = _decimal_opcional(total_movimientos) or Decimal("0.00")
-    if numero_movimientos == 0 and _estado_legacy_pagado(estado):
-        return _decimal_opcional(importe_obligacion) or Decimal("0.00")
-    return total
+    return total_pagado_efectivo(estado, importe_obligacion, total_movimientos, numero_movimientos)
 
 
 @router.get("/{expediente_id}/gastos", response_model=list[GastoResponse])
@@ -236,7 +238,7 @@ def listar_gastos(expediente_id: int, db: Session = Depends(get_db), usuario=Dep
         """), {"expediente_id": expediente.id}).mappings().all()
         pagos_por_gasto = {int(f["gasto_id"]): (f["total_pagado"], int(f["numero_movimientos"])) for f in filas}
     for gasto in gastos:
-        importe_obligacion = gasto.importe_resultante if gasto.importe_resultante is not None else gasto.importe
+        importe_obligacion = _importe_obligacion_gasto(gasto)
         total_movimientos, numero_movimientos = pagos_por_gasto.get(gasto.id, (Decimal("0.00"), 0))
         total_pagado = _total_pagado_efectivo(gasto.estado_pago, importe_obligacion, total_movimientos, numero_movimientos)
         obligacion = _decimal_opcional(importe_obligacion) or Decimal("0.00")
@@ -357,7 +359,7 @@ def listar_pagos_gasto(expediente_id: int, gasto_id: int, db: Session = Depends(
     except Exception as exc:
         db.rollback()
         raise HTTPException(status_code=500, detail="No se pudo consultar el histórico de pagos.") from exc
-    obligacion = _decimal_opcional(gasto.importe_resultante if gasto.importe_resultante is not None else gasto.importe) or Decimal("0.00")
+    obligacion = _importe_obligacion_gasto(gasto)
     total = _decimal_opcional(total) or Decimal("0.00")
     return {
         "items": [dict(fila) for fila in filas],
@@ -408,10 +410,16 @@ def registrar_pago_gasto(
                 "saldo_pendiente": str(max(Decimal("0.00"), obligacion - total)),
                 "estado_pago": gasto.estado_pago or "Pendiente",
             }
-        total_previo = _decimal_opcional(db.execute(text("""
-            SELECT COALESCE(SUM(importe), 0) FROM public.expediente_gasto_pagos
-            WHERE gasto_id = :gasto_id AND anulado_en IS NULL
-        """), {"gasto_id": gasto.id}).scalar()) or Decimal("0.00")
+        resumen_pagos = db.execute(text("""
+            SELECT COALESCE(SUM(importe) FILTER (WHERE anulado_en IS NULL), 0) AS total_pagado,
+                   COUNT(*) AS numero_movimientos
+            FROM public.expediente_gasto_pagos
+            WHERE gasto_id = :gasto_id
+        """), {"gasto_id": gasto.id}).mappings().first()
+        total_previo = _total_pagado_efectivo(
+            gasto.estado_pago, obligacion,
+            resumen_pagos["total_pagado"], int(resumen_pagos["numero_movimientos"]),
+        )
         if total_previo + payload.importe > obligacion:
             raise HTTPException(
                 status_code=422,
@@ -446,11 +454,11 @@ def registrar_pago_gasto(
                 WHERE g.expediente_id = :expediente_id AND p.anulado_en IS NULL
             """), {"expediente_id": expediente.id}).scalar()) or Decimal("0.00")
             historico_pagado = _decimal_opcional(db.execute(text("""
-                SELECT COALESCE(SUM(COALESCE(g.importe_resultante, g.importe, g.importe_total_bruto, 0)), 0)
+                SELECT COALESCE(SUM(COALESCE(g.importe_resultante, g.importe_total_bruto, g.importe, 0)), 0)
                 FROM public.expediente_gastos g
                 WHERE g.expediente_id = :expediente_id
                   AND lower(trim(coalesce(g.estado_pago, ''))) IN
-                      ('pagado', 'pagada', 'abonado', 'abonada', 'efectuado', 'efectuada')
+                      ('pagado', 'pagada', 'abonado', 'abonada', 'efectuado', 'efectuada', 'realizado', 'realizada', 'paid')
                   AND NOT EXISTS (
                       SELECT 1 FROM public.expediente_gasto_pagos p WHERE p.gasto_id = g.id
                   )
@@ -512,7 +520,7 @@ def anular_pago_gasto(
             SELECT MAX(fecha) FROM public.expediente_gasto_pagos
             WHERE gasto_id = :gasto_id AND anulado_en IS NULL
         """), {"gasto_id": gasto.id}).scalar()
-        obligacion = _decimal_opcional(gasto.importe_resultante if gasto.importe_resultante is not None else gasto.importe) or Decimal("0.00")
+        obligacion = _importe_obligacion_gasto(gasto)
         if total >= obligacion and obligacion > 0:
             gasto.estado_pago, gasto.fecha_pago = "Pagado", ultima_fecha_pago or date.today()
         elif total > 0:
