@@ -1,4 +1,5 @@
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanButton from "../../components/ui/MolsanButton";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
@@ -255,13 +256,14 @@ export default function CorrespondenciaTipificada() {
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[var(--molsan-border)] bg-[var(--molsan-surface)] text-[var(--molsan-primary)]"><MolsanIcon name="mail" size={26} /></div>
+            <div className="molsan-page-header__mark"><MolsanIcon name="mail" size={22} tone="ocean" /></div>
             <div>
-              <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Correspondencia tipificada</h1>
+              <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+              <h1 className="molsan-page-header__title">Correspondencia tipificada</h1>
               <p className="mt-1 text-sm text-slate-500">Plantillas reutilizables con campos vinculados a los expedientes.</p>
             </div>
           </div>
-          <button type="button" onClick={nuevaPlantilla} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700"><MolsanIcon name="plus" size={14} inline /> Nueva plantilla</button>
+          <MolsanButton type="button" onClick={nuevaPlantilla} icon="plus" variant="success">Nueva plantilla</MolsanButton>
         </div>
       </header>
 
