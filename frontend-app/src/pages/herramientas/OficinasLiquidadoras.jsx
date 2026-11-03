@@ -1,7 +1,7 @@
 import MolsanButton from "../../components/ui/MolsanButton";
 import { API_BASE as API_ROOT } from "../../api/config";
 import MolsanIcon from "../../components/ui/MolsanIcon";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { sortRows } from "../../utils/sortRows";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import React, {
@@ -1140,7 +1140,11 @@ export default function OficinasLiquidadoras() {
 
           <div>
 
-            <h1
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+
+              <Link to="/catalogos" className="molsan-page-back-link">← Volver a catálogos</Link>
+
+              <h1
               className="
                 text-2xl
                 sm:text-3xl
