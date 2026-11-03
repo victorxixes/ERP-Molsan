@@ -793,6 +793,32 @@ export default function EnviarANotarioModal({
                         onChange={(v) => cambiarDatoNotario("provincia", v)}
                       />
                     </div>
+
+                    <div className="sm:col-span-2 grid grid-cols-1 gap-3 border-t border-slate-200 pt-3 sm:grid-cols-2 xl:grid-cols-3">
+                      <CampoAutomatico label="Código CTN" valor={notario.codigo} />
+                      <CampoAutomatico label="Teléfono" valor={notario.telefono} />
+                      <CampoAutomatico label="Código postal" valor={notario.cp} />
+                      <div className="sm:col-span-2 xl:col-span-3">
+                        <CampoAutomatico label="Dirección" valor={notario.direccion} />
+                      </div>
+                      <CampoAutomatico label="Videoconferencia (VC)" valor={notario.vc} />
+                      <CampoAutomatico label="Apoderado S" valor={notario.apoderado_s} />
+                      <CampoAutomatico label="Departamento cancelaciones" valor={notario.departamento_cancelaciones} />
+                      <CampoAutomatico label="Departamento copias" valor={notario.departamento_copias} />
+                      <CampoAutomatico label="Otros departamentos" valor={notario.otros_departamentos} />
+                      <div className="sm:col-span-2 xl:col-span-3">
+                        <CampoAutomatico label="Observaciones CTN" valor={notario.observacion} />
+                      </div>
+                      <div className="sm:col-span-2 xl:col-span-3">
+                        <CampoAutomatico
+                          label="Notarios asociados"
+                          valor={(Array.isArray(notario.notarios_asociados) ? notario.notarios_asociados : [])
+                            .map((item) => item.nombre_completo || [item.nombre, item.apellidos].filter(Boolean).join(" "))
+                            .filter(Boolean)
+                            .join(" · ") || notario.notario_asociado}
+                        />
+                      </div>
+                    </div>
                   </div>
                 )}
               </section>              {/* TIPO DE DOCUMENTO Y NUEVOS CAMPOS */}
