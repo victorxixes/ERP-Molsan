@@ -6,6 +6,7 @@ import React, {
 import axios from "../../api/axios";
 import { API_BASE as API_ROOT } from "../../api/config";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanButton from "../../components/ui/MolsanButton";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { Link } from "react-router-dom";
 import "../../css/ModalesHerramientasPremium.css";
@@ -766,64 +767,7 @@ export default function TiposConceptoGastos() {
               BOTÓN NUEVO
           ================================================= */}
 
-          <button
-            type="button"
-            onClick={abrirNuevo}
-            className="catalogos-subpage-header__action
-              inline-flex
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              bg-blue-600
-              px-5
-              py-3
-              text-sm
-              font-semibold
-              text-white
-              shadow-lg
-              shadow-blue-600/20
-              transition-all
-              duration-200
-              hover:bg-blue-700
-              hover:-translate-y-0.5
-              active:translate-y-0
-            "
-          >
-
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              className="
-                h-4
-                w-4
-              "
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="
-                  M12 5
-                  v14
-                "
-              />
-
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="
-                  M5 12
-                  h14
-                "
-              />
-            </svg>
-
-            Nuevo concepto
-
-          </button>
+          <MolsanButton type="button" onClick={abrirNuevo} icon="plus" variant="success">Nuevo concepto</MolsanButton>
 
         </header>
 
