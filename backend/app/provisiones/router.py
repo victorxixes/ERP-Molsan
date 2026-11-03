@@ -668,7 +668,7 @@ def actualizar_provision(id_expediente: str, provision_id: int, datos: Provision
     item.fecha = datos.fecha
     item.observaciones = datos.observaciones
     try:
-        _reemplazar_operaciones(db, item, datos)
+        _reemplazar_operaciones(db, item, datos, usuario)
         db.commit()
         db.refresh(item)
     except HTTPException:

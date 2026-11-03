@@ -386,8 +386,8 @@ def registrar_pago_gasto(
     ).with_for_update().first()
     if gasto is None:
         raise HTTPException(status_code=404, detail="No se encontró la obligación económica.")
-    obligacion = _decimal_opcional(gasto.importe_resultante if gasto.importe_resultante is not None else gasto.importe)
-    if obligacion is None or obligacion <= 0:
+    obligacion = _importe_obligacion_gasto(gasto)
+    if obligacion <= 0:
         raise HTTPException(status_code=422, detail="Completa primero el importe de la factura antes de registrar pagos.")
     try:
         _garantizar_tabla_pagos(db)
@@ -535,10 +535,10 @@ def anular_pago_gasto(
                 WHERE g.expediente_id = :expediente_id AND p.anulado_en IS NULL
             """), {"expediente_id": expediente.id}).scalar()) or Decimal("0.00")
             historico_pagado = _decimal_opcional(db.execute(text("""
-                SELECT COALESCE(SUM(COALESCE(g.importe_resultante, g.importe, g.importe_total_bruto, 0)), 0)
+                SELECT COALESCE(SUM(COALESCE(g.importe_resultante, g.importe_total_bruto, g.importe, 0)), 0)
                 FROM public.expediente_gastos g
                 WHERE g.expediente_id = :expediente_id
-                  AND lower(trim(coalesce(g.estado_pago, ''))) IN ('pagado', 'pagada', 'abonado', 'abonada', 'efectuado', 'efectuada')
+                  AND lower(trim(coalesce(g.estado_pago, ''))) IN ('pagado', 'pagada', 'abonado', 'abonada', 'efectuado', 'efectuada', 'realizado', 'realizada', 'paid')
                   AND NOT EXISTS (SELECT 1 FROM public.expediente_gasto_pagos p WHERE p.gasto_id = g.id)
             """), {"expediente_id": expediente.id}).scalar()) or Decimal("0.00")
             expediente.saldo_disponible = _redondear(Decimal(str(expediente.importe)) - pagos_expediente - historico_pagado)

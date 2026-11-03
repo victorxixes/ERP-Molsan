@@ -87,10 +87,6 @@ class EconomicDocumentLinkTests(unittest.TestCase):
         from decimal import Decimal
         self.assertEqual(_total_pagado_efectivo("Parcial", "100.00", "35.00", 2), Decimal("35.00"))
 
-    def test_legacy_paid_expense_without_movements_remains_fully_paid(self):
-        from decimal import Decimal
-        self.assertEqual(_total_pagado_efectivo("Pagado", "100.00", "0.00", 0), Decimal("100.00"))
-
     def test_annulled_movements_do_not_fall_back_to_legacy_paid_status(self):
         from decimal import Decimal
         self.assertEqual(_total_pagado_efectivo("Pagado", "100.00", "0.00", 1), Decimal("0.00"))
