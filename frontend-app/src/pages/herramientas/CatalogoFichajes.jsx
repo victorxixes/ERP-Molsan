@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import MolsanButton from "../../components/ui/MolsanButton";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "../../css/HerramientasPremium.css";
 
 export default function CatalogoFichajes() {
