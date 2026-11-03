@@ -932,3 +932,46 @@
 @media(max-width:760px) {
   .catalogos-premium-page > .molsan-page-header.dashboard-header { border-radius:18px; }
 }
+
+
+/* Accesibilidad: el relieve se conserva estático cuando se solicita reducir movimiento. */
+@media (prefers-reduced-motion: reduce) {
+  :where(.erp-card, .card-sj, .dashboard-kpi):hover {
+    transform: none !important;
+  }
+  :where(
+    .ficha-expediente-premium,
+    .empleados-premium-page,
+    .empleados-listado-premium,
+    .empleado-ficha-premium,
+    .empleado-editar-premium,
+    .catalogos-premium-page,
+    .catalogos-maestros-premium,
+    .catalogos-maestros-page,
+    .maestros-premium-page,
+    .seguridad-premium-page,
+    .seguridad-subpagina-premium,
+    .panel-tecnico-premium,
+    .panel-tecnico-submodulo-premium,
+    .informes-premium-page,
+    .herramientas-subpagina-premium,
+    .herramienta-operativa-premium,
+    .agenda-premium-page,
+    .ctn-workspace-premium,
+    .encargagest-workspace-premium,
+    .provisiones-fondos-premium,
+    .provisiones-fondos-page,
+    .mensajes-premium-page,
+    .molsan-intranet-page,
+    .cg-page,
+    .cg-unified-workspace,
+    .utilidades-premium-page,
+    .honorarios-gestoria-premium,
+    .logs-premium-page,
+    .notificaciones-premium-page,
+    .portal-login-premium,
+    .herramientas-home-premium
+  ) :where(div, section, article)[class~="border"][class*="rounded-"][class*="bg-white"]:hover {
+    transform: none !important;
+  }
+}
