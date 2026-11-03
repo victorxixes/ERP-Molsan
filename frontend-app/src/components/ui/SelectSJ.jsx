@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import MolsanIcon from "./MolsanIcon";
 
 import "../../css/ComponentesOperativosPremium.css";
 
@@ -124,19 +125,7 @@ export default function SelectSJ({
           {opcionSeleccionada?.label ?? placeholder}
         </span>
 
-        <svg
-          className={`
-            w-4 h-4
-            shrink-0
-            text-slate-500
-            transition-transform
-            duration-200
-            ${open ? "rotate-180" : ""}
-          `}
-          aria-hidden="true"
-        >
-          <use href="/icons/icons.svg#chevron-down" />
-        </svg>
+        <MolsanIcon name="chevronDown" size={16} bare className={`shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
 
       {/* =====================================================
@@ -206,12 +195,7 @@ export default function SelectSJ({
                   </span>
 
                   {seleccionada && (
-                    <svg
-                      className="w-4 h-4 shrink-0 text-blue-600"
-                      aria-hidden="true"
-                    >
-                      <use href="/icons/icons.svg#check" />
-                    </svg>
+                    <MolsanIcon name="check" size={16} bare className="shrink-0" />
                   )}
                 </button>
               );
