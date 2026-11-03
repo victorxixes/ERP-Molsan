@@ -105,6 +105,9 @@ const ALIASES = {
   "folder-check": "fileCheck",
   "book-check": "book",
   fusion: "merge",
+  edit: "pen",
+  delete: "trash",
+  close: "x",
   AG: "users",
   NG: "landmark",
 };
