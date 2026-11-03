@@ -1729,38 +1729,7 @@ export default function RegistrosPropiedad() {
             
 
 
-            <button
-              type="button"
-              onClick={
-                abrirNuevo
-              }
-              className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-xl
-                bg-blue-600
-                px-5
-                py-2.5
-                text-sm
-                font-semibold
-                text-white
-                shadow-[0_8px_20px_rgba(37,99,235,0.20)]
-                transition-all
-                hover:-translate-y-0.5
-                hover:bg-blue-700
-                active:scale-[0.98]
-              "
-            >
-
-              <span className="text-lg">
-                +
-              </span>
-
-              Nuevo registro
-
-            </button>
+            <MolsanButton type="button" onClick={abrirNuevo} icon="plus" variant="success">Nuevo registro</MolsanButton>
 
           </div>
 
