@@ -1614,7 +1614,7 @@ export default function EntidadesBancarias() {
             
 
 
-            <MolsanButton type="button" onClick={descargarExcel} disabled={cargando || entidadesOrdenadas.length === 0} icon="download" variant="secondary" title="Descargar el catálogo filtrado en Excel">Descargar Excel</MolsanButton>
+            <MolsanButton type="button" onClick={descargarExcel} disabled={cargando || entidadesOrdenadas.length === 0} icon="download" variant="excel" title="Descargar el catálogo filtrado en Excel">Descargar Excel</MolsanButton>
 
 
             <MolsanButton type="button" onClick={abrirNuevo} icon="plus" variant="success">Nueva entidad</MolsanButton>
@@ -3173,7 +3173,7 @@ function ModalImportarExcel({
           </button>
 
 
-          <MolsanButton type="button" icon="upload" variant="secondary" loading={importando} disabled={!archivo || importando} onClick={onImportar} className="min-w-[190px]">{importando ? "Importando..." : "Importar entidades"}</MolsanButton>
+          <MolsanButton type="button" icon="upload" variant="excel" loading={importando} disabled={!archivo || importando} onClick={onImportar} className="min-w-[190px]">{importando ? "Importando..." : "Importar entidades"}</MolsanButton>
 
         </div>
 
