@@ -424,7 +424,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
           <div className="min-w-0">
             <p className="molsan-page-header__eyebrow">MOLSAN ERP · APODERAGEST</p>
             <h1 className="molsan-page-header__title">Agenda · Vista {vista === "mes" ? "mensual" : vista === "semana" ? "semanal" : "diaria"}</h1>
-            <p className="molsan-page-header__description">Consulta la actividad mensual y la distribución de citas.</p>
+            <p className="molsan-page-header__description">{vista === "mes" ? "Consulta la actividad mensual y la distribución de citas." : vista === "semana" ? "Consulta la planificación semanal de citas y firmas." : "Consulta las citas y firmas organizadas por horas."}</p>
           </div>
         </div>
       </header>
