@@ -1271,7 +1271,7 @@ export default function CarpetaDigitalModal({
                           className="inline-flex items-center gap-2 rounded-lg border border-indigo-300 bg-indigo-700 px-4 py-2.5 text-xs font-extrabold text-white transition hover:bg-indigo-800 disabled:cursor-not-allowed disabled:opacity-40"
                           title={facturaEmitida ? "Revisar provisión, movimientos y confirmar el cierre" : "Primero debes generar y guardar la factura de honorarios"}
                         >
-                          ⚖️ Liquidar
+                          <MolsanIcon name="scale" size={16} /> Liquidar
                         </button>
                       </div>
                     </div>
