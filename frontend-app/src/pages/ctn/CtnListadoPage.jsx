@@ -140,10 +140,17 @@ export default function CtnListadoPage() {
         }
 
         const data = await response.json();
-        const filas = Array.isArray(data) ? data : data.items || data.notarias || data.results || [];
+        // CTN puede devolver un array directo o distintos envoltorios paginados.
+        // Solo aceptamos listas reales para impedir que un objeto de metadatos
+        // llegue a los componentes de tabla como si fuera el catálogo.
+        const payload = data?.data ?? data;
+        const filas = Array.isArray(payload)
+          ? payload
+          : [payload?.items, payload?.notarias, payload?.results, payload?.resultados]
+              .find(Array.isArray) || [];
         setItems(filas);
-        setTotal(Number(data.total ?? data.count ?? filas.length));
-        setPagina(Number(data.page ?? paginaSolicitada));
+        setTotal(Number(payload?.total ?? payload?.count ?? payload?.total_items ?? filas.length));
+        setPagina(Number(payload?.page ?? payload?.pagina ?? paginaSolicitada));
       } catch (err) {
         console.error("No se ha podido cargar el listado CTN.");
         setItems([]);
