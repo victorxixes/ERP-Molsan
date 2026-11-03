@@ -27,7 +27,7 @@ const MODULOS_ERP = [
     key: "provisiones-fondos",
     label: "Provisiones",
     route: "/provisiones-fondos",
-    icon: "clipboard",
+    icon: "receipt",
   },
 
   {
@@ -48,7 +48,7 @@ const MODULOS_ERP = [
     key: "empleados",
     label: "Empleados",
     route: "/empleados",
-    icon: "user-group",
+    icon: "users",
   },
 
   {
@@ -63,7 +63,7 @@ const MODULOS_ERP = [
     label: "Control de Fichajes",
     route: "/control-fichajes",
     permiso: "control-fichajes",
-    icon: "clock",
+    icon: "timer",
   },
 
   {
@@ -77,7 +77,7 @@ const MODULOS_ERP = [
     key: "intranet",
     label: "Intranet",
     route: "/intranet",
-    icon: "globe",
+    icon: "newspaper",
   },
 
   // Permiso granular para la gestión de noticias de la intranet.
@@ -107,7 +107,7 @@ const MODULOS_ERP = [
     key: "mensajeria-gestion",
     label: "Mensajería Gestión",
     route: "/mensajeria-gestion",
-    icon: "package",
+    icon: "mail",
   },
 
   {
@@ -121,7 +121,7 @@ const MODULOS_ERP = [
     key: "fusiones",
     label: "Fusiones",
     route: "/fusiones",
-    icon: "activity",
+    icon: "merge",
   },
 
   {
@@ -156,7 +156,7 @@ const MODULOS_ERP = [
     key: "seguridad",
     label: "Seguridad",
     route: "/seguridad",
-    icon: "shield",
+    icon: "lock",
   },
 
   {
@@ -170,7 +170,7 @@ const MODULOS_ERP = [
     key: "maestros",
     label: "Maestros",
     route: "/maestros",
-    icon: "database",
+    icon: "book",
   },
 
   {
@@ -230,14 +230,14 @@ const MODULOS_ERP = [
     label: "NotarGest Notarios",
     route: "/notargest-notarios",
     permiso: "notargest",
-    icon: "landmark",
+    icon: "building",
   },
   {
     key: "encargagestweb",
     label: "EncargaGest Notarios",
     route: "/encargagest-notarios",
     permiso: "encargagest",
-    icon: "clipboard-list",
+    icon: "archive",
   },
 ];
 
