@@ -616,10 +616,10 @@ export default function CarpetaDigitalModal({
   const renderVisor = () => (
     <aside className={`flex min-h-[360px] min-w-0 flex-col overflow-hidden rounded-xl border border-slate-300 bg-white shadow-sm ${visorExpandido ? "fixed inset-3 z-[10500] h-[calc(100vh-1.5rem)]" : "h-full"}`}>
       <header className="flex items-center gap-2 border-b border-slate-200 bg-white px-3 py-3">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700">▤</span>
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700"><MolsanIcon name="file" size={16} /></span>
         <div className="min-w-0 flex-1"><h4 className="text-sm font-extrabold text-slate-800">Visor de documentos</h4><p className="truncate text-[11px] text-slate-500" title={documentoVistaPrevia?.nombre_original || "Sin documento seleccionado"}>{documentoVistaPrevia?.nombre_original || "Selecciona un archivo de la lista"}</p></div>
-        <button type="button" onClick={() => setVisorExpandido((v) => !v)} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50" title={visorExpandido ? "Reducir visor" : "Ampliar visor"}>{visorExpandido ? "Reducir" : "⛶ Ampliar"}</button>
-        <button type="button" onClick={() => { if (modoActividad) cerrarVisor(); else { setVisorVisible(false); setVisorExpandido(false); } }} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50" title={modoActividad ? "Cerrar visor" : "Ocultar visor"}>{modoActividad ? "✕ Cerrar" : "Ocultar"}</button>
+        <button type="button" onClick={() => setVisorExpandido((v) => !v)} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50" title={visorExpandido ? "Reducir visor" : "Ampliar visor"}>{visorExpandido ? "Reducir" : <><MolsanIcon name="maximize" size={14} /> Ampliar</>}</button>
+        <button type="button" onClick={() => { if (modoActividad) cerrarVisor(); else { setVisorVisible(false); setVisorExpandido(false); } }} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50" title={modoActividad ? "Cerrar visor" : "Ocultar visor"}>{modoActividad ? <><MolsanIcon name="x" size={14} /> Cerrar</> : "Ocultar"}</button>
       </header>
       <div className="min-h-0 flex-1 overflow-hidden bg-slate-100 p-2 sm:p-3">
         {cargandoVistaPrevia ? <div className="flex h-full min-h-[300px] items-center justify-center text-sm text-slate-500">Cargando documento…</div> : urlVistaPrevia && documentoVistaPrevia ? (
