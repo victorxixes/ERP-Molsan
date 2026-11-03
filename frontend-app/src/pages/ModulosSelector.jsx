@@ -311,8 +311,8 @@ export default function ModulosSelector() {
                   className={`workspace-app-card workspace-tone-${color}`}>
                   <span className="workspace-card-accent" aria-hidden="true" />
                   <span className="workspace-card-topline">
-                    <span className="workspace-app-icon molsan-icon-3d" aria-hidden="true">
-                      <svg viewBox="0 0 24 24">{iconosModulo[modulo.clave] || iconosModulo.apoderagest}</svg>
+                    <span className="workspace-app-icon" aria-hidden="true">
+                      <MolsanIcon name={iconosModulo[modulo.clave] || "briefcase"} size={29} tone={color} bare />
                     </span>
                     <span className="workspace-card-open" aria-hidden="true">
                       <MolsanIcon name="arrowRight" size={16} bare />
