@@ -465,7 +465,7 @@ export default function InformeApoderado({
               shadow-sm
             "
           >
-            <MolsanIcon name="chart" size={48} />
+            <MolsanIcon name="chart" size={48} bare />
           </div>
 
 
@@ -684,7 +684,7 @@ export default function InformeApoderado({
                 text-lg
               "
             >
-              <MolsanIcon name="trophy" size={22} />
+              <MolsanIcon name="trophy" size={22} tone="amber" bare />
             </div>
 
 
