@@ -3611,7 +3611,7 @@ export default function Informes() {
       <header className="molsan-page-header">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="molsan-page-header__identity flex items-center gap-3">
-            <div className="molsan-page-header__mark"><MolsanIcon name="chart" size={42} tone="ocean" /></div>
+            <div className="molsan-page-header__mark"><MolsanIcon name="chart" size={22} tone="ocean" /></div>
             <div>
               <div className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
               <h1 className="molsan-page-header__title">{apartadoSeleccionado ? apartadoSeleccionado.titulo : "Informes"}</h1>
