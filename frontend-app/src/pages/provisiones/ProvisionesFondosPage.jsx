@@ -1,5 +1,6 @@
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanButton from "../../components/ui/MolsanButton";
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 import "./ProvisionesFondosPage.css";
@@ -786,7 +787,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
         </div>
       </div>
       <div className="molsan-page-header__actions">
-        <button type="button" onClick={nueva} className={`${boton} shrink-0 bg-blue-600 text-white shadow-sm hover:bg-blue-700`}>＋ Nueva provisión</button>
+        <MolsanButton type="button" onClick={nueva} icon="plus" variant="success">Nueva provisión</MolsanButton>
       </div>
     </header>
 
