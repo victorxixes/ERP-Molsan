@@ -311,9 +311,7 @@ export default function ModulosSelector() {
                   className={`workspace-app-card workspace-tone-${color}`}>
                   <span className="workspace-card-accent" aria-hidden="true" />
                   <span className="workspace-card-topline">
-                    <span className="workspace-app-icon" aria-hidden="true">
-                      <MolsanIcon name={iconosModulo[modulo.clave] || "briefcase"} size={29} tone={color} bare />
-                    </span>
+                    <MolsanIcon className="workspace-app-icon" name={iconosModulo[modulo.clave] || "briefcase"} size={58} tone={color} />
                     <span className="workspace-card-open" aria-hidden="true">
                       <MolsanIcon name="arrowRight" size={16} bare />
                     </span>
