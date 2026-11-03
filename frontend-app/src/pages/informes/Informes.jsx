@@ -3615,7 +3615,7 @@ export default function Informes() {
             <div>
               <div className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
               <h1 className="molsan-page-header__title">{apartadoSeleccionado ? apartadoSeleccionado.titulo : "Informes"}</h1>
-              {!apartadoSeleccionado && <p className="molsan-page-header__description">Selecciona el tipo de informe que quieres consultar.</p>}
+              <p className="molsan-page-header__description">{apartadoSeleccionado ? apartadoSeleccionado.descripcion : "Selecciona el tipo de informe que quieres consultar."}</p>
               {claveApartado && <button type="button" onClick={() => navigate("/informes")} className="molsan-btn molsan-btn--secondary mt-3">← Volver a Informes</button>}
             </div>
           </div>
