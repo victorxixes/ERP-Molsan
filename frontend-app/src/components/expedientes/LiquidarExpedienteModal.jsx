@@ -202,7 +202,7 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
                   <p className="mt-1">{Number(cierreDocumental.paginas || 0)} páginas · {Array.isArray(cierreDocumental.documentos_incluidos) ? cierreDocumental.documentos_incluidos.length : 0} documento(s).</p>
                   {Array.isArray(cierreDocumental.documentos_faltantes) && cierreDocumental.documentos_faltantes.length > 0 && <p className="mt-1">No encontrados: {cierreDocumental.documentos_faltantes.join(", ")}.</p>}
                 </div>}
-                {cierreDocumental?.guardado && <p className="mt-2 text-xs font-bold text-emerald-700"><MolsanIcon name="check" size={13} /> PDF guardado en Carpeta digital → Expediente digital completo.</p>}
+                {cierreDocumental?.guardado && <p className="mt-2 text-xs font-bold text-emerald-700"><MolsanIcon name="check" size={13} bare /> PDF guardado en Carpeta digital → Expediente digital completo.</p>}
               </div>
               <button type="button" onClick={async () => { setError(""); try { await generarCierreDocumental(); } catch (e) { setError(e?.response?.data?.detail || e?.message || "No se ha podido generar la vista previa del PDF."); } }} disabled={generandoCierreDocumental || guardandoCierreDocumental || guardando || cargandoCierre} className="shrink-0 rounded-lg border border-indigo-300 bg-white px-3 py-2 text-xs font-extrabold text-indigo-800 hover:bg-indigo-100 disabled:opacity-50">
                 {generandoCierreDocumental ? "Generando vista previa…" : cierreDocumental?.guardado ? "Generar nueva vista previa" : "Generar y previsualizar PDF"}
