@@ -28,56 +28,9 @@ import "./SeguridadSubpaginasPremium.css";
 // ICONO
 // ============================================================
 
-const Icono = ({
-  name,
-  className = "w-5 h-5",
-}) => (
-
-  <svg
-    className={`${className} flex-shrink-0`}
-    aria-hidden="true"
-  >
-
-    <use
-      href={`/icons/icons.svg#${name}`}
-    />
-
-  </svg>
-
+const Icono = ({ name, className = "w-4 h-4" }) => (
+  <MolsanIcon name={name} size={16} bare className={className} />
 );
-
-
-// ============================================================
-// ICONOS EVENTO
-// ============================================================
-
-const ICONOS_EVENTO = {
-
-  login: "lock",
-
-  login_error: "shield",
-
-  acceso: "folder",
-
-  update: "edit",
-
-  delete: "trash",
-
-  permiso: "shield",
-
-  modulo: "folder",
-
-  error: "shield",
-
-  warning: "shield",
-
-  create: "clipboard",
-
-  logout: "lock",
-
-  default: "clipboard",
-
-};
 
 
 // ============================================================
