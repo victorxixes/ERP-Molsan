@@ -196,7 +196,7 @@ export default function HonorariosGestoria({ soloPlantilla = false } = {}) {
             </div>
             <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Descripción / notas</span><textarea rows={3} maxLength={2000} value={form.descripcion} onChange={e=>setForm(a=>({...a,descripcion:e.target.value}))} className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm" /></label>
             <label className="flex items-center gap-2 rounded-xl bg-slate-50 p-3 text-sm"><input type="checkbox" checked={form.activo} onChange={e=>setForm(a=>({...a,activo:e.target.checked}))} />Honorario disponible en «Añadir pagos»</label>
-            <div className="flex flex-wrap gap-2"><MolsanButton type="submit" disabled={guardando} loading={guardando} icon="check" variant="success">Guardar honorario</MolsanButton><button type="button" onClick={nuevo} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-600">Limpiar</button></div>
+            <div className="flex flex-wrap gap-2"><MolsanButton type="submit" disabled={guardando} loading={guardando} icon="check" variant="success">Guardar honorario</MolsanButton><MolsanButton type="button" onClick={nuevo} variant="secondary">Limpiar</MolsanButton></div>
           </form>
         </section>}
         {soloPlantilla && <div className="min-w-0">
@@ -212,7 +212,7 @@ export default function HonorariosGestoria({ soloPlantilla = false } = {}) {
         </div>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
           <input id="plantilla-word-honorarios" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={e=>setArchivoPlantilla(e.target.files?.[0] || null)} className="block w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-3 file:py-2 file:text-xs file:font-bold file:text-indigo-700" />
-          <button type="button" onClick={subirPlantilla} disabled={!archivoPlantilla || subiendoPlantilla} className="shrink-0 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50">{subiendoPlantilla ? "Subiendo…" : "Guardar plantilla Word"}</button>
+          <MolsanButton type="button" onClick={subirPlantilla} disabled={!archivoPlantilla || subiendoPlantilla} loading={subiendoPlantilla} icon="upload" variant="success" className="shrink-0">Guardar plantilla Word</MolsanButton>
         </div>
         {(errorPlantilla || mensajePlantilla) && <p role="status" className={`mt-3 rounded-lg px-3 py-2 text-sm ${errorPlantilla ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700"}`}>{errorPlantilla || mensajePlantilla}</p>}
       </section>
