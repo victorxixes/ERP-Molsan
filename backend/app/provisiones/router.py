@@ -216,8 +216,10 @@ def _tarifa_dict(item: TarifaProvision) -> dict:
 
 def _operacion_dict(db: Session, item: ProvisionOperacion) -> dict:
     fincas = db.query(ProvisionOperacionFinca).filter(ProvisionOperacionFinca.operacion_id == item.id).order_by(ProvisionOperacionFinca.id).all()
+    tarifa_vinculada = db.query(TarifaProvision).filter(TarifaProvision.id == item.tarifa_id).first() if item.tarifa_id else None
     return {
         "id": item.id,
+        "territorio": getattr(tarifa_vinculada, "territorio", "Península") or "Península",
         "entidad": item.entidad,
         "numero_prestamo": item.numero_prestamo,
         "capital": float(item.capital or 0),
