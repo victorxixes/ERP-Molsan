@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuthStore } from "../../store/authStore";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import { Link } from "react-router-dom";
 import { API_BASE } from "../../api/config";
 
 const API_URL = `${API_BASE}/catalogos-absis`;
@@ -174,6 +175,7 @@ export default function CatalogoAbsis() {
             <p className="molsan-page-header__eyebrow">MOLSAN ERP · DATOS ABSIS</p>
             <h1 className="molsan-page-header__title">Catálogo ABSIS</h1>
             <p className="molsan-page-header__description">Gestiona en una única pantalla los estados y listas auxiliares que utiliza la integración ABSIS. Cada lista se mantiene por separado y sus cambios quedan guardados en el servidor.</p>
+            <Link to="/catalogos" className="molsan-page-back-link">← Volver a catálogos</Link>
           </div>
         </div>
       </header>
