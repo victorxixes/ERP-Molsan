@@ -107,7 +107,7 @@ export default function TiposExpediente() {
     <main className="molsan-page-stack catalogos-premium-page min-h-full ">
       <header className="molsan-page-header dashboard-header">
         <div className="molsan-page-header__identity">
-          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="folder" size={42} bare /></div>
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="folder" size={22} tone="ocean" /></div>
           <div className="min-w-0">
             <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
             <h1 className="molsan-page-header__title">Tipos de expediente</h1>
