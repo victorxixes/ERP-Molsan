@@ -2621,7 +2621,7 @@ export default function AccionesExpediente() {
                 </button>
 
 
-                <MolsanButton type="submit" icon="upload" variant="primary" loading={importando} disabled={!archivo || importando}>{importando ? "Importando..." : "Importar Excel"}</MolsanButton>
+                <MolsanButton type="submit" icon="upload" variant="excel" loading={importando} disabled={!archivo || importando}>{importando ? "Importando..." : "Importar Excel"}</MolsanButton>
 
               </div>
 
