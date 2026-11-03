@@ -1813,3 +1813,56 @@ a[aria-current="page"] .molsan-nav-icon-3d {
   color: #FFFFFF !important;
   filter: none !important;
 }
+
+
+/* Las acciones de cabecera conservan el color semántico de MolsanButton.
+   La regla general de enlaces/botones del hero solo se aplica a controles heredados. */
+.molsan-page-header .molsan-btn--primary {
+  color: #FFFFFF !important;
+  background: linear-gradient(135deg, #075487, #064675) !important;
+  border-color: #064675 !important;
+}
+.molsan-page-header .molsan-btn--secondary {
+  color: #064675 !important;
+  background: linear-gradient(145deg, #FFFFFF, #F2F7FB) !important;
+  border-color: #D8E4EC !important;
+}
+.molsan-page-header .molsan-btn--success {
+  color: #176B4B !important;
+  background: linear-gradient(145deg, #F3FBF6, #E6F4EB) !important;
+  border-color: #BFE2CC !important;
+}
+.molsan-page-header .molsan-btn--warning {
+  color: #8A620D !important;
+  background: linear-gradient(145deg, #FFFCF2, #FFF4D8) !important;
+  border-color: #EEDCA8 !important;
+}
+.molsan-page-header .molsan-btn--danger {
+  color: #FFFFFF !important;
+  background: #B42318 !important;
+  border-color: #B42318 !important;
+}
+.molsan-page-header .molsan-btn--excel {
+  color: #FFFFFF !important;
+  background: linear-gradient(135deg, #16845B, #11734E) !important;
+  border-color: #11734E !important;
+}
+.molsan-page-header .molsan-btn--success:hover:not(:disabled) {
+  color: #145A40 !important;
+  background: #DDF0E5 !important;
+  border-color: #9CCFB1 !important;
+}
+.molsan-page-header .molsan-btn--warning:hover:not(:disabled) {
+  color: #76520A !important;
+  background: #FCECC2 !important;
+  border-color: #E5CD88 !important;
+}
+.molsan-page-header .molsan-btn--danger:hover:not(:disabled) {
+  color: #FFFFFF !important;
+  background: #941B13 !important;
+}
+.molsan-page-header .molsan-btn--excel:hover:not(:disabled) {
+  color: #FFFFFF !important;
+  background: linear-gradient(135deg, #11734E, #0D6242) !important;
+  border-color: #0D6242 !important;
+}
