@@ -320,7 +320,7 @@ export default function SeguridadResumen({ empleadoId }) {
       <div className="molsan-page-header">
 
         <div className="molsan-page-header__identity">
-          <div className="molsan-page-header__mark" aria-hidden="true">SG</div>
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="shield" size={22} tone="ocean" /></div>
           <div>
           <p className="molsan-page-header__eyebrow">
             SEGURIDAD · USUARIO
