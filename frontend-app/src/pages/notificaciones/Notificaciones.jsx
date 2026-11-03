@@ -233,7 +233,7 @@ export default function Notificaciones() {
             <div
               className="molsan-page-header__mark"
             >
-              <MolsanIcon name="bell" size={42} bare />
+              <MolsanIcon name="bell" size={22} tone="ocean" />
             </div>
 
 
