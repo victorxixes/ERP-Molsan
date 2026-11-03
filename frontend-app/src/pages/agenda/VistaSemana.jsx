@@ -97,16 +97,7 @@ export default function VistaSemana({
 
   return (
     <>
-      <header className="molsan-page-header agenda-vista-page-header">
-        <div className="molsan-page-header__identity">
-          <span className="molsan-page-header__mark" aria-hidden="true">AG</span>
-          <div className="min-w-0">
-            <p className="molsan-page-header__eyebrow">MOLSAN ERP · APODERAGEST</p>
-            <h1 className="molsan-page-header__title">Agenda · Vista semanal</h1>
-            <p className="molsan-page-header__description">Consulta la planificación semanal de citas y firmas.</p>
-          </div>
-        </div>
-      </header>
+      
 <div
       className="agenda-vista-premium agenda-vista-semana-premium 
         grid grid-cols-[70px,repeat(7,minmax(0,1fr))]
