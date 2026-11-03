@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "../../api/axios";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanIcon from "../../components/ui/MolsanIcon";
+import { Link } from "react-router-dom";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
 import { formatEuro as euros, formatPercent } from "../../utils/formatters";
@@ -149,11 +151,12 @@ export default function HonorariosGestoria({ soloPlantilla = false } = {}) {
       {!soloPlantilla && <>
       <header className="molsan-page-header">
         <div className="molsan-page-header__identity">
-          <div className="molsan-page-header__mark" aria-hidden="true">€</div>
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="euro" size={22} tone="ocean" /></div>
           <div className="min-w-0">
-            <p className="molsan-page-header__eyebrow">UTILIDADES · CATÁLOGO ECONÓMICO</p>
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027 · CATÁLOGO ECONÓMICO</p>
             <h1 className="molsan-page-header__title">Honorarios de gestoría</h1>
             <p className="molsan-page-header__description">Administra las tarifas vigentes. Los cambios se aplican al seleccionar el honorario en «Añadir pagos»; los importes ya registrados no se modifican.</p>
+            <Link to="/catalogos" className="molsan-page-back-link">← Volver a catálogos</Link>
           </div>
         </div>
       </header>
