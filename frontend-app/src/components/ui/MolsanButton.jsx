@@ -24,7 +24,7 @@ export default function MolsanButton({
         <span className="molsan-btn__spinner" aria-hidden="true" />
       ) : icon ? (
         <MolsanIcon name={icon} size={16} bare className="molsan-btn__icon" />
-      ) : null)
+      ) : null}
       <span>{children}</span>
     </button>
   );
