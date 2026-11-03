@@ -305,14 +305,14 @@ export default function EnviarANotarioModal({
   // (la ficha carga las fincas de forma asíncrona). Sincronizamos el primer
   // documento mientras el usuario no lo haya editado y no exista un valor guardado.
   const [cuantiaDocumentoPrincipalEditada, setCuantiaDocumentoPrincipalEditada] = useState(false);
+  const cuantiaDocumentoGuardada = expediente?.documentos_escritura?.[0]?.cuantia;
   useEffect(() => {
     if (cuantiaDocumentoPrincipalEditada || cuantiaFincas === "" || cuantiaFincas === null || cuantiaFincas === undefined) return;
-    const cuantiaPersistida = expediente?.documentos_escritura?.[0]?.cuantia;
-    if (cuantiaPersistida !== "" && cuantiaPersistida !== null && cuantiaPersistida !== undefined) return;
+    if (cuantiaDocumentoGuardada !== "" && cuantiaDocumentoGuardada !== null && cuantiaDocumentoGuardada !== undefined) return;
     setDocumentosEscritura((actuales) => actuales.map((documento, indice) =>
       indice === 0 ? { ...documento, cuantia: String(cuantiaFincas) } : documento
     ));
-  }, [cuantiaFincas, cuantiaDocumentoPrincipalEditada, expediente?.documentos_escritura]);
+  }, [cuantiaFincas, cuantiaDocumentoPrincipalEditada, cuantiaDocumentoGuardada]);
 
   const [documentosCarpeta, setDocumentosCarpeta] = useState([]);
   const [cargandoDocumentosCarpeta, setCargandoDocumentosCarpeta] = useState(false);
