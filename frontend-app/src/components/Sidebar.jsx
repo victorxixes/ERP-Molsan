@@ -480,9 +480,9 @@ const TopNavItem = ({
       ${
         isActive
           ? `
-            bg-[var(--erp-primary)]
-            text-white
-            border-[var(--erp-primary)]
+            bg-[#EAF2F8]
+            text-[#064675]
+            border-[#B9D7E6]
             shadow-sm
           `
           : `
@@ -1318,14 +1318,14 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                         }}
                         aria-haspopup={esMenu ? "menu" : undefined} aria-expanded={esMenu ? abierto : undefined}
                         aria-current={activeNavigationItem === item.label ? "page" : undefined}
-                        className={`flex items-center gap-1.5 whitespace-nowrap font-medium transition-all duration-200 border flex-shrink-0 px-2.5 py-1.5 rounded-lg text-[12px] ${(item.directRoute && pathname.replace(/\/$/, "") === item.to) || activeNavigationItem === item.label ? "bg-[var(--erp-primary)] text-white border-[var(--erp-primary)] shadow-sm" : abierto ? "bg-transparent text-[var(--erp-text)] border-[var(--erp-primary)]" : "bg-white text-[var(--erp-text)] border-[var(--erp-border)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)] hover:border-[var(--erp-primary)]"} ${item.attention ? "ng-boton-firmas-urgentes ng-urgencias-activas" : ""}`}>
+                        className={`flex items-center gap-1.5 whitespace-nowrap font-medium transition-all duration-200 border flex-shrink-0 px-2.5 py-1.5 rounded-lg text-[12px] ${(item.directRoute && pathname.replace(/\/$/, "") === item.to) || activeNavigationItem === item.label ? "bg-[#EAF2F8] text-[#064675] border-[#B9D7E6] shadow-sm" : abierto ? "bg-transparent text-[var(--erp-text)] border-[var(--erp-primary)]" : "bg-white text-[var(--erp-text)] border-[var(--erp-border)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)] hover:border-[var(--erp-primary)]"} ${item.attention ? "ng-boton-firmas-urgentes ng-urgencias-activas" : ""}`}>
                         <NavIcon name={item.icon} /><span>{item.label}</span>
                         {esMenu && <ChevronIcon open={abierto} />}
                         {(item.badge > 0 || (item.label === "Mensajes" && mensajesNoLeidos > 0)) ? <span className={item.label === "Mensajes" ? "min-w-[19px] h-[19px] px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold" : "min-w-[19px] h-[19px] px-1 flex items-center justify-center rounded-full bg-[var(--erp-primary-soft)] text-[var(--erp-primary)] text-[10px] font-bold"}>{item.label === "Mensajes" ? mensajesNoLeidos : item.badge}</span> : null}
                       </button>
                       {abierto && menuSidebarPosicion && createPortal(
                         <div ref={menuSidebarMenuRef} role="menu" style={{ position: "fixed", top: menuSidebarPosicion.top, left: menuSidebarPosicion.left, width: menuSidebarPosicion.ancho, zIndex: 9999 }} className="max-h-[min(70vh,380px)] overflow-y-auto rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-2 shadow-2xl">
-                          {menuSidebarItems.map((modulo) => <NavLink key={modulo.key} to={modulo.to} onClick={() => setMenuSidebarAbierto(null)} role="menuitem" className={({ isActive }) => `flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition ${isActive ? "bg-[var(--erp-primary)] text-white" : "text-[var(--erp-text)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"}`}><NavIcon name={modulo.icon} /><span>{modulo.label}</span></NavLink>)}
+                          {menuSidebarItems.map((modulo) => <NavLink key={modulo.key} to={modulo.to} onClick={() => setMenuSidebarAbierto(null)} role="menuitem" className={({ isActive }) => `flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition ${isActive ? "bg-[#EAF2F8] text-[#064675] border border-[#B9D7E6]" : "text-[var(--erp-text)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"}`}><NavIcon name={modulo.icon} /><span>{modulo.label}</span></NavLink>)}
                         </div>, document.body
                       )}
                     </div>
