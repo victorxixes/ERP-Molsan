@@ -7,6 +7,7 @@ import {
 
 import AuthenticatedPhoto from "../../components/AuthenticatedPhoto";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanButton from "../../components/ui/MolsanButton";
 import "./EmpleadosListadoPremium.css";
 
 import {
@@ -1795,33 +1796,7 @@ export default function EmpleadosListado({
                 sm:justify-end
               ">
 
-                <button
-                  type="button"
-                  onClick={
-                    cerrarNuevo
-                  }
-                  disabled={
-                    guardandoNuevo
-                  }
-                  className="
-                    rounded-xl
-                    border
-                    border-slate-200
-                    bg-white
-                    px-5
-                    py-2.5
-                    text-sm
-                    font-semibold
-                    text-slate-600
-                    shadow-sm
-                    transition
-                    hover:bg-slate-50
-                    disabled:cursor-not-allowed
-                    disabled:opacity-50
-                  "
-                >
-                  Cancelar
-                </button>
+                <MolsanButton type="button" onClick={cerrarNuevo} disabled={guardandoNuevo} variant="warning">Cancelar</MolsanButton>
 
 
                 <button
