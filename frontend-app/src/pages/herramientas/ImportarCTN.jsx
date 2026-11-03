@@ -10,7 +10,7 @@ import "../../css/CatalogosMaestrosPremium.css";
  */
 
 export default function ImportarCTN() {
-  const { importarCTN, loading, resultado } = useUtilidades();
+  const { importarCTN, loading, resultado, error } = useUtilidades();
 
   const [file, setFile] = useState(null);
 
@@ -192,46 +192,35 @@ export default function ImportarCTN() {
 
           {/* RESULTADO */}
 
+          {error && (
+            <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+              {error}
+            </div>
+          )}
+
           {resultado && (
-            <div
-              className="
-                rounded-2xl
-                border border-emerald-200
-                bg-emerald-50
-                p-5
-                animate-fadeIn
-              "
-            >
-
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 animate-fadeIn">
               <div className="flex items-center gap-3">
-
-                <div
-                  className="
-                    flex h-10 w-10
-                    items-center justify-center
-                    rounded-xl
-                    bg-emerald-100
-                    text-emerald-700
-                    font-bold
-                  "
-                >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 font-bold">
                   <MolsanIcon name="check" size={20} />
                 </div>
-
                 <div>
-
                   <div className="font-semibold text-emerald-800">
-                    Importación completada
+                    Importación completada sin borrar registros existentes
                   </div>
-
-                  <div className="mt-0.5 text-sm text-emerald-700">
-                    {resultado.importados} registros importados
+                  <div className="mt-1 text-sm text-emerald-700">
+                    {resultado.importados} filas procesadas · {resultado.insertados ?? 0} nuevos · {resultado.actualizados ?? 0} actualizados
                   </div>
-
+                  {resultado.asociaciones_actualizadas && (
+                    <div className="mt-1 text-sm text-emerald-700">
+                      {resultado.asociaciones_importadas ?? 0} asociaciones CTN importadas
+                    </div>
+                  )}
+                  <div className="mt-1 text-xs text-emerald-700/80">
+                    Los registros ausentes en el Excel y los datos bancarios/credenciales se conservan.
+                  </div>
                 </div>
-
               </div>
-
             </div>
           )}
 
