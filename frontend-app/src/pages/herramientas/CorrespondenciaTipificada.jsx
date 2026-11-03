@@ -298,7 +298,7 @@ export default function CorrespondenciaTipificada() {
         </section>
       ) : (
         <>
-          <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-wide text-slate-400">Catálogo de correspondencia</p><h2 className="mt-1 text-xl font-bold text-slate-800">{plantillaId ? "Ficha de plantilla" : "Nueva plantilla"}</h2></div><button type="button" onClick={() => { setVistaFicha(false); setMostrarVistaPrevia(false); setError(""); setMensaje(""); }} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">← Volver a correspondencia</button></div>
+          <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-wide text-slate-400">Catálogo de correspondencia</p><h2 className="mt-1 text-xl font-bold text-slate-800">{plantillaId ? "Ficha de plantilla" : "Nueva plantilla"}</h2></div><MolsanButton type="button" onClick={() => { setVistaFicha(false); setMostrarVistaPrevia(false); setError(""); setMensaje(""); }} variant="secondary">Volver a correspondencia</MolsanButton></div>
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[320px_minmax(0,1fr)]">
         <aside className="space-y-4">
           <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -385,10 +385,10 @@ export default function CorrespondenciaTipificada() {
             </div>
 
             <div className="mt-5 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
-              <button type="button" onClick={guardarPlantilla} disabled={guardando} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-50">{guardando ? "Guardando…" : "Guardar plantilla"}</button>
+              <MolsanButton type="button" onClick={guardarPlantilla} disabled={guardando} loading={guardando} icon="check" variant="success">Guardar plantilla</MolsanButton>
               <button type="button" onClick={() => setMostrarVistaPrevia((v) => !v)} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50"><MolsanIcon name="eye" size={20} /> Vista previa</button>
               {plantillaId && <button type="button" onClick={duplicarPlantilla} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">⧉ Duplicar</button>}
-              {plantillaId && <button type="button" onClick={eliminarPlantilla} className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-bold text-rose-700 hover:bg-rose-100">Eliminar</button>}
+              {plantillaId && <MolsanButton type="button" onClick={eliminarPlantilla} icon="delete" variant="danger">Eliminar</MolsanButton>}
             </div>
           </section>
 
