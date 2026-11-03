@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useAgendaStore } from "../../store/agendaStore";
+import MolsanIcon from "../ui/MolsanIcon";
 
 import "../../css/ComponentesOperativosPremium.css";
 
@@ -106,12 +107,7 @@ export default function AgendaToast() {
               shrink-0
             "
           >
-            <svg
-              className="w-4 h-4"
-              aria-hidden="true"
-            >
-              <use href="/icons/icons.svg#calendar" />
-            </svg>
+            <MolsanIcon name="calendar" size={16} bare />
           </div>
 
           {/* MENSAJE */}
