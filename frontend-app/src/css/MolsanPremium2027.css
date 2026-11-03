@@ -1794,3 +1794,22 @@ a[aria-current="page"] .molsan-nav-icon-3d {
   outline: 2px solid #064675;
   outline-offset: 2px;
 }
+
+/* Los pictogramas Molsan dentro de la marca de cabecera heredan el blanco
+   corporativo y no añaden una segunda placa sobre el recuadro del header. */
+.molsan-page-header__mark .molsan-icon-3d {
+  display: inline-grid;
+  width: 22px !important;
+  height: 22px !important;
+  color: #FFFFFF !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.molsan-page-header__mark .molsan-icon-3d svg {
+  width: 100% !important;
+  height: 100% !important;
+  color: #FFFFFF !important;
+  filter: none !important;
+}
