@@ -1,5 +1,6 @@
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import MolsanButton from "../../components/ui/MolsanButton";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import "./Maestros.css";
 
@@ -493,24 +494,7 @@ export default function Maestros() {
                   `}
                 >
 
-                  <svg
-                    className={`
-                      w-4
-                      h-4
-                      ${
-                        activo
-                          ? "text-white"
-                          : "text-[var(--erp-primary)]"
-                      }
-                    `}
-                    aria-hidden="true"
-                  >
-
-                    <use
-                      href={`/icons/icons.svg#${tipo.icon}`}
-                    />
-
-                  </svg>
+                  <MolsanIcon name={tipo.icon} size={16} bare className={`w-4 h-4 ${activo ? "!text-white" : "text-[var(--molsan-primary)]"}`} />
 
                   {tipo.label}
 
@@ -650,14 +634,7 @@ export default function Maestros() {
               "
             >
 
-              <svg
-                className="w-4 h-4"
-                aria-hidden="true"
-              >
-                <use
-                  href="/icons/icons.svg#plus"
-                />
-              </svg>
+              <MolsanIcon name="plus" size={16} bare />
 
               Nuevo {tipoActual.singular}
 
@@ -899,14 +876,7 @@ export default function Maestros() {
                   "
                 >
 
-                  <svg
-                    className="w-6 h-6"
-                    aria-hidden="true"
-                  >
-                    <use
-                      href="/icons/icons.svg#database"
-                    />
-                  </svg>
+                  <MolsanIcon name="database" size={24} bare />
 
                 </div>
 
