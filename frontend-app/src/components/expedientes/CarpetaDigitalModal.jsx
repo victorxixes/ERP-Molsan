@@ -1045,9 +1045,9 @@ export default function CarpetaDigitalModal({
                           <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">{seccion.titulo}</h5>
                           <div className="space-y-0 px-2.5 py-1.5">
                             {seccion.campos.map(([etiqueta, valor]) => (
-                              <div key={etiqueta} className="min-w-0 border-b border-slate-100 py-1.5 last:border-b-0">
-                                <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
-                                <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                              <div key={etiqueta} className={(String(actividadId || "").toLowerCase().includes("auditoria") || String(actividadId || "").toLowerCase().includes("auditoría")) ? "min-w-0 border-b border-slate-100 py-1.5 last:border-b-0" : "min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2"}>
+                                <p className={(String(actividadId || "").toLowerCase().includes("auditoria") || String(actividadId || "").toLowerCase().includes("auditoría")) ? "text-[10px] font-bold text-slate-500" : "text-[10px] font-bold uppercase tracking-wide text-slate-500"}>{etiqueta}</p>
+                                <p className={(String(actividadId || "").toLowerCase().includes("auditoria") || String(actividadId || "").toLowerCase().includes("auditoría")) ? "break-words text-[11px] font-semibold text-slate-800" : "mt-0.5 break-words text-xs font-semibold text-slate-800"}>{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
                               </div>
                             ))}
                           </div>
