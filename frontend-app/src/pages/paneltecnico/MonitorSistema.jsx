@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import MonitorRealtime from "./MonitorRealtime";
 import "./PanelTecnicoSubmodulos.css";
 import {
@@ -471,22 +472,7 @@ export default function MonitorSistema() {
                         `}
                       >
 
-                        <svg
-                          className={`
-                            w-4
-                            h-4
-                            flex-shrink-0
-
-                            ${
-                              activa
-                                ? "text-white"
-                                : "text-[var(--erp-primary)]"
-                            }
-                          `}
-                          aria-hidden="true"
-                        >
-                          <use href="/icons/icons.svg#database" />
-                        </svg>
+                        <MolsanIcon name="database" size={16} bare />
 
                         <span className="truncate">
                           {tabla}
@@ -544,12 +530,7 @@ export default function MonitorSistema() {
                     "
                   >
 
-                    <svg
-                      className="w-6 h-6"
-                      aria-hidden="true"
-                    >
-                      <use href="/icons/icons.svg#database" />
-                    </svg>
+                    <MolsanIcon name="database" size={24} bare />
 
                   </div>
 
@@ -607,16 +588,7 @@ export default function MonitorSistema() {
                         "
                       >
 
-                        <svg
-                          className="
-                            w-5
-                            h-5
-                            text-[var(--erp-primary)]
-                          "
-                          aria-hidden="true"
-                        >
-                          <use href="/icons/icons.svg#database" />
-                        </svg>
+                        <MolsanIcon name="database" size={20} bare />
 
                         <h3
                           className="
