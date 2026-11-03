@@ -710,22 +710,9 @@ export default function TiposConceptoGastos() {
 
           <div className="catalogos-subpage-header__identity-wrap">
             <div className="molsan-page-header__identity catalogos-subpage-header__identity">
-              <div
-                className="
-                  flex
-                  h-11
-                  w-11
-                  items-center
-                  justify-center
-                  rounded-2xl
-                  bg-blue-600
-                  text-white
-                  shadow-lg
-                  shadow-blue-600/20
-                "
-              >
+              <div className="molsan-page-header__mark">
 
-                <MolsanIcon name="receipt" size={24} tone="ocean" />
+                <MolsanIcon name="receipt" size={22} tone="ocean" />
               </div>
 
               <div>
