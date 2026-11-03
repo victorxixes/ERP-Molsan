@@ -967,7 +967,7 @@ function Kpi({
             shadow-sm
           `}
         >
-          <MolsanIcon name={icon} size={38} />
+          <MolsanIcon name={icon} size={38} bare />
         </div>
 
 
