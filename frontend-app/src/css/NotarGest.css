@@ -54,121 +54,7 @@
 .ng-icono-girando { display:inline-block; animation:ng-girar 1s linear infinite; }
 @keyframes ng-girar { to { transform:rotate(360deg); } }
 
-/* Cabecera única del espacio de trabajo */
-.notargest.ng-content > .ng-hero,
-.ng-admin-notarias > .ng-hero {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  width: 100%;
-  min-width: 0;
-  min-height: 132px;
-  margin: 0;
-  padding: 26px 30px;
-  overflow: hidden;
-  color: #fff;
-  border: 1px solid rgba(255,255,255,.16);
-  border-radius: 18px;
-  background:
-    radial-gradient(circle at 86% 18%, rgba(116,199,219,.18), transparent 28%),
-    linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
-  box-shadow: 0 12px 28px rgba(4,55,91,.14);
-  animation: none;
-  transition: none;
-  opacity: 1;
-  transform: none;
-  filter: none;
-}
-.notargest.ng-content > .ng-hero::after,
-.ng-admin-notarias > .ng-hero::after {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: 3px;
-  content: "";
-  background: linear-gradient(90deg,#6CC5D9 0%,#8CB8D8 38%,rgba(255,255,255,.08) 100%);
-  pointer-events: none;
-}
-.ng-hero-identidad {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  min-width: 0;
-}
-.ng-hero-marca {
-  display: grid;
-  flex: 0 0 60px;
-  place-items: center;
-  width: 60px;
-  height: 60px;
-  color: #fff;
-  border: 1px solid rgba(255,255,255,.32);
-  border-radius: 14px;
-  background: rgba(255,255,255,.12);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
-  font-size: 19px;
-  font-weight: 850;
-  letter-spacing: -.04em;
-}
-.ng-hero-eyebrow,
-.notargest .molsan-page-header__eyebrow,
-.ng-admin-notarias .molsan-page-header__eyebrow {
-  margin: 0 0 4px;
-  color: #C6DFEC;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: .14em;
-  line-height: 1.35;
-}
-.notargest .molsan-page-header__title,
-.ng-admin-notarias .molsan-page-header__title {
-  margin: 0;
-  color: #fff;
-  font-size: clamp(27px,2.2vw,34px);
-  font-weight: 850;
-  letter-spacing: -.04em;
-  line-height: 1.12;
-}
-.notargest .molsan-page-header__description,
-.ng-admin-notarias .molsan-page-header__description {
-  max-width: 720px;
-  margin: 5px 0 0;
-  color: #D1E4EE;
-  font-size: 12px;
-  line-height: 1.5;
-}
-.ng-hero-acciones {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-left: auto;
-}
-.ng-hero-acciones > button,
-.ng-hero-acciones > a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 38px;
-  padding: 0 13px;
-  color: #fff !important;
-  border: 1px solid rgba(255,255,255,.3) !important;
-  border-radius: 10px !important;
-  background: rgba(255,255,255,.12) !important;
-  box-shadow: none !important;
-  font-size: 11px;
-  font-weight: 750;
-}
-.ng-hero-acciones > button:hover,
-.ng-hero-acciones > a:hover { background: rgba(255,255,255,.2) !important; }
-
+/* Cabecera gestionada por PortalProfesionalPremium2027.css. */
 /* Dashboard: métricas y paneles */
 .ng-dashboard-analitica { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 .ng-dashboard-graficos {
@@ -552,17 +438,6 @@
 }
 @media (max-width: 640px) {
   .notargest.ng-content,.ng-admin-notarias { gap: 13px; padding: 12px; }
-  .notargest.ng-content > .ng-hero,.ng-admin-notarias > .ng-hero {
-    min-height: 0;
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 13px;
-    padding: 15px;
-    border-radius: 14px;
-  }
-  .ng-hero-identidad { gap: 10px; }
-  .ng-hero-marca { flex-basis: 42px; width: 42px; height: 42px; }
-  .ng-hero-acciones { width: 100%; margin-left: 0; justify-content: flex-start; }
   .ng-dashboard-graficos,.ng-dashboard-graficos-tres-columnas,.ng-dashboard-kpis,
   .ng-admin-kpis,.ng-admin-kpis-global,.ng-admin-notarias-grid,.ng-admin-circuitos { grid-template-columns: 1fr; }
   .ng-dashboard-grafico { padding: 13px; }
@@ -589,21 +464,7 @@
 }
 
 
-/* Acabado Premium 2027 · iconografía, tarjetas y modales NotarGest */
-.notargest.ng-content > .ng-hero .ng-hero-marca,
-.ng-admin-notarias > .ng-hero .ng-hero-marca {
-  display:grid;
-  flex:0 0 58px;
-  width:58px;
-  height:58px;
-  place-items:center;
-  color:#FFFFFF;
-  border:1px solid rgba(255,255,255,.34);
-  border-radius:17px;
-  background:linear-gradient(145deg,rgba(255,255,255,.22),rgba(255,255,255,.08));
-  box-shadow:0 8px 20px rgba(1,30,50,.20),inset 0 1px 0 rgba(255,255,255,.28);
-}
-.ng-hero-marca .molsan-icon-3d { width:40px!important;height:40px!important;filter:drop-shadow(0 3px 5px rgba(0,24,42,.22)); }
+/* Iconografía de cabecera centralizada en MolsanIcon y estilos comunes. */
 .ng-admin-kpi-button {
   display:flex;
   min-height:190px;
@@ -661,7 +522,5 @@
   max-width:100%;min-width:0;box-sizing:border-box;
 }
 @media(max-width:640px) {
-  .notargest.ng-content > .ng-hero .ng-hero-marca,.ng-admin-notarias > .ng-hero .ng-hero-marca { width:48px;height:48px;flex-basis:48px;border-radius:14px; }
-  .ng-hero-marca .molsan-icon-3d { width:34px!important;height:34px!important; }
   .ng-admin-kpi-button { min-height:150px; }
 }
