@@ -11,6 +11,7 @@ import VistaDia from "./VistaDia";
 import ModalNuevaCita from "../../components/agenda/ModalNuevaCita.jsx";
 import AgendaToast from "../../components/agenda/AgendaToast.jsx";
 import SelectSJ from "../../components/ui/SelectSJ";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "./Agenda.css";
 
 const MESES = [
@@ -419,10 +420,10 @@ export default function Agenda({ soloApoderado = false } = {}) {
     <div className="molsan-page-stack agenda-premium-page text-[var(--erp-text)] animate-fade-in">
       <header className="molsan-page-header">
         <div className="molsan-page-header__identity">
-          <div className="molsan-page-header__mark" aria-hidden="true">AG</div>
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="calendar" size={24} tone="ocean" /></div>
           <div className="min-w-0">
             <p className="molsan-page-header__eyebrow">MOLSAN ERP · APODERAGEST</p>
-            <h1 className="molsan-page-header__title">Agenda · Vista mensual</h1>
+            <h1 className="molsan-page-header__title">Agenda · Vista {vista === "mes" ? "mensual" : vista === "semana" ? "semanal" : "diaria"}</h1>
             <p className="molsan-page-header__description">Consulta la actividad mensual y la distribución de citas.</p>
           </div>
         </div>
