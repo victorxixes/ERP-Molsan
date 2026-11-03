@@ -649,7 +649,7 @@ export default function EnviarANotarioModal({
 
         {!inline && (
           <div className="flex shrink-0 items-center justify-end border-b border-slate-200 bg-white px-5 py-3 sm:px-7">
-            <button type="button" disabled={loading} onClick={onClose} aria-label="Cerrar modal" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50"><MolsanIcon name="x" size={15} /></button>
+            <button type="button" disabled={loading} onClick={onClose} aria-label="Cerrar modal" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50"><MolsanIcon name="x" size={15} bare /></button>
           </div>
         )}
 
@@ -700,7 +700,7 @@ export default function EnviarANotarioModal({
                                 : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                             }`}
                           >
-                            {opcion === "Sí" ? <><MolsanIcon name="check" size={14} /> Sí</> : <><MolsanIcon name="x" size={14} /> No</>}
+                            {opcion === "Sí" ? <><MolsanIcon name="check" size={14} bare /> Sí</> : <><MolsanIcon name="x" size={14} bare /> No</>}
                           </button>
                         );
                       })}
@@ -749,7 +749,7 @@ export default function EnviarANotarioModal({
                       onClick={() => seleccionarNotario(null)}
                       className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      <MolsanIcon name="x" size={14} /> Quitar notario y buscar otro
+                      <MolsanIcon name="x" size={14} bare /> Quitar notario y buscar otro
                     </button>
                   </div>
                 )}
