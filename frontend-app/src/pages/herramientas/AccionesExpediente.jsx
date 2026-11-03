@@ -124,20 +124,9 @@ async function leerRespuestaServidor(
 // ICONO
 // ============================================================
 
-function Icono({
-  name,
-  className = "w-5 h-5",
-}) {
-  return (
-    <svg
-      className={className}
-      aria-hidden="true"
-    >
-      <use
-        href={`/icons/icons.svg#${name}`}
-      />
-    </svg>
-  );
+function Icono({ name, className = "w-5 h-5" }) {
+  const size = className.includes("w-6") ? 24 : className.includes("w-4") ? 16 : 20;
+  return <MolsanIcon name={name} size={size} bare className={className} />;
 }
 
 
