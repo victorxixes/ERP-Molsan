@@ -1548,38 +1548,7 @@ export default function Municipios() {
             
 
 
-            <button
-              type="button"
-              onClick={
-                abrirNuevo
-              }
-              className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-xl
-                bg-blue-600
-                px-5
-                py-2.5
-                text-sm
-                font-semibold
-                text-white
-                shadow-[0_8px_20px_rgba(37,99,235,0.20)]
-                transition-all
-                hover:bg-blue-700
-                hover:-translate-y-0.5
-                active:scale-[0.98]
-              "
-            >
-
-              <span className="text-lg">
-                +
-              </span>
-
-              Nuevo municipio
-
-            </button>
+            <MolsanButton type="button" onClick={abrirNuevo} icon="plus" variant="success">Nuevo municipio</MolsanButton>
 
           </div>
 
