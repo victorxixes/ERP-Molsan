@@ -1117,22 +1117,8 @@ export default function OficinasLiquidadoras() {
           className="molsan-page-header__identity catalogos-subpage-header__identity"
         >
 
-          <div
-            className="
-              w-12
-              h-12
-              rounded-2xl
-              bg-[var(--erp-primary-soft)]
-              text-[var(--erp-primary)]
-              border
-              border-[var(--erp-border)]
-              flex
-              items-center
-              justify-center
-              shrink-0
-            "
-          >
-            <MolsanIcon name="landmark" size={40} tone="ocean" />
+          <div className="molsan-page-header__mark">
+            <MolsanIcon name="landmark" size={22} tone="ocean" tone="ocean" />
           </div>
 
 
