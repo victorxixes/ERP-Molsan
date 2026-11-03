@@ -578,7 +578,7 @@ export default function InformeApoderado({
       >
 
         <Kpi
-          icon="🤝"
+          icon="handshake"
           titulo="Citas presenciales"
           valor={
             data.total_presencial ?? 0
@@ -590,7 +590,7 @@ export default function InformeApoderado({
 
 
         <Kpi
-          icon="💻"
+          icon="monitor"
           titulo="Citas VC"
           valor={
             data.total_vc ?? 0
@@ -602,7 +602,7 @@ export default function InformeApoderado({
 
 
         <Kpi
-          icon="🚗"
+          icon="car"
           titulo="Km recorridos"
           valor={`${numero(
             data.km_totales,
@@ -615,7 +615,7 @@ export default function InformeApoderado({
 
 
         <Kpi
-          icon="⏱️"
+          icon="timer"
           titulo="Tiempo medio"
           valor={`${numero(
             data.tiempo_medio_dias,
