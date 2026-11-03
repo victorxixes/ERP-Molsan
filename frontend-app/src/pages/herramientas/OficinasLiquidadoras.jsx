@@ -1107,7 +1107,7 @@ export default function OficinasLiquidadoras() {
         >
 
           <div className="molsan-page-header__mark">
-            <MolsanIcon name="landmark" size={22} tone="ocean" tone="ocean" />
+            <MolsanIcon name="landmark" size={22} tone="ocean" />
           </div>
 
 
