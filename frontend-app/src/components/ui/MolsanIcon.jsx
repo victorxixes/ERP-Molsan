@@ -2,8 +2,7 @@ import React from "react";
 
 /**
  * Iconografía corporativa MOLSAN ERP PREMIUM 2027.
- * Acepta nombres semánticos y los emojis históricos para facilitar una
- * migración gradual sin alterar la lógica de los módulos.
+ * Catálogo único de pictogramas SVG con nombres semánticos corporativos.
  */
 const PATHS = {
   activity: <><path d="M3 12h4l2.2-7 4.1 14 2.2-7H21"/></>,
