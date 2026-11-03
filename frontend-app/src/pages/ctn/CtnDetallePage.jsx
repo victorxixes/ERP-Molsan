@@ -154,7 +154,7 @@ export default function CtnDetallePage() {
   const modalidadTexto = modalModalidad === "VC" ? "Videoconferencia" : "Presencial";
 
   if (cargando) return <div className="ctn-detalle-page"><p>Cargando ficha CTN…</p></div>;
-  if (!notaria) return <div className="ctn-detalle-page"><p>{error || "No se ha encontrado el notario."}</p><button onClick={() => navigate(-1)}>Volver</button></div>;
+  if (!notaria) return <div className="ctn-detalle-page"><p>{error || "No se ha encontrado el notario."}</p><button type="button" className="molsan-btn molsan-btn--secondary" onClick={() => navigate(-1)}>Volver al listado</button></div>;
 
   return (
     <div className="molsan-page-stack ctn-detalle-page ctn-detalle-page--content">
