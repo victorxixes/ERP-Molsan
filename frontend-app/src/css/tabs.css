@@ -4,13 +4,17 @@
 
 .tabs-sj {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   margin-bottom: 20px;
+  padding: 0 0 6px;
+  border-bottom: 1px solid #D8E4EC;
 }
 
 .tab-sj {
   padding: 10px 18px;
-  border-radius: var(--molsan-radius-control, 9px);
+  border: 1px solid #D8E4EC;
+  border-bottom: 3px solid transparent;
+  border-radius: 10px 10px 7px 7px;
   background-color: var(--molsan-surface-soft, #F2F7FB);
   color: var(--molsan-text-secondary, #617789);
   cursor: pointer;
@@ -26,4 +30,7 @@
 .tab-sj.active {
   background-color: var(--molsan-primary, #064675);
   color: white;
+  border-color: var(--molsan-primary, #064675);
+  border-bottom-color: #6CC5D9;
+  box-shadow: 0 5px 12px rgba(6, 70, 117, .16);
 }
