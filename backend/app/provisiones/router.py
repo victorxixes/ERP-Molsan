@@ -344,7 +344,7 @@ def _crear_operacion(db: Session, provision: ProvisionFondo, datos: OperacionPro
         suplidos_base = _dinero(tarifa.suplidos)
         otros_gastos_base = _dinero(tarifa.otros_gastos)
     else:
-        honorarios_base = _dinero(datos.honorarios_base if datos.honorarios_base is not None else datos.honorarios)
+        honorarios_base = _dinero(datos.honorarios_base if datos.honorarios_base else datos.honorarios)
         honorarios = Decimal("0.00") if datos.condonar_honorarios else _dinero(datos.honorarios)
         suplidos = _dinero(datos.suplidos)
         gastos_registro_base = registro_configurado
