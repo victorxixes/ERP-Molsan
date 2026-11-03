@@ -1,6 +1,5 @@
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import MolsanButton from "../../components/ui/MolsanButton";
-import MolsanButton from "../../components/ui/MolsanButton";
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 
