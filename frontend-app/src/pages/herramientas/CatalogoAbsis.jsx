@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuthStore } from "../../store/authStore";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { API_BASE } from "../../api/config";
 
 const API_URL = `${API_BASE}/catalogos-absis`;
@@ -168,18 +169,11 @@ export default function CatalogoAbsis() {
     <main className="molsan-page-stack catalogos-premium-page min-h-full">
       <header className="molsan-page-header">
         <div className="molsan-page-header__identity">
-          <div className="molsan-page-header__mark" aria-hidden="true">▦</div>
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="database" size={22} tone="ocean" /></div>
           <div className="min-w-0">
             <p className="molsan-page-header__eyebrow">MOLSAN ERP · DATOS ABSIS</p>
             <h1 className="molsan-page-header__title">Catálogo ABSIS</h1>
             <p className="molsan-page-header__description">Gestiona en una única pantalla los estados y listas auxiliares que utiliza la integración ABSIS. Cada lista se mantiene por separado y sus cambios quedan guardados en el servidor.</p>
-            <button type="button" onClick={() => window.history.back()} className="molsan-btn molsan-btn--secondary mt-3">← Volver</button>
-          </div>
-        </div>
-        <div className="molsan-page-header__actions">
-          <div className="rounded-xl border border-[#D8E4EC] bg-[#F2F7FB] px-4 py-3 text-right shadow-sm">
-            <p className="text-2xl font-extrabold leading-tight text-[#064675]">{filas.filter((f) => f.activo).length}</p>
-            <p className="text-xs font-bold tracking-wide text-[#617789]">entradas activas</p>
           </div>
         </div>
       </header>
