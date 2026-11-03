@@ -267,9 +267,7 @@ function Toast({
             shadow-sm
           "
         >
-          {
-            configuracion.icono
-          }
+          <MolsanIcon name={configuracion.icono} size={18} />
         </div>
 
 
@@ -415,7 +413,7 @@ function obtenerConfiguracion(
     case "offline":
 
       return {
-        icono: "⚫",
+        icono: "pause",
         titulo: "Usuario desconectado",
         color: "bg-slate-400",
       };
@@ -424,7 +422,7 @@ function obtenerConfiguracion(
     case "error":
 
       return {
-        icono: "⛔",
+        icono: "alert",
         titulo: "Error",
         color: "bg-red-400",
       };
@@ -433,7 +431,7 @@ function obtenerConfiguracion(
     case "warning":
 
       return {
-        icono: "⚠️",
+        icono: "alert",
         titulo: "Advertencia",
         color: "bg-yellow-400",
       };
