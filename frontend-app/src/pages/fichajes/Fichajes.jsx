@@ -1,5 +1,6 @@
 import MolsanButton from "../../components/ui/MolsanButton";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import "../../css/tabs.css";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
@@ -276,8 +277,8 @@ export default function Fichajes({ modo = "empleado" }) {
           {!esAdminVista && <FichajesResumen recargar={recargarEmpleado} />}
 
           <section className="overflow-hidden rounded-3xl border border-[var(--erp-border)] bg-[var(--erp-surface)] shadow-sm">
-            <div className="flex flex-wrap gap-2 border-b border-[var(--erp-border)] p-3 sm:p-4">
-              {tabs.map((t) => <button key={t.id} type="button" onClick={() => setPestana(t.id)} className={`rounded-xl px-4 py-2.5 text-sm font-bold transition ${pestana === t.id ? "bg-blue-700 text-white shadow-sm" : "text-[var(--erp-text-soft)] hover:bg-blue-50 hover:text-blue-800"}`}>{t.label}</button>)}
+            <div className="tabs-sj flex-wrap p-3 sm:p-4">
+              {tabs.map((t) => <button key={t.id} type="button" onClick={() => setPestana(t.id)} className={`tab-sj ${pestana === t.id ? "active" : ""}`}>{t.label}</button>)}
             </div>
 
             {!esAdminVista && pestana === "calendario" && (
