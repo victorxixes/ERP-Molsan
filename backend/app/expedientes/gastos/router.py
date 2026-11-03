@@ -209,7 +209,7 @@ def _validar_calculo(datos: dict):
 
 
 def _estado_legacy_pagado(estado: object) -> bool:
-    return str(estado or "").strip().casefold() in {"pagado", "pagada", "abonado", "abonada", "efectuado", "efectuada", "paid"}
+    return str(estado or "").strip().casefold() in {"pagado", "pagada", "abonado", "abonada", "efectuado", "efectuada", "realizado", "realizada", "paid"}
 
 
 def _total_pagado_efectivo(estado: object, importe_obligacion: object, total_movimientos: object, numero_movimientos: int) -> Decimal:
