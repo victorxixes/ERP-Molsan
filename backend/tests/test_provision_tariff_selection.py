@@ -4,7 +4,7 @@ from decimal import Decimal
 from types import SimpleNamespace
 
 from fastapi import HTTPException
-from backend.app.provisiones.router import _buscar_tarifa, _tarifa_aplicable, _importe_configurable, _validar_motivo_total_manual
+from backend.app.provisiones.router import _buscar_tarifa, _tarifa_aplicable, _importe_configurable, _validar_motivo_total_manual, _total_garantia_independiente
 
 
 class FakeQuery:
@@ -71,6 +71,15 @@ class ProvisionTariffSelectionTests(unittest.TestCase):
             _validar_motivo_total_manual(Decimal("100.00"), Decimal("95.00"), "")
         self.assertEqual(caught.exception.status_code, 422)
         _validar_motivo_total_manual(Decimal("100.00"), Decimal("95.00"), "Ajuste autorizado")
+
+    def test_independent_guarantee_total_is_recomputed_from_four_concepts(self):
+        garantia = {"notaria": "10.10", "ajd": "2.50", "registro": "3.20", "gestion": "5.00", "total": "999.99"}
+        self.assertEqual(_total_garantia_independiente(garantia), Decimal("20.80"))
+
+    def test_independent_guarantee_rejects_negative_concept(self):
+        from fastapi import HTTPException
+        with self.assertRaises(HTTPException):
+            _total_garantia_independiente({"notaria": "-1", "ajd": "0", "registro": "0", "gestion": "0"})
 
     def test_capital_must_be_inside_configured_range(self):
         bounded = tariff(1, minimo="100", maximo="200")

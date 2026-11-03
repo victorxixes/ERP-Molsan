@@ -1001,6 +1001,14 @@ class ProvisionIndependienteInput(BaseModel):
     garantias: List[dict] = Field(default_factory=list)
     observaciones: Optional[str] = None
 
+
+def _total_garantia_independiente(garantia: dict) -> Decimal:
+    """Recalcula la garantía con los cuatro conceptos que forman su provisión."""
+    return sum(
+        (_dinero(garantia.get(campo, 0)) for campo in ("notaria", "ajd", "registro", "gestion")),
+        Decimal("0.00"),
+    ).quantize(Decimal("0.01"))
+
     @validator("garantias")
     def validar_garantias(cls, valor):
         if not valor:
@@ -1041,10 +1049,7 @@ def _guardar_independiente(item: ProvisionIndependiente, datos: ProvisionIndepen
     for g in garantias:
         # El total nunca se toma del cliente ni de campos heredados: se deriva exclusivamente
         # de los cuatro conceptos vigentes de la provisión.
-        subtotal = sum(
-            (_dinero(g.get(k, 0)) for k in ("notaria", "ajd", "registro", "gestion")),
-            Decimal("0.00"),
-        ).quantize(Decimal("0.01"))
+        subtotal = _total_garantia_independiente(g)
         g["total"] = float(subtotal)
         total += subtotal
     item.fecha = datos.fecha
