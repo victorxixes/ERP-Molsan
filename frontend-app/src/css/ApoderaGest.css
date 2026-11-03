@@ -100,7 +100,7 @@
   width: 34px;
   height: 34px;
   place-items: center;
-  color: var(--ag-kpi-color, #3761d7);
+  color: var(--ag-kpi-color, var(--molsan-primary, #064675));
   background: var(--ag-kpi-icon-bg, var(--molsan-primary-soft, #EAF2F8));
   border: 1px solid rgba(255,255,255,.85);
   border-radius: 11px;
@@ -127,7 +127,7 @@
   font-weight: 550;
 }
 .apoderagest .ag-kpi-azul{
-  --ag-kpi-color: #3862dc;
+  --ag-kpi-color: var(--molsan-primary, #064675);
   --ag-kpi-icon-bg: var(--molsan-primary-soft, #EAF2F8);
   --ag-kpi-halo: rgba(72, 111, 235, .075);
 }
@@ -177,7 +177,7 @@
   font-weight: 800;
 }
 .apoderagest .ag-enlace-accion:hover{
-  color: #183da9;
+  color: var(--molsan-primary-hover, #04375B);
 }
 .apoderagest .ag-proximas-lista{
   display: grid;
@@ -413,7 +413,7 @@
   width: 22px;
   height: 22px;
   border: 2px solid #dce5fb;
-  border-top-color: #4168e7;
+  border-top-color: var(--molsan-primary-hover, #04375B);
   border-radius: 50%;
   animation: ag-girar .75s linear infinite;
 }
@@ -684,7 +684,7 @@
 .apoderagest .ag-ficha-paneles .ag-ficha-observaciones{grid-column:1/-1!important}
 .apoderagest .ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles{display:grid;grid-template-columns:minmax(150px,.8fr) minmax(190px,1fr) minmax(230px,1.25fr) auto;align-items:end;gap:12px}
 .apoderagest .ag-ficha-paneles .ag-firmar-controles select{width:100%;min-width:0;min-height:40px;padding:9px 34px 9px 12px;border:1px solid #d7e0ef;border-radius:10px;outline:none;background-color:#f8faff;color:#24324b;font:inherit;font-size:13px;font-weight:600;box-shadow:inset 0 1px 2px rgba(31,51,86,.03);transition:border-color .18s,box-shadow .18s,background .18s}
-.apoderagest .ag-ficha-paneles .ag-firmar-controles select:focus{border-color:#6b8af5;background:#fff;box-shadow:0 0 0 3px rgba(65,109,240,.12)}
+.apoderagest .ag-ficha-paneles .ag-firmar-controles select:focus{border-color:var(--molsan-primary, #064675);background:#fff;box-shadow:0 0 0 3px color-mix(in srgb, var(--molsan-primary, #064675) 12%, transparent)}
 .apoderagest .ag-ficha-paneles .ag-firmar-controles label{min-width:0}
 .apoderagest .ag-ficha-paneles .ag-firmar-controles input{box-sizing:border-box}
 .apoderagest .ag-ficha-paneles .ag-firmar-controles button{white-space:nowrap}
@@ -730,7 +730,7 @@
 .apoderagest .ag-aceptar-campo{display:flex;min-width:0;flex-direction:column;gap:6px}
 .apoderagest .ag-aceptar-campo>span{color:#738199;font-size:10px;font-weight:850;letter-spacing:.055em;text-transform:uppercase}
 .apoderagest .ag-aceptar-campo input{box-sizing:border-box;width:100%;min-width:0;min-height:39px;border:1px solid #d7e0ef;border-radius:10px;background:#fbfcff;padding:8px 10px;color:#25334b;font:inherit;font-size:12px;font-weight:650;outline:none}
-.apoderagest .ag-aceptar-campo input:focus{border-color:#6b8af5;background:#fff;box-shadow:0 0 0 3px rgba(65,109,240,.12)}
+.apoderagest .ag-aceptar-campo input:focus{border-color:var(--molsan-primary, #064675);background:#fff;box-shadow:0 0 0 3px color-mix(in srgb, var(--molsan-primary, #064675) 12%, transparent)}
 .apoderagest .ag-aceptar-campo input:disabled{cursor:not-allowed;background:#edf0f5;color:#8a94a6}
 .apoderagest .ag-aceptar-accion{display:flex;align-items:end;min-height:39px}
 .apoderagest .ag-aceptar-accion button{min-height:39px;border:0;border-radius:10px;background:linear-gradient(135deg,#2458cf,#4279ef);padding:9px 20px;color:#fff;font-size:12px;font-weight:850;box-shadow:0 5px 14px rgba(37,87,205,.18);cursor:pointer}
