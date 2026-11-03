@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanButton from "../../components/ui/MolsanButton";
 import { listarNotarios } from "../../api/notarios";
 import { useAuthStore } from "../../store/authStore";
 import "../../css/HerramientasPremium.css";
@@ -229,7 +230,7 @@ export default function MensajeriaSolicitudes() {
         </div>
         <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Servicio<select className={inputClass + " mt-1.5"} value={form.servicio_id} onChange={(e) => setForm({ ...form, servicio_id: e.target.value })}><option value="">Sin especificar</option>{servicios.map((s) => <option key={s.id} value={s.id}>{s.nombre}</option>)}</select></label>
         <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Instrucciones<textarea className={inputClass + " mt-1.5"} rows="3" value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} placeholder="Contenido, horario, indicaciones de recogida o entrega…" /></label>
-        <button disabled={guardando} className="w-full rounded-xl bg-blue-700 px-5 py-3 text-sm font-bold text-white disabled:opacity-50">{guardando ? "Creando encargo…" : "Crear encargo"}</button>
+        <MolsanButton type="submit" variant="success" icon="plus" disabled={guardando} loading={guardando} className="w-full">Crear encargo</MolsanButton>
       </form>
       <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="border-b border-slate-100 p-5"><h2 className="text-lg font-bold text-slate-800">Mis encargos</h2><p className="mt-1 text-sm text-slate-500">El sistema genera automáticamente un ID único para cada encargo.</p></div>
