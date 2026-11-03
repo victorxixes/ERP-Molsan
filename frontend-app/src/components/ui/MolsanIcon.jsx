@@ -92,34 +92,21 @@ const PATHS = {
 
 };
 const ALIASES = {
-  "👥": "users", "✍️": "pen", "✍": "pen", "⏱️": "timer",
-  "🧾": "receipt", "🏛️": "landmark", "💻": "monitor", "🚗": "car",
-  "📈": "chart", "📍": "pin", "📄": "file", "📁": "folder",
-  "⚠️": "alert", "💶": "euro", "🏦": "bank", "📋": "clipboard",
-  "📑": "file", "🧮": "calculator", "🤝": "handshake", "❔": "help",
-  "👤": "person", "🏛": "courthouse", "🏛️": "courthouse", "📜": "scroll",
-  "🏢": "building", "🍽": "meal", "🍽️": "meal", "🚬": "pause",
-  "📅": "calendar", "🛡": "shield", "🛡️": "shield", "🔒": "lock", "🔐": "lock",
-  "🔎": "search", "📰": "newspaper", "🛠": "tools", "🛠️": "tools",
-  "📎": "attachment", "🏠": "home", "💰": "wallet", "📂": "folderOpen",
-  "📨": "mail", "💬": "message", "👁": "eye", "📤": "upload", "🗑": "trash",
-  "☕": "coffee", "✒️": "pen", "✓": "check", "↗": "arrowRight", "↙": "arrowLeft",
-  "↩": "refresh", "◉": "eye", "🛠️": "tools",
-  "🏘": "building", "🏘️": "building", "🖋️": "pen", "✉️": "mail", "🚚": "truck",
-  "🕒": "clock", "🗂️": "folder", "🗃️": "archive", "⚖️": "scale", "🔑": "key",
-  "🔀": "refresh", "📝": "pen", "🖥️": "monitor", "📡": "monitor", "🌐": "globe",
-  "📦": "archive", "📥": "download", "📮": "mail", "📭": "inbox", "🏆": "trophy",
-  "🟢": "check", "🔔": "bell", "🔕": "bell", "🏷️": "tag", "🙈": "eye",
-  "🔌": "plug", "🧱": "building", "🚫": "alert", "💥": "alert", "🚪": "door",
-  "🔓": "lock", "🗓": "calendar", "🗓️": "calendar", "🗂": "folder", "🗃": "archive",
-  "📗": "fileCheck", "clipboard-list": "clipboardList", "file-check": "fileCheck", "folder-check": "fileCheck", "book-check": "book", "alert-triangle": "alert", "check-circle": "check", "files": "files", "zap": "zap", "🏷": "tag", "🚧": "alert", "🔧": "tools", "🖋": "pen",
-  "🖥": "monitor", "🛡": "shield", "🏛": "courthouse", "📡": "monitor",
-
-
-
-  "📊": "chart", "⚙": "settings", "▤": "file", "💼": "briefcase", "📚": "book", "✅": "check", "🔄": "refresh", "▦": "calendar",
-  "▥": "chart", "AG": "users", "NG": "landmark", "◇": "landmark",
-  "✉": "receipt", "⌂": "home", "◫": "dashboard", "▣": "video",
+  chat: "message",
+  cog: "settings",
+  package: "archive",
+  wrench: "tools",
+  database: "archive",
+  "user-group": "users",
+  "file-check": "fileCheck",
+  "clipboard-list": "clipboardList",
+  "alert-triangle": "alert",
+  "check-circle": "check",
+  "folder-check": "fileCheck",
+  "book-check": "book",
+  fusion: "merge",
+  AG: "users",
+  NG: "landmark",
 };
 const TONES = new Set(["ocean", "emerald", "violet", "amber", "cyan", "indigo", "slate"]);
 
