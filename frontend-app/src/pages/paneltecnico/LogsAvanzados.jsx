@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { getLogs } from "../../api/logs";
 import "./PanelTecnicoSubmodulos.css";
 
@@ -119,16 +120,7 @@ export default function LogsAvanzados() {
             transition
           "
         >
-          <svg
-            className="
-              w-4
-              h-4
-              text-[var(--erp-text-soft)]
-              flex-shrink-0
-            "
-          >
-            <use href="/icons/icons.svg#search" />
-          </svg>
+          <MolsanIcon name="search" size={16} bare />
 
           <input
             type="text"
@@ -452,15 +444,7 @@ export default function LogsAvanzados() {
                 mb-4
               "
             >
-              <svg
-                className="
-                  w-5
-                  h-5
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                <use href="/icons/icons.svg#clipboard" />
-              </svg>
+              <MolsanIcon name="clipboard" size={20} bare />
             </div>
 
             <h3
