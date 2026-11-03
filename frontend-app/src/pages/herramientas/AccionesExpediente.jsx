@@ -2301,46 +2301,9 @@ export default function AccionesExpediente() {
                 "
               >
 
-                <button
-                  type="button"
-                  onClick={
-                    cerrarModal
-                  }
-                  className="
-                    px-4
-                    py-2.5
-                    rounded-xl
-                    bg-white
-                    border
-                    border-[var(--erp-border)]
-                    text-sm
-                    font-semibold
-                  "
-                >
-                  Cancelar
-                </button>
+                <MolsanButton type="button" onClick={cerrarModal} variant="warning">Cancelar</MolsanButton>
 
-
-                <button
-                  type="submit"
-                  disabled={
-                    loading
-                  }
-                  className="
-                    px-4
-                    py-2.5
-                    rounded-xl
-                    bg-[var(--erp-primary)]
-                    text-white
-                    text-sm
-                    font-semibold
-                    disabled:opacity-50
-                  "
-                >
-                  {loading
-                    ? "Guardando..."
-                    : "Guardar"}
-                </button>
+                <MolsanButton type="submit" disabled={loading} loading={loading} icon="check" variant="success">{loading ? "Guardando…" : "Guardar"}</MolsanButton>
 
               </div>
 
