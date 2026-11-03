@@ -7,6 +7,7 @@ import axios from "../../api/axios";
 import { API_BASE as API_ROOT } from "../../api/config";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import { Link } from "react-router-dom";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
 
@@ -688,16 +689,16 @@ export default function TiposConceptoGastos() {
         catalogos-premium-page tipos-concepto-gastos-premium herramientas-subpagina-premium
         min-h-screen
         bg-slate-50
-        p-4
-        md:p-6
-        lg:p-8
+        w-full
+        px-0
+        py-0
       "
     >
 
       <div
         className="
-          mx-auto
-          max-w-7xl
+          w-full
+          max-w-none
         "
       >
 
@@ -724,61 +725,7 @@ export default function TiposConceptoGastos() {
                 "
               >
 
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  className="
-                    h-5
-                    w-5
-                  "
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="
-                      M4 6.5
-                      A2.5 2.5 0 0 1 6.5 4
-                      h11
-                      A2.5 2.5 0 0 1 20 6.5
-                      v11
-                      A2.5 2.5 0 0 1 17.5 20
-                      h-11
-                      A2.5 2.5 0 0 1 4 17.5
-                      v-11Z
-                    "
-                  />
-
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="
-                      M8 8.5
-                      h8
-                    "
-                  />
-
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="
-                      M8 12
-                      h8
-                    "
-                  />
-
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="
-                      M8 15.5
-                      h5
-                    "
-                  />
-                </svg>
-
+                <MolsanIcon name="receipt" size={24} tone="ocean" />
               </div>
 
               <div>
@@ -792,7 +739,7 @@ export default function TiposConceptoGastos() {
                     text-blue-600
                   "
                 >
-                  Herramientas
+                  MOLSAN ERP · PREMIUM 2027
                 </p>
 
                 <h1
@@ -823,6 +770,7 @@ export default function TiposConceptoGastos() {
               para clasificar los gastos de los
               expedientes.
             </p>
+            <Link to="/catalogos" className="molsan-page-back-link">← Volver a catálogos</Link>
 
           </div>
 
