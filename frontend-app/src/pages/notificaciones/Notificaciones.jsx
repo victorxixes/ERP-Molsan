@@ -264,9 +264,10 @@ export default function Notificaciones() {
                 px-4
                 py-2
                 rounded-xl
-                bg-[var(--erp-background)]
+                bg-[#F2F7FB]
                 border
-                border-[var(--erp-border)]
+                border-[#D8E4EC]
+                shadow-inner
                 text-center
                 min-w-[90px]
               "
