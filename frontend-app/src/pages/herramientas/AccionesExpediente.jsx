@@ -1297,23 +1297,9 @@ export default function AccionesExpediente() {
           "
         >
 
-          <div
-            className="
-              w-12
-              h-12
-              rounded-2xl
-              bg-[var(--erp-primary-soft)]
-              text-[var(--erp-primary)]
-              border
-              border-[var(--erp-border)]
-              flex
-              items-center
-              justify-center
-              shrink-0
-            "
-          >
+          <div className="molsan-page-header__mark">
 
-            <MolsanIcon name="clipboardList" size={36} tone="ocean" />
+            <MolsanIcon name="clipboardList" size={22} tone="ocean" />
 
           </div>
 
