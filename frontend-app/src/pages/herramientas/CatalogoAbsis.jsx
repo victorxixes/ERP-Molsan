@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuthStore } from "../../store/authStore";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanButton from "../../components/ui/MolsanButton";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import { Link } from "react-router-dom";
 import { API_BASE } from "../../api/config";
@@ -186,10 +187,8 @@ export default function CatalogoAbsis() {
           <select id="absis-categoria" value={categoria} onChange={(e) => { setCategoria(e.target.value); setBusqueda(""); setMensaje(""); }} className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm focus:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-100">
             {categorias.map((item) => <option key={item} value={item}>{item}</option>)}
           </select>
-          <button type="button" onClick={() => { setNombreNuevaLista(""); setError(""); setModalNuevaLista(true); }} className="inline-flex items-center justify-center gap-2 rounded-xl border border-indigo-200 bg-white px-4 py-3 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50 focus:outline-none focus:ring-4 focus:ring-indigo-100">+ Crear lista</button>
-          <button type="button" onClick={abrirNuevo} className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-200">
-            <span aria-hidden="true" className="text-lg leading-none">+</span> Añadir entrada
-          </button>
+          <MolsanButton type="button" onClick={() => { setNombreNuevaLista(""); setError(""); setModalNuevaLista(true); }} icon="plus" variant="success">Crear lista</MolsanButton>
+          <MolsanButton type="button" onClick={abrirNuevo} icon="plus" variant="success">Añadir entrada</MolsanButton>
         </div>
         <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <input type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar código, valor o descripción…" aria-label="Buscar en el catálogo seleccionado" className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100 sm:max-w-md" />
