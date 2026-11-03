@@ -1104,54 +1104,12 @@ function Dato({
   }
 
   return (
-    <div
-      className={`
-        min-w-0
-        rounded-xl
-        border
-        ${compacto ? "px-1.5 py-1.5 rounded-lg" : "px-2 py-2 rounded-xl"}
-        ${
-          destaque
-            ? "border-blue-100 bg-blue-50/60"
-            : "border-slate-100 bg-white"
-        }
-      `}
-    >
-      <p
-        className="
-          mb-1
-          truncate
-          text-[9px]
-          font-bold
-          uppercase
-          tracking-[0.08em]
-          text-slate-400
-        "
-      >
-        {campo}
-      </p>
-
+    <div className={`ficha-dato ${compacto ? "ficha-dato--compacto" : ""} ${destaque ? "ficha-dato--destacado" : ""}`}>
+      <p className="ficha-dato__label">{campo}</p>
       {estado ? (
-        <EstadoBadge
-          valor={valor}
-        />
+        <div className="ficha-dato__value"><EstadoBadge valor={valor} /></div>
       ) : (
-        <div
-          className={`
-            ${compacto ? "text-[11px] leading-tight" : "text-xs"}
-            font-medium
-            ${
-              destaque
-                ? "text-blue-700"
-                : "text-slate-700"
-            }
-            ${
-              multilinea
-                ? "whitespace-pre-wrap"
-                : "break-words"
-            }
-          `}
-        >
+        <div className={`ficha-dato__value ${multilinea ? "whitespace-pre-wrap" : "break-words"}`}>
           {contenido}
         </div>
       )}
@@ -5670,17 +5628,7 @@ const cuantiaFincasParaEnvio =
                       "
                     >
 
-                      <span
-                        className="
-                          shrink-0
-                          text-lg
-                          leading-tight
-                        "
-                      >
-                        {
-                          actividad.icono
-                        }
-                      </span>
+                      <MolsanIcon name={actividad.icono} size={22} />
 
                       <span
                         className={`
@@ -6139,16 +6087,15 @@ const cuantiaFincasParaEnvio =
                 )}
 
                 {actividadSeleccionada === "sede-notarial" && (
-                  <section className="mb-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-3 sm:p-4">
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="text-sm font-extrabold text-slate-800">Datos de Sede notarial</h3>
-                  <span className="text-[11px] font-medium text-slate-500">Información del envío y del documento</span>
-                </div>
-
-                <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-2">
-                  <article className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
-                    <h4 className="mb-3 border-b border-slate-100 pb-2 text-xs font-extrabold text-slate-800">Datos del notario</h4>
-                    <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+                  <section className="mb-3 min-w-0 rounded-xl border border-slate-200 bg-white p-4">
+                    <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
+                      <h3 className="text-sm font-extrabold text-slate-800">Datos de Sede notarial</h3>
+                      <span className="text-xs font-medium text-slate-500">Información del envío y del documento</span>
+                    </div>
+                    <div className="grid min-w-0 grid-cols-1 gap-x-8 gap-y-4 xl:grid-cols-2">
+                      <div className="min-w-0">
+                        <h4 className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-600">Datos del notario</h4>
+                        <div className="grid min-w-0 grid-cols-1 gap-x-5 sm:grid-cols-2">
                       <Dato campo="Fecha envío" valor={expediente?.fecha_envio_notario || expediente?.fecha_envio} tipo="fecha" />
                       <Dato campo="Apoderado" valor={expediente?.apoderado} />
                       <Dato campo="Notario" valor={expediente?.nombre_notario ?? expediente?.notario} />
@@ -6162,11 +6109,10 @@ const cuantiaFincasParaEnvio =
                       <Dato campo="Hora de inicio" valor={expediente?.hora_prevista_firma ?? expediente?.hora_inicio_firma} />
                       <Dato campo="Hora de fin" valor={expediente?.hora_fin_prevista_firma} />
                     </div>
-                  </article>
-
-                  <article className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
-                    <h4 className="mb-3 border-b border-slate-100 pb-2 text-xs font-extrabold text-slate-800">Datos del documento</h4>
-                    <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-600">Datos del documento</h4>
+                        <div className="grid min-w-0 grid-cols-1 gap-x-5 sm:grid-cols-2">
                       <Dato campo="Título" valor={expediente?.titulo ?? expediente?.titulo_documento ?? expediente?.titulo_escritura} />
                       <Dato
                         campo="Tipo de documento"
@@ -6181,11 +6127,10 @@ const cuantiaFincasParaEnvio =
                       <Dato campo="Importe (€)" valor={expediente?.importe} />
                       <Dato campo="Formato de escritura" valor={expediente?.formato_escritura ?? expediente?.formato_escritura_notarial} />
                       <Dato campo="Tipo de trámite" valor={expediente?.tipo_tramite ?? expediente?.tipo_tramite_notarial ?? expediente?.tramite} />
+                        </div>
+                      </div>
                     </div>
-
-                  </article>
-                </div>
-              </section>
+                  </section>
             
                 )}
               </div>
