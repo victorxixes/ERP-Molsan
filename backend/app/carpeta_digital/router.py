@@ -380,9 +380,28 @@ def previsualizar_cierre_documental(expediente_id: str, db: Session = Depends(ge
         .all()
     )
     total_gastos = sum(float(g.importe_resultante if g.importe_resultante is not None else (g.importe_total_bruto if g.importe_total_bruto is not None else (g.importe or 0))) for g in gastos)
+    pagos_por_gasto = {}
+    tabla_pagos = db.execute(text("SELECT to_regclass('public.expediente_gasto_pagos')")).scalar()
+    if tabla_pagos:
+        filas_pagos = db.execute(text("""
+            SELECT p.gasto_id, COALESCE(SUM(p.importe) FILTER (WHERE p.anulado_en IS NULL), 0) AS total_pagado,
+                   COUNT(*) AS numero_movimientos
+            FROM public.expediente_gasto_pagos p
+            JOIN public.expediente_gastos g ON g.id = p.gasto_id
+            WHERE g.expediente_id = :expediente_id
+            GROUP BY p.gasto_id
+        """), {"expediente_id": expediente.id}).mappings().all()
+        pagos_por_gasto = {int(f["gasto_id"]): (float(f["total_pagado"] or 0), int(f["numero_movimientos"])) for f in filas_pagos}
     estados_pagados = {"pagado", "pagada", "abonado", "abonada", "efectuado", "efectuada", "paid"}
-    gastos_pagados = [g for g in gastos if str(g.estado_pago or "").strip().lower() in estados_pagados]
-    total_pagado = sum(float(g.importe_resultante if g.importe_resultante is not None else (g.importe_total_bruto if g.importe_total_bruto is not None else (g.importe or 0))) for g in gastos_pagados)
+    total_pagado = 0.0
+    for gasto in gastos:
+        importe_obligacion = gasto.importe_resultante if gasto.importe_resultante is not None else gasto.importe
+        total_movimientos, numero_movimientos = pagos_por_gasto.get(gasto.id, (0.0, 0))
+        if numero_movimientos == 0 and str(gasto.estado_pago or "").strip().casefold() in estados_pagados:
+            importe_pagado = float(importe_obligacion or 0)
+        else:
+            importe_pagado = total_movimientos
+        total_pagado += importe_pagado
     importe_provision = getattr(expediente, "importe", None)
     fecha_liquidacion = getattr(expediente, "fecha_fin_actividad", None)
 
