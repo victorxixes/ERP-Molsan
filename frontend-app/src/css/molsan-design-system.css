@@ -288,8 +288,7 @@
   --ag-blue-dark: var(--molsan-primary-hover);
 }
 
-/* NotarGest comparte tokens con PortalProfesionalShared.css;
-   este selector mantiene la paleta corporativa sin depender del orden legado. */
+/* NotarGest y ApoderaGest comparten los tokens corporativos MOLSAN. */
 :root .apoderagest.notargest {
   --ag-ink: var(--molsan-text);
   --ag-muted: var(--molsan-text-muted);
