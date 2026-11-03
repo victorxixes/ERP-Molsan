@@ -874,30 +874,7 @@ export default function TiposConceptoGastos() {
                   text-slate-600
                 "
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  className="h-5 w-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="
-                      M5 5.5
-                      A1.5 1.5 0 0 1 6.5 4
-                      h11
-                      A1.5 1.5 0 0 1 19 5.5
-                      v13
-                      A1.5 1.5 0 0 1 17.5 20
-                      h-11
-                      A1.5 1.5 0 0 1 5 18.5
-                      v-13Z
-                    "
-                  />
-                </svg>
+                <MolsanIcon name="file" size={20} bare />
               </div>
 
             </div>
@@ -970,24 +947,7 @@ export default function TiposConceptoGastos() {
                 "
               >
 
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  className="h-5 w-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="
-                      m5 12.5
-                      4.2 4.2
-                      L19 7
-                    "
-                  />
-                </svg>
+                <MolsanIcon name="check" size={20} bare />
 
               </div>
 
@@ -1061,46 +1021,7 @@ export default function TiposConceptoGastos() {
                 "
               >
 
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  className="h-5 w-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="
-                      M12 9
-                      v4
-                    "
-                  />
-
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="
-                      M12 16.5
-                      v.01
-                    "
-                  />
-
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="
-                      M10.25 4.75
-                      3.5 16
-                      A2 2 0 0 0 5.2 19
-                      h13.6
-                      A2 2 0 0 0 20.5 16
-                      l-6.75-11.25
-                      A2 2 0 0 0 10.25 4.75Z
-                    "
-                  />
-                </svg>
+                <MolsanIcon name="alert" size={20} bare />
 
               </div>
 
@@ -1175,31 +1096,7 @@ export default function TiposConceptoGastos() {
                   "
                 >
 
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    className="
-                      h-4
-                      w-4
-                    "
-                  >
-                    <circle
-                      cx="11"
-                      cy="11"
-                      r="7"
-                    />
-
-                    <path
-                      strokeLinecap="round"
-                      d="
-                        m16.5 16.5
-                        4 4
-                      "
-                    />
-                  </svg>
+                  <MolsanIcon name="search" size={16} bare />
 
                 </div>
 
@@ -1326,28 +1223,7 @@ export default function TiposConceptoGastos() {
             "
           >
 
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              className="
-                h-5
-                w-5
-                shrink-0
-              "
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="
-                  m5 12
-                  4 4
-                  10-10
-                "
-              />
-            </svg>
+            <MolsanIcon name="check" size={20} bare />
 
             <span>
               {mensaje}
@@ -1378,40 +1254,7 @@ export default function TiposConceptoGastos() {
             "
           >
 
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              className="
-                h-5
-                w-5
-                shrink-0
-              "
-            >
-              <circle
-                cx="12"
-                cy="12"
-                r="8"
-              />
-
-              <path
-                strokeLinecap="round"
-                d="
-                  M12 8
-                  v4
-                "
-              />
-
-              <path
-                strokeLinecap="round"
-                d="
-                  M12 15.5
-                  v.01
-                "
-              />
-            </svg>
+            <MolsanIcon name="clock" size={20} bare />
 
             <span>
               {error}
@@ -1653,30 +1496,7 @@ export default function TiposConceptoGastos() {
                 "
               >
 
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  className="h-5 w-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    d="
-                      M6 6
-                      l12 12
-                    "
-                  />
-
-                  <path
-                    strokeLinecap="round"
-                    d="
-                      M18 6
-                      L6 18
-                    "
-                  />
-                </svg>
+                <MolsanIcon name="x" size={20} bare />
 
               </button>
 
