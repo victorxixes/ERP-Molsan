@@ -32,7 +32,7 @@ export default function CatalogoFichajes() {
   return <main className="molsan-page-stack catalogos-premium-page min-h-full ">
     <header className="molsan-page-header">
       <div className="molsan-page-header__identity">
-        <div className="molsan-page-header__mark" aria-hidden="true">◷</div>
+        <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="timer" size={22} tone="ocean" /></div>
         <div className="min-w-0">
           <p className="molsan-page-header__eyebrow">MOLSAN ERP · CATÁLOGOS OPERATIVOS</p>
           <h1 className="molsan-page-header__title">Fichajes · Tipos de ausencia</h1>
