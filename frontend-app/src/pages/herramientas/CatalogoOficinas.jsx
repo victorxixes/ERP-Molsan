@@ -130,7 +130,7 @@ export default function CatalogoOficinas() {
             <input id="catalogo-oficinas-excel" type="file" accept=".xlsx,.xls" onChange={seleccionarArchivo} className="mt-2 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:font-semibold file:text-blue-700" />
           </label>
           <MolsanButton icon="check" variant="secondary" onClick={previsualizar} disabled={!archivo || cargando || importando} loading={cargando}>Validar y previsualizar</MolsanButton>
-          <MolsanButton icon="upload" variant="primary" onClick={importar} disabled={!archivo || !previsualizacion || !!previsualizacion.errores?.length || importando} loading={importando}>Importar oficinas</MolsanButton>
+          <MolsanButton icon="upload" variant="excel" onClick={importar} disabled={!archivo || !previsualizacion || !!previsualizacion.errores?.length || importando} loading={importando}>Importar oficinas</MolsanButton>
         </div>
         {mensaje && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{mensaje}</div>}
         {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{Array.isArray(error) ? error.join(" · ") : error}</div>}
