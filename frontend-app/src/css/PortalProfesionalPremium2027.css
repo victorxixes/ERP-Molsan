@@ -47,8 +47,8 @@
    las cabeceras globales de Catálogos, Utilidades ni otras subpáginas. */
 .apoderagest>header.ag-hero.molsan-page-header,
 .encargagest>header.ag-hero.molsan-page-header,
-.notargest.ng-content>header.ag-hero.molsan-page-header,
-.ng-admin-notarias>header.ag-hero.molsan-page-header{
+.notargest.ng-content>header.ng-hero.molsan-page-header,
+.ng-admin-notarias>header.ng-hero.molsan-page-header{
   position:relative!important;
   display:flex!important;
   align-items:center!important;
@@ -77,7 +77,7 @@
   will-change:auto!important;
 }
 .apoderagest>header.ag-hero::after,.encargagest>header.ag-hero::after,
-.notargest.ng-content>header.ag-hero::after,.ng-admin-notarias>header.ag-hero::after{
+.notargest.ng-content>header.ng-hero::after,.ng-admin-notarias>header.ng-hero::after{
   content:""!important;
   position:absolute!important;
   right:0!important;bottom:0!important;left:0!important;height:3px!important;
