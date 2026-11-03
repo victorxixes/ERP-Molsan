@@ -1896,7 +1896,7 @@ export default function OficinasLiquidadoras() {
               { key: "email", header: "Email", accessor: "email", sortType: "text" },
               { key: "horario", header: "Horario", accessor: "horario", sortType: "text" },
               { key: "activo", header: "Estado", accessor: (item) => item.activo !== false, sortType: "boolean", render: (value) => <BadgeActivo activo={value} /> },
-              { key: "acciones", header: "Acciones", sortable: false, align: "right", accessor: (item) => item.id, render: (_, item) => <div className="flex justify-center gap-2"><button type="button" onClick={() => abrirEditar(item)} title="Editar" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-blue-700 hover:bg-blue-50">Editar</button><button type="button" onClick={() => eliminarOficina(item)} title="Eliminar" className="rounded-lg border border-red-200 bg-white px-3 py-2 text-xs text-red-600 hover:bg-red-50">Eliminar</button></div> },
+              { key: "acciones", header: "Acciones", sortable: false, align: "right", accessor: (item) => item.id, render: (_, item) => <div className="flex justify-center gap-2"><MolsanButton type="button" onClick={() => abrirEditar(item)} icon="edit" variant="secondary" className="molsan-btn--compact">Editar</MolsanButton><MolsanButton type="button" onClick={() => eliminarOficina(item)} icon="delete" variant="danger" className="molsan-btn--compact">Eliminar</MolsanButton></div> },
             ]}
           />
 
