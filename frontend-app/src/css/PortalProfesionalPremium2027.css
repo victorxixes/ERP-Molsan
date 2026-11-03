@@ -58,15 +58,15 @@
   width:100%!important;
   max-width:none!important;
   min-width:0!important;
-  min-height:60px!important;
-  height:60px!important;
-  max-height:64px!important;
+  min-height:88px!important;
+  height:auto!important;
+  max-height:none!important;
   margin:0 0 16px!important;
-  padding:5px 16px!important;
+  padding:14px 20px!important;
   overflow:hidden!important;
   color:#fff!important;
   border:1px solid rgba(255,255,255,.16)!important;
-  border-radius:16px!important;
+  border-radius:18px!important;
   background:radial-gradient(circle at 86% 18%,rgba(116,199,219,.18),transparent 27%),linear-gradient(116deg,#032D4B 0%,#064675 54%,#0D638C 100%)!important;
   box-shadow:0 12px 28px rgba(4,55,91,.16)!important;
   animation:none!important;
@@ -90,23 +90,23 @@
 }
 :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__mark{
   display:grid!important;place-items:center!important;
-  flex:0 0 36px!important;width:36px!important;height:36px!important;
+  flex:0 0 42px!important;width:42px!important;height:42px!important;
   color:#fff!important;border:1px solid rgba(255,255,255,.3)!important;
   border-radius:10px!important;background:rgba(255,255,255,.12)!important;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.18)!important;
 }
 :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__eyebrow{
-  margin:0 0 1px!important;color:#C6DFEC!important;font-size:8.5px!important;
+  margin:0 0 1px!important;color:#C6DFEC!important;font-size:9px!important;
   font-weight:800!important;letter-spacing:.14em!important;line-height:1.15!important;
 }
 :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__title{
-  margin:0!important;color:#fff!important;font-size:clamp(19px,1.8vw,22px)!important;
-  font-weight:800!important;letter-spacing:-.035em!important;line-height:1.05!important;
+  margin:0!important;color:#fff!important;font-size:clamp(21px,2vw,25px)!important;
+  font-weight:800!important;letter-spacing:-.035em!important;line-height:1.1!important;
 }
 :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__description{
   display:block!important;max-width:780px!important;margin:2px 0 0!important;
-  color:#C6DFEC!important;font-size:10px!important;line-height:1.15!important;
-  white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  color:#C6DFEC!important;font-size:11.5px!important;line-height:1.35!important;
+  white-space:normal!important;overflow:hidden!important;text-overflow:ellipsis!important;
 }
 :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__actions{
   position:relative!important;z-index:1!important;display:flex!important;
@@ -147,7 +147,7 @@
 }
 .apoderagest .ag-kpi-valor,.encargagest .eg-kpi strong,
 .ng-admin-notarias .ng-admin-kpi-button>strong{
-  color:var(--molsan-prof-blue)!important;font-size:clamp(26px,2vw,32px)!important;font-weight:850!important;line-height:1.05!important;letter-spacing:-.035em!important;font-variant-numeric:tabular-nums;
+  color:var(--molsan-prof-blue)!important;font-size:clamp(26px,2vw,32px)!important;font-weight:850!important;line-height:1.1!important;letter-spacing:-.035em!important;font-variant-numeric:tabular-nums;
 }
 .apoderagest .ag-kpi-icono,.encargagest .eg-kpi-icono{
   display:grid!important;place-items:center!important;flex:0 0 38px!important;width:38px!important;height:38px!important;
@@ -166,7 +166,7 @@
 .apoderagest .ag-panel,.encargagest .eg-panel,.notargest.ng-content .ng-panel,
 .notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-detalle-bloque,
 .ng-admin-notarias .ng-admin-global-resumen,.ng-admin-notarias .ng-admin-notaria-card{
-  min-width:0!important;border:1px solid var(--molsan-prof-border)!important;border-radius:16px!important;
+  min-width:0!important;border:1px solid var(--molsan-prof-border)!important;border-radius:18px!important;
   background:#fff!important;box-shadow:var(--molsan-prof-shadow)!important;overflow:hidden!important;
 }
 .apoderagest .ag-panel-cabecera,.apoderagest .ag-titulo-seccion,
@@ -190,7 +190,7 @@
 .apoderagest .ag-panel table td,.encargagest .eg-panel table td,
 .encargagest .eg-directorio-tabla td,.notargest.ng-content .ng-tabla td,
 .notargest.ng-content .ng-panel table td{border-color:var(--molsan-prof-border)!important}
-.encargagest .eg-directorio{min-width:0!important;padding:0!important;overflow:hidden!important;border:1px solid var(--molsan-prof-border)!important;border-radius:16px!important;background:#fff!important;box-shadow:var(--molsan-prof-shadow)!important}
+.encargagest .eg-directorio{min-width:0!important;padding:0!important;overflow:hidden!important;border:1px solid var(--molsan-prof-border)!important;border-radius:18px!important;background:#fff!important;box-shadow:var(--molsan-prof-shadow)!important}
 .encargagest .eg-directorio-cabecera{border-radius:0!important}
 .notargest.ng-content .ng-dashboard-graficos{display:grid!important;gap:14px!important}
 .notargest.ng-content .ng-dashboard-grafico{padding:0!important}
@@ -240,7 +240,7 @@
 /* Responsive: misma jerarquía sin cabeceras comprimidas ni tarjetas desiguales. */
 @media(max-width:760px){
   :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias)>header.ag-hero.molsan-page-header{
-    min-height:60px!important;height:auto!important;max-height:none!important;
+    min-height:88px!important;height:auto!important;max-height:none!important;
     flex-wrap:wrap!important;gap:8px 12px!important;padding:8px 12px!important;
   }
   :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__description{
@@ -275,16 +275,16 @@
    Corrige las reglas compactas heredadas que anulaban la cabecera y los iconos
    del módulo mediante !important en bloques anteriores de esta hoja. */
 .erp-page.apoderagest > header.ag-hero.molsan-page-header {
-  min-height:112px !important;
+  min-height:88px !important;
   height:auto !important;
   max-height:none !important;
   align-items:center !important;
   flex-wrap:wrap !important;
-  gap:18px !important;
+  gap:12px !important;
   margin:0 0 20px !important;
-  padding:18px 24px !important;
+  padding:14px 20px !important;
   overflow:hidden !important;
-  border-radius:20px !important;
+  border-radius:18px !important;
   box-shadow:0 18px 38px rgba(4,55,91,.19) !important;
 }
 .erp-page.apoderagest > header.ag-hero.molsan-page-header .molsan-page-header__identity {
@@ -292,15 +292,15 @@
   align-items:center !important;
 }
 .erp-page.apoderagest > header.ag-hero.molsan-page-header .molsan-page-header__mark {
-  flex:0 0 60px !important;
-  width:60px !important;
-  height:60px !important;
-  min-width:60px !important;
-  min-height:60px !important;
+  flex:0 0 42px !important;
+  width:42px !important;
+  height:42px !important;
+  min-width:42px !important;
+  min-height:42px !important;
   display:grid !important;
   place-items:center !important;
   border:1px solid #D8E4EC !important;
-  border-radius:17px !important;
+  border-radius:12px !important;
   background:linear-gradient(145deg,#FFFFFF 0%,#EAF3FA 100%) !important;
   box-shadow:0 8px 20px rgba(4,39,66,.18),inset 0 1px 0 rgba(255,255,255,.98) !important;
 }
@@ -315,14 +315,14 @@
   letter-spacing:.17em !important;
 }
 .erp-page.apoderagest > header.ag-hero.molsan-page-header .molsan-page-header__title {
-  font-size:clamp(25px,2.2vw,30px) !important;
+  font-size:clamp(21px,2vw,25px) !important;
   line-height:1.12 !important;
 }
 .erp-page.apoderagest > header.ag-hero.molsan-page-header .molsan-page-header__description {
   display:block !important;
   max-width:820px !important;
   margin-top:6px !important;
-  font-size:12px !important;
+  font-size:11.5px !important;
   line-height:1.5 !important;
   white-space:normal !important;
 }
@@ -369,7 +369,7 @@
 }
 @media(max-width:760px) {
   .erp-page.apoderagest > header.ag-hero.molsan-page-header {
-    min-height:96px !important;
+    min-height:88px !important;
     height:auto !important;
     max-height:none !important;
     align-items:flex-start !important;
