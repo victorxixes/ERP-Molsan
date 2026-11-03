@@ -1849,28 +1849,7 @@ export default function EntidadesBancarias() {
 
           {/* LIMPIAR */}
 
-          <button
-            type="button"
-            onClick={
-              limpiarFiltros
-            }
-            className="
-              rounded-xl
-              border
-              border-slate-200
-              bg-white
-              px-4
-              py-2.5
-              text-sm
-              font-medium
-              text-slate-600
-              transition
-              hover:border-slate-300
-              hover:bg-slate-50
-            "
-          >
-            Limpiar filtros
-          </button>
+          <MolsanButton type="button" onClick={limpiarFiltros} variant="secondary">Limpiar filtros</MolsanButton>
 
         </div>
 
