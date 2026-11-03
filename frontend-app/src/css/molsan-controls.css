@@ -38,7 +38,10 @@
 .molsan-btn:active:not(:disabled) { transform: translateY(0) scale(.985); }
 .molsan-btn--primary { color:#fff; background:linear-gradient(135deg,#075487,#064675); border-color:#064675; }
 .molsan-btn--secondary { color:#064675; background:linear-gradient(145deg,#fff,#F2F7FB); border-color:#D8E4EC; }
-.molsan-btn--success { color:#fff; background:#16845B; border-color:#16845B; }
+.molsan-btn--success { color:#176B4B; background:linear-gradient(145deg,#F3FBF6,#E6F4EB); border-color:#BFE2CC; }
+.molsan-btn--success:hover:not(:disabled) { color:#145A40; background:#DDF0E5; border-color:#9CCFB1; }
+.molsan-btn--warning { color:#8A620D; background:linear-gradient(145deg,#FFFCF2,#FFF4D8); border-color:#EEDCA8; }
+.molsan-btn--warning:hover:not(:disabled) { color:#76520A; background:#FCECC2; border-color:#E5CD88; }
 .molsan-btn--danger { color:#fff; background:#B42318; border-color:#B42318; }
 .molsan-btn--danger:hover:not(:disabled) { background:#941B13; }
 .molsan-btn--ghost { color:#617789; background:transparent; border-color:transparent; box-shadow:none; }
