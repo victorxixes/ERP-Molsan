@@ -38,12 +38,16 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
     setFilas((Array.isArray(movimientos) ? movimientos : []).map((g) => ({
       ...g,
       _tipo: String(g.tipo || g.descripcion || "Gasto"),
-      _pagado: ["pagado", "realizado", "abonado", "paid"].includes(String(g.estado_pago || "").toLowerCase()),
+      _importePagado: g.total_pagado !== undefined && g.total_pagado !== null
+        ? Number(g.total_pagado)
+        : (["pagado", "pagada", "realizado", "abonado", "abonada", "paid"].includes(String(g.estado_pago || "").toLowerCase())
+          ? Number(g.importe_resultante ?? g.importe ?? g.importe_total_bruto ?? 0)
+          : 0),
     })));
   }, [expediente, movimientos]);
 
   const importeInicial = Number(expediente?.importe || 0);
-  const totalPagado = useMemo(() => filas.filter((f) => f._pagado).reduce((sum, f) => sum + Number(f.importe_total_bruto ?? f.importe ?? f.importe_resultante ?? 0), 0), [filas]);
+  const totalPagado = useMemo(() => filas.reduce((sum, f) => sum + Number(f._importePagado || 0), 0), [filas]);
   const saldoLiquidacion = Math.round((importeInicial - totalPagado) * 100) / 100;
 
   // Liquidar es una pantalla de consulta: los datos maestros y los movimientos
