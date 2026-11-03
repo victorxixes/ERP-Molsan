@@ -2465,7 +2465,7 @@ const permisosDisponibles =
               >
 
                 <span className="mr-2">
-                  <MolsanIcon name={item.icon} size={22} />
+                  <MolsanIcon name={item.icon} size={22} bare />
                 </span>
 
                 {item.label}
@@ -4494,7 +4494,7 @@ const permisosDisponibles =
                           >
 
                             <div className="text-3xl">
-                              <MolsanIcon name="clipboard" size={20} />
+                              <MolsanIcon name="clipboard" size={20} bare />
                             </div>
 
                             <p
