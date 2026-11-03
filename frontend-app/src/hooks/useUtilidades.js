@@ -35,7 +35,7 @@ export function useUtilidades() {
       setResultado(res.data);
       return res.data;
     } catch (err) {
-      setError("Error al importar CTN");
+      setError(err?.response?.data?.detail || err?.message || "Error al importar CTN");
       return null;
     } finally {
       setLoading(false);
