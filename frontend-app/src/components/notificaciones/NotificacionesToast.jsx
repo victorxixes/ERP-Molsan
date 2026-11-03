@@ -267,7 +267,7 @@ function Toast({
             shadow-sm
           "
         >
-          <MolsanIcon name={configuracion.icono} size={18} />
+          <MolsanIcon name={configuracion.icono} size={18} bare />
         </div>
 
 
