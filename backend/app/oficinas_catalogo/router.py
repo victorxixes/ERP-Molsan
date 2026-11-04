@@ -13,6 +13,8 @@ from sqlalchemy.orm import Session
 from backend.app.database import engine, get_db
 from backend.app.uploads import MAX_EXCEL_UPLOAD_BYTES, read_upload_limited
 
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
+
 router = APIRouter(prefix="/oficinas-catalogo", tags=["Catálogo de oficinas"])
 
 COLUMNAS = [
@@ -54,6 +56,9 @@ def _crear_tabla() -> None:
 
 @router.on_event("startup")
 def inicializar_catalogo_oficinas() -> None:
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: inicializar_catalogo_oficinas; ejecutar migración versionada.", flush=True)
+        return
     _crear_tabla()
 
 
