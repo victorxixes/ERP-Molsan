@@ -136,7 +136,7 @@ LEGACY_FOTOS_DIR = os.path.join(STATIC_DIR, "fotos")
 os.makedirs(LEGACY_FOTOS_DIR, exist_ok=True)
 
 from backend.app.auth.dependencies import get_current_user
-from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, storage_backend_is_supabase
 from backend.app.auth.permissions import require_perm_modulo
 
 FOTOS_ROOT = Path(FOTOS_DIR).resolve()
@@ -164,7 +164,7 @@ def servir_fotografia_empleado(
             detail="Fotografía no encontrada",
         )
 
-    if (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase":
+    if storage_backend_is_supabase():
         try:
             contenido = SupabasePrivateStorage().download(f"fotos/{ruta}")
         except FileNotFoundError as exc:
