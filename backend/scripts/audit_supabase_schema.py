@@ -205,7 +205,8 @@ def scan_raw_ddl(orm_table_names):
                     template,
                     re.IGNORECASE,
                 ):
-                    dynamic.append(f"{source_path}:{node.lineno}: {re.sub(r'\\s+', ' ', template)[:240]}")
+                    compact_template = re.sub(r"\\s+", " ", template)
+                    dynamic.append(f"{source_path}:{node.lineno}: {compact_template[:240]}")
 
     for source_path in sorted(source_root.rglob("*.sql")):
         try:
