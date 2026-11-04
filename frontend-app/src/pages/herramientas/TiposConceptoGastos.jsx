@@ -6,6 +6,7 @@ import React, {
 import axios from "../../api/axios";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
+import { API_BASE as API_BASE_CONFIG } from "../../api/config";
 
 
 // ============================================================
@@ -18,11 +19,7 @@ import "../../css/CatalogosMaestrosPremium.css";
 // CONFIGURACIÓN API
 // ============================================================
 
-const API_ORIGEN =
-  "https://agenda-intranet-b.onrender.com";
-
-const API_BASE =
-  `${API_ORIGEN}/api/tipos-concepto-gastos`;
+const API_BASE = `${API_BASE_CONFIG}/tipos-concepto-gastos`;
 
 
 // ============================================================
