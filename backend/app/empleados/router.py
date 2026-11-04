@@ -489,30 +489,6 @@ def subir_foto(
     # Se hace DESPUÉS de guardar la nueva.
     # -----------------------------------------------------
 
-    extensiones_anteriores = {
-        ".jpg",
-        ".jpeg",
-        ".png",
-        ".webp",
-        ".gif",
-    }
-
-
-    for ext in extensiones_anteriores:
-        archivo_anterior = f"empleado_{empleado_id}{ext}"
-        if archivo_anterior == filename:
-            continue
-        try:
-            if (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase":
-                SupabasePrivateStorage().delete(f"fotos/empleados/{archivo_anterior}")
-            else:
-                ruta_anterior = os.path.join(upload_dir, archivo_anterior)
-                if os.path.exists(ruta_anterior):
-                    os.remove(ruta_anterior)
-        except Exception:
-            pass
-
-
     # -----------------------------------------------------
     # GUARDAR REFERENCIA EN BD
     #
@@ -550,6 +526,29 @@ def subir_foto(
                 f"{exc}"
             ),
         )
+
+    extensiones_anteriores = {
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".webp",
+        ".gif",
+    }
+
+
+    for ext in extensiones_anteriores:
+        archivo_anterior = f"empleado_{empleado_id}{ext}"
+        if archivo_anterior == filename:
+            continue
+        try:
+            if (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase":
+                SupabasePrivateStorage().delete(f"fotos/empleados/{archivo_anterior}")
+            else:
+                ruta_anterior = os.path.join(upload_dir, archivo_anterior)
+                if os.path.exists(ruta_anterior):
+                    os.remove(ruta_anterior)
+        except Exception:
+            pass
 
 
     # -----------------------------------------------------
