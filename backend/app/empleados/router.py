@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 import shutil
 import os
+from uuid import uuid4
 
 from backend.app.database import SessionLocal
 
@@ -420,10 +421,8 @@ def subir_foto(
     # NOMBRE FINAL
     # -----------------------------------------------------
 
-    filename = (
-        f"empleado_{empleado_id}"
-        f"{extension}"
-    )
+    foto_anterior = getattr(empleado, "foto", None)
+    filename = f"empleado_{empleado_id}_{uuid4().hex}{extension}"
 
 
     filepath = os.path.join(
@@ -465,7 +464,7 @@ def subir_foto(
                 ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
                 ".gif": "image/gif", ".webp": "image/webp",
             }[extension]
-            SupabasePrivateStorage().upload(f"fotos/empleados/{filename}", contenido, mime, upsert=True)
+            SupabasePrivateStorage().upload(f"fotos/empleados/{filename}", contenido, mime, upsert=False)
         else:
             with open(filepath, "wb") as buffer:
                 buffer.write(contenido)
@@ -517,12 +516,18 @@ def subir_foto(
     except Exception as exc:
 
         db.rollback()
+        try:
+            if (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase":
+                SupabasePrivateStorage().delete(f"fotos/empleados/{filename}")
+            elif os.path.exists(filepath):
+                os.remove(filepath)
+        except Exception:
+            pass
 
         raise HTTPException(
             status_code=500,
             detail=(
-                "La fotografía se guardó en disco, "
-                "pero no se pudo actualizar el empleado: "
+                "No se pudo actualizar la referencia de la fotografía: "
                 f"{exc}"
             ),
         )
@@ -549,6 +554,21 @@ def subir_foto(
                     os.remove(ruta_anterior)
         except Exception:
             pass
+
+
+    # El archivo anterior se elimina solo después de confirmar la referencia nueva.
+    if foto_anterior and foto_anterior != filename:
+        nombre_anterior = os.path.basename(str(foto_anterior))
+        if nombre_anterior == str(foto_anterior):
+            try:
+                if (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase":
+                    SupabasePrivateStorage().delete(f"fotos/empleados/{nombre_anterior}")
+                else:
+                    ruta_anterior = os.path.join(upload_dir, nombre_anterior)
+                    if os.path.isfile(ruta_anterior):
+                        os.remove(ruta_anterior)
+            except Exception:
+                pass
 
 
     # -----------------------------------------------------
