@@ -1,4 +1,5 @@
 import "../../css/ModalesOperativosPremium.css";
+import MolsanIcon from "../ui/MolsanIcon";
 
 import {
   useEffect,
@@ -2102,20 +2103,20 @@ const permisosDisponibles =
   ========================================================== */
 
   const pestanasEmpleado = [
-    { id: "basicos", label: "Datos básicos", icon: "👤" },
-    { id: "personales", label: "Datos personales", icon: "🏠" },
-    { id: "laborales", label: "Datos laborales", icon: "💼" },
-    ...(esAdministrador && Boolean(empleadoFormulario?.es_colaborador) ? [{ id: "honorarios", label: "Honorarios", icon: "💶" }] : []),
-    ...(esAdministrador ? [{ id: "visibilidad-tablas", label: "Visibilidad tablas", icon: "📊" }] : []),
-    ...(esPropiaFicha ? [{ id: "mi-visibilidad", label: "Mi visibilidad de tablas", icon: "📊" }] : []),
-    { id: "seguridad", label: "Seguridad", icon: "🛡️" },
-    { id: "auditoria", label: "Auditoría", icon: "📋" },
+    { id: "basicos", label: "Datos básicos", icon: "person" },
+    { id: "personales", label: "Datos personales", icon: "home" },
+    { id: "laborales", label: "Datos laborales", icon: "briefcase" },
+    ...(esAdministrador && Boolean(empleadoFormulario?.es_colaborador) ? [{ id: "honorarios", label: "Honorarios", icon: "euro" }] : []),
+    ...(esAdministrador ? [{ id: "visibilidad-tablas", label: "Visibilidad tablas", icon: "chart" }] : []),
+    ...(esPropiaFicha ? [{ id: "mi-visibilidad", label: "Mi visibilidad de tablas", icon: "chart" }] : []),
+    { id: "seguridad", label: "Seguridad", icon: "shield" },
+    { id: "auditoria", label: "Auditoría", icon: "clipboard" },
   ];
 
   // Las opciones administrativas también están disponibles en la ficha de cada empleado.
   const pestanasAdministracion = [
-    { id: "asignaciones", label: "Asignaciones", icon: "⚖️" },
-    { id: "visibilidad-tablas", label: "Visibilidad tablas", icon: "📊" },
+    { id: "asignaciones", label: "Asignaciones", icon: "scale" },
+    { id: "visibilidad-tablas", label: "Visibilidad tablas", icon: "chart" },
   ];
   const pestanasVisibles = modoAdministracion
     ? (esAdministrador ? pestanasAdministracion.filter((item) => item.id === pestanaInicial) : [])
@@ -2464,7 +2465,7 @@ const permisosDisponibles =
               >
 
                 <span className="mr-2">
-                  {item.icon}
+                  <MolsanIcon name={item.icon} size={22} bare />
                 </span>
 
                 {item.label}
@@ -4493,7 +4494,7 @@ const permisosDisponibles =
                           >
 
                             <div className="text-3xl">
-                              📋
+                              <MolsanIcon name="clipboard" size={20} bare />
                             </div>
 
                             <p

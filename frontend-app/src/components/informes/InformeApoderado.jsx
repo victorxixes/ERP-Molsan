@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "../../api/axios";
+import MolsanIcon from "../ui/MolsanIcon";
 
 
 import "../../css/ComponentesOperativosPremium.css";
@@ -464,7 +465,7 @@ export default function InformeApoderado({
               shadow-sm
             "
           >
-            📊
+            <MolsanIcon name="chart" size={48} bare />
           </div>
 
 
@@ -577,7 +578,7 @@ export default function InformeApoderado({
       >
 
         <Kpi
-          icon="🤝"
+          icon="handshake"
           titulo="Citas presenciales"
           valor={
             data.total_presencial ?? 0
@@ -589,7 +590,7 @@ export default function InformeApoderado({
 
 
         <Kpi
-          icon="💻"
+          icon="monitor"
           titulo="Citas VC"
           valor={
             data.total_vc ?? 0
@@ -601,7 +602,7 @@ export default function InformeApoderado({
 
 
         <Kpi
-          icon="🚗"
+          icon="car"
           titulo="Km recorridos"
           valor={`${numero(
             data.km_totales,
@@ -614,7 +615,7 @@ export default function InformeApoderado({
 
 
         <Kpi
-          icon="⏱️"
+          icon="timer"
           titulo="Tiempo medio"
           valor={`${numero(
             data.tiempo_medio_dias,
@@ -683,7 +684,7 @@ export default function InformeApoderado({
                 text-lg
               "
             >
-              🏆
+              <MolsanIcon name="trophy" size={22} tone="amber" bare />
             </div>
 
 
@@ -755,7 +756,7 @@ export default function InformeApoderado({
                   text-2xl
                 "
               >
-                🏆
+                <MolsanIcon name="trophy" size={22} />
               </div>
 
               <p
@@ -966,7 +967,7 @@ function Kpi({
             shadow-sm
           `}
         >
-          {icon}
+          <MolsanIcon name={icon} size={38} bare />
         </div>
 
 

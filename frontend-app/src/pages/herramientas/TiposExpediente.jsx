@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanButton from "../../components/ui/MolsanButton";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "../../css/CatalogosMaestrosPremium.css";
 
 const API = "/tipos-expediente";
@@ -101,12 +104,16 @@ export default function TiposExpediente() {
   const activos = tipos.filter((t) => t.activo !== false).length;
 
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-      <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white p-6 shadow-sm">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">MOLSAN ERP PREMIUM 2027</p>
-        <h1 className="mt-2 text-2xl font-bold text-slate-800 sm:text-3xl">Tipos de expediente</h1>
-        <p className="mt-2 max-w-3xl text-sm text-slate-500">Catálogo maestro de tipos de expediente. Incluye los registros históricos de provisiones fuera del circuito GTG y los tipos para nuevas altas manuales.</p>
+    <main className="molsan-page-stack catalogos-premium-page min-h-full ">
+      <header className="molsan-page-header dashboard-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="folder" size={22} tone="ocean" /></div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">Tipos de expediente</h1>
+            <p className="molsan-page-header__description">Catálogo maestro de tipos de expediente. Incluye los registros históricos de provisiones fuera del circuito GTG y los tipos para nuevas altas manuales.</p>
+          </div>
+        </div>
       </header>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -120,7 +127,7 @@ export default function TiposExpediente() {
       {mostrarModal && <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm" onMouseDown={(e) => { if (e.target === e.currentTarget) cerrarModal(); }}><div role="dialog" aria-modal="true" aria-labelledby="tipo-expediente-modal-title" className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[24px] border border-slate-200 bg-white p-5 shadow-2xl sm:p-6">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div><h2 id="tipo-expediente-modal-title" className="text-lg font-bold text-slate-800">{editando ? "Editar tipo de expediente" : "Nuevo tipo de expediente"}</h2><p className="mt-1 text-sm text-slate-500">Los identificadores históricos se conservan; las nuevas altas reciben un ID automático.</p></div>
-          <button type="button" onClick={cerrarModal} disabled={guardando} aria-label="Cerrar ventana" className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50">Cerrar ✕</button>
+          <button type="button" onClick={cerrarModal} disabled={guardando} aria-label="Cerrar ventana" className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50">Cerrar <MolsanIcon name="x" size={14} inline /></button>
         </div>
         <form onSubmit={guardar} className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-12">
           <label className="text-sm font-semibold text-slate-700 md:col-span-5">Descripción
@@ -134,7 +141,7 @@ export default function TiposExpediente() {
           <label className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 md:col-span-2">
             <input type="checkbox" checked={activo} onChange={(e) => setActivo(e.target.checked)} /> Activo
           </label>
-          <div className="flex items-end md:col-span-1"><button disabled={guardando || !nombre.trim()} className="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50" type="submit">{guardando ? "..." : editando ? "Guardar" : "Añadir"}</button></div>
+          <div className="flex items-end md:col-span-1"><MolsanButton type="submit" icon={editando ? "check" : "plus"} variant="success" className="w-full" disabled={guardando || !nombre.trim()} loading={guardando}>{editando ? "Guardar" : "Añadir"}</MolsanButton></div>
         </form>
       </div></div>}
 
@@ -147,16 +154,19 @@ export default function TiposExpediente() {
             <button type="button" onClick={cargar} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">Actualizar</button>
           </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[760px] text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-5 py-3">ID</th><th className="px-5 py-3">Descripción</th><th className="px-5 py-3">Grupo</th><th className="px-5 py-3">Estado</th><th className="px-5 py-3 text-right">Acciones</th></tr></thead>
-            <tbody className="divide-y divide-slate-100">
-              {cargando ? <tr><td colSpan="5" className="px-5 py-10 text-center text-slate-500">Cargando catálogo…</td></tr> : tiposFiltrados.length === 0 ? <tr><td colSpan="5" className="px-5 py-10 text-center text-slate-500">No hay tipos que coincidan con la búsqueda.</td></tr> : tiposFiltrados.map((tipo) => <tr key={tipo.id} className="hover:bg-blue-50/40">
-                <td className="px-5 py-3 font-mono font-semibold text-slate-500">{tipo.id}</td><td className="px-5 py-3 font-semibold text-slate-800">{tipo.nombre}</td><td className="px-5 py-3 text-slate-600">{tipo.grupo}</td><td className="px-5 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${tipo.activo ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{tipo.activo ? "Activo" : "Inactivo"}</span></td><td className="px-5 py-3"><div className="flex justify-end gap-2"><button type="button" onClick={() => abrirEditar(tipo)} className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100">Editar</button><button type="button" onClick={() => eliminar(tipo)} className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">Eliminar</button></div></td>
-              </tr>)}
-            </tbody>
-          </table>
-        </div>
+        <MolsanDataTable
+          rows={tiposFiltrados}
+          rowKey="id"
+          minWidth="760px"
+          emptyText="No hay tipos que coincidan con la búsqueda."
+          columns={[
+            { key: "id", header: "ID", accessor: "id", sortType: "number" },
+            { key: "nombre", header: "Descripción", accessor: "nombre", sortType: "text" },
+            { key: "grupo", header: "Grupo", accessor: "grupo", sortType: "text" },
+            { key: "activo", header: "Estado", accessor: "activo", sortType: "boolean", render: (value) => <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${value ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{value ? "Activo" : "Inactivo"}</span> },
+            { key: "acciones", header: "Acciones", sortable: false, align: "right", accessor: (tipo) => tipo.id, render: (_, tipo) => <div className="flex justify-end gap-2"><MolsanButton type="button" onClick={() => abrirEditar(tipo)} variant="secondary" className="molsan-btn--compact">Editar</MolsanButton><MolsanButton type="button" onClick={() => eliminar(tipo)} variant="danger" className="molsan-btn--compact">Eliminar</MolsanButton></div> },
+          ]}
+        />
       </section>
     </main>
   );

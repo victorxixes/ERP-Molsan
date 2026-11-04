@@ -1,4 +1,5 @@
 import MODULOS_ERP from "../config/modulos";
+import MolsanIcon from "./ui/MolsanIcon";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { createPortal } from "react-dom";
 import {
@@ -34,212 +35,15 @@ import "../css/LayoutPortalesPremium.css";
  * ============================================================
  */
 
-const iconos = {
-
-  folder: (
-    <>
-      <path
-        d="M3 6.5A2.5 2.5 0 0 1 5.5 4H10l2 2h6.5A2.5 2.5 0 0 1 21 8.5v8A2.5 2.5 0 0 1 18.5 19h-13A2.5 2.5 0 0 1 3 16.5z"
-      />
-      <path d="M3 8h18" />
-    </>
-  ),
-
-  home: (
-    <>
-      <path d="m3 10 9-7 9 7" />
-      <path d="M5 9v11h14V9" />
-      <path d="M9 20v-6h6v6" />
-    </>
-  ),
-
-  calendar: (
-    <>
-      <rect
-        x="3"
-        y="4.5"
-        width="18"
-        height="17"
-        rx="2"
-      />
-      <path d="M16 2.5v4" />
-      <path d="M8 2.5v4" />
-      <path d="M3 9h18" />
-      <path d="M8 13h.01" />
-      <path d="M12 13h.01" />
-      <path d="M16 13h.01" />
-      <path d="M8 17h.01" />
-      <path d="M12 17h.01" />
-    </>
-  ),
-
-  clock: (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7v5l3.5 2" />
-    </>
-  ),
-
-  "user-group": (
-    <>
-      <circle cx="9" cy="8" r="3" />
-      <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" />
-      <path d="M16 5.5a3 3 0 0 1 0 5.5" />
-      <path d="M18 14c1.8.8 3 2.4 3 4.5" />
-    </>
-  ),
-
-  globe: (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M3 12h18" />
-      <path d="M12 3c2.5 2.4 4 5.5 4 9s-1.5 6.6-4 9" />
-      <path d="M12 3c-2.5-2.4-4-5.5-4 9s1.5 6.6 4 9" />
-    </>
-  ),
-
-  chat: (
-    <>
-      <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v7A2.5 2.5 0 0 1 17.5 15H11l-4.5 4v-4.2A2.5 2.5 0 0 1 4 12.5z" />
-      <path d="M8 8h8" />
-      <path d="M8 11h5" />
-    </>
-  ),
-
-  cog: (
-    <>
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.8 1.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-2.6V20a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1-1.8-1.8.1-.1A1.7 1.7 0 0 0 8 15a1.7 1.7 0 0 0-1.6-1H6v-2.6h.4A1.7 1.7 0 0 0 8 10a1.7 1.7 0 0 0-.3-1.9l-.1-.1 1.8-1.8.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.6v-.2h2.6V5a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.8 1.8-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2V14h-.2a1.7 1.7 0 0 0-1.6 1z" />
-    </>
-  ),
-
-  bell: (
-    <>
-      <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
-      <path d="M10 21h4" />
-    </>
-  ),
-
-  chart: (
-    <>
-      <path d="M4 19V5" />
-      <path d="M4 19h16" />
-      <rect
-        x="7"
-        y="11"
-        width="2.5"
-        height="5"
-        rx=".5"
-      />
-      <rect
-        x="11"
-        y="8"
-        width="2.5"
-        height="8"
-        rx=".5"
-      />
-      <rect
-        x="15"
-        y="5"
-        width="2.5"
-        height="11"
-        rx=".5"
-      />
-    </>
-  ),
-
-  shield: (
-    <>
-      <path d="M12 3 20 6v5.5c0 4.8-3.2 8.3-8 9.5-4.8-1.2-8-4.7-8-9.5V6z" />
-      <path d="m9 12 2 2 4-4" />
-    </>
-  ),
-
-  clipboard: (
-    <>
-      <rect
-        x="5"
-        y="4"
-        width="14"
-        height="17"
-        rx="2"
-      />
-      <path d="M9 4V3h6v1" />
-      <path d="M8 9h8" />
-      <path d="M8 13h8" />
-      <path d="M8 17h5" />
-    </>
-  ),
-
-  truck: (
-    <>
-      <path d="M3 6h11v11H3z" />
-      <path d="M14 10h4l3 3v4h-7z" />
-      <circle cx="7" cy="19" r="1.7" />
-      <circle cx="18" cy="19" r="1.7" />
-    </>
-  ),
-
-  database: (
-    <>
-      <ellipse
-        cx="12"
-        cy="5"
-        rx="7"
-        ry="3"
-      />
-      <path d="M5 5v7c0 1.7 3.1 3 7 3s7-1.3 7-3V5" />
-      <path d="M5 12v7c0 1.7 3.1 3 7 3s7-1.3 7-3v-7" />
-    </>
-  ),
-
-  settings: (
-    <>
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.4 1a7 7 0 0 0-2.1-1.2L14 3h-4l-.4 2.7a7 7 0 0 0-2.1 1.2l-2.4-1-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.4-1a7 7 0 0 0 2.1 1.2L10 21h4l.4-2.7a7 7 0 0 0 2.1-1.2l2.4 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z" />
-    </>
-  ),
-
-  activity: (
-    <>
-      <path d="M3 12h4l2-7 4 14 2-7h6" />
-    </>
-  ),
-
-};
-
-
 /**
  * ============================================================
  * ICONO DE NAVEGACIÓN
  * ============================================================
  */
 
-const NavIcon = ({ name }) => {
-
-  const contenido =
-    iconos[name] ||
-    iconos.activity;
-
-  return (
-    <svg
-      className="
-        w-4
-        h-4
-        flex-shrink-0
-      "
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {contenido}
-    </svg>
-  );
-};
+const NavIcon = ({ name }) => (
+  <MolsanIcon name={name} size={27} className="molsan-nav-icon-3d" />
+);
 
 
 /**
@@ -248,21 +52,7 @@ const NavIcon = ({ name }) => {
  * ============================================================
  */
 
-const ProfileIcon = () => (
-  <svg
-    className="w-[18px] h-[18px]"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <circle cx="12" cy="8" r="4" />
-    <path d="M5 21c0-3.9 3.1-7 7-7s7 3.1 7 7" />
-  </svg>
-);
+const ProfileIcon = () => <MolsanIcon name="person" size={18} bare />;
 
 
 /**
@@ -271,22 +61,7 @@ const ProfileIcon = () => (
  * ============================================================
  */
 
-const LogoutIcon = () => (
-  <svg
-    className="w-[18px] h-[18px]"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-    <path d="M16 17l5-5-5-5" />
-    <path d="M21 12H9" />
-  </svg>
-);
+const LogoutIcon = () => <MolsanIcon name="logout" size={18} bare />;
 
 
 /**
@@ -295,21 +70,7 @@ const LogoutIcon = () => (
  * ============================================================
  */
 
-const BellIcon = () => (
-  <svg
-    className="w-[18px] h-[18px]"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
-    <path d="M10 21h4" />
-  </svg>
-);
+const BellIcon = () => <MolsanIcon name="bell" size={18} bare />;
 
 
 /**
@@ -318,26 +79,7 @@ const BellIcon = () => (
  * ============================================================
  */
 
-const ChevronIcon = ({ open }) => (
-  <svg
-    className={`
-      w-3.5
-      h-3.5
-      transition-transform
-      duration-200
-      ${open ? "rotate-180" : ""}
-    `}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="m6 9 6 6-6-6" />
-  </svg>
-);
+const ChevronIcon = ({ open }) => <MolsanIcon name="chevronDown" size={14} bare className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />;
 
 
 /**
@@ -375,9 +117,9 @@ const TopNavItem = ({
       ${
         isActive
           ? `
-            bg-[var(--erp-primary)]
-            text-white
-            border-[var(--erp-primary)]
+            bg-[#EAF2F8]
+            text-[#064675]
+            border-[#B9D7E6]
             shadow-sm
           `
           : `
@@ -432,7 +174,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
   const navigate = useNavigate();
   const { pathname } = useLocation();
   // Los portales de notarios externos mantienen su navegación aislada del ERP interno.
-  const esPortalNotarialExterno = /^\/(?:notargest|encargagest)-notarios(?:\/|$)/i.test(pathname);
+  const esPortalNotarialExterno = /^\/(?:notargest|encargagest)(?:-notarios|-notario|\/notario)(?:\/|$)/i.test(pathname);
 
   const empleado = useAuthStore(
     (s) => s.empleado
@@ -976,10 +718,11 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       return true;
     }).map((modulo) => ({
       key: modulo.key, to: modulo.route, label: modulo.label,
+      // Los iconos del catálogo central se renderizan directamente.
+      // Solo traducimos los dos nombres heredados que aún no tienen dibujo propio.
       icon: ({
-        "user-group": "user-group", "file-check": "folder", briefcase: "activity",
-        landmark: "globe", "clipboard-list": "clipboard", clock: "clock",
-        settings: "settings", package: "truck", wrench: "settings",
+        package: "truck",
+        wrench: "settings",
       })[modulo.icon] || modulo.icon,
     })).filter((modulo, index, lista) => lista.findIndex((otro) => otro.key === modulo.key) === index);
   };
@@ -1212,14 +955,14 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                         }}
                         aria-haspopup={esMenu ? "menu" : undefined} aria-expanded={esMenu ? abierto : undefined}
                         aria-current={activeNavigationItem === item.label ? "page" : undefined}
-                        className={`flex items-center gap-1.5 whitespace-nowrap font-medium transition-all duration-200 border flex-shrink-0 ${brandName === "NotarGest" ? "px-3 py-2 rounded-full text-[12px]" : "px-2.5 py-1.5 rounded-lg text-[12px]"} ${(item.directRoute && pathname.replace(/\/$/, "") === item.to) || activeNavigationItem === item.label ? "bg-[var(--erp-primary)] text-white border-[var(--erp-primary)] shadow-sm" : abierto ? "bg-transparent text-[var(--erp-text)] border-[var(--erp-primary)]" : "bg-white text-[var(--erp-text)] border-[var(--erp-border)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)] hover:border-[var(--erp-primary)]"} ${item.attention ? "ng-boton-firmas-urgentes ng-urgencias-activas" : ""}`}>
+                        className={`flex items-center gap-1.5 whitespace-nowrap font-medium transition-all duration-200 border flex-shrink-0 px-2.5 py-1.5 rounded-lg text-[12px] ${(item.directRoute && pathname.replace(/\/$/, "") === item.to) || activeNavigationItem === item.label ? "bg-[#EAF2F8] text-[#064675] border-[#B9D7E6] shadow-sm" : abierto ? "bg-transparent text-[var(--erp-text)] border-[var(--erp-primary)]" : "bg-white text-[var(--erp-text)] border-[var(--erp-border)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)] hover:border-[var(--erp-primary)]"} ${item.attention ? "ng-boton-firmas-urgentes ng-urgencias-activas" : ""}`}>
                         <NavIcon name={item.icon} /><span>{item.label}</span>
                         {esMenu && <ChevronIcon open={abierto} />}
                         {(item.badge > 0 || (item.label === "Mensajes" && mensajesNoLeidos > 0)) ? <span className={item.label === "Mensajes" ? "min-w-[19px] h-[19px] px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold" : "min-w-[19px] h-[19px] px-1 flex items-center justify-center rounded-full bg-[var(--erp-primary-soft)] text-[var(--erp-primary)] text-[10px] font-bold"}>{item.label === "Mensajes" ? mensajesNoLeidos : item.badge}</span> : null}
                       </button>
                       {abierto && menuSidebarPosicion && createPortal(
                         <div ref={menuSidebarMenuRef} role="menu" style={{ position: "fixed", top: menuSidebarPosicion.top, left: menuSidebarPosicion.left, width: menuSidebarPosicion.ancho, zIndex: 9999 }} className="max-h-[min(70vh,380px)] overflow-y-auto rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-2 shadow-2xl">
-                          {menuSidebarItems.map((modulo) => <NavLink key={modulo.key} to={modulo.to} onClick={() => setMenuSidebarAbierto(null)} role="menuitem" className={({ isActive }) => `flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition ${isActive ? "bg-[var(--erp-primary)] text-white" : "text-[var(--erp-text)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"}`}><NavIcon name={modulo.icon} /><span>{modulo.label}</span></NavLink>)}
+                          {menuSidebarItems.map((modulo) => <NavLink key={modulo.key} to={modulo.to} onClick={() => setMenuSidebarAbierto(null)} role="menuitem" className={({ isActive }) => `flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition ${isActive ? "bg-[#EAF2F8] text-[#064675] border border-[#B9D7E6]" : "text-[var(--erp-text)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"}`}><NavIcon name={modulo.icon} /><span>{modulo.label}</span></NavLink>)}
                         </div>, document.body
                       )}
                     </div>
@@ -1578,18 +1321,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                 "
               >
 
-                <svg
-                  className="w-4 h-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  aria-hidden="true"
-                >
-                  <path d="M6 6l12 12" />
-                  <path d="M18 6 6 18" />
-                </svg>
+                <MolsanIcon name="x" size={16} bare />
 
               </button>
 

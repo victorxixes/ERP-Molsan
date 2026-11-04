@@ -1,3 +1,4 @@
+import MolsanIcon from "../ui/MolsanIcon";
 import {
   useEffect,
   useState,
@@ -6,7 +7,7 @@ import {
   useRef,
 } from "react";
 
-import { listarNotarias } from "../../api/ctn";
+import { listarNotarias, obtenerNotaria } from "../../api/ctn";
 import "../../css/ComponentesCompartidosPremium.css";
 
 
@@ -258,11 +259,54 @@ export default function AutocompleteNotario({
 
   useEffect(() => {
 
-    if (disabled) {
-      setOpen(false);
-    }
+    if (disabled || !value?.id) return;
 
-  }, [disabled]);
+    const camposFicha = [
+      "codigo", "telefono", "direccion", "cp", "vc",
+      "apoderado_s", "departamento_cancelaciones",
+      "departamento_copias", "otros_departamentos", "observacion",
+    ];
+    const fichaCompleta = camposFicha.every((campo) =>
+      Object.prototype.hasOwnProperty.call(value, campo)
+    );
+    if (fichaCompleta) return;
+
+    let activo = true;
+    obtenerNotaria(value.id)
+      .then((respuesta) => {
+        const payload = respuesta?.data ?? respuesta;
+        const detalle = payload?.notaria ?? payload?.item ?? payload;
+        if (!activo || !detalle?.id) return;
+
+        const vc = String(detalle.vc || "").trim().toUpperCase();
+        const tipoFirma = ["SI", "SÍ", "S", "VC", "VIDEOCONFERENCIA", "VIDEOCONFERENCE", "TRUE", "1"].includes(vc)
+          ? "Videoconferencia"
+          : "Presencial";
+        const lat = coordenadaValida(detalle.lat, -90, 90);
+        const lng = coordenadaValida(detalle.lng, -180, 180);
+        const distancia_km = lat === null || lng === null
+          ? null
+          : distanciaKm(MOLSAN_LAT, MOLSAN_LNG, lat, lng);
+
+        onSelect({
+          ...value,
+          ...detalle,
+          id: Number(detalle.id),
+          municipio: detalle.municipio || detalle.poblacion || value.municipio || "",
+          provincia: detalle.provincia || value.provincia || "",
+          tipo_firma: tipoFirma,
+          distancia_km,
+        });
+      })
+      .catch(() => {
+        if (activo) setSearchError("No se ha podido recuperar la ficha completa del notario en CTN.");
+      });
+
+    return () => {
+      activo = false;
+    };
+
+  }, [disabled, value, onSelect]);
 
 
   // ==========================================================
@@ -405,58 +449,30 @@ export default function AutocompleteNotario({
         // ====================================================
 
         const notarioCompleto = {
-
-          id: n.id,
-
-          codigo:
-            n.codigo || "",
-
-          nombre:
-            n.nombre || "",
-
-          apellidos:
-            n.apellidos || "",
-
-          nif:
-            n.nif || "",
-
-          telefono:
-            n.telefono || "",
-
-          provincia:
-            n.provincia || "",
-
-          municipio:
-            n.municipio || "",
-
-          cp:
-            n.cp || "",
-
-          direccion:
-            n.direccion || "",
-
-          vc:
-            n.vc || "",
-
+          ...n,
+          id: Number(n.id),
+          codigo: n.codigo || "",
+          nombre: n.nombre || "",
+          apellidos: n.apellidos || "",
+          nif: n.nif || "",
+          telefono: n.telefono || "",
+          provincia: n.provincia || "",
+          municipio: n.municipio || "",
+          cp: n.cp || "",
+          direccion: n.direccion || "",
+          vc: n.vc || "",
           lat,
-
           lng,
-
-          apoderado:
-            n.apoderado ||
-            n.apoderado_s ||
-            "",
-
-          observacion:
-            n.observacion ||
-            "",
-
-          tipo_firma:
-            tipoFirma,
-
-          distancia_km:
-            distancia_km,
-
+          apoderado: n.apoderado || "",
+          apoderado_s: n.apoderado_s || "",
+          departamento_cancelaciones: n.departamento_cancelaciones || "",
+          departamento_copias: n.departamento_copias || "",
+          otros_departamentos: n.otros_departamentos || "",
+          observacion: n.observacion || "",
+          notarios_asociados: Array.isArray(n.notarios_asociados) ? n.notarios_asociados : [],
+          notario_asociado: n.notario_asociado || "",
+          tipo_firma: tipoFirma,
+          distancia_km,
         };
 
 
@@ -790,7 +806,7 @@ export default function AutocompleteNotario({
                           whitespace-nowrap
                         "
                       >
-                        🚗{" "}
+                        <MolsanIcon name="car" size={18} />{" "}
                         {km.toFixed(1)} km
                       </div>
 

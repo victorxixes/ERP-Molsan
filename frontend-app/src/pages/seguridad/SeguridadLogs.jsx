@@ -5,6 +5,7 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "./SeguridadSubpaginasPremium.css";
 
 
@@ -27,56 +28,9 @@ import "./SeguridadSubpaginasPremium.css";
 // ICONO
 // ============================================================
 
-const Icono = ({
-  name,
-  className = "w-5 h-5",
-}) => (
-
-  <svg
-    className={`${className} flex-shrink-0`}
-    aria-hidden="true"
-  >
-
-    <use
-      href={`/icons/icons.svg#${name}`}
-    />
-
-  </svg>
-
+const Icono = ({ name, className = "w-4 h-4" }) => (
+  <MolsanIcon name={name} size={16} bare className={className} />
 );
-
-
-// ============================================================
-// ICONOS EVENTO
-// ============================================================
-
-const ICONOS_EVENTO = {
-
-  login: "lock",
-
-  login_error: "shield",
-
-  acceso: "folder",
-
-  update: "edit",
-
-  delete: "trash",
-
-  permiso: "shield",
-
-  modulo: "folder",
-
-  error: "shield",
-
-  warning: "shield",
-
-  create: "clipboard",
-
-  logout: "lock",
-
-  default: "clipboard",
-
-};
 
 
 // ============================================================
@@ -362,11 +316,7 @@ function CabeceraOrden({
           `}
         >
 
-          {activa
-            ? orden.asc
-              ? "▲"
-              : "▼"
-            : "↕"}
+          <MolsanIcon name={activa ? (orden.asc ? "arrowUp" : "arrowDown") : "arrowUpDown"} size={13} />
 
         </span>
 
@@ -943,24 +893,14 @@ export default function SeguridadLogs() {
 
   return (
 
-    <div className="seguridad-logs-premium seguridad-subpagina-premium space-y-6 animate-fade-in">
+    <div className="molsan-page-stack seguridad-logs-premium seguridad-subpagina-premium animate-fade-in">
 
 
       {/* ====================================================
           CABECERA
       ==================================================== */}
 
-      <section
-        className="
-          bg-[var(--erp-surface)]
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          shadow-sm
-          px-6
-          py-5
-        "
-      >
+      <section className="molsan-page-header">
 
         <div
           className="
@@ -973,26 +913,10 @@ export default function SeguridadLogs() {
           "
         >
 
-          <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
-          >
+          <div className="molsan-page-header__identity">
 
             <div
-              className="
-                w-11
-                h-11
-                rounded-xl
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-                flex-shrink-0
-              "
+              className="molsan-page-header__mark"
             >
 
               <Icono
@@ -1005,26 +929,11 @@ export default function SeguridadLogs() {
 
             <div>
 
-              <h1
-                className="
-                  text-2xl
-                  font-bold
-                  text-[var(--erp-text)]
-                "
-              >
-                Logs técnicos
-              </h1>
+              <p className="molsan-page-header__eyebrow">MOLSAN ERP · SEGURIDAD</p>
+              <h1 className="molsan-page-header__title">Logs técnicos</h1>
 
 
-              <p
-                className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                  mt-0.5
-                "
-              >
-                Monitorización técnica y trazabilidad de eventos del ERP
-              </p>
+              <p className="molsan-page-header__description">Monitorización técnica y trazabilidad de eventos del ERP</p>
 
             </div>
 

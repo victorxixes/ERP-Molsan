@@ -78,10 +78,18 @@ function tokenEstaExpirado(token) {
       return false;
     }
 
-    const payloadBase64 = partes[1];
+    // JWT usa Base64URL: normalizamos sus dos caracteres especiales
+    // y completamos el padding antes de pasarlo a atob().
+    const payloadBase64 = partes[1]
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
+    const payloadBase64Padded = payloadBase64.padEnd(
+      Math.ceil(payloadBase64.length / 4) * 4,
+      "="
+    );
 
     const payloadJson = decodeURIComponent(
-      atob(payloadBase64)
+      atob(payloadBase64Padded)
         .split("")
         .map(
           (caracter) =>
@@ -263,14 +271,15 @@ function normalizarEmpleado(empleado) {
 ========================================================= */
 
 function limpiarSesionLocal() {
+  for (const clave of ["token", "empleado", "notargest_token", "encargagest_token", "encargagest_mode"]) {
+    localStorage.removeItem(clave);
+  }
 
-  localStorage.removeItem(
-    "token"
-  );
-
-  localStorage.removeItem(
-    "empleado"
-  );
+  // Las sesiones de soporte son delegaciones temporales de la sesión ERP.
+  // Nunca deben sobrevivir al cierre o cambio de identidad del empleado.
+  for (const clave of ["notargest_token", "notargest_soporte_token", "notargest_soporte_notaria", "encargagest_token", "encargagest_soporte_token", "encargagest_mode"]) {
+    sessionStorage.removeItem(clave);
+  }
 }
 
 

@@ -1,5 +1,7 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useState } from "react";
 import { useUtilidades } from "../../hooks/useUtilidades";
+import MolsanButton from "../../components/ui/MolsanButton";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
 
@@ -8,7 +10,7 @@ import "../../css/CatalogosMaestrosPremium.css";
  */
 
 export default function ImportarCTN() {
-  const { importarCTN, loading, resultado } = useUtilidades();
+  const { importarCTN, loading, resultado, error } = useUtilidades();
 
   const [file, setFile] = useState(null);
 
@@ -19,22 +21,14 @@ export default function ImportarCTN() {
   };
 
   return (
-    <div className="importar-ctn-premium herramientas-subpagina-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6 animate-fadeIn">
+    <div className="molsan-page-stack importar-ctn-premium herramientas-subpagina-premium min-h-full ">
 
       {/* =====================================================
           CABECERA
       ===================================================== */}
 
-      <div
-        className="
-          relative overflow-hidden
-          rounded-[24px]
-          border border-slate-200/80
-          bg-white/80
-          backdrop-blur-xl
-          shadow-[0_18px_50px_rgba(15,23,42,0.08)]
-          p-6 sm:p-7
-        "
+      <header
+        className=" molsan-page-header "
       >
 
         <div
@@ -59,7 +53,7 @@ export default function ImportarCTN() {
               text-2xl
             "
           >
-            📥
+            <MolsanIcon name="download" size={20} />
           </div>
 
           <div>
@@ -76,7 +70,7 @@ export default function ImportarCTN() {
 
         </div>
 
-      </div>
+      </header>
 
 
       {/* =====================================================
@@ -125,7 +119,7 @@ export default function ImportarCTN() {
             >
 
               <span className="text-4xl">
-                {file ? "📊" : "📁"}
+                <MolsanIcon name={file ? "chart" : "folder"} size={22} />
               </span>
 
               <span className="text-sm font-medium text-slate-700">
@@ -167,7 +161,7 @@ export default function ImportarCTN() {
                 animate-fadeIn
               "
             >
-              <span>✓</span>
+              <MolsanIcon name="check" size={15} />
 
               <div className="min-w-0">
 
@@ -189,95 +183,44 @@ export default function ImportarCTN() {
 
           <div className="flex justify-end">
 
-            <button
-              onClick={enviar}
-              disabled={!file || loading}
-              className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-xl
-                px-6 py-3
-                text-sm font-semibold
-                text-white
-                bg-gradient-to-r
-                from-blue-600
-                to-blue-500
-                shadow-[0_10px_25px_rgba(37,99,235,0.20)]
-                transition-all
-                hover:from-blue-500
-                hover:to-blue-400
-                active:scale-[0.98]
-                disabled:opacity-40
-                disabled:cursor-not-allowed
-              "
-            >
-
-              {loading && (
-                <span
-                  className="
-                    h-4 w-4
-                    rounded-full
-                    border-2
-                    border-white/30
-                    border-t-white
-                    animate-spin
-                  "
-                />
-              )}
-
-              {loading
-                ? "Importando..."
-                : "Importar fichero"}
-
-            </button>
+            <MolsanButton icon="upload" variant="primary" onClick={enviar} disabled={!file || loading} loading={loading}>
+              Importar fichero
+            </MolsanButton>
 
           </div>
 
 
           {/* RESULTADO */}
 
+          {error && (
+            <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+              {error}
+            </div>
+          )}
+
           {resultado && (
-            <div
-              className="
-                rounded-2xl
-                border border-emerald-200
-                bg-emerald-50
-                p-5
-                animate-fadeIn
-              "
-            >
-
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 animate-fadeIn">
               <div className="flex items-center gap-3">
-
-                <div
-                  className="
-                    flex h-10 w-10
-                    items-center justify-center
-                    rounded-xl
-                    bg-emerald-100
-                    text-emerald-700
-                    font-bold
-                  "
-                >
-                  ✓
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 font-bold">
+                  <MolsanIcon name="check" size={20} />
                 </div>
-
                 <div>
-
                   <div className="font-semibold text-emerald-800">
-                    Importación completada
+                    Importación completada sin borrar registros existentes
                   </div>
-
-                  <div className="mt-0.5 text-sm text-emerald-700">
-                    {resultado.importados} registros importados
+                  <div className="mt-1 text-sm text-emerald-700">
+                    {resultado.importados} filas procesadas · {resultado.insertados ?? 0} nuevos · {resultado.actualizados ?? 0} actualizados
                   </div>
-
+                  {resultado.asociaciones_actualizadas && (
+                    <div className="mt-1 text-sm text-emerald-700">
+                      {resultado.asociaciones_importadas ?? 0} asociaciones CTN importadas
+                    </div>
+                  )}
+                  <div className="mt-1 text-xs text-emerald-700/80">
+                    Los registros ausentes en el Excel y los datos bancarios/credenciales se conservan.
+                  </div>
                 </div>
-
               </div>
-
             </div>
           )}
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import axios from "../../api/axios";
 
 const VACIO = {
@@ -80,11 +81,11 @@ export default function DatosMolsan() {
   };
 
   return (
-    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-      <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
+    <div className="molsan-page-stack herramientas-subpagina-premium min-h-full animate-fadeIn">
+      <header className="molsan-page-header">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="flex items-start gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl">🏢</div>
+          <MolsanIcon name="building" size={48} tone="indigo" />
           <div>
             <p className="text-xs font-black uppercase tracking-[.18em] text-indigo-600">Utilidades · Configuración corporativa</p>
             <h1 className="mt-2 text-2xl font-black text-slate-900 sm:text-3xl">Datos Molsan</h1>

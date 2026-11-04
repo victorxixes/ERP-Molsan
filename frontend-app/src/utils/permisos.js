@@ -63,7 +63,7 @@ export function puedeVerModulo(modulo) {
   const normalizar = (valor) =>
     String(valor || "")
       .normalize("NFD")
-      .replace(/[\\u0300-\\u036f]/g, "")
+      .replace(/[\u0300-\u036f]/g, "")
       .trim()
       .toLowerCase();
 
@@ -79,7 +79,7 @@ export function puedeVerModulo(modulo) {
   const esAdministrador =
     Number(empleado.rol_id ?? empleado.rol?.id) === 0 ||
     usuario === "admin" ||
-    /(^|\\s)(admin|administrador|administradora|superadmin|superusuario|superuser|root)(\\s|$)/.test(rol);
+    /(^|\s)(admin|administrador|administradora|superadmin|superadministrador|superadministradora|superusuario|superuser|root)(\s|$)/.test(rol);
 
   if (esAdministrador) {
     return true;

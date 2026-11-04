@@ -6,6 +6,7 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 import MODULOS_ERP from "../../config/modulos";
 import { editarEmpleado } from "../../api/empleados";
@@ -173,7 +174,7 @@ function SeccionAcordeon({
               text-lg
             "
           >
-            {icono}
+            <MolsanIcon name={icono} size={34} />
           </div>
 
           <div className="min-w-0">
@@ -1581,16 +1582,7 @@ const permisosGlobales =
           CABECERA
       ====================================================== */}
 
-      <section
-        className="
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-5
-          shadow-sm
-        "
-      >
+      <section className="molsan-page-header">
 
         <div
           className="
@@ -1603,14 +1595,7 @@ const permisosGlobales =
           "
         >
 
-          <div
-            className="
-              flex
-              min-w-0
-              items-center
-              gap-4
-            "
-          >
+          <div className="molsan-page-header__identity">
 
             <div
               className="
@@ -1673,28 +1658,9 @@ const permisosGlobales =
 
             <div className="min-w-0">
 
-              <p
-                className="
-                  text-[11px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.14em]
-                  text-[var(--erp-primary)]
-                "
-              >
-                Centro de seguridad
-              </p>
+              <p className="molsan-page-header__eyebrow">MOLSAN ERP · SEGURIDAD</p>
 
-              <h1
-                className="
-                  mt-1
-                  truncate
-                  text-2xl
-                  font-bold
-                  tracking-tight
-                  text-[var(--erp-text)]
-                "
-              >
+              <h1 className="molsan-page-header__title">
                 {textoSeguro(
                   empleado.nombre
                 )}
@@ -1704,13 +1670,7 @@ const permisosGlobales =
                   : ""}
               </h1>
 
-              <p
-                className="
-                  mt-0.5
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                "
-              >
+              <p className="molsan-page-header__description">
                 @{empleado.usuario || "-"}
               </p>
 
@@ -1861,8 +1821,8 @@ const permisosGlobales =
             {guardandoVisibilidad
               ? "Guardando…"
               : empleado.visible_en_listado === false
-                ? "👁️ Mostrar en Empleados"
-                : "🙈 Ocultar de Empleados"}
+                ? "Mostrar en Empleados"
+                : "Ocultar de Empleados"}
           </button>
 
           {empleado.activo ? (
@@ -1887,7 +1847,7 @@ const permisosGlobales =
                 hover:bg-red-100
               "
             >
-              🔒 Bloquear usuario
+              <MolsanIcon name="lock" size={18} /> Bloquear usuario
             </button>
 
           ) : (
@@ -1912,7 +1872,7 @@ const permisosGlobales =
                 hover:bg-emerald-100
               "
             >
-              🔓 Desbloquear usuario
+              <MolsanIcon name="lock" size={18} /> Desbloquear usuario
             </button>
 
           )}
@@ -2045,7 +2005,7 @@ const permisosGlobales =
               text-[var(--erp-text)]
             "
           >
-            🔐 Credenciales y acceso
+            Credenciales y acceso
           </h2>
 
           <p
@@ -2089,7 +2049,7 @@ const permisosGlobales =
                 text-[var(--erp-text)]
               "
             >
-              🔑 Restablecer contraseña
+              <MolsanIcon name="key" size={18} /> Restablecer contraseña
             </h3>
 
             <p
@@ -2188,7 +2148,7 @@ const permisosGlobales =
                 text-[var(--erp-text)]
               "
             >
-              👤 Asignar rol
+              <MolsanIcon name="person" size={18} /> Asignar rol
             </h3>
 
             <p
@@ -2295,7 +2255,7 @@ const permisosGlobales =
       <SeccionAcordeon
         titulo="Módulos visibles"
         descripcion="Control de los módulos disponibles para este empleado."
-        icono="📦"
+        icono="archive"
         contador={
           modulosVisibles.length
         }
@@ -2415,7 +2375,7 @@ const permisosGlobales =
       <SeccionAcordeon
         titulo="Permisos por módulo"
         descripcion="Control granular de las capacidades del empleado."
-        icono="🔧"
+        icono="tools"
         abierto={showPermisos}
         onToggle={() =>
           setShowPermisos(
@@ -2695,7 +2655,7 @@ const permisosGlobales =
       <SeccionAcordeon
         titulo="Auditoría del usuario"
         descripcion="Trazabilidad de las acciones realizadas por este empleado."
-        icono="📊"
+        icono="chart"
         contador={
           auditoriaFiltrada.length
         }
@@ -2793,7 +2753,7 @@ const permisosGlobales =
                 text-emerald-700
               "
             >
-              📊 Exportar
+              <MolsanIcon name="chart" size={18} /> Exportar
             </button>
 
           </div>
@@ -3009,7 +2969,7 @@ const permisosGlobales =
       <SeccionAcordeon
         titulo="Logs técnicos del usuario"
         descripcion="Eventos técnicos, errores e incidencias."
-        icono="📝"
+        icono="pen"
         contador={
           logsFiltrados.length
         }
@@ -3107,7 +3067,7 @@ const permisosGlobales =
                 text-amber-700
               "
             >
-              📝 Exportar
+              <MolsanIcon name="pen" size={18} /> Exportar
             </button>
 
           </div>

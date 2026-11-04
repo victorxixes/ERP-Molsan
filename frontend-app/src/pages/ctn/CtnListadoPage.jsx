@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
+import { API_BASE as API_ROOT } from "../../api/config";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "../../css/CtnListadoPage.css";
 
-const API_BASE = (
-  import.meta.env.VITE_API_URL ||
-  "https://agenda-intranet-b.onrender.com/api"
-).replace(/\/$/, "");
+const API_BASE = API_ROOT;
 
 const PAGE_SIZE = 15;
 
@@ -69,6 +68,7 @@ export default function CtnListadoPage() {
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [pagina, setPagina] = useState(1);
+  const [orden, setOrden] = useState({ key: "nombre_completo", direction: "asc" });
   const [cargando, setCargando] = useState(false);
   const [exportando, setExportando] = useState(false);
   const [error, setError] = useState("");
@@ -76,7 +76,6 @@ export default function CtnListadoPage() {
   const [accesosEncargaGest, setAccesosEncargaGest] = useState([]);
   const [errorEncargaGest, setErrorEncargaGest] = useState("");
 
-  const [orden, setOrden] = useState({ campo: "apellidos", direccion: "asc" });
   const filtrosIniciales = {
     q: "",
     provincia: "",
@@ -89,6 +88,24 @@ export default function CtnListadoPage() {
   const [filtrosAplicados, setFiltrosAplicados] = useState({ ...filtrosIniciales });
   const totalPaginas = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
+  const cambiarOrden = (key) => {
+    setOrden((actual) => {
+      if (actual.key !== key) return { key, direction: "asc" };
+      if (actual.direction === "asc") return { key, direction: "desc" };
+      return { key: null, direction: null };
+    });
+    setPagina(1);
+  };
+
+  const cabeceraOrdenable = (label, key) => (
+    <button type="button" className="molsan-table-sort" onClick={() => cambiarOrden(key)} aria-label={`Ordenar por ${label}`}>
+      <span>{label}</span>
+      <span className={`molsan-table-sort__indicator ${orden.key === key ? "is-active" : ""}`} aria-hidden="true">
+        {orden.key === key ? (orden.direction === "asc" ? "↑" : "↓") : "↕"}
+      </span>
+    </button>
+  );
+
   const cargarListado = useCallback(
     async (paginaSolicitada = pagina, filtrosActuales = filtrosAplicados) => {
       setCargando(true);
@@ -98,6 +115,10 @@ export default function CtnListadoPage() {
           page: String(paginaSolicitada),
           page_size: String(PAGE_SIZE),
         });
+        if (orden.key && orden.direction) {
+          params.set("sort_by", orden.key);
+          params.set("sort_dir", orden.direction);
+        }
         Object.entries(filtrosActuales).forEach(([key, value]) => {
           if (value?.trim()) params.set(key, value.trim());
         });
@@ -132,7 +153,7 @@ export default function CtnListadoPage() {
         setCargando(false);
       }
     },
-    [pagina, filtrosAplicados]
+    [pagina, filtrosAplicados, orden]
   );
 
   useEffect(() => {
@@ -155,23 +176,6 @@ export default function CtnListadoPage() {
     return () => { activo = false; };
   }, []);
 
-  const filasOrdenadas = useMemo(() => {
-    const copia = [...items];
-    const obtener = (item, campo) => {
-      if (campo === "nombre_completo") return nombreNotario(item);
-      if (campo === "notario_asociado") return listaAsociados(item);
-      return item?.[campo] ?? "";
-    };
-    copia.sort((a, b) => {
-      const av = obtener(a, orden.campo);
-      const bv = obtener(b, orden.campo);
-      const comparacion = typeof av === "number" && typeof bv === "number"
-        ? av - bv
-        : String(av).localeCompare(String(bv), "es", { sensitivity: "base", numeric: true });
-      return orden.direccion === "asc" ? comparacion : -comparacion;
-    });
-    return copia;
-  }, [items, orden]);
 
   const cambiarFiltro = (campo, valor) => setFiltros((actual) => ({ ...actual, [campo]: valor }));
 
@@ -186,16 +190,6 @@ export default function CtnListadoPage() {
     setFiltros(vacios);
     setFiltrosAplicados(vacios);
     setPagina(1);
-  };
-
-  const ordenarPor = (campo) => setOrden((actual) => ({
-    campo,
-    direccion: actual.campo === campo && actual.direccion === "asc" ? "desc" : "asc",
-  }));
-
-  const indicadorOrden = (campo) => {
-    if (orden.campo !== campo) return "↕";
-    return orden.direccion === "asc" ? "↑" : "↓";
   };
 
   const cerrarFichaNotaria = async () => {
@@ -256,23 +250,21 @@ export default function CtnListadoPage() {
   };
 
   return (
-    <main className="ctn-listado-page molsan-page" aria-busy={cargando}>
+    <main className="molsan-page-stack ctn-listado-page molsan-page" aria-busy={cargando}>
       <header className="ctn-listado-header molsan-page-header">
         <div className="ctn-listado-header-identidad molsan-page-header__identity">
-          <div className="ctn-listado-header-icon molsan-page-header__mark" aria-hidden="true">CTN</div>
+          <div className="ctn-listado-header-icon molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="courthouse" size={32} bare /></div>
           <div className="min-w-0">
             <p className="ctn-listado-header-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
-            <h1>Listado CTN</h1>
-            <p>Consulta, filtra y gestiona los notarios y sus asociaciones.</p>
+            <h1 className="molsan-page-header__title">Listado CTN</h1>
+            <p className="molsan-page-header__description">Consulta, filtra y gestiona los notarios y sus asociaciones.</p>
           </div>
         </div>
         <div className="ctn-listado-header-acciones molsan-page-header__actions">
           <button type="button" className="ctn-btn ctn-btn-excel molsan-btn" onClick={exportarExcel} disabled={exportando}>
             {exportando ? "Preparando Excel…" : "⇩ Exportar Excel"}
           </button>
-          <button type="button" className="ctn-btn ctn-btn-secondary molsan-btn molsan-btn--secondary" onClick={() => cargarListado(pagina, filtrosAplicados)} disabled={cargando}>
-            {cargando ? "Actualizando…" : "↻ Actualizar"}
-          </button>
+          
         </div>
       </header>
 
@@ -320,26 +312,26 @@ export default function CtnListadoPage() {
       {error && <div className="ctn-alerta-error" role="alert"><strong>No se ha podido completar la operación.</strong><span>{error}</span></div>}
       {errorEncargaGest && <div className="ctn-alerta-error" role="alert"><strong>No se ha podido consultar el estado de EncargaGest.</strong><span>{errorEncargaGest}</span></div>}
 
-      <section className="ctn-tabla-contenedor molsan-table-wrap">
+      <section className="ctn-tabla-contenedor molsan-panel molsan-table-wrap">
         <div className="ctn-tabla-cabecera"><div><h2>Notarios</h2><p>{total.toLocaleString("es-ES")} resultados encontrados</p></div></div>
         <div className="ctn-tabla-scroll">
           <table className="ctn-tabla molsan-table">
             <thead><tr>
-              <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("id")}>ID {indicadorOrden("id")}</button></th>
-              <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("nombre_completo")}>Notario {indicadorOrden("nombre_completo")}</button></th>
-              <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("nif")}>NIF {indicadorOrden("nif")}</button></th>
-              <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("municipio")}>Municipio {indicadorOrden("municipio")}</button></th>
-              <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("provincia")}>Provincia {indicadorOrden("provincia")}</button></th>
-              <th>VC</th><th>Apoderado</th>
-              <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("notario_asociado")}>Notario asociado {indicadorOrden("notario_asociado")}</button></th>
-              <th>Acceso NotarGest</th><th>Acceso EncargaGest</th><th>Distancia</th><th>Acciones</th>
+              <th>{cabeceraOrdenable("ID", "id")}</th>
+              <th>{cabeceraOrdenable("Notario", "nombre_completo")}</th>
+              <th>{cabeceraOrdenable("NIF", "nif")}</th>
+              <th>{cabeceraOrdenable("Municipio", "municipio")}</th>
+              <th>{cabeceraOrdenable("Provincia", "provincia")}</th>
+              <th>{cabeceraOrdenable("VC", "vc")}</th><th>{cabeceraOrdenable("Apoderado", "apoderado")}</th>
+              <th>{cabeceraOrdenable("Notario asociado", "notario_asociado")}</th>
+              <th>{cabeceraOrdenable("Acceso NotarGest", "notargest_habilitado")}</th><th>{cabeceraOrdenable("Acceso EncargaGest", "encargagest_habilitado")}</th><th>{cabeceraOrdenable("Distancia", "distancia_km")}</th><th>Acciones</th>
             </tr></thead>
             <tbody>
               {cargando && items.length === 0 ? (
                 <tr><td colSpan={12} className="ctn-tabla-vacio">Cargando notarios…</td></tr>
-              ) : filasOrdenadas.length === 0 ? (
+              ) : items.length === 0 ? (
                 <tr><td colSpan={12} className="ctn-tabla-vacio">No hay notarios que coincidan con los filtros.</td></tr>
-              ) : filasOrdenadas.map((item) => {
+              ) : items.map((item) => {
                 const vc = etiquetaVc(item.vc);
                 return (
                   <tr key={item.id}>
@@ -348,8 +340,8 @@ export default function CtnListadoPage() {
                     <td>{texto(item.nif)}</td><td>{texto(item.municipio)}</td><td>{texto(item.provincia)}</td>
                     <td><span className={`ctn-etiqueta ${vc.clase}`}>{vc.texto}</span></td>
                     <td>{texto(item.apoderado)}</td><td>{texto(listaAsociados(item))}</td>
-                    <td><span className={`ctn-etiqueta ${item.notargest_habilitado ? "ctn-etiqueta-si" : "ctn-etiqueta-neutra"}`} title="El acceso se gestiona desde la ficha de la notaría">{item.notargest_habilitado ? "✓ Habilitado" : "Deshabilitado"}</span></td>
-                    <td>{errorEncargaGest ? <span className="ctn-etiqueta ctn-etiqueta-neutra" title={errorEncargaGest}>No disponible</span> : (() => { const acceso = accesosEncargaGest.find((x) => Number(x.notaria_id) === Number(item.id)); const habilitado = Boolean(acceso?.tiene_acceso && acceso?.habilitado); const configurado = Boolean(acceso?.tiene_acceso); return <span className={`ctn-etiqueta ${habilitado ? "ctn-etiqueta-si" : "ctn-etiqueta-neutra"}`} title="El acceso se gestiona desde la ficha de la notaría">{habilitado ? "✓ Habilitado" : configurado ? "Deshabilitado" : "Sin configurar"}</span>; })}</td>
+                    <td><span className={`ctn-etiqueta ${item.notargest_habilitado ? "ctn-etiqueta-si" : "ctn-etiqueta-neutra"}`} title="El acceso se gestiona desde la ficha de la notaría">{item.notargest_habilitado ? <><MolsanIcon name="check" size={12} inline /> Habilitado</> : "Deshabilitado"}</span></td>
+                    <td>{errorEncargaGest ? <span className="ctn-etiqueta ctn-etiqueta-neutra" title={errorEncargaGest}>No disponible</span> : (() => { const acceso = accesosEncargaGest.find((x) => Number(x.notaria_id) === Number(item.id)); const habilitado = Boolean(acceso?.tiene_acceso && acceso?.habilitado); const configurado = Boolean(acceso?.tiene_acceso); return <span className={`ctn-etiqueta ${habilitado ? "ctn-etiqueta-si" : "ctn-etiqueta-neutra"}`} title="El acceso se gestiona desde la ficha de la notaría">{habilitado ? <><MolsanIcon name="check" size={12} inline /> Habilitado</> : configurado ? "Deshabilitado" : "Sin configurar"}</span>; })}</td>
                     <td>{item.distancia_km == null ? "—" : `${Number(item.distancia_km).toLocaleString("es-ES", { maximumFractionDigits: 1 })} km`}</td>
                     <td><button type="button" className="ctn-btn ctn-btn-primary ctn-btn-small molsan-btn molsan-btn--primary molsan-btn--compact" onClick={() => setNotariaSeleccionada(item)}>Ver ficha</button></td>
                   </tr>

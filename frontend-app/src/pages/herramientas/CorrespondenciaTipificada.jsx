@@ -1,7 +1,9 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanButton from "../../components/ui/MolsanButton";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import axios from "../../api/axios";
 
 const PLANTILLA_VACIA = {
@@ -249,19 +251,19 @@ export default function CorrespondenciaTipificada() {
   }
 
   return (
-    <div className="correspondencia-tipificada-premium herramientas-subpagina-premium min-h-full space-y-5 p-4 pb-10 sm:p-6 lg:p-8 animate-fadeIn">
-      <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
+    <div className="molsan-page-stack catalogos-premium-page correspondencia-tipificada-premium herramientas-subpagina-premium min-h-full ">
+      <header className="molsan-page-header">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl">✉️</div>
+            <div className="molsan-page-header__mark"><MolsanIcon name="mail" size={22} tone="ocean" /></div>
             <div>
-              <Link to="/herramientas/catalogos" className="text-xs font-bold text-blue-600 hover:text-blue-700">← Volver a Catálogos</Link>
-              <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Correspondencia tipificada</h1>
+              <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+              <h1 className="molsan-page-header__title">Correspondencia tipificada</h1>
               <p className="mt-1 text-sm text-slate-500">Plantillas reutilizables con campos vinculados a los expedientes.</p>
             </div>
           </div>
-          <button type="button" onClick={nuevaPlantilla} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700">＋ Nueva plantilla</button>
+          <MolsanButton type="button" onClick={nuevaPlantilla} icon="plus" variant="success">Nueva plantilla</MolsanButton>
         </div>
       </header>
 
@@ -279,7 +281,7 @@ export default function CorrespondenciaTipificada() {
             <select value={categoriaFiltro} onChange={(e) => setCategoriaFiltro(e.target.value)} className={inputClass}><option value="Todas">Todas las tipologías</option>{CATEGORIAS.map((cat) => <option key={cat} value={cat}>{cat}</option>)}</select>
           </div>
           {cargando ? <p className="p-8 text-center text-sm text-slate-400">Cargando plantillas…</p> : plantillasFiltradas.length === 0 ? (
-            <div className="p-10 text-center"><div className="text-3xl">✉️</div><h3 className="mt-3 font-bold text-slate-800">{plantillas.length ? "No hay plantillas que coincidan" : "Todavía no hay plantillas creadas"}</h3><p className="mt-1 text-sm text-slate-500">{plantillas.length ? "Prueba con otra búsqueda o categoría." : "Pulsa «Nueva plantilla» para crear el primer modelo de correspondencia."}</p>{!plantillas.length && <button type="button" onClick={nuevaPlantilla} className="mt-4 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700">＋ Nueva plantilla</button>}</div>
+            <div className="p-10 text-center"><div className="flex justify-center"><MolsanIcon name="mail" size={34} /></div><h3 className="mt-3 font-bold text-slate-800">{plantillas.length ? "No hay plantillas que coincidan" : "Todavía no hay plantillas creadas"}</h3><p className="mt-1 text-sm text-slate-500">{plantillas.length ? "Prueba con otra búsqueda o categoría." : "Pulsa «Nueva plantilla» para crear el primer modelo de correspondencia."}</p>{!plantillas.length && <button type="button" onClick={nuevaPlantilla} className="mt-4 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700"><MolsanIcon name="plus" size={14} inline /> Nueva plantilla</button>}</div>
           ) : (
             <div className="overflow-x-auto"><table className="w-full min-w-[820px] border-collapse text-left text-sm">
               <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-5 py-3 font-bold">Nombre de la plantilla</th><th className="px-5 py-3 font-bold">Tipología / proceso</th><th className="px-5 py-3 font-bold">Asunto</th><th className="px-5 py-3 font-bold">Estado</th><th className="px-5 py-3 text-right font-bold">Acciones</th></tr></thead>
@@ -296,7 +298,7 @@ export default function CorrespondenciaTipificada() {
         </section>
       ) : (
         <>
-          <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-wide text-slate-400">Catálogo de correspondencia</p><h2 className="mt-1 text-xl font-bold text-slate-800">{plantillaId ? "Ficha de plantilla" : "Nueva plantilla"}</h2></div><button type="button" onClick={() => { setVistaFicha(false); setMostrarVistaPrevia(false); setError(""); setMensaje(""); }} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">← Volver al catálogo</button></div>
+          <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-wide text-slate-400">Catálogo de correspondencia</p><h2 className="mt-1 text-xl font-bold text-slate-800">{plantillaId ? "Ficha de plantilla" : "Nueva plantilla"}</h2></div><MolsanButton type="button" onClick={() => { setVistaFicha(false); setMostrarVistaPrevia(false); setError(""); setMensaje(""); }} variant="secondary">Volver a correspondencia</MolsanButton></div>
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[320px_minmax(0,1fr)]">
         <aside className="space-y-4">
           <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -383,10 +385,10 @@ export default function CorrespondenciaTipificada() {
             </div>
 
             <div className="mt-5 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
-              <button type="button" onClick={guardarPlantilla} disabled={guardando} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-50">{guardando ? "Guardando…" : "💾 Guardar plantilla"}</button>
-              <button type="button" onClick={() => setMostrarVistaPrevia((v) => !v)} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">👁 Vista previa</button>
+              <MolsanButton type="button" onClick={guardarPlantilla} disabled={guardando} loading={guardando} icon="check" variant="success">Guardar plantilla</MolsanButton>
+              <button type="button" onClick={() => setMostrarVistaPrevia((v) => !v)} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50"><MolsanIcon name="eye" size={20} /> Vista previa</button>
               {plantillaId && <button type="button" onClick={duplicarPlantilla} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">⧉ Duplicar</button>}
-              {plantillaId && <button type="button" onClick={eliminarPlantilla} className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-bold text-rose-700 hover:bg-rose-100">Eliminar</button>}
+              {plantillaId && <MolsanButton type="button" onClick={eliminarPlantilla} icon="delete" variant="danger">Eliminar</MolsanButton>}
             </div>
           </section>
 

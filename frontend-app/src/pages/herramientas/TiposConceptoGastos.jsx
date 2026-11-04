@@ -4,6 +4,11 @@ import React, {
   useState,
 } from "react";
 import axios from "../../api/axios";
+import { API_BASE as API_ROOT } from "../../api/config";
+import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanButton from "../../components/ui/MolsanButton";
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import { Link } from "react-router-dom";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
 
@@ -18,11 +23,7 @@ import "../../css/CatalogosMaestrosPremium.css";
 // CONFIGURACIÓN API
 // ============================================================
 
-const API_ORIGEN =
-  "https://agenda-intranet-b.onrender.com";
-
-const API_BASE =
-  `${API_ORIGEN}/api/tipos-concepto-gastos`;
+const API_BASE = `${API_ROOT}/tipos-concepto-gastos`;
 
 
 // ============================================================
@@ -686,19 +687,19 @@ export default function TiposConceptoGastos() {
   return (
     <div
       className="
-        tipos-concepto-gastos-premium herramientas-subpagina-premium
-        min-h-screen
-        bg-slate-50
-        p-4
-        md:p-6
-        lg:p-8
+        molsan-page-stack catalogos-premium-page tipos-concepto-gastos-premium herramientas-subpagina-premium
+        min-h-full
+        bg-transparent
+        w-full
+        px-0
+        py-0
       "
     >
 
       <div
         className="
-          mx-auto
-          max-w-7xl
+          w-full
+          max-w-none
         "
       >
 
@@ -706,99 +707,13 @@ export default function TiposConceptoGastos() {
             CABECERA
         ================================================== */}
 
-        <div
-          className="
-            mb-6
-            flex
-            flex-col
-            gap-4
-            xl:flex-row
-            xl:items-center
-            xl:justify-between
-          "
-        >
+        <header className="molsan-page-header catalogos-subpage-header mb-6">
 
-          <div>
+          <div className="catalogos-subpage-header__identity-wrap">
+            <div className="molsan-page-header__identity catalogos-subpage-header__identity">
+              <div className="molsan-page-header__mark">
 
-            <div
-              className="
-                mb-2
-                flex
-                items-center
-                gap-3
-              "
-            >
-
-              <div
-                className="
-                  flex
-                  h-11
-                  w-11
-                  items-center
-                  justify-center
-                  rounded-2xl
-                  bg-blue-600
-                  text-white
-                  shadow-lg
-                  shadow-blue-600/20
-                "
-              >
-
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  className="
-                    h-5
-                    w-5
-                  "
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="
-                      M4 6.5
-                      A2.5 2.5 0 0 1 6.5 4
-                      h11
-                      A2.5 2.5 0 0 1 20 6.5
-                      v11
-                      A2.5 2.5 0 0 1 17.5 20
-                      h-11
-                      A2.5 2.5 0 0 1 4 17.5
-                      v-11Z
-                    "
-                  />
-
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="
-                      M8 8.5
-                      h8
-                    "
-                  />
-
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="
-                      M8 12
-                      h8
-                    "
-                  />
-
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="
-                      M8 15.5
-                      h5
-                    "
-                  />
-                </svg>
-
+                <MolsanIcon name="receipt" size={22} tone="ocean" />
               </div>
 
               <div>
@@ -812,7 +727,7 @@ export default function TiposConceptoGastos() {
                     text-blue-600
                   "
                 >
-                  Herramientas
+                  MOLSAN ERP · PREMIUM 2027
                 </p>
 
                 <h1
@@ -843,6 +758,7 @@ export default function TiposConceptoGastos() {
               para clasificar los gastos de los
               expedientes.
             </p>
+            <Link to="/catalogos" className="molsan-page-back-link">← Volver a catálogos</Link>
 
           </div>
 
@@ -851,66 +767,9 @@ export default function TiposConceptoGastos() {
               BOTÓN NUEVO
           ================================================= */}
 
-          <button
-            type="button"
-            onClick={abrirNuevo}
-            className="
-              inline-flex
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              bg-blue-600
-              px-5
-              py-3
-              text-sm
-              font-semibold
-              text-white
-              shadow-lg
-              shadow-blue-600/20
-              transition-all
-              duration-200
-              hover:bg-blue-700
-              hover:-translate-y-0.5
-              active:translate-y-0
-            "
-          >
+          <MolsanButton type="button" onClick={abrirNuevo} icon="plus" variant="success">Nuevo concepto</MolsanButton>
 
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              className="
-                h-4
-                w-4
-              "
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="
-                  M12 5
-                  v14
-                "
-              />
-
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="
-                  M5 12
-                  h14
-                "
-              />
-            </svg>
-
-            Nuevo concepto
-
-          </button>
-
-        </div>
+        </header>
 
 
         <section className="mb-6 rounded-2xl border border-indigo-100 bg-white p-5 shadow-sm md:p-6">
@@ -919,7 +778,7 @@ export default function TiposConceptoGastos() {
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-indigo-600">Plantilla documental vinculada</p>
               <h2 className="mt-1 text-lg font-extrabold text-slate-800">Factura de honorarios · Concepto ID 6</h2>
               <p className="mt-1 text-sm text-slate-500">La plantilla Word se asocia exclusivamente al registro «honorarios gestoría» del catálogo. Se utiliza al pulsar «Guardar y facturar» en la FichaExpediente y nunca se adjunta a los emails.</p>
-              {plantillaFactura?.plantilla_cargada && <p className="mt-3 break-all text-sm font-semibold text-emerald-700">✓ Plantilla actual: {plantillaFactura.factura_nombre}</p>}
+              {plantillaFactura?.plantilla_cargada && <p className="mt-3 break-all text-sm font-semibold text-emerald-700"><MolsanIcon name="check" size={14} inline /> Plantilla actual: {plantillaFactura.factura_nombre}</p>}
               {plantillaFactura && <p className="mt-1 text-xs text-slate-500">Vinculación confirmada: ID {plantillaFactura.concepto_gasto_id} · {plantillaFactura.concepto_gasto}</p>}
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
@@ -1015,30 +874,7 @@ export default function TiposConceptoGastos() {
                   text-slate-600
                 "
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  className="h-5 w-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="
-                      M5 5.5
-                      A1.5 1.5 0 0 1 6.5 4
-                      h11
-                      A1.5 1.5 0 0 1 19 5.5
-                      v13
-                      A1.5 1.5 0 0 1 17.5 20
-                      h-11
-                      A1.5 1.5 0 0 1 5 18.5
-                      v-13Z
-                    "
-                  />
-                </svg>
+                <MolsanIcon name="file" size={20} bare />
               </div>
 
             </div>
@@ -1111,24 +947,7 @@ export default function TiposConceptoGastos() {
                 "
               >
 
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  className="h-5 w-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="
-                      m5 12.5
-                      4.2 4.2
-                      L19 7
-                    "
-                  />
-                </svg>
+                <MolsanIcon name="check" size={20} bare />
 
               </div>
 
@@ -1202,46 +1021,7 @@ export default function TiposConceptoGastos() {
                 "
               >
 
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  className="h-5 w-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="
-                      M12 9
-                      v4
-                    "
-                  />
-
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="
-                      M12 16.5
-                      v.01
-                    "
-                  />
-
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="
-                      M10.25 4.75
-                      3.5 16
-                      A2 2 0 0 0 5.2 19
-                      h13.6
-                      A2 2 0 0 0 20.5 16
-                      l-6.75-11.25
-                      A2 2 0 0 0 10.25 4.75Z
-                    "
-                  />
-                </svg>
+                <MolsanIcon name="alert" size={20} bare />
 
               </div>
 
@@ -1316,31 +1096,7 @@ export default function TiposConceptoGastos() {
                   "
                 >
 
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    className="
-                      h-4
-                      w-4
-                    "
-                  >
-                    <circle
-                      cx="11"
-                      cy="11"
-                      r="7"
-                    />
-
-                    <path
-                      strokeLinecap="round"
-                      d="
-                        m16.5 16.5
-                        4 4
-                      "
-                    />
-                  </svg>
+                  <MolsanIcon name="search" size={16} bare />
 
                 </div>
 
@@ -1467,28 +1223,7 @@ export default function TiposConceptoGastos() {
             "
           >
 
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              className="
-                h-5
-                w-5
-                shrink-0
-              "
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="
-                  m5 12
-                  4 4
-                  10-10
-                "
-              />
-            </svg>
+            <MolsanIcon name="check" size={20} bare />
 
             <span>
               {mensaje}
@@ -1519,40 +1254,7 @@ export default function TiposConceptoGastos() {
             "
           >
 
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              className="
-                h-5
-                w-5
-                shrink-0
-              "
-            >
-              <circle
-                cx="12"
-                cy="12"
-                r="8"
-              />
-
-              <path
-                strokeLinecap="round"
-                d="
-                  M12 8
-                  v4
-                "
-              />
-
-              <path
-                strokeLinecap="round"
-                d="
-                  M12 15.5
-                  v.01
-                "
-              />
-            </svg>
+            <MolsanIcon name="clock" size={20} bare />
 
             <span>
               {error}
@@ -1656,679 +1358,17 @@ export default function TiposConceptoGastos() {
             "
           >
 
-            <table
-              className="
-                min-w-full
-                divide-y
-                divide-slate-200
-              "
-            >
-
-              <thead
-                className="
-                  bg-slate-50
-                "
-              >
-
-                <tr>
-
-                  <th
-                    className="
-                      px-5
-                      py-4
-                      text-left
-                      text-xs
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    #
-                  </th>
-
-                  <th
-                    className="
-                      px-5
-                      py-4
-                      text-left
-                      text-xs
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    Tipo concepto de gastos
-                  </th>
-
-                  <th
-                    className="
-                      px-5
-                      py-4
-                      text-center
-                      text-xs
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    Estado
-                  </th>
-
-                  <th
-                    className="
-                      px-5
-                      py-4
-                      text-right
-                      text-xs
-                      font-bold
-                      uppercase
-                      tracking-wider
-                      text-slate-500
-                    "
-                  >
-                    Acciones
-                  </th>
-
-                </tr>
-
-              </thead>
-
-
-              <tbody
-                className="
-                  divide-y
-                  divide-slate-100
-                "
-              >
-
-                {!cargando &&
-                tipos.length === 0 ? (
-
-                  <tr>
-
-                    <td
-                      colSpan="4"
-                      className="
-                        px-5
-                        py-16
-                        text-center
-                      "
-                    >
-
-                      <div
-                        className="
-                          mx-auto
-                          flex
-                          max-w-sm
-                          flex-col
-                          items-center
-                        "
-                      >
-
-                        <div
-                          className="
-                            flex
-                            h-14
-                            w-14
-                            items-center
-                            justify-center
-                            rounded-2xl
-                            bg-slate-100
-                            text-slate-400
-                          "
-                        >
-
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="1.7"
-                            className="h-6 w-6"
-                          >
-                            <circle
-                              cx="11"
-                              cy="11"
-                              r="7"
-                            />
-
-                            <path
-                              strokeLinecap="round"
-                              d="
-                                m16.5 16.5
-                                4 4
-                              "
-                            />
-                          </svg>
-
-                        </div>
-
-                        <p
-                          className="
-                            mt-4
-                            text-sm
-                            font-semibold
-                            text-slate-700
-                          "
-                        >
-                          No se encontraron conceptos
-                        </p>
-
-                        <p
-                          className="
-                            mt-1
-                            text-xs
-                            text-slate-400
-                          "
-                        >
-                          Prueba con otro texto
-                          de búsqueda o cambia
-                          el filtro de estado.
-                        </p>
-
-                      </div>
-
-                    </td>
-
-                  </tr>
-
-                ) : (
-
-                  tipos.map(
-                    (tipo, index) => (
-
-                      <tr
-                        key={
-                          tipo.id
-                        }
-                        className="
-                          transition-all
-                          duration-150
-                          hover:bg-blue-50/40
-                        "
-                      >
-
-                        {/* NÚMERO */}
-
-                        <td
-                          className="
-                            whitespace-nowrap
-                            px-5
-                            py-4
-                            text-sm
-                            font-semibold
-                            text-slate-400
-                          "
-                        >
-                          {index + 1}
-                        </td>
-
-
-                        {/* NOMBRE */}
-
-                        <td
-                          className="
-                            px-5
-                            py-4
-                          "
-                        >
-
-                          <div
-                            className="
-                              flex
-                              items-center
-                              gap-3
-                            "
-                          >
-
-                            <div
-                              className="
-                                flex
-                                h-9
-                                w-9
-                                shrink-0
-                                items-center
-                                justify-center
-                                rounded-xl
-                                bg-blue-50
-                                text-blue-600
-                              "
-                            >
-
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="1.8"
-                                className="h-4 w-4"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="
-                                    M6 4.5
-                                    h12
-                                    A1.5 1.5 0 0 1
-                                    19.5 6
-                                    v12
-                                    A1.5 1.5 0 0 1
-                                    18 19.5
-                                    h-12
-                                    A1.5 1.5 0 0 1
-                                    4.5 18
-                                    v-12
-                                    A1.5 1.5 0 0 1
-                                    6 4.5Z
-                                  "
-                                />
-
-                                <path
-                                  strokeLinecap="round"
-                                  d="
-                                    M8 9
-                                    h8
-                                  "
-                                />
-
-                                <path
-                                  strokeLinecap="round"
-                                  d="
-                                    M8 12
-                                    h8
-                                  "
-                                />
-
-                                <path
-                                  strokeLinecap="round"
-                                  d="
-                                    M8 15
-                                    h5
-                                  "
-                                />
-                              </svg>
-
-                            </div>
-
-                            <div>
-
-                              <p
-                                className="
-                                  text-sm
-                                  font-semibold
-                                  text-slate-700
-                                "
-                              >
-                                {tipo.nombre}
-                              </p>
-
-                              <p
-                                className="
-                                  mt-0.5
-                                  text-xs
-                                  text-slate-400
-                                "
-                              >
-                                ID {tipo.id}
-                              </p>
-
-                            </div>
-
-                          </div>
-
-                        </td>
-
-
-                        {/* ESTADO */}
-
-                        <td
-                          className="
-                            px-5
-                            py-4
-                            text-center
-                          "
-                        >
-
-                          <span
-                            className={`
-                              inline-flex
-                              items-center
-                              gap-2
-                              rounded-full
-                              px-3
-                              py-1.5
-                              text-xs
-                              font-semibold
-                              ${
-                                tipo.activo
-                                  ? `
-                                    bg-emerald-50
-                                    text-emerald-700
-                                  `
-                                  : `
-                                    bg-slate-100
-                                    text-slate-500
-                                  `
-                              }
-                            `}
-                          >
-
-                            <span
-                              className={`
-                                h-2
-                                w-2
-                                rounded-full
-                                ${
-                                  tipo.activo
-                                    ? "bg-emerald-500"
-                                    : "bg-slate-400"
-                                }
-                              `}
-                            />
-
-                            {tipo.activo
-                              ? "Activo"
-                              : "Inactivo"}
-
-                          </span>
-
-                        </td>
-
-
-                        {/* ACCIONES */}
-
-                        <td
-                          className="
-                            px-5
-                            py-4
-                          "
-                        >
-
-                          <div
-                            className="
-                              flex
-                              justify-end
-                              gap-2
-                            "
-                          >
-
-                            {/* EDITAR */}
-
-                            <button
-                              type="button"
-                              onClick={() =>
-                                abrirEditar(
-                                  tipo
-                                )
-                              }
-                              title="Editar"
-                              className="
-                                inline-flex
-                                items-center
-                                justify-center
-                                rounded-lg
-                                border
-                                border-slate-200
-                                bg-white
-                                p-2
-                                text-slate-500
-                                transition-all
-                                hover:border-blue-200
-                                hover:bg-blue-50
-                                hover:text-blue-600
-                              "
-                            >
-
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="1.8"
-                                className="h-4 w-4"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="
-                                    M12 20
-                                    h9
-                                  "
-                                />
-
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="
-                                    M16.5 3.5
-                                    a2.12 2.12 0 0 1
-                                    3 3
-                                    L8 18
-                                    l-4 1
-                                    1-4
-                                    12.5-11.5Z
-                                  "
-                                />
-                              </svg>
-
-                            </button>
-
-
-                            {/* ACTIVAR / DESACTIVAR */}
-
-                            <button
-                              type="button"
-                              onClick={() =>
-                                cambiarEstado(
-                                  tipo
-                                )
-                              }
-                              title={
-                                tipo.activo
-                                  ? "Desactivar"
-                                  : "Activar"
-                              }
-                              className={`
-                                inline-flex
-                                items-center
-                                justify-center
-                                rounded-lg
-                                border
-                                p-2
-                                transition-all
-                                ${
-                                  tipo.activo
-                                    ? `
-                                      border-amber-200
-                                      bg-amber-50
-                                      text-amber-600
-                                      hover:bg-amber-100
-                                    `
-                                    : `
-                                      border-emerald-200
-                                      bg-emerald-50
-                                      text-emerald-600
-                                      hover:bg-emerald-100
-                                    `
-                                }
-                              `}
-                            >
-
-                              {tipo.activo ? (
-
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="1.8"
-                                  className="h-4 w-4"
-                                >
-                                  <rect
-                                    x="5"
-                                    y="5"
-                                    width="14"
-                                    height="14"
-                                    rx="2"
-                                  />
-
-                                  <path
-                                    strokeLinecap="round"
-                                    d="
-                                      M9 9
-                                      v6
-                                    "
-                                  />
-
-                                  <path
-                                    strokeLinecap="round"
-                                    d="
-                                      M15 9
-                                      v6
-                                    "
-                                  />
-                                </svg>
-
-                              ) : (
-
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="1.8"
-                                  className="h-4 w-4"
-                                >
-                                  <circle
-                                    cx="12"
-                                    cy="12"
-                                    r="7"
-                                  />
-
-                                  <path
-                                    strokeLinecap="round"
-                                    d="
-                                      M12 8
-                                      v8
-                                    "
-                                  />
-
-                                  <path
-                                    strokeLinecap="round"
-                                    d="
-                                      M8 12
-                                      h8
-                                    "
-                                  />
-                                </svg>
-
-                              )}
-
-                            </button>
-
-
-                            {/* ELIMINAR */}
-
-                            <button
-                              type="button"
-                              onClick={() =>
-                                eliminarTipo(
-                                  tipo
-                                )
-                              }
-                              title="Eliminar"
-                              className="
-                                inline-flex
-                                items-center
-                                justify-center
-                                rounded-lg
-                                border
-                                border-red-200
-                                bg-red-50
-                                p-2
-                                text-red-600
-                                transition-all
-                                hover:bg-red-100
-                              "
-                            >
-
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="1.8"
-                                className="h-4 w-4"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="
-                                    M4 7
-                                    h16
-                                  "
-                                />
-
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="
-                                    M10 11
-                                    v6
-                                  "
-                                />
-
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="
-                                    M14 11
-                                    v6
-                                  "
-                                />
-
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="
-                                    M6 7
-                                    l1 13
-                                    h10
-                                    l1-13
-                                  "
-                                />
-
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="
-                                    M9 7
-                                    V4
-                                    h6
-                                    v3
-                                  "
-                                />
-                              </svg>
-
-                            </button>
-
-                          </div>
-
-                        </td>
-
-                      </tr>
-
-                    )
-                  )
-
-                )}
-
-              </tbody>
-
-            </table>
+            <MolsanDataTable
+              rows={tipos}
+              rowKey="id"
+              columns={[
+                { key: "id", header: "ID", accessor: "id", sortType: "number" },
+                { key: "nombre", header: "Tipo concepto de gastos", accessor: "nombre", sortType: "text", render: (value, tipo) => <div className="flex items-center gap-3"><span className="molsan-icon-3d h-9 w-9 rounded-xl text-sm" aria-hidden="true">▤</span><span><strong className="block text-sm text-slate-700">{value}</strong><small className="text-xs text-slate-400">ID {tipo.id}</small></span></div> },
+                { key: "activo", header: "Estado", accessor: "activo", sortType: "boolean", render: (value) => <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold ${value ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}><span className={`h-2 w-2 rounded-full ${value ? "bg-emerald-500" : "bg-slate-400"}`} />{value ? "Activo" : "Inactivo"}</span> },
+                { key: "acciones", header: "Acciones", sortable: false, align: "right", accessor: (tipo) => tipo.id, render: (_, tipo) => <div className="flex justify-end gap-2"><button type="button" onClick={() => abrirEditar(tipo)} title="Editar" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50">Editar</button><button type="button" onClick={() => cambiarEstado(tipo)} title={tipo.activo ? "Desactivar" : "Activar"} className={tipo.activo ? "rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700" : "rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700"}>{tipo.activo ? "Desactivar" : "Activar"}</button></div> },
+              ]}
+              emptyText="No se encontraron conceptos."
+            />
 
           </div>
 
@@ -2456,30 +1496,7 @@ export default function TiposConceptoGastos() {
                 "
               >
 
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  className="h-5 w-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    d="
-                      M6 6
-                      l12 12
-                    "
-                  />
-
-                  <path
-                    strokeLinecap="round"
-                    d="
-                      M18 6
-                      L6 18
-                    "
-                  />
-                </svg>
+                <MolsanIcon name="x" size={20} bare />
 
               </button>
 

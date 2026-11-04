@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import { Link } from "react-router-dom";
@@ -68,12 +69,12 @@ export default function ReglasActividadesExpediente() {
   };
 
   return (
-    <main className="utilidades-premium-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-      <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
+    <main className="molsan-page-stack utilidades-premium-page min-h-full animate-fadeIn">
+      <header className="molsan-page-header">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="relative flex flex-wrap items-start justify-between gap-4">
           <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl">⚙️</div>
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[var(--molsan-border)] bg-[var(--molsan-surface)] text-[var(--molsan-primary)]"><MolsanIcon name="settings" size={26} /></div>
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-indigo-600">Configuración del expediente</p>
               <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Reglas de actividades expediente</h1>
@@ -85,9 +86,9 @@ export default function ReglasActividadesExpediente() {
       </header>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Resumen icono="📂" titulo="Actividad inicial" valor="Documentación previa" />
-        <Resumen icono="📄" titulo="Documentos requeridos" valor={`${documentosActivos} de ${DOCUMENTOS_INICIALES.length}`} />
-        <Resumen icono="📨" titulo="Flujo principal" valor="5 transiciones" />
+        <Resumen icono="folderOpen" titulo="Actividad inicial" valor="Documentación previa" />
+        <Resumen icono="file" titulo="Documentos requeridos" valor={`${documentosActivos} de ${DOCUMENTOS_INICIALES.length}`} />
+        <Resumen icono="mail" titulo="Flujo principal" valor="5 transiciones" />
       </section>
 
       <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
@@ -352,7 +353,7 @@ function Resumen({ icono, titulo, valor }) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex items-center gap-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 bg-slate-50 text-xl">{icono}</span>
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 bg-slate-50 text-xl"><MolsanIcon name={icono} size={32} /></span>
         <div className="min-w-0">
           <p className="text-xs font-semibold text-slate-500">{titulo}</p>
           <p className="mt-1 text-base font-bold text-slate-800">{valor}</p>

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "../../css/HerramientasPremium.css";
 
 /**
@@ -8,90 +9,88 @@ import "../../css/HerramientasPremium.css";
 export default function Utilidades() {
 
   return (
-    <div className="utilidades-premium-page min-h-full space-y-7 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-      <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="relative flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl shadow-sm">⚙️</div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Utilidades del sistema</h1>
-            <p className="mt-1 text-sm text-slate-500">Accede a importaciones, integraciones y herramientas de trabajo directamente desde el ERP.</p>
+    <div className="molsan-page-stack utilidades-premium-page min-h-full">
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" ><MolsanIcon name="settings" size={42} bare /></div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">Utilidades del sistema</h1>
+            <p className="molsan-page-header__description">Accede a importaciones, integraciones y herramientas de trabajo directamente desde el ERP.</p>
           </div>
         </div>
       </header>
 
       <Grupo titulo="Documentación y plantillas" descripcion="Centraliza el diseño de los documentos oficiales sin mover los catálogos ni las reglas económicas.">
-        <Card icon="📑" titulo="Modelos documentos" descripcion="Consulta y prepara las plantillas de Hoja de liquidación, Provisión de fondos y Factura de honorarios de gestoría." link="/herramientas/utilidades/modelos-documentos" destacado />
+        <Card icon="files" titulo="Modelos documentos" descripcion="Consulta y prepara las plantillas de Hoja de liquidación, Provisión de fondos y Factura de honorarios de gestoría." link="/herramientas/utilidades/modelos-documentos" destacado />
       </Grupo>
 
       <Grupo titulo="Datos corporativos" descripcion="Centraliza la información de Molsan que se reutilizará en documentos y facturación.">
-        <Card icon="🏢" titulo="Datos Molsan" descripcion="Mantén los datos fiscales, contacto corporativo y preferencias documentales en un único lugar." link="/herramientas/utilidades/datos-molsan" destacado />
+        <Card icon="building" titulo="Datos Molsan" descripcion="Mantén los datos fiscales, contacto corporativo y preferencias documentales en un único lugar." link="/herramientas/utilidades/datos-molsan" destacado />
       </Grupo>
 
       <Grupo titulo="Empleados y permisos" descripcion="Gestiona empleados, roles, permisos, asignaciones, visibilidad y auditoría desde un único grupo de administración.">
-        <Card icon="🛡️" titulo="Empleados y permisos" descripcion="Selecciona un empleado para revisar y administrar sus roles, módulos y permisos asignados." link="/seguridad/usuarios" destacado />
-        <Card icon="🔑" titulo="Gestión de roles" descripcion="Crea roles nuevos, como Colaborador, y administra los roles disponibles en el sistema." link="/seguridad/roles/editor" destacado />
-        <Card icon="🧾" titulo="Auditoría" descripcion="Consulta los eventos de auditoría disponibles para tu perfil." link="/auditoria" destacado />
-        <Card icon="📊" titulo="Visibilidad de tablas" descripcion="Configura las columnas de Excel y la visibilidad por actividad para el empleado seleccionado." link="/herramientas/utilidades/visibilidad-tablas" destacado />
-        <Card icon="⚖️" titulo="Asignaciones" descripcion="Administra las reglas de reparto y asignación de expedientes desde un panel centralizado." link="/herramientas/utilidades/asignaciones" destacado />
+        <Card icon="shield" titulo="Empleados y permisos" descripcion="Selecciona un empleado para revisar y administrar sus roles, módulos y permisos asignados." link="/seguridad/usuarios" destacado />
+        <Card icon="key" titulo="Gestión de roles" descripcion="Crea roles nuevos, como Colaborador, y administra los roles disponibles en el sistema." link="/seguridad/roles/editor" destacado />
+        <Card icon="receipt" titulo="Auditoría" descripcion="Consulta los eventos de auditoría disponibles para tu perfil." link="/auditoria" destacado />
+        <Card icon="chart" titulo="Visibilidad de tablas" descripcion="Configura las columnas de Excel y la visibilidad por actividad para el empleado seleccionado." link="/herramientas/utilidades/visibilidad-tablas" destacado />
+        <Card icon="scale" titulo="Asignaciones" descripcion="Administra las reglas de reparto y asignación de expedientes desde un panel centralizado." link="/herramientas/utilidades/asignaciones" destacado />
       </Grupo>
 
       <Grupo titulo="Accesos notariales" descripcion="Administra por separado los accesos de las notarías a NotarGest y EncargaGest, con historial de cambios.">
-        <Card icon="🔐" titulo="Accesos notariales" descripcion="Busca una notaría y administra por separado sus accesos a NotarGest y EncargaGest, con historial de cambios." link="/herramientas/utilidades/accesos-notariales" />
+        <Card icon="lock" titulo="Accesos notariales" descripcion="Busca una notaría y administra por separado sus accesos a NotarGest y EncargaGest, con historial de cambios." link="/herramientas/utilidades/accesos-notariales" />
       </Grupo>
 
-      <Grupo titulo="Importaciones y datos" descripcion="Carga información desde los ficheros de trabajo autorizados.">
-        <Card icon="📥" titulo="Importar CTN" descripcion="Importar un Excel con información de notarías." link="/herramientas/importar-ctn" />
-        <Card icon="📦" titulo="Importador ABSIS" descripcion="Importar expedientes desde el Excel matriz ABSIS." etapa="Carga Pre firma" link="/herramientas/importador-absis" destacado />
-        <Card icon="📦" titulo="Importador ABSIS" descripcion="Importar el histórico Excel de gastos y facturación Post Firma, validar los datos y abrir su informe." etapa="Post Firma" link="/herramientas/importador-absis/postfirma" destacado />
+      <Grupo titulo="Importaciones y datos" descripcion="Accede desde un único centro a las cargas, validaciones y actualizaciones de información del ERP.">
+        <Card icon="⇧" titulo="Centro de importaciones" descripcion="Accede a los importadores de CTN, ABSIS, catálogos territoriales y datos operativos, con sus procesos de validación." link="/herramientas/importaciones-datos" destacado />
       </Grupo>
 
       <Grupo titulo="Integraciones y comunicaciones" descripcion="Seguimiento de los procesos de intercambio de información con los sistemas de nuestros clientes.">
-        <Card icon="🔄" titulo="Proceso de ABSIS" descripcion="Control de expedientes enviados, errores detectados e incidencias, con buscador, acciones y exportación Excel." link="/herramientas/utilidades/proceso-absis" enConstruccion />
-        <Card icon="🧾" titulo="Verifacti" descripcion="Acceso al futuro panel de control de Verifacti para consultar la integración y el estado de los registros de facturación." link="/herramientas/utilidades/verifacti" enConstruccion />
-        <Card icon="📄" titulo="Lectura copias" descripcion="Procesamiento de copias por fecha, con progreso y listado de expedientes detectados." link="/herramientas/utilidades/lectura-copias" enConstruccion />
-        <Card icon="📁" titulo="Lectura Cancela I" descripcion="Accede a la pantalla inicial del futuro módulo de lectura de información de Cancela I." link="/herramientas/utilidades/lectura-cancela-i" enConstruccion />
-        <Card icon="🔀" titulo="Cambios de actividad ABSIS" descripcion="Busca expedientes, solicita una nueva actividad y consulta el estado de consolidación." link="/herramientas/utilidades/cambios-actividad-absis" enConstruccion />
+        <Card icon="refresh" titulo="Proceso de ABSIS" descripcion="Control de expedientes enviados, errores detectados e incidencias, con buscador, acciones y exportación Excel." link="/herramientas/utilidades/proceso-absis" enConstruccion />
+        <Card icon="receipt" titulo="Verifacti" descripcion="Acceso al futuro panel de control de Verifacti para consultar la integración y el estado de los registros de facturación." link="/herramientas/utilidades/verifacti" enConstruccion />
+        <Card icon="file" titulo="Lectura copias" descripcion="Procesamiento de copias por fecha, con progreso y listado de expedientes detectados." link="/herramientas/utilidades/lectura-copias" enConstruccion />
+        <Card icon="folder" titulo="Lectura Cancela I" descripcion="Accede a la pantalla inicial del futuro módulo de lectura de información de Cancela I." link="/herramientas/utilidades/lectura-cancela-i" enConstruccion />
+        <Card icon="merge" titulo="Cambios de actividad ABSIS" descripcion="Busca expedientes, solicita una nueva actividad y consulta el estado de consolidación." link="/herramientas/utilidades/cambios-actividad-absis" enConstruccion />
       </Grupo>
 
       <Grupo titulo="Control económico" descripcion="Seguimiento de PPAD, complementos de saldo y control económico de apoderados.">
-        <Card icon="💶" titulo="Complementos de saldo" descripcion="Consultar solicitudes de complemento de saldo, controlar su estado, revisar importes y descargar el listado a Excel." link="/herramientas/utilidades/complementos-saldo" />
+        <Card icon="euro" titulo="Complementos de saldo" descripcion="Consultar solicitudes de complemento de saldo, controlar su estado, revisar importes y descargar el listado a Excel." link="/herramientas/utilidades/complementos-saldo" />
 
-        <Card icon="🧾" titulo="Control Apoderados" descripcion="Gestiona colaboradores, revisa las relaciones mensuales de firmas reales y valida las facturas recibidas." link="/herramientas/utilidades/control-apoderados" destacado />
-        <Card icon="💶" titulo="PPAD" descripcion="Consulta importes pendientes y compensados, revisa cada expediente y descarga los listados a Excel." link="/herramientas/utilidades/ppad" destacado />
+        <Card icon="receipt" titulo="Control Apoderados" descripcion="Gestiona colaboradores, revisa las relaciones mensuales de firmas reales y valida las facturas recibidas." link="/herramientas/utilidades/control-apoderados" destacado />
+        <Card icon="euro" titulo="PPAD" descripcion="Consulta importes pendientes y compensados, revisa cada expediente y descarga los listados a Excel." link="/herramientas/utilidades/ppad" destacado />
       </Grupo>
 
       <Grupo titulo="Reglas y configuración de expedientes" descripcion="Define las condiciones de documentos, campos y validaciones del circuito de actividades.">
-        <Card icon="⚙️" titulo="Reglas de actividades expediente" descripcion="Configura los documentos requeridos en cada actividad, las condiciones de envío a notaría, las validaciones y los requisitos de avance y cierre." link="/herramientas/utilidades/reglas-actividades-expediente" destacado />
+        <Card icon="settings" titulo="Reglas de actividades expediente" descripcion="Configura los documentos requeridos en cada actividad, las condiciones de envío a notaría, las validaciones y los requisitos de avance y cierre." link="/herramientas/utilidades/reglas-actividades-expediente" destacado />
       </Grupo>
 
       <Grupo titulo="Gestión de expedientes" descripcion="Acciones manuales y controladas sobre la asignación y el seguimiento de los expedientes.">
-        <Card icon="📝" titulo="Alta expediente" descripcion="Crear un expediente nuevo con sus datos de facturación, contrato, múltiples fincas, hipotecas y notaría CTN." link="/herramientas/utilidades/alta-expediente" destacado />
-        <Card icon="🔁" titulo="Cambiar gestor de expediente" descripcion="Busca un expediente por su número y reasígnalo manualmente a otro gestor, dejando constancia del cambio." link="/herramientas/utilidades/cambiar-gestor" />
-        <Card icon="🏛️" titulo="Reasignar expediente a notario" descripcion="Busca un expediente, carga su ficha de Envío a notario y modifica el notario, la fecha de envío y los datos relacionados antes de guardar." link="/herramientas/utilidades/reasignar-notario" destacado />
-        <Card icon="🏷️" titulo="Asignar expedientes a promociones" descripcion="Busca un expediente y asígnale un tipo del catálogo Tipos de expediente para que la promoción aparezca automáticamente en su ficha y en los filtros." link="/herramientas/utilidades/asignar-promociones" destacado />
+        <Card icon="pen" titulo="Alta expediente" descripcion="Crear un expediente nuevo con sus datos de facturación, contrato, múltiples fincas, hipotecas y notaría CTN." link="/herramientas/utilidades/alta-expediente" destacado />
+        <Card icon="refresh" titulo="Cambiar gestor de expediente" descripcion="Busca un expediente por su número y reasígnalo manualmente a otro gestor, dejando constancia del cambio." link="/herramientas/utilidades/cambiar-gestor" />
+        <Card icon="courthouse" titulo="Reasignar expediente a notario" descripcion="Busca un expediente, carga su ficha de Envío a notario y modifica el notario, la fecha de envío y los datos relacionados antes de guardar." link="/herramientas/utilidades/reasignar-notario" destacado />
+        <Card icon="tag" titulo="Asignar expedientes a promociones" descripcion="Busca un expediente y asígnale un tipo del catálogo Tipos de expediente para que la promoción aparezca automáticamente en su ficha y en los filtros." link="/herramientas/utilidades/asignar-promociones" destacado />
       </Grupo>
 
       <Grupo titulo="Administración y supervisión" descripcion="Accesos directos para revisar el estado operativo y técnico del ERP.">
-        <Card icon="📜" titulo="Logs del sistema" descripcion="Revisar registros y errores registrados por la aplicación." link="/logs" />
-        <Card icon="🖥️" titulo="Panel técnico" descripcion="Acceder a los paneles de supervisión del sistema y tiempo real." link="/paneltecnico" />
-        <Card icon="📈" titulo="Informes" descripcion="Consultar informes y estadísticas operativas." link="/informes" />
-        <Card icon="📡" titulo="Monitor en tiempo real" descripcion="Consultar la supervisión y actividad del sistema en tiempo real." link="/paneltecnico/monitor-realtime" />
-        <Card icon="⚙️" titulo="Mantenimiento técnico" descripcion="Diagnóstico de base de datos, revisión de estructura y tareas técnicas controladas desde el ERP." link="/herramientas/mantenimiento-tecnico" />
+        <Card icon="scroll" titulo="Logs del sistema" descripcion="Revisar registros y errores registrados por la aplicación." link="/logs" />
+        <Card icon="monitor" titulo="Panel técnico" descripcion="Acceder a los paneles de supervisión del sistema y tiempo real." link="/paneltecnico" />
+        <Card icon="chart" titulo="Informes" descripcion="Consultar informes y estadísticas operativas." link="/informes" />
+        <Card icon="monitor" titulo="Monitor en tiempo real" descripcion="Consultar la supervisión y actividad del sistema en tiempo real." link="/paneltecnico/monitor-realtime" />
+        <Card icon="settings" titulo="Mantenimiento técnico" descripcion="Diagnóstico de base de datos, revisión de estructura y tareas técnicas controladas desde el ERP." link="/herramientas/mantenimiento-tecnico" />
       </Grupo>
 
       <Grupo titulo="Módulos de trabajo" descripcion="Accesos directos a los módulos operativos del ERP.">
-        <Card icon="⚡" titulo="ApoderaGest" descripcion="Gestionar encargos y actividad de apoderados." link="/apoderagest" />
-        <Card icon="📁" titulo="CancelaGest" descripcion="Acceder al módulo de gestión de cancelaciones." link="/cancelagest" />
-        <Card icon="🌐" titulo="NotarGest" descripcion="Acceder al módulo de trabajo notarial interno." link="/notargest" />
-        <Card icon="📋" titulo="EncargaGest" descripcion="Gestionar encargos de cancelación recibidos desde el ERP." link="/encargagest" />
-        <Card icon="🏛️" titulo="NotarGest · Notarios" descripcion="Acceso externo de las notarías colaboradoras a NotarGest." link="/notargest-notario" />
-        <Card icon="📨" titulo="EncargaGest · Notarios" descripcion="Portal externo para que las notarías envíen encargos, aporten documentación y consulten su seguimiento." link="/encargagest-notario" />
+        <Card icon="zap" titulo="ApoderaGest" descripcion="Gestionar encargos y actividad de apoderados." link="/apoderagest" />
+        <Card icon="folder" titulo="CancelaGest" descripcion="Acceder al módulo de gestión de cancelaciones." link="/cancelagest" />
+        <Card icon="globe" titulo="NotarGest" descripcion="Acceder al módulo de trabajo notarial interno." link="/notargest" />
+        <Card icon="clipboard" titulo="EncargaGest" descripcion="Gestionar encargos de cancelación recibidos desde el ERP." link="/encargagest" />
+        <Card icon="courthouse" titulo="NotarGest · Notarios" descripcion="Acceso externo de las notarías colaboradoras a NotarGest." link="/notargest-notario" />
+        <Card icon="mail" titulo="EncargaGest · Notarios" descripcion="Portal externo para que las notarías envíen encargos, aporten documentación y consulten su seguimiento." link="/encargagest-notario" />
       </Grupo>
 
       <Grupo titulo="Intranet y administración" descripcion="Publicación de información y herramientas de soporte integradas en el ERP.">
-        <Card icon="📰" titulo="Crear noticia" descripcion="Publicar noticias para los usuarios de la intranet." link="/herramientas/utilidades/crear-noticia" />
-        <Card icon="📄" titulo="Subir documento" descripcion="Publicar documentos en la intranet." link="/herramientas/utilidades/subir-documento" />
+        <Card icon="newspaper" titulo="Crear noticia" descripcion="Publicar noticias para los usuarios de la intranet." link="/herramientas/utilidades/crear-noticia" />
+        <Card icon="file" titulo="Subir documento" descripcion="Publicar documentos en la intranet." link="/herramientas/utilidades/subir-documento" />
       </Grupo>
     </div>
   );
@@ -140,9 +139,8 @@ function Card({
       />
       <div className="flex items-start gap-4">
         <div
-          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl transition-all duration-300 group-hover:scale-105 ${destacado ? "bg-blue-100 border-blue-200" : "bg-slate-50 border-slate-200"}`}
-        >
-          {icon}
+          className="flex h-12 w-12 shrink-0 items-center justify-center">
+          <MolsanIcon name={icon} size={48} />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -155,7 +153,7 @@ function Card({
           </div>
           <p className="mt-1.5 text-sm leading-5 text-slate-500">{descripcion}</p>
           {etapa && <p className="mt-3 inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-700">{etapa}</p>}
-          {aviso && <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs leading-5 text-amber-900"><p className="font-bold">⚠️ Pendiente de revisión técnica</p><p className="mt-1">{aviso}</p></div>}
+          {aviso && <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs leading-5 text-amber-900"><p className="font-bold"><MolsanIcon name="alert" size={13} inline /> Pendiente de revisión técnica</p><p className="mt-1">{aviso}</p></div>}
           {enConstruccion && (
             <p className="mt-3 text-xs font-medium text-amber-700">
               Próximamente: registro de envíos, respuestas y cambios de estado vía API.
@@ -169,7 +167,7 @@ function Card({
     </>
   );
 
-  const clases = `group relative overflow-hidden rounded-[22px] border bg-white/80 p-5 shadow-[0_12px_35px_rgba(15,23,42,0.07)] backdrop-blur-xl transition-all duration-300 ${enConstruccion && !onClick && !link ? "cursor-default border-amber-200/80 bg-amber-50/30" : "cursor-pointer hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(15,23,42,0.11)] active:scale-[0.98]"} ${destacado ? "border-blue-200/80 bg-blue-50/50" : ""}`;
+  const clases = `utilidades-access-card group relative overflow-hidden rounded-[21px] border border-[#D8E4EC] bg-gradient-to-br from-white via-white to-[#F2F7FB] p-5 shadow-[0_8px_24px_rgba(6,50,82,0.065)] transition-all duration-300 ${enConstruccion && !onClick && !link ? "cursor-default border-amber-200/80 bg-amber-50/30" : "cursor-pointer hover:-translate-y-1 hover:border-[#B9D7E6] hover:shadow-[0_17px_34px_rgba(6,50,82,0.12)] active:scale-[0.99]"} ${destacado ? "border-[#B9D7E6] from-white to-[#EFF7FB]" : ""}`;
 
   if (enConstruccion && !onClick && !link) {
     return (

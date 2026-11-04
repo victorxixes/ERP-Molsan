@@ -80,19 +80,9 @@ export default function EmpleadosModulo2026() {
           LISTADO
       ===================================================== */}
 
-      <section className="
-        erp-card
-        w-full
-        p-5
-      ">
-
-        <EmpleadosListado
-          onSeleccionar={
-            abrirFicha
-          }
-        />
-
-      </section>
+      <div className="w-full min-w-0">
+        <EmpleadosListado onSeleccionar={abrirFicha} />
+      </div>
 
 
       {/* =====================================================

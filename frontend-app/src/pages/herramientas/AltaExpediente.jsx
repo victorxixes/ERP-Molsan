@@ -125,8 +125,8 @@ export default function AltaExpediente() {
     }
   }
 
-  return <main className="min-h-full space-y-6 bg-[var(--molsan-surface-soft)] p-4 sm:p-6 lg:p-8">
-    <header className="relative overflow-hidden rounded-[28px] border border-[var(--molsan-border)] bg-[var(--molsan-surface)] p-6 shadow-[0_18px_50px_rgba(15,23,42,0.09)] backdrop-blur-xl sm:p-8">
+  return <main className="molsan-page-stack min-h-full bg-[var(--molsan-surface-soft)]">
+    <header className="molsan-page-header relative overflow-hidden rounded-[28px] border border-[var(--molsan-border)] bg-[var(--molsan-surface)] p-6 shadow-[0_18px_50px_rgba(15,23,42,0.09)] backdrop-blur-xl sm:p-8">
       <div className="absolute inset-x-0 top-0 h-1 bg-[var(--molsan-primary)]" />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div><p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--molsan-primary)]">MOLSAN ERP · PREMIUM 2027</p><h1 className="mt-2 text-2xl font-bold tracking-tight text-[var(--molsan-text)] sm:text-3xl">Alta de expediente</h1><p className="mt-2 max-w-3xl text-sm text-[var(--molsan-text-muted)]">Crea un expediente manual con facturación, contrato, múltiples fincas, hipotecas y notaría CTN.</p></div>

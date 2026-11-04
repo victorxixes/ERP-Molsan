@@ -4,9 +4,9 @@
 
 :root {
   /* Colores corporativos principales */
-  --sj-azul: var(--molsan-primary, #3156b3);
-  --sj-azul-claro: var(--molsan-text-muted, #64748b);
-  --sj-gris-azulado: var(--molsan-border-light, #e8edf4);
+  --sj-azul: var(--molsan-primary, #064675);
+  --sj-azul-claro: var(--molsan-text-muted, #718696);
+  --sj-gris-azulado: var(--molsan-border-light, #E8EFF4);
   --sj-blanco: var(--molsan-surface, #fff);
 
   /* Colores auxiliares */

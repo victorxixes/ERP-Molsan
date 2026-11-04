@@ -6,6 +6,8 @@ import {
   useState,
 } from "react";
 import "../../css/ModalesHerramientasPremium.css";
+import { API_BASE } from "../../api/config";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 import {
   useMensajesStore,
@@ -399,7 +401,7 @@ export default function Mensajes({
 
           const response =
             await fetch(
-              `${import.meta.env.VITE_API_URL}/mensajes/upload`,
+              `${API_BASE}/mensajes/upload`,
               {
                 method:
                   "POST",
@@ -590,7 +592,7 @@ export default function Mensajes({
       }
 
 
-      return `${import.meta.env.VITE_API_URL}${foto}`;
+      return `${API_BASE}${foto}`;
 
     };
 
@@ -628,22 +630,16 @@ export default function Mensajes({
   return (
     <div
       className="
+        erp-page
         mensajes-premium-page
         relative
-
+        flex
         min-h-0
-
-        lg:h-[calc(100dvh-96px)]
-        lg:min-h-0
-
+        w-full
+        flex-col
         overflow-hidden
-
-        px-4
-        py-4
-
-        sm:px-6
-        sm:py-6
-
+        p-0
+        lg:h-[calc(100dvh-112px)]
         animate-fadeIn
       "
     >
@@ -704,6 +700,16 @@ export default function Mensajes({
 
       </div>
 
+      <header className="molsan-page-header mensajes-page-header relative z-10">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="message" size={22} tone="ocean" /></div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · COMUNICACIÓN INTERNA</p>
+            <h1 className="molsan-page-header__title">Mensajes</h1>
+            <p className="molsan-page-header__description">Mensajería interna y comunicación directa entre empleados.</p>
+          </div>
+        </div>
+      </header>
 
       {/* =================================================
           CONTENIDO
@@ -720,7 +726,7 @@ export default function Mensajes({
           gap-5
 
           lg:grid-cols-3
-          lg:h-full
+          lg:flex-1
           lg:min-h-0
         "
       >
@@ -802,7 +808,7 @@ export default function Mensajes({
                     text-slate-800
                   "
                 >
-                  Mensajes
+                  Contactos
                 </h2>
 
                 <p
@@ -942,7 +948,7 @@ export default function Mensajes({
                     text-xl
                   "
                 >
-                  👥
+                  <MolsanIcon name="users" size={44} />
                 </div>
 
                 <p
@@ -1292,7 +1298,7 @@ export default function Mensajes({
                     shadow-sm
                   "
                 >
-                  💬
+                  <MolsanIcon name="message" size={44} />
                 </div>
 
 
@@ -1410,7 +1416,7 @@ export default function Mensajes({
                           shadow-sm
                         "
                       >
-                        💬
+                        <MolsanIcon name="message" size={36} />
                       </div>
 
                       <p
@@ -1616,7 +1622,7 @@ export default function Mensajes({
                     title="Adjuntar archivo"
                   >
 
-                    📎
+                    <MolsanIcon name="attachment" size={22} />
 
                     <input
                       type="file"

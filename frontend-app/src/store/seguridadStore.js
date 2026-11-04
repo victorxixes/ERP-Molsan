@@ -1,8 +1,9 @@
 import { create } from "zustand";
 import { useAuthStore } from "./authStore";
 import axios from "../api/axios";
+import { API_BASE } from "../api/config";
 
-const API = import.meta.env.VITE_API_URL;
+const API = API_BASE;
 
 
 // ============================================================

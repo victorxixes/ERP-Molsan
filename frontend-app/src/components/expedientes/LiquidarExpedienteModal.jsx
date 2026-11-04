@@ -2,13 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import axios from "../../api/axios";
 import "../../css/ModalesOperativosPremium.css";
+import { formatEuro as dinero } from "../../utils/formatters";
+import MolsanIcon from "../ui/MolsanIcon";
 
-const dinero = (valor) => {
-  const numero = Number(valor);
-  return Number.isFinite(numero)
-    ? numero.toLocaleString("es-ES", { style: "currency", currency: "EUR" })
-    : "—";
-};
 const valor = (obj, ...keys) => {
   for (const key of keys) if (obj?.[key] !== undefined && obj?.[key] !== null && String(obj[key]).trim() !== "") return obj[key];
   return "";
@@ -40,15 +36,27 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
       facturacion_email: valor(expediente, "facturacion_email", "email_facturacion"),
       fecha_fin_actividad: String(expediente?.fecha_fin_actividad || "").slice(0, 10),
     });
-    setFilas((Array.isArray(movimientos) ? movimientos : []).map((g) => ({
-      ...g,
-      _tipo: String(g.tipo || g.descripcion || "Gasto"),
-      _pagado: ["pagado", "realizado", "abonado", "paid"].includes(String(g.estado_pago || "").toLowerCase()),
-    })));
+    setFilas((Array.isArray(movimientos) ? movimientos : []).map((g) => {
+      const importeObligacion = Number(g.importe_resultante ?? g.importe_total_bruto ?? g.importe ?? 0);
+      const importePagado = g.total_pagado !== undefined && g.total_pagado !== null
+        ? Number(g.total_pagado)
+        : (["pagado", "pagada", "realizado", "abonado", "abonada", "efectuado", "efectuada", "paid"].includes(String(g.estado_pago || "").trim().toLowerCase())
+          ? importeObligacion
+          : 0);
+      return {
+        ...g,
+        _tipo: String(g.tipo || g.descripcion || "Gasto"),
+        _importeObligacion: importeObligacion,
+        _importePagado: importePagado,
+        _estadoPago: importeObligacion > 0 && importePagado >= importeObligacion
+          ? "Pagado"
+          : importePagado > 0 ? "Parcial" : "Pendiente",
+      };
+    }));
   }, [expediente, movimientos]);
 
   const importeInicial = Number(expediente?.importe || 0);
-  const totalPagado = useMemo(() => filas.filter((f) => f._pagado).reduce((sum, f) => sum + Number(f.importe_total_bruto ?? f.importe ?? f.importe_resultante ?? 0), 0), [filas]);
+  const totalPagado = useMemo(() => filas.reduce((sum, f) => sum + Number(f._importePagado || 0), 0), [filas]);
   const saldoLiquidacion = Math.round((importeInicial - totalPagado) * 100) / 100;
 
   // Liquidar es una pantalla de consulta: los datos maestros y los movimientos
@@ -162,8 +170,8 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
                   {filas.map((fila, idx) => <tr key={fila.id || idx} className="border-t border-slate-100">
                     <td className="whitespace-nowrap px-3 py-2">{String(fila.fecha_pago || fila.fecha || fila.fecha_factura || "").slice(0,10) || "—"}</td>
                     <td className="px-3 py-2 text-slate-700">{fila._tipo}</td>
-                    <td className="whitespace-nowrap px-3 py-2 text-right font-semibold">{dinero(fila.importe_total_bruto ?? fila.importe ?? fila.importe_resultante)}</td>
-                    <td className="px-3 py-2"><span className={fila._pagado ? "font-bold text-emerald-700" : "font-semibold text-amber-700"}>{fila._pagado ? "Pagado" : "Pendiente · registrar desde Pagar"}</span></td>
+                    <td className="whitespace-nowrap px-3 py-2 text-right font-semibold">{dinero(fila._importeObligacion)}</td>
+                    <td className="px-3 py-2"><span className={fila._estadoPago === "Pagado" ? "font-bold text-emerald-700" : fila._estadoPago === "Parcial" ? "font-bold text-blue-700" : "font-semibold text-amber-700"}>{fila._estadoPago}{fila._importePagado > 0 ? ` · ${dinero(fila._importePagado)}` : " · registrar desde Pagar"}</span></td>
                   </tr>)}
                   <tr className="border-t-2 border-indigo-200 bg-indigo-50/60"><td className="whitespace-nowrap px-3 py-2 text-slate-600">{form.fecha_fin_actividad || "—"}</td><td className="px-3 py-2 font-extrabold text-indigo-900">Liquidación final</td><td className="px-3 py-2 text-right font-extrabold text-indigo-900">{dinero(saldoLiquidacion)}</td><td className="px-3 py-2 text-slate-600">Saldo calculado</td></tr>
                 </tbody>
@@ -187,14 +195,14 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
           <section className="rounded-xl border border-indigo-200 bg-indigo-50/60 p-4">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
-                <h3 className="text-sm font-extrabold text-slate-900">📚 Cierre documental digital</h3>
+                <h3 className="text-sm font-extrabold text-slate-900"><MolsanIcon name="book" size={20} /> Cierre documental digital</h3>
                 <p className="mt-1 text-xs leading-5 text-slate-600">Genera una vista previa sin guardar. Tras revisarla, pulsa «Aceptar y guardar en Carpeta digital» para registrar el PDF en Expediente digital completo. Orden: Hoja de liquidación, Factura notario, Factura registro, Factura Honorarios gestoría, Copia simple, Justificación de cancelación, AJD / ITP y Hoja de inscripción.</p>
                 {cierreDocumental && <div className={`mt-3 rounded-lg border px-3 py-2 text-xs ${cierreDocumental.guardado ? "border-emerald-200 bg-white text-emerald-800" : "border-amber-200 bg-white text-amber-800"}`}>
                   <p className="font-extrabold">{cierreDocumental.mensaje || "PDF de cierre documental preparado."}</p>
                   <p className="mt-1">{Number(cierreDocumental.paginas || 0)} páginas · {Array.isArray(cierreDocumental.documentos_incluidos) ? cierreDocumental.documentos_incluidos.length : 0} documento(s).</p>
                   {Array.isArray(cierreDocumental.documentos_faltantes) && cierreDocumental.documentos_faltantes.length > 0 && <p className="mt-1">No encontrados: {cierreDocumental.documentos_faltantes.join(", ")}.</p>}
                 </div>}
-                {cierreDocumental?.guardado && <p className="mt-2 text-xs font-bold text-emerald-700">✓ PDF guardado en Carpeta digital → Expediente digital completo.</p>}
+                {cierreDocumental?.guardado && <p className="mt-2 text-xs font-bold text-emerald-700"><MolsanIcon name="check" size={13} bare /> PDF guardado en Carpeta digital → Expediente digital completo.</p>}
               </div>
               <button type="button" onClick={async () => { setError(""); try { await generarCierreDocumental(); } catch (e) { setError(e?.response?.data?.detail || e?.message || "No se ha podido generar la vista previa del PDF."); } }} disabled={generandoCierreDocumental || guardandoCierreDocumental || guardando || cargandoCierre} className="shrink-0 rounded-lg border border-indigo-300 bg-white px-3 py-2 text-xs font-extrabold text-indigo-800 hover:bg-indigo-100 disabled:opacity-50">
                 {generandoCierreDocumental ? "Generando vista previa…" : cierreDocumental?.guardado ? "Generar nueva vista previa" : "Generar y previsualizar PDF"}

@@ -1,5 +1,6 @@
 import { useMemo, useCallback } from "react";
 import { useAgendaStore } from "../../store/agendaStore";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "../../css/ComponentesCompartidosPremium.css";
 
 const HORAS = Array.from(
@@ -84,6 +85,8 @@ export default function VistaDia({
   }, [citasSeguras]);
 
   return (
+    <>
+      
     <div className="agenda-vista-premium agenda-vista-dia-premium grid grid-cols-[70px,1fr] gap-4 text-xs animate-fade-in">
 
       {/* HORAS */}
@@ -197,7 +200,7 @@ export default function VistaDia({
                 {cita.hora_inicio} -{" "}
                 {cita.hora_fin}
               </div>
-              {String(cita.tipo_cita || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es").includes("firma") ? (() => { const realizada = Boolean(cita.firma_realizada) || /FIRMA\s+REALIZADA|FIRMADA/.test(String(cita.observaciones || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()); return <div className={`mt-1 inline-flex items-center rounded-md border px-2 py-1 text-[11px] font-bold ${realizada ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-700"}`}>{realizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</div>; })() : null}
+              {String(cita.tipo_cita || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es").includes("firma") ? (() => { const realizada = Boolean(cita.firma_realizada) || /FIRMA\s+REALIZADA|FIRMADA/.test(String(cita.observaciones || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()); return <div className={`mt-1 inline-flex items-center rounded-md border px-2 py-1 text-[11px] font-bold ${realizada ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-700"}`}>{realizada ? <><MolsanIcon name="check" size={13} bare /> Firma realizada</> : <><MolsanIcon name="clock" size={13} bare /> Pendiente de firma</>}</div>; })() : null}
 
               <div className="truncate text-[var(--erp-text-soft)] pl-1">
                 Notario:{" "}
@@ -233,5 +236,6 @@ export default function VistaDia({
 
       </div>
     </div>
+    </>
   );
 }

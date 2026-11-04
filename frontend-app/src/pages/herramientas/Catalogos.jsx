@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "../../css/HerramientasPremium.css";
 
 /**
@@ -8,7 +9,7 @@ import "../../css/HerramientasPremium.css";
  */
 const CATALOGOS = [
   {
-    icon: "🖋️",
+    icon: "pen",
     titulo: "Firmas y plantillas de email",
     descripcion: "Configura el pie corporativo y la firma automática vinculada a la ficha del empleado.",
     ruta: "/catalogos/firmas-email",
@@ -16,7 +17,7 @@ const CATALOGOS = [
     destacado: true,
   },
   {
-    icon: "✉️",
+    icon: "mail",
     titulo: "Correspondencia tipificada",
     descripcion: "Crea plantillas de email por proceso y genera mensajes con datos reales de la ficha del expediente.",
     ruta: "/catalogos/correspondencia-tipificada",
@@ -24,7 +25,7 @@ const CATALOGOS = [
     destacado: true,
   },
   {
-    icon: "🔗",
+    icon: "link",
     titulo: "Catálogo ABSIS",
     descripcion: "Estados de expediente, productos GTG, actividades, operaciones y defectos.",
     ruta: "/catalogos/absis",
@@ -32,35 +33,35 @@ const CATALOGOS = [
     destacado: true,
   },
   {
-    icon: "🏦",
+    icon: "bank",
     titulo: "Entidades bancarias",
     descripcion: "Entidades, códigos europeos, LEI, categorías y direcciones.",
     ruta: "/herramientas/entidades-bancarias",
     grupo: "Datos territoriales y entidades",
   },
   {
-    icon: "🏘️",
+    icon: "building",
     titulo: "Municipios",
     descripcion: "Comunidades autónomas, provincias y municipios.",
     ruta: "/herramientas/municipios",
     grupo: "Datos territoriales y entidades",
   },
   {
-    icon: "🏛️",
+    icon: "courthouse",
     titulo: "Registros de la propiedad",
     descripcion: "Datos y mantenimiento de los registros de la propiedad.",
     ruta: "/herramientas/registros-propiedad",
     grupo: "Datos territoriales y entidades",
   },
   {
-    icon: "🏢",
+    icon: "building",
     titulo: "Oficinas liquidadoras",
     descripcion: "Oficinas liquidadoras y sus datos asociados.",
     ruta: "/herramientas/oficinas-liquidadoras",
     grupo: "Datos territoriales y entidades",
   },
   {
-    icon: "🏢",
+    icon: "building",
     titulo: "Catálogo de oficinas",
     descripcion: "Busca oficinas e importa y actualiza sus datos desde tu Excel.",
     ruta: "/catalogos/oficinas",
@@ -68,7 +69,7 @@ const CATALOGOS = [
     destacado: true,
   },
   {
-    icon: "🧾",
+    icon: "receipt",
     titulo: "Tabla Provisiones de fondos",
     descripcion: "Configura importes de referencia y criterios iniciales de impuestos por operación y territorio.",
     ruta: "/catalogos/provisiones-fondos",
@@ -76,7 +77,7 @@ const CATALOGOS = [
     destacado: true,
   },
   {
-    icon: "🧮",
+    icon: "calculator",
     titulo: "Tipos impositivos",
     descripcion: "Gestiona tipos de IVA, IGIC y retenciones; crea, edita y desactiva porcentajes utilizados por las órdenes de pago.",
     ruta: "/catalogos/tipos-impositivos",
@@ -84,7 +85,7 @@ const CATALOGOS = [
     destacado: true,
   },
   {
-    icon: "💶",
+    icon: "euro",
     titulo: "Honorarios de gestoría",
     descripcion: "Tarifas con base imponible, IVA o IGIC y total calculado.",
     ruta: "/herramientas/honorarios-gestoria",
@@ -92,21 +93,21 @@ const CATALOGOS = [
     destacado: true,
   },
   {
-    icon: "🏠",
+    icon: "home",
     titulo: "Tipos de carga hipotecaria",
     descripcion: "Catálogo de tipos de carga hipotecaria.",
     ruta: "/herramientas/tipos-carga-hipotecaria",
     grupo: "Catálogos económicos",
   },
   {
-    icon: "🧾",
+    icon: "receipt",
     titulo: "Tipos de conceptos de gastos",
     descripcion: "Conceptos disponibles para clasificar gastos.",
     ruta: "/herramientas/tipos-concepto-gastos",
     grupo: "Catálogos económicos",
   },
   {
-    icon: "🚚",
+    icon: "truck",
     titulo: "Mensajería · Servicios y tarifas",
     descripcion: "Mantén el catálogo interno de servicios, tarifas, suplementos e impuestos de mensajería.",
     ruta: "/catalogos/mensajeria-servicios",
@@ -115,7 +116,7 @@ const CATALOGOS = [
     avisoConstruccion: true,
   },
   {
-    icon: "🕒",
+    icon: "clock",
     titulo: "Fichajes · Tipos de ausencia",
     descripcion: "Configura los motivos de ausencia y si cada uno requiere justificante.",
     ruta: "/catalogos/fichajes",
@@ -123,14 +124,14 @@ const CATALOGOS = [
     destacado: true,
   },
   {
-    icon: "🗂️",
+    icon: "folder",
     titulo: "Maestros generales",
     descripcion: "Acceso al catálogo general de datos maestros del ERP.",
     ruta: "/maestros",
     grupo: "Catálogos operativos",
   },
   {
-    icon: "🗃️",
+    icon: "archive",
     titulo: "Tipos de expediente",
     descripcion: "Mantén los tipos de expediente, incluidos los tipos históricos de provisiones fuera del circuito GTG.",
     ruta: "/herramientas/tipos-expediente",
@@ -138,7 +139,7 @@ const CATALOGOS = [
     destacado: true,
   },
   {
-    icon: "📋",
+    icon: "clipboardList",
     titulo: "Acciones del expediente",
     descripcion: "Acciones y actividades utilizadas en el circuito de expedientes.",
     ruta: "/herramientas/acciones-expediente",
@@ -155,15 +156,14 @@ const GRUPOS = [
 
 export default function Catalogos() {
   return (
-    <main className="catalogos-premium-page min-h-full space-y-7 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-      <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="relative flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl shadow-sm">▦</div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">MOLSAN ERP PREMIUM 2027</p>
-            <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Catálogos</h1>
-            <p className="mt-1 text-sm text-slate-500">Centraliza los datos maestros que utilizan los módulos y procesos de la gestoría.</p>
+    <main className="molsan-page-stack catalogos-premium-page min-h-full ">
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark"><MolsanIcon name="book" size={22} tone="ocean" /></div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">Catálogos</h1>
+            <p className="molsan-page-header__description">Centraliza los datos maestros que utilizan los módulos y procesos de la gestoría.</p>
           </div>
         </div>
       </header>
@@ -182,11 +182,11 @@ export default function Catalogos() {
                 <Link
                   key={item.ruta}
                   to={item.ruta}
-                  className={`group relative overflow-hidden rounded-[22px] border p-5 shadow-[0_12px_35px_rgba(15,23,42,0.07)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(15,23,42,0.11)] active:scale-[0.98] ${item.destacado ? "border-blue-200/80 bg-blue-50/70" : "border-slate-200/80 bg-white/85"}`}
+                  className="group erp-card relative overflow-hidden p-5 transition-all duration-300 active:scale-[0.98]"
                 >
                   <div className="flex items-start gap-4">
-                    <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl ${item.destacado ? "border-blue-200 bg-blue-100" : "border-slate-200 bg-slate-50"}`}>
-                      {item.icon}
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center">
+                      <MolsanIcon name={item.icon} size={48} />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="text-base font-semibold text-slate-800">{item.titulo}</h3>

@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import MonitorRealtime from "./MonitorRealtime";
 import "./PanelTecnicoSubmodulos.css";
 import {
@@ -183,119 +184,7 @@ export default function MonitorSistema() {
   // ============================================================
 
   return (
-    <div className="monitor-sistema-premium panel-tecnico-submodulo-premium p-6 space-y-6 animate-fade-in">
-
-      {/* ======================================================
-          CABECERA
-          ====================================================== */}
-
-      <div
-        className="
-          flex
-          flex-col
-          md:flex-row
-          md:items-center
-          md:justify-between
-          gap-3
-        "
-      >
-
-        <div>
-
-          <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
-          >
-
-            <div
-              className="
-                w-11
-                h-11
-                rounded-2xl
-                bg-[var(--erp-primary-soft)]
-                border
-                border-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-                text-[var(--erp-primary)]
-                shadow-sm
-              "
-            >
-              <svg
-                className="w-5 h-5"
-                aria-hidden="true"
-              >
-                <use href="/icons/icons.svg#monitor" />
-              </svg>
-            </div>
-
-            <div>
-
-              <h1
-                className="
-                  text-2xl
-                  font-bold
-                  text-[var(--erp-text)]
-                  drop-shadow-sm
-                "
-              >
-                Monitor del Sistema
-              </h1>
-
-              <p
-                className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                  mt-0.5
-                "
-              >
-                Supervisión técnica, WebSocket y diagnóstico de base de datos
-              </p>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div
-          className="
-            inline-flex
-            items-center
-            gap-2
-            px-3
-            py-2
-            rounded-xl
-            bg-[var(--erp-surface)]
-            border
-            border-[var(--erp-border)]
-            text-xs
-            text-[var(--erp-text-soft)]
-            shadow-sm
-          "
-        >
-
-          <span
-            className="
-              w-2
-              h-2
-              rounded-full
-              bg-emerald-500
-              animate-pulse
-            "
-          />
-
-          Sistema operativo
-
-        </div>
-
-      </div>
-
+    <div className="molsan-page-stack monitor-sistema-premium panel-tecnico-submodulo-premium">
 
       {/* ======================================================
           MONITOR REALTIME
@@ -583,22 +472,7 @@ export default function MonitorSistema() {
                         `}
                       >
 
-                        <svg
-                          className={`
-                            w-4
-                            h-4
-                            flex-shrink-0
-
-                            ${
-                              activa
-                                ? "text-white"
-                                : "text-[var(--erp-primary)]"
-                            }
-                          `}
-                          aria-hidden="true"
-                        >
-                          <use href="/icons/icons.svg#database" />
-                        </svg>
+                        <MolsanIcon name="database" size={16} bare />
 
                         <span className="truncate">
                           {tabla}
@@ -656,12 +530,7 @@ export default function MonitorSistema() {
                     "
                   >
 
-                    <svg
-                      className="w-6 h-6"
-                      aria-hidden="true"
-                    >
-                      <use href="/icons/icons.svg#database" />
-                    </svg>
+                    <MolsanIcon name="database" size={24} bare />
 
                   </div>
 
@@ -719,16 +588,7 @@ export default function MonitorSistema() {
                         "
                       >
 
-                        <svg
-                          className="
-                            w-5
-                            h-5
-                            text-[var(--erp-primary)]
-                          "
-                          aria-hidden="true"
-                        >
-                          <use href="/icons/icons.svg#database" />
-                        </svg>
+                        <MolsanIcon name="database" size={20} bare />
 
                         <h3
                           className="

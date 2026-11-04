@@ -1068,6 +1068,8 @@ def directorio_notarias_encargagest(
     alcance: str = Query("habilitadas", regex="^(habilitadas|todas)$"),
     pagina: int = Query(1, ge=1),
     por_pagina: int = Query(12, ge=1, le=48),
+    sort_by: str = Query("provincia", regex="^(nombre|nif|municipio|provincia|habilitada)$"),
+    sort_dir: str = Query("asc", regex="^(asc|desc)$"),
     db: Session = Depends(get_db),
     usuario=Depends(get_encargagest_actor),
 ):
@@ -1092,7 +1094,16 @@ def directorio_notarias_encargagest(
             Notaria.provincia.ilike(termino),
         ))
     total = consulta.count()
-    registros = consulta.order_by(Notaria.provincia.asc(), Notaria.municipio.asc(), Notaria.apellidos.asc(), Notaria.nombre.asc()).offset((pagina - 1) * por_pagina).limit(por_pagina).all()
+    columnas_orden = {
+        "nombre": func.concat(Notaria.nombre, " ", Notaria.apellidos),
+        "nif": Notaria.nif,
+        "municipio": Notaria.municipio,
+        "provincia": Notaria.provincia,
+        "habilitada": EncargoExternoUsuario.habilitado,
+    }
+    columna_orden = columnas_orden[sort_by]
+    expresion_orden = columna_orden.desc().nullslast() if sort_dir == "desc" else columna_orden.asc().nullslast()
+    registros = consulta.order_by(expresion_orden, Notaria.id.asc()).offset((pagina - 1) * por_pagina).limit(por_pagina).all()
     items = []
     for notaria, acceso in registros:
         items.append({

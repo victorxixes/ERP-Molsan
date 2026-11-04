@@ -1,4 +1,5 @@
 import { useMemo, useCallback, useState } from "react";
+import MolsanIcon from "../ui/MolsanIcon";
 import "../../css/ComponentesCompartidosPremium.css";
 
 /**
@@ -601,7 +602,7 @@ export default function TablaLogs({
                   "
                   aria-hidden="true"
                 >
-                  🔎
+                  <MolsanIcon name="search" size={20} />
                 </span>
 
                 <input
@@ -747,7 +748,7 @@ export default function TablaLogs({
                 <span
                   aria-hidden="true"
                 >
-                  📊
+                  <MolsanIcon name="chart" size={20} />
                 </span>
 
                 Descargar Excel
@@ -859,11 +860,10 @@ export default function TablaLogs({
                               }
                             `}
                           >
-                            {activo
-                              ? orden.asc
-                                ? "▲"
-                                : "▼"
-                              : "↕"}
+                            <MolsanIcon
+                              name={activo ? (orden.asc ? "arrowUp" : "arrowDown") : "arrowUpDown"}
+                              size={13}
+                            />
                           </span>
                         </div>
                       </th>
@@ -904,7 +904,7 @@ export default function TablaLogs({
                         "
                         aria-hidden="true"
                       >
-                        📋
+                        <MolsanIcon name="clipboard" size={20} />
                       </span>
 
                       <span
@@ -983,7 +983,7 @@ export default function TablaLogs({
                                 valor
                               ] ||
                               iconosEvento.default ||
-                              "📄";
+                              "file";
 
                             return (
                               <td
@@ -1020,7 +1020,7 @@ export default function TablaLogs({
                                       border-slate-200
                                     "
                                   >
-                                    {icono}
+                                    <MolsanIcon name={icono} size={17} />
                                   </span>
 
                                   <span
@@ -1137,7 +1137,7 @@ export default function TablaLogs({
             disabled:opacity-40
           "
         >
-          ← Anterior
+          <MolsanIcon name="arrowLeft" size={14} inline /> Anterior
         </button>
 
 
@@ -1220,7 +1220,7 @@ export default function TablaLogs({
             disabled:opacity-40
           "
         >
-          Siguiente →
+          Siguiente <MolsanIcon name="arrowRight" size={14} inline />
         </button>
 
 
