@@ -2,9 +2,8 @@ import { Navigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 
 /**
- * RequireAuth — SJ‑2026 Premium
+ * RequireAuth
  * Protege rutas privadas del ERP.
- * - Muestra pantalla de carga glass‑UI mientras Zustand hidrata
  * - Redirige al login si no hay token
  * - Evita pantallas en blanco y renders prematuros
  */
@@ -15,27 +14,21 @@ export default function RequireAuth({ children }) {
   const authReady = useAuthStore((s) => s.authReady);
 
   /**
-   * Estado de carga premium SJ‑2026
+   * Estado de carga
    * Evita pantallas en blanco mientras Zustand hidrata.
    */
   if (!authReady || loading) {
     return (
       <div
-        className="
-          w-full h-screen flex items-center justify-center
-          bg-black/40 backdrop-blur-xl
-        "
+        className="w-full h-screen flex items-center justify-center"
       >
         <div className="flex flex-col items-center gap-4">
-          {/* Spinner premium */}
+          {/* Indicador de carga */}
           <div
-            className="
-              w-12 h-12 border-4 border-white/20 border-t-white
-              rounded-full animate-spin
-            "
+            className="w-12 h-12"
           />
 
-          <p className="text-white/80 text-sm tracking-wide">
+          <p>
             Cargando sesión…
           </p>
         </div>
