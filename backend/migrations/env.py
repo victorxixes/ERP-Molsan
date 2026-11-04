@@ -17,6 +17,50 @@ from backend.app.database import Base  # noqa: E402
 
 target_metadata = Base.metadata
 
+# Estas tablas se administran mediante revisiones SQL auxiliares revisadas.
+# Se excluyen del autogenerate ORM para no intentar recrearlas ni borrarlas.
+AUXILIARY_TABLE_NAMES = {
+    "absis_postfirma_cargas",
+    "absis_postfirma_registros",
+    "alta_expediente_contadores",
+    "catalogo_oficinas",
+    "catalogos_absis",
+    "catalogos_absis_categorias",
+    "correspondencia_configuracion",
+    "correspondencia_plantillas",
+    "ctn_portal_accesos_historial",
+    "datos_molsan_config",
+    "encargagest_notaria_gestor",
+    "expediente_absis_solicitudes",
+    "expediente_documentacion_previa_absis",
+    "expediente_gasto_pagos",
+    "expediente_gestor_historial",
+    "expediente_hipotecas",
+    "expediente_sla_actividad",
+    "expediente_traspasos_saldo",
+    "expediente_traspasos_saldo_origenes",
+    "expediente_visibilidad_config",
+    "facturas_honorarios_gestoria",
+    "mensajeria_servicios",
+    "mensajeria_solicitudes",
+    "mensajeria_albaranes",
+    "mensajeria_comunicaciones",
+    "mensajeria_facturas",
+    "mensajeria_factura_albaran",
+    "mensajeria_proveedores",
+    "notargest_avisos_leidos",
+    "notargest_historial_actividad",
+    "plantilla_factura_concepto_gasto",
+    "provisiones_email_envios",
+    "tipos_impositivos",
+}
+
+
+def include_object(object, name, type_, reflected, compare_to):
+    if type_ == "table" and reflected and name in AUXILIARY_TABLE_NAMES:
+        return False
+    return True
+
 
 def compare_server_default(context, connection, inspected_column, metadata_column, rendered_metadata_default, rendered_inspected_default):
     # PostgreSQL json no implementa igualdad; el comparador automático de Alembic
@@ -51,6 +95,7 @@ def run_migrations_offline():
         dialect_opts={"paramstyle": "named"},
         compare_type=True,
         compare_server_default=compare_server_default,
+                include_object=include_object,
     )
     with context.begin_transaction():
         context.run_migrations()
