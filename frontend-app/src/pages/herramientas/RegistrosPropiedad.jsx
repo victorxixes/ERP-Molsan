@@ -70,7 +70,7 @@ import "../../css/CatalogosMaestrosPremium.css";
    BACKEND
 ============================================================ */
 
-const API_BASE = `${API_ROOT}/api/registros-propiedad`;
+const API_BASE = `${API_ROOT}/registros-propiedad`;
 
 const API_IMPORTAR_EXCEL =
   `${API_BASE}/importar-excel`;
