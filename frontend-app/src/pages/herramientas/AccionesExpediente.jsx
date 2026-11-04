@@ -1,3 +1,4 @@
+import { API_BASE as API_ROOT } from "../../api/config";
 import "../../css/ModalesHerramientasPremium.css";
 import React, {
   useCallback,
@@ -17,11 +18,7 @@ import React, {
 // API
 // ============================================================
 
-const API_ORIGEN =
-  "https://agenda-intranet-b.onrender.com";
-
-const API_BASE =
-  `${API_ORIGEN}/api/acciones-expediente`;
+const API_BASE = `${API_ROOT}/api/acciones-expediente`;
 
 const API_IMPORTAR_EXCEL =
   `${API_BASE}/importar-excel`;
