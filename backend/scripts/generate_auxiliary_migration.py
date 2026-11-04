@@ -100,15 +100,15 @@ def main() -> None:
     if raw_missing_fks:
         raise RuntimeError(f"Quedan {len(raw_missing_fks)} referencias FK sin destino.")
 
-    auxiliary_names = {line.split("\\t", 1)[0].lower() for line in raw_inventory}
+    auxiliary_names = {line.split("\t", 1)[0].lower() for line in raw_inventory}
     table_sql = {}
     index_sql = []
     for item in raw_sql:
         if not item.startswith("-- Source:"):
             continue
-        statement = item.split("\\n", 1)[1].strip()
+        statement = item.split("\n", 1)[1].strip()
         table_match = re.match(
-            r"CREATE\\s+TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?(?:public\\.)?([A-Za-z_][A-Za-z0-9_]*)",
+            r"CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:public\.)?([A-Za-z_][A-Za-z0-9_]*)",
             statement,
             re.IGNORECASE,
         )
@@ -120,7 +120,7 @@ def main() -> None:
                 raise RuntimeError(f"Definición auxiliar repetida no reconciliada: {name}")
             table_sql[name] = statement
             continue
-        if re.match(r"CREATE\\s+(?:UNIQUE\\s+)?INDEX\\b", statement, re.IGNORECASE):
+        if re.match(r"CREATE\s+(?:UNIQUE\s+)?INDEX\b", statement, re.IGNORECASE):
             index_sql.append(statement)
 
     if set(table_sql) != auxiliary_names:
@@ -137,7 +137,7 @@ def main() -> None:
     for entry in manual_review_ddl:
         statement = entry["sql"]
         add_column = re.search(
-            r"ALTER\\s+TABLE\\s+(?:IF\\s+EXISTS\\s+)?(?:public\\.)?([A-Za-z_][A-Za-z0-9_]*)\\s+ADD\\s+(?:COLUMN\\s+)?(?!CONSTRAINT\\b)(?:IF\\s+NOT\\s+EXISTS\\s+)?([A-Za-z_][A-Za-z0-9_]*)",
+            r"ALTER\s+TABLE\s+(?:IF\s+EXISTS\s+)?(?:public\.)?([A-Za-z_][A-Za-z0-9_]*)\s+ADD\s+(?:COLUMN\s+)?(?!CONSTRAINT\b)(?:IF\s+NOT\s+EXISTS\s+)?([A-Za-z_][A-Za-z0-9_]*)",
             statement,
             re.IGNORECASE,
         )
@@ -154,21 +154,21 @@ def main() -> None:
             )
 
         drop_constraint = re.search(
-            r"ALTER\\s+TABLE\\s+(?:IF\\s+EXISTS\\s+)?(?:public\\.)?([A-Za-z_][A-Za-z0-9_]*)\\s+DROP\\s+CONSTRAINT",
+            r"ALTER\s+TABLE\s+(?:IF\s+EXISTS\s+)?(?:public\.)?([A-Za-z_][A-Za-z0-9_]*)\s+DROP\s+CONSTRAINT",
             statement,
             re.IGNORECASE,
         )
         if drop_constraint:
             table = drop_constraint.group(1).lower()
             canonical = table_sql.get(table, "")
-            normalized = re.sub(r"\\s+", " ", canonical).lower()
+            normalized = re.sub(r"\s+", " ", canonical).lower()
             if table == "expediente_visibilidad_config" and "primary key (empleado_id, actividad_key, ambito)" in normalized:
                 resolved_alters += 1
                 continue
             raise RuntimeError(f"ALTER DROP CONSTRAINT no reconciliado: {table} ({entry['source']})")
 
         add_constraint = re.search(
-            r"ALTER\\s+TABLE\\s+(?:IF\\s+EXISTS\\s+)?(?:public\\.)?([A-Za-z_][A-Za-z0-9_]*)\\s+ADD\\s+CONSTRAINT\\s+([A-Za-z_][A-Za-z0-9_]*)",
+            r"ALTER\s+TABLE\s+(?:IF\s+EXISTS\s+)?(?:public\.)?([A-Za-z_][A-Za-z0-9_]*)\s+ADD\s+CONSTRAINT\s+([A-Za-z_][A-Za-z0-9_]*)",
             statement,
             re.IGNORECASE,
         )
@@ -187,7 +187,7 @@ def main() -> None:
             raise RuntimeError(f"ALTER ADD CONSTRAINT no reconciliado: {table}.{constraint_name}")
 
         nullable_change = re.search(
-            r"ALTER\\s+TABLE\\s+(?:IF\\s+EXISTS\\s+)?(?:public\\.)?([A-Za-z_][A-Za-z0-9_]*)\\s+ALTER\\s+(?:COLUMN\\s+)?([A-Za-z_][A-Za-z0-9_]*)\\s+DROP\\s+NOT\\s+NULL",
+            r"ALTER\s+TABLE\s+(?:IF\s+EXISTS\s+)?(?:public\.)?([A-Za-z_][A-Za-z0-9_]*)\s+ALTER\s+(?:COLUMN\s+)?([A-Za-z_][A-Za-z0-9_]*)\s+DROP\s+NOT\s+NULL",
             statement,
             re.IGNORECASE,
         )
@@ -224,7 +224,7 @@ def main() -> None:
     lines.append("")
 
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_text("\\n".join(lines), encoding="utf-8")
+    OUTPUT.write_text("\n".join(lines), encoding="utf-8")
     print(
         f"Generated {OUTPUT.name}: {len(table_names)} auxiliary tables, "
         f"{len(index_sql)} indexes, {resolved_alters} static ALTERs reconciled, "
