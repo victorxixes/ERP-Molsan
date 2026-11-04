@@ -2265,14 +2265,19 @@ def reparar_vinculos_apoderado_expedientes():
 # ORDEN DE ARRANQUE
 # ============================================================
 
-# La migración se ejecuta antes de crear o comprobar las tablas auxiliares.
-app.router.on_startup.insert(
-    0,
-    migrar_esquema_expedientes_inicio,
-)
-app.router.on_startup.insert(1, migrar_catalogo_honorarios_impuestos)
-app.router.on_startup.insert(2, migrar_catalogo_absis)
-app.router.on_startup.insert(3, migrar_visibilidad_empleado)
-app.router.on_startup.insert(4, reparar_vinculos_apoderado_expedientes)
+# Las tareas heredadas de esquema/catálogos no se ejecutan en el servicio web.
+# El esquema se provisiona mediante revisiones Alembic en un proceso aislado.
+# Las semillas y reparaciones se trasladarán a tareas explícitas e idempotentes.
+if runtime_schema_migrations_enabled():
+    app.router.on_startup.insert(0, migrar_esquema_expedientes_inicio)
+    app.router.on_startup.insert(1, migrar_catalogo_honorarios_impuestos)
+    app.router.on_startup.insert(2, migrar_catalogo_absis)
+    app.router.on_startup.insert(3, migrar_visibilidad_empleado)
+    app.router.on_startup.insert(4, reparar_vinculos_apoderado_expedientes)
+else:
+    print(
+        "[SCHEMA] Proceso web: DDL, semillas y reparaciones de arranque desactivados.",
+        flush=True,
+    )
 
 instrumentar_inicio_aplicacion()
