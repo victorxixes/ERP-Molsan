@@ -91,7 +91,7 @@ def scan_raw_ddl(orm_table_names):
     def register_sql(sql, source):
         for statement in extract_statements(sql, r"\bCREATE\s+TABLE\b"):
             table_match = re.search(
-                r"\bCREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:public\\.)?([A-Za-z_][A-Za-z0-9_]*)",
+                r"\bCREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:public\.)?([A-Za-z_][A-Za-z0-9_]*)",
                 statement,
                 re.IGNORECASE,
             )
@@ -112,7 +112,7 @@ def scan_raw_ddl(orm_table_names):
 
         for statement in extract_statements(sql, r"\bCREATE\s+(?:UNIQUE\s+)?INDEX\b"):
             index_match = re.search(
-                r"\bCREATE\s+(?:UNIQUE\s+)?INDEX\s+(?:IF\s+NOT\s+EXISTS\s+)?([A-Za-z_][A-Za-z0-9_]*)\s+ON\s+(?:public\\.)?([A-Za-z_][A-Za-z0-9_]*)",
+                r"\bCREATE\s+(?:UNIQUE\s+)?INDEX\s+(?:IF\s+NOT\s+EXISTS\s+)?([A-Za-z_][A-Za-z0-9_]*)\s+ON\s+(?:public\.)?([A-Za-z_][A-Za-z0-9_]*)",
                 statement,
                 re.IGNORECASE,
             )
@@ -158,7 +158,7 @@ def scan_raw_ddl(orm_table_names):
     dependencies = {}
     for name, entry in statements_by_table.items():
         refs = re.findall(
-            r"\bREFERENCES\s+(?:public\\.)?([A-Za-z_][A-Za-z0-9_]*)",
+            r"\bREFERENCES\s+(?:public\.)?([A-Za-z_][A-Za-z0-9_]*)",
             entry["sql"],
             re.IGNORECASE,
         )
