@@ -6,6 +6,7 @@ import hashlib
 import hmac
 import secrets
 import os
+import mimetypes
 import base64
 import threading
 import asyncio
@@ -37,6 +38,13 @@ ROOT.mkdir(parents=True, exist_ok=True)
 
 MAX_BYTES = int(os.getenv("ENCARGAGEST_MAX_DOCUMENT_BYTES", str(25 * 1024 * 1024)))
 EXTENSIONES_PERMITIDAS = {".pdf", ".doc", ".docx", ".xls", ".xlsx", ".jpg", ".jpeg", ".png", ".eml", ".msg", ".txt"}
+def _tipo_mime_seguro_encargagest(nombre):
+    extension = Path(str(nombre or "")).suffix.lower()
+    if extension not in EXTENSIONES_PERMITIDAS:
+        return "application/octet-stream"
+    return mimetypes.guess_type("documento" + extension)[0] or "application/octet-stream"
+
+
 CATEGORIAS_DOCUMENTO = {
     "Hoja de solicitud",
     "Certificado de saldo cero / deuda",
