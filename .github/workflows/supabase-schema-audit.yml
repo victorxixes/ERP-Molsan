@@ -1,6 +1,13 @@
 name: Supabase schema audit
 
 on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "backend/scripts/audit_supabase_schema.py"
+      - "backend/app/**"
+      - ".github/workflows/supabase-schema-audit.yml"
   push:
     branches:
       - release/molsan-premium-2027-candidate
