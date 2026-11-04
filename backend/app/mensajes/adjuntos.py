@@ -1,12 +1,11 @@
 """Validación de referencias a adjuntos privados de Mensajes."""
 from __future__ import annotations
 
-import os
 import re
 from pathlib import Path
 
 from backend.app.storage import MENSAJES_DIR
-from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, storage_backend_is_supabase
 
 URL_PREFIXES = (
     "/api/mensajes/archivo/",
@@ -51,7 +50,7 @@ def adjunto_mensaje_valido(valor: object, exigir_existencia: bool = True) -> boo
     if not exigir_existencia:
         return True
 
-    if (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase":
+    if storage_backend_is_supabase():
         try:
             return SupabasePrivateStorage().exists(f"mensajes/{nombre}")
         except (RuntimeError, SupabaseStorageError):
