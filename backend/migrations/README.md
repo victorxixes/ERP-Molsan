@@ -6,10 +6,11 @@ Este directorio contiene las revisiones Alembic versionadas de la integración c
 - `20261104_0001_initial_orm_schema.py`: 67 tablas ORM y sus restricciones/índices.
 - `20261104_0002_reconcile_orm_constraints.py`: reconciliación de la FK de subtipo de defecto.
 - `20261104_0003_auxiliary_schema.py`: 33 tablas auxiliares y 7 índices, con sus dependencias.
+- `20261104_0004_secure_public_api.py`: activa RLS en tablas públicas y revoca acceso de `anon`, `authenticated` y `PUBLIC` a la API de datos ERP.
 
-Las tres revisiones son candidatas hasta completar en PostgreSQL aislado el ciclo:
+Las cuatro revisiones son candidatas hasta completar en PostgreSQL aislado el ciclo:
 `upgrade head` → `alembic check` → `downgrade base` → `upgrade head`.
-No se ha aplicado ninguna revisión a Supabase.
+No se ha aplicado ninguna revisión a Supabase. La revisión 0004 es una barrera de seguridad adicional; el backend usa JWT/roles propios y no expone las tablas ERP mediante Supabase Data API.
 
 ## Salvaguardas
 - El backend web no ejecuta migraciones al arrancar ni desde endpoints.
