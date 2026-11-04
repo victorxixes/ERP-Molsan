@@ -98,17 +98,15 @@ La rama contiene tres revisiones consecutivas:
 1. `20261104_0001_initial_orm_schema.py`: esquema inicial de las 67 tablas ORM.
 2. `20261104_0002_reconcile_orm_constraints.py`: reconciliación de la FK de subtipo de defecto.
 3. `20261104_0003_auxiliary_schema.py`: 33 tablas auxiliares y 7 índices.
+4. `20261104_0004_secure_public_api.py`: activa RLS en tablas públicas del ERP y revoca privilegios de `anon`, `authenticated` y `PUBLIC`; no crea políticas de acceso para el navegador.
 
 ## Validación aislada
 
-La ejecución del workflow **Bootstrap ORM migration in isolated PostgreSQL** sobre el SHA `f8792f759679e5054604ec71f9611b554dfcf585` terminó correctamente el 4-11-2026:
+Las revisiones 0001–0003 superaron el 4-11-2026 el ciclo completo en PostgreSQL temporal: `upgrade head`, `alembic check` (**No new upgrade operations detected**), `downgrade base` y segundo `upgrade head`.
 
-- `alembic upgrade head`: correcto.
-- `alembic check`: correcto, con resultado **No new upgrade operations detected**.
-- `alembic downgrade base`: correcto.
-- `alembic upgrade head` posterior al rollback: correcto.
+La revisión 0004 añade el cierre de la Data API y RLS para el sistema de autenticación propio del ERP. Su validación conjunta con las cuatro revisiones está pendiente de la ejecución del workflow de CI actual; no se considerará validada hasta que termine correctamente.
 
-El workflow utilizó un PostgreSQL temporal de CI. Esta validación no equivale a aplicar las revisiones en Supabase ni autoriza todavía el despliegue.
+El workflow utiliza PostgreSQL temporal de CI. Ninguna de estas pruebas equivale a aplicar las revisiones en Supabase ni autoriza el despliegue.
 
 ## Estado de Supabase
 
@@ -129,4 +127,4 @@ Las revisiones de estructura no importan expedientes ni pagos. Antes de conectar
 
 El proceso web no debe ejecutar DDL, seeds ni reparaciones de esquema al arrancar ni desde endpoints. Las modificaciones estructurales se aplican mediante revisiones Alembic explícitas. Si falta una tabla, columna, índice o restricción, el servicio debe fallar con un diagnóstico claro, sin intentar alterar la base de datos durante una petición.
 
-**Estado:** estructura ORM y auxiliar versionada y probada en PostgreSQL aislado; Supabase continúa vacío. Pendientes: seeds aprobados, integración privada de Supabase Storage, autenticación/permisos, conexión del Preview y pruebas integrales.
+**Estado:** revisiones 0001–0003 de esquema probadas en PostgreSQL aislado; revisión 0004 de seguridad añadida y pendiente de validación CI conjunta. Supabase continúa vacío. Pendientes: completar CI, seeds aprobados, bucket privado y secreto de Storage, conexión del Preview y pruebas integrales.
