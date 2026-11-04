@@ -121,3 +121,4 @@ jobs:
                   raise SystemExit("FAILED: temporary Storage object still exists after cleanup.")
               print("PASS: temporary Storage object deleted and absence verified.")
           PY
+# trigger integration smoke test
