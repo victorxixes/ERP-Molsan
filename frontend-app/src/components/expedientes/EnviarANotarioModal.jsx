@@ -5,7 +5,6 @@ import useAccessibleDialog from "../ui/useAccessibleDialog";
 
 import AutocompleteNotario from "../agenda/AutocompleteNotario";
 import axios from "../../api/axios";
-import useAccessibleDialog from "../ui/useAccessibleDialog";
 
 // ============================================================
 // ENVÍO A NOTARIO + DATOS DE FACTURACIÓN
@@ -275,8 +274,6 @@ export default function EnviarANotarioModal({
     })
   );
 
-  const dialogRef = useRef(null);
-
 
   // Lista de documentos de escritura. El primero conserva la cuantía
   // procedente de Fincas y Registros; los adicionales tienen cuantía propia.
@@ -313,8 +310,6 @@ export default function EnviarANotarioModal({
   const [municipiosLoading, setMunicipiosLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  useAccessibleDialog({ open: !inline, onClose: () => { if (!loading) onClose?.(); }, dialogRef });
 
   useAccessibleDialog({
     open: !inline,
