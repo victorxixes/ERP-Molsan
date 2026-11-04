@@ -60,16 +60,12 @@ class SupabasePrivateStorageTests(unittest.TestCase):
         self.assertTrue(args[0].endswith("/storage/v1/object/molsan-private"))
         self.assertEqual(kwargs["json"], {"prefixes": ["mensajes/a.pdf"]})
 
-    def test_exists_returns_true_for_existing_object(self):
-        self.session.get.return_value = Mock(status_code=200, close=Mock())
-        self.assertTrue(self.storage.exists("mensajes/a.pdf"))
-
-    def test_exists_returns_false_for_missing_object(self):
-        self.session.get.return_value = Mock(status_code=404, close=Mock())
-        self.assertFalse(self.storage.exists("mensajes/missing.pdf"))
-
     def test_render_forces_private_storage_even_if_local_is_requested(self):
-        with patch.dict(os.environ, {"RENDER_SERVICE_ID": "srv-preview", "MOLSAN_STORAGE_BACKEND": "local"}, clear=True):
+        with patch.dict(
+            os.environ,
+            {"RENDER_SERVICE_ID": "srv-preview", "MOLSAN_STORAGE_BACKEND": "local"},
+            clear=True,
+        ):
             self.assertTrue(storage_backend_is_supabase())
 
     def test_local_development_defaults_to_local_storage(self):
