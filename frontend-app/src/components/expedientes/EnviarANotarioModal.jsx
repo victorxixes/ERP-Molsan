@@ -301,6 +301,19 @@ export default function EnviarANotarioModal({
     return [{ id: 1, tipo_documento: inicial.tipo_documento || "", cuantia: cuantiaInicial }];
   });
 
+  // La cuantía de Fincas y Registros puede llegar después de montar el formulario
+  // (la ficha carga las fincas de forma asíncrona). Sincronizamos el primer
+  // documento mientras el usuario no lo haya editado y no exista un valor guardado.
+  const [cuantiaDocumentoPrincipalEditada, setCuantiaDocumentoPrincipalEditada] = useState(false);
+  const cuantiaDocumentoGuardada = expediente?.documentos_escritura?.[0]?.cuantia;
+  useEffect(() => {
+    if (cuantiaDocumentoPrincipalEditada || cuantiaFincas === "" || cuantiaFincas === null || cuantiaFincas === undefined) return;
+    if (cuantiaDocumentoGuardada !== "" && cuantiaDocumentoGuardada !== null && cuantiaDocumentoGuardada !== undefined) return;
+    setDocumentosEscritura((actuales) => actuales.map((documento, indice) =>
+      indice === 0 ? { ...documento, cuantia: String(cuantiaFincas) } : documento
+    ));
+  }, [cuantiaFincas, cuantiaDocumentoPrincipalEditada, cuantiaDocumentoGuardada]);
+
   const [documentosCarpeta, setDocumentosCarpeta] = useState([]);
   const [cargandoDocumentosCarpeta, setCargandoDocumentosCarpeta] = useState(false);
   const [repositorioAbierto, setRepositorioAbierto] = useState("");
@@ -934,7 +947,7 @@ export default function EnviarANotarioModal({
                           value={documento.cuantia}
                           disabled={loading}
                           placeholder="Cuantía de este documento (€)"
-                          onChange={(event) => setDocumentosEscritura((actuales) => actuales.map((item) => item.id === documento.id ? { ...item, cuantia: event.target.value } : item))}
+                          onChange={(event) => { if (indice === 0) setCuantiaDocumentoPrincipalEditada(true); setDocumentosEscritura((actuales) => actuales.map((item) => item.id === documento.id ? { ...item, cuantia: event.target.value } : item)); }}
                           className={clasesInput()}
                         />
                         {indice === 0 && (

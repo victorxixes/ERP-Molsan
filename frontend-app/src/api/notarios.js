@@ -25,19 +25,19 @@ export async function listarNotarios(filtros = {}) {
 
     if (!primeraRespuesta) primeraRespuesta = respuesta;
 
-    const payload = respuesta?.data;
+    const respuestaData = respuesta?.data;
+    const payload = respuestaData?.data ?? respuestaData;
     const items = Array.isArray(payload)
       ? payload
-      : Array.isArray(payload?.items)
-        ? payload.items
-        : [];
+      : [payload?.items, payload?.notarias, payload?.results, payload?.resultados]
+          .find(Array.isArray) || [];
 
     todos.push(...items);
 
     if (Array.isArray(payload)) {
       totalEsperado = todos.length;
     } else {
-      const total = Number(payload?.total);
+      const total = Number(payload?.total ?? payload?.count ?? payload?.total_items);
       totalEsperado = Number.isFinite(total) && total >= 0
         ? total
         : todos.length;
