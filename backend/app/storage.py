@@ -102,7 +102,7 @@ REQUIRE_PERSISTENT_STORAGE = _env_bool("MOLSAN_REQUIRE_PERSISTENT_STORAGE", Fals
 
 if REQUIRE_PERSISTENT_STORAGE:
     _validate_persistent_root(STORAGE_ROOT)
-elif (os.getenv("RENDER_SERVICE_ID") or os.getenv("RENDER")) and (
+elif (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() != "supabase" and (os.getenv("RENDER_SERVICE_ID") or os.getenv("RENDER")) and (
     not _inside(Path("/var/data").resolve(), STORAGE_ROOT)
     or not os.path.ismount(str(Path("/var/data").resolve()))
 ):
