@@ -1,11 +1,7 @@
+import { API_BASE } from "../../api/config";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
 import "../../css/CtnListadoPage.css";
-
-const API_BASE = (
-  import.meta.env.VITE_API_URL ||
-  "https://agenda-intranet-b.onrender.com/api"
-).replace(/\/$/, "");
 
 const PAGE_SIZE = 15;
 
