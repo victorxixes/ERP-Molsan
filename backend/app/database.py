@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine
+from sqlalchemy.engine import make_url
 from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 
@@ -19,20 +20,30 @@ if not DATABASE_URL:
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = "postgresql://" + DATABASE_URL[len("postgres://"):]
 
-# PostgreSQL usa un pool ampliado para absorber consultas concurrentes.
-# SQLite (usado en pruebas/CI) no admite estos argumentos de pool en su
-# configuración; se configura por separado.
+# Supabase Free dispone de un presupuesto de conexiones más ajustado.
+# Render es un backend persistente en IPv4: se conectará mediante Supavisor
+# en modo sesión (puerto 5432), no mediante el pooler transaccional.
+# Los valores siguen siendo configurables y el pool histórico de Render
+# PostgreSQL se conserva sin cambios.
 if DATABASE_URL.startswith("sqlite"):
     engine = create_engine(
         DATABASE_URL,
         connect_args={"check_same_thread": False},
     )
 else:
+    parsed_url = make_url(DATABASE_URL)
+    database_host = (parsed_url.host or "").lower()
+    is_supabase = (
+        database_host.endswith(".supabase.co")
+        or database_host.endswith(".pooler.supabase.com")
+    )
+    default_pool_size = "3" if is_supabase else "10"
+    default_max_overflow = "2" if is_supabase else "20"
     engine = create_engine(
         DATABASE_URL,
         pool_pre_ping=True,
-        pool_size=int(os.getenv("DB_POOL_SIZE", "10")),
-        max_overflow=int(os.getenv("DB_MAX_OVERFLOW", "20")),
+        pool_size=int(os.getenv("DB_POOL_SIZE", default_pool_size)),
+        max_overflow=int(os.getenv("DB_MAX_OVERFLOW", default_max_overflow)),
         pool_timeout=int(os.getenv("DB_POOL_TIMEOUT", "15")),
         pool_recycle=int(os.getenv("DB_POOL_RECYCLE", "1800")),
     )
