@@ -49,10 +49,8 @@ jobs:
       JWT_SECRET: ci-only-secret-never-use-in-production-32-characters
       MOLSAN_STORAGE_ROOT: /tmp/molsan-schema-ci
     steps:
-      - name: Checkout integration branch
+      - name: Checkout tested commit (PR merge ref or pushed branch SHA)
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref_name }}
       - name: Configure Python
         uses: actions/setup-python@v5
         with:
