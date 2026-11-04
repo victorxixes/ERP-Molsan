@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
+import { API_BASE as API_BASE_CONFIG } from "../../api/config";
 
 /**
  * ============================================================
@@ -47,11 +48,7 @@ import "../../css/CatalogosMaestrosPremium.css";
    El frontend y el backend están en servicios Render distintos.
 ============================================================ */
 
-const API_ORIGEN =
-  "https://agenda-intranet-b.onrender.com";
-
-const API_BASE =
-  `${API_ORIGEN}/api/municipios`;
+const API_BASE = `${API_BASE_CONFIG}/municipios`;
 
 const API_IMPORTAR_EXCEL =
   `${API_BASE}/importar-excel`;
