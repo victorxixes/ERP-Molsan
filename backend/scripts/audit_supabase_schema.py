@@ -78,6 +78,7 @@ def scan_raw_ddl(orm_table_names):
     statements_by_table = {}
     indexes_by_name = {}
     dynamic = []
+    manual_review_ddl = []
     duplicates = []
 
     def extract_statements(sql, keyword):
@@ -135,6 +136,16 @@ def scan_raw_ddl(orm_table_names):
             elif normalize(previous["sql"]) != normalize(statement):
                 duplicates.append((index_name, source, "different CREATE INDEX definition; manual reconciliation required"))
 
+        # DDL auxiliar que no se puede omitir ni aplicar automáticamente:
+        # ALTER TABLE, secuencias, tipos, triggers, funciones y DROP requieren
+        # revisión/transformación explícita antes de formar una migración.
+        manual_pattern = (
+            r"\\b(?:ALTER\\s+TABLE|CREATE\\s+(?:SEQUENCE|TYPE|TRIGGER|FUNCTION)|"
+            r"DROP\\s+(?:TABLE|INDEX|TYPE|TRIGGER|FUNCTION))\\b"
+        )
+        for statement in extract_statements(sql, manual_pattern):
+            manual_review_ddl.append({"source": source, "sql": statement})
+
     for source_path in sorted(source_root.rglob("*.py")):
         try:
             source_text = source_path.read_text(encoding="utf-8")
@@ -143,7 +154,7 @@ def scan_raw_ddl(orm_table_names):
             continue
         for node in ast.walk(tree):
             if isinstance(node, ast.Constant) and isinstance(node.value, str):
-                if re.search(r"\bCREATE\s+(?:TABLE|(?:UNIQUE\s+)?INDEX)\b", node.value, re.IGNORECASE):
+                if re.search(r"\b(?:CREATE\s+(?:TABLE|(?:UNIQUE\s+)?INDEX|SEQUENCE|TYPE|TRIGGER|FUNCTION)|ALTER\s+TABLE|DROP\s+(?:TABLE|INDEX|TYPE|TRIGGER|FUNCTION))\b", node.value, re.IGNORECASE):
                     register_sql(node.value, f"{source_path}:{node.lineno}")
             elif isinstance(node, ast.JoinedStr):
                 pieces = []
@@ -153,7 +164,7 @@ def scan_raw_ddl(orm_table_names):
                     else:
                         pieces.append("{dynamic}")
                 template = "".join(pieces)
-                if re.search(r"\bCREATE\s+(?:TABLE|(?:UNIQUE\s+)?INDEX)\b", template, re.IGNORECASE):
+                if re.search(r"\b(?:CREATE\s+(?:TABLE|(?:UNIQUE\s+)?INDEX|SEQUENCE|TYPE|TRIGGER|FUNCTION)|ALTER\s+TABLE|DROP\s+(?:TABLE|INDEX|TYPE|TRIGGER|FUNCTION))\b", template, re.IGNORECASE):
                     dynamic.append(f"{source_path}:{node.lineno}: {template[:240]}")
 
     for source_path in sorted(source_root.rglob("*.sql")):
@@ -208,7 +219,9 @@ def scan_raw_ddl(orm_table_names):
     for name, entry in sorted(raw_indexes.items()):
         sql_parts.append(f"-- Source: {entry['source']}\n{entry['sql']}")
 
-    return sql_parts, inventory, dynamic, duplicates, raw_indexes
+    for entry in manual_review_ddl:
+        sql_parts.append(f"-- MANUAL REVIEW REQUIRED; Source: {entry['source']}\\n{entry['sql']}")
+    return sql_parts, inventory, dynamic, duplicates, raw_indexes, manual_review_ddl
 
 
 
@@ -263,7 +276,7 @@ def main():
     )
 
     orm_table_names = {table.name.lower() for table in tables.values()}
-    raw_sql, raw_inventory, dynamic_ddl, duplicate_ddl, raw_indexes = scan_raw_ddl(orm_table_names)
+    raw_sql, raw_inventory, dynamic_ddl, duplicate_ddl, raw_indexes, manual_review_ddl = scan_raw_ddl(orm_table_names)
     (output / "raw-ddl.sql").write_text(
         "-- Static auxiliary CREATE TABLE statements found in backend source.\n"
         "-- Review dynamic/duplicate definitions in raw-ddl-inventory.txt before applying.\n\n"
@@ -286,6 +299,7 @@ def main():
     print(f"ORM tables registered: {len(tables)}")
     print(f"Auxiliary static SQL tables discovered: {len(raw_inventory)}")
     print(f"Auxiliary static SQL indexes discovered: {len(raw_indexes)}")
+    print(f"Static ALTER/sequence/type/trigger/function/drop statements requiring manual review: {len(manual_review_ddl)}")
     print(f"Dynamic DDL statements requiring manual review: {len(dynamic_ddl)}")
     print(f"Duplicate/ORM DDL definitions: {len(duplicate_ddl)}")
     print(f"External FK targets requiring manual migration work: {len(missing)}")
