@@ -18,7 +18,7 @@ from backend.app.database import Base  # noqa: E402
 target_metadata = Base.metadata
 
 
-def compare_server_default(context, inspected_column, metadata_column, rendered_metadata_default, rendered_inspected_default):
+def compare_server_default(context, connection, inspected_column, metadata_column, rendered_metadata_default, rendered_inspected_default):
     # PostgreSQL json no implementa igualdad; el comparador automático de Alembic
     # intenta ejecutar SELECT '{}'::json = '{}' y falla. Los defaults JSON se
     # mantienen en las revisiones y se revisan explícitamente.
