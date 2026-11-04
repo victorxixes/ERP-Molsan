@@ -70,20 +70,28 @@ def ordered_tables(tables):
 
 
 def scan_raw_ddl(orm_table_names):
-    """Extrae CREATE TABLE estáticos del backend y marca DDL dinámico."""
+    """Extrae CREATE TABLE/INDEX estáticos y marca DDL dinámico."""
     source_root = Path("backend/app")
     statements_by_table = {}
+    indexes_by_name = {}
     dynamic = []
     duplicates = []
 
-    def register_sql(sql, source):
-        for match in re.finditer(r"\bCREATE\s+TABLE\b", sql, re.IGNORECASE):
+    def extract_statements(sql, keyword):
+        pattern = re.compile(keyword, re.IGNORECASE)
+        for match in pattern.finditer(sql):
             end = sql.find(";", match.start())
             if end < 0:
                 end = len(sql)
             statement = sql[match.start():end].strip()
+            if statement and not statement.endswith(";"):
+                statement += ";"
+            yield statement
+
+    def register_sql(sql, source):
+        for statement in extract_statements(sql, r"\\bCREATE\\s+TABLE\\b"):
             table_match = re.search(
-                r"\bCREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:public\.)?([A-Za-z_][A-Za-z0-9_]*)",
+                r"\\bCREATE\\s+TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?(?:public\\.)?([A-Za-z_][A-Za-z0-9_]*)",
                 statement,
                 re.IGNORECASE,
             )
@@ -97,10 +105,27 @@ def scan_raw_ddl(orm_table_names):
             previous = statements_by_table.get(table_name)
             if previous is None:
                 statements_by_table[table_name] = entry
-            elif re.sub(r"\s+", " ", previous["sql"]).strip().lower() != re.sub(r"\s+", " ", statement).strip().lower():
+            elif re.sub(r"\\s+", " ", previous["sql"]).strip().lower() != re.sub(r"\\s+", " ", statement).strip().lower():
                 duplicates.append((table_name, source, "different CREATE TABLE definition; manual reconciliation required"))
             else:
                 duplicates.append((table_name, source, "duplicate identical definition"))
+
+        for statement in extract_statements(sql, r"\\bCREATE\\s+(?:UNIQUE\\s+)?INDEX\\b"):
+            index_match = re.search(
+                r"\\bCREATE\\s+(?:UNIQUE\\s+)?INDEX\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?([A-Za-z_][A-Za-z0-9_]*)\\s+ON\\s+(?:public\\.)?([A-Za-z_][A-Za-z0-9_]*)",
+                statement,
+                re.IGNORECASE,
+            )
+            if not index_match:
+                continue
+            index_name = index_match.group(1).lower()
+            table_name = index_match.group(2).lower()
+            entry = {"source": source, "sql": statement, "table": table_name}
+            previous = indexes_by_name.get(index_name)
+            if previous is None:
+                indexes_by_name[index_name] = entry
+            elif re.sub(r"\\s+", " ", previous["sql"]).strip().lower() != re.sub(r"\\s+", " ", statement).strip().lower():
+                duplicates.append((index_name, source, "different CREATE INDEX definition; manual reconciliation required"))
 
     for source_path in sorted(source_root.rglob("*.py")):
         try:
@@ -110,7 +135,7 @@ def scan_raw_ddl(orm_table_names):
             continue
         for node in ast.walk(tree):
             if isinstance(node, ast.Constant) and isinstance(node.value, str):
-                if re.search(r"\bCREATE\s+TABLE\b", node.value, re.IGNORECASE):
+                if re.search(r"\\bCREATE\\s+(?:TABLE|(?:UNIQUE\\s+)?INDEX)\\b", node.value, re.IGNORECASE):
                     register_sql(node.value, f"{source_path}:{node.lineno}")
             elif isinstance(node, ast.JoinedStr):
                 pieces = []
@@ -120,7 +145,7 @@ def scan_raw_ddl(orm_table_names):
                     else:
                         pieces.append("{dynamic}")
                 template = "".join(pieces)
-                if re.search(r"\bCREATE\s+TABLE\b", template, re.IGNORECASE):
+                if re.search(r"\\bCREATE\\s+(?:TABLE|(?:UNIQUE\\s+)?INDEX)\\b", template, re.IGNORECASE):
                     dynamic.append(f"{source_path}:{node.lineno}: {template[:240]}")
 
     for source_path in sorted(source_root.rglob("*.sql")):
@@ -133,7 +158,7 @@ def scan_raw_ddl(orm_table_names):
     dependencies = {}
     for name, entry in statements_by_table.items():
         refs = re.findall(
-            r"\bREFERENCES\s+(?:public\.)?([A-Za-z_][A-Za-z0-9_]*)",
+            r"\\bREFERENCES\\s+(?:public\\.)?([A-Za-z_][A-Za-z0-9_]*)",
             entry["sql"],
             re.IGNORECASE,
         )
@@ -161,14 +186,22 @@ def scan_raw_ddl(orm_table_names):
     for name in ordered:
         entry = statements_by_table[name]
         statement = entry["sql"]
-        idempotent = bool(re.search(r"CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS", statement, re.IGNORECASE))
+        idempotent = bool(re.search(r"CREATE\\s+TABLE\\s+IF\\s+NOT\\s+EXISTS", statement, re.IGNORECASE))
         refs = sorted(dependencies.get(name, ()))
         inventory.append(
-            f"{name}\tsource={entry['source']}\tidempotent={idempotent}\tfk_dependencies={','.join(refs)}"
+            f"{name}\\tsource={entry['source']}\\tidempotent={idempotent}\\tfk_dependencies={','.join(refs)}"
         )
-        sql_parts.append(f"-- Source: {entry['source']}\n{statement}")
+        sql_parts.append(f"-- Source: {entry['source']}\\n{statement}")
 
-    return sql_parts, inventory, dynamic, duplicates
+    raw_indexes = {
+        name: entry for name, entry in indexes_by_name.items()
+        if entry["table"] in names
+    }
+    for name, entry in sorted(raw_indexes.items()):
+        sql_parts.append(f"-- Source: {entry['source']}\\n{entry['sql']}")
+
+    return sql_parts, inventory, dynamic, duplicates, raw_indexes
+
 
 
 def main():
@@ -222,7 +255,7 @@ def main():
     )
 
     orm_table_names = {table.name.lower() for table in tables.values()}
-    raw_sql, raw_inventory, dynamic_ddl, duplicate_ddl = scan_raw_ddl(orm_table_names)
+    raw_sql, raw_inventory, dynamic_ddl, duplicate_ddl, raw_indexes = scan_raw_ddl(orm_table_names)
     (output / "raw-ddl.sql").write_text(
         "-- Static auxiliary CREATE TABLE statements found in backend source.\n"
         "-- Review dynamic/duplicate definitions in raw-ddl-inventory.txt before applying.\n\n"
@@ -232,6 +265,7 @@ def main():
     )
     (output / "raw-ddl-inventory.txt").write_text(
         "RAW_STATIC_TABLE_COUNT=" + str(len(raw_inventory)) + "\n"
+        + "RAW_STATIC_INDEX_COUNT=" + str(len(raw_indexes)) + "\n"
         + "\n".join(raw_inventory)
         + "\n\nDYNAMIC_DDL_REQUIRES_MANUAL_REVIEW\n"
         + "\n".join(dynamic_ddl)
@@ -243,6 +277,7 @@ def main():
 
     print(f"ORM tables registered: {len(tables)}")
     print(f"Auxiliary static SQL tables discovered: {len(raw_inventory)}")
+    print(f"Auxiliary static SQL indexes discovered: {len(raw_indexes)}")
     print(f"Dynamic DDL statements requiring manual review: {len(dynamic_ddl)}")
     print(f"Duplicate/ORM DDL definitions: {len(duplicate_ddl)}")
     print(f"External FK targets requiring manual migration work: {len(missing)}")
