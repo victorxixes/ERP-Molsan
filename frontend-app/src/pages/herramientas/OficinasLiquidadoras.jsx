@@ -30,7 +30,7 @@ import "../../css/CatalogosMaestrosPremium.css";
 // CONFIGURACIÓN API
 // ============================================================
 
-const API_BASE = `${API_ROOT}/api/oficinas-liquidadoras`;
+const API_BASE = `${API_ROOT}/oficinas-liquidadoras`;
 
 const API_IMPORTAR_EXCEL =
   `${API_BASE}/importar-excel`;
