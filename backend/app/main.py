@@ -38,9 +38,9 @@ if origins_configurados:
         if origen.strip()
     ]
 else:
+    # Fallo cerrado: sin configuración explícita solo se permiten orígenes locales.
+    # Preview y Producción deben declarar sus dominios en CORS_ORIGINS.
     origins = [
-        "https://agenda-intranet-f.onrender.com",
-        "https://agenda-intranet-b.onrender.com",
         "http://localhost:5173",
         "http://localhost:3000",
     ]
