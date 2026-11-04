@@ -12,6 +12,8 @@ from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 from backend.app.registros_propiedad.models import RegistroPropiedad
 
 
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
+
 router = APIRouter(
     prefix="/expedientes/{id_expediente}/fincas",
     tags=["Expedientes - Fincas y registros"],
@@ -20,6 +22,9 @@ router = APIRouter(
 
 @router.on_event("startup")
 def asegurar_columna_registro_propiedad_id():
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: asegurar_columna_registro_propiedad_id; ejecutar migración versionada.", flush=True)
+        return
     """Migración aditiva e idempotente; conserva el texto de registros históricos."""
     with engine.begin() as conexion:
         conexion.execute(text("""
