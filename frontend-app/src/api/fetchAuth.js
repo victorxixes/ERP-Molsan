@@ -4,25 +4,19 @@
  * pantallas heredadas que aún usan fetch() directamente.
  * Nunca envía el token a dominios distintos del backend configurado.
  */
+import { API_BASE } from "./config";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://agenda-intranet-b.onrender.com";
+const API_BASE_URL = API_BASE;
 
-if (
-  typeof window !== "undefined" &&
-  typeof window.fetch === "function" &&
-  !window.__molsanFetchAuthInstalled
-) {
+if (typeof window !== "undefined" && typeof window.fetch === "function" && !window.__molsanFetchAuthInstalled) {
   let apiOrigin = null;
   try {
     apiOrigin = new URL(API_BASE_URL, window.location.href).origin;
-  } catch (error) {
+  } catch {
     console.error("[MOLSAN FETCH AUTH] VITE_API_URL no es válida.");
   }
 
   const fetchOriginal = window.fetch.bind(window);
-
   window.fetch = (input, init = undefined) => {
     let target = null;
     try {
@@ -34,12 +28,10 @@ if (
             : null;
       if (rawUrl) target = new URL(rawUrl, window.location.href);
     } catch {
-      // Si no podemos interpretar la URL, dejamos que fetch original responda.
+      // Dejamos que fetch original gestione URLs no interpretables.
     }
 
-    if (!apiOrigin || !target || target.origin !== apiOrigin) {
-      return fetchOriginal(input, init);
-    }
+    if (!apiOrigin || !target || target.origin !== apiOrigin) return fetchOriginal(input, init);
 
     let token = null;
     try {
@@ -53,20 +45,10 @@ if (
       typeof Request !== "undefined" && input instanceof Request
         ? new Headers(input.headers)
         : new Headers();
+    new Headers(init?.headers || {}).forEach((value, key) => requestHeaders.set(key, value));
 
-    new Headers(init?.headers || {}).forEach((value, key) => {
-      requestHeaders.set(key, value);
-    });
-
-    if (!requestHeaders.has("Authorization")) {
-      requestHeaders.set("Authorization", `Bearer ${token}`);
-    }
-
-    return fetchOriginal(input, {
-      ...(init || {}),
-      headers: requestHeaders,
-    });
+    if (!requestHeaders.has("Authorization")) requestHeaders.set("Authorization", `Bearer ${token}`);
+    return fetchOriginal(input, { ...(init || {}), headers: requestHeaders });
   };
-
   window.__molsanFetchAuthInstalled = true;
 }
