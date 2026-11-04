@@ -55,4 +55,4 @@ jobs:
           MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS: "false"
         run: |
           python -c "import asyncio; import backend.app.main; from backend.app.encargagest.router import crear_tablas_encargagest; asyncio.run(crear_tablas_encargagest()); print('FastAPI import and safe schema-migration skip OK')"
-          python -m unittest discover -s backend/tests -v
+          python -m pytest -q backend/tests
