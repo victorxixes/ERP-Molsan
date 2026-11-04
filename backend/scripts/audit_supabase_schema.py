@@ -23,58 +23,60 @@ from backend.app.database import Base
 
 
 def target_table_name(fk) -> str:
-    return fk.target_fullname.rsplit(".", 1)[0]
+    # Acepta tanto "tabla.columna" como "public.tabla.columna".
+    return fk.target_fullname.split(".")[-2] if "." in fk.target_fullname else fk.target_fullname
 
 
 def ordered_tables(tables):
-    names = set(tables)
+    key_by_table_name = {table.name: key for key, table in tables.items()}
     dependencies = {}
     missing = []
-    for name, table in tables.items():
-        dependencies[name] = set()
+    for key, table in tables.items():
+        dependencies[key] = set()
         for fk in table.foreign_keys:
-            target = target_table_name(fk)
-            if target in names:
-                dependencies[name].add(target)
+            target_name = target_table_name(fk)
+            target_key = key_by_table_name.get(target_name)
+            if target_key is not None:
+                dependencies[key].add(target_key)
             else:
-                missing.append((name, fk.parent.name, fk.target_fullname))
+                missing.append((key, fk.parent.name, fk.target_fullname))
 
     ordered = []
     temporary = set()
     permanent = set()
 
-    def visit(name):
-        if name in permanent:
+    def visit(key):
+        if key in permanent:
             return
-        if name in temporary:
+        if key in temporary:
             return
-        temporary.add(name)
-        for dependency in sorted(dependencies[name]):
+        temporary.add(key)
+        for dependency in sorted(dependencies[key]):
             visit(dependency)
-        temporary.remove(name)
-        permanent.add(name)
-        ordered.append(name)
+        temporary.remove(key)
+        permanent.add(key)
+        ordered.append(key)
 
-    for name in sorted(names):
-        visit(name)
-    return ordered, missing
+    for key in sorted(tables):
+        visit(key)
+    return ordered, missing, key_by_table_name
 
 
 def main():
     tables = dict(Base.metadata.tables)
-    ordered, missing = ordered_tables(tables)
+    ordered, missing, key_by_table_name = ordered_tables(tables)
     output = Path(os.getenv("MOLSAN_SCHEMA_AUDIT_OUTPUT", "schema-audit"))
     output.mkdir(parents=True, exist_ok=True)
 
     inventory = []
-    for name in ordered:
-        table = tables[name]
+    for key in ordered:
+        table = tables[key]
         fks = sorted(
             f"{fk.parent.name} -> {fk.target_fullname}"
             for fk in table.foreign_keys
         )
         inventory.append(
-            f"{name}\tcolumns={len(table.columns)}\tindexes={len(table.indexes)}\tfks={len(fks)}"
+            f"{table.fullname}\tcolumns={len(table.columns)}\tindexes={len(table.indexes)}\tfks={len(fks)}"
         )
 
     (output / "orm-tables.txt").write_text(
@@ -89,12 +91,12 @@ def main():
     statements = []
     dialect_engine = create_mock_engine("postgresql://", lambda *args, **kwargs: None)
     dialect = dialect_engine.dialect
-    for name in ordered:
-        table = tables[name]
+    for key in ordered:
+        table = tables[key]
         valid_constraints = []
         for constraint in table.foreign_key_constraints:
             targets = {target_table_name(element) for element in constraint.elements}
-            if targets.issubset(tables):
+            if targets.issubset(key_by_table_name):
                 valid_constraints.append(constraint)
         statements.append(
             str(CreateTable(table, include_foreign_key_constraints=valid_constraints).compile(dialect=dialect)).rstrip() + ";"
