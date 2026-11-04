@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.intranet.documentos.models import Documento
 from backend.app.storage import DOCUMENTOS_INTRANET_DIR
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, is_supabase_object, parse_object_reference
 
 UPLOAD_DIR = DOCUMENTOS_INTRANET_DIR
 MAX_FILE_SIZE = 20 * 1024 * 1024
@@ -16,6 +17,29 @@ ALLOWED_EXTENSIONS = {
     ".txt", ".csv", ".png", ".jpg", ".jpeg",
 }
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def _usa_supabase_storage() -> bool:
+    import os
+    return (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase"
+
+
+def leer_fichero_documento(reference: str) -> bytes:
+    if is_supabase_object(reference):
+        bucket, key = parse_object_reference(reference)
+        storage = SupabasePrivateStorage()
+        if bucket != storage.config.bucket:
+            raise HTTPException(status_code=404, detail="El archivo no está disponible")
+        try:
+            return storage.download(key)
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail="El archivo no está disponible") from exc
+        except SupabaseStorageError as exc:
+            raise HTTPException(status_code=503, detail="El almacenamiento documental no está disponible") from exc
+    ruta = Path(reference).resolve()
+    if ruta.parent != UPLOAD_DIR.resolve() or not ruta.is_file():
+        raise HTTPException(status_code=404, detail="El archivo del documento no está disponible")
+    return ruta.read_bytes()
 
 
 def listar_documentos(db: Session, search: str | None = None):
@@ -57,16 +81,22 @@ def crear_documento(db: Session, titulo: str, concepto: str, archivo, usuario_id
     ruta = (UPLOAD_DIR / nombre_guardado).resolve()
     if ruta.parent != UPLOAD_DIR.resolve():
         raise HTTPException(status_code=400, detail="Ruta de archivo no válida")
-    temporal = ruta.with_name(f".{ruta.name}.part")
+    referencia = None
 
     try:
-        UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-        temporal.write_bytes(contenido)
-        temporal.replace(ruta)
+        if _usa_supabase_storage():
+            storage = SupabasePrivateStorage()
+            referencia = storage.upload(f"intranet/{nombre_guardado}", contenido, "application/octet-stream")
+        else:
+            temporal = ruta.with_name(f".{ruta.name}.part")
+            UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+            temporal.write_bytes(contenido)
+            temporal.replace(ruta)
+            referencia = str(ruta)
         doc = Documento(
             titulo=titulo[:300],
             concepto=concepto[:2000] or None,
-            fichero=str(ruta),
+            fichero=referencia,
             fecha_publicacion=datetime.utcnow(),
             usuario_id=usuario_id,
         )
@@ -76,8 +106,18 @@ def crear_documento(db: Session, titulo: str, concepto: str, archivo, usuario_id
         return doc
     except Exception:
         db.rollback()
-        ruta.unlink(missing_ok=True)
-        temporal.unlink(missing_ok=True)
+        try:
+            if referencia and is_supabase_object(referencia):
+                bucket, key = parse_object_reference(referencia)
+                storage = SupabasePrivateStorage()
+                if bucket == storage.config.bucket:
+                    storage.delete(key)
+            else:
+                ruta.unlink(missing_ok=True)
+                if "temporal" in locals():
+                    temporal.unlink(missing_ok=True)
+        except Exception:
+            pass
         raise
     finally:
         try:
@@ -101,12 +141,19 @@ def actualizar_documento(db: Session, documento_id: int, titulo: str, concepto: 
 
 def eliminar_documento(db: Session, documento_id: int):
     doc = obtener_documento(db, documento_id)
-    ruta = Path(doc.fichero).resolve() if doc.fichero else None
+    referencia = doc.fichero
     db.delete(doc)
     db.commit()
     try:
-        if ruta and ruta.parent == UPLOAD_DIR.resolve():
-            ruta.unlink(missing_ok=True)
-    except OSError as exc:
+        if is_supabase_object(referencia):
+            bucket, key = parse_object_reference(referencia)
+            storage = SupabasePrivateStorage()
+            if bucket == storage.config.bucket:
+                storage.delete(key)
+        elif referencia:
+            ruta = Path(referencia).resolve()
+            if ruta.parent == UPLOAD_DIR.resolve():
+                ruta.unlink(missing_ok=True)
+    except Exception as exc:
         print(f"[DOCUMENTOS INTRANET] No se pudo eliminar el fichero físico: {exc}", flush=True)
     return doc
