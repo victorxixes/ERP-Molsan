@@ -89,7 +89,7 @@ El inventario detecta definiciones duplicadas o ya presentes en ORM para:
 - provisiones_email_envios
 - expediente_defectos_historial
 
-Las 16 entradas detectadas son seguras: 4 corresponden a tablas ya definidas en ORM y 12 son definiciones idénticas repetidas en varios módulos. No se detectan definiciones conflictivas. El inventario conserva una única definición canónica por tabla auxiliar. Para expediente_gestor_historial, la definición canónica debe mantener gestor_id y gestor_anterior_id con sus referencias a empleados, actividad VARCHAR(120) NOT NULL y motivo VARCHAR(80).
+Las 16 entradas detectadas son seguras: 6 corresponden a tablas ya definidas en ORM y 10 son definiciones idénticas repetidas en varios módulos. No se detectan definiciones conflictivas. El inventario conserva una única definición canónica por tabla auxiliar. Para expediente_gestor_historial, la definición canónica debe mantener gestor_id y gestor_anterior_id con sus referencias a empleados, actividad VARCHAR(120) NOT NULL y motivo VARCHAR(80).
 
 Las 11 columnas auxiliares detectadas están incluidas en las definiciones finales: expediente_gasto_pagos (anulación), expediente_documentacion_previa_absis (avance y registro local), expediente_visibilidad_config (empleado_id/ambito) y mensajeria_solicitudes (teléfono de recogida/entrega). Se han añadido estos dos últimos campos a la definición canónica de mensajería.
 
