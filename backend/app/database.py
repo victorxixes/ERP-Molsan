@@ -56,10 +56,10 @@ else:
 # Las migraciones se ejecutarán desde un proceso controlado con la variable
 # MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS=true, nunca desde el servicio web.
 _SCHEMA_DDL = re.compile(
-    r"^\\s*(?:CREATE|ALTER|DROP|TRUNCATE)\\s+"
-    r"(?:TEMPORARY?\\s+)?"
-    r"(?:TABLE|INDEX|SEQUENCE|TYPE|SCHEMA|VIEW|MATERIALIZED\\s+VIEW|"
-    r"FUNCTION|TRIGGER|EXTENSION|DOMAIN)\\b",
+    r"^\s*(?:CREATE|ALTER|DROP|TRUNCATE)\s+"
+    r"(?:TEMP(?:ORARY)?\s+)?"
+    r"(?:TABLE|INDEX|SEQUENCE|TYPE|SCHEMA|VIEW|MATERIALIZED\s+VIEW|"
+    r"FUNCTION|TRIGGER|EXTENSION|DOMAIN)\b",
     re.IGNORECASE,
 )
 
