@@ -704,6 +704,14 @@ def migrar_esquema_expedientes_inicio():
         Una transacción de lectura abandonada puede impedir ALTER TABLE durante el despliegue.
         Se limita a sesiones inactivas más de 5 minutos; nunca termina sesiones activas.
         """
+        if _es_url_supabase_preview():
+            # En Supabase no se finalizan sesiones ajenas: pueden pertenecer
+            # a Studio, al pooler o a otros servicios del mismo proyecto.
+            print(
+                "[MIGRACION STARTUP] Supabase Preview: no se terminan sesiones externas.",
+                flush=True,
+            )
+            return
         try:
             with conexion.begin():
                 pids = [
@@ -2739,22 +2747,54 @@ def reparar_vinculos_apoderado_expedientes():
 # ORDEN DE ARRANQUE
 # ============================================================
 
-# Nombre de la base PostgreSQL creada exclusivamente para Glass Luxe Preview.
-# La comprobación se ejecuta ANTES de cualquier bootstrap o escritura de prueba.
-PREVIEW_DATABASE_NAME = "molsan_glass_luxe_preview_db"
+# Destino exclusivo del Preview ERP_Molsan en Supabase.
+# El nombre de la base en Supabase suele ser "postgres"; por eso la
+# identificación segura se hace también con el project ref de la URL.
+PREVIEW_DATABASE_NAME = "postgres"
+PREVIEW_DATABASE_PROJECT_REF = "powiprqarmluanplxpyb"
+PREVIEW_API_HOSTNAME = "molsan-glass-luxe-preview-api.onrender.com"
+
+
+def _es_url_supabase_preview() -> bool:
+    url = engine.url
+    host = (url.host or "").lower()
+    username = (url.username or "").lower()
+    conexion_directa = (
+        host.endswith(".supabase.co")
+        and PREVIEW_DATABASE_PROJECT_REF in host
+    )
+    pooler_sesion = (
+        host.endswith(".pooler.supabase.com")
+        and username.endswith(f".{PREVIEW_DATABASE_PROJECT_REF}")
+    )
+    return conexion_directa or pooler_sesion
 
 
 def _exigir_base_datos_preview():
+    hostname = os.getenv("RENDER_EXTERNAL_HOSTNAME", "").strip().lower()
+    if hostname and hostname != PREVIEW_API_HOSTNAME:
+        raise RuntimeError(
+            "[PREVIEW DB] Bootstrap bloqueado: el servicio Render no es la API Preview autorizada."
+        )
+    if not _es_url_supabase_preview():
+        raise RuntimeError(
+            "[PREVIEW DB] Bootstrap bloqueado: DATABASE_URL no identifica "
+            f"el proyecto Supabase Preview {PREVIEW_DATABASE_PROJECT_REF!r}."
+        )
+
     with engine.connect() as conexion_preview:
         nombre_bd = conexion_preview.execute(
             text("SELECT current_database()")
         ).scalar()
     if nombre_bd != PREVIEW_DATABASE_NAME:
         raise RuntimeError(
-            "[PREVIEW DB] Bootstrap bloqueado: DATABASE_URL no apunta a "
+            "[PREVIEW DB] Bootstrap bloqueado: se esperaba la base "
             f"{PREVIEW_DATABASE_NAME!r} (base detectada: {nombre_bd!r})."
         )
-    print(f"[PREVIEW DB] Conexión confirmada: {nombre_bd}.", flush=True)
+    print(
+        f"[PREVIEW DB] Proyecto Supabase {PREVIEW_DATABASE_PROJECT_REF} confirmado.",
+        flush=True,
+    )
     return nombre_bd
 
 
