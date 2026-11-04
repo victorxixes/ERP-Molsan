@@ -6,17 +6,13 @@ on:
     paths:
       - "backend/**"
       - ".github/workflows/backend-audit.yml"
-  pull_request:
-    paths:
-      - "backend/**"
-      - ".github/workflows/backend-audit.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: backend-audit-${{ github.ref }}
+  group: backend-audit-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
