@@ -9,6 +9,7 @@ from __future__ import annotations
 import os
 import sys
 
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from backend.app.database import SessionLocal
@@ -52,6 +53,21 @@ def main() -> int:
 
     db: Session = SessionLocal()
     try:
+        try:
+            revision_actual = db.execute(text("SELECT version_num FROM alembic_version")).scalar()
+        except Exception:
+            print(
+                "ERROR: no se pudo verificar alembic_version; aplica y valida el esquema antes del bootstrap.",
+                file=sys.stderr,
+            )
+            return 3
+        if revision_actual != "20261104_0004":
+            print(
+                "ERROR: el esquema no está en la revisión 20261104_0004; no se ha creado ningún usuario.",
+                file=sys.stderr,
+            )
+            return 3
+
         total_empleados = db.query(Empleado).count()
         existente = db.query(Empleado).filter(Empleado.usuario == username).first()
         if existente:
