@@ -63,7 +63,7 @@ jobs:
 
 -- Security baseline: ERP tables are accessed only through the authenticated
 -- MOLSAN backend. No direct Data API grants are given to anon/authenticated.
-DO $
+DO $rls$
 DECLARE tabla RECORD;
 BEGIN
     FOR tabla IN
@@ -78,7 +78,7 @@ BEGIN
         );
     END LOOP;
 END
-$;
+$rls$;
 
 REVOKE ALL ON ALL TABLES IN SCHEMA public FROM anon, authenticated;
 REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM anon, authenticated;
