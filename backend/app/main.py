@@ -684,9 +684,9 @@ def _transaccion_inicio_segura(etiqueta):
 @app.on_event("startup")
 @_serializar_inicializacion_startup
 def inicializar_tablas_auxiliares():
-    if not runtime_schema_migrations_enabled():
-        print("[SCHEMA] Migración automática omitida: inicializar_tablas_auxiliares; ejecutar migración versionada.", flush=True)
-        return
+    # Las semillas y comprobaciones idempotentes se mantienen. El listener
+    # central de database.py convierte DDL ya provisionado en no-op y bloquea
+    # cualquier cambio de esquema que no haya pasado por Alembic.
     print(
         "[INICIALIZACION] Comprobando tablas auxiliares...",
         flush=True,
