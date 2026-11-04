@@ -59,11 +59,11 @@ class SupabasePrivateStorageTests(unittest.TestCase):
         self.assertEqual(kwargs["json"], {"prefixes": ["mensajes/a.pdf"]})
 
     def test_exists_returns_true_for_existing_object(self):
-        self.session.head.return_value = Mock(status_code=200)
+        self.session.get.return_value = Mock(status_code=200, close=Mock())
         self.assertTrue(self.storage.exists("mensajes/a.pdf"))
 
     def test_exists_returns_false_for_missing_object(self):
-        self.session.head.return_value = Mock(status_code=404)
+        self.session.get.return_value = Mock(status_code=404, close=Mock())
         self.assertFalse(self.storage.exists("mensajes/missing.pdf"))
 
     def test_object_reference_round_trip(self):
