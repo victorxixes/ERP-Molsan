@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useIntranetStore } from "../store/intranetStore";
+import { getApiOrigin } from "../api/config";
 
 /**
  * WebSocket autenticado de Intranet.
@@ -22,14 +23,14 @@ export const useIntranetWS = () => {
     }
     if (!token) return undefined;
 
-    const configuredWs = String(import.meta.env.VITE_WS_URL || "").replace(/\/+$/, "");
-    const configuredApi = String(
-      import.meta.env.VITE_API_URL || "https://agenda-intranet-b.onrender.com"
-    ).replace(/\/+$/, "");
+    const configuredWs = String(import.meta.env.VITE_WS_URL || "").trim().replace(/\/+$/, "");
+    const configuredApi = getApiOrigin();
     const wsBase = configuredWs || configuredApi.replace(/^http:/i, "ws:").replace(/^https:/i, "wss:");
     if (!wsBase) return undefined;
 
-    const ws = new WebSocket(`${wsBase}/ws/intranet?token=${encodeURIComponent(token)}`);
+    const wsUrl = new URL("/ws/intranet", wsBase);
+    wsUrl.searchParams.set("token", token);
+    const ws = new WebSocket(wsUrl.toString());
     wsRef.current = ws;
 
     ws.onmessage = (event) => {
@@ -45,10 +46,7 @@ export const useIntranetWS = () => {
       if (String(data.tipo).toLowerCase().includes("noticia")) cargarNoticias();
     };
 
-    ws.onerror = () => {
-      console.warn("WS Intranet: conexión no disponible.");
-    };
-
+    ws.onerror = () => console.warn("WS Intranet: conexión no disponible.");
     ws.onclose = () => {
       if (wsRef.current === ws) wsRef.current = null;
     };
