@@ -198,7 +198,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
   useAccessibleDialog({ open: modalNuevo, onClose: () => { if (!guardando) setModalNuevo(false); }, dialogRef: nuevoDialogRef });
   useAccessibleDialog({ open: modalEditar, onClose: () => { if (!guardandoEdicion) setModalEditar(false); }, dialogRef: editarDialogRef });
   useAccessibleDialog({ open: modalIncidencia, onClose: () => { if (!guardandoIncidencia) setModalIncidencia(false); }, dialogRef: incidenciaDialogRef });
-  useAccessibleDialog({ open: perfilAbierto && modo === "externo", onClose: () => setPerfilAbierto(false), dialogRef: perfilDialogRef });
+  useAccessibleDialog({ open: perfilAbierto && modo === "externo", onClose: () => { if (!sesion?.requiere_cambio_password) setPerfilAbierto(false); }, dialogRef: perfilDialogRef });
   useAccessibleDialog({ open: modalAccesos, onClose: () => setModalAccesos(false), dialogRef: accesosDialogRef });
 
   useEffect(() => {
@@ -1336,7 +1336,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
 
       {modalEditar && detalle && editForm && (
         <div className="eg-modal-overlay eg-modal-overlay--edit fixed inset-0 z-[70] grid place-items-center overflow-y-auto bg-slate-950/65 p-3 backdrop-blur-sm sm:p-6">
-          <form onSubmit={guardarEdicion} className="eg-modal-form eg-modal-form--edit my-auto max-h-[94vh] w-full max-w-6xl overflow-y-auto rounded-3xl border border-white/70 bg-white shadow-2xl">
+          <form ref={editarDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Editar encargo" onSubmit={guardarEdicion} className="eg-modal-form eg-modal-form--edit my-auto max-h-[94vh] w-full max-w-6xl overflow-y-auto rounded-3xl border border-white/70 bg-white shadow-2xl">
             <datalist id="eg-catalogo-municipios-registro-edicion">
               {catalogoMunicipiosRegistro.map((item) => <option key={item.id} value={item.municipio}>{item.provincia}</option>)}
             </datalist>
@@ -1391,7 +1391,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
 
       {modalIncidencia && detalle && (
         <div className="eg-modal-overlay eg-modal-overlay--incidencia fixed inset-0 z-[60] grid place-items-center overflow-y-auto bg-slate-950/60 p-3 backdrop-blur-sm sm:p-6">
-          <form onSubmit={registrarIncidencia} className="eg-modal-form eg-modal-form--incidencia my-auto w-full max-w-xl overflow-hidden rounded-3xl border border-rose-100 bg-white shadow-2xl">
+          <form ref={incidenciaDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Registrar incidencia" onSubmit={registrarIncidencia} className="eg-modal-form eg-modal-form--incidencia my-auto w-full max-w-xl overflow-hidden rounded-3xl border border-rose-100 bg-white shadow-2xl">
             <div className="eg-modal-header eg-modal-header--warning border-b border-rose-100 bg-rose-50 px-5 py-4 sm:px-7">
               <p className="text-[9px] font-extrabold tracking-[0.18em] text-rose-700">ENCARGAGEST · GESTIÓN DE INCIDENCIAS</p>
               <h2 className="mt-1 text-xl font-black text-slate-900">Indicar motivo de la incidencia</h2>
@@ -1413,7 +1413,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
 
       {perfilAbierto && modo === "externo" && (
         <div className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-slate-950/60 p-3 backdrop-blur-sm sm:p-4 lg:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget && !sesion?.requiere_cambio_password) setPerfilAbierto(false); }}>
-          <section role="dialog" aria-modal="true" aria-labelledby="eg-perfil-titulo" className="eg-modal-perfil my-0 w-full max-w-[1180px] min-w-0 max-h-[calc(100vh-2rem)] overflow-y-auto rounded-3xl border border-white/70 bg-white shadow-2xl">
+          <section ref={perfilDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="eg-perfil-titulo" className="eg-modal-perfil my-0 w-full max-w-[1180px] min-w-0 max-h-[calc(100vh-2rem)] overflow-y-auto rounded-3xl border border-white/70 bg-white shadow-2xl">
             <header className="eg-perfil-cabecera flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50 px-5 py-4 sm:px-7">
               <div><p className="text-[9px] font-extrabold tracking-[0.18em] text-[var(--molsan-primary)]">ENCARGAGEST · FICHA CTN</p><h2 id="eg-perfil-titulo" className="mt-1 text-xl font-black text-slate-900">Ficha del notario</h2><p className="mt-1 text-xs text-slate-500">Datos de la notaría registrados en el catálogo CTN.</p></div>
               <button type="button" onClick={() => setPerfilAbierto(false)} disabled={Boolean(sesion?.requiere_cambio_password)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500 disabled:cursor-not-allowed disabled:opacity-30" aria-label="Cerrar ventana"><MolsanIcon name="x" size={20} tone="ocean" /></button>
@@ -1456,7 +1456,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
 
       {modalAccesos && (
         <div className="eg-modal-overlay eg-modal-overlay--accesos fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-slate-950/50 p-3 backdrop-blur-sm sm:p-6">
-          <form onSubmit={guardarAcceso} className="eg-modal-form eg-modal-form--accesos my-auto w-full max-w-2xl overflow-hidden rounded-3xl border border-white/70 bg-white shadow-2xl">
+          <form ref={accesosDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Configurar accesos de notarías externas" onSubmit={guardarAcceso} className="eg-modal-form eg-modal-form--accesos my-auto w-full max-w-2xl overflow-hidden rounded-3xl border border-white/70 bg-white shadow-2xl">
             <div className="eg-modal-header flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4 sm:px-7">
               <div><p className="text-[9px] font-extrabold tracking-[0.18em] text-[var(--molsan-primary)]">ENCARGAGEST · CONTROL DE ACCESO</p><h2 className="mt-1 text-xl font-black text-slate-900">Accesos de notarías externas</h2><p className="mt-1 text-xs leading-5 text-slate-500">Las cuentas son independientes de NotarGest. El usuario de entrada se obtiene del NIF de CTN.</p></div>
               <button type="button" onClick={() => setModalAccesos(false)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500"><MolsanIcon name="x" size={20} tone="ocean" /></button>
