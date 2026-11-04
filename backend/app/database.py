@@ -101,6 +101,21 @@ def _column_exists(cursor, dialect, schema, table, column):
     return False
 
 
+def _column_is_nullable(cursor, dialect, schema, table, column):
+    if dialect == "postgresql":
+        cursor.execute(
+            "SELECT is_nullable FROM information_schema.columns "
+            "WHERE table_schema = %s AND table_name = %s AND column_name = %s",
+            (schema, table, column),
+        )
+        row = cursor.fetchone()
+        return bool(row and row[0] == "YES")
+    if dialect == "sqlite":
+        cursor.execute(f'PRAGMA table_info("{table.replace(chr(34), chr(34) * 2)}")')
+        return any(row[1] == column and not row[3] for row in cursor.fetchall())
+    return False
+
+
 def _index_exists(cursor, dialect, schema, index):
     if dialect == "postgresql":
         cursor.execute(
@@ -154,6 +169,18 @@ def _ddl_is_already_applied(connection, cursor, statement):
         schema, table = _split_schema_name(alter_add_column.group(1))
         column = alter_add_column.group(2).strip('"')
         return _column_exists(cursor, dialect, schema, table, column)
+
+    alter_nullability = re.match(
+        rf"^\s*ALTER\s+TABLE\s+(?:IF\s+EXISTS\s+)?({_QUALIFIED_IDENTIFIER})\s+ALTER\s+(?:COLUMN\s+)?({_IDENTIFIER})\s+(DROP|SET)\s+NOT\s+NULL",
+        statement,
+        re.IGNORECASE,
+    )
+    if alter_nullability:
+        schema, table = _split_schema_name(alter_nullability.group(1))
+        column = alter_nullability.group(2).strip('"')
+        nullable = _column_is_nullable(cursor, dialect, schema, table, column)
+        operation = alter_nullability.group(3).upper()
+        return nullable if operation == "DROP" else not nullable
 
     constraint_add = re.search(
         rf"ALTER\s+TABLE\s+(?:IF\s+EXISTS\s+)?({_QUALIFIED_IDENTIFIER})\s+ADD\s+CONSTRAINT\s+({_IDENTIFIER})",
