@@ -26,6 +26,7 @@ Revisiones presentes en la rama:
 - `20261104_0001_initial_orm_schema.py`
 - `20261104_0002_reconcile_orm_constraints.py`
 - `20261104_0003_auxiliary_schema.py`
+- `20261104_0004_secure_public_api.py` (RLS + revocación de acceso Data API para roles cliente)
 
 La ejecución completa del workflow **Bootstrap ORM migration in isolated PostgreSQL** sobre el SHA `f8792f759679e5054604ec71f9611b554dfcf585` terminó correctamente el 4-11-2026. Se ejecutaron `upgrade head`, `alembic check`, `downgrade base` y un segundo `upgrade head`. Alembic informó **No new upgrade operations detected**. La base utilizada fue un PostgreSQL temporal de CI, nunca la base de Supabase.
 
@@ -61,27 +62,23 @@ Comprobaciones de solo lectura del proyecto `ERP_Molsan` el 4-11-2026:
 
 No se ha aplicado ninguna migración ni se han cargado datos. Los asesores de seguridad y rendimiento no mostraban avisos en la comprobación realizada.
 
-## Almacenamiento documental: siguiente fase
+## Almacenamiento documental: implementación en rama
 
-El backend aún usa almacenamiento local en `backend/app/storage.py` para Carpeta Digital, Mensajes, documentos de intranet y fotos. También hay escrituras locales en NotarGest y EncargaGest.
+Se ha añadido `backend/app/supabase_storage.py` y pruebas unitarias simuladas. Las rutas de Carpeta Digital, NotarGest, EncargaGest, Mensajes, Intranet y fotos de empleados ya tienen soporte para objetos privados de Supabase Storage. Mensajes se sirve por endpoint autenticado y se ha retirado el montaje estático público de adjuntos. En Render, `storage.py` falla de forma cerrada si no se activa Supabase Storage.
 
-Como no se contratarán discos persistentes de Render, el siguiente bloque es implementar Supabase Storage privado:
-- buckets privados separados por dominio;
-- claves aleatorias y metadatos en PostgreSQL;
-- autorización en backend antes de leer o emitir una URL firmada;
-- límites de tamaño/MIME y controles contra path traversal;
-- pruebas de subida, descarga, sustitución, borrado y fallos transaccionales;
-- credencial privilegiada únicamente en el servicio API de Render, nunca en frontend.
+El diseño utiliza un bucket privado `molsan-private` con prefijos por dominio (`cd/`, `eg/`, `mensajes/`, `intranet/`, `fotos/empleados/`). Se mantiene compatibilidad de lectura con referencias locales antiguas para datos históricos, pero no se importarán documentos antiguos de Preview.
 
-La auditoría y el diseño se documentan en `backend/migrations/STORAGE_REVIEW.md`. Aún no se han creado buckets ni se han cambiado rutas.
+La implementación todavía no está desplegada ni validada contra un bucket real. Faltan crear el bucket privado, configurar el secreto `SUPABASE_SERVICE_ROLE_KEY` en el API Preview y ejecutar las pruebas reales de subida, descarga, sustitución, borrado, aislamiento y rollback. El detalle está en `backend/migrations/STORAGE_REVIEW.md`.
 
 ## Autenticación y permisos
 
-El backend conserva su sistema actual de usuarios empleados, JWT, roles y permisos. Supabase Auth está vacío. Antes de abrir Preview hay que cerrar la decisión de conservar este sistema o realizar una integración explícita con Supabase Auth, y probar 401/403/200, permisos por módulo y aislamiento de ApoderaGest, EncargaGest y NotarGest. No se expondrán claves privilegiadas al navegador.
+Decisión tomada: conservar el sistema actual de empleados, PBKDF2, JWT, roles y permisos; no migrar ahora a Supabase Auth. La ausencia de usuarios Supabase Auth es intencionada, porque los usuarios del ERP viven en `empleados` y los portales NotarGest/EncargaGest mantienen sus propios flujos. Se ha documentado en `backend/migrations/AUTH_REVIEW.md`.
+
+Se ha añadido la revisión candidata `20261104_0004_secure_public_api.py` para activar RLS y revocar acceso de `anon`/`authenticated`/`PUBLIC` a las tablas ERP expuestas por Data API. Debe superar el ciclo aislado de migraciones antes de aplicarse a Supabase. Falta ejecutar pruebas reales 401/403/200 y aislamiento en Preview.
 
 ## Render Preview
 
-Los servicios Preview existentes siguen vinculados a ramas anteriores y no se han cambiado. No están desplegados desde la rama de integración. La conexión se realizará después de cerrar Storage, autenticación, seeds y configuración de variables; producción permanecerá intacta.
+Los servicios Preview actuales siguen vinculados a ramas antiguas (`molsan-premium-2027-glass-luxe` para API y `molsan-premium-2027-global` para frontend), con auto-deploy desactivado. El conector Render disponible no permite cambiar la rama asociada; ese ajuste deberá hacerse en Render Dashboard. No se han cambiado variables ni se ha desplegado la rama. Después de cambiar ambas ramas, se configurarán las variables de Preview y se desplegará manualmente. Producción permanecerá intacta.
 
 ## Seeds y datos maestros
 
@@ -93,11 +90,11 @@ Se ha preparado `backend/migrations/IMPORT_25_EXPEDIENTES.md` como runbook. No c
 
 ## Secuencia pendiente
 
-1. Implementar y probar Supabase Storage privado; no crear discos persistentes.
-2. Cerrar autenticación, roles, permisos y aislamiento de portales.
-3. Identificar y preparar seeds de catálogos/datos maestros.
-4. Configurar los servicios Preview de Render contra esta rama y el proyecto Supabase correcto, sin tocar producción.
-5. Ejecutar pruebas integrales de API, documentos, portales, permisos, regresión y rollback.
+1. Ejecutar CI completo del SHA más reciente y validar conjuntamente las cuatro revisiones Alembic en PostgreSQL aislado.
+2. Crear el bucket privado `molsan-private` y configurar `SUPABASE_SERVICE_ROLE_KEY` solo en API Preview.
+3. Cambiar las ramas de los dos servicios Preview en Render Dashboard y configurar sus variables, sin tocar producción.
+4. Preparar los seeds idempotentes de catálogos y el procedimiento de alta inicial del administrador.
+5. Ejecutar pruebas integrales de API, documentos, portales, permisos 401/403/200, aislamiento, regresión y rollback.
 6. Aprobar el punto de restauración y solo entonces preparar la importación de los 25 expedientes seleccionados.
 
 **No fusionar, desplegar a producción, aplicar migraciones a Supabase ni importar datos históricos hasta superar las validaciones anteriores.**
