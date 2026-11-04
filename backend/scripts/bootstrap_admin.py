@@ -19,6 +19,21 @@ from backend.app.seguridad.roles.models import Rol
 
 
 def main() -> int:
+    environment = (os.getenv("MOLSAN_ENVIRONMENT") or "").strip().lower()
+    confirmation = (os.getenv("MOLSAN_BOOTSTRAP_ADMIN_CONFIRM") or "").strip()
+    if environment != "preview":
+        print(
+            "ERROR: el bootstrap solo puede ejecutarse con MOLSAN_ENVIRONMENT=preview.",
+            file=sys.stderr,
+        )
+        return 2
+    if confirmation != "CREATE_FIRST_ADMIN_IN_PREVIEW":
+        print(
+            "ERROR: falta MOLSAN_BOOTSTRAP_ADMIN_CONFIRM=CREATE_FIRST_ADMIN_IN_PREVIEW.",
+            file=sys.stderr,
+        )
+        return 2
+
     username = (os.getenv("MOLSAN_BOOTSTRAP_ADMIN_USERNAME") or "").strip()
     password = os.getenv("MOLSAN_BOOTSTRAP_ADMIN_PASSWORD") or ""
     nombre = (os.getenv("MOLSAN_BOOTSTRAP_ADMIN_NAME") or "Administrador").strip()
