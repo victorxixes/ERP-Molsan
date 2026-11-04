@@ -12,8 +12,8 @@ Los expedientes y pagos históricos de los entornos anteriores son datos de prue
 - 33 tablas auxiliares declaradas mediante SQL estático.
 - 7 índices auxiliares estáticos.
 - 82 operaciones ALTER/DDL estáticas reconciliadas: 66 añaden columnas ya presentes en ORM; 11 se corresponden con columnas ya incluidas en las definiciones auxiliares canónicas; 5 se consolidan en las definiciones finales de claves y nulabilidad.
-- 9 operaciones DDL dinámicas que deben convertirse a operaciones explícitas.
-- 0 columnas añadidas por ALTER que falten en los modelos ORM (la auditoría de columnas ha localizado 66 ya representadas).
+- 0 operaciones DDL dinámicas pendientes: se han retirado las 9 rutas heredadas.
+- 0 columnas añadidas por ALTER que falten en los modelos ORM (66 ya estaban representadas).
 - 16 definiciones duplicadas o coincidentes con ORM.
 - 8 referencias FK desde tablas auxiliares hacia tablas ORM.
 - 0 destinos FK sin resolver detectados en el DDL auxiliar.
