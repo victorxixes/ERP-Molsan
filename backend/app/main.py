@@ -2324,7 +2324,8 @@ def inicializar_tablas_auxiliares():
 # REPARTO AUTOMÁTICO INICIAL DE GESTORES
 # ============================================================
 
-@app.on_event("startup")
+# Ejecución manual y controlada: no se engancha al arranque del backend.
+# Los expedientes históricos sin gestor deben revisarse antes de aplicar reglas.
 def asignar_gestores_pendientes_al_iniciar():
     """
     Aplica automáticamente las reglas activas de la ficha de empleado
