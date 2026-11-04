@@ -154,10 +154,6 @@ export default function CarpetaDigitalModal({
   const viewerDialogRef = useRef(null);
   useAccessibleDialog({ open: !modoActividad, onClose, dialogRef });
   useAccessibleDialog({ open: Boolean(modoActividad && documentoVistaPrevia), onClose: cerrarVisor, dialogRef: viewerDialogRef });
-  const dialogRef = useRef(null);
-  const viewerDialogRef = useRef(null);
-  useAccessibleDialog({ open: !modoActividad, onClose, dialogRef });
-  useAccessibleDialog({ open: Boolean(modoActividad && documentoVistaPrevia), onClose: cerrarVisor, dialogRef: viewerDialogRef });
 
   // Las fechas pertenecen a la ficha del expediente; este modal se abre desde
   // el listado sin recibir esos datos como props, por eso se cargan aquí.
