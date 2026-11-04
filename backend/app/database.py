@@ -166,7 +166,7 @@ def _ddl_is_already_applied(connection, cursor, statement):
         return _constraint_exists(cursor, dialect, schema, table, constraint)
 
     constraint_drop = re.match(
-        rf"^\\s*ALTER\\s+TABLE\\s+(?:IF\\s+EXISTS\\s+)?({_QUALIFIED_IDENTIFIER})\\s+DROP\\s+CONSTRAINT\\s+(?:IF\\s+EXISTS\\s+)?({_IDENTIFIER})",
+        rf"^\s*ALTER\s+TABLE\s+(?:IF\s+EXISTS\s+)?({_QUALIFIED_IDENTIFIER})\s+DROP\s+CONSTRAINT\s+(?:IF\s+EXISTS\s+)?({_IDENTIFIER})",
         statement,
         re.IGNORECASE,
     )
@@ -176,7 +176,7 @@ def _ddl_is_already_applied(connection, cursor, statement):
         return not _constraint_exists(cursor, dialect, schema, table, constraint)
 
     table_drop = re.match(
-        rf"^\\s*DROP\\s+TABLE\\s+(?:IF\\s+EXISTS\\s+)?({_QUALIFIED_IDENTIFIER})",
+        rf"^\s*DROP\s+TABLE\s+(?:IF\s+EXISTS\s+)?({_QUALIFIED_IDENTIFIER})",
         statement,
         re.IGNORECASE,
     )
@@ -185,7 +185,7 @@ def _ddl_is_already_applied(connection, cursor, statement):
         return not _table_exists(cursor, dialect, schema, table)
 
     index_drop = re.match(
-        rf"^\\s*DROP\\s+INDEX\\s+(?:IF\\s+EXISTS\\s+)?({_QUALIFIED_IDENTIFIER})",
+        rf"^\s*DROP\s+INDEX\s+(?:IF\s+EXISTS\s+)?({_QUALIFIED_IDENTIFIER})",
         statement,
         re.IGNORECASE,
     )
