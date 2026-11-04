@@ -6,6 +6,7 @@ on:
     paths:
       - "backend/app/**"
       - "backend/migrations/**"
+      - "backend/scripts/**"
       - "backend/requirements.txt"
       - ".github/workflows/bootstrap-orm-migration.yml"
   workflow_dispatch:
