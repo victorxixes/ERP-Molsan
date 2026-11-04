@@ -89,9 +89,9 @@ def scan_raw_ddl(orm_table_names):
             yield statement
 
     def register_sql(sql, source):
-        for statement in extract_statements(sql, r"\\bCREATE\\s+TABLE\\b"):
+        for statement in extract_statements(sql, r"\bCREATE\s+TABLE\b"):
             table_match = re.search(
-                r"\\bCREATE\\s+TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?(?:public\\.)?([A-Za-z_][A-Za-z0-9_]*)",
+                r"\bCREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:public\\.)?([A-Za-z_][A-Za-z0-9_]*)",
                 statement,
                 re.IGNORECASE,
             )
@@ -105,14 +105,14 @@ def scan_raw_ddl(orm_table_names):
             previous = statements_by_table.get(table_name)
             if previous is None:
                 statements_by_table[table_name] = entry
-            elif re.sub(r"\\s+", " ", previous["sql"]).strip().lower() != re.sub(r"\\s+", " ", statement).strip().lower():
+            elif re.sub(r"\s+", " ", previous["sql"]).strip().lower() != re.sub(r"\s+", " ", statement).strip().lower():
                 duplicates.append((table_name, source, "different CREATE TABLE definition; manual reconciliation required"))
             else:
                 duplicates.append((table_name, source, "duplicate identical definition"))
 
-        for statement in extract_statements(sql, r"\\bCREATE\\s+(?:UNIQUE\\s+)?INDEX\\b"):
+        for statement in extract_statements(sql, r"\bCREATE\s+(?:UNIQUE\s+)?INDEX\b"):
             index_match = re.search(
-                r"\\bCREATE\\s+(?:UNIQUE\\s+)?INDEX\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?([A-Za-z_][A-Za-z0-9_]*)\\s+ON\\s+(?:public\\.)?([A-Za-z_][A-Za-z0-9_]*)",
+                r"\bCREATE\s+(?:UNIQUE\s+)?INDEX\s+(?:IF\s+NOT\s+EXISTS\s+)?([A-Za-z_][A-Za-z0-9_]*)\s+ON\s+(?:public\\.)?([A-Za-z_][A-Za-z0-9_]*)",
                 statement,
                 re.IGNORECASE,
             )
@@ -124,7 +124,7 @@ def scan_raw_ddl(orm_table_names):
             previous = indexes_by_name.get(index_name)
             if previous is None:
                 indexes_by_name[index_name] = entry
-            elif re.sub(r"\\s+", " ", previous["sql"]).strip().lower() != re.sub(r"\\s+", " ", statement).strip().lower():
+            elif re.sub(r"\s+", " ", previous["sql"]).strip().lower() != re.sub(r"\s+", " ", statement).strip().lower():
                 duplicates.append((index_name, source, "different CREATE INDEX definition; manual reconciliation required"))
 
     for source_path in sorted(source_root.rglob("*.py")):
@@ -135,7 +135,7 @@ def scan_raw_ddl(orm_table_names):
             continue
         for node in ast.walk(tree):
             if isinstance(node, ast.Constant) and isinstance(node.value, str):
-                if re.search(r"\\bCREATE\\s+(?:TABLE|(?:UNIQUE\\s+)?INDEX)\\b", node.value, re.IGNORECASE):
+                if re.search(r"\bCREATE\s+(?:TABLE|(?:UNIQUE\s+)?INDEX)\b", node.value, re.IGNORECASE):
                     register_sql(node.value, f"{source_path}:{node.lineno}")
             elif isinstance(node, ast.JoinedStr):
                 pieces = []
@@ -145,7 +145,7 @@ def scan_raw_ddl(orm_table_names):
                     else:
                         pieces.append("{dynamic}")
                 template = "".join(pieces)
-                if re.search(r"\\bCREATE\\s+(?:TABLE|(?:UNIQUE\\s+)?INDEX)\\b", template, re.IGNORECASE):
+                if re.search(r"\bCREATE\s+(?:TABLE|(?:UNIQUE\s+)?INDEX)\b", template, re.IGNORECASE):
                     dynamic.append(f"{source_path}:{node.lineno}: {template[:240]}")
 
     for source_path in sorted(source_root.rglob("*.sql")):
@@ -158,7 +158,7 @@ def scan_raw_ddl(orm_table_names):
     dependencies = {}
     for name, entry in statements_by_table.items():
         refs = re.findall(
-            r"\\bREFERENCES\\s+(?:public\\.)?([A-Za-z_][A-Za-z0-9_]*)",
+            r"\bREFERENCES\s+(?:public\\.)?([A-Za-z_][A-Za-z0-9_]*)",
             entry["sql"],
             re.IGNORECASE,
         )
@@ -186,19 +186,19 @@ def scan_raw_ddl(orm_table_names):
     for name in ordered:
         entry = statements_by_table[name]
         statement = entry["sql"]
-        idempotent = bool(re.search(r"CREATE\\s+TABLE\\s+IF\\s+NOT\\s+EXISTS", statement, re.IGNORECASE))
+        idempotent = bool(re.search(r"CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS", statement, re.IGNORECASE))
         refs = sorted(dependencies.get(name, ()))
         inventory.append(
-            f"{name}\\tsource={entry['source']}\\tidempotent={idempotent}\\tfk_dependencies={','.join(refs)}"
+            f"{name}\tsource={entry['source']}\tidempotent={idempotent}\tfk_dependencies={','.join(refs)}"
         )
-        sql_parts.append(f"-- Source: {entry['source']}\\n{statement}")
+        sql_parts.append(f"-- Source: {entry['source']}\n{statement}")
 
     raw_indexes = {
         name: entry for name, entry in indexes_by_name.items()
         if entry["table"] in names
     }
     for name, entry in sorted(raw_indexes.items()):
-        sql_parts.append(f"-- Source: {entry['source']}\\n{entry['sql']}")
+        sql_parts.append(f"-- Source: {entry['source']}\n{entry['sql']}")
 
     return sql_parts, inventory, dynamic, duplicates, raw_indexes
 
