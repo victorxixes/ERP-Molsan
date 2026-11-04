@@ -6,16 +6,12 @@ on:
     paths:
       - "backend/**"
       - ".github/workflows/supabase-schema-inventory.yml"
-  pull_request:
-    paths:
-      - "backend/**"
-      - ".github/workflows/supabase-schema-inventory.yml"
 
 permissions:
   contents: read
 
 concurrency:
-  group: supabase-schema-inventory-${{ github.ref }}
+  group: supabase-schema-inventory-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
