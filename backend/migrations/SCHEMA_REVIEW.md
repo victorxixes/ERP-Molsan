@@ -11,8 +11,9 @@ Los expedientes y pagos históricos de los entornos anteriores son datos de prue
 - 67 tablas SQLAlchemy registradas al importar la aplicación.
 - 33 tablas auxiliares declaradas mediante SQL estático.
 - 7 índices auxiliares estáticos.
-- 82 operaciones ALTER/DDL estáticas que deben reconciliarse con los modelos.
+- 82 operaciones ALTER/DDL estáticas: 66 añaden columnas ya presentes en los modelos ORM, 11 completan tablas auxiliares y 5 son cambios de restricciones/nulabilidad que deben consolidarse en el esquema inicial.
 - 9 operaciones DDL dinámicas que deben convertirse a operaciones explícitas.
+- 0 columnas añadidas por ALTER que falten en los modelos ORM (la auditoría de columnas ha localizado 66 ya representadas).
 - 16 definiciones duplicadas o coincidentes con ORM.
 - 8 referencias FK desde tablas auxiliares hacia tablas ORM.
 - 0 destinos FK sin resolver detectados en el DDL auxiliar.
@@ -89,6 +90,8 @@ El inventario detecta definiciones duplicadas o ya presentes en ORM para:
 - expediente_defectos_historial
 
 Algunas entradas aparecen en varios archivos. La revisión debe elegir una única definición canónica. Para expediente_gestor_historial, la definición canónica debe mantener gestor_id y gestor_anterior_id con sus referencias a empleados, actividad VARCHAR(120) NOT NULL y motivo VARCHAR(80).
+
+La tabla auxiliar `expediente_visibilidad_config` debe crearse directamente con su clave primaria compuesta `(empleado_id, actividad_key, ambito)`; no se debe crear primero una PK antigua para después alterarla. La columna `entidades_bancarias.codigo_europeo` ya es nullable en el modelo ORM, por lo que su ALTER heredado debe ser un no-op después de la migración.
 
 ## Política de DDL en ejecución
 
