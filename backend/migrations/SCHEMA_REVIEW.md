@@ -11,7 +11,7 @@ Los expedientes y pagos históricos de los entornos anteriores son datos de prue
 - 67 tablas SQLAlchemy registradas al importar la aplicación.
 - 33 tablas auxiliares declaradas mediante SQL estático.
 - 7 índices auxiliares estáticos.
-- 82 operaciones ALTER/DDL estáticas reconciliadas: 66 añaden columnas ya presentes en ORM; 11 se corresponden con columnas ya incluidas en las definiciones auxiliares canónicas; 5 se consolidan en las definiciones finales de claves y nulabilidad.
+- 77 operaciones ALTER/DDL estáticas reconciliadas: 62 añaden columnas ya presentes en ORM; 10 se corresponden con columnas ya incluidas en las definiciones auxiliares canónicas; 5 se consolidan en las definiciones finales de claves y nulabilidad.
 - 0 operaciones DDL dinámicas pendientes: se han retirado las 9 rutas heredadas.
 - 0 columnas añadidas por ALTER que falten en los modelos ORM (66 ya estaban representadas).
 - 16 definiciones duplicadas o coincidentes con ORM.
@@ -80,13 +80,12 @@ El inventario detecta definiciones duplicadas o ya presentes en ORM para:
 - correspondencia_configuracion
 - plantilla_factura_concepto_gasto
 - facturas_honorarios_gestoria
-- expediente_documentos_escritura
-- expediente_promociones
+- - expediente_promociones
 - correspondencia_plantillas
 - provisiones_email_envios
 - expediente_defectos_historial
 
-Las 16 entradas detectadas son seguras: 6 corresponden a tablas ya definidas en ORM y 10 son definiciones idénticas repetidas en varios módulos. No se detectan definiciones conflictivas. El inventario conserva una única definición canónica por tabla auxiliar. Para expediente_gestor_historial, la definición canónica debe mantener gestor_id y gestor_anterior_id con sus referencias a empleados, actividad VARCHAR(120) NOT NULL y motivo VARCHAR(80).
+Las 14 entradas detectadas son seguras: 4 corresponden a tablas ya definidas en ORM y 10 son definiciones idénticas repetidas en varios módulos. No se detectan definiciones conflictivas. El inventario conserva una única definición canónica por tabla auxiliar. Para expediente_gestor_historial, la definición canónica debe mantener gestor_id y gestor_anterior_id con sus referencias a empleados, actividad VARCHAR(120) NOT NULL y motivo VARCHAR(80).
 
 Las 11 columnas auxiliares detectadas están incluidas en las definiciones finales: expediente_gasto_pagos (anulación), expediente_documentacion_previa_absis (avance y registro local), expediente_visibilidad_config (empleado_id/ambito) y mensajeria_solicitudes (teléfono de recogida/entrega). Se han añadido estos dos últimos campos a la definición canónica de mensajería.
 
