@@ -126,12 +126,25 @@ def _es_administrador_apoderagest(usuario) -> bool:
         _valor_usuario(rol, "nombre_rol"),
         _valor_usuario(rol, "codigo"),
     ]
+    roles_administradores = {
+        "admin", "administrador", "administradora", "superadmin",
+        "super admin", "superadministrador", "super administradora",
+        "administrador del sistema", "administrador general",
+        "superuser", "super usuario", "superusuario",
+    }
     if any(
-        "admin" in str(nombre or "").strip().casefold()
-        or "administrador" in str(nombre or "").strip().casefold()
+        str(nombre or "").strip().casefold().replace("_", " ").replace("-", " ")
+        in roles_administradores
         for nombre in nombres_rol
     ):
         return True
+    if str(_valor_usuario(usuario, "usuario", "") or "").strip().casefold() == "admin":
+        return True
+    try:
+        if int(_valor_usuario(usuario, "rol_id", _valor_usuario(rol, "id", -1))) == 0:
+            return True
+    except (TypeError, ValueError):
+        pass
 
     fuentes = [
         _valor_usuario(usuario, "permisos_modulo_dict", {}),
@@ -164,6 +177,7 @@ def _es_administrador_apoderagest(usuario) -> bool:
             elif str(acciones).strip().casefold() in {"*", "ver_todos", "administrar", "admin", "ver_todo", "true"}:
                 return True
     return False
+
 
 
 @router.get("/contexto", summary="Indicar si la sesión puede consultar todos los encargos")
