@@ -50,16 +50,16 @@ jobs:
           python-version: "3.11"
       - name: Install backend requirements
         run: pip install -r backend/requirements.txt
-      - name: Generate initial ORM revision if absent
+      - name: Generate ORM revisions against the isolated PostgreSQL schema
         run: |
           if ! find backend/migrations/versions -maxdepth 1 -type f -name '*20261104_0001*.py' | grep -q .; then
             alembic -c alembic.ini revision --autogenerate --rev-id 20261104_0001 -m "initial ORM schema"
-          elif ! find backend/migrations/versions -maxdepth 1 -type f -name '*20261104_0002*.py' | grep -q .; then
-            alembic -c alembic.ini revision --autogenerate --rev-id 20261104_0002 -m "reconcile ORM constraints"
-          else
-            echo "Initial ORM revisions exist; testing the current chain."
           fi
-      - name: Apply, rollback and reapply migrations on isolated PostgreSQL
+          alembic -c alembic.ini upgrade head
+          if ! find backend/migrations/versions -maxdepth 1 -type f -name '*20261104_0002*.py' | grep -q .; then
+            alembic -c alembic.ini revision --autogenerate --rev-id 20261104_0002 -m "reconcile ORM constraints"
+          fi
+      - name: Apply, check, rollback and reapply migrations on isolated PostgreSQL
         run: |
           alembic -c alembic.ini upgrade head
           alembic -c alembic.ini check
