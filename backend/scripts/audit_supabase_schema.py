@@ -205,7 +205,7 @@ def scan_raw_ddl(orm_table_names):
                     template,
                     re.IGNORECASE,
                 ):
-                    compact_template = re.sub(r"\\s+", " ", template)
+                    compact_template = re.sub(r"\s+", " ", template)
                     dynamic.append(f"{source_path}:{node.lineno}: {compact_template[:240]}")
 
     for source_path in sorted(source_root.rglob("*.sql")):
@@ -249,8 +249,9 @@ def scan_raw_ddl(orm_table_names):
     for name in ordered:
         entry = statements_by_table[name]
         refs = sorted(dependencies.get(name, ()))
+        idempotent = bool(re.search(r"CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS", entry["sql"], re.IGNORECASE))
         inventory.append(
-            f"{name}\tsource={entry['source']}\tidempotent={bool(re.search(r'CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS', entry['sql'], re.IGNORECASE))}\tfk_dependencies={','.join(refs)}"
+            f"{name}\tsource={entry['source']}\tidempotent={idempotent}\tfk_dependencies={','.join(refs)}"
         )
         sql_parts.append(f"-- Source: {entry['source']}\n{entry['sql']}")
 
