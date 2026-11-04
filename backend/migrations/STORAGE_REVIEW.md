@@ -31,7 +31,7 @@ Prefijos:
 - Fotos de empleados: objetos con nombre versionado, descarga mediante `/api/fotos` con permiso de Empleados y eliminación de la foto anterior solo después de confirmar la referencia nueva.
 - `backend/app/storage.py`: en Render falla de forma cerrada si `MOLSAN_STORAGE_BACKEND=supabase` no está activado; en modo Supabase valida URL y clave al arrancar. No se permite fallback silencioso a almacenamiento efímero en Render.
 
-El modo local permanece disponible para desarrollo local. En Preview/Render deberá configurarse explícitamente Supabase antes de desplegar esta rama.
+El bucket privado `molsan-private` ya se ha creado en el proyecto Supabase de integración con `public=false`, límite de 100 MiB y lista MIME permitida. La comprobación de solo lectura confirma 0 objetos. No se han creado tablas ERP ni aplicado migraciones. El modo local permanece disponible para desarrollo local. En Preview/Render deberá configurarse explícitamente Supabase antes de desplegar esta rama.
 
 ## Configuración necesaria (solo API Preview)
 
