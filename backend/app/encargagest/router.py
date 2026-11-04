@@ -14,7 +14,7 @@ import jwt
 from cryptography.fernet import Fernet
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, Field, condecimal, constr
 from sqlalchemy import or_, func, text
 from sqlalchemy.orm import Session
@@ -31,10 +31,62 @@ from backend.app.encargagest.models import (
     EncargoExternoUsuario,
 )
 from backend.app.storage import CARPETA_DIGITAL_DIR
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, is_supabase_object, parse_object_reference
 
 router = APIRouter(prefix="/encargagest", tags=["EncargaGest"])
 ROOT = (CARPETA_DIGITAL_DIR / "encargagest").resolve()
 ROOT.mkdir(parents=True, exist_ok=True)
+
+
+def _usa_storage_remoto() -> bool:
+    return (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase"
+
+
+def _guardar_documento_storage(nombre_guardado: str, contenido: bytes, mime: str) -> str:
+    if _usa_storage_remoto():
+        try:
+            return SupabasePrivateStorage().upload(
+                f"eg/{uuid4().hex}{Path(nombre_guardado).suffix.lower()}",
+                contenido,
+                mime or "application/octet-stream",
+            )
+        except (RuntimeError, SupabaseStorageError) as exc:
+            raise HTTPException(status_code=503, detail="El almacenamiento documental no está disponible.") from exc
+    ruta = (ROOT / nombre_guardado).resolve()
+    if ruta.parent != ROOT:
+        raise HTTPException(status_code=400, detail="Nombre de archivo no válido.")
+    ruta.write_bytes(contenido)
+    return nombre_guardado
+
+
+def _leer_documento_storage(referencia: str) -> bytes:
+    if is_supabase_object(referencia):
+        bucket, key = parse_object_reference(referencia)
+        storage = SupabasePrivateStorage()
+        if bucket != storage.config.bucket:
+            raise HTTPException(status_code=404, detail="Documento no encontrado.")
+        try:
+            return storage.download(key)
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail="El archivo no está disponible en el almacenamiento.") from exc
+        except SupabaseStorageError as exc:
+            raise HTTPException(status_code=503, detail="El almacenamiento documental no está disponible.") from exc
+    ruta = (ROOT / referencia).resolve()
+    if ruta.parent != ROOT or not ruta.is_file():
+        raise HTTPException(status_code=404, detail="El archivo no está disponible en el almacenamiento.")
+    return ruta.read_bytes()
+
+
+def _eliminar_documento_storage(referencia: str) -> None:
+    if is_supabase_object(referencia):
+        bucket, key = parse_object_reference(referencia)
+        storage = SupabasePrivateStorage()
+        if bucket == storage.config.bucket:
+            storage.delete(key)
+    else:
+        ruta = (ROOT / referencia).resolve()
+        if ruta.parent == ROOT:
+            ruta.unlink(missing_ok=True)
 
 MAX_BYTES = int(os.getenv("ENCARGAGEST_MAX_DOCUMENT_BYTES", str(25 * 1024 * 1024)))
 EXTENSIONES_PERMITIDAS = {".pdf", ".doc", ".docx", ".xls", ".xlsx", ".jpg", ".jpeg", ".png", ".eml", ".msg", ".txt"}
@@ -1558,12 +1610,12 @@ async def subir_documento(
     ruta = (ROOT / nombre_guardado).resolve()
     if ruta.parent != ROOT:
         raise HTTPException(status_code=400, detail="Nombre de archivo no válido.")
+    referencia_storage = _guardar_documento_storage(nombre_guardado, contenido, archivo.content_type or "application/octet-stream")
     try:
-        ruta.write_bytes(contenido)
         documento = EncargoExternoDocumento(
             encargo_id=item.id,
             nombre_original=nombre_original,
-            nombre_guardado=nombre_guardado,
+            nombre_guardado=referencia_storage,
             categoria=categoria,
             contrato_index=contrato_index,
             tipo_mime=archivo.content_type,
@@ -1579,7 +1631,8 @@ async def subir_documento(
         return _serializar_documento(documento) | {"ok": True}
     except Exception:
         db.rollback()
-        ruta.unlink(missing_ok=True)
+        try: _eliminar_documento_storage(referencia_storage)
+        except Exception: pass
         raise HTTPException(status_code=500, detail="No se pudo guardar el documento.")
     finally:
         await archivo.close()
@@ -1595,10 +1648,12 @@ def descargar_documento(encargo_id: int, documento_id: int, db: Session = Depend
     ).first()
     if not documento:
         raise HTTPException(status_code=404, detail="Documento no encontrado.")
-    ruta = (ROOT / documento.nombre_guardado).resolve()
-    if ruta.parent != ROOT or not ruta.is_file():
-        raise HTTPException(status_code=404, detail="El archivo no está disponible en el almacenamiento.")
-    return FileResponse(path=str(ruta), filename=documento.nombre_original, media_type=documento.tipo_mime or "application/octet-stream")
+    contenido = _leer_documento_storage(documento.nombre_guardado)
+    respuesta = StreamingResponse(iter([contenido]), media_type=documento.tipo_mime or "application/octet-stream")
+    respuesta.headers["Content-Disposition"] = f'attachment; filename="{documento.nombre_original.replace(chr(34), "")}"'
+    respuesta.headers["X-Content-Type-Options"] = "nosniff"
+    respuesta.headers["Cache-Control"] = "private, no-store"
+    return respuesta
 
 
 @router.delete("/encargos/{encargo_id}/documentos/{documento_id}")
@@ -1612,10 +1667,8 @@ def eliminar_documento(encargo_id: int, documento_id: int, db: Session = Depends
     ).first()
     if not documento:
         raise HTTPException(status_code=404, detail="Documento no encontrado.")
-    ruta = (ROOT / documento.nombre_guardado).resolve()
+    referencia_storage = documento.nombre_guardado
     try:
-        if ruta.parent == ROOT:
-            ruta.unlink(missing_ok=True)
         nombre_documento = documento.nombre_original
         categoria_documento = documento.categoria
         db.delete(documento)
@@ -1626,6 +1679,8 @@ def eliminar_documento(encargo_id: int, documento_id: int, db: Session = Depends
         )
         encargo.actualizado_en = datetime.utcnow()
         db.commit()
+        try: _eliminar_documento_storage(referencia_storage)
+        except Exception: pass
     except Exception:
         db.rollback()
         raise HTTPException(status_code=500, detail="No se pudo eliminar el documento.")
