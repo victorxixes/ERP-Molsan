@@ -54,6 +54,9 @@ PRIORIDADES = {"Baja", "Normal", "Alta", "Urgente"}
 
 
 def _migrar_tablas_encargagest_en_hilo():
+    if os.getenv("MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS", "false").strip().lower() not in {"1", "true", "yes"}:
+        print("[ENCARGAGEST MIGRACION] DDL automático desactivado; usar migraciones versionadas.", flush=True)
+        return
     # Las migraciones no deben impedir que FastAPI abra el puerto en Render.
     # Si hay un bloqueo PostgreSQL, se informa y se reintenta en el próximo arranque.
     tablas_modulo = [
@@ -205,6 +208,9 @@ def _migrar_tablas_encargagest_en_hilo():
 
 @router.on_event("startup")
 async def crear_tablas_encargagest():
+    if os.getenv("MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS", "false").strip().lower() not in {"1", "true", "yes"}:
+        print("[ENCARGAGEST MIGRACION] DDL automático desactivado; se omite el hilo de migración.", flush=True)
+        return
     # No crear ni iniciar hilos mientras Starlette está ejecutando la secuencia
     # de arranque. Solo se agenda el lanzamiento para después de liberar el
     # ciclo de startup; así un problema de recursos no puede atascar el puerto.
