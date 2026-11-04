@@ -3,8 +3,9 @@
 ## Estado del proyecto Supabase
 
 - Proyecto `ERP_Molsan`, ref `powiprqarmluanplxpyb`, activo en EU Central.
-- La última consulta de solo lectura registró 0 buckets y 0 objetos.
-- No se ha creado el bucket, no se ha aplicado migración a Supabase y no se han subido documentos.
+- Bucket `molsan-private` creado y verificado mediante consulta de solo lectura: `public=false`, límite 104857600 bytes (100 MiB) y 20 tipos MIME permitidos.
+- `storage.objects` y `storage.buckets` tienen RLS activado; no hay políticas en `storage.objects`.
+- El bucket contiene 0 objetos. No se ha aplicado ninguna migración ERP ni se han subido documentos.
 - No se contratarán discos persistentes de Render.
 - No se importarán archivos heredados de Preview ni documentos asociados a expedientes/pagos ficticios.
 
@@ -41,12 +42,7 @@ Variables de entorno:
 - `MOLSAN_STORAGE_BUCKET=molsan-private`
 - `MOLSAN_STORAGE_BACKEND=supabase`
 
-Crear el bucket desde Supabase Dashboard > Storage > New Bucket:
-- Nombre: `molsan-private`.
-- Visibilidad: **Private**.
-- Límite de tamaño: al menos 100 MiB (el máximo actual de Carpeta Digital es 100 MiB).
-- No crear políticas públicas de lectura.
-- No colocar la clave service-role en el frontend.
+El bucket ya está provisionado. No lo recrees. Antes de usarlo, vuelve a verificar que permanece privado, con límite de 100 MiB, RLS activo y sin políticas de lectura para `anon` ni `authenticated`. No coloques la clave service-role en el frontend.
 
 El backend usa la clave privilegiada únicamente en el servidor y valida los permisos ERP antes de descargar. No se requiere crear usuarios Supabase Auth para este flujo.
 
@@ -73,6 +69,6 @@ Los servicios Preview actuales siguen apuntando a ramas antiguas y tienen auto-d
 
 ## Producción
 
-No se ha cambiado ningún servicio de producción, no se ha aplicado ninguna migración, no se han creado buckets y no se han copiado documentos.
+No se ha cambiado ningún servicio de producción, no se ha aplicado ninguna migración ERP y no se han copiado documentos. El único cambio de infraestructura confirmado es el bucket privado vacío `molsan-private` del proyecto de integración.
 
-**Estado:** adaptador y rutas principales implementados en la rama de integración; provisión del bucket, secreto, ejecución CI final, cambio de rama de Preview y pruebas reales siguen pendientes.
+**Estado:** adaptador y rutas principales implementados en la rama de integración; el bucket privado está creado y verificado. Siguen pendientes el secreto, la ejecución CI final, el cambio de rama de Preview y las pruebas reales.
