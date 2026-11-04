@@ -18,7 +18,7 @@ from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
 from backend.app.storage import CARPETA_DIGITAL_DIR
 from backend.app.supabase_storage import (
     SupabasePrivateStorage, SupabaseStorageError, is_supabase_object,
-    parse_object_reference,
+    parse_object_reference, storage_backend_is_supabase,
 )
 
 logger = logging.getLogger(__name__)
@@ -142,7 +142,7 @@ def _normalizar_texto(valor: str | None) -> str:
 
 
 def _usa_supabase_storage() -> bool:
-    return (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase"
+    return storage_backend_is_supabase()
 
 
 def _cliente_storage() -> SupabasePrivateStorage:
