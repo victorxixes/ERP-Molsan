@@ -165,7 +165,35 @@ def _ddl_is_already_applied(connection, cursor, statement):
         constraint = constraint_add.group(2).strip('"')
         return _constraint_exists(cursor, dialect, schema, table, constraint)
 
-    # DO $$ ... ALTER TABLE ... ADD CONSTRAINT ... $$ solo se considera no-op
+    constraint_drop = re.match(
+        rf"^\\s*ALTER\\s+TABLE\\s+(?:IF\\s+EXISTS\\s+)?({_QUALIFIED_IDENTIFIER})\\s+DROP\\s+CONSTRAINT\\s+(?:IF\\s+EXISTS\\s+)?({_IDENTIFIER})",
+        statement,
+        re.IGNORECASE,
+    )
+    if constraint_drop:
+        schema, table = _split_schema_name(constraint_drop.group(1))
+        constraint = constraint_drop.group(2).strip('"')
+        return not _constraint_exists(cursor, dialect, schema, table, constraint)
+
+    table_drop = re.match(
+        rf"^\\s*DROP\\s+TABLE\\s+(?:IF\\s+EXISTS\\s+)?({_QUALIFIED_IDENTIFIER})",
+        statement,
+        re.IGNORECASE,
+    )
+    if table_drop:
+        schema, table = _split_schema_name(table_drop.group(1))
+        return not _table_exists(cursor, dialect, schema, table)
+
+    index_drop = re.match(
+        rf"^\\s*DROP\\s+INDEX\\s+(?:IF\\s+EXISTS\\s+)?({_QUALIFIED_IDENTIFIER})",
+        statement,
+        re.IGNORECASE,
+    )
+    if index_drop:
+        schema, index = _split_schema_name(index_drop.group(1))
+        return not _index_exists(cursor, dialect, schema, index)
+
+    # DO $ ... ALTER TABLE ... ADD CONSTRAINT ... $$ solo se considera no-op
     # cuando la restricción ya existe; nunca se permite crearla desde una petición.
     if re.match(r"^\s*DO\b", statement, re.IGNORECASE):
         return bool(constraint_add)
