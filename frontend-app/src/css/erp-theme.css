@@ -20,49 +20,7 @@
    VARIABLES CORPORATIVAS
    ============================================================ */
 
-:root {
-  /* Compatibilidad: las variables antiguas apuntan al sistema MOLSAN canónico. */
-  --erp-bg: var(--molsan-page-bg, #f4f7fb);
-  --erp-surface: var(--molsan-surface, #fff);
-  --erp-surface-soft: var(--molsan-surface-soft, #f7f9fc);
-  --erp-surface-hover: var(--molsan-primary-soft, #edf3ff);
-
-  --erp-border: var(--molsan-border, #dce4ef);
-  --erp-border-light: var(--molsan-border-light, #e8edf4);
-  --erp-border-strong: var(--molsan-border-strong, #c4d0df);
-
-  --erp-primary: var(--molsan-primary, #3156b3);
-  --erp-primary-dark: var(--molsan-primary-hover, #274694);
-  --erp-primary-light: var(--molsan-primary-hover, #274694);
-  --erp-primary-soft: var(--molsan-primary-soft, #edf3ff);
-  --erp-primary-hover: var(--molsan-primary-hover, #274694);
-
-  --erp-text: var(--molsan-text, #17243a);
-  --erp-text-soft: var(--molsan-text-muted, #64748b);
-  --erp-text-muted: var(--molsan-text-muted, #64748b);
-  --erp-text-strong: var(--molsan-text, #17243a);
-
-  --erp-success: var(--molsan-success, #16845b);
-  --erp-success-soft: #eaf8f0;
-  --erp-warning: var(--molsan-warning, #b7791f);
-  --erp-warning-soft: #fff7e8;
-  --erp-danger: var(--molsan-danger, #c43d4b);
-  --erp-danger-soft: #fff0f1;
-  --erp-info: var(--molsan-primary, #3156b3);
-  --erp-info-soft: var(--molsan-primary-soft, #edf3ff);
-
-  --erp-shadow-xs: 0 1px 2px rgba(36, 50, 74, .04);
-  --erp-shadow-sm: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
-  --erp-shadow-md: 0 10px 25px rgba(36, 50, 74, .08);
-  --erp-shadow-lg: 0 18px 45px rgba(36, 50, 74, .12);
-
-  --erp-radius-sm: var(--molsan-radius-control, 9px);
-  --erp-radius-md: var(--molsan-radius-card, 14px);
-  --erp-radius-lg: var(--molsan-radius-card, 14px);
-  --erp-radius-xl: var(--molsan-radius-dialog, 16px);
-
-  --erp-transition: var(--molsan-transition-normal, 180ms ease);
-}
+/* Los alias --erp-* se definen en molsan-tokens.css. */
 
 
 /* ============================================================
@@ -87,65 +45,15 @@
    CONTENEDORES PRINCIPALES
    ============================================================ */
 
-.erp-card {
-
-  background:
-    var(--erp-surface);
-
-  color:
-    var(--erp-text);
-
-  border:
-    1px solid var(--erp-border);
-
-  border-radius:
-    var(--erp-radius-lg);
-
-  box-shadow:
-    var(--erp-shadow-sm);
-
-}
-
-
-.erp-card-soft {
-
-  background:
-    var(--erp-surface-soft);
-
-  color:
-    var(--erp-text);
-
-  border:
-    1px solid var(--erp-border);
-
-  border-radius:
-    var(--erp-radius-md);
-
-}
-
-
 /* ============================================================
    HOVER DE TARJETAS
    ============================================================ */
-
-.erp-card:hover {
-
-  border-color:
-    var(--erp-border-strong);
-
-}
-
 
 /* ============================================================
    TÍTULOS DENTRO DE PÁGINAS ERP
    ============================================================ */
 
-.erp-page h1,
-.erp-page h2,
-.erp-page h3,
-.erp-page h4,
-.erp-page h5,
-.erp-page h6 {
+:where(.erp-page) :where(h1:not([class]), h2:not([class]), h3:not([class]), h4:not([class]), h5:not([class]), h6:not([class])) {
 
   color:
     var(--erp-text-strong);
@@ -189,7 +97,7 @@
    ENLACES
    ============================================================ */
 
-.erp-page a {
+.erp-page a:not([class]) {
 
   color:
     var(--erp-primary);
@@ -203,7 +111,7 @@
 }
 
 
-.erp-page a:hover {
+.erp-page a:not([class]):hover {
 
   color:
     var(--erp-primary-dark);
@@ -215,7 +123,7 @@
    BOTONES ERP
    ============================================================ */
 
-.erp-page button {
+.erp-page button:not([class]) {
 
   font-family:
     inherit;
@@ -339,9 +247,7 @@
    INPUTS
    ============================================================ */
 
-.erp-page input,
-.erp-page textarea,
-.erp-page select {
+.erp-page :where(input:not([class]), textarea:not([class]), select:not([class])) {
 
   background:
     var(--erp-surface);
@@ -359,8 +265,7 @@
    PLACEHOLDER
    ============================================================ */
 
-.erp-page input::placeholder,
-.erp-page textarea::placeholder {
+.erp-page :where(input:not([class]), textarea:not([class]))::placeholder {
 
   color:
     var(--erp-text-muted);
@@ -375,9 +280,7 @@
    FOCUS INPUTS
    ============================================================ */
 
-.erp-page input:focus,
-.erp-page textarea:focus,
-.erp-page select:focus {
+.erp-page :where(input:not([class]), textarea:not([class]), select:not([class])):focus {
 
   border-color:
     var(--erp-primary);
@@ -405,9 +308,7 @@
    Lo anulamos aquí.
    ============================================================ */
 
-.erp-page input:hover,
-.erp-page textarea:hover,
-.erp-page select:hover {
+.erp-page :where(input:not([class]), textarea:not([class]), select:not([class])):hover {
 
   transform:
     none;
@@ -837,7 +738,7 @@
 .erp-page select:focus-visible {
 
   outline:
-    3px solid rgba(49, 86, 179, 0.25);
+    3px solid color-mix(in srgb, var(--molsan-primary) 25%, transparent);
 
   outline-offset:
     2px;
@@ -945,14 +846,7 @@
 
 @media (max-width: 768px) {
 
-  .erp-card {
-
-    border-radius:
-      12px;
-
   }
-
-}
 
 
 /* ============================================================
