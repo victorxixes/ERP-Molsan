@@ -1,7 +1,7 @@
 """Regression tests for Supabase Storage API-key authentication."""
 import unittest
 
-from app.supabase_storage import SupabasePrivateStorage, SupabaseStorageConfig
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageConfig
 
 
 class SupabaseStorageAuthHeadersTests(unittest.TestCase):
