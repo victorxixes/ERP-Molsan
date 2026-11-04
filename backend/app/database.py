@@ -196,7 +196,7 @@ def _ddl_is_already_applied(connection, cursor, statement):
     # DO $ ... ALTER TABLE ... ADD CONSTRAINT ... $$ solo se considera no-op
     # cuando la restricción ya existe; nunca se permite crearla desde una petición.
     if re.match(r"^\s*DO\b", statement, re.IGNORECASE):
-        return bool(constraint_add)
+        return False
 
     return False
 
