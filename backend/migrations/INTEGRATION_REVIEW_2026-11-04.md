@@ -77,3 +77,15 @@ No se debe asumir que Supabase Auth esté configurado. Hay que inventariar el si
 ## Regla de datos
 
 No importar los 417 expedientes ni pagos históricos de prueba. Los 25 expedientes seleccionados se incorporarán después de que el ERP esté integrado y validado. No se importan ahora.
+
+
+## Actualización de seguridad aplicada en la rama
+
+En commits posteriores a esta revisión se ha aplicado una contención adicional:
+- Los hooks heredados de esquema/catálogos en `main.py` ya no se registran en el arranque web.
+- `runtime_schema_migrations_enabled()` devuelve siempre `False`; las variables de entorno antiguas no pueden reactivar esos hooks.
+- El hilo de DDL de arranque de EncargaGest consulta esa misma guarda y queda desactivado.
+- Los endpoints de mantenimiento de defectos, gastos y envío a notario inspeccionados en esta rama verifican el esquema provisionado y no ejecutan ALTER/CREATE desde la petición.
+- Se ha añadido `backend/tests/test_runtime_schema_migrations.py` para cubrir la desactivación por defecto y asegurar que las variables antiguas no la reactivan.
+
+Esta contención no sustituye la migración Alembic completa ni constituye una ejecución de pruebas. La creación de tablas auxiliares, los seeds y las reparaciones de datos deben convertirse en revisiones/tareas explícitas antes de provisionar el entorno limpio. No activar la variable antigua en Render.
