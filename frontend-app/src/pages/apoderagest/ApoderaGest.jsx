@@ -528,7 +528,7 @@ function TablaEncargos({ encargos, onFirmado }) {
               </span>
             </button>
             {abierto ? createPortal((
-              <div className="apoderagest ag-portal-root ag-grupo-modal-overlay fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label={`Encargos de ${grupo.nombre}`} onMouseDown={(e) => { if (e.target === e.currentTarget) setAbiertos(actual => ({ ...actual, [grupo.clave]: false })); }}>
+              <div className="apoderagest ag-portal-root ag-grupo-modal-overlay fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" ref={grupoDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={`Encargos de ${grupo.nombre}`} onMouseDown={(e) => { if (e.target === e.currentTarget) setAbiertos(actual => ({ ...actual, [grupo.clave]: false })); }}>
                 <div className="ag-grupo-modal flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
                   <header className="ag-grupo-modal-cabecera molsan-modal-header flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4">
                     <div><span className="text-xs font-semibold uppercase tracking-widest text-slate-500">APODERAGEST · BLOQUE DE APODERADO</span><h3 className="mt-1 text-xl font-bold text-slate-900">{grupo.nombre}</h3><p className="text-sm text-slate-600">{grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas registradas · {grupo.expedientes.length} encargos</p></div>
@@ -1112,7 +1112,7 @@ export default function ApoderaGest() {
       
       {modalResumen ? (
         <div className="ag-resumen-modal-overlay" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalResumen(null); }}>
-          <section className="ag-resumen-modal" role="dialog" aria-modal="true" aria-labelledby="ag-resumen-modal-titulo">
+          <section ref={resumenDialogRef} tabIndex={-1} className="ag-resumen-modal" role="dialog" aria-modal="true" aria-labelledby="ag-resumen-modal-titulo">
             <header className="ag-resumen-modal-cabecera">
               <div><span className="ag-kicker">APODERAGEST · RESUMEN DE ACTIVIDAD</span><h2 id="ag-resumen-modal-titulo">{modalResumen.titulo}</h2><p>{encargosDelResumen.length} expediente(s) en este indicador.</p></div>
               <button type="button" className="ag-resumen-modal-cerrar" autoFocus onClick={() => setModalResumen(null)} aria-label="Cerrar modal"><MolsanIcon name="x" size={16} bare /></button>
