@@ -383,10 +383,7 @@ export default function App() {
         <Route path="encargagest/mensajes" element={<RequireAuth>{protegerModulo("encargagest", <EncargaGestWorkspace page="mensajes" />)}</RequireAuth>} />
         <Route path="encargagest/intranet" element={<RequireAuth>{protegerModulo("encargagest", <EncargaGestWorkspace page="intranet" />)}</RequireAuth>} />
 
-        <Route
-          path="notargest"
         <Route path="notargest" element={<RequireAuth>{protegerModulo("notargest", <NotarGest />)}</RequireAuth>} />
-        />
 
         {/* Portales externos para notarías: rutas explícitas y separadas. */}
         <Route
