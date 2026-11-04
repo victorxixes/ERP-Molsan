@@ -1,3 +1,4 @@
+import MolsanIcon from "../ui/MolsanIcon";
 import {
   useEffect,
   useState,
@@ -8,16 +9,12 @@ import {
 } from "../../store/notificacionesStore";
 
 
-import "../../css/ComponentesOperativosPremium.css";
 
 /**
  * ============================================================
  * NOTIFICACIONES TOAST
- * MOLSAN ERP — GLASS LUXE
  *
  * - Avisos realtime
- * - Diseño translúcido
- * - Backdrop blur
  * - Tamaño compacto
  * - Desaparición automática en 2 segundos
  * - No elimina la notificación del store
@@ -68,18 +65,17 @@ export default function NotificacionesToast() {
 
   return (
     <div
-      className="notificaciones-toast-premium 
-        pointer-events-none
-        fixed
-        bottom-5
-        right-5
-        z-[9999]
+      className="notificaciones-toast 
+ pointer-events-none
+ fixed
+ bottom-5
+ right-5
+ z-[9999]
 
-        flex
-        w-[min(340px,calc(100vw-2rem))]
-        flex-col
-        gap-2
-      "
+ flex
+ w-[min(340px,calc(100vw-2rem))]
+ flex-col
+ gap-2"
     >
 
       {notificaciones
@@ -169,11 +165,8 @@ function Toast({
 
     return (
       <div
-        className="
-          h-0
-          overflow-hidden
-          opacity-0
-        "
+        className="h-0
+ overflow-hidden"
       />
     );
 
@@ -182,35 +175,23 @@ function Toast({
 
   return (
     <div
-      className="
-        pointer-events-auto
-        relative
-        overflow-hidden
+      className="pointer-events-auto
+ relative
+ overflow-hidden
 
-        w-full
+ w-full
 
-        rounded-2xl
+ 
 
-        border
-        border-white/10
+ 
+ 
 
-        bg-slate-900/50
+ 
 
-        backdrop-blur-xl
+ 
 
-        px-3
-        py-3
-
-        text-white
-
-        shadow-[0_18px_45px_rgba(15,23,42,0.18)]
-
-        transition-all
-        duration-500
-        ease-out
-
-        animate-fade-in
-      "
+ px-3
+ py-3"
     >
 
       {/* ==================================================
@@ -218,14 +199,12 @@ function Toast({
       ================================================== */}
 
       <div
-        className={`
-          absolute
-          left-0
-          top-0
-          bottom-0
-          w-[3px]
-          ${configuracion.color}
-        `}
+        className={`absolute
+ left-0
+ top-0
+ bottom-0
+ w-[3px]
+ `}
       />
 
 
@@ -234,11 +213,9 @@ function Toast({
       ================================================== */}
 
       <div
-        className="
-          flex
-          items-center
-          gap-3
-        "
+        className="flex
+ items-center
+ gap-3"
       >
 
         {/* =================================================
@@ -246,29 +223,14 @@ function Toast({
         ================================================= */}
 
         <div
-          className="
-            flex
-            h-9
-            w-9
-            shrink-0
-            items-center
-            justify-center
-
-            rounded-xl
-
-            border
-            border-white/10
-
-            bg-white/10
-
-            text-base
-
-            shadow-sm
-          "
+          className="flex
+ h-9
+ w-9
+ shrink-0
+ items-center
+ justify-center"
         >
-          {
-            configuracion.icono
-          }
+          <MolsanIcon name={configuracion.icono} size={18} bare />
         </div>
 
 
@@ -277,28 +239,19 @@ function Toast({
         ================================================= */}
 
         <div
-          className="
-            min-w-0
-            flex-1
-          "
+          className="min-w-0
+ flex-1"
         >
 
           <div
-            className="
-              flex
-              items-center
-              justify-between
-              gap-3
-            "
+            className="flex
+ items-center
+ justify-between
+ gap-3"
           >
 
             <div
-              className="
-                truncate
-                text-sm
-                font-semibold
-                text-white/95
-              "
+              className="truncate"
             >
               {
                 configuracion.titulo
@@ -307,12 +260,7 @@ function Toast({
 
 
             <div
-              className="
-                shrink-0
-                text-[10px]
-                font-medium
-                text-white/35
-              "
+              className="shrink-0"
             >
               Ahora
             </div>
@@ -326,12 +274,8 @@ function Toast({
             n.archivo_url) && (
 
             <div
-              className="
-                mt-0.5
-                truncate
-                text-xs
-                text-white/55
-              "
+              className="mt-0.5
+ truncate"
             >
               {
                 n.preview ||
@@ -352,19 +296,12 @@ function Toast({
       ================================================== */}
 
       <div
-        className="
-          pointer-events-none
-          absolute
-          left-0
-          right-0
-          top-0
-          h-px
-
-          bg-gradient-to-r
-          from-transparent
-          via-white/20
-          to-transparent
-        "
+        className="pointer-events-none
+ absolute
+ left-0
+ right-0
+ top-0
+ h-px"
       />
 
     </div>
@@ -387,63 +324,63 @@ function obtenerConfiguracion(
     case "nuevo_mensaje":
 
       return {
-        icono: "💬",
+        icono: "message",
         titulo: "Nuevo mensaje",
-        color: "bg-blue-400",
+
       };
 
 
     case "nuevo_archivo":
 
       return {
-        icono: "📎",
+        icono: "attachment",
         titulo: "Nuevo archivo",
-        color: "bg-purple-400",
+
       };
 
 
     case "online":
 
       return {
-        icono: "🟢",
+        icono: "check",
         titulo: "Usuario conectado",
-        color: "bg-emerald-400",
+
       };
 
 
     case "offline":
 
       return {
-        icono: "⚫",
+        icono: "pause",
         titulo: "Usuario desconectado",
-        color: "bg-slate-400",
+
       };
 
 
     case "error":
 
       return {
-        icono: "⛔",
+        icono: "alert",
         titulo: "Error",
-        color: "bg-red-400",
+
       };
 
 
     case "warning":
 
       return {
-        icono: "⚠️",
+        icono: "alert",
         titulo: "Advertencia",
-        color: "bg-yellow-400",
+
       };
 
 
     default:
 
       return {
-        icono: "🔔",
+        icono: "bell",
         titulo: "Nueva notificación",
-        color: "bg-blue-400",
+
       };
 
   }
