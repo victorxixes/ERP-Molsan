@@ -94,6 +94,23 @@ def _probe_directory(path: Path) -> None:
             pass
 
 
+STORAGE_BACKEND = (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower()
+if STORAGE_BACKEND not in {"local", "supabase"}:
+    raise RuntimeError("MOLSAN_STORAGE_BACKEND debe ser 'local' o 'supabase'.")
+
+IS_RENDER = bool(os.getenv("RENDER_SERVICE_ID") or os.getenv("RENDER"))
+if IS_RENDER and STORAGE_BACKEND != "supabase":
+    raise RuntimeError(
+        "En Render el ERP requiere MOLSAN_STORAGE_BACKEND=supabase. "
+        "No se permite guardar documentos en almacenamiento efímero."
+    )
+
+if STORAGE_BACKEND == "supabase":
+    # Validar al arrancar, no esperar al primer documento, para que el Preview
+    # nunca acepte tráfico con el almacenamiento privado mal configurado.
+    from backend.app.supabase_storage import SupabaseStorageConfig
+    SupabaseStorageConfig.from_env()
+
 ROOT_VALUE = os.getenv("MOLSAN_STORAGE_ROOT", "./data/molsan").strip()
 if not ROOT_VALUE:
     raise RuntimeError("MOLSAN_STORAGE_ROOT no puede estar vacío")
