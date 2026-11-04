@@ -25,6 +25,7 @@ from backend.app.config import settings
 from backend.app.empleados.models import Empleado
 from backend.app.ctn.models import Notaria
 from backend.app.database import Base, engine, get_db
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
 from backend.app.encargagest.models import (
     EncargoExterno, EncargoExternoActividad, EncargoExternoDocumento,
     EncargoExternoUsuario,
@@ -163,11 +164,8 @@ def _migrar_tablas_encargagest_en_hilo():
 
 @router.on_event("startup")
 async def crear_tablas_encargagest():
-    if (
-        os.getenv("MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS", "false").strip().lower() not in {"1", "true", "yes"}
-        or os.getenv("MOLSAN_PROCESS_ROLE", "web").strip().lower() != "migration"
-    ):
-        print("[ENCARGAGEST MIGRACION] DDL desactivado en proceso web; se omite el hilo de migración.", flush=True)
+    if not runtime_schema_migrations_enabled():
+        print("[ENCARGAGEST MIGRACION] DDL de arranque desactivado; el esquema se gestiona con Alembic.", flush=True)
         return
     # No crear ni iniciar hilos mientras Starlette está ejecutando la secuencia
     # de arranque. Solo se agenda el lanzamiento para después de liberar el
