@@ -18,7 +18,7 @@ import React, {
 // API
 // ============================================================
 
-const API_BASE = `${API_ROOT}/api/acciones-expediente`;
+const API_BASE = `${API_ROOT}/acciones-expediente`;
 
 const API_IMPORTAR_EXCEL =
   `${API_BASE}/importar-excel`;
