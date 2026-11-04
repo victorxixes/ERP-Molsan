@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Response
 from fastapi.responses import FileResponse
 from pathlib import Path
 from contextlib import contextmanager
@@ -146,6 +146,7 @@ LEGACY_FOTOS_DIR = os.path.join(STATIC_DIR, "fotos")
 os.makedirs(LEGACY_FOTOS_DIR, exist_ok=True)
 
 from backend.app.auth.dependencies import get_current_user
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError
 from backend.app.auth.permissions import require_perm_modulo
 
 FOTOS_ROOT = Path(FOTOS_DIR).resolve()
@@ -171,6 +172,24 @@ def servir_fotografia_empleado(
         raise HTTPException(
             status_code=404,
             detail="Fotografía no encontrada",
+        )
+
+    if (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase":
+        try:
+            contenido = SupabasePrivateStorage().download(f"fotos/{ruta}")
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail="Fotografía no encontrada") from exc
+        except (RuntimeError, SupabaseStorageError) as exc:
+            raise HTTPException(status_code=503, detail="El almacenamiento de fotografías no está disponible") from exc
+        extension = Path(ruta).suffix.lower()
+        mime = {
+            ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
+            ".gif": "image/gif", ".webp": "image/webp",
+        }.get(extension, "application/octet-stream")
+        return Response(
+            content=contenido,
+            media_type=mime,
+            headers={"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"},
         )
 
     fichero = None
