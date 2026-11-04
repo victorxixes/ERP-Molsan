@@ -1,5 +1,6 @@
 """WebSocket de Mensajes con validación de identidad y destinatarios."""
 
+import asyncio
 import json
 from pathlib import Path
 
@@ -10,7 +11,7 @@ from backend.app.auth.websocket_auth import autenticar_websocket
 from backend.app.database import SessionLocal
 from backend.app.empleados.models import Empleado
 from backend.app.mensajes.ws_manager import manager
-from backend.app.mensajes.adjuntos import ruta_adjunto_mensaje
+from backend.app.mensajes.adjuntos import adjunto_mensaje_valido
 
 router = APIRouter()
 MAX_TEXTO = 10_000
@@ -148,7 +149,7 @@ async def mensajes_ws(websocket: WebSocket, empleado_id: int):
                     await websocket.close(code=4005, reason="No se pudo validar la sesión")
                     break
                 archivo_url = data.get("archivo_url")
-                if ruta_adjunto_mensaje(archivo_url, exigir_existencia=True) is None:
+                if not await asyncio.to_thread(adjunto_mensaje_valido, archivo_url, True):
                     continue
                 await manager.enviar_archivo_ws(
                     remitente_id=empleado_id,
