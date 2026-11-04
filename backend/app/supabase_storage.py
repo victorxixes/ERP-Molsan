@@ -112,16 +112,19 @@ class SupabasePrivateStorage:
             raise SupabaseStorageError("No se pudo conectar con Supabase Storage.") from exc
 
     def exists(self, key: str) -> bool:
-        """Check object existence without downloading its body."""
+        """Check object metadata, avoiding cached download responses."""
         path = _object_path(key)
-        url = self._url(f"object/{quote(self.config.bucket, safe='-_.~')}/{path}")
+        url = self._url(
+            f"object/info/{quote(self.config.bucket, safe='-_.~')}/{path}"
+        )
         response = None
         try:
+            # The info endpoint returns object metadata, not the cached file body.
             response = self.session.get(
                 url,
                 headers=self._headers(),
                 timeout=self.config.timeout_seconds,
-                stream=True,
+                headers_extra=None,
             )
             if response.status_code == 404:
                 return False
