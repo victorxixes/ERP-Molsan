@@ -23,6 +23,8 @@ jobs:
     env:
       DATABASE_URL: ${{ secrets.MOLSAN_SUPABASE_MIGRATION_DATABASE_URL }}
       MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS: "true"
+      JWT_SECRET: "ci-only-secret-never-use-in-production-32-characters"
+      MOLSAN_STORAGE_ROOT: /tmp/molsan-migration-workflow
     steps:
       - name: Checkout exact integration commit
         uses: actions/checkout@v4
