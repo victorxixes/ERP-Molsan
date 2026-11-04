@@ -5,7 +5,7 @@ import mimetypes
 import re
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
@@ -22,6 +22,7 @@ from backend.app.mensajes.service import (
 )
 from backend.app.mensajes.ws_manager import manager
 from backend.app.storage import MENSAJES_DIR
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError
 
 
 router = APIRouter(
