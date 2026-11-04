@@ -58,9 +58,10 @@ Comprobaciones de solo lectura del proyecto `ERP_Molsan` el 4-11-2026:
 - 0 tablas/vistas ERP en `public`.
 - 0 migraciones registradas.
 - 0 usuarios Auth.
-- 0 buckets y 0 objetos Storage.
+- 1 bucket privado `molsan-private` (100 MiB, 20 MIME permitidos), 0 objetos.
+- RLS activo en `storage.objects` y `storage.buckets`; 0 políticas en `storage.objects`.
 
-No se ha aplicado ninguna migración ni se han cargado datos. Los asesores de seguridad y rendimiento no mostraban avisos en la comprobación realizada.
+No se ha aplicado ninguna migración ERP ni se han cargado documentos. Los asesores de seguridad y rendimiento no mostraban avisos en la comprobación realizada.
 
 ## Almacenamiento documental: implementación en rama
 
