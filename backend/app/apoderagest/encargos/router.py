@@ -629,12 +629,3 @@ def aceptar_encargo(
         "mensaje": "Encargo aceptado. Los datos quedan guardados en Ficha Expediente y la cita de firma está sincronizada con Agenda.",
     }
 
-
-
-def _es_gestor_asignado_apoderagest(expediente, empleado_id):
-    try:
-        gestor_id = int(getattr(expediente, "gestor_asignado_id", None) or 0)
-        destinatario_id = int(empleado_id or 0)
-    except (TypeError, ValueError):
-        return False
-    return bool(gestor_id and destinatario_id and gestor_id == destinatario_id)
