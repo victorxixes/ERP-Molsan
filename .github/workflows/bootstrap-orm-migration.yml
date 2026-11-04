@@ -1,0 +1,80 @@
+name: Bootstrap ORM migration in isolated PostgreSQL
+
+on:
+  push:
+    branches: [production/erp-molsan-2026-11-04]
+    paths:
+      - "backend/app/**"
+      - "backend/migrations/**"
+      - "backend/requirements.txt"
+      - ".github/workflows/bootstrap-orm-migration.yml"
+  pull_request:
+    paths:
+      - "backend/app/**"
+      - "backend/migrations/**"
+      - "backend/requirements.txt"
+      - ".github/workflows/bootstrap-orm-migration.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bootstrap-orm-migration-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate-and-test:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: molsan_ci
+          POSTGRES_PASSWORD: molsan_ci_only
+          POSTGRES_DB: molsan_schema_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U molsan_ci -d molsan_schema_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgresql+psycopg2://molsan_ci:molsan_ci_only@localhost:5432/molsan_schema_test
+      MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS: "true"
+      JWT_SECRET: ci-only-secret-never-use-in-production-32-characters
+      MOLSAN_STORAGE_ROOT: /tmp/molsan-schema-ci
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install backend requirements
+        run: pip install -r backend/requirements.txt
+      - name: Generate initial ORM revision if absent
+        run: |
+          if ! find backend/migrations/versions -maxdepth 1 -type f -name '*.py' ! -name '__init__.py' | grep -q .; then
+            alembic -c alembic.ini revision --autogenerate --rev-id 20261104_0001 -m "initial ORM schema"
+          else
+            echo "An initial Alembic revision already exists; testing the current chain."
+          fi
+      - name: Apply, rollback and reapply migrations on isolated PostgreSQL
+        run: |
+          alembic -c alembic.ini upgrade head
+          alembic -c alembic.ini downgrade base
+          alembic -c alembic.ini upgrade head
+      - name: Commit generated revision to integration branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backend/migrations/versions/*.py
+          if ! git diff --cached --quiet; then
+            git commit -m "db: add initial ORM schema migration"
+            git push
+          fi
