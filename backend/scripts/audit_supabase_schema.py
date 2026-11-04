@@ -388,7 +388,7 @@ def main():
         + "\n".join(unknown_table_alters)
         + "\n\nOTHER_STATIC_ALTERATIONS\n"
         + "\n".join(other_static_alters)
-        + "\n\nSTATIC_DDL_REQUIRES_MANUAL_REVIEW\n"
+        + "\n\nSTATIC_DDL_RECONCILED\n"
         + "\n".join(f"{entry['source']}\t{entry['sql']}" for entry in manual_review_ddl)
         + "\n\nDUPLICATE_OR_ORM_TABLE_DEFINITIONS\n"
         + "\n".join(f"{table}\t{source}\t{note}" for table, source, note in duplicate_ddl)
