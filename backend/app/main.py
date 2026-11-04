@@ -31,6 +31,8 @@ app = FastAPI(title="Agenda Intranet Backend")
 origins = [
     "https://agenda-intranet-f.onrender.com",
     "https://agenda-intranet-b.onrender.com",
+    "https://molsan-glass-luxe-preview.onrender.com",
+    "https://molsan-premium-2027-preview.onrender.com",
     "http://localhost:5173",
     "http://localhost:3000",
 ]
@@ -205,6 +207,8 @@ from backend.app.seguridad.asignar_password_router import (
 )
 from backend.app.seguridad.permisos.permisos_router import (
     router as permisos_router,
+    MODULOS_BASE,
+    PERMISOS_BASE,
 )
 from backend.app.expedientes.gastos.router import router as gastos_router
 from backend.app.honorarios_gestoria.router import router as honorarios_gestoria_router
@@ -2733,7 +2737,156 @@ def reparar_vinculos_apoderado_expedientes():
 # ORDEN DE ARRANQUE
 # ============================================================
 
-# La migración se ejecuta antes de crear o comprobar las tablas auxiliares.
+# Nombre de la base PostgreSQL creada exclusivamente para Glass Luxe Preview.
+# La comprobación se ejecuta ANTES de cualquier bootstrap o escritura de prueba.
+PREVIEW_DATABASE_NAME = "molsan_glass_luxe_preview_db"
+
+
+def _exigir_base_datos_preview():
+    with engine.connect() as conexion_preview:
+        nombre_bd = conexion_preview.execute(
+            text("SELECT current_database()")
+        ).scalar()
+    if nombre_bd != PREVIEW_DATABASE_NAME:
+        raise RuntimeError(
+            "[PREVIEW DB] Bootstrap bloqueado: DATABASE_URL no apunta a "
+            f"{PREVIEW_DATABASE_NAME!r} (base detectada: {nombre_bd!r})."
+        )
+    print(f"[PREVIEW DB] Conexión confirmada: {nombre_bd}.", flush=True)
+    return nombre_bd
+
+
+# La base de datos de pruebas parte vacía. En esa instancia aislada se
+# materializan primero las tablas definidas por los modelos SQLAlchemy y,
+# a continuación, se ejecutan las migraciones incrementales habituales.
+# La opción está desactivada por defecto y solo debe activarse en el servicio
+# molsan-glass-luxe-preview-api; producción conserva su esquema preexistente.
+def inicializar_esquema_base_preview():
+    habilitado = os.getenv("MOLSAN_PREVIEW_BOOTSTRAP_SCHEMA", "").strip().lower()
+    if habilitado not in {"1", "true", "yes", "si", "sí"}:
+        print("[PREVIEW SCHEMA] Bootstrap desactivado; se conserva el flujo normal.", flush=True)
+        return
+
+    _exigir_base_datos_preview()
+    print("[PREVIEW SCHEMA] Creando únicamente tablas ausentes desde los modelos registrados...", flush=True)
+    Base.metadata.create_all(bind=engine, checkfirst=True)
+    with engine.connect() as conexion_preview:
+        comprobacion = conexion_preview.execute(text("""
+            SELECT
+                to_regclass('public.roles') IS NOT NULL AS roles,
+                to_regclass('public.empleados') IS NOT NULL AS empleados
+        """)).mappings().one()
+    if not comprobacion["roles"] or not comprobacion["empleados"]:
+        raise RuntimeError(
+            "[PREVIEW SCHEMA] No se han podido crear las tablas base roles/empleados."
+        )
+    print("[PREVIEW SCHEMA] Tablas base roles/empleados disponibles.", flush=True)
+
+
+
+def crear_administrador_preview():
+    """Crea o repara el administrador únicamente en la API aislada de preview.
+
+    No inicializa el esquema ni cambia la contraseña de una cuenta existente.
+    La comprobación del hostname impide ejecutar este bootstrap en producción,
+    aunque la variable de activación se configurase allí por error.
+    """
+    habilitado = os.getenv("MOLSAN_PREVIEW_BOOTSTRAP_ADMIN", "").strip().lower()
+    if habilitado not in {"1", "true", "yes", "si", "sí"}:
+        return
+
+    hostname = os.getenv("RENDER_EXTERNAL_HOSTNAME", "").strip().lower()
+    hostname_esperado = "molsan-glass-luxe-preview-api.onrender.com"
+    if hostname != hostname_esperado:
+        raise RuntimeError(
+            "[PREVIEW ADMIN] Bootstrap bloqueado: el servicio no es la API de preview autorizada."
+        )
+
+    _exigir_base_datos_preview()
+
+    usuario = os.getenv("MOLSAN_PREVIEW_ADMIN_USERNAME", "").strip()
+    password = os.getenv("MOLSAN_PREVIEW_ADMIN_PASSWORD", "")
+    if not usuario:
+        raise RuntimeError("[PREVIEW ADMIN] Falta MOLSAN_PREVIEW_ADMIN_USERNAME.")
+
+    modulos_admin = list(MODULOS_BASE)
+    permisos_admin = {
+        modulo: list(PERMISOS_BASE)
+        for modulo in modulos_admin
+    }
+
+    from backend.app.empleados.service import hash_password
+
+    db = SessionLocal()
+    try:
+        rol_admin = db.query(Rol).filter(
+            or_(
+                Rol.nombre.ilike("admin"),
+                Rol.nombre.ilike("administrador"),
+                Rol.nombre.ilike("administradora"),
+                Rol.nombre.ilike("superadmin"),
+            )
+        ).first()
+        if rol_admin is None:
+            rol_admin = Rol(
+                nombre="Admin",
+                descripcion="Administrador del entorno aislado de pruebas",
+            )
+            db.add(rol_admin)
+            db.flush()
+
+        existente = (
+            db.query(Empleado)
+            .filter(Empleado.usuario == usuario)
+            .first()
+        )
+
+        if existente:
+            # La cuenta se identifica explícitamente mediante la variable de
+            # entorno del administrador de preview. Se repara el rol y los
+            # permisos explícitos; nunca se sobrescribe su contraseña.
+            existente.rol_id = rol_admin.id
+            existente.activo = True
+            existente.modulos_visibles_list = modulos_admin
+            existente.permisos_modulo_dict = permisos_admin
+            db.commit()
+            print(
+                "[PREVIEW ADMIN] Cuenta existente reparada: rol, módulos y permisos explícitos actualizados; contraseña conservada.",
+                flush=True,
+            )
+            return
+
+        if len(password) < 20:
+            raise RuntimeError(
+                "[PREVIEW ADMIN] Para crear una cuenta nueva, MOLSAN_PREVIEW_ADMIN_PASSWORD debe tener al menos 20 caracteres."
+            )
+
+        administrador = Empleado(
+            nombre="Administrador",
+            apellidos="Preview",
+            dni="PREVIEW-ADMIN",
+            usuario=usuario,
+            password=hash_password(password),
+            activo=True,
+            foto="default-avatar.png",
+            rol_id=rol_admin.id,
+            modulos_visibles_list=modulos_admin,
+            permisos_modulo_dict=permisos_admin,
+        )
+        db.add(administrador)
+        db.commit()
+        print(
+            "[PREVIEW ADMIN] Cuenta administradora de pruebas creada con permisos explícitos para todos los módulos base.",
+            flush=True,
+        )
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
+
+
+# Las migraciones incrementales siguen ejecutándose en su orden original.
 app.router.on_startup.insert(
     0,
     migrar_esquema_expedientes_inicio,
@@ -2742,5 +2895,25 @@ app.router.on_startup.insert(1, migrar_catalogo_honorarios_impuestos)
 app.router.on_startup.insert(2, migrar_catalogo_absis)
 app.router.on_startup.insert(3, migrar_visibilidad_empleado)
 app.router.on_startup.insert(4, reparar_vinculos_apoderado_expedientes)
+
+# Solo el servicio aislado de preview activa la creación inicial del esquema.
+# El bootstrap del administrador es independiente: puede reparar permisos en
+# una base ya inicializada sin volver a ejecutar create_all ni exigir el flag schema.
+if os.getenv("MOLSAN_PREVIEW_BOOTSTRAP_SCHEMA", "").strip().lower() in {"1", "true", "yes", "si", "sí"}:
+    app.router.on_startup.insert(0, inicializar_esquema_base_preview)
+
+if os.getenv("MOLSAN_PREVIEW_BOOTSTRAP_ADMIN", "").strip().lower() in {"1", "true", "yes", "si", "sí"}:
+    app.router.on_startup.append(crear_administrador_preview)
+
+
+def verificar_base_datos_preview_inicio():
+    """Verifica siempre el destino DB en el servicio Preview, antes de migraciones."""
+    hostname = os.getenv("RENDER_EXTERNAL_HOSTNAME", "").strip().lower()
+    if hostname == "molsan-glass-luxe-preview-api.onrender.com":
+        _exigir_base_datos_preview()
+
+
+# Se inserta después de registrar las demás tareas para ejecutarse la primera.
+app.router.on_startup.insert(0, verificar_base_datos_preview_inicio)
 
 instrumentar_inicio_aplicacion()

@@ -3,13 +3,22 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 from backend.app.empleados.models import Empleado
 from backend.app.empleados.service import hash_password
+
+
+def _requiere_edicion_seguridad(usuario=Depends(get_current_user)):
+    """Solo usuarios autenticados con permiso explícito pueden restablecer contraseñas."""
+    require_perm_modulo(usuario, "seguridad", "editar")
+    return usuario
 
 
 router = APIRouter(
     prefix="/seguridad/asignar",
     tags=["Seguridad - Asignación"],
+    dependencies=[Depends(_requiere_edicion_seguridad)],
 )
 
 

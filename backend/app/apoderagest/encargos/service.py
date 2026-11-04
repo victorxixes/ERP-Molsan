@@ -71,24 +71,11 @@ def _nombre_notario(expediente):
 
 
 
-def _campos_ficha_central(expediente):
-    """Expone los campos del modelo central sin perder los alias de ApoderaGest."""
-    resultado = {}
-    for columna in Expediente.__table__.columns:
-        nombre = columna.name
-        valor = getattr(expediente, nombre, None)
-        if valor is not None and hasattr(valor, "isoformat"):
-            valor = valor.isoformat()
-        resultado[nombre] = valor
-    return resultado
-
-
 def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_apoderado=None):
     """Convierte un expediente en el formato consumido por ApoderaGest."""
     return {
-        # Fuente de verdad: campos persistidos en Expediente/FichaExpediente.
-        # Los alias de compatibilidad de ApoderaGest definidos debajo prevalecen.
-        **_campos_ficha_central(expediente),
+        # Contrato explícito: no serializar todas las columnas de Expediente,
+        # porque incluiría datos internos ajenos al apoderado.
         "id": getattr(expediente, "id", None),
         "id_expediente": _texto(
             getattr(expediente, "id_expediente", None)
@@ -106,7 +93,6 @@ def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_a
             else getattr(expediente, "capital", None)
         ),
         "importe": getattr(expediente, "importe", None),
-        "saldo_real": getattr(expediente, "saldo_real", None),
         "saldo_disponible": getattr(expediente, "saldo_disponible", None),
         "contrato": _texto(getattr(expediente, "contrato", None)),
         "tipo_operacion": _texto(getattr(expediente, "tipo_operacion", None)),
@@ -132,19 +118,6 @@ def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_a
             }
             for documento in (getattr(expediente, "documentos_escritura", None) or [])
         ],
-        "facturacion": {
-            "nombre": _texto(getattr(expediente, "facturacion_nombre", None)),
-            "apellidos": _texto(getattr(expediente, "facturacion_apellidos", None)),
-            "dni_nif": _texto(getattr(expediente, "facturacion_dni_nif", None)),
-            "direccion": _texto(getattr(expediente, "facturacion_direccion", None)),
-            "codigo_postal": _texto(getattr(expediente, "facturacion_codigo_postal", None)),
-            "poblacion": _texto(getattr(expediente, "facturacion_poblacion", None)),
-            "provincia": _texto(getattr(expediente, "facturacion_provincia", None)),
-            "telefono": _texto(getattr(expediente, "facturacion_telefono", None)),
-            "email": _texto(getattr(expediente, "facturacion_email", None)),
-            "estado": _texto(getattr(expediente, "facturacion_estado", None)),
-            "fecha": _fecha_texto(getattr(expediente, "facturacion_fecha", None)),
-        },
         "fecha_firma": _fecha_texto(
             getattr(expediente, "fecha_firma", None)
         ),
@@ -174,9 +147,6 @@ def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_a
         "nif_titular": _texto(
             getattr(expediente, "nif_titular", None)
         ),
-        "observaciones": _texto(
-            getattr(expediente, "observaciones", None)
-        ),
         "fecha_solicitud_pnc": _fecha_texto(getattr(expediente, "fecha_solicitud_pnc", None)),
         "numero_solicitud_pnc": _texto(getattr(expediente, "numero_solicitud_pnc", None)),
         "hora_prevista_firma": _fecha_texto(getattr(expediente, "hora_prevista_firma", None)),
@@ -185,6 +155,7 @@ def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_a
             getattr(expediente, "fecha_envio_notario", None)
             or getattr(expediente, "fecha_envio", None)
         ),
+        "fecha_envio": _fecha_texto(getattr(expediente, "fecha_envio", None)),
         "fecha_prevista_firma": _fecha_texto(
             getattr(expediente, "fecha_prevista_firma", None)
         ),

@@ -7,11 +7,10 @@ import {
 
 import { buildRealtimeWsUrl } from "../../api/monitorRealtime";
 import { useAuthStore } from "../../store/authStore";
-import "./PanelTecnicoSubmodulos.css";
 
 /**
  * ============================================================
- * MONITOR REALTIME — MOLSAN ERP PREMIUM 2027
+ * MONITOR REALTIME
  * ============================================================
  *
  * Monitor técnico del WebSocket realtime.
@@ -484,35 +483,17 @@ export default function MonitorRealtime() {
 
     conectado: {
       texto: "WebSocket conectado",
-      punto: "bg-emerald-500",
-      fondo:
-        "bg-emerald-50",
-      borde:
-        "border-emerald-200",
-      textoClase:
-        "text-emerald-700",
+
     },
 
     conectando: {
       texto: "Conectando WebSocket...",
-      punto: "bg-amber-500 animate-pulse",
-      fondo:
-        "bg-amber-50",
-      borde:
-        "border-amber-200",
-      textoClase:
-        "text-amber-700",
+
     },
 
     desconectado: {
       texto: "WebSocket desconectado",
-      punto: "bg-red-500",
-      fondo:
-        "bg-red-50",
-      borde:
-        "border-red-200",
-      textoClase:
-        "text-red-700",
+
     },
 
   };
@@ -528,14 +509,13 @@ export default function MonitorRealtime() {
   return (
 
     <section
-      className="monitor-realtime-premium panel-tecnico-submodulo-premium
-        bg-[var(--erp-surface)]
-        border
-        border-[var(--erp-border)]
-        rounded-2xl
-        shadow-sm
-        overflow-hidden
-      "
+      className="panel-tecnico-submodulo-premium
+ 
+ 
+ 
+ 
+ 
+ overflow-hidden"
     >
 
       {/* ======================================================
@@ -543,43 +523,36 @@ export default function MonitorRealtime() {
           ====================================================== */}
 
       <div
-        className="
-          px-6
-          py-5
-          border-b
-          border-[var(--erp-border)]
-          flex
-          flex-col
-          md:flex-row
-          md:items-center
-          md:justify-between
-          gap-4
-        "
+        className="molsan-subpage-header px-6
+ py-5
+ 
+ 
+ flex
+ flex-col
+ md:flex-row
+ md:items-center
+ md:justify-between
+ gap-4"
       >
 
         <div>
 
           <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
+            className="flex
+ items-center
+ gap-3"
           >
 
             <div
-              className="
-                w-11
-                h-11
-                rounded-2xl
-                bg-[var(--erp-primary-soft)]
-                border
-                border-[var(--erp-border)]
-                flex
-                items-center
-                justify-center
-                text-[var(--erp-primary)]
-              "
+              className="w-11
+ h-11
+ 
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
             >
 
               <svg
@@ -598,21 +571,13 @@ export default function MonitorRealtime() {
             <div>
 
               <h2
-                className="
-                  text-lg
-                  font-semibold
-                  text-[var(--erp-text)]
-                "
+               
               >
                 Monitor Realtime
               </h2>
 
               <p
-                className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                  mt-0.5
-                "
+                className="mt-0.5"
               >
                 Conexión WebSocket del sistema
               </p>
@@ -626,29 +591,25 @@ export default function MonitorRealtime() {
         {/* ESTADO */}
 
         <div
-          className={`
-            inline-flex
-            items-center
-            gap-2
-            px-3
-            py-2
-            rounded-xl
-            border
-            text-xs
-            font-medium
-            ${estadoActual.fondo}
-            ${estadoActual.borde}
-            ${estadoActual.textoClase}
-          `}
+          className={`inline-flex
+ items-center
+ gap-2
+ px-3
+ py-2
+ 
+ 
+ 
+ 
+ 
+ 
+ `}
         >
 
           <span
-            className={`
-              w-2
-              h-2
-              rounded-full
-              ${estadoActual.punto}
-            `}
+            className={`w-2
+ h-2
+ 
+ `}
           />
 
           {estadoActual.texto}
@@ -669,53 +630,32 @@ export default function MonitorRealtime() {
             ==================================================== */}
 
         <div
-          className="
-            grid
-            grid-cols-1
-            md:grid-cols-3
-            gap-4
-          "
+          className="grid
+ grid-cols-1
+ md:grid-cols-3
+ gap-4"
         >
 
           {/* CONEXIONES */}
 
           <div
-            className="
-              rounded-2xl
-              border
-              border-[var(--erp-border)]
-              bg-[var(--erp-surface-soft)]
-              p-4
-            "
+            className="p-4"
           >
 
             <div
-              className="
-                text-xs
-                font-medium
-                text-[var(--erp-text-soft)]
-              "
+             
             >
               Conexión de esta vista
             </div>
 
             <div
-              className="
-                mt-2
-                text-3xl
-                font-bold
-                text-[var(--erp-text)]
-              "
+              className="mt-2"
             >
               {conexiones}
             </div>
 
             <div
-              className="
-                mt-1
-                text-xs
-                text-[var(--erp-text-soft)]
-              "
+              className="mt-1"
             >
               {estado === "conectado"
                 ? "Conexión activa"
@@ -728,42 +668,23 @@ export default function MonitorRealtime() {
           {/* MENSAJES */}
 
           <div
-            className="
-              rounded-2xl
-              border
-              border-[var(--erp-border)]
-              bg-[var(--erp-surface-soft)]
-              p-4
-            "
+            className="p-4"
           >
 
             <div
-              className="
-                text-xs
-                font-medium
-                text-[var(--erp-text-soft)]
-              "
+             
             >
               Mensajes recibidos
             </div>
 
             <div
-              className="
-                mt-2
-                text-3xl
-                font-bold
-                text-[var(--erp-text)]
-              "
+              className="mt-2"
             >
               {mensajesRecibidos}
             </div>
 
             <div
-              className="
-                mt-1
-                text-xs
-                text-[var(--erp-text-soft)]
-              "
+              className="mt-1"
             >
               Eventos recibidos por esta conexión
             </div>
@@ -774,32 +695,17 @@ export default function MonitorRealtime() {
           {/* ACTIVIDAD */}
 
           <div
-            className="
-              rounded-2xl
-              border
-              border-[var(--erp-border)]
-              bg-[var(--erp-surface-soft)]
-              p-4
-            "
+            className="p-4"
           >
 
             <div
-              className="
-                text-xs
-                font-medium
-                text-[var(--erp-text-soft)]
-              "
+             
             >
               Última actividad
             </div>
 
             <div
-              className="
-                mt-2
-                text-2xl
-                font-bold
-                text-[var(--erp-text)]
-              "
+              className="mt-2"
             >
               {formatearHora(
                 ultimaActividad
@@ -807,11 +713,7 @@ export default function MonitorRealtime() {
             </div>
 
             <div
-              className="
-                mt-1
-                text-xs
-                text-[var(--erp-text-soft)]
-              "
+              className="mt-1"
             >
               Último evento recibido
             </div>
@@ -826,45 +728,33 @@ export default function MonitorRealtime() {
             ==================================================== */}
 
         <div
-          className="
-            mt-4
-            rounded-2xl
-            border
-            border-[var(--erp-border)]
-            bg-[var(--erp-surface-soft)]
-            p-4
-          "
+          className="mt-4
+ 
+ 
+ 
+ 
+ p-4"
         >
 
           <div
-            className="
-              flex
-              flex-col
-              sm:flex-row
-              sm:items-center
-              sm:justify-between
-              gap-3
-            "
+            className="flex
+ flex-col
+ sm:flex-row
+ sm:items-center
+ sm:justify-between
+ gap-3"
           >
 
             <div>
 
               <div
-                className="
-                  text-sm
-                  font-semibold
-                  text-[var(--erp-text)]
-                "
+               
               >
                 Suscripción realtime
               </div>
 
               <div
-                className="
-                  text-xs
-                  text-[var(--erp-text-soft)]
-                  mt-1
-                "
+                className="mt-1"
               >
                 Esta vista escucha eventos del canal técnico del sistema.
               </div>
@@ -873,66 +763,37 @@ export default function MonitorRealtime() {
 
 
             <div
-              className="
-                flex
-                flex-wrap
-                items-center
-                gap-2
-              "
+              className="flex
+ flex-wrap
+ items-center
+ gap-2"
             >
 
               <span
-                className="
-                  inline-flex
-                  items-center
-                  px-2.5
-                  py-1
-                  rounded-lg
-                  bg-[var(--erp-primary-soft)]
-                  border
-                  border-[var(--erp-border)]
-                  text-xs
-                  text-[var(--erp-primary)]
-                  font-medium
-                "
+                className="inline-flex
+ items-center
+ px-2.5
+ py-1"
               >
                 módulo: {modulo}
               </span>
 
 
               <span
-                className="
-                  inline-flex
-                  items-center
-                  px-2.5
-                  py-1
-                  rounded-lg
-                  bg-[var(--erp-primary-soft)]
-                  border
-                  border-[var(--erp-border)]
-                  text-xs
-                  text-[var(--erp-primary)]
-                  font-medium
-                "
+                className="inline-flex
+ items-center
+ px-2.5
+ py-1"
               >
                 grupo: {grupo}
               </span>
 
 
               <span
-                className="
-                  inline-flex
-                  items-center
-                  px-2.5
-                  py-1
-                  rounded-lg
-                  bg-[var(--erp-primary-soft)]
-                  border
-                  border-[var(--erp-border)]
-                  text-xs
-                  text-[var(--erp-primary)]
-                  font-medium
-                "
+                className="inline-flex
+ items-center
+ px-2.5
+ py-1"
               >
                 rol: {rol}
               </span>
@@ -949,38 +810,29 @@ export default function MonitorRealtime() {
             ==================================================== */}
 
         <div
-          className="
-            mt-4
-            rounded-2xl
-            border
-            border-[var(--erp-border)]
-            bg-[var(--erp-surface-soft)]
-            px-4
-            py-3
-            flex
-            flex-col
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
-            gap-2
-          "
+          className="mt-4
+ 
+ 
+ 
+ 
+ px-4
+ py-3
+ flex
+ flex-col
+ sm:flex-row
+ sm:items-center
+ sm:justify-between
+ gap-2"
         >
 
           <span
-            className="
-              text-xs
-              text-[var(--erp-text-soft)]
-            "
+           
           >
             Endpoint WebSocket
           </span>
 
           <code
-            className="
-              text-xs
-              font-mono
-              text-[var(--erp-primary)]
-            "
+           
           >
             /ws/realtime/
           </code>

@@ -1,10 +1,14 @@
 """Validación de integridad al vincular documentos económicos."""
 import unittest
+from datetime import date
+from decimal import Decimal
 from types import SimpleNamespace
 
 from fastapi import HTTPException
 
 from backend.app.expedientes.gastos.router import (
+    _crear_obligacion_pendiente,
+    _estado_pago_desde_totales,
     _tipo_gasto_desde_categoria,
     _validar_documento_economico,
 )
@@ -67,6 +71,26 @@ class EconomicDocumentLinkTests(unittest.TestCase):
         with self.assertRaises(HTTPException) as caught:
             _validar_documento_economico(self.expediente, None, "Factura registral")
         self.assertEqual(caught.exception.status_code, 404)
+
+    def test_attaching_invoice_creates_pending_obligation_not_payment(self):
+        gasto = _crear_obligacion_pendiente(
+            expediente_id=10,
+            tipo="Factura notarial",
+            descripcion="Factura notaría.pdf",
+            fecha=date(2026, 10, 31),
+            documento_carpeta_id=25,
+        )
+        self.assertEqual(gasto.estado_pago, "Pendiente")
+        self.assertIsNone(gasto.fecha_pago)
+        self.assertEqual(gasto.documento_carpeta_id, 25)
+
+    def test_payment_state_is_derived_from_real_paid_totals(self):
+        self.assertEqual(_estado_pago_desde_totales(Decimal("100"), Decimal("0")), "Pendiente")
+        self.assertEqual(_estado_pago_desde_totales(Decimal("100"), Decimal("35")), "Parcial")
+        self.assertEqual(_estado_pago_desde_totales(Decimal("100"), Decimal("100")), "Pagado")
+
+    def test_zero_obligation_never_becomes_paid_by_default(self):
+        self.assertEqual(_estado_pago_desde_totales(Decimal("0"), Decimal("0")), "Pendiente")
 
 
 if __name__ == "__main__":

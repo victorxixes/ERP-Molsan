@@ -8,7 +8,7 @@ import {
   useRef,
 } from "react";
 
-import { puedeVerModulo } from "../utils/permisos";
+import { esAdministrador, puedeVerModulo } from "../utils/permisos";
 
 import { useAuthStore } from "../store/authStore";
 import { useMensajesStore } from "../store/mensajesStore";
@@ -18,9 +18,10 @@ import {
 
 import Notificaciones from "../pages/notificaciones/Notificaciones.jsx";
 import SidebarPerfilModal from "./SidebarPerfilModal";
+import useAccessibleDialog from "./ui/useAccessibleDialog";
 
 
-import "../css/LayoutPortalesPremium.css";
+import "../css/SidebarBase.css";
 /**
  * ============================================================
  * ICONOS DE NAVEGACIÓN
@@ -438,22 +439,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     (s) => s.empleado
   );
 
-  const rolSidebar = String(
-    empleado?.rol?.nombre ||
-    empleado?.rol_nombre ||
-    (typeof empleado?.rol === "string" ? empleado.rol : "")
-  ).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[_-]+/g, " ").trim().toLowerCase().replace(/\s+/g, " ");
-  const rolesAdminSidebar = new Set([
-    "admin", "administrador", "administradora", "superadmin", "super admin",
-    "superadministrador", "super administradora", "superuser", "super usuario",
-    "superusuario", "administrador general",
-  ]);
-  const esAdminSidebar =
-    empleado?.es_admin === true ||
-    empleado?.is_admin === true ||
-    Number(empleado?.rol_id ?? empleado?.rol?.id) === 0 ||
-    String(empleado?.usuario || "").trim().toLowerCase() === "admin" ||
-    rolesAdminSidebar.has(rolSidebar);
+  const esAdminSidebar = esAdministrador(empleado);
   const modulosVisiblesSidebar = [
     ...(Array.isArray(empleado?.modulos_visibles_list) ? empleado.modulos_visibles_list : []),
     ...(Array.isArray(empleado?.modulos_visibles) ? empleado.modulos_visibles : []),
@@ -490,6 +476,13 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
   const [notificacionesAbiertas, setNotificacionesAbiertas] =
     useState(false);
+  const notificacionesDialogRef = useRef(null);
+
+  useAccessibleDialog({
+    open: notificacionesAbiertas && !onNotificationsClick,
+    onClose: () => setNotificacionesAbiertas(false),
+    dialogRef: notificacionesDialogRef,
+  });
 
   const masRef = useRef(null);
   const masMenuRef = useRef(null);
@@ -583,51 +576,6 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       document.removeEventListener("keydown", handleEscape);
     };
   }, [masAbierto]);
-
-
-  /**
-   * ==========================================================
-   * ESC — CERRAR MODAL NOTIFICACIONES
-   * ==========================================================
-   */
-
-  useEffect(() => {
-
-    if (!notificacionesAbiertas) {
-      return;
-    }
-
-    const handleKeyDown = (
-      event
-    ) => {
-
-      if (
-        event.key === "Escape"
-      ) {
-        setNotificacionesAbiertas(
-          false
-        );
-      }
-
-    };
-
-    document.addEventListener(
-      "keydown",
-      handleKeyDown
-    );
-
-    return () => {
-
-      document.removeEventListener(
-        "keydown",
-        handleKeyDown
-      );
-
-    };
-
-  }, [
-    notificacionesAbiertas,
-  ]);
 
 
   /**
@@ -1218,7 +1166,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                         {(item.badge > 0 || (item.label === "Mensajes" && mensajesNoLeidos > 0)) ? <span className={item.label === "Mensajes" ? "min-w-[19px] h-[19px] px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold" : "min-w-[19px] h-[19px] px-1 flex items-center justify-center rounded-full bg-[var(--erp-primary-soft)] text-[var(--erp-primary)] text-[10px] font-bold"}>{item.label === "Mensajes" ? mensajesNoLeidos : item.badge}</span> : null}
                       </button>
                       {abierto && menuSidebarPosicion && createPortal(
-                        <div ref={menuSidebarMenuRef} role="menu" style={{ position: "fixed", top: menuSidebarPosicion.top, left: menuSidebarPosicion.left, width: menuSidebarPosicion.ancho, zIndex: 9999 }} className="max-h-[min(70vh,380px)] overflow-y-auto rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-2 shadow-2xl">
+                        <div ref={menuSidebarMenuRef} role="menu" style={{ position: "fixed", top: menuSidebarPosicion.top, left: menuSidebarPosicion.left, width: menuSidebarPosicion.ancho, zIndex: 9999 }} className="mol-sidebar-dropdown-menu max-h-[min(70vh,380px)] overflow-y-auto rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-2 shadow-2xl">
                           {menuSidebarItems.map((modulo) => <NavLink key={modulo.key} to={modulo.to} onClick={() => setMenuSidebarAbierto(null)} role="menuitem" className={({ isActive }) => `flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition ${isActive ? "bg-[var(--erp-primary)] text-white" : "text-[var(--erp-text)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"}`}><NavIcon name={modulo.icon} /><span>{modulo.label}</span></NavLink>)}
                         </div>, document.body
                       )}
@@ -1429,6 +1377,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
         <div
           className="
+            panel-modal-premium
             fixed
             inset-0
             z-[1000]
@@ -1441,9 +1390,6 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
             bg-slate-950/35
             backdrop-blur-[2px]
           "
-          role="dialog"
-          aria-modal="true"
-          aria-label="Notificaciones"
           onMouseDown={(event) => {
 
             if (
@@ -1459,6 +1405,11 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
         >
 
           <div
+            ref={notificacionesDialogRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Notificaciones"
             className="
               relative
               w-full

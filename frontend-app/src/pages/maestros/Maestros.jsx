@@ -1,5 +1,7 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import "./Maestros.css";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 import {
   getMaestros,
@@ -11,7 +13,7 @@ import {
 
 /**
  * ============================================================
- * MAESTROS — MOLSAN ERP PREMIUM 2027
+ * MAESTROS
  * ============================================================
  *
  * Gestiona:
@@ -74,6 +76,8 @@ export default function Maestros() {
 
   const [datos, setDatos] =
     useState([]);
+
+  const ordenDatos = useSortableData(datos);
 
   const [cargando, setCargando] =
     useState(false);
@@ -360,122 +364,14 @@ export default function Maestros() {
   ---------------------------------------------------------- */
 
   return (
-    <div className="maestros-premium-page p-6 space-y-6 animate-fade-in">
+    <div className="erp-page min-w-0 space-y-6">
 
       {/* ======================================================
           CABECERA
       ====================================================== */}
 
-      <div
-        className="
-          flex
-          flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-4
-        "
-      >
-
-        <div>
-
-          <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
-          >
-
-            <div
-              className="
-                w-12
-                h-12
-                rounded-2xl
-                bg-[var(--erp-primary-soft)]
-                border
-                border-[var(--erp-border)]
-                text-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-                shadow-sm
-              "
-            >
-
-              <svg
-                className="w-6 h-6"
-                aria-hidden="true"
-              >
-                <use
-                  href="/icons/icons.svg#database"
-                />
-              </svg>
-
-            </div>
-
-
-            <div>
-
-              <h1
-                className="
-                  text-2xl
-                  font-bold
-                  text-[var(--erp-text)]
-                "
-              >
-                Maestros
-              </h1>
-
-              <p
-                className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                  mt-1
-                "
-              >
-                Gestión de departamentos, secciones y cargos
-              </p>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div
-          className="
-            inline-flex
-            items-center
-            gap-2
-            px-3
-            py-2
-            rounded-xl
-            bg-[var(--erp-surface)]
-            border
-            border-[var(--erp-border)]
-            text-xs
-            font-medium
-            text-[var(--erp-text-soft)]
-            shadow-sm
-          "
-        >
-
-          <span
-            className="
-              w-2
-              h-2
-              rounded-full
-              bg-emerald-500
-            "
-          />
-
-          Gestión de datos maestros
-
-        </div>
-
-      </div>
+      <MolsanPageHeader mark="MA" title="Maestros" description="Gestión de departamentos, secciones y cargos." />
+      <div className="flex justify-end"><span className="molsan-panel inline-flex items-center gap-2 px-3 py-2">Gestión de datos maestros</span></div>
 
 
       {/* ======================================================
@@ -483,14 +379,7 @@ export default function Maestros() {
       ====================================================== */}
 
       <section
-        className="
-          bg-[var(--erp-surface)]
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          shadow-sm
-          overflow-hidden
-        "
+        className="overflow-hidden"
       >
 
         {/* ====================================================
@@ -498,21 +387,14 @@ export default function Maestros() {
         ==================================================== */}
 
         <div
-          className="
-            px-6
-            py-5
-            border-b
-            border-[var(--erp-border)]
-            bg-[var(--erp-surface-soft)]
-          "
+          className="px-6
+ py-5"
         >
 
           <div
-            className="
-              flex
-              flex-wrap
-              gap-2
-            "
+            className="flex
+ flex-wrap
+ gap-2"
           >
 
             {TIPOS_MAESTRO.map((tipo) => {
@@ -528,47 +410,29 @@ export default function Maestros() {
                   onClick={() =>
                     setTipoActivo(tipo.key)
                   }
-                  className={`
-                    inline-flex
-                    items-center
-                    gap-2
-                    px-4
-                    py-2.5
-                    rounded-xl
-                    border
-                    text-sm
-                    font-semibold
-                    transition-all
-                    duration-200
+                  className={`inline-flex
+ items-center
+ gap-2
+ px-4
+ py-2.5
+ 
+ 
+ 
+ 
+ 
+ 
 
-                    ${
-                      activo
-                        ? `
-                          bg-[var(--erp-primary)]
-                          border-[var(--erp-primary)]
-                          text-white
-                          shadow-sm
-                        `
-                        : `
-                          bg-[var(--erp-surface)]
-                          border-[var(--erp-border)]
-                          text-[var(--erp-text)]
-                          hover:bg-[var(--erp-primary-soft)]
-                        `
-                    }
-                  `}
+ `}
                 >
 
                   <svg
-                    className={`
-                      w-4
-                      h-4
-                      ${
-                        activo
-                          ? "text-white"
-                          : "text-[var(--erp-primary)]"
-                      }
-                    `}
+                    className={`w-4
+ h-4
+ ${
+ activo
+ ? ""
+ : ""
+ }`}
                     aria-hidden="true"
                   >
 
@@ -604,17 +468,8 @@ export default function Maestros() {
           {mensaje && (
 
             <div
-              className="
-                mb-5
-                p-4
-                rounded-xl
-                bg-emerald-50
-                border
-                border-emerald-200
-                text-emerald-700
-                text-sm
-                font-medium
-              "
+              className="mb-5
+ p-4"
             >
               {mensaje}
             </div>
@@ -629,16 +484,8 @@ export default function Maestros() {
           {error && (
 
             <div
-              className="
-                mb-5
-                p-4
-                rounded-xl
-                bg-red-50
-                border
-                border-red-200
-                text-red-700
-                text-sm
-              "
+              className="mb-5
+ p-4"
             >
               {error}
             </div>
@@ -651,35 +498,25 @@ export default function Maestros() {
           ================================================== */}
 
           <div
-            className="
-              flex
-              flex-col
-              sm:flex-row
-              sm:items-center
-              sm:justify-between
-              gap-3
-              mb-4
-            "
+            className="flex
+ flex-col
+ sm:flex-row
+ sm:items-center
+ sm:justify-between
+ gap-3
+ mb-4"
           >
 
             <div>
 
               <h2
-                className="
-                  text-lg
-                  font-semibold
-                  text-[var(--erp-text)]
-                "
+               
               >
                 {tipoActual.label}
               </h2>
 
               <p
-                className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                  mt-1
-                "
+                className="mt-1"
               >
                 {datos.length}{" "}
                 {datos.length === 1
@@ -694,26 +531,12 @@ export default function Maestros() {
               type="button"
               onClick={abrirCrear}
               disabled={guardando}
-              className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                px-4
-                py-2.5
-                rounded-xl
-                bg-[var(--erp-primary)]
-                border
-                border-[var(--erp-primary)]
-                text-white
-                text-sm
-                font-semibold
-                shadow-sm
-                hover:opacity-90
-                transition
-                disabled:opacity-50
-                disabled:cursor-not-allowed
-              "
+              className="inline-flex
+ items-center
+ justify-center
+ gap-2
+ px-4
+ py-2.5"
             >
 
               <svg
@@ -740,37 +563,27 @@ export default function Maestros() {
 
             <form
               onSubmit={guardar}
-              className="
-                mb-5
-                p-5
-                rounded-2xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-surface-soft)]
-              "
+              className="mb-5
+ p-5"
             >
 
               <div
-                className="
-                  flex
-                  flex-col
-                  lg:flex-row
-                  lg:items-end
-                  gap-4
-                "
+                className="flex
+ flex-col
+ lg:flex-row
+ lg:items-end
+ gap-4"
               >
 
                 <div className="flex-1">
 
                   <label
                     htmlFor="maestro-nombre"
-                    className="
-                      block
-                      text-sm
-                      font-semibold
-                      text-[var(--erp-text)]
-                      mb-2
-                    "
+                    className="block
+ 
+ 
+ 
+ mb-2"
                   >
                     Nombre
                   </label>
@@ -788,31 +601,18 @@ export default function Maestros() {
                     placeholder={
                       `Nombre del ${tipoActual.singular.toLowerCase()}`
                     }
-                    className="
-                      w-full
-                      px-4
-                      py-2.5
-                      rounded-xl
-                      border
-                      border-[var(--erp-border)]
-                      bg-[var(--erp-surface)]
-                      text-[var(--erp-text)]
-                      outline-none
-                      focus:ring-2
-                      focus:ring-[var(--erp-primary)]
-                      disabled:opacity-50
-                    "
+                    className="w-full
+ px-4
+ py-2.5"
                   />
 
                 </div>
 
 
                 <div
-                  className="
-                    flex
-                    items-center
-                    gap-2
-                  "
+                  className="flex
+ items-center
+ gap-2"
                 >
 
                   <button
@@ -821,25 +621,12 @@ export default function Maestros() {
                       guardando ||
                       !nombre.trim()
                     }
-                    className="
-                      inline-flex
-                      items-center
-                      justify-center
-                      gap-2
-                      px-4
-                      py-2.5
-                      rounded-xl
-                      bg-[var(--erp-primary)]
-                      border
-                      border-[var(--erp-primary)]
-                      text-white
-                      text-sm
-                      font-semibold
-                      hover:opacity-90
-                      transition
-                      disabled:opacity-50
-                      disabled:cursor-not-allowed
-                    "
+                    className="inline-flex
+ items-center
+ justify-center
+ gap-2
+ px-4
+ py-2.5"
                   >
 
                     {guardando
@@ -855,20 +642,8 @@ export default function Maestros() {
                     type="button"
                     onClick={cancelarFormulario}
                     disabled={guardando}
-                    className="
-                      px-4
-                      py-2.5
-                      rounded-xl
-                      border
-                      border-[var(--erp-border)]
-                      bg-[var(--erp-surface)]
-                      text-[var(--erp-text)]
-                      text-sm
-                      font-semibold
-                      hover:bg-[var(--erp-primary-soft)]
-                      transition
-                      disabled:opacity-50
-                    "
+                    className="px-4
+ py-2.5"
                   >
                     Cancelar
                   </button>
@@ -889,34 +664,26 @@ export default function Maestros() {
           {cargando && (
 
             <div
-              className="
-                py-16
-                flex
-                flex-col
-                items-center
-                justify-center
-                text-center
-              "
+              className="py-16
+ flex
+ flex-col
+ items-center
+ justify-center"
             >
 
               <div
-                className="
-                  w-8
-                  h-8
-                  rounded-full
-                  border-2
-                  border-[var(--erp-border)]
-                  border-t-[var(--erp-primary)]
-                  animate-spin
-                  mb-4
-                "
+                className="w-8
+ h-8
+ 
+ 
+ 
+ 
+ 
+ mb-4"
               />
 
               <p
-                className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                "
+               
               >
                 Cargando {tipoActual.label.toLowerCase()}...
               </p>
@@ -933,36 +700,32 @@ export default function Maestros() {
           {!cargando &&
             datos.length === 0 && (
               <div
-                className="
-                  py-16
-                  rounded-2xl
-                  border
-                  border-dashed
-                  border-[var(--erp-border)]
-                  bg-[var(--erp-surface-soft)]
-                  flex
-                  flex-col
-                  items-center
-                  justify-center
-                  text-center
-                  px-6
-                "
+                className="py-16
+ 
+ 
+ 
+ 
+ 
+ flex
+ flex-col
+ items-center
+ justify-center
+ 
+ px-6"
               >
 
                 <div
-                  className="
-                    w-14
-                    h-14
-                    rounded-2xl
-                    bg-[var(--erp-primary-soft)]
-                    border
-                    border-[var(--erp-border)]
-                    text-[var(--erp-primary)]
-                    flex
-                    items-center
-                    justify-center
-                    mb-4
-                  "
+                  className="w-14
+ h-14
+ 
+ 
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center
+ mb-4"
                 >
 
                   <svg
@@ -977,22 +740,14 @@ export default function Maestros() {
                 </div>
 
                 <h3
-                  className="
-                    text-lg
-                    font-semibold
-                    text-[var(--erp-text)]
-                  "
+                 
                 >
                   No hay registros
                 </h3>
 
                 <p
-                  className="
-                    text-sm
-                    text-[var(--erp-text-soft)]
-                    mt-2
-                    max-w-md
-                  "
+                  className="mt-2
+ max-w-md"
                 >
                   Todavía no existen{" "}
                   {tipoActual.label.toLowerCase()}.
@@ -1012,77 +767,35 @@ export default function Maestros() {
             datos.length > 0 && (
 
               <div
-                className="
-                  rounded-2xl
-                  border
-                  border-[var(--erp-border)]
-                  overflow-hidden
-                  bg-[var(--erp-surface-soft)]
-                "
+                className="overflow-hidden"
               >
 
                 <div className="overflow-x-auto">
 
                   <table
-                    className="
-                      w-full
-                      text-sm
-                    "
+                    className="w-full"
                   >
 
                     <thead>
 
                       <tr
-                        className="
-                          bg-[var(--erp-surface)]
-                          border-b
-                          border-[var(--erp-border)]
-                        "
+                       
                       >
 
-                        <th
-                          className="
-                            py-3
-                            px-4
-                            text-center
-                            text-xs
-                            font-semibold
-                            uppercase
-                            tracking-wide
-                            text-[var(--erp-text-soft)]
-                            w-24
-                          "
-                        >
-                          ID
-                        </th>
+                        <MolsanSortableTh label="ID" sortKey="id" sortConfig={ordenDatos.sortConfig} onSort={ordenDatos.requestSort} className="py-3 px-4 uppercase w-24" />
+
+                        <MolsanSortableTh label="Nombre" sortKey="nombre" sortConfig={ordenDatos.sortConfig} onSort={ordenDatos.requestSort} className="py-3 px-4 uppercase" />
 
                         <th
-                          className="
-                            py-3
-                            px-4
-                            text-left
-                            text-xs
-                            font-semibold
-                            uppercase
-                            tracking-wide
-                            text-[var(--erp-text-soft)]
-                          "
-                        >
-                          Nombre
-                        </th>
-
-                        <th
-                          className="
-                            py-3
-                            px-4
-                            text-right
-                            text-xs
-                            font-semibold
-                            uppercase
-                            tracking-wide
-                            text-[var(--erp-text-soft)]
-                            w-48
-                          "
+                          className="py-3
+ px-4
+ 
+ 
+ 
+ uppercase
+ 
+ 
+ w-48"
                         >
                           Acciones
                         </th>
@@ -1094,58 +807,39 @@ export default function Maestros() {
 
                     <tbody>
 
-                      {datos.map((registro) => (
+                      {ordenDatos.items.map((registro) => (
 
                         <tr
                           key={registro.id}
-                          className="
-                            border-b
-                            border-[var(--erp-border)]
-                            last:border-b-0
-                            hover:bg-[var(--erp-surface)]
-                            transition
-                          "
+                         
                         >
 
                           <td
-                            className="
-                              py-3
-                              px-4
-                              text-center
-                              font-semibold
-                              text-[var(--erp-primary)]
-                            "
+                            className="py-3
+ px-4"
                           >
                             {registro.id}
                           </td>
 
 
                           <td
-                            className="
-                              py-3
-                              px-4
-                              font-medium
-                              text-[var(--erp-text)]
-                            "
+                            className="py-3
+ px-4"
                           >
                             {registro.nombre || "—"}
                           </td>
 
 
                           <td
-                            className="
-                              py-3
-                              px-4
-                            "
+                            className="py-3
+ px-4"
                           >
 
                             <div
-                              className="
-                                flex
-                                items-center
-                                justify-end
-                                gap-2
-                              "
+                              className="flex
+ items-center
+ justify-end
+ gap-2"
                             >
 
                               <button
@@ -1154,23 +848,11 @@ export default function Maestros() {
                                   abrirEditar(registro)
                                 }
                                 disabled={guardando}
-                                className="
-                                  inline-flex
-                                  items-center
-                                  gap-1.5
-                                  px-3
-                                  py-2
-                                  rounded-lg
-                                  border
-                                  border-[var(--erp-border)]
-                                  bg-[var(--erp-surface)]
-                                  text-[var(--erp-text)]
-                                  text-xs
-                                  font-semibold
-                                  hover:bg-[var(--erp-primary-soft)]
-                                  transition
-                                  disabled:opacity-50
-                                "
+                                className="inline-flex
+ items-center
+ gap-1.5
+ px-3
+ py-2"
                               >
 
                                 <svg
@@ -1193,23 +875,11 @@ export default function Maestros() {
                                   eliminar(registro)
                                 }
                                 disabled={guardando}
-                                className="
-                                  inline-flex
-                                  items-center
-                                  gap-1.5
-                                  px-3
-                                  py-2
-                                  rounded-lg
-                                  border
-                                  border-red-200
-                                  bg-red-50
-                                  text-red-700
-                                  text-xs
-                                  font-semibold
-                                  hover:bg-red-100
-                                  transition
-                                  disabled:opacity-50
-                                "
+                                className="inline-flex
+ items-center
+ gap-1.5
+ px-3
+ py-2"
                               >
 
                                 <svg

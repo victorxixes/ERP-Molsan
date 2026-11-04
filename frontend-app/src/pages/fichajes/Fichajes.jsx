@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios from "../../api/axios";
 import FichajesResumen from "./FichajesResumen.jsx";
 import FestivosCompensaciones from "./FestivosCompensaciones.jsx";
 import ControlFichajesAdmin from "./ControlFichajesAdmin.jsx";
 import SolicitudesAusencia from "./SolicitudesAusencia.jsx";
 import DocumentosAdmin from "./DocumentosAdmin.jsx";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 const TIPOS = [
   { value: "ENTRADA", label: "Entrada a trabajar", icon: "↗", tone: "emerald" },
@@ -126,6 +129,9 @@ export default function Fichajes({ modo = "empleado" }) {
     return marcajes.filter((m) => !q || [formatearTipo(m.tipo), m.observaciones, fechaLarga(m.fecha_hora), hora(m.fecha_hora)].some((v) => String(v || "").toLocaleLowerCase("es").includes(q)));
   }, [marcajes, busqueda]);
 
+  const ordenMarcajes = useSortableData(marcajesFiltrados);
+  const ordenVacaciones = useSortableData(vacacionesAdmin);
+
   const calendario = useMemo(() => {
     const primero = inicioMes(mes);
     const desplazamiento = (primero.getDay() + 6) % 7;
@@ -229,62 +235,57 @@ export default function Fichajes({ modo = "empleado" }) {
     : [{ id: "resumen", label: "Resumen de marcajes" }, { id: "calendario", label: "Calendario mensual" }, { id: "documentos", label: "Documentos" }, { id: "personal", label: "Información personal" }, { id: "ausencias", label: "Solicitudes de ausencia" }, { id: "compensaciones", label: "Festivos y compensaciones" }];
 
   return (
-    <main className="fichajes-premium-page mx-auto w-full max-w-[1500px] space-y-6 p-4 text-[var(--erp-text)] sm:p-6">
-      <header className="relative overflow-hidden rounded-3xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-6 shadow-sm sm:p-8">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-700 via-cyan-500 to-emerald-400" />
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-extrabold tracking-[.2em] text-blue-700">MOLSAN ERP · PREMIUM 2027</p>
-            <h1 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">{esAdminVista ? "Control de Fichajes" : "Fichaje Molsan"}</h1>
-            <p className="mt-2 text-sm text-[var(--erp-text-soft)]">{esAdminVista ? "Supervisión de marcajes de la plantilla." : "Registro de jornada y gestión de justificantes personales."}</p>
-          </div>
-          {!esAdminVista && perfil && <div className="rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3"><p className="text-xs text-blue-700">Empleado</p><p className="font-bold text-slate-900">{perfil.nombre}</p><p className="text-xs text-slate-500">{perfil.usuario}</p></div>}
-        </div>
-      </header>
+    <main className="erp-page w-full min-w-0 space-y-5">
+      <MolsanPageHeader
+        mark="FI"
+        title={esAdminVista ? "Control de Fichajes" : "Fichajes"}
+        description={esAdminVista ? "Supervisión de marcajes de la plantilla." : "Registro de jornada y gestión de justificantes personales."}
+      />
+      {!esAdminVista && perfil && <div className="molsan-panel mb-4 px-4 py-3"><p className="text-xs font-semibold uppercase">Empleado</p><p className="font-semibold">{perfil.nombre}</p><p className="text-sm">{perfil.usuario}</p></div>}
 
-      {mensaje && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">{mensaje}</div>}
-      {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</div>}
-      {cargando ? <div className="rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-8 text-sm text-[var(--erp-text-soft)]">Cargando fichajes…</div> : (
+      {mensaje && <div role="status" className="px-4 py-3">{mensaje}</div>}
+      {error && <div role="alert" className="px-4 py-3">{error}</div>}
+      {cargando ? <div className="p-8">Cargando fichajes…</div> : (
         <>
           {!esAdminVista && (
-            <section className="rounded-3xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-5 shadow-sm sm:p-6">
+            <section className="p-5 sm:p-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div><h2 className="text-lg font-bold">Jornada de hoy</h2><p className="mt-1 text-sm text-[var(--erp-text-soft)]">{reloj.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p><p className="mt-2 font-mono text-4xl font-extrabold tracking-tight text-blue-800 tabular-nums">{reloj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</p><p className="text-xs text-slate-500">Hora local · reloj en tiempo real</p></div>
-                <div className="rounded-xl bg-slate-50 px-3 py-2 text-sm"><span className="text-slate-500">Último movimiento: </span><strong>{ultimoMarcaje ? formatearTipo(ultimoMarcaje.tipo) : "Sin marcajes hoy"}</strong>{ultimoMarcaje && <span className="ml-2 text-slate-500">{hora(ultimoMarcaje.fecha_hora)}</span>}</div>
+                <div><h2>Jornada de hoy</h2><p className="mt-2 tabular-nums">{reloj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</p><p>Hora local · reloj en tiempo real</p></div>
+                <div className="px-3 py-2"><span>Último movimiento: </span><strong>{ultimoMarcaje ? formatearTipo(ultimoMarcaje.tipo) : "Sin marcajes hoy"}</strong>{ultimoMarcaje && <span className="ml-2">{hora(ultimoMarcaje.fecha_hora)}</span>}</div>
               </div>
               <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 {TIPOS.map((t) => (
-                  <button key={t.value} type="button" disabled={guardando} onClick={() => t.value === "AUSENCIA" ? setMostrarSelectorAusencia(true) : enviarMarcaje(t.value)} className={`flex min-h-[94px] items-center gap-4 rounded-2xl border px-5 py-4 text-left font-bold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:cursor-wait disabled:opacity-50 ${t.tone === "emerald" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : t.tone === "rose" ? "border-rose-200 bg-rose-50 text-rose-800" : t.tone === "amber" ? "border-amber-200 bg-amber-50 text-amber-900" : t.tone === "violet" ? "border-violet-200 bg-violet-50 text-violet-900" : t.tone === "blue" ? "border-blue-200 bg-blue-50 text-blue-900" : "border-sky-200 bg-sky-50 text-sky-900"}`}>
-                    <span className="grid h-11 w-11 place-items-center rounded-xl bg-white/80 text-2xl">{t.icon}</span><span>{t.label}<span className="mt-1 block text-xs font-medium opacity-70">Registrar ahora</span></span>
+                  <button key={t.value} type="button" disabled={guardando} onClick={() => t.value === "AUSENCIA" ? setMostrarSelectorAusencia(true) : enviarMarcaje(t.value)} className={`flex min-h-[94px] items-center gap-4 px-5 py-4 ${t.tone === "emerald" ? "" : t.tone === "rose" ? "" : t.tone === "amber" ? "" : t.tone === "violet" ? "" : t.tone === "blue" ? "" : ""}`}>
+                    <span className="grid h-11 w-11 place-items-center">{t.icon}</span><span>{t.label}<span className="mt-1 block">Registrar ahora</span></span>
                   </button>
                 ))}
               </div>
-              {mostrarSelectorAusencia && <div className="mt-4 rounded-xl border border-violet-200 bg-violet-50/70 p-4"><label className="block text-xs font-bold text-violet-900">Selecciona el tipo de ausencia
-                <select value={tipoAusencia} disabled={guardando || tiposAusencia.length === 0} onChange={(e) => { setTipoAusencia(e.target.value); setError(""); }} className="mt-2 w-full rounded-xl border border-[var(--erp-border)] bg-white px-4 py-3 text-sm font-normal text-slate-800">
+              {mostrarSelectorAusencia && <div className="mt-4 p-4"><label className="block">Selecciona el tipo de ausencia
+                <select value={tipoAusencia} disabled={guardando || tiposAusencia.length === 0} onChange={(e) => { setTipoAusencia(e.target.value); setError(""); }} className="mt-2 w-full px-4 py-3">
                   <option value="">{tiposAusencia.length ? "Selecciona una ausencia…" : "No hay tipos de ausencia disponibles"}</option>
                   {tiposAusencia.map((x) => <option key={x.id} value={x.nombre}>{x.nombre}{x.requiere_justificante ? " · requiere justificante" : ""}</option>)}
                 </select>
-                {tiposAusencia.length === 0 && <p className="mt-2 text-xs font-medium text-rose-700">No se ha podido cargar el catálogo de ausencias. Actualiza Fichaje Molsan o contacta con administración.</p>}
-              </label><button type="button" disabled={guardando || !tipoAusencia || tiposAusencia.length === 0} onClick={() => enviarMarcaje("AUSENCIA")} className="mt-3 rounded-xl bg-violet-700 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">{guardando ? "Registrando…" : "Confirmar ausencia"}</button><button type="button" disabled={guardando} onClick={() => { setMostrarSelectorAusencia(false); setTipoAusencia(""); setError(""); }} className="ml-2 rounded-xl border border-violet-200 px-4 py-2.5 text-sm font-semibold text-violet-900 disabled:opacity-50">Cancelar</button></div>}
+                {tiposAusencia.length === 0 && <p className="mt-2">No se ha podido cargar el catálogo de ausencias. Actualiza Fichajes o contacta con administración.</p>}
+              </label><button type="button" disabled={guardando || !tipoAusencia || tiposAusencia.length === 0} onClick={() => enviarMarcaje("AUSENCIA")} className="mt-3 px-4 py-2.5">{guardando ? "Registrando…" : "Confirmar ausencia"}</button><button type="button" disabled={guardando} onClick={() => { setMostrarSelectorAusencia(false); setTipoAusencia(""); setError(""); }} className="ml-2 px-4 py-2.5">Cancelar</button></div>}
 
             </section>
           )}
 
           {!esAdminVista && <FichajesResumen recargar={recargarEmpleado} />}
 
-          <section className="overflow-hidden rounded-3xl border border-[var(--erp-border)] bg-[var(--erp-surface)] shadow-sm">
-            <div className="flex flex-wrap gap-2 border-b border-[var(--erp-border)] p-3 sm:p-4">
-              {tabs.map((t) => <button key={t.id} type="button" onClick={() => setPestana(t.id)} className={`rounded-xl px-4 py-2.5 text-sm font-bold transition ${pestana === t.id ? "bg-blue-700 text-white shadow-sm" : "text-[var(--erp-text-soft)] hover:bg-blue-50 hover:text-blue-800"}`}>{t.label}</button>)}
+          <section className="overflow-hidden">
+            <div className="flex flex-wrap gap-2 p-3 sm:p-4">
+              {tabs.map((t) => <button key={t.id} type="button" onClick={() => setPestana(t.id)} className={`px-4 py-2.5 ${pestana === t.id ? "" : ""}`}>{t.label}</button>)}
             </div>
 
             {!esAdminVista && pestana === "calendario" && (
               <div className="p-4 sm:p-6">
                 <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-                  <div><h2 className="text-lg font-bold">Calendario de marcajes</h2><p className="text-sm text-[var(--erp-text-soft)]">Consulta tus registros por día y navega entre meses y años.</p></div>
-                  <div className="flex items-center gap-2"><button type="button" onClick={() => setMes(new Date(mes.getFullYear() - 1, mes.getMonth(), 1))} className="rounded-lg border px-3 py-2" aria-label="Año anterior">«</button><button type="button" onClick={() => setMes(new Date(mes.getFullYear(), mes.getMonth() - 1, 1))} className="rounded-lg border px-3 py-2" aria-label="Mes anterior">‹</button><span className="min-w-36 text-center font-bold capitalize">{mes.toLocaleDateString("es-ES", { month: "long", year: "numeric" })}</span><button type="button" onClick={() => setMes(new Date(mes.getFullYear(), mes.getMonth() + 1, 1))} className="rounded-lg border px-3 py-2" aria-label="Mes siguiente">›</button><button type="button" onClick={() => setMes(new Date(mes.getFullYear() + 1, mes.getMonth(), 1))} className="rounded-lg border px-3 py-2" aria-label="Año siguiente">»</button></div>
+                  <div><h2>Calendario de marcajes</h2><p>Consulta tus registros por día y navega entre meses y años.</p></div>
+                  <div className="flex items-center gap-2"><button type="button" onClick={() => setMes(new Date(mes.getFullYear() - 1, mes.getMonth(), 1))} className="px-3 py-2" aria-label="Año anterior">«</button><button type="button" onClick={() => setMes(new Date(mes.getFullYear(), mes.getMonth() - 1, 1))} className="px-3 py-2" aria-label="Mes anterior">‹</button><span className="min-w-36 capitalize">{mes.toLocaleDateString("es-ES", { month: "long", year: "numeric" })}</span><button type="button" onClick={() => setMes(new Date(mes.getFullYear(), mes.getMonth() + 1, 1))} className="px-3 py-2" aria-label="Mes siguiente">›</button><button type="button" onClick={() => setMes(new Date(mes.getFullYear() + 1, mes.getMonth(), 1))} className="px-3 py-2" aria-label="Año siguiente">»</button></div>
                 </div>
                 <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
-                  {["L", "M", "X", "J", "V", "S", "D"].map((d, i) => <div key={d + i} className="py-2 text-center text-xs font-extrabold text-slate-400">{d}</div>)}
+                  {["L", "M", "X", "J", "V", "S", "D"].map((d, i) => <div key={d + i} className="py-2">{d}</div>)}
                   {calendario.map((dia, i) => {
                     const claveDia = dia ? fechaISO(dia) : "";
                     const registros = dia ? porDia[claveDia] || [] : [];
@@ -293,8 +294,8 @@ export default function Fichajes({ modo = "empleado" }) {
                     const solicitudesDia = dia ? (resumenCompensacion.solicitudes || []).filter((s) => s.fecha_disfrute === claveDia && ["SOLICITADO", "APROBADO", "DISFRUTADO"].includes(s.estado)) : [];
                     const ausenciasDia = dia ? solicitudesAusencia.filter((a) => a.fecha_inicio <= claveDia && a.fecha_fin >= claveDia && ["SOLICITADO", "APROBADO"].includes(a.estado)) : [];
                     const esHoy = dia && claveDia === fechaISO(FECHA_HOY);
-                    return <div key={dia ? fechaISO(dia) : "vacio-" + i} className={`min-h-[78px] rounded-xl border p-2 sm:min-h-[105px] ${!dia ? "border-transparent bg-transparent" : esHoy ? "border-blue-300 bg-blue-50/80" : "border-[var(--erp-border)] bg-white"}`}>
-                      {dia && <><div className={`text-sm font-bold ${esHoy ? "text-blue-800" : "text-slate-700"}`}>{dia.getDate()}</div><div className="mt-1 space-y-1">{registros.slice(0, 3).map((m) => <div key={m.id} title={formatearTipo(m.tipo)} className="truncate rounded-md bg-slate-100 px-1.5 py-1 text-[10px] font-semibold text-slate-700 sm:text-xs">{hora(m.fecha_hora)} {formatearTipo(m.tipo)}</div>)}{registros.length > 3 && <p className="text-[10px] text-slate-500">+{registros.length - 3} más</p>}{calendarioFestivosDia.map((f) => <div key={"calendario-festivo-" + f.id} className="truncate rounded-md bg-orange-100 px-1.5 py-1 text-[10px] font-bold text-orange-900" title={f.nombre}>{f.nombre}</div>)}{festivosDia.map((f) => <div key={"festivo-" + f.id} className="truncate rounded-md bg-amber-100 px-1.5 py-1 text-[10px] font-bold text-amber-900" title="Festivo trabajado">{f.estado === "VALIDADO" ? "Festivo validado" : f.estado === "RECHAZADO" ? "Festivo rechazado" : "Festivo pendiente"}</div>)}{solicitudesDia.map((s) => <div key={"comp-" + s.id} className="truncate rounded-md bg-violet-100 px-1.5 py-1 text-[10px] font-bold text-violet-900" title="Compensación">{s.estado === "SOLICITADO" ? "Compensación solicitada" : s.estado === "APROBADO" ? "Compensación aprobada" : "Compensación disfrutada"}</div>)}{ausenciasDia.map((a) => <div key={"ausencia-" + a.id} className={"truncate rounded-md px-1.5 py-1 text-[10px] font-bold " + (a.estado === "SOLICITADO" ? "bg-amber-100 text-amber-900" : "bg-rose-100 text-rose-900")} title={a.tipo_ausencia}>{a.estado === "SOLICITADO" ? "Ausencia pendiente" : "Ausencia aprobada"} · {a.tipo_ausencia}</div>)}</div></>}
+                    return <div key={dia ? fechaISO(dia) : "vacio-" + i} className={`min-h-[78px] p-2 sm:min-h-[105px] ${!dia ? "" : esHoy ? "" : ""}`}>
+                      {dia && <><div className={`${esHoy ? "" : ""}`}>{dia.getDate()}</div><div className="mt-1 space-y-1">{registros.slice(0, 3).map((m) => <div key={m.id} title={formatearTipo(m.tipo)} className="truncate px-1.5 py-1">{hora(m.fecha_hora)} {formatearTipo(m.tipo)}</div>)}{registros.length > 3 && <p>+{registros.length - 3} más</p>}{calendarioFestivosDia.map((f) => <div key={"calendario-festivo-" + f.id} className="truncate px-1.5 py-1" title={f.nombre}>{f.nombre}</div>)}{festivosDia.map((f) => <div key={"festivo-" + f.id} className="truncate px-1.5 py-1" title="Festivo trabajado">{f.estado === "VALIDADO" ? "Festivo validado" : f.estado === "RECHAZADO" ? "Festivo rechazado" : "Festivo pendiente"}</div>)}{solicitudesDia.map((s) => <div key={"comp-" + s.id} className="truncate px-1.5 py-1" title="Compensación">{s.estado === "SOLICITADO" ? "Compensación solicitada" : s.estado === "APROBADO" ? "Compensación aprobada" : "Compensación disfrutada"}</div>)}{ausenciasDia.map((a) => <div key={"ausencia-" + a.id} className={"truncate px-1.5 py-1" + (a.estado === "SOLICITADO" ? "" : "")} title={a.tipo_ausencia}>{a.estado === "SOLICITADO" ? "Ausencia pendiente" : "Ausencia aprobada"} · {a.tipo_ausencia}</div>)}</div></>}
                     </div>;
                   })}
                 </div>
@@ -303,21 +304,21 @@ export default function Fichajes({ modo = "empleado" }) {
 
             {!esAdminVista && pestana === "resumen" && (
               <div className="p-4 sm:p-6">
-                <div className="flex flex-wrap items-end justify-between gap-3"><div><h2 className="text-lg font-bold">Resumen de marcajes</h2><p className="text-sm text-[var(--erp-text-soft)]">Busca por tipo, fecha, hora u observaciones.</p></div><label className="w-full max-w-sm text-xs font-bold text-slate-500">Buscar<input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Ej. Entrada, 09:00…" className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm font-normal" /></label></div>
-                <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[560px] text-left text-sm"><thead><tr className="border-b text-xs uppercase tracking-wide text-slate-400"><th className="px-3 py-3">Fecha</th><th className="px-3 py-3">Hora</th><th className="px-3 py-3">Marcaje</th><th className="px-3 py-3">Observaciones</th></tr></thead><tbody>{marcajesFiltrados.map((m) => <tr key={m.id} className="border-b border-slate-100 last:border-0"><td className="px-3 py-3">{fechaLarga(m.fecha_hora)}</td><td className="px-3 py-3 font-bold tabular-nums">{hora(m.fecha_hora)}</td><td className="px-3 py-3"><span className="rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-bold">{formatearTipo(m.tipo)}</span></td><td className="px-3 py-3 text-slate-500">{m.observaciones || "—"}</td></tr>)}{marcajesFiltrados.length === 0 && <tr><td colSpan="4" className="px-3 py-10 text-center text-slate-400">No hay marcajes para esta búsqueda.</td></tr>}</tbody></table></div>
+                <div className="flex flex-wrap items-end justify-between gap-3"><div><h2>Resumen de marcajes</h2><p>Busca por tipo, fecha, hora u observaciones.</p></div><label className="w-full max-w-sm">Buscar<input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Ej. Entrada, 09:00…" className="mt-1 w-full px-3 py-2.5" /></label></div>
+                <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[560px]"><thead><tr className="uppercase"><MolsanSortableTh label="Fecha" sortKey="fecha_hora" sortConfig={ordenMarcajes.sortConfig} onSort={ordenMarcajes.requestSort} className="px-3 py-3" /><MolsanSortableTh label="Hora" sortKey="fecha_hora" sortConfig={ordenMarcajes.sortConfig} onSort={ordenMarcajes.requestSort} className="px-3 py-3" /><MolsanSortableTh label="Marcaje" sortKey="tipo" sortConfig={ordenMarcajes.sortConfig} onSort={ordenMarcajes.requestSort} className="px-3 py-3" /><MolsanSortableTh label="Observaciones" sortKey="observaciones" sortConfig={ordenMarcajes.sortConfig} onSort={ordenMarcajes.requestSort} className="px-3 py-3" /></tr></thead><tbody>{ordenMarcajes.items.map((m) => <tr key={m.id}><td className="px-3 py-3">{fechaLarga(m.fecha_hora)}</td><td className="px-3 py-3 tabular-nums">{hora(m.fecha_hora)}</td><td className="px-3 py-3"><span className="px-2.5 py-1.5">{formatearTipo(m.tipo)}</span></td><td className="px-3 py-3">{m.observaciones || "—"}</td></tr>)}{marcajesFiltrados.length === 0 && <tr><td colSpan="4" className="px-3 py-10">No hay marcajes para esta búsqueda.</td></tr>}</tbody></table></div>
               </div>
             )}
 
             {!esAdminVista && pestana === "documentos" && (
               <div className="grid gap-6 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] sm:p-6">
-                <form onSubmit={subirDocumento} className="space-y-4 rounded-2xl border border-[var(--erp-border)] bg-slate-50/70 p-4">
-                  <div><h2 className="font-bold">Adjuntar justificante</h2><p className="mt-1 text-sm text-slate-500">Los archivos quedan guardados junto con su tipo y fecha.</p></div>
-                  <label className="block text-xs font-bold text-slate-600">Tipo de justificación<select value={tipoDocumento} onChange={(e) => setTipoDocumento(e.target.value)} className="mt-1 w-full rounded-xl border bg-white px-3 py-3 text-sm font-normal">{TIPOS_DOCUMENTO.map((t) => <option key={t}>{t}</option>)}</select></label>
-                  <label className="block text-xs font-bold text-slate-600">Fecha del documento<input type="date" value={fechaDocumento} onChange={(e) => setFechaDocumento(e.target.value)} required className="mt-1 w-full rounded-xl border bg-white px-3 py-3 text-sm font-normal" /></label>
-                  <label className="block text-xs font-bold text-slate-600">Archivo<input type="file" required onChange={(e) => setArchivo(e.target.files?.[0] || null)} className="mt-1 block w-full rounded-xl border bg-white p-2 text-sm font-normal" /><span className="mt-1 block font-normal text-slate-400">Máximo 10 MB por archivo.</span></label>
-                  <button disabled={guardando} className="w-full rounded-xl bg-blue-700 px-4 py-3 text-sm font-bold text-white hover:bg-blue-800 disabled:opacity-50">{guardando ? "Guardando…" : "Guardar documento"}</button>
+                <form onSubmit={subirDocumento} className="space-y-4 p-4">
+                  <div><h2>Adjuntar justificante</h2><p className="mt-1">Los archivos quedan guardados junto con su tipo y fecha.</p></div>
+                  <label className="block">Tipo de justificación<select value={tipoDocumento} onChange={(e) => setTipoDocumento(e.target.value)} className="mt-1 w-full px-3 py-3">{TIPOS_DOCUMENTO.map((t) => <option key={t}>{t}</option>)}</select></label>
+                  <label className="block">Fecha del documento<input type="date" value={fechaDocumento} onChange={(e) => setFechaDocumento(e.target.value)} required className="mt-1 w-full px-3 py-3" /></label>
+                  <label className="block">Archivo<input type="file" required onChange={(e) => setArchivo(e.target.files?.[0] || null)} className="mt-1 block w-full p-2" /><span className="mt-1 block">Máximo 10 MB por archivo.</span></label>
+                  <button type="submit" disabled={guardando} className="w-full px-4 py-3">{guardando ? "Guardando…" : "Guardar documento"}</button>
                 </form>
-                <div><h2 className="font-bold">Historial de documentos</h2><div className="mt-3 space-y-2">{documentos.map((d) => <div key={d.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--erp-border)] p-3"><div className="min-w-0"><p className="truncate text-sm font-bold">{d.nombre_archivo}</p><p className="mt-1 text-xs text-slate-500">{d.tipo_justificante} · Fecha: {d.fecha_documento} · Subido: {d.subido_en ? fechaLarga(d.subido_en) : "—"}</p><p className="mt-1 text-xs font-bold text-blue-700">Revisión: {d.revision_estado === "APROBADO" ? "Aprobado" : d.revision_estado === "RECHAZADO" ? "Rechazado" : "Pendiente"}</p>{d.revision_motivo && <p className="mt-1 text-xs text-slate-500">{d.revision_motivo}</p>}</div><button type="button" onClick={() => descargar(d)} className="rounded-lg border px-3 py-2 text-xs font-bold hover:bg-slate-50">Descargar</button></div>)}{documentos.length === 0 && <p className="rounded-xl border border-dashed p-8 text-center text-sm text-slate-400">Todavía no has adjuntado documentos.</p>}</div></div>
+                <div><h2>Historial de documentos</h2><div className="mt-3 space-y-2">{documentos.map((d) => <div key={d.id} className="flex flex-wrap items-center justify-between gap-3 p-3"><div className="min-w-0"><p className="truncate">{d.nombre_archivo}</p><p className="mt-1">{d.tipo_justificante} · Fecha: {d.fecha_documento} · Subido: {d.subido_en ? fechaLarga(d.subido_en) : "—"}</p><p className="mt-1">Revisión: {d.revision_estado === "APROBADO" ? "Aprobado" : d.revision_estado === "RECHAZADO" ? "Rechazado" : "Pendiente"}</p>{d.revision_motivo && <p className="mt-1">{d.revision_motivo}</p>}</div><button type="button" onClick={() => descargar(d)} className="px-3 py-2">Descargar</button></div>)}{documentos.length === 0 && <p className="p-8">Todavía no has adjuntado documentos.</p>}</div></div>
               </div>
             )}
 
@@ -327,8 +328,8 @@ export default function Fichajes({ modo = "empleado" }) {
 
             {!esAdminVista && pestana === "personal" && perfil && (
               <div className="grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-3 sm:p-6">
-                {[["Nombre completo", perfil.nombre], ["Usuario", perfil.usuario], ["Correo electrónico", perfil.email], ["Departamento", perfil.departamento_id ? `ID ${perfil.departamento_id}` : "No indicado"], ["Cargo", perfil.cargo_id ? `ID ${perfil.cargo_id}` : "No indicado"]].map(([label, valor]) => <div key={label} className="rounded-2xl border border-[var(--erp-border)] bg-white p-4"><p className="text-xs font-bold text-slate-400">{label}</p><p className="mt-2 break-words font-semibold">{valor || "No indicado"}</p></div>)}
-                <p className="text-xs text-slate-400 sm:col-span-2 lg:col-span-3">La información se obtiene de tu ficha de empleado del ERP. Para modificarla, utiliza el procedimiento de actualización de tu ficha personal.</p>
+                {[["Nombre completo", perfil.nombre], ["Usuario", perfil.usuario], ["Correo electrónico", perfil.email], ["Departamento", perfil.departamento_id ? `ID ${perfil.departamento_id}` : "No indicado"], ["Cargo", perfil.cargo_id ? `ID ${perfil.cargo_id}` : "No indicado"]].map(([label, valor]) => <div key={label} className="p-4"><p>{label}</p><p className="mt-2 break-words">{valor || "No indicado"}</p></div>)}
+                <p className="sm:col-span-2 lg:col-span-3">La información se obtiene de tu ficha de empleado del ERP. Para modificarla, utiliza el procedimiento de actualización de tu ficha personal.</p>
               </div>
             )}
 
@@ -339,17 +340,17 @@ export default function Fichajes({ modo = "empleado" }) {
             {esAdminVista && pestana === "solicitudes" && (
               <div className="p-4 sm:p-6">
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                  <div><h2 className="text-lg font-extrabold">Solicitudes de vacaciones</h2><p className="text-sm text-[var(--erp-text-soft)]">Revisa, aprueba o rechaza las solicitudes recibidas desde Fichaje Molsan.</p></div>
-                  <div className="rounded-xl bg-amber-50 px-4 py-2 text-sm font-bold text-amber-900">Pendientes: {vacacionesAdmin.filter(v => v.estado === "SOLICITADO").length}</div>
+                  <div><h2>Solicitudes de vacaciones</h2><p>Revisa, aprueba o rechaza las solicitudes recibidas desde Fichajes.</p></div>
+                  <div className="px-4 py-2">Pendientes: {vacacionesAdmin.filter(v => v.estado === "SOLICITADO").length}</div>
                 </div>
-                <div className="mb-4 grid gap-3 sm:grid-cols-2"><label className="text-xs font-bold text-slate-500">Filtrar empleado<select value={empleadoFiltro} onChange={e => setEmpleadoFiltro(e.target.value)} className="mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-sm font-normal"><option value="">Toda la plantilla</option>{empleados.map(e => <option key={e.id} value={e.id}>{e.nombre}</option>)}</select></label><div className="flex items-end"><button type="button" onClick={() => recargarAdmin().catch(e => setError(e?.response?.data?.detail || "No se pudieron actualizar las solicitudes."))} className="rounded-xl border px-4 py-2.5 text-sm font-bold">Actualizar solicitudes</button></div></div>
-                <div className="overflow-x-auto rounded-2xl border border-[var(--erp-border)]">
-                  <table className="w-full min-w-[850px] text-left text-sm">
-                    <thead><tr className="border-b bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><th className="p-3">Empleado</th><th className="p-3">Desde</th><th className="p-3">Hasta</th><th className="p-3">Días</th><th className="p-3">Estado</th><th className="p-3">Observaciones</th><th className="p-3">Acciones</th></tr></thead>
-                    <tbody>{vacacionesAdmin.map(v => <tr key={v.id} className="border-b last:border-0">
-                      <td className="p-3 font-semibold">{v.empleado_nombre}</td><td className="p-3">{fechaLarga(v.fecha_inicio)}</td><td className="p-3">{fechaLarga(v.fecha_fin)}</td><td className="p-3">{v.dias}</td><td className="p-3"><span className={v.estado === "SOLICITADO" ? "rounded-lg bg-amber-100 px-2 py-1 text-xs font-bold text-amber-900" : v.estado === "APROBADO" ? "rounded-lg bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-900" : "rounded-lg bg-rose-100 px-2 py-1 text-xs font-bold text-rose-900"}>{v.estado === "SOLICITADO" ? "Pendiente" : v.estado === "APROBADO" ? "Aprobada" : "Rechazada"}</span></td>
-                      <td className="max-w-[220px] p-3 text-slate-500">{v.observaciones || "—"}</td><td className="p-3">{v.estado === "SOLICITADO" ? <div className="flex gap-2"><button type="button" disabled={guardando} onClick={() => resolverVacaciones(v, "APROBADO")} className="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white disabled:opacity-50">Aprobar</button><button type="button" disabled={guardando} onClick={() => resolverVacaciones(v, "RECHAZADO")} className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700 disabled:opacity-50">Rechazar</button></div> : "Resuelta"}</td>
-                    </tr>)}{!vacacionesAdmin.length && <tr><td colSpan="7" className="p-10 text-center text-slate-400">No hay solicitudes de vacaciones registradas.</td></tr>}</tbody>
+                <div className="mb-4 grid gap-3 sm:grid-cols-2"><label>Filtrar empleado<select value={empleadoFiltro} onChange={e => setEmpleadoFiltro(e.target.value)} className="mt-1 w-full px-3 py-2.5"><option value="">Toda la plantilla</option>{empleados.map(e => <option key={e.id} value={e.id}>{e.nombre}</option>)}</select></label><div className="flex items-end"><button type="button" onClick={() => recargarAdmin().catch(e => setError(e?.response?.data?.detail || "No se pudieron actualizar las solicitudes."))} className="px-4 py-2.5">Actualizar solicitudes</button></div></div>
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[850px]">
+                    <thead><tr className="uppercase"><MolsanSortableTh label="Empleado" sortKey="empleado_nombre" sortConfig={ordenVacaciones.sortConfig} onSort={ordenVacaciones.requestSort} className="p-3" /><MolsanSortableTh label="Desde" sortKey="fecha_inicio" sortConfig={ordenVacaciones.sortConfig} onSort={ordenVacaciones.requestSort} className="p-3" /><MolsanSortableTh label="Hasta" sortKey="fecha_fin" sortConfig={ordenVacaciones.sortConfig} onSort={ordenVacaciones.requestSort} className="p-3" /><MolsanSortableTh label="Días" sortKey="dias" sortConfig={ordenVacaciones.sortConfig} onSort={ordenVacaciones.requestSort} className="p-3" /><MolsanSortableTh label="Estado" sortKey="estado" sortConfig={ordenVacaciones.sortConfig} onSort={ordenVacaciones.requestSort} className="p-3" /><MolsanSortableTh label="Observaciones" sortKey="observaciones" sortConfig={ordenVacaciones.sortConfig} onSort={ordenVacaciones.requestSort} className="p-3" /><th className="p-3">Acciones</th></tr></thead>
+                    <tbody>{ordenVacaciones.items.map(v => <tr key={v.id}>
+                      <td className="p-3">{v.empleado_nombre}</td><td className="p-3">{fechaLarga(v.fecha_inicio)}</td><td className="p-3">{fechaLarga(v.fecha_fin)}</td><td className="p-3">{v.dias}</td><td className="p-3"><span className={v.estado === "SOLICITADO" ? "px-2 py-1" : v.estado === "APROBADO" ? "px-2 py-1" : "px-2 py-1"}>{v.estado === "SOLICITADO" ? "Pendiente" : v.estado === "APROBADO" ? "Aprobada" : "Rechazada"}</span></td>
+                      <td className="max-w-[220px] p-3">{v.observaciones || "—"}</td><td className="p-3">{v.estado === "SOLICITADO" ? <div className="flex gap-2"><button type="button" disabled={guardando} onClick={() => resolverVacaciones(v, "APROBADO")} className="px-3 py-2">Aprobar</button><button type="button" disabled={guardando} onClick={() => resolverVacaciones(v, "RECHAZADO")} className="px-3 py-2">Rechazar</button></div> : "Resuelta"}</td>
+                    </tr>)}{!vacacionesAdmin.length && <tr><td colSpan="7" className="p-10">No hay solicitudes de vacaciones registradas.</td></tr>}</tbody>
                   </table>
                 </div>
               </div>

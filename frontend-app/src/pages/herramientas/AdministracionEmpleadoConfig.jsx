@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useSeguridad } from "../../hooks/useSeguridad";
 import ModalEmpleado from "../../components/empleados/ModalEmpleado";
 import { useAuthStore } from "../../store/authStore";
@@ -53,65 +54,62 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
 
   if (!esAdministrador) {
     return (
-      <div className="p-6">
-        <section className="max-w-2xl rounded-2xl border border-amber-200 bg-amber-50 p-6">
-          <h1 className="text-xl font-bold text-amber-900">Acceso restringido</h1>
-          <p className="mt-2 text-sm text-amber-800">Solo un administrador puede gestionar la visibilidad de tablas y las asignaciones de empleados.</p>
+      <div className="erp-page min-w-0 space-y-6">
+        <MolsanPageHeader mark="AD" title="Acceso restringido" description="Esta sección está reservada a perfiles administradores." />
+        <section className="erp-card max-w-2xl p-6">
+          <h1>Acceso restringido</h1>
+          <p className="mt-2">Solo un administrador puede gestionar la visibilidad de tablas y las asignaciones de empleados.</p>
         </section>
       </div>
     );
   }
 
   return (
-    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-xs font-bold uppercase tracking-[0.12em] text-blue-600">Utilidades · Administración de empleados</p>
-        <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">{titulo}</h1>
-        <p className="mt-2 max-w-3xl text-sm text-slate-500">{descripcion}</p>
-      </header>
+    <div className="erp-page min-w-0 space-y-6">
+      <MolsanPageHeader mark="AD" title={titulo} description={descripcion} />
 
-      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="flex flex-col gap-3 border-b border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+      <section className="erp-card overflow-hidden">
+        <div className="molsan-filter-bar flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
           <div>
-            <h2 className="text-base font-bold text-slate-800">Listado de empleados</h2>
-            <p className="mt-1 text-xs text-slate-500">
+            <h2>Listado de empleados</h2>
+            <p className="mt-1">
               {loading ? "Cargando empleados…" : `${empleadosFiltrados.length} de ${empleadosSeguros.length} empleados`}
             </p>
           </div>
           <label className="relative block w-full sm:max-w-sm">
             <span className="sr-only">Buscar empleado</span>
-            <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400">⌕</span>
+            <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center">⌕</span>
             <input
               type="search"
               value={busqueda}
               onChange={(event) => setBusqueda(event.target.value)}
               placeholder="Buscar por nombre, usuario, DNI…"
-              className="h-10 w-full rounded-lg border border-slate-300 bg-white pl-9 pr-3 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              className="h-10 w-full pl-9 pr-3"
             />
           </label>
         </div>
 
         {loading && empleadosSeguros.length === 0 ? (
-          <div className="p-10 text-center text-sm text-slate-500">Cargando listado de empleados…</div>
+          <div className="p-10">Cargando listado de empleados…</div>
         ) : empleadosSeguros.length === 0 ? (
-          <div className="p-10 text-center">
-            <p className="text-sm font-semibold text-slate-700">No hay empleados para mostrar.</p>
-            <p className="mt-1 text-sm text-slate-500">Comprueba los permisos de administración y vuelve a cargar la página.</p>
+          <div className="p-10">
+            <p>No hay empleados para mostrar.</p>
+            <p className="mt-1">Comprueba los permisos de administración y vuelve a cargar la página.</p>
           </div>
         ) : empleadosFiltrados.length === 0 ? (
-          <div className="p-10 text-center text-sm text-slate-500">No hay empleados que coincidan con la búsqueda.</div>
+          <div className="p-10">No hay empleados que coincidan con la búsqueda.</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[900px] border-collapse text-left text-sm">
+            <table className="w-full min-w-[900px]">
               <thead>
-                <tr className="border-b border-slate-300 bg-slate-100 text-[11px] uppercase tracking-wide text-slate-600">
-                  <th className="border-r border-slate-200 px-4 py-3 font-bold">ID</th>
-                  <th className="border-r border-slate-200 px-4 py-3 font-bold">Empleado</th>
-                  <th className="border-r border-slate-200 px-4 py-3 font-bold">Usuario</th>
-                  <th className="border-r border-slate-200 px-4 py-3 font-bold">Departamento</th>
-                  <th className="border-r border-slate-200 px-4 py-3 font-bold">Cargo</th>
-                  <th className="border-r border-slate-200 px-4 py-3 font-bold">Estado</th>
-                  <th className="px-4 py-3 text-right font-bold">Acciones</th>
+                <tr className="uppercase">
+                  <th className="px-4 py-3">ID</th>
+                  <th className="px-4 py-3">Empleado</th>
+                  <th className="px-4 py-3">Usuario</th>
+                  <th className="px-4 py-3">Departamento</th>
+                  <th className="px-4 py-3">Cargo</th>
+                  <th className="px-4 py-3">Estado</th>
+                  <th className="px-4 py-3">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -121,26 +119,26 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
                   const cargo = empleado.cargo_nombre || empleado.cargo || empleado.puesto || "—";
                   const activo = empleado.activo !== false;
                   return (
-                    <tr key={empleado.id} className={`border-b border-slate-200 last:border-b-0 transition-colors hover:bg-blue-50/60 ${indice % 2 === 0 ? "bg-white" : "bg-slate-50/50"}`}>
-                      <td className="border-r border-slate-100 px-4 py-3 font-mono text-xs text-slate-500">{empleado.id}</td>
-                      <td className="border-r border-slate-100 px-4 py-3">
-                        <div className="font-semibold text-slate-800">{nombre}</div>
-                        {empleado.email_empresa && <div className="mt-0.5 text-xs text-slate-500">{empleado.email_empresa}</div>}
+                    <tr key={empleado.id} className={`${indice % 2 === 0 ? "" : ""}`}>
+                      <td className="px-4 py-3">{empleado.id}</td>
+                      <td className="px-4 py-3">
+                        <div>{nombre}</div>
+                        {empleado.email_empresa && <div className="mt-0.5">{empleado.email_empresa}</div>}
                       </td>
-                      <td className="border-r border-slate-100 px-4 py-3 text-slate-600">{empleado.usuario || "—"}</td>
-                      <td className="border-r border-slate-100 px-4 py-3 text-slate-600">{departamento}</td>
-                      <td className="border-r border-slate-100 px-4 py-3 text-slate-600">{cargo}</td>
-                      <td className="border-r border-slate-100 px-4 py-3">
-                        <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${activo ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-100 text-slate-500"}`}>
+                      <td className="px-4 py-3">{empleado.usuario || "—"}</td>
+                      <td className="px-4 py-3">{departamento}</td>
+                      <td className="px-4 py-3">{cargo}</td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex items-center px-2.5 py-1 ${activo ? "" : ""}`}>
                           {activo ? "Activo" : "Inactivo"}
                         </span>
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-2">
-                          <button type="button" onClick={() => abrirModal(empleado, "ficha")} className="whitespace-nowrap rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700">
+                          <button type="button" onClick={() => abrirModal(empleado, "ficha")} className="molsan-btn molsan-btn--secondary whitespace-nowrap">
                             Abrir ficha
                           </button>
-                          <button type="button" onClick={() => abrirModal(empleado, "configuracion")} className="whitespace-nowrap rounded-lg bg-blue-600 px-3 py-2 text-xs font-bold text-white transition hover:bg-blue-700">
+                          <button type="button" onClick={() => abrirModal(empleado, "configuracion")} className="whitespace-nowrap px-3 py-2">
                             Ir a configuración
                           </button>
                         </div>
@@ -152,7 +150,7 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
             </table>
           </div>
         )}
-        <div className="border-t border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-500">
+        <div className="px-4 py-3">
           Puedes abrir la ficha o ir directamente a la configuración de {esAsignaciones ? "asignaciones" : "visibilidad de tablas"} desde cada fila.
         </div>
       </section>

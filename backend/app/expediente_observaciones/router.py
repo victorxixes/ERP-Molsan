@@ -8,6 +8,7 @@ import jwt
 from backend.app.config import settings
 from backend.app.database import get_db
 from backend.app.expedientes.models import Expediente
+from backend.app.expedientes.reparto import validar_acceso_candidatos_expediente
 from backend.app.empleados.models import Empleado
 from backend.app.expediente_observaciones.models import ExpedienteObservacion
 from backend.app.notificaciones.router_ws import send_notif_to_user
@@ -108,10 +109,11 @@ class ObservacionComentarioFicha(BaseModel):
         return valores
 
 
-def _comprobar_expediente(db: Session, expediente_id: str) -> Expediente:
+def _comprobar_expediente(db: Session, expediente_id: str, usuario: Empleado) -> Expediente:
     expediente = db.query(Expediente).filter(Expediente.id_expediente == str(expediente_id)).first()
     if not expediente:
         raise HTTPException(status_code=404, detail="El expediente no existe.")
+    validar_acceso_candidatos_expediente(db, usuario, [expediente])
     return expediente
 
 
@@ -167,7 +169,7 @@ def _crear_observacion(db: Session, expediente, usuario, comentario, visibilidad
 
 @router.get("", summary="Listar observaciones de un expediente")
 def listar_observaciones(expediente_id: str, incluir_inactivas: bool = False, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
-    expediente = _comprobar_expediente(db, expediente_id)
+    expediente = _comprobar_expediente(db, expediente_id, usuario)
     consulta = db.query(ExpedienteObservacion).filter(ExpedienteObservacion.expediente_id == expediente.id)
     if not incluir_inactivas:
         consulta = consulta.filter(ExpedienteObservacion.activo.is_(True))
@@ -184,7 +186,7 @@ def listar_observaciones(expediente_id: str, incluir_inactivas: bool = False, db
 
 @router.post("", status_code=status.HTTP_201_CREATED, summary="Crear observación de expediente")
 async def crear_observacion(expediente_id: str, datos: ObservacionCreate, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
-    expediente = _comprobar_expediente(db, expediente_id)
+    expediente = _comprobar_expediente(db, expediente_id, usuario)
     if datos.visibilidad == "Gestor":
         destinatario = db.query(Empleado).filter(Empleado.id == datos.empleado_destinatario_id, Empleado.activo.is_(True)).first()
         if not destinatario:
@@ -207,7 +209,7 @@ async def crear_observacion(expediente_id: str, datos: ObservacionCreate, db: Se
 
 @router.post("/comentario-ficha", status_code=status.HTTP_201_CREATED, summary="Guardar comentario del modal clásico y sus destinos")
 async def guardar_comentario_ficha(expediente_id: str, datos: ObservacionComentarioFicha, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
-    expediente = _comprobar_expediente(db, expediente_id)
+    expediente = _comprobar_expediente(db, expediente_id, usuario)
     if "actividad" in datos.visiones:
         if datos.empleado_destinatario_id is None:
             raise HTTPException(status_code=400, detail="Selecciona el empleado destinatario del comentario interno.")
@@ -254,7 +256,7 @@ async def guardar_comentario_ficha(expediente_id: str, datos: ObservacionComenta
 
 @router.post("/{observacion_id}/validar", summary="Validar una observación interna recibida")
 def validar_observacion(expediente_id: str, observacion_id: int, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
-    expediente = _comprobar_expediente(db, expediente_id)
+    expediente = _comprobar_expediente(db, expediente_id, usuario)
     item = _obtener_observacion(db, expediente.id, observacion_id)
     if item.visibilidad != "Gestor" or item.empleado_destinatario_id != usuario.id:
         raise HTTPException(status_code=403, detail="Solo el empleado destinatario puede validar esta observación interna.")
@@ -274,7 +276,7 @@ def validar_observacion(expediente_id: str, observacion_id: int, db: Session = D
 
 @router.put("/{observacion_id}", summary="Modificar observación de expediente")
 def modificar_observacion(expediente_id: str, observacion_id: int, datos: ObservacionUpdate, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
-    expediente = _comprobar_expediente(db, expediente_id)
+    expediente = _comprobar_expediente(db, expediente_id, usuario)
     item = _obtener_observacion(db, expediente.id, observacion_id)
     if item.autor_empleado_id != usuario.id:
         raise HTTPException(status_code=403, detail="Solo el autor puede modificar esta observación.")
@@ -303,7 +305,7 @@ def modificar_observacion(expediente_id: str, observacion_id: int, datos: Observ
 
 @router.delete("/{observacion_id}", summary="Desactivar observación de expediente")
 def desactivar_observacion(expediente_id: str, observacion_id: int, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
-    expediente = _comprobar_expediente(db, expediente_id)
+    expediente = _comprobar_expediente(db, expediente_id, usuario)
     item = _obtener_observacion(db, expediente.id, observacion_id)
     if item.autor_empleado_id != usuario.id:
         raise HTTPException(status_code=403, detail="Solo el autor puede desactivar esta observación.")

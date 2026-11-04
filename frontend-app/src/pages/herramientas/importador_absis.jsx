@@ -1,12 +1,12 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useState } from "react";
 import axios from "../../api/axios";
-import "../../css/ModalesHerramientasPremium.css";
 
 
 /**
  * ============================================================
  * IMPORTADOR ABSIS
- * MOLSAN ERP — TEMA CLARO PREMIUM
+ * MOLSAN ERP
  * ============================================================
  */
 
@@ -139,120 +139,16 @@ export default function ImportadorAbsis() {
     return (
 
         <div
-            className="
-                herramientas-subpagina-premium
-                w-full
-                p-4
-                lg:p-6
-                space-y-5
-                animate-fade-in
-                text-[var(--erp-text)]
-            "
+            className="utilidades-premium-page herramientas-subpagina-premium erp-page min-w-0 space-y-5"
         >
 
 
-            {/* ==================================================
-                CABECERA
-                ================================================== */}
+            <MolsanPageHeader mark="IA" title="Importador ABSIS" description="Importa expedientes desde el Excel matriz ABSIS seleccionando el día que deseas procesar." />
+
 
             <section
-                className="
-                    bg-white
-                    border
-                    border-[var(--erp-border)]
-                    rounded-2xl
-                    p-5
-                    lg:p-6
-                    shadow-sm
-                "
-            >
-
-                <div
-                    className="
-                        flex
-                        items-center
-                        gap-4
-                    "
-                >
-
-                    {/* ICONO */}
-
-                    <div
-                        className="
-                            w-12
-                            h-12
-                            rounded-2xl
-                            bg-[var(--erp-primary-soft)]
-                            border
-                            border-[var(--erp-primary)]
-                            flex
-                            items-center
-                            justify-center
-                            flex-shrink-0
-                            shadow-sm
-                        "
-                    >
-
-                        <span
-                            className="
-                                text-xl
-                            "
-                        >
-                            📥
-                        </span>
-
-                    </div>
-
-
-                    {/* TEXTO */}
-
-                    <div className="min-w-0">
-
-                        <h1
-                            className="
-                                text-2xl
-                                lg:text-3xl
-                                font-bold
-                                tracking-tight
-                                text-[var(--erp-text)]
-                            "
-                        >
-                            Importador ABSIS
-                        </h1>
-
-                        <p
-                            className="
-                                text-sm
-                                text-[var(--erp-text-soft)]
-                                mt-1
-                            "
-                        >
-                            Importa expedientes desde el Excel matriz ABSIS
-                            seleccionando el día que deseas procesar.
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-
-            {/* ==================================================
-                PANEL PRINCIPAL
-                ================================================== */}
-
-            <section
-                className="
-                    bg-white
-                    border
-                    border-[var(--erp-border)]
-                    rounded-2xl
-                    p-5
-                    lg:p-6
-                    shadow-sm
-                "
+                className="erp-card p-5
+ lg:p-6"
             >
 
 
@@ -261,26 +157,22 @@ export default function ImportadorAbsis() {
                     ================================================= */}
 
                 <div
-                    className="
-                        flex
-                        items-center
-                        gap-3
-                        mb-6
-                    "
+                    className="flex
+ items-center
+ gap-3
+ mb-6"
                 >
 
                     <div
-                        className="
-                            w-9
-                            h-9
-                            rounded-xl
-                            bg-[var(--erp-primary-soft)]
-                            border
-                            border-[var(--erp-border)]
-                            flex
-                            items-center
-                            justify-center
-                        "
+                        className="w-9
+ h-9
+ 
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
                     >
                         📥
                     </div>
@@ -288,20 +180,13 @@ export default function ImportadorAbsis() {
                     <div>
 
                         <h2
-                            className="
-                                text-base
-                                font-bold
-                                text-[var(--erp-text)]
-                            "
+                           
                         >
                             Configuración de la importación
                         </h2>
 
                         <p
-                            className="
-                                text-xs
-                                text-[var(--erp-text-soft)]
-                            "
+                           
                         >
                             Selecciona la fecha y el archivo Excel ABSIS.
                         </p>
@@ -320,15 +205,13 @@ export default function ImportadorAbsis() {
 
                     <label
                         htmlFor="absis-fecha"
-                        className="
-                            flex
-                            items-center
-                            gap-2
-                            text-sm
-                            font-semibold
-                            text-[var(--erp-text)]
-                            mb-2
-                        "
+                        className="flex
+ items-center
+ gap-2
+ 
+ 
+ 
+ mb-2"
                     >
 
                         <span>📅</span>
@@ -341,10 +224,8 @@ export default function ImportadorAbsis() {
 
 
                     <div
-                        className="
-                            max-w-sm
-                            relative
-                        "
+                        className="max-w-sm
+ relative"
                     >
 
                         <input
@@ -355,35 +236,16 @@ export default function ImportadorAbsis() {
                                 setFecha(e.target.value)
                             }
                             disabled={cargando}
-                            className="
-                                w-full
-                                h-11
-                                px-3
-                                rounded-xl
-                                border
-                                border-[var(--erp-border)]
-                                bg-white
-                                text-[var(--erp-text)]
-                                text-sm
-                                outline-none
-                                transition-all
-                                focus:border-[var(--erp-primary)]
-                                focus:ring-2
-                                focus:ring-[var(--erp-primary-soft)]
-                                disabled:bg-gray-50
-                                disabled:cursor-not-allowed
-                            "
+                            className="w-full
+ h-11
+ px-3"
                         />
 
                     </div>
 
 
                     <p
-                        className="
-                            text-xs
-                            text-[var(--erp-text-soft)]
-                            mt-2
-                        "
+                        className="mt-2"
                     >
                         Selecciona una fecha si quieres importar un día
                         concreto del histórico ABSIS.
@@ -400,15 +262,13 @@ export default function ImportadorAbsis() {
                 <div>
 
                     <label
-                        className="
-                            flex
-                            items-center
-                            gap-2
-                            text-sm
-                            font-semibold
-                            text-[var(--erp-text)]
-                            mb-2
-                        "
+                        className="flex
+ items-center
+ gap-2
+ 
+ 
+ 
+ mb-2"
                     >
 
                         <span>📊</span>
@@ -421,55 +281,46 @@ export default function ImportadorAbsis() {
 
 
                     <label
-                        className="
-                            group
-                            flex
-                            flex-col
-                            items-center
-                            justify-center
-                            w-full
-                            min-h-[155px]
-                            rounded-2xl
-                            border-2
-                            border-dashed
-                            border-[var(--erp-border)]
-                            bg-[var(--erp-background)]
-                            hover:border-[var(--erp-primary)]
-                            hover:bg-[var(--erp-primary-soft)]
-                            transition-all
-                            duration-200
-                            cursor-pointer
-                            px-6
-                        "
+                        className="group
+ flex
+ flex-col
+ items-center
+ justify-center
+ w-full
+ min-h-[155px]
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ px-6"
                     >
 
                         <div
-                            className="
-                                text-center
-                                pointer-events-none
-                            "
+                            className="pointer-events-none"
                         >
 
                             {/* ICONO */}
 
                             <div
-                                className="
-                                    mx-auto
-                                    w-12
-                                    h-12
-                                    rounded-2xl
-                                    bg-white
-                                    border
-                                    border-[var(--erp-border)]
-                                    flex
-                                    items-center
-                                    justify-center
-                                    text-2xl
-                                    shadow-sm
-                                    mb-3
-                                    group-hover:border-[var(--erp-primary)]
-                                    transition
-                                "
+                                className="mx-auto
+ w-12
+ h-12
+ 
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center
+ 
+ 
+ mb-3"
                             >
                                 {file ? "📊" : "📄"}
                             </div>
@@ -482,42 +333,24 @@ export default function ImportadorAbsis() {
                                 <>
 
                                     <div
-                                        className="
-                                            font-semibold
-                                            text-[var(--erp-text)]
-                                            text-sm
-                                            break-all
-                                        "
+                                        className="break-all"
                                     >
                                         {file.name}
                                     </div>
 
                                     <div
-                                        className="
-                                            text-xs
-                                            text-[var(--erp-text-soft)]
-                                            mt-1
-                                        "
+                                        className="mt-1"
                                     >
                                         {tamañoArchivo}
                                     </div>
 
                                     <div
-                                        className="
-                                            inline-flex
-                                            items-center
-                                            gap-1.5
-                                            mt-3
-                                            px-3
-                                            py-1
-                                            rounded-full
-                                            bg-green-50
-                                            border
-                                            border-green-200
-                                            text-green-700
-                                            text-[11px]
-                                            font-semibold
-                                        "
+                                        className="inline-flex
+ items-center
+ gap-1.5
+ mt-3
+ px-3
+ py-1"
                                     >
                                         <span>✓</span>
                                         Excel seleccionado
@@ -530,31 +363,19 @@ export default function ImportadorAbsis() {
                                 <>
 
                                     <div
-                                        className="
-                                            font-semibold
-                                            text-[var(--erp-text)]
-                                            text-sm
-                                        "
+                                       
                                     >
                                         Selecciona el Excel ABSIS
                                     </div>
 
                                     <div
-                                        className="
-                                            text-xs
-                                            text-[var(--erp-text-soft)]
-                                            mt-1
-                                        "
+                                        className="mt-1"
                                     >
                                         Formato permitido: .xlsx
                                     </div>
 
                                     <div
-                                        className="
-                                            text-[11px]
-                                            text-[var(--erp-text-soft)]
-                                            mt-3
-                                        "
+                                        className="mt-3"
                                     >
                                         Haz clic aquí para seleccionar el archivo
                                     </div>
@@ -585,13 +406,11 @@ export default function ImportadorAbsis() {
                     ================================================= */}
 
                 <div
-                    className="
-                        grid
-                        grid-cols-1
-                        lg:grid-cols-2
-                        gap-3
-                        mt-6
-                    "
+                    className="grid
+ grid-cols-1
+ lg:grid-cols-2
+ gap-3
+ mt-6"
                 >
 
                     {/* IMPORTAR DÍA ACTUAL */}
@@ -605,39 +424,21 @@ export default function ImportadorAbsis() {
                             cargando ||
                             !file
                         }
-                        className="
-                            min-h-[46px]
-                            px-5
-                            rounded-xl
-                            bg-[var(--erp-primary)]
-                            hover:brightness-95
-                            text-white
-                            font-semibold
-                            text-sm
-                            shadow-sm
-                            transition-all
-                            active:scale-[0.98]
-                            disabled:opacity-40
-                            disabled:cursor-not-allowed
-                        "
+                        className="min-h-[46px]
+ px-5"
                     >
 
                         {cargando ? (
 
                             <span
-                                className="
-                                    flex
-                                    items-center
-                                    justify-center
-                                    gap-2
-                                "
+                                className="flex
+ items-center
+ justify-center
+ gap-2"
                             >
 
                                 <span
-                                    className="
-                                        animate-spin
-                                        text-lg
-                                    "
+                                   
                                 >
                                     ⟳
                                 </span>
@@ -649,12 +450,10 @@ export default function ImportadorAbsis() {
                         ) : (
 
                             <span
-                                className="
-                                    flex
-                                    items-center
-                                    justify-center
-                                    gap-2
-                                "
+                                className="flex
+ items-center
+ justify-center
+ gap-2"
                             >
                                 📥
                                 Importar expedientes del día
@@ -678,39 +477,21 @@ export default function ImportadorAbsis() {
                             !file ||
                             !fecha
                         }
-                        className="
-                            min-h-[46px]
-                            px-5
-                            rounded-xl
-                            bg-green-600
-                            hover:bg-green-700
-                            text-white
-                            font-semibold
-                            text-sm
-                            shadow-sm
-                            transition-all
-                            active:scale-[0.98]
-                            disabled:opacity-40
-                            disabled:cursor-not-allowed
-                        "
+                        className="min-h-[46px]
+ px-5"
                     >
 
                         {cargando ? (
 
                             <span
-                                className="
-                                    flex
-                                    items-center
-                                    justify-center
-                                    gap-2
-                                "
+                                className="flex
+ items-center
+ justify-center
+ gap-2"
                             >
 
                                 <span
-                                    className="
-                                        animate-spin
-                                        text-lg
-                                    "
+                                   
                                 >
                                     ⟳
                                 </span>
@@ -722,12 +503,10 @@ export default function ImportadorAbsis() {
                         ) : (
 
                             <span
-                                className="
-                                    flex
-                                    items-center
-                                    justify-center
-                                    gap-2
-                                "
+                                className="flex
+ items-center
+ justify-center
+ gap-2"
                             >
                                 📅
                                 Importar fecha seleccionada
@@ -751,37 +530,25 @@ export default function ImportadorAbsis() {
             {error && (
 
                 <section
-                    className="
-                        bg-red-50
-                        border
-                        border-red-200
-                        rounded-2xl
-                        p-5
-                        shadow-sm
-                        animate-fade-in
-                    "
+                    className="p-5"
                 >
 
                     <div
-                        className="
-                            flex
-                            items-start
-                            gap-3
-                        "
+                        className="flex
+ items-start
+ gap-3"
                     >
 
                         <div
-                            className="
-                                w-10
-                                h-10
-                                rounded-xl
-                                bg-red-100
-                                flex
-                                items-center
-                                justify-center
-                                text-lg
-                                flex-shrink-0
-                            "
+                            className="w-10
+ h-10
+ 
+ 
+ flex
+ items-center
+ justify-center
+ 
+ flex-shrink-0"
                         >
                             ⛔
                         </div>
@@ -790,20 +557,13 @@ export default function ImportadorAbsis() {
                         <div>
 
                             <h3
-                                className="
-                                    font-semibold
-                                    text-red-800
-                                "
+                               
                             >
                                 Error en la importación
                             </h3>
 
                             <p
-                                className="
-                                    text-sm
-                                    text-red-700
-                                    mt-1
-                                "
+                                className="mt-1"
                             >
                                 {error}
                             </p>
@@ -825,43 +585,29 @@ export default function ImportadorAbsis() {
             {resultado && (
 
                 <section
-                    className="
-                        bg-white
-                        border
-                        border-green-200
-                        rounded-2xl
-                        p-5
-                        lg:p-6
-                        shadow-sm
-                        animate-fade-in
-                    "
+                    className="p-5
+ lg:p-6"
                 >
 
                     {/* CABECERA */}
 
                     <div
-                        className="
-                            flex
-                            items-center
-                            gap-3
-                            mb-5
-                        "
+                        className="flex
+ items-center
+ gap-3
+ mb-5"
                     >
 
                         <div
-                            className="
-                                w-11
-                                h-11
-                                rounded-xl
-                                bg-green-50
-                                border
-                                border-green-200
-                                flex
-                                items-center
-                                justify-center
-                                text-xl
-                                text-green-600
-                            "
+                            className="w-11
+ h-11
+ 
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
                         >
                             ✓
                         </div>
@@ -870,20 +616,13 @@ export default function ImportadorAbsis() {
                         <div>
 
                             <h2
-                                className="
-                                    text-xl
-                                    font-bold
-                                    text-[var(--erp-text)]
-                                "
+                               
                             >
                                 Importación completada
                             </h2>
 
                             <p
-                                className="
-                                    text-sm
-                                    text-[var(--erp-text-soft)]
-                                "
+                               
                             >
                                 El proceso ABSIS ha finalizado correctamente.
                             </p>
@@ -897,46 +636,27 @@ export default function ImportadorAbsis() {
                     {/* KPIS */}
 
                     <div
-                        className="
-                            grid
-                            grid-cols-1
-                            sm:grid-cols-2
-                            lg:grid-cols-4
-                            gap-3
-                        "
+                        className="grid
+ grid-cols-1
+ sm:grid-cols-2
+ lg:grid-cols-4
+ gap-3"
                     >
 
                         {/* FECHA */}
 
                         <div
-                            className="
-                                rounded-xl
-                                border
-                                border-[var(--erp-border)]
-                                bg-[var(--erp-background)]
-                                p-4
-                            "
+                            className="p-4"
                         >
 
                             <div
-                                className="
-                                    text-[11px]
-                                    font-semibold
-                                    uppercase
-                                    tracking-wide
-                                    text-[var(--erp-text-soft)]
-                                "
+                                className="uppercase"
                             >
                                 Fecha importada
                             </div>
 
                             <div
-                                className="
-                                    text-lg
-                                    font-bold
-                                    text-[var(--erp-text)]
-                                    mt-1
-                                "
+                                className="mt-1"
                             >
                                 {resultado.fecha_importada || "-"}
                             </div>
@@ -947,34 +667,17 @@ export default function ImportadorAbsis() {
                         {/* CREADOS */}
 
                         <div
-                            className="
-                                rounded-xl
-                                border
-                                border-green-200
-                                bg-green-50
-                                p-4
-                            "
+                            className="p-4"
                         >
 
                             <div
-                                className="
-                                    text-[11px]
-                                    font-semibold
-                                    uppercase
-                                    tracking-wide
-                                    text-green-700
-                                "
+                                className="uppercase"
                             >
                                 Expedientes creados
                             </div>
 
                             <div
-                                className="
-                                    text-2xl
-                                    font-bold
-                                    text-green-700
-                                    mt-1
-                                "
+                                className="mt-1"
                             >
                                 {resultado.expedientes_creados ?? 0}
                             </div>
@@ -985,34 +688,17 @@ export default function ImportadorAbsis() {
                         {/* ACTUALIZADOS */}
 
                         <div
-                            className="
-                                rounded-xl
-                                border
-                                border-blue-200
-                                bg-blue-50
-                                p-4
-                            "
+                            className="p-4"
                         >
 
                             <div
-                                className="
-                                    text-[11px]
-                                    font-semibold
-                                    uppercase
-                                    tracking-wide
-                                    text-blue-700
-                                "
+                                className="uppercase"
                             >
                                 Expedientes actualizados
                             </div>
 
                             <div
-                                className="
-                                    text-2xl
-                                    font-bold
-                                    text-blue-700
-                                    mt-1
-                                "
+                                className="mt-1"
                             >
                                 {resultado.expedientes_actualizados ?? 0}
                             </div>
@@ -1023,34 +709,17 @@ export default function ImportadorAbsis() {
                         {/* FILTRADOS */}
 
                         <div
-                            className="
-                                rounded-xl
-                                border
-                                border-[var(--erp-border)]
-                                bg-[var(--erp-background)]
-                                p-4
-                            "
+                            className="p-4"
                         >
 
                             <div
-                                className="
-                                    text-[11px]
-                                    font-semibold
-                                    uppercase
-                                    tracking-wide
-                                    text-[var(--erp-text-soft)]
-                                "
+                                className="uppercase"
                             >
                                 Total filtrados
                             </div>
 
                             <div
-                                className="
-                                    text-2xl
-                                    font-bold
-                                    text-[var(--erp-text)]
-                                    mt-1
-                                "
+                                className="mt-1"
                             >
                                 {resultado.total_filtrados ?? 0}
                             </div>
@@ -1066,16 +735,8 @@ export default function ImportadorAbsis() {
                     {resultado.errores > 0 && (
 
                         <div
-                            className="
-                                mt-4
-                                p-4
-                                rounded-xl
-                                bg-yellow-50
-                                border
-                                border-yellow-200
-                                text-yellow-800
-                                text-sm
-                            "
+                            className="mt-4
+ p-4"
                         >
 
                             ⚠️ La importación terminó con{" "}

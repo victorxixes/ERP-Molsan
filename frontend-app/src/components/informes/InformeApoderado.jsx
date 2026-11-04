@@ -2,17 +2,15 @@ import { useState, useEffect } from "react";
 import axios from "../../api/axios";
 
 
-import "../../css/ComponentesOperativosPremium.css";
 
 /**
  * ============================================================
- * INFORME APODERADO — MOLSAN ERP SAAS PREMIUM 2027
+ * INFORME APODERADO
  * ============================================================
  *
  * Versión:
  * - Compatible con interfaz clara
  * - Sin text-white sobre fondos claros
- * - Glass Luxe claro
  * - Contraste correcto
  * - KPIs claros
  * - Ranking mejorado
@@ -245,44 +243,29 @@ export default function InformeApoderado({
     return (
 
       <div
-        className="informe-apoderado-premium 
-          rounded-[28px]
-          border
-          border-slate-200
-          bg-white
-          p-8
-          shadow-[0_18px_55px_rgba(15,23,42,0.08)]
-        "
+        className="
+ 
+ 
+ 
+ 
+ p-8"
       >
 
         <div
-          className="
-            flex
-            items-center
-            justify-center
-            gap-3
-            py-10
-          "
+          className="flex
+ items-center
+ justify-center
+ gap-3
+ py-10"
         >
 
           <span
-            className="
-              h-5
-              w-5
-              rounded-full
-              border-2
-              border-blue-100
-              border-t-blue-500
-              animate-spin
-            "
+            className="h-5
+ w-5"
           />
 
           <span
-            className="
-              text-sm
-              font-medium
-              text-slate-500
-            "
+           
           >
             Cargando informe…
           </span>
@@ -305,39 +288,22 @@ export default function InformeApoderado({
     return (
 
       <div
-        className="
-          rounded-[28px]
-          border
-          border-red-200
-          bg-white
-          p-8
-          shadow-[0_18px_55px_rgba(15,23,42,0.08)]
-        "
+        className="p-8"
       >
 
         <div
-          className="
-            flex
-            items-center
-            gap-4
-          "
+          className="flex
+ items-center
+ gap-4"
         >
 
           <div
-            className="
-              flex
-              h-11
-              w-11
-              shrink-0
-              items-center
-              justify-center
-              rounded-2xl
-              border
-              border-red-100
-              bg-red-50
-              text-red-500
-              font-bold
-            "
+            className="flex
+ h-11
+ w-11
+ shrink-0
+ items-center
+ justify-center"
           >
             !
           </div>
@@ -346,22 +312,14 @@ export default function InformeApoderado({
           <div>
 
             <h3
-              className="
-                text-base
-                font-bold
-                text-slate-800
-              "
+             
             >
               No se ha podido cargar el informe
             </h3>
 
 
             <p
-              className="
-                mt-1
-                text-sm
-                text-slate-500
-              "
+              className="mt-1"
             >
               {error}
             </p>
@@ -384,19 +342,17 @@ export default function InformeApoderado({
   return (
 
     <div
-      className="
-        relative
-        overflow-hidden
-        rounded-[30px]
-        border
-        border-slate-200/80
-        bg-white/80
-        p-5
-        shadow-[0_20px_60px_rgba(15,23,42,0.08)]
-        backdrop-blur-2xl
-        sm:p-6
-        lg:p-7
-      "
+      className="relative
+ overflow-hidden
+ 
+ 
+ 
+ 
+ p-5
+ 
+ 
+ sm:p-6
+ lg:p-7"
     >
 
 
@@ -405,18 +361,12 @@ export default function InformeApoderado({
       ====================================================== */}
 
       <div
-        className="
-          pointer-events-none
-          absolute
-          left-0
-          right-0
-          top-0
-          h-px
-          bg-gradient-to-r
-          from-transparent
-          via-blue-400/60
-          to-transparent
-        "
+        className="pointer-events-none
+ absolute
+ left-0
+ right-0
+ top-0
+ h-px"
       />
 
 
@@ -425,44 +375,32 @@ export default function InformeApoderado({
       ====================================================== */}
 
       <div
-        className="
-          flex
-          flex-col
-          gap-5
-          border-b
-          border-slate-200
-          pb-6
-          md:flex-row
-          md:items-center
-          md:justify-between
-        "
+        className="flex
+ flex-col
+ gap-5
+ 
+ 
+ pb-6
+ md:flex-row
+ md:items-center
+ md:justify-between"
       >
 
         {/* TITULO */}
 
         <div
-          className="
-            flex
-            items-center
-            gap-4
-          "
+          className="flex
+ items-center
+ gap-4"
         >
 
           <div
-            className="
-              flex
-              h-14
-              w-14
-              shrink-0
-              items-center
-              justify-center
-              rounded-2xl
-              border
-              border-blue-100
-              bg-blue-50
-              text-2xl
-              shadow-sm
-            "
+            className="flex
+ h-14
+ w-14
+ shrink-0
+ items-center
+ justify-center"
           >
             📊
           </div>
@@ -471,24 +409,14 @@ export default function InformeApoderado({
           <div>
 
             <h2
-              className="
-                text-xl
-                font-bold
-                tracking-tight
-                text-slate-800
-                sm:text-2xl
-              "
+             
             >
               Informe del apoderado
             </h2>
 
 
             <p
-              className="
-                mt-1
-                text-sm
-                text-slate-500
-              "
+              className="mt-1"
             >
               Resumen de actividad y rendimiento
             </p>
@@ -501,21 +429,13 @@ export default function InformeApoderado({
         {/* SELECTOR */}
 
         <div
-          className="
-            flex
-            items-center
-            gap-3
-          "
+          className="flex
+ items-center
+ gap-3"
         >
 
           <span
-            className="
-              text-xs
-              font-semibold
-              uppercase
-              tracking-[0.12em]
-              text-slate-400
-            "
+            className="uppercase"
           >
             Periodo
           </span>
@@ -526,24 +446,13 @@ export default function InformeApoderado({
             onChange={(e) =>
               setPeriodo(e.target.value)
             }
-            className="
-              min-w-[150px]
-              rounded-xl
-              border
-              border-slate-200
-              bg-white
-              px-4
-              py-2.5
-              text-sm
-              font-medium
-              text-slate-700
-              shadow-sm
-              outline-none
-              transition
-              focus:border-blue-400
-              focus:ring-4
-              focus:ring-blue-100
-            "
+            className="min-w-[150px]
+ 
+ 
+ 
+ 
+ px-4
+ py-2.5"
           >
 
             <option value="mensual">
@@ -566,14 +475,12 @@ export default function InformeApoderado({
       ====================================================== */}
 
       <div
-        className="
-          mt-6
-          grid
-          grid-cols-1
-          gap-4
-          sm:grid-cols-2
-          xl:grid-cols-4
-        "
+        className="mt-6
+ grid
+ grid-cols-1
+ gap-4
+ sm:grid-cols-2
+ xl:grid-cols-4"
       >
 
         <Kpi
@@ -582,9 +489,7 @@ export default function InformeApoderado({
           valor={
             data.total_presencial ?? 0
           }
-          fondo="bg-emerald-50"
-          borde="border-emerald-100"
-          icono="text-emerald-600"
+
         />
 
 
@@ -594,9 +499,7 @@ export default function InformeApoderado({
           valor={
             data.total_vc ?? 0
           }
-          fondo="bg-blue-50"
-          borde="border-blue-100"
-          icono="text-blue-600"
+
         />
 
 
@@ -607,9 +510,7 @@ export default function InformeApoderado({
             data.km_totales,
             1
           )} km`}
-          fondo="bg-rose-50"
-          borde="border-rose-100"
-          icono="text-rose-600"
+
         />
 
 
@@ -620,9 +521,7 @@ export default function InformeApoderado({
             data.tiempo_medio_dias,
             1
           )} días`}
-          fondo="bg-violet-50"
-          borde="border-violet-100"
-          icono="text-violet-600"
+
         />
 
       </div>
@@ -633,55 +532,38 @@ export default function InformeApoderado({
       ====================================================== */}
 
       <section
-        className="
-          mt-6
-          overflow-hidden
-          rounded-2xl
-          border
-          border-slate-200
-          bg-white
-        "
+        className="mt-6
+ overflow-hidden"
       >
 
         {/* CABECERA */}
 
         <div
-          className="
-            flex
-            flex-col
-            gap-2
-            border-b
-            border-slate-200
-            bg-slate-50/80
-            px-5
-            py-4
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
-          "
+          className="flex
+ flex-col
+ gap-2
+ 
+ 
+ 
+ px-5
+ py-4
+ sm:flex-row
+ sm:items-center
+ sm:justify-between"
         >
 
           <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
+            className="flex
+ items-center
+ gap-3"
           >
 
             <div
-              className="
-                flex
-                h-10
-                w-10
-                items-center
-                justify-center
-                rounded-xl
-                border
-                border-amber-100
-                bg-amber-50
-                text-lg
-              "
+              className="flex
+ h-10
+ w-10
+ items-center
+ justify-center"
             >
               🏆
             </div>
@@ -690,20 +572,13 @@ export default function InformeApoderado({
             <div>
 
               <h3
-                className="
-                  text-base
-                  font-bold
-                  text-slate-800
-                "
+               
               >
                 Ranking de apoderados
               </h3>
 
               <p
-                className="
-                  text-xs
-                  text-slate-400
-                "
+               
               >
                 Actividad acumulada durante el periodo
               </p>
@@ -714,16 +589,11 @@ export default function InformeApoderado({
 
 
           <span
-            className="
-              w-fit
-              rounded-full
-              bg-slate-100
-              px-3
-              py-1
-              text-xs
-              font-semibold
-              text-slate-500
-            "
+            className="w-fit
+ 
+ 
+ px-3
+ py-1"
           >
             {ranking.length} registros
           </span>
@@ -738,33 +608,18 @@ export default function InformeApoderado({
           {ranking.length === 0 ? (
 
             <div
-              className="
-                rounded-xl
-                border
-                border-dashed
-                border-slate-200
-                bg-slate-50
-                px-5
-                py-8
-                text-center
-              "
+              className="px-5
+ py-8"
             >
 
               <div
-                className="
-                  text-2xl
-                "
+               
               >
                 🏆
               </div>
 
               <p
-                className="
-                  mt-2
-                  text-sm
-                  font-medium
-                  text-slate-600
-                "
+                className="mt-2"
               >
                 No hay datos de ranking.
               </p>
@@ -782,48 +637,38 @@ export default function InformeApoderado({
                     r.apoderado_id ??
                     `ranking-${i}`
                   }
-                  className="
-                    flex
-                    items-center
-                    gap-3
-                    rounded-xl
-                    border
-                    border-slate-200
-                    bg-white
-                    p-3
-                    transition-all
-                    duration-200
-                    hover:-translate-y-0.5
-                    hover:border-blue-200
-                    hover:bg-blue-50/30
-                    hover:shadow-sm
-                  "
+                  className="flex
+ items-center
+ gap-3
+ 
+ 
+ 
+ 
+ p-3"
                 >
 
                   {/* POSICIÓN */}
 
                   <div
-                    className={`
-                      flex
-                      h-9
-                      w-9
-                      shrink-0
-                      items-center
-                      justify-center
-                      rounded-xl
-                      text-sm
-                      font-bold
+                    className={`flex
+ h-9
+ w-9
+ shrink-0
+ items-center
+ justify-center
+ 
+ 
+ 
 
-                      ${
-                        i === 0
-                          ? "bg-amber-50 text-amber-600 border border-amber-100"
-                          : i === 1
-                          ? "bg-slate-100 text-slate-600 border border-slate-200"
-                          : i === 2
-                          ? "bg-orange-50 text-orange-600 border border-orange-100"
-                          : "bg-blue-50 text-blue-600 border border-blue-100"
-                      }
-                    `}
+ ${
+ i === 0
+ ? ""
+ : i === 1
+ ? ""
+ : i === 2
+ ? ""
+ : ""
+ }`}
                   >
                     {i + 1}
                   </div>
@@ -834,12 +679,7 @@ export default function InformeApoderado({
                   <div className="min-w-0 flex-1">
 
                     <div
-                      className="
-                        truncate
-                        text-sm
-                        font-semibold
-                        text-slate-800
-                      "
+                      className="truncate"
                     >
                       {r.nombre ||
                         r.nombre_apoderado ||
@@ -848,11 +688,7 @@ export default function InformeApoderado({
 
 
                     <div
-                      className="
-                        mt-0.5
-                        text-xs
-                        text-slate-400
-                      "
+                      className="mt-0.5"
                     >
                       {r.total_citas ?? 0} citas
                     </div>
@@ -863,30 +699,18 @@ export default function InformeApoderado({
                   {/* DISTANCIA */}
 
                   <div
-                    className="
-                      shrink-0
-                      text-right
-                    "
+                    className="shrink-0"
                   >
 
                     <div
-                      className="
-                        text-sm
-                        font-bold
-                        text-slate-700
-                      "
+                     
                     >
                       {numero(r.km, 1)} km
                     </div>
 
 
                     <div
-                      className="
-                        text-[10px]
-                        uppercase
-                        tracking-wider
-                        text-slate-400
-                      "
+                      className="uppercase"
                     >
                       distancia
                     </div>
@@ -920,64 +744,30 @@ function Kpi({
   icon,
   titulo,
   valor,
-  fondo,
-  borde,
-  icono,
+
 }) {
 
   return (
 
     <div
-      className={`
-        rounded-2xl
-        border
-        ${borde}
-        ${fondo}
-        p-5
-        shadow-sm
-        transition-all
-        duration-200
-        hover:-translate-y-0.5
-        hover:shadow-md
-      `}
+      className="p-5"
     >
 
       <div
-        className="
-          flex
-          items-center
-          justify-between
-        "
+        className="flex
+ items-center
+ justify-between"
       >
 
         <div
-          className={`
-            flex
-            h-10
-            w-10
-            items-center
-            justify-center
-            rounded-xl
-            bg-white/80
-            border
-            border-white
-            text-lg
-            ${icono}
-            shadow-sm
-          `}
+          className="flex h-10 w-10 items-center justify-center"
         >
           {icon}
         </div>
 
 
         <span
-          className="
-            text-[10px]
-            font-bold
-            uppercase
-            tracking-[0.12em]
-            text-slate-400
-          "
+          className="uppercase"
         >
           KPI
         </span>
@@ -986,26 +776,14 @@ function Kpi({
 
 
       <div
-        className="
-          mt-4
-          text-2xl
-          font-bold
-          tracking-tight
-          text-slate-800
-          sm:text-3xl
-        "
+        className="mt-4"
       >
         {valor}
       </div>
 
 
       <div
-        className="
-          mt-1
-          text-xs
-          font-medium
-          text-slate-500
-        "
+        className="mt-1"
       >
         {titulo}
       </div>

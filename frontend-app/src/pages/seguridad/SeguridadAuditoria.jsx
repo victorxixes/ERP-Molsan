@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
-import "./SeguridadSubpaginasPremium.css";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import { useEffect, useMemo, useRef, useState } from "react";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
 
@@ -7,7 +8,7 @@ import { useSeguridad } from "../../hooks/useSeguridad";
 /**
  * ============================================================
  * SEGURIDAD — AUDITORÍA
- * MOLSAN ERP SAAS PREMIUM 2027
+ * MOLSAN ERP
  * ============================================================
  *
  * Módulo completo de consulta de auditoría.
@@ -156,77 +157,18 @@ function BadgeAccion({
   accion,
 }) {
 
-  const valor =
-    normalizarTexto(
-      accion
-    );
-
-
-  let clases =
-    "bg-[var(--erp-primary-soft)] text-[var(--erp-primary)] border-[var(--erp-primary)]";
-
-
-  if (
-    valor === "login" ||
-    valor === "login_success" ||
-    valor === "acceso"
-  ) {
-
-    clases =
-      "bg-emerald-50 text-emerald-700 border-emerald-200";
-
-  } else if (
-    valor === "login_error" ||
-    valor === "error" ||
-    valor.includes("fall")
-  ) {
-
-    clases =
-      "bg-red-50 text-red-700 border-red-200";
-
-  } else if (
-    valor.includes("delete") ||
-    valor.includes("elimin") ||
-    valor.includes("borr")
-  ) {
-
-    clases =
-      "bg-red-50 text-red-700 border-red-200";
-
-  } else if (
-    valor.includes("update") ||
-    valor.includes("actualiz") ||
-    valor.includes("editar")
-  ) {
-
-    clases =
-      "bg-amber-50 text-amber-700 border-amber-200";
-
-  } else if (
-    valor.includes("create") ||
-    valor.includes("crear") ||
-    valor.includes("alta")
-  ) {
-
-    clases =
-      "bg-blue-50 text-blue-700 border-blue-200";
-  }
-
-
   return (
     <span
-      className={`
-        inline-flex
-        items-center
-        px-2.5
-        py-1
-        rounded-lg
-        border
-        text-[11px]
-        font-semibold
-        whitespace-nowrap
-        ${clases}
-      `}
+      className={`inline-flex
+ items-center
+ px-2.5
+ py-1
+ 
+ 
+ 
+ 
+ whitespace-nowrap
+ `}
     >
       {textoSeguro(accion) || "Actividad"}
     </span>
@@ -245,91 +187,37 @@ function KPI({
   titulo,
   valor,
   descripcion,
-  accent = "primary",
 }) {
-
-  const estilos = {
-
-    primary: {
-      bg: "bg-[var(--erp-primary-soft)]",
-      color: "text-[var(--erp-primary)]",
-    },
-
-    success: {
-      bg: "bg-emerald-50",
-      color: "text-emerald-600",
-    },
-
-    warning: {
-      bg: "bg-amber-50",
-      color: "text-amber-600",
-    },
-
-    danger: {
-      bg: "bg-red-50",
-      color: "text-red-600",
-    },
-
-  };
-
-
-  const estilo =
-    estilos[accent] ||
-    estilos.primary;
 
 
   return (
     <div
-      className="
-        bg-[var(--erp-surface)]
-        border
-        border-[var(--erp-border)]
-        rounded-2xl
-        shadow-sm
-        p-5
-      "
+      className="p-5"
     >
 
       <div
-        className="
-          flex
-          items-start
-          justify-between
-          gap-4
-        "
+        className="flex
+ items-start
+ justify-between
+ gap-4"
       >
 
         <div className="min-w-0">
 
           <p
-            className="
-              text-xs
-              uppercase
-              tracking-wide
-              font-medium
-              text-[var(--erp-text-soft)]
-            "
+            className="uppercase"
           >
             {titulo}
           </p>
 
           <p
-            className="
-              text-2xl
-              font-bold
-              text-[var(--erp-text)]
-              mt-1
-            "
+            className="mt-1"
           >
             {valor}
           </p>
 
           <p
-            className="
-              text-xs
-              text-[var(--erp-text-soft)]
-              mt-1
-            "
+            className="mt-1"
           >
             {descripcion}
           </p>
@@ -338,17 +226,14 @@ function KPI({
 
 
         <div
-          className={`
-            w-10
-            h-10
-            rounded-xl
-            flex
-            items-center
-            justify-center
-            flex-shrink-0
-            ${estilo.bg}
-            ${estilo.color}
-          `}
+          className={`w-10
+ h-10
+ 
+ flex
+ items-center
+ justify-center
+ flex-shrink-0
+ `}
         >
 
           <Icono
@@ -402,28 +287,18 @@ function RegistroAuditoria({
           registro
         )
       }
-      className="
-        w-full
-        text-left
-        px-5
-        py-4
-        border-b
-        border-[var(--erp-border)]
-        hover:bg-[var(--erp-primary-soft)]
-        transition
-        focus:outline-none
-        focus:bg-[var(--erp-primary-soft)]
-      "
+      className="w-full
+ 
+ px-5
+ py-4"
     >
 
       <div
-        className="
-          grid
-          grid-cols-1
-          lg:grid-cols-[170px_140px_140px_minmax(0,1fr)_150px]
-          gap-3
-          lg:items-center
-        "
+        className="grid
+ grid-cols-1
+ lg:grid-cols-[170px_140px_140px_minmax(0,1fr)_150px]
+ gap-3
+ lg:items-center"
       >
 
         {/* USUARIO */}
@@ -431,23 +306,14 @@ function RegistroAuditoria({
         <div className="min-w-0">
 
           <p
-            className="
-              text-sm
-              font-semibold
-              text-[var(--erp-text)]
-              truncate
-            "
+            className="truncate"
             title={usuario}
           >
             {usuario}
           </p>
 
           <p
-            className="
-              text-[11px]
-              text-[var(--erp-text-soft)]
-              mt-0.5
-            "
+            className="mt-0.5"
           >
             Usuario
           </p>
@@ -460,22 +326,14 @@ function RegistroAuditoria({
         <div className="min-w-0">
 
           <p
-            className="
-              text-sm
-              text-[var(--erp-text)]
-              truncate
-            "
+            className="truncate"
             title={modulo}
           >
             {modulo}
           </p>
 
           <p
-            className="
-              text-[11px]
-              text-[var(--erp-text-soft)]
-              mt-0.5
-            "
+            className="mt-0.5"
           >
             Módulo
           </p>
@@ -501,23 +359,15 @@ function RegistroAuditoria({
         <div className="min-w-0">
 
           <p
-            className="
-              text-sm
-              text-[var(--erp-text)]
-              truncate
-            "
+            className="truncate"
             title={descripcion}
           >
             {descripcion}
           </p>
 
           <p
-            className="
-              text-[11px]
-              text-[var(--erp-text-soft)]
-              mt-0.5
-              truncate
-            "
+            className="mt-0.5
+ truncate"
           >
             IP:{" "}
             {textoSeguro(
@@ -530,14 +380,10 @@ function RegistroAuditoria({
 
         {/* FECHA */}
 
-        <div className="lg:text-right">
+        <div>
 
           <p
-            className="
-              text-sm
-              text-[var(--erp-text)]
-              whitespace-nowrap
-            "
+            className="whitespace-nowrap"
           >
             {formatearFecha(
               registro?.fecha
@@ -545,11 +391,7 @@ function RegistroAuditoria({
           </p>
 
           <p
-            className="
-              text-[11px]
-              text-[var(--erp-text-soft)]
-              mt-0.5
-            "
+            className="mt-0.5"
           >
             Registro #
             {registro?.id ?? "-"}
@@ -574,6 +416,8 @@ function ModalDetalle({
   registro,
   onCerrar,
 }) {
+  const dialogRef = useRef(null);
+  useAccessibleDialog({ open: Boolean(registro), onClose: onCerrar, dialogRef });
 
   if (!registro) {
     return null;
@@ -582,17 +426,14 @@ function ModalDetalle({
 
   return (
     <div
-      className="
-        fixed
-        inset-0
-        z-50
-        flex
-        items-center
-        justify-center
-        p-4
-        bg-black/30
-        backdrop-blur-sm
-      "
+      className="panel-modal-premium
+ fixed
+ inset-0
+ z-50
+ flex
+ items-center
+ justify-center
+ p-4"
       onMouseDown={(
         event
       ) => {
@@ -608,53 +449,45 @@ function ModalDetalle({
     >
 
       <div
-        className="
-          w-full
-          max-w-2xl
-          max-h-[90vh]
-          overflow-auto
-          bg-[var(--erp-surface)]
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          shadow-2xl
-        "
+        ref={dialogRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Detalle de registro de auditoría"
+        className="w-full
+ max-w-2xl
+ max-h-[90vh]
+ overflow-auto"
       >
 
         {/* CABECERA */}
 
         <div
-          className="
-            px-6
-            py-5
-            border-b
-            border-[var(--erp-border)]
-            flex
-            items-center
-            justify-between
-            gap-4
-          "
+          className="px-6
+ py-5
+ 
+ 
+ flex
+ items-center
+ justify-between
+ gap-4"
         >
 
           <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
+            className="flex
+ items-center
+ gap-3"
           >
 
             <div
-              className="
-                w-10
-                h-10
-                rounded-xl
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-              "
+              className="w-10
+ h-10
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
             >
 
               <Icono
@@ -668,21 +501,13 @@ function ModalDetalle({
             <div>
 
               <h2
-                className="
-                  text-lg
-                  font-semibold
-                  text-[var(--erp-text)]
-                "
+               
               >
                 Detalle de auditoría
               </h2>
 
               <p
-                className="
-                  text-xs
-                  text-[var(--erp-text-soft)]
-                  mt-0.5
-                "
+                className="mt-0.5"
               >
                 Registro #{registro.id ?? "-"}
               </p>
@@ -695,17 +520,8 @@ function ModalDetalle({
           <button
             type="button"
             onClick={onCerrar}
-            className="
-              w-9
-              h-9
-              rounded-xl
-              border
-              border-[var(--erp-border)]
-              text-[var(--erp-text-soft)]
-              hover:text-[var(--erp-text)]
-              hover:bg-[var(--erp-bg)]
-              transition
-            "
+            className="w-9
+ h-9"
             aria-label="Cerrar"
           >
             ×
@@ -717,49 +533,29 @@ function ModalDetalle({
         {/* CONTENIDO */}
 
         <div
-          className="
-            p-6
-            space-y-5
-          "
+          className="p-6
+ space-y-5"
         >
 
           <div
-            className="
-              grid
-              grid-cols-1
-              sm:grid-cols-2
-              gap-4
-            "
+            className="grid
+ grid-cols-1
+ sm:grid-cols-2
+ gap-4"
           >
 
             <div
-              className="
-                p-4
-                rounded-xl
-                bg-[var(--erp-bg)]
-                border
-                border-[var(--erp-border)]
-              "
+              className="p-4"
             >
 
               <p
-                className="
-                  text-[11px]
-                  uppercase
-                  tracking-wide
-                  text-[var(--erp-text-soft)]
-                "
+                className="uppercase"
               >
                 Usuario
               </p>
 
               <p
-                className="
-                  mt-1
-                  text-sm
-                  font-semibold
-                  text-[var(--erp-text)]
-                "
+                className="mt-1"
               >
                 {textoSeguro(
                   registro.usuario
@@ -770,33 +566,17 @@ function ModalDetalle({
 
 
             <div
-              className="
-                p-4
-                rounded-xl
-                bg-[var(--erp-bg)]
-                border
-                border-[var(--erp-border)]
-              "
+              className="p-4"
             >
 
               <p
-                className="
-                  text-[11px]
-                  uppercase
-                  tracking-wide
-                  text-[var(--erp-text-soft)]
-                "
+                className="uppercase"
               >
                 Módulo
               </p>
 
               <p
-                className="
-                  mt-1
-                  text-sm
-                  font-semibold
-                  text-[var(--erp-text)]
-                "
+                className="mt-1"
               >
                 {textoSeguro(
                   registro.modulo
@@ -807,22 +587,11 @@ function ModalDetalle({
 
 
             <div
-              className="
-                p-4
-                rounded-xl
-                bg-[var(--erp-bg)]
-                border
-                border-[var(--erp-border)]
-              "
+              className="p-4"
             >
 
               <p
-                className="
-                  text-[11px]
-                  uppercase
-                  tracking-wide
-                  text-[var(--erp-text-soft)]
-                "
+                className="uppercase"
               >
                 Acción
               </p>
@@ -841,33 +610,17 @@ function ModalDetalle({
 
 
             <div
-              className="
-                p-4
-                rounded-xl
-                bg-[var(--erp-bg)]
-                border
-                border-[var(--erp-border)]
-              "
+              className="p-4"
             >
 
               <p
-                className="
-                  text-[11px]
-                  uppercase
-                  tracking-wide
-                  text-[var(--erp-text-soft)]
-                "
+                className="uppercase"
               >
                 Fecha
               </p>
 
               <p
-                className="
-                  mt-1
-                  text-sm
-                  font-semibold
-                  text-[var(--erp-text)]
-                "
+                className="mt-1"
               >
                 {formatearFecha(
                   registro.fecha
@@ -880,34 +633,21 @@ function ModalDetalle({
 
 
           <div
-            className="
-              p-4
-              rounded-xl
-              bg-[var(--erp-bg)]
-              border
-              border-[var(--erp-border)]
-            "
+            className="p-4"
           >
 
             <p
-              className="
-                text-[11px]
-                uppercase
-                tracking-wide
-                text-[var(--erp-text-soft)]
-              "
+              className="uppercase"
             >
               Descripción
             </p>
 
             <p
-              className="
-                mt-2
-                text-sm
-                leading-6
-                text-[var(--erp-text)]
-                whitespace-pre-wrap
-              "
+              className="mt-2
+ 
+ 
+ 
+ whitespace-pre-wrap"
             >
               {textoSeguro(
                 registro.descripcion
@@ -918,42 +658,24 @@ function ModalDetalle({
 
 
           <div
-            className="
-              grid
-              grid-cols-1
-              sm:grid-cols-2
-              gap-4
-            "
+            className="grid
+ grid-cols-1
+ sm:grid-cols-2
+ gap-4"
           >
 
             <div
-              className="
-                p-4
-                rounded-xl
-                bg-[var(--erp-bg)]
-                border
-                border-[var(--erp-border)]
-              "
+              className="p-4"
             >
 
               <p
-                className="
-                  text-[11px]
-                  uppercase
-                  tracking-wide
-                  text-[var(--erp-text-soft)]
-                "
+                className="uppercase"
               >
                 Dirección IP
               </p>
 
               <p
-                className="
-                  mt-1
-                  text-sm
-                  font-mono
-                  text-[var(--erp-text)]
-                "
+                className="mt-1"
               >
                 {textoSeguro(
                   registro.ip
@@ -964,33 +686,17 @@ function ModalDetalle({
 
 
             <div
-              className="
-                p-4
-                rounded-xl
-                bg-[var(--erp-bg)]
-                border
-                border-[var(--erp-border)]
-              "
+              className="p-4"
             >
 
               <p
-                className="
-                  text-[11px]
-                  uppercase
-                  tracking-wide
-                  text-[var(--erp-text-soft)]
-                "
+                className="uppercase"
               >
                 Identificador
               </p>
 
               <p
-                className="
-                  mt-1
-                  text-sm
-                  font-mono
-                  text-[var(--erp-text)]
-                "
+                className="mt-1"
               >
                 #{registro.id ?? "-"}
               </p>
@@ -1005,30 +711,19 @@ function ModalDetalle({
         {/* PIE */}
 
         <div
-          className="
-            px-6
-            py-4
-            border-t
-            border-[var(--erp-border)]
-            flex
-            justify-end
-          "
+          className="px-6
+ py-4
+ 
+ 
+ flex
+ justify-end"
         >
 
           <button
             type="button"
             onClick={onCerrar}
-            className="
-              px-4
-              py-2
-              rounded-xl
-              bg-[var(--erp-primary)]
-              text-white
-              text-sm
-              font-medium
-              hover:opacity-90
-              transition
-            "
+            className="px-4
+ py-2"
           >
             Cerrar
           </button>
@@ -1417,37 +1112,25 @@ export default function SeguridadAuditoria() {
 
     return (
       <div
-        className="
-          min-h-[400px]
-          flex
-          items-center
-          justify-center
-        "
+        className="min-h-[400px]
+ flex
+ items-center
+ justify-center"
       >
 
         <div
-          className="
-            flex
-            flex-col
-            items-center
-            gap-3
-            text-[var(--erp-text-soft)]
-          "
+          className="flex
+ flex-col
+ items-center
+ gap-3"
         >
 
           <div
-            className="
-              w-8
-              h-8
-              rounded-full
-              border-2
-              border-[var(--erp-border)]
-              border-t-[var(--erp-primary)]
-              animate-spin
-            "
+            className="w-8
+ h-8"
           />
 
-          <span className="text-sm">
+          <span>
             Cargando auditoría…
           </span>
 
@@ -1464,126 +1147,11 @@ export default function SeguridadAuditoria() {
 
   return (
     <div
-      className="seguridad-auditoria-premium space-y-6 animate-fade-in"
+      className="erp-page space-y-6"
     >
 
-      {/* ======================================================
-          CABECERA
-          ====================================================== */}
-
-      <section
-        className="
-          bg-[var(--erp-surface)]
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          shadow-sm
-          px-6
-          py-5
-        "
-      >
-
-        <div
-          className="
-            flex
-            flex-col
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-            gap-5
-          "
-        >
-
-          <div
-            className="
-              flex
-              items-center
-              gap-4
-            "
-          >
-
-            <div
-              className="
-                w-12
-                h-12
-                rounded-2xl
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-              "
-            >
-
-              <Icono
-                name="clipboard"
-                className="w-6 h-6"
-              />
-
-            </div>
-
-
-            <div>
-
-              <h1
-                className="
-                  text-2xl
-                  font-bold
-                  text-[var(--erp-text)]
-                "
-              >
-                Auditoría
-              </h1>
-
-              <p
-                className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                  mt-1
-                "
-              >
-                Registro de actividad y operaciones de seguridad del ERP
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div
-            className="
-              flex
-              items-center
-              gap-2
-              px-3
-              py-2
-              rounded-xl
-              bg-[var(--erp-bg)]
-              border
-              border-[var(--erp-border)]
-              text-xs
-              text-[var(--erp-text-soft)]
-              w-fit
-            "
-          >
-
-            <span
-              className="
-                w-1.5
-                h-1.5
-                rounded-full
-                bg-emerald-500
-              "
-            />
-
-            Histórico protegido
-
-          </div>
-
-        </div>
-
-      </section>
-
+      <MolsanPageHeader mark="SE" title="Auditoría" description="Registro de actividad y operaciones de seguridad del ERP." />
+      <div className="flex justify-end"><span className="molsan-panel px-3 py-2 text-sm">Histórico protegido</span></div>
 
       {/* ======================================================
           KPIs
@@ -1592,13 +1160,11 @@ export default function SeguridadAuditoria() {
       <section>
 
         <div
-          className="
-            grid
-            grid-cols-1
-            sm:grid-cols-2
-            xl:grid-cols-4
-            gap-4
-          "
+          className="grid
+ grid-cols-1
+ sm:grid-cols-2
+ xl:grid-cols-4
+ gap-4"
         >
 
           <KPI
@@ -1650,46 +1216,29 @@ export default function SeguridadAuditoria() {
           ====================================================== */}
 
       <section
-        className="
-          bg-[var(--erp-surface)]
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          shadow-sm
-          p-5
-        "
+        className="p-5"
       >
 
         <div
-          className="
-            flex
-            flex-col
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-            gap-4
-            mb-4
-          "
+          className="flex
+ flex-col
+ lg:flex-row
+ lg:items-center
+ lg:justify-between
+ gap-4
+ mb-4"
         >
 
           <div>
 
             <h2
-              className="
-                text-base
-                font-semibold
-                text-[var(--erp-text)]
-              "
+             
             >
               Filtros
             </h2>
 
             <p
-              className="
-                text-xs
-                text-[var(--erp-text-soft)]
-                mt-0.5
-              "
+              className="mt-0.5"
             >
               Localiza rápidamente cualquier operación registrada
             </p>
@@ -1704,13 +1253,7 @@ export default function SeguridadAuditoria() {
               onClick={
                 limpiarFiltros
               }
-              className="
-                text-xs
-                font-medium
-                text-[var(--erp-primary)]
-                hover:underline
-                w-fit
-              "
+              className="w-fit"
             >
               Limpiar filtros
             </button>
@@ -1721,13 +1264,11 @@ export default function SeguridadAuditoria() {
 
 
         <div
-          className="
-            grid
-            grid-cols-1
-            md:grid-cols-2
-            xl:grid-cols-5
-            gap-3
-          "
+          className="grid
+ grid-cols-1
+ md:grid-cols-2
+ xl:grid-cols-5
+ gap-3"
         >
 
           {/* BÚSQUEDA */}
@@ -1735,13 +1276,11 @@ export default function SeguridadAuditoria() {
           <div className="xl:col-span-2">
 
             <label
-              className="
-                block
-                text-xs
-                font-medium
-                text-[var(--erp-text-soft)]
-                mb-1.5
-              "
+              className="block
+ 
+ 
+ 
+ mb-1.5"
             >
               Buscar
             </label>
@@ -1750,15 +1289,12 @@ export default function SeguridadAuditoria() {
 
               <Icono
                 name="search"
-                className="
-                  absolute
-                  left-3
-                  top-1/2
-                  -translate-y-1/2
-                  w-4
-                  h-4
-                  text-[var(--erp-text-soft)]
-                "
+                className="absolute
+ left-3
+ top-1/2
+ 
+ w-4
+ h-4"
               />
 
               <input
@@ -1772,22 +1308,10 @@ export default function SeguridadAuditoria() {
                   )
                 }
                 placeholder="Usuario, módulo, acción, descripción o IP..."
-                className="
-                  w-full
-                  pl-9
-                  pr-3
-                  py-2.5
-                  rounded-xl
-                  border
-                  border-[var(--erp-border)]
-                  bg-[var(--erp-bg)]
-                  text-sm
-                  text-[var(--erp-text)]
-                  outline-none
-                  focus:border-[var(--erp-primary)]
-                  focus:ring-2
-                  focus:ring-[var(--erp-primary-soft)]
-                "
+                className="w-full
+ pl-9
+ pr-3
+ py-2.5"
               />
 
             </div>
@@ -1800,13 +1324,11 @@ export default function SeguridadAuditoria() {
           <div>
 
             <label
-              className="
-                block
-                text-xs
-                font-medium
-                text-[var(--erp-text-soft)]
-                mb-1.5
-              "
+              className="block
+ 
+ 
+ 
+ mb-1.5"
             >
               Módulo
             </label>
@@ -1820,19 +1342,9 @@ export default function SeguridadAuditoria() {
                   event.target.value
                 )
               }
-              className="
-                w-full
-                py-2.5
-                px-3
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-bg)]
-                text-sm
-                text-[var(--erp-text)]
-                outline-none
-                focus:border-[var(--erp-primary)]
-              "
+              className="w-full
+ py-2.5
+ px-3"
             >
 
               <option value="">
@@ -1860,13 +1372,11 @@ export default function SeguridadAuditoria() {
           <div>
 
             <label
-              className="
-                block
-                text-xs
-                font-medium
-                text-[var(--erp-text-soft)]
-                mb-1.5
-              "
+              className="block
+ 
+ 
+ 
+ mb-1.5"
             >
               Acción
             </label>
@@ -1880,19 +1390,9 @@ export default function SeguridadAuditoria() {
                   event.target.value
                 )
               }
-              className="
-                w-full
-                py-2.5
-                px-3
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-bg)]
-                text-sm
-                text-[var(--erp-text)]
-                outline-none
-                focus:border-[var(--erp-primary)]
-              "
+              className="w-full
+ py-2.5
+ px-3"
             >
 
               <option value="">
@@ -1920,13 +1420,11 @@ export default function SeguridadAuditoria() {
           <div>
 
             <label
-              className="
-                block
-                text-xs
-                font-medium
-                text-[var(--erp-text-soft)]
-                mb-1.5
-              "
+              className="block
+ 
+ 
+ 
+ mb-1.5"
             >
               Desde
             </label>
@@ -1941,19 +1439,9 @@ export default function SeguridadAuditoria() {
                   event.target.value
                 )
               }
-              className="
-                w-full
-                py-2.5
-                px-3
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-bg)]
-                text-sm
-                text-[var(--erp-text)]
-                outline-none
-                focus:border-[var(--erp-primary)]
-              "
+              className="w-full
+ py-2.5
+ px-3"
             />
 
           </div>
@@ -1964,13 +1452,11 @@ export default function SeguridadAuditoria() {
           <div>
 
             <label
-              className="
-                block
-                text-xs
-                font-medium
-                text-[var(--erp-text-soft)]
-                mb-1.5
-              "
+              className="block
+ 
+ 
+ 
+ mb-1.5"
             >
               Hasta
             </label>
@@ -1985,19 +1471,9 @@ export default function SeguridadAuditoria() {
                   event.target.value
                 )
               }
-              className="
-                w-full
-                py-2.5
-                px-3
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-bg)]
-                text-sm
-                text-[var(--erp-text)]
-                outline-none
-                focus:border-[var(--erp-primary)]
-              "
+              className="w-full
+ py-2.5
+ px-3"
             />
 
           </div>
@@ -2012,51 +1488,34 @@ export default function SeguridadAuditoria() {
           ====================================================== */}
 
       <section
-        className="
-          bg-[var(--erp-surface)]
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          shadow-sm
-          overflow-hidden
-        "
+        className="overflow-hidden"
       >
 
         {/* CABECERA */}
 
         <div
-          className="
-            px-5
-            py-4
-            border-b
-            border-[var(--erp-border)]
-            flex
-            flex-col
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
-            gap-3
-          "
+          className="px-5
+ py-4
+ 
+ 
+ flex
+ flex-col
+ sm:flex-row
+ sm:items-center
+ sm:justify-between
+ gap-3"
         >
 
           <div>
 
             <h2
-              className="
-                text-base
-                font-semibold
-                text-[var(--erp-text)]
-              "
+             
             >
               Registro de actividad
             </h2>
 
             <p
-              className="
-                text-xs
-                text-[var(--erp-text-soft)]
-                mt-0.5
-              "
+              className="mt-0.5"
             >
               {registrosFiltrados.length}{" "}
               {registrosFiltrados.length === 1
@@ -2069,10 +1528,7 @@ export default function SeguridadAuditoria() {
 
 
           <div
-            className="
-              text-xs
-              text-[var(--erp-text-soft)]
-            "
+           
           >
             Mostrando el histórico disponible
           </div>
@@ -2085,22 +1541,17 @@ export default function SeguridadAuditoria() {
         {registrosFiltrados.length > 0 && (
 
           <div
-            className="
-              hidden
-              lg:grid
-              lg:grid-cols-[170px_140px_140px_minmax(0,1fr)_150px]
-              gap-3
-              px-5
-              py-3
-              bg-[var(--erp-bg)]
-              border-b
-              border-[var(--erp-border)]
-              text-[11px]
-              uppercase
-              tracking-wide
-              font-semibold
-              text-[var(--erp-text-soft)]
-            "
+            className="hidden
+ lg:grid
+ lg:grid-cols-[170px_140px_140px_minmax(0,1fr)_150px]
+ gap-3
+ px-5
+ py-3
+ 
+ 
+ 
+ 
+ uppercase"
           >
 
             <div>
@@ -2119,7 +1570,7 @@ export default function SeguridadAuditoria() {
               Descripción
             </div>
 
-            <div className="text-right">
+            <div>
               Fecha
             </div>
 
@@ -2133,26 +1584,21 @@ export default function SeguridadAuditoria() {
         {registrosFiltrados.length === 0 ? (
 
           <div
-            className="
-              px-6
-              py-14
-              text-center
-            "
+            className="px-6
+ py-14"
           >
 
             <div
-              className="
-                w-12
-                h-12
-                rounded-2xl
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-                mx-auto
-                mb-4
-              "
+              className="w-12
+ h-12
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center
+ mx-auto
+ mb-4"
             >
 
               <Icono
@@ -2164,11 +1610,7 @@ export default function SeguridadAuditoria() {
 
 
             <h3
-              className="
-                text-sm
-                font-semibold
-                text-[var(--erp-text)]
-              "
+             
             >
               {hayFiltros
                 ? "No hay resultados"
@@ -2177,13 +1619,9 @@ export default function SeguridadAuditoria() {
 
 
             <p
-              className="
-                text-xs
-                text-[var(--erp-text-soft)]
-                mt-1
-                max-w-md
-                mx-auto
-              "
+              className="mt-1
+ max-w-md
+ mx-auto"
             >
               {hayFiltros
                 ? "No existen registros que coincidan con los filtros seleccionados."
@@ -2198,18 +1636,9 @@ export default function SeguridadAuditoria() {
                 onClick={
                   limpiarFiltros
                 }
-                className="
-                  mt-4
-                  px-4
-                  py-2
-                  rounded-xl
-                  bg-[var(--erp-primary)]
-                  text-white
-                  text-xs
-                  font-medium
-                  hover:opacity-90
-                  transition
-                "
+                className="mt-4
+ px-4
+ py-2"
               >
                 Limpiar filtros
               </button>
@@ -2253,47 +1682,35 @@ export default function SeguridadAuditoria() {
           ====================================================== */}
 
       <section
-        className="
-          bg-[var(--erp-bg)]
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          px-5
-          py-4
-        "
+        className="px-5
+ py-4"
       >
 
         <div
-          className="
-            flex
-            flex-col
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
-            gap-3
-          "
+          className="flex
+ flex-col
+ sm:flex-row
+ sm:items-center
+ sm:justify-between
+ gap-3"
         >
 
           <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
+            className="flex
+ items-center
+ gap-3"
           >
 
             <div
-              className="
-                w-8
-                h-8
-                rounded-lg
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-                flex-shrink-0
-              "
+              className="w-8
+ h-8
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center
+ flex-shrink-0"
             >
 
               <Icono
@@ -2307,21 +1724,13 @@ export default function SeguridadAuditoria() {
             <div>
 
               <p
-                className="
-                  text-sm
-                  font-medium
-                  text-[var(--erp-text)]
-                "
+               
               >
                 Auditoría centralizada
               </p>
 
               <p
-                className="
-                  text-xs
-                  text-[var(--erp-text-soft)]
-                  mt-0.5
-                "
+                className="mt-0.5"
               >
                 Registro de actividad de seguridad de Molsan ERP.
               </p>
@@ -2332,10 +1741,7 @@ export default function SeguridadAuditoria() {
 
 
           <div
-            className="
-              text-xs
-              text-[var(--erp-text-soft)]
-            "
+           
           >
             Molsan ERP · Seguridad · Auditoría
           </div>

@@ -1,6 +1,6 @@
 import ModalEmpleado from "./empleados/ModalEmpleado";
 
-import "../css/LayoutPortalesPremium.css";
+import "../css/SidebarBase.css";
 export default function EmpleadoPerfilModal({
   id,
   onClose,
@@ -20,6 +20,7 @@ export default function EmpleadoPerfilModal({
       open={true}
       empleadoId={idNum}
       onClose={onClose}
+      preservarEstilosSidebar={true}
     />
   );
 }

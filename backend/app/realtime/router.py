@@ -279,7 +279,7 @@ async def realtime_ws(websocket: WebSocket):
     except WebSocketDisconnect:
         pass
     except Exception as exc:
-        print(f"[REALTIME] Error WebSocket: {exc!r}", flush=True)
+        print(f"[REALTIME] Error WebSocket: {type(exc).__name__}", flush=True)
         try:
             await websocket.close(code=1011, reason="Error interno del WebSocket")
         except Exception:

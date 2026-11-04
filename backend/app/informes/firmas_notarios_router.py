@@ -16,12 +16,23 @@ from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
 from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 from backend.app.expedientes.models import Expediente
+
+def _autorizar_informes(usuario=Depends(get_current_user)):
+    require_perm_modulo(usuario, "informes", "ver")
+    return usuario
+
+
+def _autorizar_edicion_expedientes(usuario=Depends(get_current_user)):
+    require_perm_modulo(usuario, "expedientes", "editar")
+    return usuario
+
 
 router = APIRouter(
     prefix="/informes",
     tags=["Informes"],
-    dependencies=[Depends(get_current_user)],
+    dependencies=[Depends(get_current_user), Depends(_autorizar_informes)],
 )
 
 
@@ -281,7 +292,7 @@ class ActualizarDatosFirmaRequest(BaseModel):
     fecha_envio: Optional[date] = None
 
 
-@router.put("/firmas/{id_expediente}/datos")
+@router.put("/firmas/{id_expediente}/datos", dependencies=[Depends(_autorizar_edicion_expedientes)])
 def actualizar_datos_firma(
     id_expediente: str,
     datos: ActualizarDatosFirmaRequest,

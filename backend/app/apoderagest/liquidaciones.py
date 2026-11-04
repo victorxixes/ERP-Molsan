@@ -52,18 +52,20 @@ class LiquidacionMensual(Base):
     __table_args__ = (UniqueConstraint("empleado_id", "periodo", name="uq_apoderagest_liquidacion_periodo"),)
 
 def _es_admin(usuario):
-    rol = str(getattr(getattr(usuario, "rol", None), "nombre", "") or "").casefold()
-    usuario_nombre = str(getattr(usuario, "usuario", "") or "").casefold()
-    if usuario_nombre == "admin" or "admin" in rol or "administrador" in rol:
-        return True
-    for modulo in ("utilidades", "seguridad"):
-        try:
-            require_perm_modulo(usuario, modulo, "editar")
-            return True
-        except HTTPException as exc:
-            if exc.status_code != 403:
-                raise
-    return False
+    rol_obj = getattr(usuario, "rol", None)
+    rol = str(getattr(rol_obj, "nombre", "") or "").strip().casefold().replace("_", " ").replace("-", " ")
+    usuario_nombre = str(getattr(usuario, "usuario", "") or "").strip().casefold()
+    roles_administradores = {
+        "admin", "administrador", "administradora", "superadmin",
+        "super admin", "superadministrador", "super administradora",
+        "administrador del sistema", "administrador general",
+        "superuser", "super usuario", "superusuario",
+    }
+    try:
+        rol_id = int(getattr(usuario, "rol_id", getattr(rol_obj, "id", -1)))
+    except (TypeError, ValueError):
+        rol_id = -1
+    return usuario_nombre == "admin" or rol_id == 0 or rol in roles_administradores
 
 def _exigir_admin(usuario):
     if not _es_admin(usuario):

@@ -1,7 +1,7 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useSeguridad } from "../../hooks/useSeguridad";
-import "./Seguridad.css";
 
 const Icono = ({ name, className = "h-5 w-5" }) => (
   <svg className={`${className} shrink-0`} aria-hidden="true">
@@ -21,14 +21,14 @@ function texto(value, fallback = "") {
 
 function Indicador({ icon, label, value, detail }) {
   return (
-    <div className="rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+    <div className="p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--erp-text-soft)]">{label}</p>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-[var(--erp-text)]">{value}</p>
-          <p className="mt-1 text-xs text-[var(--erp-text-soft)]">{detail}</p>
+          <p className="uppercase">{label}</p>
+          <p className="mt-2">{value}</p>
+          <p className="mt-1">{detail}</p>
         </div>
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--erp-primary-soft)] text-[var(--erp-primary)]">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center">
           <Icono name={icon} />
         </span>
       </div>
@@ -93,32 +93,17 @@ export default function Seguridad() {
   }, [auditoriaList]);
 
   return (
-    <div className="seguridad-premium-page animate-fade-in space-y-6">
-      <header className="rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] px-6 py-5 shadow-sm">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--erp-primary-soft)] text-[var(--erp-primary)]">
-              <Icono name="shield" className="h-6 w-6" />
-            </span>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-[var(--erp-text)]">Centro de seguridad</h1>
-              <p className="mt-1 text-sm text-[var(--erp-text-soft)]">Resumen general y accesos a la administración de seguridad de Molsan ERP.</p>
-            </div>
-          </div>
-          <span className="inline-flex w-fit items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-[var(--erp-bg)] px-3 py-2 text-xs text-[var(--erp-text-soft)]">
-            <Icono name="folder" className="h-4 w-4" />
-            Panel de administración
-          </span>
-        </div>
-      </header>
+    <div className="erp-page space-y-6">
+      <MolsanPageHeader mark="SE" title="Centro de seguridad" description="Resumen general y accesos a la administración de seguridad de Molsan ERP." />
+      <div className="flex justify-end"><span className="molsan-panel inline-flex items-center gap-2 px-3 py-2">Panel de administración</span></div>
 
       <section aria-labelledby="seguridad-resumen-title" className="space-y-3">
         <div>
-          <h2 id="seguridad-resumen-title" className="text-lg font-semibold text-[var(--erp-text)]">Resumen</h2>
-          <p className="mt-0.5 text-sm text-[var(--erp-text-soft)]">Indicadores informativos; no sustituyen la revisión de incidencias.</p>
+          <h2 id="seguridad-resumen-title">Resumen</h2>
+          <p className="mt-0.5">Indicadores informativos; no sustituyen la revisión de incidencias.</p>
         </div>
         {loading ? (
-          <div className="rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-8 text-center text-sm text-[var(--erp-text-soft)]">
+          <div className="p-8">
             Cargando información de seguridad…
           </div>
         ) : (
@@ -134,8 +119,8 @@ export default function Seguridad() {
 
       <section aria-labelledby="seguridad-accesos-title" className="space-y-3">
         <div>
-          <h2 id="seguridad-accesos-title" className="text-lg font-semibold text-[var(--erp-text)]">Administración de seguridad</h2>
-          <p className="mt-0.5 text-sm text-[var(--erp-text-soft)]">Cada función tiene su propia pantalla para evitar formularios y listados duplicados.</p>
+          <h2 id="seguridad-accesos-title">Administración de seguridad</h2>
+          <p className="mt-0.5">Cada función tiene su propia pantalla para evitar formularios y listados duplicados.</p>
         </div>
         <div className="seguridad-accesos-grid">
           <Acceso to="/seguridad/usuarios" icon="user-group" title="Empleados y permisos" description="Selecciona empleados y gestiona su acceso según los permisos de tu perfil." />
@@ -145,18 +130,18 @@ export default function Seguridad() {
         </div>
       </section>
 
-      <section aria-labelledby="seguridad-actividad-title" className="overflow-hidden rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] shadow-sm">
-        <div className="flex flex-col gap-1 border-b border-[var(--erp-border)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <section aria-labelledby="seguridad-actividad-title" className="overflow-hidden">
+        <div className="flex flex-col gap-1 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 id="seguridad-actividad-title" className="font-semibold text-[var(--erp-text)]">Actividad reciente</h2>
-            <p className="mt-0.5 text-xs text-[var(--erp-text-soft)]">Últimos eventos disponibles en los datos de auditoría cargados.</p>
+            <h2 id="seguridad-actividad-title">Actividad reciente</h2>
+            <p className="mt-0.5">Últimos eventos disponibles en los datos de auditoría cargados.</p>
           </div>
-          <Link to="/auditoria" className="text-sm font-medium text-[var(--erp-primary)] hover:underline">Ver auditoría →</Link>
+          <Link to="/auditoria">Ver auditoría →</Link>
         </div>
         {actividadReciente.length === 0 ? (
-          <p className="px-5 py-8 text-center text-sm text-[var(--erp-text-soft)]">No hay eventos de auditoría disponibles para mostrar.</p>
+          <p className="px-5 py-8">No hay eventos de auditoría disponibles para mostrar.</p>
         ) : (
-          <ul className="divide-y divide-[var(--erp-border)]">
+          <ul>
             {actividadReciente.map((item, index) => {
               const usuario = texto(item?.usuario || item?.empleado || item?.nombre_usuario, "Sistema");
               const accion = texto(item?.accion || item?.evento, "Actividad");
@@ -164,13 +149,13 @@ export default function Seguridad() {
               const fecha = texto(item?.fecha || item?.created_at, "Fecha no disponible");
               return (
                 <li key={item?.id ?? `auditoria-${index}`} className="flex items-start gap-3 px-5 py-3.5">
-                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--erp-primary-soft)] text-[var(--erp-primary)]">
+                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center">
                     <Icono name="clipboard" className="h-4 w-4" />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-medium text-[var(--erp-text)]">{usuario} · {accion}</span>
-                    <span className="mt-0.5 block text-sm text-[var(--erp-text-soft)]">{detalle}</span>
-                    <span className="mt-1 block text-xs text-[var(--erp-text-soft)]">{fecha}</span>
+                    <span className="block">{usuario} · {accion}</span>
+                    <span className="mt-0.5 block">{detalle}</span>
+                    <span className="mt-1 block">{fecha}</span>
                   </span>
                 </li>
               );
@@ -179,15 +164,15 @@ export default function Seguridad() {
         )}
       </section>
 
-      <section className="flex flex-col gap-3 rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-bg)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <section className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
-          <Icono name="shield" className="mt-0.5 h-5 w-5 text-[var(--erp-primary)]" />
+          <Icono name="shield" className="mt-0.5 h-5 w-5" />
           <div>
-            <p className="text-sm font-medium text-[var(--erp-text)]">Supervisión técnica</p>
-            <p className="mt-0.5 text-xs text-[var(--erp-text-soft)]">{logsList.length} registros técnicos cargados. Consulta los logs para revisar errores y advertencias.</p>
+            <p>Supervisión técnica</p>
+            <p className="mt-0.5">{logsList.length} registros técnicos cargados. Consulta los logs para revisar errores y advertencias.</p>
           </div>
         </div>
-        <Link to="/seguridad/logs" className="shrink-0 text-sm font-medium text-[var(--erp-primary)] hover:underline">Ver logs técnicos →</Link>
+        <Link to="/seguridad/logs" className="shrink-0">Ver logs técnicos →</Link>
       </section>
     </div>
   );
