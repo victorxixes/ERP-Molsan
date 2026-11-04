@@ -2356,10 +2356,10 @@ def asignar_gestores_pendientes_al_iniciar():
             CREATE TABLE IF NOT EXISTS public.expediente_gestor_historial (
                 id BIGSERIAL PRIMARY KEY,
                 expediente_id VARCHAR(100) NOT NULL,
-                actividad VARCHAR(100) NULL,
-                gestor_id INTEGER NULL,
-                gestor_anterior_id INTEGER NULL,
-                motivo VARCHAR(100) NOT NULL DEFAULT 'reparto_automatico',
+                actividad VARCHAR(120) NOT NULL,
+                gestor_id INTEGER NULL REFERENCES public.empleados(id) ON DELETE SET NULL,
+                gestor_anterior_id INTEGER NULL REFERENCES public.empleados(id) ON DELETE SET NULL,
+                motivo VARCHAR(80) NOT NULL DEFAULT 'reparto_automatico',
                 fecha TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
             )
         """))
