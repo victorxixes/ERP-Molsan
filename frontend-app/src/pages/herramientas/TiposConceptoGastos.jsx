@@ -19,7 +19,7 @@ import "../../css/CatalogosMaestrosPremium.css";
 // CONFIGURACIÓN API
 // ============================================================
 
-const API_BASE = `${API_ROOT}/api/tipos-concepto-gastos`;
+const API_BASE = `${API_ROOT}/tipos-concepto-gastos`;
 
 
 // ============================================================
