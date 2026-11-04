@@ -2354,20 +2354,8 @@ def asignar_gestores_pendientes_al_iniciar():
 
     db = SessionLocal()
     try:
-        # Garantiza que el histórico existe aunque EncargaGest aún no haya
-        # ejecutado su propia inicialización en esta instancia.
-        db.execute(text("""
-            CREATE TABLE IF NOT EXISTS public.expediente_gestor_historial (
-                id BIGSERIAL PRIMARY KEY,
-                expediente_id VARCHAR(100) NOT NULL,
-                actividad VARCHAR(100) NULL,
-                gestor_id INTEGER NULL,
-                gestor_anterior_id INTEGER NULL,
-                motivo VARCHAR(100) NOT NULL DEFAULT 'reparto_automatico',
-                fecha TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
-            )
-        """))
-        db.commit()
+        # expediente_gestor_historial se crea exclusivamente mediante
+        # la migración Alembic versionada; aquí solo se registra la actividad.
 
         pendientes = (
             db.query(Expediente)
