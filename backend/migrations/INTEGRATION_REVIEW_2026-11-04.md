@@ -2,90 +2,102 @@
 
 ## Alcance y límites
 
-Revisión estática de la rama `production/erp-molsan-2026-11-04`. No se ha desplegado código, no se ha fusionado la PR, no se ha aplicado ninguna migración a Supabase y no se han cambiado servicios ni variables de Render.
+La rama `production/erp-molsan-2026-11-04` se utiliza para integrar y probar los cambios de forma controlada. La PR #391 continúa abierta y en borrador.
 
-La PR #391 sigue abierta y en borrador. La rama incluye una migración ORM inicial que se ha probado en PostgreSQL temporal de CI; esa prueba no acredita que el esquema completo esté listo para Supabase.
+No se ha fusionado la PR, no se ha desplegado esta rama en Render, no se ha aplicado ninguna migración a Supabase y no se han modificado servicios ni variables de producción.
 
-## Estado CI observado
+Los 417 expedientes y pagos históricos son datos de prueba y quedan excluidos. La importación de aproximadamente 25 expedientes reales se realizará solo después de completar la integración, las pruebas y la aprobación del punto de restauración.
 
-En la consulta del commit revisado, los workflows visibles no habían terminado todos:
-- EncargaGest checks: en ejecución.
-- Frontend dependency security audit: en ejecución.
-- Consolidación Post Firma checks: pendiente.
-- Validar Fichaje Molsan: pendiente.
-- Validar Control Apoderados: pendiente.
+## Estado técnico verificado
 
-Hay que volver a consultar el estado del SHA actual antes de declarar CI verde.
+### 1. Esquema y migraciones Alembic
 
-## Hallazgos que bloquean la integración
+Inventario offline completado:
 
-### 1. El inventario del esquema aún no está convertido en migraciones completas
-
-El inventario offline identifica:
 - 67 tablas ORM.
-- 33 tablas auxiliares.
-- 7 índices auxiliares.
-- 9 puntos con DDL dinámico.
-- 16 definiciones duplicadas/coincidentes que requieren consolidación canónica.
-- 8 FK auxiliares hacia tablas ORM.
+- 33 tablas auxiliares y 7 índices.
+- 77 operaciones ALTER/DDL estáticas reconciliadas.
+- 0 columnas de ALTER pendientes de ORM.
+- 0 DDL dinámico pendiente en el flujo web; se retiraron las 9 rutas heredadas detectadas.
+- 14 entradas duplicadas/coincidentes revisadas: 4 tablas ya definidas en ORM y 10 definiciones auxiliares idénticas repetidas; 0 conflictos.
+- 8 FK auxiliares hacia tablas ORM; 0 destinos sin resolver.
 
-La migración ORM no sustituye la creación de las 33 tablas auxiliares, sus índices, seeds, ni la conversión explícita de los nueve puntos dinámicos.
+Revisiones presentes en la rama:
+- `20261104_0001_initial_orm_schema.py`
+- `20261104_0002_reconcile_orm_constraints.py`
+- `20261104_0003_auxiliary_schema.py`
 
-### 2. Quedan endpoints y rutinas que intentan modificar el esquema en ejecución
+La ejecución completa del workflow **Bootstrap ORM migration in isolated PostgreSQL** sobre el SHA `f8792f759679e5054604ec71f9611b554dfcf585` terminó correctamente el 4-11-2026. Se ejecutaron `upgrade head`, `alembic check`, `downgrade base` y un segundo `upgrade head`. Alembic informó **No new upgrade operations detected**. La base utilizada fue un PostgreSQL temporal de CI, nunca la base de Supabase.
 
-Revisión de código:
-- `backend/app/encargagest/router.py`: rutina de creación de estructuras auxiliares y columna de reparto; debe quedar estrictamente fuera del proceso web.
-- `backend/app/expedientes/defectos/migracion_router.py`: añade columnas, índice y FK a `expediente_defectos`.
-- `backend/app/expedientes/fix_schema.py`: añade dinámicamente columnas a `expedientes`.
-- `backend/app/expedientes/gastos/migracion_router.py`: endpoint `/aplicar`, protegido por permiso administrativo, ejecuta ALTER TABLE sobre `expediente_gastos`.
-- `backend/app/expedientes/router.py`: endpoint `/migraciones/actividades`, protegido por permiso administrativo, ejecuta ALTER TABLE; el endpoint `/migraciones/actualizar-envio-notario` crea tabla/índice y altera columnas.
-- `backend/app/informes/facturacion_router.py`: rutina de ALTER TABLE e índices sobre `expediente_gastos`.
-- `backend/app/main.py`: rutina de inicio que comprueba y añade columnas, crea `apoderagest_liquidaciones` y modifica `expedientes`/otras tablas.
+### 2. Pruebas CI
 
-**Hallazgo de seguridad prioritario:** el endpoint `POST /migraciones/actualizar-envio-notario` aparece definido con `db: Session = Depends(get_db)`, pero sin dependencia `usuario=Depends(get_current_user)` ni comprobación explícita de permiso antes de ejecutar DDL. Debe dejar de ejecutar DDL en peticiones y, mientras se retira, quedar inaccesible para usuarios normales. No se debe resolver permitiendo migraciones de esquema desde el backend web.
+En el SHA revisado `f8792f759679e5054604ec71f9611b554dfcf585` finalizaron correctamente:
+- Backend audit.
+- Offline ORM and DDL inventory.
+- Bootstrap ORM migration in isolated PostgreSQL.
+- Frontend dependency security audit.
+- EncargaGest checks.
+- Validar Fichaje Molsan.
+- Validar Control Apoderados.
+- Consolidación Post Firma checks.
 
-### 3. Almacenamiento documental incompatible con Render efímero
+Las modificaciones documentales posteriores vuelven a activar CI; antes de cualquier integración se comprobará el SHA más reciente, no solo esta ejecución.
 
-`backend/app/storage.py` resuelve cuatro directorios locales (carpeta digital, mensajes, documentos de intranet y fotos de empleados), y advierte de almacenamiento efímero en Render. El modelo `DocumentoCarpetaDigital` guarda metadatos y un nombre de archivo, pero no acredita una implementación de object storage.
+### 3. Protección de producción
 
-Antes de conectar el Preview debe implementarse y probarse un adaptador de almacenamiento persistente (objetos en Supabase Storage), con:
-- buckets privados por dominio documental o una separación equivalente bien justificada;
-- rutas/keys no predecibles y metadatos en PostgreSQL;
-- autorización en backend antes de emitir URL firmada o descargar;
-- límites de tamaño y validación MIME/extensión;
-- políticas de Storage cerradas por defecto;
-- pruebas de subida, lectura, sustitución y borrado;
-- migración/importación de ficheros separada, sin copiar datos ficticios históricos.
+- El proceso web tiene bloqueadas las migraciones de esquema de arranque.
+- Los endpoints heredados de mantenimiento comprueban el esquema provisionado; no deben ejecutar ALTER/CREATE desde peticiones.
+- La variable antigua de migración en runtime no debe configurarse en Render.
+- La generación de revisiones se ejecuta contra PostgreSQL aislado y publica artefactos para revisión; no debe hacer push automático ni desplegar.
 
-No crear buckets ni abrir políticas hasta que el modelo de acceso esté definido.
+## Supabase
 
-### 4. Autenticación y permisos
+Comprobaciones de solo lectura del proyecto `ERP_Molsan` el 4-11-2026:
 
-No se debe asumir que Supabase Auth esté configurado. Hay que inventariar el sistema real de usuarios, JWT, roles y permisos del ERP, verificar todas las rutas y decidir si se conserva el backend de autenticación actual o se migra explícitamente. No exponer nunca claves privilegiadas de Supabase al frontend.
+- 0 tablas/vistas ERP en `public`.
+- 0 migraciones registradas.
+- 0 usuarios Auth.
+- 0 buckets y 0 objetos Storage.
 
-## Secuencia de cierre
+No se ha aplicado ninguna migración ni se han cargado datos. Los asesores de seguridad y rendimiento no mostraban avisos en la comprobación realizada.
 
-1. Eliminar DDL de arranque y de endpoints; todas las operaciones pasan a migraciones Alembic versionadas.
-2. Construir la revisión de esquema completa: tablas ORM + auxiliares + índices + columnas + FK/UNIQUE/CHECK + secuencias + triggers y dependencias.
-3. Convertir los nueve puntos dinámicos en operaciones estáticas revisadas; no interpolar nombres/tipos procedentes de peticiones.
-4. Crear seeds idempotentes y separados de los datos operativos.
-5. Añadir pruebas de upgrade, downgrade y upgrade, además de comparación de esquema y pruebas de permisos.
-6. Implementar Supabase Storage privado y probarlo desde el backend.
-7. Configurar Render Preview contra Supabase Preview, con secretos solo en backend y sin tocar servicios productivos.
-8. Ejecutar pruebas integrales y solo entonces preparar la importación de los aproximadamente 25 expedientes reales de prueba.
+## Almacenamiento documental: siguiente fase
 
-## Regla de datos
+El backend aún usa almacenamiento local en `backend/app/storage.py` para Carpeta Digital, Mensajes, documentos de intranet y fotos. También hay escrituras locales en NotarGest y EncargaGest.
 
-No importar los 417 expedientes ni pagos históricos de prueba. Los 25 expedientes seleccionados se incorporarán después de que el ERP esté integrado y validado. No se importan ahora.
+Como no se contratarán discos persistentes de Render, el siguiente bloque es implementar Supabase Storage privado:
+- buckets privados separados por dominio;
+- claves aleatorias y metadatos en PostgreSQL;
+- autorización en backend antes de leer o emitir una URL firmada;
+- límites de tamaño/MIME y controles contra path traversal;
+- pruebas de subida, descarga, sustitución, borrado y fallos transaccionales;
+- credencial privilegiada únicamente en el servicio API de Render, nunca en frontend.
 
+La auditoría y el diseño se documentan en `backend/migrations/STORAGE_REVIEW.md`. Aún no se han creado buckets ni se han cambiado rutas.
 
-## Actualización de seguridad aplicada en la rama
+## Autenticación y permisos
 
-En commits posteriores a esta revisión se ha aplicado una contención adicional:
-- Los hooks heredados de esquema/catálogos en `main.py` ya no se registran en el arranque web.
-- `runtime_schema_migrations_enabled()` devuelve siempre `False`; las variables de entorno antiguas no pueden reactivar esos hooks.
-- El hilo de DDL de arranque de EncargaGest consulta esa misma guarda y queda desactivado.
-- Los endpoints de mantenimiento de defectos, gastos y envío a notario inspeccionados en esta rama verifican el esquema provisionado y no ejecutan ALTER/CREATE desde la petición.
-- Se ha añadido `backend/tests/test_runtime_schema_migrations.py` para cubrir la desactivación por defecto y asegurar que las variables antiguas no la reactivan.
+El backend conserva su sistema actual de usuarios empleados, JWT, roles y permisos. Supabase Auth está vacío. Antes de abrir Preview hay que cerrar la decisión de conservar este sistema o realizar una integración explícita con Supabase Auth, y probar 401/403/200, permisos por módulo y aislamiento de ApoderaGest, EncargaGest y NotarGest. No se expondrán claves privilegiadas al navegador.
 
-Esta contención no sustituye la migración Alembic completa ni constituye una ejecución de pruebas. La creación de tablas auxiliares, los seeds y las reparaciones de datos deben convertirse en revisiones/tareas explícitas antes de provisionar el entorno limpio. No activar la variable antigua en Render.
+## Render Preview
+
+Los servicios Preview existentes siguen vinculados a ramas anteriores y no se han cambiado. No están desplegados desde la rama de integración. La conexión se realizará después de cerrar Storage, autenticación, seeds y configuración de variables; producción permanecerá intacta.
+
+## Seeds y datos maestros
+
+Las revisiones crean estructura, no datos operativos. Falta identificar los catálogos y datos maestros necesarios para una instalación limpia y preparar seeds idempotentes desde una fuente aprobada. No se copiarán usuarios, permisos, expedientes ni pagos históricos sin validación explícita.
+
+## Importación de 25 expedientes
+
+Se ha preparado `backend/migrations/IMPORT_25_EXPEDIENTES.md` como runbook. No contiene datos personales ni ejecuta importaciones. La carga se hará en staging, con previsualización, validación de relaciones, aprobación, transacción controlada y evidencia de rollback.
+
+## Secuencia pendiente
+
+1. Implementar y probar Supabase Storage privado; no crear discos persistentes.
+2. Cerrar autenticación, roles, permisos y aislamiento de portales.
+3. Identificar y preparar seeds de catálogos/datos maestros.
+4. Configurar los servicios Preview de Render contra esta rama y el proyecto Supabase correcto, sin tocar producción.
+5. Ejecutar pruebas integrales de API, documentos, portales, permisos, regresión y rollback.
+6. Aprobar el punto de restauración y solo entonces preparar la importación de los 25 expedientes seleccionados.
+
+**No fusionar, desplegar a producción, aplicar migraciones a Supabase ni importar datos históricos hasta superar las validaciones anteriores.**
