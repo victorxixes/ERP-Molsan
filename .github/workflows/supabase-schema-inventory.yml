@@ -57,7 +57,7 @@ jobs:
               return [line for line in tail.splitlines() if line.strip()]
 
           missing = section(orm, "MISSING_EXTERNAL_FK_TARGETS")
-          dynamic = section(raw, "DYNAMIC_DDL_REQUIRES_MANUAL_REVIEW", "STATIC_DDL_REQUIRES_MANUAL_REVIEW")
+          dynamic = section(raw, "DYNAMIC_DDL_REQUIRES_MANUAL_REVIEW", "RAW_ORM_FK_DEPENDENCIES")
           static_ddl = section(raw, "STATIC_DDL_REQUIRES_MANUAL_REVIEW", "DUPLICATE_OR_ORM_TABLE_DEFINITIONS")
           raw_missing = section(raw, "RAW_MISSING_FK_TARGETS", "STATIC_DDL_REQUIRES_MANUAL_REVIEW")
           duplicates = section(raw, "DUPLICATE_OR_ORM_TABLE_DEFINITIONS")
