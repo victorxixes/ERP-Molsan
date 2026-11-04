@@ -1030,7 +1030,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
             {cargando ? <div className="p-10 text-center text-sm text-slate-500">Cargando encargos…</div> : !filas.length ? (
               <div className="p-10 text-center"><div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-xl text-slate-400"><MolsanIcon name="file" size={28} tone="ocean" /></div><h3 className="mt-3 text-sm font-bold text-slate-800">Todavía no hay encargos</h3><p className="mt-1 text-xs leading-5 text-slate-500">Cuando una notaría registre un encargo, aparecerá aquí automáticamente.</p></div>
             ) : (
-              <div>
+              <div className="divide-y divide-slate-100">
                 {filas.map((item) => (
                   <button type="button" key={item.id} onClick={() => { setSeleccionadoId(item.id); setErrorAccion(""); }} className={"block w-full border-l-4 p-4 text-left transition hover:bg-[var(--molsan-primary-soft)] " + (seleccionadoId === item.id ? "border-blue-600 bg-[var(--molsan-primary-soft)]" : "border-transparent")}>
                     <div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-[10px] font-black tracking-wide text-[var(--molsan-primary)]">{item.referencia || ("EG-" + item.id)}</p><h3 className="mt-1 truncate text-sm font-extrabold text-slate-900">{item.titular}</h3><p className="mt-1 truncate text-xs text-slate-500">{item.notaria_nombre}</p></div><EtiquetaEstado estado={item.estado} /></div>
@@ -1063,17 +1063,17 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
 
                 <div className="grid grid-cols-1 gap-6 p-5 sm:p-6 xl:grid-cols-2">
                   <>
-                  <section className="min-w-0 p-4">
-                    <div className="mb-4 flex items-center gap-3 pb-3">
-                      <span className="grid h-9 w-9 shrink-0 place-items-center">01</span>
-                      <div><p className="uppercase">Datos principales</p><h3 className="mt-0.5">Datos del encargo</h3></div>
+                  <section className="min-w-0 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-4">
+                    <div className="mb-4 flex items-center gap-3 border-b border-indigo-100 pb-3">
+                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-indigo-100 bg-white text-xs font-black text-indigo-700">01</span>
+                      <div><p className="text-[9px] font-extrabold uppercase tracking-[0.14em] text-indigo-500">Datos principales</p><h3 className="mt-0.5 text-sm font-extrabold text-slate-900">Datos del encargo</h3></div>
                     </div>
-                    <dl className="space-y-3">
-                      <div className="pb-2"><dt className="mb-1">Nombre del solicitante</dt><dd className="break-words">{detalle.titular || "—"}</dd></div>
-                      <div className="flex items-start justify-between gap-3 pb-2"><dt>NIF / CIF del solicitante</dt><dd className="break-all">{detalle.nif_titular || "—"}</dd></div>
-                      <div className="flex items-start justify-between gap-3 pb-2"><dt>Tipo de encargo</dt><dd>{detalle.tipo_encargo || "—"}</dd></div>
-                      <div className="flex items-start justify-between gap-3 pb-2"><dt>Prioridad</dt><dd>{detalle.prioridad || "—"}</dd></div>
-                      <div className="flex items-start justify-between gap-3"><dt>Entidad bancaria</dt><dd>{detalle.entidad_bancaria || "—"}</dd></div>
+                    <dl className="space-y-3 text-xs">
+                      <div className="border-b border-indigo-100 pb-2"><dt className="mb-1 text-slate-500">Nombre del solicitante</dt><dd className="break-words font-semibold text-slate-800">{detalle.titular || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 border-b border-indigo-100 pb-2"><dt className="text-slate-500">NIF / CIF del solicitante</dt><dd className="break-all text-right font-semibold text-slate-800">{detalle.nif_titular || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 border-b border-indigo-100 pb-2"><dt className="text-slate-500">Tipo de encargo</dt><dd className="text-right font-semibold text-slate-800">{detalle.tipo_encargo || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 border-b border-indigo-100 pb-2"><dt className="text-slate-500">Prioridad</dt><dd className="text-right font-semibold text-slate-800">{detalle.prioridad || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3"><dt className="text-slate-500">Entidad bancaria</dt><dd className="text-right font-semibold text-slate-800">{detalle.entidad_bancaria || "—"}</dd></div>
                     </dl>
                   </section>
                   <section className="min-w-0">
@@ -1106,13 +1106,13 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
                         </div>
                         <div className="mt-3 space-y-3">
                           {(contrato.fincas?.length ? contrato.fincas : [{}]).map((finca, fincaIndex) => (
-                            <div key={"detalle-finca-" + contratoIndex + "-" + fincaIndex} className="grid grid-cols-2 gap-3 p-3 md:grid-cols-3 2xl:grid-cols-6">
-                              <div><p>Número de finca</p><p className="mt-1 break-words">{finca.numero_finca || "—"}</p></div>
-                              <div><p>Inscripción</p><p className="mt-1 break-words">{finca.numero_inscripcion || "—"}</p></div>
-                              <div><p>Sección</p><p className="mt-1 break-words">{finca.seccion || "—"}</p></div>
-                              <div><p>Capital inscrito</p><p className="mt-1">{euros(finca.capital_inscrito ?? contrato.capital_inscrito)}</p></div>
-                              <div><p>Municipio del registro</p><p className="mt-1 break-words">{finca.municipio_registro || "—"}</p></div>
-                              <div><p>Registro de la Propiedad</p><p className="mt-1 break-words">{finca.registro_propiedad || "—"}</p></div>
+                            <div key={"detalle-finca-" + contratoIndex + "-" + fincaIndex} className="grid grid-cols-2 gap-3 rounded-lg bg-slate-50 p-3 md:grid-cols-3 2xl:grid-cols-6">
+                              <div><p className="text-[10px] text-slate-500">Número de finca</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.numero_finca || "—"}</p></div>
+                              <div><p className="text-[10px] text-slate-500">Inscripción</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.numero_inscripcion || "—"}</p></div>
+                              <div><p className="text-[10px] text-slate-500">Sección</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.seccion || "—"}</p></div>
+                              <div><p className="text-[10px] text-slate-500">Capital inscrito</p><p className="mt-1 text-xs font-bold text-slate-800">{euros(finca.capital_inscrito ?? contrato.capital_inscrito)}</p></div>
+                              <div><p className="text-[10px] text-slate-500">Municipio del registro</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.municipio_registro || "—"}</p></div>
+                              <div><p className="text-[10px] text-slate-500">Registro de la Propiedad</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.registro_propiedad || "—"}</p></div>
                             </div>
                           ))}
                         </div>
@@ -1139,7 +1139,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
                         </Campo>
                         <button type="submit" disabled={!archivo || subiendo || detalle.estado === "FIRMADO"} className="rounded-xl bg-[var(--molsan-primary)] px-4 py-2.5 text-xs font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-40">{subiendo ? "Subiendo…" : "Subir documento"}</button>
                       </form>
-                      {detalle.estado === "FIRMADO" && <p className="mt-2">El encargo está cerrado y no admite nuevos documentos.</p>}
+                      {detalle.estado === "FIRMADO" && <p className="mt-2 text-[10px] text-rose-700">El encargo está cerrado y no admite nuevos documentos.</p>}
                     </div>
                     <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
                       <div className="min-w-0 space-y-4">
@@ -1185,16 +1185,15 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
                       ))}
                     </div>
                   </section>
-                  {cargandoDetalle && <div className="xl:col-span-2">Actualizando la ficha…</div>}
+                  {cargandoDetalle && <div className="xl:col-span-2 text-xs text-slate-400">Actualizando la ficha…</div>}
                 </div>
               </>
             )}
           </div>
         </section>
         )}
-        <p className="mt-6">MOLSAN ERP · EncargaGest · Portal independiente conectado al catálogo CTN</p>
+        <p className="mt-6 text-center text-[10px] font-medium tracking-wide text-slate-400">MOLSAN ERP · EncargaGest · Portal independiente conectado al catálogo CTN</p>
       </main>
-      </div>
 
       {modalNuevo && (
         <div
