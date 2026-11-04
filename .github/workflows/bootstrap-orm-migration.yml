@@ -9,6 +9,14 @@ on:
       - "backend/scripts/**"
       - "backend/requirements.txt"
       - ".github/workflows/bootstrap-orm-migration.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "backend/app/**"
+      - "backend/migrations/**"
+      - "backend/scripts/**"
+      - "backend/requirements.txt"
+      - ".github/workflows/bootstrap-orm-migration.yml"
   workflow_dispatch:
 
 permissions:
