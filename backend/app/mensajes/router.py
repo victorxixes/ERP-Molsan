@@ -6,7 +6,7 @@ import os
 import re
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
-from fastapi.responses import FileResponse, StreamingResponse, StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
@@ -23,8 +23,7 @@ from backend.app.mensajes.service import (
 )
 from backend.app.mensajes.ws_manager import manager
 from backend.app.storage import MENSAJES_DIR
-from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError
-from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, storage_backend_is_supabase
 
 
 router = APIRouter(
@@ -149,7 +148,7 @@ async def subir_archivo(
         raise HTTPException(status_code=400, detail="El archivo está vacío")
 
     nombre = f"{uuid4().hex}.{ext}"
-    if (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase":
+    if storage_backend_is_supabase():
         try:
             storage = SupabasePrivateStorage()
             storage.upload(f"mensajes/{nombre}", contenido, mimetypes.guess_type(nombre)[0] or "application/octet-stream")
@@ -204,7 +203,7 @@ def descargar_archivo(
         raise HTTPException(status_code=404, detail="Adjunto no encontrado")
 
     mime, disposicion = _politica_descarga_adjunto(nombre)
-    if (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase":
+    if storage_backend_is_supabase():
         try:
             contenido = SupabasePrivateStorage().download(f"mensajes/{nombre}")
         except FileNotFoundError as exc:
