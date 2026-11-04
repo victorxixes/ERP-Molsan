@@ -35,7 +35,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Instalar dependencias
-        run: npm install --include=optional --no-audit --no-fund
+      - name: Generar lockfile reproducible
+        run: npm install --package-lock-only --include=optional --no-audit --no-fund
+      - name: Instalar dependencias bloqueadas
+        run: npm ci --include=optional --no-audit --no-fund
+      - name: Publicar lockfile para incorporarlo al repositorio
+        uses: actions/upload-artifact@v4
+        with:
+          name: molsan-frontend-package-lock
+          path: frontend-app/package-lock.json
+          if-no-files-found: error
+          retention-days: 3
       - name: Compilar frontend
         run: npm run build
