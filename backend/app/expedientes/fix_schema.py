@@ -7,22 +7,13 @@ from backend.app.database import engine
 # FIX SCHEMA - EXPEDIENTES
 # ============================================================
 #
-# Este fichero actualiza la tabla "expedientes" si la base de
-# datos existente no tiene alguna de las columnas que actualmente
-# define el modelo Expediente.
+# Este fichero verifica que la tabla "expedientes" tiene las
+# columnas definidas por el modelo ORM.
 #
 # IMPORTANTE:
-# - NO modifica ninguna tabla de Agenda.
-# - NO elimina datos.
-# - NO modifica columnas existentes.
-# - Solamente crea columnas que no existan.
-#
-# Esto es necesario porque:
-#
-#     Base.metadata.create_all()
-#
-# NO añade automáticamente columnas nuevas a una tabla que ya
-# existe en PostgreSQL.
+# - No modifica ni crea columnas.
+# - El esquema se administra exclusivamente mediante revisiones Alembic.
+# - Si faltan columnas, informa del error para aplicar la revisión pendiente.
 #
 # ============================================================
 
