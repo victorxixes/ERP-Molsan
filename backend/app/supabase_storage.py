@@ -82,7 +82,6 @@ class SupabasePrivateStorage:
         headers = self._headers(content_type or "application/octet-stream")
         headers["x-upsert"] = "true" if upsert else "false"
         try:
-            # Supabase Storage's standard REST upload endpoint uses POST.
             response = self.session.post(
                 url, data=content, headers=headers, timeout=self.config.timeout_seconds
             )
@@ -119,12 +118,12 @@ class SupabasePrivateStorage:
         )
         response = None
         try:
-            # The info endpoint returns object metadata, not the cached file body.
+            headers = self._headers()
+            headers["Cache-Control"] = "no-cache"
             response = self.session.get(
                 url,
-                headers=self._headers(),
+                headers=headers,
                 timeout=self.config.timeout_seconds,
-                headers_extra=None,
             )
             if response.status_code == 404:
                 return False
