@@ -220,7 +220,7 @@ def scan_raw_ddl(orm_table_names):
         sql_parts.append(f"-- Source: {entry['source']}\n{entry['sql']}")
 
     for entry in manual_review_ddl:
-        sql_parts.append(f"-- MANUAL REVIEW REQUIRED; Source: {entry['source']}\\n{entry['sql']}")
+        sql_parts.append(f"-- MANUAL REVIEW REQUIRED; Source: {entry['source']}\n{entry['sql']}")
     return sql_parts, inventory, dynamic, duplicates, raw_indexes, manual_review_ddl
 
 
