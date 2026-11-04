@@ -15,54 +15,15 @@ from openpyxl.utils import get_column_letter
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
 from sqlalchemy import text
-from backend.app.database import engine
 
 from backend.app.auth.dependencies import get_current_user
 from backend.app.database import get_db
 from backend.app.expedientes.models import Expediente
 from backend.app.expedientes.gastos.models import ExpedienteGasto
 
-from backend.app.schema_migrations import runtime_schema_migrations_enabled
 
 router = APIRouter(prefix="/informes", tags=["Informes"], dependencies=[Depends(get_current_user)])
 
-
-@router.on_event("startup")
-def migrar_campos_absis_facturacion():
-    if not runtime_schema_migrations_enabled():
-        print("[SCHEMA] Migración automática omitida: migrar_campos_absis_facturacion; ejecutar migración versionada.", flush=True)
-        return
-    """Añade los campos opcionales del informe sin modificar datos existentes."""
-    columnas = {
-        "estado_absis": "VARCHAR(100)",
-        "estado_justificante": "VARCHAR(100)",
-        "fecha_adjuntar_factura": "DATE",
-        "imp_gasto": "NUMERIC(12, 2)",
-        "imp_base_impuesto": "NUMERIC(12, 2)",
-        "imp_base_retencion": "NUMERIC(12, 2)",
-        "imp_impuesto": "NUMERIC(12, 2)",
-        "fecha_estado": "DATE",
-        "fecha_peticion": "DATE",
-        "fecha_pago": "DATE",
-        "id_gasto_absis": "VARCHAR(100)",
-        "id_expediente_absis": "VARCHAR(100)",
-        "tipo_operacion_absis": "VARCHAR(300)",
-        "concepto_gasto_absis": "VARCHAR(300)",
-        "datos_absis_json": "TEXT",
-        "numero_factura_absis": "VARCHAR(150)",
-        "fecha_factura_absis": "DATE",
-        "tipo_concepto_absis": "VARCHAR(100)",
-        "origen_registro": "VARCHAR(30)",
-        "estado_consolidacion": "VARCHAR(50)",
-        "fecha_ultima_sincronizacion": "DATE",
-    }
-    with engine.begin() as conexion:
-        for nombre, tipo_sql in columnas.items():
-            conexion.execute(text(
-                f"ALTER TABLE public.expediente_gastos ADD COLUMN IF NOT EXISTS {nombre} {tipo_sql}"
-            ))
-        conexion.execute(text("CREATE INDEX IF NOT EXISTS ix_expediente_gastos_id_gasto_absis ON public.expediente_gastos (id_gasto_absis)"))
-        conexion.execute(text("CREATE INDEX IF NOT EXISTS ix_expediente_gastos_id_expediente_absis ON public.expediente_gastos (id_expediente_absis)"))
 
 def _normalizar_texto(valor):
     import unicodedata
