@@ -31,7 +31,7 @@ from backend.app.encargagest.models import (
     EncargoExternoUsuario,
 )
 from backend.app.storage import CARPETA_DIGITAL_DIR
-from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, is_supabase_object, parse_object_reference
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, is_supabase_object, parse_object_reference, storage_backend_is_supabase
 
 router = APIRouter(prefix="/encargagest", tags=["EncargaGest"])
 ROOT = (CARPETA_DIGITAL_DIR / "encargagest").resolve()
@@ -39,7 +39,7 @@ ROOT.mkdir(parents=True, exist_ok=True)
 
 
 def _usa_storage_remoto() -> bool:
-    return (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase"
+    return storage_backend_is_supabase()
 
 
 def _guardar_documento_storage(nombre_guardado: str, contenido: bytes, mime: str) -> str:
