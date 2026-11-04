@@ -147,6 +147,13 @@ def detectar_columnas(
             "DOMICILIO",
         },
 
+        "entidad_actual": {
+            "ENTIDADACTUAL",
+            "ENTIDADVIGENTE",
+            "BANCOACTUAL",
+            "ENTIDADSUCESORA",
+        },
+
     }
 
     resultado = {}
@@ -301,26 +308,23 @@ def importar_excel_entidades_bancarias(
     # LEER EXCEL
     # ========================================================
 
+    # Seleccionar motor por la firma binaria real del fichero.
     try:
-
-        df = pd.read_excel(
-            BytesIO(contenido),
-            engine="openpyxl",
-        )
-
-    except Exception:
-
-        try:
-
-            df = pd.read_excel(
-                BytesIO(contenido)
-            )
-
-        except Exception as exc:
-
-            raise ValueError(
-                f"No se pudo leer el archivo Excel: {exc}"
-            ) from exc
+        if contenido.startswith(b"PK\x03\x04"):
+            df = pd.read_excel(BytesIO(contenido), engine="openpyxl")
+        elif contenido.startswith(bytes.fromhex("D0CF11E0A1B11AE1")):
+            df = pd.read_excel(BytesIO(contenido), engine="xlrd")
+        else:
+            try:
+                df = pd.read_excel(BytesIO(contenido), engine="openpyxl")
+            except Exception:
+                df = pd.read_excel(BytesIO(contenido), engine="xlrd")
+    except Exception as exc:
+        raise ValueError(
+            "No se pudo leer el archivo. Sube un Excel .xlsx o .xls válido; "
+            "comprueba que no esté dañado ni sea un CSV renombrado. "
+            f"Detalle técnico: {exc}"
+        ) from exc
 
     total_excel = int(
         len(df)
@@ -363,6 +367,7 @@ def importar_excel_entidades_bancarias(
         "nombre",
         "categoria",
         "direccion",
+        "entidad_actual",
     ]:
 
         columna = columnas.get(
@@ -395,6 +400,7 @@ def importar_excel_entidades_bancarias(
             str,
             str,
             str | None,
+            str,
         ]
     ] = []
 
@@ -443,6 +449,7 @@ def importar_excel_entidades_bancarias(
             )
             or None
         )
+        entidad_actual = normalizar_texto(fila.entidad_actual)
 
         # ----------------------------------------------------
         # FILA VACÍA
@@ -455,6 +462,7 @@ def importar_excel_entidades_bancarias(
                 nombre,
                 categoria,
                 direccion,
+                entidad_actual,
             ]
         ):
 
@@ -546,6 +554,7 @@ def importar_excel_entidades_bancarias(
                 nombre,
                 categoria,
                 direccion,
+                entidad_actual,
             )
         )
 
@@ -577,6 +586,7 @@ def importar_excel_entidades_bancarias(
     creados = 0
     actualizados = 0
     sin_cambios = 0
+    relaciones_pendientes = []
 
     # ========================================================
     # IMPORTACIÓN POR LOTES
@@ -601,6 +611,7 @@ def importar_excel_entidades_bancarias(
                 nombre,
                 categoria,
                 direccion,
+                entidad_actual,
             ) in lote:
 
                 clave_fila = (
@@ -640,6 +651,8 @@ def importar_excel_entidades_bancarias(
                     )
 
                     existentes_por_codigo[clave_fila] = nueva
+                    existentes.append(nueva)
+                    relaciones_pendientes.append((nueva, entidad_actual))
 
                     creados += 1
 
@@ -649,16 +662,16 @@ def importar_excel_entidades_bancarias(
                 # EXISTENTE
                 # ==========================================
 
+                relaciones_pendientes.append((existente, entidad_actual))
                 cambio = False
 
                 if codigo and existente.codigo_europeo != codigo:
                     existente.codigo_europeo = codigo
                     cambio = True
 
-                if existente.lei != lei:
-
+                # Una celda vacía no debe borrar información ya catalogada.
+                if lei and existente.lei != lei:
                     existente.lei = lei
-
                     cambio = True
 
                 if existente.nombre != nombre:
@@ -675,12 +688,8 @@ def importar_excel_entidades_bancarias(
 
                     cambio = True
 
-                if existente.direccion != direccion:
-
-                    existente.direccion = (
-                        direccion
-                    )
-
+                if direccion and existente.direccion != direccion:
+                    existente.direccion = direccion
                     cambio = True
 
                 if existente.activo is not True:
@@ -702,15 +711,41 @@ def importar_excel_entidades_bancarias(
             # ------------------------------------------------
 
             db.flush()
+            procesados += len(lote)
 
-            procesados += len(
-                lote
+        # Resolver Entidad actual en segunda pasada, cuando todo el catálogo
+        # importado ya existe y puede ser referenciado.
+        db.flush()
+        existentes_actualizados = db.query(EntidadBancaria).all()
+        por_nombre = {clave(registro.nombre): registro for registro in existentes_actualizados}
+        referencias_no_resueltas = []
+
+        for registro, nombre_actual in relaciones_pendientes:
+            if not nombre_actual:
+                # Si Excel no indica entidad actual, conservar relación previa.
+                continue
+            destino = por_nombre.get(clave(nombre_actual))
+            if destino is None:
+                referencias_no_resueltas.append(f"{registro.nombre} -> {nombre_actual}")
+                continue
+            if destino.id == registro.id:
+                raise ValueError(
+                    f"La entidad '{registro.nombre}' no puede ser su propia entidad actual."
+                )
+            if registro.entidad_actual_id != destino.id:
+                registro.entidad_actual_id = destino.id
+
+        if referencias_no_resueltas:
+            muestra = "; ".join(referencias_no_resueltas[:10])
+            raise ValueError(
+                "No se pudo resolver el nombre de Entidad actual en el catálogo. "
+                "Revisa que la entidad de destino exista y que su nombre coincida. "
+                f"Referencias: {muestra}"
             )
 
         # ====================================================
         # COMMIT
         # ====================================================
-
         db.commit()
 
     except Exception as exc:
