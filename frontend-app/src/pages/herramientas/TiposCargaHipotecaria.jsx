@@ -1,4 +1,5 @@
 import React, {
+import { API_BASE as API_BASE_CONFIG } from "../../api/config";
   useEffect,
   useMemo,
   useState,
@@ -11,11 +12,9 @@ import "../../css/CatalogosMaestrosPremium.css";
 // CONFIGURACIÓN API
 // ============================================================
 
-const API_ORIGEN =
-  "https://agenda-intranet-b.onrender.com";
+import { API_BASE as API_BASE_CONFIG } from "../../api/config";
 
-const API_BASE =
-  `${API_ORIGEN}/api/tipos-carga-hipotecaria`;
+const API_BASE = `${API_BASE_CONFIG}/tipos-carga-hipotecaria`;
 
 
 // ============================================================
