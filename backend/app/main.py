@@ -698,11 +698,15 @@ def _transaccion_inicio_segura(etiqueta):
 
 
 @app.on_event("startup")
-@_serializar_inicializacion_startup
 def inicializar_tablas_auxiliares():
-    # Las semillas y comprobaciones idempotentes se mantienen. El listener
-    # central de database.py convierte DDL ya provisionado en no-op y bloquea
-    # cualquier cambio de esquema que no haya pasado por Alembic.
+    """Hook heredado desactivado: semillas y esquema se gestionan fuera del web worker."""
+    if not runtime_schema_migrations_enabled():
+        print(
+            "[STARTUP] Inicialización auxiliar omitida; DDL y semillas requieren tarea explícita.",
+            flush=True,
+        )
+        return
+
     print(
         "[INICIALIZACION] Comprobando tablas auxiliares...",
         flush=True,
@@ -1882,7 +1886,10 @@ def inicializar_tablas_auxiliares():
 @app.on_event("startup")
 def asignar_gestores_pendientes_al_iniciar():
     if not runtime_schema_migrations_enabled():
-        print("[SCHEMA] Migración automática omitida: asignar_gestores_pendientes_al_iniciar; ejecutar migración versionada.", flush=True)
+        print(
+            "[STARTUP] Reparto automático omitido; requiere una tarea de negocio explícita.",
+            flush=True,
+        )
         return
     """
     Aplica automáticamente las reglas activas de la ficha de empleado
