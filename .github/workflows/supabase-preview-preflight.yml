@@ -1,6 +1,12 @@
 name: Supabase Preview database preflight (read-only)
 
 on:
+  push:
+    branches: [production/erp-molsan-2026-11-04]
+    paths:
+      - ".github/workflows/supabase-preview-preflight.yml"
+      - "backend/migrations/**"
+      - "alembic.ini"
   workflow_dispatch:
 
 permissions:
@@ -38,7 +44,6 @@ jobs:
         run: |
           python - <<'PY'
           import os
-          import sys
           from sqlalchemy import create_engine, text
           from sqlalchemy.engine import make_url
 
@@ -66,10 +71,8 @@ jobs:
           if not (host_matches or username_matches):
               raise SystemExit("BLOCKED: the connection target cannot be verified as the ERP_Molsan Supabase project. No database changes were made.")
 
-          safe_host = url.host
-          safe_port = url.port or 5432
           print(f"Connection target identity check: matched project {expected_project}.")
-          print(f"Database endpoint: {safe_host}:{safe_port} (credentials hidden).")
+          print(f"Database endpoint: {url.host}:{url.port or 5432} (credentials hidden).")
 
           engine = create_engine(url, pool_pre_ping=True, connect_args={"connect_timeout": 10})
           try:
