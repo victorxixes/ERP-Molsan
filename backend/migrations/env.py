@@ -1,0 +1,77 @@
+"""Alembic environment for controlled ERP-Molsan schema migrations."""
+from logging.config import fileConfig
+import os
+
+from alembic import context
+from sqlalchemy import create_engine, pool
+
+config = context.config
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
+
+# Importing the application registers models declared in routers and model files.
+# The import builds an engine but does not connect or execute schema statements.
+from backend.app.main import app  # noqa: F401,E402
+from backend.app.database import Base  # noqa: E402
+
+target_metadata = Base.metadata
+
+
+def require_explicit_migration_mode():
+    enabled = os.getenv(
+        "MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS", ""
+    ).strip().lower() in {"1", "true", "yes"}
+    if not enabled:
+        raise RuntimeError(
+            "Migraciones bloqueadas. Define "
+            "MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS=true "
+            "solo en un proceso de migración aislado y autorizado."
+        )
+
+
+def run_migrations_offline():
+    require_explicit_migration_mode()
+    url = (os.getenv("DATABASE_URL") or config.get_main_option("sqlalchemy.url") or "").strip()
+    if not url:
+        raise RuntimeError("DATABASE_URL no está definida para generar SQL de migración.")
+    context.configure(
+        url=url,
+        target_metadata=target_metadata,
+        literal_binds=True,
+        dialect_opts={"paramstyle": "named"},
+        compare_type=True,
+        compare_server_default=True,
+    )
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+def run_migrations_online():
+    require_explicit_migration_mode()
+    url = (os.getenv("DATABASE_URL") or config.get_main_option("sqlalchemy.url") or "").strip()
+    if not url:
+        raise RuntimeError("DATABASE_URL no está definida para ejecutar migraciones.")
+    connectable = create_engine(
+        url,
+        poolclass=pool.NullPool,
+        pool_pre_ping=True,
+    )
+    try:
+        with connectable.connect() as connection:
+            context.configure(
+                connection=connection,
+                target_metadata=target_metadata,
+                compare_type=True,
+                compare_server_default=True,
+                transaction_per_migration=True,
+            )
+            with context.begin_transaction():
+                context.run_migrations()
+    finally:
+        connectable.dispose()
+
+
+if context.is_offline_mode():
+    run_migrations_offline()
+else:
+    run_migrations_online()
