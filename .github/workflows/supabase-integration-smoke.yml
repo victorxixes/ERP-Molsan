@@ -53,6 +53,7 @@ jobs:
           JWT_SECRET: "ci-preview-startup-test-secret-32-bytes-minimum"
           CORS_ORIGINS: "https://molsan-premium-2027-preview.onrender.com"
           MOLSAN_STORAGE_BACKEND: "supabase"
+          MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS: "false"
           RENDER_SERVICE_ID: "srv-dbig454s728c73f5ug2g"
         run: |
           python - <<'PY'
