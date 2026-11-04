@@ -251,8 +251,23 @@ def _es_externo(actor):
 
 def _es_administrador_encargagest(usuario):
     nombre_usuario = str(getattr(usuario, "usuario", "") or "").strip().casefold()
-    rol = str(getattr(getattr(usuario, "rol", None), "nombre", "") or "").strip().casefold()
-    return nombre_usuario == "admin" or rol in {"admin", "administrador", "administradora", "superadmin"}
+    rol_obj = getattr(usuario, "rol", None)
+    rol = str(getattr(rol_obj, "nombre", "") or "").strip().casefold()
+    try:
+        rol_id = int(getattr(usuario, "rol_id", getattr(rol_obj, "id", -1)))
+    except (TypeError, ValueError):
+        rol_id = -1
+    return nombre_usuario == "admin" or rol_id == 0 or rol in {"admin", "administrador", "administradora", "superadmin", "superadministrador", "administrador del sistema"}
+
+
+def _exigir_admin_encargagest(usuario):
+    if _es_externo(usuario) or not _es_administrador_encargagest(usuario):
+        raise HTTPException(
+            status_code=403,
+            detail="La administración de accesos externos de EncargaGest está reservada a administradores.",
+        )
+    return usuario
+
 
 
 def _ids_notarias_asignadas(usuario):
