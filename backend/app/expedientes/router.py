@@ -387,43 +387,71 @@ def migrar_campos_workflow_actividades(
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
-    """Migración idempotente, reservada a usuarios con permiso administrativo."""
+    """Verifica las columnas del workflow, provisionadas exclusivamente por Alembic."""
     from backend.app.auth.permissions import require_perm_modulo
     require_perm_modulo(usuario, "seguridad", "editar")
-    columnas = {
-        "fecha_envio": "DATE",
-        "asiento_presentacion_libro_diario": "VARCHAR(300)",
-        "fecha_presentacion": "DATE",
-        "numero_entrada": "VARCHAR(200)",
-        "fecha_recogida_notario_presentacion_telematica": "DATE",
-        "copia_simple_escritura": "VARCHAR(500)",
-        "fecha_presentacion_tributaria": "DATE",
-        "fecha_liquidacion_tributaria": "DATE",
-        "oficina_liquidadora": "VARCHAR(200)",
-        "base_imponible": "DOUBLE PRECISION",
-        "tributacion": "VARCHAR(100)",
-        "impuesto_ajd_itp": "VARCHAR(20)",
-        "fecha_vencimiento_asiento": "DATE",
-        "escritura_simple_cancelacion": "VARCHAR(500)",
-        # Campos usados por el formulario y el listado de actividades.
-        "ultima_accion": "VARCHAR(500)",
-        "fecha_ultima_accion": "DATE",
-        "sol": "VARCHAR(100)",
-        "cs": "VARCHAR(100)",
-        "ns": "VARCHAR(100)",
-        "promocion": "VARCHAR(300)",
-    }
+    columnas_requeridas = [
+        "fecha_envio",
+        "asiento_presentacion_libro_diario",
+        "fecha_presentacion",
+        "numero_entrada",
+        "fecha_recogida_notario_presentacion_telematica",
+        "copia_simple_escritura",
+        "fecha_presentacion_tributaria",
+        "fecha_liquidacion_tributaria",
+        "oficina_liquidadora",
+        "base_imponible",
+        "tributacion",
+        "impuesto_ajd_itp",
+        "fecha_vencimiento_asiento",
+        "escritura_simple_cancelacion",
+        "ultima_accion",
+        "fecha_ultima_accion",
+        "sol",
+        "cs",
+        "ns",
+        "promocion",
+    ]
     try:
-        for nombre, tipo_sql in columnas.items():
-            db.execute(text(f"ALTER TABLE expedientes ADD COLUMN IF NOT EXISTS {nombre} {tipo_sql}"))
-        db.commit()
-        return {"ok": True, "mensaje": "Migración de actividades completada.", "columnas_creadas_o_verificadas": list(columnas.keys())}
+        tabla = db.execute(text("SELECT to_regclass('public.expedientes')")).scalar()
+        if tabla is None:
+            raise HTTPException(
+                status_code=409,
+                detail="No existe public.expedientes. Ejecuta las migraciones Alembic pendientes.",
+            )
+        existentes = db.execute(
+            text(
+                """
+                SELECT column_name
+                FROM information_schema.columns
+                WHERE table_schema = 'public'
+                  AND table_name = 'expedientes'
+                  AND column_name = ANY(:columnas)
+                """
+            ),
+            {"columnas": columnas_requeridas},
+        ).scalars().all()
+        faltantes = sorted(set(columnas_requeridas) - set(existentes))
+        if faltantes:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "mensaje": "Faltan columnas del workflow de expedientes; aplica Alembic.",
+                    "columnas": faltantes,
+                },
+            )
+        return {
+            "ok": True,
+            "mensaje": "Las columnas del workflow están provisionadas por Alembic.",
+            "columnas_verificadas": len(columnas_requeridas),
+        }
+    except HTTPException:
+        raise
     except Exception as exc:
-        db.rollback()
-        logger.exception("Error al aplicar la migración de actividades de expedientes")
+        logger.exception("Error al verificar el esquema de actividades de expedientes")
         raise HTTPException(
             status_code=500,
-            detail="No se pudo completar la migración de actividades. Consulta los logs del backend.",
+            detail="No se pudo verificar el esquema de actividades. Consulta los logs del backend.",
         ) from exc
 
 
