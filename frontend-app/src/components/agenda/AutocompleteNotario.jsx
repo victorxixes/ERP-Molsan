@@ -1,3 +1,4 @@
+import MolsanIcon from "../ui/MolsanIcon";
 import {
   useEffect,
   useState,
@@ -6,8 +7,7 @@ import {
   useRef,
 } from "react";
 
-import { listarNotarias } from "../../api/ctn";
-import "../../css/ComponentesCompartidosPremium.css";
+import { listarNotarias, obtenerNotaria } from "../../api/ctn";
 
 
 // ============================================================
@@ -36,13 +36,7 @@ function highlight(text, query) {
       regex.test(part) ? (
         <span
           key={i}
-          className="
-            bg-yellow-200
-            text-yellow-900
-            font-semibold
-            px-0.5
-            rounded
-          "
+          className="px-0.5"
         >
           {part}
         </span>
@@ -258,11 +252,54 @@ export default function AutocompleteNotario({
 
   useEffect(() => {
 
-    if (disabled) {
-      setOpen(false);
-    }
+    if (disabled || !value?.id) return;
 
-  }, [disabled]);
+    const camposFicha = [
+      "codigo", "telefono", "direccion", "cp", "vc",
+      "apoderado_s", "departamento_cancelaciones",
+      "departamento_copias", "otros_departamentos", "observacion",
+    ];
+    const fichaCompleta = camposFicha.every((campo) =>
+      Object.prototype.hasOwnProperty.call(value, campo)
+    );
+    if (fichaCompleta) return;
+
+    let activo = true;
+    obtenerNotaria(value.id)
+      .then((respuesta) => {
+        const payload = respuesta?.data ?? respuesta;
+        const detalle = payload?.notaria ?? payload?.item ?? payload;
+        if (!activo || !detalle?.id) return;
+
+        const vc = String(detalle.vc || "").trim().toUpperCase();
+        const tipoFirma = ["SI", "SÍ", "S", "VC", "VIDEOCONFERENCIA", "VIDEOCONFERENCE", "TRUE", "1"].includes(vc)
+          ? "Videoconferencia"
+          : "Presencial";
+        const lat = coordenadaValida(detalle.lat, -90, 90);
+        const lng = coordenadaValida(detalle.lng, -180, 180);
+        const distancia_km = lat === null || lng === null
+          ? null
+          : distanciaKm(MOLSAN_LAT, MOLSAN_LNG, lat, lng);
+
+        onSelect({
+          ...value,
+          ...detalle,
+          id: Number(detalle.id),
+          municipio: detalle.municipio || detalle.poblacion || value.municipio || "",
+          provincia: detalle.provincia || value.provincia || "",
+          tipo_firma: tipoFirma,
+          distancia_km,
+        });
+      })
+      .catch(() => {
+        if (activo) setSearchError("No se ha podido recuperar la ficha completa del notario en CTN.");
+      });
+
+    return () => {
+      activo = false;
+    };
+
+  }, [disabled, value, onSelect]);
 
 
   // ==========================================================
@@ -405,58 +442,30 @@ export default function AutocompleteNotario({
         // ====================================================
 
         const notarioCompleto = {
-
-          id: n.id,
-
-          codigo:
-            n.codigo || "",
-
-          nombre:
-            n.nombre || "",
-
-          apellidos:
-            n.apellidos || "",
-
-          nif:
-            n.nif || "",
-
-          telefono:
-            n.telefono || "",
-
-          provincia:
-            n.provincia || "",
-
-          municipio:
-            n.municipio || "",
-
-          cp:
-            n.cp || "",
-
-          direccion:
-            n.direccion || "",
-
-          vc:
-            n.vc || "",
-
+          ...n,
+          id: Number(n.id),
+          codigo: n.codigo || "",
+          nombre: n.nombre || "",
+          apellidos: n.apellidos || "",
+          nif: n.nif || "",
+          telefono: n.telefono || "",
+          provincia: n.provincia || "",
+          municipio: n.municipio || "",
+          cp: n.cp || "",
+          direccion: n.direccion || "",
+          vc: n.vc || "",
           lat,
-
           lng,
-
-          apoderado:
-            n.apoderado ||
-            n.apoderado_s ||
-            "",
-
-          observacion:
-            n.observacion ||
-            "",
-
-          tipo_firma:
-            tipoFirma,
-
-          distancia_km:
-            distancia_km,
-
+          apoderado: n.apoderado || "",
+          apoderado_s: n.apoderado_s || "",
+          departamento_cancelaciones: n.departamento_cancelaciones || "",
+          departamento_copias: n.departamento_copias || "",
+          otros_departamentos: n.otros_departamentos || "",
+          observacion: n.observacion || "",
+          notarios_asociados: Array.isArray(n.notarios_asociados) ? n.notarios_asociados : [],
+          notario_asociado: n.notario_asociado || "",
+          tipo_firma: tipoFirma,
+          distancia_km,
         };
 
 
@@ -518,43 +527,39 @@ export default function AutocompleteNotario({
          ==================================================== */}
 
       <div
-        className={`
-          flex
-          items-center
-          gap-2
-          min-h-[42px]
-          bg-white
-          border
-          rounded-xl
-          px-3 py-2
-          shadow-sm
-          transition-all
+        className={`flex
+ items-center
+ gap-2
+ min-h-[42px]
+ 
+ 
+ 
+ px-3 py-2
+ 
+ 
 
-          ${
-            disabled
-              ? "border-slate-200 bg-slate-100"
-              : "border-slate-300 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-500/10"
-          }
-        `}
+ ${
+ disabled
+ ? ""
+ : ""
+ }`}
       >
 
         {/* AVATAR */}
 
         <span
-          className="
-            inline-flex
-            items-center
-            justify-center
-            w-7
-            h-7
-            rounded-full
-            bg-blue-600
-            text-white
-            text-xs
-            font-bold
-            shadow-sm
-            shrink-0
-          "
+          className="inline-flex
+ items-center
+ justify-center
+ w-7
+ h-7
+ 
+ 
+ 
+ 
+ 
+ 
+ shrink-0"
         >
           {currentLabel
             ? currentLabel
@@ -575,14 +580,10 @@ export default function AutocompleteNotario({
         <input
           type="text"
           disabled={disabled}
-          className="
-            w-full
-            bg-transparent
-            text-slate-700
-            placeholder-slate-400
-            focus:outline-none
-            disabled:text-slate-400
-          "
+          className="w-full
+ 
+ 
+ placeholder-slate-400"
           placeholder="Buscar notario por nombre, apellidos, municipio o provincia…"
           value={currentLabel}
           onChange={
@@ -608,15 +609,12 @@ export default function AutocompleteNotario({
         {loading && (
 
           <div
-            className="
-              animate-spin
-              h-4 w-4
-              border-2
-              border-slate-300
-              border-t-blue-500
-              rounded-full
-              shrink-0
-            "
+            className="h-4 w-4
+ 
+ 
+ 
+ 
+ shrink-0"
           />
 
         )}
@@ -631,33 +629,26 @@ export default function AutocompleteNotario({
       {open && !disabled && (
 
         <div
-          className="
-            absolute
-            left-0
-            right-0
-            mt-2
-            bg-white
-            border border-slate-200
-            rounded-xl
-            shadow-2xl
-            shadow-slate-900/10
-            overflow-hidden
-            z-[110]
-            max-h-80
-            overflow-y-auto
-            animate-fade-in
-          "
+          className="absolute
+ left-0
+ right-0
+ mt-2
+ 
+ 
+ 
+ 
+ 
+ overflow-hidden
+ z-[110]
+ max-h-80
+ overflow-y-auto"
         >
 
           {notarios.length === 0 &&
           !loading ? (
 
             <div
-              className="
-                px-4 py-4
-                text-sm
-                text-slate-400
-              "
+              className="px-4 py-4"
             >
               {searchError || (query.trim().length < 2
                 ? "Escribe al menos dos caracteres para buscar."
@@ -733,47 +724,40 @@ export default function AutocompleteNotario({
                   onClick={() =>
                     seleccionar(n)
                   }
-                  className="
-                    w-full
-                    text-left
-                    px-4 py-3
-                    cursor-pointer
-                    text-sm
-                    hover:bg-slate-50
-                    transition
-                    border-b
-                    border-slate-100
-                    last:border-b-0
-                    flex
-                    gap-3
-                  "
+                  className="w-full
+ 
+ px-4 py-3
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ flex
+ gap-3"
                 >
 
                   {/* AVATAR / KM */}
 
                   <div
-                    className="
-                      flex
-                      flex-col
-                      items-center
-                      justify-start
-                      shrink-0
-                    "
+                    className="flex
+ flex-col
+ items-center
+ justify-start
+ shrink-0"
                   >
 
                     <div
-                      className="
-                        w-9 h-9
-                        rounded-full
-                        bg-blue-600
-                        text-white
-                        text-xs
-                        font-bold
-                        flex
-                        items-center
-                        justify-center
-                        shadow-sm
-                      "
+                      className="w-9 h-9
+ 
+ 
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
                     >
                       {iniciales}
                     </div>
@@ -782,15 +766,13 @@ export default function AutocompleteNotario({
                     {km !== null && (
 
                       <div
-                        className="
-                          mt-1
-                          text-[10px]
-                          text-blue-600
-                          font-semibold
-                          whitespace-nowrap
-                        "
+                        className="mt-1
+ 
+ 
+ 
+ whitespace-nowrap"
                       >
-                        🚗{" "}
+                        <MolsanIcon name="car" size={18} />{" "}
                         {km.toFixed(1)} km
                       </div>
 
@@ -802,18 +784,12 @@ export default function AutocompleteNotario({
                   {/* DATOS */}
 
                   <div
-                    className="
-                      flex-1
-                      min-w-0
-                    "
+                    className="flex-1
+ min-w-0"
                   >
 
                     <div
-                      className="
-                        font-semibold
-                        text-slate-800
-                        truncate
-                      "
+                      className="truncate"
                     >
                       {highlight(
                         nombreCompleto,
@@ -823,12 +799,8 @@ export default function AutocompleteNotario({
 
 
                     <div
-                      className="
-                        text-xs
-                        text-slate-500
-                        truncate
-                        mt-0.5
-                      "
+                      className="truncate
+ mt-0.5"
                     >
                       {highlight(
                         `${n.municipio || ""} — ${
@@ -842,12 +814,8 @@ export default function AutocompleteNotario({
                     {direccionCompleta && (
 
                       <div
-                        className="
-                          text-[11px]
-                          text-slate-400
-                          truncate
-                          mt-0.5
-                        "
+                        className="truncate
+ mt-0.5"
                       >
                         {highlight(
                           direccionCompleta,
@@ -861,12 +829,8 @@ export default function AutocompleteNotario({
                     {apoderadoLabel && (
 
                       <div
-                        className="
-                          text-[11px]
-                          text-emerald-600
-                          truncate
-                          mt-0.5
-                        "
+                        className="truncate
+ mt-0.5"
                       >
                         Apoderado:{" "}
                         {highlight(
@@ -883,32 +847,28 @@ export default function AutocompleteNotario({
                   {/* ESTADO */}
 
                   <div
-                    className="
-                      flex
-                      flex-col
-                      items-end
-                      justify-start
-                      gap-1
-                      shrink-0
-                    "
+                    className="flex
+ flex-col
+ items-end
+ justify-start
+ gap-1
+ shrink-0"
                   >
 
                     <span
-                      className={`
-                        inline-flex
-                        items-center
-                        px-2
-                        py-0.5
-                        rounded-full
-                        text-[10px]
-                        font-semibold
+                      className={`inline-flex
+ items-center
+ px-2
+ py-0.5
+ 
+ 
+ 
 
-                        ${
-                          esVC
-                            ? "bg-purple-100 text-purple-700"
-                            : "bg-sky-100 text-sky-700"
-                        }
-                      `}
+ ${
+ esVC
+ ? ""
+ : ""
+ }`}
                     >
                       {vcLabel}
                     </span>
@@ -917,10 +877,7 @@ export default function AutocompleteNotario({
                     {n.codigo && (
 
                       <span
-                        className="
-                          text-[10px]
-                          text-slate-400
-                        "
+                       
                       >
                         {n.codigo}
                       </span>
