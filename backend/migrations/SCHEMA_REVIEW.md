@@ -56,22 +56,19 @@ Los expedientes y pagos históricos de los entornos anteriores son datos de prue
 
 Las dependencias entre estas tablas auxiliares deben respetarse al crear la revisión inicial. Ocho referencias apuntan a tablas ORM que deben existir antes que las auxiliares.
 
-## DDL dinámico pendiente
+## DDL dinámico heredado: resuelto
 
-Las 9 ubicaciones detectadas son:
+Se han retirado las 9 rutas de DDL dinámico detectadas originalmente:
+- EncargaGest: eliminada la ampliación dinámica de columnas; los campos están en los modelos ORM.
+- Defectos: el endpoint ahora verifica tablas, columnas, índice y FK provisionados por Alembic.
+- Expedientes: los endpoints de workflow y envío a notario verifican el esquema y no ejecutan ALTER/CREATE.
+- Gastos: el endpoint administrativo verifica las columnas de ORM y ya no las crea.
+- Fix schema: convertido en comprobación de columnas, sin DDL.
+- Facturación: retirada la migración de arranque porque sus campos e índices están en ORM.
+- Main: retirada la migración legacy de arranque, incluidos los ALTER dinámicos y la terminación de sesiones PostgreSQL.
 
-- backend/app/encargagest/router.py:121
-- backend/app/expedientes/defectos/migracion_router.py:58
-- backend/app/expedientes/fix_schema.py:291
-- backend/app/expedientes/gastos/migracion_router.py:91
-- backend/app/expedientes/router.py:418
-- backend/app/expedientes/router.py:4300
-- backend/app/informes/facturacion_router.py:62
-- backend/app/main.py:906
-- backend/app/main.py:940
-
-Hay que extraer las listas/diccionarios que generan los nombres de columnas y crear operaciones estáticas explícitas. No se permitirá DDL arbitrario generado por datos de usuario en ejecución normal.
-
+La instalación debe aplicar las revisiones Alembic antes de abrir el servicio. Si una tabla o columna falta, los endpoints de verificación devuelven un error explícito y no intentan modificar el esquema.
+ 
 ## Duplicidades a reconciliar
 
 El inventario detecta definiciones duplicadas o ya presentes en ORM para:
