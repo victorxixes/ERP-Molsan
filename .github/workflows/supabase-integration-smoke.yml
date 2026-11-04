@@ -103,21 +103,18 @@ jobs:
               b"trailer<</Root 1 0 R>>\n"
               b"%%EOF\n"
           )
-          uploaded = False
           try:
-              reference = storage.upload(object_key, payload, "application/pdf", upsert=False)
-              uploaded = True
+              storage.upload(object_key, payload, "application/pdf", upsert=False)
               downloaded = storage.download(object_key)
               if downloaded != payload:
                   raise SystemExit("FAILED: downloaded bytes differ from uploaded bytes.")
               if not storage.exists(object_key):
                   raise SystemExit("FAILED: uploaded object was not found by exists().")
               print("PASS: private Storage upload and byte-for-byte download verified.")
-              print("Object reference returned by adapter: " + reference.split("/", 3)[0] + "/[temporary-key hidden]")
           finally:
-              if uploaded:
-                  storage.delete(object_key)
-                  if storage.exists(object_key):
-                      raise SystemExit("FAILED: temporary Storage object still exists after cleanup.")
-                  print("PASS: temporary Storage object deleted and absence verified.")
+              # Attempt cleanup even if the upload request failed after the server accepted it.
+              storage.delete(object_key)
+              if storage.exists(object_key):
+                  raise SystemExit("FAILED: temporary Storage object still exists after cleanup.")
+              print("PASS: temporary Storage object deleted and absence verified.")
           PY
