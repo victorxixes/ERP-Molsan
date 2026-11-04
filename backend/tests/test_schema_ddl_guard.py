@@ -89,3 +89,21 @@ def test_drop_de_objeto_ausente_es_noop(monkeypatch):
     cursor = database.cursor()
     cursor.execute("CREATE TABLE prueba (id INTEGER)")
     assert _ejecutar_guard_sqlite(cursor, "DROP INDEX IF EXISTS ix_ausente") == ("SELECT 1", ())
+
+def test_drop_not_null_si_columna_ya_es_nullable_es_noop(monkeypatch):
+    monkeypatch.delenv("MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS", raising=False)
+    database = sqlite3.connect(":memory:")
+    cursor = database.cursor()
+    cursor.execute("CREATE TABLE entidades_bancarias (codigo_europeo TEXT)")
+    statement = "ALTER TABLE entidades_bancarias ALTER COLUMN codigo_europeo DROP NOT NULL"
+    assert _ejecutar_guard_sqlite(cursor, statement) == ("SELECT 1", ())
+
+
+def test_drop_not_null_si_columna_sigue_siendolo_se_bloquea(monkeypatch):
+    monkeypatch.delenv("MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS", raising=False)
+    database = sqlite3.connect(":memory:")
+    cursor = database.cursor()
+    cursor.execute("CREATE TABLE entidades_bancarias (codigo_europeo TEXT NOT NULL)")
+    statement = "ALTER TABLE entidades_bancarias ALTER COLUMN codigo_europeo DROP NOT NULL"
+    with pytest.raises(RuntimeError, match="DDL bloqueado"):
+        _ejecutar_guard_sqlite(cursor, statement)
