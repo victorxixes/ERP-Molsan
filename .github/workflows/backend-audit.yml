@@ -2,7 +2,7 @@ name: Backend audit
 
 on:
   push:
-    branches: [main]
+    branches: [main, production/erp-molsan-2026-11-04]
     paths:
       - "backend/**"
       - ".github/workflows/backend-audit.yml"
