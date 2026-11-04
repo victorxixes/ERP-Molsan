@@ -6,11 +6,11 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import { API_BASE } from "../../api/config";
 import "./SeguridadSubpaginasPremium.css";
 
 
-const API_URL =
-  "https://agenda-intranet-b.onrender.com";
+const API_URL = API_BASE;
 
 
 export default function SeguridadRolEditor() {
@@ -161,7 +161,7 @@ export default function SeguridadRolEditor() {
 
           respuesta =
             await fetch(
-              `${API_URL}/api/seguridad/roles`,
+              `${API_URL}/seguridad/roles`,
               {
                 method: "POST",
 
@@ -188,7 +188,7 @@ export default function SeguridadRolEditor() {
 
           respuesta =
             await fetch(
-              `${API_URL}/api/seguridad/roles/${rolEditando.id}`,
+              `${API_URL}/seguridad/roles/${rolEditando.id}`,
               {
                 method: "PUT",
 
@@ -316,7 +316,7 @@ export default function SeguridadRolEditor() {
 
           const respuesta =
             await fetch(
-              `${API_URL}/api/seguridad/roles/${id}`,
+              `${API_URL}/seguridad/roles/${id}`,
               {
                 method: "DELETE",
               }
