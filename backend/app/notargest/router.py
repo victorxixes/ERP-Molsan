@@ -28,7 +28,7 @@ from backend.app.expediente_observaciones.models import ExpedienteObservacion
 from backend.app.empleados.models import Empleado
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.storage import CARPETA_DIGITAL_DIR
-from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, is_supabase_object, parse_object_reference
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, is_supabase_object, parse_object_reference, storage_backend_is_supabase
 
 from backend.app.schema_migrations import runtime_schema_migrations_enabled
 
@@ -37,7 +37,7 @@ ROOT = CARPETA_DIGITAL_DIR.resolve()
 
 
 def _usa_storage_remoto() -> bool:
-    return (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase"
+    return storage_backend_is_supabase()
 
 
 def _guardar_documento_storage(nombre_guardado: str, contenido: bytes, mime: str) -> str:
