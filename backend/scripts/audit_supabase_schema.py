@@ -140,8 +140,8 @@ def scan_raw_ddl(orm_table_names):
         # ALTER TABLE, secuencias, tipos, triggers, funciones y DROP requieren
         # revisión/transformación explícita antes de formar una migración.
         manual_pattern = (
-            r"\\b(?:ALTER\\s+TABLE|CREATE\\s+(?:SEQUENCE|TYPE|TRIGGER|FUNCTION)|"
-            r"DROP\\s+(?:TABLE|INDEX|TYPE|TRIGGER|FUNCTION))\\b"
+            r"\b(?:ALTER\s+TABLE|CREATE\s+(?:SEQUENCE|TYPE|TRIGGER|FUNCTION)|"
+            r"DROP\s+(?:TABLE|INDEX|TYPE|TRIGGER|FUNCTION))\b"
         )
         for statement in extract_statements(sql, manual_pattern):
             manual_review_ddl.append({"source": source, "sql": statement})
@@ -290,6 +290,8 @@ def main():
         + "\n".join(raw_inventory)
         + "\n\nDYNAMIC_DDL_REQUIRES_MANUAL_REVIEW\n"
         + "\n".join(dynamic_ddl)
+        + "\n\nSTATIC_DDL_REQUIRES_MANUAL_REVIEW\n"
+        + "\n".join(f"{entry['source']}\t{entry['sql']}" for entry in manual_review_ddl)
         + "\n\nDUPLICATE_OR_ORM_TABLE_DEFINITIONS\n"
         + "\n".join(f"{table}\t{source}\t{note}" for table, source, note in duplicate_ddl)
         + "\n",
