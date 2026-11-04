@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import useAccessibleDialog from "../ui/useAccessibleDialog";
 import axios from "../../api/axios";
 import MolsanIcon from "../ui/MolsanIcon";
-import useAccessibleDialog from "../ui/useAccessibleDialog";
 
 
 const ACTIVIDADES = [
@@ -53,9 +52,6 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
   const dialogRef = useRef(null);
   useAccessibleDialog({ open: Boolean(modal), onClose, dialogRef });
   const [busquedaColumna, setBusquedaColumna] = useState("");
-  const dialogRef = useRef(null);
-
-  useAccessibleDialog({ open: modal, onClose, dialogRef });
 
   useEffect(() => {
     let activo = true;
