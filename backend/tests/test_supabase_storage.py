@@ -37,6 +37,20 @@ class SupabasePrivateStorageTests(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             self.storage.download("mensajes/missing.pdf")
 
+    def test_exists_checks_headers_without_downloading_body(self):
+        response = Mock(status_code=200)
+        self.session.get.return_value = response
+        self.assertTrue(self.storage.exists("mensajes/a.pdf"))
+        kwargs = self.session.get.call_args.kwargs
+        self.assertTrue(kwargs["stream"])
+        response.close.assert_called_once()
+
+    def test_exists_returns_false_for_missing_object(self):
+        response = Mock(status_code=404)
+        self.session.get.return_value = response
+        self.assertFalse(self.storage.exists("mensajes/missing.pdf"))
+        response.close.assert_called_once()
+
     def test_delete_uses_private_bucket_object_api(self):
         self.session.delete.return_value = Mock(status_code=200)
         self.storage.delete("mensajes/a.pdf")
