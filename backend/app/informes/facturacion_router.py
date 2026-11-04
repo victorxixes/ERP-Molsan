@@ -22,11 +22,16 @@ from backend.app.database import get_db
 from backend.app.expedientes.models import Expediente
 from backend.app.expedientes.gastos.models import ExpedienteGasto
 
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
+
 router = APIRouter(prefix="/informes", tags=["Informes"], dependencies=[Depends(get_current_user)])
 
 
 @router.on_event("startup")
 def migrar_campos_absis_facturacion():
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: migrar_campos_absis_facturacion; ejecutar migración versionada.", flush=True)
+        return
     """Añade los campos opcionales del informe sin modificar datos existentes."""
     columnas = {
         "estado_absis": "VARCHAR(100)",
