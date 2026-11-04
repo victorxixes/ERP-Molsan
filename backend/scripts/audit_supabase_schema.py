@@ -75,7 +75,7 @@ def ordered_tables(tables):
 
 
 def scan_raw_ddl(orm_table_names):
-    """Extrae CREATE TABLE/INDEX estáticos y marca DDL dinámico."""
+    """Extrae DDL estático real y marca por separado las sentencias dinámicas."""
     source_root = Path("backend/app")
     statements_by_table = {}
     indexes_by_name = {}
@@ -84,18 +84,32 @@ def scan_raw_ddl(orm_table_names):
     duplicates = []
 
     def extract_statements(sql, keyword):
-        pattern = re.compile(keyword, re.IGNORECASE)
+        pattern = re.compile(r"(?im)(?:^|[;\n])\s*(" + keyword + r")\b")
         for match in pattern.finditer(sql):
-            end = sql.find(";", match.start())
+            start = match.start(1)
+            end = sql.find(";", start)
             if end < 0:
                 end = len(sql)
-            statement = sql[match.start():end].strip()
+            statement = sql[start:end].strip()
             if statement and not statement.endswith(";"):
                 statement += ";"
-            yield statement
+            if statement:
+                yield statement
+
+    identifier = r'(?:[A-Za-z_][A-Za-z0-9_$]*|"[^"]+")'
+    qualified_identifier = rf'(?:{identifier}\s*\.\s*)?{identifier}'
+
+    def is_real_manual_ddl(statement):
+        normalized = re.sub(r"\s+", " ", statement).strip()
+        patterns = [
+            rf"^ALTER\s+TABLE\s+(?:IF\s+EXISTS\s+)?{qualified_identifier}\s+(?:ADD|ALTER|DROP|RENAME|OWNER|SET|RESET|ENABLE|DISABLE|VALIDATE|ATTACH|DETACH)\b",
+            rf"^CREATE\s+(?:(?:OR\s+REPLACE)\s+)?(?:SEQUENCE|TYPE|TRIGGER|FUNCTION)\s+{identifier}\b",
+            rf"^DROP\s+(?:TABLE|INDEX|TYPE|TRIGGER|FUNCTION)\s+(?:IF\s+EXISTS\s+)?{qualified_identifier}\b",
+        ]
+        return any(re.search(pattern, normalized, re.IGNORECASE) for pattern in patterns)
 
     def register_sql(sql, source):
-        for statement in extract_statements(sql, r"\bCREATE\s+TABLE\b"):
+        for statement in extract_statements(sql, r"CREATE\s+TABLE"):
             table_match = re.search(
                 r"\bCREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:public\.)?([A-Za-z_][A-Za-z0-9_]*)",
                 statement,
@@ -116,7 +130,7 @@ def scan_raw_ddl(orm_table_names):
             else:
                 duplicates.append((table_name, source, "duplicate identical definition"))
 
-        for statement in extract_statements(sql, r"\bCREATE\s+(?:UNIQUE\s+)?INDEX\b"):
+        for statement in extract_statements(sql, r"CREATE\s+(?:UNIQUE\s+)?INDEX"):
             index_match = re.search(
                 r"\bCREATE\s+(?:UNIQUE\s+)?INDEX\s+(?:IF\s+NOT\s+EXISTS\s+)?([A-Za-z_][A-Za-z0-9_]*)\s+ON\s+(?:public\.)?([A-Za-z_][A-Za-z0-9_]*)",
                 statement,
@@ -126,8 +140,6 @@ def scan_raw_ddl(orm_table_names):
                 continue
             index_name = index_match.group(1).lower()
             table_name = index_match.group(2).lower()
-            # Los índices de tablas ORM ya salen de Base.metadata; no se
-            # vuelven a incluir desde migraciones SQL antiguas.
             if table_name in orm_table_names:
                 continue
             entry = {"source": source, "sql": statement, "table": table_name}
@@ -138,15 +150,15 @@ def scan_raw_ddl(orm_table_names):
             elif normalize(previous["sql"]) != normalize(statement):
                 duplicates.append((index_name, source, "different CREATE INDEX definition; manual reconciliation required"))
 
-        # DDL auxiliar que no se puede omitir ni aplicar automáticamente:
-        # ALTER TABLE, secuencias, tipos, triggers, funciones y DROP requieren
-        # revisión/transformación explícita antes de formar una migración.
-        manual_pattern = (
-            r"\b(?:ALTER\s+TABLE|CREATE\s+(?:SEQUENCE|TYPE|TRIGGER|FUNCTION)|"
-            r"DROP\s+(?:TABLE|INDEX|TYPE|TRIGGER|FUNCTION))\b"
-        )
-        for statement in extract_statements(sql, manual_pattern):
-            manual_review_ddl.append({"source": source, "sql": statement})
+        for statement in extract_statements(
+            sql,
+            r"(?:ALTER\s+TABLE|CREATE\s+(?:(?:OR\s+REPLACE)\s+)?(?:SEQUENCE|TYPE|TRIGGER|FUNCTION)|DROP\s+(?:TABLE|INDEX|TYPE|TRIGGER|FUNCTION))",
+        ):
+            if is_real_manual_ddl(statement):
+                manual_review_ddl.append({
+                    "source": source,
+                    "sql": re.sub(r"\s+", " ", statement).strip(),
+                })
 
     for source_path in sorted(source_root.rglob("*.py")):
         try:
@@ -154,9 +166,31 @@ def scan_raw_ddl(orm_table_names):
             tree = ast.parse(source_text)
         except (OSError, SyntaxError, UnicodeDecodeError):
             continue
+
+        joined_string_segments = set()
+        docstring_nodes = set()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.JoinedStr):
+                joined_string_segments.update(
+                    id(value) for value in node.values
+                    if isinstance(value, ast.Constant) and isinstance(value.value, str)
+                )
+            if isinstance(node, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+                body = getattr(node, "body", [])
+                if body and isinstance(body[0], ast.Expr):
+                    value = body[0].value
+                    if isinstance(value, ast.Constant) and isinstance(value.value, str):
+                        docstring_nodes.add(id(value))
+
         for node in ast.walk(tree):
             if isinstance(node, ast.Constant) and isinstance(node.value, str):
-                if re.search(r"\b(?:CREATE\s+(?:TABLE|(?:UNIQUE\s+)?INDEX|SEQUENCE|TYPE|TRIGGER|FUNCTION)|ALTER\s+TABLE|DROP\s+(?:TABLE|INDEX|TYPE|TRIGGER|FUNCTION))\b", node.value, re.IGNORECASE):
+                if id(node) in joined_string_segments or id(node) in docstring_nodes:
+                    continue
+                if re.search(
+                    r"\b(?:CREATE\s+(?:TABLE|(?:UNIQUE\s+)?INDEX|SEQUENCE|TYPE|TRIGGER|FUNCTION)|ALTER\s+TABLE|DROP\s+(?:TABLE|INDEX|TYPE|TRIGGER|FUNCTION))\b",
+                    node.value,
+                    re.IGNORECASE,
+                ):
                     register_sql(node.value, f"{source_path}:{node.lineno}")
             elif isinstance(node, ast.JoinedStr):
                 pieces = []
@@ -166,12 +200,19 @@ def scan_raw_ddl(orm_table_names):
                     else:
                         pieces.append("{dynamic}")
                 template = "".join(pieces)
-                if re.search(r"\b(?:CREATE\s+(?:TABLE|(?:UNIQUE\s+)?INDEX|SEQUENCE|TYPE|TRIGGER|FUNCTION)|ALTER\s+TABLE|DROP\s+(?:TABLE|INDEX|TYPE|TRIGGER|FUNCTION))\b", template, re.IGNORECASE):
-                    dynamic.append(f"{source_path}:{node.lineno}: {template[:240]}")
+                if re.search(
+                    r"\b(?:CREATE\s+(?:TABLE|(?:UNIQUE\s+)?INDEX|SEQUENCE|TYPE|TRIGGER|FUNCTION)|ALTER\s+TABLE|DROP\s+(?:TABLE|INDEX|TYPE|TRIGGER|FUNCTION))\b",
+                    template,
+                    re.IGNORECASE,
+                ):
+                    dynamic.append(f"{source_path}:{node.lineno}: {re.sub(r'\\s+', ' ', template)[:240]}")
 
     for source_path in sorted(source_root.rglob("*.sql")):
         try:
-            register_sql(source_path.read_text(encoding="utf-8"), str(source_path))
+            sql = source_path.read_text(encoding="utf-8")
+            sql = re.sub(r"/\*.*?\*/", "", sql, flags=re.DOTALL)
+            sql = re.sub(r"(?m)^\s*--.*$", "", sql)
+            register_sql(sql, str(source_path))
         except (OSError, UnicodeDecodeError):
             continue
 
@@ -206,13 +247,11 @@ def scan_raw_ddl(orm_table_names):
     inventory = []
     for name in ordered:
         entry = statements_by_table[name]
-        statement = entry["sql"]
-        idempotent = bool(re.search(r"CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS", statement, re.IGNORECASE))
         refs = sorted(dependencies.get(name, ()))
         inventory.append(
-            f"{name}\tsource={entry['source']}\tidempotent={idempotent}\tfk_dependencies={','.join(refs)}"
+            f"{name}\tsource={entry['source']}\tidempotent={bool(re.search(r'CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS', entry['sql'], re.IGNORECASE))}\tfk_dependencies={','.join(refs)}"
         )
-        sql_parts.append(f"-- Source: {entry['source']}\n{statement}")
+        sql_parts.append(f"-- Source: {entry['source']}\n{entry['sql']}")
 
     raw_indexes = {
         name: entry for name, entry in indexes_by_name.items()
@@ -224,7 +263,6 @@ def scan_raw_ddl(orm_table_names):
     for entry in manual_review_ddl:
         sql_parts.append(f"-- MANUAL REVIEW REQUIRED; Source: {entry['source']}\n{entry['sql']}")
     return sql_parts, inventory, dynamic, duplicates, raw_indexes, manual_review_ddl
-
 
 
 def main():
