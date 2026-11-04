@@ -38,14 +38,14 @@ jobs:
           node-version: "22"
       - name: Discover Supabase CLI commands
         run: |
-          npx --yes supabase@latest --version
-          npx --yes supabase@latest init --help
-          npx --yes supabase@latest migration --help
-          npx --yes supabase@latest migration new --help
+          npx --yes supabase@3.0.0 --version
+          npx --yes supabase@3.0.0 init --help
+          npx --yes supabase@3.0.0 migration --help
+          npx --yes supabase@3.0.0 migration new --help
       - name: Create versioned Supabase baseline migration
         run: |
-          npx --yes supabase@latest init
-          npx --yes supabase@latest migration new erp_molsan_initial_schema
+          npx --yes supabase@3.0.0 init
+          npx --yes supabase@3.0.0 migration new erp_molsan_initial_schema
           MIGRATION_FILE="$(find supabase/migrations -maxdepth 1 -type f -name '*.sql' | sort | tail -n 1)"
           test -n "$MIGRATION_FILE"
           {
