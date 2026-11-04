@@ -59,16 +59,26 @@ jobs:
           missing = section(orm, "MISSING_EXTERNAL_FK_TARGETS")
           dynamic = section(raw, "DYNAMIC_DDL_REQUIRES_MANUAL_REVIEW", "RAW_ORM_FK_DEPENDENCIES")
           static_ddl = section(raw, "STATIC_DDL_REQUIRES_MANUAL_REVIEW", "DUPLICATE_OR_ORM_TABLE_DEFINITIONS")
-          raw_missing = section(raw, "RAW_MISSING_FK_TARGETS", "STATIC_DDL_REQUIRES_MANUAL_REVIEW")
+          raw_orm = section(raw, "RAW_ORM_FK_DEPENDENCIES", "RAW_MISSING_FK_TARGETS")
+          raw_missing = section(raw, "RAW_MISSING_FK_TARGETS", "ALTER_COLUMNS_ALREADY_IN_ORM")
+          already_in_orm = section(raw, "ALTER_COLUMNS_ALREADY_IN_ORM", "ALTER_COLUMNS_MISSING_FROM_ORM")
+          missing_from_orm = section(raw, "ALTER_COLUMNS_MISSING_FROM_ORM", "ALTER_COLUMNS_ON_AUXILIARY_TABLES")
+          auxiliary_alters = section(raw, "ALTER_COLUMNS_ON_AUXILIARY_TABLES", "ALTER_COLUMNS_UNKNOWN_TABLES")
+          unknown_alters = section(raw, "ALTER_COLUMNS_UNKNOWN_TABLES", "OTHER_STATIC_ALTERATIONS")
           duplicates = section(raw, "DUPLICATE_OR_ORM_TABLE_DEFINITIONS")
 
           print(f"Referencias FK externas: {len(missing)}")
+          print(f"Referencias DDL auxiliar hacia ORM: {len(raw_orm)}")
+          print(f"Columnas ALTER ya presentes en ORM: {len(already_in_orm)}")
+          print(f"Columnas ALTER que faltan en ORM: {len(missing_from_orm)}")
+          print(f"ALTER sobre tablas auxiliares: {len(auxiliary_alters)}")
+          print(f"ALTER sobre tablas no identificadas: {len(unknown_alters)}")
           print(f"DDL estático auxiliar para revisión: {len(static_ddl)}")
           print(f"DDL dinámico para revisión: {len(dynamic)}")
           print(f"Definiciones duplicadas/ORM: {len(duplicates)}")
           print(f"Referencias FK del DDL auxiliar sin destino: {len(raw_missing)}")
 
-          if missing or raw_missing or static_ddl or dynamic or duplicates:
+          if missing or raw_missing or missing_from_orm or unknown_alters or static_ddl or dynamic or duplicates:
               raise SystemExit(
                   "Inventario generado, pero requiere revisión manual. "
                   "No debe aplicarse ninguna migración hasta resolver estos elementos."
