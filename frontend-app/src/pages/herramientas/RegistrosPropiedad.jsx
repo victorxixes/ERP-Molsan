@@ -1,4 +1,5 @@
 import {
+import { API_BASE as API_BASE_CONFIG } from "../../api/config";
   useEffect,
   useMemo,
   useRef,
@@ -69,11 +70,9 @@ import "../../css/CatalogosMaestrosPremium.css";
    BACKEND
 ============================================================ */
 
-const API_ORIGEN =
-  "https://agenda-intranet-b.onrender.com";
+import { API_BASE as API_BASE_CONFIG } from "../../api/config";
 
-const API_BASE =
-  `${API_ORIGEN}/api/registros-propiedad`;
+const API_BASE = `${API_BASE_CONFIG}/registros-propiedad`;
 
 const API_IMPORTAR_EXCEL =
   `${API_BASE}/importar-excel`;
