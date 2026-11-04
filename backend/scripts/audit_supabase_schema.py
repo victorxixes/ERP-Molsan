@@ -202,9 +202,9 @@ def scan_raw_ddl(orm_table_names):
                 template = "".join(pieces)
                 if (
                     is_real_manual_ddl(template)
-                    or re.match(r"^\\s*CREATE\\s+(?:TABLE|(?:UNIQUE\\s+)?INDEX)\\b", template, re.IGNORECASE)
+                    or re.match(r"^\s*CREATE\s+(?:TABLE|(?:UNIQUE\s+)?INDEX)\b", template, re.IGNORECASE)
                 ):
-                    compact_template = re.sub(r"\\s+", " ", template).strip()
+                    compact_template = re.sub(r"\s+", " ", template).strip()
                     dynamic.append(f"{source_path}:{node.lineno}: {compact_template[:240]}")
 
     for source_path in sorted(source_root.rglob("*.sql")):
