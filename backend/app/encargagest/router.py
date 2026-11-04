@@ -16,7 +16,7 @@ from cryptography.fernet import Fernet
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, Request
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field, condecimal, constr
-from sqlalchemy import or_, func, inspect as sa_inspect, text
+from sqlalchemy import or_, func, text
 from sqlalchemy.orm import Session
 
 from backend.app.auth.dependencies import obtener_token_bearer
