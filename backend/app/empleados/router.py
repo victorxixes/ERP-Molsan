@@ -40,6 +40,7 @@ from backend.app.seguridad.auditoria.service import (
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.storage import FOTOS_EMPLEADOS_DIR
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError
 
 
 def _permiso_empleados(accion: str):
@@ -459,8 +460,15 @@ def subir_foto(
                 detail="El contenido del archivo no coincide con el formato de imagen declarado.",
             )
 
-        with open(filepath, "wb") as buffer:
-            buffer.write(contenido)
+        if (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase":
+            mime = {
+                ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
+                ".gif": "image/gif", ".webp": "image/webp",
+            }[extension]
+            SupabasePrivateStorage().upload(f"fotos/empleados/{filename}", contenido, mime, upsert=True)
+        else:
+            with open(filepath, "wb") as buffer:
+                buffer.write(contenido)
 
     except HTTPException:
         raise
@@ -491,28 +499,18 @@ def subir_foto(
 
 
     for ext in extensiones_anteriores:
-
-        archivo_anterior = os.path.join(
-            upload_dir,
-            f"empleado_{empleado_id}{ext}",
-        )
-
-        if (
-            archivo_anterior != filepath
-            and os.path.exists(
-                archivo_anterior
-            )
-        ):
-
-            try:
-
-                os.remove(
-                    archivo_anterior
-                )
-
-            except Exception:
-
-                pass
+        archivo_anterior = f"empleado_{empleado_id}{ext}"
+        if archivo_anterior == filename:
+            continue
+        try:
+            if (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase":
+                SupabasePrivateStorage().delete(f"fotos/empleados/{archivo_anterior}")
+            else:
+                ruta_anterior = os.path.join(upload_dir, archivo_anterior)
+                if os.path.exists(ruta_anterior):
+                    os.remove(ruta_anterior)
+        except Exception:
+            pass
 
 
     # -----------------------------------------------------
