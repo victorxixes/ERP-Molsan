@@ -8,24 +8,17 @@ on:
       - "backend/migrations/**"
       - "backend/requirements.txt"
       - ".github/workflows/bootstrap-orm-migration.yml"
-  pull_request:
-    paths:
-      - "backend/app/**"
-      - "backend/migrations/**"
-      - "backend/requirements.txt"
-      - ".github/workflows/bootstrap-orm-migration.yml"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: bootstrap-orm-migration-${{ github.event.pull_request.number || github.ref }}
+  group: bootstrap-orm-migration-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   generate-and-test:
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -50,7 +43,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref || github.ref_name }}
+          ref: ${{ github.ref_name }}
       - name: Configure Python
         uses: actions/setup-python@v5
         with:
