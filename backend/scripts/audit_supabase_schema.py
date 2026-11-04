@@ -327,7 +327,40 @@ def main():
     )
 
     orm_table_names = {table.name.lower() for table in tables.values()}
+    orm_column_names = {
+        (table.name.lower(), column.name.lower())
+        for table in tables.values()
+        for column in table.columns
+    }
     raw_sql, raw_inventory, dynamic_ddl, duplicate_ddl, raw_indexes, manual_review_ddl, raw_missing_fks, raw_orm_fks = scan_raw_ddl(orm_table_names)
+
+    raw_auxiliary_names = {line.split("\\t", 1)[0] for line in raw_inventory}
+    already_in_orm = []
+    missing_from_orm = []
+    auxiliary_table_alters = []
+    unknown_table_alters = []
+    other_static_alters = []
+    for entry in manual_review_ddl:
+        statement = entry["sql"]
+        add_column = re.search(
+            r"ALTER\\s+TABLE\\s+(?:IF\\s+EXISTS\\s+)?(?:public\\.)?([A-Za-z_][A-Za-z0-9_]*)\\s+ADD\\s+(?:COLUMN\\s+)?(?:IF\\s+NOT\\s+EXISTS\\s+)?([A-Za-z_][A-Za-z0-9_]*)",
+            statement,
+            re.IGNORECASE,
+        )
+        if add_column:
+            table_name, column_name = add_column.group(1).lower(), add_column.group(2).lower()
+            item = f"{table_name}.{column_name}\\tsource={entry['source']}"
+            if table_name in orm_table_names:
+                if (table_name, column_name) in orm_column_names:
+                    already_in_orm.append(item)
+                else:
+                    missing_from_orm.append(item)
+            elif table_name in raw_auxiliary_names:
+                auxiliary_table_alters.append(item)
+            else:
+                unknown_table_alters.append(item)
+        else:
+            other_static_alters.append(f"{entry['source']}\\t{statement}")
     (output / "raw-ddl.sql").write_text(
         "-- Static auxiliary CREATE TABLE statements found in backend source.\n"
         "-- Review dynamic/duplicate definitions in raw-ddl-inventory.txt before applying.\n\n"
@@ -345,8 +378,18 @@ def main():
         + "\n".join(f"{table} -> {target}\tsource={source}" for table, target, source in raw_orm_fks)
         + "\n\nRAW_MISSING_FK_TARGETS\n"
         + "\n".join(f"{table} -> {target}\tsource={source}" for table, target, source in raw_missing_fks)
-        + "\n\nSTATIC_DDL_REQUIRES_MANUAL_REVIEW\n"
-        + "\n".join(f"{entry['source']}\t{entry['sql']}" for entry in manual_review_ddl)
+        + "\\n\\nALTER_COLUMNS_ALREADY_IN_ORM\\n"
+        + "\\n".join(already_in_orm)
+        + "\\n\\nALTER_COLUMNS_MISSING_FROM_ORM\\n"
+        + "\\n".join(missing_from_orm)
+        + "\\n\\nALTER_COLUMNS_ON_AUXILIARY_TABLES\\n"
+        + "\\n".join(auxiliary_table_alters)
+        + "\\n\\nALTER_COLUMNS_UNKNOWN_TABLES\\n"
+        + "\\n".join(unknown_table_alters)
+        + "\\n\\nOTHER_STATIC_ALTERATIONS\\n"
+        + "\\n".join(other_static_alters)
+        + "\\n\\nSTATIC_DDL_REQUIRES_MANUAL_REVIEW\\n"
+        + "\\n".join(f"{entry['source']}\\t{entry['sql']}" for entry in manual_review_ddl)
         + "\n\nDUPLICATE_OR_ORM_TABLE_DEFINITIONS\n"
         + "\n".join(f"{table}\t{source}\t{note}" for table, source, note in duplicate_ddl)
         + "\n",
