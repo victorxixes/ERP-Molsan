@@ -44,6 +44,9 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: python -m compileall -q backend
 
+      - name: Validate Alembic configuration without connecting to a database
+        run: alembic -c alembic.ini heads
+
       - name: Run backend tests (isolated SQLite, no production database)
         env:
           PYTHONPATH: ${{ github.workspace }}
