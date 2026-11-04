@@ -41,7 +41,7 @@ from backend.app.seguridad.auditoria.service import (
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.storage import FOTOS_EMPLEADOS_DIR
-from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, storage_backend_is_supabase
 
 
 def _permiso_empleados(accion: str):
@@ -459,7 +459,7 @@ def subir_foto(
                 detail="El contenido del archivo no coincide con el formato de imagen declarado.",
             )
 
-        if (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase":
+        if storage_backend_is_supabase():
             mime = {
                 ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
                 ".gif": "image/gif", ".webp": "image/webp",
@@ -517,7 +517,7 @@ def subir_foto(
 
         db.rollback()
         try:
-            if (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase":
+            if storage_backend_is_supabase():
                 SupabasePrivateStorage().delete(f"fotos/empleados/{filename}")
             elif os.path.exists(filepath):
                 os.remove(filepath)
@@ -546,7 +546,7 @@ def subir_foto(
         if archivo_anterior == filename:
             continue
         try:
-            if (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase":
+            if storage_backend_is_supabase():
                 SupabasePrivateStorage().delete(f"fotos/empleados/{archivo_anterior}")
             else:
                 ruta_anterior = os.path.join(upload_dir, archivo_anterior)
@@ -561,7 +561,7 @@ def subir_foto(
         nombre_anterior = os.path.basename(str(foto_anterior))
         if nombre_anterior == str(foto_anterior):
             try:
-                if (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase":
+                if storage_backend_is_supabase():
                     SupabasePrivateStorage().delete(f"fotos/empleados/{nombre_anterior}")
                 else:
                     ruta_anterior = os.path.join(upload_dir, nombre_anterior)
