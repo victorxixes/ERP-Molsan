@@ -68,7 +68,7 @@ jobs:
       - name: Apply reviewed Alembic revisions
         run: alembic -c alembic.ini upgrade head
 
-      - name: Verify migration head, table count and RLS
+      - name: Verify migration head, protected tables and data privileges
         run: |
           python - <<'PY'
           import os
@@ -87,23 +87,66 @@ jobs:
                              count(*) FILTER (WHERE c.relrowsecurity)
                       FROM pg_class c
                       JOIN pg_namespace n ON n.oid = c.relnamespace
-                      WHERE n.nspname = 'public' AND c.relkind = 'r'
+                      WHERE n.nspname = 'public' AND c.relkind IN ('r', 'p')
                   """)
                   table_count, rls_count = cur.fetchone()
-                  if table_count != 100 or rls_count != table_count:
+                  if table_count != 101 or rls_count != table_count:
                       raise SystemExit(
-                          f"BLOCKED: expected 100 public tables with RLS; got "
+                          f"BLOCKED: expected 101 public tables with RLS; got "
                           f"{table_count} tables and {rls_count} with RLS"
                       )
 
+                  table_privileges = (
+                      "SELECT", "INSERT", "UPDATE", "DELETE",
+                      "TRUNCATE", "REFERENCES", "TRIGGER",
+                  )
                   for role in ("anon", "authenticated"):
-                      cur.execute("SELECT has_schema_privilege(%s, 'public', 'USAGE')", (role,))
-                      if cur.fetchone()[0]:
-                          raise SystemExit(f"BLOCKED: {role} still has public schema USAGE")
+                      cur.execute("""
+                          SELECT count(*)
+                          FROM pg_class c
+                          JOIN pg_namespace n ON n.oid = c.relnamespace
+                          WHERE n.nspname = 'public'
+                            AND c.relkind IN ('r', 'p')
+                            AND (
+                                has_table_privilege(%s, c.oid, 'SELECT') OR
+                                has_table_privilege(%s, c.oid, 'INSERT') OR
+                                has_table_privilege(%s, c.oid, 'UPDATE') OR
+                                has_table_privilege(%s, c.oid, 'DELETE') OR
+                                has_table_privilege(%s, c.oid, 'TRUNCATE') OR
+                                has_table_privilege(%s, c.oid, 'REFERENCES') OR
+                                has_table_privilege(%s, c.oid, 'TRIGGER')
+                            )
+                      """, (role,) * len(table_privileges))
+                      tables_with_privileges = cur.fetchone()[0]
+                      if tables_with_privileges:
+                          raise SystemExit(
+                              f"BLOCKED: {role} has data/table privileges on "
+                              f"{tables_with_privileges} public tables"
+                          )
+
+                      cur.execute("""
+                          SELECT count(*)
+                          FROM pg_class c
+                          JOIN pg_namespace n ON n.oid = c.relnamespace
+                          WHERE n.nspname = 'public'
+                            AND c.relkind = 'S'
+                            AND (
+                                has_sequence_privilege(%s, c.oid, 'USAGE') OR
+                                has_sequence_privilege(%s, c.oid, 'SELECT') OR
+                                has_sequence_privilege(%s, c.oid, 'UPDATE')
+                            )
+                      """, (role, role, role))
+                      sequences_with_privileges = cur.fetchone()[0]
+                      if sequences_with_privileges:
+                          raise SystemExit(
+                              f"BLOCKED: {role} has privileges on "
+                              f"{sequences_with_privileges} public sequences"
+                          )
 
                   print("SUCCESS: Alembic head is 20261104_0004")
                   print(f"SUCCESS: {table_count} public tables; RLS enabled on all")
-                  print("SUCCESS: anon/authenticated cannot use the public schema")
+                  print("SUCCESS: anon/authenticated have no table data privileges")
+                  print("SUCCESS: anon/authenticated have no sequence privileges")
           finally:
               conn.close()
           PY
