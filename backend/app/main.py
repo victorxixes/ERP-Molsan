@@ -28,12 +28,22 @@ app = FastAPI(title="Agenda Intranet Backend")
 # CORS — CONFIGURACIÓN PARA RENDER
 # ============================================================
 
-origins = [
-    "https://agenda-intranet-f.onrender.com",
-    "https://agenda-intranet-b.onrender.com",
-    "http://localhost:5173",
-    "http://localhost:3000",
-]
+# Render/Preview debe declarar explícitamente los orígenes permitidos.
+# Si CORS_ORIGINS está configurada, sustituye la lista heredada completa.
+origins_configurados = os.getenv("CORS_ORIGINS", "").strip()
+if origins_configurados:
+    origins = [
+        origen.strip().rstrip("/")
+        for origen in origins_configurados.split(",")
+        if origen.strip()
+    ]
+else:
+    origins = [
+        "https://agenda-intranet-f.onrender.com",
+        "https://agenda-intranet-b.onrender.com",
+        "http://localhost:5173",
+        "http://localhost:3000",
+    ]
 
 app.add_middleware(
     CORSMiddleware,
