@@ -218,13 +218,23 @@ def scan_raw_ddl(orm_table_names):
 
     names = set(statements_by_table)
     dependencies = {}
+    raw_missing_fks = []
+    raw_orm_fks = []
     for name, entry in statements_by_table.items():
         refs = re.findall(
             r"\bREFERENCES\s+(?:public\.)?([A-Za-z_][A-Za-z0-9_]*)",
             entry["sql"],
             re.IGNORECASE,
         )
-        dependencies[name] = {ref.lower() for ref in refs if ref.lower() in names and ref.lower() != name}
+        dependencies[name] = set()
+        for reference in refs:
+            target = reference.lower()
+            if target in names and target != name:
+                dependencies[name].add(target)
+            elif target in orm_table_names:
+                raw_orm_fks.append((name, target, entry["source"]))
+            else:
+                raw_missing_fks.append((name, target, entry["source"]))
 
     ordered = []
     visiting = set()
@@ -263,7 +273,7 @@ def scan_raw_ddl(orm_table_names):
 
     for entry in manual_review_ddl:
         sql_parts.append(f"-- MANUAL REVIEW REQUIRED; Source: {entry['source']}\n{entry['sql']}")
-    return sql_parts, inventory, dynamic, duplicates, raw_indexes, manual_review_ddl
+    return sql_parts, inventory, dynamic, duplicates, raw_indexes, manual_review_ddl, raw_missing_fks, raw_orm_fks
 
 
 def main():
@@ -317,7 +327,7 @@ def main():
     )
 
     orm_table_names = {table.name.lower() for table in tables.values()}
-    raw_sql, raw_inventory, dynamic_ddl, duplicate_ddl, raw_indexes, manual_review_ddl = scan_raw_ddl(orm_table_names)
+    raw_sql, raw_inventory, dynamic_ddl, duplicate_ddl, raw_indexes, manual_review_ddl, raw_missing_fks, raw_orm_fks = scan_raw_ddl(orm_table_names)
     (output / "raw-ddl.sql").write_text(
         "-- Static auxiliary CREATE TABLE statements found in backend source.\n"
         "-- Review dynamic/duplicate definitions in raw-ddl-inventory.txt before applying.\n\n"
@@ -331,6 +341,10 @@ def main():
         + "\n".join(raw_inventory)
         + "\n\nDYNAMIC_DDL_REQUIRES_MANUAL_REVIEW\n"
         + "\n".join(dynamic_ddl)
+        + "\n\nRAW_ORM_FK_DEPENDENCIES\n"
+        + "\n".join(f"{table} -> {target}\tsource={source}" for table, target, source in raw_orm_fks)
+        + "\n\nRAW_MISSING_FK_TARGETS\n"
+        + "\n".join(f"{table} -> {target}\tsource={source}" for table, target, source in raw_missing_fks)
         + "\n\nSTATIC_DDL_REQUIRES_MANUAL_REVIEW\n"
         + "\n".join(f"{entry['source']}\t{entry['sql']}" for entry in manual_review_ddl)
         + "\n\nDUPLICATE_OR_ORM_TABLE_DEFINITIONS\n"
@@ -345,7 +359,9 @@ def main():
     print(f"Static ALTER/sequence/type/trigger/function/drop statements requiring manual review: {len(manual_review_ddl)}")
     print(f"Dynamic DDL statements requiring manual review: {len(dynamic_ddl)}")
     print(f"Duplicate/ORM DDL definitions: {len(duplicate_ddl)}")
-    print(f"External FK targets requiring manual migration work: {len(missing)}")
+    print(f"ORM external FK targets requiring manual migration work: {len(missing)}")
+    print(f"Raw DDL references to ORM tables: {len(raw_orm_fks)}")
+    print(f"Raw DDL unresolved FK targets: {len(raw_missing_fks)}")
     for table, column, target in missing:
         print(f"EXTERNAL_FK {table}.{column} -> {target}")
     print(f"Generated: {output / 'orm-tables.txt'}")
