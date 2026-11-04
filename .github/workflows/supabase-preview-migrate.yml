@@ -91,11 +91,9 @@ jobs:
       - name: Apply Alembic revisions to Preview only
         env:
           DATABASE_URL: ${{ secrets.MOLSAN_SUPABASE_MIGRATION_DATABASE_URL }}
-          JWT_SECRET: ${{ secrets.MOLSAN_PREVIEW_JWT_SECRET }}
-          SUPABASE_URL: https://powiprqarmluanplxpyb.supabase.co
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.MOLSAN_SUPABASE_SERVICE_ROLE_KEY }}
-          MOLSAN_STORAGE_BACKEND: supabase
-          MOLSAN_STORAGE_BUCKET: molsan-private
+          # Alembic imports the app registry, but this isolated job does not authenticate users or access Storage.
+          JWT_SECRET: molsan-migration-only-not-for-user-authentication-2026-11-04
+          MOLSAN_STORAGE_BACKEND: local
           MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS: "true"
           PYTHONPATH: .
         run: |
