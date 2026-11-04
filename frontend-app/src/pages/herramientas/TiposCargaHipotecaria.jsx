@@ -12,7 +12,7 @@ import "../../css/CatalogosMaestrosPremium.css";
 // CONFIGURACIÓN API
 // ============================================================
 
-const API_BASE = `${API_ROOT}/api/tipos-carga-hipotecaria`;
+const API_BASE = `${API_ROOT}/tipos-carga-hipotecaria`;
 
 
 // ============================================================
