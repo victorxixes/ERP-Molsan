@@ -41,6 +41,8 @@ from backend.app.provisiones.models import (
     ConceptoImporteProvision,
 )
 
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
+
 router = APIRouter(
     tags=["Provisiones de fondos y cancelaciones"],
     dependencies=[Depends(get_current_user)],
@@ -1428,6 +1430,9 @@ async def enviar_email_provision(
 
 @router.on_event("startup")
 def inicializar_tablas_provisiones() -> None:
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: inicializar_tablas_provisiones; ejecutar migración versionada.", flush=True)
+        return
     """Crea solo tablas nuevas del módulo; no altera ni borra tablas existentes."""
     TarifaProvision.__table__.create(bind=engine, checkfirst=True)
     # Compatibilidad con bases de datos ya existentes: añade la columna sin borrar datos.
