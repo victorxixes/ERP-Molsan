@@ -120,11 +120,16 @@ def scan_raw_ddl(orm_table_names):
                 continue
             index_name = index_match.group(1).lower()
             table_name = index_match.group(2).lower()
+            # Los índices de tablas ORM ya salen de Base.metadata; no se
+            # vuelven a incluir desde migraciones SQL antiguas.
+            if table_name in orm_table_names:
+                continue
             entry = {"source": source, "sql": statement, "table": table_name}
             previous = indexes_by_name.get(index_name)
+            normalize = lambda value: re.sub(r"\s+", " ", value).replace("public.", "").strip().lower()
             if previous is None:
                 indexes_by_name[index_name] = entry
-            elif re.sub(r"\s+", " ", previous["sql"]).strip().lower() != re.sub(r"\s+", " ", statement).strip().lower():
+            elif normalize(previous["sql"]) != normalize(statement):
                 duplicates.append((index_name, source, "different CREATE INDEX definition; manual reconciliation required"))
 
     for source_path in sorted(source_root.rglob("*.py")):
