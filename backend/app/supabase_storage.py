@@ -124,6 +124,7 @@ class SupabasePrivateStorage:
                 url,
                 headers=headers,
                 timeout=self.config.timeout_seconds,
+                stream=True,
             )
             if response.status_code == 200:
                 return True
