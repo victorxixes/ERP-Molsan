@@ -1,24 +1,30 @@
 # Revisión del esquema objetivo ERP-Molsan
 
-Estado del análisis offline del código (no es una inspección de la base de datos real ni una migración aplicable).
+Fecha de actualización: 4 de noviembre de 2026.
+
+## Alcance
+
+Este inventario se genera desde el código de la rama de integración; no representa una lectura del esquema de producción. La validación de migraciones se ha ejecutado en un PostgreSQL temporal de CI. No se ha aplicado ninguna revisión a Supabase.
 
 ## Criterio de datos
 
-Los expedientes y pagos históricos de los entornos anteriores son datos de prueba. No se migrarán. Tras validar la integración se preparará una importación separada de aproximadamente 25 expedientes seleccionados para pruebas reales.
+Los 417 expedientes y pagos históricos de los entornos anteriores son datos ficticios/de prueba y no se migrarán. Después de completar y validar el ERP se preparará una importación separada de aproximadamente 25 expedientes seleccionados por MOLSAN. Los pagos y saldos se crearán posteriormente mediante los flujos funcionales del ERP.
 
-## Inventario actual
+## Inventario reconciliado
 
-- 67 tablas SQLAlchemy registradas al importar la aplicación.
+- 67 tablas registradas en SQLAlchemy.
 - 33 tablas auxiliares declaradas mediante SQL estático.
 - 7 índices auxiliares estáticos.
-- 77 operaciones ALTER/DDL estáticas reconciliadas: 62 añaden columnas ya presentes en ORM; 10 se corresponden con columnas ya incluidas en las definiciones auxiliares canónicas; 5 se consolidan en las definiciones finales de claves y nulabilidad.
-- 0 operaciones DDL dinámicas pendientes: se han retirado las 9 rutas heredadas.
-- 0 columnas añadidas por ALTER que falten en los modelos ORM (66 ya estaban representadas).
-- 16 definiciones duplicadas o coincidentes con ORM.
+- 77 operaciones ALTER/DDL estáticas reconciliadas: 62 columnas ya representadas en ORM, 10 columnas incluidas en las definiciones auxiliares canónicas y 5 ajustes consolidados de claves/nulabilidad.
+- 0 columnas de ALTER pendientes de incorporar a modelos ORM.
+- 0 operaciones DDL dinámicas pendientes: las 9 rutas heredadas identificadas se han retirado del flujo web y se han sustituido por comprobaciones de esquema.
+- 14 entradas de definiciones duplicadas o coincidentes: 4 corresponden a tablas ya incluidas en ORM y 10 son repeticiones idénticas de definiciones auxiliares. No se detectaron definiciones conflictivas.
 - 8 referencias FK desde tablas auxiliares hacia tablas ORM.
-- 0 destinos FK sin resolver detectados en el DDL auxiliar.
+- 0 destinos FK auxiliares sin resolver.
 
-## Tablas auxiliares estáticas
+El inventario completo se genera mediante `backend/scripts/audit_supabase_schema.py` y se publica como artefacto del workflow **Offline ORM and DDL inventory**.
+
+## Tablas auxiliares
 
 1. absis_postfirma_cargas
 2. absis_postfirma_registros
@@ -54,54 +60,73 @@ Los expedientes y pagos históricos de los entornos anteriores son datos de prue
 32. provisiones_email_envios
 33. tipos_impositivos
 
-Las dependencias entre estas tablas auxiliares deben respetarse al crear la revisión inicial. Ocho referencias apuntan a tablas ORM que deben existir antes que las auxiliares.
+Las siete referencias de índice auxiliares y las ocho referencias FK hacia tablas ORM están incluidas en la revisión 0003 y se crean después de las tablas ORM.
 
-## DDL dinámico heredado: resuelto
+## Columnas auxiliares reconciliadas
 
-Se han retirado las 9 rutas de DDL dinámico detectadas originalmente:
-- EncargaGest: eliminada la ampliación dinámica de columnas; los campos están en los modelos ORM.
-- Defectos: el endpoint ahora verifica tablas, columnas, índice y FK provisionados por Alembic.
-- Expedientes: los endpoints de workflow y envío a notario verifican el esquema y no ejecutan ALTER/CREATE.
-- Gastos: el endpoint administrativo verifica las columnas de ORM y ya no las crea.
-- Fix schema: convertido en comprobación de columnas, sin DDL.
-- Facturación: retirada la migración de arranque porque sus campos e índices están en ORM.
-- Main: retirada la migración legacy de arranque, incluidos los ALTER dinámicos y la terminación de sesiones PostgreSQL.
+Las 10 columnas adicionales detectadas en tablas auxiliares están incorporadas a las definiciones canónicas:
 
-La instalación debe aplicar las revisiones Alembic antes de abrir el servicio. Si una tabla o columna falta, los endpoints de verificación devuelven un error explícito y no intentan modificar el esquema.
- 
-## Duplicidades a reconciliar
+- `expediente_gasto_pagos`: `anulado_en`, `anulado_por`, `motivo_anulacion`.
+- `expediente_visibilidad_config`: `empleado_id`, `ambito`.
+- `expediente_documentacion_previa_absis`: `mover_siguiente_actividad`, `solicitud_registrada_localmente`, `fecha_solicitud_local`.
+- `mensajeria_solicitudes`: `telefono_recogida`, `telefono_entrega`.
 
-El inventario detecta definiciones duplicadas o ya presentes en ORM para:
+`expediente_visibilidad_config` se crea directamente con su clave primaria compuesta `(empleado_id, actividad_key, ambito)`. La columna `entidades_bancarias.codigo_europeo` es nullable en ORM. La FK de subtipo de defecto se normaliza en la revisión 0002 con nombre estable `fk_expediente_defectos_subtipo` y `ON DELETE SET NULL`.
+
+## Definiciones duplicadas
+
+Las 14 entradas detectadas corresponden a estos nombres de tabla (algunas aparecen repetidas en más de un módulo):
 
 - agenda_citas
 - expediente_gestor_historial
-- defecto_subtipos
 - expediente_absis_solicitudes
 - correspondencia_configuracion
 - plantilla_factura_concepto_gasto
 - facturas_honorarios_gestoria
-- - expediente_promociones
+- expediente_promociones
 - correspondencia_plantillas
 - provisiones_email_envios
+- defecto_subtipos
 - expediente_defectos_historial
 
-Las 14 entradas detectadas son seguras: 4 corresponden a tablas ya definidas en ORM y 10 son definiciones idénticas repetidas en varios módulos. No se detectan definiciones conflictivas. El inventario conserva una única definición canónica por tabla auxiliar. Para expediente_gestor_historial, la definición canónica debe mantener gestor_id y gestor_anterior_id con sus referencias a empleados, actividad VARCHAR(120) NOT NULL y motivo VARCHAR(80).
+Se conserva una sola definición canónica por tabla auxiliar. Para `expediente_gestor_historial`, la definición conserva `gestor_id` y `gestor_anterior_id` con referencias a empleados, `actividad VARCHAR(120) NOT NULL` y `motivo VARCHAR(80)`.
 
-Las 11 columnas auxiliares detectadas están incluidas en las definiciones finales: expediente_gasto_pagos (anulación), expediente_documentacion_previa_absis (avance y registro local), expediente_visibilidad_config (empleado_id/ambito) y mensajeria_solicitudes (teléfono de recogida/entrega). Se han añadido estos dos últimos campos a la definición canónica de mensajería.
+## Revisiones Alembic versionadas
 
-La tabla auxiliar `expediente_visibilidad_config` se crea directamente con su clave primaria compuesta `(empleado_id, actividad_key, ambito)`; no se debe crear primero una PK antigua para después alterarla. La columna `entidades_bancarias.codigo_europeo` ya es nullable en el modelo ORM. La FK de subtipo de defecto se ha definido en ORM con nombre estable y `ON DELETE SET NULL`, para reconciliarla en la siguiente revisión Alembic.
+La rama contiene tres revisiones consecutivas:
 
-## Política de DDL en ejecución
+1. `20261104_0001_initial_orm_schema.py`: esquema inicial de las 67 tablas ORM.
+2. `20261104_0002_reconcile_orm_constraints.py`: reconciliación de la FK de subtipo de defecto.
+3. `20261104_0003_auxiliary_schema.py`: 33 tablas auxiliares y 7 índices.
 
-El backend no debe cambiar el esquema. Las sentencias idempotentes heredadas solo se convierten en no-op cuando el objeto ya existe con el estado final provisionado. Si falta una tabla, índice, columna o restricción, la operación falla y exige una migración Alembic versionada. Las eliminaciones/destructivas no se ejecutan desde peticiones.
+## Validación aislada
 
-La migración Alembic inicial debe incorporar:
-1. Las 67 tablas ORM.
-2. Las 33 tablas auxiliares y sus 7 índices.
-3. Las columnas y restricciones de las 82 operaciones estáticas.
-4. Las 9 operaciones dinámicas una vez enumeradas.
-5. Seeds explícitos para catálogos/datos maestros que deban existir en la instalación limpia.
+La ejecución del workflow **Bootstrap ORM migration in isolated PostgreSQL** sobre el SHA `f8792f759679e5054604ec71f9611b554dfcf585` terminó correctamente el 4-11-2026:
 
-## Estado de aplicación
+- `alembic upgrade head`: correcto.
+- `alembic check`: correcto, con resultado **No new upgrade operations detected**.
+- `alembic downgrade base`: correcto.
+- `alembic upgrade head` posterior al rollback: correcto.
 
-No se ha creado ni ejecutado la revisión inicial. Supabase sigue sin tablas del ERP. Este documento es una guía de revisión; no debe ejecutarse como SQL.
+El workflow utilizó un PostgreSQL temporal de CI. Esta validación no equivale a aplicar las revisiones en Supabase ni autoriza todavía el despliegue.
+
+## Estado de Supabase
+
+Comprobaciones de solo lectura del proyecto `ERP_Molsan` el 4-11-2026:
+
+- 0 tablas/vistas ERP en `public`.
+- 0 migraciones registradas.
+- 0 usuarios en `auth.users`.
+- 0 buckets y 0 objetos en Storage.
+
+No se ha escrito esquema ni datos en el proyecto.
+
+## Seeds y datos maestros pendientes
+
+Las revisiones de estructura no importan expedientes ni pagos. Antes de conectar Preview hay que identificar los catálogos/datos maestros imprescindibles para una instalación limpia, localizar su fuente aprobada y crear seeds versionados e idempotentes por separado. No se deben copiar datos operativos antiguos como si fueran catálogos.
+
+## Política de ejecución
+
+El proceso web no debe ejecutar DDL, seeds ni reparaciones de esquema al arrancar ni desde endpoints. Las modificaciones estructurales se aplican mediante revisiones Alembic explícitas. Si falta una tabla, columna, índice o restricción, el servicio debe fallar con un diagnóstico claro, sin intentar alterar la base de datos durante una petición.
+
+**Estado:** estructura ORM y auxiliar versionada y probada en PostgreSQL aislado; Supabase continúa vacío. Pendientes: seeds aprobados, integración privada de Supabase Storage, autenticación/permisos, conexión del Preview y pruebas integrales.
