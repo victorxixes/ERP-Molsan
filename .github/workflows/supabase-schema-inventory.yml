@@ -1,0 +1,80 @@
+name: Supabase schema inventory
+
+on:
+  push:
+    branches: [production/erp-molsan-2026-11-04]
+    paths:
+      - "backend/**"
+      - ".github/workflows/supabase-schema-inventory.yml"
+  pull_request:
+    paths:
+      - "backend/**"
+      - ".github/workflows/supabase-schema-inventory.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supabase-schema-inventory-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: ${{ github.workspace }}
+      MOLSAN_SCHEMA_AUDIT_OUTPUT: schema-audit
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - name: Instalar dependencias del backend
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r backend/requirements.txt
+      - name: Generar inventario sin conectarse a ninguna base de datos
+        run: python backend/scripts/audit_supabase_schema.py
+      - name: Comprobar que no se genera una migración incompleta
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          orm = Path("schema-audit/orm-tables.txt").read_text(encoding="utf-8")
+          raw = Path("schema-audit/raw-ddl-inventory.txt").read_text(encoding="utf-8")
+
+          def section(text, start, end=None):
+              if start not in text:
+                  return []
+              tail = text.split(start, 1)[1]
+              if end and end in tail:
+                  tail = tail.split(end, 1)[0]
+              return [line for line in tail.splitlines() if line.strip()]
+
+          missing = section(orm, "MISSING_EXTERNAL_FK_TARGETS")
+          dynamic = section(raw, "DYNAMIC_DDL_REQUIRES_MANUAL_REVIEW", "DUPLICATE_OR_ORM_TABLE_DEFINITIONS")
+          duplicates = section(raw, "DUPLICATE_OR_ORM_TABLE_DEFINITIONS")
+
+          print(f"Referencias FK externas: {len(missing)}")
+          print(f"DDL dinámico para revisión: {len(dynamic)}")
+          print(f"Definiciones duplicadas/ORM: {len(duplicates)}")
+
+          if missing or dynamic or duplicates:
+              raise SystemExit(
+                  "Inventario generado, pero requiere revisión manual. "
+                  "No debe aplicarse ninguna migración hasta resolver estos elementos."
+              )
+          PY
+      - name: Publicar inventario de esquema
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: molsan-supabase-schema-inventory
+          path: schema-audit/
+          if-no-files-found: warn
+          retention-days: 7
