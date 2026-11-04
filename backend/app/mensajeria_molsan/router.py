@@ -65,6 +65,7 @@ def _ensure_tables(db: Session):
             prioridad VARCHAR(20) NOT NULL DEFAULT 'Normal', descripcion TEXT,
             expediente_id VARCHAR(100), contacto_origen VARCHAR(180),
             contacto_destino VARCHAR(180), telefono_destino VARCHAR(80),
+            telefono_recogida VARCHAR(80), telefono_entrega VARCHAR(80),
             servicio_id INTEGER REFERENCES mensajeria_servicios(id) ON DELETE SET NULL,
             responsable VARCHAR(180), estado VARCHAR(40) NOT NULL DEFAULT 'Pendiente',
             estado_proveedor VARCHAR(120), incidencia TEXT, coste_previsto NUMERIC(12,2),
