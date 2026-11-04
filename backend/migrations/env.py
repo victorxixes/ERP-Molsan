@@ -72,7 +72,7 @@ def run_migrations_online():
                 connection=connection,
                 target_metadata=target_metadata,
                 compare_type=True,
-                compare_server_default=True,
+                compare_server_default=compare_server_default,
                 transaction_per_migration=True,
             )
             with context.begin_transaction():
