@@ -84,20 +84,6 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
   const [avisosLeidos, setAvisosLeidos] = useState([]);
   const [modalExpedientesResumen, setModalExpedientesResumen] = useState(null);
   const [cargandoResumenExpedientes, setCargandoResumenExpedientes] = useState(false);
-  const avisosDialogRef = useRef(null);
-  const pagosDialogRef = useRef(null);
-  const perfilDialogRef = useRef(null);
-  const resumenDialogRef = useRef(null);
-  const ordenPagos = useSortableData(pagosNotario);
-  const ordenResumenExpedientes = useSortableData(modalExpedientesResumen?.items || []);
-  const cerrarPerfilNotario = () => {
-    if (guardandoPasswordPerfil) return;
-    setPerfilNotarioAbierto(false);
-  };
-  useAccessibleDialog({ open: notificacionesAbiertas, onClose: () => setNotificacionesAbiertas(false), dialogRef: avisosDialogRef });
-  useAccessibleDialog({ open: pagosAbiertos, onClose: () => setPagosAbiertos(false), dialogRef: pagosDialogRef });
-  useAccessibleDialog({ open: perfilNotarioAbierto, onClose: cerrarPerfilNotario, dialogRef: perfilDialogRef });
-  useAccessibleDialog({ open: Boolean(modalExpedientesResumen), onClose: () => setModalExpedientesResumen(null), dialogRef: resumenDialogRef });
 
   const peticion = useCallback(async (path, options = {}) => {
     const headers = { ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(options.headers || {}) };
@@ -488,25 +474,6 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
     return bandeja ? filtradas.filter(x => x[bandeja.campo]) : filtradas;
   }, [expedientes, busqueda, vista]);
 
-  const tablaFactura = vista === "factura";
-  const filasOrdenables = useMemo(() => filas.map((x) => ({
-    ...x,
-    _provisionOrden: x.id_provision || x.id_expediente || "",
-    _fechaEnvioOrden: x.fecha_envio_notario || x.fecha_envio || "",
-    _nombreOrden: x.nombre || x.nombre_titular || x.titular || "",
-    _fincaOrden: x.finca || x.fincas?.map((f) => f.finca).filter(Boolean).join(", ") || "",
-    _tipoDocumentoOrden: x.tipo_documento || x.documentos_escritura?.map((d) => d.tipo_documento).filter(Boolean).join(", ") || "",
-    _cuantiaOrden: x.cuantia_documento ?? x.cuantia ?? x.documentos_escritura?.[0]?.cuantia ?? "",
-  })), [filas]);
-  const ordenFilas = useSortableData(filasOrdenables);
-  const firmasUrgentes = useMemo(() => expedientes.filter((x) => x.firma_urgente).map((x) => ({
-    ...x,
-    _nombreOrden: [x.nombre, x.apellidos].filter(Boolean).join(" ") || x.titular || "",
-    _dniOrden: x.dni || x.nif_titular || "",
-  })), [expedientes]);
-  const ordenUrgentes = useSortableData(firmasUrgentes);
-  const ordenDocumentosDetalle = useSortableData(detalle?.documentos_escritura || []);
-
   if (!token) return (
     <PortalLogin
       variant="notargest"
@@ -529,6 +496,10 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
 
   const esDetalle = vista === "detalle" && detalle;
   const titulo = esDetalle ? `Expediente ${detalle.id_expediente}` : (bandejas.find(b => b.id === vista)?.titulo || ({ avisos_comentarios: "Observaciones del gestor", avisos_documentos: "Nueva documentación añadida" }[vista]) || (vista === "inicio" ? "Mis tareas pendientes" : vista === "documentacion" ? "Carpeta Digital" : "NotarGest"));
+  const tablaFactura = vista === "factura";
+  const fechaActual = new Intl.DateTimeFormat("es-ES", {
+    weekday: "long", day: "numeric", month: "long", year: "numeric",
+  }).format(new Date());
   const sidebarVista = vista === "inicio" ? "Dashboard" : ({
     recepcion: "Nuevos encargos",
     firma: "Pendientes de firma",
@@ -609,7 +580,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
   }
 
   return (
-    <div className="min-h-screen notargest">
+    <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
       <Sidebar
         brandName="NotarGest"
         navigationItems={accesoERP && esAdminNotarGest && !tokenAdminNotaria ? [] : [
@@ -701,12 +672,12 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
 
       {modalExpedientesResumen && (
         <div className="ng-modal-overlay ng-resumen-expedientes-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setModalExpedientesResumen(null); }}>
-          <section ref={resumenDialogRef} tabIndex={-1} className="ng-modal molsan-modal__panel ng-resumen-expedientes-modal" role="dialog" aria-modal="true" aria-labelledby="ng-resumen-expedientes-titulo">
-            <header className="molsan-modal__header">
+          <section className="ng-modal ng-resumen-expedientes-modal" role="dialog" aria-modal="true" aria-labelledby="ng-resumen-expedientes-titulo">
+            <header>
               <div><span className="ng-kicker">NOTARGEST · VISIÓN MOLSAN</span><h2 id="ng-resumen-expedientes-titulo">{modalExpedientesResumen.titulo}</h2><p>{modalExpedientesResumen.items.length} expediente(s) coinciden con este bloque.</p></div>
               <button type="button" className="ng-boton-secundario" onClick={() => setModalExpedientesResumen(null)}>Cerrar</button>
             </header>
-            <div className="ng-resumen-expedientes-contenido molsan-modal__body">
+            <div className="ng-resumen-expedientes-contenido">
               {cargandoResumenExpedientes ? <p className="ng-mensaje">Cargando expedientes…</p> : modalExpedientesResumen.items.length === 0 ? <div className="ng-modal-vacio"><strong>No hay expedientes en este bloque</strong><p>Cuando existan expedientes que cumplan esta condición aparecerán aquí.</p></div> : (
                 <div className="ng-resumen-expedientes-tabla-wrap">
                   <MolsanDataTable
@@ -841,9 +812,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
               })}
             </div>
           </> : <div className="ng-admin-notaria-activa"><div><span className="ng-kicker">NOTARÍA SELECCIONADA</span><h2>{notariasSeleccionables.find(x=>String(x.id)===String(notariaAdminSeleccionada))?.nombre || notario?.nombre || "Notaría"}</h2><p>Estás gestionando esta notaría como administrador.</p></div><button type="button" className="ng-boton-secundario" onClick={()=>seleccionarNotariaAdmin("")}><MolsanIcon name="arrowLeft" size={18} tone="ocean" /> Volver al control de notarías</button></div>}
-            </section>
-          </div>
-        </main>
+        </section>
       )}
       {(!accesoERP || !esAdminNotarGest || Boolean(tokenAdminNotaria)) && <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
@@ -874,7 +843,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
             for (let i=5;i>=0;i--) { const d=new Date(ahora.getFullYear(),ahora.getMonth()-i,1); meses.push({key:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`,label:d.toLocaleDateString("es-ES",{month:"short",year:"2-digit"}),valor:0}); }
             expedientes.filter(x=>x.fecha_firma && x.protocolo).forEach(x=>{const key=String(x.fecha_firma).slice(0,7);const m=meses.find(z=>z.key===key);if(m)m.valor++;});
             const max=Math.max(1,...meses.map(m=>m.valor));
-            return <div className="ng-barras-meses">{meses.map(m=><div className="ng-barra-mes" key={m.key}><strong>{m.valor}</strong><div className="ng-barra-pista"><span style={{ height:`${Math.max(m.valor?6:0,m.valor/max*100)}%` }} /></div><small>{m.label}</small></div>)}</div>;
+            return <div className="ng-barras-meses">{meses.map(m=><div className="ng-barra-mes" key={m.key}><strong>{m.valor}</strong><div className="ng-barra-pista"><span style={{height:`${Math.max(m.valor?6:0,m.valor/max*100)}%`}} /></div><small>{m.label}</small></div>)}</div>;
           })()}
         </section>
         <section className="ng-dashboard-grafico ng-dashboard-pagos ng-dashboard-economica">
@@ -903,7 +872,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
             const max = Math.max(1, ...meses.map(x => x.valor));
             return <div className="ng-pagos-grafico">
               <div className="ng-pagos-grafico-titulo"><strong>Cuantías pagadas por mes</strong><span>Últimos 6 meses</span></div>
-              <div className="ng-barras-meses ng-barras-pagos">{meses.map(x => <div className="ng-barra-mes" key={x.key}><strong>{euros(x.valor)}</strong><div className="ng-barra-pista"><span style={{ height:`${x.valor ? Math.max(5,x.valor/max*100) : 0}%` }} /></div><small>{x.label}</small></div>)}</div>
+              <div className="ng-barras-meses ng-barras-pagos">{meses.map(x => <div className="ng-barra-mes" key={x.key}><strong>{euros(x.valor)}</strong><div className="ng-barra-pista"><span style={{height:`${x.valor ? Math.max(5,x.valor/max*100) : 0}%`}} /></div><small>{x.label}</small></div>)}</div>
             </div>;
           })()}
         </section>
@@ -920,7 +889,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
             const diferencia=(a,b)=>{if(!a||!b)return null;const n=Math.round((new Date(String(b).slice(0,10)+"T00:00:00")-new Date(String(a).slice(0,10)+"T00:00:00"))/86400000);return Number.isFinite(n)&&n>=0?n:null;};
             const medias=etapas.map(e=>{const ds=expedientes.map(x=>diferencia(valorFecha(x,e.desde),valorFecha(x,e.hasta))).filter(n=>n!==null);return {...e,media:ds.length?ds.reduce((a,b)=>a+b,0)/ds.length: null,n:ds.length};});
             const max=Math.max(1,...medias.map(x=>x.media||0));
-            return <div className="ng-barras-medias">{medias.map(e=><div className="ng-media-row" key={e.label}><div><strong>{e.label}</strong><small>{e.media===null?"Sin datos suficientes":`${e.media.toFixed(1)} días de media · ${e.n} expedientes`}</small></div><div className="ng-media-pista"><span style={{ width:`${e.media===null?0:e.media/max*100}%` }} /></div></div>)}</div>;
+            return <div className="ng-barras-medias">{medias.map(e=><div className="ng-media-row" key={e.label}><div><strong>{e.label}</strong><small>{e.media===null?"Sin datos suficientes":`${e.media.toFixed(1)} días de media · ${e.n} expedientes`}</small></div><div className="ng-media-pista"><span style={{width:`${e.media===null?0:e.media/max*100}%`}} /></div></div>)}</div>;
           })()}
         </section>
       </div>
@@ -1018,7 +987,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
              ["Formato de escritura", detalle.formato_escritura], ["Tipo de trámite", detalle.tipo_tramite]
             ].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div>
             <h4 className="ng-subtitulo-detalle">Documentos y cuantías</h4>
-            {detalle.documentos_escritura?.length ? <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><MolsanSortableTh label="Tipo de documento" sortKey="tipo_documento" sortConfig={ordenDocumentosDetalle.sortConfig} onSort={ordenDocumentosDetalle.requestSort} /><MolsanSortableTh label="Cuantía documento" sortKey="cuantia_documento" sortConfig={ordenDocumentosDetalle.sortConfig} onSort={ordenDocumentosDetalle.requestSort} /></tr></thead><tbody>{ordenDocumentosDetalle.items.map((d,i) => <tr key={d.id || i}><td>{texto(d.tipo_documento)}</td><td>{euros(d.cuantia_documento ?? d.cuantia)}</td></tr>)}</tbody></table></div> : <div className="ng-datos-grid"><div className="ng-dato"><small>Tipo de documento</small><strong>{texto(detalle.tipo_documento)}</strong></div><div className="ng-dato"><small>Cuantía documento</small><strong>{euros(detalle.cuantia_documento ?? detalle.cuantia)}</strong></div></div>}
+            {detalle.documentos_escritura?.length ? <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><th>Tipo de documento</th><th>Cuantía documento</th></tr></thead><tbody>{detalle.documentos_escritura.map((d,i) => <tr key={d.id || i}><td>{texto(d.tipo_documento)}</td><td>{euros(d.cuantia_documento ?? d.cuantia)}</td></tr>)}</tbody></table></div> : <div className="ng-datos-grid"><div className="ng-dato"><small>Tipo de documento</small><strong>{texto(detalle.tipo_documento)}</strong></div><div className="ng-dato"><small>Cuantía documento</small><strong>{euros(detalle.cuantia_documento ?? detalle.cuantia)}</strong></div></div>}
             <h4 className="ng-subtitulo-detalle">Fincas y registros</h4><p className="ng-descripcion">Datos registrales del expediente</p>
             {detalle.fincas?.length ? <div className="ng-fincas-lista">{detalle.fincas.map((f,i) => <article className="ng-finca-card" key={f.id || i}><strong>Finca {texto(f.finca)}</strong><span>{[f.poblacion,f.registro,f.provincia].filter(Boolean).join(" · ") || "—"}</span><div><small>CRU/IDUFIR</small><b>{texto(f.cru_idufir)}</b></div><div><small>Cuantía</small><b>{euros(f.cuantia)}</b></div><div><small>Inscripción</small><b>{texto(f.inscripcion)}</b></div><div><small>Contrato</small><b>{texto(f.contrato || detalle.contrato)}</b></div></article>)}</div> : <p className="ng-mensaje">No hay fincas registradas en este expediente.</p>}
           </details>
