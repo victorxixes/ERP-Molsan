@@ -46,7 +46,7 @@ jobs:
         run: python -m compileall -q backend
 
       - name: Install backend dependencies
-        run: pip install -r backend/requirements.txt
+        run: pip install -r backend/requirements.txt pytest
       - name: Import full FastAPI application
         env:
           DATABASE_URL: sqlite:////tmp/molsan-encargagest-ci.db
