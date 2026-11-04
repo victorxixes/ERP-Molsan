@@ -42,7 +42,12 @@ class SupabaseStorageError(RuntimeError):
 def _object_path(value: str) -> str:
     path = str(value or "").strip().strip("/")
     parts = path.split("/")
-    if not path or any(part in {"", ".", ".."} for part in parts):
+    if (
+        not path
+        or "\\" in path
+        or any(part in {"", ".", ".."} for part in parts)
+        or any(ord(char) < 32 for char in path)
+    ):
         raise ValueError("La clave del objeto no es válida.")
     return "/".join(quote(part, safe="-_.~") for part in parts)
 
@@ -74,7 +79,8 @@ class SupabasePrivateStorage:
         headers = self._headers(content_type or "application/octet-stream")
         headers["x-upsert"] = "true" if upsert else "false"
         try:
-            response = self.session.put(
+            # Supabase Storage's standard REST upload endpoint uses POST.
+            response = self.session.post(
                 url, data=content, headers=headers, timeout=self.config.timeout_seconds
             )
             if response.status_code not in (200, 201):
@@ -130,4 +136,5 @@ def parse_object_reference(reference: str) -> tuple[str, str]:
     bucket, separator, key = reference[len("supabase://"):].partition("/")
     if not separator or not bucket or not key:
         raise ValueError("La referencia de almacenamiento no es válida.")
+    _object_path(key)
     return bucket, key
