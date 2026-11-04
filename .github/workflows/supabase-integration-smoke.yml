@@ -2,6 +2,9 @@ name: Supabase integration connectivity and Storage smoke test
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - production/erp-molsan-2026-11-04
 
 permissions:
   contents: read
