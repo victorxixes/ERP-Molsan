@@ -7,7 +7,11 @@ no se abre ninguna conexión y no se leen secretos del entorno del runner.
 from __future__ import annotations
 
 import os
+import sys
 from pathlib import Path
+
+REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPOSITORY_ROOT))
 
 os.environ["DATABASE_URL"] = "postgresql://schema_audit:unused@127.0.0.1/schema_audit"
 os.environ["JWT_SECRET"] = "schema-audit-only-secret-not-used-for-signing-000000000000"
