@@ -5,7 +5,6 @@ from pathlib import Path
 from contextlib import contextmanager
 from functools import wraps
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text, or_
 
 
@@ -120,18 +119,9 @@ app.mount(
 )
 
 
-# ============================================================
-# STATIC — MENSAJES
-# ============================================================
-
-TMP_MENSAJES = "/tmp/mensajes"
-os.makedirs(TMP_MENSAJES, exist_ok=True)
-
-app.mount(
-    "/static/mensajes",
-    StaticFiles(directory=TMP_MENSAJES),
-    name="mensajes",
-)
+# Los adjuntos de mensajería se sirven exclusivamente mediante
+# /api/mensajes/archivo/{nombre}, que comprueba la participación en la conversación.
+# No se monta /static/mensajes: sería una ruta pública sin autorización.
 
 
 # ============================================================
