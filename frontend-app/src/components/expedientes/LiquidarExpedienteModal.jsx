@@ -4,7 +4,6 @@ import axios from "../../api/axios";
 import useAccessibleDialog from "../ui/useAccessibleDialog";
 import { formatEuro as dinero } from "../../utils/formatters";
 import MolsanIcon from "../ui/MolsanIcon";
-import useAccessibleDialog from "../ui/useAccessibleDialog";
 
 const valor = (obj, ...keys) => {
   for (const key of keys) if (obj?.[key] !== undefined && obj?.[key] !== null && String(obj[key]).trim() !== "") return obj[key];
@@ -36,10 +35,6 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
     },
     dialogRef: previewDialogRef,
   });
-  const dialogRef = useRef(null);
-  const previewDialogRef = useRef(null);
-  useAccessibleDialog({ open: true, onClose, dialogRef });
-  useAccessibleDialog({ open: Boolean(vistaPreviaUrl), onClose: () => { setVistaPreviaUrl((actual) => { if (actual) URL.revokeObjectURL(actual); return ""; }); setMetadataVistaPrevia(null); }, dialogRef: previewDialogRef });
 
   useEffect(() => {
     setForm({
