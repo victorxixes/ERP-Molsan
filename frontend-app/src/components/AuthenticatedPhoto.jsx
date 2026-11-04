@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
+import { API_BASE } from "../api/config";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://agenda-intranet-b.onrender.com";
+const API_BASE_URL = API_BASE.replace(/\/api\/?$/, "");
 
 const FALLBACK = "/no-foto.png";
 
