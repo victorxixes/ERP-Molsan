@@ -60,6 +60,7 @@ jobs:
       - name: Apply, rollback and reapply migrations on isolated PostgreSQL
         run: |
           alembic -c alembic.ini upgrade head
+          alembic -c alembic.ini check
           alembic -c alembic.ini downgrade base
           alembic -c alembic.ini upgrade head
       - name: Commit generated revision to integration branch
