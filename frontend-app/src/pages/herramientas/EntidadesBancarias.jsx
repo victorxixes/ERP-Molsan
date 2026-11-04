@@ -58,7 +58,7 @@ import "../../css/CatalogosMaestrosPremium.css";
    BACKEND
 ============================================================ */
 
-const API_BASE = `${API_ROOT}/api/entidades-bancarias`;
+const API_BASE = `${API_ROOT}/entidades-bancarias`;
 
 const API_IMPORTAR_EXCEL =
   `${API_BASE}/importar-excel`;
