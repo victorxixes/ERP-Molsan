@@ -6,16 +6,12 @@ on:
     paths:
       - "frontend-app/**"
       - ".github/workflows/frontend-build.yml"
-  pull_request:
-    paths:
-      - "frontend-app/**"
-      - ".github/workflows/frontend-build.yml"
 
 permissions:
   contents: read
 
 concurrency:
-  group: frontend-build-${{ github.ref }}
+  group: frontend-build-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
