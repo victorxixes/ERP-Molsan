@@ -63,10 +63,13 @@ class SupabasePrivateStorage:
         return f"{self.config.url}/storage/v1/{path}"
 
     def _headers(self, content_type: str | None = None) -> dict[str, str]:
-        headers = {
-            "apikey": self.config.service_role_key,
-            "Authorization": f"Bearer {self.config.service_role_key}",
-        }
+        # Supabase's new sb_secret_* API keys are opaque API keys, not JWTs.
+        # They must be sent only in the apikey header: sending one as a Bearer
+        # token makes Storage reject it with "Invalid Compact JWS".
+        headers = {"apikey": self.config.service_role_key}
+        if not self.config.service_role_key.startswith("sb_secret_"):
+            # Backwards compatibility for the legacy JWT-based service_role key.
+            headers["Authorization"] = f"Bearer {self.config.service_role_key}"
         if content_type:
             headers["Content-Type"] = content_type
         return headers
