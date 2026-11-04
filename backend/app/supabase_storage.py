@@ -151,6 +151,13 @@ class SupabasePrivateStorage:
             raise SupabaseStorageError("No se pudo conectar con Supabase Storage.") from exc
 
 
+def storage_backend_is_supabase() -> bool:
+    """Render must never silently fall back to an ephemeral local filesystem."""
+    if os.getenv("RENDER") or os.getenv("RENDER_SERVICE_ID"):
+        return True
+    return (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase"
+
+
 def is_supabase_object(reference: str | None) -> bool:
     return isinstance(reference, str) and reference.startswith("supabase://")
 
