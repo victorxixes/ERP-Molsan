@@ -108,6 +108,31 @@ class SupabasePrivateStorage:
         except requests.RequestException as exc:
             raise SupabaseStorageError("No se pudo conectar con Supabase Storage.") from exc
 
+    def exists(self, key: str) -> bool:
+        """Check object existence without downloading its body."""
+        path = _object_path(key)
+        url = self._url(f"object/{quote(self.config.bucket, safe='-_.~')}/{path}")
+        response = None
+        try:
+            response = self.session.get(
+                url,
+                headers=self._headers(),
+                timeout=self.config.timeout_seconds,
+                stream=True,
+            )
+            if response.status_code == 404:
+                return False
+            if response.status_code != 200:
+                raise SupabaseStorageError(
+                    f"Supabase Storage rechazó la comprobación (HTTP {response.status_code})."
+                )
+            return True
+        except requests.RequestException as exc:
+            raise SupabaseStorageError("No se pudo conectar con Supabase Storage.") from exc
+        finally:
+            if response is not None:
+                response.close()
+
     def delete(self, key: str) -> None:
         path = _object_path(key)
         url = self._url(f"object/{quote(self.config.bucket, safe='-_.~')}")
