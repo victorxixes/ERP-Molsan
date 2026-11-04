@@ -4,7 +4,6 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 import re
 
-from backend.app.schema_migrations import runtime_schema_migrations_enabled
 
 
 # Validar la configuración aquí, antes de construir el engine. main.py importa
