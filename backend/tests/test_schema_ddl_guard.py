@@ -42,10 +42,10 @@ def test_permite_consultas_normales_sin_modo_migracion(monkeypatch):
     assert _ejecutar_guard("SELECT 1") == ("SELECT 1", None)
 
 
-def test_permite_ddl_en_proceso_de_migracion(monkeypatch):
+def test_engine_web_bloquea_ddl_aunque_este_activo_el_flag_legacy(monkeypatch):
     monkeypatch.setenv("MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS", "true")
-    statement = "CREATE TABLE public.prueba (id INTEGER)"
-    assert _ejecutar_guard(statement) == (statement, None)
+    with pytest.raises(RuntimeError, match="DDL bloqueado"):
+        _ejecutar_guard("CREATE TABLE public.prueba (id INTEGER)")
 
 
 def test_convierte_create_table_existente_en_noop(monkeypatch):
