@@ -4,37 +4,6 @@
   color: var(--molsan-text);
 }
 
-.expedientes-page__header {
-  margin-bottom: 4px;
-  padding: 18px 20px;
-  background: var(--molsan-surface);
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-card);
-  box-shadow: var(--molsan-shadow-card);
-}
-
-.expedientes-page__header-icon {
-  display: grid;
-  width: 44px;
-  height: 44px;
-  flex: 0 0 44px;
-  place-items: center;
-  border-radius: 12px;
-  background: var(--molsan-primary-soft);
-  color: var(--molsan-primary);
-  font-size: 25px;
-  font-weight: 700;
-}
-
-.expedientes-page__eyebrow {
-  margin: 0 0 3px;
-  color: var(--molsan-text-muted);
-  font-size: var(--molsan-font-size-xs);
-  font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
-
 .expedientes-page__header-note {
   display: inline-flex;
   align-items: center;
@@ -84,20 +53,10 @@
 }
 
 @media (max-width: 700px) {
-  .expedientes-page__header {
-    padding: 14px;
-  }
-
-  .expedientes-page__header-note {
-    display: none;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .expedientes-page button {
-    transition: none;
   }
-}
 
 
 /* ============================================================
@@ -110,60 +69,17 @@
   color: var(--molsan-text, #24324a);
 }
 
-.expedientes-page .molsan-page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  background: var(--molsan-surface, #fff);
-}
-
-.expedientes-page .molsan-page-header__identity {
-  min-width: 0;
-}
-
-.expedientes-page .molsan-page-header__title {
-  margin: 0;
-  color: #1e2d46;
-  font-size: clamp(1.25rem, 1.8vw, 1.65rem);
-  font-weight: 780;
-  line-height: 1.2;
-  letter-spacing: -.035em;
-}
-
-.expedientes-page .molsan-page-header__description {
-  margin-top: 5px;
-  color: #65748b;
-  font-size: 13px;
-  line-height: 1.55;
-}
-
-.expedientes-page .molsan-page-header__actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
 .expedientes-page :is(.erp-card, [class~="bg-white"]) {
   min-width: 0;
-}
-
-.expedientes-page .erp-card {
-  border: 1px solid var(--molsan-border, #dbe3ef);
-  border-radius: var(--molsan-radius-card, 14px);
-  box-shadow: 0 4px 14px rgb(23 43 77 / 5%);
 }
 
 .expedientes-page :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea) {
   max-width: 100%;
   min-width: 0;
-  border: 1px solid #d4deeb;
+  border: 1px solid var(--molsan-border-strong, #B8CBD9);
   border-radius: 9px;
   background-color: #fff;
-  color: #24324a;
+  color: var(--molsan-text, #173247);
   font-size: 13px;
   box-shadow: none;
   transition: border-color .16s ease, box-shadow .16s ease;
@@ -179,9 +95,9 @@
 }
 
 .expedientes-page :is(input, select, textarea):focus {
-  border-color: #3156b3;
+  border-color: var(--molsan-primary, #064675);
   outline: none;
-  box-shadow: 0 0 0 3px rgb(49 86 179 / 12%);
+  box-shadow: var(--molsan-shadow-focus, 0 0 0 3px rgba(6, 70, 117, .16));
 }
 
 .expedientes-page :is(button, [role="button"]) {
@@ -191,7 +107,7 @@
 
 .expedientes-page :is(button, [role="button"]):focus-visible,
 .expedientes-page a:focus-visible {
-  outline: 2px solid rgb(49 86 179 / 65%);
+  outline: 2px solid rgba(6, 70, 117, .58);
   outline-offset: 2px;
 }
 
@@ -208,8 +124,8 @@
 }
 
 .expedientes-page table thead th {
-  color: #53627a;
-  background: #f5f7fb;
+  color: var(--molsan-text-secondary, #617789);
+  background: var(--molsan-table-head, #EAF2F8);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: .035em;
@@ -217,7 +133,7 @@
 }
 
 .expedientes-page table :is(th, td) {
-  border-bottom: 1px solid #e6ebf2;
+  border-bottom: 1px solid var(--molsan-border-light, #E8EFF4);
   vertical-align: middle;
 }
 
@@ -226,27 +142,11 @@
 }
 
 .expedientes-page table tbody tr:hover > td {
-  background-color: #f7f9fd;
+  background-color: var(--molsan-surface-soft, #F2F7FB);
 }
 
 .expedientes-page :is(.text-red-600, .text-red-700, .text-rose-600, .text-rose-700) {
   font-weight: 600;
-}
-
-@media (max-width: 700px) {
-  .expedientes-page .molsan-page-header {
-    align-items: flex-start;
-    padding: 14px;
-  }
-
-  .expedientes-page .molsan-page-header__actions {
-    width: 100%;
-    justify-content: flex-start;
-  }
-
-  .expedientes-page .molsan-page-header__actions > * {
-    max-width: 100%;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -273,3 +173,9 @@
   width: max-content;
   min-width: 100%;
 }
+
+
+/* Acciones del listado: azul corporativo Molsan. */
+.expedientes-listado-premium [class~="bg-indigo-600"] { background-color: var(--molsan-primary); }
+.expedientes-listado-premium [class~="hover:bg-indigo-700"]:hover { background-color: var(--molsan-primary-hover); }
+.expedientes-listado-premium [class~="text-indigo-600"] { color: var(--molsan-primary); }
