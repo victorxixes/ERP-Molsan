@@ -29,6 +29,7 @@ def _ejecutar_guard_sqlite(cursor, statement):
         "ALTER TABLE public.expedientes ADD COLUMN prueba TEXT",
         "DROP INDEX IF EXISTS ix_prueba",
         "TRUNCATE TABLE public.prueba",
+        "DO $ BEGIN ALTER TABLE public.prueba ADD CONSTRAINT uq_prueba UNIQUE (id); END $",
     ],
 )
 def test_bloquea_ddl_sin_modo_migracion(monkeypatch, statement):
