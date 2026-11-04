@@ -82,7 +82,7 @@ Los servicios Preview actuales siguen vinculados a ramas antiguas (`molsan-premi
 
 ## Seeds y datos maestros
 
-Las revisiones crean estructura, no datos operativos. Falta identificar los catálogos y datos maestros necesarios para una instalación limpia y preparar seeds idempotentes desde una fuente aprobada. No se copiarán usuarios, permisos, expedientes ni pagos históricos sin validación explícita.
+Las revisiones crean estructura, no datos operativos. Falta identificar los catálogos y datos maestros necesarios para una instalación limpia y preparar seeds idempotentes desde una fuente aprobada. Se ha añadido `backend/scripts/bootstrap_admin.py` para crear de forma explícita la primera cuenta administradora solo cuando `empleados` está vacía; requiere contraseña secreta temporal y no contiene credenciales predeterminadas. No se copiarán usuarios, permisos, expedientes ni pagos históricos sin validación explícita.
 
 ## Importación de 25 expedientes
 
