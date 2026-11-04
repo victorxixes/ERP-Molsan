@@ -17,7 +17,7 @@ import axios from "./axios";
  *
  * La API principal utiliza:
  *
- *   https://agenda-intranet-b.onrender.com/api
+ *   ${VITE_API_URL}
  *
  * Pero las rutas técnicas /debug están publicadas en:
  *
@@ -147,7 +147,7 @@ export const obtenerContenidoTabla = (tabla) => {
  *
  * Axios utiliza:
  *
- *   https://agenda-intranet-b.onrender.com/api
+ *   ${VITE_API_URL}
  *
  * Pero WebSocket está definido en:
  *
@@ -159,7 +159,7 @@ export const obtenerContenidoTabla = (tabla) => {
  *
  * VITE_API_URL:
  *
- *   https://agenda-intranet-b.onrender.com/api
+ *   ${VITE_API_URL}
  *
  * Resultado:
  *
