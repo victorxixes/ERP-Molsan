@@ -4,6 +4,7 @@ from io import BytesIO
 from urllib.parse import quote
 import unicodedata
 import json
+import os
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import StreamingResponse
@@ -26,6 +27,9 @@ MAX_DOCUMENTO_BYTES = 10 * 1024 * 1024
 
 
 def _migrar_tablas():
+    if os.getenv("MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS", "false").strip().lower() not in {"1", "true", "yes"}:
+        print("[FICHAJES] Migraciones automáticas desactivadas; usar migraciones versionadas.", flush=True)
+        return
     try:
         with engine.begin() as conexion:
             from sqlalchemy import text
