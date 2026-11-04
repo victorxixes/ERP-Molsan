@@ -394,6 +394,10 @@ def get_encargagest_actor(request: Request, token=Depends(obtener_token_bearer),
         raise HTTPException(status_code=401, detail="No se pudo validar la sesión EncargaGest.")
 
 
+def _observacion_ctn_visible_encargagest(notaria, usuario):
+    return getattr(notaria, "observacion", None) if _es_externo(usuario) and usuario.get("sesion_soporte") else None
+
+
 def _nombre_usuario(usuario):
     if _es_externo(usuario):
         return usuario.get("nombre") or usuario.get("usuario") or "Notaría externa"
