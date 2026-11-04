@@ -158,7 +158,13 @@ def servir_fotografia_empleado(
 ):
     require_perm_modulo(usuario, "empleados", "ver")
 
-    if Path(ruta).suffix.lower() not in EXTENSIONES_FOTO_PERMITIDAS:
+    # La referencia del empleado es solo el nombre opaco del objeto.
+    # Nunca aceptar subrutas del cliente para evitar traversal o lectura cruzada.
+    nombre_foto = Path(ruta).name
+    if nombre_foto != ruta or nombre_foto in {"", ".", ".."}:
+        raise HTTPException(status_code=404, detail="Fotografía no encontrada")
+
+    if Path(nombre_foto).suffix.lower() not in EXTENSIONES_FOTO_PERMITIDAS:
         raise HTTPException(
             status_code=404,
             detail="Fotografía no encontrada",
@@ -166,7 +172,7 @@ def servir_fotografia_empleado(
 
     if storage_backend_is_supabase():
         try:
-            contenido = SupabasePrivateStorage().download(f"fotos/{ruta}")
+            contenido = SupabasePrivateStorage().download(f"fotos/empleados/{nombre_foto}")
         except FileNotFoundError as exc:
             raise HTTPException(status_code=404, detail="Fotografía no encontrada") from exc
         except (RuntimeError, SupabaseStorageError) as exc:
