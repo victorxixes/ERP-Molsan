@@ -1,4 +1,4 @@
-"""Audita y exporta el esquema ORM PostgreSQL sin conectarse a ninguna base de datos.
+"""Inventaría modelos ORM y DDL fuente sin conectarse a ninguna base de datos.
 
 El import de main registra los modelos usados por todos los routers. Se emplean
 credenciales ficticias solo para satisfacer la validación de configuración:
@@ -6,8 +6,10 @@ no se abre ninguna conexión y no se leen secretos del entorno del runner.
 """
 from __future__ import annotations
 
-# Este inventario alimenta la migración base generada por Supabase CLI en CI.
-# La exportación incluye índices y DDL auxiliar además de Base.metadata.
+# Este script SOLO inventaría modelos y DDL presentes en el código.
+# No consulta la base de datos, no ejecuta Supabase CLI y NO genera migraciones
+# listas para aplicar. Sus artefactos requieren revisión y transformación
+# manual antes de crear migraciones versionadas.
 
 import ast
 import os
