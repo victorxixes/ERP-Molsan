@@ -45,6 +45,40 @@ jobs:
       - name: Verify web startup cannot run legacy migrations or business-data repairs
         run: python -m unittest backend.tests.test_clean_startup -v
 
+      - name: Start the FastAPI app with Preview runtime settings (no business-data writes)
+        env:
+          JWT_SECRET: "ci-preview-startup-test-secret-32-bytes-minimum"
+          CORS_ORIGINS: "https://molsan-premium-2027-preview.onrender.com"
+          MOLSAN_STORAGE_BACKEND: "supabase"
+          RENDER_SERVICE_ID: "srv-dbig454s728c73f5ug2g"
+        run: |
+          python - <<'PY'
+          from fastapi.testclient import TestClient
+          from app.main import app
+          from app.database import engine
+          from app.supabase_storage import SupabaseStorageConfig, storage_backend_is_supabase
+
+          if not storage_backend_is_supabase():
+              raise SystemExit("FAILED: Preview must select private Supabase Storage.")
+          storage_config = SupabaseStorageConfig.from_env()
+          if storage_config.url != "https://powiprqarmluanplxpyb.supabase.co":
+              raise SystemExit("FAILED: API startup is not configured for the approved Preview Supabase project.")
+          if storage_config.bucket != "molsan-private":
+              raise SystemExit("FAILED: unexpected private Storage bucket.")
+
+          # TestClient enters the ASGI lifespan and executes the real FastAPI startup hooks.
+          # Those hooks must skip legacy DDL, seeds, and data repairs in the web process.
+          with TestClient(app) as client:
+              response = client.get("/openapi.json")
+              if response.status_code != 200:
+                  raise SystemExit(f"FAILED: API did not serve OpenAPI after startup (HTTP {response.status_code}).")
+              print("PASS: FastAPI imported and completed its real startup lifecycle.")
+              print("PASS: Preview CORS, Supabase project and private bucket settings loaded.")
+              print("PASS: API startup exposed its schema; no business-data endpoint was invoked.")
+
+          engine.dispose()
+          PY
+
       - name: Test backend database engine against the integration Supabase project (read-only)
         shell: bash
         run: |
