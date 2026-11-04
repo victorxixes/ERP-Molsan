@@ -77,8 +77,11 @@ def scan_raw_ddl(orm_table_names):
     duplicates = []
 
     def register_sql(sql, source):
-        for match in re.finditer(r"\bCREATE\s+TABLE\b.*?;", sql, re.IGNORECASE | re.DOTALL):
-            statement = match.group(0).strip()
+        for match in re.finditer(r"\bCREATE\s+TABLE\b", sql, re.IGNORECASE):
+            end = sql.find(";", match.start())
+            if end < 0:
+                end = len(sql)
+            statement = sql[match.start():end].strip()
             table_match = re.search(
                 r"\bCREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:public\.)?([A-Za-z_][A-Za-z0-9_]*)",
                 statement,
