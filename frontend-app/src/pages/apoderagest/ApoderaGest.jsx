@@ -38,6 +38,27 @@ function texto(valor, alternativa = "—") {
     : String(valor);
 }
 
+function normalizarNombreNotario(valor) {
+  return String(valor || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLocaleLowerCase("es");
+}
+
+function encontrarNotarioCtn(encargo, catalogo) {
+  const nif = normalizarNombreNotario(encargo?.nif);
+  if (nif) {
+    const porNif = catalogo.find((notario) => normalizarNombreNotario(notario.nif) === nif);
+    if (porNif) return porNif;
+  }
+  const nombre = normalizarNombreNotario(encargo?.nombre);
+  return catalogo.find((notario) =>
+    normalizarNombreNotario(notario.nombre_completo || [notario.nombre, notario.apellidos].filter(Boolean).join(" ")) === nombre
+  ) || null;
+}
+
 function normalizarCategoriaDocumento(valor) {
   return String(valor || "")
     .normalize("NFD")
@@ -678,7 +699,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                                 {(() => {
                                   const normalizar = (v) => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es");
                                   const nombreAsignado = normalizar(encargo.nombre_notario || encargo.notario);
-                                  const notarioCtn = catalogoCtn.find((n) => normalizar(n.nombre_completo || [n.nombre, n.apellidos].filter(Boolean).join(" ")) === nombreAsignado);
+                                  const notarioCtn = encontrarNotarioCtn({ nif: encargo.nif_notario || encargo.notario_nif, nombre: encargo.nombre_notario || encargo.notario }, catalogoCtn);
                                   const asociados = (notarioCtn?.notarios_asociados || []).filter((n) => normalizar(n.nombre_completo || [n.nombre, n.apellidos].filter(Boolean).join(" ")) !== nombreAsignado);
                                   return asociados.map((n) => { const nombre = n.nombre_completo || [n.nombre, n.apellidos].filter(Boolean).join(" "); return <option key={n.id} value={nombre}>{nombre}</option>; });
                                 })()}
