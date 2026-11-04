@@ -125,13 +125,25 @@ class SupabasePrivateStorage:
                 headers=headers,
                 timeout=self.config.timeout_seconds,
             )
+            if response.status_code == 200:
+                return True
             if response.status_code == 404:
                 return False
-            if response.status_code != 200:
-                raise SupabaseStorageError(
-                    f"Supabase Storage rechazó la comprobación (HTTP {response.status_code})."
-                )
-            return True
+            if response.status_code == 400:
+                # Supabase Storage's info endpoint encodes a missing object as
+                # HTTP 400 with the structured NoSuchKey/not_found payload.
+                try:
+                    error = response.json()
+                except (ValueError, requests.RequestException):
+                    error = {}
+                if (
+                    error.get("code") == "NoSuchKey"
+                    or error.get("error") == "not_found"
+                ):
+                    return False
+            raise SupabaseStorageError(
+                f"Supabase Storage rechazó la comprobación (HTTP {response.status_code})."
+            )
         except requests.RequestException as exc:
             raise SupabaseStorageError("No se pudo conectar con Supabase Storage.") from exc
         finally:
