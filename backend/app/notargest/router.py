@@ -28,6 +28,8 @@ from backend.app.empleados.models import Empleado
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.storage import CARPETA_DIGITAL_DIR
 
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
+
 router = APIRouter(prefix="/notargest", tags=["NotarGest"])
 ROOT = CARPETA_DIGITAL_DIR.resolve()
 MAX_WORKFLOW_UPLOAD_BYTES = 25 * 1024 * 1024
@@ -68,6 +70,9 @@ ROOT.mkdir(parents=True, exist_ok=True)
 
 @router.on_event("startup")
 def crear_tabla_avisos_leidos_notargest():
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: crear_tabla_avisos_leidos_notargest; ejecutar migración versionada.", flush=True)
+        return
     """Guarda las notificaciones leídas por notario, sin alterar las observaciones originales."""
     with engine.begin() as conn:
         conn.execute(text("""
@@ -83,6 +88,9 @@ def crear_tabla_avisos_leidos_notargest():
 
 @router.on_event("startup")
 def crear_tabla_historial_actividad_notargest():
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: crear_tabla_historial_actividad_notargest; ejecutar migración versionada.", flush=True)
+        return
     with engine.begin() as conn:
         conn.execute(text("""
             CREATE TABLE IF NOT EXISTS notargest_historial_actividad (
@@ -138,6 +146,9 @@ def verificar_password(password, stored):
 
 @router.on_event("startup")
 def migrar_notargest():
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: migrar_notargest; ejecutar migración versionada.", flush=True)
+        return
     """Comprueba primero el esquema y evita ALTER TABLE si las columnas ya existen.
 
     PostgreSQL puede necesitar un bloqueo exclusivo para ALTER TABLE incluso con
