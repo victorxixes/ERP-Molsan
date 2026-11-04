@@ -1,7 +1,10 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import sessionmaker, declarative_base
 import os
+import re
+
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
 
 
 # Validar la configuración aquí, antes de construir el engine. main.py importa
@@ -47,6 +50,30 @@ else:
         pool_timeout=int(os.getenv("DB_POOL_TIMEOUT", "15")),
         pool_recycle=int(os.getenv("DB_POOL_RECYCLE", "1800")),
     )
+
+
+# Defensa central: el backend web no puede modificar el esquema por accidente.
+# Las migraciones se ejecutarán desde un proceso controlado con la variable
+# MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS=true, nunca desde el servicio web.
+_SCHEMA_DDL = re.compile(
+    r"^\\s*(?:CREATE|ALTER|DROP|TRUNCATE)\\s+"
+    r"(?:TEMPORARY?\\s+)?"
+    r"(?:TABLE|INDEX|SEQUENCE|TYPE|SCHEMA|VIEW|MATERIALIZED\\s+VIEW|"
+    r"FUNCTION|TRIGGER|EXTENSION|DOMAIN)\\b",
+    re.IGNORECASE,
+)
+
+
+@event.listens_for(engine, "before_cursor_execute")
+def _bloquear_ddl_fuera_de_migraciones(
+    conexion, cursor, statement, parametros, contexto, executemany
+):
+    if _SCHEMA_DDL.match(statement) and not runtime_schema_migrations_enabled():
+        raise RuntimeError(
+            "DDL bloqueado: el esquema solo puede modificarse mediante "
+            "migraciones versionadas y controladas."
+        )
+
 
 SessionLocal = sessionmaker(
     autocommit=False,
