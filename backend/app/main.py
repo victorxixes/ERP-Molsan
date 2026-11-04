@@ -28,12 +28,29 @@ app = FastAPI(title="Agenda Intranet Backend")
 # CORS — CONFIGURACIÓN PARA RENDER
 # ============================================================
 
+# En Render, la lista de orígenes debe configurarse explícitamente.
+# No se admiten comodines: las credenciales JWT solo se aceptan desde orígenes
+# concretos autorizados para cada entorno.
+CORS_ORIGINS_CONFIG = os.getenv("CORS_ORIGINS", "").strip()
+IS_RENDER = bool(os.getenv("RENDER_SERVICE_ID") or os.getenv("RENDER"))
+
+if not CORS_ORIGINS_CONFIG and IS_RENDER:
+    raise RuntimeError(
+        "CORS_ORIGINS no está definida. Configura los orígenes web autorizados "
+        "para este entorno antes de iniciar el backend."
+    )
+
 origins = [
-    "https://agenda-intranet-f.onrender.com",
-    "https://agenda-intranet-b.onrender.com",
-    "http://localhost:5173",
-    "http://localhost:3000",
+    origin.strip().rstrip("/")
+    for origin in CORS_ORIGINS_CONFIG.split(",")
+    if origin.strip()
 ]
+
+if not origins:
+    origins = ["http://localhost:5173", "http://localhost:3000"]
+
+if any(origin == "*" or not origin.startswith(("https://", "http://")) for origin in origins):
+    raise RuntimeError("CORS_ORIGINS solo admite orígenes HTTP/HTTPS explícitos; no se permiten comodines.")
 
 app.add_middleware(
     CORSMiddleware,
