@@ -87,7 +87,7 @@ def descargar(documento_id: int, db: Session = Depends(get_db), usuario=Depends(
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="El archivo del documento no está disponible")
     contenido = leer_fichero_documento(doc.fichero)
-    extension = Path(doc.fichero).suffix.lower() if not doc.fichero.startswith("supabase://") else Path(doc.titulo or "").suffix.lower()
+    extension = Path(doc.fichero).suffix.lower()
     respuesta = StreamingResponse(iter([contenido]), media_type="application/octet-stream")
     respuesta.headers["Content-Disposition"] = f'attachment; filename="documento-{doc.id}{extension}"'
     respuesta.headers["X-Content-Type-Options"] = "nosniff"
