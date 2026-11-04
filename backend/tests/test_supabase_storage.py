@@ -1,11 +1,13 @@
+import os
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from backend.app.supabase_storage import (
     SupabasePrivateStorage,
     SupabaseStorageConfig,
     is_supabase_object,
     parse_object_reference,
+    storage_backend_is_supabase,
 )
 
 
@@ -65,6 +67,18 @@ class SupabasePrivateStorageTests(unittest.TestCase):
     def test_exists_returns_false_for_missing_object(self):
         self.session.get.return_value = Mock(status_code=404, close=Mock())
         self.assertFalse(self.storage.exists("mensajes/missing.pdf"))
+
+    def test_render_forces_private_storage_even_if_local_is_requested(self):
+        with patch.dict(os.environ, {"RENDER_SERVICE_ID": "srv-preview", "MOLSAN_STORAGE_BACKEND": "local"}, clear=True):
+            self.assertTrue(storage_backend_is_supabase())
+
+    def test_local_development_defaults_to_local_storage(self):
+        with patch.dict(os.environ, {}, clear=True):
+            self.assertFalse(storage_backend_is_supabase())
+
+    def test_explicit_supabase_backend_is_respected_outside_render(self):
+        with patch.dict(os.environ, {"MOLSAN_STORAGE_BACKEND": "supabase"}, clear=True):
+            self.assertTrue(storage_backend_is_supabase())
 
     def test_object_reference_round_trip(self):
         ref = "supabase://molsan-private/carpeta/123/a.pdf"
