@@ -11,7 +11,7 @@ Los expedientes y pagos históricos de los entornos anteriores son datos de prue
 - 67 tablas SQLAlchemy registradas al importar la aplicación.
 - 33 tablas auxiliares declaradas mediante SQL estático.
 - 7 índices auxiliares estáticos.
-- 82 operaciones ALTER/DDL estáticas: 66 añaden columnas ya presentes en los modelos ORM, 11 completan tablas auxiliares y 5 son cambios de restricciones/nulabilidad que deben consolidarse en el esquema inicial.
+- 82 operaciones ALTER/DDL estáticas reconciliadas: 66 añaden columnas ya presentes en ORM; 11 se corresponden con columnas ya incluidas en las definiciones auxiliares canónicas; 5 se consolidan en las definiciones finales de claves y nulabilidad.
 - 9 operaciones DDL dinámicas que deben convertirse a operaciones explícitas.
 - 0 columnas añadidas por ALTER que falten en los modelos ORM (la auditoría de columnas ha localizado 66 ya representadas).
 - 16 definiciones duplicadas o coincidentes con ORM.
@@ -91,7 +91,9 @@ El inventario detecta definiciones duplicadas o ya presentes en ORM para:
 
 Algunas entradas aparecen en varios archivos. La revisión debe elegir una única definición canónica. Para expediente_gestor_historial, la definición canónica debe mantener gestor_id y gestor_anterior_id con sus referencias a empleados, actividad VARCHAR(120) NOT NULL y motivo VARCHAR(80).
 
-La tabla auxiliar `expediente_visibilidad_config` debe crearse directamente con su clave primaria compuesta `(empleado_id, actividad_key, ambito)`; no se debe crear primero una PK antigua para después alterarla. La columna `entidades_bancarias.codigo_europeo` ya es nullable en el modelo ORM, por lo que su ALTER heredado debe ser un no-op después de la migración.
+Las 11 columnas auxiliares detectadas están incluidas en las definiciones finales: expediente_gasto_pagos (anulación), expediente_documentacion_previa_absis (avance y registro local), expediente_visibilidad_config (empleado_id/ambito) y mensajeria_solicitudes (teléfono de recogida/entrega). Se han añadido estos dos últimos campos a la definición canónica de mensajería.
+
+La tabla auxiliar `expediente_visibilidad_config` se crea directamente con su clave primaria compuesta `(empleado_id, actividad_key, ambito)`; no se debe crear primero una PK antigua para después alterarla. La columna `entidades_bancarias.codigo_europeo` ya es nullable en el modelo ORM. La FK de subtipo de defecto se ha definido en ORM con nombre estable y `ON DELETE SET NULL`, para reconciliarla en la siguiente revisión Alembic.
 
 ## Política de DDL en ejecución
 
