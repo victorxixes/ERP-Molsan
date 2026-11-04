@@ -6,6 +6,7 @@ import PortalLogin from "../../components/PortalLogin";
 import Sidebar from "../../components/Sidebar";
 import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import "../../css/NotarGest.css";
 import { formatEuro as euros } from "../../utils/formatters";
 
@@ -84,6 +85,20 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
   const [avisosLeidos, setAvisosLeidos] = useState([]);
   const [modalExpedientesResumen, setModalExpedientesResumen] = useState(null);
   const [cargandoResumenExpedientes, setCargandoResumenExpedientes] = useState(false);
+  const avisosDialogRef = useRef(null);
+  const pagosDialogRef = useRef(null);
+  const perfilDialogRef = useRef(null);
+  const resumenDialogRef = useRef(null);
+
+  const cerrarPerfilNotario = () => {
+    if (guardandoPasswordPerfil || notario?.requiere_cambio_password) return;
+    setPerfilNotarioAbierto(false);
+  };
+
+  useAccessibleDialog({ open: notificacionesAbiertas, onClose: () => setNotificacionesAbiertas(false), dialogRef: avisosDialogRef });
+  useAccessibleDialog({ open: pagosAbiertos, onClose: () => setPagosAbiertos(false), dialogRef: pagosDialogRef });
+  useAccessibleDialog({ open: perfilNotarioAbierto, onClose: cerrarPerfilNotario, dialogRef: perfilDialogRef });
+  useAccessibleDialog({ open: Boolean(modalExpedientesResumen), onClose: () => setModalExpedientesResumen(null), dialogRef: resumenDialogRef });
 
   const peticion = useCallback(async (path, options = {}) => {
     const headers = { ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(options.headers || {}) };
@@ -621,9 +636,9 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
           </>
         }
       />
-      {notificacionesAbiertas && <div className="ng-modal-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setNotificacionesAbiertas(false); }}><section className="ng-modal ng-modal-avisos" role="dialog" aria-modal="true" aria-labelledby="ng-avisos-titulo"><header><div><span className="ng-kicker">NOTARGEST · AVISOS</span><h2 id="ng-avisos-titulo">Notificaciones pendientes</h2><p>Documentos nuevos y observaciones del gestor vinculados a tus expedientes.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setNotificacionesAbiertas(false)}><MolsanIcon name="x" size={20} tone="ocean" /> Cerrar</button></header><div className="ng-modal-lista">{totalAvisosPendientes === 0 ? <div className="ng-modal-vacio"><strong>Todo al día</strong><p>No tienes notificaciones pendientes de leer.</p></div> : <>{avisosPendientes.documentos.map(item => <article className="ng-aviso-item" key={`documento:${item.id}`}><span className="ng-aviso-icono">PDF</span><div className="ng-aviso-contenido"><strong>Nuevo documento en expediente {item.id_expediente}</strong><p>{texto(item.nombre)} · {texto(item.categoria)}</p><small>{texto(item.oficina)} · {texto(item.fecha_subida)}</small><div className="ng-aviso-acciones"><button type="button" className="ng-login-submit" onClick={() => abrirAvisoExpediente(item)}>Ver expediente</button><button type="button" className="ng-boton-secundario" onClick={() => marcarAvisoLeido("documento", item.id)}>Marcar como leída</button></div></div></article>)}{avisosPendientes.comentarios.map(item => <article className="ng-aviso-item" key={`comentario:${item.id}`}><span className="ng-aviso-icono ng-aviso-icono-observacion">!</span><div className="ng-aviso-contenido"><strong>Nueva observación · expediente {item.id_expediente}</strong><p>{texto(item.comentario)}</p><small>{texto(item.oficina)} · {texto(item.fecha)}</small><div className="ng-aviso-acciones"><button type="button" className="ng-login-submit" onClick={() => abrirAvisoExpediente(item)}>Ver expediente</button><button type="button" className="ng-boton-secundario" onClick={() => marcarAvisoLeido("comentario", item.id)}>Marcar como leída</button></div></div></article>)}</>}</div></section></div>}
+      {notificacionesAbiertas && <div className="ng-modal-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setNotificacionesAbiertas(false); }}><section ref={avisosDialogRef} tabIndex={-1} className="ng-modal ng-modal-avisos" role="dialog" aria-modal="true" aria-labelledby="ng-avisos-titulo"><header><div><span className="ng-kicker">NOTARGEST · AVISOS</span><h2 id="ng-avisos-titulo">Notificaciones pendientes</h2><p>Documentos nuevos y observaciones del gestor vinculados a tus expedientes.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setNotificacionesAbiertas(false)}><MolsanIcon name="x" size={20} tone="ocean" /> Cerrar</button></header><div className="ng-modal-lista">{totalAvisosPendientes === 0 ? <div className="ng-modal-vacio"><strong>Todo al día</strong><p>No tienes notificaciones pendientes de leer.</p></div> : <>{avisosPendientes.documentos.map(item => <article className="ng-aviso-item" key={`documento:${item.id}`}><span className="ng-aviso-icono">PDF</span><div className="ng-aviso-contenido"><strong>Nuevo documento en expediente {item.id_expediente}</strong><p>{texto(item.nombre)} · {texto(item.categoria)}</p><small>{texto(item.oficina)} · {texto(item.fecha_subida)}</small><div className="ng-aviso-acciones"><button type="button" className="ng-login-submit" onClick={() => abrirAvisoExpediente(item)}>Ver expediente</button><button type="button" className="ng-boton-secundario" onClick={() => marcarAvisoLeido("documento", item.id)}>Marcar como leída</button></div></div></article>)}{avisosPendientes.comentarios.map(item => <article className="ng-aviso-item" key={`comentario:${item.id}`}><span className="ng-aviso-icono ng-aviso-icono-observacion">!</span><div className="ng-aviso-contenido"><strong>Nueva observación · expediente {item.id_expediente}</strong><p>{texto(item.comentario)}</p><small>{texto(item.oficina)} · {texto(item.fecha)}</small><div className="ng-aviso-acciones"><button type="button" className="ng-login-submit" onClick={() => abrirAvisoExpediente(item)}>Ver expediente</button><button type="button" className="ng-boton-secundario" onClick={() => marcarAvisoLeido("comentario", item.id)}>Marcar como leída</button></div></div></article>)}</>}</div></section></div>}
       {pagosAbiertos && <div className="ng-modal-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setPagosAbiertos(false); }}>
-        <section className="ng-modal ng-modal-pagos ng-modal-pagos-amplio" role="dialog" aria-modal="true" aria-labelledby="ng-pagos-titulo">
+        <section ref={pagosDialogRef} tabIndex={-1} className="ng-modal ng-modal-pagos ng-modal-pagos-amplio" role="dialog" aria-modal="true" aria-labelledby="ng-pagos-titulo">
           <header><div><span className="ng-kicker">NOTARGEST · GESTIÓN ECONÓMICA</span><h2 id="ng-pagos-titulo">Solicitudes de Pago efectuadas por Molsan</h2><p>Pagos registrados desde la Ficha de expediente y vinculados a la notaría.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setPagosAbiertos(false)}>Cerrar</button></header>
           <div className="ng-pagos-tabla-wrap">
             <MolsanDataTable
@@ -651,7 +666,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
           </div>
         </section>
       </div>}
-      {perfilNotarioAbierto && <div className="ng-modal-overlay ng-modal-overlay-scroll" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget && !notario?.requiere_cambio_password) setPerfilNotarioAbierto(false); }}><section className="ng-modal ng-modal-perfil ng-modal-perfil-scroll" role="dialog" aria-modal="true" aria-labelledby="ng-perfil-titulo"><header><div><span className="ng-kicker">FICHA CTN</span><h2 id="ng-perfil-titulo">Ficha del notario</h2><p>Datos de la notaría registrados en el catálogo CTN.</p></div><button type="button" className="ng-boton-secundario" disabled={Boolean(notario?.requiere_cambio_password)} onClick={() => setPerfilNotarioAbierto(false)}>Cerrar <MolsanIcon name="x" size={18} tone="ocean" /></button></header><div className="grid grid-cols-1 gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)]">
+      {perfilNotarioAbierto && <div className="ng-modal-overlay ng-modal-overlay-scroll" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget && !notario?.requiere_cambio_password) setPerfilNotarioAbierto(false); }}><section ref={perfilDialogRef} tabIndex={-1} className="ng-modal ng-modal-perfil ng-modal-perfil-scroll" role="dialog" aria-modal="true" aria-labelledby="ng-perfil-titulo"><header><div><span className="ng-kicker">FICHA CTN</span><h2 id="ng-perfil-titulo">Ficha del notario</h2><p>Datos de la notaría registrados en el catálogo CTN.</p></div><button type="button" className="ng-boton-secundario" disabled={Boolean(notario?.requiere_cambio_password)} onClick={() => setPerfilNotarioAbierto(false)}>Cerrar <MolsanIcon name="x" size={18} tone="ocean" /></button></header><div className="grid grid-cols-1 gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)]">
           <div className="min-w-0">
             <div className="ng-perfil-identidad"><div className="ng-perfil-avatar"><MolsanIcon name="courthouse" size={36} tone="ocean" /></div><div><strong>{texto(notario?.nombre)}</strong><span>{texto(notario?.nif)}</span></div></div>
             <div className="ng-perfil-datos">{[["Nombre",notario?.nombre],["NIF",notario?.nif],["Usuario",notario?.nif],["Teléfono",notario?.telefono],["Dirección",notario?.direccion],["Código postal",notario?.cp],["Municipio",notario?.municipio],["Provincia",notario?.provincia],["Código CTN",notario?.codigo],["Videoconferencia",notario?.vc],["Apoderado asociado",notario?.apoderado],["Departamento cancelaciones",notario?.departamento_cancelaciones],["Departamento copias",notario?.departamento_copias],["Otros departamentos",notario?.otros_departamentos]].map(([label,value]) => <div className="ng-dato" key={label}><small>{label}</small><strong>{texto(value)}</strong></div>)}</div>
@@ -672,7 +687,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
 
       {modalExpedientesResumen && (
         <div className="ng-modal-overlay ng-resumen-expedientes-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setModalExpedientesResumen(null); }}>
-          <section className="ng-modal ng-resumen-expedientes-modal" role="dialog" aria-modal="true" aria-labelledby="ng-resumen-expedientes-titulo">
+          <section ref={resumenDialogRef} tabIndex={-1} className="ng-modal ng-resumen-expedientes-modal" role="dialog" aria-modal="true" aria-labelledby="ng-resumen-expedientes-titulo">
             <header>
               <div><span className="ng-kicker">NOTARGEST · VISIÓN MOLSAN</span><h2 id="ng-resumen-expedientes-titulo">{modalExpedientesResumen.titulo}</h2><p>{modalExpedientesResumen.items.length} expediente(s) coinciden con este bloque.</p></div>
               <button type="button" className="ng-boton-secundario" onClick={() => setModalExpedientesResumen(null)}>Cerrar</button>
