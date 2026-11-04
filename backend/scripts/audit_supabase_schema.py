@@ -7,6 +7,7 @@ no se abre ninguna conexión y no se leen secretos del entorno del runner.
 from __future__ import annotations
 
 # Este inventario alimenta la migración base generada por Supabase CLI en CI.
+# La exportación incluye índices y DDL auxiliar además de Base.metadata.
 
 import ast
 import os
