@@ -174,6 +174,11 @@ def main() -> None:
         )
         if add_constraint:
             table, constraint_name = add_constraint.group(1).lower(), add_constraint.group(2)
+            if table == "expediente_visibilidad_config":
+                canonical = re.sub(r"\\s+", " ", table_sql.get(table, "")).lower()
+                if "primary key (empleado_id, actividad_key, ambito)" in canonical:
+                    resolved_alters += 1
+                    continue
             if table == "expediente_defectos":
                 metadata_table = tables.get(table)
                 matching = [
