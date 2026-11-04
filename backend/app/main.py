@@ -2959,3 +2959,57 @@ def verificar_base_datos_preview_inicio():
 app.router.on_startup.insert(0, verificar_base_datos_preview_inicio)
 
 instrumentar_inicio_aplicacion()
+
+def proteger_esquema_publico_supabase_preview():
+    """Cierra el acceso directo de anon/authenticated a las tablas del ERP.
+
+    El backend sigue usando su autenticación JWT propia y conecta como rol
+    PostgreSQL de servidor. Ninguna tabla ERP se expone directamente al cliente
+    mediante la Data API de Supabase.
+    """
+    if not _es_url_supabase_preview():
+        return
+
+    with engine.begin() as conexion:
+        conexion.execute(text("""
+            DO $$
+            DECLARE tabla RECORD;
+            BEGIN
+                FOR tabla IN
+                    SELECT tablename
+                    FROM pg_tables
+                    WHERE schemaname = 'public'
+                LOOP
+                    EXECUTE format(
+                        'ALTER TABLE %I.%I ENABLE ROW LEVEL SECURITY',
+                        'public',
+                        tabla.tablename
+                    );
+                END LOOP;
+            END
+            $$;
+        """))
+        conexion.execute(text(
+            "REVOKE ALL ON ALL TABLES IN SCHEMA public FROM anon, authenticated"
+        ))
+        conexion.execute(text(
+            "REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM anon, authenticated"
+        ))
+        conexion.execute(text(
+            "ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public "
+            "REVOKE ALL ON TABLES FROM anon, authenticated"
+        ))
+        conexion.execute(text(
+            "ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public "
+            "REVOKE ALL ON SEQUENCES FROM anon, authenticated"
+        ))
+
+    print(
+        "[SUPABASE SECURITY] RLS activado en tablas públicas y privilegios "
+        "de anon/authenticated revocados; acceso ERP solo por backend.",
+        flush=True,
+    )
+
+
+# Debe ejecutarse después de las migraciones y los inicializadores de routers.
+app.router.on_startup.append(proteger_esquema_publico_supabase_preview)
