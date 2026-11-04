@@ -74,6 +74,9 @@ jobs:
           print(f"Connection target identity check: matched project {expected_project}.")
           print(f"Database endpoint: {url.host}:{url.port or 5432} (credentials hidden).")
 
+          # SQLAlchemy 2.1 defaults postgresql:// to psycopg 3; this workflow installs psycopg2-binary.
+          # Select psycopg2 explicitly so the installed DBAPI matches the dialect.
+          url = url.set(drivername="postgresql+psycopg2")
           engine = create_engine(url, pool_pre_ping=True, connect_args={"connect_timeout": 10})
           try:
               with engine.connect() as connection:
