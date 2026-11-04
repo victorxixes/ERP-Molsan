@@ -75,53 +75,8 @@ def _migrar_tablas_encargagest_en_hilo():
     except Exception as exc:
         print(f"[ENCARGAGEST MIGRACION] AVISO: tablas del módulo pendientes; se reintentará. Error: {exc!r}", flush=True)
 
-    migraciones = {
-        "empleados": {
-            "notarias_encargagest_ids": "JSONB NOT NULL DEFAULT '[]'::jsonb",
-        },
-        "encargagest_usuarios": {
-            "password_enc": "TEXT",
-            "password_provisional": "BOOLEAN NOT NULL DEFAULT TRUE",
-        },
-        "encargagest_encargos": {
-            "capital_inscrito": "NUMERIC(14, 2)",
-            "fecha_constitucion": "DATE",
-            "numero_finca": "VARCHAR(150)",
-            "municipio_registro": "VARCHAR(200)",
-            "registro_propiedad": "VARCHAR(200)",
-            "contratos_json": "JSONB",
-        },
-        "encargagest_documentos": {
-            "categoria": "VARCHAR(120) NOT NULL DEFAULT 'Otros'",
-            "contrato_index": "INTEGER NOT NULL DEFAULT 0",
-        },
-    }
-    try:
-        inspector = sa_inspect(engine)
-        tablas = set(inspector.get_table_names())
-    except Exception as exc:
-        print(f"[ENCARGAGEST MIGRACION] AVISO: no se pudo inspeccionar el esquema; se reintentará. Error: {exc!r}", flush=True)
-        tablas = set()
-
-    for tabla, columnas in migraciones.items():
-        if tabla not in tablas:
-            continue
-        try:
-            existentes = {columna["name"] for columna in sa_inspect(engine).get_columns(tabla)}
-        except Exception as exc:
-            print(f"[ENCARGAGEST MIGRACION] AVISO: no se pudieron consultar columnas de {tabla}: {exc!r}", flush=True)
-            continue
-        for nombre, tipo in columnas.items():
-            if nombre in existentes:
-                continue
-            try:
-                with engine.begin() as conexion:
-                    conexion.execute(text("SET LOCAL lock_timeout = '2s'"))
-                    conexion.execute(text("SET LOCAL statement_timeout = '8s'"))
-                    conexion.execute(text(f'ALTER TABLE "{tabla}" ADD COLUMN "{nombre}" {tipo}'))
-                print(f"[ENCARGAGEST MIGRACION] {tabla}.{nombre}: OK.", flush=True)
-            except Exception as exc:
-                print(f"[ENCARGAGEST MIGRACION] AVISO: no se pudo añadir {tabla}.{nombre}; se reintentará. Error: {exc!r}", flush=True)
+    # Las columnas de estas tablas forman parte de los modelos ORM y se crean
+    # mediante Alembic. No se alteran tablas desde el proceso web.
 
     # Tablas/columnas de reparto: ejecutar cada operación por separado para que
     # una tabla bloqueada no haga rollback del resto ni bloquee el arranque.
