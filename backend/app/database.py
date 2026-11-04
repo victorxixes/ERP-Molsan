@@ -56,14 +56,14 @@ else:
 # Si una sentencia idempotente ya quedó aplicada por Alembic, se convierte en
 # SELECT 1. Si falta el objeto, la petición falla y exige una migración versionada.
 _SCHEMA_DDL = re.compile(
-    r"^\\s*(?:CREATE|ALTER|DROP|TRUNCATE|DO)\\s+"
-    r"(?:TEMP(?:ORARY)?\\s+)?"
-    r"(?:TABLE|INDEX|SEQUENCE|TYPE|SCHEMA|VIEW|MATERIALIZED\\s+VIEW|"
-    r"FUNCTION|TRIGGER|EXTENSION|DOMAIN|\\$\\$)\\b",
+    r"^\s*(?:CREATE|ALTER|DROP|TRUNCATE|DO)\s+"
+    r"(?:TEMP(?:ORARY)?\s+)?"
+    r"(?:TABLE|INDEX|SEQUENCE|TYPE|SCHEMA|VIEW|MATERIALIZED\s+VIEW|"
+    r"FUNCTION|TRIGGER|EXTENSION|DOMAIN|\$\$)\b",
     re.IGNORECASE,
 )
 _IDENTIFIER = r'(?:[A-Za-z_][A-Za-z0-9_$]*|"[^"]+")'
-_QUALIFIED_IDENTIFIER = rf'(?:{_IDENTIFIER}\\s*\\.\\s*)?{_IDENTIFIER}'
+_QUALIFIED_IDENTIFIER = rf'(?:{_IDENTIFIER}\s*\.\s*)?{_IDENTIFIER}'
 
 
 def _split_schema_name(value):
@@ -128,7 +128,7 @@ def _constraint_exists(cursor, dialect, schema, table, constraint):
 def _ddl_is_already_applied(connection, cursor, statement):
     dialect = connection.dialect.name
     table_create = re.match(
-        rf"^\\s*CREATE\\s+(?:TEMP(?:ORARY)?\\s+)?TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?({_QUALIFIED_IDENTIFIER})",
+        rf"^\s*CREATE\s+(?:TEMP(?:ORARY)?\s+)?TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?({_QUALIFIED_IDENTIFIER})",
         statement,
         re.IGNORECASE,
     )
@@ -137,7 +137,7 @@ def _ddl_is_already_applied(connection, cursor, statement):
         return _table_exists(cursor, dialect, schema, table)
 
     index_create = re.match(
-        rf"^\\s*CREATE\\s+(?:UNIQUE\\s+)?INDEX\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?({_IDENTIFIER})\\s+ON\\s+({_QUALIFIED_IDENTIFIER})",
+        rf"^\s*CREATE\s+(?:UNIQUE\s+)?INDEX\s+(?:IF\s+NOT\s+EXISTS\s+)?({_IDENTIFIER})\s+ON\s+({_QUALIFIED_IDENTIFIER})",
         statement,
         re.IGNORECASE,
     )
@@ -146,7 +146,7 @@ def _ddl_is_already_applied(connection, cursor, statement):
         return _index_exists(cursor, dialect, schema, index_create.group(1).strip('"'))
 
     alter_add_column = re.match(
-        rf"^\\s*ALTER\\s+TABLE\\s+(?:IF\\s+EXISTS\\s+)?({_QUALIFIED_IDENTIFIER})\\s+ADD\\s+(?:COLUMN\\s+)?(?:IF\\s+NOT\\s+EXISTS\\s+)?({_IDENTIFIER})",
+        rf"^\s*ALTER\s+TABLE\s+(?:IF\s+EXISTS\s+)?({_QUALIFIED_IDENTIFIER})\s+ADD\s+(?:COLUMN\s+)?(?:IF\s+NOT\s+EXISTS\s+)?({_IDENTIFIER})",
         statement,
         re.IGNORECASE,
     )
@@ -156,7 +156,7 @@ def _ddl_is_already_applied(connection, cursor, statement):
         return _column_exists(cursor, dialect, schema, table, column)
 
     constraint_add = re.search(
-        rf"ALTER\\s+TABLE\\s+(?:IF\\s+EXISTS\\s+)?({_QUALIFIED_IDENTIFIER})\\s+ADD\\s+CONSTRAINT\\s+({_IDENTIFIER})",
+        rf"ALTER\s+TABLE\s+(?:IF\s+EXISTS\s+)?({_QUALIFIED_IDENTIFIER})\s+ADD\s+CONSTRAINT\s+({_IDENTIFIER})",
         statement,
         re.IGNORECASE,
     )
@@ -167,7 +167,7 @@ def _ddl_is_already_applied(connection, cursor, statement):
 
     # DO $$ ... ALTER TABLE ... ADD CONSTRAINT ... $$ solo se considera no-op
     # cuando la restricción ya existe; nunca se permite crearla desde una petición.
-    if re.match(r"^\\s*DO\\b", statement, re.IGNORECASE):
+    if re.match(r"^\s*DO\b", statement, re.IGNORECASE):
         return bool(constraint_add)
 
     return False
