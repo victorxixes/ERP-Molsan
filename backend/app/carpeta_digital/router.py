@@ -155,7 +155,7 @@ def _cliente_storage() -> SupabasePrivateStorage:
 def _guardar_contenido(nombre_guardado: str, contenido: bytes, tipo_mime: str, expediente_id: str) -> str:
     if _usa_supabase_storage():
         storage = _cliente_storage()
-        key = f"carpeta-digital/{expediente_id}/{nombre_guardado}"
+        key = f"cd/{uuid.uuid4().hex}{Path(nombre_guardado).suffix.lower()}"
         try:
             return storage.upload(key, contenido, tipo_mime)
         except SupabaseStorageError as exc:
