@@ -2,7 +2,7 @@ name: Backend audit
 
 on:
   push:
-    branches: [main]
+    branches: [main, release/molsan-premium-2027-candidate]
     paths:
       - "backend/**"
       - ".github/workflows/backend-audit.yml"
@@ -50,3 +50,74 @@ jobs:
           DATABASE_URL: sqlite:///./backend-audit-test.db
           JWT_SECRET: test-only-secret-for-ci-never-use-in-production-32chars
         run: python -m pytest -q backend/tests
+
+      - name: Export ORM and auxiliary SQL schema for Supabase
+        env:
+          MOLSAN_SCHEMA_AUDIT_OUTPUT: schema-audit
+          PYTHONPATH: ${{ github.workspace }}
+        run: python backend/scripts/audit_supabase_schema.py
+
+      - name: Set up Node for Supabase CLI
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Discover Supabase CLI commands
+        run: |
+          npx --yes supabase@latest --version
+          npx --yes supabase@latest init --help
+          npx --yes supabase@latest migration --help
+          npx --yes supabase@latest migration new --help
+
+      - name: Create versioned Supabase baseline migration
+        run: |
+          npx --yes supabase@latest init
+          npx --yes supabase@latest migration new erp_molsan_initial_schema
+          MIGRATION_FILE="$(find supabase/migrations -maxdepth 1 -type f -name '*.sql' | sort | tail -n 1)"
+          test -n "$MIGRATION_FILE"
+          {
+            echo "-- ERP_Molsan Preview baseline. Target project ref: powiprqarmluanplxpyb."
+            echo "-- Generated from SQLAlchemy metadata and reviewed auxiliary DDL."
+            cat schema-audit/orm-schema.sql
+            cat schema-audit/raw-ddl.sql
+            cat <<'SQL'
+
+-- Security baseline: ERP tables are accessed only through the authenticated
+-- MOLSAN backend. No direct Data API grants are given to anon/authenticated.
+DO $rls$
+DECLARE tabla RECORD;
+BEGIN
+    FOR tabla IN
+        SELECT tablename
+        FROM pg_tables
+        WHERE schemaname = 'public'
+    LOOP
+        EXECUTE format(
+            'ALTER TABLE %I.%I ENABLE ROW LEVEL SECURITY',
+            'public',
+            tabla.tablename
+        );
+    END LOOP;
+END
+$rls$;
+
+REVOKE ALL ON ALL TABLES IN SCHEMA public FROM anon, authenticated;
+REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM anon, authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+    REVOKE ALL ON TABLES FROM anon, authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+    REVOKE ALL ON SEQUENCES FROM anon, authenticated;
+SQL
+          } > "$MIGRATION_FILE"
+          echo "$MIGRATION_FILE" > schema-audit/migration-path.txt
+          echo "Generated migration: $MIGRATION_FILE"
+
+      - name: Upload Supabase schema audit and migration
+        uses: actions/upload-artifact@v4
+        with:
+          name: molsan-supabase-schema-migration
+          path: |
+            schema-audit/
+            supabase/
+          if-no-files-found: error
+          retention-days: 7
