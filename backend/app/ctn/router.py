@@ -533,6 +533,59 @@ def listar_notarias(
     query = _aplicar_filtros_notarias(db, provincia, municipio, vc, apoderado, q, asociado)
     total = query.count()
 
+    # Ordenación en base de datos antes de paginar: nunca se ordena solo la
+    # página visible. Los campos calculados también tienen expresión SQL.
+    asociada = aliased(Notaria)
+    asociados_nombre = (
+        select(func.coalesce(func.string_agg(
+            func.trim(func.concat(func.coalesce(asociada.nombre, ""), " ", func.coalesce(asociada.apellidos, ""))),
+            ", "
+        ), ""))
+        .select_from(notarios_asociados_table.join(asociada, asociada.id == notarios_asociados_table.c.asociado_id))
+        .where(notarios_asociados_table.c.notario_id == Notaria.id)
+        .scalar_subquery()
+    )
+    acceso_encargagest = (
+        select(EncargoExternoUsuario.habilitado)
+        .where(EncargoExternoUsuario.notaria_id == Notaria.id)
+        .scalar_subquery()
+    )
+
+    lat_valida = Notaria.lat.op("~")(r"^-?[0-9]+(\.[0-9]+)?$")
+    lng_valida = Notaria.lng.op("~")(r"^-?[0-9]+(\.[0-9]+)?$")
+    latitud = case((lat_valida, cast(Notaria.lat, Float)), else_=None)
+    longitud = case((lng_valida, cast(Notaria.lng, Float)), else_=None)
+    phi1 = func.radians(literal(MOLSAN_LAT))
+    phi2 = func.radians(latitud)
+    delta_phi = func.radians(latitud - literal(MOLSAN_LAT))
+    delta_lambda = func.radians(longitud - literal(MOLSAN_LNG))
+    haversine = (
+        func.pow(func.sin(delta_phi / 2), 2)
+        + func.cos(phi1) * func.cos(phi2) * func.pow(func.sin(delta_lambda / 2), 2)
+    )
+    distancia_sql = case(
+        (and_(lat_valida, lng_valida), 6371.0 * 2 * func.asin(func.sqrt(func.least(1.0, haversine)))),
+        else_=None,
+    )
+
+    nombre_completo_sql = func.trim(func.concat(func.coalesce(Notaria.nombre, ""), " ", func.coalesce(Notaria.apellidos, "")))
+    expresiones_orden = {
+        "id": Notaria.id,
+        "nombre_completo": nombre_completo_sql,
+        "nif": Notaria.nif,
+        "municipio": Notaria.municipio,
+        "provincia": Notaria.provincia,
+        "vc": Notaria.vc,
+        "apoderado": Notaria.apoderado,
+        "notario_asociado": asociados_nombre,
+        "notargest_habilitado": Notaria.notargest_habilitado,
+        "encargagest_habilitado": func.coalesce(acceso_encargagest, False),
+        "distancia_km": distancia_sql,
+        "apellidos": Notaria.apellidos,
+    }
+    expresion = expresiones_orden.get(sort_by, Notaria.apellidos)
+    orden = expresion.desc().nullslast() if sort_dir.lower() == "desc" else expresion.asc().nullslast()
+
     # Las columnas calculadas se ordenan en SQL antes de paginar. Así el orden
     # es global y no cambia al avanzar entre páginas.
     notaria_asociada = aliased(Notaria)
