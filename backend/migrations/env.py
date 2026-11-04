@@ -3,7 +3,8 @@ from logging.config import fileConfig
 import os
 
 from alembic import context
-from sqlalchemy import create_engine, pool
+from sqlalchemy import JSON, create_engine, pool
+from sqlalchemy.dialects.postgresql import JSONB
 
 config = context.config
 if config.config_file_name is not None:
@@ -15,6 +16,15 @@ from backend.app.main import app  # noqa: F401,E402
 from backend.app.database import Base  # noqa: E402
 
 target_metadata = Base.metadata
+
+
+def compare_server_default(context, inspected_column, metadata_column, rendered_metadata_default, rendered_inspected_default):
+    # PostgreSQL json no implementa igualdad; el comparador automático de Alembic
+    # intenta ejecutar SELECT '{}'::json = '{}' y falla. Los defaults JSON se
+    # mantienen en las revisiones y se revisan explícitamente.
+    if isinstance(metadata_column.type, (JSON, JSONB)):
+        return False
+    return None
 
 
 def require_explicit_migration_mode():
@@ -40,7 +50,7 @@ def run_migrations_offline():
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
         compare_type=True,
-        compare_server_default=True,
+        compare_server_default=compare_server_default,
     )
     with context.begin_transaction():
         context.run_migrations()
