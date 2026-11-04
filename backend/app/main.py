@@ -21,6 +21,8 @@ instalar_filtro_credenciales_websocket()
 # APP
 # ============================================================
 
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
+
 app = FastAPI(title="Agenda Intranet Backend")
 
 
@@ -1154,6 +1156,9 @@ def _transaccion_inicio_segura(etiqueta):
 @app.on_event("startup")
 @_serializar_inicializacion_startup
 def inicializar_tablas_auxiliares():
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: inicializar_tablas_auxiliares; ejecutar migración versionada.", flush=True)
+        return
     print(
         "[INICIALIZACION] Comprobando tablas auxiliares...",
         flush=True,
@@ -2332,6 +2337,9 @@ def inicializar_tablas_auxiliares():
 
 @app.on_event("startup")
 def asignar_gestores_pendientes_al_iniciar():
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: asignar_gestores_pendientes_al_iniciar; ejecutar migración versionada.", flush=True)
+        return
     """
     Aplica automáticamente las reglas activas de la ficha de empleado
     a expedientes que todavía no tienen gestor. Nunca reemplaza un gestor
