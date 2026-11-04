@@ -1,32 +1,27 @@
 /* MOLSAN ERP PREMIUM 2027 · Provisiones y cancelaciones */
 .provisiones-fondos-page {
-  --pf-ink: #24324a;
-  --pf-muted: #64748b;
-  --pf-line: #dbe3ef;
+  --pf-ink: var(--molsan-text, #173247);
+  --pf-muted: var(--molsan-text-secondary, #617789);
+  --pf-line: var(--molsan-border, #D8E4EC);
   color: var(--pf-ink);
-}
-.provisiones-fondos-page > header {
-  border-color: #dbe3ef;
-  border-radius: 18px;
-  box-shadow: 0 6px 22px rgb(23 43 77 / 5%);
 }
 .provisiones-fondos-page :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea) {
   min-width: 0;
   max-width: 100%;
-  border-color: #d4deeb;
+  border-color: var(--molsan-border-strong, #B8CBD9);
   border-radius: 9px;
-  color: #24324a;
+  color: var(--molsan-text, #173247);
   font-size: 13px;
   box-shadow: none;
   transition: border-color .16s ease, box-shadow .16s ease;
 }
 .provisiones-fondos-page :is(input, select, textarea):focus-visible {
   outline: none;
-  border-color: #3156b3;
-  box-shadow: 0 0 0 3px rgb(49 86 179 / 13%);
+  border-color: var(--molsan-primary, #064675);
+  box-shadow: var(--molsan-shadow-focus, 0 0 0 3px rgba(6, 70, 117, .16));
 }
 .provisiones-fondos-page :is(button, [role="button"], a):focus-visible {
-  outline: 2px solid rgb(49 86 179 / 58%);
+  outline: 2px solid rgba(6, 70, 117, .58);
   outline-offset: 2px;
 }
 .provisiones-fondos-page :is(section, article) {
@@ -43,7 +38,7 @@
 }
 @media (max-width: 640px) {
   .provisiones-fondos-page {
-    padding: 12px;
+    
   }
   .provisiones-fondos-page .sticky {
     position: static;
@@ -70,3 +65,16 @@
   gap: 16px;
 }
 .provision-editor-designer { min-width: 0; }
+
+
+
+
+/* Armonización de utilidades de color heredadas con el tema corporativo. */
+.provisiones-fondos-page :is([class~="bg-blue-50"], [class~="bg-blue-100"], [class~="bg-sky-50"]) { background-color: var(--molsan-primary-soft); }
+.provisiones-fondos-page :is([class~="hover:bg-blue-50"], [class~="hover:bg-indigo-50"]):hover { background-color: var(--molsan-primary-soft); }
+.provisiones-fondos-page :is([class~="bg-blue-600"], [class~="bg-blue-700"], [class~="bg-sky-700"], [class~="bg-indigo-600"]) { background-color: var(--molsan-primary); }
+.provisiones-fondos-page :is([class~="hover:bg-blue-700"], [class~="hover:bg-indigo-700"]):hover { background-color: var(--molsan-primary-hover); }
+.provisiones-fondos-page :is([class~="text-blue-700"], [class~="text-blue-800"], [class~="text-blue-900"], [class~="text-sky-700"], [class~="text-sky-950"]) { color: var(--molsan-primary); }
+.provisiones-fondos-page :is([class~="border-blue-100"], [class~="border-blue-200"], [class~="border-sky-100"], [class~="border-sky-200"]) { border-color: var(--molsan-border); }
+.provisiones-fondos-page :is([class~="border-blue-500"], [class~="border-blue-700"], [class~="border-sky-500"]) { border-color: var(--molsan-primary); }
+.provisiones-fondos-page [class~="focus:border-blue-500"]:focus { border-color: var(--molsan-primary); }
