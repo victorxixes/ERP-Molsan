@@ -133,23 +133,6 @@ class SupabasePrivateStorage:
             if response is not None:
                 response.close()
 
-    def exists(self, key: str) -> bool:
-        path = _object_path(key)
-        url = self._url(f"object/{quote(self.config.bucket, safe='-_.~')}/{path}")
-        try:
-            response = self.session.head(
-                url, headers=self._headers(), timeout=self.config.timeout_seconds
-            )
-            if response.status_code == 404:
-                return False
-            if response.status_code == 200:
-                return True
-            raise SupabaseStorageError(
-                f"Supabase Storage no pudo verificar el objeto (HTTP {response.status_code})."
-            )
-        except requests.RequestException as exc:
-            raise SupabaseStorageError("No se pudo conectar con Supabase Storage.") from exc
-
     def delete(self, key: str) -> None:
         path = _object_path(key)
         url = self._url(f"object/{quote(self.config.bucket, safe='-_.~')}")
