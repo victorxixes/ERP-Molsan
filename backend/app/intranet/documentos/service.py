@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.intranet.documentos.models import Documento
 from backend.app.storage import DOCUMENTOS_INTRANET_DIR
-from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, is_supabase_object, parse_object_reference
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, is_supabase_object, parse_object_reference, storage_backend_is_supabase
 
 UPLOAD_DIR = DOCUMENTOS_INTRANET_DIR
 MAX_FILE_SIZE = 20 * 1024 * 1024
@@ -20,8 +20,7 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def _usa_supabase_storage() -> bool:
-    import os
-    return (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() == "supabase"
+    return storage_backend_is_supabase()
 
 
 def leer_fichero_documento(reference: str) -> bytes:
