@@ -62,7 +62,14 @@ def include_object(object, name, type_, reflected, compare_to):
     return True
 
 
-def compare_server_default(context, connection, inspected_column, metadata_column, rendered_metadata_default, rendered_inspected_default):
+def compare_server_default(
+    context,
+    inspected_column,
+    metadata_column,
+    inspected_default,
+    metadata_default,
+    rendered_metadata_default,
+):
     # PostgreSQL json no implementa igualdad; el comparador automático de Alembic
     # intenta ejecutar SELECT '{}'::json = '{}' y falla. Los defaults JSON se
     # mantienen en las revisiones y se revisan explícitamente.
@@ -95,7 +102,7 @@ def run_migrations_offline():
         dialect_opts={"paramstyle": "named"},
         compare_type=True,
         compare_server_default=compare_server_default,
-                include_object=include_object,
+        include_object=include_object,
     )
     with context.begin_transaction():
         context.run_migrations()
