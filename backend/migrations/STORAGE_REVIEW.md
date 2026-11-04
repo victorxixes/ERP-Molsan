@@ -1,81 +1,78 @@
-# Revisión y diseño de Supabase Storage — 4 noviembre 2026
+# Revisión e implementación de Supabase Storage — 4 noviembre 2026
 
-## Estado confirmado
+## Estado del proyecto Supabase
 
-- El backend todavía guarda documentos y fotografías en rutas locales mediante `backend/app/storage.py`.
-- El proyecto Supabase `ERP_Molsan` no tiene todavía buckets ni objetos: consulta de solo lectura del 4-11-2026: 0 buckets y 0 objetos.
-- No se ha creado ningún bucket ni se ha copiado ningún fichero.
-- No se contratará ni configurará un Persistent Disk de Render para sustituir este almacenamiento.
-- Los documentos antiguos de Preview y los ficheros asociados a expedientes/pagos ficticios no se importarán.
+- Proyecto `ERP_Molsan`, ref `powiprqarmluanplxpyb`, activo en EU Central.
+- La última consulta de solo lectura registró 0 buckets y 0 objetos.
+- No se ha creado el bucket, no se ha aplicado migración a Supabase y no se han subido documentos.
+- No se contratarán discos persistentes de Render.
+- No se importarán archivos heredados de Preview ni documentos asociados a expedientes/pagos ficticios.
 
-## Inventario de código que debe migrarse
+## Diseño elegido
 
-| Área | Código actual | Referencia de almacenamiento actual | Destino propuesto |
-|---|---|---|---|
-| Carpeta Digital y documentos de workflow de NotarGest | `carpeta_digital/router.py`, `notargest/router.py` | `DocumentoCarpetaDigital.nombre_guardado` + `CARPETA_DIGITAL_DIR` | Bucket privado `molsan-expedientes`, prefijos opacos por tipo |
-| EncargaGest | `encargagest/router.py` | `EncargoExternoDocumento.nombre_guardado` + subdirectorio `encargagest` | Bucket privado `molsan-encargagest` |
-| Mensajes | `mensajes/router.py`, `mensajes/adjuntos.py` | `Mensaje.archivo_url` + `MENSAJES_DIR` | Bucket privado `molsan-mensajes` |
-| Documentos de intranet | `intranet/documentos/service.py`, `intranet/documentos/router.py` | `Documento.fichero` + `DOCUMENTOS_INTRANET_DIR` | Bucket privado `molsan-intranet` |
-| Fotos de empleados | `empleados/router.py`, ruta `/api/fotos` en `main.py` | `Empleado.foto` + `FOTOS_EMPLEADOS_DIR` | Bucket privado `molsan-empleados` |
+Se utiliza **un único bucket privado `molsan-private`** y prefijos por dominio. Así se mantiene una sola política de acceso y se evita duplicar configuración de buckets sin necesidad. Los prefijos no son una frontera de autorización: cada endpoint debe validar primero identidad, permiso y relación con el recurso.
 
-Los campos actuales de base de datos permiten guardar la clave del objeto sin guardar el binario:
-- `DocumentoCarpetaDigital.nombre_guardado`.
-- `EncargoExternoDocumento.nombre_guardado`.
-- `Mensaje.archivo_url` (manteniendo compatibilidad de lectura con el formato histórico mientras se retira).
-- `Documento.fichero` (pasará de ruta absoluta local a clave relativa del objeto).
-- `Empleado.foto` (clave del objeto, no ruta del disco).
+Prefijos:
+- `cd/`: Carpeta Digital y documentos de NotarGest.
+- `eg/`: documentos de EncargaGest.
+- `mensajes/`: adjuntos de Mensajes.
+- `intranet/`: documentos de intranet.
+- `fotos/empleados/`: fotografías de empleados.
 
-## Diseño de seguridad
+## Código implementado en la rama de integración
 
-1. Todos los buckets serán **privados**; no se habilitará lectura pública.
-2. Solo el backend de Render utilizará `SUPABASE_SERVICE_ROLE_KEY`. Nunca se incluirá en `frontend-app`, en `.env.example` del frontend, en respuestas API ni en logs.
-3. El backend verificará primero la sesión, los permisos del módulo y la relación del usuario con el expediente/mensaje/encargo. Solo después leerá el objeto.
-4. Las descargas se servirán mediante el backend autorizado. Si una optimización posterior utiliza URL firmada, será de corta duración y solo se generará después de autorizar la petición.
-5. Las claves serán aleatorias (UUID) y no incluirán nombres, NIF, identificadores de expediente ni otros datos personales. El nombre original y el MIME se conservan como metadatos en PostgreSQL.
-6. Se validarán extensión, MIME real, tamaño máximo y normalización de la clave. No se aceptarán rutas absolutas, segmentos `..` ni nombres aportados por el usuario como clave.
-7. El borrado/sustitución coordinará almacenamiento y transacción SQL: si falla el commit se elimina el objeto nuevo; si falla el borrado físico se registra el huérfano para limpieza controlada sin borrar metadatos válidos.
+- `backend/app/supabase_storage.py`: adaptador HTTP para subir, descargar, comprobar existencia y borrar objetos. Valida claves, codifica segmentos, usa solo credenciales de servidor y no crea URLs públicas.
+- `backend/tests/test_supabase_storage.py`: pruebas unitarias simuladas para subida, descarga, existencia, borrado/referencias y rechazo de traversal.
+- Carpeta Digital: subida, descarga, eliminación, previsualización de cierre y reemplazo de expediente digital soportan referencias remotas; se mantiene lectura de referencias locales antiguas.
+- NotarGest: subida de documentos de workflow, documentos generales y facturas; descargas y reemplazo usan el adaptador privado.
+- EncargaGest: subida, descarga y borrado de adjuntos usan el adaptador privado.
+- Mensajes: adjuntos usan el adaptador privado y se sirven por endpoint autenticado. Se ha retirado el montaje estático `/static/mensajes` para evitar descargas sin comprobar la conversación. La UI ya consume el endpoint autenticado.
+- Intranet: subida, descarga y eliminación de documentos usan el adaptador privado; se mantiene lectura de rutas locales antiguas.
+- Fotos de empleados: objetos con nombre versionado, descarga mediante `/api/fotos` con permiso de Empleados y eliminación de la foto anterior solo después de confirmar la referencia nueva.
+- `backend/app/storage.py`: en Render falla de forma cerrada si `MOLSAN_STORAGE_BACKEND=supabase` no está activado; en modo Supabase valida URL y clave al arrancar. No se permite fallback silencioso a almacenamiento efímero en Render.
 
-## Adaptador backend previsto
+El modo local permanece disponible para desarrollo local. En Preview/Render deberá configurarse explícitamente Supabase antes de desplegar esta rama.
 
-Crear un servicio único de almacenamiento con operaciones explícitas:
-- `upload(bucket, key, content, content_type)`.
-- `download(bucket, key)` o streaming equivalente.
-- `delete(bucket, key)`.
-- `ensure_bucket_configuration(...)` como tarea administrativa explícita, nunca en el arranque web.
+## Configuración necesaria (solo API Preview)
 
-Configuración exclusivamente en el servicio API de Render:
-- `SUPABASE_URL`.
-- `SUPABASE_SERVICE_ROLE_KEY` (secreto).
-- `MOLSAN_STORAGE_BACKEND=supabase`.
-- Nombres/límites de buckets, si se externalizan, con valores validados.
+Variables de entorno:
+- `SUPABASE_URL=https://powiprqarmluanplxpyb.supabase.co`
+- `SUPABASE_SERVICE_ROLE_KEY`: secreto de servidor obtenido desde la sección API Keys del proyecto; nunca compartirlo en chat, GitHub, frontend ni logs.
+- `MOLSAN_STORAGE_BUCKET=molsan-private`
+- `MOLSAN_STORAGE_BACKEND=supabase`
 
-No habrá fallback silencioso al disco efímero en Render. Si faltan las credenciales de Storage, el servicio deberá fallar de forma explícita en la comprobación de disponibilidad, sin guardar documentos en local.
+Crear el bucket desde Supabase Dashboard > Storage > New Bucket:
+- Nombre: `molsan-private`.
+- Visibilidad: **Private**.
+- Límite de tamaño: al menos 100 MiB (el máximo actual de Carpeta Digital es 100 MiB).
+- No crear políticas públicas de lectura.
+- No colocar la clave service-role en el frontend.
 
-## Cambios de rutas y compatibilidad
+El backend usa la clave privilegiada únicamente en el servidor y valida los permisos ERP antes de descargar. No se requiere crear usuarios Supabase Auth para este flujo.
 
-- Refactorizar los seis módulos/zonas del inventario para que no usen `Path.write_bytes`, `FileResponse` sobre rutas locales ni `unlink` como mecanismo de persistencia.
-- Mantener los endpoints autenticados actuales y sus controles de permisos.
-- Revisar la ruta de Mensajes: `main.py` monta actualmente `/static/mensajes` sobre una carpeta temporal; los adjuntos privados deben descargarse solo por el endpoint autenticado que comprueba que el mensaje pertenece al usuario.
-- La ruta `/api/fotos/{ruta:path}` seguirá comprobando el permiso de Empleados antes de obtener el objeto.
-- Mantener las respuestas y contratos de frontend estables cuando sea posible; las claves internas no se mostrarán al navegador.
+## Autenticación y autorización
 
-## Pruebas obligatorias
+- El backend valida el usuario empleado y sus permisos antes de operar sobre los objetos.
+- NotarGest y EncargaGest conservan sus validaciones de portal, notaría y encargo.
+- Mensajes exige participación en la conversación y valida la existencia del objeto al emitir el adjunto por WebSocket.
+- Las fotografías siguen exigiendo permiso del módulo Empleados.
+- Los objetos no se exponen mediante URL pública ni se envían al navegador con la clave de servicio.
 
-- Subida y descarga con usuario autorizado.
-- Denegación 401/403 antes de acceder al objeto.
-- Aislamiento entre expedientes, notarías, gestores y destinatarios de Mensajes.
-- Tamaño excedido, MIME/extensión no permitidos y clave manipulada.
-- Sustitución y borrado sin dejar registros rotos.
-- Fallo de Storage, timeout y fallo de commit SQL con limpieza compensatoria.
-- Comprobación de que buckets son privados y de que no se filtra la clave de servicio al frontend/logs.
-- Pruebas de regresión de Carpeta Digital, NotarGest, EncargaGest, Mensajes, Intranet y fotos.
+## Riesgos y validaciones pendientes
 
-## Orden de ejecución
+1. Ejecutar el workflow backend audit en el SHA más reciente y revisar cualquier fallo de importación/sintaxis.
+2. Verificar en Preview que el bucket privado existe y que la API puede subir, descargar, comprobar y borrar un archivo de prueba.
+3. Probar los cinco flujos de archivo con cuentas y permisos reales: Carpeta Digital, NotarGest, EncargaGest, Mensajes, Intranet y fotos.
+4. Probar 401/403 antes de leer objetos y aislamiento entre expedientes, notarías, gestores y destinatarios.
+5. Probar rollback SQL, fallos de red, timeouts, reemplazo de fotos y documentos, y limpieza de objetos huérfanos.
+6. Comprobar límites de tamaño y tipos MIME permitidos en el bucket y en cada endpoint.
 
-1. Implementar y probar el adaptador con un cliente HTTP simulado.
-2. Refactorizar un módulo cada vez, empezando por Carpeta Digital/NotarGest y después EncargaGest, Mensajes, Intranet y Empleados.
-3. Provisionar los buckets privados mediante una acción administrativa explícita cuando el código y la configuración estén listos.
-4. Añadir `SUPABASE_SERVICE_ROLE_KEY` como secreto únicamente al servicio API Preview de Render y comprobar una subida/descarga de prueba no sensible.
-5. Conservar producción intacta y no copiar archivos históricos. La importación de documentos de los 25 expedientes seleccionados se hará después de aprobar las pruebas integrales.
+## Render Preview
 
-**Estado actual:** auditoría y diseño documentados. No se han creado buckets, no se han modificado rutas de almacenamiento, no se ha añadido ninguna clave y no se ha desplegado nada.
+Los servicios Preview actuales siguen apuntando a ramas antiguas y tienen auto-deploy desactivado. El conector Render disponible permite consultar servicios, modificar variables y disparar despliegues, pero no modificar la rama asociada del servicio. La rama deberá cambiarse en Render Dashboard antes de desplegar esta integración. No se han cambiado variables ni desplegado servicios.
+
+## Producción
+
+No se ha cambiado ningún servicio de producción, no se ha aplicado ninguna migración, no se han creado buckets y no se han copiado documentos.
+
+**Estado:** adaptador y rutas principales implementados en la rama de integración; provisión del bucket, secreto, ejecución CI final, cambio de rama de Preview y pruebas reales siguen pendientes.
