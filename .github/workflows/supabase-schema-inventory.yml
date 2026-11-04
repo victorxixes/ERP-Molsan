@@ -1,4 +1,4 @@
-name: Supabase schema inventory
+name: Offline ORM and DDL inventory
 
 on:
   push:
@@ -38,9 +38,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r backend/requirements.txt
-      - name: Generar inventario sin conectarse a ninguna base de datos
+      - name: Inventariar modelos y DDL fuente sin conectarse a ninguna base de datos
         run: python backend/scripts/audit_supabase_schema.py
-      - name: Comprobar que no se genera una migración incompleta
+      - name: Detectar elementos que requieren revisión antes de diseñar migraciones
         run: |
           python - <<'PY'
           from pathlib import Path
