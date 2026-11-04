@@ -29,6 +29,12 @@ Supabase se utiliza como PostgreSQL y Storage. La clave privilegiada de Storage 
 
 No se deben fusionar estos tokens o roles de portal en una única identidad Supabase Auth durante la migración de base de datos.
 
+## Alta inicial de administrador
+
+Se ha añadido `backend/scripts/bootstrap_admin.py` para crear la primera cuenta únicamente cuando la tabla `empleados` está vacía. Requiere variables de entorno explícitas (`MOLSAN_BOOTSTRAP_ADMIN_USERNAME` y `MOLSAN_BOOTSTRAP_ADMIN_PASSWORD`, mínimo 16 caracteres), crea el rol Administrador si no existe y asigna permisos completos sobre el catálogo base. No contiene contraseñas predeterminadas, no imprime la contraseña y se niega a modificar una instalación que ya tenga empleados.
+
+Se ejecutará una sola vez después de aplicar y verificar el esquema en Preview, usando un secreto temporal introducido de forma segura en el entorno de ejecución. No se crea ningún usuario ni contraseña en esta fase.
+
 ## Configuración obligatoria en Render API Preview
 
 - `DATABASE_URL`: conexión al proyecto Supabase de integración.
