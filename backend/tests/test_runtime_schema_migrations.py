@@ -19,7 +19,7 @@ def test_migration_role_requires_explicit_enable_flag(monkeypatch):
     assert runtime_schema_migrations_enabled() is False
 
 
-def test_migration_role_can_explicitly_enable_legacy_tasks(monkeypatch):
+def test_legacy_flags_cannot_reenable_startup_ddl(monkeypatch):
     monkeypatch.setenv("MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS", "true")
     monkeypatch.setenv("MOLSAN_PROCESS_ROLE", "migration")
-    assert runtime_schema_migrations_enabled() is True
+    assert runtime_schema_migrations_enabled() is False
