@@ -6,6 +6,7 @@ import React, {
 } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
+import { API_BASE as API_BASE_CONFIG } from "../../api/config";
 
 
 // ============================================================
@@ -29,11 +30,7 @@ import "../../css/CatalogosMaestrosPremium.css";
 // CONFIGURACIÓN API
 // ============================================================
 
-const API_ORIGEN =
-  "https://agenda-intranet-b.onrender.com";
-
-const API_BASE =
-  `${API_ORIGEN}/api/oficinas-liquidadoras`;
+const API_BASE = `${API_BASE_CONFIG}/oficinas-liquidadoras`;
 
 const API_IMPORTAR_EXCEL =
   `${API_BASE}/importar-excel`;
