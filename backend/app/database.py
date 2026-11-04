@@ -58,7 +58,7 @@ _SCHEMA_DDL = re.compile(
     r"^\s*(?:CREATE|ALTER|DROP|TRUNCATE|DO)\s+"
     r"(?:TEMP(?:ORARY)?\s+)?"
     r"(?:(?:TABLE|INDEX|SEQUENCE|TYPE|SCHEMA|VIEW|MATERIALIZED\s+VIEW|"
-    r"FUNCTION|TRIGGER|EXTENSION|DOMAIN)\b|\$\$)",
+    r"FUNCTION|TRIGGER|EXTENSION|DOMAIN)\b|\$(?:[A-Za-z_][A-Za-z0-9_]*)?\$)",
     re.IGNORECASE,
 )
 _IDENTIFIER = r'(?:[A-Za-z_][A-Za-z0-9_$]*|"[^"]+")'
