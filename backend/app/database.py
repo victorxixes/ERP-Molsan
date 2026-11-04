@@ -232,7 +232,7 @@ def _ddl_is_already_applied(connection, cursor, statement):
 def _bloquear_ddl_fuera_de_migraciones(
     conexion, cursor, statement, parametros, contexto, executemany
 ):
-    if not _SCHEMA_DDL.match(statement) or runtime_schema_migrations_enabled():
+    if not _SCHEMA_DDL.match(statement):
         return statement, parametros
 
     if cursor is not None and _ddl_is_already_applied(conexion, cursor, statement):
