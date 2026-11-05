@@ -807,13 +807,13 @@
   flex-wrap: wrap;
   gap: 12px;
   padding: 16px 20px;
-  color: #064675;
-  border-bottom: 1px solid #D8E4EC;
-  background: #F2F7FB;
+  color:#FFFFFF;
+  border-bottom:1px solid rgba(255,255,255,.16);
+  background:radial-gradient(circle at 86% 18%, rgba(116,199,219,.18), transparent 27%), linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
 }
 :is(.ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera, .ng-modal > header) h2 {
   margin: 0;
-  color: #064675;
+  color:#FFFFFF;
   font-size: 18px;
   font-weight: 800;
   letter-spacing: -.02em;
@@ -821,7 +821,7 @@
 }
 :is(.ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera, .ng-modal > header) p {
   margin: 4px 0 0;
-  color: #617789;
+  color:#C6DFEC;
   font-size: 12px;
   line-height: 1.5;
 }
@@ -1058,7 +1058,7 @@
   .eg-modal-section-heading h3, .molsan-section-header__title, .erp-card-title
 ) {
   margin: 0;
-  color: #064675;
+  color:#FFFFFF;
   font-size: 15px;
   font-weight: 800;
   letter-spacing: -.02em;
@@ -1097,7 +1097,7 @@
   .expediente-operativo-modal [role="dialog"] > header,
   .empleado-operativo-modal [role="dialog"] > header
 ) :is(h1, h2, h3, p) {
-  color: #064675;
+  color:#FFFFFF;
 }
 @media (max-width: 640px) {
   :is(
