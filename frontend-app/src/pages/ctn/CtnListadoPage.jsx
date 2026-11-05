@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
 import "../../css/CtnListadoPage.css";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 const API_BASE = (
   import.meta.env.VITE_API_URL ||
