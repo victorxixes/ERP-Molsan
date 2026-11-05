@@ -1016,3 +1016,23 @@
     transform: none !important;
   }
 }
+
+
+/* Consistencia de tarjetas: el acento y el relieve se comparten con Espacios de trabajo.
+   Se aplica solo a tarjetas semánticas ya identificadas; no altera filas ni controles. */
+.erp-route-content :where(.erp-card,.card-sj) {
+  isolation: isolate;
+}
+.erp-route-content :where(.erp-card,.card-sj) > :where(svg,.molsan-icon,.card-icon,.erp-card-icon) {
+  color: var(--molsan-primary, #064675);
+}
+.erp-route-content :where(.erp-card,.card-sj):focus-visible,
+.erp-route-content :where(a.erp-card,button.erp-card):focus-visible {
+  outline: 3px solid rgba(6,70,117,.22);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .erp-route-content :where(.erp-card,.card-sj) {
+    transition: none !important;
+  }
+}
