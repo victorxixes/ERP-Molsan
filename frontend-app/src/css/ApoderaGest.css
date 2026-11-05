@@ -96,14 +96,14 @@
 }
 .apoderagest .ag-kpi-icono{
   display: grid;
-  flex: 0 0 34px;
-  width: 34px;
-  height: 34px;
+  flex:0 0 40px;
+  width:40px;
+  height:40px;
   place-items: center;
   color: var(--ag-kpi-color, var(--molsan-primary, #064675));
   background: var(--ag-kpi-icon-bg, var(--molsan-primary-soft, #EAF2F8));
   border: 1px solid rgba(255,255,255,.85);
-  border-radius: 11px;
+  border-radius:12px;
   font-size: 17px;
   font-weight: 800;
 }
@@ -454,9 +454,9 @@
   }
 .apoderagest .ag-kpi{padding: 14px}
 .apoderagest .ag-kpi-icono{
-    flex-basis: 29px;
-    width: 29px;
-    height: 29px;
+    flex-basis:40px;
+    width:40px;
+    height:40px;
   }
 .apoderagest .ag-kpi-valor{
     font-size: 25px;
@@ -1664,11 +1664,11 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   font-weight:750;
 }
 .apoderagest .ag-kpi-icono{
-  flex:0 0 38px;
-  width:38px;
-  height:38px;
+  flex:0 0 40px;
+  width:40px;
+  height:40px;
   border:1px solid var(--molsan-border-light,#E8EDF4);
-  border-radius:11px;
+  border-radius:12px;
 }
 .apoderagest .ag-kpi-valor{
   margin-top:12px;
@@ -2042,11 +2042,11 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 
 /* Iconografía visible y tridimensional · MOLSAN PREMIUM 2027 */
 .apoderagest .ag-kpi-icono{
-  flex:0 0 54px;
-  width:54px;
-  height:54px;
+  flex:0 0 40px;
+  width:40px;
+  height:40px;
   border:1px solid rgba(255,255,255,.92);
-  border-radius:15px;
+  border-radius:12px;
   background:linear-gradient(145deg,#FFFFFF 0%,var(--ag-kpi-icon-bg,#EAF2F8) 100%);
   box-shadow:0 5px 13px rgba(6,50,82,.10),inset 0 1px 0 #FFFFFF;
 }
@@ -2059,10 +2059,10 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 .apoderagest .ag-kpi-ambar{--ag-kpi-icon-bg:#FFF1D9}
 .apoderagest .ag-kpi-violeta{--ag-kpi-icon-bg:#F0EAFE}
 .apoderagest .ag-grid-secundario .ag-kpi-icono{
-  flex-basis:48px;
-  width:48px;
-  height:48px;
-  border-radius:14px;
+  flex-basis:40px;
+  width:40px;
+  height:40px;
+  border-radius:12px;
 }
 .apoderagest .ag-notario-grupo-icono{
   display:grid;
@@ -2104,5 +2104,5 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   filter:drop-shadow(0 2px 3px rgba(6,50,82,.15));
 }
 @media(max-width:760px){
-  .apoderagest .ag-kpi-icono{flex-basis:48px;width:48px;height:48px}
+  .apoderagest .ag-kpi-icono{flex-basis:40px;width:40px;height:40px}
 }
