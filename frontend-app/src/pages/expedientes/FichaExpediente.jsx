@@ -5272,7 +5272,7 @@ const cuantiaFincasParaEnvio =
                               })}
                               <article className="min-w-0 rounded-xl border border-violet-200 bg-violet-50/40 p-3">
                                 <div className="flex items-center gap-2">
-                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-violet-300 bg-white text-sm">💶</div>
+                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-violet-300 bg-white"><MolsanIcon name="euro" size={18} tone="ocean" bare /></div>
                                   <div className="min-w-0 flex-1">
                                     <p className="text-xs font-bold text-slate-800">PPAD</p>
                                     <p className="mt-0.5 text-[10px] font-semibold text-violet-700">{cargandoPpad ? "Cargando registros…" : `${ppadItems.length} registro(s) · ${ppadItems.filter((item) => !item.compensado).length} pendiente(s)`}</p>
@@ -5290,7 +5290,7 @@ const cuantiaFincasParaEnvio =
                               </article>
                               <article className="min-w-0 rounded-xl border border-amber-200 bg-amber-50/40 p-3">
                                 <div className="flex items-center gap-2">
-                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-amber-300 bg-white text-sm">💰</div>
+                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-amber-300 bg-white"><MolsanIcon name="wallet" size={18} tone="ocean" bare /></div>
                                   <div className="min-w-0 flex-1">
                                     <p className="text-xs font-bold text-slate-800">Complementos de saldo</p>
                                     <p className="mt-0.5 text-[10px] font-semibold text-amber-800">{cargandoComplementosExpediente ? "Cargando solicitudes…" : `${complementosSaldoExpediente.length} solicitud(es) · ${complementosSaldoExpediente.filter((item) => !["compensado", "cerrado"].includes(String(item.estado || "").toLowerCase())).length} pendiente(s)`}</p>
@@ -5508,7 +5508,7 @@ const cuantiaFincasParaEnvio =
                   <span className="mr-1 shrink-0 text-[9px] font-bold uppercase tracking-wide text-slate-400">Relacionados</span>
                   {primerosRelacionados.map((relacionado) => (
                     <Link key={String(relacionado.id_expediente)} to={`/expedientes/${encodeURIComponent(relacionado.id_expediente)}`} className="inline-flex max-w-[180px] min-w-0 shrink items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[10px] font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50" title={relacionado.actividad_actual || "Abrir expediente relacionado"}>
-                      <span className="shrink-0 text-blue-700">📁</span>
+                      <MolsanIcon name="folder" size={18} tone="ocean" bare />
                       <span className="truncate">{valorVisible(relacionado.id_expediente)}</span>
                     </Link>
                   ))}
@@ -5522,11 +5522,11 @@ const cuantiaFincasParaEnvio =
             })()}
             {expedienteBloqueado && <span className="inline-flex shrink-0 items-center rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[10px] font-extrabold text-red-800">🔒 BLOQUEADO · {motivoBloqueoExpediente}</span>}
             <div className="flex shrink-0 items-center gap-1.5">
-              <button type="button" onClick={abrirDefecto} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-blue-700 shadow-sm transition hover:bg-blue-100" title="Registrar un defecto registral">➕ Alta defecto</button>
+              <button type="button" onClick={abrirDefecto} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-blue-700 shadow-sm transition hover:bg-blue-100" title="Registrar un defecto registral"><MolsanIcon name="plus" size={14} tone="ocean" bare /> Alta defecto</button>
               <Boton onClick={abrirControlExpediente} className="!shrink-0 !rounded-lg !px-2.5 !py-2 !text-[11px] !leading-tight">{expedienteBloqueado ? "🔒 Control / desbloqueo" : "🔐 Control y bloqueo"}</Boton>
-              <button type="button" onClick={abrirReclamacionOficina} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-amber-800 shadow-sm transition hover:bg-amber-100">✉️ Emails</button>
-              <button type="button" onClick={() => window.alert("Pendiente: enlazar este botón con la dirección real del área de clientes.")} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[11px] font-bold leading-tight text-slate-600 shadow-sm transition hover:bg-slate-100" title="Pendiente de enlazar con el área de clientes">🔗 Área de clientes</button>
-              {tieneDefecto && <button type="button" onClick={abrirDefecto} className="animate-pulse inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-red-700 shadow-sm">⚠️ DEFECTO REGISTRAL</button>}
+              <button type="button" onClick={abrirReclamacionOficina} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-amber-800 shadow-sm transition hover:bg-amber-100"><MolsanIcon name="mail" size={14} tone="ocean" bare /> Emails</button>
+              <button type="button" onClick={() => window.alert("Pendiente: enlazar este botón con la dirección real del área de clientes.")} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[11px] font-bold leading-tight text-slate-600 shadow-sm transition hover:bg-slate-100" title="Pendiente de enlazar con el área de clientes"><MolsanIcon name="link" size={14} tone="ocean" bare /> Área de clientes</button>
+              {tieneDefecto && <button type="button" onClick={abrirDefecto} className="animate-pulse inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-red-700 shadow-sm"><MolsanIcon name="alert" size={14} tone="amber" bare /> DEFECTO REGISTRAL</button>}
             </div>
             <div className="ml-auto flex shrink-0 items-center gap-2">
               <div className="inline-flex max-w-[260px] items-center gap-1.5 rounded-lg border border-blue-100 bg-white px-2.5 py-2 text-[11px]">
@@ -5590,7 +5590,7 @@ const cuantiaFincasParaEnvio =
                       onClick={() => { setMostrarControlCalidad(true); cargarDocumentosCierre(); }}
                       className={`flex h-[84px] w-[190px] min-w-[190px] shrink-0 flex-col justify-start rounded-xl border px-3 py-2 text-left transition ${mostrarControlCalidad ? "border-violet-300 bg-violet-50 shadow-sm" : "border-violet-200 bg-white hover:bg-violet-50"}`}
                     >
-                      <span className={`text-xs font-bold ${mostrarControlCalidad ? "text-violet-700" : "text-violet-800"}`}>🛡️ Control de calidad</span>
+                      <span className={`text-xs font-bold ${mostrarControlCalidad ? "text-violet-700" : "text-violet-800"}`}><MolsanIcon name="shield" size={15} tone="violet" bare /> Control de calidad</span>
                       <span className="mt-2 text-[9px] font-semibold text-slate-500">Revisión independiente</span>
                     </button>
                   )}
@@ -7131,7 +7131,7 @@ const cuantiaFincasParaEnvio =
           <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-8">
         {/* ENVÍO A NOTARIO: CENTRADO DEBAJO DE PPAD E INFORMACIÓN CREDITICIA */}
         <div className="min-w-0 w-full xl:col-span-8">
-          {expedienteBloqueado && esRetencionSinTramitar && <section role="alert" className="mx-auto mb-4 w-full rounded-2xl border-2 border-red-300 bg-red-50 px-5 py-4 shadow-sm"><p className="text-xs font-black uppercase text-red-700">⛔ Expediente bloqueado</p><h2 className="mt-1 text-base font-extrabold text-red-900">RETENCIÓN SIN TRAMITAR</h2><p className="mt-1 text-sm text-red-800">Estado RST: retención sin tramitar.</p><p className="mt-2 text-xs font-semibold text-red-700">Las actividades no se pueden modificar ni avanzar mientras esté bloqueado.</p><button type="button" onClick={abrirControlExpediente} className="mt-2 rounded-lg border border-red-300 bg-white px-3 py-2 text-xs font-bold text-red-800">Gestionar bloqueo</button></section>}
+          {expedienteBloqueado && esRetencionSinTramitar && <section role="alert" className="mx-auto mb-4 w-full rounded-2xl border-2 border-red-300 bg-red-50 px-5 py-4 shadow-sm"><p className="flex items-center gap-1 text-xs font-black uppercase text-red-700"><MolsanIcon name="alert" size={14} tone="amber" bare /> Expediente bloqueado</p><h2 className="mt-1 text-base font-extrabold text-red-900">RETENCIÓN SIN TRAMITAR</h2><p className="mt-1 text-sm text-red-800">Estado RST: retención sin tramitar.</p><p className="mt-2 text-xs font-semibold text-red-700">Las actividades no se pueden modificar ni avanzar mientras esté bloqueado.</p><button type="button" onClick={abrirControlExpediente} className="mt-2 rounded-lg border border-red-300 bg-white px-3 py-2 text-xs font-bold text-red-800">Gestionar bloqueo</button></section>}
           <div className="flex w-full min-w-0 justify-center">
           {/* =====================================================
               FICHA COMPLETA DE ENVÍO A NOTARIO
@@ -7139,7 +7139,7 @@ const cuantiaFincasParaEnvio =
           ====================================================== */}
             <section className="w-full max-w-none min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_10px_28px_rgba(30,41,59,0.08)]">
               <div className="hidden flex-wrap items-center justify-center gap-3 border-b border-slate-100 bg-white px-4 py-4 text-center sm:px-5">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-100 bg-white text-xl shadow-sm">🏛️</div>
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-100 bg-white shadow-sm"><MolsanIcon name="courthouse" size={24} tone="ocean" /></div>
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-extrabold text-slate-800">Envío a notario</h3>
                   <p className="mt-0.5 text-[11px] text-slate-500">Encargo al notario, datos de firma y facturación</p>
@@ -7535,7 +7535,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={mostrarReclamarOficina}
         onClose={() => !enviandoReclamacion && setMostrarReclamarOficina(false)}
-        titulo="✉️ Emails del expediente"
+        titulo="Emails del expediente"
         subtitulo={`Expediente ${valorVisible(expediente?.id_expediente || id)} · Correspondencia tipificada e histórico`}
         ancho="max-w-5xl"
         footer={
@@ -7600,7 +7600,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={mostrarAvisoBloqueoExpediente}
         onClose={() => setMostrarAvisoBloqueoExpediente(false)}
-        titulo="⛔ AVISO DE BLOQUEO DEL EXPEDIENTE"
+        titulo="AVISO DE BLOQUEO DEL EXPEDIENTE"
         subtitulo={`Expediente ${valorVisible(expediente?.id_expediente)}`}
         ancho="max-w-[620px]"
         footer={
@@ -7628,7 +7628,7 @@ const cuantiaFincasParaEnvio =
       </Modal>
 
       {/* CONTROL DE BLOQUEO */}
-      <Modal open={mostrarControlExpediente} onClose={()=>!guardandoControlExpediente&&setMostrarControlExpediente(false)} titulo="🔐 Control del expediente" subtitulo={`Expediente ${valorVisible(expediente?.id_expediente)}`} ancho="max-w-[760px]" footer={<div className="flex justify-end gap-2"><Boton onClick={()=>setMostrarControlExpediente(false)} disabled={guardandoControlExpediente}>Cancelar</Boton><Boton tipo="primary" onClick={guardarControlExpediente} disabled={guardandoControlExpediente}>{guardandoControlExpediente?"Guardando…":"💾 Guardar control"}</Boton></div>}>
+      <Modal open={mostrarControlExpediente} onClose={()=>!guardandoControlExpediente&&setMostrarControlExpediente(false)} titulo="Control del expediente" subtitulo={`Expediente ${valorVisible(expediente?.id_expediente)}`} ancho="max-w-[760px]" footer={<div className="flex justify-end gap-2"><Boton onClick={()=>setMostrarControlExpediente(false)} disabled={guardandoControlExpediente}>Cancelar</Boton><Boton tipo="primary" onClick={guardarControlExpediente} disabled={guardandoControlExpediente}>{guardandoControlExpediente?"Guardando…":"💾 Guardar control"}</Boton></div>}>
         <div className="space-y-4">
           {estadoLegadoBloqueante&&<p role="alert" className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm font-bold text-amber-900">El estado {expediente?.estado_expediente} mantiene el bloqueo automático. Para desbloquearlo, debe corregirse primero el estado del expediente.</p>}
           <label className="flex items-start gap-3 rounded-xl border p-4"><input type="checkbox" className="mt-1" checked={!!controlExpediente.liquidado_sin_tramitar} onChange={e=>setControlExpediente(v=>({...v,liquidado_sin_tramitar:e.target.checked}))}/><span className="flex-1"><strong className="block text-sm">Liquidado sin tramitar</strong><span className="block text-xs text-slate-500">Bloquea el expediente y genera aviso central.</span>{controlExpediente.liquidado_sin_tramitar&&<input aria-label="Fecha liquidado sin tramitar" type="date" className="mt-3 w-full rounded-lg border p-2" value={controlExpediente.fecha_liquidacion_sin_tramitar||""} onChange={e=>setControlExpediente(v=>({...v,fecha_liquidacion_sin_tramitar:e.target.value}))}/>}</span></label>
@@ -7647,7 +7647,7 @@ const cuantiaFincasParaEnvio =
 <Modal
   open={mostrarDefecto}
   onClose={() => setMostrarDefecto(false)}
-  titulo="⚠️ Alta de defecto registral"
+  titulo="Alta de defecto registral"
   subtitulo={`Expediente ${valorVisible(expediente?.id_expediente)}`}
   ancho="max-w-4xl"
   footer={
@@ -8216,7 +8216,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={modalSelectorRegistro}
         onClose={() => setModalSelectorRegistro(false)}
-        titulo="📚 Catálogo de Registros de la Propiedad"
+        titulo="Catálogo de Registros de la Propiedad"
         subtitulo="Busca y vincula un registro al expediente"
         ancho="max-w-4xl"
         footer={<Boton onClick={() => setModalSelectorRegistro(false)}>Cerrar</Boton>}
@@ -8244,7 +8244,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={Boolean(registroDetalleAbierto)}
         onClose={() => setRegistroDetalleAbierto(null)}
-        titulo="🏛️ Datos del Registro de la Propiedad"
+        titulo="Datos del Registro de la Propiedad"
         subtitulo={registroDetalleAbierto?.registro_propiedad || "Datos del catálogo"}
         ancho="max-w-3xl"
         footer={<Boton onClick={() => setRegistroDetalleAbierto(null)}>Cerrar</Boton>}
@@ -8273,7 +8273,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={oficinaDetalleAbierta}
         onClose={() => setOficinaDetalleAbierta(false)}
-        titulo="🏢 Datos de la oficina"
+        titulo="Datos de la oficina"
         subtitulo={expediente?.oficina || "Catálogo de oficinas"}
         ancho="max-w-3xl"
         footer={<Boton onClick={() => setOficinaDetalleAbierta(false)}>Cerrar</Boton>}
@@ -8365,7 +8365,7 @@ const cuantiaFincasParaEnvio =
 <Modal
   open={mostrarAcciones}
   onClose={() => setMostrarAcciones(false)}
-  titulo="⚡ Acciones del expediente"
+  titulo="Acciones del expediente"
   subtitulo="Asignar una acción del catálogo al expediente"
   ancho="max-w-3xl"
   footer={
@@ -8785,7 +8785,7 @@ const cuantiaFincasParaEnvio =
         onClose={() =>
           setMostrarObservaciones(false)
         }
-        titulo="💬 Observaciones"
+        titulo="Observaciones"
         subtitulo="Comentario y destino dentro del expediente"
         ancho="max-w-3xl"
         footer={
@@ -8982,7 +8982,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={mostrarModalFacturaHonorarios}
         onClose={() => !guardandoFacturaHonorarios && setMostrarModalFacturaHonorarios(false)}
-        titulo="🧾 Factura de honorarios gestoría"
+        titulo="Factura de honorarios gestoría"
         subtitulo={`Expediente ${expediente?.id_expediente || ""} · Revisa los datos antes de registrar`}
         ancho="max-w-5xl"
         footer={
@@ -9136,7 +9136,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={mostrarModalDatosActividad}
         onClose={() => setMostrarModalDatosActividad(false)}
-        titulo={`☷ Datos de actividad · ${ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"}`}
+        titulo={`Datos de actividad · ${ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"}`}
         subtitulo={`Expediente ${expediente?.id_expediente || ""}. Solo se muestran los campos propios de esta actividad.`}
         ancho="max-w-4xl"
         footer={
@@ -9241,7 +9241,7 @@ const cuantiaFincasParaEnvio =
                 </label>
               </div>
               <section className="mt-3 rounded-xl border border-slate-200 bg-white p-4">
-                <h4 className="mb-3 text-sm font-extrabold text-slate-800">📁 Repositorios digitales</h4>
+                <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800"><MolsanIcon name="folder" size={17} tone="ocean" bare /> Repositorios digitales</h4>
                 <RepositorioDocumentosInline
                   expedienteId={expediente?.id_expediente || expediente?.id || id}
                   categorias={["Hoja de Encargo firmada", "Justificante de cancelación", "Nota simple registral"]}
@@ -9335,7 +9335,7 @@ const cuantiaFincasParaEnvio =
             ) : actividadSeleccionada === "facturacion-cierre" ? (
               <div className="grid min-w-0 grid-cols-1 items-start gap-3">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Cierre del expediente</h4>
+                <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800"><MolsanIcon name="clipboardList" size={17} tone="ocean" bare /> Datos · Cierre del expediente</h4>
                 <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {[
                     { key: "fecha_fin_actividad", label: "Fecha de cierre" },
@@ -9370,7 +9370,7 @@ const cuantiaFincasParaEnvio =
             ) : actividadSeleccionada === "liquidacion-impuestos" ? (
               <div className="grid min-w-0 grid-cols-1 items-start gap-3">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Liquidación de impuestos</h4>
+                  <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800"><MolsanIcon name="clipboardList" size={17} tone="ocean" bare /> Datos · Liquidación de impuestos</h4>
                   <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
                       const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
@@ -9404,7 +9404,7 @@ const cuantiaFincasParaEnvio =
             ) : actividadSeleccionada === "tramitacion-inscripcion" ? (
               <div className="grid min-w-0 grid-cols-1 items-start gap-3">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Tramitación inscripción</h4>
+                  <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800"><MolsanIcon name="clipboardList" size={17} tone="ocean" bare /> Datos · Tramitación inscripción</h4>
                   <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
                       const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
