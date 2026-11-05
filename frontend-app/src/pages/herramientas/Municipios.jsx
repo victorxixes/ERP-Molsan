@@ -2,6 +2,7 @@ import { API_BASE as API_ROOT } from "../../api/config";
 import { useEffect, useMemo, useRef, useState } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 /**
  * ============================================================
@@ -1465,96 +1466,12 @@ export default function Municipios() {
           CABECERA
       ===================================================== */}
 
-      <div
-        className="
-          relative overflow-hidden
-          rounded-[24px]
-          border border-slate-200/80
-          bg-white/80
-          backdrop-blur-xl
-          shadow-[0_18px_50px_rgba(15,23,42,0.08)]
-          p-6 sm:p-7
-        "
-      >
-
-        <div
-          className="
-            absolute inset-x-0 top-0 h-px
-            bg-gradient-to-r
-            from-transparent
-            via-blue-400/60
-            to-transparent
-          "
-        />
-
-
-        <div
-          className="
-            relative
-            flex flex-col
-            gap-5
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-          "
-        >
-
-          <div
-            className="
-              flex items-center gap-4
-            "
-          >
-
-            <div
-              className="
-                flex h-14 w-14 shrink-0
-                items-center justify-center
-                rounded-2xl
-                bg-indigo-50
-                border border-indigo-100
-                text-2xl
-                shadow-sm
-              "
-            >
-              🏘️
-            </div>
-
-
-            <div>
-
-              <h1
-                className="
-                  text-2xl sm:text-3xl
-                  font-bold
-                  tracking-tight
-                  text-slate-800
-                "
-              >
-                Municipios
-              </h1>
-
-
-              <p
-                className="
-                  mt-1
-                  text-sm
-                  text-slate-500
-                "
-              >
-                Maestro de comunidades autónomas,
-                provincias y municipios.
-              </p>
-
-            </div>
-
-          </div>
-
-
-          {/* =================================================
-              BOTONES CABECERA
-          ================================================= */}
-
-          <div
+      <MolsanPageHeader
+          mark="MUN"
+          title="Municipios"
+          description="Maestro de comunidades autónomas, provincias y municipios."
+          className="municipios-page-header"
+          actions={<><div
             className="
               flex
               flex-col
@@ -1644,11 +1561,8 @@ export default function Municipios() {
 
             </button>
 
-          </div>
-
-        </div>
-
-      </div>
+          </div></>}
+        />
 
 
       {/* =====================================================
