@@ -95,22 +95,21 @@ export default function Layout() {
         encontrada.classList.add("molsan-page-header", "molsan-page-header--legacy");
       }
 
-      const botonVolverExistente = Array.from(
+      const botonesVolverExistentes = Array.from(
         encontrada.querySelectorAll("button:not([data-layout-back-button]), a")
-      ).find((elemento) => {
+      ).filter((elemento) => {
         const texto = (elemento.textContent || "").trim();
         const aria = elemento.getAttribute("aria-label") || "";
         return /\bvolver\b|regresar/i.test(texto) || /\bvolver\b|regresar/i.test(aria);
       });
 
-      if (botonVolverExistente) {
-        botonVolverExistente.classList.add("molsan-page-back-button");
-        setTieneVolverPropio(true);
-        setCabeceraSubpagina(null);
-      } else {
-        setTieneVolverPropio(false);
-        setCabeceraSubpagina(encontrada);
-      }
+      // Sustituye cualquier botón de vuelta heredado por uno único y común.
+      // Así todas las subpáginas regresan a la raíz del módulo, no al historial.
+      botonesVolverExistentes.forEach((elemento) => {
+        elemento.classList.add("molsan-page-back-replaced");
+      });
+      setTieneVolverPropio(false);
+      setCabeceraSubpagina(encontrada);
 
       // El observador solo espera al primer pintado de la cabecera diferida.
       // Se desconecta al encontrarla para no reubicar el portal con cada cambio
