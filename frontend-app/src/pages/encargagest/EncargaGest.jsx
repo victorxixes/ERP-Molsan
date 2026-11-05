@@ -879,14 +879,6 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         <Sidebar
           brandName="EncargaGest"
           navigationItems={[]}
-          headerActions={
-            <>
-              <div className="ag-fecha-actual" aria-label={`Fecha actual: ${fechaActual}`}>
-                <span className="ag-punto-vivo" aria-hidden="true" />
-                <span>{fechaActual}</span>
-              </div>
-            </>
-          }
           onProfileClick={() => {
             setPerfilAbierto(true);
             setMensajePasswordPerfil("");
