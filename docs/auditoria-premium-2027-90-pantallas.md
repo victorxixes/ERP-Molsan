@@ -10,20 +10,20 @@ Se extrajeron las declaraciones `lazy(() => import(...))` de `frontend-app/src/A
 - **Legacy (39):** no usa `MolsanPageHeader` y conserva `header/h1`; necesita adaptación.
 - **Embebido (8):** no declara cabecera propia ni usa el componente común; validar integrado y no añadir una cabecera redundante.
 
-## Premium por estructura — 35
-Dashboard; FichaExpedienteDemo; CtnDetallePage; CtnListadoPage; EmpleadosListado; EmpleadoFicha; EmpleadoEditar; Intranet; Utilidades; Catalogos; CatalogoAbsis; CatalogoOficinas; TiposImpositivos; CorrespondenciaTipificada; FirmasEmail; HonorariosGestoria; Municipios; EntidadesBancarias; RegistrosPropiedad; OficinasLiquidadoras; AccionesExpediente; PanelTecnico; SeguridadUsuarios; SeguridadRoles; SeguridadModulos; SeguridadPermisos; SeguridadFicha; SeguridadAuditoria; Maestros; Fusiones; TiposExpediente; Fichajes; MensajeriaMolsan; MensajeriaSolicitudes; CatalogoFichajes.
+## Premium por estructura — 43
+Dashboard; FichaExpedienteDemo; CtnDetallePage; CtnListadoPage; EmpleadosListado; EmpleadoFicha; EmpleadoEditar; Intranet; Utilidades; Catalogos; CatalogoAbsis; CatalogoOficinas; TiposImpositivos; CorrespondenciaTipificada; FirmasEmail; HonorariosGestoria; Municipios; EntidadesBancarias; RegistrosPropiedad; OficinasLiquidadoras; AccionesExpediente; PanelTecnico; SeguridadUsuarios; SeguridadRoles; SeguridadModulos; SeguridadPermisos; SeguridadFicha; SeguridadAuditoria; SeguridadRolEditor; SeguridadLogs; Maestros; Fusiones; TiposExpediente; Fichajes; MensajeriaMolsan; MensajeriaSolicitudes; CatalogoFichajes; ReglasActividadesExpediente; ModelosDocumentos; DatosMolsan; AltaExpediente; CambiarGestorExpediente; AccesosNotariales.
 
 ## Parcial — 8
 Agenda; ExpedientesListado; FichaExpediente; ProvisionesFondosPage; Informes; ApoderaGest; NotarGest; EncargaGest.
 
-## Legacy — 39
-LoginPage; ModulosSelector; ModuloPendiente; Cancelagest; Herramientas; ImportarCTN; ImportacionesDatos; ImportadorAbsis; ImportadorPostFirma; ReglasActividadesExpediente; ModelosDocumentos; DatosMolsan; AltaExpediente; AdministracionEmpleadoConfig; AccesosNotariales; CrearNoticia; SubirDocumento; MantenimientoTecnico; CambiarGestorExpediente; ReasignarNotarioExpediente; AsignarExpedientesPromociones; ComplementosSaldo; ProcesoAbsis; LecturaCopias; CambiosActividadAbsis; LecturaCancelaI; PPAD; Verifacti; Logs; Notificaciones; MonitorSistema; AuditoriaAvanzada; LogsAvanzados; Seguridad; SeguridadLogs; SeguridadRolEditor; TiposCargaHipotecaria; TiposConceptoGastos; ControlApoderados.
+## Legacy — 31
+LoginPage; ModulosSelector; ModuloPendiente; Cancelagest; Herramientas; ImportarCTN; ImportacionesDatos; ImportadorAbsis; ImportadorPostFirma; AdministracionEmpleadoConfig; CrearNoticia; SubirDocumento; MantenimientoTecnico; ReasignarNotarioExpediente; AsignarExpedientesPromociones; ComplementosSaldo; ProcesoAbsis; LecturaCopias; CambiosActividadAbsis; LecturaCancelaI; PPAD; Verifacti; Logs; Notificaciones; MonitorSistema; AuditoriaAvanzada; LogsAvanzados; Seguridad; TiposCargaHipotecaria; TiposConceptoGastos; ControlApoderados.
 
 ## Embebido — 8
 VistaDia; VistaSemana; VistaMes; Ctn; EmpleadosModulo2026; Mensajes; MonitorRealtime; EncargaGestWorkspace.
 
 ## Cambios posteriores a la primera fotografía
-Se ha normalizado también la cabecera de EmpleadoEditar, SeguridadFicha e Intranet en esta rama. La categoría anterior ya refleja esos cambios: EmpleadoEditar, SeguridadFicha e Intranet están en Premium por estructura.
+Se han normalizado también EmpleadoEditar, SeguridadFicha, SeguridadRolEditor, SeguridadLogs e Intranet, además de ReglasActividadesExpediente, ModelosDocumentos, DatosMolsan, AltaExpediente, CambiarGestorExpediente y AccesosNotariales. El inventario actualizado refleja estas migraciones.
 
 ## Próximas acciones
 1. Revisar visualmente los 8 componentes parciales para eliminar cabeceras internas duplicadas sin quitar títulos funcionales.
