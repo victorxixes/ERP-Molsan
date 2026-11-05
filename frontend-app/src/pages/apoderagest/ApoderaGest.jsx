@@ -937,14 +937,6 @@ export default function ApoderaGest() {
         title="ApoderaGest"
         description="Centro de gestión de encargos, firmas y actividad del apoderado."
         className="ag-hero dashboard-header"
-        actions={
-          <>
-            <div className="ag-fecha-actual"><span className="ag-punto-vivo" /><span>{fechaActual}</span></div>
-            <button type="button" onClick={() => navigate("/modulos")} className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]">
-              <MolsanIcon name="dashboard" size={20} tone="ocean" /> Ir a módulos
-            </button>
-          </>
-        }
       />
 
       {error ? (
