@@ -8,6 +8,7 @@ import { useSeguridad } from "../../hooks/useSeguridad";
 import MODULOS_ERP from "../../config/modulos";
 import "./SeguridadSubpaginasPremium.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 
 function arraySeguro(valor) {
@@ -700,9 +701,7 @@ export default function SeguridadPermisos() {
           text-center
         "
       >
-        <div className="text-3xl">
-          🔑
-        </div>
+        <div><MolsanIcon name="key" size={34} tone="ocean" /></div>
 
         <p
           className="
@@ -1131,7 +1130,7 @@ export default function SeguridadPermisos() {
                         >
                           {completo
                             ? "✓"
-                            : "🔑"}
+                            : <MolsanIcon name="key" size={15} tone="ocean" bare />}
                         </span>
 
 
