@@ -1,6 +1,12 @@
 name: Frontend dependency security audit
 
 on:
+  push:
+    branches:
+      - preview-security-audit-check
+    paths:
+      - "frontend-app/package.json"
+      - ".github/workflows/frontend-security-audit.yml"
   pull_request:
     paths:
       - "frontend-app/package.json"
