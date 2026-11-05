@@ -20,9 +20,9 @@ class Notaria(Base):
     iban_2 = Column(String(34), nullable=True)
 
     # Departamentos internos
-    departamento_cancelaciones = Column(String(150), nullable=True)
-    departamento_copias = Column(String(150), nullable=True)
-    otros_departamentos = Column(String(150), nullable=True)
+    departamento_cancelaciones = Column(String(255), nullable=True)
+    departamento_copias = Column(String(255), nullable=True)
+    otros_departamentos = Column(String(255), nullable=True)
 
     # Dirección
     cp = Column(String(10), nullable=True)
