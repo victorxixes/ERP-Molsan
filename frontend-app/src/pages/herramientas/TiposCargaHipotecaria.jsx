@@ -593,7 +593,7 @@ export default function TiposCargaHipotecaria() {
         title="Tipos de Carga Hipotecaria"
         description="Catálogo de tipos de carga hipotecaria"
         actions={<button type="button" onClick={abrirNuevo} className="molsan-btn molsan-btn--primary">Nuevo tipo de carga</button>}
-      />ction>
+      />
 
 
       {/* ====================================================
