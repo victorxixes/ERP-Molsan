@@ -7,6 +7,34 @@ import EmpleadoPerfilModal from "../components/SidebarPerfilModal";
 import { useNotificacionesWS } from "../hooks/useNotificacionesWS";
 import NotificacionesToast from "../components/notificaciones/NotificacionesToast";
 
+const RUTAS_PADRE_SUBPAGINA = [
+  [/^\\/catalogos\\/provisiones-fondos$/, "/catalogos"],
+  [/^\\/catalogos\\//, "/catalogos"],
+  [/^\\/herramientas\\/utilidades\\/correspondencia-tipificada$/, "/catalogos"],
+  [/^\\/herramientas\\/utilidades\\//, "/herramientas/utilidades"],
+  [/^\\/herramientas\\/(?:municipios|entidades-bancarias|registros-propiedad|oficinas-liquidadoras|honorarios-gestoria|acciones-expediente|tipos-carga-hipotecaria|tipos-concepto-gastos|tipos-expediente)$/, "/catalogos"],
+  [/^\\/herramientas\\/importador-absis\\/postfirma$/, "/herramientas/importador-absis"],
+  [/^\\/herramientas\\/(?:importar-ctn|importador-absis|importaciones-datos|mantenimiento-tecnico)$/, "/herramientas"],
+  [/^\\/agenda\\/(?:dia|semana|mes)$/, "/agenda"],
+  [/^\\/expedientes\\/[^/]+$/, "/expedientes"],
+  [/^\\/expedientes-demo-glass-luxe$/, "/expedientes"],
+  [/^\\/ctn\\/(?:listado|[^/]+)$/, "/ctn"],
+  [/^\\/empleados\\/(?:listado|[^/]+)(?:\\/editar)?$/, "/empleados"],
+  [/^\\/informes\\/[^/]+$/, "/informes"],
+  [/^\\/apoderagest\\/liquidaciones$/, "/apoderagest"],
+  [/^\\/encargagest\\/(?:ctn|agenda|mensajes|intranet)$/, "/encargagest"],
+  [/^\\/paneltecnico\\//, "/paneltecnico"],
+  [/^\\/seguridad\\/auditoria$/, "/auditoria"],
+  [/^\\/seguridad\\//, "/seguridad"],
+];
+
+function obtenerRutaPrincipal(pathname) {
+  const coincidencia = RUTAS_PADRE_SUBPAGINA.find(([patron]) => patron.test(pathname));
+  if (coincidencia) return coincidencia[1];
+  const partes = pathname.split("/").filter(Boolean);
+  return partes.length > 1 ? `/${partes.slice(0, -1).join("/")}` : "/dashboard";
+}
+
 /** Layout principal de ERP-Molsan. Mantiene perfil, navegación,
  * canal de notificaciones. */
 export default function Layout() {
@@ -22,7 +50,7 @@ export default function Layout() {
     "/", "/dashboard", "/expedientes", "/provisiones-fondos", "/agenda",
     "/empleados", "/fichajes", "/control-fichajes", "/ctn", "/intranet",
     "/mensajes", "/mensajeria", "/mensajeria-gestion", "/informes",
-    "/fusiones", "/auditoria", "/catalogos", "/herramientas/utilidades",
+    "/fusiones", "/auditoria", "/catalogos", "/herramientas", "/herramientas/utilidades",
     "/seguridad", "/logs", "/maestros", "/paneltecnico", "/apoderagest",
     "/cancelagest", "/notargest", "/encargagest",
   ]);
@@ -89,12 +117,8 @@ export default function Layout() {
   }, [pathname, esSubpagina]);
 
   const volverSubpagina = () => {
-    if (window.history.state?.idx > 0) {
-      navigate(-1);
-      return;
-    }
-    const partes = pathname.split("/").filter(Boolean);
-    navigate(partes.length > 1 ? `/${partes.slice(0, -1).join("/")}` : "/dashboard");
+    // Volver siempre al módulo principal, nunca a la pantalla anterior del historial.
+    navigate(obtenerRutaPrincipal(pathname), { replace: true });
   };
 
   useNotificacionesWS(empleado?.id);
@@ -107,7 +131,7 @@ export default function Layout() {
       <main className="erp-main-content relative min-h-[calc(100vh-70px)]">
         <div className={`erp-main-inner w-full${esSubpaginaCatalogosUtilidades ? " molsan-tools-subpage" : ""}`}>
           <div className={`erp-route-content w-full${rutaCancelaGest ? " cg-unified-workspace" : ""}`}>
-            {esSubpagina && !esSubpaginaCatalogosUtilidades && !cabeceraSubpagina && !tieneVolverPropio ? (
+            {esSubpagina && !cabeceraSubpagina && !tieneVolverPropio ? (
         <header className="molsan-page-header molsan-page-back-fallback">
           <button type="button" className="molsan-page-back-button" onClick={volverSubpagina} aria-label="Volver a la página anterior"><span aria-hidden="true">←</span> Volver</button>
         </header>
