@@ -952,7 +952,7 @@ export default function SeguridadLogs() {
         title="Logs técnicos"
         description="Monitorización técnica y trazabilidad de eventos del ERP"
         actions={
-          <span className="molsan-status-chip">
+          <span className="molsan-status molsan-status--success">
             <span className="h-2 w-2 rounded-full bg-emerald-500" />
             Monitor técnico activo
           </span>
