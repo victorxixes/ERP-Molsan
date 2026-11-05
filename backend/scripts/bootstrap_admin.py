@@ -14,6 +14,16 @@ from sqlalchemy.orm import Session
 
 from backend.app.database import SessionLocal
 from backend.app.empleados.models import Empleado
+# Registrar los modelos relacionados antes de que SQLAlchemy configure los mapeadores.
+# El bootstrap no importa main.py ni inicializa routers o tareas de arranque.
+from backend.app.agenda.models import Cita  # noqa: F401
+from backend.app.ctn.models import Notaria  # noqa: F401
+from backend.app.expedientes.models import (  # noqa: F401
+    Cliente,
+    Expediente,
+    ExpedienteDocumentoEscritura,
+    ExpedientePromocion,
+)
 from backend.app.empleados.service import hash_password
 from backend.app.seguridad.permisos.permisos_router import MODULOS_BASE
 from backend.app.seguridad.roles.models import Rol
