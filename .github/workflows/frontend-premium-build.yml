@@ -1,0 +1,38 @@
+name: MOLSAN frontend premium build
+
+on:
+  pull_request:
+    branches:
+      - release/molsan-premium-2027-candidate
+    paths:
+      - "frontend-app/**"
+      - ".github/workflows/frontend-premium-build.yml"
+  push:
+    branches:
+      - fix/molsan-premium-2027-global-ui
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-premium-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Vite production build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend-app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build frontend
+        run: npm run build
