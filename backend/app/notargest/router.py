@@ -20,6 +20,7 @@ from backend.app.auth.dependencies import obtener_token_bearer
 from backend.app.config import settings
 from backend.app.ctn.models import Notaria
 from backend.app.database import engine, get_db
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
 from backend.app.expedientes.models import Expediente
 from backend.app.expedientes.gastos.models import ExpedienteGasto
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
@@ -70,6 +71,10 @@ ROOT.mkdir(parents=True, exist_ok=True)
 @router.on_event("startup")
 def crear_tabla_avisos_leidos_notargest():
     """Guarda las notificaciones leídas por notario, sin alterar las observaciones originales."""
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: crear_tabla_avisos_leidos_notargest; ejecutar migración versionada.", flush=True)
+        return
+
     with engine.begin() as conn:
         conn.execute(text("""
             CREATE TABLE IF NOT EXISTS notargest_avisos_leidos (
@@ -84,6 +89,10 @@ def crear_tabla_avisos_leidos_notargest():
 
 @router.on_event("startup")
 def crear_tabla_historial_actividad_notargest():
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: crear_tabla_historial_actividad_notargest; ejecutar migración versionada.", flush=True)
+        return
+
     with engine.begin() as conn:
         conn.execute(text("""
             CREATE TABLE IF NOT EXISTS notargest_historial_actividad (
@@ -144,6 +153,10 @@ def migrar_notargest():
     PostgreSQL puede necesitar un bloqueo exclusivo para ALTER TABLE incluso con
     ADD COLUMN IF NOT EXISTS. Por eso no ejecutamos ALTER sobre columnas existentes.
     """
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: migrar_notargest; ejecutar migración versionada.", flush=True)
+        return
+
     import time as _time
 
     cambios = [
