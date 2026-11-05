@@ -57,32 +57,15 @@ export default function Layout() {
       const controlesVolver = Array.from(
         contenedor.querySelectorAll("button:not([data-layout-back-button]), a")
       ).filter(esControlVolver);
-      const botonVolverEnCabecera = controlesVolver.find((elemento) => encontrada.contains(elemento));
 
-      // Conserva un único Volver. Si el módulo lo había colocado fuera de la
-      // cabecera, se oculta el control antiguo y se muestra el común dentro
-      // de la cabecera, sin tocar botones de navegación de los modales.
+      // Todos los controles heredados se sustituyen por el botón común.
+      // Así el destino es siempre la página principal del módulo, aunque
+      // el botón anterior tuviera un handler que regresara a otra vista.
       controlesVolver.forEach((elemento) => {
-        if (elemento !== botonVolverEnCabecera) {
-          elemento.classList.add("molsan-page-back-legacy-hidden");
-        }
+        elemento.classList.add("molsan-page-back-legacy-hidden");
       });
-
-      if (botonVolverEnCabecera) {
-        botonVolverEnCabecera.classList.add("molsan-page-back-button");
-        setTieneVolverPropio(true);
-        setCabeceraSubpagina(null);
-      } else {
-        setTieneVolverPropio(false);
-        setCabeceraSubpagina(encontrada);
-      }
-
-      // El observador solo espera al primer pintado de la cabecera diferida.
-      // Se desconecta al encontrarla para no reubicar el portal con cada cambio
-      // de datos, tabla o tarjeta dentro de la subpágina.
-      finalizado = true;
-      observador?.disconnect();
-      return true;
+      setTieneVolverPropio(false);
+      setCabeceraSubpagina(encontrada);
     };
 
     if (!localizarCabecera()) {
