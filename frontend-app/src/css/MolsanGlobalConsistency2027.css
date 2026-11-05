@@ -136,6 +136,17 @@
   background: rgba(255,255,255,.12);
 }
 
+.erp-route-content .molsan-page-header__eyebrow,
+.erp-page.molsan-professional-shell .molsan-page-header__eyebrow {
+  margin: 0 0 1px;
+  color: #C6DFEC;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
 .erp-route-content .molsan-page-header__title,
 .erp-page.molsan-professional-shell .molsan-page-header__title {
   margin: 0;
@@ -310,4 +321,10 @@
     animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;
   }
+}
+
+/* Los botones Volver heredados se sustituyen por el único control común
+   situado en la cabecera de la subpágina. */
+.erp-route-content .molsan-page-back-legacy-hidden {
+  display: none !important;
 }
