@@ -13,6 +13,7 @@ import TraspasoSaldoPanel from "../../components/expedientes/TraspasoSaldoPanel"
 import { useAuthStore } from "../../store/authStore";
 import "./FichaExpedientePremium.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 import { obtenerCatalogoAcciones, obtenerAccionesExpediente, asignarAccionExpediente, eliminarAccionExpediente } from "../../api/expedienteAcciones";
 
@@ -230,49 +231,49 @@ const ACTIVIDADES_EXPEDIENTES = [
   {
     key: "documentacion-previa",
     label: "Documentación previa",
-    icono: "📄",
+    icono: "file",
   },
 
   {
     key: "sede-notarial",
     label: "Sede notarial",
-    icono: "🏛️",
+    icono: "courthouse",
   },
 
   {
     key: "sede-notarial-protocolo",
     label: "Sede notarial con protocolo",
-    icono: "📜",
+    icono: "scroll",
   },
 
   {
     key: "gestion-economica",
     label: "Gestión económica",
-    icono: "💼",
+    icono: "briefcase",
   },
 
   {
     key: "liquidacion-impuestos",
     label: "Liquidación de impuestos",
-    icono: "💶",
+    icono: "euro",
   },
 
   {
     key: "tramitacion-inscripcion",
     label: "Tramitación inscripción",
-    icono: "🏢",
+    icono: "building",
   },
 
   {
     key: "defectos-registrales",
     label: "Defectos registrales",
-    icono: "⚠️",
+    icono: "alert",
   },
 
   {
     key: "facturacion-cierre",
     label: "Cierre del expediente",
-    icono: "🧾",
+    icono: "receipt",
   },
 ];
 
@@ -5044,7 +5045,7 @@ const cuantiaFincasParaEnvio =
                         });
                         const fases = [
                           {
-                            key: "documentacion-previa", label: "Documentación previa", icono: "📄",
+                            key: "documentacion-previa", label: "Documentación previa", icono: "file",
                             checks: [
                               requisito(
                                 "Certificado Saldo «0» erróneo",
@@ -5087,14 +5088,14 @@ const cuantiaFincasParaEnvio =
                             ],
                           },
                           {
-                            key: "sede-notarial", label: "Sede notarial", icono: "🏛️",
+                            key: "sede-notarial", label: "Sede notarial", icono: "courthouse",
                             checks: [
                               requisito("Notario", Boolean(notario), "Falta seleccionar o indicar el notario en Enviar a notario"),
                               requisito("Fecha de envío", Boolean(fechaEnvio), "No consta la fecha de envío a notario"),
                             ],
                           },
                           {
-                            key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "📜",
+                            key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "scroll",
                             checks: [
                               requisito("Apoderado", Boolean(valor("apoderado")), "Selecciona Gestoría o CaixaBank"),
                               requisito("Fecha firma", Boolean(fechaFirma), "No consta la fecha de firma"),
@@ -5108,7 +5109,7 @@ const cuantiaFincasParaEnvio =
                             ],
                           },
                           {
-                            key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "💶",
+                            key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "euro",
                             checks: [
                               requisito("Fecha presentación tributaria", Boolean(valor("fecha_presentacion_tributaria")), "Falta la fecha de presentación tributaria"),
                               requisito("Fecha liquidación tributaria", Boolean(valor("fecha_liquidacion_tributaria")), "Falta la fecha de liquidación tributaria"),
@@ -5120,7 +5121,7 @@ const cuantiaFincasParaEnvio =
                             ],
                           },
                           {
-                            key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "🏢",
+                            key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "building",
                             checks: [
                               requisito("Fecha presentación", Boolean(valor("fecha_presentacion")), "Falta la fecha de presentación en Registro"),
                               requisito("Fecha vencimiento asiento (+60 días naturales)", Boolean(valor("fecha_vencimiento_asiento", "fecha_vencimiento")), "No consta la fecha de vencimiento del asiento, calculada a 60 días naturales desde la presentación"),
@@ -5137,7 +5138,7 @@ const cuantiaFincasParaEnvio =
                             ],
                           },
                           {
-                            key: "defectos-registrales", label: "Defectos registrales", icono: "⚠️",
+                            key: "defectos-registrales", label: "Defectos registrales", icono: "alert",
                             checks: [
                               requisito(
                                 "Control de defectos registrales",
@@ -5171,7 +5172,7 @@ const cuantiaFincasParaEnvio =
                             ],
                           },
                           {
-                            key: "facturacion-cierre", label: "Facturación y cierre", icono: "🧾",
+                            key: "facturacion-cierre", label: "Facturación y cierre", icono: "receipt",
                             checks: [
                               requisito("Fecha de facturación", Boolean(valor("facturacion_fecha")), "Falta la fecha de facturación"),
                               requisito("Entrega al cliente", Boolean(valor("fecha_entregado_cliente")), "Falta la fecha de entrega al cliente"),
@@ -5198,9 +5199,9 @@ const cuantiaFincasParaEnvio =
                                     aria-label={"Ir a " + fase.label + ". " + (completa ? "Control superado" : pendientes.length + " tareas pendientes")}
                                   >
                                     <span className="flex items-center gap-3">
-                                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-lg ${completa ? "bg-emerald-100" : actual ? "bg-blue-100" : "bg-slate-100"}`}>{completa ? "✓" : fase.icono}</span>
+                                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-lg ${completa ? "bg-emerald-100" : actual ? "bg-blue-100" : "bg-slate-100"}`}>{completa ? "✓" : <MolsanIcon name={fase.icono} size={20} tone="ocean" bare />}</span>
                                       <span className="min-w-0 flex-1">
-                                        <span className="block text-sm font-extrabold text-slate-800">{fase.icono} {fase.label}</span>
+                                        <span className="block text-sm font-extrabold text-slate-800"><MolsanIcon name={fase.icono} size={16} tone="ocean" bare /> {fase.label}</span>
                                         <span className={`mt-1 block text-xs font-semibold ${completa ? "text-emerald-700" : actual ? "text-blue-700" : "text-amber-700"}`}>
                                           {completa ? "Control superado" : actual ? "Actividad actual · requiere revisión" : "Con incidencias pendientes"}
                                         </span>
@@ -5686,7 +5687,7 @@ const cuantiaFincasParaEnvio =
                         "
                       >
                         {
-                          actividad.icono
+                          <MolsanIcon name={actividad.icono} size={22} tone="ocean" bare />
                         }
                       </span>
 
@@ -5761,7 +5762,7 @@ const cuantiaFincasParaEnvio =
 
               <div className="min-w-0 flex-1">
                 <h3 className="text-base font-bold text-slate-800">
-                  {actividadSeleccionadaDef.icono} {actividadSeleccionadaDef.label}
+                  <MolsanIcon name={actividadSeleccionadaDef.icono} size={20} tone="ocean" bare /> {actividadSeleccionadaDef.label}
                 </h3>
                 <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
                   <span className="inline-flex items-center gap-1.5">
