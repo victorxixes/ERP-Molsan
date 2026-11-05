@@ -1,6 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
 
 const mesActual = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; };
@@ -11,7 +10,6 @@ const estado = (v) => ({ pendiente: "Pendiente de validar", validada: "Relación
 
 export default function ControlApoderados({ modo = "colaborador" }) {
   const admin = modo === "admin";
-  const navigate = useNavigate();
   const [periodo, setPeriodo] = useState(mesActual());
   const [item, setItem] = useState(null);
   const [items, setItems] = useState([]);
@@ -258,6 +256,5 @@ export default function ControlApoderados({ modo = "colaborador" }) {
         {historial.length ? <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr className="border-b text-slate-500"><th className="p-3">Periodo</th><th className="p-3">Firmas</th><th className="p-3">Relación</th><th className="p-3">Factura</th><th className="p-3">Consulta</th></tr></thead><tbody>{historial.map((h) => <tr key={h.id} className="border-b last:border-0"><td className="p-3 font-semibold">{h.periodo}</td><td className="p-3">{h.protocolos_firmados ?? h.expedientes?.length ?? 0}</td><td className="p-3">{estado(h.estado_relacion)}</td><td className="p-3">{estado(h.estado_factura)}</td><td className="p-3"><button onClick={() => setPeriodo(h.periodo)} className="font-semibold text-indigo-700 hover:underline">Abrir mes</button></td></tr>)}</tbody></table></div> : <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500">Todavía no hay otros periodos registrados.</p>}
       </section>
     </> : !cargando && <section className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600">No se ha podido cargar la relación mensual. Si eres colaborador, solicita que habiliten tu ficha desde Utilidades → Control Apoderados.</section>}
-    <div><button onClick={() => navigate(admin ? "/herramientas/utilidades" : "/apoderagest")} className="text-sm font-semibold text-indigo-700 hover:underline">← Volver</button></div>
   </div>;
 }
