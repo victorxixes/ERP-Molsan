@@ -160,7 +160,7 @@ export default function Intranet() {
         <p className="text-xs font-semibold uppercase tracking-wider text-[var(--erp-text-soft)]">Sesión</p>
         <p className="mt-1 truncate font-bold text-[var(--erp-text)]">{empleado?.nombre || empleado?.username || empleado?.email || "Empleado conectado"}</p>
       </article>
-    </section>der>
+    </section>
 
     {(mensaje || error) && <div role="status" className={`rounded-2xl border px-4 py-3 text-sm ${error || /no se ha podido|no permitido|supera|selecciona|obligatorio|completa/i.test(mensaje) ? "border-amber-200 bg-amber-50 text-amber-800" : "border-emerald-200 bg-emerald-50 text-emerald-800"}`}>{mensaje || error}</div>}
 
