@@ -2485,7 +2485,7 @@ function GraficoCard({
               justify-center
             "
           >
-            {icono}
+            <MolsanIcon name={icono} size={20} tone="ocean" />
           </div>
 
 
@@ -2874,7 +2874,7 @@ function InformeFirmas() {
       </section>
 
       <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4"><div><h3 className="font-bold text-slate-800">Detalle de firmas</h3><p className="mt-1 text-xs text-slate-500">{numeroInforme(filas.length)} registros recibidos del backend. Puedes completar modalidad y fecha de envío desde la columna de acciones.</p></div><div className="flex flex-wrap gap-2"><button type="button" disabled={loading || exportando} onClick={exportarExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Exportando…" : "📗 Exportar Excel"}</button><button type="button" disabled={loading || filas.length === 0} onClick={() => imprimirInforme("Informe de firmas reales", periodo, columnasPDF, filas)} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50">📄 Exportar PDF</button></div></div>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4"><div><h3 className="font-bold text-slate-800">Detalle de firmas</h3><p className="mt-1 text-xs text-slate-500">{numeroInforme(filas.length)} registros recibidos del backend. Puedes completar modalidad y fecha de envío desde la columna de acciones.</p></div><div className="flex flex-wrap gap-2"><button type="button" disabled={loading || exportando} onClick={exportarExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Exportando…" : "📗 Exportar Excel"}</button><button type="button" disabled={loading || filas.length === 0} onClick={() => imprimirInforme("Informe de firmas reales", periodo, columnasPDF, filas)} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50"><MolsanIcon name="file" size={14} tone="inherit" bare /> Exportar PDF</button></div></div>
         {loading ? <PanelEstadoInforme loading /> : filas.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales para el periodo y los filtros seleccionados." /> : <div className="max-h-[700px] overflow-auto"><table className="w-full min-w-[1420px] text-sm"><thead className="sticky top-0 z-10 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr>{columnasPDF.map((c) => <th key={c.key} className="whitespace-nowrap px-4 py-3">{c.label}</th>)}<th className="whitespace-nowrap px-4 py-3">Acciones</th></tr></thead><tbody>{filas.map((f, i) => <Fragment key={f.id ?? `${f.id_expediente}-${i}`}>
           <tr className="border-t border-slate-100 hover:bg-blue-50/40">
             <td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_firma)}</td>
@@ -3106,7 +3106,7 @@ function InformeNotarios() {
           <div><h3 className="font-bold text-slate-800">Resumen por notario</h3><p className="mt-1 text-xs text-slate-500">Incluye firmas por modalidad, media entre envío y firma, protocolo y tipos de operación.</p></div>
           <div className="flex flex-wrap gap-2">
             <button type="button" disabled={loading || exportando} onClick={exportarExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Exportando…" : "📗 Excel resumen"}</button>
-            <button type="button" disabled={loading || porNotario.length === 0} onClick={exportarResumenPDF} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50">📄 PDF resumen</button>
+            <button type="button" disabled={loading || porNotario.length === 0} onClick={exportarResumenPDF} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50"><MolsanIcon name="file" size={14} tone="inherit" bare /> PDF resumen</button>
           </div>
         </div>
         {loading ? <PanelEstadoInforme loading /> : porNotario.length === 0 ? <PanelEstadoInforme vacio /> : (
@@ -3120,7 +3120,7 @@ function InformeNotarios() {
           <div className="flex flex-wrap gap-2">
             {claveNotarioSeleccionado && <button type="button" onClick={() => setClaveNotarioSeleccionado("")} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Ver todos</button>}
             <button type="button" disabled={loading || exportandoDetalle} onClick={exportarDetalleExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportandoDetalle ? "Exportando…" : "📗 Excel detalle"}</button>
-            <button type="button" disabled={loading || detalle.length === 0} onClick={exportarDetallePDF} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50">📄 PDF detalle</button>
+            <button type="button" disabled={loading || detalle.length === 0} onClick={exportarDetallePDF} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50"><MolsanIcon name="file" size={14} tone="inherit" bare /> PDF detalle</button>
           </div>
         </div>
         {loading ? <PanelEstadoInforme loading /> : detalle.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales con los filtros seleccionados." /> : (
@@ -3198,7 +3198,7 @@ function InformeSLA() {
             <option value="todos">Todos los grupos</option><option value="con-provision">Cancelaciones con provisión</option><option value="sin-provision">Cancelaciones sin provisión</option>
           </SelectFiltroInforme>
         </div>
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><p className="text-xs text-slate-500">{numeroInforme(items.length)} expedientes · días naturales. Los expedientes Hipotecario y Crédito Stock quedan excluidos del SLA global.</p><button type="button" onClick={exportar} disabled={actividadesPlanas.length === 0} className="rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">📊 Exportar Excel (CSV)</button></div>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><p className="text-xs text-slate-500">{numeroInforme(items.length)} expedientes · días naturales. Los expedientes Hipotecario y Crédito Stock quedan excluidos del SLA global.</p><button type="button" onClick={exportar} disabled={actividadesPlanas.length === 0} className="rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"><MolsanIcon name="chart" size={14} tone="inherit" bare /> Exportar Excel (CSV)</button></div>
       </section>
       <AvisoInforme error={error} />
       <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
@@ -3394,7 +3394,7 @@ function InformeFacturacion() {
     return (
     <section key={grupo.key} className="space-y-4 rounded-2xl border border-white/80 bg-white/55 p-4 shadow-sm backdrop-blur-xl sm:p-5">
         <div className="flex flex-wrap items-center gap-3">
-          <span className={"flex h-12 w-12 items-center justify-center rounded-xl text-2xl " + (grupo.acento === "emerald" ? "bg-emerald-50" : "bg-amber-50")}>{grupo.icono}</span>
+          <span className={"flex h-12 w-12 items-center justify-center rounded-xl text-2xl " + (grupo.acento === "emerald" ? "bg-emerald-50" : "bg-amber-50")}><MolsanIcon name={grupo.icono} size={28} tone="ocean" /></span>
           <div><h3 className="text-lg font-bold text-slate-800">{grupo.titulo}</h3><p className="text-xs text-slate-500">{grupo.descripcion}</p></div>
           <div className="ml-auto text-right"><div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Registros del periodo</div><div className="text-2xl font-extrabold text-slate-800">{loadingTarjetas ? "…" : numeroInforme(r.registros)}</div></div>
         </div>
