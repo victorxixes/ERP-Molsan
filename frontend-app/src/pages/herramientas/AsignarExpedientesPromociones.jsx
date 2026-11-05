@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
@@ -77,17 +78,7 @@ export default function AsignarExpedientesPromociones() {
 
   return (
     <div className="herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-3xl">🏷️</div>
-          <div className="min-w-0 flex-1">
-            <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl">Asignar expedientes a promociones</h1>
-            <p className="mt-1 text-sm text-slate-500">Asocia cada expediente a un tipo activo del catálogo oficial. La ficha mostrará la promoción asignada automáticamente.</p>
-          </div>
-          <Link to="/herramientas/utilidades" className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">← Volver a Utilidades</Link>
-        </div>
-      </header>
+      <MolsanPageHeader mark="UT" title="Asignar expedientes a promociones" description="Asocia cada expediente a un tipo activo del catálogo oficial. La ficha mostrará la promoción asignada automáticamente." actions={<Link to="/herramientas/utilidades" className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">← Volver a Utilidades</Link>}/>
 
       {(error || mensaje) && (
         <div role="status" className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${error ? "border-rose-200 bg-rose-50 text-rose-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"}`}>
