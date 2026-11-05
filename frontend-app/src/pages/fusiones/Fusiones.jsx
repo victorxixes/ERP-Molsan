@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import "../../css/Fusiones.css";
@@ -85,13 +86,12 @@ export default function Fusiones() {
   ];
 
   return <main className="erp-page min-h-full space-y-6 p-4 text-[var(--erp-text)] sm:p-6 lg:p-8">
-    <section className="relative overflow-hidden rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface,var(--erp-card,#fff))] shadow-sm">
-      <div className="h-1 bg-gradient-to-r from-slate-400 via-blue-600 to-indigo-300" />
-      <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
-        <div className="flex min-w-0 items-start gap-4"><div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[var(--erp-border)] bg-[var(--erp-bg,#f8fafc)] text-[var(--erp-primary,#3156b3)]"><Icon name="merge" size={25} /></div><div className="min-w-0"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--erp-text-soft)]">MOLSAN ERP · PREMIUM 2027</p><h1 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">Gestión de fusiones</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--erp-text-soft)]">Consulta y seguimiento de solicitudes de fusión recibidas desde la gestión de expedientes.</p></div></div>
-        <button type="button" onClick={cargarSolicitudes} disabled={cargando} className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-[var(--erp-border)] bg-[var(--erp-surface,var(--erp-card,#fff))] px-4 py-2 text-sm font-semibold shadow-sm transition hover:border-blue-300 hover:bg-blue-50/60 disabled:cursor-wait disabled:opacity-60"><Icon name="refresh" size={17} />{cargando ? "Actualizando…" : "Actualizar datos"}</button>
-      </div>
-    </section>
+    <MolsanPageHeader
+      mark="FUS"
+      title="Gestión de fusiones"
+      description="Consulta y seguimiento de solicitudes de fusión recibidas desde la gestión de expedientes."
+      className="fusiones-page-header"
+    />
 
     {error && <div role="alert" className="flex flex-col gap-3 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-semibold">No se han podido cargar las solicitudes</p><p className="mt-1 leading-5">{error}</p></div><button type="button" onClick={cargarSolicitudes} className="shrink-0 rounded-lg border border-rose-200 bg-white px-3 py-2 text-xs font-semibold hover:bg-rose-100">Reintentar</button></div>}
 
