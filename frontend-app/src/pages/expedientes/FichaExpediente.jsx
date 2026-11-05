@@ -929,32 +929,19 @@ function IconoSeccion({
   tipo = "default",
 }) {
   const iconos = {
-    estado: "◉",
-    titular: "👤",
-    solicitante: "👥",
-    economico: "📊",
-    notario: "✒️",
-    observaciones: "▣",
-    actividad: "⚙️",
-    finca: "🏠",
-    registro: "📚",
-    accion: "⚡",
+    estado: "activity",
+    titular: "person",
+    solicitante: "users",
+    economico: "chart",
+    notario: "pen",
+    observaciones: "clipboard",
+    actividad: "settings",
+    finca: "home",
+    registro: "book",
+    accion: "zap",
   };
 
-  return (
-    <span
-      className="
-        text-base
-        leading-none
-      "
-      aria-hidden="true"
-    >
-      {
-        iconos[tipo] ||
-        "▣"
-      }
-    </span>
-  );
+  return <MolsanIcon name={iconos[tipo] || "file"} size={22} tone="ocean" bare />;
 }
 
 
