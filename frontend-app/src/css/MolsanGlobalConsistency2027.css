@@ -68,6 +68,7 @@
   width: 100%;
   max-width: none;
   margin-inline: 0;
+  padding: 0 !important;
 }
 
 /* Cabecera única: identidad izquierda y acciones a la derecha. */
