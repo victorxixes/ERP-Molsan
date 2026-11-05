@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
@@ -126,13 +127,7 @@ export default function AltaExpediente() {
   }
 
   return <main className="min-h-full space-y-6 bg-[var(--molsan-surface-soft)] p-4 sm:p-6 lg:p-8">
-    <header className="relative overflow-hidden rounded-[28px] border border-[var(--molsan-border)] bg-[var(--molsan-surface)] p-6 shadow-[0_18px_50px_rgba(15,23,42,0.09)] backdrop-blur-xl sm:p-8">
-      <div className="absolute inset-x-0 top-0 h-1 bg-[var(--molsan-primary)]" />
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div><p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--molsan-primary)]">MOLSAN ERP · PREMIUM 2027</p><h1 className="mt-2 text-2xl font-bold tracking-tight text-[var(--molsan-text)] sm:text-3xl">Alta de expediente</h1><p className="mt-2 max-w-3xl text-sm text-[var(--molsan-text-muted)]">Crea un expediente manual con facturación, contrato, múltiples fincas, hipotecas y notaría CTN.</p></div>
-        <button type="button" onClick={() => navigate("/herramientas/utilidades")} className={botonSecundario}>← Volver a Utilidades</button>
-      </div>
-    </header>
+    <MolsanPageHeader mark="UT" title="Alta de expediente" description="Crea un expediente manual con facturación, contrato, múltiples fincas, hipotecas y notaría CTN." actions={<button type="button" onClick={() => navigate("/herramientas/utilidades")} className={botonSecundario}>← Volver a Utilidades</button>}/>
 
     {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</div>}
     {resultado && <div role="status" className="flex flex-col gap-3 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-primary-soft)] p-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-bold text-[var(--molsan-primary-hover)]">Expediente creado correctamente</p><p className="mt-1 text-sm text-[var(--molsan-primary)]">{resultado.id_expediente} · {resultado.tipo_expediente}</p></div><div className="flex flex-wrap gap-2"><button type="button" onClick={imprimirFicha} disabled={imprimiendo} className="rounded-xl border border-[var(--molsan-primary)] bg-white px-4 py-2 text-sm font-semibold text-[var(--molsan-primary)] hover:bg-[var(--molsan-primary-soft)] disabled:opacity-60">{imprimiendo ? "Generando PDF…" : "Imprimir ficha PDF"}</button><button type="button" onClick={() => navigate("/expedientes")} className="rounded-xl bg-[var(--molsan-primary)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--molsan-primary-hover)]">Ir a expedientes</button></div></div>}
