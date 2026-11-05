@@ -11,6 +11,7 @@ import os
 import inspect
 
 from backend.app.storage import FOTOS_DIR as STORAGE_FOTOS_DIR
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
 
 from backend.app.auth.log_redaction import instalar_filtro_credenciales_websocket
 
@@ -1157,6 +1158,10 @@ def _transaccion_inicio_segura(etiqueta):
 @app.on_event("startup")
 @_serializar_inicializacion_startup
 def inicializar_tablas_auxiliares():
+    if not runtime_schema_migrations_enabled():
+        print("[STARTUP SQL] Migraciones automáticas desactivadas; no se modifica el esquema.", flush=True)
+        return
+
     print(
         "[INICIALIZACION] Comprobando tablas auxiliares...",
         flush=True,
@@ -2928,30 +2933,26 @@ def crear_administrador_preview():
         db.close()
 
 
-# Las migraciones incrementales siguen ejecutándose en su orden original.
-app.router.on_startup.insert(
-    0,
-    migrar_esquema_expedientes_inicio,
-)
-app.router.on_startup.insert(1, migrar_catalogo_honorarios_impuestos)
-app.router.on_startup.insert(2, migrar_catalogo_absis)
-app.router.on_startup.insert(3, migrar_visibilidad_empleado)
-app.router.on_startup.insert(4, reparar_vinculos_apoderado_expedientes)
+# Las migraciones incrementales solo se registran cuando el módulo de control
+# las habilita explícitamente. La configuración segura por defecto devuelve False.
+if runtime_schema_migrations_enabled():
+    app.router.on_startup.insert(0, migrar_esquema_expedientes_inicio)
+    app.router.on_startup.insert(1, migrar_catalogo_honorarios_impuestos)
+    app.router.on_startup.insert(2, migrar_catalogo_absis)
+    app.router.on_startup.insert(3, migrar_visibilidad_empleado)
+    app.router.on_startup.insert(4, reparar_vinculos_apoderado_expedientes)
 
 # Solo el servicio aislado de preview activa la creación inicial del esquema.
 # El bootstrap del administrador es independiente: puede reparar permisos en
 # una base ya inicializada sin volver a ejecutar create_all ni exigir el flag schema.
-if os.getenv("MOLSAN_PREVIEW_BOOTSTRAP_SCHEMA", "").strip().lower() in {"1", "true", "yes", "si", "sí"}:
-    app.router.on_startup.insert(0, inicializar_esquema_base_preview)
-
-if os.getenv("MOLSAN_PREVIEW_BOOTSTRAP_ADMIN", "").strip().lower() in {"1", "true", "yes", "si", "sí"}:
-    app.router.on_startup.append(crear_administrador_preview)
+# Los bootstraps de esquema y administrador quedan fuera del arranque normal.
+# Cualquier inicialización de Preview requiere una operación explícita y revisada.
 
 
 def verificar_base_datos_preview_inicio():
     """Verifica siempre el destino DB en el servicio Preview, antes de migraciones."""
     hostname = os.getenv("RENDER_EXTERNAL_HOSTNAME", "").strip().lower()
-    if hostname == "molsan-glass-luxe-preview-api.onrender.com":
+    if hostname == "molsan-glass-luxe-preview-api.onrender.com" and _es_url_supabase_preview():
         _exigir_base_datos_preview()
 
 
