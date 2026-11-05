@@ -356,3 +356,58 @@
     animation-iteration-count: 1 !important;
   }
 }
+
+
+/* ============================================================
+   GLASS LUXE · CABECERA CORPORATIVA SUAVE
+   Misma geometría del Dashboard, con azul hielo y contraste sereno.
+   ============================================================ */
+.erp-route-content .molsan-page-header,
+.erp-page.molsan-professional-shell > .molsan-page-header,
+.catalogos-premium-page > .molsan-page-header,
+.utilidades-premium-page > .molsan-page-header,
+.erp-route-content .molsan-page-header--legacy {
+  color: #064675 !important;
+  border: 1px solid rgba(6,70,117,.13) !important;
+  background:
+    radial-gradient(ellipse at 88% 8%, rgba(255,255,255,.96), transparent 46%),
+    linear-gradient(112deg, rgba(234,244,250,.96) 0%, rgba(222,237,246,.92) 58%, rgba(238,246,250,.94) 100%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(118%) !important;
+  backdrop-filter: blur(24px) saturate(118%) !important;
+  box-shadow: 0 8px 22px rgba(6,70,117,.075) !important;
+}
+.erp-route-content .molsan-page-header__title,
+.erp-page.molsan-professional-shell .molsan-page-header__title,
+.erp-route-content .molsan-page-header--legacy h1,
+.erp-route-content .molsan-page-header--legacy h2 {
+  color: #064675 !important;
+}
+.erp-route-content .molsan-page-header__description,
+.erp-page.molsan-professional-shell .molsan-page-header__description,
+.erp-route-content .molsan-page-header--legacy p {
+  color: #617789 !important;
+}
+.erp-route-content .molsan-page-header__mark,
+.erp-page.molsan-professional-shell .molsan-page-header__mark {
+  color: #064675 !important;
+  border-color: rgba(6,70,117,.12) !important;
+  background: rgba(255,255,255,.72) !important;
+  box-shadow: 0 3px 10px rgba(6,70,117,.06);
+}
+.erp-route-content .molsan-page-header__actions > :where(button,a),
+.erp-page.molsan-professional-shell .molsan-page-header__actions > :where(button,a) {
+  color: #064675 !important;
+  border-color: rgba(6,70,117,.16) !important;
+  background: rgba(255,255,255,.76) !important;
+}
+.erp-route-content .molsan-page-header__actions > :where(button,a):hover,
+.erp-page.molsan-professional-shell .molsan-page-header__actions > :where(button,a):hover {
+  color: #043B60 !important;
+  border-color: rgba(6,70,117,.28) !important;
+  background: #FFFFFF !important;
+}
+.erp-route-content .molsan-page-header::after,
+.erp-page.molsan-professional-shell > .molsan-page-header::after {
+  height: 2px;
+  background: linear-gradient(90deg, rgba(20,119,165,.48), rgba(108,197,217,.34) 58%, transparent 100%);
+}
