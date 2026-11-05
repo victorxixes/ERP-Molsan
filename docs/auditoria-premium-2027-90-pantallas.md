@@ -5,9 +5,9 @@ Fecha: 2026-11-05. Rama: `fix/molsan-premium-2027-global-ui`.
 ## Método y límites
 Se extrajeron las declaraciones `lazy(() => import(...))` de `frontend-app/src/App.jsx`: **90 componentes lazy distintos**, enlazados por **109 declaraciones de ruta**. El escaneo comprobó presencia de `MolsanPageHeader`, etiquetas `header/h1`, tablas y formularios. Esta es una clasificación estática de código, no una certificación visual; los componentes embebidos deben juzgarse dentro de su contenedor.
 
-- **Premium por estructura (35):** usa `MolsanPageHeader` y no se detectó otra etiqueta `header/h1` en el componente.
+- **Premium por estructura (51):** usa `MolsanPageHeader` y no se detectó otra etiqueta `header/h1` en el componente.
 - **Parcial (8):** usa `MolsanPageHeader` pero también conserva etiquetas `header/h1`; revisar posible cabecera secundaria/duplicada.
-- **Legacy (39):** no usa `MolsanPageHeader` y conserva `header/h1`; necesita adaptación.
+- **Legacy (23):** no usa `MolsanPageHeader` y conserva `header/h1`; necesita adaptación.
 - **Embebido (8):** no declara cabecera propia ni usa el componente común; validar integrado y no añadir una cabecera redundante.
 
 ## Premium por estructura — 51
