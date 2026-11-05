@@ -737,7 +737,7 @@ export default function SeguridadPermisos() {
       <MolsanPageHeader
         mark="PER"
         title="Permisos por módulo"
-        description={{empleado?.nombre || "Empleado"}}
+        description={empleado?.nombre || "Empleado"}
         className="seguridad-subpage-header"
         actions={<Chip tone="primary">{porcentajeAsignado}% cobertura</Chip>}
       />
