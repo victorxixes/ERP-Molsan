@@ -66,6 +66,7 @@ export default function Layout() {
       });
       setTieneVolverPropio(false);
       setCabeceraSubpagina(encontrada);
+      return true;
     };
 
     if (!localizarCabecera()) {
