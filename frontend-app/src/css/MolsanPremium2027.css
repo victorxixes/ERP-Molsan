@@ -1749,3 +1749,26 @@ a[aria-current="page"] .molsan-nav-icon-3d {
   background: linear-gradient(135deg, #11734E, #0D6242) !important;
   border-color: #0D6242 !important;
 }
+
+
+/* Márgenes exteriores uniformes para las páginas de herramientas.
+   El Layout ya proporciona el espacio perimetral: los contenedores raíz
+   no deben volver a añadir padding y crear dobles márgenes. */
+.erp-main-inner.molsan-tools-subpage {
+  padding: clamp(16px, 2vw, 24px) !important;
+}
+
+.erp-main-inner.molsan-tools-subpage > .erp-route-content > :first-child,
+.erp-main-inner > .erp-route-content > :is(
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .mensajes-premium-page
+) {
+  padding: 0 !important;
+  min-width: 0;
+}
+
+.erp-main-inner.molsan-tools-subpage > .erp-route-content {
+  width: 100%;
+  min-width: 0;
+}
