@@ -166,7 +166,7 @@ export default function Layout() {
             <Outlet />
       {cabeceraSubpagina ? createPortal(
         <button type="button" data-layout-back-button="true" className="molsan-page-back-button" onClick={volverSubpagina} aria-label="Volver a la página anterior">
-          <span aria-hidden="true">←</span> Volver
+          <MolsanIcon name="arrowLeft" size={16} tone="ocean" bare /> Volver
         </button>,
         cabeceraSubpagina
       ) : null}
