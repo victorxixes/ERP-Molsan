@@ -73,8 +73,16 @@ export default function Layout() {
     let finalizado = false;
     const localizarCabecera = () => {
       if (finalizado) return true;
-      const encontrada = contenedor.querySelector(".molsan-page-header:not(.molsan-page-back-fallback)");
+      const ruta = contenedor.querySelector(".erp-route-content");
+      const encontrada = ruta?.querySelector(".molsan-page-header:not(.molsan-page-back-fallback)") ||
+        Array.from(ruta?.querySelectorAll("header") || []).find((header) =>
+          !header.closest('[role="dialog"], .molsan-modal, .ng-modal') &&
+          header.querySelector("h1, h2")
+        );
       if (!encontrada) return false;
+      if (!encontrada.classList.contains("molsan-page-header")) {
+        encontrada.classList.add("molsan-page-header", "molsan-page-header--legacy");
+      }
 
       const botonVolverExistente = Array.from(
         encontrada.querySelectorAll("button:not([data-layout-back-button]), a")
