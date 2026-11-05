@@ -757,6 +757,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                 ))}
               </div>
             </section>
+            <section className="ng-admin-individual-panel">
             <header className="ng-admin-individual-titulo" aria-label="Detalle por notaría"><span className="ng-admin-global-eyebrow">DETALLE POR NOTARÍA</span><h2>Situación individual</h2><p>Cada ficha muestra los contadores y las incidencias de esa notaría.</p></header>
             <div className="ng-admin-notarias-grid">
               {notariasSeleccionables.map(item => {
@@ -820,6 +821,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                 </article>;
               })}
             </div>
+            </section>
           </> : <div className="ng-admin-notaria-activa"><div><span className="ng-kicker">NOTARÍA SELECCIONADA</span><h2>{notariasSeleccionables.find(x=>String(x.id)===String(notariaAdminSeleccionada))?.nombre || notario?.nombre || "Notaría"}</h2><p>Estás gestionando esta notaría como administrador.</p></div><button type="button" className="ng-boton-secundario" onClick={()=>seleccionarNotariaAdmin("")}><MolsanIcon name="arrowLeft" size={18} tone="ocean" /> Volver al control de notarías</button></div>}
         </section>
       )}
@@ -835,7 +837,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       actions={
         <>
           {vista !== "inicio" && <button type="button" onClick={volverVistaAnterior} className="ng-boton-secundario"><MolsanIcon name="arrowLeft" size={20} tone="ocean" /> {vista === "detalle" ? "Volver a la vista anterior" : "Volver al inicio"}</button>}
-          {accesoERP && <button type="button" onClick={() => navigate("/modulos")} className="molsan-btn molsan-btn--secondary inline-flex items-center gap-2"><MolsanIcon name="dashboard" size={22} tone="ocean" /> Ir a módulos</button>}
+          
         </>
       }
     />
