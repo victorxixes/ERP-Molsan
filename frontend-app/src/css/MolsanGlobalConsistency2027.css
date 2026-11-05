@@ -311,3 +311,9 @@
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Los botones Volver heredados se sustituyen por el único control común
+   situado en la cabecera de la subpágina. */
+.erp-route-content .molsan-page-back-legacy-hidden {
+  display: none !important;
+}
