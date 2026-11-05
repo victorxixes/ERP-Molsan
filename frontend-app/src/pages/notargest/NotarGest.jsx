@@ -729,7 +729,6 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
               title="NotarGest"
               description="Visión global del trabajo notarial y detalle operativo de cada notaría habilitada."
               className="ng-hero ng-hero-notargest ng-admin-notarias-hero"
-              actions={<button type="button" className="molsan-btn molsan-btn--secondary" onClick={() => navigate("/modulos")}><MolsanIcon name="dashboard" size={22} tone="ocean" /> Ir a módulos</button>}
             />
             {cargandoSelectorNotaria && <p className="ng-mensaje">Calculando pendientes de las notarías…</p>}
             {!cargandoSelectorNotaria && notariasSeleccionables.length === 0 && <div className="ng-admin-vacio"><strong>No hay notarías habilitadas</strong><p>Activa el acceso NotarGest desde la ficha CTN de cada notaría.</p></div>}
