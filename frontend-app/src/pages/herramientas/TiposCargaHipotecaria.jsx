@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import React, {
   useEffect,
   useMemo,
@@ -587,113 +588,12 @@ export default function TiposCargaHipotecaria() {
           CABECERA
       ==================================================== */}
 
-      <section
-        className="
-          erp-card
-          max-w-[1700px]
-          mx-auto
-          p-5
-        "
-      >
-
-        <div
-          className="
-            flex
-            flex-col
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-            gap-4
-          "
-        >
-
-          <div>
-
-            <div
-              className="
-                flex
-                items-center
-                gap-3
-              "
-            >
-
-              <div
-                className="
-                  w-11
-                  h-11
-                  rounded-xl
-                  bg-[var(--erp-primary-soft)]
-                  border
-                  border-[var(--erp-border)]
-                  flex
-                  items-center
-                  justify-center
-                  text-xl
-                "
-              >
-                🏠
-              </div>
-
-              <div>
-
-                <h1
-                  className="
-                    text-2xl
-                    font-bold
-                    text-[var(--erp-text)]
-                  "
-                >
-                  Tipos de Carga Hipotecaria
-                </h1>
-
-                <p
-                  className="
-                    text-sm
-                    text-[var(--erp-text-soft)]
-                    mt-0.5
-                  "
-                >
-                  Catálogo de tipos de carga hipotecaria
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <button
-            type="button"
-            onClick={abrirNuevo}
-            className="
-              inline-flex
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              px-4
-              py-2.5
-              bg-[var(--erp-primary)]
-              text-white
-              text-sm
-              font-semibold
-              shadow-sm
-              hover:opacity-90
-              transition
-            "
-          >
-            <span className="text-lg">
-              ＋
-            </span>
-
-            Nuevo tipo de carga
-
-          </button>
-
-        </div>
-
-      </section>
+      <MolsanPageHeader
+        mark="CH"
+        title="Tipos de Carga Hipotecaria"
+        description="Catálogo de tipos de carga hipotecaria"
+        actions={<button type="button" onClick={abrirNuevo} className="molsan-btn molsan-btn--primary">Nuevo tipo de carga</button>}
+      />ction>
 
 
       {/* ====================================================
