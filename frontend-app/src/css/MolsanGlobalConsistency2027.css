@@ -236,6 +236,10 @@
   background: #fff !important;
 }
 
+.erp-route-content .molsan-page-back-replaced {
+  display: none !important;
+}
+
 /* Botón Volver insertado por Layout: secundario, sin crear una segunda cabecera. */
 .erp-route-content .molsan-page-back-button {
   display: inline-flex;
