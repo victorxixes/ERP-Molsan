@@ -13,6 +13,23 @@
   --molsan-header-gap: 16px;
 }
 
+/* Catálogos y Utilidades ya reciben el gutter del Layout: eliminar el padding
+   Tailwind duplicado que desplazaba sus cabeceras y provocaba márgenes desiguales. */
+.erp-route-content :where(.catalogos-premium-page, .utilidades-premium-page) {
+  padding: 0 !important;
+  animation: none !important;
+}
+.erp-route-content :where(.catalogos-premium-page, .utilidades-premium-page) > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 20px !important;
+}
+
+/* Evita el parpadeo de entrada en las páginas que adoptan la cabecera compartida. */
+.erp-route-content :where(.catalogos-premium-page, .utilidades-premium-page) .molsan-page-header {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
 /* Una sola caja de contenido para todas las rutas del ERP principal.
    El sidebar conserva su propio ancho y comportamiento. */
 .erp-main-content,
