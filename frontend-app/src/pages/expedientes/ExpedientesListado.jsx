@@ -2456,7 +2456,7 @@ export default function ExpedientesListado() {
               titulo: "Circuito CaixaBank",
               descripcion: "Propia entidad · Vinculada propia entidad",
               plazo: "40 días",
-              icono: "🏦",
+              icono: "bank",
               borde: "#2563eb",
               fondo: "rgba(37, 99, 235, 0.07)",
             },
@@ -2496,7 +2496,7 @@ export default function ExpedientesListado() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: circuito.fondo }}>{circuito.icono}</span>
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: circuito.fondo }}><MolsanIcon name={circuito.icono} size={28} tone="ocean" /></span>
                     <div className="min-w-0">
                       <div className="font-bold text-[var(--erp-text)]">{circuito.titulo}</div>
                       <div className="mt-1 text-xs text-[var(--erp-text-soft)]">{circuito.descripcion}</div>
@@ -2530,8 +2530,8 @@ export default function ExpedientesListado() {
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {[
-            { codigo: "PVA", titulo: "Pendientes de Validar", icono: "🔎", borde: "#2563eb", fondo: "rgba(37, 99, 235, 0.08)" },
-            { codigo: "RST", titulo: "Retención", icono: "⏸️", borde: "#7e22ce", fondo: "rgba(126, 34, 206, 0.08)" },
+            { codigo: "PVA", titulo: "Pendientes de Validar", icono: "search", borde: "#2563eb", fondo: "rgba(37, 99, 235, 0.08)" },
+            { codigo: "RST", titulo: "Retención", icono: "pause", borde: "#7e22ce", fondo: "rgba(126, 34, 206, 0.08)" },
           ].map((estado) => {
             const activa = filtrosAplicados.estadoExpediente.trim().toLocaleUpperCase("es-ES") === estado.codigo;
             return (
@@ -2553,7 +2553,7 @@ export default function ExpedientesListado() {
                 style={{ background: activa ? estado.fondo : "var(--erp-surface)", borderColor: activa ? estado.borde : "var(--erp-border)", boxShadow: activa ? `0 0 0 1px ${estado.borde}` : undefined }}
               >
                 <div className="flex items-start justify-between gap-3">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: estado.fondo }}>{estado.icono}</span>
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: estado.fondo }}><MolsanIcon name={estado.icono} size={26} tone="ocean" /></span>
                   <span className="text-3xl font-extrabold tabular-nums" style={{ color: estado.borde }}>{loading ? "…" : formatearNumero(totalesEstadosDiferenciales[estado.codigo])}</span>
                 </div>
                 <div className="mt-3 font-bold text-[var(--erp-text)]">{estado.titulo}</div>
