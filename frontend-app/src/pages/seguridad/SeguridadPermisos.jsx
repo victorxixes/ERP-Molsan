@@ -7,6 +7,7 @@ import {
 import { useSeguridad } from "../../hooks/useSeguridad";
 import MODULOS_ERP from "../../config/modulos";
 import "./SeguridadSubpaginasPremium.css";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 
 function arraySeguro(valor) {
@@ -733,95 +734,13 @@ export default function SeguridadPermisos() {
       className="seguridad-subpagina-premium seguridad-permisos-premium w-full space-y-4"
     >
 
-      {/* CABECERA */}
-
-      <div
-        className="
-          flex
-          flex-col
-          gap-4
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-5
-          shadow-sm
-          md:flex-row
-          md:items-center
-          md:justify-between
-        "
-      >
-
-        <div
-          className="
-            flex
-            items-center
-            gap-3
-          "
-        >
-
-          <div
-            className="
-              flex
-              h-11
-              w-11
-              shrink-0
-              items-center
-              justify-center
-              rounded-xl
-              bg-[var(--erp-primary-soft)]
-              text-xl
-            "
-          >
-            🔑
-          </div>
-
-          <div>
-
-            <p
-              className="
-                text-[11px]
-                font-semibold
-                uppercase
-                tracking-[0.14em]
-                text-[var(--erp-primary)]
-              "
-            >
-              Centro de seguridad
-            </p>
-
-            <h2
-              className="
-                mt-1
-                text-xl
-                font-bold
-                text-[var(--erp-text)]
-              "
-            >
-              Permisos por módulo
-            </h2>
-
-            <p
-              className="
-                mt-0.5
-                text-sm
-                text-[var(--erp-text-soft)]
-              "
-            >
-              {empleado?.nombre || "Empleado"}
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <Chip tone="primary">
-          {porcentajeAsignado}% cobertura
-        </Chip>
-
-      </div>
-
+      <MolsanPageHeader
+        mark="PER"
+        title="Permisos por módulo"
+        description={{empleado?.nombre || "Empleado"}}
+        className="seguridad-subpage-header"
+        actions={<Chip tone="primary">{porcentajeAsignado}% cobertura</Chip>}
+      />
 
       {/* RESUMEN */}
 
