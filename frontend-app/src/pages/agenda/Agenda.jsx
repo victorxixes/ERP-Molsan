@@ -11,6 +11,7 @@ import VistaDia from "./VistaDia";
 import ModalNuevaCita from "../../components/agenda/ModalNuevaCita.jsx";
 import AgendaToast from "../../components/agenda/AgendaToast.jsx";
 import SelectSJ from "../../components/ui/SelectSJ";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import "./Agenda.css";
 
 const MESES = [
@@ -417,8 +418,14 @@ export default function Agenda({ soloApoderado = false } = {}) {
 
   return (
     <div className="agenda-premium-page space-y-5 p-6 text-[var(--erp-text)] animate-fade-in">
-      {/* CABECERA Y NAVEGACIÓN */}
+      <MolsanPageHeader
+        mark="AG"
+        title="Agenda"
+        description="Planificación y seguimiento de citas, firmas y videoconferencias."
+        className="agenda-page-header"
+      />
 
+      {/* NAVEGACIÓN DEL CALENDARIO */}
       <div className="erp-card p-4 shadow-sm">
         <div className="flex flex-wrap items-center gap-3">
           <button
