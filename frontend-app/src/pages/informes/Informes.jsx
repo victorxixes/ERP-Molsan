@@ -4,6 +4,7 @@ import axios from "../../api/axios";
 import { API_BASE } from "../../api/config";
 import Chart from "chart.js/auto";
 import SelectSJ from "../../components/ui/SelectSJ";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import "../../css/ModalesHerramientasPremium.css";
 
 const MESES = [
@@ -3769,19 +3770,14 @@ export default function Informes() {
   };
 
   return (
-    <div className="informes-premium-page herramientas-subpagina-premium min-h-screen space-y-5 bg-gradient-to-br from-[#eef5fb] via-[#f7faff] to-[#eaf2fb] p-4 text-slate-700 md:p-6">
-      <header className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl md:p-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-200 bg-blue-100 text-xl shadow-sm">📊</div>
-            <div>
-              <h1 className="text-2xl font-bold text-slate-800 md:text-3xl">{apartadoSeleccionado ? apartadoSeleccionado.titulo : "Informes"}</h1>
-              <p className="mt-1 text-sm text-slate-500">{apartadoSeleccionado ? apartadoSeleccionado.descripcion : "Selecciona el tipo de informe que quieres consultar."}</p>
-            </div>
-          </div>
-          {claveApartado && <button type="button" onClick={() => navigate("/informes")} className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50">← Volver a Informes</button>}
-        </div>
-      </header>
+    <div className="informes-premium-page herramientas-subpagina-premium min-h-screen space-y-5 bg-white p-4 text-slate-700 md:p-6">
+      <MolsanPageHeader
+        mark="INF"
+        title={apartadoSeleccionado ? apartadoSeleccionado.titulo : "Informes"}
+        description={apartadoSeleccionado ? apartadoSeleccionado.descripcion : "Selecciona el tipo de informe que quieres consultar."}
+        className="informes-page-header"
+        actions={claveApartado ? <button type="button" onClick={() => navigate("/informes")} className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--erp-primary)] shadow-sm transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)]">← Volver a Informes</button> : null}
+      />
 
       {!claveApartado ? (
         <nav aria-label="Apartados de informes" className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
