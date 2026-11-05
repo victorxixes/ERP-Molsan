@@ -88,7 +88,9 @@ export default function Layout() {
     const localizarCabecera = () => {
       if (finalizado) return true;
       const ruta = contenedor.querySelector(".erp-route-content");
-      const encontrada = ruta?.querySelector(".molsan-page-header:not(.molsan-page-back-fallback)") ||
+      const encontrada = Array.from(
+        ruta?.querySelectorAll(".molsan-page-header:not(.molsan-page-back-fallback)") || []
+      ).find((header) => !header.closest('[role="dialog"], .molsan-modal, .ng-modal')) ||
         ruta?.querySelector([
           ":scope > header",
           ":scope > main > header",
