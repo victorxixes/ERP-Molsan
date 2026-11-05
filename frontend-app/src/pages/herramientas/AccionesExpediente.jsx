@@ -1,11 +1,11 @@
 import "../../css/ModalesHerramientasPremium.css";
 import React, {
-import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
   useCallback,
   useEffect,
   useMemo,
   useState,
 } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 
 // ============================================================
