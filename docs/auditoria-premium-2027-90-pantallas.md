@@ -60,3 +60,14 @@ El hook común también contempla Escape, ciclo Tab/Shift+Tab, foco fuera del di
 La última pasada también ha retirado la fecha y el acceso «Ir a módulos» de las cabeceras de ApoderaGest y NotarGest; en EncargaGest se conserva únicamente «Cerrar sesión» como acción de cabecera. El selector Espacio de trabajo usa ahora la cabecera común y mantiene la sesión activa y el cierre de sesión.
 
 En las 8 parciales, los marcadores adicionales de `header/h1` pueden corresponder a secciones internas, contenido de impresión o estados restringidos, no necesariamente a una segunda cabecera visible. La inspección visual en Preview determinará si alguno debe reclasificarse o corregirse.
+
+
+### Resultado de adopción estática en los 90 componentes lazy
+
+- **46** componentes contienen una etiqueta nativa `<table>`.
+- Solo **NotarGest** referencia `MolsanDataTable`; **3** componentes de ruta usan directamente la clase `molsan-table` (ExpedientesListado, FichaExpedienteDemo y CtnListadoPage).
+- **32** componentes contienen `<form>`; solo **3** referencias de ruta usan clases `molsan-field`.
+- No se detectó referencia directa a `MolsanButton` en el código fuente de los 90 componentes lazy. Puede haber usos en componentes hijos compartidos, por lo que este dato no equivale a un inventario de todo el árbol React.
+- Las tablas nativas sí reciben una capa visual global desde `MolsanCardsPremium2027.css` mediante `.erp-main-content table:not(.molsan-table)` (cabecera azul hielo, bordes, hover y ajustes responsive). `MolsanFase3.css` normaliza tipografía y geometría de rutas. La capa `molsan-controls.css` define campos y botones compartidos, pero su adopción directa en las páginas lazy sigue siendo baja.
+
+**Decisión:** no sustituir masivamente las 46 tablas nativas por `MolsanDataTable`: varias pueden depender de ordenación remota, paginación, renderizado de celdas o acciones propias. Primero se debe probar cada caso y conservar su contrato funcional; la normalización visual global existente es la base segura mientras se migra progresivamente.
