@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session, aliased
 
 from backend.app.database import get_db
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
 from backend.app.uploads import MAX_EXCEL_UPLOAD_BYTES, read_upload_limited
 from backend.app.entidades_bancarias.models import (
     EntidadBancaria,
@@ -675,4 +676,8 @@ def eliminar_entidad_bancaria(
 @router.on_event("startup")
 def cargar_catalogo_historico_caixabank_al_arrancar():
     """Carga el listado histórico solicitado después de las migraciones del esquema."""
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: cargar_catalogo_historico_caixabank_al_arrancar; ejecutar migración versionada.", flush=True)
+        return
+
     sincronizar_catalogo_historico_caixabank()
