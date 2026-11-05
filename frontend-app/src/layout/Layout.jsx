@@ -58,7 +58,6 @@ export default function Layout() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [cabeceraSubpagina, setCabeceraSubpagina] = useState(null);
-  const [tieneVolverPropio, setTieneVolverPropio] = useState(false);
 
   const rutasPrincipales = new Set([
     "/", "/dashboard", "/expedientes", "/provisiones-fondos", "/agenda",
@@ -78,7 +77,6 @@ export default function Layout() {
 
   useLayoutEffect(() => {
     setCabeceraSubpagina(null);
-    setTieneVolverPropio(false);
     if (!esSubpagina) return undefined;
     const contenedor = document.querySelector(".erp-main-inner");
     if (!contenedor) return undefined;
@@ -119,7 +117,6 @@ export default function Layout() {
       botonesVolverExistentes.forEach((elemento) => {
         elemento.classList.add("molsan-page-back-replaced");
       });
-      setTieneVolverPropio(false);
       setCabeceraSubpagina(encontrada);
 
       // El observador solo espera al primer pintado de la cabecera diferida.
@@ -160,7 +157,7 @@ export default function Layout() {
       <main className="erp-main-content relative min-h-[calc(100vh-70px)]">
         <div className={`erp-main-inner w-full${esSubpaginaCatalogosUtilidades ? " molsan-tools-subpage" : ""}`}>
           <div className={`erp-route-content w-full${rutaCancelaGest ? " cg-unified-workspace" : ""}`}>
-            {esSubpagina && !cabeceraSubpagina && !tieneVolverPropio ? (
+            {esSubpagina && !cabeceraSubpagina ? (
         <header className="molsan-page-header molsan-page-back-fallback">
           <button type="button" className="molsan-page-back-button" onClick={volverSubpagina} aria-label="Volver a la página anterior"><span aria-hidden="true">←</span> Volver</button>
         </header>
