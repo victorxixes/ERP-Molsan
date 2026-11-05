@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
@@ -94,17 +95,7 @@ export default function AccesosNotariales() {
 
   return (
     <main className="ctn-listado-page molsan-page" aria-busy={cargando}>
-      <header className="ctn-listado-header molsan-page-header">
-        <div className="ctn-listado-header-identidad molsan-page-header__identity">
-          <div className="ctn-listado-header-icon molsan-page-header__mark" aria-hidden="true">🔐</div>
-          <div className="min-w-0">
-            <p className="ctn-listado-header-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · UTILIDADES</p>
-            <h1>Accesos notariales</h1>
-            <p>Gestión centralizada y restringida de accesos a NotarGest y EncargaGest.</p>
-          </div>
-        </div>
-        <button type="button" className="ctn-btn ctn-btn-secondary molsan-btn molsan-btn--secondary" onClick={() => navigate("/herramientas/utilidades")}>Volver a Utilidades</button>
-      </header>
+      <MolsanPageHeader mark="UT" title="Accesos notariales" description="Gestión centralizada y restringida de accesos a NotarGest y EncargaGest." actions={<button type="button" className="molsan-btn molsan-btn--secondary" onClick={() => navigate("/herramientas/utilidades")}>Volver a Utilidades</button>}/>
       <section className="accesos-notariales-resumen" aria-label="Resumen de accesos habilitados">
         <article className="accesos-notariales-resumen-card">
           <span aria-hidden="true">🔐</span>
