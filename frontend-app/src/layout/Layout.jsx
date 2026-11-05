@@ -62,7 +62,7 @@ export default function Layout() {
   const rutasPrincipales = new Set([
     "/", "/dashboard", "/expedientes", "/provisiones-fondos", "/agenda",
     "/empleados", "/fichajes", "/control-fichajes", "/ctn", "/intranet",
-    "/mensajes", "/mensajeria", "/mensajeria-gestion", "/informes",
+    "/mensajes", "/mensajeria", "/mensajeria-gestion", "/notificaciones", "/informes",
     "/fusiones", "/auditoria", "/catalogos", "/herramientas", "/herramientas/utilidades",
     "/seguridad", "/logs", "/maestros", "/paneltecnico", "/apoderagest",
     "/cancelagest", "/notargest", "/encargagest",
