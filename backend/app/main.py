@@ -2305,4 +2305,34 @@ else:
         flush=True,
     )
 
+@app.on_event("startup")
+def comprobar_conexion_postgresql_inicio():
+    """Verifica la conexión SQL real del proceso web sin modificar datos ni esquema."""
+    host_bd = (engine.url.host or "").lower()
+    es_supabase = (
+        host_bd.endswith(".supabase.co")
+        or host_bd.endswith(".pooler.supabase.com")
+    )
+    try:
+        with engine.connect() as conexion:
+            resultado = conexion.execute(text("SELECT 1")).scalar()
+        if resultado == 1:
+            destino = "Supabase" if es_supabase else "PostgreSQL configurado"
+            print(
+                f"[DB CONNECTIVITY] OK: {destino}; SELECT 1 = 1.",
+                flush=True,
+            )
+        else:
+            print(
+                "[DB CONNECTIVITY] ERROR: SELECT 1 devolvió un resultado inesperado.",
+                flush=True,
+            )
+    except Exception as exc:
+        # No imprimir la URL ni el mensaje del driver: podrían contener datos sensibles.
+        print(
+            "[DB CONNECTIVITY] ERROR: no se pudo ejecutar SELECT 1 "
+            f"({type(exc).__name__}).",
+            flush=True,
+        )
+
 instrumentar_inicio_aplicacion()
