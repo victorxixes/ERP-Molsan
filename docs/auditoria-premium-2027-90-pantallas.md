@@ -27,7 +27,7 @@ Se han normalizado también EmpleadoEditar, SeguridadFicha, SeguridadRolEditor, 
 
 ## Próximas acciones
 1. Revisar visualmente los 8 componentes parciales para eliminar cabeceras internas duplicadas sin quitar títulos funcionales.
-2. Adaptar las 39 pantallas Legacy, priorizando herramientas y subpáginas de Seguridad/Panel Técnico.
+2. Adaptar las 27 pantallas Legacy, priorizando herramientas y subpáginas de Seguridad/Panel Técnico.
 3. Revisar tablas, formularios, botones, estados vacíos/error/carga y modales en los 90 componentes y sus rutas.
 4. Ejecutar CI; después desplegar exclusivamente a Preview y comprobar rutas autenticadas y estados reales.
 5. No modificar producción ni bases de datos en esta intervención.
