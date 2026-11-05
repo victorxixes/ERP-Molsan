@@ -197,6 +197,45 @@
   background: rgba(255,255,255,.2);
 }
 
+/* Cabeceras heredadas detectadas por Layout: mismo Glass Luxe que el componente común. */
+.erp-route-content .molsan-page-header--legacy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--molsan-header-gap);
+  min-height: var(--molsan-header-min-height);
+  margin: 0 0 20px;
+  padding: 14px 20px;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: var(--molsan-header-radius);
+  color: #fff;
+  background:
+    radial-gradient(ellipse at 88% 12%, rgba(170,220,232,.22), transparent 46%),
+    linear-gradient(116deg, rgba(3,45,75,.76) 0%, rgba(6,70,117,.70) 56%, rgba(13,99,140,.66) 100%);
+  -webkit-backdrop-filter: blur(24px) saturate(128%);
+  backdrop-filter: blur(24px) saturate(128%);
+  box-shadow: 0 8px 22px rgba(4,55,91,.09);
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+.erp-route-content .molsan-page-header--legacy h1,
+.erp-route-content .molsan-page-header--legacy h2 {
+  color: #fff !important;
+}
+.erp-route-content .molsan-page-header--legacy p {
+  color: #D1E4EE !important;
+}
+.erp-route-content .molsan-page-header--legacy .molsan-page-back-button {
+  color: var(--molsan-primary, #064675) !important;
+  border: 1px solid rgba(255,255,255,.58) !important;
+  background: rgba(255,255,255,.88) !important;
+}
+.erp-route-content .molsan-page-header--legacy .molsan-page-back-button:hover {
+  background: #fff !important;
+}
+
 /* Botón Volver insertado por Layout: secundario, sin crear una segunda cabecera. */
 .erp-route-content .molsan-page-back-button {
   display: inline-flex;
