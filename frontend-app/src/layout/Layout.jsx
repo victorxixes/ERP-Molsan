@@ -86,10 +86,16 @@ export default function Layout() {
       if (finalizado) return true;
       const ruta = contenedor.querySelector(".erp-route-content");
       const encontrada = ruta?.querySelector(".molsan-page-header:not(.molsan-page-back-fallback)") ||
-        Array.from(ruta?.querySelectorAll("header") || []).find((header) =>
-          !header.closest('[role="dialog"], .molsan-modal, .ng-modal') &&
-          header.querySelector("h1, h2")
-        );
+        ruta?.querySelector([
+          ":scope > header",
+          ":scope > main > header",
+          ":scope > div > header",
+          ":scope > section > header",
+          ":scope > div > main > header",
+          ":scope > main > div > header",
+          ".herramienta-operativa-premium > header",
+          ".herramientas-subpagina-premium > header",
+        ].join(", "));
       if (!encontrada) return false;
       if (!encontrada.classList.contains("molsan-page-header")) {
         encontrada.classList.add("molsan-page-header", "molsan-page-header--legacy");
