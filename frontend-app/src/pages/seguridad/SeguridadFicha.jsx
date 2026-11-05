@@ -1626,7 +1626,7 @@ const permisosGlobales =
           <button type="button" onClick={() => desbloquear(empleadoIdSeguro)} className="molsan-btn molsan-btn--primary">Desbloquear usuario</button>
         )}
         {mensajeVisibilidad && <p className="w-full text-sm text-[var(--erp-text-soft)]" role="status">{mensajeVisibilidad}</p>}
-      </section>ction>
+      </section>
 
 
       {/* ======================================================
