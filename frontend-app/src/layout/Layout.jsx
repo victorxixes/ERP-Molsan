@@ -8,31 +8,31 @@ import { useNotificacionesWS } from "../hooks/useNotificacionesWS";
 import NotificacionesToast from "../components/notificaciones/NotificacionesToast";
 
 const RUTAS_PADRE_SUBPAGINA = [
-  [/^\\/catalogos\\/provisiones-fondos$/, "/catalogos"],
-  [/^\\/catalogos\\//, "/catalogos"],
-  [/^\\/herramientas\\/utilidades\\/correspondencia-tipificada$/, "/catalogos"],
-  [/^\\/herramientas\\/utilidades\\//, "/herramientas/utilidades"],
-  [/^\\/herramientas\\/(?:municipios|entidades-bancarias|registros-propiedad|oficinas-liquidadoras|honorarios-gestoria|acciones-expediente|tipos-carga-hipotecaria|tipos-concepto-gastos|tipos-expediente)$/, "/catalogos"],
-  [/^\\/herramientas\\/importador-absis\\/postfirma$/, "/herramientas/importador-absis"],
-  [/^\\/herramientas\\/(?:importar-ctn|importador-absis|importaciones-datos|mantenimiento-tecnico)$/, "/herramientas"],
-  [/^\\/agenda\\/(?:dia|semana|mes)$/, "/agenda"],
-  [/^\\/expedientes\\/[^/]+$/, "/expedientes"],
-  [/^\\/expedientes-demo-glass-luxe$/, "/expedientes"],
-  [/^\\/ctn\\/(?:listado|[^/]+)$/, "/ctn"],
-  [/^\\/empleados\\/(?:listado|[^/]+)(?:\\/editar)?$/, "/empleados"],
-  [/^\\/informes\\/[^/]+$/, "/informes"],
-  [/^\\/apoderagest\\/liquidaciones$/, "/apoderagest"],
-  [/^\\/encargagest\\/(?:ctn|agenda|mensajes|intranet)$/, "/encargagest"],
-  [/^\\/paneltecnico\\//, "/paneltecnico"],
-  [/^\\/seguridad\\/auditoria$/, "/auditoria"],
-  [/^\\/seguridad\\//, "/seguridad"],
+  [/^\/catalogos\/provisiones-fondos$/, "/catalogos"],
+  [/^\/catalogos\//, "/catalogos"],
+  [/^\/herramientas\/utilidades\/correspondencia-tipificada$/, "/catalogos"],
+  [/^\/herramientas\/utilidades\//, "/herramientas/utilidades"],
+  [/^\/herramientas\/(?:municipios|entidades-bancarias|registros-propiedad|oficinas-liquidadoras|honorarios-gestoria|acciones-expediente|tipos-carga-hipotecaria|tipos-concepto-gastos|tipos-expediente)$/, "/catalogos"],
+  [/^\/herramientas\/importador-absis\/postfirma$/, "/herramientas/importador-absis"],
+  [/^\/herramientas\/(?:importar-ctn|importador-absis|importaciones-datos|mantenimiento-tecnico)$/, "/herramientas"],
+  [/^\/agenda\/(?:dia|semana|mes)$/, "/agenda"],
+  [/^\/expedientes\/[^/]+$/, "/expedientes"],
+  [/^\/expedientes-demo-glass-luxe$/, "/expedientes"],
+  [/^\/ctn\/(?:listado|[^/]+)$/, "/ctn"],
+  [/^\/empleados\/(?:listado|[^/]+)(?:\/editar)?$/, "/empleados"],
+  [/^\/informes\/[^/]+$/, "/informes"],
+  [/^\/apoderagest\/liquidaciones$/, "/apoderagest"],
+  [/^\/encargagest\/(?:ctn|agenda|mensajes|intranet)$/, "/encargagest"],
+  [/^\/paneltecnico\//, "/paneltecnico"],
+  [/^\/seguridad\/auditoria$/, "/auditoria"],
+  [/^\/seguridad\//, "/seguridad"],
 ];
 
 function obtenerRutaPrincipal(pathname) {
   const coincidencia = RUTAS_PADRE_SUBPAGINA.find(([patron]) => patron.test(pathname));
   if (coincidencia) return coincidencia[1];
   const partes = pathname.split("/").filter(Boolean);
-  return partes.length > 1 ? `/${partes.slice(0, -1).join("/")}` : "/dashboard";
+  return partes.length > 1 ? \`/\${partes.slice(0, -1).join("/")}\` : "/dashboard";
 }
 
 /** Layout principal de ERP-Molsan. Mantiene perfil, navegación,
@@ -81,7 +81,7 @@ export default function Layout() {
       ).find((elemento) => {
         const texto = (elemento.textContent || "").trim();
         const aria = elemento.getAttribute("aria-label") || "";
-        return /\\bvolver\\b|regresar/i.test(texto) || /\\bvolver\\b|regresar/i.test(aria);
+        return /\bvolver\b|regresar/i.test(texto) || /\bvolver\b|regresar/i.test(aria);
       });
 
       if (botonVolverExistente) {
