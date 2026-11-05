@@ -154,7 +154,7 @@ function Card({
           </div>
           <p className="mt-1.5 text-sm leading-5 text-slate-500">{descripcion}</p>
           {etapa && <p className="mt-3 inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-700">{etapa}</p>}
-          {aviso && <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs leading-5 text-amber-900"><p className="font-bold">⚠️ Pendiente de revisión técnica</p><p className="mt-1">{aviso}</p></div>}
+          {aviso && <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs leading-5 text-amber-900"><p className="flex items-center gap-1 font-bold"><MolsanIcon name="alert" size={14} tone="amber" bare /> Pendiente de revisión técnica</p><p className="mt-1">{aviso}</p></div>}
           {enConstruccion && (
             <p className="mt-3 text-xs font-medium text-amber-700">
               Próximamente: registro de envíos, respuestas y cambios de estado vía API.
