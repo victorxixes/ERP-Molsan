@@ -1,6 +1,6 @@
 
 from fastapi import FastAPI, Depends, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -135,6 +135,7 @@ LEGACY_FOTOS_DIR = os.path.join(STATIC_DIR, "fotos")
 os.makedirs(LEGACY_FOTOS_DIR, exist_ok=True)
 
 from backend.app.auth.dependencies import get_current_user
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, storage_backend_is_supabase
 from backend.app.auth.permissions import require_perm_modulo
 
 FOTOS_ROOT = Path(FOTOS_DIR).resolve()
@@ -156,24 +157,42 @@ def servir_fotografia_empleado(
 ):
     require_perm_modulo(usuario, "empleados", "ver")
 
-    if Path(ruta).suffix.lower() not in EXTENSIONES_FOTO_PERMITIDAS:
-        raise HTTPException(
-            status_code=404,
-            detail="Fotografía no encontrada",
+    # La referencia del empleado es solo el nombre opaco del objeto.
+    # Nunca aceptar subrutas del cliente para evitar traversal o lectura cruzada.
+    nombre_foto = Path(ruta).name
+    if nombre_foto != ruta or nombre_foto in {"", ".", ".."}:
+        raise HTTPException(status_code=404, detail="Fotografía no encontrada")
+
+    extension = Path(nombre_foto).suffix.lower()
+    if extension not in EXTENSIONES_FOTO_PERMITIDAS:
+        raise HTTPException(status_code=404, detail="Fotografía no encontrada")
+
+    if storage_backend_is_supabase():
+        try:
+            contenido = SupabasePrivateStorage().download(f"fotos/empleados/{nombre_foto}")
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail="Fotografía no encontrada") from exc
+        except (RuntimeError, SupabaseStorageError) as exc:
+            raise HTTPException(status_code=503, detail="El almacenamiento de fotografías no está disponible") from exc
+        mime = {
+            ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
+            ".gif": "image/gif", ".webp": "image/webp",
+        }.get(extension, "application/octet-stream")
+        return Response(
+            content=contenido,
+            media_type=mime,
+            headers={"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"},
         )
 
     fichero = None
     for raiz in FOTOS_ROOTS:
-        candidata = (raiz / ruta).resolve()
+        candidata = (raiz / nombre_foto).resolve()
         if raiz in candidata.parents and candidata.is_file():
             fichero = candidata
             break
 
     if fichero is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Fotografía no encontrada",
-        )
+        raise HTTPException(status_code=404, detail="Fotografía no encontrada")
 
     return FileResponse(
         path=str(fichero),
