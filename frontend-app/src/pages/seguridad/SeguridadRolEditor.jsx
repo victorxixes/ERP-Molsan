@@ -1,4 +1,5 @@
 import { getApiOrigin } from "../../api/config";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import {
   useState,
   useCallback,
@@ -424,49 +425,16 @@ export default function SeguridadRolEditor() {
 
     <div className="erp-page seguridad-subpagina-premium seguridad-rol-editor-premium space-y-6 animate-fade-in">
 
-      {/* ======================================================
-          CABECERA
-      ====================================================== */}
-
-      <div className="erp-page-header">
-
-        <div>
-
-          <div className="erp-eyebrow">
-            SEGURIDAD · ADMINISTRACIÓN
-          </div>
-
-          <h1 className="erp-page-title">
-            Editor de roles
-          </h1>
-
-          <p className="erp-page-subtitle">
-            Gestiona los roles disponibles en Molsan ERP.
-          </p>
-
-        </div>
-
-
-        {modo === "lista" && (
-
-          <button
-            type="button"
-            onClick={iniciarCrear}
-            className="erp-btn erp-btn-primary inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-
-            <span className="text-base">
-              +
-            </span>
-
+      <MolsanPageHeader
+        mark="SR"
+        title="Editor de roles"
+        description="Gestiona los roles disponibles en Molsan ERP."
+        actions={modo === "lista" ? (
+          <button type="button" onClick={iniciarCrear} className="molsan-btn molsan-btn--primary">
             Crear rol
-
           </button>
-
-        )}
-
-      </div>
-
+        ) : null}
+      />
 
       {/* ======================================================
           MENSAJES
