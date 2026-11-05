@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { Link } from "react-router-dom";
 
 import "../../css/ComponentesOperativosPremium.css";
@@ -32,35 +33,35 @@ export default function Herramientas() {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
 
         <Card
-          icon="📥"
+          icon="download"
           titulo="Importar CTN"
           descripcion="Importar fichero Excel con información de notarías."
           link="/herramientas/importar-ctn"
         />
 
         <Card
-          icon="📰"
+          icon="newspaper"
           titulo="Crear noticia"
           descripcion="Publicar una nueva noticia en la intranet."
           link="/herramientas/utilidades/crear-noticia"
         />
 
         <Card
-          icon="📄"
+          icon="file"
           titulo="Subir documento"
           descripcion="Subir documentos y archivos a la intranet."
           link="/herramientas/utilidades/subir-documento"
         />
 
         <Card
-          icon="📊"
+          icon="chart"
           titulo="Informes"
           descripcion="Consultar listados y estadísticas de apoderados."
           link="/herramientas/informes"
         />
 
         <Card
-          icon="📦"
+          icon="archive"
           titulo="Importador ABSIS"
           descripcion="Importar expedientes desde el Excel matriz ABSIS."
           link="/herramientas/importador-absis"
