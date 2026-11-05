@@ -1,0 +1,142 @@
+name: Supabase Preview schema migration
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: "Escribe exactamente APPLY_TO_EMPTY_MOLSAN_PREVIEW"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: molsan-supabase-preview-migration
+  cancel-in-progress: false
+
+jobs:
+  migrate-preview:
+    if: >-
+      github.ref == 'refs/heads/production/erp-molsan-2026-11-04' &&
+      inputs.confirmation == 'APPLY_TO_EMPTY_MOLSAN_PREVIEW'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact integration branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install backend dependencies
+        run: python -m pip install -r backend/requirements.txt
+
+      - name: Verify target is the empty MOLSAN Preview database
+        env:
+          DATABASE_URL: ${{ secrets.MOLSAN_SUPABASE_MIGRATION_DATABASE_URL }}
+          EXPECTED_PROJECT_REF: powiprqarmluanplxpyb
+        run: |
+          python - <<'PY'
+          import os
+          from sqlalchemy import create_engine, text
+          from sqlalchemy.engine import make_url
+
+          raw = os.environ.get("DATABASE_URL", "").strip()
+          expected = os.environ["EXPECTED_PROJECT_REF"]
+          if not raw:
+              raise SystemExit("Falta el secreto MOLSAN_SUPABASE_MIGRATION_DATABASE_URL.")
+          url = make_url(raw)
+          host = (url.host or "").lower()
+          username = url.username or ""
+          if not (host.endswith(".supabase.co") or host.endswith(".pooler.supabase.com")):
+              raise SystemExit("El destino no parece ser un endpoint PostgreSQL de Supabase.")
+          if expected not in host and expected not in username:
+              raise SystemExit("La conexión no identifica el proyecto Supabase Preview esperado.")
+          if not url.password or (url.database or "") != "postgres":
+              raise SystemExit("La URL debe incluir credencial y apuntar a la base postgres.")
+          engine = create_engine(raw, pool_pre_ping=True, connect_args={"connect_timeout": 10})
+          try:
+              with engine.connect() as conn:
+                  version = conn.execute(text("select current_setting('server_version_num')::int")).scalar_one()
+                  public_tables = conn.execute(text("""
+                      select count(*) from information_schema.tables
+                      where table_schema = 'public' and table_type = 'BASE TABLE'
+                  """)).scalar_one()
+                  has_alembic = conn.execute(text("""
+                      select to_regclass('public.alembic_version') is not null
+                  """)).scalar_one()
+                  bucket = conn.execute(text("""
+                      select public, file_size_limit,
+                             (select count(*) from storage.objects o where o.bucket_id = b.id)
+                      from storage.buckets b where id = 'molsan-private'
+                  """)).first()
+                  if version < 170000:
+                      raise SystemExit("Se esperaba PostgreSQL 17 o superior.")
+                  if public_tables != 0 or has_alembic:
+                      raise SystemExit("ABORTADO: el esquema public no está vacío o ya existe alembic_version.")
+                  if bucket is None or bucket[0] is not False or bucket[2] != 0:
+                      raise SystemExit("ABORTADO: el bucket privado esperado no existe, es público o contiene objetos.")
+                  print("Preflight correcto: proyecto esperado, PostgreSQL 17+, public vacío y bucket privado vacío.")
+          finally:
+              engine.dispose()
+          PY
+
+      - name: Apply Alembic revisions to Preview only
+        env:
+          DATABASE_URL: ${{ secrets.MOLSAN_SUPABASE_MIGRATION_DATABASE_URL }}
+          # Alembic imports the app registry, but this isolated job does not authenticate users or access Storage.
+          JWT_SECRET: molsan-migration-only-not-for-user-authentication-2026-11-04
+          MOLSAN_STORAGE_BACKEND: local
+          MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS: "true"
+          PYTHONPATH: .
+        run: |
+          set -euo pipefail
+          alembic upgrade head
+          alembic check
+
+      - name: Verify final schema and RLS
+        env:
+          DATABASE_URL: ${{ secrets.MOLSAN_SUPABASE_MIGRATION_DATABASE_URL }}
+        run: |
+          python - <<'PY'
+          import os
+          from sqlalchemy import create_engine, text
+
+          engine = create_engine(os.environ["DATABASE_URL"], pool_pre_ping=True)
+          try:
+              with engine.connect() as conn:
+                  version = conn.execute(text("select version_num from public.alembic_version")).scalar_one()
+                  counts = conn.execute(text("""
+                      select count(*) as total,
+                             count(*) filter (where c.relrowsecurity) as rls_enabled
+                      from pg_class c
+                      join pg_namespace n on n.oid = c.relnamespace
+                      where n.nspname = 'public' and c.relkind = 'r'
+                  """)).one()
+                  api_grants = conn.execute(text("""
+                      select count(*)
+                      from pg_class c
+                      join pg_namespace n on n.oid = c.relnamespace
+                      where n.nspname = 'public' and c.relkind = 'r'
+                        and (
+                          has_table_privilege('anon', c.oid, 'SELECT')
+                          or has_table_privilege('authenticated', c.oid, 'SELECT')
+                        )
+                  """)).scalar_one()
+                  if version != "20261104_0004":
+                      raise SystemExit(f"Revisión inesperada: {version}")
+                  if counts.total < 100 or counts.total != counts.rls_enabled:
+                      raise SystemExit(f"Esquema/RLS incompleto: {counts.total} tablas, {counts.rls_enabled} con RLS.")
+                  if api_grants:
+                      raise SystemExit(f"Hay {api_grants} tablas accesibles por roles API.")
+                  print(f"Verificado: {version}; {counts.total} tablas públicas; RLS activo en todas; sin SELECT para anon/authenticated.")
+          finally:
+              engine.dispose()
+          PY

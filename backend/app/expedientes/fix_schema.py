@@ -7,22 +7,13 @@ from backend.app.database import engine
 # FIX SCHEMA - EXPEDIENTES
 # ============================================================
 #
-# Este fichero actualiza la tabla "expedientes" si la base de
-# datos existente no tiene alguna de las columnas que actualmente
-# define el modelo Expediente.
+# Este fichero verifica que la tabla "expedientes" tiene las
+# columnas definidas por el modelo ORM.
 #
 # IMPORTANTE:
-# - NO modifica ninguna tabla de Agenda.
-# - NO elimina datos.
-# - NO modifica columnas existentes.
-# - Solamente crea columnas que no existan.
-#
-# Esto es necesario porque:
-#
-#     Base.metadata.create_all()
-#
-# NO añade automáticamente columnas nuevas a una tabla que ya
-# existe en PostgreSQL.
+# - No modifica ni crea columnas.
+# - El esquema se administra exclusivamente mediante revisiones Alembic.
+# - Si faltan columnas, informa del error para aplicar la revisión pendiente.
 #
 # ============================================================
 
@@ -276,54 +267,22 @@ def fix_expedientes_schema():
             )
 
             # ------------------------------------------------
-            # Crear columnas que falten
+            # Verificar esquema provisionado por Alembic
             # ------------------------------------------------
 
-            creadas = 0
-
-            for nombre_columna, tipo_columna in columnas.items():
-
-                if nombre_columna in columnas_existentes:
-
-                    continue
-
-                sql = text(
-                    f"""
-                    ALTER TABLE expedientes
-                    ADD COLUMN "{nombre_columna}" {tipo_columna}
-                    """
+            faltantes = sorted(set(columnas) - columnas_existentes)
+            if faltantes:
+                raise RuntimeError(
+                    "La tabla expedientes no tiene todas las columnas "
+                    "del esquema versionado. Ejecuta Alembic; faltan: "
+                    + ", ".join(faltantes)
                 )
 
-                conn.execute(sql)
-
-                creadas += 1
-
-                print(
-                    f"FIX SCHEMA: creada columna "
-                    f"expedientes.{nombre_columna} "
-                    f"({tipo_columna})",
-                    flush=True,
-                )
-
-            # ------------------------------------------------
-            # Resultado
-            # ------------------------------------------------
-
-            if creadas == 0:
-
-                print(
-                    "FIX SCHEMA: la tabla expedientes ya "
-                    "tiene todas las columnas necesarias.",
-                    flush=True,
-                )
-
-            else:
-
-                print(
-                    f"FIX SCHEMA: se han creado "
-                    f"{creadas} columnas.",
-                    flush=True,
-                )
+            print(
+                f"FIX SCHEMA: verificadas {len(columnas)} columnas; "
+                "no se ejecutó DDL desde la aplicación.",
+                flush=True,
+            )
 
     except Exception as e:
 

@@ -11,6 +11,7 @@ from datetime import date, datetime, time, timedelta
 import jwt
 from cryptography.fernet import Fernet
 from fastapi import APIRouter, Depends, HTTPException, File, Form, UploadFile, Request
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, constr
 from sqlalchemy import and_, text, or_
 from sqlalchemy.orm import Session
@@ -27,9 +28,63 @@ from backend.app.expediente_observaciones.models import ExpedienteObservacion
 from backend.app.empleados.models import Empleado
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.storage import CARPETA_DIGITAL_DIR
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, is_supabase_object, parse_object_reference, storage_backend_is_supabase
+
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
 
 router = APIRouter(prefix="/notargest", tags=["NotarGest"])
 ROOT = CARPETA_DIGITAL_DIR.resolve()
+
+
+def _usa_storage_remoto() -> bool:
+    return storage_backend_is_supabase()
+
+
+def _guardar_documento_storage(nombre_guardado: str, contenido: bytes, mime: str) -> str:
+    if _usa_storage_remoto():
+        try:
+            return SupabasePrivateStorage().upload(
+                f"cd/{uuid.uuid4().hex}{Path(nombre_guardado).suffix.lower()}",
+                contenido,
+                mime or "application/octet-stream",
+            )
+        except (RuntimeError, SupabaseStorageError) as exc:
+            raise HTTPException(status_code=503, detail="El almacenamiento documental no está disponible.") from exc
+    ruta = (ROOT / nombre_guardado).resolve()
+    if ruta.parent != ROOT:
+        raise HTTPException(status_code=400, detail="Nombre de archivo no válido")
+    ruta.write_bytes(contenido)
+    return nombre_guardado
+
+
+def _leer_documento_storage(referencia: str) -> bytes:
+    if is_supabase_object(referencia):
+        bucket, key = parse_object_reference(referencia)
+        storage = SupabasePrivateStorage()
+        if bucket != storage.config.bucket:
+            raise HTTPException(status_code=404, detail="Documento no encontrado")
+        try:
+            return storage.download(key)
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail="El archivo no está disponible en el almacenamiento") from exc
+        except SupabaseStorageError as exc:
+            raise HTTPException(status_code=503, detail="El almacenamiento documental no está disponible.") from exc
+    ruta = (ROOT / referencia).resolve()
+    if ruta.parent != ROOT or not ruta.is_file():
+        raise HTTPException(status_code=404, detail="El archivo no está disponible en el almacenamiento")
+    return ruta.read_bytes()
+
+
+def _eliminar_documento_storage(referencia: str) -> None:
+    if is_supabase_object(referencia):
+        bucket, key = parse_object_reference(referencia)
+        storage = SupabasePrivateStorage()
+        if bucket == storage.config.bucket:
+            storage.delete(key)
+    else:
+        ruta = (ROOT / referencia).resolve()
+        if ruta.parent == ROOT:
+            ruta.unlink(missing_ok=True)
 MAX_WORKFLOW_UPLOAD_BYTES = 25 * 1024 * 1024
 EXTENSIONES_NOTARGEST_PERMITIDAS = {
     ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
@@ -68,6 +123,9 @@ ROOT.mkdir(parents=True, exist_ok=True)
 
 @router.on_event("startup")
 def crear_tabla_avisos_leidos_notargest():
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: crear_tabla_avisos_leidos_notargest; ejecutar migración versionada.", flush=True)
+        return
     """Guarda las notificaciones leídas por notario, sin alterar las observaciones originales."""
     with engine.begin() as conn:
         conn.execute(text("""
@@ -83,6 +141,9 @@ def crear_tabla_avisos_leidos_notargest():
 
 @router.on_event("startup")
 def crear_tabla_historial_actividad_notargest():
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: crear_tabla_historial_actividad_notargest; ejecutar migración versionada.", flush=True)
+        return
     with engine.begin() as conn:
         conn.execute(text("""
             CREATE TABLE IF NOT EXISTS notargest_historial_actividad (
@@ -138,6 +199,9 @@ def verificar_password(password, stored):
 
 @router.on_event("startup")
 def migrar_notargest():
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: migrar_notargest; ejecutar migración versionada.", flush=True)
+        return
     """Comprueba primero el esquema y evita ALTER TABLE si las columnas ya existen.
 
     PostgreSQL puede necesitar un bloqueo exclusivo para ALTER TABLE incluso con
@@ -918,11 +982,9 @@ async def subir_documento_workflow(expediente_id: str, categoria: str = Form(...
     }
     _validar_contenido_workflow(contenido, exigir_pdf=exigir_pdf)
     nombre_guardado = f"{uuid.uuid4().hex}{Path(nombre).suffix[:20].lower()}"
-    ruta = (ROOT / nombre_guardado).resolve()
-    if ruta.parent != ROOT: raise HTTPException(status_code=400, detail="Nombre de archivo no válido")
-    ruta.write_bytes(contenido)
+    referencia_storage = _guardar_documento_storage(nombre_guardado, contenido, mime_fijo or tipo_mime_seguro)
     try:
-        doc = DocumentoCarpetaDigital(expediente_id=str(e.id_expediente), categoria=categoria_carpeta, nombre_original=nombre, nombre_guardado=nombre_guardado, tipo_mime=mime_fijo or tipo_mime_seguro, tamano_bytes=len(contenido), fecha_subida=datetime.utcnow())
+        doc = DocumentoCarpetaDigital(expediente_id=str(e.id_expediente), categoria=categoria_carpeta, nombre_original=nombre, nombre_guardado=referencia_storage, tipo_mime=mime_fijo or tipo_mime_seguro, tamano_bytes=len(contenido), fecha_subida=datetime.utcnow())
         db.add(doc)
         if categoria == "defecto":
             e.tiene_defectos_abiertos = "SI"
@@ -933,7 +995,10 @@ async def subir_documento_workflow(expediente_id: str, categoria: str = Form(...
             e.actividad_actual = ESTADOS_NOTARGEST[siguiente]
         db.commit(); db.refresh(doc)
     except Exception:
-        db.rollback(); ruta.unlink(missing_ok=True); raise
+        db.rollback()
+        try: _eliminar_documento_storage(referencia_storage)
+        except Exception: pass
+        raise
     return {"ok": True, "id": doc.id, "categoria": doc.categoria, "nombre": doc.nombre_original, "estado": _estado_workflow(e)}
 
 @router.get("/expedientes")
@@ -1209,16 +1274,13 @@ async def subir_documento_carpeta_notargest(
         await archivo.close()
     _validar_contenido_workflow(contenido, exigir_pdf=True)
     nombre_guardado = f"{uuid.uuid4().hex}{Path(nombre).suffix[:20].lower()}"
-    ruta = (ROOT / nombre_guardado).resolve()
-    if ruta.parent != ROOT:
-        raise HTTPException(status_code=400, detail="Nombre de archivo no válido")
-    ruta.write_bytes(contenido)
+    referencia_storage = _guardar_documento_storage(nombre_guardado, contenido, "application/pdf")
     try:
         doc = DocumentoCarpetaDigital(
             expediente_id=str(e.id_expediente),
             categoria=categoria,
             nombre_original=nombre,
-            nombre_guardado=nombre_guardado,
+            nombre_guardado=referencia_storage,
             tipo_mime="application/pdf",
             tamano_bytes=len(contenido),
             fecha_subida=datetime.utcnow(),
@@ -1228,7 +1290,8 @@ async def subir_documento_carpeta_notargest(
         db.refresh(doc)
     except Exception:
         db.rollback()
-        ruta.unlink(missing_ok=True)
+        try: _eliminar_documento_storage(referencia_storage)
+        except Exception: pass
         raise
     return {"ok": True, "id": doc.id, "categoria": doc.categoria, "nombre": doc.nombre_original}
 
@@ -1242,18 +1305,13 @@ def descargar_documento(expediente_id: str, documento_id: int, n=Depends(get_not
     ).first()
     if not doc:
         raise HTTPException(status_code=404, detail="Documento no encontrado")
-    ruta = (ROOT / doc.nombre_guardado).resolve()
-    if ruta.parent != ROOT or not ruta.is_file():
-        raise HTTPException(status_code=404, detail="El archivo no está disponible en el almacenamiento")
-    from fastapi.responses import FileResponse
+    contenido = _leer_documento_storage(doc.nombre_guardado)
     media_type_seguro, disposicion = _politica_descarga_notargest(doc.nombre_original)
-    return FileResponse(
-        path=ruta,
-        media_type=media_type_seguro,
-        filename=doc.nombre_original,
-        content_disposition_type=disposicion,
-        headers={"X-Content-Type-Options": "nosniff"},
-    )
+    respuesta = StreamingResponse(iter([contenido]), media_type=media_type_seguro)
+    respuesta.headers["Content-Disposition"] = f'{disposicion}; filename="{doc.nombre_original.replace(chr(34), "")}"'
+    respuesta.headers["X-Content-Type-Options"] = "nosniff"
+    respuesta.headers["Cache-Control"] = "private, no-store"
+    return respuesta
 
 @router.post("/expedientes/{expediente_id}/factura-notarial")
 async def subir_factura_notarial(expediente_id: str, archivo: UploadFile = File(...), n=Depends(get_notario), db: Session = Depends(get_db)):
@@ -1271,26 +1329,23 @@ async def subir_factura_notarial(expediente_id: str, archivo: UploadFile = File(
         DocumentoCarpetaDigital.categoria == "Factura notarial"
     ).first()
     nombre_guardado = f"{uuid.uuid4().hex}.pdf"
-    ruta = (ROOT / nombre_guardado).resolve()
-    if ruta.parent != ROOT:
-        raise HTTPException(status_code=400, detail="Nombre de archivo no válido")
-    ruta.write_bytes(contenido)
+    referencia_storage = _guardar_documento_storage(nombre_guardado, contenido, "application/pdf")
     try:
         if anterior:
-            ruta_anterior = (ROOT / anterior.nombre_guardado).resolve()
+            referencia_anterior = anterior.nombre_guardado
             anterior.nombre_original = nombre
-            anterior.nombre_guardado = nombre_guardado
+            anterior.nombre_guardado = referencia_storage
             anterior.tipo_mime = "application/pdf"
             anterior.tamano_bytes = len(contenido)
             anterior.fecha_subida = datetime.utcnow()
             db.commit()
-            if ruta_anterior.parent == ROOT:
-                ruta_anterior.unlink(missing_ok=True)
+            try: _eliminar_documento_storage(referencia_anterior)
+            except Exception: pass
             doc = anterior
         else:
             doc = DocumentoCarpetaDigital(
                 expediente_id=str(e.id_expediente), categoria="Factura notarial",
-                nombre_original=nombre, nombre_guardado=nombre_guardado,
+                nombre_original=nombre, nombre_guardado=referencia_storage,
                 tipo_mime="application/pdf", tamano_bytes=len(contenido), fecha_subida=datetime.utcnow()
             )
             db.add(doc)
@@ -1298,7 +1353,8 @@ async def subir_factura_notarial(expediente_id: str, archivo: UploadFile = File(
             db.refresh(doc)
     except Exception:
         db.rollback()
-        ruta.unlink(missing_ok=True)
+        try: _eliminar_documento_storage(referencia_storage)
+        except Exception: pass
         raise
     e.notargest_estado = "registro"
     e.actividad_actual = ESTADOS_NOTARGEST["registro"]

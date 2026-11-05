@@ -1,0 +1,130 @@
+name: Supabase Preview database preflight (read-only)
+
+on:
+  push:
+    branches: [production/erp-molsan-2026-11-04]
+    paths:
+      - ".github/workflows/supabase-preview-preflight.yml"
+      - "backend/migrations/**"
+      - "alembic.ini"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: molsan-supabase-preview-preflight
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    name: Verify target database without changing it
+    if: github.ref == 'refs/heads/production/erp-molsan-2026-11-04'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      MOLSAN_SUPABASE_MIGRATION_DATABASE_URL: ${{ secrets.MOLSAN_SUPABASE_MIGRATION_DATABASE_URL }}
+    steps:
+      - name: Checkout exact integration branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install database driver
+        run: |
+          python -m pip install --disable-pip-version-check "SQLAlchemy>=2.0,<3" "psycopg2-binary>=2.9,<3"
+
+      - name: Read-only connection and schema preflight
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          from sqlalchemy import create_engine, text
+          from sqlalchemy.engine import make_url
+
+          raw_url = os.environ.get("MOLSAN_SUPABASE_MIGRATION_DATABASE_URL", "").strip()
+          if not raw_url:
+              raise SystemExit("BLOCKED: GitHub secret MOLSAN_SUPABASE_MIGRATION_DATABASE_URL is missing or empty.")
+
+          try:
+              url = make_url(raw_url)
+          except Exception:
+              raise SystemExit("BLOCKED: the database URL cannot be parsed. The secret value has not been printed.")
+
+          if url.get_backend_name() != "postgresql":
+              raise SystemExit("BLOCKED: the secret must contain a PostgreSQL connection URL.")
+          if not url.host or not url.username:
+              raise SystemExit("BLOCKED: the connection URL is missing its host or username.")
+          if url.port == 6543:
+              raise SystemExit("BLOCKED: transaction pooler port 6543 is not accepted for schema migrations. Use a direct connection or Session pooler.")
+          if url.query.get("sslmode", "").lower() not in {"require", "verify-ca", "verify-full"}:
+              raise SystemExit("BLOCKED: configure sslmode=require (or stronger) in the connection URL.")
+
+          expected_project = "powiprqarmluanplxpyb"
+          host_matches = expected_project in url.host.lower()
+          username_matches = url.username.lower().endswith("." + expected_project)
+          if not (host_matches or username_matches):
+              raise SystemExit("BLOCKED: the connection target cannot be verified as the ERP_Molsan Supabase project. No database changes were made.")
+
+          print(f"Connection target identity check: matched project {expected_project}.")
+          print(f"Database endpoint: {url.host}:{url.port or 5432} (credentials hidden).")
+
+          # SQLAlchemy 2.1 defaults postgresql:// to psycopg 3; this workflow installs psycopg2-binary.
+          # Select psycopg2 explicitly so the installed DBAPI matches the dialect.
+          url = url.set(drivername="postgresql+psycopg2")
+          engine = create_engine(url, pool_pre_ping=True, connect_args={"connect_timeout": 10})
+          try:
+              with engine.connect() as connection:
+                  identity = connection.execute(text("""
+                      SELECT current_database(), current_user,
+                             COALESCE(inet_server_addr()::text, 'local/socket')
+                  """)).one()
+                  print(f"Connected database: {identity[0]}; database role: {identity[1]}; server address: {identity[2]}.")
+
+                  tables = connection.execute(text("""
+                      SELECT tablename
+                      FROM pg_catalog.pg_tables
+                      WHERE schemaname = 'public'
+                      ORDER BY tablename
+                  """)).scalars().all()
+                  print("Tables currently in public schema: " + (", ".join(tables) if tables else "(none)"))
+
+                  if len(tables) != 101:
+                      raise SystemExit(f"BLOCKED: expected 101 reviewed public tables; found {len(tables)}.")
+
+                  versions = connection.execute(text("SELECT version_num FROM public.alembic_version")).scalars().all()
+                  print("Alembic revision(s): " + (", ".join(versions) if versions else "(empty)"))
+                  if versions != ["20261105_0005"]:
+                      raise SystemExit("BLOCKED: Alembic revision is not the reviewed Preview head 20261105_0005.")
+
+                  security = connection.execute(text("""
+                      SELECT
+                          count(*) FILTER (WHERE c.relrowsecurity),
+                          count(*) FILTER (
+                              WHERE has_table_privilege('anon', c.oid, 'SELECT')
+                                 OR has_table_privilege('anon', c.oid, 'INSERT')
+                                 OR has_table_privilege('anon', c.oid, 'UPDATE')
+                                 OR has_table_privilege('anon', c.oid, 'DELETE')
+                                 OR has_table_privilege('authenticated', c.oid, 'SELECT')
+                                 OR has_table_privilege('authenticated', c.oid, 'INSERT')
+                                 OR has_table_privilege('authenticated', c.oid, 'UPDATE')
+                                 OR has_table_privilege('authenticated', c.oid, 'DELETE')
+                          )
+                      FROM pg_class c
+                      JOIN pg_namespace n ON n.oid = c.relnamespace
+                      WHERE n.nspname = 'public' AND c.relkind IN ('r', 'p')
+                  """)).one()
+                  if security[0] != 101:
+                      raise SystemExit(f"BLOCKED: RLS enabled on {security[0]} of 101 public tables.")
+                  if security[1] != 0:
+                      raise SystemExit(f"BLOCKED: anon/authenticated have data privileges on {security[1]} tables.")
+
+                  print("READ-ONLY PREFLIGHT PASSED: 101 tables, RLS enabled, client roles have no table data grants. No data or schema changed.")
+          finally:
+              engine.dispose()
+          PY

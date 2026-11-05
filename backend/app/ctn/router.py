@@ -28,6 +28,8 @@ from backend.app.ctn.geocode import geocode_todas_notarias
 from backend.app.ctn.migracion import agregar_coordenadas
 from backend.app.encargagest.models import EncargoExternoUsuario
 
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
+
 router = APIRouter(
     prefix="/ctn",
     tags=["CTN"],
@@ -85,6 +87,9 @@ else:
 
 @router.on_event("startup")
 def crear_tabla_asociaciones_ctn():
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: crear_tabla_asociaciones_ctn; ejecutar migración versionada.", flush=True)
+        return
     """Crea las asociaciones CTN y migra IBAN solo si faltan, serializando el DDL."""
     import time
 
@@ -693,6 +698,9 @@ def historico_firmas_notario(
 # ACCESO INDIVIDUAL A NOTARGEST
 @router.on_event("startup")
 def migrar_columna_acceso_notargest():
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: migrar_columna_acceso_notargest; ejecutar migración versionada.", flush=True)
+        return
     """Añade el indicador de acceso sin dejar que un bloqueo auxiliar tumbe la API."""
     import time as _time
 
@@ -772,6 +780,9 @@ def cambiar_acceso_notargest(
 
 @router.on_event("startup")
 def crear_tabla_historial_accesos_portales():
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: crear_tabla_historial_accesos_portales; ejecutar migración versionada.", flush=True)
+        return
     """Prepara el historial sin bloquear el arranque si PostgreSQL tiene un lock."""
     def ejecutar_migracion(etiqueta, sql, parametros=None):
         try:

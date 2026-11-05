@@ -14,9 +14,9 @@ import jwt
 from cryptography.fernet import Fernet
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, Field, condecimal, constr
-from sqlalchemy import or_, func, inspect as sa_inspect, text
+from sqlalchemy import or_, func, text
 from sqlalchemy.orm import Session
 
 from backend.app.auth.dependencies import obtener_token_bearer
@@ -25,15 +25,68 @@ from backend.app.config import settings
 from backend.app.empleados.models import Empleado
 from backend.app.ctn.models import Notaria
 from backend.app.database import Base, engine, get_db
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
 from backend.app.encargagest.models import (
     EncargoExterno, EncargoExternoActividad, EncargoExternoDocumento,
     EncargoExternoUsuario,
 )
 from backend.app.storage import CARPETA_DIGITAL_DIR
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, is_supabase_object, parse_object_reference, storage_backend_is_supabase
 
 router = APIRouter(prefix="/encargagest", tags=["EncargaGest"])
 ROOT = (CARPETA_DIGITAL_DIR / "encargagest").resolve()
 ROOT.mkdir(parents=True, exist_ok=True)
+
+
+def _usa_storage_remoto() -> bool:
+    return storage_backend_is_supabase()
+
+
+def _guardar_documento_storage(nombre_guardado: str, contenido: bytes, mime: str) -> str:
+    if _usa_storage_remoto():
+        try:
+            return SupabasePrivateStorage().upload(
+                f"eg/{uuid4().hex}{Path(nombre_guardado).suffix.lower()}",
+                contenido,
+                mime or "application/octet-stream",
+            )
+        except (RuntimeError, SupabaseStorageError) as exc:
+            raise HTTPException(status_code=503, detail="El almacenamiento documental no está disponible.") from exc
+    ruta = (ROOT / nombre_guardado).resolve()
+    if ruta.parent != ROOT:
+        raise HTTPException(status_code=400, detail="Nombre de archivo no válido.")
+    ruta.write_bytes(contenido)
+    return nombre_guardado
+
+
+def _leer_documento_storage(referencia: str) -> bytes:
+    if is_supabase_object(referencia):
+        bucket, key = parse_object_reference(referencia)
+        storage = SupabasePrivateStorage()
+        if bucket != storage.config.bucket:
+            raise HTTPException(status_code=404, detail="Documento no encontrado.")
+        try:
+            return storage.download(key)
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail="El archivo no está disponible en el almacenamiento.") from exc
+        except SupabaseStorageError as exc:
+            raise HTTPException(status_code=503, detail="El almacenamiento documental no está disponible.") from exc
+    ruta = (ROOT / referencia).resolve()
+    if ruta.parent != ROOT or not ruta.is_file():
+        raise HTTPException(status_code=404, detail="El archivo no está disponible en el almacenamiento.")
+    return ruta.read_bytes()
+
+
+def _eliminar_documento_storage(referencia: str) -> None:
+    if is_supabase_object(referencia):
+        bucket, key = parse_object_reference(referencia)
+        storage = SupabasePrivateStorage()
+        if bucket == storage.config.bucket:
+            storage.delete(key)
+    else:
+        ruta = (ROOT / referencia).resolve()
+        if ruta.parent == ROOT:
+            ruta.unlink(missing_ok=True)
 
 MAX_BYTES = int(os.getenv("ENCARGAGEST_MAX_DOCUMENT_BYTES", str(25 * 1024 * 1024)))
 EXTENSIONES_PERMITIDAS = {".pdf", ".doc", ".docx", ".xls", ".xlsx", ".jpg", ".jpeg", ".png", ".eml", ".msg", ".txt"}
@@ -54,6 +107,9 @@ PRIORIDADES = {"Baja", "Normal", "Alta", "Urgente"}
 
 
 def _migrar_tablas_encargagest_en_hilo():
+    if os.getenv("MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS", "false").strip().lower() not in {"1", "true", "yes"}:
+        print("[ENCARGAGEST MIGRACION] DDL automático desactivado; usar migraciones versionadas.", flush=True)
+        return
     # Las migraciones no deben impedir que FastAPI abra el puerto en Render.
     # Si hay un bloqueo PostgreSQL, se informa y se reintenta en el próximo arranque.
     tablas_modulo = [
@@ -72,53 +128,8 @@ def _migrar_tablas_encargagest_en_hilo():
     except Exception as exc:
         print(f"[ENCARGAGEST MIGRACION] AVISO: tablas del módulo pendientes; se reintentará. Error: {exc!r}", flush=True)
 
-    migraciones = {
-        "empleados": {
-            "notarias_encargagest_ids": "JSONB NOT NULL DEFAULT '[]'::jsonb",
-        },
-        "encargagest_usuarios": {
-            "password_enc": "TEXT",
-            "password_provisional": "BOOLEAN NOT NULL DEFAULT TRUE",
-        },
-        "encargagest_encargos": {
-            "capital_inscrito": "NUMERIC(14, 2)",
-            "fecha_constitucion": "DATE",
-            "numero_finca": "VARCHAR(150)",
-            "municipio_registro": "VARCHAR(200)",
-            "registro_propiedad": "VARCHAR(200)",
-            "contratos_json": "JSONB",
-        },
-        "encargagest_documentos": {
-            "categoria": "VARCHAR(120) NOT NULL DEFAULT 'Otros'",
-            "contrato_index": "INTEGER NOT NULL DEFAULT 0",
-        },
-    }
-    try:
-        inspector = sa_inspect(engine)
-        tablas = set(inspector.get_table_names())
-    except Exception as exc:
-        print(f"[ENCARGAGEST MIGRACION] AVISO: no se pudo inspeccionar el esquema; se reintentará. Error: {exc!r}", flush=True)
-        tablas = set()
-
-    for tabla, columnas in migraciones.items():
-        if tabla not in tablas:
-            continue
-        try:
-            existentes = {columna["name"] for columna in sa_inspect(engine).get_columns(tabla)}
-        except Exception as exc:
-            print(f"[ENCARGAGEST MIGRACION] AVISO: no se pudieron consultar columnas de {tabla}: {exc!r}", flush=True)
-            continue
-        for nombre, tipo in columnas.items():
-            if nombre in existentes:
-                continue
-            try:
-                with engine.begin() as conexion:
-                    conexion.execute(text("SET LOCAL lock_timeout = '2s'"))
-                    conexion.execute(text("SET LOCAL statement_timeout = '8s'"))
-                    conexion.execute(text(f'ALTER TABLE "{tabla}" ADD COLUMN "{nombre}" {tipo}'))
-                print(f"[ENCARGAGEST MIGRACION] {tabla}.{nombre}: OK.", flush=True)
-            except Exception as exc:
-                print(f"[ENCARGAGEST MIGRACION] AVISO: no se pudo añadir {tabla}.{nombre}; se reintentará. Error: {exc!r}", flush=True)
+    # Las columnas de estas tablas forman parte de los modelos ORM y se crean
+    # mediante Alembic. No se alteran tablas desde el proceso web.
 
     # Tablas/columnas de reparto: ejecutar cada operación por separado para que
     # una tabla bloqueada no haga rollback del resto ni bloquee el arranque.
@@ -205,6 +216,9 @@ def _migrar_tablas_encargagest_en_hilo():
 
 @router.on_event("startup")
 async def crear_tablas_encargagest():
+    if not runtime_schema_migrations_enabled():
+        print("[ENCARGAGEST MIGRACION] DDL de arranque desactivado; el esquema se gestiona con Alembic.", flush=True)
+        return
     # No crear ni iniciar hilos mientras Starlette está ejecutando la secuencia
     # de arranque. Solo se agenda el lanzamiento para después de liberar el
     # ciclo de startup; así un problema de recursos no puede atascar el puerto.
@@ -1596,12 +1610,12 @@ async def subir_documento(
     ruta = (ROOT / nombre_guardado).resolve()
     if ruta.parent != ROOT:
         raise HTTPException(status_code=400, detail="Nombre de archivo no válido.")
+    referencia_storage = _guardar_documento_storage(nombre_guardado, contenido, archivo.content_type or "application/octet-stream")
     try:
-        ruta.write_bytes(contenido)
         documento = EncargoExternoDocumento(
             encargo_id=item.id,
             nombre_original=nombre_original,
-            nombre_guardado=nombre_guardado,
+            nombre_guardado=referencia_storage,
             categoria=categoria,
             contrato_index=contrato_index,
             tipo_mime=archivo.content_type,
@@ -1617,7 +1631,8 @@ async def subir_documento(
         return _serializar_documento(documento) | {"ok": True}
     except Exception:
         db.rollback()
-        ruta.unlink(missing_ok=True)
+        try: _eliminar_documento_storage(referencia_storage)
+        except Exception: pass
         raise HTTPException(status_code=500, detail="No se pudo guardar el documento.")
     finally:
         await archivo.close()
@@ -1633,10 +1648,12 @@ def descargar_documento(encargo_id: int, documento_id: int, db: Session = Depend
     ).first()
     if not documento:
         raise HTTPException(status_code=404, detail="Documento no encontrado.")
-    ruta = (ROOT / documento.nombre_guardado).resolve()
-    if ruta.parent != ROOT or not ruta.is_file():
-        raise HTTPException(status_code=404, detail="El archivo no está disponible en el almacenamiento.")
-    return FileResponse(path=str(ruta), filename=documento.nombre_original, media_type=documento.tipo_mime or "application/octet-stream")
+    contenido = _leer_documento_storage(documento.nombre_guardado)
+    respuesta = StreamingResponse(iter([contenido]), media_type=documento.tipo_mime or "application/octet-stream")
+    respuesta.headers["Content-Disposition"] = f'attachment; filename="{documento.nombre_original.replace(chr(34), "")}"'
+    respuesta.headers["X-Content-Type-Options"] = "nosniff"
+    respuesta.headers["Cache-Control"] = "private, no-store"
+    return respuesta
 
 
 @router.delete("/encargos/{encargo_id}/documentos/{documento_id}")
@@ -1650,10 +1667,8 @@ def eliminar_documento(encargo_id: int, documento_id: int, db: Session = Depends
     ).first()
     if not documento:
         raise HTTPException(status_code=404, detail="Documento no encontrado.")
-    ruta = (ROOT / documento.nombre_guardado).resolve()
+    referencia_storage = documento.nombre_guardado
     try:
-        if ruta.parent == ROOT:
-            ruta.unlink(missing_ok=True)
         nombre_documento = documento.nombre_original
         categoria_documento = documento.categoria
         db.delete(documento)
@@ -1664,6 +1679,8 @@ def eliminar_documento(encargo_id: int, documento_id: int, db: Session = Depends
         )
         encargo.actualizado_en = datetime.utcnow()
         db.commit()
+        try: _eliminar_documento_storage(referencia_storage)
+        except Exception: pass
     except Exception:
         db.rollback()
         raise HTTPException(status_code=500, detail="No se pudo eliminar el documento.")

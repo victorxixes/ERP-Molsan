@@ -1,11 +1,9 @@
-"""Almacenamiento local configurable y comprobable para ERP-Molsan.
+"""Resolución de rutas locales de desarrollo y validación del backend documental.
 
-En Render debe montarse un Persistent Disk en /var/data y configurar:
-    MOLSAN_STORAGE_ROOT=/var/data/molsan
-    MOLSAN_REQUIRE_PERSISTENT_STORAGE=true
-
-Los directorios concretos pueden sobrescribirse mediante variables de entorno,
-pero en modo obligatorio deben permanecer dentro de MOLSAN_STORAGE_ROOT.
+En Render, la persistencia documental se realiza en Supabase Storage privado.
+El backend falla al arrancar si Render no tiene MOLSAN_STORAGE_BACKEND=supabase
+y las credenciales necesarias. No se requiere Persistent Disk.
+En desarrollo local se mantiene el backend de ficheros local.
 """
 from __future__ import annotations
 
@@ -94,15 +92,32 @@ def _probe_directory(path: Path) -> None:
             pass
 
 
+STORAGE_BACKEND = (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower()
+if STORAGE_BACKEND not in {"local", "supabase"}:
+    raise RuntimeError("MOLSAN_STORAGE_BACKEND debe ser 'local' o 'supabase'.")
+
+IS_RENDER = bool(os.getenv("RENDER_SERVICE_ID") or os.getenv("RENDER"))
+if IS_RENDER and STORAGE_BACKEND != "supabase":
+    raise RuntimeError(
+        "En Render el ERP requiere MOLSAN_STORAGE_BACKEND=supabase. "
+        "No se permite guardar documentos en almacenamiento efímero."
+    )
+
+if STORAGE_BACKEND == "supabase":
+    # Validar al arrancar, no esperar al primer documento, para que el Preview
+    # nunca acepte tráfico con el almacenamiento privado mal configurado.
+    from backend.app.supabase_storage import SupabaseStorageConfig
+    SupabaseStorageConfig.from_env()
+
 ROOT_VALUE = os.getenv("MOLSAN_STORAGE_ROOT", "./data/molsan").strip()
 if not ROOT_VALUE:
     raise RuntimeError("MOLSAN_STORAGE_ROOT no puede estar vacío")
 STORAGE_ROOT = Path(ROOT_VALUE).expanduser().resolve()
-REQUIRE_PERSISTENT_STORAGE = _env_bool("MOLSAN_REQUIRE_PERSISTENT_STORAGE", False)
+REQUIRE_PERSISTENT_STORAGE = STORAGE_BACKEND == "local" and _env_bool("MOLSAN_REQUIRE_PERSISTENT_STORAGE", False)
 
 if REQUIRE_PERSISTENT_STORAGE:
     _validate_persistent_root(STORAGE_ROOT)
-elif (os.getenv("RENDER_SERVICE_ID") or os.getenv("RENDER")) and (
+elif (os.getenv("MOLSAN_STORAGE_BACKEND") or "local").strip().lower() != "supabase" and (os.getenv("RENDER_SERVICE_ID") or os.getenv("RENDER")) and (
     not _inside(Path("/var/data").resolve(), STORAGE_ROOT)
     or not os.path.ismount(str(Path("/var/data").resolve()))
 ):
@@ -146,6 +161,7 @@ def storage_status() -> dict[str, object]:
     }
     status: dict[str, object] = {
         "persistent_required": REQUIRE_PERSISTENT_STORAGE,
+        "backend": STORAGE_BACKEND,
         "root": str(STORAGE_ROOT),
         "var_data_is_mountpoint": os.path.ismount("/var/data"),
         "root_inside_var_data": _inside(Path("/var/data"), STORAGE_ROOT),

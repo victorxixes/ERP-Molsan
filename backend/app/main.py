@@ -1,14 +1,16 @@
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Response
 from fastapi.responses import FileResponse
 from pathlib import Path
+from contextlib import contextmanager
+from functools import wraps
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text, or_
 
 
 import os
 import inspect
+import time
 
 from backend.app.storage import FOTOS_DIR as STORAGE_FOTOS_DIR
 
@@ -21,6 +23,8 @@ instalar_filtro_credenciales_websocket()
 # APP
 # ============================================================
 
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
+
 app = FastAPI(title="Agenda Intranet Backend")
 
 
@@ -28,12 +32,22 @@ app = FastAPI(title="Agenda Intranet Backend")
 # CORS — CONFIGURACIÓN PARA RENDER
 # ============================================================
 
-origins = [
-    "https://agenda-intranet-f.onrender.com",
-    "https://agenda-intranet-b.onrender.com",
-    "http://localhost:5173",
-    "http://localhost:3000",
-]
+# Render/Preview debe declarar explícitamente los orígenes permitidos.
+# Si CORS_ORIGINS está configurada, sustituye la lista heredada completa.
+origins_configurados = os.getenv("CORS_ORIGINS", "").strip()
+if origins_configurados:
+    origins = [
+        origen.strip().rstrip("/")
+        for origen in origins_configurados.split(",")
+        if origen.strip()
+    ]
+else:
+    # Fallo cerrado: sin configuración explícita solo se permiten orígenes locales.
+    # Preview y Producción deben declarar sus dominios en CORS_ORIGINS.
+    origins = [
+        "http://localhost:5173",
+        "http://localhost:3000",
+    ]
 
 app.add_middleware(
     CORSMiddleware,
@@ -105,18 +119,9 @@ app.mount(
 )
 
 
-# ============================================================
-# STATIC — MENSAJES
-# ============================================================
-
-TMP_MENSAJES = "/tmp/mensajes"
-os.makedirs(TMP_MENSAJES, exist_ok=True)
-
-app.mount(
-    "/static/mensajes",
-    StaticFiles(directory=TMP_MENSAJES),
-    name="mensajes",
-)
+# Los adjuntos de mensajería se sirven exclusivamente mediante
+# /api/mensajes/archivo/{nombre}, que comprueba la participación en la conversación.
+# No se monta /static/mensajes: sería una ruta pública sin autorización.
 
 
 # ============================================================
@@ -131,6 +136,7 @@ LEGACY_FOTOS_DIR = os.path.join(STATIC_DIR, "fotos")
 os.makedirs(LEGACY_FOTOS_DIR, exist_ok=True)
 
 from backend.app.auth.dependencies import get_current_user
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, storage_backend_is_supabase
 from backend.app.auth.permissions import require_perm_modulo
 
 FOTOS_ROOT = Path(FOTOS_DIR).resolve()
@@ -152,10 +158,34 @@ def servir_fotografia_empleado(
 ):
     require_perm_modulo(usuario, "empleados", "ver")
 
-    if Path(ruta).suffix.lower() not in EXTENSIONES_FOTO_PERMITIDAS:
+    # La referencia del empleado es solo el nombre opaco del objeto.
+    # Nunca aceptar subrutas del cliente para evitar traversal o lectura cruzada.
+    nombre_foto = Path(ruta).name
+    if nombre_foto != ruta or nombre_foto in {"", ".", ".."}:
+        raise HTTPException(status_code=404, detail="Fotografía no encontrada")
+
+    if Path(nombre_foto).suffix.lower() not in EXTENSIONES_FOTO_PERMITIDAS:
         raise HTTPException(
             status_code=404,
             detail="Fotografía no encontrada",
+        )
+
+    if storage_backend_is_supabase():
+        try:
+            contenido = SupabasePrivateStorage().download(f"fotos/empleados/{nombre_foto}")
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail="Fotografía no encontrada") from exc
+        except (RuntimeError, SupabaseStorageError) as exc:
+            raise HTTPException(status_code=503, detail="El almacenamiento de fotografías no está disponible") from exc
+        extension = Path(ruta).suffix.lower()
+        mime = {
+            ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
+            ".gif": "image/gif", ".webp": "image/webp",
+        }.get(extension, "application/octet-stream")
+        return Response(
+            content=contenido,
+            media_type=mime,
+            headers={"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"},
         )
 
     fichero = None
@@ -529,487 +559,13 @@ app.include_router(mensajeria_molsan_router, prefix="/api")
 # ============================================================
 
 def migrar_esquema_expedientes_inicio():
-    """Añade columnas ausentes de forma idempotente y compatible con SQLAlchemy 1.4.
-
-    Todas las operaciones se ejecutan dentro de ``Connection.begin()``. No se usan
-    ``Connection.commit()`` ni ``Connection.rollback()`` porque la aplicación usa
-    SQLAlchemy 1.4 en modo legacy, donde esos métodos pueden no estar disponibles.
-    El advisory lock es de sesión y permanece adquirido entre transacciones.
-    """
-    import time
-
+    """Compatibilidad con el antiguo hook; el esquema se administra con Alembic."""
     print(
-        "[MIGRACION STARTUP] Revisando columnas pendientes de expedientes...",
+        "[SCHEMA] La migración de esquema en el arranque está desactivada. "
+        "Ejecuta las revisiones Alembic en el proceso de despliegue.",
         flush=True,
     )
-
-    # Mantener estos tipos alineados con backend/app/expedientes/models.py y con
-    # los campos usados en la Ficha de expediente/flujo de cierre.
-    columnas = [
-        # Circuito de actividades
-        ("fecha_inicio_actividad", "DATE"),
-        ("fecha_fin_actividad", "DATE"),
-        ("actividad_actual", "VARCHAR(300)"),
-        ("gestor_asignado_id", "INTEGER REFERENCES empleados(id) ON DELETE SET NULL"),
-        ("estado_actividad", "VARCHAR(200)"),
-        ("liquidado_sin_tramitar", "BOOLEAN NOT NULL DEFAULT FALSE"),
-        ("fecha_liquidacion_sin_tramitar", "DATE"),
-        ("cambio_gestoria", "BOOLEAN NOT NULL DEFAULT FALSE"),
-        ("fecha_cambio_gestoria", "DATE"),
-        ("bloqueo_manual", "BOOLEAN NOT NULL DEFAULT FALSE"),
-        ("motivo_bloqueo", "VARCHAR(1000)"),
-        ("fecha_bloqueo", "DATE"),
-        ("fecha_envio", "DATE"),
-        ("asiento_presentacion_libro_diario", "VARCHAR(300)"),
-        ("asiento_presentacion", "VARCHAR(200)"),
-        ("libro_diario", "VARCHAR(200)"),
-        ("tipo_gestoria", "VARCHAR(100)"),
-        ("fecha_presentacion", "DATE"),
-        ("numero_entrada", "VARCHAR(200)"),
-        ("fecha_recogida_notario_presentacion_telematica", "DATE"),
-        ("copia_simple_escritura", "VARCHAR(500)"),
-        ("fecha_presentacion_tributaria", "DATE"),
-        ("fecha_liquidacion_tributaria", "DATE"),
-        ("oficina_liquidadora", "VARCHAR(200)"),
-        ("base_imponible", "DOUBLE PRECISION"),
-        ("tributacion", "VARCHAR(100)"),
-        ("impuesto_ajd_itp", "VARCHAR(20)"),
-        ("fecha_vencimiento_asiento", "DATE"),
-        ("fecha_inscripcion", "DATE"),
-        ("escritura_simple_cancelacion", "VARCHAR(500)"),
-        ("ultima_accion", "VARCHAR(500)"),
-        ("fecha_ultima_accion", "DATE"),
-        ("sol", "VARCHAR(100)"),
-        ("cs", "VARCHAR(100)"),
-        ("ns", "VARCHAR(100)"),
-        # Defectos registrales que también se muestran en el circuito legacy
-        ("tiene_defectos_abiertos", "VARCHAR(50)"),
-        ("tipo_error", "VARCHAR(300)"),
-        ("falta_defecto", "VARCHAR(1000)"),
-        ("descripcion_error", "VARCHAR(1000)"),
-        ("fcierre_defecto", "DATE"),
-        ("registral_estado", "VARCHAR(200)"),
-        ("registral_fecha", "DATE"),
-        # Alta manual: tipo de expediente y numeración por tipo.
-        # Estas columnas están en el modelo ORM y deben existir antes de cargar Expediente.
-        ("tipo_expediente_id", "INTEGER"),
-        ("numero_tipo_expediente", "INTEGER"),
-        # Envío a notario y documentos de escritura
-        ("cliente_id", "INTEGER"),
-        ("notario_id", "INTEGER"),
-        ("apoderado_empleado_id", "INTEGER"),
-        ("capital_documento_notarial", "DOUBLE PRECISION"),
-        ("fecha_envio_notario", "DATE"),
-        ("fecha_solicitud_pnc", "DATE"),
-        ("numero_solicitud_pnc", "VARCHAR(200)"),
-        ("notario_otorgante", "VARCHAR(300)"),
-        # Columnas del workflow NotarGest, centralizadas para evitar DDL concurrente
-        ("notargest_estado", "VARCHAR(80)"),
-        ("notargest_fecha_cierre", "DATE"),
-        ("notargest_fecha_envio_gestoria", "DATE"),
-        ("escritura_firmada", "BOOLEAN"),
-        ("hora_prevista_firma", "TIME"),
-        ("hora_fin_prevista_firma", "TIME"),
-        ("firma_urgente", "BOOLEAN NOT NULL DEFAULT FALSE"),
-        ("idioma_documento", "VARCHAR(100)"),
-        ("formato_escritura", "VARCHAR(200)"),
-        ("tipo_tramite", "VARCHAR(200)"),
-        # Facturación/cierre: tipos sincronizados con el modelo ORM
-        ("facturacion_nombre", "VARCHAR(300)"),
-        ("facturacion_apellidos", "VARCHAR(300)"),
-        ("facturacion_dni_nif", "VARCHAR(50)"),
-        ("facturacion_direccion", "VARCHAR(500)"),
-        ("facturacion_codigo_postal", "VARCHAR(30)"),
-        ("facturacion_poblacion", "VARCHAR(200)"),
-        ("facturacion_provincia", "VARCHAR(200)"),
-        ("facturacion_telefono", "VARCHAR(50)"),
-        ("facturacion_email", "VARCHAR(320)"),
-        ("facturacion_empleado", "BOOLEAN NOT NULL DEFAULT FALSE"),
-        ("facturacion_estado", "VARCHAR(200)"),
-        ("facturacion_fecha", "DATE"),
-    ]
-
-    # Clave fija compartida por todas las instancias del servicio.
-    clave_bloqueo_migracion = 731208640224
-    conexion = None
-    bloqueo_adquirido = False
-    bloqueo_liberado = False
-
-    def es_bloqueo_temporal(error) -> bool:
-        original = getattr(error, "orig", None)
-        codigo = getattr(original, "pgcode", None) or getattr(original, "sqlstate", None)
-        if codigo == "55P03":
-            return True
-        mensaje = str(error).lower()
-        return any(
-            termino in mensaje
-            for termino in (
-                "locknotavailable",
-                "lock timeout",
-                "canceling statement due to lock timeout",
-                "could not obtain lock",
-            )
-        )
-
-    def registrar_bloqueos_expedientes(etiqueta: str) -> None:
-        """Registra sesiones con locks sobre expedientes sin cancelar ni modificar sesiones."""
-        try:
-            with conexion.begin():
-                filas = conexion.execute(
-                    text(
-                        """
-                        SELECT
-                            a.pid,
-                            a.usename,
-                            a.application_name,
-                            a.client_addr::text,
-                            a.state,
-                            a.wait_event_type,
-                            a.wait_event,
-                            a.xact_start,
-                            now() - a.xact_start AS antiguedad_transaccion,
-                            a.query_start,
-                            now() - a.query_start AS antiguedad_consulta,
-                            l.mode,
-                            l.granted,
-                            left(regexp_replace(a.query, '[[:space:]]+', ' ', 'g'), 500) AS consulta
-                        FROM pg_stat_activity a
-                        JOIN pg_locks l ON l.pid = a.pid
-                        WHERE l.relation IN ('public.expedientes'::regclass, 'public.empleados'::regclass)
-                          AND a.pid <> pg_backend_pid()
-                        ORDER BY l.granted DESC, a.xact_start NULLS LAST
-                        """
-                    )
-                ).mappings().all()
-            print(
-                f"[MIGRACION STARTUP] Diagnóstico de locks para {etiqueta}: "
-                f"{[dict(fila) for fila in filas]!r}",
-                flush=True,
-            )
-        except Exception as error_diagnostico:
-            print(
-                f"[MIGRACION STARTUP] No se pudo consultar el diagnóstico de locks "
-                f"para {etiqueta}: {error_diagnostico!r}",
-                flush=True,
-            )
-
-    def liberar_transacciones_inactivas_expedientes() -> None:
-        """Libera solo sesiones antiguas idle-in-transaction que retienen AccessShareLock en las tablas que requieren DDL.
-
-        Una transacción de lectura abandonada puede impedir ALTER TABLE durante el despliegue.
-        Se limita a sesiones inactivas más de 5 minutos; nunca termina sesiones activas.
-        """
-        try:
-            with conexion.begin():
-                pids = [
-                    fila[0]
-                    for fila in conexion.execute(
-                        text(
-                            """
-                            SELECT DISTINCT a.pid
-                            FROM pg_stat_activity a
-                            JOIN pg_locks l ON l.pid = a.pid
-                            WHERE l.relation IN ('public.expedientes'::regclass, 'public.empleados'::regclass)
-                              AND l.mode = 'AccessShareLock'
-                              AND l.granted = TRUE
-                              AND a.pid <> pg_backend_pid()
-                              AND a.state = 'idle in transaction'
-                              AND a.xact_start < now() - CASE
-                                  WHEN l.relation = 'public.empleados'::regclass THEN interval '2 minutes'
-                                  ELSE interval '5 minutes'
-                              END
-                            """
-                        )
-                    ).fetchall()
-                ]
-            for pid in pids:
-                try:
-                    with conexion.begin():
-                        terminado = bool(
-                            conexion.execute(
-                                text("SELECT pg_terminate_backend(:pid)"),
-                                {"pid": pid},
-                            ).scalar()
-                        )
-                    print(
-                        f"[MIGRACION STARTUP] Sesión inactiva pid={pid} "
-                        f"terminada={terminado} para liberar bloqueos de esquema.",
-                        flush=True,
-                    )
-                except Exception as error_sesion:
-                    print(
-                        f"[MIGRACION STARTUP] No se pudo liberar la sesión pid={pid}: {error_sesion!r}",
-                        flush=True,
-                    )
-        except Exception as error_limpieza:
-            print(
-                f"[MIGRACION STARTUP] No se pudo revisar sesiones inactivas de expedientes: {error_limpieza!r}",
-                flush=True,
-            )
-
-    def ejecutar_ddl_con_reintentos(etiqueta: str, sql: str) -> None:
-        ultimo_error = None
-        # En Render puede coincidir el arranque de una instancia con consultas
-        # activas de la anterior. No mantener cada intento bloqueado demasiado
-        # tiempo, pero conceder una ventana de reintentos suficiente para que
-        # PostgreSQL libere el bloqueo de tabla.
-        max_intentos = 20
-        for intento in range(1, max_intentos + 1):
-            # Repetir la limpieza en cada intento: la transacción que bloquea
-            # empleados puede superar los 5 minutos mientras se reintenta el DDL.
-            liberar_transacciones_inactivas_expedientes()
-            try:
-                with conexion.begin():
-                    conexion.execute(text("SET LOCAL lock_timeout = '3s'"))
-                    conexion.execute(text("SET LOCAL statement_timeout = '40s'"))
-                    conexion.execute(text(sql))
-                return
-            except Exception as error:
-                ultimo_error = error
-                if not es_bloqueo_temporal(error):
-                    raise
-                if intento == max_intentos:
-                    registrar_bloqueos_expedientes(etiqueta)
-                    raise
-                espera = min(2 * intento, 5)
-                print(
-                    f"[MIGRACION STARTUP] Bloqueo temporal en {etiqueta}; "
-                    f"reintento {intento}/{max_intentos} en {espera}s: {error!r}",
-                    flush=True,
-                )
-                time.sleep(espera)
-        raise RuntimeError(f"No se pudo completar {etiqueta}: {ultimo_error!r}")
-
-    try:
-        conexion = engine.connect()
-
-        # pg_try_advisory_lock evita que un segundo arranque quede bloqueado
-        # indefinidamente mientras otra instancia esté migrando.
-        for intento in range(1, 61):
-            with conexion.begin():
-                adquirido = bool(
-                    conexion.execute(
-                        text("SELECT pg_try_advisory_lock(:clave)"),
-                        {"clave": clave_bloqueo_migracion},
-                    ).scalar()
-                )
-            if adquirido:
-                bloqueo_adquirido = True
-                break
-            time.sleep(1)
-        if not bloqueo_adquirido:
-            raise RuntimeError(
-                "Otra instancia mantiene el bloqueo de migración durante más de 60 segundos."
-            )
-
-        # Migración de Control Apoderados: habilitación y tarifa por protocolo.
-        # Solo ejecutar DDL cuando la columna falte evita bloqueos innecesarios en cada arranque.
-        with conexion.begin():
-            existe_honorarios_valor = bool(
-                conexion.execute(
-                    text("""
-                        SELECT EXISTS (
-                            SELECT 1
-                            FROM pg_attribute
-                            WHERE attrelid = 'public.empleados'::regclass
-                              AND attname = 'honorarios_valor'
-                              AND NOT attisdropped
-                        )
-                    """)
-                ).scalar()
-            )
-        if not existe_honorarios_valor:
-            ejecutar_ddl_con_reintentos(
-                "crear columna empleados.honorarios_valor",
-                "ALTER TABLE public.empleados ADD COLUMN honorarios_valor DOUBLE PRECISION NOT NULL DEFAULT 0",
-            )
-            print("[MIGRACION STARTUP] Columna empleados.honorarios_valor creada.", flush=True)
-        else:
-            print("[MIGRACION STARTUP] Columna empleados.honorarios_valor ya existe; se omite DDL.", flush=True)
-
-        # Habilitación del circuito mensual de liquidaciones.
-        with conexion.begin():
-            existe_es_colaborador = bool(
-                conexion.execute(
-                    text("""
-                        SELECT EXISTS (
-                            SELECT 1
-                            FROM pg_attribute
-                            WHERE attrelid = 'public.empleados'::regclass
-                              AND attname = 'es_colaborador'
-                              AND NOT attisdropped
-                        )
-                    """)
-                ).scalar()
-            )
-        if not existe_es_colaborador:
-            ejecutar_ddl_con_reintentos(
-                "crear columna empleados.es_colaborador",
-                "ALTER TABLE public.empleados ADD COLUMN es_colaborador BOOLEAN NOT NULL DEFAULT FALSE",
-            )
-            print("[MIGRACION STARTUP] Columna empleados.es_colaborador creada.", flush=True)
-        else:
-            print("[MIGRACION STARTUP] Columna empleados.es_colaborador ya existe; se omite DDL.", flush=True)
-        tabla_liquidaciones_creada = False
-        for intento_tabla in range(1, 21):
-            try:
-                with conexion.begin():
-                    conexion.execute(text("SET LOCAL lock_timeout = '3s'"))
-                    conexion.execute(text("SET LOCAL statement_timeout = '40s'"))
-                    LiquidacionMensual.__table__.create(bind=conexion, checkfirst=True)
-                tabla_liquidaciones_creada = True
-                break
-            except Exception as error_tabla:
-                if not es_bloqueo_temporal(error_tabla) or intento_tabla == 20:
-                    raise
-                espera = min(2 * intento_tabla, 5)
-                print(
-                    f"[MIGRACION STARTUP] Bloqueo temporal creando apoderagest_liquidaciones; "
-                    f"reintento {intento_tabla}/20 en {espera}s: {error_tabla!r}",
-                    flush=True,
-                )
-                time.sleep(espera)
-        if not tabla_liquidaciones_creada:
-            raise RuntimeError("No se pudo crear la tabla apoderagest_liquidaciones.")
-
-        # Añadir los campos de justificante a instalaciones que ya tengan la tabla.
-        with conexion.begin():
-            columnas_liquidacion = {
-                fila[0] for fila in conexion.execute(text(
-                    "SELECT column_name FROM information_schema.columns "
-                    "WHERE table_schema = 'public' AND table_name = 'apoderagest_liquidaciones'"
-                )).fetchall()
-            }
-        columnas_justificante = [
-            ("honorarios_valor", "DOUBLE PRECISION NOT NULL DEFAULT 0"),
-            ("justificante_bytes", "BYTEA"),
-            ("justificante_nombre", "VARCHAR(255)"),
-            ("justificante_tipo", "VARCHAR(150)"),
-            ("justificante_subido_en", "TIMESTAMP WITH TIME ZONE"),
-        ]
-        for nombre, tipo_sql in columnas_justificante:
-            if nombre not in columnas_liquidacion:
-                ejecutar_ddl_con_reintentos(
-                    f"crear columna apoderagest_liquidaciones.{nombre}",
-                    f'ALTER TABLE public.apoderagest_liquidaciones ADD COLUMN "{nombre}" {tipo_sql}',
-                )
-                print(f"[MIGRACION STARTUP] Columna apoderagest_liquidaciones.{nombre} creada.", flush=True)
-
-        with conexion.begin():
-            resultado = conexion.execute(
-                text(
-                    "SELECT column_name "
-                    "FROM information_schema.columns "
-                    "WHERE table_schema = 'public' AND table_name = 'expedientes'"
-                )
-            )
-            columnas_existentes = {fila[0] for fila in resultado.fetchall()}
-
-        if not columnas_existentes:
-            raise RuntimeError(
-                "No se encuentra public.expedientes en PostgreSQL. "
-                "No se ha ejecutado ninguna alteración."
-            )
-
-        pendientes = [
-            (nombre, tipo_sql)
-            for nombre, tipo_sql in columnas
-            if nombre not in columnas_existentes
-        ]
-        print(
-            f"[MIGRACION STARTUP] {len(columnas) - len(pendientes)} columnas ya existen; "
-            f"{len(pendientes)} pendientes.",
-            flush=True,
-        )
-
-        for indice, (nombre, tipo_sql) in enumerate(pendientes, start=1):
-            ejecutar_ddl_con_reintentos(
-                f"crear columna {nombre}",
-                f'ALTER TABLE public.expedientes ADD COLUMN "{nombre}" {tipo_sql}',
-            )
-            columnas_existentes.add(nombre)
-            print(
-                f"[MIGRACION STARTUP] Columna {nombre} añadida "
-                f"({indice}/{len(pendientes)}).",
-                flush=True,
-            )
-
-        with conexion.begin():
-            indice_cliente = conexion.execute(
-                text(
-                    "SELECT 1 FROM pg_indexes "
-                    "WHERE schemaname = 'public' "
-                    "AND indexname = 'ix_expedientes_cliente_id'"
-                )
-            ).first()
-
-        if not indice_cliente:
-            ejecutar_ddl_con_reintentos(
-                "crear índice ix_expedientes_cliente_id",
-                "CREATE INDEX IF NOT EXISTS ix_expedientes_cliente_id "
-                "ON public.expedientes (cliente_id)",
-            )
-
-        # Campos de auditoría para PPAD y acciones; migración idempotente.
-        ejecutar_ddl_con_reintentos(
-            "añadir usuario_creador a expediente_ppad",
-            "ALTER TABLE public.expediente_ppad ADD COLUMN IF NOT EXISTS usuario_creador VARCHAR(200)",
-        )
-        ejecutar_ddl_con_reintentos(
-            "añadir usuario_creador a expediente_acciones",
-            "ALTER TABLE public.expediente_acciones ADD COLUMN IF NOT EXISTS usuario_creador VARCHAR(200)",
-        )
-
-        print(
-            "[MIGRACION STARTUP] Migración de expedientes completada.",
-            flush=True,
-        )
-
-    except Exception as error:
-        # Los bloques Connection.begin() ya revierten cada transacción fallida.
-        # No llamar conexion.rollback(): no está disponible en el modo legacy
-        # de SQLAlchemy utilizado por este proyecto.
-        print(f"[MIGRACION STARTUP] ERROR: {error!r}", flush=True)
-        raise
-
-    finally:
-        if conexion is not None:
-            if bloqueo_adquirido:
-                try:
-                    with conexion.begin():
-                        bloqueo_liberado = bool(
-                            conexion.execute(
-                                text("SELECT pg_advisory_unlock(:clave)"),
-                                {"clave": clave_bloqueo_migracion},
-                            ).scalar()
-                        )
-                    if not bloqueo_liberado:
-                        print(
-                            "[MIGRACION STARTUP] PostgreSQL indicó que el advisory lock ya no estaba retenido.",
-                            flush=True,
-                        )
-                except Exception as error:
-                    print(
-                        f"[MIGRACION STARTUP] No se pudo liberar el advisory lock: {error!r}. "
-                        "Se invalidará la conexión para forzar el cierre de la sesión.",
-                        flush=True,
-                    )
-                    try:
-                        conexion.invalidate()
-                    except Exception:
-                        pass
-            try:
-                conexion.close()
-            except Exception:
-                pass
-
-
-# ============================================================
-# INICIALIZAR TABLAS AUXILIARES
-# ============================================================
-
-from contextlib import contextmanager, wraps
-import time
+    return
 
 
 def _serializar_inicializacion_startup(funcion):
@@ -1142,8 +698,15 @@ def _transaccion_inicio_segura(etiqueta):
 
 
 @app.on_event("startup")
-@_serializar_inicializacion_startup
 def inicializar_tablas_auxiliares():
+    """Hook heredado desactivado: semillas y esquema se gestionan fuera del web worker."""
+    if not runtime_schema_migrations_enabled():
+        print(
+            "[STARTUP] Inicialización auxiliar omitida; DDL y semillas requieren tarea explícita.",
+            flush=True,
+        )
+        return
+
     print(
         "[INICIALIZACION] Comprobando tablas auxiliares...",
         flush=True,
@@ -2322,6 +1885,12 @@ def inicializar_tablas_auxiliares():
 
 @app.on_event("startup")
 def asignar_gestores_pendientes_al_iniciar():
+    if not runtime_schema_migrations_enabled():
+        print(
+            "[STARTUP] Reparto automático omitido; requiere una tarea de negocio explícita.",
+            flush=True,
+        )
+        return
     """
     Aplica automáticamente las reglas activas de la ficha de empleado
     a expedientes que todavía no tienen gestor. Nunca reemplaza un gestor
@@ -2336,20 +1905,8 @@ def asignar_gestores_pendientes_al_iniciar():
 
     db = SessionLocal()
     try:
-        # Garantiza que el histórico existe aunque EncargaGest aún no haya
-        # ejecutado su propia inicialización en esta instancia.
-        db.execute(text("""
-            CREATE TABLE IF NOT EXISTS public.expediente_gestor_historial (
-                id BIGSERIAL PRIMARY KEY,
-                expediente_id VARCHAR(100) NOT NULL,
-                actividad VARCHAR(100) NULL,
-                gestor_id INTEGER NULL,
-                gestor_anterior_id INTEGER NULL,
-                motivo VARCHAR(100) NOT NULL DEFAULT 'reparto_automatico',
-                fecha TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
-            )
-        """))
-        db.commit()
+        # expediente_gestor_historial se crea exclusivamente mediante
+        # la migración Alembic versionada; aquí solo se registra la actividad.
 
         pendientes = (
             db.query(Expediente)
@@ -2733,14 +2290,49 @@ def reparar_vinculos_apoderado_expedientes():
 # ORDEN DE ARRANQUE
 # ============================================================
 
-# La migración se ejecuta antes de crear o comprobar las tablas auxiliares.
-app.router.on_startup.insert(
-    0,
-    migrar_esquema_expedientes_inicio,
-)
-app.router.on_startup.insert(1, migrar_catalogo_honorarios_impuestos)
-app.router.on_startup.insert(2, migrar_catalogo_absis)
-app.router.on_startup.insert(3, migrar_visibilidad_empleado)
-app.router.on_startup.insert(4, reparar_vinculos_apoderado_expedientes)
+# Las tareas heredadas de esquema/catálogos no se ejecutan en el servicio web.
+# El esquema se provisiona mediante revisiones Alembic en un proceso aislado.
+# Las semillas y reparaciones se trasladarán a tareas explícitas e idempotentes.
+if runtime_schema_migrations_enabled():
+    app.router.on_startup.insert(0, migrar_esquema_expedientes_inicio)
+    app.router.on_startup.insert(1, migrar_catalogo_honorarios_impuestos)
+    app.router.on_startup.insert(2, migrar_catalogo_absis)
+    app.router.on_startup.insert(3, migrar_visibilidad_empleado)
+    app.router.on_startup.insert(4, reparar_vinculos_apoderado_expedientes)
+else:
+    print(
+        "[SCHEMA] Proceso web: DDL, semillas y reparaciones de arranque desactivados.",
+        flush=True,
+    )
+
+@app.on_event("startup")
+def comprobar_conexion_postgresql_inicio():
+    """Verifica la conexión SQL real del proceso web sin modificar datos ni esquema."""
+    host_bd = (engine.url.host or "").lower()
+    es_supabase = (
+        host_bd.endswith(".supabase.co")
+        or host_bd.endswith(".pooler.supabase.com")
+    )
+    try:
+        with engine.connect() as conexion:
+            resultado = conexion.execute(text("SELECT 1")).scalar()
+        if resultado == 1:
+            destino = "Supabase" if es_supabase else "PostgreSQL configurado"
+            print(
+                f"[DB CONNECTIVITY] OK: {destino}; SELECT 1 = 1.",
+                flush=True,
+            )
+        else:
+            print(
+                "[DB CONNECTIVITY] ERROR: SELECT 1 devolvió un resultado inesperado.",
+                flush=True,
+            )
+    except Exception as exc:
+        # No imprimir la URL ni el mensaje del driver: podrían contener datos sensibles.
+        print(
+            "[DB CONNECTIVITY] ERROR: no se pudo ejecutar SELECT 1 "
+            f"({type(exc).__name__}).",
+            flush=True,
+        )
 
 instrumentar_inicio_aplicacion()

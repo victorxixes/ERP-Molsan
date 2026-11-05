@@ -1,0 +1,87 @@
+name: Bootstrap ORM migration in isolated PostgreSQL
+
+on:
+  push:
+    branches: [production/erp-molsan-2026-11-04]
+    paths:
+      - "backend/app/**"
+      - "backend/migrations/**"
+      - "backend/scripts/**"
+      - "backend/requirements.txt"
+      - ".github/workflows/bootstrap-orm-migration.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "backend/app/**"
+      - "backend/migrations/**"
+      - "backend/scripts/**"
+      - "backend/requirements.txt"
+      - ".github/workflows/bootstrap-orm-migration.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bootstrap-orm-migration-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  generate-and-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: molsan_ci
+          POSTGRES_PASSWORD: molsan_ci_only
+          POSTGRES_DB: molsan_schema_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U molsan_ci -d molsan_schema_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgresql+psycopg2://molsan_ci:molsan_ci_only@localhost:5432/molsan_schema_test
+      MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS: "true"
+      JWT_SECRET: ci-only-secret-never-use-in-production-32-characters
+      MOLSAN_STORAGE_ROOT: /tmp/molsan-schema-ci
+    steps:
+      - name: Checkout tested commit (PR head SHA or pushed commit)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install backend requirements
+        run: pip install -r backend/requirements.txt
+      - name: Generate candidate revisions against isolated PostgreSQL only
+        run: |
+          if ! find backend/migrations/versions -maxdepth 1 -type f -name '*20261104_0001*.py' | grep -q .; then
+            alembic -c alembic.ini revision --autogenerate --rev-id 20261104_0001 -m "initial ORM schema"
+          fi
+          alembic -c alembic.ini upgrade head
+          if ! find backend/migrations/versions -maxdepth 1 -type f -name '*20261104_0002*.py' | grep -q .; then
+            alembic -c alembic.ini revision --autogenerate --rev-id 20261104_0002 -m "reconcile ORM constraints"
+          fi
+          if ! find backend/migrations/versions -maxdepth 1 -type f -name '*20261104_0003*.py' | grep -q .; then
+            python backend/scripts/generate_auxiliary_migration.py
+          fi
+      - name: Apply, check, rollback and reapply in isolated PostgreSQL
+        run: |
+          alembic -c alembic.ini upgrade head
+          alembic -c alembic.ini check
+          alembic -c alembic.ini downgrade base
+          alembic -c alembic.ini upgrade head
+      - name: Publish generated revisions for manual review (never push or deploy)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: molsan-candidate-alembic-revisions
+          path: backend/migrations/versions/*.py
+          if-no-files-found: error
+          retention-days: 7

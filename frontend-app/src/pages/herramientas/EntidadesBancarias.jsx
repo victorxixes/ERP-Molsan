@@ -1,3 +1,4 @@
+import { API_BASE as API_ROOT } from "../../api/config";
 import {
   useEffect,
   useMemo,
@@ -57,11 +58,7 @@ import "../../css/CatalogosMaestrosPremium.css";
    BACKEND
 ============================================================ */
 
-const API_ORIGEN =
-  "https://agenda-intranet-b.onrender.com";
-
-const API_BASE =
-  `${API_ORIGEN}/api/entidades-bancarias`;
+const API_BASE = `${API_ROOT}/entidades-bancarias`;
 
 const API_IMPORTAR_EXCEL =
   `${API_BASE}/importar-excel`;

@@ -8,11 +8,16 @@ from backend.app.intranet.auditoria import IntranetAuditoria
 from backend.app.intranet.noticias.router import router as noticias_router
 from backend.app.intranet.documentos.router import router as documentos_router
 
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
+
 router = APIRouter(prefix="/intranet", tags=["Intranet"])
 
 
 @router.on_event("startup")
 def inicializar_tabla_auditoria_intranet():
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: inicializar_tabla_auditoria_intranet; ejecutar migración versionada.", flush=True)
+        return
     IntranetAuditoria.__table__.create(bind=engine, checkfirst=True)
 
 

@@ -1,0 +1,152 @@
+name: Apply ERP-Molsan migrations to Supabase Preview
+
+on:
+  push:
+    branches:
+      - production/erp-molsan-2026-11-04
+    paths:
+      - ".github/workflows/supabase-preview-apply-migrations.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: molsan-supabase-preview-migrations
+  cancel-in-progress: false
+
+jobs:
+  apply-preview-migrations:
+    name: Apply Alembic 0001-0005 to the authorized Preview project
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      DATABASE_URL: ${{ secrets.MOLSAN_SUPABASE_MIGRATION_DATABASE_URL }}
+      MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS: "true"
+      JWT_SECRET: "ci-only-secret-never-use-in-production-32-characters"
+      MOLSAN_STORAGE_ROOT: /tmp/molsan-migration-workflow
+    steps:
+      - name: Checkout exact integration commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate target without printing credentials
+        run: |
+          python - <<'PY'
+          import os
+          from urllib.parse import urlparse, parse_qs
+
+          raw = os.environ.get("DATABASE_URL", "")
+          if not raw:
+              raise SystemExit("BLOCKED: migration secret is missing")
+          parsed = urlparse(raw)
+          query = parse_qs(parsed.query)
+          checks = {
+              "PostgreSQL scheme": parsed.scheme in {"postgres", "postgresql"},
+              "Supabase session pooler": (parsed.hostname or "").endswith(".pooler.supabase.com"),
+              "expected EU Central pooler": parsed.hostname == "aws-1-eu-central-1.pooler.supabase.com",
+              "session pooler port": parsed.port == 5432,
+              "authorized project user": parsed.username == "postgres.powiprqarmluanplxpyb",
+              "expected database": parsed.path == "/postgres",
+              "TLS required": query.get("sslmode", [""])[0] in {"require", "verify-ca", "verify-full"},
+          }
+          for label, passed in checks.items():
+              print(f"{'PASS' if passed else 'FAIL'}: {label}")
+          if not all(checks.values()):
+              raise SystemExit("BLOCKED: DATABASE_URL does not identify the authorized Preview project")
+          PY
+
+      - name: Install backend dependencies
+        run: python -m pip install -r backend/requirements.txt
+
+      - name: Apply reviewed Alembic revisions
+        run: alembic -c alembic.ini upgrade head
+
+      - name: Verify migration head, protected tables and data privileges
+        run: |
+          python - <<'PY'
+          import os
+          import psycopg2
+
+          conn = psycopg2.connect(os.environ["DATABASE_URL"], connect_timeout=10)
+          try:
+              with conn.cursor() as cur:
+                  cur.execute("SELECT version_num FROM public.alembic_version")
+                  versions = [row[0] for row in cur.fetchall()]
+                  if versions != ["20261105_0005"]:
+                      raise SystemExit(f"BLOCKED: unexpected Alembic version state: {versions!r}")
+
+                  cur.execute("""
+                      SELECT count(*),
+                             count(*) FILTER (WHERE c.relrowsecurity)
+                      FROM pg_class c
+                      JOIN pg_namespace n ON n.oid = c.relnamespace
+                      WHERE n.nspname = 'public' AND c.relkind IN ('r', 'p')
+                  """)
+                  table_count, rls_count = cur.fetchone()
+                  if table_count != 101 or rls_count != table_count:
+                      raise SystemExit(
+                          f"BLOCKED: expected 101 public tables with RLS; got "
+                          f"{table_count} tables and {rls_count} with RLS"
+                      )
+
+                  table_privileges = (
+                      "SELECT", "INSERT", "UPDATE", "DELETE",
+                      "TRUNCATE", "REFERENCES", "TRIGGER",
+                  )
+                  for role in ("anon", "authenticated"):
+                      cur.execute("""
+                          SELECT count(*)
+                          FROM pg_class c
+                          JOIN pg_namespace n ON n.oid = c.relnamespace
+                          WHERE n.nspname = 'public'
+                            AND c.relkind IN ('r', 'p')
+                            AND (
+                                has_table_privilege(%s, c.oid, 'SELECT') OR
+                                has_table_privilege(%s, c.oid, 'INSERT') OR
+                                has_table_privilege(%s, c.oid, 'UPDATE') OR
+                                has_table_privilege(%s, c.oid, 'DELETE') OR
+                                has_table_privilege(%s, c.oid, 'TRUNCATE') OR
+                                has_table_privilege(%s, c.oid, 'REFERENCES') OR
+                                has_table_privilege(%s, c.oid, 'TRIGGER')
+                            )
+                      """, (role,) * len(table_privileges))
+                      tables_with_privileges = cur.fetchone()[0]
+                      if tables_with_privileges:
+                          raise SystemExit(
+                              f"BLOCKED: {role} has data/table privileges on "
+                              f"{tables_with_privileges} public tables"
+                          )
+
+                      cur.execute("""
+                          SELECT count(*)
+                          FROM pg_class c
+                          JOIN pg_namespace n ON n.oid = c.relnamespace
+                          WHERE n.nspname = 'public'
+                            AND c.relkind = 'S'
+                            AND (
+                                has_sequence_privilege(%s, c.oid, 'USAGE') OR
+                                has_sequence_privilege(%s, c.oid, 'SELECT') OR
+                                has_sequence_privilege(%s, c.oid, 'UPDATE')
+                            )
+                      """, (role, role, role))
+                      sequences_with_privileges = cur.fetchone()[0]
+                      if sequences_with_privileges:
+                          raise SystemExit(
+                              f"BLOCKED: {role} has privileges on "
+                              f"{sequences_with_privileges} public sequences"
+                          )
+
+                  print("SUCCESS: Alembic head is 20261105_0005")
+                  print(f"SUCCESS: {table_count} public tables; RLS enabled on all")
+                  print("SUCCESS: anon/authenticated have no table data privileges")
+                  print("SUCCESS: anon/authenticated have no sequence privileges")
+          finally:
+              conn.close()
+          PY

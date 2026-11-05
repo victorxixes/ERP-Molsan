@@ -2,10 +2,11 @@ from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
 import mimetypes
+import os
 import re
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
@@ -22,6 +23,7 @@ from backend.app.mensajes.service import (
 )
 from backend.app.mensajes.ws_manager import manager
 from backend.app.storage import MENSAJES_DIR
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, storage_backend_is_supabase
 
 
 router = APIRouter(
@@ -146,20 +148,28 @@ async def subir_archivo(
         raise HTTPException(status_code=400, detail="El archivo está vacío")
 
     nombre = f"{uuid4().hex}.{ext}"
-    ruta = (CARPETA_MENSAJES / nombre).resolve()
-    if ruta.parent != CARPETA_MENSAJES:
-        raise HTTPException(status_code=400, detail="Nombre de archivo no válido")
-    temporal = ruta.with_name(f".{ruta.name}.part")
-    try:
-        CARPETA_MENSAJES.mkdir(parents=True, exist_ok=True)
-        temporal.write_bytes(contenido)
-        temporal.replace(ruta)
-    except OSError as exc:
-        temporal.unlink(missing_ok=True)
-        print(f"[MENSAJES] Error guardando archivo: {exc}", flush=True)
-        raise HTTPException(status_code=500, detail="No se pudo guardar el archivo") from exc
+    if storage_backend_is_supabase():
+        try:
+            storage = SupabasePrivateStorage()
+            storage.upload(f"mensajes/{nombre}", contenido, mimetypes.guess_type(nombre)[0] or "application/octet-stream")
+        except (RuntimeError, SupabaseStorageError) as exc:
+            print(f"[MENSAJES] Error guardando adjunto en almacenamiento privado: {exc}", flush=True)
+            raise HTTPException(status_code=503, detail="El almacenamiento de adjuntos no está disponible") from exc
+    else:
+        ruta = (CARPETA_MENSAJES / nombre).resolve()
+        if ruta.parent != CARPETA_MENSAJES:
+            raise HTTPException(status_code=400, detail="Nombre de archivo no válido")
+        temporal = ruta.with_name(f".{ruta.name}.part")
+        try:
+            CARPETA_MENSAJES.mkdir(parents=True, exist_ok=True)
+            temporal.write_bytes(contenido)
+            temporal.replace(ruta)
+        except OSError as exc:
+            temporal.unlink(missing_ok=True)
+            print(f"[MENSAJES] Error guardando archivo: {exc}", flush=True)
+            raise HTTPException(status_code=500, detail="No se pudo guardar el archivo") from exc
 
-    return {"status": "ok", "archivo_url": f"/static/mensajes/{nombre}"}
+    return {"status": "ok", "archivo_url": f"/api/mensajes/archivo/{nombre}"}
 
 
 @router.get("/archivo/{nombre}")
@@ -175,11 +185,12 @@ def descargar_archivo(
     if not re.fullmatch(r"[0-9a-fA-F-]{32,36}\.(pdf|doc|docx|jpg|jpeg|png)", nombre or ""):
         raise HTTPException(status_code=404, detail="Adjunto no encontrado")
 
-    sufijo = f"/static/mensajes/{nombre}"
+    sufijo_api = f"/api/mensajes/archivo/{nombre}"
+    sufijo_legacy = f"/static/mensajes/{nombre}"
     mensaje_visible = (
         db.query(Mensaje.id)
         .filter(
-            Mensaje.archivo_url.endswith(sufijo),
+            or_(Mensaje.archivo_url.endswith(sufijo_api), Mensaje.archivo_url.endswith(sufijo_legacy)),
             or_(
                 Mensaje.remitente_id == actual_id,
                 Mensaje.destinatario_id == actual_id,
@@ -191,18 +202,30 @@ def descargar_archivo(
         # No revelar si el archivo existe para otro usuario.
         raise HTTPException(status_code=404, detail="Adjunto no encontrado")
 
+    mime, disposicion = _politica_descarga_adjunto(nombre)
+    if storage_backend_is_supabase():
+        try:
+            contenido = SupabasePrivateStorage().download(f"mensajes/{nombre}")
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail="Adjunto no encontrado") from exc
+        except (RuntimeError, SupabaseStorageError) as exc:
+            raise HTTPException(status_code=503, detail="El almacenamiento de adjuntos no está disponible") from exc
+        respuesta = StreamingResponse(iter([contenido]), media_type=mime)
+        respuesta.headers["Content-Disposition"] = f'{disposicion}; filename="{nombre}"'
+        respuesta.headers["X-Content-Type-Options"] = "nosniff"
+        respuesta.headers["Cache-Control"] = "private, no-store"
+        return respuesta
+
     root = CARPETA_MENSAJES.resolve()
     ruta = (root / nombre).resolve()
     if ruta.parent != root or not ruta.is_file():
         raise HTTPException(status_code=404, detail="El archivo no está disponible")
-
-    mime, disposicion = _politica_descarga_adjunto(nombre)
     return FileResponse(
         path=str(ruta),
         media_type=mime,
         filename=nombre,
         content_disposition_type=disposicion,
-        headers={"X-Content-Type-Options": "nosniff"},
+        headers={"X-Content-Type-Options": "nosniff", "Cache-Control": "private, no-store"},
     )
 
 

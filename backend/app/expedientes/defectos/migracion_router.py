@@ -1,9 +1,10 @@
-
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 
 router = APIRouter(
     prefix="/mantenimiento-defectos",
@@ -11,93 +12,96 @@ router = APIRouter(
 )
 
 
-
 @router.post("/crear-tablas")
-def crear_tablas_defectos(db: Session = Depends(get_db)):
+def crear_tablas_defectos(
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    """Comprueba que la revisión Alembic de defectos está aplicada; no crea DDL."""
+    require_perm_modulo(usuario, "seguridad", "editar")
     try:
-        db.execute(text("""
-            CREATE TABLE IF NOT EXISTS public.defecto_subtipos (
-                id SERIAL PRIMARY KEY,
-                nombre VARCHAR(200) NOT NULL UNIQUE,
-                descripcion TEXT NULL,
-                activo BOOLEAN NOT NULL DEFAULT TRUE,
-                creado_en TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        tablas = db.execute(
+            text(
+                "SELECT to_regclass('public.defecto_subtipos'), "
+                "to_regclass('public.expediente_defectos')"
             )
-        """))
-
-        tabla = db.execute(text("""
-            SELECT to_regclass('public.expediente_defectos')
-        """)).scalar()
-
-        if tabla is None:
+        ).one()
+        if not all(tablas):
             raise HTTPException(
-                status_code=500,
-                detail="No existe la tabla public.expediente_defectos"
+                status_code=409,
+                detail="Falta el esquema de defectos. Ejecuta las migraciones Alembic pendientes.",
             )
 
-        columnas = {
-            "documento": "VARCHAR(300)",
-            "motivo_defecto": "VARCHAR(500)",
-            "subtipo_defecto_id": "INTEGER",
-            "subtipo_defecto": "VARCHAR(500)",
-            "tipo_carga_hipotecaria_id": "INTEGER",
-            "fecha_notificacion_registro": "DATE",
-            "fecha_vencimiento_presentacion": "DATE",
-            "fecha_entrada_subsanacion": "DATE",
-            "observaciones_registro": "VARCHAR(200)",
-            "calificacion_registro": "TEXT",
-            "calificacion_archivo": "BYTEA",
-            "calificacion_nombre": "VARCHAR(255)",
-            "calificacion_content_type": "VARCHAR(100)",
-            "calificacion_tamano": "INTEGER",
-            "calificacion_subida_en": "TIMESTAMPTZ",
-        }
+        columnas_requeridas = [
+            "documento",
+            "motivo_defecto",
+            "subtipo_defecto_id",
+            "subtipo_defecto",
+            "tipo_carga_hipotecaria_id",
+            "fecha_notificacion_registro",
+            "fecha_vencimiento_presentacion",
+            "fecha_entrada_subsanacion",
+            "observaciones_registro",
+            "calificacion_registro",
+            "calificacion_archivo",
+            "calificacion_nombre",
+            "calificacion_content_type",
+            "calificacion_tamano",
+            "calificacion_subida_en",
+        ]
+        columnas = db.execute(
+            text(
+                """
+                SELECT column_name
+                FROM information_schema.columns
+                WHERE table_schema = 'public'
+                  AND table_name = 'expediente_defectos'
+                  AND column_name = ANY(:columnas)
+                """
+            ),
+            {"columnas": columnas_requeridas},
+        ).scalars().all()
+        faltantes = sorted(set(columnas_requeridas) - set(columnas))
+        if faltantes:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "mensaje": "Faltan columnas del esquema de defectos; aplica la migración Alembic.",
+                    "columnas": faltantes,
+                },
+            )
 
-        for nombre, tipo in columnas.items():
-            db.execute(text(
-                f"ALTER TABLE public.expediente_defectos "
-                f"ADD COLUMN IF NOT EXISTS {nombre} {tipo}"
-            ))
-
-        db.execute(text("""
-            CREATE INDEX IF NOT EXISTS ix_expediente_defectos_subtipo_defecto_id
-            ON public.expediente_defectos (subtipo_defecto_id)
-        """))
-
-        db.execute(text("""
-            DO $$
-            BEGIN
-                IF NOT EXISTS (
-                    SELECT 1
-                    FROM pg_constraint
-                    WHERE conname = 'fk_expediente_defectos_subtipo'
-                      AND conrelid = 'public.expediente_defectos'::regclass
-                ) THEN
-                    ALTER TABLE public.expediente_defectos
-                    ADD CONSTRAINT fk_expediente_defectos_subtipo
-                    FOREIGN KEY (subtipo_defecto_id)
-                    REFERENCES public.defecto_subtipos(id)
-                    ON DELETE SET NULL;
-                END IF;
-            END
-            $$
-        """))
-
-        db.commit()
+        indice = db.execute(
+            text(
+                "SELECT 1 FROM pg_indexes "
+                "WHERE schemaname = 'public' "
+                "AND indexname = 'ix_expediente_defectos_subtipo_defecto_id'"
+            )
+        ).scalar()
+        fk = db.execute(
+            text(
+                "SELECT 1 FROM pg_constraint "
+                "WHERE conname = 'fk_expediente_defectos_subtipo' "
+                "AND conrelid = 'public.expediente_defectos'::regclass"
+            )
+        ).scalar()
+        if not indice or not fk:
+            raise HTTPException(
+                status_code=409,
+                detail="Falta el índice o la clave foránea de subtipos; aplica la migración Alembic pendiente.",
+            )
 
         return {
             "ok": True,
-            "mensaje": "Migración completada correctamente",
+            "mensaje": "El esquema de defectos está provisionado por Alembic.",
             "tabla_subtipos": "public.defecto_subtipos",
-            "columnas_revisadas": list(columnas.keys()),
+            "columnas_verificadas": len(columnas_requeridas),
         }
 
     except HTTPException:
-        db.rollback()
         raise
     except Exception as exc:
-        db.rollback()
         raise HTTPException(
             status_code=500,
-            detail=str(exc),
+            detail=f"No se pudo verificar el esquema de defectos: {exc}",
         ) from exc

@@ -66,50 +66,59 @@ COLUMNAS_GASTOS = {
 @router.post("/aplicar")
 def aplicar_migracion_gastos(usuario=Depends(get_current_user)):
     """
-    Añade las columnas que falten. Es idempotente y requiere permiso
-    administrativo de edición de seguridad además de una sesión JWT válida.
+    Comprueba el esquema de gastos provisionado por Alembic.
+    Requiere sesión JWT válida y permiso administrativo.
     """
     require_perm_modulo(usuario, "seguridad", "editar")
 
-    columnas_creadas = []
+    columnas_requeridas = list(COLUMNAS_GASTOS)
     try:
         with engine.begin() as conexion:
-            # Comprueba que la tabla exista antes de modificarla.
             tabla = conexion.execute(
                 text("SELECT to_regclass('public.expediente_gastos')")
             ).scalar()
 
             if tabla is None:
                 raise HTTPException(
-                    status_code=404,
-                    detail="No existe la tabla public.expediente_gastos.",
+                    status_code=409,
+                    detail="No existe public.expediente_gastos. Ejecuta las migraciones Alembic pendientes.",
                 )
 
-            for nombre, tipo_sql in COLUMNAS_GASTOS.items():
-                resultado = conexion.execute(
-                    text(
-                        f"ALTER TABLE public.expediente_gastos "
-                        f"ADD COLUMN IF NOT EXISTS {nombre} {tipo_sql}"
-                    )
+            existentes = conexion.execute(
+                text(
+                    """
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_schema = 'public'
+                      AND table_name = 'expediente_gastos'
+                      AND column_name = ANY(:columnas)
+                    """
+                ),
+                {"columnas": columnas_requeridas},
+            ).scalars().all()
+
+            faltantes = sorted(set(columnas_requeridas) - set(existentes))
+            if faltantes:
+                raise HTTPException(
+                    status_code=409,
+                    detail={
+                        "mensaje": "Faltan columnas de gastos. Ejecuta la migración Alembic correspondiente.",
+                        "columnas": faltantes,
+                    },
                 )
-                columnas_creadas.append(nombre)
 
     except HTTPException:
         raise
     except Exception as error:
-        # El detalle técnico queda en los logs, no en la respuesta HTTP.
-        logger.exception("Error al aplicar la migración de gastos de expedientes")
+        logger.exception("Error al verificar el esquema de gastos de expedientes")
         raise HTTPException(
             status_code=500,
-            detail="Falló la migración de gastos y se ha revertido la transacción. Consulta los logs del backend.",
+            detail="No se pudo verificar el esquema de gastos. Consulta los logs del backend.",
         ) from error
 
     return {
         "ok": True,
         "tabla": "public.expediente_gastos",
-        "columnas_comprobadas": columnas_creadas,
-        "mensaje": (
-            "Migración aplicada. Las columnas son opcionales y no se han "
-            "eliminado ni modificado los gastos existentes."
-        ),
+        "columnas_verificadas": len(columnas_requeridas),
+        "mensaje": "El esquema de gastos está provisionado por Alembic; no se ejecutó DDL desde la aplicación.",
     }

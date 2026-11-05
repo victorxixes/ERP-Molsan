@@ -1,3 +1,4 @@
+import { getApiOrigin } from "../../api/config";
 import {
   useState,
   useCallback,
@@ -9,8 +10,7 @@ import { useSeguridad } from "../../hooks/useSeguridad";
 import "./SeguridadSubpaginasPremium.css";
 
 
-const API_URL =
-  "https://agenda-intranet-b.onrender.com";
+const API_URL = getApiOrigin();
 
 
 export default function SeguridadRolEditor() {

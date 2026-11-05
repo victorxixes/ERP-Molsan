@@ -130,6 +130,7 @@ def entidad_a_dict(
 
 
 from backend.app.entidades_bancarias.sincronizar_catalogo_historico import sincronizar_catalogo_historico_caixabank
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
 
 # ============================================================
 # GET /api/entidades-bancarias
@@ -674,5 +675,8 @@ def eliminar_entidad_bancaria(
 
 @router.on_event("startup")
 def cargar_catalogo_historico_caixabank_al_arrancar():
-    """Carga el listado histórico solicitado después de las migraciones del esquema."""
+    """La carga de catálogos se ejecutará como seed controlado, no al arrancar."""
+    if not runtime_schema_migrations_enabled():
+        print("[CATALOGO BANCARIO] Carga automática omitida; ejecutar seed controlado.", flush=True)
+        return
     sincronizar_catalogo_historico_caixabank()

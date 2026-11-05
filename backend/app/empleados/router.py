@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 import shutil
 import os
+from uuid import uuid4
 
 from backend.app.database import SessionLocal
 
@@ -40,6 +41,7 @@ from backend.app.seguridad.auditoria.service import (
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.storage import FOTOS_EMPLEADOS_DIR
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, storage_backend_is_supabase
 
 
 def _permiso_empleados(accion: str):
@@ -419,10 +421,8 @@ def subir_foto(
     # NOMBRE FINAL
     # -----------------------------------------------------
 
-    filename = (
-        f"empleado_{empleado_id}"
-        f"{extension}"
-    )
+    foto_anterior = getattr(empleado, "foto", None)
+    filename = f"empleado_{empleado_id}_{uuid4().hex}{extension}"
 
 
     filepath = os.path.join(
@@ -459,8 +459,15 @@ def subir_foto(
                 detail="El contenido del archivo no coincide con el formato de imagen declarado.",
             )
 
-        with open(filepath, "wb") as buffer:
-            buffer.write(contenido)
+        if storage_backend_is_supabase():
+            mime = {
+                ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
+                ".gif": "image/gif", ".webp": "image/webp",
+            }[extension]
+            SupabasePrivateStorage().upload(f"fotos/empleados/{filename}", contenido, mime, upsert=False)
+        else:
+            with open(filepath, "wb") as buffer:
+                buffer.write(contenido)
 
     except HTTPException:
         raise
@@ -480,40 +487,6 @@ def subir_foto(
     #
     # Se hace DESPUÉS de guardar la nueva.
     # -----------------------------------------------------
-
-    extensiones_anteriores = {
-        ".jpg",
-        ".jpeg",
-        ".png",
-        ".webp",
-        ".gif",
-    }
-
-
-    for ext in extensiones_anteriores:
-
-        archivo_anterior = os.path.join(
-            upload_dir,
-            f"empleado_{empleado_id}{ext}",
-        )
-
-        if (
-            archivo_anterior != filepath
-            and os.path.exists(
-                archivo_anterior
-            )
-        ):
-
-            try:
-
-                os.remove(
-                    archivo_anterior
-                )
-
-            except Exception:
-
-                pass
-
 
     # -----------------------------------------------------
     # GUARDAR REFERENCIA EN BD
@@ -543,15 +516,59 @@ def subir_foto(
     except Exception as exc:
 
         db.rollback()
+        try:
+            if storage_backend_is_supabase():
+                SupabasePrivateStorage().delete(f"fotos/empleados/{filename}")
+            elif os.path.exists(filepath):
+                os.remove(filepath)
+        except Exception:
+            pass
 
         raise HTTPException(
             status_code=500,
             detail=(
-                "La fotografía se guardó en disco, "
-                "pero no se pudo actualizar el empleado: "
+                "No se pudo actualizar la referencia de la fotografía: "
                 f"{exc}"
             ),
         )
+
+    extensiones_anteriores = {
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".webp",
+        ".gif",
+    }
+
+
+    for ext in extensiones_anteriores:
+        archivo_anterior = f"empleado_{empleado_id}{ext}"
+        if archivo_anterior == filename:
+            continue
+        try:
+            if storage_backend_is_supabase():
+                SupabasePrivateStorage().delete(f"fotos/empleados/{archivo_anterior}")
+            else:
+                ruta_anterior = os.path.join(upload_dir, archivo_anterior)
+                if os.path.exists(ruta_anterior):
+                    os.remove(ruta_anterior)
+        except Exception:
+            pass
+
+
+    # El archivo anterior se elimina solo después de confirmar la referencia nueva.
+    if foto_anterior and foto_anterior != filename:
+        nombre_anterior = os.path.basename(str(foto_anterior))
+        if nombre_anterior == str(foto_anterior):
+            try:
+                if storage_backend_is_supabase():
+                    SupabasePrivateStorage().delete(f"fotos/empleados/{nombre_anterior}")
+                else:
+                    ruta_anterior = os.path.join(upload_dir, nombre_anterior)
+                    if os.path.isfile(ruta_anterior):
+                        os.remove(ruta_anterior)
+            except Exception:
+                pass
 
 
     # -----------------------------------------------------

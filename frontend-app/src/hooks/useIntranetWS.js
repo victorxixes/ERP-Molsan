@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useIntranetStore } from "../store/intranetStore";
+import { getWebSocketBase } from "../api/config";
 
 /**
  * WebSocket autenticado de Intranet.
@@ -22,11 +23,7 @@ export const useIntranetWS = () => {
     }
     if (!token) return undefined;
 
-    const configuredWs = String(import.meta.env.VITE_WS_URL || "").replace(/\/+$/, "");
-    const configuredApi = String(
-      import.meta.env.VITE_API_URL || "https://agenda-intranet-b.onrender.com"
-    ).replace(/\/+$/, "");
-    const wsBase = configuredWs || configuredApi.replace(/^http:/i, "ws:").replace(/^https:/i, "wss:");
+    const wsBase = getWebSocketBase();
     if (!wsBase) return undefined;
 
     const ws = new WebSocket(`${wsBase}/ws/intranet?token=${encodeURIComponent(token)}`);

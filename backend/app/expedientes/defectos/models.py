@@ -134,7 +134,11 @@ class ExpedienteDefecto(Base):
 
     subtipo_defecto_id = Column(
         Integer,
-        ForeignKey("defecto_subtipos.id"),
+        ForeignKey(
+            "defecto_subtipos.id",
+            name="fk_expediente_defectos_subtipo",
+            ondelete="SET NULL",
+        ),
         nullable=True,
         index=True,
     )

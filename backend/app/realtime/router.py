@@ -5,6 +5,7 @@ La identidad y el rol se obtienen del empleado autenticado en PostgreSQL.
 """
 from __future__ import annotations
 
+import asyncio
 import json
 from typing import Optional
 
@@ -15,7 +16,7 @@ from backend.app.auth.websocket_auth import autenticar_websocket
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.database import SessionLocal
 from backend.app.empleados.models import Empleado
-from backend.app.mensajes.adjuntos import ruta_adjunto_mensaje
+from backend.app.mensajes.adjuntos import adjunto_mensaje_valido
 from backend.app.mensajes.ws_manager import manager as mensajes_manager
 from backend.app.realtime.manager import realtime_manager
 from backend.app.realtime.schemas import RealtimeEvent
@@ -253,8 +254,7 @@ async def realtime_ws(websocket: WebSocket):
 
             if tipo == "archivo":
                 archivo_url = data.get("archivo_url")
-                ruta_adjunto = ruta_adjunto_mensaje(archivo_url, exigir_existencia=True)
-                if ruta_adjunto is None:
+                if not await asyncio.to_thread(adjunto_mensaje_valido, archivo_url, True):
                     continue
                 try:
                     mensaje = await mensajes_manager.enviar_archivo_ws(

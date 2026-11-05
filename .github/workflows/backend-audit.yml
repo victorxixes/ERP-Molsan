@@ -2,11 +2,12 @@ name: Backend audit
 
 on:
   push:
-    branches: [main]
+    branches: [main, production/erp-molsan-2026-11-04]
     paths:
       - "backend/**"
       - ".github/workflows/backend-audit.yml"
   pull_request:
+    branches: [main]
     paths:
       - "backend/**"
       - ".github/workflows/backend-audit.yml"
@@ -16,7 +17,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: backend-audit-${{ github.ref }}
+  group: backend-audit-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -43,6 +44,9 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: python -m compileall -q backend
+
+      - name: Validate Alembic configuration without connecting to a database
+        run: alembic -c alembic.ini heads
 
       - name: Run backend tests (isolated SQLite, no production database)
         env:
