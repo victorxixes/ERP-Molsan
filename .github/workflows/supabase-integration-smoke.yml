@@ -111,8 +111,8 @@ jobs:
                          current_setting('server_version'),
                          (SELECT version_num FROM public.alembic_version LIMIT 1)
               """)).one()
-              if result[3] != "20261104_0004":
-                  raise SystemExit("FAILED: unexpected Alembic revision; expected 20261104_0004.")
+              if result[3] != "20261105_0005":
+                  raise SystemExit("FAILED: unexpected Alembic revision; expected 20261105_0005.")
               print("PASS: backend SQLAlchemy engine connected to the approved Supabase project.")
               print(f"Database: {result[0]} | Role: {result[1]} | PostgreSQL: {result[2]} | Alembic: {result[3]}")
               print("Only SELECT statements were executed; no schema or business data was changed.")
