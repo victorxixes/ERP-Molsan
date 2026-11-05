@@ -65,7 +65,7 @@ export default function Layout() {
         elemento.classList.add("molsan-page-back-legacy-hidden");
       });
       setTieneVolverPropio(false);
-      setCabeceraSubpagina(encontrada);
+      setCabeceraSubpagina(encontrada.querySelector('.molsan-page-header__actions') || encontrada);
       return true;
     };
 
