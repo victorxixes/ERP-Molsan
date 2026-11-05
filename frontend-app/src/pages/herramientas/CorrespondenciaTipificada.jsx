@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
@@ -250,20 +251,18 @@ export default function CorrespondenciaTipificada() {
 
   return (
     <div className="correspondencia-tipificada-premium herramientas-subpagina-premium min-h-full space-y-5 p-4 pb-10 sm:p-6 lg:p-8 animate-fadeIn">
-      <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl">✉️</div>
-            <div>
-              <Link to="/herramientas/catalogos" className="text-xs font-bold text-blue-600 hover:text-blue-700">← Volver a Catálogos</Link>
-              <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Correspondencia tipificada</h1>
-              <p className="mt-1 text-sm text-slate-500">Plantillas reutilizables con campos vinculados a los expedientes.</p>
-            </div>
-          </div>
-          <button type="button" onClick={nuevaPlantilla} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700">＋ Nueva plantilla</button>
-        </div>
-      </header>
+      <MolsanPageHeader
+        mark="COR"
+        title="Correspondencia tipificada"
+        description="Plantillas reutilizables con campos vinculados a los expedientes."
+        className="correspondencia-page-header"
+        actions={
+          <>
+            <Link to="/herramientas/catalogos" className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)]">← Volver a Catálogos</Link>
+            <button type="button" onClick={nuevaPlantilla} className="molsan-btn molsan-btn--primary">＋ Nueva plantilla</button>
+          </>
+        }
+      />
 
       {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{error}</div>}
       {mensaje && <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{mensaje}</div>}
