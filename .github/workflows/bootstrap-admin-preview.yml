@@ -70,6 +70,32 @@ jobs:
           print("PASS: secreto de contraseña presente y longitud válida; su valor no se muestra.")
           PY
 
+      - name: Diagnosticar conexión y revisión Alembic (solo lectura)
+        run: |
+          python - <<'PY'
+          import os
+          from sqlalchemy import create_engine, text
+          from sqlalchemy.engine import make_url
+
+          url = make_url(os.environ["DATABASE_URL"])
+          engine = create_engine(url, pool_pre_ping=True, connect_args={"connect_timeout": 10})
+          try:
+              with engine.connect() as connection:
+                  print("PASS: conexión PostgreSQL establecida.")
+                  db = connection.execute(text("SELECT current_database(), current_user, current_schema()")).one()
+                  print(f"DB={db[0]} USER={db[1]} SCHEMA={db[2]}")
+                  revision = connection.execute(text("SELECT version_num FROM public.alembic_version")).scalar()
+                  print(f"ALEMBIC_REVISION={revision}")
+                  if revision != "20261104_0004":
+                      raise SystemExit("BLOCKED: revisión distinta de la esperada.")
+          except Exception as exc:
+              print(f"DB_DIAGNOSTIC_ERROR_TYPE={type(exc).__name__}")
+              print(f"DB_DIAGNOSTIC_ERROR={str(exc)[:1200]}")
+              raise
+          finally:
+              engine.dispose()
+          PY
+
       - name: Crear administrador solo si se cumplen todas las precondiciones
         run: python backend/scripts/bootstrap_admin.py
 
