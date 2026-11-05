@@ -6,14 +6,14 @@ Fecha: 2026-11-05. Rama: `fix/molsan-premium-2027-global-ui`.
 Se extrajeron las declaraciones `lazy(() => import(...))` de `frontend-app/src/App.jsx`: **90 componentes lazy distintos**, enlazados por **109 declaraciones de ruta**. El escaneo comprobó presencia de `MolsanPageHeader`, etiquetas `header/h1`, tablas y formularios. Esta es una clasificación estática de código, no una certificación visual; los componentes embebidos deben juzgarse dentro de su contenedor.
 
 - **Premium por estructura (72):** usa `MolsanPageHeader` y no se detectó otra etiqueta `header/h1` en el componente.
-- **Parcial (8):** usa `MolsanPageHeader` pero también conserva etiquetas `header/h1`; revisar posible cabecera secundaria/duplicada.
+- **Premium con contenido interno (8):** usa `MolsanPageHeader` y conserva etiquetas `header/h1` dentro de impresión, modales, estados restringidos o secciones; confirmar visualmente que no se convierten en una segunda cabecera superior.
 - **Legacy (0):** no usa `MolsanPageHeader` y conserva `header/h1`; necesita adaptación.
 - **Embebido (8):** no declara cabecera propia ni usa el componente común; validar integrado y no añadir una cabecera redundante.
 
 ## Premium por estructura — 72
 Dashboard; FichaExpedienteDemo; CtnDetallePage; CtnListadoPage; EmpleadosListado; EmpleadoFicha; EmpleadoEditar; Intranet; Utilidades; Catalogos; CatalogoAbsis; CatalogoOficinas; TiposImpositivos; CorrespondenciaTipificada; FirmasEmail; HonorariosGestoria; Municipios; EntidadesBancarias; RegistrosPropiedad; OficinasLiquidadoras; AccionesExpediente; PanelTecnico; SeguridadUsuarios; SeguridadRoles; SeguridadModulos; SeguridadPermisos; SeguridadFicha; SeguridadAuditoria; SeguridadRolEditor; SeguridadLogs; Maestros; Fusiones; TiposExpediente; Fichajes; MensajeriaMolsan; MensajeriaSolicitudes; CatalogoFichajes; ReglasActividadesExpediente; ModelosDocumentos; DatosMolsan; AltaExpediente; CambiarGestorExpediente; AccesosNotariales; ImportarCTN; Herramientas; Seguridad; Cancelagest; ReasignarNotarioExpediente; AsignarExpedientesPromociones; ComplementosSaldo; ProcesoAbsis; ImportacionesDatos; ImportadorAbsis; ImportadorPostFirma; MantenimientoTecnico; AdministracionEmpleadoConfig; LecturaCopias; CambiosActividadAbsis; LecturaCancelaI; PPAD; Verifacti; CrearNoticia; SubirDocumento; TiposCargaHipotecaria; TiposConceptoGastos; ControlApoderados; MonitorSistema; AuditoriaAvanzada; LogsAvanzados; Logs; Notificaciones; ModulosSelector.
 
-## Parcial — 8
+## Premium con contenido interno — 8
 Agenda; ExpedientesListado; FichaExpediente; ProvisionesFondosPage; Informes; ApoderaGest; NotarGest; EncargaGest.
 
 ## Legacy — 0
