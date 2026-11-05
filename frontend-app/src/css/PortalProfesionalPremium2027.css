@@ -320,3 +320,23 @@
     height:52px !important;
   }
 }
+
+/* EncargaGest comparte la misma caja exterior que ApoderaGest y NotarGest. */
+.encargagest > header.ag-hero.molsan-page-header {
+  width: calc(100% - 32px);
+  margin: 24px 16px 16px;
+}
+.encargagest .eg-main {
+  padding: 0 16px 24px !important;
+}
+@media (min-width: 1024px) {
+  .encargagest > header.ag-hero.molsan-page-header {
+    width: calc(100% - 48px);
+    margin-right: 24px;
+    margin-left: 24px;
+  }
+  .encargagest .eg-main {
+    padding-right: 24px !important;
+    padding-left: 24px !important;
+  }
+}
