@@ -9,7 +9,10 @@ import NotificacionesToast from "../components/notificaciones/NotificacionesToas
 
 const RUTAS_PADRE_EXACTAS = {
   "/herramientas/utilidades/correspondencia-tipificada": "/catalogos",
-  "/herramientas/importador-absis/postfirma": "/herramientas/importador-absis",
+  "/herramientas/importador-absis/postfirma": "/herramientas/utilidades",
+  "/herramientas/importador-absis": "/herramientas/utilidades",
+  "/herramientas/importar-ctn": "/herramientas/utilidades",
+  "/herramientas/mantenimiento-tecnico": "/herramientas/utilidades",
   "/seguridad/auditoria": "/auditoria",
   "/expedientes-demo-glass-luxe": "/expedientes",
   "/apoderagest/liquidaciones": "/apoderagest",
