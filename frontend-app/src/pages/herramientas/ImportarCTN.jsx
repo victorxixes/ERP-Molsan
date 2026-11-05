@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useState } from "react";
 import { useUtilidades } from "../../hooks/useUtilidades";
@@ -74,7 +75,7 @@ export default function ImportarCTN() {
             >
 
               <span className="text-4xl">
-                {file ? "📊" : "📁"}
+                {file ? <MolsanIcon name="chart" size={20} tone="ocean" bare /> : <MolsanIcon name="folder" size={20} tone="ocean" bare />}
               </span>
 
               <span className="text-sm font-medium text-slate-700">
