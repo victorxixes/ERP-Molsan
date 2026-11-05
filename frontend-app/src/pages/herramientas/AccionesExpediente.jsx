@@ -1,5 +1,6 @@
 import "../../css/ModalesHerramientasPremium.css";
 import React, {
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
   useCallback,
   useEffect,
   useMemo,
@@ -1257,170 +1258,16 @@ export default function AccionesExpediente() {
           CABECERA
       ===================================================== */}
 
-      <div
-        className="
-          max-w-[1700px]
-          mx-auto
-          flex
-          flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-5
-        "
-      >
-
-        <div
-          className="
-            flex
-            items-center
-            gap-4
-          "
-        >
-
-          <div
-            className="
-              w-12
-              h-12
-              rounded-2xl
-              bg-[var(--erp-primary-soft)]
-              text-[var(--erp-primary)]
-              border
-              border-[var(--erp-border)]
-              flex
-              items-center
-              justify-center
-              shrink-0
-            "
-          >
-
-            <Icono
-              name="clipboard"
-              className="
-                w-6
-                h-6
-              "
-            />
-
-          </div>
-
-
-          <div>
-
-            <h1
-              className="
-                text-2xl
-                sm:text-3xl
-                font-bold
-                text-[var(--erp-text)]
-              "
-            >
-              Acciones del expediente
-            </h1>
-
-            <p
-              className="
-                text-sm
-                text-[var(--erp-text-soft)]
-                mt-0.5
-              "
-            >
-              Catálogo de acciones y actividades
-              disponibles para los expedientes
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div
-          className="
-            flex
-            flex-wrap
-            items-center
-            gap-2
-          "
-        >
-
-          <button
-            type="button"
-            onClick={
-              abrirImportar
-            }
-            className="
-              inline-flex
-              items-center
-              gap-2
-              px-4
-              py-2.5
-              rounded-xl
-              bg-white
-              border
-              border-[var(--erp-border)]
-              text-[var(--erp-text)]
-              text-sm
-              font-semibold
-              shadow-sm
-              hover:bg-[var(--erp-primary-soft)]
-              hover:text-[var(--erp-primary)]
-              hover:border-[var(--erp-primary)]
-              transition-all
-              duration-200
-            "
-          >
-
-            <Icono
-              name="database"
-              className="
-                w-4
-                h-4
-              "
-            />
-
-            Importar Excel
-
-          </button>
-
-
-          <button
-            type="button"
-            onClick={
-              abrirNueva
-            }
-            className="
-              inline-flex
-              items-center
-              gap-2
-              px-4
-              py-2.5
-              rounded-xl
-              bg-[var(--erp-primary)]
-              hover:brightness-95
-              text-white
-              text-sm
-              font-semibold
-              shadow-sm
-              transition
-            "
-          >
-
-            <span
-              className="
-                text-lg
-                leading-none
-              "
-            >
-              +
-            </span>
-
-            Nueva acción
-
-          </button>
-
-        </div>
-
-      </div>
+      <MolsanPageHeader
+        mark="ACC"
+        title="Acciones del expediente"
+        description="Catálogo de acciones y actividades disponibles para los expedientes"
+        className="herramientas-subpage-header"
+        actions={<>
+          <button type="button" onClick={abrirImportar} className="molsan-btn molsan-btn--secondary inline-flex items-center gap-2"><Icono name="database" className="w-4 h-4" />Importar Excel</button>
+          <button type="button" onClick={abrirNueva} className="molsan-btn molsan-btn--primary inline-flex items-center gap-2"><span className="text-lg leading-none">+</span>Nueva acción</button>
+        </>}
+      />
 
 
       {/* =====================================================
