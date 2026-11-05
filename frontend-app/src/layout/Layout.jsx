@@ -32,7 +32,7 @@ function obtenerRutaPrincipal(pathname) {
   const coincidencia = RUTAS_PADRE_SUBPAGINA.find(([patron]) => patron.test(pathname));
   if (coincidencia) return coincidencia[1];
   const partes = pathname.split("/").filter(Boolean);
-  return partes.length > 1 ? \`/\${partes.slice(0, -1).join("/")}\` : "/dashboard";
+  return partes.length > 1 ? "/" + partes.slice(0, -1).join("/") : "/dashboard";
 }
 
 /** Layout principal de ERP-Molsan. Mantiene perfil, navegación,
