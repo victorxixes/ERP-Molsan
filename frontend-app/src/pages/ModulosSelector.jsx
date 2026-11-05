@@ -1,61 +1,58 @@
-import MolsanPageHeader from "../components/ui/MolsanPageHeader";
 import { useMemo, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
+import MODULOS_ERP from "../config/modulos";
+import MolsanIcon from "../components/ui/MolsanIcon";
 import { API_BASE } from "../api/config";
 import { configurarSesionEncargaGest } from "../api/encargagest";
 import "../css/ModalesHerramientasPremium.css";
 
+const CATALOGO_MODULOS = Object.fromEntries(
+  MODULOS_ERP.map((modulo) => [modulo.key, modulo])
+);
+
+// El catálogo central conserva las claves, etiquetas y rutas.
+// Aquí solo se mantiene el contenido editorial propio de cada tarjeta.
 const MODULOS = {
   apoderagest: {
-    nombre: "ApoderaGest",
     descripcion: "Encargos, firmas y actividad del apoderado.",
-    ruta: "/apoderagest",
     siglas: "AG",
     categoria: "GESTIÓN DE APODERADOS",
     estilo: "ag",
   },
   cancelagest: {
-    nombre: "CancelaGest",
     descripcion: "Gestión y seguimiento de cancelaciones hipotecarias.",
-    ruta: "/cancelagest",
     siglas: "CG",
     categoria: "GESTIÓN DE CANCELACIONES",
     estilo: "cg",
   },
   notargest: {
-    nombre: "Notargest",
     descripcion: "Herramientas y operaciones del entorno de notaría.",
-    ruta: "/notargest",
     siglas: "NG",
     categoria: "ENTORNO NOTARIAL",
     estilo: "ng",
   },
   encargagest: {
-    nombre: "EncargaGest",
     descripcion: "Portal para que notarías externas envíen y consulten encargos a MOLSAN.",
-    ruta: "/encargagest",
     siglas: "EG",
     categoria: "PORTAL DE ENCARGOS EXTERNOS",
     estilo: "eg",
   },
   "mensajeria-gestion": {
-    nombre: "Mensajería Gestión",
     descripcion: "Solicitudes, pedidos al proveedor, incidencias, albaranes y facturas de mensajería.",
-    ruta: "/mensajeria-gestion",
     siglas: "MG",
     categoria: "GESTIÓN DE MENSAJERÍA",
     estilo: "mg",
   },
   fichajes: {
-    nombre: "Fichaje Molsan",
     descripcion: "Registra tu jornada, pausas, ausencias y consulta tu calendario y justificantes.",
-    ruta: "/fichajes",
     siglas: "FI",
     categoria: "CONTROL HORARIO DE EMPLEADOS",
     estilo: "fi",
   },
 };
+
+const obtenerModuloCatalogo = (clave) => CATALOGO_MODULOS[clave] || null;
 
 function normalizar(valor) {
   return String(valor || "")
@@ -106,11 +103,12 @@ export default function ModulosSelector() {
     const rolesAdministradores = new Set([
       "admin", "administrador", "administradora", "superadmin",
       "super admin", "superadministrador", "super administradora",
-      "superuser", "super usuario", "superusuario", "administrador general",
+      "superuser", "super usuario", "superusuario", "administrador general", "administrador del sistema",
     ]);
     const esAdmin =
       empleado.es_admin === true ||
       empleado.is_admin === true ||
+      Number(empleado.rol_id ?? empleado.rol?.id) === 0 ||
       usuario === "admin" ||
       rolesAdministradores.has(rol);
 
@@ -118,16 +116,26 @@ export default function ModulosSelector() {
     // de Fichajes; no necesita la tarjeta de marcaje personal en este panel.
     const disponibles = Object.keys(MODULOS)
       .filter((clave) => visibles.includes(clave) && !(esAdmin && clave === "fichajes"))
-      .map((clave) => ({ clave, ...MODULOS[clave] }));
+      .map((clave) => {
+        const catalogo = obtenerModuloCatalogo(clave);
+        if (!catalogo?.route) return null;
+        return {
+          clave,
+          nombre: catalogo.label,
+          ruta: catalogo.route,
+          ...MODULOS[clave],
+        };
+      })
+      .filter(Boolean);
     // Mensajería Gestión es el espacio administrativo de este módulo:
     // debe aparecer a los administradores aunque no figure en sus módulos
     // personales visibles de la ficha de empleado.
     if (esAdmin && !disponibles.some((modulo) => modulo.clave === "mensajeria-gestion")) {
       disponibles.push({
         clave: "mensajeria-gestion",
-        nombre: "Mensajería Gestión",
+        nombre: obtenerModuloCatalogo("mensajeria-gestion")?.label || "Mensajería Gestión",
         descripcion: "Administra solicitudes, pedidos, incidencias, albaranes y facturas de mensajería.",
-        ruta: "/mensajeria-gestion",
+        ruta: obtenerModuloCatalogo("mensajeria-gestion")?.route,
         siglas: "MG",
         categoria: "GESTIÓN DE MENSAJERÍA",
         estilo: "mg",
@@ -136,19 +144,19 @@ export default function ModulosSelector() {
     if (esAdmin && visibles.includes("control-fichajes")) {
       disponibles.push({
         clave: "control-fichajes",
-        nombre: "Control de Fichajes",
+        nombre: obtenerModuloCatalogo("control-fichajes")?.label || "Control de Fichajes",
         descripcion: "Supervisión de marcajes de la plantilla y consulta por empleado y periodo.",
-        ruta: "/control-fichajes",
+        ruta: obtenerModuloCatalogo("control-fichajes")?.route,
         siglas: "CF",
         categoria: "ADMINISTRACIÓN DE JORNADA",
         estilo: "fi",
       });
     }
     if (esAdmin && visibles.includes("notargest")) {
-      disponibles.push({ clave: "notargest_notario", nombre: "NotarGest – Notarios", descripcion: "Acceso de soporte al portal de una notaría habilitada.", siglas: "NN", categoria: "SOPORTE A NOTARÍAS", estilo: "ng", portalSoporte: "notargest" });
+      disponibles.push({ clave: "notargest_notario", nombre: obtenerModuloCatalogo("notargestweb")?.label || "NotarGest Notarios", descripcion: "Acceso de soporte al portal de una notaría habilitada.", siglas: "NN", categoria: "SOPORTE A NOTARÍAS", estilo: "ng", portalSoporte: "notargest" });
     }
     if (esAdmin && visibles.includes("encargagest")) {
-      disponibles.push({ clave: "encargagest_notario", nombre: "EncargaGest – Notarios", descripcion: "Acceso de soporte al portal de una notaría habilitada.", siglas: "EN", categoria: "SOPORTE A NOTARÍAS", estilo: "eg", portalSoporte: "encargagest" });
+      disponibles.push({ clave: "encargagest_notario", nombre: obtenerModuloCatalogo("encargagestweb")?.label || "EncargaGest Notarios", descripcion: "Acceso de soporte al portal de una notaría habilitada.", siglas: "EN", categoria: "SOPORTE A NOTARÍAS", estilo: "eg", portalSoporte: "encargagest" });
     }
     return disponibles;
   }, [empleado]);
@@ -225,122 +233,129 @@ export default function ModulosSelector() {
     return <Navigate to="/login" replace />;
   }
 
+  const iconosModulo = {
+    expedientes: "folder",
+    "provisiones-fondos": "receipt",
+    dashboard: "dashboard",
+    agenda: "calendar",
+    empleados: "users",
+    fichajes: "clock",
+    "control-fichajes": "timer",
+    ctn: "globe",
+    intranet: "newspaper",
+    noticias: "newspaper",
+    mensajes: "message",
+    mensajeria: "truck",
+    "mensajeria-gestion": "message",
+    informes: "chart",
+    fusiones: "merge",
+    auditoria: "shield",
+    catalogos: "book",
+    herramientas: "tools",
+    utilidades: "settings",
+    seguridad: "lock",
+    logs: "clipboardList",
+    maestros: "building",
+    "panel-tecnico": "monitor",
+    realtime: "activity",
+    apoderagest: "users",
+    cancelagest: "fileCheck",
+    notargest: "courthouse",
+    encargagest: "clipboardList",
+    notargest_notario: "courthouse",
+    encargagest_notario: "clipboardList",
+  };;
+  const coloresModulo = {
+    apoderagest: "ocean", cancelagest: "emerald", notargest: "violet",
+    encargagest: "amber", "mensajeria-gestion": "cyan", fichajes: "indigo",
+    "control-fichajes": "indigo", notargest_notario: "violet", encargagest_notario: "amber",
+  };
+
   return (
-    <main className="selector-modulos-premium herramientas-subpagina-premium relative isolate min-h-[calc(100vh-110px)] overflow-hidden rounded-3xl border border-white/80 bg-gradient-to-br from-slate-50 via-white to-blue-50/70 px-5 py-8 text-slate-800 shadow-sm sm:px-8 sm:py-10">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-24 -top-28 -z-10 h-80 w-80 rounded-full border border-blue-100/70"
-      />
-
-      <MolsanPageHeader
-        mark="M"
-        title="Espacio de trabajo"
-        description={`Hola, ${empleado.nombre || empleado.usuario}. Selecciona el módulo al que quieres acceder.`}
-        actions={
-          <>
-            <span className="molsan-status molsan-status--success">Sesión activa</span>
-            <button
-              type="button"
-              onClick={() => {
-                logout();
-                navigate("/login", { replace: true });
-              }}
-              className="molsan-btn molsan-btn--secondary"
-            >
-              Cerrar sesión
-            </button>
-          </>
-        }
-      />
-
-      <div className="mb-5">
-        <p className="text-[10px] font-extrabold tracking-[0.17em] text-slate-400">
-          TUS APLICACIONES
-        </p>
-        <div className="mt-3 h-px bg-gradient-to-r from-blue-200 via-slate-200 to-transparent" />
-      </div>
-
-      {modulosDisponibles.length === 0 ? (
-        <section className="rounded-2xl border border-amber-200 bg-amber-50/90 p-6">
-          <h2 className="font-bold text-amber-950">
-            No hay módulos disponibles para esta cuenta
-          </h2>
-          <p className="mt-2 text-sm leading-6 text-amber-900">
-            Para mostrar una aplicación, márcala en «Módulos visibles» dentro de la ficha del empleado. Los permisos para consultar, crear, editar o eliminar se configuran por separado.
-          </p>
-          <p className="mt-3 break-all text-xs text-amber-800">
-            Rol detectado: {empleado.rol_nombre || empleado.rol?.nombre || "No informado"}
-          </p>
-        </section>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {modulosDisponibles.map((modulo) => (
-              <button
-                key={modulo.clave}
-                type="button"
-                onClick={() => modulo.portalSoporte ? abrirSelectorSoporte(modulo.portalSoporte) : navigate(modulo.ruta)}
-                className="group relative flex min-h-[220px] flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white/90 p-6 text-left shadow-[0_8px_26px_rgba(31,48,79,0.045)] transition duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-[0_18px_38px_rgba(31,48,79,0.11)] focus:outline-none focus:ring-4 focus:ring-blue-100"
-              >
-                <div
-                  aria-hidden="true"
-                  className={`absolute inset-x-0 top-0 h-1 ${
-                    modulo.estilo === "ag"
-                      ? "bg-gradient-to-r from-blue-600 to-indigo-400"
-                      : modulo.estilo === "cg"
-                        ? "bg-gradient-to-r from-emerald-600 to-teal-400"
-                        : modulo.estilo === "eg"
-                          ? "bg-gradient-to-r from-amber-500 to-yellow-300"
-                          : "bg-gradient-to-r from-violet-600 to-fuchsia-400"
-                  }`}
-                />
-
-                <div className="flex w-full items-start justify-between gap-4">
-                  <div
-                    className={`grid h-14 w-14 place-items-center rounded-2xl border text-sm font-black tracking-wide transition group-hover:scale-[1.04] ${
-                      modulo.estilo === "ag"
-                        ? "border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-100 text-blue-800"
-                        : modulo.estilo === "cg"
-                          ? "border-emerald-100 bg-gradient-to-br from-emerald-50 to-teal-100 text-emerald-800"
-                          : modulo.estilo === "eg"
-                            ? "border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-100 text-amber-800"
-                            : "border-violet-100 bg-gradient-to-br from-violet-50 to-fuchsia-100 text-violet-800"
-                    }`}
-                  >
-                    {modulo.siglas}
-                  </div>
-                  <span className="mt-1 grid h-8 w-8 place-items-center rounded-full border border-slate-100 text-lg text-slate-400 transition group-hover:border-blue-100 group-hover:bg-blue-50 group-hover:text-blue-700">
-                    ↗
-                  </span>
-                </div>
-
-                <p className="mt-5 text-[9px] font-extrabold tracking-[0.15em] text-slate-400">
-                  {modulo.categoria}
-                </p>
-                <h2 className="mt-1 text-xl font-extrabold tracking-tight text-slate-900">
-                  {modulo.nombre}
-                </h2>
-                <p className="mt-2 text-xs leading-6 text-slate-500">
-                  {modulo.descripcion}
-                </p>
-
-                <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-4">
-                  <span className="text-[11px] font-extrabold text-blue-700">
-                    Abrir aplicación
-                  </span>
-                  <span className="text-sm text-slate-400 transition group-hover:translate-x-1 group-hover:text-blue-700">
-                    →
-                  </span>
-                </div>
-              </button>
-            ))}
+    <main className="selector-modulos-premium workspace-premium">
+      <section className="workspace-hero">
+        <div className="workspace-hero-orb workspace-hero-orb-one" aria-hidden="true" />
+        <div className="workspace-hero-orb workspace-hero-orb-two" aria-hidden="true" />
+        <div className="workspace-hero-content">
+          <div className="workspace-brand-lockup">
+            <span className="workspace-brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 48 48"><path d="M8 36V12l16 14L40 12v24M8 12l16 14 16-14" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </span>
+            <span><strong>MOLSAN</strong><small>ERP · PREMIUM 2027</small></span>
           </div>
+          <p className="workspace-eyebrow">CENTRO DE OPERACIONES</p>
+          <h1>Tu espacio de trabajo</h1>
+          <p className="workspace-welcome">Hola, {empleado.nombre || empleado.usuario}. Aquí tienes tus aplicaciones y herramientas de trabajo.</p>
+          <div className="workspace-hero-meta">
+            <span className="workspace-live-dot" />
+            Sesión iniciada
+            <span className="workspace-meta-divider" />
+            {modulosDisponibles.length} {modulosDisponibles.length === 1 ? "aplicación disponible" : "aplicaciones disponibles"}
+          </div>
+        </div>
+        <div className="workspace-hero-actions">
+          <div className="workspace-user-chip">
+            <span className="workspace-user-avatar">{String(empleado.nombre || empleado.usuario || "U").trim().charAt(0).toLocaleUpperCase("es")}</span>
+            <span><strong>{empleado.nombre || empleado.usuario}</strong><small>Área de trabajo</small></span>
+          </div>
+          <button type="button" onClick={() => { logout(); navigate("/login", { replace: true }); }} className="workspace-logout">
+            <MolsanIcon name="logout" size={18} bare />
+            Cerrar sesión
+          </button>
+        </div>
+      </section>
 
-          <p className="mt-7 text-center text-[10px] font-medium tracking-wide text-slate-400">
-            MOLSAN ERP · Entorno corporativo de gestión
-          </p>
-        </>
-      )}
+      <section className="workspace-apps-section" aria-labelledby="workspace-apps-title">
+        <div className="workspace-section-heading">
+          <div>
+            <span className="workspace-section-kicker">ACCESO APLICACIONES</span>
+            <h2 id="workspace-apps-title">Tus aplicaciones</h2>
+            <p>Selecciona un espacio para continuar con tu trabajo.</p>
+          </div>
+          <span className="workspace-app-count">{modulosDisponibles.length} disponibles</span>
+        </div>
+
+        {modulosDisponibles.length === 0 ? (
+          <section className="workspace-empty-state">
+            <MolsanIcon className="workspace-empty-icon" name="folderOpen" size={48} tone="ocean" />
+            <h2>No hay aplicaciones asignadas</h2>
+            <p>Para mostrar una aplicación, actívala en «Módulos visibles» dentro de la ficha del empleado. Los permisos para consultar, crear, editar o eliminar se configuran por separado.</p>
+            <small>Rol detectado: {empleado.rol_nombre || empleado.rol?.nombre || "No informado"}</small>
+          </section>
+        ) : (
+          <div className="workspace-app-grid">
+            {modulosDisponibles.map((modulo) => {
+              const color = coloresModulo[modulo.clave] || "ocean";
+              return (
+                <button key={modulo.clave} type="button"
+                  onClick={() => modulo.portalSoporte ? abrirSelectorSoporte(modulo.portalSoporte) : navigate(modulo.ruta)}
+                  className={`workspace-app-card workspace-tone-${color}`}>
+                  <span className="workspace-card-accent" aria-hidden="true" />
+                  <span className="workspace-card-topline">
+                    <MolsanIcon className="workspace-app-icon" name={iconosModulo[modulo.clave] || "briefcase"} size={58} tone={color} />
+                    <span className="workspace-card-open" aria-hidden="true">
+                      <MolsanIcon name="arrowRight" size={16} bare />
+                    </span>
+                  </span>
+                  <span className="workspace-app-category">{modulo.categoria}</span>
+                  <span className="workspace-app-title">{modulo.nombre}</span>
+                  <span className="workspace-app-description">{modulo.descripcion}</span>
+                  <span className="workspace-card-footer">
+                    <span>Abrir aplicación</span>
+                    <MolsanIcon name="arrowRight" size={18} bare />
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </section>
+      <footer className="workspace-footer">
+        <span className="workspace-footer-mark">M</span>
+        <span>MOLSAN ERP</span>
+        <span className="workspace-footer-separator">·</span>
+        <span>Entorno corporativo de gestión</span>
+      </footer>
 
       {modalSoporte && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !abriendoNotaria) setModalSoporte(null); }}>
@@ -351,7 +366,7 @@ export default function ModulosSelector() {
                 <h2 id="soporte-notaria-titulo" className="mt-1 text-xl font-extrabold text-slate-900">{modalSoporte === "notargest" ? "NotarGest – Notarios" : "EncargaGest – Notarios"}</h2>
                 <p className="mt-1 text-sm text-slate-500">Solo aparecen notarías con el acceso a este portal habilitado.</p>
               </div>
-              <button type="button" onClick={() => setModalSoporte(null)} disabled={Boolean(abriendoNotaria)} className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50" aria-label="Cerrar">✕</button>
+              <button type="button" onClick={() => setModalSoporte(null)} disabled={Boolean(abriendoNotaria)} className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50" aria-label="Cerrar"><MolsanIcon name="x" size={16} bare /></button>
             </header>
             <div className="border-b border-slate-100 p-5">
               <label className="relative block">
