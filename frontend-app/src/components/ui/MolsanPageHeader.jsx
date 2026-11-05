@@ -24,6 +24,17 @@ const ICONOS_MARCA = {
   FUS: "merge",
   NOT: "bell",
   IN: "newspaper",
+  NT: "bell",
+  PT: "monitor",
+  MT: "tools",
+  RP: "building",
+  EB: "bank",
+  OL: "building",
+  MUN: "pin",
+  TE: "file",
+  AE: "zap",
+  PF: "wallet",
+  MOD: "dashboard",
 };
 
 /**
