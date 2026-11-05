@@ -145,7 +145,7 @@ export default function Intranet() {
       mark="IN"
       title="Intranet"
       description="Noticias, documentación y actividad interna de Molsan"
-      actions={<span className="molsan-status-chip"><span className="h-2 w-2 rounded-full bg-emerald-500" />Actualización automática activa</span>}
+      actions={<span className="molsan-status molsan-status--success"><span className="h-2 w-2 rounded-full bg-emerald-500" />Actualización automática activa</span>}
     />
     <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
       <article className="rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-4 shadow-sm">
