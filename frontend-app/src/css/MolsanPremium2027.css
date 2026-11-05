@@ -1418,72 +1418,8 @@ a[aria-current="page"] .molsan-nav-icon-3d {
 }
 
 
-/* CABECERA ESTABLE DE SUBPÁGINAS · CATÁLOGOS Y UTILIDADES
-   La cabecera queda fuera de las animaciones de contenido y conserva una
-   geometría fija mientras se actualizan formularios, tablas y tarjetas. */
-.erp-main-inner.molsan-tools-subpage .molsan-page-header:not(.molsan-page-back-fallback) {
-  box-sizing: border-box !important;
-  display: flex !important;
-  min-height: 60px !important;
-  height: 60px !important;
-  max-height: 64px !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  flex-wrap: nowrap !important;
-  gap: 12px !important;
-  margin: 0 0 16px !important;
-  padding: 5px 16px !important;
-  overflow: hidden !important;
-  animation: none !important;
-  transition: none !important;
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
-  will-change: auto !important;
-}
-.erp-main-inner.molsan-tools-subpage .molsan-page-header::before,
-.erp-main-inner.molsan-tools-subpage .molsan-page-header::after,
-.erp-main-inner.molsan-tools-subpage .molsan-page-header * {
-  animation: none !important;
-  transition: none !important;
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
-  will-change: auto !important;
-}
-.erp-main-inner.molsan-tools-subpage .molsan-page-header__identity {
-  min-width: 0 !important;
-  flex: 1 1 auto !important;
-}
-.erp-main-inner.molsan-tools-subpage .molsan-page-header__mark {
-  flex: 0 0 36px !important;
-  width: 36px !important;
-  height: 36px !important;
-}
-.erp-main-inner.molsan-tools-subpage .molsan-page-header__description {
-  overflow: hidden !important;
-  white-space: nowrap !important;
-  text-overflow: ellipsis !important;
-}
-@media (max-width: 760px) {
-  .erp-main-inner.molsan-tools-subpage .molsan-page-header:not(.molsan-page-back-fallback) {
-    min-height: 60px !important;
-    height: auto !important;
-    max-height: none !important;
-    flex-wrap: wrap !important;
-    gap: 8px 12px !important;
-    padding: 8px 12px !important;
-  }
-  .erp-main-inner.molsan-tools-subpage .molsan-page-header__description {
-    display: none !important;
-  }
-  .erp-main-inner.molsan-tools-subpage .molsan-page-header__actions {
-    flex: 0 0 auto !important;
-    width: auto !important;
-    margin-left: auto !important;
-  }
-}
-
+/* Las subpáginas de Catálogos y Utilidades heredan ahora la geometría
+   de cabecera común; la estabilización anti-parpadeo se conserva arriba. */
 
 /* Navegación contextual común: destino explícito, bajo el título de página. */
 .molsan-page-back-link {
