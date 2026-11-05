@@ -7,29 +7,40 @@ import EmpleadoPerfilModal from "../components/SidebarPerfilModal";
 import { useNotificacionesWS } from "../hooks/useNotificacionesWS";
 import NotificacionesToast from "../components/notificaciones/NotificacionesToast";
 
-const RUTAS_PADRE_SUBPAGINA = [
-  [/^\/catalogos\/provisiones-fondos$/, "/catalogos"],
-  [/^\/catalogos\//, "/catalogos"],
-  [/^\/herramientas\/utilidades\/correspondencia-tipificada$/, "/catalogos"],
-  [/^\/herramientas\/utilidades\//, "/herramientas/utilidades"],
-  [/^\/herramientas\/(?:municipios|entidades-bancarias|registros-propiedad|oficinas-liquidadoras|honorarios-gestoria|acciones-expediente|tipos-carga-hipotecaria|tipos-concepto-gastos|tipos-expediente)$/, "/catalogos"],
-  [/^\/herramientas\/importador-absis\/postfirma$/, "/herramientas/importador-absis"],
-  [/^\/herramientas\/(?:importar-ctn|importador-absis|importaciones-datos|mantenimiento-tecnico)$/, "/herramientas"],
-  [/^\/agenda\/(?:dia|semana|mes)$/, "/agenda"],
-  [/^\/expedientes\/[^/]+$/, "/expedientes"],
-  [/^\/expedientes-demo-glass-luxe$/, "/expedientes"],
-  [/^\/ctn\/(?:listado|[^/]+)$/, "/ctn"],
-  [/^\/empleados\/(?:listado|[^/]+)(?:\/editar)?$/, "/empleados"],
-  [/^\/informes\/[^/]+$/, "/informes"],
-  [/^\/apoderagest\/liquidaciones$/, "/apoderagest"],
-  [/^\/encargagest\/(?:ctn|agenda|mensajes|intranet)$/, "/encargagest"],
-  [/^\/paneltecnico\//, "/paneltecnico"],
-  [/^\/seguridad\/auditoria$/, "/auditoria"],
-  [/^\/seguridad\//, "/seguridad"],
+const RUTAS_PADRE_EXACTAS = {
+  "/herramientas/utilidades/correspondencia-tipificada": "/catalogos",
+  "/herramientas/importador-absis/postfirma": "/herramientas/importador-absis",
+  "/seguridad/auditoria": "/auditoria",
+  "/expedientes-demo-glass-luxe": "/expedientes",
+  "/apoderagest/liquidaciones": "/apoderagest",
+};
+
+const RUTAS_PADRE_PREFIJOS = [
+  ["/catalogos/", "/catalogos"],
+  ["/herramientas/utilidades/", "/herramientas/utilidades"],
+  ["/herramientas/municipios", "/catalogos"],
+  ["/herramientas/entidades-bancarias", "/catalogos"],
+  ["/herramientas/registros-propiedad", "/catalogos"],
+  ["/herramientas/oficinas-liquidadoras", "/catalogos"],
+  ["/herramientas/honorarios-gestoria", "/catalogos"],
+  ["/herramientas/acciones-expediente", "/catalogos"],
+  ["/herramientas/tipos-carga-hipotecaria", "/catalogos"],
+  ["/herramientas/tipos-concepto-gastos", "/catalogos"],
+  ["/herramientas/tipos-expediente", "/catalogos"],
+  ["/herramientas/", "/herramientas"],
+  ["/agenda/", "/agenda"],
+  ["/expedientes/", "/expedientes"],
+  ["/ctn/", "/ctn"],
+  ["/empleados/", "/empleados"],
+  ["/informes/", "/informes"],
+  ["/encargagest/", "/encargagest"],
+  ["/paneltecnico/", "/paneltecnico"],
+  ["/seguridad/", "/seguridad"],
 ];
 
 function obtenerRutaPrincipal(pathname) {
-  const coincidencia = RUTAS_PADRE_SUBPAGINA.find(([patron]) => patron.test(pathname));
+  if (RUTAS_PADRE_EXACTAS[pathname]) return RUTAS_PADRE_EXACTAS[pathname];
+  const coincidencia = RUTAS_PADRE_PREFIJOS.find(([prefijo]) => pathname.startsWith(prefijo));
   if (coincidencia) return coincidencia[1];
   const partes = pathname.split("/").filter(Boolean);
   return partes.length > 1 ? "/" + partes.slice(0, -1).join("/") : "/dashboard";
