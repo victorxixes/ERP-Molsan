@@ -1,6 +1,17 @@
 import { Link } from "react-router-dom";
 import "../../css/HerramientasPremium.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
+
+const ICONOS_UTILIDADES = {
+  "📑": "files", "🏢": "building", "🛡️": "shield", "🔑": "key",
+  "🧾": "receipt", "📊": "chart", "⚖️": "scale", "🔐": "lock",
+  "📥": "download", "📦": "archive", "🔄": "refresh", "📄": "file",
+  "📁": "folder", "🗂️": "archive", "🧮": "calculator", "✉️": "mail",
+  "🏦": "bank", "🖋️": "pen", "📋": "clipboardList", "🗃️": "archive",
+  "🚚": "truck", "🕒": "clock", "🔗": "link", "⚙️": "settings",
+  "🧰": "tools", "🗃": "archive", "📚": "book", "🧑‍💼": "person",
+};
 
 /**
  * UTILIDADES — MOLSAN ERP PREMIUM 2027
@@ -139,7 +150,7 @@ function Card({
         <div
           className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl transition-all duration-300 group-hover:scale-105 ${destacado ? "bg-blue-100 border-blue-200" : "bg-slate-50 border-slate-200"}`}
         >
-          {icon}
+          <MolsanIcon name={ICONOS_UTILIDADES[icon] || "file"} size={30} tone="ocean" />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
