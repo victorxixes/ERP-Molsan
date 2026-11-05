@@ -32,6 +32,8 @@ import "./css/MolsanPremium2027.css";
 import "./css/MolsanCardsPremium2027.css";
 // Autoridad final de cascada para ApoderaGest, EncargaGest y NotarGest.
 import "./css/PortalProfesionalPremium2027.css";
+// Autoridad visual final: márgenes, cabeceras y controles comunes en todo el ERP.
+import "./css/MolsanGlobalConsistency2027.css";
 
 // Última capa: neutraliza diferencias visuales propias de los módulos.
 
