@@ -959,7 +959,6 @@ export default function SeguridadLogs() {
         }
       />
 
-ction>
 
 
       {/* ====================================================
