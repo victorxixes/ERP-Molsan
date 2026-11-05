@@ -662,6 +662,47 @@
 }
 
 
+/* MOLSAN FORM STANDARD · base segura para controles nativos sin clase propia.
+   Los controles con clases de módulo conservan su presentación específica. */
+.erp-main-content :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="hidden"]):not([class]),
+  select:not([class]),
+  textarea:not([class])
+) {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  padding: 8px 10px;
+  color: #173247;
+  background: #FFFFFF;
+  border: 1px solid #D8E4EC;
+  border-radius: 11px;
+  font: inherit;
+}
+.erp-main-content :where(textarea:not([class])) {
+  min-height: 96px;
+  resize: vertical;
+}
+.erp-main-content :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="hidden"]):focus-visible,
+  select:focus-visible,
+  textarea:focus-visible
+) {
+  outline: 3px solid rgba(6, 70, 117, .18);
+  outline-offset: 1px;
+  border-color: #064675;
+}
+.erp-main-content :where(
+  input:disabled,
+  select:disabled,
+  textarea:disabled
+) {
+  color: #718696;
+  background: #F2F7FB;
+  cursor: not-allowed;
+}
+
 /* MOLSAN ERP PREMIUM 2027 · CABECERA CANÓNICA COMPARTIDA CON DASHBOARD
    ApoderaGest y EncargaGest deben utilizar el mismo hero azul corporativo.
    Esta capa se carga después de los estilos globales anteriores y prevalece
