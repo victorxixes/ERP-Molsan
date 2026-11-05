@@ -2512,7 +2512,7 @@ export default function ExpedientesListado() {
                     <div className="text-xs text-[var(--erp-text-soft)]">expedientes fuera de plazo</div>
                   </div>
                   <div className="text-sm font-semibold" style={{ color: circuito.borde }}>
-                    {activa ? "Circuito seleccionado ✓" : "Ver expedientes →"}
+                    {activa ? <>Circuito seleccionado <MolsanIcon name="check" size={13} tone="emerald" bare /></> : <>Ver expedientes <MolsanIcon name="arrowRight" size={13} tone="ocean" bare /></>}
                   </div>
                 </div>
               </button>
@@ -2617,7 +2617,7 @@ export default function ExpedientesListado() {
                   <span className="inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)" }}>Calculando plazos…</span>
                 ) : reglaPlazo ? (
                   <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold ${cantidadPlazo > 0 ? "border-amber-300 bg-amber-50 text-amber-800" : "border-emerald-200 bg-emerald-50 text-emerald-800"}`}>
-                    {cantidadPlazo > 0 ? "⚠ " : "✓ "}{reglaPlazo.etiqueta(formatearNumero(cantidadPlazo))}
+                    {cantidadPlazo > 0 ? <MolsanIcon name="alert" size={13} tone="amber" bare /> : <MolsanIcon name="check" size={13} tone="emerald" bare />}{reglaPlazo.etiqueta(formatearNumero(cantidadPlazo))}
                   </span>
                 ) : (
                   actividad.key !== "documentacion-previa" ? (
@@ -3325,7 +3325,7 @@ export default function ExpedientesListado() {
                 <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Expedientes</p>
                 <h2 id="titulo-control-plazos" className="mt-1 text-lg font-extrabold text-slate-900"><MolsanIcon name="calendar" size={18} tone="ocean" bare /> Control de plazos</h2>
               </div>
-              <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} aria-label="Cerrar" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100">✕</button>
+              <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} aria-label="Cerrar" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100"><MolsanIcon name="x" size={15} tone="ocean" bare /></button>
             </header>
             <div className="space-y-3 px-5 py-5 text-sm leading-6 text-slate-700">
               <p>Los recuentos por actividad son independientes del SLA global:</p>
