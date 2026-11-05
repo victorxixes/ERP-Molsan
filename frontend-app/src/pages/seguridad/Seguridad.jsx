@@ -99,7 +99,7 @@ export default function Seguridad() {
         mark="SG"
         title="Centro de seguridad"
         description="Resumen general y accesos a la administración de seguridad de Molsan ERP."
-        actions={<span className="molsan-status-chip">Panel de administración</span>}
+        actions={<span className="molsan-status molsan-status--info">Panel de administración</span>}
       />
 
       <section aria-labelledby="seguridad-resumen-title" className="space-y-3">
