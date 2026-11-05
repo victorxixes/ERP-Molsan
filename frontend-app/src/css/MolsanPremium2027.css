@@ -800,7 +800,7 @@
 .ctn-modal-header,
 .eg-modal-header,
 .ag-resumen-modal-cabecera,
-.ng-modal > header {
+.ng-modal > header, .ng-resumen-expedientes-modal > header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -811,7 +811,7 @@
   border-bottom:1px solid rgba(255,255,255,.16);
   background:radial-gradient(circle at 86% 18%, rgba(116,199,219,.18), transparent 27%), linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
 }
-:is(.ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera, .ng-modal > header) h2 {
+:is(.ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera, .ng-modal > header, .ng-resumen-expedientes-modal > header) h2 {
   margin: 0;
   color:#FFFFFF;
   font-size: 18px;
@@ -819,7 +819,7 @@
   letter-spacing: -.02em;
   line-height: 1.3;
 }
-:is(.ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera, .ng-modal > header) p {
+:is(.ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera, .ng-modal > header, .ng-resumen-expedientes-modal > header) p {
   margin: 4px 0 0;
   color:#C6DFEC;
   font-size: 12px;
@@ -830,7 +830,7 @@
   .ctn-modal-header,
   .eg-modal-header,
   .ag-resumen-modal-cabecera,
-  .ng-modal > header { padding: 14px; gap: 10px; }
+  .ng-modal > header, .ng-resumen-expedientes-modal > header { padding: 14px; gap: 10px; }
 }
 
 .modal-sj { border:1px solid #D8E4EC; border-radius:18px; }
@@ -1070,7 +1070,7 @@
 :is(
   .molsan-modal-header, .erp-modal-header, .modal-sj-header,
   .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
-  .ng-modal > header, .ctn-modal-panel > header,
+  .ng-modal > header, .ng-resumen-expedientes-modal > header, .ctn-modal-panel > header,
   .panel-modal-premium [role="dialog"] > header,
   .expediente-operativo-modal [role="dialog"] > header,
   .empleado-operativo-modal [role="dialog"] > header
@@ -1092,7 +1092,7 @@
 :is(
   .molsan-modal-header, .erp-modal-header, .modal-sj-header,
   .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
-  .ng-modal > header, .ctn-modal-panel > header,
+  .ng-modal > header, .ng-resumen-expedientes-modal > header, .ctn-modal-panel > header,
   .panel-modal-premium [role="dialog"] > header,
   .expediente-operativo-modal [role="dialog"] > header,
   .empleado-operativo-modal [role="dialog"] > header
@@ -1103,7 +1103,7 @@
   :is(
     .molsan-modal-header, .erp-modal-header, .modal-sj-header,
     .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
-    .ng-modal > header, .ctn-modal-panel > header,
+    .ng-modal > header, .ng-resumen-expedientes-modal > header, .ctn-modal-panel > header,
     .panel-modal-premium [role="dialog"] > header,
     .expediente-operativo-modal [role="dialog"] > header,
     .empleado-operativo-modal [role="dialog"] > header
