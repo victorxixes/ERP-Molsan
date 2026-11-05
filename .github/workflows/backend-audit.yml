@@ -28,7 +28,7 @@ jobs:
       DATABASE_URL: sqlite:////tmp/erp-molsan-audit.db
       JWT_SECRET: ci-audit-secret-not-for-production
       JWT_ALGORITHM: HS256
-      PYTHONPATH: .
+      PYTHONPATH: ..:.
       ENVIRONMENT: test
       APP_ENV: test
       ADMIN_EMAIL: admin@audit.invalid
