@@ -1,12 +1,21 @@
 import { Link } from "react-router-dom";
 import "../../css/HerramientasPremium.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 /**
  * CENTRAL DE CATÁLOGOS — MOLSAN ERP PREMIUM 2027 · GLASS LUXE
  * Reúne las pantallas de mantenimiento de datos maestros existentes.
  * Cada tarjeta conserva la ruta y el origen de datos de su catálogo.
  */
+const ICONOS_CATALOGO = {
+  "🖋️": "pen", "✉️": "mail", "🔗": "link", "🏦": "bank",
+  "🏘️": "building", "🏛️": "courthouse", "🏢": "building",
+  "🧾": "receipt", "🧮": "calculator", "💶": "euro",
+  "🏠": "home", "🚚": "truck", "🕒": "clock",
+  "🗂️": "archive", "🗃️": "archive", "📋": "clipboardList",
+};
+
 const CATALOGOS = [
   {
     icon: "🖋️",
@@ -182,7 +191,7 @@ export default function Catalogos() {
                 >
                   <div className="flex items-start gap-4">
                     <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl ${item.destacado ? "border-blue-200 bg-blue-100" : "border-slate-200 bg-slate-50"}`}>
-                      {item.icon}
+                      <MolsanIcon name={ICONOS_CATALOGO[item.icon] || "file"} size={30} tone="ocean" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="text-base font-semibold text-slate-800">{item.titulo}</h3>
