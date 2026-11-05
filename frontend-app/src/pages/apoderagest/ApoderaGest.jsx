@@ -12,6 +12,7 @@ import { useAuthStore } from "../../store/authStore";
 import { createPortal } from "react-dom";
 import "../../css/ApoderaGest.css";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { formatEuro } from "../../utils/formatters";
 
 function fechaLegible(valor) {
@@ -931,29 +932,20 @@ export default function ApoderaGest() {
       <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="erp-page molsan-page molsan-professional-shell w-full apoderagest">
-      <header className="ag-hero molsan-page-header dashboard-header">
-        <div className="ag-hero-identidad molsan-page-header__identity">
-          <div className="ag-marca ag-marca-icono molsan-page-header__mark" role="img" aria-label="ApoderaGest"><MolsanIcon name="shield" size={42} tone="ocean" /></div>
-          <div>
-            <div className="ag-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
-            <h1 className="molsan-page-header__title">ApoderaGest</h1>
-            <p className="molsan-page-header__description">Centro de gestión de encargos, firmas y actividad del apoderado.</p>
-          </div>
-        </div>
-        <div className="ag-hero-acciones molsan-page-header__actions">
-          <div className="ag-fecha-actual">
-            <span className="ag-punto-vivo" />
-            <span>{fechaActual}</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigate("/modulos")}
-            className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"
-          >
-            <MolsanIcon name="dashboard" size={20} tone="ocean" /> Ir a módulos
-          </button>
-        </div>
-      </header>
+      <MolsanPageHeader
+        mark="AG"
+        title="ApoderaGest"
+        description="Centro de gestión de encargos, firmas y actividad del apoderado."
+        className="ag-hero dashboard-header"
+        actions={
+          <>
+            <div className="ag-fecha-actual"><span className="ag-punto-vivo" /><span>{fechaActual}</span></div>
+            <button type="button" onClick={() => navigate("/modulos")} className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]">
+              <MolsanIcon name="dashboard" size={20} tone="ocean" /> Ir a módulos
+            </button>
+          </>
+        }
+      />
 
       {error ? (
         <div className="ag-alerta-error" role="alert">
