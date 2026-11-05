@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useState } from "react";
 import axios from "../../api/axios";
 
@@ -81,17 +82,7 @@ export default function DatosMolsan() {
 
   return (
     <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-      <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="flex items-start gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl">🏢</div>
-          <div>
-            <p className="text-xs font-black uppercase tracking-[.18em] text-indigo-600">Utilidades · Configuración corporativa</p>
-            <h1 className="mt-2 text-2xl font-black text-slate-900 sm:text-3xl">Datos Molsan</h1>
-            <p className="mt-2 max-w-3xl text-sm text-slate-500">Guarda los datos oficiales de la empresa en un único lugar para reutilizarlos en documentos y facturación. No introducimos valores por defecto para evitar datos fiscales incorrectos.</p>
-          </div>
-        </div>
-      </header>
+      <MolsanPageHeader mark="UT" title="Datos Molsan" description="Guarda los datos oficiales de la empresa en un único lugar para reutilizarlos en documentos y facturación. No introducimos valores por defecto para evitar datos fiscales incorrectos." />
 
       {cargando ? <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-500">Cargando configuración…</div> : (
         <form onSubmit={guardar} className="space-y-5">

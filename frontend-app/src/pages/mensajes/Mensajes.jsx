@@ -18,6 +18,7 @@ import {
 import MensajeBubble from "../../components/mensajes/MensajeBubble";
 
 import MensajesHeader from "../../components/mensajes/MensajesHeader";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 
 export default function Mensajes({
@@ -631,22 +632,24 @@ export default function Mensajes({
         mensajes-premium-page
         relative
 
+        flex
         min-h-0
+        flex-col
+        gap-4
 
-        lg:h-[calc(100dvh-96px)]
+        lg:h-[calc(100dvh-170px)]
         lg:min-h-0
 
         overflow-hidden
 
-        px-4
-        py-4
-
-        sm:px-6
-        sm:py-6
-
         animate-fadeIn
       "
     >
+      <MolsanPageHeader
+        mark="MSG"
+        title="Mensajes"
+        description="Comunicación interna y seguimiento de conversaciones del equipo."
+      />
 
       {/* =================================================
           FONDO PREMIUM
@@ -720,7 +723,7 @@ export default function Mensajes({
           gap-5
 
           lg:grid-cols-3
-          lg:h-full
+          lg:flex-1
           lg:min-h-0
         "
       >
@@ -812,7 +815,7 @@ export default function Mensajes({
                     text-slate-400
                   "
                 >
-                  Empleados conectados
+                  Personas disponibles para conversar
                 </p>
 
               </div>

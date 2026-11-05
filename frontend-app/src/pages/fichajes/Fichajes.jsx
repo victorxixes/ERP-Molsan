@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import FichajesResumen from "./FichajesResumen.jsx";
@@ -230,17 +231,13 @@ export default function Fichajes({ modo = "empleado" }) {
 
   return (
     <main className="fichajes-premium-page mx-auto w-full max-w-[1500px] space-y-6 p-4 text-[var(--erp-text)] sm:p-6">
-      <header className="relative overflow-hidden rounded-3xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-6 shadow-sm sm:p-8">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-700 via-cyan-500 to-emerald-400" />
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-extrabold tracking-[.2em] text-blue-700">MOLSAN ERP · PREMIUM 2027</p>
-            <h1 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">{esAdminVista ? "Control de Fichajes" : "Fichaje Molsan"}</h1>
-            <p className="mt-2 text-sm text-[var(--erp-text-soft)]">{esAdminVista ? "Supervisión de marcajes de la plantilla." : "Registro de jornada y gestión de justificantes personales."}</p>
-          </div>
-          {!esAdminVista && perfil && <div className="rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3"><p className="text-xs text-blue-700">Empleado</p><p className="font-bold text-slate-900">{perfil.nombre}</p><p className="text-xs text-slate-500">{perfil.usuario}</p></div>}
-        </div>
-      </header>
+      <MolsanPageHeader
+        mark="FIC"
+        title={esAdminVista ? "Control de Fichajes" : "Fichaje Molsan"}
+        description={esAdminVista ? "Supervisión de marcajes de la plantilla." : "Registro de jornada y gestión de justificantes personales."}
+        className="fichajes-page-header"
+        actions={!esAdminVista && perfil ? <div className="rounded-xl border border-[var(--erp-border)] bg-[var(--erp-surface-soft)] px-4 py-2.5"><p className="text-xs text-[var(--erp-text-soft)]">Empleado</p><p className="font-bold text-[var(--erp-text)]">{perfil.nombre}</p><p className="text-xs text-[var(--erp-text-soft)]">{perfil.usuario}</p></div> : null}
+      />
 
       {mensaje && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">{mensaje}</div>}
       {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</div>}

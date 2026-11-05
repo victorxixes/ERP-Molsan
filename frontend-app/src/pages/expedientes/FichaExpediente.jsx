@@ -12,6 +12,7 @@ import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModa
 import TraspasoSaldoPanel from "../../components/expedientes/TraspasoSaldoPanel";
 import { useAuthStore } from "../../store/authStore";
 import "./FichaExpedientePremium.css";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 import { obtenerCatalogoAcciones, obtenerAccionesExpediente, asignarAccionExpediente, eliminarAccionExpediente } from "../../api/expedienteAcciones";
 
@@ -5373,6 +5374,14 @@ const cuantiaFincasParaEnvio =
           </div>
 
 
+        <MolsanPageHeader
+          mark="EXP"
+          title={valorVisible(expediente.id_expediente)}
+          description="Ficha completa del expediente · Datos, documentación y seguimiento."
+          className="ficha-expediente-page-header"
+          actions={<Link to="/expedientes" className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)]">← Expedientes</Link>}
+        />
+
         {/* ===================================================
             BLOQUES SUPERIORES
         ==================================================== */}
@@ -5489,14 +5498,6 @@ const cuantiaFincasParaEnvio =
 
           {/* Ficha y acciones en una sola línea, debajo de los bloques principales */}
           <div className="mt-3 flex w-full min-w-0 flex-wrap items-center gap-2 overflow-x-hidden rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2">
-            <div className="flex shrink-0 items-center gap-2 pr-2">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-lg text-blue-600">📁</div>
-              <div className="min-w-[150px]">
-                <p className="whitespace-nowrap text-[9px] font-bold uppercase tracking-[0.12em] text-slate-400">Ficha de expediente</p>
-                <h1 className="whitespace-nowrap text-base font-extrabold leading-tight text-slate-800">{valorVisible(expediente.id_expediente)}</h1>
-                <p className="whitespace-nowrap text-[10px] leading-tight text-slate-400">Ficha completa del expediente</p>
-              </div>
-            </div>
             <div className="flex min-w-0 flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-white px-2 py-1.5">
               <label htmlFor="ficha-promocion" className="shrink-0 text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Promoción</label>
               <input id="ficha-promocion" type="text" value={expediente?.promocion || ""} readOnly placeholder="Sin asignar" className="w-36 min-w-[100px] cursor-default rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs text-slate-700 sm:w-44" aria-label="Promoción asignada al expediente" title="La promoción se asigna desde Utilidades → Gestión de expedientes." />
@@ -5897,7 +5898,7 @@ const cuantiaFincasParaEnvio =
                               <thead className="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500"><tr><th className="px-3 py-3 font-bold">ID de pago</th><th className="px-3 py-3 font-bold">Fecha</th><th className="px-3 py-3 font-bold">Tipo de documento</th><th className="px-3 py-3 text-right font-bold">Cuantía documento</th><th className="px-3 py-3 text-right font-bold">Impuesto</th><th className="px-3 py-3 text-right font-bold">Total</th><th className="px-3 py-3 font-bold">Estado</th><th className="px-3 py-3 text-right font-bold">Saldo tras pago</th><th className="px-3 py-3 font-bold">Acciones</th></tr></thead>
                               <tbody className="divide-y divide-slate-100">
                                 {resumenEconomico.movimientos.length === 0 && gastosPendientesResumen.length === 0 && <tr><td colSpan={9} className="px-4 py-6 text-center text-slate-500">Todavía no hay gastos ni pagos registrados.</td></tr>}
-                                {gastosPendientesResumen.map((gasto) => { const fmtPendiente = (valor) => Number(valor ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); const importe = Math.abs(Number(gasto.importe_resultante ?? gasto.importe ?? 0)); const base = Number(gasto.base_imponible ?? gasto.base_sujeta_impuestos ?? gasto.base_exenta_impuestos ?? 0); const impuesto = Number(gasto.importe_impuesto ?? gasto.impuesto ?? gasto.iva ?? 0); return <tr key={"pendiente-" + gasto.id} className="bg-amber-50/40 text-slate-700"><td className="whitespace-nowrap px-3 py-3 font-extrabold text-amber-700">{gasto.numero_documento || ("GAS-" + String(gasto.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(gasto.fecha_factura || gasto.fecha || gasto.created_at)}</td><td className="px-3 py-3"><span className="font-semibold">{gasto.tipo || "Gasto registrado"}</span>{gasto.descripcion ? <span className="mt-1 block text-slate-500">{gasto.descripcion}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{fmtPendiente(base > 0 ? base : importe)} €</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{impuesto > 0 ? `${fmtPendiente(impuesto)} €` : "—"}</td><td className="whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums">{fmtPendiente(importe)} €</td><td className="whitespace-nowrap px-3 py-3"><span className="rounded-full bg-amber-100 px-2 py-1 text-[10px] font-bold text-amber-800">Pendiente</span></td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{importeInicialDisponible ? `${fmtPendiente(resumenEconomico.saldoActual)} €` : "—"}</td><td className="px-3 py-3">{esAdministradorSesion ? <button type="button" onClick={() => abrirOrdenPago(gasto)} disabled={importe <= 0} className="rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[10px] font-bold text-emerald-800 hover:bg-emerald-100 disabled:opacity-50">Pagar</button> : <span className="text-[10px] text-slate-400">Solo administración</span>}</td></tr>; })}}
+                                {gastosPendientesResumen.map((gasto) => { const fmtPendiente = (valor) => Number(valor ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); const importe = Math.abs(Number(gasto.importe_resultante ?? gasto.importe ?? 0)); const base = Number(gasto.base_imponible ?? gasto.base_sujeta_impuestos ?? gasto.base_exenta_impuestos ?? 0); const impuesto = Number(gasto.importe_impuesto ?? gasto.impuesto ?? gasto.iva ?? 0); return <tr key={"pendiente-" + gasto.id} className="bg-amber-50/40 text-slate-700"><td className="whitespace-nowrap px-3 py-3 font-extrabold text-amber-700">{gasto.numero_documento || ("GAS-" + String(gasto.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(gasto.fecha_factura || gasto.fecha || gasto.created_at)}</td><td className="px-3 py-3"><span className="font-semibold">{gasto.tipo || "Gasto registrado"}</span>{gasto.descripcion ? <span className="mt-1 block text-slate-500">{gasto.descripcion}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{fmtPendiente(base > 0 ? base : importe)} €</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{impuesto > 0 ? `${fmtPendiente(impuesto)} €` : "—"}</td><td className="whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums">{fmtPendiente(importe)} €</td><td className="whitespace-nowrap px-3 py-3"><span className="rounded-full bg-amber-100 px-2 py-1 text-[10px] font-bold text-amber-800">Pendiente</span></td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{importeInicialDisponible ? `${fmtPendiente(resumenEconomico.saldoActual)} €` : "—"}</td><td className="px-3 py-3">{esAdministradorSesion ? <button type="button" onClick={() => abrirOrdenPago(gasto)} disabled={importe <= 0} className="rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[10px] font-bold text-emerald-800 hover:bg-emerald-100 disabled:opacity-50">Pagar</button> : <span className="text-[10px] text-slate-400">Solo administración</span>}</td></tr>; })}
                                 {resumenEconomico.movimientos.map((movimiento) => {
                                   const fmt = (valor) => Number(valor ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                                   const importeMovimiento = Math.abs(Number(movimiento.importeMovimiento ?? movimiento.importe_resultante ?? movimiento.importe ?? 0));

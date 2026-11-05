@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useState, useEffect } from "react";
 import axios from "../../api/axios";
 import "../../css/ModalesHerramientasPremium.css";
@@ -107,15 +108,11 @@ export default function ImportadorPostFirma() {
 
   return (
     <main className="herramientas-subpagina-premium min-h-screen space-y-5 bg-gradient-to-br from-slate-50 via-blue-50/40 to-slate-100 p-4 text-slate-700 md:p-6">
-      <header className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
-        <div className="flex items-start gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-blue-200 bg-blue-50 text-2xl">📦</div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-800 md:text-3xl">Importador ABSIS · Post Firma</h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Carga histórica pura y aislada. Los ficheros de distintos meses permanecen separados y no se aplican a expedientes ni a los gastos operativos del ERP.</p>
-          </div>
-        </div>
-      </header>
+      <MolsanPageHeader
+        mark="AB"
+        title="Importador ABSIS · Post Firma"
+        description="Carga histórica pura y aislada. Los ficheros de distintos meses permanecen separados y no se aplican a expedientes ni a los gastos operativos del ERP."
+      />
 
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
         <h2 className="text-lg font-bold text-slate-800">1. Seleccionar Excel</h2>

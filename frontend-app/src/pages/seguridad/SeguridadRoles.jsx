@@ -5,6 +5,7 @@ import {
 
 import { useSeguridad } from "../../hooks/useSeguridad";
 import "./SeguridadSubpaginasPremium.css";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 
 /**
@@ -654,81 +655,13 @@ export default function SeguridadRoles() {
       className="seguridad-subpagina-premium seguridad-roles-premium w-full space-y-4"
     >
 
-      {/* CABECERA */}
-
-      <div
-        className="
-          flex
-          flex-col
-          gap-4
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-bg)]
-          p-5
-          md:flex-row
-          md:items-center
-          md:justify-between
-        "
-      >
-
-        <div
-          className="
-            flex
-            items-center
-            gap-3
-          "
-        >
-
-          <div
-            className="
-              flex
-              h-11
-              w-11
-              shrink-0
-              items-center
-              justify-center
-              rounded-xl
-              bg-[var(--erp-primary-soft)]
-              text-xl
-            "
-          >
-            🛡️
-          </div>
-
-          <div>
-
-            <h2
-              className="
-                text-xl
-                font-bold
-                text-[var(--erp-text)]
-              "
-            >
-              Roles de seguridad
-            </h2>
-
-            <p
-              className="
-                mt-0.5
-                text-sm
-                text-[var(--erp-text-soft)]
-              "
-            >
-              Perfiles y niveles de acceso.
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <Chip tone="primary">
-          {estadisticas.total} roles
-        </Chip>
-
-      </div>
-
+      <MolsanPageHeader
+        mark="ROL"
+        title="Roles de seguridad"
+        description={"Perfiles y niveles de acceso."}
+        className="seguridad-subpage-header"
+        actions={<Chip tone="primary">{estadisticas.total} roles</Chip>}
+      />
 
       {/* KPIS */}
 

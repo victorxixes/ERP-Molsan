@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
 import "../../css/HerramientasPremium.css";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
 
@@ -43,16 +44,13 @@ export default function FirmasEmail() {
   }
 
   return <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-    <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-      <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <Link to="/herramientas/catalogos" className="text-xs font-bold text-blue-600 hover:text-blue-700">← Volver a Catálogos</Link>
-          <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Firma corporativa de email</h1>
-          <p className="mt-1 text-sm text-slate-500">Configura el pie común que acompaña a la firma personal del empleado remitente.</p>
-        </div>
-      </div>
-    </header>
+    <MolsanPageHeader
+      mark="SIG"
+      title="Firma corporativa de email"
+      description="Configura el pie común que acompaña a la firma personal del empleado remitente."
+      className="firmas-email-page-header"
+      actions={<Link to="/herramientas/catalogos" className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)]">← Volver a Catálogos</Link>}
+    />
     {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{error}</div>}
     {mensaje && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{mensaje}</div>}
     {cargando ? <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500">Cargando configuración…</div> : <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 space-y-5">

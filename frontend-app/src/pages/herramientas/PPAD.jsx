@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
@@ -111,17 +112,7 @@ export default function PPAD() {
 
   return (
     <div className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
-        <div className="h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-600">Utilidades · Control económico</p>
-            <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Control de PPAD</h1>
-            <p className="mt-2 text-sm text-slate-500">Seguimiento de importes pendientes de compensar y compensados.</p>
-          </div>
-          <Link to="/herramientas/utilidades" className="self-start rounded-xl border border-slate-200 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50">← Volver a Utilidades</Link>
-        </div>
-      </header>
+      <MolsanPageHeader mark="PP" title="Control de PPAD" description="Seguimiento de importes pendientes de compensar y compensados." actions={<Link to="/herramientas/utilidades" className="self-start rounded-xl border border-slate-200 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50">← Volver a Utilidades</Link>}/>
 
       {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
       {mensaje && <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{mensaje}</div>}

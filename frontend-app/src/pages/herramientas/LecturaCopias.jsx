@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import "../../css/ModalesHerramientasPremium.css";
@@ -45,19 +46,7 @@ export default function LecturaCopias() {
 
   return (
     <main className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link>
-        <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Lectura copias</h1>
-              <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-amber-700">Demostración · datos ficticios</span>
-            </div>
-            <p className="mt-2 max-w-3xl text-sm text-slate-500">Selecciona la fecha de recepción y ejecuta el procesamiento de ejemplo para visualizar el progreso y el resultado esperado de la futura integración.</p>
-          </div>
-        </div>
-      </header>
+      <MolsanPageHeader mark="LC" title="Lectura copias" description="Selecciona la fecha de recepción y ejecuta el procesamiento de ejemplo para visualizar el progreso y el resultado esperado de la futura integración." actions={<Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link>}/>
 
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(240px,0.8fr)]">
         <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
