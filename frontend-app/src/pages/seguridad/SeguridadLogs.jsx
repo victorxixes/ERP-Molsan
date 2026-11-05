@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import {
   useMemo,
   useState,
@@ -946,125 +947,19 @@ export default function SeguridadLogs() {
     <div className="seguridad-logs-premium seguridad-subpagina-premium space-y-6 animate-fade-in">
 
 
-      {/* ====================================================
-          CABECERA
-      ==================================================== */}
-
-      <section
-        className="
-          bg-[var(--erp-surface)]
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          shadow-sm
-          px-6
-          py-5
-        "
-      >
-
-        <div
-          className="
-            flex
-            flex-col
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-            gap-4
-          "
-        >
-
-          <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
-          >
-
-            <div
-              className="
-                w-11
-                h-11
-                rounded-xl
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-                flex-shrink-0
-              "
-            >
-
-              <Icono
-                name="shield"
-                className="w-5 h-5"
-              />
-
-            </div>
-
-
-            <div>
-
-              <h1
-                className="
-                  text-2xl
-                  font-bold
-                  text-[var(--erp-text)]
-                "
-              >
-                Logs técnicos
-              </h1>
-
-
-              <p
-                className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                  mt-0.5
-                "
-              >
-                Monitorización técnica y trazabilidad de eventos del ERP
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div
-            className="
-              inline-flex
-              items-center
-              gap-2
-              px-3
-              py-2
-              rounded-xl
-              bg-emerald-50
-              border
-              border-emerald-100
-              text-emerald-700
-              text-xs
-              font-medium
-              w-fit
-            "
-          >
-
-            <span
-              className="
-                w-2
-                h-2
-                rounded-full
-                bg-emerald-500
-              "
-            />
-
+      <MolsanPageHeader
+        mark="LG"
+        title="Logs técnicos"
+        description="Monitorización técnica y trazabilidad de eventos del ERP"
+        actions={
+          <span className="molsan-status-chip">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
             Monitor técnico activo
+          </span>
+        }
+      />
 
-          </div>
-
-        </div>
-
-      </section>
+ction>
 
 
       {/* ====================================================
