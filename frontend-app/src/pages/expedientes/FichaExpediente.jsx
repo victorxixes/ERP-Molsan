@@ -5245,7 +5245,7 @@ const cuantiaFincasParaEnvio =
                                         {completa ? "✓" : actual ? "●" : indice + 1}
                                       </div>
                                       <div className="min-w-0 flex-1">
-                                        <p className="text-xs font-bold text-slate-800">{fase.icono} {fase.label}</p>
+                                        <p className="text-xs font-bold text-slate-800"><MolsanIcon name={fase.icono} size={16} tone="ocean" bare /> {fase.label}</p>
                                         <p className={`mt-0.5 text-[10px] font-semibold ${completa ? "text-emerald-700" : actual ? "text-blue-700" : "text-amber-700"}`}>
                                           {completa ? "Control superado" : actual ? "Actividad actual · requiere revisión" : "Con incidencias pendientes"}
                                         </p>
