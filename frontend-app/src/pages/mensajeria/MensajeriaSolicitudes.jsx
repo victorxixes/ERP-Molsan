@@ -3,6 +3,7 @@ import axios from "../../api/axios";
 import { listarNotarios } from "../../api/notarios";
 import { useAuthStore } from "../../store/authStore";
 import "../../css/HerramientasPremium.css";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
 const estadoColor = (estado) => estado === "Entregada" ? "bg-emerald-50 text-emerald-700" : estado === "Incidencia" ? "bg-rose-50 text-rose-700" : estado === "Cancelada" ? "bg-slate-100 text-slate-600" : "bg-blue-50 text-blue-700";
@@ -204,12 +205,12 @@ export default function MensajeriaSolicitudes() {
   };
 
   return <main className="catalogos-premium-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-    <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-      <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">MOLSAN ERP PREMIUM 2027</p>
-      <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Mensajería</h1>
-      <p className="mt-2 max-w-3xl text-sm text-slate-500">Solicita envíos y recogidas, consulta el estado de tus encargos y mantén la comunicación con la responsable desde aquí.</p>
-    </header>
+    <MolsanPageHeader
+      mark="MEN"
+      title="Mensajería"
+      description="Solicita envíos y recogidas, consulta el estado de tus encargos y mantén la comunicación con la responsable desde aquí."
+      className="mensajeria-page-header"
+    />
     {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">{error}</div>}
     {aviso && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{aviso}</div>}
     <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
