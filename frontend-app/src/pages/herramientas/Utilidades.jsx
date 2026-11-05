@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import "../../css/HerramientasPremium.css";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 /**
  * UTILIDADES — MOLSAN ERP PREMIUM 2027
@@ -9,16 +10,12 @@ export default function Utilidades() {
 
   return (
     <div className="utilidades-premium-page min-h-full space-y-7 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-      <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="relative flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl shadow-sm">⚙️</div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Utilidades del sistema</h1>
-            <p className="mt-1 text-sm text-slate-500">Accede a importaciones, integraciones y herramientas de trabajo directamente desde el ERP.</p>
-          </div>
-        </div>
-      </header>
+      <MolsanPageHeader
+        mark="UT"
+        title="Utilidades del sistema"
+        description="Accede a importaciones, integraciones y herramientas de trabajo directamente desde el ERP."
+        className="utilidades-page-header"
+      />
 
       <Grupo titulo="Documentación y plantillas" descripcion="Centraliza el diseño de los documentos oficiales sin mover los catálogos ni las reglas económicas.">
         <Card icon="📑" titulo="Modelos documentos" descripcion="Consulta y prepara las plantillas de Hoja de liquidación, Provisión de fondos y Factura de honorarios de gestoría." link="/herramientas/utilidades/modelos-documentos" destacado />
