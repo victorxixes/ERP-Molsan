@@ -594,11 +594,8 @@ def previsualizar_cierre_documental(expediente_id: str, db: Session = Depends(ge
         ]
         archivos_validos = []
         for item in coincidencias:
-            ruta = _ruta_segura(item.nombre_guardado)
-            if not ruta.is_file():
-                continue
             try:
-                contenido = ruta.read_bytes()
+                contenido = _leer_contenido(item.nombre_guardado)
                 if contenido.startswith(b"%PDF-"):
                     # Validar que el PDF sea legible antes de incorporarlo.
                     PdfReader(io.BytesIO(contenido), strict=False)
@@ -667,22 +664,19 @@ async def guardar_cierre_documental(
         raise HTTPException(status_code=422, detail=f"El PDF no se puede leer: {exc}")
 
     nombre_guardado = f"{uuid.uuid4().hex}.pdf"
-    ruta_final = _ruta_segura(nombre_guardado)
-    temporal = _ruta_segura(f".{nombre_guardado}.part")
     anteriores = (
         db.query(DocumentoCarpetaDigital)
         .filter(DocumentoCarpetaDigital.expediente_id == str(expediente_id))
         .all()
     )
     anteriores = [d for d in anteriores if _normalizar_texto(d.categoria) == _normalizar_texto("Expediente digital completo")]
+    referencia_guardada = _guardar_contenido(nombre_guardado, contenido, "application/pdf")
     try:
-        temporal.write_bytes(contenido)
-        temporal.replace(ruta_final)
         registro = DocumentoCarpetaDigital(
             expediente_id=str(expediente_id),
             categoria="Expediente digital completo",
             nombre_original=nombre_original,
-            nombre_guardado=nombre_guardado,
+            nombre_guardado=referencia_guardada,
             tipo_mime="application/pdf",
             tamano_bytes=len(contenido),
             fecha_subida=datetime.utcnow(),
@@ -694,14 +688,16 @@ async def guardar_cierre_documental(
         db.refresh(registro)
         for anterior in anteriores:
             try:
-                _ruta_segura(anterior.nombre_guardado).unlink(missing_ok=True)
+                _eliminar_contenido(anterior.nombre_guardado)
             except Exception:
-                pass
+                logger.exception("No se pudo eliminar el cierre documental anterior")
         return registro
     except Exception:
         db.rollback()
-        temporal.unlink(missing_ok=True)
-        ruta_final.unlink(missing_ok=True)
+        try:
+            _eliminar_contenido(referencia_guardada)
+        except Exception:
+            logger.exception("No se pudo limpiar el PDF de cierre tras fallar la transacción")
         raise
     finally:
         await archivo.close()
