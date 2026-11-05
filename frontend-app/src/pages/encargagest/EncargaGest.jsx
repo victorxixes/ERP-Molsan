@@ -902,11 +902,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         description={modo === "externo" ? "Portal profesional · " + (sesion?.notaria_nombre || "Sesión externa") : "Recepción y seguimiento de encargos notariales externos."}
         className="ag-hero eg-hero dashboard-header"
         actions={modo === "interno" ? (
-          <>
-            <div className="ag-fecha-actual"><span className="ag-punto-vivo" aria-hidden="true" /><span>{fechaActual}</span></div>
-            <button type="button" onClick={irAModulos} className="eg-secondary"><MolsanIcon name="dashboard" size={20} tone="ocean" /> Ir a módulos</button>
-            <button type="button" onClick={salirEncargaGest} className="eg-secondary">Cerrar sesión</button>
-          </>
+          <button type="button" onClick={salirEncargaGest} className="molsan-btn molsan-btn--secondary">Cerrar sesión</button>
         ) : null}
       />
 
