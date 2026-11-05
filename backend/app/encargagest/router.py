@@ -27,6 +27,7 @@ from backend.app.config import settings
 from backend.app.empleados.models import Empleado
 from backend.app.ctn.models import Notaria
 from backend.app.database import Base, engine, get_db
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
 from backend.app.encargagest.models import (
     EncargoExterno, EncargoExternoActividad, EncargoExternoDocumento,
     EncargoExternoUsuario,
@@ -216,6 +217,10 @@ def _migrar_tablas_encargagest_en_hilo():
 
 @router.on_event("startup")
 async def crear_tablas_encargagest():
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: crear_tablas_encargagest; ejecutar migración versionada.", flush=True)
+        return
+
     # No crear ni iniciar hilos mientras Starlette está ejecutando la secuencia
     # de arranque. Solo se agenda el lanzamiento para después de liberar el
     # ciclo de startup; así un problema de recursos no puede atascar el puerto.
