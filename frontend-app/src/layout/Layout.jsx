@@ -20,7 +20,7 @@ export default function Layout() {
 
   const rutasPrincipales = new Set([
     "/", "/dashboard", "/expedientes", "/provisiones-fondos", "/agenda",
-    "/empleados", "/fichajes", "/control-fichajes", "/ctn", "/intranet",
+    "/empleados", "/fichajes", "/control-fichajes", "/ctn", "/intranet", "/herramientas",
     "/mensajes", "/mensajeria", "/mensajeria-gestion", "/informes",
     "/fusiones", "/auditoria", "/catalogos", "/herramientas/utilidades",
     "/seguridad", "/logs", "/maestros", "/paneltecnico", "/apoderagest",
@@ -48,16 +48,28 @@ export default function Layout() {
       const encontrada = contenedor.querySelector(".molsan-page-header:not(.molsan-page-back-fallback)");
       if (!encontrada) return false;
 
-      const botonVolverExistente = Array.from(
-        encontrada.querySelectorAll("button:not([data-layout-back-button]), a")
-      ).find((elemento) => {
+      const esControlVolver = (elemento) => {
+        if (elemento.closest('[role="dialog"], [aria-modal="true"], .molsan-modal, [data-modal]')) return false;
         const texto = (elemento.textContent || "").trim();
         const aria = elemento.getAttribute("aria-label") || "";
-        return /\\bvolver\\b|regresar/i.test(texto) || /\\bvolver\\b|regresar/i.test(aria);
+        return /\bvolver\b|regresar/i.test(texto) || /\bvolver\b|regresar/i.test(aria);
+      };
+      const controlesVolver = Array.from(
+        contenedor.querySelectorAll("button:not([data-layout-back-button]), a")
+      ).filter(esControlVolver);
+      const botonVolverEnCabecera = controlesVolver.find((elemento) => encontrada.contains(elemento));
+
+      // Conserva un único Volver. Si el módulo lo había colocado fuera de la
+      // cabecera, se oculta el control antiguo y se muestra el común dentro
+      // de la cabecera, sin tocar botones de navegación de los modales.
+      controlesVolver.forEach((elemento) => {
+        if (elemento !== botonVolverEnCabecera) {
+          elemento.classList.add("molsan-page-back-legacy-hidden");
+        }
       });
 
-      if (botonVolverExistente) {
-        botonVolverExistente.classList.add("molsan-page-back-button");
+      if (botonVolverEnCabecera) {
+        botonVolverEnCabecera.classList.add("molsan-page-back-button");
         setTieneVolverPropio(true);
         setCabeceraSubpagina(null);
       } else {
@@ -89,12 +101,10 @@ export default function Layout() {
   }, [pathname, esSubpagina]);
 
   const volverSubpagina = () => {
-    if (window.history.state?.idx > 0) {
-      navigate(-1);
-      return;
-    }
-    const partes = pathname.split("/").filter(Boolean);
-    navigate(partes.length > 1 ? `/${partes.slice(0, -1).join("/")}` : "/dashboard");
+    const rutaPrincipal = Array.from(rutasPrincipales)
+      .filter((ruta) => ruta !== "/" && (pathname === ruta || pathname.startsWith(`${ruta}/`)))
+      .sort((a, b) => b.length - a.length)[0];
+    navigate(rutaPrincipal || "/dashboard");
   };
 
   useNotificacionesWS(empleado?.id);
