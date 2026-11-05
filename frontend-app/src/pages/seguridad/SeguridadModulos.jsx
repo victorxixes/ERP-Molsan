@@ -6,6 +6,7 @@ import {
 
 import { useSeguridad } from "../../hooks/useSeguridad";
 import "./SeguridadSubpaginasPremium.css";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 import MODULOS_ERP from "../../config/modulos";
 
@@ -302,125 +303,13 @@ export default function SeguridadModulos() {
       className="seguridad-subpagina-premium seguridad-modulos-premium w-full space-y-4"
     >
 
-      {/* CABECERA */}
-
-      <div
-        className="
-          flex
-          flex-col
-          gap-4
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-5
-          shadow-sm
-          md:flex-row
-          md:items-center
-          md:justify-between
-        "
-      >
-
-        <div
-          className="
-            flex
-            items-center
-            gap-3
-          "
-        >
-
-          <div
-            className="
-              flex
-              h-11
-              w-11
-              shrink-0
-              items-center
-              justify-center
-              rounded-xl
-              bg-blue-50
-              text-xl
-            "
-          >
-            📦
-          </div>
-
-          <div>
-
-            <h2
-              className="
-                text-xl
-                font-bold
-                text-[var(--erp-text)]
-              "
-            >
-              Módulos visibles
-            </h2>
-
-            <p
-              className="
-                mt-0.5
-                text-sm
-                text-[var(--erp-text-soft)]
-              "
-            >
-              Configura los módulos que puede visualizar este empleado.
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div
-          className="
-            flex
-            flex-wrap
-            items-center
-            gap-2
-          "
-        >
-
-          <span
-            className="
-              inline-flex
-              items-center
-              rounded-full
-              border
-              border-blue-200
-              bg-blue-50
-              px-3
-              py-1.5
-              text-xs
-              font-semibold
-              text-blue-700
-            "
-          >
-            {modulosGlobales.length} disponibles
-          </span>
-
-          <span
-            className="
-              inline-flex
-              items-center
-              rounded-full
-              border
-              border-emerald-200
-              bg-emerald-50
-              px-3
-              py-1.5
-              text-xs
-              font-semibold
-              text-emerald-700
-            "
-          >
-            {modulosVisibles.length} visibles
-          </span>
-
-        </div>
-
-      </div>
-
+      <MolsanPageHeader
+        mark="MOD"
+        title="Módulos visibles"
+        description={"Configura los módulos que puede visualizar este empleado."}
+        className="seguridad-subpage-header"
+        actions={<><span className="erp-badge erp-badge-primary">{modulosGlobales.length} disponibles</span><span className="erp-badge erp-badge-success">{modulosVisibles.length} visibles</span></>}
+      />
 
       {/* FILTRO */}
 
