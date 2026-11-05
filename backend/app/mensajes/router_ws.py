@@ -25,6 +25,15 @@ def _empleado_activo(db: Session, empleado_id: int):
     return empleado
 
 
+def _destinatario_activo(empleado_id: int) -> bool:
+    """Comprueba destinatarios con una sesión breve, nunca ligada al socket."""
+    db = SessionLocal()
+    try:
+        return _empleado_activo(db, empleado_id) is not None
+    finally:
+        db.close()
+
+
 @router.websocket("/ws/mensajes/{empleado_id}")
 async def mensajes_ws(websocket: WebSocket, empleado_id: int):
     """Conexión realtime autenticada: el ID de ruta debe coincidir con el JWT."""
@@ -57,6 +66,11 @@ async def mensajes_ws(websocket: WebSocket, empleado_id: int):
         if not empleado:
             await websocket.close(code=4006, reason="Empleado inexistente o inactivo")
             return
+
+        # La sesión PostgreSQL solo se utiliza durante la autenticación inicial.
+        # Mantenerla abierta durante el WebSocket agotaba el pool de Supabase
+        # aunque el socket permaneciese inactivo durante varios minutos.
+        db.close()
 
         primera_conexion = await manager.connect(websocket, empleado_id)
         conectado = True
@@ -98,8 +112,7 @@ async def mensajes_ws(websocket: WebSocket, empleado_id: int):
             if destinatario_id <= 0 or destinatario_id == empleado_id:
                 continue
 
-            destinatario = _empleado_activo(db, destinatario_id)
-            if destinatario is None:
+            if not _destinatario_activo(destinatario_id):
                 # No filtrar detalles del destinatario por el socket; simplemente ignorar.
                 continue
 
