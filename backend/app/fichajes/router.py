@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.database import Base, engine, get_db
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
 from backend.app.empleados.models import Empleado
 from backend.app.fichajes.models import (FichajeDocumento, FichajeMarcaje, FichajeTipoAusencia, FichajeVacaciones, FichajeBolsaVacaciones, FichajeFestivoTrabajado, FichajeCompensacionMovimiento, FichajeSolicitudCompensacion, FichajeCompensacionAuditoria, FichajeFestivoCalendario, FichajeMarcajeAuditoria, FichajePeriodoCerrado, FichajeDocumentoRevision, FichajeSolicitudAusencia)
 
@@ -27,6 +28,9 @@ MAX_DOCUMENTO_BYTES = 10 * 1024 * 1024
 
 
 def _migrar_tablas():
+    if not runtime_schema_migrations_enabled():
+        print("[FICHAJES] Migraciones automáticas desactivadas; usar migraciones versionadas.", flush=True)
+        return
     try:
         with engine.begin() as conexion:
             from sqlalchemy import text
