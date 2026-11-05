@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import "./Maestros.css";
 
@@ -366,116 +367,13 @@ export default function Maestros() {
           CABECERA
       ====================================================== */}
 
-      <div
-        className="
-          flex
-          flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-4
-        "
-      >
-
-        <div>
-
-          <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
-          >
-
-            <div
-              className="
-                w-12
-                h-12
-                rounded-2xl
-                bg-[var(--erp-primary-soft)]
-                border
-                border-[var(--erp-border)]
-                text-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-                shadow-sm
-              "
-            >
-
-              <svg
-                className="w-6 h-6"
-                aria-hidden="true"
-              >
-                <use
-                  href="/icons/icons.svg#database"
-                />
-              </svg>
-
-            </div>
-
-
-            <div>
-
-              <h1
-                className="
-                  text-2xl
-                  font-bold
-                  text-[var(--erp-text)]
-                "
-              >
-                Maestros
-              </h1>
-
-              <p
-                className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                  mt-1
-                "
-              >
-                Gestión de departamentos, secciones y cargos
-              </p>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div
-          className="
-            inline-flex
-            items-center
-            gap-2
-            px-3
-            py-2
-            rounded-xl
-            bg-[var(--erp-surface)]
-            border
-            border-[var(--erp-border)]
-            text-xs
-            font-medium
-            text-[var(--erp-text-soft)]
-            shadow-sm
-          "
-        >
-
-          <span
-            className="
-              w-2
-              h-2
-              rounded-full
-              bg-emerald-500
-            "
-          />
-
-          Gestión de datos maestros
-
-        </div>
-
-      </div>
+      <MolsanPageHeader
+        mark="MAE"
+        title="Maestros"
+        description="Gestión de departamentos, secciones y cargos."
+        className="maestros-page-header"
+        actions={<span className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-[var(--erp-surface)] px-3 py-2 text-xs font-medium text-[var(--erp-text-soft)]"><span className="h-2 w-2 rounded-full bg-emerald-500" />Gestión de datos maestros</span>}
+      />
 
 
       {/* ======================================================

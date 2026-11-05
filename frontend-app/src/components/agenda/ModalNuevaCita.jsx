@@ -2,7 +2,10 @@ import {
   useEffect,
   useState,
   useCallback,
+  useRef,
 } from "react";
+
+import useAccessibleDialog from "../ui/useAccessibleDialog";
 
 import AutocompleteNotario from "./AutocompleteNotario";
 import "../../css/ModalesHerramientasPremium.css";
@@ -199,6 +202,9 @@ export default function ModalNuevaCita({
     notarioSeleccionado,
     setNotarioSeleccionado,
   ] = useState(null);
+
+  const dialogRef = useRef(null);
+  useAccessibleDialog({ open: Boolean(fecha), onClose, dialogRef });
 
 
   // ==========================================================
@@ -745,6 +751,11 @@ export default function ModalNuevaCita({
     >
 
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-nueva-cita-title"
+        tabIndex={-1}
         className="
           bg-white
           border border-slate-200
@@ -779,6 +790,7 @@ export default function ModalNuevaCita({
           <div>
 
             <h2
+              id="modal-nueva-cita-title"
               className="
                 text-xl
                 font-bold

@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useState } from "react";
 import axios from "../../api/axios";
 import "../../css/ModalesHerramientasPremium.css";
@@ -155,89 +156,11 @@ export default function ImportadorAbsis() {
                 CABECERA
                 ================================================== */}
 
-            <section
-                className="
-                    bg-white
-                    border
-                    border-[var(--erp-border)]
-                    rounded-2xl
-                    p-5
-                    lg:p-6
-                    shadow-sm
-                "
-            >
-
-                <div
-                    className="
-                        flex
-                        items-center
-                        gap-4
-                    "
-                >
-
-                    {/* ICONO */}
-
-                    <div
-                        className="
-                            w-12
-                            h-12
-                            rounded-2xl
-                            bg-[var(--erp-primary-soft)]
-                            border
-                            border-[var(--erp-primary)]
-                            flex
-                            items-center
-                            justify-center
-                            flex-shrink-0
-                            shadow-sm
-                        "
-                    >
-
-                        <span
-                            className="
-                                text-xl
-                            "
-                        >
-                            📥
-                        </span>
-
-                    </div>
-
-
-                    {/* TEXTO */}
-
-                    <div className="min-w-0">
-
-                        <h1
-                            className="
-                                text-2xl
-                                lg:text-3xl
-                                font-bold
-                                tracking-tight
-                                text-[var(--erp-text)]
-                            "
-                        >
-                            Importador ABSIS
-                        </h1>
-
-                        <p
-                            className="
-                                text-sm
-                                text-[var(--erp-text-soft)]
-                                mt-1
-                            "
-                        >
-                            Importa expedientes desde el Excel matriz ABSIS
-                            seleccionando el día que deseas procesar.
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
+            <MolsanPageHeader
+                mark="AB"
+                title="Importador ABSIS"
+                description="Importa expedientes desde el Excel matriz ABSIS seleccionando el día que deseas procesar."
+            />
 
             {/* ==================================================
                 PANEL PRINCIPAL

@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
@@ -165,20 +166,13 @@ export default function CatalogoAbsis() {
 
   return (
     <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · DATOS ABSIS</p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">Catálogo ABSIS</h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Gestiona en una única pantalla los estados y listas auxiliares que utiliza la integración ABSIS. Cada lista se mantiene por separado y sus cambios quedan guardados en el servidor.</p>
-          </div>
-          <div className="rounded-2xl border border-indigo-100 bg-indigo-50 px-5 py-4">
-            <p className="text-3xl font-bold text-slate-900">{filas.filter((f) => f.activo).length}</p>
-            <p className="text-xs font-medium text-slate-500">entradas activas</p>
-          </div>
-        </div>
-      </header>
+      <MolsanPageHeader
+        mark="ABS"
+        title="Catálogo ABSIS"
+        description="Gestiona en una única pantalla los estados y listas auxiliares que utiliza la integración ABSIS. Cada lista se mantiene por separado y sus cambios quedan guardados en el servidor."
+        className="catalogo-absis-page-header"
+        actions={<span className="inline-flex items-center rounded-xl border border-[var(--erp-border)] bg-[var(--erp-surface-soft)] px-4 py-2 text-sm font-semibold text-[var(--erp-primary)]">{filas.filter((f) => f.activo).length} entradas activas</span>}
+      />
 
       <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         <label className="mb-2 block text-sm font-semibold text-slate-700" htmlFor="absis-categoria">Lista que quieres gestionar</label>

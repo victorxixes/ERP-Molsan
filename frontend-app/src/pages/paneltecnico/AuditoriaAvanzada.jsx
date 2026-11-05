@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import {
   getAuditoria,
@@ -89,119 +90,12 @@ export default function AuditoriaAvanzada() {
   return (
     <div className="auditoria-avanzada-premium panel-tecnico-submodulo-premium space-y-6 animate-fade-in">
 
-      {/* ======================================================
-          CABECERA
-          ====================================================== */}
-
-      <div
-        className="
-          flex
-          flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-4
-        "
-      >
-
-        <div className="flex items-center gap-3">
-
-          <div
-            className="
-              w-11
-              h-11
-              rounded-2xl
-              bg-[var(--erp-primary-soft)]
-              text-[var(--erp-primary)]
-              border
-              border-[var(--erp-border)]
-              flex
-              items-center
-              justify-center
-            "
-          >
-            <svg className="w-5 h-5">
-              <use href="/icons/icons.svg#shield" />
-            </svg>
-          </div>
-
-          <div>
-
-            <h1
-              className="
-                text-2xl
-                font-bold
-                text-[var(--erp-text)]
-              "
-            >
-              Auditoría Avanzada
-            </h1>
-
-            <p
-              className="
-                text-sm
-                text-[var(--erp-text-soft)]
-                mt-0.5
-              "
-            >
-              Control y trazabilidad de la actividad del sistema
-            </p>
-
-          </div>
-
-        </div>
-
-
-        {/* CONTADOR */}
-
-        <div
-          className="
-            inline-flex
-            items-center
-            gap-2
-            px-4
-            py-2
-            rounded-xl
-            bg-[var(--erp-surface)]
-            border
-            border-[var(--erp-border)]
-            shadow-sm
-            w-fit
-          "
-        >
-
-          <span
-            className="
-              w-2
-              h-2
-              rounded-full
-              bg-[var(--erp-primary)]
-            "
-          />
-
-          <span
-            className="
-              text-sm
-              font-semibold
-              text-[var(--erp-text)]
-            "
-          >
-            {filtrados.length}
-          </span>
-
-          <span
-            className="
-              text-sm
-              text-[var(--erp-text-soft)]
-            "
-          >
-            registros
-          </span>
-
-        </div>
-
-      </div>
-
+      <MolsanPageHeader
+        mark="AU"
+        title="Auditoría Avanzada"
+        description="Control y trazabilidad de la actividad del sistema"
+        actions={<span className="molsan-status molsan-status--info">{filtrados.length} registros</span>}
+      />
 
       {/* ======================================================
           MÉTRICAS

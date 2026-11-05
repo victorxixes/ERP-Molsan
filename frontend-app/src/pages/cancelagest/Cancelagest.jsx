@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { puedeVerModulo } from "../../utils/permisos";
@@ -81,16 +82,11 @@ export default function Cancelagest() {
     .filter((modulo) => modulo && puedeVerModulo(modulo.key));
 
   return <main className="cg-page">
-      <header className="cg-hero">
-        <div className="cg-hero-identidad">
-          <div className="cg-logo"><img src="/img/logo.jpg" alt="MOLSAN" /></div>
-          <div><div className="cg-eyebrow">MOLSAN ERP · PREMIUM 2027</div><h1>CancelaGest</h1><p>Centro de gestión de cancelaciones, provisiones, firmas y seguimiento registral.</p></div>
-        </div>
-        <div className="cg-hero-acciones">
-          <div className="cg-fecha">{fechaActual}</div>
-          <button type="button" className="cg-button-primary" onClick={cargar} disabled={cargando}>{cargando ? "Actualizando…" : "↻ Actualizar datos"}</button>
-        </div>
-      </header>
+      <MolsanPageHeader
+        mark={<img src="/img/logo.jpg" alt="" className="h-full w-full rounded-lg object-contain" />}
+        title="CancelaGest"
+        description="Centro de gestión de cancelaciones, provisiones, firmas y seguimiento registral."
+      />
 
       {error && <div className="cg-error" role="alert"><strong>No se han podido cargar los indicadores.</strong><p>{error}</p><button onClick={cargar}>Reintentar</button></div>}
 

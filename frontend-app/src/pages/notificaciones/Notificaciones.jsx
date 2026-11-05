@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useMemo } from "react";
 import "./Notificaciones.css";
 import { useNotificacionesStore } from "../../store/notificacionesStore";
@@ -213,176 +214,24 @@ export default function Notificaciones() {
           CABECERA
           ====================================================== */}
 
-      <div
-        className="
-          relative
-          overflow-hidden
-          bg-white
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          p-5
-          md:p-6
-          shadow-sm
-        "
-      >
-
-        <div
-          className="
-            flex
-            flex-col
-            md:flex-row
-            md:items-center
-            md:justify-between
-            gap-4
-          "
-        >
-
-          {/* ==================================================
-              TÍTULO
-              ================================================== */}
-
-          <div
-            className="
-              flex
-              items-center
-              gap-4
-            "
-          >
-
-            <div
-              className="
-                w-12
-                h-12
-                rounded-xl
-                bg-[var(--erp-primary-soft)]
-                border
-                border-[var(--erp-border)]
-                flex
-                items-center
-                justify-center
-                text-2xl
-                shadow-sm
-              "
-            >
-              🔔
-            </div>
-
-
-            <div>
-
-              <h1
-                className="
-                  text-2xl
-                  md:text-3xl
-                  font-bold
-                  tracking-tight
-                  text-[var(--erp-text)]
-                "
-              >
-                Notificaciones
-              </h1>
-
-              <p
-                className="
-                  text-sm
-                  mt-1
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                Actividad y avisos en tiempo real del ERP.
-              </p>
-
-            </div>
-
-          </div>
-
-
-          {/* ==================================================
-              ACCIONES
-              ================================================== */}
-
-          <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
-          >
-
-            {/* CONTADOR */}
-
-            <div
-              className="
-                px-4
-                py-2
-                rounded-xl
-                bg-[var(--erp-background)]
-                border
-                border-[var(--erp-border)]
-                text-center
-                min-w-[90px]
-              "
-            >
-
-              <div
-                className="
-                  text-xl
-                  font-bold
-                  text-[var(--erp-text)]
-                "
-              >
-                {lista.length}
-              </div>
-
-              <div
-                className="
-                  text-[10px]
-                  uppercase
-                  tracking-wider
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                Avisos
-              </div>
-
-            </div>
-
-
-            {/* LIMPIAR */}
-
+      <MolsanPageHeader
+        mark="NO"
+        title="Notificaciones"
+        description="Actividad y avisos en tiempo real del ERP."
+        actions={
+          <>
+            <span className="molsan-status molsan-status--info">{lista.length} avisos</span>
             <button
               type="button"
               onClick={clearNotificaciones}
               disabled={lista.length === 0}
-              className="
-                px-4
-                py-2.5
-                rounded-xl
-                bg-red-50
-                border
-                border-red-200
-                text-red-600
-                text-sm
-                font-medium
-                transition-all
-                duration-200
-                hover:bg-red-100
-                hover:border-red-300
-                active:scale-[0.97]
-                disabled:opacity-40
-                disabled:cursor-not-allowed
-              "
+              className="molsan-btn molsan-btn--danger"
             >
-              🗑️ Limpiar
+              Limpiar
             </button>
-
-          </div>
-
-        </div>
-
-      </div>
-
+          </>
+        }
+      />
 
       {/* ======================================================
           ESTADO VACÍO

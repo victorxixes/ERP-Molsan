@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { Link } from "react-router-dom";
 
 import "../../css/ComponentesOperativosPremium.css";
@@ -22,56 +23,7 @@ export default function Herramientas() {
           CABECERA
       ===================================================== */}
 
-      <div
-        className="
-          relative overflow-hidden
-          rounded-[24px]
-          border border-slate-200/80
-          bg-white/80
-          backdrop-blur-xl
-          shadow-[0_18px_50px_rgba(15,23,42,0.08)]
-          p-6 sm:p-7
-        "
-      >
-        <div
-          className="
-            absolute inset-x-0 top-0 h-px
-            bg-gradient-to-r
-            from-transparent
-            via-blue-400/60
-            to-transparent
-          "
-        />
-
-        <div className="relative flex items-center gap-4">
-
-          <div
-            className="
-              flex h-12 w-12 shrink-0
-              items-center justify-center
-              rounded-2xl
-              bg-blue-50
-              border border-blue-100
-              text-2xl
-              shadow-sm
-            "
-          >
-            🛠️
-          </div>
-
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-800">
-              Herramientas
-            </h1>
-
-            <p className="mt-1 text-sm text-slate-500">
-              Herramientas y procesos auxiliares del sistema.
-            </p>
-          </div>
-
-        </div>
-      </div>
-
+      <MolsanPageHeader mark="HT" title="Herramientas" description="Herramientas y procesos auxiliares del sistema." />
 
       {/* =====================================================
           TARJETAS
