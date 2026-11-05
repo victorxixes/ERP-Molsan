@@ -56,3 +56,7 @@ El hook común también contempla Escape, ciclo Tab/Shift+Tab, foco fuera del di
 - `molsan-tables.css` define tabla corporativa, cabecera, hover, scroll horizontal y responsive.
 
 **Pendiente:** identificar, ruta por ruta, qué listados y formularios usan realmente estos componentes y cuáles conservan tablas/controles locales; migrar solo cuando se pueda preservar ordenación del servidor, paginación, validaciones, permisos y acciones.
+
+La última pasada también ha retirado la fecha y el acceso «Ir a módulos» de las cabeceras de ApoderaGest y NotarGest; en EncargaGest se conserva únicamente «Cerrar sesión» como acción de cabecera. El selector Espacio de trabajo usa ahora la cabecera común y mantiene la sesión activa y el cierre de sesión.
+
+En las 8 parciales, los marcadores adicionales de `header/h1` pueden corresponder a secciones internas, contenido de impresión o estados restringidos, no necesariamente a una segunda cabecera visible. La inspección visual en Preview determinará si alguno debe reclasificarse o corregirse.
