@@ -29,6 +29,7 @@ from sqlalchemy.orm import Session
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.database import get_db, engine
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
 from backend.app.expedientes.models import Expediente
 from backend.app.expedientes.reparto import validar_visibilidad_expediente_request
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
@@ -1477,6 +1478,10 @@ async def enviar_email_provision(
 @router.on_event("startup")
 def inicializar_tablas_provisiones() -> None:
     """Crea solo tablas nuevas del módulo; no altera ni borra tablas existentes."""
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: inicializar_tablas_provisiones; ejecutar migración versionada.", flush=True)
+        return
+
     TarifaProvision.__table__.create(bind=engine, checkfirst=True)
     # Compatibilidad con bases de datos ya existentes: añade la columna sin borrar datos.
     from sqlalchemy import inspect, text
