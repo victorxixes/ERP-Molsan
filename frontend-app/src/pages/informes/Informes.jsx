@@ -5,6 +5,7 @@ import { API_BASE } from "../../api/config";
 import Chart from "chart.js/auto";
 import SelectSJ from "../../components/ui/SelectSJ";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "../../css/ModalesHerramientasPremium.css";
 
 const MESES = [
@@ -1582,7 +1583,7 @@ function InformeCitasApoderados() {
       >
 
         <KpiCard
-          icon="💻"
+          icon="monitor"
           titulo="Total VC"
           valor={totalVC}
           subtitulo="Videoconferencias"
@@ -1591,7 +1592,7 @@ function InformeCitasApoderados() {
 
 
         <KpiCard
-          icon="👤"
+          icon="person"
           titulo="Total Presencial"
           valor={totalPresencial}
           subtitulo="Citas presenciales"
@@ -1600,7 +1601,7 @@ function InformeCitasApoderados() {
 
 
         <KpiCard
-          icon="🚗"
+          icon="car"
           titulo="Km Totales"
           valor={totalKm.toFixed(1)}
           subtitulo="Kilómetros"
@@ -1609,7 +1610,7 @@ function InformeCitasApoderados() {
 
 
         <KpiCard
-          icon="📈"
+          icon="chart"
           titulo="Media Citas"
           valor={mediaCitas.toFixed(1)}
           subtitulo="Por apoderado"
@@ -1618,7 +1619,7 @@ function InformeCitasApoderados() {
 
 
         <KpiCard
-          icon="📍"
+          icon="pin"
           titulo="Media Km"
           valor={mediaKm.toFixed(1)}
           subtitulo="Por apoderado"
@@ -1703,7 +1704,7 @@ function InformeCitasApoderados() {
               gap-2
             "
           >
-            <span>📗</span>
+            <MolsanIcon name="book" size={16} tone="inherit" bare />
             Exportar Excel
           </button>
 
@@ -1728,7 +1729,7 @@ function InformeCitasApoderados() {
               gap-2
             "
           >
-            <span>📄</span>
+            <MolsanIcon name="file" size={16} tone="inherit" bare />
             Exportar PDF
           </button>
 
@@ -2161,7 +2162,7 @@ function InformeCitasApoderados() {
           <GraficoCard
             titulo="Videoconferencias"
             descripcion="VC por apoderado"
-            icono="💻"
+            icono="monitor"
           >
 
             <canvas
@@ -2174,7 +2175,7 @@ function InformeCitasApoderados() {
           <GraficoCard
             titulo="Presencial"
             descripcion="Citas presenciales por apoderado"
-            icono="👤"
+            icono="person"
           >
 
             <canvas
@@ -2187,7 +2188,7 @@ function InformeCitasApoderados() {
           <GraficoCard
             titulo="Desplazamientos"
             descripcion="Kilómetros presenciales"
-            icono="🚗"
+            icono="car"
           >
 
             <canvas
@@ -2546,31 +2547,31 @@ const APARTADOS_INFORMES = [
     key: "apoderados",
     titulo: "Informe citas apoderados",
     descripcion: "Citas presenciales, videoconferencias y desplazamientos.",
-    icono: "👥",
+    icono: "users",
   },
   {
     key: "firmas",
     titulo: "Informe firmas",
     descripcion: "Seguimiento de las firmas realizadas.",
-    icono: "✍️",
+    icono: "pen",
   },
   {
     key: "sla",
     titulo: "Informe SLA’s",
     descripcion: "Control de plazos por actividad y grupo de cancelación.",
-    icono: "⏱️",
+    icono: "timer",
   },
   {
     key: "facturacion",
     titulo: "Informes de facturación",
     descripcion: "Resumen de importes, facturas y estados.",
-    icono: "🧾",
+    icono: "receipt",
   },
   {
     key: "notarios",
     titulo: "Informes de notarios",
     descripcion: "Actividad y estadísticas por notario.",
-    icono: "🏛️",
+    icono: "courthouse",
   },
 ];
 
@@ -2673,7 +2674,7 @@ function InformeKpi({ titulo, valor, subtitulo, icono }) {
           <div className="mt-2 text-2xl font-bold tracking-tight text-slate-800">{valor}</div>
           {subtitulo && <div className="mt-1 text-xs text-slate-400">{subtitulo}</div>}
         </div>
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-lg">{icono}</span>
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50"><MolsanIcon name={icono} size={22} tone="ocean" /></span>
       </div>
     </div>
   );
@@ -2702,7 +2703,7 @@ function AvisoInforme({ error }) {
 
 function PanelEstadoInforme({ loading, vacio, textoVacio = "No hay registros para los filtros seleccionados." }) {
   if (loading) return <div className="px-5 py-12 text-center text-sm text-slate-500">Consultando datos reales del ERP…</div>;
-  if (vacio) return <div className="px-5 py-12 text-center text-sm text-slate-500"><div className="mb-2 text-3xl">📭</div>{textoVacio}</div>;
+  if (vacio) return <div className="px-5 py-12 text-center text-sm text-slate-500"><div className="mb-2"><MolsanIcon name="inbox" size={34} tone="ocean" /></div>{textoVacio}</div>;
   return null;
 }
 
@@ -2860,11 +2861,11 @@ function InformeFirmas() {
         </div>
       )}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        <InformeKpi icono="✍️" titulo="Firmas reales" valor={numeroInforme(resumen.total_firmas)} subtitulo="Expedientes con fecha de firma" />
-        <InformeKpi icono="💻" titulo="Videoconferencia" valor={numeroInforme(resumen.videoconferencia)} />
-        <InformeKpi icono="🏛️" titulo="Presencial" valor={numeroInforme(resumen.presencial)} />
-        <InformeKpi icono="❔" titulo="Sin clasificar" valor={numeroInforme(resumen.sin_clasificar)} />
-        <InformeKpi icono="⏱️" titulo="Media envío-firma" valor={resumen.media_dias_envio_firma == null ? "—" : `${numeroInforme(resumen.media_dias_envio_firma, 1)} días`} subtitulo={`${numeroInforme(resumen.firmas_con_tiempo_calculable)} con fechas válidas`} />
+        <InformeKpi icono="pen" titulo="Firmas reales" valor={numeroInforme(resumen.total_firmas)} subtitulo="Expedientes con fecha de firma" />
+        <InformeKpi icono="monitor" titulo="Videoconferencia" valor={numeroInforme(resumen.videoconferencia)} />
+        <InformeKpi icono="courthouse" titulo="Presencial" valor={numeroInforme(resumen.presencial)} />
+        <InformeKpi icono="help" titulo="Sin clasificar" valor={numeroInforme(resumen.sin_clasificar)} />
+        <InformeKpi icono="timer" titulo="Media envío-firma" valor={resumen.media_dias_envio_firma == null ? "—" : `${numeroInforme(resumen.media_dias_envio_firma, 1)} días`} subtitulo={`${numeroInforme(resumen.firmas_con_tiempo_calculable)} con fechas válidas`} />
       </div>
 
       <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
@@ -3060,12 +3061,12 @@ function InformeNotarios() {
       <AvisoInforme error={error} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-        <InformeKpi icono="✍️" titulo="Expedientes firmados" valor={numeroInforme(resumen.total_firmas)} subtitulo="Firmas reales en el periodo" />
-        <InformeKpi icono="🏛️" titulo="Notarios con actividad" valor={numeroInforme(resumen.total_notarios)} subtitulo="Con al menos una firma" />
-        <InformeKpi icono="💻" titulo="Videoconferencia" valor={numeroInforme(resumen.videoconferencia)} />
-        <InformeKpi icono="🤝" titulo="Presencial" valor={numeroInforme(resumen.presencial)} />
-        <InformeKpi icono="❔" titulo="Sin clasificar" valor={numeroInforme(resumen.sin_clasificar)} subtitulo="Modalidad pendiente de confirmar" />
-        <InformeKpi icono="⏱️" titulo="Media envío-firma" valor={resumen.media_dias_envio_firma == null ? "—" : `${numeroInforme(resumen.media_dias_envio_firma, 1)} días`} subtitulo={`${numeroInforme(resumen.firmas_con_tiempo_calculable)} con fechas válidas`} />
+        <InformeKpi icono="pen" titulo="Expedientes firmados" valor={numeroInforme(resumen.total_firmas)} subtitulo="Firmas reales en el periodo" />
+        <InformeKpi icono="courthouse" titulo="Notarios con actividad" valor={numeroInforme(resumen.total_notarios)} subtitulo="Con al menos una firma" />
+        <InformeKpi icono="monitor" titulo="Videoconferencia" valor={numeroInforme(resumen.videoconferencia)} />
+        <InformeKpi icono="handshake" titulo="Presencial" valor={numeroInforme(resumen.presencial)} />
+        <InformeKpi icono="help" titulo="Sin clasificar" valor={numeroInforme(resumen.sin_clasificar)} subtitulo="Modalidad pendiente de confirmar" />
+        <InformeKpi icono="timer" titulo="Media envío-firma" valor={resumen.media_dias_envio_firma == null ? "—" : `${numeroInforme(resumen.media_dias_envio_firma, 1)} días`} subtitulo={`${numeroInforme(resumen.firmas_con_tiempo_calculable)} con fechas válidas`} />
       </div>
 
       {(Number(resumen.sin_clasificar || 0) > 0 || Number(resumen.sin_notario_identificado || 0) > 0 || (Number(resumen.total_firmas || 0) > Number(resumen.firmas_con_tiempo_calculable || 0))) && (
@@ -3186,9 +3187,9 @@ function InformeSLA() {
     <section className="space-y-5">
       <div className="flex justify-end"><button type="button" onClick={() => setRecarga((v) => v + 1)} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">↻ Actualizar datos</button></div>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-        <InformeKpi icono="📁" titulo="Expedientes" valor={numeroInforme(items.length)} subtitulo="Según el grupo y la búsqueda" />
-        <InformeKpi icono="⏱️" titulo="Duración global media" valor={mediaGlobal == null ? "—" : `${numeroInforme(mediaGlobal, 1)} días`} subtitulo={`${numeroInforme(globalesDentro)} dentro de plazo de ${numeroInforme(globalesEvaluables.length)} evaluables`} />
-        <InformeKpi icono="⚠️" titulo="Actividades fuera de plazo" valor={numeroInforme(fuera)} subtitulo={cumplimiento == null ? "Sin datos suficientes para calcular cumplimiento" : `${cumplimiento}% de cumplimiento en actividades con objetivo`} />
+        <InformeKpi icono="folder" titulo="Expedientes" valor={numeroInforme(items.length)} subtitulo="Según el grupo y la búsqueda" />
+        <InformeKpi icono="timer" titulo="Duración global media" valor={mediaGlobal == null ? "—" : `${numeroInforme(mediaGlobal, 1)} días`} subtitulo={`${numeroInforme(globalesDentro)} dentro de plazo de ${numeroInforme(globalesEvaluables.length)} evaluables`} />
+        <InformeKpi icono="alert" titulo="Actividades fuera de plazo" valor={numeroInforme(fuera)} subtitulo={cumplimiento == null ? "Sin datos suficientes para calcular cumplimiento" : `${cumplimiento}% de cumplimiento en actividades con objetivo`} />
       </div>
       <section className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-sm backdrop-blur-xl">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_minmax(220px,0.5fr)]">
@@ -3384,9 +3385,9 @@ function InformeFacturacion() {
   const euros = (v) => Number(v || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
   const campo = "block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
   const grupos = [
-    { key: "con_provision", titulo: "Cancelación con provisión", descripcion: "TIPOOPERACION: CANCELACIÓN / CANCELACIÓN CON PROVISIÓN", icono: "🏦", acento: "emerald" },
-    { key: "sin_provision", titulo: "Cancelación sin provisión", descripcion: "TIPOOPERACION: CANCELACIÓN SIN PROVISIÓN", icono: "📄", acento: "amber" },
-    { key: "otros", titulo: "Otros tipos de operación", descripcion: "Filas importadas cuyo TIPOOPERACION no es una cancelación", icono: "📋", acento: "blue" },
+    { key: "con_provision", titulo: "Cancelación con provisión", descripcion: "TIPOOPERACION: CANCELACIÓN / CANCELACIÓN CON PROVISIÓN", icono: "bank", acento: "emerald" },
+    { key: "sin_provision", titulo: "Cancelación sin provisión", descripcion: "TIPOOPERACION: CANCELACIÓN SIN PROVISIÓN", icono: "file", acento: "amber" },
+    { key: "otros", titulo: "Otros tipos de operación", descripcion: "Filas importadas cuyo TIPOOPERACION no es una cancelación", icono: "clipboardList", acento: "blue" },
   ];
   const renderTarjetas = (grupo) => {
     const r = resumen(grupo.key);
@@ -3398,10 +3399,10 @@ function InformeFacturacion() {
           <div className="ml-auto text-right"><div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Registros del periodo</div><div className="text-2xl font-extrabold text-slate-800">{loadingTarjetas ? "…" : numeroInforme(r.registros)}</div></div>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <InformeKpi titulo="Gastos Post Firma" valor={loadingTarjetas ? "…" : euros(r.total_gasto)} subtitulo={numeroInforme(r.registros) + " registros"} icono="🧾" />
-          <InformeKpi titulo="Base imponible" valor={loadingTarjetas ? "…" : euros(r.base_impuesto)} subtitulo="Base asociada al impuesto" icono="📑" />
-          <InformeKpi titulo="Base de retención" valor={loadingTarjetas ? "…" : euros(r.base_retencion)} subtitulo="Base sujeta a retención" icono="🧮" />
-          <InformeKpi titulo="Impuestos" valor={loadingTarjetas ? "…" : euros(r.total_impuesto)} subtitulo="Importe total de impuesto" icono="💶" />
+          <InformeKpi titulo="Gastos Post Firma" valor={loadingTarjetas ? "…" : euros(r.total_gasto)} subtitulo={numeroInforme(r.registros) + " registros"} icono="receipt" />
+          <InformeKpi titulo="Base imponible" valor={loadingTarjetas ? "…" : euros(r.base_impuesto)} subtitulo="Base asociada al impuesto" icono="files" />
+          <InformeKpi titulo="Base de retención" valor={loadingTarjetas ? "…" : euros(r.base_retencion)} subtitulo="Base sujeta a retención" icono="calculator" />
+          <InformeKpi titulo="Impuestos" valor={loadingTarjetas ? "…" : euros(r.total_impuesto)} subtitulo="Importe total de impuesto" icono="euro" />
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="rounded-2xl border border-emerald-100 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Cobrado</div><div className="mt-1 text-xl font-bold text-emerald-700">{loadingTarjetas ? "…" : euros(r.total_cobrado)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.cobrado)} registros</div></div>
@@ -3720,7 +3721,7 @@ export default function Informes() {
               onClick={() => navigate(`/informes/${apartado.key}`)}
               className="group flex min-h-[150px] items-start gap-4 rounded-2xl border border-white/80 bg-white/75 p-5 text-left shadow-[0_8px_25px_rgba(55,85,120,0.07)] backdrop-blur-xl transition-all hover:-translate-y-1 hover:border-blue-300 hover:shadow-[0_14px_35px_rgba(55,85,120,0.13)] focus:outline-none focus:ring-2 focus:ring-blue-300"
             >
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-2xl transition group-hover:bg-blue-100">{apartado.icono}</span>
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 transition group-hover:bg-blue-100"><MolsanIcon name={apartado.icono} size={28} tone="ocean" /></span>
               <span className="min-w-0 flex-1">
                 <span className="block text-base font-bold text-slate-800">{apartado.titulo}</span>
                 <span className="mt-2 block text-sm leading-relaxed text-slate-500">{apartado.descripcion}</span>
@@ -3733,7 +3734,7 @@ export default function Informes() {
         renderInforme()
       ) : (
         <section className="rounded-2xl border border-white/80 bg-white/75 p-8 text-center shadow-sm">
-          <div className="text-3xl">📊</div>
+          <div><MolsanIcon name="chart" size={34} tone="ocean" /></div>
           <h2 className="mt-3 text-lg font-bold text-slate-800">Informe no encontrado</h2>
           <p className="mt-1 text-sm text-slate-500">El apartado solicitado no existe.</p>
           <button type="button" onClick={() => navigate("/informes")} className="mt-4 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">Ver los cinco informes</button>
