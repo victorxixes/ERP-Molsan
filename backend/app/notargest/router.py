@@ -1595,7 +1595,6 @@ async def subir_factura_notarial(expediente_id: str, archivo: UploadFile = File(
     referencia_anterior = anterior.nombre_guardado if anterior else None
     try:
         if anterior:
-            ruta_anterior = (ROOT / anterior.nombre_guardado).resolve()
             anterior.nombre_original = nombre
             anterior.nombre_guardado = referencia_guardada
             anterior.tipo_mime = "application/pdf"
