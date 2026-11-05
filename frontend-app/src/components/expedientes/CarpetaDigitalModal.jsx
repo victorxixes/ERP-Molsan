@@ -240,7 +240,6 @@ export default function CarpetaDigitalModal({
   };
 
   const bloqueActividad = useMemo(() => resolverBloque(actividadId), [actividadId]);
-  const usarFormatoResumenSede = !["documentacion-previa", "control-calidad"].includes(normalizar(actividadId)) && !normalizar(actividadId).includes("auditoria");
   const esCancelacionSinProvision = normalizar(tipoOperacion) === "cancelacion-sin-provision";
   const bloquesVisibles = useMemo(() => {
     if (!modoActividad) return BLOQUES;
@@ -1063,10 +1062,7 @@ export default function CarpetaDigitalModal({
                           <div className="grid min-w-0 grid-cols-1 gap-1.5 px-2.5 py-2 sm:grid-cols-2 xl:grid-cols-1">
 
                             {actividadId === "facturacion-cierre" && (
-                              <div className="min-w-0 px-2 py-2">
-                                <p>Fecha de cierre</p>
-                                <p className="break-words">{(() => { const fecha = datosPanelActividad?.fecha_fin_actividad || expedienteDatos?.fecha_fin_actividad || datosPanelActividad?.fecha_liquidacion || expedienteDatos?.fecha_liquidacion; if (!fecha) return "Pendiente de cierre"; const s = String(fecha).slice(0, 10); const partes = s.split("-"); return partes.length === 3 ? `${partes[2]}/${partes[1]}/${partes[0]}` : s; })()}</p>
-                              </div>
+                              <MolsanDetailField label="Fecha de cierre" value={(() => { const fecha = datosPanelActividad?.fecha_fin_actividad || expedienteDatos?.fecha_fin_actividad || datosPanelActividad?.fecha_liquidacion || expedienteDatos?.fecha_liquidacion; if (!fecha) return "Pendiente de cierre"; const valorFecha = String(fecha).slice(0, 10); const partes = valorFecha.split("-"); return partes.length === 3 ? partes[2] + "/" + partes[1] + "/" + partes[0] : valorFecha; })()} />
                             )}
                             {camposPanelActividad
                               .filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key))
@@ -1223,18 +1219,7 @@ export default function CarpetaDigitalModal({
                         })}
                         {camposPanelActividad.length === 0 && <p>Los campos específicos de esta actividad aparecerán aquí.</p>}
                          {actividadId === "facturacion-cierre" && (
-                           <div className="mt-2 min-w-0 px-3 py-2">
-                             <p>Fecha de cierre (fecha de liquidación)</p>
-                             <p className="break-words">
-                               {(() => {
-                                 const fecha = datosPanelActividad?.fecha_fin_actividad || expedienteDatos?.fecha_fin_actividad || datosPanelActividad?.fecha_liquidacion || expedienteDatos?.fecha_liquidacion;
-                                 if (!fecha) return "—";
-                                 const valorFecha = String(fecha).slice(0, 10);
-                                 const partes = valorFecha.split("-");
-                                 return partes.length === 3 ? `${partes[2]}/${partes[1]}/${partes[0]}` : valorFecha;
-                               })()}
-                             </p>
-                           </div>
+                           <div className="mt-2 min-w-0"><MolsanDetailField label="Fecha de cierre (fecha de liquidación)" value={(() => { const fecha = datosPanelActividad?.fecha_fin_actividad || expedienteDatos?.fecha_fin_actividad || datosPanelActividad?.fecha_liquidacion || expedienteDatos?.fecha_liquidacion; if (!fecha) return "—"; const valorFecha = String(fecha).slice(0, 10); const partes = valorFecha.split("-"); return partes.length === 3 ? partes[2] + "/" + partes[1] + "/" + partes[0] : valorFecha; })()} /></div>
                          )}
                       </div>
                     )
