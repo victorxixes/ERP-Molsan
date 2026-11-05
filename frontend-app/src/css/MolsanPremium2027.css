@@ -991,11 +991,11 @@
   gap: 12px;
   min-width: 0;
   padding: 16px 20px;
-  color: var(--molsan-primary, #064675);
+  color:#FFFFFF;
   border: 0;
-  border-bottom: 1px solid var(--molsan-border, #D8E4EC);
+  border-bottom:1px solid rgba(255,255,255,.16);
   border-radius: 20px 20px 0 0;
-  background: var(--molsan-surface-soft, #F2F7FB);
+  background:radial-gradient(circle at 86% 18%, rgba(116,199,219,.18), transparent 27%), linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
   box-shadow: none;
 }
 .molsan-modal-header::after { display: none; }
@@ -1082,10 +1082,10 @@
   gap: 12px;
   min-width: 0;
   padding: 16px 20px;
-  color: #064675;
-  background: #F2F7FB;
+  color:#FFFFFF;
+  background:radial-gradient(circle at 86% 18%, rgba(116,199,219,.18), transparent 27%), linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
   border: 0;
-  border-bottom: 1px solid #D8E4EC;
+  border-bottom:1px solid rgba(255,255,255,.16);
   box-shadow: none;
   margin-bottom: 0;
 }
