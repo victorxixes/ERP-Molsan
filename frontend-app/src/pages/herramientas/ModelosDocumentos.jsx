@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useRef, useState } from "react";
 import { renderAsync } from "docx-preview";
 import axios from "../../api/axios";
@@ -33,10 +34,7 @@ function LiquidacionPreview({ datosMolsan, logoCliente, expediente, gastos = [],
   return <div className="mx-auto w-full max-w-[760px] bg-slate-100 p-3 sm:p-5">
     <article className="relative overflow-hidden bg-white p-4 text-slate-800 shadow-[0_12px_35px_rgba(15,23,42,.12)] sm:p-6">
       <div className="pointer-events-none absolute right-0 top-0 h-32 w-32 rounded-bl-full bg-sky-50/80" />
-      <header className="relative flex flex-wrap items-center justify-between gap-3 border-b-2 border-[#1e5794] pb-3">
-        <div className="flex min-w-0 items-center gap-3">{logoCliente ? <img src={logoCliente} alt="Logotipo del cliente" className="max-h-14 max-w-36 object-contain" /> : <div className="flex h-12 w-36 items-center justify-center rounded-lg border border-dashed border-slate-300 px-2 text-center text-[8px] text-slate-400">Logotipo del cliente</div>}<div className="border-l border-sky-200 pl-3"><div className="text-lg font-black tracking-wide text-[#123e70]">{datosMolsan.razon_social || "Nombre de la gestoría"}</div><div className="text-[8px] font-semibold text-slate-500">{datosMolsan.nif ? `CIF: ${datosMolsan.nif}` : "CIF: configurar en Datos Molsan"}</div></div></div>
-        <div className="text-right"><div className="text-[8px] font-bold uppercase tracking-[.18em] text-[#1e5794]">MOLSAN PREMIUM 2027</div><div className="mt-1 text-[8px] text-slate-500">Fecha de emisión: {fechaEmision || "—"}</div></div>
-      </header>
+      <MolsanPageHeader mark="UT" title="Modelos de documentos" description="Diseño corporativo unificado. Las plantillas no alteran tarifas, cálculos, pagos ni numeración oficial." />
       <h3 className="relative mt-4 text-xl font-extrabold leading-tight text-[#123e70] sm:text-2xl">Hoja de liquidación de expediente</h3><p className="mt-1 text-sm font-semibold text-[#2872b8]">Cancelación</p>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <Section title="Datos de la provisión"><Field label="Titular / Nombre" value={titular || "No consta en facturación"} /><Field label="DNI / NIF" value={nifTitular || "No consta en facturación"} /><Field label="N.º expediente" value={get("id_expediente", "numero_expediente") || "—"} /><Field label="Contrato" value={get("contrato", "numero_contrato") || "No disponible en el expediente"} /><Field label="Oficina CaixaBank" value={get("oficina", "oficina_caixabank", "oficinaAlta") || "No disponible en el expediente"} /></Section>
