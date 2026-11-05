@@ -1415,7 +1415,7 @@ export default function SeguridadRoles() {
           >
 
             <div className="text-3xl">
-              🛡️
+              <MolsanIcon name="shield" size={18} tone="ocean" bare />
             </div>
 
             <p
