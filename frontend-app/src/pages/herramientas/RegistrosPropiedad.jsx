@@ -6,6 +6,7 @@ import {
 } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 /**
  * ============================================================
@@ -1665,110 +1666,12 @@ export default function RegistrosPropiedad() {
           CABECERA
       ===================================================== */}
 
-      <div
-        className="
-          relative
-          overflow-hidden
-          rounded-[24px]
-          border
-          border-slate-200/80
-          bg-white/80
-          p-6 sm:p-7
-          shadow-[0_18px_50px_rgba(15,23,42,0.08)]
-          backdrop-blur-xl
-        "
-      >
-
-        <div
-          className="
-            absolute
-            inset-x-0
-            top-0
-            h-px
-            bg-gradient-to-r
-            from-transparent
-            via-blue-400/60
-            to-transparent
-          "
-        />
-
-
-        <div
-          className="
-            relative
-            flex
-            flex-col
-            gap-5
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-          "
-        >
-
-          <div
-            className="
-              flex
-              items-center
-              gap-4
-            "
-          >
-
-            <div
-              className="
-                flex
-                h-14
-                w-14
-                shrink-0
-                items-center
-                justify-center
-                rounded-2xl
-                border
-                border-indigo-100
-                bg-indigo-50
-                text-2xl
-                shadow-sm
-              "
-            >
-              🏛️
-            </div>
-
-
-            <div>
-
-              <h1
-                className="
-                  text-2xl
-                  font-bold
-                  tracking-tight
-                  text-slate-800
-                  sm:text-3xl
-                "
-              >
-                Registros de la Propiedad
-              </h1>
-
-
-              <p
-                className="
-                  mt-1
-                  text-sm
-                  text-slate-500
-                "
-              >
-                Maestro de registros, registradores,
-                oficinas y datos de contacto.
-              </p>
-
-            </div>
-
-          </div>
-
-
-          {/* =================================================
-              BOTONES
-          ================================================= */}
-
-          <div
+      <MolsanPageHeader
+          mark="REG"
+          title="Registros de la Propiedad"
+          description="Maestro de registros, registradores, oficinas y datos de contacto."
+          className="registros-propiedad-page-header"
+          actions={<><div
             className="
               flex
               flex-col
@@ -1847,11 +1750,8 @@ export default function RegistrosPropiedad() {
 
             </button>
 
-          </div>
-
-        </div>
-
-      </div>
+          </div></>}
+        />
 
 
       {/* =====================================================

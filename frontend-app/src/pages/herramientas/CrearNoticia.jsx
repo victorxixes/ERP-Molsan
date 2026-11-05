@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useState, useCallback, useMemo } from "react";
 import { useUtilidades } from "../../hooks/useUtilidades";
 
@@ -58,59 +59,7 @@ export default function CrearNoticia() {
           CABECERA
       ===================================================== */}
 
-      <div
-        className="
-          relative overflow-hidden
-          rounded-[24px]
-          border border-slate-200/80
-          bg-white/80
-          backdrop-blur-xl
-          shadow-[0_18px_50px_rgba(15,23,42,0.08)]
-          p-6 sm:p-7
-        "
-      >
-
-        <div
-          className="
-            absolute inset-x-0 top-0 h-px
-            bg-gradient-to-r
-            from-transparent
-            via-purple-400/60
-            to-transparent
-          "
-        />
-
-        <div className="flex items-center gap-4">
-
-          <div
-            className="
-              flex h-12 w-12
-              items-center justify-center
-              rounded-2xl
-              bg-purple-50
-              border border-purple-100
-              text-2xl
-            "
-          >
-            📰
-          </div>
-
-          <div>
-
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">
-              Crear noticia
-            </h1>
-
-            <p className="mt-1 text-sm text-slate-500">
-              Publica información para todos los usuarios de la intranet.
-            </p>
-
-          </div>
-
-        </div>
-
-      </div>
-
+      <MolsanPageHeader mark="NT" title="Crear noticia" description="Publica información para todos los usuarios de la intranet." />
 
       {/* =====================================================
           FORMULARIO

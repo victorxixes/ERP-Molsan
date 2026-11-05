@@ -1499,6 +1499,57 @@ body {
   margin-inline: auto;
   padding: 24px clamp(12px, 1.6vw, 28px);
 }
+/*
+ * Una sola fuente para el margen exterior de las páginas del ERP.
+ * .erp-main-inner aporta el espacio de página; las raíces de cada módulo
+ * no deben volver a sumar p-4/p-6/p-8 y desplazar cabeceras y contenido.
+ * Se excluye expresamente el selector Espacios de trabajo, que conserva
+ * su composición visual propia.
+ */
+.erp-route-content > :is(
+  .erp-page,
+  .molsan-page,
+  .cg-page,
+  .cg-unified-workspace,
+  .expedientes-page,
+  .expedientes-listado-premium,
+  .ficha-expediente-premium,
+  .agenda-premium-page,
+  .ctn-listado-page,
+  .ctn-workspace-premium,
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .herramientas-subpagina-premium,
+  .herramienta-operativa-premium,
+  .subir-documento-premium,
+  .catalogos-maestros-premium,
+  .catalogos-maestros-page,
+  .honorarios-gestoria-premium,
+  .empleados-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .empleado-perfil-premium,
+  .maestros-premium-page,
+  .logs-premium-page,
+  .seguridad-premium-page,
+  .seguridad-subpagina-premium,
+  .notificaciones-premium-page,
+  .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium,
+  .informes-premium-page,
+  .mensajes-premium-page,
+  .molsan-intranet-page,
+  .provisiones-fondos-premium,
+  .provisiones-fondos-page,
+  .fichajes-premium-page,
+  .control-apoderados-page,
+  .herramientas-home-premium,
+  .crear-noticia-premium
+) {
+  padding: 0 !important;
+}
+
 
 :where(
   .cg-page, .cg-unified-workspace, .expedientes-page,

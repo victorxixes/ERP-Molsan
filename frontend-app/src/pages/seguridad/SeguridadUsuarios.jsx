@@ -7,6 +7,7 @@ import ModalEmpleado from "../../components/empleados/ModalEmpleado.jsx";
 import SeguridadModulos from "./SeguridadModulos.jsx";
 import SeguridadPermisos from "./SeguridadPermisos.jsx";
 import "./SeguridadSubpaginasPremium.css";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 export default function SeguridadUsuarios() {
   const {
@@ -311,30 +312,13 @@ export default function SeguridadUsuarios() {
           CABECERA
       ====================================================== */}
 
-      <div className="erp-page-header">
-
-        <div>
-          <div className="erp-eyebrow">
-            SEGURIDAD
-          </div>
-
-          <h1 className="erp-page-title">
-            Usuarios y seguridad
-          </h1>
-
-          <p className="erp-page-description">
-            Gestión de usuarios, permisos, estado de acceso,
-            auditoría y actividad de seguridad.
-          </p>
-        </div>
-
-        <div className="erp-page-header-status">
-          <span className="erp-badge erp-badge-primary">
-            Centro de Seguridad
-          </span>
-        </div>
-
-      </div>
+      <MolsanPageHeader
+        mark="SEG"
+        title="Usuarios y seguridad"
+        description="Gestión de usuarios, permisos, estado de acceso, auditoría y actividad de seguridad."
+        className="seguridad-usuarios-page-header"
+        actions={<span className="erp-badge erp-badge-primary">Centro de Seguridad</span>}
+      />
 
       {/* ======================================================
           CONTENIDO PRINCIPAL

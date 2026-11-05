@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import {
   useEffect,
   useState,
@@ -179,155 +180,20 @@ export default function EmpleadoFicha({
           CABECERA
       =================================================== */}
 
-      <section className="
-        erp-card
-        max-w-[1700px]
-        mx-auto
-        p-5
-      ">
-
-        <div className="
-          flex
-          flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-5
-        ">
-
-          <div className="
-            flex
-            items-center
-            gap-4
-          ">
-
-            <div className="
-              w-16
-              h-16
-              rounded-2xl
-              overflow-hidden
-              border
-              border-[var(--erp-border)]
-              bg-[var(--erp-surface-soft)]
-              flex
-              items-center
-              justify-center
-              shrink-0
-            ">
-
-              <img
-                src={
-                  empleado.foto
-                    ? `${API_BASE}${empleado.foto}`
-                    : "/no-foto.png"
-                }
-                alt="Foto empleado"
-                className="
-                  w-full
-                  h-full
-                  object-cover
-                "
-              />
-
-            </div>
-
-
-            <div>
-
-              <div className="
-                text-sm
-                text-[var(--erp-text-soft)]
-              ">
-                Ficha de empleado
-              </div>
-
-              <h1 className="
-                text-2xl
-                font-semibold
-                text-[var(--erp-text)]
-              ">
-                {empleado.nombre}{" "}
-                {empleado.apellidos}
-              </h1>
-
-              <div className="
-                flex
-                flex-wrap
-                items-center
-                gap-2
-                mt-1
-              ">
-
-                <span className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                ">
-                  ID #{empleado.id}
-                </span>
-
-                <span className="
-                  text-[var(--erp-text-soft)]
-                ">
-                  ·
-                </span>
-
-                <span className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                ">
-                  {empleado.usuario || "Sin usuario"}
-                </span>
-
-                <span
-                  className={`
-                    px-2.5
-                    py-1
-                    rounded-lg
-                    text-xs
-                    font-medium
-                    ${
-                      empleado.activo
-                        ? "bg-green-50 text-green-700 border border-green-200"
-                        : "bg-red-50 text-red-700 border border-red-200"
-                    }
-                  `}
-                >
-                  {empleado.activo
-                    ? "Activo"
-                    : "Baja"}
-                </span>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <button
-            type="button"
-            onClick={() =>
-              setOpenModal(true)
-            }
-            className="
-              inline-flex
-              items-center
-              justify-center
-              px-4
-              py-2.5
-              rounded-xl
-              bg-[var(--erp-primary)]
-              hover:bg-[var(--erp-primary-dark)]
-              text-white
-              transition
-            "
-          >
-            Editar ficha
-          </button>
-
-        </div>
-
-      </section>
+      <MolsanPageHeader
+        mark={<img src={empleado.foto ? `${API_BASE}${empleado.foto}` : "/no-foto.png"} alt="" className="h-full w-full rounded-lg object-cover" />}
+        title={`${empleado.nombre || ""} ${empleado.apellidos || ""}`.trim()}
+        description={`Ficha de empleado · ID #${empleado.id} · ${empleado.usuario || "Sin usuario"}`}
+        className="empleado-ficha-page-header"
+        actions={
+          <>
+            <span className={`inline-flex items-center rounded-xl border px-3 py-2 text-xs font-semibold ${empleado.activo ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-red-200 bg-red-50 text-red-700"}`}>
+              {empleado.activo ? "Activo" : "Baja"}
+            </span>
+            <button type="button" onClick={() => setOpenModal(true)} className="molsan-btn molsan-btn--primary">Editar ficha</button>
+          </>
+        }
+      />
 
 
       {/* ===================================================

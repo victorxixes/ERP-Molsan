@@ -1,4 +1,5 @@
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -723,19 +724,12 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       {accesoERP && esAdminNotarGest && (
         <section className="ng-admin-notarias molsan-professional-shell">
           {!tokenAdminNotaria ? <>
-            <header className="ng-hero ng-hero-notargest ng-admin-notarias-hero molsan-page-header">
-              <div className="ng-hero-identidad molsan-page-header__identity">
-                <div className="ng-hero-marca molsan-page-header__mark" aria-label="NotarGest"><MolsanIcon name="courthouse" size={34} tone="ocean" /></div>
-                <div>
-                  <div className="ng-hero-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
-                  <h1 className="molsan-page-header__title">NotarGest</h1>
-                  <p className="molsan-page-header__description">Visión global del trabajo notarial y detalle operativo de cada notaría habilitada.</p>
-                </div>
-              </div>
-              <div className="ng-hero-acciones molsan-page-header__actions">
-                <button type="button" className="molsan-btn molsan-btn--secondary" onClick={() => navigate("/modulos")}><MolsanIcon name="dashboard" size={22} tone="ocean" /> Ir a módulos</button>
-              </div>
-            </header>
+            <MolsanPageHeader
+              mark="NG"
+              title="NotarGest"
+              description="Visión global del trabajo notarial y detalle operativo de cada notaría habilitada."
+              className="ng-hero ng-hero-notargest ng-admin-notarias-hero"
+            />
             {cargandoSelectorNotaria && <p className="ng-mensaje">Calculando pendientes de las notarías…</p>}
             {!cargandoSelectorNotaria && notariasSeleccionables.length === 0 && <div className="ng-admin-vacio"><strong>No hay notarías habilitadas</strong><p>Activa el acceso NotarGest desde la ficha CTN de cada notaría.</p></div>}
             <section className="ng-admin-global-resumen" aria-label="Resumen global de todas las notarías">
@@ -763,6 +757,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                 ))}
               </div>
             </section>
+            <section className="ng-admin-individual-panel">
             <header className="ng-admin-individual-titulo" aria-label="Detalle por notaría"><span className="ng-admin-global-eyebrow">DETALLE POR NOTARÍA</span><h2>Situación individual</h2><p>Cada ficha muestra los contadores y las incidencias de esa notaría.</p></header>
             <div className="ng-admin-notarias-grid">
               {notariasSeleccionables.map(item => {
@@ -826,6 +821,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                 </article>;
               })}
             </div>
+            </section>
           </> : <div className="ng-admin-notaria-activa"><div><span className="ng-kicker">NOTARÍA SELECCIONADA</span><h2>{notariasSeleccionables.find(x=>String(x.id)===String(notariaAdminSeleccionada))?.nombre || notario?.nombre || "Notaría"}</h2><p>Estás gestionando esta notaría como administrador.</p></div><button type="button" className="ng-boton-secundario" onClick={()=>seleccionarNotariaAdmin("")}><MolsanIcon name="arrowLeft" size={18} tone="ocean" /> Volver al control de notarías</button></div>}
         </section>
       )}
@@ -833,20 +829,18 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="erp-page molsan-page molsan-professional-shell w-full notargest-workspace-premium">
             <div className="notargest ng-content">
-    <header className="ng-hero ng-hero-notargest molsan-page-header">
-      <div className="ng-hero-identidad molsan-page-header__identity">
-        <div className="ng-hero-marca molsan-page-header__mark" aria-label="NotarGest"><MolsanIcon name="courthouse" size={34} tone="ocean" /></div>
-        <div>
-          <div className="ng-hero-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
-          <h1 className="molsan-page-header__title">NotarGest</h1>
-          <p className="molsan-page-header__description">Centro de gestión notarial, firmas y seguimiento registral.</p>
-        </div>
-      </div>
-      <div className="ng-hero-acciones molsan-page-header__actions">
-        {vista !== "inicio" && <button type="button" onClick={volverVistaAnterior} className="ng-boton-secundario"><MolsanIcon name="arrowLeft" size={20} tone="ocean" /> {vista === "detalle" ? "Volver a la vista anterior" : "Volver al inicio"}</button>}
-        {accesoERP && <button type="button" onClick={() => navigate("/modulos")} className="molsan-btn molsan-btn--secondary inline-flex items-center gap-2"><MolsanIcon name="dashboard" size={22} tone="ocean" /> Ir a módulos</button>}
-      </div>
-    </header>
+    <MolsanPageHeader
+      mark="NG"
+      title="NotarGest"
+      description="Centro de gestión notarial, firmas y seguimiento registral."
+      className="ng-hero ng-hero-notargest"
+      actions={
+        <>
+          {vista !== "inicio" && <button type="button" onClick={volverVistaAnterior} className="ng-boton-secundario"><MolsanIcon name="arrowLeft" size={20} tone="ocean" /> {vista === "detalle" ? "Volver a la vista anterior" : "Volver al inicio"}</button>}
+          
+        </>
+      }
+    />
 
     {error && <div className="ng-error" role="alert">{error}</div>}{mensaje && <div className="ng-success">{mensaje}</div>}
     {vista === "inicio" && <section className="ng-dashboard-analitica">

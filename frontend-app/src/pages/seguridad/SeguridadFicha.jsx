@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import {
   useCallback,
   useEffect,
@@ -1577,351 +1578,54 @@ const permisosGlobales =
       className="seguridad-subpagina-premium seguridad-ficha-premium w-full space-y-4"
     >
 
-      {/* ======================================================
-          CABECERA
-      ====================================================== */}
+      <MolsanPageHeader
+        mark={
+          <img
+            src={typeof empleado.foto === "string" && empleado.foto.trim() !== "" && empleado.foto !== "-" ? empleado.foto : "/no-foto.png"}
+            alt=""
+            onError={(event) => { event.currentTarget.src = "/no-foto.png"; }}
+            className="h-full w-full rounded-lg object-cover"
+          />
+        }
+        title={`${textoSeguro(empleado.nombre)}${empleado.apellidos ? ` ${empleado.apellidos}` : ""}`}
+        description={`Centro de seguridad · @${empleado.usuario || "-"} · ID #${empleadoIdSeguro}`}
+        actions={
+          <>
+            <Chip tone="purple">{nombreRol}</Chip>
+            <Chip tone={empleado.activo ? "success" : "danger"}>{empleado.activo ? "Cuenta activa" : "Cuenta bloqueada"}</Chip>
+          </>
+        }
+      />
 
-      <section
-        className="
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-5
-          shadow-sm
-        "
-      >
+      <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {[
+          ["Módulos", modulosVisibles.length],
+          ["Permisos", totalPermisos],
+          ["Auditoría", auditoriaFiltrada.length],
+          ["Logs", logsFiltrados.length],
+        ].map(([label, value]) => (
+          <article key={label} className="rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-4 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--erp-text-soft)]">{label}</p>
+            <p className="mt-1 text-2xl font-bold text-[var(--erp-primary)]">{value}</p>
+          </article>
+        ))}
+      </section>
 
-        <div
-          className="
-            flex
-            flex-col
-            gap-5
-            xl:flex-row
-            xl:items-center
-            xl:justify-between
-          "
+      <section className="flex flex-wrap items-center gap-2 rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-4">
+        <button
+          type="button"
+          onClick={cambiarVisibilidadEmpleado}
+          disabled={guardandoVisibilidad}
+          className={`molsan-btn ${empleado.visible_en_listado === false ? "molsan-btn--primary" : "molsan-btn--secondary"}`}
         >
-
-          <div
-            className="
-              flex
-              min-w-0
-              items-center
-              gap-4
-            "
-          >
-
-            <div
-              className="
-                relative
-                shrink-0
-              "
-            >
-
-              <img
-                src={
-                  typeof empleado.foto === "string" &&
-                  empleado.foto.trim() !== "" &&
-                  empleado.foto !== "-"
-                    ? empleado.foto
-                    : "/no-foto.png"
-                }
-                alt="Foto del empleado"
-                onError={(event) => {
-                  event.currentTarget.src =
-                    "/no-foto.png";
-                }}
-                className="
-                  h-20
-                  w-20
-                  rounded-2xl
-                  border
-                  border-[var(--erp-border)]
-                  bg-[var(--erp-bg)]
-                  object-cover
-                  shadow-sm
-                "
-              />
-
-              <span
-                className={`
-                  absolute
-                  -bottom-2
-                  -right-2
-                  rounded-full
-                  border-2
-                  border-[var(--erp-surface)]
-                  px-2
-                  py-0.5
-                  text-[9px]
-                  font-bold
-                  ${
-                    empleado.activo
-                      ? "bg-emerald-500 text-white"
-                      : "bg-red-500 text-white"
-                  }
-                `}
-              >
-                {empleado.activo
-                  ? "ACTIVO"
-                  : "BLOQUEADO"}
-              </span>
-
-            </div>
-
-
-            <div className="min-w-0">
-
-              <p
-                className="
-                  text-[11px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.14em]
-                  text-[var(--erp-primary)]
-                "
-              >
-                Centro de seguridad
-              </p>
-
-              <h1
-                className="
-                  mt-1
-                  truncate
-                  text-2xl
-                  font-bold
-                  tracking-tight
-                  text-[var(--erp-text)]
-                "
-              >
-                {textoSeguro(
-                  empleado.nombre
-                )}
-
-                {empleado.apellidos
-                  ? ` ${empleado.apellidos}`
-                  : ""}
-              </h1>
-
-              <p
-                className="
-                  mt-0.5
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                @{empleado.usuario || "-"}
-              </p>
-
-              <div
-                className="
-                  mt-2
-                  flex
-                  flex-wrap
-                  gap-2
-                "
-              >
-
-                <Chip tone="primary">
-                  ID #{empleadoIdSeguro}
-                </Chip>
-
-                <Chip tone="purple">
-                  {nombreRol}
-                </Chip>
-
-                <Chip
-                  tone={
-                    empleado.activo
-                      ? "success"
-                      : "danger"
-                  }
-                >
-                  {empleado.activo
-                    ? "Cuenta activa"
-                    : "Cuenta bloqueada"}
-                </Chip>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <div
-            className="
-              grid
-              grid-cols-2
-              gap-2
-              sm:grid-cols-4
-              xl:w-[520px]
-            "
-          >
-
-            <div
-              className="
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-bg)]
-                p-3
-              "
-            >
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--erp-text-soft)]">
-                Módulos
-              </p>
-
-              <p className="mt-1 text-xl font-bold text-[var(--erp-text)]">
-                {modulosVisibles.length}
-              </p>
-            </div>
-
-
-            <div
-              className="
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-bg)]
-                p-3
-              "
-            >
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--erp-text-soft)]">
-                Permisos
-              </p>
-
-              <p className="mt-1 text-xl font-bold text-[var(--erp-text)]">
-                {totalPermisos}
-              </p>
-            </div>
-
-
-            <div
-              className="
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-bg)]
-                p-3
-              "
-            >
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--erp-text-soft)]">
-                Auditoría
-              </p>
-
-              <p className="mt-1 text-xl font-bold text-[var(--erp-text)]">
-                {auditoriaFiltrada.length}
-              </p>
-            </div>
-
-
-            <div
-              className="
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-bg)]
-                p-3
-              "
-            >
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--erp-text-soft)]">
-                Logs
-              </p>
-
-              <p className="mt-1 text-xl font-bold text-[var(--erp-text)]">
-                {logsFiltrados.length}
-              </p>
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div
-          className="
-            mt-5
-            flex
-            flex-wrap
-            gap-2
-            border-t
-            border-[var(--erp-border)]
-            pt-4
-          "
-        >
-
-          <button
-            type="button"
-            onClick={cambiarVisibilidadEmpleado}
-            disabled={guardandoVisibilidad}
-            className={`rounded-xl border px-4 py-2.5 text-sm font-semibold transition disabled:cursor-wait disabled:opacity-60 ${empleado.visible_en_listado === false ? "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100" : "border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100"}`}
-          >
-            {guardandoVisibilidad
-              ? "Guardando…"
-              : empleado.visible_en_listado === false
-                ? "👁️ Mostrar en Empleados"
-                : "🙈 Ocultar de Empleados"}
-          </button>
-
-          {empleado.activo ? (
-
-            <button
-              type="button"
-              onClick={() =>
-                bloquear(
-                  empleadoIdSeguro
-                )
-              }
-              className="
-                rounded-xl
-                border
-                border-red-200
-                bg-red-50
-                px-4
-                py-2.5
-                text-sm
-                font-semibold
-                text-red-700
-                hover:bg-red-100
-              "
-            >
-              🔒 Bloquear usuario
-            </button>
-
-          ) : (
-
-            <button
-              type="button"
-              onClick={() =>
-                desbloquear(
-                  empleadoIdSeguro
-                )
-              }
-              className="
-                rounded-xl
-                border
-                border-emerald-200
-                bg-emerald-50
-                px-4
-                py-2.5
-                text-sm
-                font-semibold
-                text-emerald-700
-                hover:bg-emerald-100
-              "
-            >
-              🔓 Desbloquear usuario
-            </button>
-
-          )}
-
-          {mensajeVisibilidad && (
-            <p className="mt-2 w-full text-sm font-medium text-[var(--erp-text-soft)]" role="status">{mensajeVisibilidad}</p>
-          )}
-        </div>
-
+          {guardandoVisibilidad ? "Guardando…" : empleado.visible_en_listado === false ? "Mostrar en Empleados" : "Ocultar de Empleados"}
+        </button>
+        {empleado.activo ? (
+          <button type="button" onClick={() => bloquear(empleadoIdSeguro)} className="molsan-btn molsan-btn--danger">Bloquear usuario</button>
+        ) : (
+          <button type="button" onClick={() => desbloquear(empleadoIdSeguro)} className="molsan-btn molsan-btn--primary">Desbloquear usuario</button>
+        )}
+        {mensajeVisibilidad && <p className="w-full text-sm text-[var(--erp-text-soft)]" role="status">{mensajeVisibilidad}</p>}
       </section>
 
 

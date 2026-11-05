@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import "../../css/HerramientasPremium.css";
@@ -99,17 +100,12 @@ export default function CatalogoOficinas() {
 
   return (
     <main className="catalogos-premium-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-      <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="relative flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl shadow-sm">🏢</div>
-          <div className="min-w-0">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">MOLSAN ERP PREMIUM 2027</p>
-            <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Catálogo de oficinas</h1>
-            <p className="mt-1 text-sm text-slate-500">Busca y administra únicamente las oficinas que importes desde tus archivos Excel.</p>
-          </div>
-        </div>
-      </header>
+      <MolsanPageHeader
+        mark="OFI"
+        title="Catálogo de oficinas"
+        description="Busca y administra únicamente las oficinas que importes desde tus archivos Excel."
+        className="catalogo-oficinas-page-header"
+      />
 
       <section className="rounded-2xl border border-slate-200/80 bg-white/90 p-5 shadow-sm space-y-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

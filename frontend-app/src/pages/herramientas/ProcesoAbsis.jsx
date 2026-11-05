@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
@@ -82,14 +83,10 @@ export default function ProcesoAbsis() {
   }
 
   return <main className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-    <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-      <Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link>
-      <div className="mt-2 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div><h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Proceso de ABSIS</h1><p className="mt-1 text-sm text-slate-500">Seguimiento de expedientes enviados, incidencias y acciones de envío.</p></div>
-        <button onClick={() => Promise.all([cargarActividades(), cargarItems()])} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">↻ Actualizar</button>
+    <MolsanPageHeader mark="UT" title="Proceso de ABSIS" description="Seguimiento de expedientes enviados, incidencias y acciones de envío." actions={<Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link>}/>
+      <div className="flex justify-end">
+        <button onClick={() => Promise.all([cargarActividades(), cargarItems()])} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">Actualizar datos</button>
       </div>
-    </header>
 
     <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       <Kpi titulo="Expedientes enviados al ABSIS" valor={totalEnvios} icono="↗" />

@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import { API_BASE } from "../../api/config";
@@ -277,36 +278,26 @@ export default function MantenimientoTecnico() {
 
   return (
     <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <div className="mb-2 flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
-                <span>⚙️</span> HERRAMIENTAS DEL SISTEMA
-              </span>
-              <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-bold ${validacionTecnica ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-800"}`}>
-                <span className={`h-2 w-2 rounded-full ${validacionTecnica ? "bg-emerald-500" : "bg-amber-500"}`} />
-                {validacionTecnica ? "Diagnóstico técnico correcto" : "Pendiente de validación técnica"}
-              </span>
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-              Mantenimiento técnico
-            </h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-              Centro de diagnóstico y mantenimiento integrado en el ERP. Ejecuta primero las comprobaciones y revisa el resultado antes de realizar cambios.
-            </p>
-          </div>
-          <button
-            type="button"
-            disabled={Boolean(cargando)}
-            onClick={ejecutarDiagnosticoCompleto}
-            className="shrink-0 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-wait disabled:opacity-50"
-          >
-            {cargando === "diagnostico-completo" ? "Ejecutando diagnóstico…" : "▶ Ejecutar diagnóstico completo"}
-          </button>
-        </div>
-      </header>
+      <MolsanPageHeader
+        mark="MT"
+        title="Mantenimiento técnico"
+        description="Centro de diagnóstico y mantenimiento integrado en el ERP. Ejecuta primero las comprobaciones y revisa el resultado antes de realizar cambios."
+        actions={
+          <>
+            <span className={`molsan-status ${validacionTecnica ? "molsan-status--success" : "molsan-status--warning"}`}>
+              {validacionTecnica ? "Diagnóstico técnico correcto" : "Pendiente de validación técnica"}
+            </span>
+            <button
+              type="button"
+              disabled={Boolean(cargando)}
+              onClick={ejecutarDiagnosticoCompleto}
+              className="molsan-btn molsan-btn--primary"
+            >
+              {cargando === "diagnostico-completo" ? "Ejecutando diagnóstico…" : "Ejecutar diagnóstico completo"}
+            </button>
+          </>
+        }
+      />
 
       <section className="grid grid-cols-1 gap-5 xl:grid-cols-2">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">

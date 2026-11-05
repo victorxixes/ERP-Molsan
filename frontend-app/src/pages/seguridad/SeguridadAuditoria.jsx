@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import "./SeguridadSubpaginasPremium.css";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
 
@@ -1467,122 +1468,13 @@ export default function SeguridadAuditoria() {
       className="seguridad-auditoria-premium space-y-6 animate-fade-in"
     >
 
-      {/* ======================================================
-          CABECERA
-          ====================================================== */}
-
-      <section
-        className="
-          bg-[var(--erp-surface)]
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          shadow-sm
-          px-6
-          py-5
-        "
-      >
-
-        <div
-          className="
-            flex
-            flex-col
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-            gap-5
-          "
-        >
-
-          <div
-            className="
-              flex
-              items-center
-              gap-4
-            "
-          >
-
-            <div
-              className="
-                w-12
-                h-12
-                rounded-2xl
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-              "
-            >
-
-              <Icono
-                name="clipboard"
-                className="w-6 h-6"
-              />
-
-            </div>
-
-
-            <div>
-
-              <h1
-                className="
-                  text-2xl
-                  font-bold
-                  text-[var(--erp-text)]
-                "
-              >
-                Auditoría
-              </h1>
-
-              <p
-                className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                  mt-1
-                "
-              >
-                Registro de actividad y operaciones de seguridad del ERP
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div
-            className="
-              flex
-              items-center
-              gap-2
-              px-3
-              py-2
-              rounded-xl
-              bg-[var(--erp-bg)]
-              border
-              border-[var(--erp-border)]
-              text-xs
-              text-[var(--erp-text-soft)]
-              w-fit
-            "
-          >
-
-            <span
-              className="
-                w-1.5
-                h-1.5
-                rounded-full
-                bg-emerald-500
-              "
-            />
-
-            Histórico protegido
-
-          </div>
-
-        </div>
-
-      </section>
+      <MolsanPageHeader
+        mark="AUD"
+        title="Auditoría"
+        description="Registro de actividad y operaciones de seguridad del ERP."
+        className="seguridad-auditoria-page-header"
+        actions={<span className="inline-flex w-fit items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />Histórico protegido</span>}
+      />
 
 
       {/* ======================================================

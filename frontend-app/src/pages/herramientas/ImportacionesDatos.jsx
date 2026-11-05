@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { Link } from "react-router-dom";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import "../../css/ImportacionesDatos.css";
@@ -18,16 +19,11 @@ export default function ImportacionesDatos() {
   const grupos = [...new Set(IMPORTADORES.map((item) => item.grupo))];
   return (
     <main className="molsan-page molsan-page-stack importaciones-datos-premium">
-      <header className="molsan-page-header">
-        <div className="molsan-page-header__identity">
-          <div className="molsan-page-header__mark"><MolsanIcon name="download" size={42} bare /></div>
-          <div className="min-w-0">
-            <p className="molsan-page-header__eyebrow">MOLSAN ERP · CENTRO DE DATOS</p>
-            <h1 className="molsan-page-header__title">Importaciones y datos</h1>
-            <p className="molsan-page-header__description">Centro único de acceso a los procesos de carga, validación y actualización de información del ERP.</p>
-          </div>
-        </div>
-      </header>
+      <MolsanPageHeader
+        mark={<MolsanIcon name="download" size={42} bare />}
+        title="Importaciones y datos"
+        description="Centro único de acceso a los procesos de carga, validación y actualización de información del ERP."
+      />
 
       <section className="importaciones-datos-notice">
         <strong>Antes de importar</strong>

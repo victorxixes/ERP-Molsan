@@ -5,6 +5,7 @@ import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import Sidebar from "../../components/Sidebar";
 import "../../css/EncargaGest.css";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios, { configurarSesionEncargaGest, limpiarSesionEncargaGest } from "../../api/encargagest";
 import { useAuthStore } from "../../store/authStore";
 import { formatEuro as euros } from "../../utils/formatters";
@@ -878,14 +879,6 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         <Sidebar
           brandName="EncargaGest"
           navigationItems={[]}
-          headerActions={
-            <>
-              <div className="ag-fecha-actual" aria-label={`Fecha actual: ${fechaActual}`}>
-                <span className="ag-punto-vivo" aria-hidden="true" />
-                <span>{fechaActual}</span>
-              </div>
-            </>
-          }
           onProfileClick={() => {
             setPerfilAbierto(true);
             setMensajePasswordPerfil("");
@@ -895,28 +888,15 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         />
       )}
       <div className="ag-fondo-decorativo" aria-hidden="true" />
-      <header className="ag-hero eg-hero molsan-page-header dashboard-header">
-        <div className="ag-hero-identidad molsan-page-header__identity">
-          <div className="ag-marca eg-marca molsan-page-header__mark" aria-label="EncargaGest"><MolsanIcon name="fileCheck" size={36} tone="ocean" /></div>
-          <div>
-            <div className="ag-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
-            <h1 className="molsan-page-header__title">EncargaGest</h1>
-            <p className="molsan-page-header__description">{modo === "externo" ? "Portal profesional · " + (sesion?.notaria_nombre || "Sesión externa") : "Recepción y seguimiento de encargos notariales externos."}</p>
-          </div>
-        </div>
-        <div className="ag-hero-acciones molsan-page-header__actions">
-          {modo === "interno" && (
-            <>
-              <div className="ag-fecha-actual">
-                <span className="ag-punto-vivo" aria-hidden="true" />
-                <span>{fechaActual}</span>
-              </div>
-              <button type="button" onClick={irAModulos} className="eg-secondary"><MolsanIcon name="dashboard" size={20} tone="ocean" /> Ir a módulos</button>
-              <button type="button" onClick={salirEncargaGest} className="eg-secondary">Cerrar sesión</button>
-            </>
-          )}
-        </div>
-      </header>
+      <MolsanPageHeader
+        mark="EG"
+        title="EncargaGest"
+        description={modo === "externo" ? "Portal profesional · " + (sesion?.notaria_nombre || "Sesión externa") : "Recepción y seguimiento de encargos notariales externos."}
+        className="ag-hero eg-hero dashboard-header"
+        actions={modo === "interno" ? (
+          <button type="button" onClick={salirEncargaGest} className="molsan-btn molsan-btn--secondary">Cerrar sesión</button>
+        ) : null}
+      />
 
       <main className="eg-main w-full max-w-none px-1 pb-4">
         <section role="status" aria-live="polite" className="mb-5 flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 shadow-sm">

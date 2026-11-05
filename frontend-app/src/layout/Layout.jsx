@@ -105,7 +105,7 @@ export default function Layout() {
       <Sidebar />
       <NotificacionesToast />
       <main className="erp-main-content relative min-h-[calc(100vh-70px)]">
-        <div className={`erp-main-inner w-full px-4 py-6 lg:px-6${esSubpaginaCatalogosUtilidades ? " molsan-tools-subpage" : ""}`}>
+        <div className={`erp-main-inner w-full${esSubpaginaCatalogosUtilidades ? " molsan-tools-subpage" : ""}`}>
           <div className={`erp-route-content w-full${rutaCancelaGest ? " cg-unified-workspace" : ""}`}>
             {esSubpagina && !esSubpaginaCatalogosUtilidades && !cabeceraSubpagina && !tieneVolverPropio ? (
         <header className="molsan-page-header molsan-page-back-fallback">

@@ -6,6 +6,7 @@ import MonitorSistema from "./MonitorSistema";
 import AuditoriaAvanzada from "./AuditoriaAvanzada";
 import LogsAvanzados from "./LogsAvanzados";
 import { puedeVerModulo } from "../../utils/permisos";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 /**
  * ============================================================
@@ -36,151 +37,18 @@ export default function PanelTecnico() {
   return (
     <div className="panel-tecnico-premium w-full space-y-8 animate-fade-in">
 
-      {/* ======================================================
-          CABECERA
-          ====================================================== */}
-
-      <section
-        className="
-          relative
-          overflow-hidden
-          rounded-3xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          shadow-sm
-        "
-      >
-
-        {/* Decoración superior */}
-
-        <div
-          className="
-            absolute
-            inset-x-0
-            top-0
-            h-1
-            bg-gradient-to-r
-            from-[var(--erp-primary)]
-            via-blue-400
-            to-cyan-400
-          "
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <MolsanPageHeader
+          mark="PT"
+          title="Panel Técnico"
+          description="Administración, diagnóstico y supervisión del sistema."
+          className="panel-tecnico-page-header flex-1"
         />
-
-        <div
-          className="
-            relative
-            px-6
-            py-6
-            lg:px-8
-            lg:py-7
-            flex
-            flex-col
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-            gap-5
-          "
-        >
-
-          {/* TÍTULO */}
-
-          <div>
-
-            <div
-              className="
-                flex
-                items-center
-                gap-3
-                mb-2
-              "
-            >
-
-              <div
-                className="
-                  w-11
-                  h-11
-                  rounded-2xl
-                  bg-[var(--erp-primary-soft)]
-                  text-[var(--erp-primary)]
-                  flex
-                  items-center
-                  justify-center
-                "
-              >
-                <svg className="w-5 h-5" aria-hidden="true">
-                  <use href="/icons/icons.svg#shield" />
-                </svg>
-              </div>
-
-              <div>
-
-                <h1
-                  className="
-                    text-2xl
-                    lg:text-3xl
-                    font-bold
-                    text-[var(--erp-text)]
-                    tracking-tight
-                  "
-                >
-                  Panel Técnico
-                </h1>
-
-                <p
-                  className="
-                    text-sm
-                    text-[var(--erp-text-soft)]
-                    mt-0.5
-                  "
-                >
-                  Administración, diagnóstico y supervisión del sistema
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          {/* ESTADO */}
-
-          <div
-            className="
-              inline-flex
-              items-center
-              gap-2
-              w-fit
-              px-3
-              py-2
-              rounded-xl
-              border
-              border-emerald-200
-              bg-emerald-50
-              text-emerald-700
-              text-xs
-              font-semibold
-            "
-          >
-
-            <span
-              className="
-                w-2
-                h-2
-                rounded-full
-                bg-emerald-500
-                animate-pulse
-              "
-            />
-
-            Sistema operativo
-
-          </div>
-
-        </div>
-
-      </section>
+        <span className="inline-flex w-fit items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
+          <span className="h-2 w-2 rounded-full bg-emerald-500" />
+          Sistema operativo
+        </span>
+      </div>
 
 
       {/* ======================================================

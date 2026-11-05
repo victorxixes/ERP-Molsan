@@ -25,7 +25,7 @@
 }
 
 /* Estructura mínima de formularios. Los estilos de campos, foco y etiquetas
-   pertenecen a NeutralizarPresentacion.css, que es la fuente común. */
+   pertenecen a molsan-controls.css, que es la fuente común. */
 .erp-route-content :where(label) {
   min-width: 0;
 }
@@ -46,7 +46,7 @@
 }
 
 /* La geometría y los estados comunes de botones se definen en
-   NeutralizarPresentacion.css; aquí no se replica esa capa. */
+   molsan-controls.css; aquí no se replica esa capa. */
 
 /* Paneles y secciones: evitar desbordamientos en todas las páginas. */
 .erp-route-content :where(section, article, aside, header, footer) {
