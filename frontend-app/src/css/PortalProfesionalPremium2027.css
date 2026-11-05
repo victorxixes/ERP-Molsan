@@ -219,7 +219,7 @@
 }
 .apoderagest .ag-resumen-modal-cabecera :is(h2,h3,p,span),
 .encargagest .eg-modal-header :is(h2,h3,p,span),
-.notargest .ng-modal>header,.notargest .ng-resumen-expedientes-modal>header :is(h2,h3,p,span,.ng-kicker){color:#fff!important}
+.notargest .ng-modal>header :is(h2,h3,p,span,.ng-kicker),.notargest .ng-resumen-expedientes-modal>header :is(h2,h3,p,span,.ng-kicker){color:#fff!important}
 .encargagest .eg-modal-close{
   color:#fff!important;border-color:rgba(255,255,255,.32)!important;background:rgba(255,255,255,.12)!important;
 }
