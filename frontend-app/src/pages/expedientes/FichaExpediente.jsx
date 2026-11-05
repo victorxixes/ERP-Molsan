@@ -1273,7 +1273,7 @@ function Modal({
               hover:text-slate-800
             "
           >
-            ✕
+            <MolsanIcon name="x" size={16} tone="ocean" bare />
           </button>
         </div>
 
@@ -6803,7 +6803,7 @@ const cuantiaFincasParaEnvio =
                   {guardandoActividad
                     ? "Validando…"
                     : actividadActual === "facturacion-cierre"
-                      ? "✅ Validar y cerrar expediente"
+                      ? <><MolsanIcon name="check" size={14} tone="inherit" bare /> Validar y cerrar expediente</>
                       : <><MolsanIcon name="arrowRight" size={14} tone="inherit" bare /> Validar y avanzar actividad</>}}
                 </Boton>
               )}
