@@ -15,6 +15,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # ============================================================
 
 COPY backend /app/backend
+COPY alembic.ini /app/alembic.ini
 
 # Incluir el logo en la imagen del backend: el contenedor no contiene frontend-app.
 COPY frontend-app/public/img/logo.jpg /app/backend/app/provisiones/logo.jpg
