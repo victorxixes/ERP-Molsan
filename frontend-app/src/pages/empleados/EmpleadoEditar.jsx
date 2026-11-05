@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import {
   useEffect,
   useState,
@@ -265,48 +266,11 @@ export default function EmpleadoEditar({
       space-y-6
     ">
 
-      {/* CABECERA */}
-
-      <div className="
-        flex
-        items-center
-        justify-between
-        gap-4
-      ">
-
-        <div>
-
-          <div className="
-            text-xs
-            uppercase
-            tracking-[0.15em]
-            text-[var(--erp-primary)]
-            font-semibold
-          ">
-            Configuración
-          </div>
-
-          <h2 className="
-            text-2xl
-            font-semibold
-            text-[var(--erp-text)]
-            mt-1
-          ">
-            Editar empleado
-          </h2>
-
-          <p className="
-            text-sm
-            text-[var(--erp-text-soft)]
-            mt-1
-          ">
-            Actualiza los datos corporativos del empleado.
-          </p>
-
-        </div>
-
-      </div>
-
+      <MolsanPageHeader
+        mark="EM"
+        title="Editar empleado"
+        description="Actualiza los datos corporativos del empleado."
+      />
 
       {/* ERROR */}
 
