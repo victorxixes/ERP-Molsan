@@ -6,7 +6,6 @@ services:
     runtime: static
     repo: https://github.com/victorxixes/ERP-Molsan
     branch: integration/erp-molsan-supabase-ready
-    plan: free
     buildCommand: cd frontend-app && npm install --no-audit --no-fund && npm run build
     staticPublishPath: frontend-app/dist
     autoDeployTrigger: off
