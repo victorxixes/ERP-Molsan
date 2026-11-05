@@ -12,6 +12,7 @@ import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModa
 import TraspasoSaldoPanel from "../../components/expedientes/TraspasoSaldoPanel";
 import { useAuthStore } from "../../store/authStore";
 import "./FichaExpedientePremium.css";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 import { obtenerCatalogoAcciones, obtenerAccionesExpediente, asignarAccionExpediente, eliminarAccionExpediente } from "../../api/expedienteAcciones";
 
@@ -5373,6 +5374,14 @@ const cuantiaFincasParaEnvio =
           </div>
 
 
+        <MolsanPageHeader
+          mark="EXP"
+          title={valorVisible(expediente.id_expediente)}
+          description="Ficha completa del expediente · Datos, documentación y seguimiento."
+          className="ficha-expediente-page-header"
+          actions={<Link to="/expedientes" className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)]">← Expedientes</Link>}
+        />
+
         {/* ===================================================
             BLOQUES SUPERIORES
         ==================================================== */}
@@ -5489,14 +5498,6 @@ const cuantiaFincasParaEnvio =
 
           {/* Ficha y acciones en una sola línea, debajo de los bloques principales */}
           <div className="mt-3 flex w-full min-w-0 flex-wrap items-center gap-2 overflow-x-hidden rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2">
-            <div className="flex shrink-0 items-center gap-2 pr-2">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-lg text-blue-600">📁</div>
-              <div className="min-w-[150px]">
-                <p className="whitespace-nowrap text-[9px] font-bold uppercase tracking-[0.12em] text-slate-400">Ficha de expediente</p>
-                <h1 className="whitespace-nowrap text-base font-extrabold leading-tight text-slate-800">{valorVisible(expediente.id_expediente)}</h1>
-                <p className="whitespace-nowrap text-[10px] leading-tight text-slate-400">Ficha completa del expediente</p>
-              </div>
-            </div>
             <div className="flex min-w-0 flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-white px-2 py-1.5">
               <label htmlFor="ficha-promocion" className="shrink-0 text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Promoción</label>
               <input id="ficha-promocion" type="text" value={expediente?.promocion || ""} readOnly placeholder="Sin asignar" className="w-36 min-w-[100px] cursor-default rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs text-slate-700 sm:w-44" aria-label="Promoción asignada al expediente" title="La promoción se asigna desde Utilidades → Gestión de expedientes." />
