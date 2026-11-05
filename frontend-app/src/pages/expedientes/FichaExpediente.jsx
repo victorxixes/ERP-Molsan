@@ -5492,7 +5492,7 @@ const cuantiaFincasParaEnvio =
             </div>
             <div className="flex shrink-0 flex-wrap items-center gap-2">
               <button type="button" onClick={abrirAgregarExpedientes} className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold text-blue-700 transition hover:bg-blue-100">
-                ➕ Agregar expediente relacionado
+                <MolsanIcon name="plus" size={15} tone="ocean" bare /> Agregar expediente relacionado
               </button>
             </div>
             {(() => {
@@ -5785,7 +5785,7 @@ const cuantiaFincasParaEnvio =
 
               <div className="flex flex-wrap items-center gap-2">
                 <button type="button" onClick={() => { setErrorActividad(""); setMensajeActividad(""); setMostrarModalDatosActividad(true); }} className="inline-flex items-center gap-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-extrabold text-sky-800 transition hover:bg-sky-100">
-                  ☷ Datos de actividad
+                  <MolsanIcon name="clipboardList" size={16} tone="ocean" bare /> Datos de actividad
                 </button>
                 <button type="button" onClick={() => { setPestanaActividad("datos"); setMostrarModalPpad(true); setErrorPpad(""); }} className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-extrabold text-indigo-800 transition hover:bg-indigo-100">
                   PPAD
@@ -6494,7 +6494,7 @@ const cuantiaFincasParaEnvio =
                     </p>
                     <p className="mt-1 text-[11px] text-slate-500">La vinculación automática con Notargest se completará cuando esté disponible la integración de documentos.</p>
                     <button type="button" onClick={() => setMostrarCarpetaDigital(true)} className="mt-3 rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">
-                      📁 Abrir carpeta digital
+                      <MolsanIcon name="folderOpen" size={16} tone="ocean" bare /> Abrir carpeta digital
                     </button>
                   </div>
                   <div className="rounded-xl border border-slate-200 bg-white p-3">
@@ -6612,7 +6612,7 @@ const cuantiaFincasParaEnvio =
                     </p>
                     <p className="mt-1 text-[11px] text-slate-500">La asociación automática del PDF desde Notargest requiere conectar la integración documental.</p>
                     <button type="button" onClick={() => setMostrarCarpetaDigital(true)} className="mt-3 rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">
-                      📁 Abrir carpeta digital
+                      <MolsanIcon name="folderOpen" size={16} tone="ocean" bare /> Abrir carpeta digital
                     </button>
                   </div>
                   <div className="rounded-xl border border-slate-200 bg-white p-3">
@@ -6888,7 +6888,7 @@ const cuantiaFincasParaEnvio =
                     {item.compensado ? (
                       <p className="mt-1 text-[11px] font-semibold text-emerald-700">✓ PPAD compensado{item.fecha_compensacion ? ` el ${formatearFecha(item.fecha_compensacion)}` : ""}.</p>
                     ) : (
-                      <p role="status" className="mt-1 text-[11px] font-bold text-amber-800">⚠ PPAD pendiente de compensar.</p>
+                      <p role="status" className="mt-1 flex items-center gap-1 text-[11px] font-bold text-amber-800"><MolsanIcon name="alert" size={13} tone="amber" bare /> PPAD pendiente de compensar.</p>
                     )}
                     {!item.compensado && !String(expediente?.fecha_firma || "").slice(0, 10) && (
                       <p className="mt-1 text-[10px] text-slate-600">La compensación estará disponible cuando el expediente tenga fecha de firma.</p>
@@ -6914,7 +6914,7 @@ const cuantiaFincasParaEnvio =
                     <h3 id="modal-ppad-titulo" className="text-base font-extrabold text-slate-900">PPAD · Conceptos y compensaciones</h3>
                     <p className="mt-1 text-xs text-slate-500">Historial completo de PPAD de este expediente.</p>
                   </div>
-                  <button type="button" onClick={() => { setMostrarModalPpad(false); cancelarPpad(); }} aria-label="Cerrar PPAD" className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50">✕ Cerrar</button>
+                  <button type="button" onClick={() => { setMostrarModalPpad(false); cancelarPpad(); }} aria-label="Cerrar PPAD" className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50"><MolsanIcon name="x" size={15} tone="ocean" bare /> Cerrar</button>
                 </header>
                 <div className="space-y-3 p-4 sm:p-6">
                   {errorPpad && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorPpad}</p>}
@@ -7542,7 +7542,7 @@ const cuantiaFincasParaEnvio =
           <div className="flex flex-wrap justify-end gap-2">
             <Boton onClick={() => setMostrarReclamarOficina(false)} disabled={enviandoReclamacion}>Cerrar</Boton>
             <Boton tipo="primary" onClick={enviarReclamacionOficina} disabled={enviandoReclamacion || !emailReclamacion.destinatario.trim() || !emailReclamacion.asunto.trim() || !emailReclamacion.cuerpo.trim() || /\[\[FALTA:/.test(emailReclamacion.destinatario + emailReclamacion.cc + emailReclamacion.asunto + emailReclamacion.cuerpo)}>
-              {enviandoReclamacion ? "Enviando…" : "✉️ Enviar email"}
+              {enviandoReclamacion ? "Enviando…" : <><MolsanIcon name="mail" size={14} tone="inherit" bare /> Enviar email</>}
             </Boton>
           </div>
         }
@@ -7611,7 +7611,7 @@ const cuantiaFincasParaEnvio =
         }
       >
         <div role="alert" className="rounded-2xl border-2 border-red-300 bg-red-50 p-5 text-center shadow-inner sm:p-7">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-red-200 bg-white text-4xl shadow-sm">⛔</div>
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-red-200 bg-white shadow-sm"><MolsanIcon name="alert" size={36} tone="amber" /></div>
           <p className="mt-4 text-xs font-black uppercase tracking-[0.18em] text-red-700">Expediente bloqueado</p>
           <h2 className="mt-2 text-xl font-black text-red-900 sm:text-2xl">{motivoBloqueoExpediente}</h2>
           {(String(expediente?.estado_expediente || "").trim().toUpperCase().startsWith("LST") || expediente?.liquidado_sin_tramitar) && (
@@ -7719,11 +7719,11 @@ const cuantiaFincasParaEnvio =
               <div className="flex flex-wrap gap-2">
                 {defecto.calificacion_nombre && (
                   <Boton onClick={() => descargarPDFCalificacion(defecto)}>
-                    📄 Descargar PDF
+                    <MolsanIcon name="file" size={14} tone="ocean" bare /> Descargar PDF
                   </Boton>
                 )}
                 <Boton onClick={() => editarDefectoRegistrado(defecto)}>
-                  ✏️ Editar
+                  <MolsanIcon name="pen" size={14} tone="ocean" bare /> Editar
                 </Boton>
               </div>
             </div>
@@ -7989,7 +7989,7 @@ const cuantiaFincasParaEnvio =
           setMostrarFincas(false);
           setFincaEditandoId(null);
         }}
-        titulo={fincaEditandoId !== null ? "🏠 Editar finca" : "🏠 Nueva finca"}
+        titulo={fincaEditandoId !== null ? "Editar finca" : "Nueva finca"}
         subtitulo="Datos registrales del expediente"
         ancho="max-w-5xl"
         footer={
@@ -8459,7 +8459,7 @@ const cuantiaFincasParaEnvio =
                       }}
                       className="shrink-0 rounded-md border border-red-200 px-2 py-1 text-[10px] font-bold text-red-700 hover:bg-red-50 disabled:opacity-50"
                     >
-                      🗑️ Eliminar
+                      <MolsanIcon name="trash" size={14} tone="ocean" bare /> Eliminar
                     </button>
                   )}
                 </div>
@@ -8489,7 +8489,7 @@ const cuantiaFincasParaEnvio =
         onClose={() =>
           setMostrarAgregarExpedientes(false)
         }
-        titulo="➕ Expedientes relacionados"
+        titulo="Expedientes relacionados"
         subtitulo={
           `Agrupación por NIF · ${valorVisible(
             expediente.nif_titular
