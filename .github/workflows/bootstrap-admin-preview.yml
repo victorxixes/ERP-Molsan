@@ -1,0 +1,88 @@
+name: Crear primer administrador de Preview (una sola vez)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: molsan-bootstrap-first-admin-preview
+  cancel-in-progress: false
+
+jobs:
+  create-first-admin:
+    name: Bootstrap protegido de admin.preview
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      MOLSAN_ENVIRONMENT: preview
+      MOLSAN_BOOTSTRAP_ADMIN_CONFIRM: CREATE_FIRST_ADMIN_IN_PREVIEW
+      MOLSAN_BOOTSTRAP_ADMIN_USERNAME: admin.preview
+      MOLSAN_BOOTSTRAP_ADMIN_PASSWORD: ${{ secrets.BOOTSTRAP_ADMIN_PASSWORD }}
+      PYTHONPATH: ${{ github.workspace }}
+    steps:
+      - name: Checkout rama backend aprobada (sin desplegar Render)
+        uses: actions/checkout@v4
+        with:
+          ref: production/erp-molsan-2026-11-04
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Instalar dependencias del backend
+        run: python -m pip install --disable-pip-version-check -r backend/requirements.txt
+
+      - name: Validar destino Supabase antes de ejecutar el alta
+        run: |
+          python - <<'PY'
+          import os
+          from sqlalchemy.engine import make_url
+
+          raw = os.environ.get("DATABASE_URL", "").strip()
+          password = os.environ.get("MOLSAN_BOOTSTRAP_ADMIN_PASSWORD", "")
+          if not raw:
+              raise SystemExit("BLOCKED: falta el secreto DATABASE_URL.")
+          if len(password) < 16:
+              raise SystemExit("BLOCKED: BOOTSTRAP_ADMIN_PASSWORD debe tener al menos 16 caracteres.")
+          url = make_url(raw)
+          project_ref = "powiprqarmluanplxpyb"
+          if url.get_backend_name() != "postgresql":
+              raise SystemExit("BLOCKED: DATABASE_URL no apunta a PostgreSQL.")
+          if url.port != 5432:
+              raise SystemExit("BLOCKED: utiliza el Session Pooler de Supabase en el puerto 5432.")
+          if not ((url.host or "").endswith(".pooler.supabase.com")
+                  and (url.username or "").endswith("." + project_ref)):
+              raise SystemExit("BLOCKED: el destino no corresponde al proyecto ERP_Molsan aprobado.")
+          print("PASS: destino PostgreSQL/Session Pooler corresponde al proyecto ERP_Molsan.")
+          print("PASS: secreto de contraseña presente y longitud válida; su valor no se muestra.")
+          PY
+
+      - name: Crear administrador solo si se cumplen todas las precondiciones
+        run: python backend/scripts/bootstrap_admin.py
+
+      - name: Verificar administrador creado (solo lectura)
+        run: |
+          python - <<'PY'
+          from sqlalchemy import text
+          from backend.app.database import engine
+
+          with engine.connect() as connection:
+              row = connection.execute(text("""
+                  SELECT e.usuario, e.activo, r.nombre
+                  FROM public.empleados AS e
+                  LEFT JOIN public.roles AS r ON r.id = e.rol_id
+                  WHERE e.usuario = :username
+              """), {"username": "admin.preview"}).first()
+              if row is None:
+                  raise SystemExit("FAILED: no se encontró admin.preview después del bootstrap.")
+              if not row[1] or row[2] != "Administrador":
+                  raise SystemExit("FAILED: la cuenta existe, pero no está activa con rol Administrador.")
+              print("PASS: admin.preview existe, está activo y tiene rol Administrador.")
+          engine.dispose()
+          PY
