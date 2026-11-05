@@ -12,7 +12,7 @@ import { useAuthStore } from "../../store/authStore";
 import { createPortal } from "react-dom";
 import "../../css/ApoderaGest.css";
 import MolsanIcon from "../../components/ui/MolsanIcon";
-import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+
 import { formatEuro } from "../../utils/formatters";
 
 function fechaLegible(valor) {
