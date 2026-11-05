@@ -7,6 +7,7 @@ import { useAuthStore } from "../../store/authStore";
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
 import "./ExpedientesListado.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 import {
   Link,
@@ -738,7 +739,7 @@ function CeldaRepositorioDigital({ expedienteId, repositorioKey, valor, onAbrir 
         title={`Abrir carpeta y ver ${cantidad} archivo(s)`}
         aria-label={`Abrir ${cantidad} documento(s)`}
       >
-        <span aria-hidden="true">📄</span>
+        <MolsanIcon name="file" size={15} tone="ocean" bare />
         <span>{cantidad > 1 ? cantidad : "PDF"}</span>
       </button>
       {hover && (
@@ -752,7 +753,7 @@ function CeldaRepositorioDigital({ expedienteId, repositorioKey, valor, onAbrir 
               <div className="max-h-56 space-y-1 overflow-auto">
                 {documentos.map((doc) => (
                   <button key={doc.id} type="button" onMouseEnter={() => previsualizar(doc)} onFocus={() => previsualizar(doc)} onClick={() => previsualizar(doc)} className="block w-full rounded-lg px-2 py-2 text-left text-xs hover:bg-[var(--erp-primary-soft)]" title={doc.nombre_original || "Ver documento"}>
-                    <span className="mr-1" aria-hidden="true">📄</span>{doc.nombre_original || "Documento"}
+                    <MolsanIcon name="file" size={14} tone="ocean" bare />{doc.nombre_original || "Documento"}
                     {doc.fecha_subida && <span className="mt-1 block text-[10px]" style={{ color: "var(--erp-text-soft)" }}>{new Date(doc.fecha_subida).toLocaleDateString("es-ES")}</span>}
                   </button>
                 ))}
@@ -804,14 +805,14 @@ const ACTIVIDADES_ABSIS = [
 // ============================================================
 
 const ACTIVIDADES_EXPEDIENTES = [
-  { key: "documentacion-previa", label: "Documentación previa", icono: "📄", aliases: ["Documentación previa"] },
-  { key: "sede-notarial", label: "Sede notarial", icono: "🏛️", aliases: ["Sede notarial", "Sede Notarial"] },
-  { key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "📜", aliases: ["Sede notarial con protocolo", "Sede Notarial con protocolo"] },
-  { key: "gestion-economica", label: "Gestión económica", icono: "💼", aliases: ["Gestión económica", "Gestion economica"] },
-  { key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "💶", aliases: ["Liquidación de impuestos", "Liquidación impuestos", "Liquidacion de impuestos", "Liquidacion impuestos"] },
-  { key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "🏢", aliases: ["Tramitación inscripción", "Tramitacion inscripcion"] },
-  { key: "defectos-registrales", label: "Defectos registrales", icono: "⚠️", aliases: ["Defectos registrales", "Defectos Registrales"] },
-  { key: "facturacion-cierre", label: "Facturación y cierre", icono: "🧾", aliases: ["Facturación y cierre", "Facturacion y cierre"] },
+  { key: "documentacion-previa", label: "Documentación previa", icono: "file", aliases: ["Documentación previa"] },
+  { key: "sede-notarial", label: "Sede notarial", icono: "courthouse", aliases: ["Sede notarial", "Sede Notarial"] },
+  { key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "scroll", aliases: ["Sede notarial con protocolo", "Sede Notarial con protocolo"] },
+  { key: "gestion-economica", label: "Gestión económica", icono: "briefcase", aliases: ["Gestión económica", "Gestion economica"] },
+  { key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "euro", aliases: ["Liquidación de impuestos", "Liquidación impuestos", "Liquidacion de impuestos", "Liquidacion impuestos"] },
+  { key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "building", aliases: ["Tramitación inscripción", "Tramitacion inscripcion"] },
+  { key: "defectos-registrales", label: "Defectos registrales", icono: "alert", aliases: ["Defectos registrales", "Defectos Registrales"] },
+  { key: "facturacion-cierre", label: "Facturación y cierre", icono: "receipt", aliases: ["Facturación y cierre", "Facturacion y cierre"] },
 ];
 
 // ============================================================
@@ -2464,7 +2465,7 @@ export default function ExpedientesListado() {
               titulo: "Circuito otra entidad",
               descripcion: "Vinculada otra entidad · Otra entidad",
               plazo: "70 días",
-              icono: "🏢",
+              icono: "building",
               borde: "#b7791f",
               fondo: "rgba(183, 121, 31, 0.08)",
             },
@@ -2609,7 +2610,7 @@ export default function ExpedientesListado() {
               }}
               className="min-h-[148px] rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
               style={{ background: activa ? "var(--erp-primary-soft)" : "var(--erp-surface)", borderColor: activa ? "var(--erp-primary)" : "var(--erp-border)", boxShadow: activa ? "0 0 0 1px var(--erp-primary)" : undefined }}>
-              <div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: activa ? "rgba(59,130,246,.14)" : "var(--erp-surface-soft)" }}>{actividad.icono}</span><span className="text-3xl font-extrabold tabular-nums" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text)" }}>{loadingActividades ? "…" : formatearNumero(total)}</span></div>
+              <div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: activa ? "rgba(59,130,246,.14)" : "var(--erp-surface-soft)" }}><MolsanIcon name={actividad.icono} size={28} tone="ocean" /></span><span className="text-3xl font-extrabold tabular-nums" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text)" }}>{loadingActividades ? "…" : formatearNumero(total)}</span></div>
               <div className="mt-3 text-sm font-bold leading-snug text-[var(--erp-text)]">{actividad.label}</div>
               <div className="mt-3">
                 {loadingAlertasControl ? (
