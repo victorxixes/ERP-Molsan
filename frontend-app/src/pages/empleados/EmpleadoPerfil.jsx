@@ -1255,7 +1255,7 @@ export default function EmpleadoPerfil({
                     justify-center
                     text-3xl
                   ">
-                    👤
+                    <MolsanIcon name="person" size={30} tone="ocean" />
                   </div>
 
                 )}
