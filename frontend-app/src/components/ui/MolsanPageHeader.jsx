@@ -35,6 +35,7 @@ const ICONOS_MARCA = {
   AE: "zap",
   PF: "wallet",
   MOD: "dashboard",
+  VF: "receipt",
 };
 
 /**
