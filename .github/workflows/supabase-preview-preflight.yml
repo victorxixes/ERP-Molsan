@@ -94,22 +94,37 @@ jobs:
                   """)).scalars().all()
                   print("Tables currently in public schema: " + (", ".join(tables) if tables else "(none)"))
 
-                  unexpected = sorted(set(tables) - {"alembic_version", "spatial_ref_sys"})
-                  if unexpected:
-                      raise SystemExit(
-                          "BLOCKED: public schema contains tables that require manual review before any migration: "
-                          + ", ".join(unexpected)
-                      )
+                  if len(tables) != 101:
+                      raise SystemExit(f"BLOCKED: expected 101 reviewed public tables; found {len(tables)}.")
 
-                  if "alembic_version" in tables:
-                      versions = connection.execute(text("SELECT version_num FROM public.alembic_version")).scalars().all()
-                      print("Alembic revision(s): " + (", ".join(versions) if versions else "(empty)"))
-                      if versions and versions != ["20261104_0004"]:
-                          raise SystemExit("BLOCKED: Alembic revision is not the reviewed expected head 20261104_0004.")
-                  else:
-                      print("Alembic history: not initialized (expected for a fresh database).")
+                  versions = connection.execute(text("SELECT version_num FROM public.alembic_version")).scalars().all()
+                  print("Alembic revision(s): " + (", ".join(versions) if versions else "(empty)"))
+                  if versions != ["20261105_0005"]:
+                      raise SystemExit("BLOCKED: Alembic revision is not the reviewed Preview head 20261105_0005.")
 
-                  print("READ-ONLY PREFLIGHT PASSED. No schema, table, row, role, or permission was changed.")
+                  security = connection.execute(text("""
+                      SELECT
+                          count(*) FILTER (WHERE c.relrowsecurity),
+                          count(*) FILTER (
+                              WHERE has_table_privilege('anon', c.oid, 'SELECT')
+                                 OR has_table_privilege('anon', c.oid, 'INSERT')
+                                 OR has_table_privilege('anon', c.oid, 'UPDATE')
+                                 OR has_table_privilege('anon', c.oid, 'DELETE')
+                                 OR has_table_privilege('authenticated', c.oid, 'SELECT')
+                                 OR has_table_privilege('authenticated', c.oid, 'INSERT')
+                                 OR has_table_privilege('authenticated', c.oid, 'UPDATE')
+                                 OR has_table_privilege('authenticated', c.oid, 'DELETE')
+                          )
+                      FROM pg_class c
+                      JOIN pg_namespace n ON n.oid = c.relnamespace
+                      WHERE n.nspname = 'public' AND c.relkind IN ('r', 'p')
+                  """)).one()
+                  if security[0] != 101:
+                      raise SystemExit(f"BLOCKED: RLS enabled on {security[0]} of 101 public tables.")
+                  if security[1] != 0:
+                      raise SystemExit(f"BLOCKED: anon/authenticated have data privileges on {security[1]} tables.")
+
+                  print("READ-ONLY PREFLIGHT PASSED: 101 tables, RLS enabled, client roles have no table data grants. No data or schema changed.")
           finally:
               engine.dispose()
           PY
