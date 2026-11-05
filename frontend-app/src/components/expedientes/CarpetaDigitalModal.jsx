@@ -4,6 +4,7 @@ import useAccessibleDialog from "../ui/useAccessibleDialog";
 import { useAuthStore } from "../../store/authStore";
 import { formatEuro } from "../../utils/formatters";
 import MolsanIcon from "../ui/MolsanIcon";
+import MolsanDetailField from "../ui/MolsanDetailField";
 
 // Se conservan las categorías del repositorio actual para no romper
 // los documentos ya almacenados.
@@ -1048,10 +1049,7 @@ export default function CarpetaDigitalModal({
                           <h5 className="px-2.5 py-2">{seccion.titulo}</h5>
                           <div className="space-y-0 px-2.5 py-1.5">
                             {seccion.campos.map(([etiqueta, valor]) => (
-                              <div key={etiqueta} className={(!usarFormatoResumenSede) ? "min-w-0 border-b border-slate-100 py-1.5 last:border-b-0" : "min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2"}>
-                                <p className={(!usarFormatoResumenSede) ? "text-[10px] font-bold text-slate-500" : "text-[10px] font-bold uppercase tracking-wide text-slate-500"}>{etiqueta}</p>
-                                <p className={(!usarFormatoResumenSede) ? "break-words text-[11px] font-semibold text-slate-800" : "mt-0.5 break-words text-xs font-semibold text-slate-800"}>{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
-                              </div>
+                              <MolsanDetailField key={etiqueta} label={etiqueta} value={valor} />
                             ))}
                           </div>
                         </section>
@@ -1075,10 +1073,7 @@ export default function CarpetaDigitalModal({
                               .map((campo) => {
                                 const valor = datosPanelActividad?.[campo.key];
                                 return (
-                                  <div key={campo.key} className={usarFormatoResumenSede ? "min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2" : "min-w-0 rounded-md border border-slate-100 bg-slate-50/60 px-2 py-1.5"}>
-                                    <p className={usarFormatoResumenSede ? "text-[10px] font-bold uppercase tracking-wide text-slate-500" : "text-[10px] font-bold text-slate-500"}>{campo.label}</p>
-                                    <p className={usarFormatoResumenSede ? "mt-0.5 break-words text-xs font-semibold text-slate-800" : "break-words text-[11px] font-semibold text-slate-800"}>{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
-                                  </div>
+                                  <MolsanDetailField key={campo.key} label={campo.label} value={valor} />
                                 );
                               })}
                             {camposPanelActividad.filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).length === 0 && <p>Los campos específicos de esta actividad aparecerán aquí.</p>}
@@ -1095,10 +1090,7 @@ export default function CarpetaDigitalModal({
                               ["Fecha firma", datosEnvioNotario?.fecha_firma || datosEnvioNotario?.fecha_real_firma || datosPanelActividad?.fecha_firma || datosPanelActividad?.fecha_real_firma],
                               ["Protocolo", datosEnvioNotario?.protocolo || datosPanelActividad?.protocolo || datosPanelActividad?.numero_protocolo],
                             ].map(([etiqueta, valor]) => (
-                              <div key={etiqueta} className={usarFormatoResumenSede ? "min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2" : "min-w-0 border-b border-slate-100 py-1.5 last:border-b-0"}>
-                                <p className={usarFormatoResumenSede ? "text-[10px] font-bold uppercase tracking-wide text-slate-500" : "text-[10px] font-bold text-slate-500"}>{etiqueta}</p>
-                                <p className={usarFormatoResumenSede ? "mt-0.5 break-words text-xs font-semibold text-slate-800" : "break-words text-[11px] font-semibold text-slate-800"}>{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
-                              </div>
+                              <MolsanDetailField key={etiqueta} label={etiqueta} value={valor} />
                             ))}
                           </div>
                         </section>
@@ -1118,10 +1110,7 @@ export default function CarpetaDigitalModal({
                               ["Email", datosPanelActividad?.facturacion_email || datosPanelActividad?.email_facturacion || datosPanelActividad?.correo_facturacion],
                               ["Empleado", [true, "true", "1", "si", "sí"].includes(String(datosPanelActividad?.facturacion_empleado ?? expedienteDatos?.facturacion_empleado ?? false).trim().toLowerCase()) ? "Sí" : "No"],
                             ].map(([etiqueta, valor]) => (
-                              <div key={etiqueta} className={usarFormatoResumenSede ? "min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2" : "min-w-0 border-b border-slate-100 py-1.5 last:border-b-0"}>
-                                <p className={usarFormatoResumenSede ? "text-[10px] font-bold uppercase tracking-wide text-slate-500" : "text-[10px] font-bold text-slate-500"}>{etiqueta}</p>
-                                <p className={usarFormatoResumenSede ? "mt-0.5 break-words text-xs font-semibold text-slate-800" : "break-words text-[11px] font-semibold text-slate-800"}>{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
-                              </div>
+                              <MolsanDetailField key={etiqueta} label={etiqueta} value={valor} />
                             ))}
                           </div>
                         </section>
@@ -1147,10 +1136,7 @@ export default function CarpetaDigitalModal({
                               ["Número de entrada", datosPanelActividad?.numero_entrada],
                               ["Fecha recogida notario o presentación telemática", datosPanelActividad?.fecha_recogida_notario_presentacion_telematica || datosPanelActividad?.fecha_recogida_notario_o_presentacion_telematica],
                             ].map(([etiqueta, valor]) => (
-                              <div key={etiqueta} className={usarFormatoResumenSede ? "min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2" : "min-w-0 border-b border-slate-100 py-1.5 last:border-b-0"}>
-                                <p className={usarFormatoResumenSede ? "text-[10px] font-bold uppercase tracking-wide text-slate-500" : "text-[10px] font-bold text-slate-500"}>{etiqueta}</p>
-                                <p className={usarFormatoResumenSede ? "mt-0.5 break-words text-xs font-semibold text-slate-800" : "break-words text-[11px] font-semibold text-slate-800"}>{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
-                              </div>
+                              <MolsanDetailField key={etiqueta} label={etiqueta} value={valor} />
                             ))}
                           </div>
                         </section>
@@ -1169,10 +1155,7 @@ export default function CarpetaDigitalModal({
                               ["Email", datosPanelActividad?.facturacion_email || datosPanelActividad?.email_facturacion],
                               ["Empleado", [true, "true", "1", "si", "sí"].includes(String(datosPanelActividad?.facturacion_empleado ?? expedienteDatos?.facturacion_empleado ?? false).trim().toLowerCase()) ? "Sí" : "No"],
                             ].map(([etiqueta, valor]) => (
-                              <div key={etiqueta} className={usarFormatoResumenSede ? "min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2" : "min-w-0 border-b border-slate-100 py-1.5 last:border-b-0"}>
-                                <p className={usarFormatoResumenSede ? "text-[10px] font-bold uppercase tracking-wide text-slate-500" : "text-[10px] font-bold text-slate-500"}>{etiqueta}</p>
-                                <p className={usarFormatoResumenSede ? "mt-0.5 break-words text-xs font-semibold text-slate-800" : "break-words text-[11px] font-semibold text-slate-800"}>{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
-                              </div>
+                              <MolsanDetailField key={etiqueta} label={etiqueta} value={valor} />
                             ))}
                           </div>
                         </section>
@@ -1217,10 +1200,7 @@ export default function CarpetaDigitalModal({
                             <h5 className="px-3 py-2">{seccion.titulo}</h5>
                             <div className="grid min-w-0 grid-cols-1 gap-1.5 px-3 py-2 sm:grid-cols-2 2xl:grid-cols-3">
                               {seccion.campos.map(([etiqueta, valor]) => (
-                                <div key={etiqueta} className={usarFormatoResumenSede ? "min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2" : "flex min-w-0 flex-col items-start gap-0.5 rounded-md border border-slate-100 bg-slate-50/60 px-2 py-1.5"}>
-                                  <span className={usarFormatoResumenSede ? "text-[10px] font-bold uppercase tracking-wide text-slate-500" : "text-[10px] font-bold leading-tight text-slate-500"}>{etiqueta}</span>
-                                  <span className={usarFormatoResumenSede ? "mt-0.5 min-w-0 break-words text-xs font-semibold text-slate-800" : "min-w-0 break-words text-[11px] font-semibold leading-snug text-slate-800"}>{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</span>
-                                </div>
+                                <MolsanDetailField key={etiqueta} label={etiqueta} value={valor} />
                               ))}
                             </div>
                           </section>
@@ -1238,12 +1218,7 @@ export default function CarpetaDigitalModal({
                           .map((campo) => {
                           const valor = datosPanelActividad?.[campo.key];
                           return (
-                            <div key={campo.key} className={usarFormatoResumenSede ? "min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2" : "min-w-0 border-b border-slate-100 pb-1.5"}>
-                              <p className={usarFormatoResumenSede ? "text-[10px] font-bold uppercase tracking-wide text-slate-500" : "text-[10px] font-bold text-slate-500"}>{campo.label}</p>
-                              <p className={usarFormatoResumenSede ? "mt-0.5 break-words text-xs font-semibold text-slate-800" : "break-words text-[11px] font-semibold text-slate-800"}>
-                                {valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}
-                              </p>
-                            </div>
+                            <MolsanDetailField key={campo.key} label={campo.label} value={valor} />
                           );
                         })}
                         {camposPanelActividad.length === 0 && <p>Los campos específicos de esta actividad aparecerán aquí.</p>}
