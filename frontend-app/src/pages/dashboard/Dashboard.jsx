@@ -5,6 +5,7 @@
 
 import { useDashboard } from "../../hooks/useDashboard";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import "../../css/DashboardCancelagest.css";
 
 // ============================================================
@@ -258,17 +259,12 @@ export default function Dashboard() {
 
   return (
     <div className="erp-page w-full dashboard-cancelagest molsan-page" aria-busy={loading}>
-      {/* CABECERA UNIFICADA CON APODERAGEST Y NOTARGEST */}
-      <header className="ag-hero molsan-page-header dashboard-header" style={{ "--ag-muted": "#748198", "--ag-ink": "#17243a" }}>
-        <div className="ag-hero-identidad molsan-page-header__identity">
-          <div className="ag-marca cg-marca-cancelagest" aria-label="CancelaGest">CG</div>
-          <div>
-            <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
-            <h1>Dashboard</h1>
-            <p>Resumen operativo de expedientes, actividad del circuito y firmas realizadas.</p>
-          </div>
-        </div>
-      </header>
+      <MolsanPageHeader
+        mark="CG"
+        title="Dashboard"
+        description="Resumen operativo de expedientes, actividad del circuito y firmas realizadas."
+        className="dashboard-header"
+      />
 
       {/* ERRORES DE CARGA */}
       {error && (
