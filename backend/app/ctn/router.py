@@ -17,6 +17,7 @@ from sqlalchemy.dialects.postgresql import aggregate_order_by
 from openpyxl import Workbook
 
 from backend.app.database import Base, get_db, engine
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
 from backend.app.config import settings
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
@@ -129,6 +130,10 @@ else:
 @router.on_event("startup")
 def crear_tabla_asociaciones_ctn():
     """Crea las asociaciones CTN y migra IBAN solo si faltan, serializando el DDL."""
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: crear_tabla_asociaciones_ctn; ejecutar migración versionada.", flush=True)
+        return
+
     import time
 
     notarios_asociados_table.create(bind=engine, checkfirst=True)
@@ -911,6 +916,10 @@ def historico_firmas_notario(
 @router.on_event("startup")
 def migrar_columna_acceso_notargest():
     """Añade el indicador de acceso sin dejar que un bloqueo auxiliar tumbe la API."""
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: migrar_columna_acceso_notargest; ejecutar migración versionada.", flush=True)
+        return
+
     import time as _time
 
     try:
@@ -990,6 +999,10 @@ def cambiar_acceso_notargest(
 @router.on_event("startup")
 def crear_tabla_historial_accesos_portales():
     """Prepara el historial sin bloquear el arranque si PostgreSQL tiene un lock."""
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: crear_tabla_historial_accesos_portales; ejecutar migración versionada.", flush=True)
+        return
+
     def ejecutar_migracion(etiqueta, sql, parametros=None):
         try:
             with engine.begin() as conexion:
