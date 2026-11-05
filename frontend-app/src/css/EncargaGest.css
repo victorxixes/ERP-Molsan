@@ -707,13 +707,13 @@
 }
 .encargagest .eg-kpi > div { display:flex!important;align-items:center!important;justify-content:space-between!important;gap:14px!important; }
 .encargagest .eg-kpi-icono {
-  display:grid!important;flex:0 0 54px!important;width:54px!important;height:54px!important;
+  display:grid!important;flex:0 0 40px!important;width:40px!important;height:40px!important;
   place-items:center!important;color:#064675!important;
-  border:1px solid #D8E4EC!important;border-radius:15px!important;
+  border:1px solid #D8E4EC!important;border-radius:12px!important;
   background:linear-gradient(145deg,#FFFFFF 0%,#EAF2F8 100%)!important;
   box-shadow:0 6px 15px rgba(6,50,82,.11),inset 0 1px 0 #FFFFFF!important;
 }
-.encargagest .eg-kpi-icono .molsan-icon-3d { width:40px!important;height:40px!important;filter:drop-shadow(0 3px 4px rgba(6,50,82,.16)); }
+.encargagest .eg-kpi-icono .molsan-icon-3d { width:34px!important;height:34px!important;filter:drop-shadow(0 3px 4px rgba(6,50,82,.16)); }
 .encargagest .eg-kpi-icono-alerta { border-color:#F1D8C5!important;background:linear-gradient(145deg,#FFFFFF,#FFF4E9)!important; }
 .encargagest .eg-kpi-icono-alerta .molsan-icon-3d { color:#B45309!important; }
 .encargagest .eg-empty-mark {
@@ -774,8 +774,8 @@
 .encargagest .eg-perfil-avatar .molsan-icon-3d { width:36px!important;height:36px!important;color:#FFFFFF; }
 @media(max-width:760px) {
   .encargagest .eg-kpi { min-height:126px;padding:14px!important; }
-  .encargagest .eg-kpi-icono { width:48px!important;height:48px!important;flex-basis:48px!important;border-radius:14px!important; }
-  .encargagest .eg-kpi-icono .molsan-icon-3d { width:36px!important;height:36px!important; }
+  .encargagest .eg-kpi-icono { width:40px!important;height:40px!important;flex-basis:40px!important;border-radius:12px!important; }
+  .encargagest .eg-kpi-icono .molsan-icon-3d { width:34px!important;height:34px!important; }
   .encargagest .eg-modal-header,.encargagest .eg-perfil-cabecera { padding:15px!important; }
   .encargagest .eg-modal-footer { padding:12px!important; }
   .encargagest .eg-modal-form,.encargagest .eg-modal-perfil { width:calc(100vw - 16px);max-height:calc(100dvh - 16px);border-radius:15px!important; }
