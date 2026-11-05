@@ -257,21 +257,17 @@ export default function CtnListadoPage() {
 
   return (
     <main className="ctn-listado-page molsan-page" aria-busy={cargando}>
-      <header className="ctn-listado-header molsan-page-header">
-        <div className="ctn-listado-header-identidad molsan-page-header__identity">
-          <div className="ctn-listado-header-icon molsan-page-header__mark" aria-hidden="true">CTN</div>
-          <div className="min-w-0">
-            <p className="ctn-listado-header-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
-            <h1>Listado CTN</h1>
-            <p>Consulta, filtra y gestiona los notarios y sus asociaciones.</p>
-          </div>
-        </div>
-        <div className="ctn-listado-header-acciones molsan-page-header__actions">
+      <MolsanPageHeader
+        mark="CTN"
+        title="Listado CTN"
+        description="Consulta, filtra y gestiona los notarios y sus asociaciones."
+        className="ctn-listado-header"
+        actions={
           <button type="button" className="ctn-btn ctn-btn-excel molsan-btn" onClick={exportarExcel} disabled={exportando}>
             {exportando ? "Preparando Excel…" : "⇩ Exportar Excel"}
           </button>
-        </div>
-      </header>
+        }
+      />
 
       <section className="ctn-filtros molsan-panel" aria-label="Filtros del listado CTN">
         <h2>Filtros de búsqueda</h2>
