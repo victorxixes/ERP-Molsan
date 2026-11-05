@@ -340,3 +340,23 @@
     padding-left: 24px !important;
   }
 }
+
+
+/* KPI de portales · mismo acento superior y relieve que el Dashboard. */
+.apoderagest .ag-kpi::before,
+.encargagest .eg-kpi::before,
+.encargagest .eg-main .ag-kpi::before,
+.ng-admin-notarias .ng-admin-kpi-button::before,
+.notargest.ng-content .ng-dashboard-kpi::before,
+.notargest.ng-content .ng-kpi-card::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  top: 0 !important;
+  right: 18px !important;
+  left: 18px !important;
+  height: 3px !important;
+  border-radius: 0 0 6px 6px !important;
+  background: linear-gradient(90deg, #064675 0%, #2696A5 70%, #8BC8D8 100%) !important;
+  pointer-events: none !important;
+}
