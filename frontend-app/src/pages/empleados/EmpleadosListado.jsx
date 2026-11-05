@@ -1,3 +1,4 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import {
   useEffect,
   useState,
@@ -922,77 +923,12 @@ export default function EmpleadosListado({
           CABECERA
       ====================================================== */}
 
-      <div className="
-        rounded-2xl
-        border
-        border-[var(--erp-border)]
-        bg-[var(--erp-surface)]
-        px-5
-        py-5
-        shadow-sm
-      ">
-
-        <div className="
-          flex
-          flex-col
-          gap-4
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-        ">
-
-          <div>
-
-            <div className="
-              flex
-              items-center
-              gap-3
-            ">
-
-              <div className="
-                flex
-                h-11
-                w-11
-                items-center
-                justify-center
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                shadow-sm
-              ">
-                👥
-              </div>
-
-
-              <div>
-
-                <h1 className="
-                  text-xl
-                  font-bold
-                  tracking-tight
-                  text-[var(--erp-text)]
-                ">
-                  Empleados
-                </h1>
-
-                <p className="
-                  mt-0.5
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                ">
-                  Gestión y administración de empleados
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <button
+      <MolsanPageHeader
+        mark="EMP"
+        title="Empleados"
+        description="Gestión y administración de empleados."
+        className="empleados-listado-page-header"
+        actions={<button
             type="button"
             onClick={
               abrirNuevo
@@ -1029,11 +965,8 @@ export default function EmpleadosListado({
               Nuevo empleado
             </span>
 
-          </button>
-
-        </div>
-
-      </div>
+          </button>}
+      />
 
 
       {/* ======================================================
