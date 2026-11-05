@@ -1,0 +1,312 @@
+/* MOLSAN ERP PREMIUM 2027 · GLOBAL CONSISTENCY
+   Última capa compartida de geometría y componentes.
+   No modifica lógica, permisos, rutas ni datos.
+   Sustituye progresivamente las excepciones heredadas por tokens comunes. */
+
+:root {
+  --molsan-content-gutter: 28px;
+  --molsan-content-gutter-tablet: 22px;
+  --molsan-content-gutter-mobile: 14px;
+  --molsan-content-bottom: 32px;
+  --molsan-header-min-height: 82px;
+  --molsan-header-radius: 18px;
+  --molsan-header-gap: 16px;
+}
+
+/* Catálogos y Utilidades ya reciben el gutter del Layout: eliminar el padding
+   Tailwind duplicado que desplazaba sus cabeceras y provocaba márgenes desiguales. */
+.erp-route-content :where(.catalogos-premium-page, .utilidades-premium-page) {
+  padding: 0 !important;
+  animation: none !important;
+}
+.erp-route-content :where(.catalogos-premium-page, .utilidades-premium-page) > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 20px !important;
+}
+
+/* Evita el parpadeo de entrada en las páginas que adoptan la cabecera compartida. */
+.erp-route-content :where(.catalogos-premium-page, .utilidades-premium-page) .molsan-page-header {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Una sola caja de contenido para todas las rutas del ERP principal.
+   El sidebar conserva su propio ancho y comportamiento. */
+.erp-main-content,
+.erp-main-inner,
+.erp-route-content {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  max-width: none;
+}
+
+.erp-main-inner {
+  margin-inline: auto;
+  padding: 24px var(--molsan-content-gutter) var(--molsan-content-bottom);
+}
+
+.erp-route-content {
+  display: flow-root;
+}
+
+/* Márgenes uniformes en los módulos y sus subpáginas. */
+.erp-route-content > :where(
+  .cg-page, .cg-unified-workspace, .expedientes-listado-premium,
+  .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
+  .utilidades-premium-page, .honorarios-gestoria-premium, .empleados-premium-page,
+  .empleado-ficha-premium, .empleado-editar-premium, .maestros-premium-page,
+  .logs-premium-page, .seguridad-premium-page, .seguridad-subpagina-premium,
+  .notificaciones-premium-page, .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium, .informes-premium-page,
+  .mensajes-premium-page, .selector-modulos-premium, .ctn-workspace-premium,
+  .encargagest-workspace-premium, .molsan-intranet-page,
+  .provisiones-fondos-premium, .provisiones-fondos-page,
+  .herramientas-home-premium, .herramientas-subpagina-premium
+) {
+  min-width: 0;
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+}
+
+/* Cabecera única: identidad izquierda y acciones a la derecha. */
+.erp-route-content .molsan-page-header,
+.erp-page.molsan-professional-shell > .molsan-page-header,
+.catalogos-premium-page > .molsan-page-header,
+.utilidades-premium-page > .molsan-page-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--molsan-header-gap);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  min-height: var(--molsan-header-min-height);
+  margin: 0 0 20px;
+  padding: 14px 20px;
+  overflow: hidden;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: var(--molsan-header-radius);
+  background:
+    radial-gradient(circle at 88% 15%, rgba(116,199,219,.17), transparent 28%),
+    linear-gradient(116deg, #032D4B 0%, #064675 56%, #0D638C 100%);
+  box-shadow: 0 10px 26px rgba(4,55,91,.14);
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+
+.erp-route-content .molsan-page-header::after,
+.erp-page.molsan-professional-shell > .molsan-page-header::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  content: "";
+  pointer-events: none;
+  background: linear-gradient(90deg, #6CC5D9 0%, #8CB8D8 42%, rgba(255,255,255,.08) 100%);
+}
+
+.erp-route-content .molsan-page-header__identity,
+.erp-page.molsan-professional-shell .molsan-page-header__identity {
+  display: flex;
+  align-items: center;
+  flex: 1 1 320px;
+  gap: 12px;
+  min-width: 0;
+}
+
+.erp-route-content .molsan-page-header__mark,
+.erp-page.molsan-professional-shell .molsan-page-header__mark {
+  display: grid;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 11px;
+  background: rgba(255,255,255,.12);
+}
+
+.erp-route-content .molsan-page-header__title,
+.erp-page.molsan-professional-shell .molsan-page-header__title {
+  margin: 0;
+  color: #fff !important;
+  font-size: clamp(21px, 2vw, 26px);
+  font-weight: 800;
+  letter-spacing: -.035em;
+  line-height: 1.15;
+}
+
+.erp-route-content .molsan-page-header__description,
+.erp-page.molsan-professional-shell .molsan-page-header__description {
+  display: block;
+  max-width: 780px;
+  margin: 4px 0 0;
+  color: #D1E4EE !important;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.erp-route-content .molsan-page-header__actions,
+.erp-page.molsan-professional-shell .molsan-page-header__actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+  margin-left: auto;
+}
+
+.erp-route-content .molsan-page-header__actions > :where(button, a),
+.erp-page.molsan-professional-shell .molsan-page-header__actions > :where(button, a) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 12px;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 10px;
+  background: rgba(255,255,255,.12);
+  box-shadow: none;
+  font-size: 12px;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.erp-route-content .molsan-page-header__actions > :where(button, a):hover,
+.erp-page.molsan-professional-shell .molsan-page-header__actions > :where(button, a):hover {
+  color: #fff;
+  border-color: rgba(255,255,255,.58);
+  background: rgba(255,255,255,.2);
+}
+
+/* Botón Volver insertado por Layout: secundario, sin crear una segunda cabecera. */
+.erp-route-content .molsan-page-back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 12px;
+  color: var(--molsan-primary, #064675);
+  border: 1px solid var(--molsan-border, #D8E4EC);
+  border-radius: 10px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Controles comunes sin interferir con botones de acción destructiva/semántica. */
+.erp-route-content :where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
+  max-width: 100%;
+  min-width: 0;
+  border-color: var(--molsan-border, #D8E4EC);
+  border-radius: var(--molsan-radius-control, 10px);
+}
+
+.erp-route-content :where(button, [role="button"]) {
+  touch-action: manipulation;
+}
+
+.erp-route-content :where(button:not(.erp-card):not([class*="icon"]), .molsan-page-back-button) {
+  border-radius: 10px;
+}
+
+.erp-route-content :where(button, a, input, select, textarea, [role="button"]):focus-visible {
+  outline: 2px solid var(--molsan-primary, #064675);
+  outline-offset: 2px;
+}
+
+/* Superficies y tablas utilizan siempre los tokens corporativos. */
+.erp-route-content :where(.molsan-table-wrap, .table-responsive, .tabla-responsive) {
+  min-width: 0;
+  max-width: 100%;
+  border-color: var(--molsan-border, #D8E4EC);
+}
+
+.erp-route-content :where(table) {
+  border-color: var(--molsan-border, #D8E4EC);
+}
+
+.erp-route-content :where(thead th) {
+  background: var(--molsan-table-head, #EAF2F8);
+}
+
+.erp-route-content :where(.erp-card, .card-sj, .dashboard-kpi) {
+  min-width: 0;
+}
+
+/* Portales independientes: mismo lenguaje de contenido y sin márgenes heredados. */
+.erp-page.molsan-professional-shell,
+.ng-admin-notarias {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+}
+
+@media (max-width: 1024px) {
+  .erp-main-inner {
+    padding-inline: var(--molsan-content-gutter-tablet);
+  }
+}
+
+@media (max-width: 720px) {
+  .erp-main-inner {
+    padding: 16px var(--molsan-content-gutter-mobile) 24px;
+  }
+
+  .erp-route-content .molsan-page-header,
+  .erp-page.molsan-professional-shell > .molsan-page-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+
+  .erp-route-content .molsan-page-header__identity,
+  .erp-page.molsan-professional-shell .molsan-page-header__identity {
+    flex-basis: auto;
+    width: 100%;
+  }
+
+  .erp-route-content .molsan-page-header__actions,
+  .erp-page.molsan-professional-shell .molsan-page-header__actions {
+    justify-content: flex-start;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .erp-route-content .molsan-page-header__actions > :where(button, a),
+  .erp-page.molsan-professional-shell .molsan-page-header__actions > :where(button, a) {
+    flex: 0 1 auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .erp-route-content *,
+  .erp-route-content *::before,
+  .erp-route-content *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
