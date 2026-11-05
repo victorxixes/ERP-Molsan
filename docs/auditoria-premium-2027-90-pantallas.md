@@ -31,3 +31,23 @@ Se han normalizado también EmpleadoEditar, SeguridadFicha, SeguridadRolEditor, 
 3. Revisar tablas, formularios, botones, estados vacíos/error/carga y modales en los 90 componentes y sus rutas.
 4. Ejecutar CI; después desplegar exclusivamente a Preview y comprobar rutas autenticadas y estados reales.
 5. No modificar producción ni bases de datos en esta intervención.
+
+
+## Revisión inicial de modales
+
+Se localizaron los componentes modales del frontend y se revisaron sus mecanismos de accesibilidad:
+
+- `ModalCtnDetalle`, `ModalEmpleado`, `CarpetaDigitalModal`, `LiquidarExpedienteModal` y `ProvisionesModal`: usan `useAccessibleDialog` y exponen `role="dialog"` / `aria-modal`.
+- `EnviarANotarioModal`: usa `useAccessibleDialog`; el rol y `aria-modal` se activan en el modo modal y se omiten correctamente en el modo embebido.
+- `SidebarPerfilModal`: delega el diálogo a `ModalEmpleado`, que ya aplica el hook común.
+- `ModalNuevaCita`: se ha corregido en esta rama; ahora usa `useAccessibleDialog`, referencia del panel, `role="dialog"`, `aria-modal="true"`, `aria-labelledby` y foco inicial/restauración. El cierre por Escape y el ciclo de foco los gestiona el hook compartido.
+
+El hook común también contempla Escape, ciclo Tab/Shift+Tab, foco fuera del diálogo, anidamiento y restauración del foco previo. Esta revisión estática no sustituye las pruebas manuales de teclado, lector de pantalla, móvil ni los flujos de validación/guardado.
+
+## Componentes comunes para tablas y formularios
+
+- `MolsanDataTable` proporciona ordenación local o servidor, búsqueda/paginación opcional, ajuste de ancho de columnas, estados vacíos y controles accesibles.
+- `MolsanButton` y `molsan-controls.css` proporcionan variantes compartidas de botones, campos y estados.
+- `molsan-tables.css` define tabla corporativa, cabecera, hover, scroll horizontal y responsive.
+
+**Pendiente:** identificar, ruta por ruta, qué listados y formularios usan realmente estos componentes y cuáles conservan tablas/controles locales; migrar solo cuando se pueda preservar ordenación del servidor, paginación, validaciones, permisos y acciones.
