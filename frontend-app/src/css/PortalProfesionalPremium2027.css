@@ -342,3 +342,34 @@
     padding-left: 24px !important;
   }
 }
+
+
+/* Portales profesionales: mismo header del Dashboard, con Glass Luxe más tenue. */
+:is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) > header.molsan-page-header {
+  color: #064675 !important;
+  border-color: rgba(6,70,117,.14) !important;
+  background:
+    radial-gradient(ellipse at 88% 8%, rgba(255,255,255,.96), transparent 46%),
+    linear-gradient(112deg, rgba(234,244,250,.96) 0%, rgba(222,237,246,.92) 58%, rgba(238,246,250,.94) 100%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(118%) !important;
+  backdrop-filter: blur(24px) saturate(118%) !important;
+  box-shadow: 0 8px 22px rgba(6,70,117,.075) !important;
+}
+:is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__title {
+  color: #064675 !important;
+}
+:is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__eyebrow,
+:is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__description {
+  color: #617789 !important;
+}
+:is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__mark {
+  color: #064675 !important;
+  border-color: rgba(6,70,117,.12) !important;
+  background: rgba(255,255,255,.72) !important;
+}
+:is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__actions > button,
+:is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__actions > a {
+  color: #064675 !important;
+  border-color: rgba(6,70,117,.16) !important;
+  background: rgba(255,255,255,.76) !important;
+}
