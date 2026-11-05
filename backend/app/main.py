@@ -2977,6 +2977,8 @@ def verificar_base_datos_preview_inicio():
 
 # Se inserta después de registrar las demás tareas para ejecutarse la primera.
 app.router.on_startup.insert(0, verificar_base_datos_preview_inicio)
+# Bootstrap de administrador estrictamente opt-in y limitado a la API Preview.
+app.router.on_startup.insert(1, crear_administrador_preview)
 
 instrumentar_inicio_aplicacion()
 
