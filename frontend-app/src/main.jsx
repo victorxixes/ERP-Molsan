@@ -21,23 +21,24 @@ import "./css/molsan-design-system.css";
 import App from "./App";
 // Estilos transversales ligeros de compatibilidad Fase 3, sin hoja monolítica de overrides.
 import "./css/MolsanFase3.css";
-// Estilos de módulos y páginas antes de las capas globales compartidas.
+// Estilos funcionales de módulos y páginas.
 import "./css/molsan-module-styles.css";
-// Capa de armonización general.
-import "./css/MolsanRedesign2027.css";
-import "./css/MolsanPremium2027.css";
-import "./css/MolsanCardsPremium2027.css";
-// Autoridad final de cascada para ApoderaGest, EncargaGest y NotarGest.
-import "./css/PortalProfesionalPremium2027.css";
-// Autoridad visual final: márgenes, cabeceras y controles comunes en todo el ERP.
-import "./css/MolsanGlobalConsistency2027.css";
-// Última autoridad visual: componentes comunes Glass Luxe en todas las rutas.
-import "./css/MolsanGlassLuxeUnified2027.css";
-// Autoridad canónica final: patrón Espacios de trabajo + geometría Dashboard.
-import "./css/MolsanCanonicalVisual2027.css";
+// Estilos propios de los portales: estructura y particularidades funcionales.
 import "./css/ApoderaGest.css";
 import "./css/EncargaGest.css";
 import "./css/NotarGest.css";
+// Compatibilidad heredada y presentación de Espacios de trabajo.
+import "./css/MolsanFase3.css";
+import "./css/MolsanRedesign2027.css";
+import "./css/MolsanPremium2027.css";
+// Tarjetas semánticas y excepciones específicas de módulos (sin inferir tarjetas Tailwind).
+import "./css/MolsanCardsPremium2027.css";
+// Normalización específica de portales y capas globales compartidas.
+import "./css/PortalProfesionalPremium2027.css";
+import "./css/MolsanGlobalConsistency2027.css";
+import "./css/MolsanGlassLuxeUnified2027.css";
+// Última capa visual canónica: cabeceras, tarjetas semánticas y geometría Dashboard.
+import "./css/MolsanCanonicalVisual2027.css";
 
 
 // ============================================================
