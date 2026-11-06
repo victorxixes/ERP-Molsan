@@ -1427,27 +1427,8 @@
 }
 
 
-/* Cabecera unificada de la ficha CTN. */
-.ctn-modal-header-unified {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  flex-wrap:wrap;
-  gap:16px;
-  padding:0 0 18px;
-  margin-bottom:20px;
-  border-bottom:1px solid var(--molsan-border, #D8E4EC);
-}
+/* Elementos secundarios de la ficha CTN; el encabezado hereda el estándar modal. */
 .ctn-modal-header-identity { min-width:0; }
-.ctn-modal-title {
-  margin:6px 0;
-  color:var(--molsan-text, #173247);
-  font-size:clamp(20px,2vw,28px);
-  font-weight:750;
-  letter-spacing:-.025em;
-  overflow-wrap:anywhere;
-}
-.ctn-modal-meta { margin:0; color:var(--molsan-text-muted, #718696); font-size:12px; }
 .ctn-modal-header-badge {
   display:inline-flex;
   align-items:center;
@@ -1461,10 +1442,6 @@
   white-space:nowrap;
 }
 .ctn-modal-alerta--spaced { margin-bottom:16px; }
-@media(max-width:640px) {
-  .ctn-modal-header-unified { align-items:flex-start; gap:10px; padding-bottom:14px; margin-bottom:14px; }
-  .ctn-modal-header-badge { order:3; }
-}
 
 
 /* Resumen de accesos a portales notariales */
