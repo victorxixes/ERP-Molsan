@@ -2,7 +2,7 @@
 
 **Rama de trabajo:** `fix/molsan-css-selector-audit-round1`  
 **PR:** #409 (Draft)  
-**Commit auditado:** `58614fe61f9b2021d166f788324b50afb559fe35`  
+**Último commit de trabajo:** `54fe0505f77b32001258b9857b974aa518c0dd30`  
 **Alcance de esta revisión:** frontend `frontend-app/src`; sin cambios en backend, API, Supabase, datos ni producción.
 
 ## 1. Inventario real del frontend
@@ -100,7 +100,14 @@ Hallazgo importante: la existencia de estos componentes no demuestra que todas l
 - Entre los modales con archivo propio aparecen Agenda, CTN, Empleados y Expedientes (carpeta digital, envío a notario, liquidación y provisiones). Otros modales se implementan dentro de páginas/componentes y no se detectan por el nombre del archivo.
 - La revisión de modales debe incluir apertura/cierre, confirmación, validación, carga, error, foco, Escape, backdrop, scroll y responsive. El inventario de rutas no basta para enumerarlos.
 
-## 6. Estado de ejecución — no confundir auditoría estática con validación
+## 6. Cambios seguros ya aplicados en esta ronda
+
+- `SeguridadSubpaginasPremium.css`: eliminado un bloque `@media (max-width: 680px)` vacío, sin declaraciones.
+- `MolsanFase3.css`: consolidados en un único bloque base los estilos y el contrato de tamaño/scroll de diálogos legacy con `role=dialog`; unificadas las reglas móviles que repetían ancho/alto y conservado el radio móvil de 14px. Se mantienen las exclusiones de overlays y modales propios.
+- `MolsanPageHeader.jsx`: añadido el mapeo `CG → dashboard` a `MolsanIcon`, porque el Dashboard ya utiliza `MolsanPageHeader` con `mark="CG"` y antes mostraba el texto de marca en vez del icono corporativo.
+- Commits de esta ronda: `c052422` (inventario), `6465ffa` (regla vacía), `0a0b8df` y `633914f` (consolidación/estilo de diálogos), `54fe050` (icono CG).
+
+## 7. Estado de ejecución — no confundir auditoría estática con validación
 
 | Trabajo | Estado |
 |---|---|
@@ -117,7 +124,7 @@ Hallazgo importante: la existencia de estos componentes no demuestra que todas l
 | Pruebas funcionales de negocio y regresión | Pendiente |
 | Validación visual interactiva de Preview | Pendiente |
 
-## 7. Límites de seguridad de esta fase
+## 8. Límites de seguridad de esta fase
 
 - Los cambios siguientes deben limitarse a la rama y al Preview.
 - No tocar producción, base de datos principal, API ni permisos funcionales.
@@ -126,7 +133,7 @@ Hallazgo importante: la existencia de estos componentes no demuestra que todas l
 - No dar por validado un modal, permiso o flujo solo porque el frontend compile.
 - Render Preview no debe desplegarse hasta que los cambios de código superen el build y la revisión de regresión acordada.
 
-## 8. Siguiente secuencia obligatoria
+## 9. Siguiente secuencia obligatoria
 
 1. Construir matriz de páginas/subpáginas: JSX, raíz CSS, cabecera, tarjetas, formularios, tablas, modales y estados.
 2. Buscar selectores sin consumidor y clases JSX sin regla; diferenciar Tailwind/utilidades, CSS Modules, estilos inline y componentes compartidos.
