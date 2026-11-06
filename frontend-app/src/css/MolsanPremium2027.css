@@ -833,10 +833,9 @@
 .modal-sj { border:1px solid #D8E4EC; border-radius:18px; }
 
 /* ============================================================
-   MOLSAN ERP PREMIUM 2027 · TARJETA CORPORATIVA ÚNICA
-   Referencia visual: .workspace-app-card de Espacios de trabajo.
-   Se unifica la superficie; cada módulo conserva su layout,
-   padding interno, contenido, estados y comportamiento funcional.
+   MOLSAN ERP PREMIUM 2027 · SUPERFICIES DE CONTENIDO
+   Paneles de formularios, tablas y secciones; no son tarjetas de acceso.
+   Las tarjetas semánticas y sus acentos pertenecen a CanonicalVisual.
    ============================================================ */
 :is(
   .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
@@ -909,16 +908,7 @@
 ):hover {
   box-shadow: 0 19px 38px rgba(6, 50, 82, .13);
 }
-:is(
-  .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
-  .apoderagest, .notargest, .encargagest, .ctn-listado-page,
-  .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
-  .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
-  .utilidades-premium-page, .maestros-premium-page, .informes-premium-page,
-  .mensajes-premium-page, .mensajeria, .provisiones-fondos-page,
-  .panel-tecnico-premium, .seguridad-premium-page,
-  .herramientas-subpagina-premium, .catalogos-maestros-premium
-) @media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce) {
   :is(.erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
     .apoderagest, .notargest, .encargagest, .ctn-listado-page,
     .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
