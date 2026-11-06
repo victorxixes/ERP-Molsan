@@ -1188,3 +1188,8 @@ Commits: 2c6826d, d5ffc26, fcc42a3, 1c0ffa7, 07f4ba3. Pendiente comprobación en
 ### 26.1. Cabeceras y pies de diálogos accesibles
 
 La última capa canónica unifica también los encabezados y pies de los diálogos con `role=dialog` (excluyendo la capa fixed/inset que actúa como backdrop y los diálogos exentos). Se neutralizan fondos de banda, líneas inferiores/superiores y blur; los títulos usan azul corporativo y la descripción texto secundario. Commit: 108f140.
+
+
+### 26.2. Retirada de skins locales de modales
+
+Se retiraron de NotarGest y EncargaGest las definiciones locales de borde, radio, fondo y sombra de sus paneles modales; también se retiraron los gradientes de cabecera, separadores inferiores, color blanco forzado de títulos y el fondo/blur del pie. La marca del modal EncargaGest ahora usa icono azul sobre superficie azul hielo. Las dimensiones, scroll, sticky header/footer, overlays, layout y estados warning/disabled siguen conservándose estructuralmente; el canon aporta la piel visual. Balance de llaves CSS verificado en ambas hojas y en Canonical/Fase3. Commits: fcc42a3, 1c0ffa7 y 07f4ba3.
