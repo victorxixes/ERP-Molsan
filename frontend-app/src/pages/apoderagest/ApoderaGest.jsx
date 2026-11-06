@@ -109,7 +109,6 @@ function TarjetaIndicador({
   detalle,
   icono,
   tono = "ocean",
-  variante = "",
   onClick,
 }) {
   const contenido = (
@@ -124,10 +123,10 @@ function TarjetaIndicador({
     </>
   );
   return onClick ? (
-    <button type="button" className={`ag-kpi ag-kpi-interactiva ${variante}`} onClick={onClick} aria-label={`Ver expedientes: ${titulo}`}>
+    <button type="button" className="erp-card ag-kpi ag-kpi-interactiva" onClick={onClick} aria-label={`Ver expedientes: ${titulo}`}>
       {contenido}
     </button>
-  ) : <article className={`ag-kpi ${variante}`}>{contenido}</article>;
+  ) : <article className="erp-card ag-kpi">{contenido}</article>;
 }
 
 function EstadoVacio({ icono = "file", titulo, detalle, tono = "ocean" }) {
@@ -481,7 +480,7 @@ function TablaEncargos({ encargos, onFirmado }) {
         const abierto = Boolean(abiertos[grupo.clave]);
         const expedientesBloqueados = grupo.expedientes.filter((encargo) => Boolean(encargo.bloqueado)).length;
         return (
-          <section className="ag-panel ag-grupo-notario ag-grupo-apoderado" key={grupo.clave}>
+          <section className="erp-card ag-panel ag-grupo-notario ag-grupo-apoderado" key={grupo.clave}>
             <button type="button" className="ag-panel-cabecera ag-notario-grupo-trigger ag-apoderado-grupo-trigger" aria-expanded={abierto} onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: !actual[grupo.clave] }))}>
               <MolsanIcon name="users" size={40} tone="ocean" />
               <span className="ag-notario-grupo-info">
@@ -933,7 +932,7 @@ export default function ApoderaGest() {
 
       {pestana === "Dashboard" ? (
         <section className="ag-contenido">
-          <div className="ag-panel ag-titulo-seccion ag-panel-resumen-heading">
+          <div className="erp-card ag-panel ag-titulo-seccion ag-panel-resumen-heading">
             <div><span className="ag-kicker">VISTA GENERAL</span><h2>Resumen de actividad</h2><p>Una visión rápida de encargos, firmas y próximos compromisos.</p></div>
             {ultimaActualizacion ? <span className="ag-actualizado">Actualizado a las {ultimaActualizacion.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}</span> : null}
           </div>
@@ -949,7 +948,7 @@ export default function ApoderaGest() {
             <TarjetaIndicador titulo="Kilómetros presenciales" valor={dashboard?.kilometros_presenciales == null ? "Pendiente" : `${numeroLegible(dashboard.kilometros_presenciales)} km`} detalle={`Desde CP ${dashboard?.origen_kilometros || "08016"} · ${dashboard?.firmas_presenciales_con_distancia ?? 0}/${dashboard?.firmas_presenciales ?? 0} distancias calculadas en línea recta`} icono="car" tono="indigo" onClick={() => abrirResumenEncargos("kilometros", "Firmas presenciales · cálculo de kilómetros")} />
           </div>
           <div className="ag-dashboard-inferior-grid">
-            <section className="ag-panel ag-panel-proximas">
+            <section className="erp-card ag-panel ag-panel-proximas">
               <div className="ag-panel-cabecera">
                 <div><span className="ag-kicker">PLANIFICACIÓN</span><h3>Próximas citas</h3></div>
                 <button type="button" className="ag-enlace-accion" onClick={() => setPestana("Agenda")}>Ver agenda <MolsanIcon name="arrowRight" size={14} bare /></button>
@@ -983,7 +982,7 @@ export default function ApoderaGest() {
                 </div>
               )}
             </section>
-            <section className="ag-panel ag-panel-estadistica-firma">
+            <section className="erp-card ag-panel ag-panel-estadistica-firma">
               <div className="ag-panel-cabecera">
                 <div><span className="ag-kicker">ACTIVIDAD ANUAL</span><h3>Estadística de firma</h3></div>
                 <span className="ag-estadistica-anio">{dashboard?.anio_estadistica_firmas || new Date().getFullYear()}</span>
@@ -1009,7 +1008,7 @@ export default function ApoderaGest() {
             </section>
           </div>
           {dashboard?.es_dashboard_general ? (
-            <section className="ag-panel ag-panel-estadistica-firma ag-estadistica-apoderados">
+            <section className="erp-card ag-panel ag-panel-estadistica-firma ag-estadistica-apoderados">
               <div className="ag-panel-cabecera">
                 <div><span className="ag-kicker">ACTIVIDAD ANUAL · POR APODERADO</span><h3>Estadística de firma por apoderado</h3></div>
                 <span className="ag-estadistica-anio">{dashboard?.anio_estadistica_firmas || new Date().getFullYear()}</span>
@@ -1077,7 +1076,7 @@ export default function ApoderaGest() {
       {modalResumen ? (
         <div className="ag-resumen-modal-overlay" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalResumen(null); }}>
           <section className="ag-resumen-modal" role="dialog" aria-modal="true" aria-labelledby="ag-resumen-modal-titulo">
-            <header className="ag-resumen-modal-cabecera">
+            <header className="ag-resumen-modal-cabecera molsan-modal-header">
               <div><span className="ag-kicker">APODERAGEST · RESUMEN DE ACTIVIDAD</span><h2 id="ag-resumen-modal-titulo">{modalResumen.titulo}</h2><p>{encargosDelResumen.length} expediente(s) en este indicador.</p></div>
               <button type="button" className="ag-resumen-modal-cerrar" autoFocus onClick={() => setModalResumen(null)} aria-label="Cerrar modal"><MolsanIcon name="x" size={16} bare /></button>
             </header>
