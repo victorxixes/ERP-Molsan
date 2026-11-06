@@ -506,7 +506,6 @@
 }
 .molsan-data-table__resizer:hover,
 .molsan-data-table__resizer:active { background:rgba(6,70,117,.28); }
-.molsan-data-table__empty { padding:30px 16px !important; color:#718696; text-align:center; }
 .molsan-data-table__pagination {
   display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:9px;
   padding:10px 12px; border:1px solid #D8E4EC; border-radius:13px; background:#F7FAFC;
