@@ -38,8 +38,12 @@
   min-width: 0;
 }
 
-/* Contenedores de tabla largos: desplazamiento horizontal sin romper la página. */
-.erp-route-content :where(.overflow-x-auto, .table-responsive, .tabla-responsive) {
+/* Redesign ya fija max-width y overscroll para overflow-x-auto/table-responsive.
+   Fase 3 conserva solo el scrollbar fino y la excepción tabla-responsive. */
+.erp-route-content :where(.overflow-x-auto, .table-responsive) {
+  scrollbar-width: thin;
+}
+.erp-route-content .tabla-responsive {
   max-width: 100%;
   overscroll-behavior-x: contain;
   scrollbar-width: thin;
