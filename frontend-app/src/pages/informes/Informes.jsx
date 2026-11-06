@@ -2719,7 +2719,7 @@ function InformeFirmas() {
         <InformeKpi icono="monitor" titulo="Videoconferencia" valor={numeroInforme(resumen.videoconferencia)} />
         <InformeKpi icono="courthouse" titulo="Presencial" valor={numeroInforme(resumen.presencial)} />
         <InformeKpi icono="help" titulo="Sin clasificar" valor={numeroInforme(resumen.sin_clasificar)} />
-        <InformeKpi icono="⏱️" titulo="Media envío-firma" valor={resumen.media_dias_envio_firma == null ? "—" : `${numeroInforme(resumen.media_dias_envio_firma, 1)} días`} subtitulo={`${numeroInforme(resumen.firmas_con_tiempo_calculable)} con fechas válidas`} />
+        <InformeKpi icono="timer" titulo="Media envío-firma" valor={resumen.media_dias_envio_firma == null ? "—" : `${numeroInforme(resumen.media_dias_envio_firma, 1)} días`} subtitulo={`${numeroInforme(resumen.firmas_con_tiempo_calculable)} con fechas válidas`} />
       </div>
 
       <section className="erp-card min-w-0 p-5">
@@ -2933,7 +2933,7 @@ function InformeNotarios() {
         <InformeKpi icono="monitor" titulo="Videoconferencia" valor={numeroInforme(resumen.videoconferencia)} />
         <InformeKpi icono="handshake" titulo="Presencial" valor={numeroInforme(resumen.presencial)} />
         <InformeKpi icono="help" titulo="Sin clasificar" valor={numeroInforme(resumen.sin_clasificar)} subtitulo="Modalidad pendiente de confirmar" />
-        <InformeKpi icono="⏱️" titulo="Media envío-firma" valor={resumen.media_dias_envio_firma == null ? "—" : `${numeroInforme(resumen.media_dias_envio_firma, 1)} días`} subtitulo={`${numeroInforme(resumen.firmas_con_tiempo_calculable)} con fechas válidas`} />
+        <InformeKpi icono="timer" titulo="Media envío-firma" valor={resumen.media_dias_envio_firma == null ? "—" : `${numeroInforme(resumen.media_dias_envio_firma, 1)} días`} subtitulo={`${numeroInforme(resumen.firmas_con_tiempo_calculable)} con fechas válidas`} />
       </div>
 
       {(Number(resumen.sin_clasificar || 0) > 0 || Number(resumen.sin_notario_identificado || 0) > 0 || (Number(resumen.total_firmas || 0) > Number(resumen.firmas_con_tiempo_calculable || 0))) && (
@@ -3116,7 +3116,7 @@ function InformeSLA() {
     <section className="informes-report-content space-y-5">
 <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
         <InformeKpi icono="folder" titulo="Expedientes" valor={numeroInforme(items.length)} subtitulo="Según el grupo y la búsqueda" />
-        <InformeKpi icono="⏱️" titulo="Duración global media" valor={mediaGlobal == null ? "—" : `${numeroInforme(mediaGlobal, 1)} días`} subtitulo={`${numeroInforme(globalesDentro)} dentro de plazo de ${numeroInforme(globalesEvaluables.length)} evaluables`} />
+        <InformeKpi icono="timer" titulo="Duración global media" valor={mediaGlobal == null ? "—" : `${numeroInforme(mediaGlobal, 1)} días`} subtitulo={`${numeroInforme(globalesDentro)} dentro de plazo de ${numeroInforme(globalesEvaluables.length)} evaluables`} />
         <InformeKpi icono="alert" titulo="Actividades fuera de plazo" valor={numeroInforme(fuera)} subtitulo={cumplimiento == null ? "Sin datos suficientes para calcular cumplimiento" : `${cumplimiento}% de cumplimiento en actividades con objetivo`} />
       </div>
       <section className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-sm backdrop-blur-xl">
