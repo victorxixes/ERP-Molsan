@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import "../../css/CatalogosMaestrosPremium.css";
 
 const API = "/tipos-expediente";
