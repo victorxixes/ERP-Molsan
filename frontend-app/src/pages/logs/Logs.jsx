@@ -221,67 +221,18 @@ export default function Logs() {
           CABECERA
       ===================================================== */}
 
-      <section
-        className="molsan-page-header molsan-page-header--dashboard-width"
-      >
-
-        <div
-          className="
-            relative
-            z-10
-          "
-        >
-
-          <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
-          >
-
-            <div
-              className="molsan-page-header__mark"
-            >
-
-              <MolsanIcon name="clipboard" size={30} bare />
-
-            </div>
-
-
-            <div>
-
-              <h1
-                className="
-                  text-2xl
-                  sm:text-3xl
-                  font-bold
-                  tracking-tight
-                  text-slate-800
-                "
-              >
-                Logs del sistema
-              </h1>
-
-
-              <p
-                className="
-                  mt-1
-                  text-sm
-                  text-slate-500
-                "
-              >
-                Monitorización avanzada de eventos,
-                seguridad y actividad del ERP.
-              </p>
-
-            </div>
-
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true">
+            <MolsanIcon name="clipboard" size={22} tone="ocean" />
           </div>
-
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">Logs del sistema</h1>
+            <p className="molsan-page-header__description">Monitorización avanzada de eventos, seguridad y actividad del ERP.</p>
+          </div>
         </div>
-
-      </section>
+      </header>
 
 
       {/* =====================================================
