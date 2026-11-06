@@ -276,3 +276,15 @@ La compilación confirma que las nuevas referencias y hooks compilan en conjunto
 ### Alcance todavía abierto
 
 Quedan por cerrar el inventario completo de modales embebidos que no declaran `role="dialog"`, las subpáginas restantes y la matriz de validación funcional. La rama está desplegada en Render Preview con commit `cfd2b4c`; la inspección visual interactiva y la regresión funcional siguen pendientes.
+
+
+## 12. Limpieza adicional de reglas vacías — 6 de noviembre de 2026
+
+En una nueva pasada sobre las hojas CSS de la rama se verificaron bloques `@media` sin ninguna declaración interna. Se retiraron únicamente los bloques vacíos, sin modificar reglas activas, breakpoints con contenido ni selectores funcionales:
+
+- `frontend-app/src/css/ApoderaGest.css`: 39 bloques `@media` vacíos retirados; el archivo reduce 1.090 caracteres.
+- `frontend-app/src/css/MolsanRedesign2027.css`: 1 bloque `@media` vacío retirado.
+
+Commits: `43ecec9` (ApoderaGest) y `96ea71e` (MolsanRedesign2027).
+
+**Validación pendiente:** estos dos commits no tienen todavía un resultado de build asociado consultable. La eliminación es estructural y no cambia declaraciones CSS, pero no se da por validada hasta ejecutar el build de la rama actual. Tampoco sustituye la inspección visual real de Preview ni la matriz de páginas, subpáginas y modales.
