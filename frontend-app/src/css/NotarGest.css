@@ -351,10 +351,6 @@
   min-width: 0;
   overflow: hidden;
   color: var(--ng-text);
-  border: 1px solid #D8E4EC;
-  border-radius: 18px;
-  background: #fff;
-  box-shadow: 0 24px 70px rgba(3,32,52,.24);
 }
 .ng-modal > header,.ng-resumen-expedientes-modal > header {
   display: flex;
@@ -362,8 +358,6 @@
   justify-content: space-between;
   gap: 16px;
   padding: 18px 20px;
-  border-bottom: 1px solid #D8E4EC;
-  background: #F2F7FB;
 }
 .ng-modal > header h2,.ng-resumen-expedientes-modal > header h2 { margin: 0; color: var(--ng-primary); font-size: 17px; font-weight: 850; }
 .ng-modal > header p,.ng-resumen-expedientes-modal > header p { margin: 5px 0 0; color: var(--ng-muted); font-size: 11px; }
@@ -439,7 +433,7 @@
   .ng-archivo-row { align-items: flex-start; flex-wrap: wrap; }
   .ng-archivo-row .ng-boton-secundario { margin-left: 42px; }
   .ng-modal-overlay,.ng-resumen-expedientes-overlay { align-items: flex-start; padding: 10px; }
-  .ng-modal,.ng-resumen-expedientes-modal { width: 100%; max-height: calc(100dvh - 20px); border-radius: 13px; }
+  .ng-modal,.ng-resumen-expedientes-modal { width: 100%; max-height: calc(100dvh - 20px); }
   .ng-modal > header,.ng-resumen-expedientes-modal > header { padding: 14px; }
   .ng-modal-pagos,.ng-modal-pagos-amplio,.ng-modal-perfil { width: 100%; }
   .ng-ficha-cuerpo,.ng-ficha-premium { padding: 10px; gap: 12px; }
