@@ -605,8 +605,8 @@ Para el commit funcional `7e7a9db` (limpieza de EncargaGest/NotarGest y retirada
 
 - `Validar Fichaje Molsan` #3320: **success**, incluyendo compilación del frontend y sintaxis del backend de fichajes.
 - `Frontend dependency security audit` #285: **success**.
-- `MOLSAN frontend premium build` #763: la primera ejecución se canceló durante la instalación por concurrencia; se ha solicitado repetir el job. La compilación del frontend ya quedó confirmada como correcta en el workflow #3320.
-- Render Preview: se ha iniciado un nuevo despliegue manual `dep-dbmvqquc6qcc73cmnt8g` desde el HEAD documental `0884cf2`, que contiene el código validado `7e7a9db`. Estado final pendiente de confirmar.
+- `MOLSAN frontend premium build` #763: el job volvió a cancelarse por concurrencia incluso tras repetirlo. La compilación del frontend sí quedó confirmada como correcta en `Validar Fichaje Molsan` #3320, con el mismo commit funcional.
+- Render Preview: despliegue manual `dep-dbmvqquc6qcc73cmnt8g` finalizado en estado **live**, desde el HEAD documental `0884cf2`, que contiene el código validado `7e7a9db`.
 
 El workflow `.github/workflows/supabase-schema-audit.yml` registró un fallo en este push, aunque no se ha cambiado ningún fichero de Supabase, esquema, API ni datos en esta pasada. No se atribuye a la limpieza CSS ni se presenta como validación satisfactoria; queda fuera de alcance y requiere diagnóstico separado si persiste.
 
