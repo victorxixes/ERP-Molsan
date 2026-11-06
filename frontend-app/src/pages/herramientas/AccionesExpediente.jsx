@@ -1264,82 +1264,22 @@ export default function AccionesExpediente() {
           CABECERA
       ===================================================== */}
 
-      <header
-        className="
-          molsan-page-header
-          w-full
-          min-w-0
-          flex
-          flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-5
-        "
-      >
-
-        <div
-          className="molsan-page-header__identity
-            flex
-            items-center
-            gap-4
-          "
-        >
-
-          <div className="molsan-page-header__mark">
-
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true">
             <MolsanIcon name="clipboardList" size={22} tone="ocean" />
-
           </div>
-
-
-          <div>
-
-            <h1
-              className="
-                text-2xl
-                sm:text-3xl
-                font-bold
-                text-[var(--erp-text)]
-              "
-            >
-              Acciones del expediente
-            </h1>
-
-            <p
-              className="
-                text-sm
-                text-[var(--erp-text-soft)]
-                mt-0.5
-              "
-            >
-              Catálogo de acciones y actividades
-              disponibles para los expedientes
-            </p>
-            <Link to="/herramientas" className="molsan-btn molsan-btn--secondary mt-3 inline-flex">← Volver a herramientas</Link>
-
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">Acciones del expediente</h1>
+            <Link to="/herramientas" className="molsan-page-back-link">← Volver a herramientas</Link>
+            <p className="molsan-page-header__description">Catálogo de acciones y actividades disponibles para los expedientes.</p>
           </div>
-
         </div>
-
-
-        <div
-          className="
-            flex
-            flex-wrap
-            items-center
-            gap-2
-          "
-        >
-
-          
-
-
+        <div className="molsan-page-header__actions">
           <MolsanButton type="button" onClick={abrirNueva} icon="plus" variant="success">Nueva acción</MolsanButton>
-
         </div>
-
-        </header>
+      </header>
 
 
       {/* =====================================================
