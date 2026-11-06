@@ -1464,7 +1464,6 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 }
 .apoderagest .ag-titulo-seccion.ag-panel-resumen-heading h2{ margin-top:3px; }
 .apoderagest .ag-titulo-seccion.ag-panel-resumen-heading p{ color:#617789; }
-.apoderagest .ag-kpi-icono .molsan-icon-3d,
 .apoderagest .ag-vacio-icono .molsan-icon-3d{
   display: inline-grid;
   vertical-align: middle;
@@ -1954,20 +1953,12 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 
 /* Iconografía visible y tridimensional · MOLSAN PREMIUM 2027 */
 
-.apoderagest .ag-kpi-icono .molsan-icon-3d{
-  display:inline-grid;
-  filter:drop-shadow(0 3px 4px rgba(6,50,82,.16));
-}
 
 
 
 
-.apoderagest .ag-grid-secundario .ag-kpi-icono{
-  flex-basis:48px;
-  width:48px;
-  height:48px;
-  border-radius:14px;
-}
+
+
 
 
 .apoderagest .ag-vacio-icono{
