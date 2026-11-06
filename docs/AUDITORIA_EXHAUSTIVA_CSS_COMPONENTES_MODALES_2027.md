@@ -1544,3 +1544,14 @@ La consulta del árbol Git recursivo de la rama ha permitido localizar los cuatr
 La cobertura JavaScript queda reconciliada: **57 de 57** ficheros leídos, clasificados como API (21), hooks (19), stores (12) y utilidades/configuración/realtime (5). Ninguno contiene JSX ni implementa una superficie visual; `useAccessibleDialog` sí gestiona foco/teclado de los modales y se conserva como comportamiento transversal de accesibilidad.
 
 La reconciliación JavaScript queda cerrada. La cobertura JSX y la validación de build/visual siguen abiertas.
+
+
+## 35. Última pasada de iconografía, clases Tailwind y componentes de formulario — 6 de noviembre de 2026
+
+- Se han conectado las clases raíz compartidas de toast, logs, mensajes, autocomplete y SelectSJ (sección 33).
+- En Catálogo ABSIS, Fichajes, Alta de expediente, Proceso ABSIS e Importaciones se han sustituido signos funcionales (`+`, flechas, doble chevrón y pictogramas de texto) por `MolsanIcon`; se conserva el texto accesible y las etiquetas aria.
+- Se ha corregido una familia de clases Tailwind que había quedado con modificador de opacidad después de una variable CSS arbitraria (forma inválida como `bg-[var(--token)]/40`). Se han eliminado los sufijos incompatibles en Fichajes, FichaExpedienteDemo, ComplementosSaldo, CorrespondenciaTipificada, ImportadorPostFirma, ImportarCTN, ModelosDocumentos, RegistrosPropiedad, ReglasActividadesExpediente, TiposConceptoGastos, Verifacti, Administración de empleados, Mensajes, SeguridadModulos y ControlApoderados.
+- La paleta de la vista previa de ModelosDocumentos se ha llevado a azul corporativo y azul hielo, preservando el significado de las zonas seleccionadas del editor.
+- Se ha comprobado por lectura posterior que los siete componentes de la sección 33 conservan su clase raíz compartida.
+
+**Límite:** esta pasada estática reduce clases inválidas conocidas y pictogramas inconsistentes, pero no sustituye el build de Vite ni la prueba real en navegador. El estado de compilación sigue sin confirmarse.
