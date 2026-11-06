@@ -515,3 +515,14 @@ Se revisaron también los tres componentes externos usados por la ficha:
 - `CarpetaDigitalModal.jsx`: distingue la carpeta modal de su uso en modo actividad inline y activa un segundo diálogo accesible para el visor de documento.
 
 No se modifican estos componentes en esta ronda porque sus condiciones de apertura y sus refs están conectadas a `useAccessibleDialog`. La comprobación visual debe validar especialmente el apilamiento de visor/preview sobre el modal principal, la restauración de foco al cerrar cada capa y que la variante inline no bloquee la pantalla.
+
+
+## 26. Modal de cita de Agenda: Escape y guardado — 6 de noviembre de 2026
+
+La revisión de `ModalNuevaCita.jsx` detectó un listener manual de Escape duplicado con `useAccessibleDialog`. El listener manual respetaba `loading`, pero el hook recibía directamente `onClose`, por lo que Escape podía cerrar el modal mientras se guardaba la cita. El backdrop y el botón de cierre ya estaban bloqueados durante el guardado.
+
+Se ha pasado la misma condición al callback de `useAccessibleDialog` (`if (!loading) onClose?.()`) y se ha eliminado el listener manual. Se conserva el ciclo de foco/Tab del hook y el bloqueo de cierre durante el guardado.
+
+Commit: `90cb639`.
+
+**Validación pendiente:** probar crear/editar cita, Escape mientras guarda, Escape en reposo, backdrop, foco restaurado y navegación Tab/Shift+Tab en Preview.
