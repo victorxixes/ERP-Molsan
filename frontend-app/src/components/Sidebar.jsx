@@ -22,7 +22,6 @@ import SidebarPerfilModal from "./SidebarPerfilModal";
 import useAccessibleDialog from "./ui/useAccessibleDialog";
 
 
-import "../css/SidebarBase.css";
 /**
  * ============================================================
  * ICONOS DE NAVEGACIÓN
