@@ -677,9 +677,11 @@ export default function SeguridadRoles() {
         </div>
 
 
-        <Chip tone="primary">
-          {estadisticas.total} roles
-        </Chip>
+        <div className="molsan-page-header__actions">
+          <Chip tone="primary">
+            {estadisticas.total} roles
+          </Chip>
+        </div>
 
       </div>
 
