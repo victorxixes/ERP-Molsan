@@ -58,35 +58,35 @@ export default function CambiarGestorExpediente() {
 
   return (
     <div className="cambiar-gestor-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <MolsanPageHeader mark="UT" title="Cambiar gestor de expediente" description="Busca el expediente y reasígnalo manualmente. El cambio quedará registrado en el historial de gestores." actions={<Link to="/herramientas/utilidades" className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">← Volver a Utilidades</Link>}/>
+      <MolsanPageHeader mark="UT" title="Cambiar gestor de expediente" description="Busca el expediente y reasígnalo manualmente. El cambio quedará registrado en el historial de gestores." actions={<Link to="/herramientas/utilidades" className="rounded-xl border border-[var(--molsan-border)] px-4 py-2 text-sm font-semibold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]">← Volver a Utilidades</Link>}/>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.85fr)]">
-        <form onSubmit={consultar} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-slate-800">1. Buscar expediente</h2>
-          <p className="mt-1 text-sm text-slate-500">Introduce el número exactamente como aparece en la ficha del expediente.</p>
-          <label className="mt-5 block text-sm font-semibold text-slate-700" htmlFor="numero-expediente">Número de expediente</label>
+        <form onSubmit={consultar} className="rounded-3xl border border-[var(--molsan-border)] bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-bold text-[var(--molsan-primary)]">1. Buscar expediente</h2>
+          <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Introduce el número exactamente como aparece en la ficha del expediente.</p>
+          <label className="mt-5 block text-sm font-semibold text-[var(--molsan-text)]" htmlFor="numero-expediente">Número de expediente</label>
           <div className="mt-2 flex flex-col gap-3 sm:flex-row">
-            <input id="numero-expediente" value={numero} onChange={(e) => { setNumero(e.target.value); setExpediente(null); setMensaje(""); }} placeholder="Ej. 2026/000123" className="min-w-0 flex-1 rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" />
-            <button type="submit" disabled={consultando} className="rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white disabled:opacity-60">{consultando ? "Buscando…" : "Consultar"}</button>
+            <input id="numero-expediente" value={numero} onChange={(e) => { setNumero(e.target.value); setExpediente(null); setMensaje(""); }} placeholder="Ej. 2026/000123" className="min-w-0 flex-1 rounded-xl border border-[var(--molsan-border-strong)] px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-[var(--molsan-primary-soft)]" />
+            <button type="submit" disabled={consultando} className="rounded-xl bg-[var(--molsan-primary)] px-5 py-3 text-sm font-semibold text-white disabled:opacity-60">{consultando ? "Buscando…" : "Consultar"}</button>
           </div>
-          {expediente && <div className="mt-5 rounded-2xl border border-blue-100 bg-blue-50/70 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Expediente encontrado</p>
-            <p className="mt-1 font-bold text-slate-800">{expediente.numero_expediente}</p>
-            <p className="mt-2 text-sm text-slate-600">Actividad actual: <span className="font-semibold">{expediente.actividad_actual || "Sin actividad indicada"}</span></p>
-            <p className="mt-1 text-sm text-slate-600">Gestor actual: <span className="font-semibold">{expediente.gestor_nombre || "Sin asignar"}</span></p>
+          {expediente && <div className="mt-5 rounded-2xl border border-[var(--molsan-border)] bg-[var(--molsan-primary-soft)] p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--molsan-primary)]">Expediente encontrado</p>
+            <p className="mt-1 font-bold text-[var(--molsan-primary)]">{expediente.numero_expediente}</p>
+            <p className="mt-2 text-sm text-[var(--molsan-text-secondary)]">Actividad actual: <span className="font-semibold">{expediente.actividad_actual || "Sin actividad indicada"}</span></p>
+            <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Gestor actual: <span className="font-semibold">{expediente.gestor_nombre || "Sin asignar"}</span></p>
           </div>}
         </form>
 
-        <form onSubmit={guardar} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-slate-800">2. Seleccionar nuevo gestor</h2>
-          <p className="mt-1 text-sm text-slate-500">La reasignación afecta al gestor responsable del expediente; no cambia el apoderado ni el notario.</p>
-          <label className="mt-5 block text-sm font-semibold text-slate-700" htmlFor="gestor-destino">Gestor de destino</label>
-          <select id="gestor-destino" value={gestorId} onChange={(e) => setGestorId(e.target.value)} disabled={cargandoGestores || !expediente} className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-slate-100">
+        <form onSubmit={guardar} className="rounded-3xl border border-[var(--molsan-border)] bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-bold text-[var(--molsan-primary)]">2. Seleccionar nuevo gestor</h2>
+          <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">La reasignación afecta al gestor responsable del expediente; no cambia el apoderado ni el notario.</p>
+          <label className="mt-5 block text-sm font-semibold text-[var(--molsan-text)]" htmlFor="gestor-destino">Gestor de destino</label>
+          <select id="gestor-destino" value={gestorId} onChange={(e) => setGestorId(e.target.value)} disabled={cargandoGestores || !expediente} className="mt-2 w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-[var(--molsan-primary-soft)] disabled:bg-[var(--molsan-table-head)]">
             <option value="">{cargandoGestores ? "Cargando gestores…" : "Selecciona un gestor"}</option>
             {gestores.map((gestor) => <option key={gestor.id} value={gestor.id}>{gestor.nombre}{gestor.usuario ? ` · ${gestor.usuario}` : ""}</option>)}
           </select>
-          <button type="submit" disabled={guardando || !expediente || !gestorId} className="mt-5 w-full rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">{guardando ? "Guardando cambio…" : "Confirmar reasignación"}</button>
-          <p className="mt-3 text-xs leading-5 text-slate-500">Antes de confirmar, revisa el número de expediente y el gestor seleccionado. El cambio se guarda de forma inmediata.</p>
+          <button type="submit" disabled={guardando || !expediente || !gestorId} className="mt-5 w-full rounded-xl bg-[var(--molsan-primary)] px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[var(--molsan-primary)] disabled:cursor-not-allowed disabled:opacity-50">{guardando ? "Guardando cambio…" : "Confirmar reasignación"}</button>
+          <p className="mt-3 text-xs leading-5 text-[var(--molsan-text-secondary)]">Antes de confirmar, revisa el número de expediente y el gestor seleccionado. El cambio se guarda de forma inmediata.</p>
         </form>
       </section>
 
