@@ -1203,3 +1203,10 @@ La regla de migración de tarjetas Tailwind ahora excluye cualquier elemento con
 ## 27. Normalización de tarjetas KPI
 
 MolsanStatCard deja de usar fondos degradados, borde fino y microanimaciones de giro/zoom del icono. Ahora comparte fondo blanco, borde 1,5 px, franja superior de acento, sombra reforzada y elevación de 4 px con el patrón Espacios de trabajo. Los tonos semánticos de cada indicador se conservan en la franja y el icono; los datos/valores y su jerarquía siguen intactos. Commit: 3918a4a.
+
+
+## 28. Eliminación de duplicado físico en el Design System
+
+Se detectó que `molsan-design-system.css` contenía una segunda copia completa de la hoja concatenada al final (casi 1.000 líneas adicionales), con estilos anteriores de tarjetas KPI y microanimaciones de icono que ya se habían sustituido en la primera copia. Se conservó la primera versión actualizada, se eliminó la copia antigua y se cerró explícitamente la regla `prefers-reduced-motion` de la sección KPI. La hoja pasa de 2.017 a 1.020 líneas, conserva un único encabezado de Design System y mantiene balance de llaves CSS.
+
+Commits: 4da325c y 790e76f. Es una eliminación real de duplicado, no un override adicional.
