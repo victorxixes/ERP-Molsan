@@ -2,9 +2,6 @@ import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useState } from "react";
 import axios from "../../api/axios";
-import "../../css/ModalesHerramientasPremium.css";
-
-
 /**
  * ============================================================
  * IMPORTADOR ABSIS
