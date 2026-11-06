@@ -178,7 +178,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
 
       {abierto && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center overflow-y-auto bg-slate-950/55 p-3 backdrop-blur-sm sm:p-6" onMouseDown={(event) => { if (event.target === event.currentTarget) setAbierto(false); }}>
-          <section role="dialog" aria-modal="true" aria-labelledby="modal-traspaso-saldo-titulo" className="my-auto max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl sm:p-5">
+          <section role="dialog" aria-modal="true" aria-labelledby="modal-traspaso-saldo-titulo" className="modal-sj my-auto max-h-[92vh] w-full max-w-5xl overflow-y-auto bg-white p-4 shadow-2xl sm:p-5">
             <header className="molsan-modal-header mb-4 flex flex-wrap items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
                 <MolsanIcon name="arrowUpDown" size={24} tone="ocean" />
