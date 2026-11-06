@@ -165,7 +165,7 @@ Hallazgo importante: la existencia de estos componentes no demuestra que todas l
 
 **Conclusión:** el inventario de 41 CSS está realizado y se han localizado focos claros de cascada heredada. La limpieza global todavía no está terminada. Este documento registra el punto de partida verificable y evita presentar como completadas pruebas que aún no se han ejecutado.
 
-## 11. Revisión incremental de modales — 6 de noviembre de 2026
+## 10. Revisión incremental de modales — 6 de noviembre de 2026
 
 Se ha profundizado en el flujo de Agenda y, especialmente, en FichaExpediente y sus modales de gestión documental/económica.
 
@@ -203,7 +203,7 @@ El commit de código `315f84c` ha terminado con resultado correcto en los tres w
 
 La actualización posterior `6ca454c` solo añade esta documentación. CI correcto confirma compilación y controles automatizados disponibles; el despliegue de Preview está confirmado, pero no sustituye las pruebas interactivas en navegador.
 
-## 12. Segunda pasada estática de las 41 hojas CSS
+## 11. Segunda pasada estática de las 41 hojas CSS
 
 Se ha vuelto a recorrer el árbol Git completo de `frontend-app/src` en el commit auditado: el árbol no está truncado y devuelve exactamente **41 CSS** y **143 JSX/TSX**.
 
@@ -241,7 +241,7 @@ La detección es estática y no modela por completo media queries, estados, espe
 
 No se ha reordenado `main.jsx` ni se han retirado capas globales: la cascada actual sí tiene dependencias verificables. La siguiente consolidación debe mover cada responsabilidad a una única hoja y retirar la regla anterior en el mismo cambio, conservando el valor computado actual y validándolo en Preview antes de continuar con la siguiente familia.
 
-## 13. Tercera pasada de accesibilidad de modales — actualización 15:42
+## 12. Tercera pasada de accesibilidad de modales — actualización 15:42
 
 Se han revisado además los modales explícitos de CTN, Provisiones e Informes, junto con los componentes de empleado y traspaso de saldo.
 
@@ -278,7 +278,7 @@ La compilación confirma que las nuevas referencias y hooks compilan en conjunto
 Quedan por cerrar el inventario completo de modales embebidos que no declaran `role="dialog"`, las subpáginas restantes y la matriz de validación funcional. La rama está desplegada en Render Preview con commit `a82d38a` (incluye código `4dcd32b`); la inspección visual interactiva y la regresión funcional siguen pendientes.
 
 
-## 12. Limpieza adicional de reglas vacías — 6 de noviembre de 2026
+## 13. Limpieza adicional de reglas vacías — 6 de noviembre de 2026
 
 La pasada de comprobación sobre las 41 hojas CSS identificó **47 bloques `@media` completamente vacíos**. Se retiraron exclusivamente esos contenedores sin declaraciones; no se eliminaron breakpoints que contuvieran reglas ni se alteró ninguna declaración activa.
 
@@ -298,7 +298,7 @@ Commits de código: `43ecec9`, `96ea71e`, `2fa5ef1`, `7790be7`, `6f442d5`, `f49b
 **Validación pendiente:** no hay todavía un resultado de build asociado a estos commits en la consulta disponible. La limpieza es estructural y no cambia declaraciones CSS, pero no se da por validada hasta ejecutar el build de la rama actual. Tampoco sustituye la inspección visual real de Preview ni la matriz de páginas, subpáginas y modales.
 
 
-## 13. Corrección de selectores canónicos inválidos — 6 de noviembre de 2026
+## 14. Corrección de selectores canónicos inválidos — 6 de noviembre de 2026
 
 La inspección de reglas repetidas en `MolsanCanonicalVisual2027.css` detectó dos selectores `:where()` con una coma final antes del paréntesis (`:where(.molsan-icon-3d,.molsan-icon-wrap,)`). Esa lista no es válida y el navegador descarta la regla completa. Se han corregido ambas apariciones eliminando únicamente la coma sobrante, para que vuelvan a aplicarse la transición y el movimiento de los iconos dentro de las tarjetas.
 
@@ -306,7 +306,7 @@ Commit: `5a62310`.
 
 La corrección no cambia la estructura de las tarjetas ni el comportamiento de las acciones. Queda pendiente el build y la comprobación visual del hover en Preview; se debe comprobar también el estado con `prefers-reduced-motion`.
 
-## 14. Cuarta pasada — Expedientes, CTN y Panel Técnico
+## 15. Cuarta pasada — Expedientes, CTN y Panel Técnico
 
 En esta pasada se cruzaron las hojas CSS con sus JSX consumidores y componentes compartidos antes de retirar reglas.
 
@@ -328,7 +328,7 @@ En esta pasada se cruzaron las hojas CSS con sus JSX consumidores y componentes 
 
 
 
-## 14. Cabeceras de Catálogos en pantallas estrechas — 6 de noviembre de 2026
+## 16. Cabeceras de Catálogos en pantallas estrechas — 6 de noviembre de 2026
 
 La comparación de reglas en `MolsanCardsPremium2027.css` encontró que el bloque móvil de la cabecera de Catálogos estaba declarado antes de las reglas base posteriores. Estas últimas volvían a imponer `flex-wrap: nowrap` y `flex: 0 0 auto` en las acciones, mientras el bloque móvil solo fijaba `width: 100%`. La combinación podía mantener identidad y acciones en una sola fila y desbordar el ancho disponible.
 
@@ -339,7 +339,7 @@ Commit: `0c18516`.
 **Validación pendiente:** comprobar en Preview Catálogos, Entidades bancarias, Registros de propiedad, Municipios, Tipos de carga hipotecaria y Honorarios, en anchuras de escritorio y móvil. No se declara corregido visualmente hasta esa comprobación.
 
 
-## 15. Validación automatizada tras la ronda CSS — 6 de noviembre de 2026
+## 17. Validación automatizada tras la ronda CSS — 6 de noviembre de 2026
 
 El commit de código `0c18516` (ajuste responsive de cabeceras de Catálogos) quedó validado por GitHub Actions:
 
@@ -350,7 +350,7 @@ El commit de código `0c18516` (ajuste responsive de cabeceras de Catálogos) qu
 El commit posterior `c8bb1d3` solo actualiza esta documentación. La validación automatizada no acredita todavía la inspección de navegador, las pruebas de modales, la matriz funcional ni el responsive visual. Render Preview sí está desplegado en esta ronda (`dep-dbmvlsqjnfac73bj64k0`, `live`); Producción, API y Supabase permanecen fuera del alcance.
 
 
-## 16. Consolidación no destructiva de cabeceras de Catálogos — 6 de noviembre de 2026
+## 18. Consolidación no destructiva de cabeceras de Catálogos — 6 de noviembre de 2026
 
 Tras corregir el orden responsive, se consolidaron en `MolsanCardsPremium2027.css` los bloques base repetidos de `.molsan-page-header`, `__identity` y `__actions` de Catálogos. Las declaraciones comunes se han reunido en una única definición por selector; los breakpoints permanecen separados y después de la base para conservar la cascada. Se mantienen intactas las reglas particulares de las fichas de Catálogos y los accesos de Informes.
 
@@ -359,7 +359,7 @@ Commit: `eb2cefa`.
 La modificación es una consolidación de declaraciones equivalentes; requiere build y verificación visual junto con la corrección responsive anterior.
 
 
-## 17. Consolidación del layout del modal de EncargaGest — 6 de noviembre de 2026
+## 19. Consolidación del layout del modal de EncargaGest — 6 de noviembre de 2026
 
 La inspección de `EncargaGest.css` confirmó dos definiciones base de `.eg-modal-layout`: la segunda reemplazaba el grid-template y alineación de la primera, mientras las reglas de tablet/móvil estaban repartidas en dos bloques con los mismos breakpoints. Se consolidó la base conservando el resultado efectivo de escritorio (`0.9fr / 1.1fr`, alineación superior, scroll vertical, padding y scrollbar) y se unificaron los breakpoints de 1100 px y 650 px. Se preservaron los ajustes de overlay, altura máxima del formulario, columnas de datos/carpeta, campos y pie de acciones.
 
@@ -368,7 +368,7 @@ Commits: `19bff3d` (consolidación) y `e8e734b` (revisión de preservación del 
 No se ha tocado JSX, handlers, permisos, envío ni guardado del modal. **Validación pendiente:** build posterior a estos commits y prueba real de alta/edición, scroll, teclado, foco y móvil/tablet en EncargaGest.
 
 
-## 18. Consolidación de tarjetas KPI de administración en NotarGest — 6 de noviembre de 2026
+## 20. Consolidación de tarjetas KPI de administración en NotarGest — 6 de noviembre de 2026
 
 En `NotarGest.css` se encontraron dos reglas base para `.ng-admin-kpi-button` y declaraciones repetidas para sus elementos `span`, `strong` y `small`. La segunda regla base cambiaba altura, padding, gap, radio, fondo y sombra. Se trasladó el conjunto final efectivo a la regla base inicial y se eliminaron las redefiniciones repetidas, manteniendo cursor/transición y los estilos del icono Molsan. No se ha cambiado el JSX ni la acción de los KPI.
 
@@ -377,7 +377,7 @@ Commit: `e3ae11a`.
 **Validación pendiente:** build posterior al commit y comprobación visual del panel global y las fichas individuales por notaría, incluyendo hover, foco y móvil. Las reglas de los modales NotarGest que aparecen repetidas en distintos breakpoints se conservan hasta validar cada estado; no se han eliminado por coincidencia de selector.
 
 
-## 19. Consolidación de superficies base de modales NotarGest — 6 de noviembre de 2026
+## 21. Consolidación de superficies base de modales NotarGest — 6 de noviembre de 2026
 
 Se unificaron las reglas base repetidas de `.ng-modal` / `.ng-resumen-expedientes-modal` y sus cabeceras. La segunda definición solo repetía el z-index del overlay y volvía a fijar borde, radio, sombra, fondo y borde inferior. Se trasladó el acabado final corporativo a las reglas base y se retiró el bloque duplicado. Se conserva la variante oscura específica de `.notargest .ng-modal > header` (portal profesional), que es una excepción funcional/visual distinta y no se ha neutralizado.
 
@@ -386,13 +386,13 @@ Commit: `9aa2115`.
 No se ha modificado JSX ni el comportamiento de apertura/cierre. **Validación pendiente:** probar los modales de avisos, pagos, perfil y resumen de expedientes en el panel administrativo y el portal NotarGest, incluyendo foco, Escape, scroll y responsive.
 
 
-## 20. Modal de resumen en ApoderaGest: cascada y estados responsive pendientes
+## 22. Modal de resumen en ApoderaGest: cascada y estados responsive pendientes
 
 La inspección de `ApoderaGest.css` localiza cuatro capas para `.ag-resumen-modal` y dos grupos de reglas de overlay: geometría inicial, scroll/overscroll, acabado corporativo y ajustes móviles. Los dos bloques móviles comparten el breakpoint de 650 px, pero el segundo sustituye el padding por valores con `env(safe-area-inset-top/bottom)` y redefine el alto máximo. La cabecera del modal también tiene una variante azul oscuro específica del portal.
 
 No se han eliminado estas reglas por coincidencia de selector: hacerlo sin comprobar notch/safe-area, scroll del overlay, altura del viewport dinámico y cabecera del portal podría recortar el modal en móvil. Queda señalado para la prueba individual del resumen de apoderado en escritorio, tablet y móvil. Se conserva también la variante de grupo/notario, que es otro diálogo y no debe mezclarse con el resumen.
 
-## 16. Consolidación de la capa visual canónica — 6 de noviembre de 2026
+## 23. Consolidación de la capa visual canónica — 6 de noviembre de 2026
 
 Se ha resuelto una de las colisiones globales identificadas en la auditoría:
 
@@ -415,7 +415,7 @@ La capa Canonical reduce sus `!important` de 115 a 110 en esta pasada. El result
 
 
 
-## 21. Validación completa del commit desplegado en Preview — 6 de noviembre de 2026
+## 24. Validación completa del commit desplegado en Preview — 6 de noviembre de 2026
 
 El commit de código `cdd387b` (consolidación de la capa canónica de tarjetas e iconos) tiene las tres comprobaciones automatizadas en **success**:
 
@@ -427,7 +427,7 @@ Render confirma el deploy `dep-dbmvkg6gekts73ej1ktg` en estado `live`, con el co
 
 La URL de Preview responde como servicio desplegado según Render, pero la lectura web automatizada no puede acceder a la aplicación para una inspección visual autenticada. La validación visual de páginas, subpáginas, estados y modales sigue siendo manual y no se declara completada.
 
-## 20. Barrido de cabeceras legacy y diálogos embebidos — 6 de noviembre de 2026
+## 25. Barrido de cabeceras legacy y diálogos embebidos — 6 de noviembre de 2026
 
 ### Cabeceras de Catálogos
 
@@ -471,7 +471,7 @@ Producción, API y base de datos principal no forman parte de estos cambios. El 
 El build y el deploy no sustituyen la comprobación visual y funcional. Falta probar en navegador: foco inicial, Tab/Shift+Tab, Escape, restauración del foco, backdrop, scroll, responsive y estados de carga/error/guardado de cada modal; además de revisar permisos 401/403/200 y completar la matriz de todas las subpáginas. No se declara finalizada la auditoría completa.
 
 
-## 22. Corrección funcional del diálogo de grupo en ApoderaGest — 6 de noviembre de 2026
+## 26. Corrección funcional del diálogo de grupo en ApoderaGest — 6 de noviembre de 2026
 
 La revisión conjunta de JSX, estado y modal encontró un desacoplamiento real: `abierto` se calculaba desde `grupoEncargosAbierto`, pero el botón escribía en `abiertos[grupo.clave]`. Por ello el estado que controlaba el render del portal no cambiaba y el diálogo de grupo no podía abrirse correctamente.
 
@@ -487,7 +487,7 @@ Commits: `986b079`, `3559730` y `4dcd32b`.
 **Validación pendiente:** build del HEAD actual y prueba real de abrir/cerrar grupo, backdrop, Escape, ciclo Tab/Shift+Tab, restauración del foco y apertura de resumen. El commit desplegado anteriormente en Preview (`cdd387b`) todavía no incluye esta corrección; requiere nuevo despliegue de Preview.
 
 
-## 23. Revisión de estados de diálogo en FichaExpediente — 6 de noviembre de 2026
+## 27. Revisión de estados de diálogo en FichaExpediente — 6 de noviembre de 2026
 
 La inspección estática de `FichaExpediente.jsx` (9.924 líneas) confirma que:
 
@@ -499,14 +499,14 @@ La inspección estática de `FichaExpediente.jsx` (9.924 líneas) confirma que:
 No se modifica FichaExpediente en esta pasada porque la estructura de sus diálogos propios está correctamente conectada en el JSX revisado. La validación final sigue requiriendo abrir cada diálogo, comprobar Escape/Tab/Shift+Tab, backdrop, foco restaurado, scroll y responsive en Preview.
 
 
-## 24. Despliegue de la corrección de estado de ApoderaGest — 6 de noviembre de 2026
+## 28. Despliegue de la corrección de estado de ApoderaGest — 6 de noviembre de 2026
 
 La corrección del diálogo de grupo y la retirada de los listeners duplicados se incluyeron en el commit `a82d38a`. Render completó el despliegue `dep-dbmvlsqjnfac73bj64k0` con estado `live` sobre el servicio `molsan-premium-2027-candidate-preview`. El Preview ya contiene el cambio funcional de ApoderaGest y las consolidaciones CSS anteriores.
 
 El HEAD del PR añade después documentación de auditoría, sin cambios adicionales de código. Producción y API siguen intactas. Pendiente únicamente la prueba visual/funcional autenticada en navegador; el deploy live por sí solo no acredita foco real, comportamiento de teclado ni responsive.
 
 
-## 25. Componentes modales propios de FichaExpediente — 6 de noviembre de 2026
+## 29. Componentes modales propios de FichaExpediente — 6 de noviembre de 2026
 
 Se revisaron también los tres componentes externos usados por la ficha:
 
@@ -517,7 +517,7 @@ Se revisaron también los tres componentes externos usados por la ficha:
 No se modifican estos componentes en esta ronda porque sus condiciones de apertura y sus refs están conectadas a `useAccessibleDialog`. La comprobación visual debe validar especialmente el apilamiento de visor/preview sobre el modal principal, la restauración de foco al cerrar cada capa y que la variante inline no bloquee la pantalla.
 
 
-## 26. Modal de cita de Agenda: Escape y guardado — 6 de noviembre de 2026
+## 30. Modal de cita de Agenda: Escape y guardado — 6 de noviembre de 2026
 
 La revisión de `ModalNuevaCita.jsx` detectó un listener manual de Escape duplicado con `useAccessibleDialog`. El listener manual respetaba `loading`, pero el hook recibía directamente `onClose`, por lo que Escape podía cerrar el modal mientras se guardaba la cita. El backdrop y el botón de cierre ya estaban bloqueados durante el guardado.
 
@@ -528,7 +528,7 @@ Commit: `90cb639`.
 **Validación pendiente:** probar crear/editar cita, Escape mientras guarda, Escape en reposo, backdrop, foco restaurado y navegación Tab/Shift+Tab en Preview.
 
 
-## 27. Cobertura de diálogos en módulos operativos — 6 de noviembre de 2026
+## 31. Cobertura de diálogos en módulos operativos — 6 de noviembre de 2026
 
 Se contrastaron los estados de render y los refs de los diálogos en seis módulos adicionales:
 
@@ -540,7 +540,7 @@ Se contrastaron los estados de render y los refs de los diálogos en seis módul
 - `Agenda.jsx` / `ModalNuevaCita.jsx`: diálogo con foco gestionado por el hook; corregido el cierre por Escape durante el guardado.
 
 En los cinco primeros no se detectó un desacoplamiento entre el estado que abre el modal y la condición de render en la inspección estática. No se han alterado porque la conexión de estado/ref es coherente. La comprobación de teclado, backdrop, scroll y foco restaurado sigue pendiente en navegador.
-## 25. Estado consolidado de la rama y colisiones resueltas — 6 de noviembre de 2026
+## 32. Estado consolidado de la rama y colisiones resueltas — 6 de noviembre de 2026
 
 - `molsan-design-system.css` es ahora el único propietario del componente `MolsanPremiumCard`: franja superior única, hover, foco y título. `MolsanCanonicalVisual2027.css` ya no lo sobrescribe.
 - `MolsanPremium2027.css` es el único propietario del acabado base de `MolsanIcon`; se retiró la base duplicada de `molsan-design-system.css`.
@@ -553,7 +553,7 @@ En los cinco primeros no se detectó un desacoplamiento entre el estado que abre
 - Pendiente: revisión visual autenticada en navegador, responsive real, prueba de foco/Tab/Shift+Tab/Escape/backdrop de cada modal, matriz de permisos 401/403/200 y regresión funcional por módulo. No se declara finalizada la auditoría global.
 
 
-## 28. Cobertura adicional de modales en Informes, Empleados, Fichajes, Mensajería y Catálogos — 6 de noviembre de 2026
+## 33. Cobertura adicional de modales en Informes, Empleados, Fichajes, Mensajería y Catálogos — 6 de noviembre de 2026
 
 Se revisaron las condiciones de apertura, refs y cierres en:
 
