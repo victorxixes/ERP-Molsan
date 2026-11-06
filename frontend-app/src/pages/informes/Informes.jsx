@@ -6,8 +6,6 @@ import Chart from "chart.js/auto";
 import SelectSJ from "../../components/ui/SelectSJ";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
-import "../../css/ModalesHerramientasPremium.css";
-
 const MESES = [
   { value: 1, label: "Enero" },
   { value: 2, label: "Febrero" },
