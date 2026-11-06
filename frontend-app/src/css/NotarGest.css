@@ -358,17 +358,6 @@
   background: #fff;
   box-shadow: 0 24px 70px rgba(3,32,52,.24);
 }
-.ng-modal > header,.ng-resumen-expedientes-modal > header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 18px 20px;
-  border-bottom: 1px solid var(--ng-border);
-  background: var(--ng-soft);
-}
-.ng-modal > header h2,.ng-resumen-expedientes-modal > header h2 { margin: 0; color: var(--ng-primary); font-size: 17px; font-weight: 850; }
-.ng-modal > header p,.ng-resumen-expedientes-modal > header p { margin: 5px 0 0; color: var(--ng-muted); font-size: 11px; }
 .ng-modal-lista { display: flex; flex-direction: column; gap: 10px; padding: 16px; overflow: auto; }
 .ng-modal-vacio { padding: 28px; color: var(--ng-muted); text-align: center; }
 .ng-modal-vacio strong { display: block; color: var(--ng-primary); font-size: 14px; }
@@ -443,7 +432,6 @@
   .ng-archivo-row .ng-boton-secundario { margin-left: 42px; }
   .ng-modal-overlay,.ng-resumen-expedientes-overlay { align-items: flex-start; padding: 10px; }
   .ng-modal,.ng-resumen-expedientes-modal { width: 100%; max-height: calc(100dvh - 20px); border-radius: 13px; }
-  .ng-modal > header,.ng-resumen-expedientes-modal > header { padding: 14px; }
   .ng-modal-pagos,.ng-modal-pagos-amplio,.ng-modal-perfil { width: 100%; }
   .ng-ficha-cuerpo,.ng-ficha-premium { padding: 10px; gap: 12px; }
   .ng-detalle-bloque,.ng-ficha-premium > .ng-detalle-bloque { padding: 12px; }
@@ -472,10 +460,6 @@
   border:1px solid #D8E4EC;
   border-radius:18px;
   box-shadow:0 24px 70px rgba(3,32,52,.24);
-}
-.ng-modal > header,.ng-resumen-expedientes-modal > header {
-  background:#F2F7FB;
-  border-bottom:1px solid #D8E4EC;
 }
 .ng-modal :is(input,select,textarea),.ng-resumen-expedientes-modal :is(input,select,textarea) {
   max-width:100%;min-width:0;box-sizing:border-box;
