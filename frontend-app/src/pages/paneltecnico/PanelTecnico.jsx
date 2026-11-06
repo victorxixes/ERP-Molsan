@@ -37,7 +37,7 @@ export default function PanelTecnico() {
         <AuditoriaAvanzada />
       </section>
 
-      <section className="panel-tecnico-seccion">
+      <section className="erp-card panel-tecnico-seccion p-5">
         <div className="mb-4">
           <h2 className="text-lg font-semibold text-[var(--erp-text)]">Logs técnicos</h2>
           <p className="mt-1 text-sm text-[var(--erp-text-soft)]">Información técnica y eventos registrados por el sistema.</p>
@@ -46,7 +46,7 @@ export default function PanelTecnico() {
       </section>
 
       {puedeVerEmpleados && (
-        <section className="panel-tecnico-seccion">
+        <section className="erp-card panel-tecnico-seccion p-5">
           <div className="mb-4">
             <h2 className="text-lg font-semibold text-[var(--erp-text)]">Gestión de empleados</h2>
             <p className="mt-1 text-sm text-[var(--erp-text-soft)]">Administración y supervisión de los empleados del ERP.</p>
