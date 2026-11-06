@@ -236,3 +236,38 @@ La detección es estática y no modela por completo media queries, estados, espe
 ### Decisión de esta pasada
 
 No se ha reordenado `main.jsx` ni se han retirado capas globales: la cascada actual sí tiene dependencias verificables. La siguiente consolidación debe mover cada responsabilidad a una única hoja y retirar la regla anterior en el mismo cambio, conservando el valor computado actual y validándolo en Preview antes de continuar con la siguiente familia.
+
+## 13. Tercera pasada de accesibilidad de modales — actualización 15:42
+
+Se han revisado además los modales explícitos de CTN, Provisiones e Informes, junto con los componentes de empleado y traspaso de saldo.
+
+### Correcciones de esta pasada
+
+- `CtnDetallePage.jsx`: el diálogo de historial de firmas ahora tiene ref, foco inicial, ciclo de Tab/Shift+Tab y Escape mediante `useAccessibleDialog`.
+- `ProvisionesFondosPage.jsx`: el diálogo de envío de provisión por email incorpora ref y cierre por Escape, manteniendo la misma limpieza de borrador e identificador que el botón Cerrar.
+- `Informes.jsx`: el diálogo de detalle de facturación incorpora ref y gestión de foco/Escape.
+- `ExpedientesListado.jsx`: la rama contiene también la migración de los diálogos de filtros y ayuda de control de plazos a refs y `useAccessibleDialog` (commit `9c2ad626`).
+
+### Componentes revisados que ya disponían del hook compartido
+
+- `ModalNuevaCita.jsx`
+- `ModalCtnDetalle.jsx`
+- `ModalEmpleado.jsx`
+- `TraspasoSaldoPanel.jsx`
+- `EnviarANotarioModal.jsx`
+- `LiquidarExpedienteModal.jsx`
+- `CarpetaDigitalModal.jsx`
+- Portales ApoderaGest, EncargaGest y NotarGest.
+
+### CI
+
+La última revisión de CI corresponde al head de rama `741029f`:
+- `MOLSAN frontend premium build`: success (job Vite production build).
+- `Frontend dependency security audit`: success.
+- `Validar Fichaje Molsan`: success.
+
+La compilación confirma que las nuevas referencias y hooks compilan en conjunto. No confirma todavía la prueba real de teclado, backdrop, restauración del foco ni anidamiento en navegador.
+
+### Alcance todavía abierto
+
+Quedan por cerrar el inventario completo de modales embebidos que no declaran `role="dialog"`, las subpáginas restantes y la matriz de validación funcional. Tampoco se ha publicado esta rama en Render Preview; no se debe confundir CI verde con despliegue ni con validación visual.
