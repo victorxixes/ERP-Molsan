@@ -544,3 +544,191 @@
   background: transparent;
   box-shadow: none;
 }
+
+
+/* Reglas específicas de NotarGest trasladadas desde la antigua hoja global de portales. */
+.notargest.ng-content {
+
+  color:var(--molsan-prof-text)!important;
+}
+
+.notargest.ng-content {
+
+  width:100%!important;max-width:none!important;min-width:0!important;
+}
+
+.notargest.ng-content {
+
+  min-width:0!important;
+}
+
+.notargest.ng-content .ng-dashboard-graficos {
+
+  gap:12px!important;
+}
+
+.notargest.ng-content>header.ng-hero.molsan-page-header {
+
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:nowrap;
+  gap:12px;
+  width:100%;
+  max-width:none;
+  min-width:0;
+  min-height:74px;
+  height:auto;
+  max-height:none;
+  margin:0 0 16px;
+  padding:10px 18px;
+  overflow:hidden;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:18px;
+  background:radial-gradient(circle at 86% 18%,rgba(116,199,219,.18),transparent 27%),linear-gradient(116deg,#032D4B 0%,#064675 54%,#0D638C 100%);
+  box-shadow:0 12px 28px rgba(4,55,91,.16);
+  animation:none;
+  transition:none;
+  opacity:1;
+  transform:none;
+  filter:none;
+  will-change:auto;
+}
+
+.notargest.ng-content>header.ng-hero::after {
+
+  content:"";
+  position:absolute;
+  right:0;bottom:0;left:0;height:3px;
+  background:linear-gradient(90deg,#6CC5D9 0%,#8CB8D8 38%,rgba(255,255,255,.08) 100%);
+  pointer-events:none;
+}
+
+.notargest.ng-content .ng-dashboard-kpi,
+.notargest.ng-content .ng-kpi-card {
+
+  position:relative!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;
+  justify-content:space-between!important;gap:9px!important;min-width:0!important;min-height:136px!important;
+  margin:0!important;padding:17px 18px!important;color:var(--molsan-prof-text)!important;
+  border:1px solid var(--molsan-prof-border)!important;border-radius:15px!important;
+  background:linear-gradient(145deg,#fff 0%,#fff 66%,#F7FAFC 100%)!important;
+  box-shadow:var(--molsan-prof-shadow)!important;transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease!important;
+  text-align:left;
+}
+
+.notargest.ng-content .ng-panel,
+.notargest.ng-content .ng-dashboard-grafico,
+.notargest.ng-content .ng-detalle-bloque {
+
+  min-width:0!important;border:1px solid var(--molsan-prof-border)!important;border-radius:18px!important;
+  background:#fff!important;box-shadow:var(--molsan-prof-shadow)!important;overflow:hidden!important;
+}
+
+.notargest.ng-content .ng-panel-titulo,
+.notargest.ng-content .ng-bloque-heading {
+
+  display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;
+  margin:0!important;padding:16px 19px!important;color:var(--molsan-prof-blue)!important;
+  border:0!important;border-bottom:1px solid var(--molsan-prof-border)!important;border-radius:0!important;
+  background:var(--molsan-prof-soft)!important;
+}
+
+.notargest.ng-content .ng-panel-titulo h2,
+.notargest.ng-content .ng-bloque-heading h3 {
+margin:0!important;color:var(--molsan-prof-blue)!important;font-weight:800!important}
+
+.notargest.ng-content .ng-tabla th,
+.notargest.ng-content .ng-panel table thead th {
+
+  color:var(--molsan-prof-blue)!important;background:var(--molsan-prof-table)!important;border-color:var(--molsan-prof-border)!important;
+}
+
+.notargest.ng-content .ng-tabla td,
+.notargest.ng-content .ng-panel table td {
+border-color:var(--molsan-prof-border)!important}
+
+.notargest.ng-content .ng-dashboard-graficos {
+display:grid!important;gap:14px!important}
+
+.notargest.ng-content .ng-dashboard-grafico {
+padding:0!important}
+
+.notargest.ng-content .ng-dashboard-grafico>.ng-bloque-heading {
+padding:16px 18px!important}
+
+.notargest.ng-content .ng-dashboard-grafico>.ng-bloque-heading h3 {
+color:var(--molsan-prof-blue)!important}
+
+.notargest.ng-content .ng-barra-pista,
+.notargest.ng-content .ng-media-pista {
+background:var(--molsan-prof-table)!important}
+
+.notargest.ng-content .ng-barra-pista span,
+.notargest.ng-content .ng-media-pista span {
+background:linear-gradient(180deg,#0D638C,#064675)!important}
+
+.notargest.ng-content .ng-ficha-cuerpo,
+.notargest.ng-content .ng-ficha-premium {
+background:var(--molsan-prof-soft)!important}
+
+.notargest.ng-content .ng-dato,
+.notargest.ng-content .ng-documento,
+.notargest.ng-content .ng-categoria-documental {
+border-color:var(--molsan-prof-border)!important;border-radius:12px!important;background:#fff!important}
+
+.notargest.ng-content button:focus-visible {
+outline:3px solid rgba(6,70,117,.22)!important;outline-offset:2px!important}
+
+.notargest .molsan-icon-3d {
+flex-shrink:0}
+
+.notargest .ng-modal-overlay {
+
+  background:rgba(3,28,46,.58)!important;backdrop-filter:blur(4px)!important;-webkit-backdrop-filter:blur(4px)!important;
+}
+
+.notargest .ng-modal {
+
+  color:var(--molsan-prof-text)!important;border:1px solid var(--molsan-prof-border)!important;
+  border-radius:18px!important;background:#fff!important;box-shadow:0 24px 64px rgba(3,28,46,.24)!important;
+}
+
+.notargest .ng-modal>header,
+.notargest .ng-resumen-expedientes-modal>header {
+
+  display:flex!important;align-items:center!important;justify-content:space-between!important;gap:14px!important;
+  padding:18px 22px!important;color:#fff!important;border:0!important;border-bottom:1px solid rgba(255,255,255,.14)!important;
+  border-radius:0!important;background:linear-gradient(116deg,#032D4B 0%,#064675 58%,#0D638C 100%)!important;
+}
+
+.notargest .ng-modal>header :is(h2,h3,p,span,.ng-kicker),
+.notargest .ng-resumen-expedientes-modal>header :is(h2,h3,p,span,.ng-kicker) {
+color:#fff!important}
+
+.notargest .ng-modal-lista {
+
+  background:#fff!important;
+}
+
+.notargest .ng-modal-vacio,
+.notargest .ng-aviso-item {
+
+  border-color:var(--molsan-prof-border)!important;border-radius:12px!important;
+}
+
+.notargest.ng-content .ng-dashboard-kpi::before,
+.notargest.ng-content .ng-kpi-card::before {
+
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  top: 0 !important;
+  right: 18px !important;
+  left: 18px !important;
+  height: 3px !important;
+  border-radius: 0 0 6px 6px !important;
+  background: linear-gradient(90deg, #064675 0%, #2696A5 70%, #8BC8D8 100%) !important;
+  pointer-events: none !important;
+}
