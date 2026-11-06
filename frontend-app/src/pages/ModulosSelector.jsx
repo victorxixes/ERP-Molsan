@@ -198,7 +198,6 @@ export default function ModulosSelector() {
       if (!response.ok || !data?.token) throw new Error(data?.detail || "No se ha podido abrir el portal de la notaría.");
       if (portal === "notargest") {
         sessionStorage.setItem("notargest_soporte_token", data.token);
-        sessionStorage.setItem("notargest_soporte_notaria", JSON.stringify(data.notaria || notaria));
         setModalSoporte(null);
         navigate("/notargest?modo_soporte=1");
       } else {
