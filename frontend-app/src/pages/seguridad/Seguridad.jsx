@@ -30,7 +30,7 @@ function Acceso({ to, icon, title, description }) {
       <span className="seguridad-acceso-body">
         <span className="seguridad-acceso-title">
           {title}
-          <span className="seguridad-acceso-arrow">→</span>
+          <span className="seguridad-acceso-arrow"><MolsanIcon name="arrowRight" size={16} /></span>
         </span>
         <span className="seguridad-acceso-description">{description}</span>
       </span>
@@ -95,7 +95,7 @@ export default function Seguridad() {
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
             <Indicador icon="users" label="Empleados" value={empleadosList.length} detail="Registros disponibles" tone="ocean" />
-            <Indicador icon="userCheck" label="Activos" value={empleadosActivos} detail="Empleados marcados como activos" tone="emerald" />
+            <Indicador icon="users" label="Activos" value={empleadosActivos} detail="Empleados marcados como activos" tone="emerald" />
             <Indicador icon="shield" label="Roles" value={rolesList.length} detail="Roles registrados" tone="cyan" />
             <Indicador icon="key" label="Permisos" value={permisosList.length} detail="Permisos registrados" tone="violet" />
             <Indicador icon="clipboard" label="Auditoría" value={auditoriaList.length} detail="Eventos disponibles" tone="amber" />
