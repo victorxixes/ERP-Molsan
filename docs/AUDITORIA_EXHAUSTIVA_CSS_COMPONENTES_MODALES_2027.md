@@ -750,3 +750,11 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - `Cancelagest.css` conserva la cuadrícula `.cg-kpis` y sus breakpoints, pero elimina tipografía, padding y superficies locales de la tarjeta que ahora pertenecen al componente compartido.
 - Retirado `.cg-kpi` de las reglas canónicas de tarjeta, hover, iconografía y movimiento reducido; `.cg-module-card` y los paneles/gráficos propios permanecen intactos.
 - Verificación estática: cero referencias a `.cg-kpi` en JSX/CSS de CancelaGest y 40/40 llaves equilibradas en CanonicalVisual. Render Preview construyó correctamente los 299 módulos y el despliegue del commit `e72f284` está `LIVE`; permanece el aviso no bloqueante de importación doble de Notificaciones.
+
+## 38. Fusiones — migración de indicadores y eliminación de iconos locales (6 de noviembre de 2026)
+
+- Los seis filtros KPI de Fusiones pasan del componente artesanal `Indicador` a `MolsanStatCard`. Se conserva el filtrado por estado, el contador y la posibilidad de desactivar el filtro al pulsar de nuevo.
+- Se mantiene una clase `is-active` con estilo local discreto para que el estado seleccionado siga siendo visible; la estructura, icono, franja superior, tipografía y hover pertenecen al componente compartido.
+- Se elimina el componente SVG local `Icon`; los pictogramas de búsqueda y estado vacío pasan a `MolsanIcon`.
+- Se añade el scope `fusiones-page` al contenedor raíz para activar los estilos locales de página y el estado seleccionado.
+- No se cambian llamadas a API, filtros, datos, navegación ni estados de solicitudes. Pendiente build y revisión visual responsive de los seis filtros.
