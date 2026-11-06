@@ -885,7 +885,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         />
       )}
       <div className="ag-fondo-decorativo" aria-hidden="true" />
-      <MolsanPageHeader mark="EG" title="EncargaGest" description={modo === "externo" ? "Portal profesional · " + (sesion?.notaria_nombre || "Sesión externa") : "Recepción y seguimiento de encargos notariales externos."} actions={modo === "interno" ? <button type="button" onClick={salirEncargaGest} className="molsan-premium-header__secondary-action">Cerrar sesión</button> : null} />
+      <MolsanPageHeader mark="EG" title="EncargaGest" description={modo === "externo" ? "Portal profesional · " + (sesion?.notaria_nombre || "Sesión externa") : "Recepción y seguimiento de encargos notariales externos."} actions={modo === "interno" ? <button type="button" onClick={salirEncargaGest} className="molsan-btn molsan-btn--secondary">Cerrar sesión</button> : null} />
 
       <main className="eg-main w-full max-w-none px-1 pb-4">
         <section role="status" aria-live="polite" className="mb-5 flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 shadow-sm">
