@@ -2,7 +2,7 @@
 
 **Rama de trabajo:** `fix/molsan-css-selector-audit-round1`  
 **PR:** #409 (Draft)  
-**Último commit de código:** `4dcd32bdefb9e161e6f4ce19bb902bb628bca929`  
+**Último commit de código desplegado:** `6b98941dd2dc9df924c6e1d93b8d2c59f3ed11cd`  
 **Alcance de esta revisión:** frontend `frontend-app/src`; sin cambios en backend, API, Supabase, datos ni producción.
 
 ## 1. Inventario real del frontend
@@ -831,3 +831,23 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - El contenedor pasa explícitamente `embedded` a los tres hijos. Se evita así la duplicación visual sin retirar accesos directos ni cambiar rutas.
 - En MonitorSistema se evita además añadir padding interior duplicado en el modo embebido; se conserva el padding en la vista independiente.
 - Pendiente build y comprobación visual de ambas formas de entrada.
+
+
+## 48. Alineación de gutters de ApoderaGest, EncargaGest y NotarGest — 6 de noviembre de 2026
+
+Comparación estática de los wrappers JSX y las reglas responsive de los tres portales, tomando como referencia el gutter común del Layout (16 px móvil y 24 px en escritorio):
+
+- **ApoderaGest:** el wrapper exterior ya aporta `px-4 py-6 lg:px-6`. Se limita a cero el padding móvil adicional de 14 px en `.erp-page.apoderagest`; los overlays y diálogos que también usan la clase `.apoderagest` no quedan afectados.
+- **EncargaGest:** el contenido `.eg-main` mantenía 12 px laterales hasta 560 px, frente a 16 px en los otros portales. Se unifica a 16 px.
+- **NotarGest:** el wrapper exterior ya aporta el gutter; se elimina el padding interior duplicado de `.notargest.ng-content`. La vista administrativa `.ng-admin-notarias`, que no está dentro de ese wrapper, recibe explícitamente el mismo gutter: 16 px móvil y 24 px desde 1024 px.
+
+Los cambios se limitan a CSS y no alteran rutas, estructura de negocio, autenticación, permisos, API, datos ni modales.
+
+### Verificación
+
+- Build frontend Vite: success en el workflow #919.
+- Auditoría de dependencias: success en el workflow #362.
+- Validación Fichaje: success en el workflow #3397.
+- Render Preview `molsan-premium-2027-candidate-preview`: deploy `dep-dbn0sj5g1s2s73c4m650`, commit `6b98941dd2dc9df924c6e1d93b8d2c59f3ed11cd`, estado `live`.
+
+La validación visual autenticada y las pruebas manuales en desktop/tablet/móvil siguen pendientes. El navegador de consulta no puede abrir la URL del Preview; no se declara una inspección visual que no se ha realizado.
