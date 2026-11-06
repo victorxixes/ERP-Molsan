@@ -356,10 +356,6 @@
   min-width:0;
   box-sizing:border-box;
 }
-.encargagest .eg-perfil-cabecera{
-  align-items:center;
-  padding:22px 28px;
-}
 .encargagest .eg-perfil-layout{
   grid-template-columns:minmax(0,1.35fr) minmax(320px,.85fr);
   align-items:start;
