@@ -1106,3 +1106,8 @@ Se han retirado las clases de animación genérica `animate-fade-in` de los cont
 Se conservan las transiciones propias de interacción (hover/focus), la animación de carga funcional de NotarGest y las entradas breves de componentes de interacción como desplegables y modales, pendientes de validación individual. No se modifica la preferencia `prefers-reduced-motion`.
 
 Commits de esta tanda: c4ca98f, a2fa2d7, f102d44, 290b243, 657cf18, b4f4c7d.
+
+
+### 20.1. Conservación de estado activo en NotarGest
+
+Al retirar la piel local de las tarjetas de notaría, se ha trasladado explícitamente el estado `.ng-admin-notaria-activa` al canon visual para que la selección siga siendo visible sobre el nuevo fondo blanco. Commit: 393ef92.
