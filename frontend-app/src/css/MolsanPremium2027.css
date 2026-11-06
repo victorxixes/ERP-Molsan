@@ -1155,29 +1155,6 @@
     transform .18s ease;
 }
 
-/* Glass Luxe Evolution · profundidad y presencia de la iconografía de cabecera */
-.molsan-page-header__mark {
-  display:inline-grid;
-  place-items:center;
-  border:1px solid rgba(190,214,230,.9);
-  border-radius:15px;
-  color:#064675;
-  background:radial-gradient(circle at 28% 20%,#fff 0%,#fff 16%,#EAF2F8 62%,#D9E9F3 100%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.98),0 5px 13px rgba(6,50,82,.12);
-  text-shadow:0 1px 1px rgba(6,70,117,.16);
-  transform:translateZ(0);
-  transition:transform .22s ease,box-shadow .22s ease;
-}
-.molsan-page-header:hover .molsan-page-header__mark {
-  transform:translateY(-1px) scale(1.035);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.98),0 8px 17px rgba(6,50,82,.16);
-}
-.molsan-page-header__mark :is(svg,img) { filter:drop-shadow(0 1px 1px rgba(6,70,117,.2)); }
-@media(prefers-reduced-motion:reduce) {
-  .molsan-page-header__mark { transition:none; }
-  .molsan-page-header:hover .molsan-page-header__mark { transform:none; }
-}
-
 /* Normalización transversal de botones heredados: conserva los colores de cada acción,
    pero comparte altura mínima, tipografía, radio, foco y respuesta táctil. */
 :is(.erp-main-content, .molsan-page, .apoderagest, .notargest, .encargagest, .cg-page)
@@ -1382,58 +1359,6 @@ a[aria-current="page"] .molsan-nav-icon-3d {
 .molsan-page-back-link:focus-visible {
   outline: 2px solid #064675;
   outline-offset: 2px;
-}
-
-/* Las acciones de cabecera conservan el color semántico de MolsanButton.
-   La regla general de enlaces/botones del hero solo se aplica a controles heredados. */
-.molsan-page-header .molsan-btn--primary {
-  color: #FFFFFF !important;
-  background: linear-gradient(135deg, #075487, #064675) !important;
-  border-color: #064675 !important;
-}
-.molsan-page-header .molsan-btn--secondary {
-  color: #064675 !important;
-  background: linear-gradient(145deg, #FFFFFF, #F2F7FB) !important;
-  border-color: #D8E4EC !important;
-}
-.molsan-page-header .molsan-btn--success {
-  color: #176B4B !important;
-  background: linear-gradient(145deg, #F3FBF6, #E6F4EB) !important;
-  border-color: #BFE2CC !important;
-}
-.molsan-page-header .molsan-btn--warning {
-  color: #8A620D !important;
-  background: linear-gradient(145deg, #FFFCF2, #FFF4D8) !important;
-  border-color: #EEDCA8 !important;
-}
-.molsan-page-header .molsan-btn--danger {
-  color: #FFFFFF !important;
-  background: #B42318 !important;
-  border-color: #B42318 !important;
-}
-.molsan-page-header .molsan-btn--excel {
-  color: #FFFFFF !important;
-  background: linear-gradient(135deg, #16845B, #11734E) !important;
-  border-color: #11734E !important;
-}
-.molsan-page-header .molsan-btn--success:hover:not(:disabled) {
-  color: #145A40 !important;
-  background: #DDF0E5 !important;
-  border-color: #9CCFB1 !important;
-}
-.molsan-page-header .molsan-btn--warning:hover:not(:disabled) {
-  color: #76520A !important;
-  background: #FCECC2 !important;
-  border-color: #E5CD88 !important;
-}
-.molsan-page-header .molsan-btn--danger:hover:not(:disabled) {
-  color: #FFFFFF !important;
-  background: #941B13 !important;
-}
-.molsan-page-header .molsan-btn--excel:hover:not(:disabled) {
-  color: #FFFFFF !important;
-  background: linear-gradient(135deg, #11734E, #0D6242) !important;
-  border-color: #0D6242 !important;
 }
 
 /* Márgenes exteriores uniformes para las páginas de herramientas.
